@@ -42,7 +42,8 @@
       INTEGER :: nnx, ndnc, ind, nnsh, info, nn, nnh, na
       INTEGER :: ifound, nap, ifpos, ifneg
       INTEGER :: nwann, nb
-      INTEGER :: nx2, ny2, nz2, npoint2
+      INTEGER :: npoint2
+      INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
       INTEGER :: nzz, nyy, nxx
       INTEGER :: iphase, nsdim, irguide
       INTEGER :: nrguide, niter0, ncgfix, ncount
@@ -1006,37 +1007,58 @@
 ! are G1s+G0, i.e. nx+nncell, etc...
 
       ALLOCATE( cm(dimwann,dimwann,nkpts,nnmx) )
+      cm(:,:,:,:) = (0.d0, 0.d0)
+      ALLOCATE( nx2(ngx) )
+      ALLOCATE( ny2(ngy) )
+      ALLOCATE( nz2(ngz) )
 
       DO nkp = 1, nkpts
-        DO i = 1, dimwann
-          DO j = 1, dimwann
-            DO nn = 1, nntot(nkp)
-              cm(i,j,nkp,nn) = ( 0.d0, 0.d0 )
-              nkp2 = nnlist(nkp,nn)
-              DO nz = 1, ngz
-                DO ny = 1, ngy
-                  DO nx = 1 , ngx
-                    npoint = nx + (ny-1)*ngx + (nz-1)*ngy*ngx
-                    nx2 = nx + nncell(1,nkp,nn)
-                    ny2 = ny + nncell(2,nkp,nn)
-                    nz2 = nz + nncell(3,nkp,nn)
-                    IF ( nx2 < 1 ) nx2 = nx2 + ngx
-                    IF ( ny2 < 1 ) ny2 = ny2 + ngy
-                    IF ( nz2 < 1 ) nz2 = nz2 + ngz
-                    IF ( nx2 > ngx ) nx2 = nx2 - ngx
-                    IF ( ny2 > ngy ) ny2 = ny2 - ngy
-                    IF ( nz2 > ngz ) nz2 = nz2 - ngz
-                    npoint2 = nx2 + (ny2-1)*ngx + (nz2-1)*ngy*ngx
-                    cm(i,j,nkp,nn) = cm(i,j,nkp,nn) + cptwfp(ninvpw(npoint,nkp),i,nkp) *  &
-                                     CONJG( cptwfp(ninvpw(npoint2,nkp2),j,nkp2) )
-                    ! WRITE(*,fmt="(4I5,2F18.12)" ) i,j,nkp,nn,cm(i,j,nkp,nn)
-                  END DO
+        DO nn = 1, nntot(nkp)
+          nkp2 = nnlist(nkp,nn)
+
+          ! set up indices
+          DO nx = 1, ngx
+            nx2(nx) = nx + nncell(1,nkp,nn)
+            IF( nx2(nx) < 1 ) nx2(nx) = nx2(nx) + ngx
+            IF( nx2(nx) > ngx ) nx2(nx) = nx2(nx) - ngx
+          END DO
+          DO ny = 1, ngy
+            ny2(ny) = ny + nncell(2,nkp,nn)
+            IF( ny2(ny) < 1 ) ny2(ny) = ny2(ny) + ngy
+            IF( ny2(ny) > ngy ) ny2(ny) = ny2(ny) - ngy
+            ny2(ny) = (ny2(ny) - 1) * ngx
+          END DO
+          DO nz = 1, ngz
+            nz2(nz) = nz + nncell(3,nkp,nn)
+            IF( nz2(nz) < 1 ) nz2(nz) = nz2(nz) + ngz
+            IF( nz2(nz) > ngz ) nz2(nz) = nz2(nz) - ngz
+            nz2(nz) = (nz2(nz) - 1) * ngx * ngy
+          END DO
+
+          npoint = 0
+          DO nz = 1, ngz
+            DO ny = 1, ngy
+              DO nx = 1 , ngx
+                npoint = npoint + 1
+                npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
+
+                DO j = 1, dimwann
+                  cm(1:dimwann, j, nkp, nn) = &
+                      cm(1:dimwann, j, nkp, nn) + &
+                      cptwfp(ninvpw(npoint,nkp), 1:dimwann ,nkp) * &
+                      CONJG( cptwfp(ninvpw(npoint2,nkp2), j, nkp2) )
                 END DO
+
               END DO
             END DO
           END DO
+
         END DO
       END DO
+
+      DEALLOCATE( nx2 )
+      DEALLOCATE( ny2 )
+      DEALLOCATE( nz2 )
 
       ALLOCATE( csheet(dimwann,nkpts,nnmx) )
       ALLOCATE( sheet(dimwann,nkpts,nnmx) )

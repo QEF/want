@@ -248,7 +248,7 @@
       ALLOCATE( nz2(ngz) )
 
       DO nkp = 1, nkpts
-        DO nn = 1 ,nntot(nkp)
+        DO nn = 1, nntot(nkp)
           nkp2 = nnlist(nkp,nn)
 
           ! set up indices
