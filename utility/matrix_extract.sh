@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 #
 # utility to extrac minors from a given matrix 
@@ -43,9 +43,9 @@ c2=" $5 "
 if [ ! -e $name ] ; then echo " file $name does NOT exist "; exit 1 ; fi
 
 #
-# get the dimanesion of the matrix
+# get the dimension of the matrix
 data=`cat $name`
-dimx=`echo "$data" | head -1 | awk '{print $1}'`
+dimx=`echo "$data" | awk '{ if (NR == 1) print $1}'`
 
 if [ $r1 -gt $dimx ] ; then echo " R1 = $r1 is larger than DIMX = $dimx " ; exit 1 ; fi
 if [ $r2 -gt $dimx ] ; then echo " R2 = $r2 is larger than DIMX = $dimx " ; exit 1 ; fi
