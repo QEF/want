@@ -78,6 +78,7 @@ case $INPUT in
                     WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
                     HAMILTONIAN=".TRUE." ; BULK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
+   (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
 #
