@@ -380,9 +380,11 @@
 !        WRITE( stdout,125) nkp, dimwin(nkp), mtxd(nkp)
 !125     FORMAT('k-point',i5,2x,'dimwin ',i2,' ngwk ',i5)
 
-         IF ( dimwin(nkp) < dimwann ) CALL errore(' disentangle ', ' dimwin < dimwan ', dimwin )
+         IF ( dimwin(nkp) < dimwann )  &
+            CALL errore(' disentangle ', ' dimwin < dimwan ', dimwin(nkp) )
 
-         IF ( dimwin(nkp) > mxdbnd ) CALL errore(' disentangle ', ' increase max number of band ', dimwin )
+         IF ( dimwin(nkp) > mxdbnd )  &
+            CALL errore(' disentangle ', ' increase max number of band ', dimwin(nkp) )
 
        END DO
 
@@ -591,10 +593,10 @@
 !                  WRITE( stdout, fmt="(4x,i2, 2x, i2, f16.12, 1x, f16.12)") l, m, ctmp
                    IF ( l == m ) THEN
                      IF ( ABS(ctmp-cmplx(1.0d0,0.0d0)) > 1.0e-8 ) &
-                       CALL errore(' disentangle ', ' Vectors in lamp not orthonormal (I)', ABS(ctmp-cmplx(1.0d0,0.0d0)) )
+                       CALL errore(' disentangle ', 'Vectors in lamp not orthonormal (I)',l)
                    ELSE
                      IF ( ABS(ctmp) > 1.0e-8 ) &
-                       CALL errore(' disentangle ', ' Vectors in lamp not orthonormal (II)', ABS(ctmp-cmplx(1.0d0,0.0d0)) )
+                       CALL errore(' disentangle ', 'Vectors in lamp not orthonormal (II)',l)
                    END IF
                  END DO
                END DO

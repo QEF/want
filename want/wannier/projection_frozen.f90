@@ -185,10 +185,10 @@
 !              WRITE(stdout ,'(i2,2x,i2,f16.12,1x,f16.12)') l, m, ctmp
                IF ( l == m ) THEN
                  IF ( ABS( ctmp - CMPLX( 1.0d0, 0.0d0 ) ) > 1.0e-8 ) &
-                   CALL errore(' projection_frozen ', ' projected gaussians in lamp not orthonormal (I)', ABS( ctmp - CMPLX( 1.0d0, 0.0d0 ) ) )
+                   CALL errore(' projection_frozen ', 'projected gaussians in lamp not orthonormal (I)',l)
                ELSE
                  IF ( ABS(ctmp) > 1.0e-8 ) &
-                   CALL errore(' projection_frozen ', ' projected gaussians in lamp not orthonormal (II)', ABS( ctmp ) )
+                   CALL errore(' projection_frozen ', 'projected gaussians in lamp not orthonormal (II)',l)
                END IF
              END DO
            END DO
