@@ -21,7 +21,7 @@
    USE constants, ONLY : CZERO, CONE, EPS_m8
    USE timing_module, ONLY : timing
    USE io_module, ONLY : stdout
-   USE util_module, ONLY : zmat_unitary, zmat_mul, zmat_svd
+   USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
    !
    USE windows_module, ONLY : lfrozen, dimfroz, indxfroz, frozen, nbnd
    USE control_module, ONLY : unitary_thr
@@ -125,7 +125,7 @@
            lamp(:,:,ik) = CZERO
            IF ( dimwann > dimfroz(ik) ) THEN
                 !
-                CALL zmat_svd( dimwin(ik), dimwann, ca(:,:,ik), s, u, vt )
+                CALL mat_svd( dimwin(ik), dimwann, ca(:,:,ik), s, u, vt )
                 !
                 CALL zmat_mul( cu, u, 'N', vt, 'N', dimwin(ik), dimwann, dimwann )
                 lamp(  1:dimwin(ik), 1:dimwann , ik) = cu( 1:dimwin(ik), 1:dimwann )

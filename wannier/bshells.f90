@@ -15,9 +15,11 @@
 
       USE kinds
       USE constants, ONLY : ZERO, CZERO, ONE, EPS_m10, EPS_m6
+      USE util_module, ONLY : mat_svd
+      USE converters_module, ONLY : cry2cart
       USE timing_module, ONLY : timing
 
-      USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, &
+      USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, nreverse, &
                                  bk, dnn, ndnntot, wb, wbtot, nnlist, nncell, &
                                  nntot, bka, neigh, nnx, &
                                  kpoints_alloc 
@@ -41,7 +43,7 @@
  
       INTEGER :: ndnc
       INTEGER :: i, j, l, m, n, nn, inx, na, nap, ierr
-      INTEGER :: nkp, nkp2, nkpts2
+      INTEGER :: nkp, nkp2
       INTEGER :: nlist, ndnn, nddn
       INTEGER :: nnsh, nnh
       INTEGER :: ifpos, ifneg, ifound, info, ind
@@ -49,36 +51,29 @@
 
       REAL(dbl), ALLOCATABLE :: vkpr(:,:)
       REAL(dbl) :: vkpp(3)
-      REAL(dbl) :: dimsingvd(nnx)
+      REAL(dbl) :: singvd(nnx)
       REAL(dbl) :: dimbk(3,nnx)
       REAL(dbl) :: v1(nnx,nnx), v2(nnx,nnx)
-      REAL(dbl) :: w1(10*nnx)
       REAL(dbl) :: dnn0, dnn1, dist, bb1, bbn, factor
 
-!
 
       CALL timing('bshells',OPR='start')
 
       IF ( .NOT. kpoints_alloc ) CALL errore('bshell', 'Kpoints NOT alloc', 1 )
       IF ( nkpts <= 0) CALL errore('bshell', 'Invaid nkpts', ABS(nkpts)+1 )
 
+      !
+      ! ... Pass the k-points in cartesian coordinates
+      !     units: Bohr^-1
+      !
       ALLOCATE( vkpr(3,nkpts), STAT=ierr )
       IF ( ierr /= 0) CALL errore('bshell', 'allocating vkpr', ABS(ierr))
 
-! ... Just so that nkpt2 is used properly later on
-      nkpts2 = nkpts
+      vkpr(:,:) = vkpt(:,:)
+      CALL cry2cart( vkpr, bvec )
 
-! ... Pass the k-points in cartesian coordinates
 
-      DO nkp = 1, nkpts
-         DO i = 1, 3
-            vkpr(i,nkp) = ZERO
-            DO j = 1, 3
-              vkpr(i,nkp) = vkpr(i,nkp) + vkpt(j,nkp) * bvec(i,j)  
-            ENDDO
-         ENDDO 
-      ENDDO
-
+!
 ! ... Find the distance between k-point 1 and its nearest-neighbour shells
 !     if we have only one k-point, the n-neighbours are its periodic images 
 
@@ -86,10 +81,10 @@
       dnn1 = eta
       ndnntot = 0
 
-
-! ... AC & MBN (April 2002) generic k grid allowed
-!     everything in bohr^-1
- 
+      !
+      ! ... AC & MBN (April 2002) generic k grid allowed
+      !     everything in bohr^-1
+      !
       DO nlist = 1, nnx
         DO nkp = 1, nkpts
           DO l = -5, 5
@@ -164,10 +159,10 @@
 
         nntot(nkp) = inx
       END DO
-
-! ... Check that the moduli of the b-vectors inside a shell are all identical
-
-      DO nkp = 1, nkpts2
+      !
+      ! ... Check that the moduli of the b-vectors inside a shell are all identical
+      !
+      DO nkp = 1, nkpts
         inx = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
@@ -187,8 +182,9 @@
         END DO
       END DO
 
-! ... Now find the dimensionality of each shell of neighbours
-
+      !
+      ! ... Now find the dimensionality of each shell of neighbours
+      !
       inx = 0
       DO ndnc = 1, nshells
         ndnn = nwhich(ndnc)
@@ -202,21 +198,15 @@
         END DO
 
         nnsh = nnshell(1,ndnn)
+        IF( nnsh > nnx ) CALL errore(' wannier ',' nnsh too big ', nnsh )
 
-        IF( nnsh > nnx ) &
-          CALL errore(' wannier ',' nnsh too big ', nnsh )
-
-        dimsingvd(:) = ZERO
-
-        CALL dgesvd( 'A', 'A', 3, nnsh, dimbk, 3, dimsingvd, v1, 3, v2, &
-                    nnsh, w1, 10*nnsh, info )
-
-        IF ( info /=0 ) &
-          CALL errore(' bshell ', ' Singular value decomposition dgesvd failed ', info )
-
+        !
+        ! use SVD decomposition
+        !
+        CALL mat_svd( 3, nnsh, dimbk, singvd, v1, v2)
         DO nn = 1, nnsh
-          IF ( ABS( dimsingvd(nn) ) > 1e-5 ) ndim(ndnn) = ndim(ndnn) + 1
-        END DO
+          IF ( ABS( singvd(nn) ) > 1e-5 ) ndim(ndnn) = ndim(ndnn) + 1
+        ENDDO
 
 
 !
@@ -237,7 +227,7 @@
 
       ENDDO
 
-      DO nkp = 1, nkpts2
+      DO nkp = 1, nkpts
         inx = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
@@ -258,7 +248,7 @@
 !     now check that the completeness relation is satisfied
 !     Eq. B1 in Appendix  B PRB 56 12847 (1997)
 
-      DO nkp = 1, nkpts2
+      DO nkp = 1, nkpts
 
         DO i = 1, 3
           DO j = 1, 3
@@ -328,38 +318,81 @@
         ENDIF
 
         IF ( ifound == 0 ) THEN
-! ...     Found new vector to add to set
-          na = na + 1
-          bka(1,na) = bk(1,1,nn)
-          bka(2,na) = bk(2,1,nn)
-          bka(3,na) = bk(3,1,nn)
-        END IF
+            !
+            ! Found new vector to add to set
+            !
+            na = na + 1
+            bka(1,na) = bk(1,1,nn)
+            bka(2,na) = bk(2,1,nn)
+            bka(3,na) = bk(3,1,nn)
+        ENDIF
+      ENDDO
+      IF ( na /= nnh )  &
+         CALL errore(' bshell ', ' Wrong number of bk directions', ABS(na-nnh))
 
-      END DO
-      IF ( na /= nnh ) CALL errore(' bshell ', ' Wrong number of bk directions', ABS(na-nnh))
+
+      !
+      ! Find index array
+      !
+      DO nkp = 1, nkpts
+          DO na = 1, nnh
+              !
+              ! first, zero the index array so we can check it gets filled
+              !
+              neigh(nkp,na) = 0
+              !
+              ! now search through list of neighbours of this k-point
+              !
+              DO nn = 1, nntot(nkp)
+                  CALL compar( bka(1,na), bk(1,nkp,nn), ifpos, ifneg )
+                  IF ( ifpos == 1 ) neigh(nkp,na) = nn
+              ENDDO
+              !
+              ! check found
+              IF ( neigh(nkp,na) == 0 ) &
+                    CALL errore(' bshell ', ' Check on neigh failed ', na )
+          ENDDO
+
+      ENDDO
 
 
-! ... Find index array
-
-      DO nkp = 1, nkpts2
-
-        DO na = 1, nnh
-
-! ...     first, zero the index array so we can check it gets filled
-          neigh(nkp,na) = 0
-
-! ...     now search through list of neighbours of this k-point
+      !
+      ! Built up nreverse(nkpts, nnx) array index, which gives for each
+      ! IK and INN (related to k, b) the index corresponding to the NN
+      ! -b for the k+b kpt. It is used to symmetrize the Mkb overlap int
+      !
+      DO nkp = 1, nkpts
           DO nn = 1, nntot(nkp)
-            CALL compar( bka(1,na), bk(1,nkp,nn), ifpos, ifneg )
-            IF ( ifpos == 1 ) neigh(nkp,na) = nn
-          END DO
 
-! ...     check found
-          IF ( neigh(nkp,na) == 0 ) CALL errore(' bshell ', ' Check failed ', na )
+             nreverse(nn,nkp) = 0
+             !
+             ! get the k+b index
+             nkp2 = nnlist(nkp, nn)
 
-        END DO
+             !
+             ! now search the -b vecotr corresponding to k+b
+             DO na=1,nntot(nkp2)
+                 CALL compar( bk(1,nkp2,na), bk(1,nkp,nn), ifpos, ifneg )
+                 IF ( ifneg == 1 ) nreverse(nn,nkp) = na
+             ENDDO
+             !
+             ! check found
+             IF (  nreverse(nn,nkp) == 0 ) &
+                    CALL errore(' bshell ', ' Check on nreverse failed ', nkp )
 
-      END DO
+! XXX
+WRITE(0,*) "nkp, nn ", nkp, nn
+WRITE(0,"(a10,3f15.9)") 'k',vkpt(:,nkp)
+WRITE(0,"(a10,3f15.9)") 'b',bk(:,nkp,nn)
+WRITE(0,"(a10,3f15.9)") 'k+b',vkpt(:,nkp2)
+WRITE(0,"(a10,3f15.9)") 'k+b, -b',bk(:,nkp2, nreverse(nn,nkp) )
+WRITE(0,"(a10,i5)") 'reverse', nreverse(nn,nkp)
+WRITE(0,*) 
+
+          ENDDO
+      ENDDO
+
+
 
       DEALLOCATE( vkpr, STAT=ierr )
       IF ( ierr /= 0) CALL errore('bshell', 'deallocating vkpr', ABS(ierr))
@@ -367,6 +400,6 @@
       CALL timing('bshells',OPR='stop')
 
       RETURN
-      END SUBROUTINE
+   END SUBROUTINE
 
 

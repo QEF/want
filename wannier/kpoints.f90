@@ -57,6 +57,7 @@
   INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*nnx
   INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nnx*nkpts
   INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*nnhx
+  INTEGER, ALLOCATABLE           :: nreverse(:,:) ! DIM: nnx*nkpts
   REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*nnx (bohr^-1)
   REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*nnx
   REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*nnhx (bohr^-1)
@@ -82,6 +83,7 @@
   PUBLIC :: nnlist
   PUBLIC :: nncell
   PUBLIC :: neigh
+  PUBLIC :: nreverse
   PUBLIC :: bk
   PUBLIC :: wb
   PUBLIC :: dnn, ndnntot
@@ -140,6 +142,8 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nnx,nkpts )
       ALLOCATE( neigh(nkpts,nnhx), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating neigh ', nkpts*nnhx )
+      ALLOCATE( nreverse(nnx,nkpts), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nreverse ', nkpts*nnx )
       ALLOCATE( bk(3,nkpts,nnx), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating bk ', 3*nkpts*nnx )
       ALLOCATE( wb(nkpts,nnx), STAT = ierr )
@@ -265,6 +269,10 @@ CONTAINS
     IF ( ALLOCATED( neigh ) ) THEN
        DEALLOCATE( neigh, STAT=ierr )
        IF (ierr/=0) CALL errore('bshells_deallocate','deallocating neigh',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( nreverse ) ) THEN
+       DEALLOCATE( nreverse, STAT=ierr )
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nreverse',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( bk ) ) THEN
        DEALLOCATE( bk, STAT=ierr )

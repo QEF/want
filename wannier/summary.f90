@@ -374,7 +374,6 @@
           WRITE( unit, " (  '</WINDOWS>',/)" )
       ENDIF
 
-
   END SUBROUTINE summary
 
 END MODULE summary_module
