@@ -29,6 +29,8 @@
 ! SUBROUTINE  clock_find(list,name,found,index)
 ! </INFO>
 !
+
+   INTEGER, PARAMETER             :: i4b = SELECTED_INT_KIND( 9 )  ! dbl integer 
  
    INTEGER, PARAMETER             :: nclockx = 500
    INTEGER, PARAMETER             :: str_len = 200
@@ -36,9 +38,9 @@
    TYPE clock
       CHARACTER(str_len)          :: name              ! clock name
       INTEGER                     :: call_number       ! number of runs for this clock
-      INTEGER                     :: start             ! last start
-      INTEGER                     :: stop              ! last stop 
-      INTEGER                     :: rate              ! rate
+      INTEGER(i4b)                :: start             ! last start
+      INTEGER(i4b)                :: stop              ! last stop 
+      INTEGER(i4b)                :: rate              ! rate
       REAL                        :: total_time        ! total time up to now
       LOGICAL                     :: running           ! true if clock is counting
       LOGICAL                     :: alloc = .FALSE.
