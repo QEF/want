@@ -53,8 +53,8 @@ MODULE ions_module
       REAL(dbl), ALLOCATABLE :: tau(:,:)      !  initial positions read from stdin (in bohr)
       REAL(dbl), ALLOCATABLE :: tau_srt(:,:)  !  tau sorted by specie in bohr
       INTEGER,   ALLOCATABLE :: ind_srt( : )  !  index of tau sorted by specie
-      CHARACTER(LEN=2), ALLOCATABLE :: atm(:) !  DIM: nsp
-      CHARACTER(LEN=2), ALLOCATABLE :: symb(:)!  DIM: nat
+      CHARACTER(LEN=3), ALLOCATABLE :: atm(:) !  DIM: nsp
+      CHARACTER(LEN=3), ALLOCATABLE :: symb(:)!  DIM: nat
       CHARACTER(LEN=nstrx), ALLOCATABLE :: psfile(:)!  DIM: nsp
 
       LOGICAL :: alloc = .FALSE.
@@ -82,7 +82,7 @@ CONTAINS
    !**********************************************************
    IMPLICIT NONE
       INTEGER :: nat_, nsp_
-      CHARACTER(12)  :: subname='ions_allocate'
+      CHARACTER(13)  :: subname='ions_allocate'
       INTEGER :: ierr
 
       IF ( nat_ <= 0) CALL errore(subname,'Invalid nat_',ABS(nat_)+1)
@@ -118,7 +118,7 @@ CONTAINS
    SUBROUTINE ions_deallocate( )
    !**********************************************************
    IMPLICIT NONE
-      CHARACTER(14)  :: subname='ions_deallocate'
+      CHARACTER(15)  :: subname='ions_deallocate'
       INTEGER :: ierr
 
       IF ( ALLOCATED( na ) ) THEN
