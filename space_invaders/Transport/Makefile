@@ -2,32 +2,27 @@
 # Makefile for transfer.f
 #
 
-#-- Defines for CRAY T90
-FC=ifc
-OPTS = -w -c -r8 -tpp6 -O3 -save
-ATLAS=/usr/local/cicaia/intel/lib/ATLAS/OLD_NODE
-LAPACK=/usr/local/cicaia/intel/lib
-LIBS= -L$(LAPACK) -llapack -L$(ATLAS) -lf77blas -latlas /usr/lib/libpthread.a
+include ../make.sys
+include ../make.rules
 
-#-----  End of configurable parameters -----
+all: Sconductor.x bulk.x
 
-FFLAGS = $(OPTS) 
-LDFLAGS = ifc
+OBJS=Sconductor.o Sgreena.o Stransfera.o Sgreenb.o Stransferb.o \
+SreadH.o setv0.o
 
-SRCS = Sconductor.f90 Sgreena.f90 Stransfera.f90 Sgreenb.f90 Stransferb.f90 \
-SreadH.f90 setv0.f90
+Sconductor.x: $(OBJS)
+	$(LD) -o Sconductor.x $(OBJS) ../Modules/*.o $(MODULES) $(LDFLAGS)
 
-PRJS = $(SRCS:.f=.prj)
-OBJS = $(SRCS:.f=.o)
 
-Sconductor.x: $(OBJS) 
-	$(FC) -o $@ $(OBJS) $(LIBS) 
+BOBJS = bulk.o green.o transfer.o hamiltonian.o \
+smooth.o scale.o setv0.o
+
+bulk.x: $(BOBJS) 
+	$(LD) -o bulk.x $(BOBJS) ../Modules/*.o $(MODULES) $(LDFLAGS)
+
 
 clean:
-	rm -f *.[ou] *.x *.dvi *.lst *.log core *.prj
+	rm -rf *.o *.a *core  work.pc work.pcl *.mod *.x
 
-cleanall:
-	rm -f *.[ou] *.x *.dvi *.lst *.log core *.prj fort.* va.job.*
-
-check: $(PRJS)
-	ftnchek $(PRJS)
+# dependencies
+#include .dependencies
