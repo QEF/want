@@ -1,6 +1,7 @@
 
    MODULE dyn_op_write
    USE kinds, ONLY: sgl, dbl, i4b
+   USE timing_module, ONLY : timing
    IMPLICIT NONE
 
 ! <INFO>
@@ -100,6 +101,7 @@ CONTAINS
 
 !-------------------------------------------
 
+   CALL timing('write_dyn_op',OPR='start')
 
    ALLOCATE( E_fmt(Nomega), STAT=ierr)
       IF (ierr/=0) CALL errore(' write_dyn_op ',' allocating E ', Nomega)
@@ -207,6 +209,7 @@ CONTAINS
    CLOSE(unit=out)
 
   
+   CALL timing('write_dyn_op',OPR='stop')
 
    END SUBROUTINE write_dyn_op
 

@@ -1,6 +1,7 @@
 
    MODULE dyn_op_read
    USE kinds, ONLY: sgl, i4b, dbl
+   USE timing_module, ONLY : timing
    IMPLICIT NONE
 
 ! <INFO>
@@ -101,6 +102,7 @@ CONTAINS
 
 !-------------------------------------------
 
+   CALL timing('read_dyn_op',OPR='start')
 
 !
 ! reading
@@ -248,6 +250,7 @@ CONTAINS
    DEALLOCATE(  Vct_fmt, STAT=ierr )  
        IF (ierr/=0) CALL errore('read_dyn_op','deallocating Vct_fmt', ABS(ierr))
 
+   CALL timing('read_dyn_op',OPR='stop')
 
    END SUBROUTINE read_dyn_op
 
