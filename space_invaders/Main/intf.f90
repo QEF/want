@@ -30,7 +30,6 @@
        INTEGER :: ngx, ngy, ngz, nionst 
        INTEGER :: nions, nbands, npspts
        INTEGER :: nrlpts, nrgrpt, mxrlnl, mxrlsh
-       INTEGER :: maxcx, maxcy, maxcz, maxgpx, maxgpy, maxgpz
 
        INTEGER :: nplwv
  
