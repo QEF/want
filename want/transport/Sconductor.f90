@@ -13,6 +13,8 @@
    
       USE kinds
       USE constants, ONLY: pi
+      USE startup_module, ONLY : startup
+      USE version_module, ONLY : version_number
 
       IMPLICIT NONE
 
@@ -87,6 +89,11 @@
      
       LOGICAL :: l_overlap
      
+!
+! ...  Startup
+!
+       CALL startup(version_number,MAIN_NAME='Sconductor')
+
 !...  Scalar for BLAS calls and other initializations
       alpha = ( 1.d0, 0.d0 )
       beta = ( 0.d0, 0.d0 ) 
