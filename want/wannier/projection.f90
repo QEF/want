@@ -20,6 +20,7 @@
        USE fft_scalar
        USE io_global, ONLY : stdout
        USE timing_module, ONLY : timing
+       USE sph_har
 
        IMPLICIT NONE
 
@@ -80,9 +81,6 @@
        REAL(dbl) :: th_cos, th_sin 
        REAL(dbl) :: ph_cos, ph_sin
        REAL(dbl) :: scalf
-       REAL(dbl) :: sph00, sph1m1, sph10
-       REAL(dbl) :: sph11, sph2m2, sph2m1
-       REAL(dbl) :: sph20, sph21, sph22        
  
        INTEGER :: info
 
@@ -235,15 +233,7 @@
 ! ...  Now pick up a consistent phase for the u_nk (the initial ones
 !      are provided by the ab-initio code, and so have almost random rotations)
      
-       sph00  = 1.0d0 / SQRT( 2.0d0 * twopi )
-       sph1m1 = SQRT( 1.5d0 / twopi )
-       sph10  = SQRT( 1.5d0 / twopi )
-       sph11  = SQRT( 1.5d0 / twopi )
-       sph2m2 = SQRT( 15.0d0 / 2.0d0 / twopi )
-       sph2m1 = SQRT( 15.0d0 / 2.0d0 / twopi )
-       sph20  = SQRT(  5.0d0 / 8.0d0 / twopi )
-       sph21  = SQRT( 15.0d0 / 2.0d0 / twopi )
-       sph22  = SQRT( 15.0d0 / 2.0d0 / twopi )
+       CALL sph_har_init  !  initialize spherical harmonics constants
 
        DO nkp = 1, nkpts
          IF  ( dimwann >  dimfroz(nkp) ) THEN  !IF  not, don't need to waste CPU time!

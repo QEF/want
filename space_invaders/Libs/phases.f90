@@ -39,7 +39,7 @@
 
       INTEGER :: nntot(nkpts)
       INTEGER :: neigh(nkpts,nnmxh)
-      COMPLEX(dbl) :: cm(nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: cm(nbands,nbands,nnmx,nkpts)
       COMPLEX(dbl) :: csum(nnmxh)
       COMPLEX(dbl) :: csheet(nbands,nkpts,nnmx)
       REAL(dbl) ::  bk(3,nkpts,nnmx)
@@ -74,7 +74,7 @@
           csum(na)=(0.0,0.0)
           do nkp=1,nkpts2
             nn=neigh(nkp,na)
-            csum(na)=csum(na)+cm(nwann,nwann,nkp,nn)
+            csum(na)=csum(na)+cm(nwann,nwann,nn,nkp)
           end do
         end do
 
@@ -185,8 +185,8 @@
       DO nkp = 1, nkpts2
         DO n = 1, nbands
           DO nn = 1, nntot(nkp)
-            pherr = AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nkp,nn) ) )           &
-            -sheet(n,nkp,nn) + rnkb(n,nkp,nn) - AIMAG( LOG( cm(n,n,nkp,nn) ) )
+            pherr = AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nn,nkp) ) )           &
+            -sheet(n,nkp,nn) + rnkb(n,nkp,nn) - AIMAG( LOG( cm(n,n,nn,nkp) ) )
             IF ( ABS(pherr) > pi ) THEN
               WRITE( stdout, fmt=" ( 2x, 3i4,f18.9,3f10.5 ) ")  nkp, n, nn, pherr, ( bk(i,nkp,nn), i=1,3 )
             END IF

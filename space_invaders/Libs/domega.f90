@@ -11,8 +11,7 @@
 !
 !=------------------------------------------------------------------------------------------=
       SUBROUTINE domega( nbands, nkpts, nkpts2, nntot, nnmx, nnlist, bk, wb,               &
-                 cm, csheet, sheet, cr, crt, rave, r2ave, rnkb, cdodq1, cdodq2, cdodq3,    &
-                 cdodq )
+                 cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq )
 !=------------------------------------------------------------------------------------------=
       
       USE kinds
@@ -27,22 +26,33 @@
       INTEGER :: ind
       INTEGER :: nkp
       INTEGER :: nn
-      INTEGER :: m, n 
 
       INTEGER :: nnlist(nkpts,nnmx), nntot(nkpts)
       REAL(dbl) :: wb(nkpts,nnmx)
       REAL(dbl) :: bk(3,nkpts,nnmx), rave(3,nbands)
-      REAL(dbl) :: r2ave(nbands), rnkb(nbands,nkpts,nnmx)
+      REAL(dbl) :: r2ave(nbands)
       REAL(dbl) :: sheet(nbands,nkpts,nnmx)
       REAL(dbl) :: brn 
       COMPLEX(dbl) :: csheet(nbands,nkpts,nnmx)
-      COMPLEX(dbl) :: cm(nbands,nbands,nkpts,nnmx)
-      COMPLEX(dbl) :: cr(nbands,nbands,nkpts,nnmx)
-      COMPLEX(dbl) :: crt(nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: cm(nbands,nbands,nnmx,nkpts)
       COMPLEX(dbl) :: cdodq(nbands,nbands,nkpts)
       COMPLEX(dbl) :: cdodq1(nbands,nbands,nkpts)
       COMPLEX(dbl) :: cdodq2(nbands,nbands,nkpts)
       COMPLEX(dbl) :: cdodq3(nbands,nbands,nkpts)
+
+      INTEGER :: m, n, ierr
+
+      REAL(dbl), ALLOCATABLE :: rnkb(:,:,:) ! rnkb(nbands,nkpts,nnmx)
+      COMPLEX(dbl), ALLOCATABLE :: cr(:,:,:,:) ! (nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl), ALLOCATABLE :: crt(:,:,:,:) ! (nbands,nbands,nkpts,nnmx)
+
+      ALLOCATE( cr(nbands,nbands,nnmx,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' domega ', ' allocating cr ', nbands**2*nkpts*nnmx )
+      ALLOCATE( crt(nbands,nbands,nnmx,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' domega ', ' allocating crt ', nbands**2*nkpts*nnmx )
+      ALLOCATE( rnkb(nbands,nnmx,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' domega ', ' allocating rnkb ', nbands*nkpts*nnmx )
+
 
 ! ... Recalculate rave
 
@@ -52,7 +62,7 @@
           DO nkp = 1, nkpts2
             DO nn = 1, nntot(nkp)
               rave(ind,nwann) = rave(ind,nwann) + wb(nkp,nn) * bk(ind,nkp,nn) *    &
-              ( AIMAG( LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nkp,nn) ) )      &
+              ( AIMAG( LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nn,nkp) ) )      &
                - sheet(nwann,nkp,nn) )
             END DO
           END DO
@@ -68,19 +78,19 @@
             DO n = 1, nbands
 
 ! ...         Old minimization 
-              crt(m,n,nkp,nn) = cm(m,n,nkp,nn) / cm(n,n,nkp,nn)
+              crt(m,n,nn,nkp) = cm(m,n,nn,nkp) / cm(n,n,nn,nkp)
 
 ! ...         New minimization 
-              cr(m,n,nkp,nn) = cm(m,n,nkp,nn) * CONJG( cm(n,n,nkp,nn) )
+              cr(m,n,nn,nkp) = cm(m,n,nn,nkp) * CONJG( cm(n,n,nn,nkp) )
 
 
             END DO
-            rnkb(m,nkp,nn) = 0.d0
+            rnkb(m,nn,nkp) = 0.d0
             brn = 0.d0
             DO ind = 1, 3
               brn = brn + bk(ind,nkp,nn) * rave(ind,m)
             END DO
-            rnkb(m,nkp,nn) = rnkb(m,nkp,nn) + brn
+            rnkb(m,nn,nkp) = rnkb(m,nn,nkp) + brn
           END DO
         END DO
       END DO
@@ -98,19 +108,19 @@
 
 ! ...         A[R^{k,b}]=(R-Rdag)/2
 
-              cdodq1(m,n,nkp) = cdodq1(m,n,nkp) + wb(nkp,nn) * ( cr(m,n,nkp,nn) / 2.d0 - &
-                                CONJG( cr(n,m,nkp,nn) ) / 2.d0 )
+              cdodq1(m,n,nkp) = cdodq1(m,n,nkp) + wb(nkp,nn) * ( cr(m,n,nn,nkp) / 2.d0 - &
+                                CONJG( cr(n,m,nn,nkp) ) / 2.d0 )
 
 ! ...         -S[T^{k,b}]=-(T+Tdag)/2i ; T_mn = Rt_mn q_n
 
-              cdodq2(m,n,nkp) = cdodq2(m,n,nkp) - wb(nkp,nn) * ( crt(m,n,nkp,nn) *          &
-                              ( AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nkp,nn) ) ) -         &
-                                sheet(n,nkp,nn) ) + CONJG( crt(n,m,nkp,nn) *                &
-                              ( AIMAG( LOG( csheet(m,nkp,nn) * cm(m,m,nkp,nn) ) ) -         &
+              cdodq2(m,n,nkp) = cdodq2(m,n,nkp) - wb(nkp,nn) * ( crt(m,n,nn,nkp) *          &
+                              ( AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nn,nkp) ) ) -         &
+                                sheet(n,nkp,nn) ) + CONJG( crt(n,m,nn,nkp) *                &
+                              ( AIMAG( LOG( csheet(m,nkp,nn) * cm(m,m,nn,nkp) ) ) -         &
                                 sheet(m,nkp,nn) ) ) ) / ( 0.d0, 2.d0 )
 
-              cdodq3(m,n,nkp) = cdodq3(m,n,nkp) - wb(nkp,nn) * ( crt(m,n,nkp,nn) *          &
-                                rnkb(n,nkp,nn) + CONJG( crt(n,m,nkp,nn) * rnkb(m,nkp,nn) ) ) / ( 0.d0, 2.d0 )
+              cdodq3(m,n,nkp) = cdodq3(m,n,nkp) - wb(nkp,nn) * ( crt(m,n,nn,nkp) *          &
+                                rnkb(n,nn,nkp) + CONJG( crt(n,m,nn,nkp) * rnkb(m,nn,nkp) ) ) / ( 0.d0, 2.d0 )
 
             END DO
 
@@ -122,6 +132,14 @@
           END DO
         END DO
       END DO
+
+      DEALLOCATE( cr, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' domega ', ' deallocating cr ', ABS(ierr) )
+      DEALLOCATE( crt, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' domega ', ' deallocating crt ', ABS(ierr) )
+      DEALLOCATE( rnkb, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' domega ', ' deallocating rnkb ', ABS(ierr) )
+
 
       RETURN
       END SUBROUTINE

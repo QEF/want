@@ -23,6 +23,7 @@
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
       USE converters_module, ONLY : cart2cry
+      USE sph_har
 
       IMPLICIT NONE
 
@@ -61,7 +62,6 @@
       INTEGER :: ifound, nap, ifpos, ifneg
       INTEGER :: nwann, nb
       INTEGER :: npoint2
-      INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
       INTEGER :: nzz, nyy, nxx
       INTEGER :: nsdim, irguide
       INTEGER :: nrguide, ncgfix, ncount
@@ -74,8 +74,6 @@
       REAL(dbl) :: asidemin, aside
       REAL(dbl) :: func_om1, func_om2, func_om3, func_o
       REAL(dbl) :: func_old1, func_old2, func_old3
-      REAL(dbl) :: sph00, sph1m1, sph10, sph11, sph2m2
-      REAL(dbl) :: sph2m1, sph20, sph21, sph22
       REAL(dbl) :: rx, ry, rz, scalf
       REAL(dbl) :: dist1, dist_pl, dist_cos
       REAL(dbl) :: th_cos, th_sin, ph_cos, ph_sin, dist2, select
@@ -91,10 +89,8 @@
       COMPLEX(dbl), ALLOCATABLE ::  cu(:,:,:) ! cu(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) ! cu0(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:) ! csheet(dimwann,nkpts,nnmx)
-      COMPLEX(dbl), ALLOCATABLE ::  cm(:,:,:,:) ! cm(dimwann,dimwann,nkpts,nnmx)
+      COMPLEX(dbl), ALLOCATABLE ::  cm(:,:,:,:) ! cm(dimwann,dimwann, nnmx, nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cm0(:,:,:,:) ! cm0(dimwann,dimwann,nkpts,nnmx)
-      COMPLEX(dbl), ALLOCATABLE ::  cr(:,:,:,:) ! cr(dimwann,dimwann,nkpts,nnmx)
-      COMPLEX(dbl), ALLOCATABLE ::  crt(:,:,:,:) ! crt(dimwann,dimwann,nkpts,nnmx)
       COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:) ! cmtmp(dimwann,dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) ! cdodq(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:) ! cdqkeep(dimwann,dimwann,nkpts)
@@ -113,7 +109,6 @@
       COMPLEX(dbl), ALLOCATABLE ::  lvec(:,:) ! lvec(mxddim,dimwann)
       REAL(dbl), ALLOCATABLE ::  singvd(:) !  singvd(dimwann)
       REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnmx)
-      REAL(dbl), ALLOCATABLE ::  rnkb(:,:,:) ! rnkb(dimwann,nkpts,nnmx)
       REAL(dbl), ALLOCATABLE ::  v1(:,:) ! v1(nnmx,nnmx)
       REAL(dbl), ALLOCATABLE ::  v2(:,:) ! v2(nnmx,nnmx)
       REAL(dbl), ALLOCATABLE ::  w1(:) !  w1(10*nnmx)
@@ -183,6 +178,7 @@
       INTEGER :: ngm
 
       INTEGER, ALLOCATABLE :: igv(:,:)
+      INTEGER, ALLOCATABLE :: dimwin(:)
       INTEGER :: mxdgve, nkpts1
       INTEGER :: i1, i2, i3
       INTEGER :: nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
@@ -488,7 +484,6 @@
 
         READ(20) ( igsort( np, nkp ), np=1, nplwkp(nkp) )
         READ(20) ( ( lvec( np, iib ), np=1, nplwkp(nkp) ), iib=1, dimwann )
-        ! READ(20) ( ( cptwfp( np, iib, nkp ), np=1, nplwkp(nkp) ), iib=1, dimwann )
 
         DO np = 1, nplwkp(nkp)
 
@@ -716,67 +711,18 @@
 ! multiplying it by 1/N.  
 !
  
-      ALLOCATE( cm(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
+      ALLOCATE( cm(dimwann,dimwann,nnmx,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm ', dimwann**2 * nkpts*nnmx)
-      ALLOCATE( nx2(nr1), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nx2 ', nr1)
-      ALLOCATE( ny2(nr2), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ny2 ', nr2)
-      ALLOCATE( nz2(nr3), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nz2 ', nr3)
 
-      cm(:,:,:,:) = (0.d0, 0.d0)
+      ALLOCATE( dimwin( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dimwin ', nkpts )
 
-      DO nkp = 1, nkpts
-        DO nn = 1, nntot(nkp)
-          nkp2 = nnlist(nkp,nn)
+      dimwin = dimwann
 
-          ! set up indices
-          DO nx = 1, nr1
-            nx2(nx) = nx + nncell(1,nkp,nn)
-            IF( nx2(nx) < 1 ) nx2(nx) = nx2(nx) + nr1
-            IF( nx2(nx) > nr1 ) nx2(nx) = nx2(nx) - nr1
-          END DO
-          DO ny = 1, nr2
-            ny2(ny) = ny + nncell(2,nkp,nn)
-            IF( ny2(ny) < 1 ) ny2(ny) = ny2(ny) + nr2
-            IF( ny2(ny) > nr2 ) ny2(ny) = ny2(ny) - nr2
-            ny2(ny) = (ny2(ny) - 1) * nr1
-          END DO
-          DO nz = 1, nr3
-            nz2(nz) = nz + nncell(3,nkp,nn)
-            IF( nz2(nz) < 1 ) nz2(nz) = nz2(nz) + nr3
-            IF( nz2(nz) > nr3 ) nz2(nz) = nz2(nz) - nr3
-            nz2(nz) = (nz2(nz) - 1) * nr1 * nr2
-          END DO
+      CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
+          ninvpw, mxddim, nkpts, nnmx, dimwann, nr1, nr2, nr3, dimwann )
 
-          npoint = 0
-          DO nz = 1, nr3
-            DO ny = 1, nr2
-              DO nx = 1 , nr1
-                npoint = npoint + 1
-                npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
-
-                DO j = 1, dimwann
-                  cm(1:dimwann, j, nkp, nn) = &
-                      cm(1:dimwann, j, nkp, nn) + &
-                      cptwfp(ninvpw(npoint,nkp), 1:dimwann ,nkp) * &
-                      CONJG( cptwfp(ninvpw(npoint2,nkp2), j, nkp2) )
-                END DO
-
-              END DO
-            END DO
-          END DO
-
-        END DO
-      END DO
-
-      DEALLOCATE( nx2, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nx2 ', ABS(ierr))
-      DEALLOCATE( ny2, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ny2 ', ABS(ierr))
-      DEALLOCATE( nz2, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nz2 ', ABS(ierr))
+      DEALLOCATE( dimwin )
 
       ALLOCATE( csheet(dimwann,nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnmx)
@@ -796,7 +742,6 @@
 
       ALLOCATE( rave(3,dimwann), r2ave(dimwann), rave2(dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rave r2ave ', 4*dimwann)
-      
 
 
       CALL omega( dimwann, nkpts, nkpts, nntot(:), nnmx, nnlist(:,:), bk(:,:,:), wb(:,:), &
@@ -830,15 +775,7 @@
 ! ... Now pick up a consistent phase for the u_nk (the initial ones
 !     are provided by the ab-initio code, and so have almost random rotations)
      
-      sph00 = 1.d0/sqrt( 2.d0 * twopi )
-      sph1m1 = sqrt( 1.5 / twopi )
-      sph10 = sqrt( 1.5 / twopi )
-      sph11 = sqrt( 1.5 / twopi )
-      sph2m2 = sqrt( 15.d0 / 2.d0 / twopi )
-      sph2m1 = sqrt( 15.d0 / 2.d0 / twopi )
-      sph20 = sqrt(  5.d0 / 8.d0 / twopi )
-      sph21 = sqrt( 15.d0 / 2.d0 / twopi )
-      sph22 = sqrt( 15.d0 / 2.d0 / twopi )
+      CALL sph_har_init  !  initialize spherical harmonics constants
 
       ALLOCATE( cptwr(mplwv), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cptwr ', mplwv)
@@ -1297,14 +1234,14 @@
               cmtmp(i,j) = ( 0.d0, 0.d0 )
               DO m = 1, dimwann
                 DO n = 1, dimwann
-                  cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,nkp)) * cu(n,j,nkp2) * cm(m,n,nkp,nn)
+                  cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,nkp)) * cu(n,j,nkp2) * cm(m,n,nn,nkp)
                 END DO
               END DO
             END DO
           END DO
           DO i = 1, dimwann
             DO j = 1, dimwann
-              cm(i,j,nkp,nn) = cmtmp(i,j)
+              cm(i,j,nn,nkp) = cmtmp(i,j)
             END DO
           END DO
         END DO
@@ -1336,7 +1273,7 @@
         DO nn = 1, nntot(nkp)
           DO na = 1, dimwann
             DO nb = 1, dimwann
-              cmtmp(na,nb) = cm(na,nb,nkp,nn)
+              cmtmp(na,nb) = cm(na,nb,nn,nkp)
             END DO
           END DO
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
@@ -1404,7 +1341,7 @@
         DO nn = 1, nntot(nkp)
           DO na = 1, dimwann
             DO nb = 1, dimwann
-              cmtmp(na,nb) = cm(na,nb,nkp,nn)
+              cmtmp(na,nb) = cm(na,nb,nn,nkp)
             END DO
           END DO
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
@@ -1504,7 +1441,7 @@
             DO j = 1, dimwann
               cu0(i,j,nkp) = cu(i,j,nkp)
               DO nn = 1, nntot(nkp)
-                cm0(i,j,nkp,nn) = cm(i,j,nkp,nn)
+                cm0(i,j,nkp,nn) = cm(i,j,nn,nkp)
               END DO
             END DO
           END DO
@@ -1516,23 +1453,8 @@
                  bk, bka, cm, csheet, sheet, rguide, irguide )
         END IF
 
-        ALLOCATE( cr(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cr ', dimwann*2*nkpts*nnmx )
-        ALLOCATE( crt(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating crt ', dimwann*2*nkpts*nnmx )
-        ALLOCATE( rnkb(dimwann,nkpts,nnmx), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rnkb ', dimwann*nkpts*nnmx )
-
         CALL domega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb,              &
-             cm, csheet, sheet, cr, crt, rave, r2ave, rnkb, cdodq1, cdodq2, cdodq3,   &
-             cdodq)
-
-        DEALLOCATE( cr, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cr ', ABS(ierr) )
-        DEALLOCATE( crt, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating crt ', ABS(ierr) )
-        DEALLOCATE( rnkb, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rnkb ', ABS(ierr) )
+             cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
 
         DO nkp = 1, nkpts
           DO m= 1, dimwann
@@ -1684,14 +1606,14 @@
                 cmtmp(i,j) = ( 0.d0, 0.d0 )
                 DO m = 1, dimwann
                   DO n = 1, dimwann
-                    cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * cdq(n,j,nkp2) * cm(m,n,nkp,nn)
+                    cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * cdq(n,j,nkp2) * cm(m,n,nn,nkp)
                   END DO
                 END DO
               END DO
             END DO
             DO i = 1, dimwann
               DO j = 1, dimwann
-                cm(i,j,nkp,nn) = cmtmp(i,j)
+                cm(i,j,nn,nkp) = cmtmp(i,j)
               END DO
             END DO
           END DO
@@ -1756,7 +1678,7 @@
               DO j=1,dimwann
                 cu(i,j,nkp)=cu0(i,j,nkp)
                 DO nn=1,nntot(nkp)
-                  cm(i,j,nkp,nn)=cm0(i,j,nkp,nn)
+                  cm(i,j,nn,nkp)=cm0(i,j,nkp,nn)
                 END DO
               END DO
             END DO
@@ -1876,14 +1798,14 @@
                   cmtmp(i,j) = ( 0.d0, 0.d0 )
                   DO m = 1, dimwann
                     DO n = 1, dimwann
-                      cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * cdq(n,j,nkp2) * cm(m,n,nkp,nn)
+                      cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * cdq(n,j,nkp2) * cm(m,n,nn,nkp)
                     END DO
                   END DO
                 END DO
               END DO
               DO i = 1, dimwann
                 DO j = 1, dimwann
-                  cm(i,j,nkp,nn) = cmtmp(i,j)
+                  cm(i,j,nn,nkp) = cmtmp(i,j)
                 END DO
               END DO
             END DO
@@ -2052,7 +1974,7 @@
 
           DO na = 1, dimwann
             DO nb = 1, dimwann
-              cmtmp(na,nb) = cm(na,nb,nkp,nn)
+              cmtmp(na,nb) = cm(na,nb,nn,nkp)
             END DO
           END DO
 

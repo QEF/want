@@ -37,7 +37,7 @@
       REAL(dbl) :: r2ave(nbands), rave2(nbands), bim(3)
       REAL(dbl) :: sheet(nbands,nkpts,nnmx)
       COMPLEX(dbl) :: csumt(3)
-      COMPLEX(dbl) :: cm(nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: cm(nbands,nbands,nnmx,nkpts)
 
       COMPLEX(dbl) :: csheet(nbands,nkpts,nnmx)
       COMPLEX(dbl) :: craven(3,nbands), crtotn(3)
@@ -64,7 +64,7 @@
           DO nkp = 1, nkpts2
             DO nn = 1, nntot(nkp)
               rave(ind,nwann) = rave(ind,nwann) + wb(nkp,nn) * bk(ind,nkp,nn) *      &
-                  ( AIMAG(LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nkp,nn) ) )     &
+                  ( AIMAG(LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nn,nkp) ) )     &
                    - sheet(nwann,nkp,nn) )
             END DO
           END DO
@@ -90,8 +90,8 @@
         DO nkp = 1, nkpts2
           DO nn = 1, nntot(nkp)
             r2ave(nwann) = r2ave(nwann) + wb(nkp,nn) * ( 1.d0 -                      &
-                 cm(nwann,nwann,nkp,nn) * CONJG( cm(nwann,nwann,nkp,nn) ) +          &
-                 ( AIMAG( LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nkp,nn) ) ) -   &
+                 cm(nwann,nwann,nn,nkp) * CONJG( cm(nwann,nwann,nn,nkp) ) +          &
+                 ( AIMAG( LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nn,nkp) ) ) -   &
                  sheet(nwann,nkp,nn) )**2 )
           END DO
         END DO
@@ -108,7 +108,7 @@
           craven(ind,nwann) = 0.d0 
           DO nkp = 1, nkpts2
             DO nn = 1, nntot(nkp)
-              craven(ind,nwann) = craven(ind,nwann) + wb(nkp,nn) * bk(ind,nkp,nn) * cm(nwann,nwann,nkp,nn)
+              craven(ind,nwann) = craven(ind,nwann) + wb(nkp,nn) * bk(ind,nkp,nn) * cm(nwann,nwann,nn,nkp)
             END DO
           END DO
           craven(ind,nwann) = ( 0.d0, 1.d0 ) * craven(ind,nwann) / DBLE(nkpts2)
@@ -144,7 +144,7 @@
         DO nn = 1, nntot(nkp)
           DO nwann = 1, nbands
             func_om1 = func_om1 + wb(nkp,nn) *                                    &
-            ( 1.d0 - cm(nwann,nwann,nkp,nn) * CONJG( cm(nwann,nwann,nkp,nn) ) )
+            ( 1.d0 - cm(nwann,nwann,nn,nkp) * CONJG( cm(nwann,nwann,nn,nkp) ) )
           END DO
         END DO
       END DO
@@ -156,7 +156,7 @@
         DO nkp = 1, nkpts2
           DO nn = 1, nntot(nkp)
             sqim = sqim + wb(nkp,nn) * ( ( AIMAG( LOG( csheet(nwann,nkp,nn) *     &
-            cm(nwann,nwann,nkp,nn) ) ) - sheet(nwann,nkp,nn) )**2 )
+            cm(nwann,nwann,nn,nkp) ) ) - sheet(nwann,nkp,nn) )**2 )
           END DO
         END DO
         sqim = sqim / DBLE(nkpts2)
@@ -170,7 +170,7 @@
           DO nkp = 1, nkpts2
             DO nn = 1, nntot(nkp)
               bim(ind) = bim(ind) + wb(nkp,nn) * bk(ind,nkp,nn) *             &
-              ( AIMAG( LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nkp,nn) ) ) &
+              ( AIMAG( LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nn,nkp) ) ) &
                -sheet(nwann,nkp,nn) )
             END DO
           END DO
@@ -189,7 +189,7 @@
           IF (n /= m ) THEN
             DO nkp = 1, nkpts2
               DO nn = 1, nntot(nkp)
-                func_n = func_n + wb(nkp,nn) * CONJG( cm(m,n,nkp,nn) ) * cm(m,n,nkp,nn)
+                func_n = func_n + wb(nkp,nn) * CONJG( cm(m,n,nn,nkp) ) * cm(m,n,nn,nkp)
               END DO
             END DO
           END IF
@@ -206,7 +206,7 @@
               DO ind = 1, 3
                 csumt(ind) = 0.d0
                 DO nn= 1, nntot(nkp)
-                  csumt(ind) = csumt(ind)+ wb(nkp,nn) * bk(ind,nkp,nn) * cm(m,n,nkp,nn)
+                  csumt(ind) = csumt(ind)+ wb(nkp,nn) * bk(ind,nkp,nn) * cm(m,n,nn,nkp)
                 END DO
                 sum = sum + csumt(ind) * CONJG( csumt(ind) )
               END DO
@@ -228,9 +228,9 @@
               DO nn = 1, nntot(nkp)
                 IF ( m ==n ) THEN
                   csumt(ind) = csumt(ind) + wb(nkp,nn) * bk(ind,nkp,nn) * ( 0.d0, 1.d0 )* &
-     &            ( AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nkp,nn) ) ) - sheet(n,nkp,nn) )
+     &            ( AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nn,nkp) ) ) - sheet(n,nkp,nn) )
                 ELSE
-                  csumt(ind) = csumt(ind) + wb(nkp,nn) * bk(ind,nkp,nn) * cm(m,n,nkp,nn)
+                  csumt(ind) = csumt(ind) + wb(nkp,nn) * bk(ind,nkp,nn) * cm(m,n,nn,nkp)
                 END IF
               END DO
               sum = sum + csumt(ind) * CONJG(csumt(ind))
@@ -254,7 +254,7 @@
           sum = 0.d0
           DO m = 1, nbands
             DO n = 1, nbands
-              sum = sum + cm(m,n,nkp,nn) * CONJG( cm(m,n,nkp,nn) )
+              sum = sum + cm(m,n,nn,nkp) * CONJG( cm(m,n,nn,nkp) )
             END DO
           END DO
           func_i = func_i + wb(nkp,nn) * ( DBLE(nbands)-sum )
@@ -268,8 +268,8 @@
           sum = 0.d0
           DO m = 1, nbands
             DO n = 1, nbands
-              sum = sum + wb(nkp,nn) * cm(m,n,nkp,nn) * CONJG( cm(m,n,nkp,nn) )
-              IF ( m == n ) sum = sum - wb(nkp,nn) * cm(m,n,nkp,nn) * CONJG( cm(m,n,nkp,nn) )
+              sum = sum + wb(nkp,nn) * cm(m,n,nn,nkp) * CONJG( cm(m,n,nn,nkp) )
+              IF ( m == n ) sum = sum - wb(nkp,nn) * cm(m,n,nn,nkp) * CONJG( cm(m,n,nn,nkp) )
             END DO
           END DO
           func_od = func_od + sum
@@ -286,7 +286,7 @@
             DO ind = 1, 3
               brn = brn + bk(ind,nkp,nn) * rave(ind,n)
             END DO
-            sum = sum + wb(nkp,nn) * ( AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nkp,nn) ) ) &
+            sum = sum + wb(nkp,nn) * ( AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nn,nkp) ) ) &
                   - sheet(n,nkp,nn) + brn )**2
           END DO
           func_d=func_d+sum

@@ -9,66 +9,46 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE overlap( kgv, vkpt, avec, evecr, eveci, isort, mtxd, &
-                           dimwin, nntot, nnlist, nncell, cm, enmax, &
-                           mxdgve, mxddim, mxdnrk, mxdnn, mxdbnd, &
-                           ngx, ngy, ngz, nrplwv, nkpts, ndwinx )
+       SUBROUTINE overlap( igv, evecr, eveci, igsort, npwk, dimwin, nntot, nnlist,  &
+                           nncell, cm, mxdgve, npwx, nkpts, mxdnn, mxdbnd, ngx,     &
+                           ngy, ngz, ndwinx )
 !=----------------------------------------------------------------------------------=
  
       USE kinds
       USE timing_module, ONLY : timing 
       USE io_global, ONLY : stdout
-      !USE constants, ONLY: bohr => bohr_radius_angs, ryd => ry, har => au, pi
-      USE constants, ONLY: ryd => ry, har => au, pi
 
       IMPLICIT NONE
 
       ! ... Input Variables
 
-      INTEGER :: mxdgve, mxddim, mxdnrk, mxdnn, mxdbnd 
-      INTEGER :: ngx, ngy, ngz, nrplwv, nkpts
-      INTEGER :: kgv(3,mxdgve), isort(mxddim,mxdnrk)
-      INTEGER :: mtxd(mxdnrk)
-      INTEGER :: nnlist(mxdnrk,mxdnn)
-      INTEGER :: nntot(mxdnrk)
-      INTEGER :: nncell(3,mxdnrk,mxdnn)
-      INTEGER :: dimwin(mxdnrk)
-      INTEGER :: ndwinx
-      REAL(dbl) :: evecr(mxddim,ndwinx,mxdnrk)
-      REAL(dbl) :: eveci(mxddim,ndwinx,mxdnrk)
-      REAL(dbl) :: vkpt(3,mxdnrk)
-      REAL(dbl) :: avec(3,3)
-      REAL(dbl) :: enmax
-      COMPLEX(dbl) :: cm(mxdbnd,mxdbnd,mxdnn,mxdnrk)
+      INTEGER :: mxdgve, npwx, nkpts, mxdnn, mxdbnd 
+      INTEGER :: ngx, ngy, ngz, ndwinx
+      INTEGER :: igv( 3, mxdgve ), igsort( npwx, nkpts )
+      INTEGER :: npwk( nkpts )
+      INTEGER :: nnlist( nkpts, mxdnn )
+      INTEGER :: nntot( nkpts )
+      INTEGER :: nncell( 3, nkpts, mxdnn )
+      INTEGER :: dimwin( nkpts )
+      REAL(dbl) :: evecr( npwx, ndwinx, nkpts )
+      REAL(dbl) :: eveci( npwx, ndwinx, nkpts )
+      COMPLEX(dbl) :: cm( mxdbnd, mxdbnd, mxdnn, nkpts )
 
       ! ... Local Variables
  
-      REAL(dbl) :: recc(3,3)
-      REAL(dbl) :: bvec(3,3)
-
-      INTEGER :: nplwv,mplwv
-
       COMPLEX(dbl) :: czero
       PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
 
       INTEGER :: nnx, ndnn, nnsh
-      INTEGER :: l, m, n, i, j ,nx, ny, nz, igk
-      INTEGER :: nkp, np, npoint
-      INTEGER :: nkb
-      INTEGER :: nkp2, npoint2, nn, iprint, nb
+      INTEGER :: l, m, n, i, j ,nx, ny, nz, igk, ipw1, ipw2
+      INTEGER :: nkp, npoint
+      INTEGER :: nkp2, npoint2, nn, nb
+      INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
 
       COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)
-      INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
-      INTEGER :: lpctx(ngx), lpcty(ngy), lpctz(ngz)
-
       INTEGER, ALLOCATABLE  :: ninvpw(:,:)
-      INTEGER, ALLOCATABLE  :: nindpw(:,:)
-      INTEGER, ALLOCATABLE  :: nplwkp(:)
 
       INTEGER :: ierr
-
-      REAL(dbl) :: bohr
-      PARAMETER ( bohr = 0.52917715d0 )
 
 ! ... END declarations
 
@@ -76,96 +56,20 @@
       !WRITE( stdout , fmt= "( /,2x,'Starting OVERLAP ',/)")
 
 
-      nplwv = ngx * ngy * ngz
-      mplwv = ngx * ngy * (ngz+1)
-
-      enmax = enmax * har
-
       IF( ndwinx /= MAXVAL( dimwin(:) ) ) THEN
         CALL errore(' overlap ', ' inconsistent window ', ndwinx )
       END IF
 
-      ALLOCATE( cptwfp( nrplwv+1 , ndwinx, nkpts ), STAT=ierr )
+      ALLOCATE( cptwfp( npwx+1 , ndwinx, nkpts ), STAT=ierr )
       IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating cptwfp ', ( (nrplwv+1) * ndwinx * nkpts ) )
+        CALL errore(' overlap ', ' allocating cptwfp ', ( (npwx+1) * ndwinx * nkpts ) )
       END IF
-      ALLOCATE( ninvpw(0:(ngx*ngy*ngz),mxdnrk), STAT = ierr )
+      ALLOCATE( ninvpw( 0:(ngx*ngy*ngz), nkpts ), STAT = ierr )
       IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating ninvpw ', ( (ngx*ngy*ngz+1)*mxdnrk ) ) 
-      END IF
-      ALLOCATE( nindpw(nrplwv,nkpts),  STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating nindpw ', ( nrplwv*nkpts ) )
-      END IF
-      ALLOCATE( nplwkp(mxdnrk), STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating nplwkp ', ( mxdnrk ) )
+        CALL errore(' overlap ', ' allocating ninvpw ', ( (ngx*ngy*ngz+1)*nkpts ) ) 
       END IF
 
-! ... do the dot product as in wannier and define indeces for G vectors
-
-      CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
-      bvec = bvec * 2.0d0 * pi
-      recc = TRANSPOSE( bvec ) / bohr
-      !recc = bvec / bohr
-
-
-! ... Generate the array ninvpw (taken from wannier)
- 
-      DO nx = 1 , (ngx/2)+1
-        lpctx(nx)  = nx - 1
-      END DO
-      DO nx = (ngx/2)+2 , ngx
-        lpctx(nx)  = nx - 1 - ngx
-      END DO
-
-      DO ny = 1 , (ngy/2)+1
-        lpcty(ny)  = ny - 1
-      END DO
-      DO ny = (ngy/2)+2 , ngy
-        lpcty(ny)  = ny - 1 - ngy
-      END DO
-
-      DO nz = 1 , (ngz/2)+1
-        lpctz(nz)  = nz - 1
-      END DO
-      DO nz = (ngz/2)+2 , ngz
-        lpctz(nz)  = nz - 1 - ngz
-      END DO
-
-! ... Subroutine gensp performs a number of tasks. 
-!     the indexing system for padding the spheres of plane waves at 
-!     each k point into the box used for the fast fourier transforms 
-!     is also computed as are the kinetic energies of the plane wave 
-!     basis states at each k point
-
-      nindpw = 0
-      ninvpw = nrplwv + 1
-
-      IPRINT=1
-
-      CALL genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
-           lpctx, lpcty, lpctz, recc, iprint )
-
-      DO nkp = 1, nkpts
-        IF( nplwkp(nkp) == mtxd(nkp) ) THEN
-           WRITE( 10, * ) ' ',nkp, nplwkp(nkp), mtxd(nkp)
-        ELSE
-           WRITE( 10, * ) '*',nkp, nplwkp(nkp), mtxd(nkp)
-        ENDIF
-        IF ( nplwkp(nkp) > mxddim ) THEN
-          WRITE( stdout, fmt= " ('For nkp = ', i4, ', nplwkp = ', i5, 'and mxddim = ', &
-                  & i5, '. Increase mxddim' ) " )nkp, nplwkp(nkp), mxddim
-          CALL errore(' overlap ', ' Increase mxddim ', mxddim )
-        END IF
-      END DO
-
-      DO nkp = 1, nkpts
-        DO np = 1, nplwkp(nkp)
-          npoint = nindpw(np,nkp)
-          ninvpw(npoint,nkp) = np
-        END DO
-      END DO
+      ninvpw = npwx + 1
 
 ! ... Transform wave-functions in CASTEP format
 
@@ -173,40 +77,100 @@
 
       DO nkp = 1, nkpts
 
-        DO nb = 1, dimwin(nkp)
+        DO j = 1, npwk( nkp )
 
- 
-! ...     Go through all the g-vectors inside the cutoff radius at the present k-point
- 
-          DO j = 1, mtxd(nkp)
+          igk = igsort(j,nkp)
+          IF ( igv(1,igk ) >= 0 ) nx = igv( 1,igk ) + 1
+          IF ( igv(1,igk ) <  0 ) nx = igv( 1,igk ) + 1 + ngx
+          IF ( igv(2,igk ) >= 0 ) ny = igv( 2,igk ) + 1
+          IF ( igv(2,igk ) <  0 ) ny = igv( 2,igk ) + 1 + ngy
+          IF ( igv(3,igk ) >= 0 ) nz = igv( 3,igk ) + 1
+          IF ( igv(3,igk ) <  0 ) nz = igv( 3,igk ) + 1 + ngz
+          npoint = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
 
-            igk = isort(j,nkp)
-            IF ( kgv(1,igk ) >= 0 ) nx = kgv( 1,igk ) + 1
-            IF ( kgv(1,igk ) <  0 ) nx = kgv( 1,igk ) + 1 + ngx
-            IF ( kgv(2,igk ) >= 0 ) ny = kgv( 2,igk ) + 1
-            IF ( kgv(2,igk ) <  0 ) ny = kgv( 2,igk ) + 1 + ngy
-            IF ( kgv(3,igk ) >= 0 ) nz = kgv( 3,igk ) + 1
-            IF ( kgv(3,igk ) <  0 ) nz = kgv( 3,igk ) + 1 + ngz
-            npoint = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
-
-            ! .. ninvpw(npoint,nkp) = j
+          ninvpw( npoint, nkp ) = j
 
 ! ...       Npoint is the absolute (k-independent) castep index of the gvector
-!           kgv(*,isort(j,nkp)). Note that in general it is not equal to nindpw(j,nkp),
+!           igv(*,igsort(j,nkp)). Note that in general it is not equal to nindpw(j,nkp),
 !           since both the ordering of the g-vectors at any given k-point and their
 !           absolute orderinging is different in cpw and in castep. (In cpw the
 !           absolute ordering is by stars of increasing length.) Think more about this,
 !           to make sure all that I said is correct.
+
+        END DO ! g-vectors at present k (J)
+
+
+        DO nb = 1, dimwin( nkp )
  
+! ...     Go through all the g-vectors inside the cutoff radius at the present k-point
+ 
+          DO j = 1, npwk( nkp )
+
 ! ...       Bloch state in the g-space grid
  
-            cptwfp(ninvpw(npoint,nkp),nb,nkp) = CONJG( CMPLX( evecr(j,nb,nkp), eveci(j,nb,nkp) ) )
+            cptwfp( j, nb, nkp ) = CONJG( CMPLX( evecr(j,nb,nkp), eveci(j,nb,nkp) ) )
 
           END DO ! g-vectors at present k (J)
 
         END DO   ! nb  loop 
       END DO     ! nkp loop
 
+      CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
+          ninvpw, npwx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
+
+      DEALLOCATE( cptwfp, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating cptwfp',ABS(ierr))
+      DEALLOCATE( ninvpw, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
+ 
+      CALL timing('overlap',OPR='stop')
+
+      RETURN
+      END SUBROUTINE
+
+!
+!=----------------------------------------------------------------------------------=
+       SUBROUTINE overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
+          ninvpw, npwx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
+!=----------------------------------------------------------------------------------=
+ 
+      USE kinds
+      USE timing_module, ONLY : timing 
+      USE io_global, ONLY : stdout
+
+      IMPLICIT NONE
+
+      ! ... Input Variables
+
+      INTEGER :: npwx, nkpts, mxdnn, mxdbnd 
+      INTEGER :: ngx, ngy, ngz, ndwinx
+      INTEGER :: nnlist( nkpts, mxdnn )
+      INTEGER :: nntot( nkpts )
+      INTEGER :: nncell( 3, nkpts, mxdnn )
+      INTEGER :: dimwin( nkpts )
+      COMPLEX(dbl) :: cm( mxdbnd, mxdbnd, mxdnn, nkpts )
+      COMPLEX(dbl) :: cptwfp( npwx+1 , ndwinx, nkpts )
+      INTEGER :: ninvpw( 0:(ngx*ngy*ngz), nkpts )
+
+      ! ... Local Variables
+ 
+      COMPLEX(dbl) :: czero
+      PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
+
+      INTEGER :: nnx, ndnn, nnsh
+      INTEGER :: j ,nx, ny, nz, igk, ipw1, ipw2
+      INTEGER :: nkp, npoint
+      INTEGER :: nkp2, npoint2, nn
+      INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
+
+! ... END declarations
+
+      CALL timing('overlap_base',OPR='start')
+
+
+      IF( ndwinx /= MAXVAL( dimwin(:) ) ) THEN
+        CALL errore(' overlap_base ', ' inconsistent window ', ndwinx )
+      END IF
 
 ! ... Calculate cm(i,j,nkp,nn)=<u_i k|u_j k+dk> (keeping into account
 !     that if k+dk is outside (or should be outside) the first BZ it must be
@@ -260,12 +224,12 @@
               DO nx = 1, ngx
                 npoint = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
                 npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
+                ipw1 = ninvpw(npoint,nkp)
+                ipw2 = ninvpw(npoint2,nkp2)
 
                 DO j = 1, dimwin(nkp2)
-                  cm(1:dimwin(nkp), j, nn, nkp) = &
-                      cm(1:dimwin(nkp), j, nn, nkp) + &
-                      cptwfp(ninvpw(npoint,nkp), 1:dimwin(nkp), nkp) * &
-                      CONJG( cptwfp(ninvpw(npoint2,nkp2), j, nkp2) )
+                  cm( 1:dimwin(nkp), j, nn, nkp ) = cm( 1:dimwin(nkp), j, nn, nkp ) + &
+                      cptwfp( ipw1, 1:dimwin(nkp), nkp ) * CONJG( cptwfp( ipw2, j, nkp2 ) )
                 END DO
 
               END DO
@@ -275,17 +239,7 @@
         END DO
       END DO
 
-      DEALLOCATE( cptwfp, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating cptwfp',ABS(ierr))
-      DEALLOCATE( ninvpw, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
-      DEALLOCATE( nindpw, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating nindpw',ABS(ierr))
-      DEALLOCATE( nplwkp, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating nplwkp',ABS(ierr))
-
- 
-      CALL timing('overlap',OPR='stop')
+      CALL timing('overlap_base',OPR='stop')
 
       RETURN
       END SUBROUTINE
