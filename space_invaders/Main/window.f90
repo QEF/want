@@ -411,6 +411,34 @@
          WRITE(19) mtxd, ( isort_k(j,nkp), j=1,mtxd )
          WRITE(19) imin, imax,   imax-imin+1 , ( ei_k(j,nkp), j=imin,imax )
 
+       END DO loop_z
+       END DO loop_y
+       END DO loop_x
+
+
+ 
+! ...  Start K-loop
+ 
+       nkp = 0
+       loop_xx: DO i1 = 0, nk(1)-1
+       loop_yy: DO i2 = 0, nk(2)-1
+       loop_zz: DO i3 = 0, nk(3)-1
+
+         nkp = nkp + 1
+         neig = neig_k(nkp)
+         mtxd = mtxd_k(nkp)
+
+         imin = 0
+         DO i = 1, neig
+           IF ( imin == 0 ) THEN
+             IF ( ( har*ei_k(i,nkp) >= win_min ) .AND. ( har*ei_k(i,nkp) <= win_max ) )  imin = i
+             imax = i
+           END IF
+           IF ( har*ei_k(i,nkp) <= win_max ) imax = i
+         END DO
+
+         kdimwin = imax - imin + 1
+
          WRITE(19) ( ( REAL(zvec_k(j,i,nkp)), j=1,mtxd ), i=imin,imax )
          WRITE(19) ( ( 1.0d0*AIMAG(zvec_k(j,i,nkp)), j=1,mtxd ), i=imin,imax )
 
@@ -486,9 +514,9 @@
          IF ( dimfroz(nkp) < kdimwin ) &
            WRITE(19) ( indxnfroz(i,nkp), i=1,kdimwin-dimfroz(nkp) )
 
-       END DO loop_z
-       END DO loop_y
-       END DO loop_x
+       END DO loop_zz
+       END DO loop_yy
+       END DO loop_xx
 
        CLOSE(19)
 !

@@ -1,7 +1,7 @@
        SUBROUTINE overlap( kgv, vkpt, avec, evecr, eveci, isort, mtxd, &
                            dimwin, nntot, nnlist, nncell, cm, enmax, &
                            mxdgve, mxddim, mxdnrk, mxdnn, mxdbnd, &
-                           ngx, ngy, ngz, nrplwv, nkpts )
+                           ngx, ngy, ngz, nrplwv, nkpts, ndwinx )
  
 !.....................................................................
 ! april 2002: rewritten for improved performance based on the original
@@ -56,11 +56,12 @@
       INTEGER :: nnlist(mxdnrk,mxdnn)
       INTEGER :: nntot(mxdnrk)
       INTEGER :: nncell(3,mxdnrk,mxdnn)
-      REAL*8 :: evecr(mxddim,mxdbnd,mxdnrk)
-      REAL*8 :: eveci(mxddim,mxdbnd,mxdnrk)
+      REAL*8 :: evecr(mxddim,ndwinx,mxdnrk)
+      REAL*8 :: eveci(mxddim,ndwinx,mxdnrk)
       COMPLEX*16 :: cm(mxdbnd,mxdbnd,mxdnn,mxdnrk)
       REAL*8 :: vkpt(3,mxdnrk)
       INTEGER :: dimwin(mxdnrk)
+      INTEGER :: ndwinx
       REAL*8 :: avec(3,3)
       REAL*8 :: enmax
 
@@ -109,9 +110,16 @@
 
       enmax = enmax * har
 
-      ALLOCATE( cptwfp( nrplwv+1 , mxdbnd, nkpts ), STAT=ierr )
+      IF( ndwinx /= MAXVAL( dimwin(:) ) ) THEN
+        CALL errore(' overlap ', ' inconsistent window ', ndwinx )
+      END IF
+
+      WRITE(*,*) ' Number of bands               (mxdbnd) : ', mxdbnd
+      WRITE(*,*) ' Number of bands within window (ndwinx) : ', ndwinx
+
+      ALLOCATE( cptwfp( nrplwv+1 , ndwinx, nkpts ), STAT=ierr )
       IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating cptwfp ', ( (nrplwv+1) * mxdbnd * nkpts ) )
+        CALL errore(' overlap ', ' allocating cptwfp ', ( (nrplwv+1) * ndwinx * nkpts ) )
       END IF
       ALLOCATE( dnlg(nrplwv,3,nkpts), STAT = ierr )
       IF( ierr /= 0 ) THEN

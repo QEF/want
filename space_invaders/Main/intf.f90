@@ -317,7 +317,7 @@
 
 ! ... K-point loop
 
-       K_POINTS: DO nkp = 1, nkpts
+       K_POINTS_DIM: DO nkp = 1, nkpts
          !
          ! format changes by ANDREA (28 jan 2004) in the following 2 lines 
          !
@@ -337,6 +337,10 @@
            WRITE(*,*) 'POSSIBLE PROBLEM: NGX,NGY,NGZ TOO SMALL'
            STOP
          END IF
+
+       END DO K_POINTS_DIM
+
+       K_POINTS: DO nkp = 1, nkpts
 
          READ(19)( ( evecr(j,i,nkp), j=1,mtxd ), i=1, kdimwin )
          READ(19)( ( eveci(j,i,nkp), j=1,mtxd ), i=1, kdimwin )

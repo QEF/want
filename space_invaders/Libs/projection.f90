@@ -2,7 +2,7 @@
                   kgv, isort, mtxd, dimwin, dimwann, dimfroz,              &
                   mxddim, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,    &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
-                  m_wann, ndir_wann, rloc)
+                  m_wann, ndir_wann, rloc, ndwinx)
 
 !...............................................................................
 ! ******
@@ -36,8 +36,11 @@
 
        IMPLICIT NONE
 
+       ! ... arguments
+
        INTEGER :: mxddim, mxdbnd, mxdnrk
-       INTEGER :: mxdgve
+       INTEGER :: mxdgve, ndwinx
+       INTEGER :: ngx, ngy, ngz, nkpts
        INTEGER :: mtxd(mxdnrk)
        INTEGER :: kgv(3,mxdgve)
        INTEGER :: isort(mxddim,mxdnrk)
@@ -45,9 +48,10 @@
        INTEGER :: dimwin(mxdnrk)
        INTEGER :: dimfroz(mxdnrk)
        REAL*8 :: avec(3,3)
-       REAL*8 :: evecr(mxddim,mxdbnd,mxdnrk)
-       REAL*8 :: eveci(mxddim,mxdbnd,mxdnrk)
+       REAL*8 :: evecr(mxddim,ndwinx,mxdnrk)
+       REAL*8 :: eveci(mxddim,ndwinx,mxdnrk)
        REAL*8 :: vkpt(3,mxdnrk)
+       COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
 
        INTEGER :: gauss_typ(dimwann)
        REAL*8 :: rphiimx1(3,dimwann)
@@ -57,20 +61,13 @@
        INTEGER :: ndir_wann(dimwann)
        REAL*8 :: rloc(dimwann)
 
-       COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
  
-       INTEGER :: ngx, ngy, ngz, nkpts
-       INTEGER :: mplwv
+       ! ... local variables
 
+       INTEGER :: mplwv
        INTEGER :: nb, i, j, l, m 
        INTEGER :: nkp, npoint
        INTEGER :: ngdim(3)
-       INTEGER :: nphimx1(3,dimwann)
-       INTEGER :: nphimx2(3,dimwann)
-       INTEGER :: nphir(dimwann)
-
-       REAL*8 :: rphicmx1(3,dimwann)
-       REAL*8 :: rphicmx2(3,dimwann)
        REAL*8 :: aside, asidemin
        COMPLEX*16 :: catmp
 
@@ -85,10 +82,6 @@
        PARAMETER( ci = ( 0.0d0, 1.0d0 ) )
        PARAMETER( citpi = ( zero, twopi ) )
 
-       COMPLEX*16 :: cptwr(ngx*ngy*(ngz+1))
-       COMPLEX*16 :: cwork2(ngx*ngy*(ngz+1))
-       COMPLEX*16 :: ca(mxdbnd,dimwann,nkpts)
-       COMPLEX*16 :: cu(mxdbnd,dimwann)
        COMPLEX*16 :: ctmp, cphi
        INTEGER :: nwann 
        INTEGER :: nxx, nyy, nzz 
@@ -105,18 +98,101 @@
        REAL*8 :: sph20, sph21, sph22        
  
        INTEGER :: info
-       COMPLEX*16 :: u(mxdbnd,mxdbnd)
-       COMPLEX*16 :: vt(dimwann,dimwann)
-       COMPLEX*16 :: work(4*mxdbnd)
-       REAL*8 :: s(dimwann)
-       REAL*8 :: rwork1(3*dimwann)
-       REAL*8 :: rwork2(5*dimwann)
+
+       COMPLEX*16, ALLOCATABLE :: u(:,:)
+       COMPLEX*16, ALLOCATABLE :: vt(:,:)
+       COMPLEX*16, ALLOCATABLE :: work(:)
+       REAL*8, ALLOCATABLE :: s(:)
+       REAL*8, ALLOCATABLE :: rwork1(:)
+       REAL*8, ALLOCATABLE :: rwork2(:)
+       REAL*8, ALLOCATABLE :: rphicmx1(:,:)
+       REAL*8, ALLOCATABLE :: rphicmx2(:,:)
+       INTEGER, ALLOCATABLE :: nphimx1(:,:)
+       INTEGER, ALLOCATABLE :: nphimx2(:,:)
+       INTEGER, ALLOCATABLE :: nphir(:)
+
+       COMPLEX*16, ALLOCATABLE :: cptwr(:)
+       COMPLEX*16, ALLOCATABLE :: cwork2(:)
+       COMPLEX*16, ALLOCATABLE :: ca(:,:,:)
+       COMPLEX*16, ALLOCATABLE :: cu(:,:)
 
        CHARACTER( LEN=6 ) :: verbosity = 'none'    ! none, low, medium, high
+       INTEGER :: ierr
 
 ! ...  End of declaration
 
        mplwv = ngx * ngy * ( ngz+1 )
+
+       ALLOCATE( cptwr(ngx*ngy*(ngz+1)), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating cptwr ', ngx*ngy*(ngz+1) )
+       END IF
+       ALLOCATE( cwork2(ngx*ngy*(ngz+1)), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating cwork2 ', ngx*ngy*(ngz+1) )
+       END IF
+       ALLOCATE( ca(mxdbnd,dimwann,nkpts), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating ca ', mxdbnd*dimwann*nkpts )
+       END IF
+       ALLOCATE( cu(mxdbnd,dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating cu ', mxdbnd*dimwann )
+       END IF
+       ALLOCATE( u(mxdbnd,mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating u ', mxdbnd*mxdbnd )
+       END IF
+       ALLOCATE( vt(dimwann,dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating vt ', dimwann*dimwann )
+       END IF
+
+       ALLOCATE( work(4*mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating work ', 4*mxdbnd )
+       END IF
+
+       ALLOCATE( s(dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating s ', dimwann )
+       END IF
+
+       ALLOCATE( rwork1(3*dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating rwork1 ', 3*dimwann )
+       END IF
+
+       ALLOCATE( rwork2(5*dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating rwork2 ', 5*dimwann )
+       END IF
+
+       ALLOCATE( rphicmx1(3,dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating rphicmx1 ', 3*dimwann )
+       END IF
+
+       ALLOCATE( rphicmx2(3,dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating rphicmx2 ', 3*dimwann )
+       END IF
+
+       ALLOCATE( nphimx1(3,dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating nphimx1 ', 3*dimwann )
+       END IF
+
+       ALLOCATE( nphimx2(3,dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating nphimx2 ', 3*dimwann )
+       END IF
+
+       ALLOCATE( nphir(dimwann), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection ', ' allocating nphir ', dimwann )
+       END IF
+
 
 
        DO nwann = 1, dimwann
@@ -575,6 +651,23 @@
 !
          END IF 
        END DO ! NKP
+
+       DEALLOCATE( cptwr )
+       DEALLOCATE( cwork2 )
+       DEALLOCATE( ca )
+       DEALLOCATE( cu )
+       DEALLOCATE( u )
+       DEALLOCATE( vt )
+       DEALLOCATE( work )
+       DEALLOCATE( s )
+       DEALLOCATE( rwork1 )
+       DEALLOCATE( rwork2 )
+       DEALLOCATE( rphicmx1 )
+       DEALLOCATE( rphicmx2 )
+       DEALLOCATE( nphimx1 )
+       DEALLOCATE( nphimx2 )
+       DEALLOCATE( nphir )
+
 
        RETURN
        END SUBROUTINE

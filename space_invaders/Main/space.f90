@@ -124,6 +124,7 @@
        LOGICAL :: ionode
        INTEGER :: ionode_id
        INTEGER :: ierr
+       INTEGER :: ndwinx
 
 !      
 ! ...  End declarations and dimensions
@@ -148,6 +149,9 @@
 !      
 ! ...  Read input parameters from takeoff.dat
 !
+
+       WRITE(*,*)
+       WRITE(*,*) ' Starting Space '
 
        OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
 !
@@ -293,14 +297,7 @@
        IF( ierr /=0 ) THEN
          CALL errore(' space ', ' allocateing mtxd ', nkpts )
        END IF
-       ALLOCATE( evecr(mxddim,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing evecr ', mxddim*mxdbnd*nkpts )
-       END IF
-       ALLOCATE( eveci(mxddim,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing eveci ', mxddim*mxdbnd*nkpts )
-       END IF
+
        ALLOCATE( eiw(mxdbnd,nkpts), STAT = ierr )
        IF( ierr /=0 ) THEN
          CALL errore(' space ', ' allocateing eiw ', mxdbnd*nkpts )
@@ -404,8 +401,8 @@
 
        froz_flag = 0
 
-       DO nkp = 1, nkpts
 
+       DO nkp = 1, nkpts
 !
 ! ...  Next 2 lines changed by ANDREA (28 jan 2004) i
 !      to account for FORMAT modification on unit 19
@@ -427,6 +424,24 @@
            STOP
          END IF
 
+       END DO
+
+       ndwinx = MAXVAL( dimwin(1:nkpts) )
+
+       WRITE(*,*) ' Number of bands               (mxdbnd) : ', mxdbnd
+       WRITE(*,*) ' Number of bands within window (ndwinx) : ', ndwinx
+
+       ALLOCATE( evecr(mxddim,ndwinx,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing evecr ', mxddim*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( eveci(mxddim,ndwinx,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing eveci ', mxddim*mxdbnd*nkpts )
+       END IF
+
+       DO nkp = 1, nkpts
+
          READ(19) ( ( evecr(j,i,nkp), j=1, mtxd(nkp) ), i=1, dimwin(nkp) )
          READ(19) ( ( eveci(j,i,nkp), j=1, mtxd(nkp) ), i=1, dimwin(nkp) )
          READ(19) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )
@@ -440,6 +455,7 @@
        END DO  ! nkp
 
        CLOSE(19)
+
 
 !
 ! ...  Setup the shells of b-vectors around each K-point
@@ -458,7 +474,7 @@
 
        call overlap( kgv, vkpt, avec, evecr, eveci, isort, mtxd, dimwin,    &
             nntot, nnlist, nncell, cm, emax, mxdgve, mxddim, nkpts,        &
-            mxdnn, mxdbnd, ngx, ngy, ngz, mxddim, nkpts )
+            mxdnn, mxdbnd, ngx, ngy, ngz, mxddim, nkpts, ndwinx )
 !
 !=----------------------------------------------------------------------------------------------=
 !
@@ -511,7 +527,7 @@
                     kgv, isort, mtxd, dimwin, dimwann, dimfroz,             &
                     mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,   &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                  &
-                    m_wann, ndir_wann, rloc)
+                    m_wann, ndir_wann, rloc, ndwinx)
              ELSE
                WRITE(6,*) ' ' 
                WRITE(6,*) 'INVALID CHOICE OF ITRIAL:',ITRIAL
@@ -547,7 +563,7 @@
                     kgv, isort, mtxd, dimwin, dimwann, dimfroz,              &
                     mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,    &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
-                    m_wann, ndir_wann, rloc )
+                    m_wann, ndir_wann, rloc, ndwinx )
              ELSE
                WRITE(6,*) ' ' 
                WRITE(6,*) 'INVALID CHOICE OF ITRIAL WITH FROZEN STATES:', itrial
