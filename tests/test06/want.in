@@ -3,6 +3,7 @@
    prefix = 'gold1'
    postfix = '_WanT'
    work_dir = './'
+   unitary_thr = 1.0d-7
 /
 
 &SUBSPACE
