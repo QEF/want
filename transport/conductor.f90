@@ -20,6 +20,7 @@
 
 !...  Link with BLAS, LAPACK
 
+      INTEGER :: ierr
       INTEGER :: i, j, k, l, m, n, info
       INTEGER, ALLOCATABLE :: ipiv2(:)     ! ipiv2(nmaxc)
       INTEGER :: nmxa, nmxb, nmxc 
@@ -90,9 +91,9 @@
       LOGICAL :: l_overlap
      
 !
-! ...  Startup
+! ... Startup
 !
-       CALL startup(version_number,MAIN_NAME='Sconductor')
+      CALL startup(version_number,MAIN_NAME='conductor')
 
 !...  Scalar for BLAS calls and other initializations
       alpha = ( 1.d0, 0.d0 )
@@ -113,62 +114,114 @@
 
 !...  Allocate arrays
 
-      ALLOCATE ( ipiv2(nmaxc) )
+      ALLOCATE ( ipiv2(nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating ipiv2 ', 1 ) 
 
-      ALLOCATE ( h00_a(nmaxa,nmaxa) )
-      ALLOCATE ( h01_a(nmaxa,nmaxa) )
-      ALLOCATE ( h00_b(nmaxb,nmaxb) )
-      ALLOCATE ( h01_b(nmaxb,nmaxb) )
-      ALLOCATE ( h00_c(nmaxc,nmaxc) )
-      ALLOCATE ( hci_ac(nmaxa,nmaxc) )
-      ALLOCATE ( hci_cb(nmaxc,nmaxb) )
+      ALLOCATE ( h00_a(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating h00_a ', 1 )
+      ALLOCATE ( h01_a(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating h01_a ', 1 )
+      ALLOCATE ( h00_b(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating h00_b ', 1 )
+      ALLOCATE ( h01_b(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating h01_b ', 1 )
+      ALLOCATE ( h00_c(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating h00_c ', 1 )
+      ALLOCATE ( hci_ac(nmaxa,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating hci_ac ', 1 )
+      ALLOCATE ( hci_cb(nmaxc,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating hac_cb ', 1 )
 
-      ALLOCATE ( hci_ca(nmaxc,nmaxa) )
-      ALLOCATE ( hci_bc(nmaxb,nmaxc) )
+      ALLOCATE ( hci_ca(nmaxc,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating hci_ca ', 1 )
+      ALLOCATE ( hci_bc(nmaxb,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating hci_bc ', 1 )
 
-      ALLOCATE ( s00_a(nmaxa,nmaxa) )
-      ALLOCATE ( s01_a(nmaxa,nmaxa) )
-      ALLOCATE ( s00_b(nmaxb,nmaxb) )
-      ALLOCATE ( s01_b(nmaxb,nmaxb) )
-      ALLOCATE ( s00_c(nmaxc,nmaxc) )
-      ALLOCATE ( sci_ac(nmaxa,nmaxc) )
-      ALLOCATE ( sci_cb(nmaxc,nmaxb) )
+      ALLOCATE ( s00_a(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating s00_a ', 1 )
+      ALLOCATE ( s01_a(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating s01_a ', 1 )
+      ALLOCATE ( s00_b(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating s00_b ', 1 )
+      ALLOCATE ( s01_b(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating s01_b ', 1 )
+      ALLOCATE ( s00_c(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating s00_c ', 1 )
+      ALLOCATE ( sci_ac(nmaxa,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sci_ac ', 1 )
+      ALLOCATE ( sci_cb(nmaxc,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sci_cb ', 1 )
 
-      ALLOCATE ( sci_ca(nmaxc,nmaxa) )
-      ALLOCATE ( sci_bc(nmaxb,nmaxc) )
+      ALLOCATE ( sci_ca(nmaxc,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sci_ca ', 1 )
+      ALLOCATE ( sci_bc(nmaxb,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sci_bc ', 1 )
 
-      ALLOCATE ( c00_a(nmaxa,nmaxa) )
-      ALLOCATE ( c01_a(nmaxa,nmaxa) )
-      ALLOCATE ( c00_b(nmaxb,nmaxb) )
-      ALLOCATE ( c01_b(nmaxb,nmaxb) )
-      ALLOCATE ( c00_c(nmaxc,nmaxc) )
-      ALLOCATE ( cci_ac(nmaxa,nmaxc) )
-      ALLOCATE ( cci_cb(nmaxc,nmaxb) )
-      ALLOCATE ( cci_ca(nmaxc,nmaxa) )
-      ALLOCATE ( cci_bc(nmaxb,nmaxc) )
+      ALLOCATE ( c00_a(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating c00_a ', 1 )
+      ALLOCATE ( c01_a(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating c01_a ', 1 )
+      ALLOCATE ( c00_b(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating c00_b ', 1 )
+      ALLOCATE ( c01_b(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating c01_b ', 1 )
+      ALLOCATE ( c00_c(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating c00_c ', 1 )
+      ALLOCATE ( cci_ac(nmaxa,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating cci_ac ', 1 )
+      ALLOCATE ( cci_cb(nmaxc,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating cci_cb ', 1 )
+      ALLOCATE ( cci_ca(nmaxc,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating cci_ca ', 1 )
+      ALLOCATE ( cci_bc(nmaxb,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating cci_bc ', 1 )
 
-      ALLOCATE ( totA(nmaxa,nmaxa) )
-      ALLOCATE ( totB(nmaxb,nmaxb) )
-      ALLOCATE ( tottA(nmaxa,nmaxa) )
-      ALLOCATE ( tottB(nmaxb,nmaxb) )
-      ALLOCATE ( gR(nmaxc,nmaxc) )
-      ALLOCATE ( gL(nmaxc,nmaxc) )
-      ALLOCATE ( gA(nmaxa,nmaxa) )
-      ALLOCATE ( gB(nmaxb,nmaxb) )
-      ALLOCATE ( gAm1(nmaxa,nmaxa) )
-      ALLOCATE ( gBm1(nmaxb,nmaxb) )
-      ALLOCATE ( gintr(nmaxc,nmaxc) )
-      ALLOCATE ( ginta(nmaxc,nmaxc) )
-      ALLOCATE ( gintm1(nmaxc,nmaxc) )
-      ALLOCATE ( sLa(nmaxc,nmaxc) )
-      ALLOCATE ( sRa(nmaxc,nmaxc) )
-      ALLOCATE ( sLr(nmaxc,nmaxc) )
-      ALLOCATE ( sRr(nmaxc,nmaxc) )
-      ALLOCATE ( s1(nmaxc,nmaxc) )
-      ALLOCATE ( s2(nmaxc,nmaxc) )
-      ALLOCATE ( c1(nmaxc,nmaxa) )
-      ALLOCATE ( c2(nmaxc,nmaxb) )
-      ALLOCATE ( tran(nmaxc,nmaxc) )
+      ALLOCATE ( totA(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating totA ', 1 )
+      ALLOCATE ( totB(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating totB ', 1 )
+      ALLOCATE ( tottA(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating tottA ', 1 )
+      ALLOCATE ( tottB(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating tottB ', 1 )
+
+      ALLOCATE ( gR(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gR ', 1 )
+      ALLOCATE ( gL(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gL ', 1 )
+      ALLOCATE ( gA(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gA ', 1 )
+      ALLOCATE ( gB(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gB ', 1 )
+
+      ALLOCATE ( gAm1(nmaxa,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gAml ', 1 )
+      ALLOCATE ( gBm1(nmaxb,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gBml ', 1 )
+      ALLOCATE ( gintr(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gintr ', 1 )
+      ALLOCATE ( ginta(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating ginta ', 1 )
+      ALLOCATE ( gintm1(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating gintml ', 1 )
+      ALLOCATE ( sLa(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sLa ', 1 )
+      ALLOCATE ( sRa(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sRa ', 1 )
+      ALLOCATE ( sLr(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sLr ', 1 )
+      ALLOCATE ( sRr(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating sRr ', 1 )
+      ALLOCATE ( s1(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating s1 ', 1 )
+      ALLOCATE ( s2(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating s2 ', 1 )
+      ALLOCATE ( c1(nmaxc,nmaxa), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating c1 ', 1 )
+      ALLOCATE ( c2(nmaxc,nmaxb), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating c2 ', 1 )
+      ALLOCATE ( tran(nmaxc,nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' allocating tran ', 1 )
 
 !...  Set up the layer hamiltonians
 !     different layers in different files - read only version
@@ -177,17 +230,17 @@
                    h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac,  &
                    sci_ac, hci_cb, sci_cb , l_overlap )
 
-      DO i = 1, nmaxc
-         DO j = 1, nmaxa
-            hci_ca(i,j) = hci_ac(j,i)
-            sci_ca(i,j) = sci_ac(j,i)
+      DO i = 1, nmaxa
+         DO j = 1, nmaxc
+            hci_ca(j,i) = hci_ac(i,j)
+            sci_ca(j,i) = sci_ac(i,j)
          END DO
       END DO
 
-      DO i = 1, nmaxb
-         DO j = 1, nmaxc
-            hci_bc(i,j) = hci_cb(j,i)
-            sci_bc(i,j) = sci_cb(j,i)
+      DO i = 1, nmaxc
+         DO j = 1, nmaxb
+            hci_bc(j,i) = hci_cb(i,j)
+            sci_bc(j,i) = sci_cb(i,j)
          END DO
       END DO
 
@@ -215,39 +268,39 @@
 
          DO i = 1, nmaxa
             DO j = 1, nmaxa
-               c00_a(i,j) = ( 1.0, 0.0 ) * h00_a(i,j) - ene * s00_a(i,j)
-               c01_a(i,j) = ( 1.0, 0.0 ) * h01_a(i,j) - ene * s01_a(i,j)
+               c00_a(i,j) = ( 1.d0, 0.d0 ) * h00_a(i,j) - ene * s00_a(i,j)
+               c01_a(i,j) = ( 1.d0, 0.d0 ) * h01_a(i,j) - ene * s01_a(i,j)
             END DO
          END DO
          DO i = 1, nmaxb
             DO j = 1, nmaxb
-               c00_b(i,j) = ( 1.0, 0.0 ) * h00_b(i,j) - ene * s00_b(i,j)
-               c01_b(i,j) = ( 1.0, 0.0 ) * h01_b(i,j) - ene * s01_b(i,j)
+               c00_b(i,j) = ( 1.d0, 0.d0 ) * h00_b(i,j) - ene * s00_b(i,j)
+               c01_b(i,j) = ( 1.d0, 0.d0 ) * h01_b(i,j) - ene * s01_b(i,j)
             END DO
          END DO
          DO i = 1, nmaxc
             DO j = 1, nmaxc
-               c00_c(i,j) = ( 1.0, 0.0 ) * h00_c(i,j) - ene * s00_c(i,j)
+               c00_c(i,j) = ( 1.d0, 0.d0 ) * h00_c(i,j) - ene * s00_c(i,j)
             END DO
          END DO
          DO i = 1, nmaxa
             DO j = 1, nmaxc
-               cci_ac(i,j) = ( 1.0, 0.0 ) * hci_ac(i,j) - ene * sci_ac(i,j)
+               cci_ac(i,j) = ( 1.d0, 0.d0 ) * hci_ac(i,j) - ene * sci_ac(i,j)
             END DO
          END DO
          DO i = 1, nmaxb
             DO j = 1, nmaxc
-               cci_bc(i,j) = ( 1.0, 0.0 ) * hci_bc(i,j) - ene * sci_bc(i,j)
+               cci_bc(i,j) = ( 1.d0, 0.d0 ) * hci_bc(i,j) - ene * sci_bc(i,j)
             END DO
          END DO
          DO i = 1, nmaxc
             DO j = 1, nmaxa
-               cci_ca(i,j) = ( 1.0, 0.0 ) * hci_ca(i,j) - ene * sci_ca(i,j)
+               cci_ca(i,j) = ( 1.d0, 0.d0 ) * hci_ca(i,j) - ene * sci_ca(i,j)
             END DO
          END DO
          DO i = 1, nmaxc
             DO j = 1, nmaxb
-               cci_cb(i,j) = ( 1.0, 0.0 ) * hci_cb(i,j) - ene * sci_cb(i,j)
+               cci_cb(i,j) = ( 1.d0, 0.d0 ) * hci_cb(i,j) - ene * sci_cb(i,j)
             END DO
          END DO
 
@@ -278,8 +331,8 @@
 
          DO i = 1, nmaxc
             DO j = 1, nmaxc
-               gL(i,j) = ( 0.0, 1.0 ) * ( sLr(i,j) - sLa(i,j) )
-               gR(i,j) = ( 0.0, 1.0 ) * ( sRr(i,j) - sRa(i,j) )
+               gL(i,j) = ( 0.d0, 1.d0 ) * ( sLr(i,j) - sLa(i,j) )
+               gR(i,j) = ( 0.d0, 1.d0 ) * ( sRr(i,j) - sRa(i,j) )
             END DO
          END DO
 
@@ -292,7 +345,7 @@
 
          DO i = 1, nmaxc
             DO j = 1, nmaxc
-               gintm1(i,j) = ( -1.0, 0.0 ) * c00_c(i,j) - sLr(i,j) - sRr(i,j)
+               gintm1(i,j) = ( -1.d0, 0.d0 ) * c00_c(i,j) - sLr(i,j) - sRr(i,j)
             END DO
          END DO
  
@@ -340,63 +393,115 @@
       CLOSE ( 24 )
       CLOSE ( 22 )
 
-      DEALLOCATE ( ipiv2 )
+!...  Deallocate arrays
 
-      DEALLOCATE ( h00_a )
-      DEALLOCATE ( h01_a )
-      DEALLOCATE ( h00_b )
-      DEALLOCATE ( h01_b )
-      DEALLOCATE ( h00_c )
-      DEALLOCATE ( hci_ac )
-      DEALLOCATE ( hci_cb )
+      DEALLOCATE ( ipiv2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating ipiv2 ', 1 )
 
-      DEALLOCATE ( hci_ca )
-      DEALLOCATE ( hci_bc )
+      DEALLOCATE ( h00_a, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating h00_a ', 1 )
+      DEALLOCATE ( h01_a, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating h01_a ', 1 )
+      DEALLOCATE ( h00_b, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating h00_b ', 1 )
+      DEALLOCATE ( h01_b, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating h01_b ', 1 )
+      DEALLOCATE ( h00_c, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating h00_c ', 1 )
+      DEALLOCATE ( hci_ac, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating hci_ac ', 1 )
+      DEALLOCATE ( hci_cb, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating hac_cb ', 1 )
 
-      DEALLOCATE ( s00_a )
-      DEALLOCATE ( s01_a )
-      DEALLOCATE ( s00_b )
-      DEALLOCATE ( s01_b )
-      DEALLOCATE ( s00_c )
-      DEALLOCATE ( sci_ac )
-      DEALLOCATE ( sci_cb )
-
-      DEALLOCATE ( sci_ca )
-      DEALLOCATE ( sci_bc )
-
-      DEALLOCATE ( c00_a )     
-      DEALLOCATE ( c01_a )     
-      DEALLOCATE ( c00_b )     
-      DEALLOCATE ( c01_b )     
-      DEALLOCATE ( c00_c )
-      DEALLOCATE ( cci_ac )    
-      DEALLOCATE ( cci_cb )    
-
-      DEALLOCATE ( cci_ca )    
-      DEALLOCATE ( cci_bc )    
-
-      DEALLOCATE ( totA )
-      DEALLOCATE ( totB )
-      DEALLOCATE ( tottA )
-      DEALLOCATE ( tottB )
-      DEALLOCATE ( gR )
-      DEALLOCATE ( gL )
-      DEALLOCATE ( gA )
-      DEALLOCATE ( gB )
-      DEALLOCATE ( gAm1 )
-      DEALLOCATE ( gBm1 )
-      DEALLOCATE ( gintr )
-      DEALLOCATE ( ginta )
-      DEALLOCATE ( gintm1 )
-      DEALLOCATE ( sLa )
-      DEALLOCATE ( sRa )
-      DEALLOCATE ( sLr )
-      DEALLOCATE ( sRr )
-      DEALLOCATE ( s1 )
-      DEALLOCATE ( s2 )
-      DEALLOCATE ( c1 )
-      DEALLOCATE ( c2 )
-      DEALLOCATE ( tran )
+!     DEALLOCATE ( hci_ca, STAT=ierr )
+!          IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating hci_ca ', 1 )
+      DEALLOCATE ( hci_bc, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating hci_bc ', 1 )
 
 
+      DEALLOCATE ( s00_a, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating s00_a ', 1 )
+      DEALLOCATE ( s01_a, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating s01_a ', 1 )
+      DEALLOCATE ( s00_b, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating s00_b ', 1 )
+      DEALLOCATE ( s01_b, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating s01_b ', 1 )
+      DEALLOCATE ( s00_c, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating s00_c ', 1 )
+      DEALLOCATE ( sci_ac, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sci_ac ', 1 )
+      DEALLOCATE ( sci_cb, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sci_cb ', 1 )
+
+      DEALLOCATE ( sci_ca, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sci_ca ', 1 )
+!     DEALLOCATE ( sci_bc, STAT=ierr )
+!          IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sci_bc ', 1 )
+
+      DEALLOCATE ( c00_a, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c00_a ', 1 )
+      DEALLOCATE ( c01_a, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c01_a ', 1 )
+      DEALLOCATE ( c00_b, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c00_b ', 1 )
+      DEALLOCATE ( c01_b, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c01_b ', 1 )
+      DEALLOCATE ( c00_c, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c00_c ', 1 )
+      DEALLOCATE ( cci_ac, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating cci_ac ', 1 )
+      DEALLOCATE ( cci_cb, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating cci_cb ', 1 )
+      DEALLOCATE ( cci_ca, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating cci_ca ', 1 )
+      DEALLOCATE ( cci_bc, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating cci_bc ', 1 )
+
+      DEALLOCATE ( totA, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating totA ', 1 )
+      DEALLOCATE ( totB, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating totB ', 1 )
+      DEALLOCATE ( tottA, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating tottA ', 1 )
+      DEALLOCATE ( tottB, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating tottB ', 1 )
+
+      DEALLOCATE ( gR, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gR ', 1 )
+      DEALLOCATE ( gL, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gL ', 1 )
+      DEALLOCATE ( gA, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gA ', 1 )
+      DEALLOCATE ( gB, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gB ', 1 )
+
+      DEALLOCATE ( gAm1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gAml ', 1 )
+      DEALLOCATE ( gBm1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gBml ', 1 )
+      DEALLOCATE ( gintr, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gintr ', 1 )
+      DEALLOCATE ( ginta, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating ginta ', 1 )
+      DEALLOCATE ( gintm1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating gintml ', 1 )
+      DEALLOCATE ( sLa, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sLa ', 1 )
+      DEALLOCATE ( sRa, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sRa ', 1 )
+      DEALLOCATE ( sLr, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sLr ', 1 )
+      DEALLOCATE ( sRr, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating sRr ', 1 )
+      DEALLOCATE ( s1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating s1 ', 1 )
+      DEALLOCATE ( s2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating s2 ', 1 )
+      DEALLOCATE ( c1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c1 ', 1 )
+      DEALLOCATE ( c2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c2 ', 1 )
+      DEALLOCATE ( tran, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating tran ', 1 )
       END 
