@@ -738,7 +738,7 @@
          END DO
          omega_i = omega_i/DBLE(nkpts)
  
-         WRITE( stdout, fmt=" (2x, 'Iteration = ',i3,'   Omega_I Error =',f16.8 )") iter, (omega_i_est - omega_i)/omega_i
+         WRITE( stdout, fmt=" (2x, 'Iteration = ',i5,'   Omega_I Error =',f16.8 )") iter, (omega_i_est - omega_i)/omega_i
          o_error = ABS( (OMEGA_I_EST-OMEGA_I)/OMEGA_I )
 
  
