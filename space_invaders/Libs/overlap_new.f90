@@ -43,7 +43,7 @@
 
       ! ... Local Variables
  
-      REAL(dbl) :: dirc(3,3),recc(3,3)
+      REAL(dbl) :: recc(3,3)
       REAL(dbl) :: bvec(3,3)
 
       INTEGER :: nplwv,mplwv
@@ -52,16 +52,17 @@
       PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
 
       INTEGER :: nnx, ndnn, nnsh
-      INTEGER :: l, m, n, i, j ,nx, ny, nz
+      INTEGER :: l, m, n, i, j ,nx, ny, nz, igk
       INTEGER :: nkp, np, npoint
       INTEGER :: nkb
       INTEGER :: nkp2, npoint2, nn, iprint, nb
 
       COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)
-      INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
+      INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
+      INTEGER :: lpctx(ngx), lpcty(ngy), lpctz(ngz)
+
       INTEGER, ALLOCATABLE  :: ninvpw(:,:)
       INTEGER, ALLOCATABLE  :: nindpw(:,:)
-      INTEGER, ALLOCATABLE  :: lpctx(:), lpcty(:), lpctz(:)
       INTEGER, ALLOCATABLE  :: nplwkp(:)
 
       INTEGER :: ierr
@@ -96,18 +97,6 @@
       IF( ierr /= 0 ) THEN
         CALL errore(' overlap ', ' allocating nindpw ', ( nrplwv*nkpts ) )
       END IF
-      ALLOCATE( lpctx(ngx), STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating lpctx ', ( ngx ) )
-      END IF
-      ALLOCATE( lpcty(ngy), STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating lpcty ', ( ngy ) )
-      END IF
-      ALLOCATE( lpctz(ngz), STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating lpctz ', ( ngz ) )
-      END IF
       ALLOCATE( nplwkp(mxdnrk), STAT = ierr )
       IF( ierr /= 0 ) THEN
         CALL errore(' overlap ', ' allocating nplwkp ', ( mxdnrk ) )
@@ -117,10 +106,8 @@
 
       CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
       bvec = bvec * 2.0d0 * pi
-      !dirc = TRANSPOSE( avec ) * bohr
-      !recc = TRANSPOSE( bvec ) / bohr
-      dirc = avec * bohr
-      recc = bvec / bohr
+      recc = TRANSPOSE( bvec ) / bohr
+      !recc = bvec / bohr
 
 
 ! ... Generate the array ninvpw (taken from wannier)
@@ -152,11 +139,8 @@
 !     is also computed as are the kinetic energies of the plane wave 
 !     basis states at each k point
 
-      DO nkp = 1, nkpts
-       Do np = 1, nrplwv
-        nindpw(np,nkp) = 0
-       END DO
-      END DO
+      nindpw = 0
+      ninvpw = nrplwv + 1
 
       IPRINT=1
 
@@ -164,6 +148,11 @@
            lpctx, lpcty, lpctz, recc, iprint )
 
       DO nkp = 1, nkpts
+        IF( nplwkp(nkp) == mtxd(nkp) ) THEN
+           WRITE( 10, * ) ' ',nkp, nplwkp(nkp), mtxd(nkp)
+        ELSE
+           WRITE( 10, * ) '*',nkp, nplwkp(nkp), mtxd(nkp)
+        ENDIF
         IF ( nplwkp(nkp) > mxddim ) THEN
           WRITE( stdout, fmt= " ('For nkp = ', i4, ', nplwkp = ', i5, 'and mxddim = ', &
                   & i5, '. Increase mxddim' ) " )nkp, nplwkp(nkp), mxddim
@@ -172,9 +161,6 @@
       END DO
 
       DO nkp = 1, nkpts
-        DO np = 0, nplwv
-          ninvpw(np,nkp) = nrplwv + 1
-        END DO
         DO np = 1, nplwkp(nkp)
           npoint = nindpw(np,nkp)
           ninvpw(npoint,nkp) = np
@@ -183,27 +169,27 @@
 
 ! ... Transform wave-functions in CASTEP format
 
+      cptwfp = czero
+
       DO nkp = 1, nkpts
+
         DO nb = 1, dimwin(nkp)
 
-          DO m = 1, nrplwv+1
-            cptwfp(m,nb,nkp) = czero
-          END DO
  
 ! ...     Go through all the g-vectors inside the cutoff radius at the present k-point
  
           DO j = 1, mtxd(nkp)
 
-            IF ( kgv(1,isort(j,nkp) ) >= 0 ) nx = kgv( 1,isort(j,nkp) ) + 1
-            IF ( kgv(1,isort(j,nkp) ) <  0 ) nx = kgv( 1,isort(j,nkp) ) + 1 + ngx
-
-            IF ( kgv(2,isort(j,nkp) ) >= 0 ) ny = kgv( 2,isort(j,nkp) ) + 1
-            IF ( kgv(2,isort(j,nkp) ) <  0 ) ny = kgv( 2,isort(j,nkp) ) + 1 + ngy
-
-            IF ( kgv(3,isort(j,nkp) ) >= 0 ) nz = kgv( 3,isort(j,nkp) ) + 1
-            IF ( kgv(3,isort(j,nkp) ) <  0 ) nz = kgv( 3,isort(j,nkp) ) + 1 + ngz
-
+            igk = isort(j,nkp)
+            IF ( kgv(1,igk ) >= 0 ) nx = kgv( 1,igk ) + 1
+            IF ( kgv(1,igk ) <  0 ) nx = kgv( 1,igk ) + 1 + ngx
+            IF ( kgv(2,igk ) >= 0 ) ny = kgv( 2,igk ) + 1
+            IF ( kgv(2,igk ) <  0 ) ny = kgv( 2,igk ) + 1 + ngy
+            IF ( kgv(3,igk ) >= 0 ) nz = kgv( 3,igk ) + 1
+            IF ( kgv(3,igk ) <  0 ) nz = kgv( 3,igk ) + 1 + ngz
             npoint = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
+
+            ! .. ninvpw(npoint,nkp) = j
 
 ! ...       Npoint is the absolute (k-independent) castep index of the gvector
 !           kgv(*,isort(j,nkp)). Note that in general it is not equal to nindpw(j,nkp),
@@ -215,7 +201,7 @@
 ! ...       Bloch state in the g-space grid
  
             cptwfp(ninvpw(npoint,nkp),nb,nkp) = CONJG( CMPLX( evecr(j,nb,nkp), eveci(j,nb,nkp) ) )
- 
+
           END DO ! g-vectors at present k (J)
 
         END DO   ! nb  loop 
@@ -243,41 +229,36 @@
 !     are G1s+G0, i.e. nx+nncell, etc...
 
       cm(:,:,:,:) = (0.d0, 0.d0)
-      ALLOCATE( nx2(ngx), STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' allocating nx2 ', ngx)
-      ALLOCATE( ny2(ngy), STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' allocating ny2 ', ngy)
-      ALLOCATE( nz2(ngz), STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' allocating nz2 ', ngz)
 
       DO nkp = 1, nkpts
+
         DO nn = 1, nntot(nkp)
+
           nkp2 = nnlist(nkp,nn)
 
           ! set up indices
           DO nx = 1, ngx
             nx2(nx) = nx + nncell(1,nkp,nn)
-            IF( nx2(nx) < 1 ) nx2(nx) = nx2(nx) + ngx
+            IF( nx2(nx) < 1   ) nx2(nx) = nx2(nx) + ngx
             IF( nx2(nx) > ngx ) nx2(nx) = nx2(nx) - ngx
           END DO
           DO ny = 1, ngy
             ny2(ny) = ny + nncell(2,nkp,nn)
-            IF( ny2(ny) < 1 ) ny2(ny) = ny2(ny) + ngy
+            IF( ny2(ny) < 1   ) ny2(ny) = ny2(ny) + ngy
             IF( ny2(ny) > ngy ) ny2(ny) = ny2(ny) - ngy
             ny2(ny) = (ny2(ny) - 1) * ngx
           END DO
           DO nz = 1, ngz
             nz2(nz) = nz + nncell(3,nkp,nn)
-            IF( nz2(nz) < 1 ) nz2(nz) = nz2(nz) + ngz
+            IF( nz2(nz) < 1   ) nz2(nz) = nz2(nz) + ngz
             IF( nz2(nz) > ngz ) nz2(nz) = nz2(nz) - ngz
             nz2(nz) = (nz2(nz) - 1) * ngx * ngy
           END DO
 
-          npoint = 0
           DO nz = 1, ngz
             DO ny = 1, ngy
               DO nx = 1, ngx
-                npoint = npoint + 1
+                npoint = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
                 npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
 
                 DO j = 1, dimwin(nkp2)
@@ -294,24 +275,12 @@
         END DO
       END DO
 
-      DEALLOCATE( nx2, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating nx2',ABS(ierr))
-      DEALLOCATE( ny2, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating ny2',ABS(ierr))
-      DEALLOCATE( nz2, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating nz2',ABS(ierr))
       DEALLOCATE( cptwfp, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating cptwfp',ABS(ierr))
       DEALLOCATE( ninvpw, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
       DEALLOCATE( nindpw, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating nindpw',ABS(ierr))
-      DEALLOCATE( lpctx, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating lpctx',ABS(ierr))
-      DEALLOCATE( lpcty, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating lpcty',ABS(ierr))
-      DEALLOCATE( lpctz, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating lpctz',ABS(ierr))
       DEALLOCATE( nplwkp, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating nplwkp',ABS(ierr))
 
