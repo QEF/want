@@ -7,6 +7,9 @@ in the header of the same file
 After cd-ing in the desired directory, type ./run.sh  without any flag
 in order to obtain a manual for the available options
 
+When available a reference copy of the outputs is provided in the directory
+<TEST_HOME>/Reference.
+
 ==============================================================================
 
 TEST1
