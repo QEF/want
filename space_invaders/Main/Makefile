@@ -5,7 +5,7 @@ include ../make.rules
 .o.x:
 	$(LD) -o $@ $< ../Modules/*.o $(MODULES) $(LDFLAGS)
 
-EXE = bands.x intf.x plot.x space.x wannier.x window.x
+EXE = disentangle.x hamiltonian.x intf.x plot.x wannier.x window.x
 all: $(EXE)
 
 $(EXE): ../Libs/lib_invaders.a
