@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2004 WanT Group
 ! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 ! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
 !
@@ -28,7 +28,7 @@
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
       USE kpoints_module, ONLY: nkpts, nnx, nnhx, &
-                          nntot, nnlist, nncell, neigh, bk, wb, bka, wbtot
+                          nntot, nnlist, neigh, bk, wb, bka, wbtot
       USE overlap_module,  ONLY : dimwann, ca, cm
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr,  &

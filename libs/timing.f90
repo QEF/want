@@ -1,5 +1,5 @@
 ! 
-! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2004 WanT Group
 ! 
 ! This file is distributed under the terms of the 
 ! GNU General Public License. See the file `License' 
@@ -117,7 +117,7 @@ CONTAINS
       !
          IF ( global_list%clock(index)%running )  THEN
             IF ( PRESENT(opr) .AND. TRIM(opr_) /= "stop" .AND. TRIM(opr_) /= "STOP" )  &
-               CALL errore('timing','Operation '//TRIM(opr_)//' NOT permitted in '&
+               CALL errore('timing','Operation '//TRIM(opr_)//' NOT allowed in '&
                            //TRIM(name),1)
             opr_ = "stop"
          ELSE

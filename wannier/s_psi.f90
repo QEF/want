@@ -8,19 +8,18 @@
 #include "machine.h"
 !
 !----------------------------------------------------------------------------
-SUBROUTINE s_psi( lda, n, m, ik, becp, psi, spsi )
+SUBROUTINE s_psi( lda, n, m, ik, psi, spsi )
   !----------------------------------------------------------------------------
   !
   !    This routine applies the S matrix to m wavefunctions psi
   !    and puts the results in spsi.
   !    Requires the products of psi with all beta functions
-  !    in array becp(nkb,m) (calculated in h_psi or by ccalbec)
+  !    in array becp(nkb,m,ik) (calculated in h_psi or by ccalbec)
   ! input:
   !     lda   leading dimension of arrays psi, spsi
   !     n     true dimension of psi, spsi
   !     m     number of states psi
   !     ik    idnex of the current kpt
-  !     becp  
   !     psi
   ! output:
   !     spsi  S*psi
@@ -28,7 +27,8 @@ SUBROUTINE s_psi( lda, n, m, ik, becp, psi, spsi )
   USE kinds,      ONLY : dbl
   USE constants,  ONLY : ZERO, CZERO
   USE us_module,  ONLY : okvan
-  USE uspp,       ONLY : nkb, vkb, qq
+  USE uspp,       ONLY : nkb, vkb, vkb_ik, qq
+  USE becmod,     ONLY : becp
   USE uspp_param, ONLY : nh, tvanp
   USE ions_module,ONLY : nat, ntyp => nsp, ityp
   USE timing_module
@@ -39,7 +39,6 @@ SUBROUTINE s_psi( lda, n, m, ik, becp, psi, spsi )
   !
   INTEGER,           INTENT(in) :: lda, n, m, ik
   COMPLEX(KIND=dbl), INTENT(in) :: psi(lda,m)
-  COMPLEX(KIND=dbl), INTENT(in) :: becp(nkb,m)
   COMPLEX(KIND=dbl), INTENT(out):: spsi(lda,m)
   !
   CALL timing( 's_psi', OPR='start' )  
@@ -77,6 +76,11 @@ SUBROUTINE s_psi( lda, n, m, ik, becp, psi, spsi )
        !
        IF ( nkb == 0 .OR. .NOT. okvan ) RETURN
        !
+       ! NOTE: vkb should have been calculated for the right k 
+       !       we check this
+       IF ( ik /= vkb_ik ) CALL errore('s_psi','Invalid ik', ik)
+       !
+       !
        ALLOCATE( ps( nkb, m ) )    
        !
        ps(:,:) = CZERO
@@ -92,7 +96,7 @@ SUBROUTINE s_psi( lda, n, m, ik, becp, psi, spsi )
                          DO ih = 1, nh(nt)
                             ikb = ijkb0 + ih
                             ps(ikb,ibnd) = ps(ikb,ibnd) + &
-                                           qq(ih,jh,nt) * becp(jkb,ibnd)
+                                           qq(ih,jh,nt) * becp(jkb,ibnd,ik)
                          END DO
                       END DO
                    END DO
@@ -106,7 +110,7 @@ SUBROUTINE s_psi( lda, n, m, ik, becp, psi, spsi )
           END IF
        END DO
        !
-       CALL ZGEMM( 'N', 'N', n, m, nkb, (1.D0, 0.D0), vkb(1,1,ik), &
+       CALL ZGEMM( 'N', 'N', n, m, nkb, (1.D0, 0.D0), vkb, &
                    lda, ps, nkb, (1.D0, 0.D0), spsi, lda )
        !
        DEALLOCATE( ps )

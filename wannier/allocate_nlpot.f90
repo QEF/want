@@ -1,5 +1,4 @@
 !
-! Copyright (C) 2004 Andrea Ferretti
 ! Copyright (C) 2001 PWSCF group
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
@@ -7,6 +6,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 ! Taken form the file allocate_nlpot.f90 of Espresso package
+! and further modified by AF (2004)
 ! 
 #include "machine.h"
 !
@@ -32,7 +32,7 @@ subroutine allocate_nlpot
   USE ions_module,     ONLY : nat, ntyp => nsp, ityp
   USE lattice_module,  ONLY : tpiba
   USE windows_module,  ONLY : nspin
-  USE wfc_module,      ONLY : npwx => npwkx
+  USE wfc_data_module, ONLY : npwx => npwkx
   USE ggrids_module,   ONLY : ecutwfc, ecutrho
 
   USE us_module,       ONLY : qrad, tab, tab_at, dq, nqx, nqxq
@@ -128,7 +128,7 @@ subroutine allocate_nlpot
   !      an extra kpt index is added
   !
   IF (nkb > 0) THEN 
-       ALLOCATE (vkb( npwx,  nkb, nkpts), STAT=ierr)    
+       ALLOCATE (vkb( npwx,  nkb), STAT=ierr)    
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating vkb',ABS(ierr))
   ENDIF
   ALLOCATE (becsum( nhm * (nhm + 1)/2, nat, nspin), STAT=ierr)    

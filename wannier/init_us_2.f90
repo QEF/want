@@ -8,7 +8,7 @@
 #include "machine.h"
 !
 !----------------------------------------------------------------------
-subroutine init_us_2 (npw_, igk_, q_, vkb_)
+subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !----------------------------------------------------------------------
   !
   !   Calculates beta functions (Kleinman-Bylander projectors), with
@@ -20,7 +20,7 @@ subroutine init_us_2 (npw_, igk_, q_, vkb_)
   USE lattice_module, ONLY : tpiba
   USE struct_fact_data_module, ONLY : strf, eigts1, eigts2, eigts3
   USE ggrids_module,  ONLY : g, igv
-  USE wfc_module,     ONLY : npwx => npwkx
+  USE wfc_data_module,ONLY : npwx => npwkx
 
 
   USE us_module,  ONLY : dq, tab

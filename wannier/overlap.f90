@@ -1,78 +1,79 @@
 !
-! Copyright (C) 2004 Andrea Ferretti, Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2004 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! From a previous version by Nicola Marzari and David Vanderbilt
-!
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE overlap( evc, igsort, npwk, dimwin, nntot, nnlist,       &
-                           nncell, cm, npw, npwkx, nkpts, nnx, ngx,      &
-                           ngy, ngz, dimwinx )
+      SUBROUTINE overlap( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, evc, evc_info, &
+                          igsort, lnncell, Mkb )
 !=----------------------------------------------------------------------------------=
  
       USE kinds
       USE constants,      ONLY : CZERO
-      USE timing_module,  ONLY : timing, timing_upto_now 
-      USE io_module,      ONLY : stdout
-
-      USE uspp,           ONLY : qb
-      USE wfc_module,     ONLY : npwx_g             ! XXXX
-      USE becmod,         ONLY : becp
-      USE ions_module,    ONLY : uspp_calculation
+      USE parameters,     ONLY : nnx
+      USE timing_module,  ONLY : timing
+      USE wfc_info_module 
+      USE ggrids_module,  ONLY : nfft
 
       IMPLICIT NONE
       !
       ! ... Input Variables
       !
-      INTEGER :: npw, npwkx, nkpts, nnx
-      INTEGER :: ngx, ngy, ngz, dimwinx
-      INTEGER :: igsort( npwkx, nkpts )
-      INTEGER :: npwk( nkpts )
-      INTEGER :: nnlist( nkpts, nnx )
-      INTEGER :: nntot( nkpts )
-      INTEGER :: nncell( 3, nkpts, nnx )
-      INTEGER :: dimwin( nkpts )
-      COMPLEX(dbl) :: evc( npwkx, dimwinx, nkpts )
-      COMPLEX(dbl) :: cm( dimwinx, dimwinx, nnx, nkpts )
+      TYPE(wfc_info), INTENT(in) :: evc_info
+      COMPLEX(dbl),   INTENT(in) :: evc( evc_info%npwx, evc_info%nwfc )
+
+      INTEGER,        INTENT(in) :: ik1, ik2
+      INTEGER,        INTENT(in) :: dimw1, dimw2, dimwinx
+      INTEGER,        INTENT(in) :: imin1, imin2
+      INTEGER,        INTENT(in) :: igsort( evc_info%npwx , *)
+      INTEGER,        INTENT(in) :: lnncell( 3 )
+      COMPLEX(dbl),   INTENT(out):: Mkb( dimwinx, dimwinx )
+
       !
       ! ... Local Variables
       !
-      INTEGER :: ndnn, nn, ierr
-      INTEGER :: i, j ,nx, ny, nz, igk, ig
-      INTEGER :: ik1, j1, dimw1
-      INTEGER :: ik2, j2, dimw2
+      INTEGER :: ierr
+      INTEGER :: i, j , ig
+      INTEGER :: npwkx, npwx_g
+      INTEGER :: j1, npwk1, ind1
+      INTEGER :: j2, npwk2, ind2
 
       INTEGER, ALLOCATABLE      :: map(:)
-      COMPLEX(dbl), ALLOCATABLE :: aux(:,:), aux1(:), aux2(:)
+      COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)
 
 !
 ! ... END declarations
 !
       CALL timing('overlap',OPR='start')
 
+      !
+      ! the maximun number of PW for wfcs
+      npwkx = evc_info%npwx
+      !
+      ! is the total number of G in k-indipendent wfc representation
+      ! among ik1 and ik2
+      ! the "+1" at the end of the line is used to have one void position
+      !
+      npwx_g = MAX( MAXVAL(igsort(:,ik1)), MAXVAL(igsort(:,ik2)) ) +1
 
-      IF( dimwinx /= MAXVAL( dimwin(:) ) ) THEN
-        CALL errore(' overlap_base ', ' inconsistent window ', dimwinx )
-      END IF
+      IF ( dimw1 > dimwinx ) CALL errore('overlap', 'Invalid dimw1', dimw1)
+      IF ( dimw2 > dimwinx ) CALL errore('overlap', 'Invalid dimw2', dimw2)
+
       ALLOCATE( map(npwkx), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap_base','allocating map',npwkx)
-      ALLOCATE( aux(dimwinx, dimwinx), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap_base','allocating aux',dimwinx**2)
+         IF (ierr/=0) CALL errore('overlap','allocating map',npwkx)
       ALLOCATE( aux1(npwx_g), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap_base','allocating aux1',npwx_g)
+         IF (ierr/=0) CALL errore('overlap','allocating aux1',npwx_g)
       ALLOCATE( aux2(npwx_g), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap_base','allocating aux2',npwx_g)
+         IF (ierr/=0) CALL errore('overlap','allocating aux2',npwx_g)
 
 !
-! ... Calculate cm(i,j,ik,nn)=<u_i k|u_j k+dk> (keeping into account
+! ... Calculate cm(i,j)=<u_i k|u_j k+dk> (keeping into account
 !     that if k+dk is outside (or should be outside) the first BZ it must be
 !     brought from there (or there)
-!     with a exp(-iG.r) factor (given the proper convention for the sign)
-!     for a standard, non-Castep convention:
+!     with a exp(-iG.r) factor (given the proper convention for the sign):
 !     psi_nk=psi_nk+G -> u_nk exp(ikr)=u_nk+G exp(ikr) exp (iGr) ->
 !                        u_nk+G = u_nk exp(-iGr)
 ! 
@@ -86,73 +87,59 @@
 !     are G1s+G0, i.e. nx+nncell, etc...
 !
 
-cm = CZERO
+      !
+      ! Here imin* take into account the fact that dimwin 
+      ! may not start from the first band
+      !
+      ind1  = wfc_info_getindex(imin1, ik1, "IK", evc_info)
+      ind2  = wfc_info_getindex(imin2, ik2, "IKB", evc_info)
+      npwk1 = evc_info%npw( ind1 )
+      npwk2 = evc_info%npw( ind2 )
 
-      DO ik1 = 1, nkpts
-          WRITE( stdout , "( 4x,'Overlap calculation for k-point ',i3)") ik1
+      !
+      ! creates the map from the PW of ik2 to those of ik1 
+      ! the PWs not found are set to npwkx hwich has zero coefficients by def.
+      !
+      ! this mapping takes into account the e^{iGr} factor when k1 and k2 are 
+      ! in different Brillouin zones.
+      !
+      CALL set_overlap_map( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(1,ik2), &
+                            lnncell(1), map)
+      map( npwk2+1: npwkx ) = 0
 
-          DO nn = 1, nntot( ik1 )
-              ik2 = nnlist( ik1, nn )
+      !
+      ! loops over bands
+      !
+      DO j2 = 1, dimw2
+          aux2(:) = CZERO
+          ind2 = wfc_info_getindex(imin2 +j2 -1, ik2, "IKB", evc_info)
+          DO ig=1, npwk2
+             aux2( map( ig ) ) = evc( ig, ind2) 
+          ENDDO
 
-              dimw1 = dimwin(ik1)
-              dimw2 = dimwin(ik2)
-
-              !
-              ! creates the map from the PW of ik2 to those of ik1 
-              ! the PWs not found are set to npwkx hwich has zero coefficients by def.
-              !
-              ! this mapping takes into account the e^{iGr} factor when k1 and k2 are 
-              ! in different Brillouin zones.
-              !
-              CALL set_overlap_map( npwk(ik2), npwx_g, ngx, ngy, ngz, igsort(1,ik2), &
-                                    nncell(1,ik1,nn), map)
-              map( npwk(ik2)+1: npwkx ) = 0
-
-              !
-              ! loops over bands
-              !
-              DO j2 = 1, dimw2
-                  aux2(:) = CZERO
-                  DO ig=1, npwk(ik2)
-                     aux2( map( ig ) ) = evc( ig, j2, ik2) 
-                  ENDDO
-
-                  DO j1 = 1, dimw1
-                      aux1(:) = CZERO
-                      DO ig=1, npwk(ik1)
-                         aux1( igsort( ig, ik1 ) ) = evc( ig, j1, ik1) 
-                      ENDDO
-
-                      cm( j1, j2, nn, ik1 ) = CZERO
-                      !
-                      ! last index is dumm:,ik1,nny
-                      DO ig=1, npwx_g -1  
-                         cm( j1, j2, nn, ik1 ) = cm( j1, j2, nn, ik1 ) + &
-                                                 CONJG( aux1(ig) ) * aux2(ig)
-                      ENDDO
-                  ENDDO
+          DO j1 = 1, dimw1
+              aux1(:) = CZERO
+              ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
+              DO ig=1, npwk1
+                 aux1( igsort( ig, ik1 ) ) = evc( ig, ind1) 
               ENDDO
 
+              Mkb( j1, j2 ) = CZERO
               !
-              ! ... add the augmentation term fo USPP
-              !
-              IF ( uspp_calculation ) THEN
-                  CALL add_us_overlap(dimwinx, dimw1, dimw2, ik1, ik2, nn, aux)
-                  cm(:,:,nn,ik1)= cm(:,:,nn,ik1) + aux(:,:)
-              ENDIF
-
+              ! last position for ig is dummy
+              DO ig=1, npwx_g -1  
+                 Mkb( j1, j2 ) = Mkb( j1, j2 ) + &
+                                         CONJG( aux1(ig) ) * aux2(ig)
+              ENDDO
           ENDDO
-          CALL timing_upto_now(stdout)
       ENDDO
 
-      DEALLOCATE( aux, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap_base','deallocating aux',ABS(ierr))
       DEALLOCATE( aux1, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap_base','deallocating aux1',ABS(ierr))
+         IF (ierr/=0) CALL errore('overlap','deallocating aux1',ABS(ierr))
       DEALLOCATE( aux2, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap_base','deallocating aux2',ABS(ierr))
+         IF (ierr/=0) CALL errore('overlap','deallocating aux2',ABS(ierr))
       DEALLOCATE( map, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap_base','deallocating map',ABS(ierr))
+         IF (ierr/=0) CALL errore('overlap','deallocating map',ABS(ierr))
 
       CALL timing('overlap',OPR='stop')
 

@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2004 WanT Group
 ! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 ! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
 !
@@ -114,7 +114,7 @@
 
 ! ... Now build up the list of nearest-neighbour shells for each k-point.
 !     nnlist(nkp,1...nnx) points to the nnx neighbours (ordered along increasing shells)
-!     of the k-point nkp. nncell(i,nkp,nnth) tells us in which BZ is the nnth 
+!     of the k-point nkp. nncell(i,nnth,nkp) tells us in which BZ is the nnth 
 !     nearest-neighbour of the k-point nkp. Construct the nnx b-vectors that go from k-point
 !     nkp to each neighbour bk(1:3,nkp,1...nnx).
 !
@@ -140,9 +140,9 @@
                     inx = inx + 1   
                     nnshell(nkp,ndnn) = nnshell(nkp,ndnn) + 1
                     nnlist(nkp,inx) = nkp2
-                    nncell(1,nkp,inx) = l
-                    nncell(2,nkp,inx) = m
-                    nncell(3,nkp,inx) = n
+                    nncell(1,inx,nkp) = l
+                    nncell(2,inx,nkp) = m
+                    nncell(3,inx,nkp) = n
                     !
                     ! units are in bohr-1
                     bk(:,nkp,inx) = ( vkpp(:) - vkpr(:,nkp) )

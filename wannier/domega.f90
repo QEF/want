@@ -1,5 +1,5 @@
 ! 
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli 
+! Copyright (C) 2004 WanT Group
 ! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt 
 ! Copyright (C) 1997 Nicola Marzari, David Vanderbilt 
 ! 

@@ -1,7 +1,5 @@
 !
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
-! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
-! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+! Copyright (C) 2004 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
@@ -57,7 +55,7 @@
   INTEGER, ALLOCATABLE           :: nntot(:)      ! DIM: nkpts
   INTEGER, ALLOCATABLE           :: nnshell(:,:)  ! DIM: nkpts*nnx
   INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*nnx
-  INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nkpts*nnx
+  INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nnx*nkpts
   INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*nnhx
   REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*nnx (bohr^-1)
   REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*nnx
@@ -138,8 +136,8 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname, ' allocating nnshell ', nkpts*nnx )
       ALLOCATE( nnlist(nkpts,nnx), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', nkpts*nnx )
-      ALLOCATE( nncell(3,nkpts,nnx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nkpts*nnx )
+      ALLOCATE( nncell(3,nnx,nkpts), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nnx,nkpts )
       ALLOCATE( neigh(nkpts,nnhx), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating neigh ', nkpts*nnhx )
       ALLOCATE( bk(3,nkpts,nnx), STAT = ierr )
