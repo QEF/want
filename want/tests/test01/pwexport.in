@@ -1,9 +1,8 @@
 &inputpp
   prefix='silicon'
   outdir='./'
-  ascii = .FALSE.
   pseudo_dir='./'
   psfile(1)='Si.vbc.UPF'
-  single_file= .TRUE.
-  ascii = .TRUE.
+  single_file= .FALSE.
+  ascii = .FALSE.
 /

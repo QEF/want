@@ -3,12 +3,12 @@ MAKE=make
 info:
 	@echo " "
 	@echo " Possible targets are: "
-	@echo "     run           perform all the calculation steps"
+	@echo "     all           perform all the calculation steps"
 	@echo "     want          perform only the WanT calculations"
 	@echo "     clean         clean up"
 	@echo " "
 
-run: 
+all: 
 	./run.sh all
 
 want: 
