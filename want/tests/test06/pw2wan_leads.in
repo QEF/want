@@ -1,9 +1,9 @@
 
 &inputpp
-  prefix='gold2'
-  nk(1)=1,
+  prefix='chain4'
+  nk(1)=8,
   nk(2)=1,
-  nk(3)=8,
+  nk(3)=1,
   s0(1)=0.0,
   s0(2)=0.0,
   s0(3)=0.0,

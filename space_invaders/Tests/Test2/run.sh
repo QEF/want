@@ -154,6 +154,9 @@ if [ ! -e $TMPDIR/$TEST_NAME/HOME ] ; then
     cd $TMPDIR/$TEST_NAME
     ln -sf $TEST_HOME ./HOME
 fi
+test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
+test -e $TMPDIR/$TEST_NAME/COND/CRASH && rm $TMPDIR/$TEST_NAME/COND/CRASH
+test -e $TMPDIR/$TEST_NAME/LEADS/CRASH && rm $TMPDIR/$TEST_NAME/LEADS/CRASH
 
 #
 # 2 sub scratch directories
@@ -248,20 +251,20 @@ fi
 if [ "$WINDOW_COND" = ".TRUE." ] ; then  
    cd COND
    $WANT_BIN/window.x < $TEST_HOME/want_cond.in > $TEST_HOME/window_cond.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "WINDOW_COND calculation done" 
    else
-      echo "found some problems in WINDOW_COND calculation, stopping" ; exit 1
+      echo "found some problems in WINDOW_COND calculation, stopping" ; cat CRASH ;exit 1
    fi
    cd ..
 fi
 if [ "$WINDOW_LEADS" = ".TRUE." ] ; then  
    cd LEADS
    $WANT_BIN/window.x < $TEST_HOME/want_leads.in > $TEST_HOME/window_leads.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "WINDOW_LEADS calculation done" 
    else
-      echo "found some problems in WINDOW_LEADS calculation, stopping" ; exit 1
+      echo "found some problems in WINDOW_LEADS calculation, stopping" ; cat CRASH; exit 1
    fi
    cd ..
 fi
@@ -272,20 +275,22 @@ fi
 if [ "$DISENTANGLE_COND" = ".TRUE." ] ; then  
    cd COND
    $WANT_BIN/disentangle.x < $TEST_HOME/want_cond.in > $TEST_HOME/disentangle_cond.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "DISENTANGLE_COND calculation done" 
    else
-      echo "found some problems in DISENTANGLE_COND calculation, stopping" ; exit 1
+      echo "found some problems in DISENTANGLE_COND calculation, stopping" ; cat CRASH 
+      exit 1
    fi
    cd ..
 fi
 if [ "$DISENTANGLE_LEADS" = ".TRUE." ] ; then  
    cd LEADS
    $WANT_BIN/disentangle.x < $TEST_HOME/want_leads.in > $TEST_HOME/disentangle_leads.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "DISENTANGLE_LEADS calculation done" 
    else
-      echo "found some problems in DISENTANGLE_LEADS calculation, stopping" ; exit 1
+      echo "found some problems in DISENTANGLE_LEADS calculation, stopping" ; cat CRASH  
+      exit 1
    fi
    cd ..
 fi
@@ -296,20 +301,20 @@ fi
 if [ "$WANNIER_COND" = ".TRUE." ] ; then  
    cd COND
    $WANT_BIN/wannier.x < $TEST_HOME/want_cond.in > $TEST_HOME/wannier_cond.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "WANNIER_COND calculation done" 
    else
-      echo "found some problems in WANNIER_COND calculation, stopping" ; exit 1
+      echo "found some problems in WANNIER_COND calculation, stopping" ; cat CRASH ; exit 1
    fi
    cd ..
 fi
 if [ "$WANNIER_LEADS" = ".TRUE." ] ; then  
    cd LEADS
    $WANT_BIN/wannier.x < $TEST_HOME/want_leads.in > $TEST_HOME/wannier_leads.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "WANNIER_LEADS calculation done" 
    else
-      echo "found some problems in WANNIER_LEADS calculation, stopping" ; exit 1
+      echo "found some problems in WANNIER_LEADS calculation, stopping" ; cat CRASH ; exit 1
    fi
    cd ..
 fi
@@ -321,31 +326,26 @@ if [ "$HAMILTONIAN_COND" = ".TRUE." ] ; then
    cd COND
    $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_cond.in  \
                            > $TEST_HOME/hamiltonian_cond.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "HAMILTONIAN_COND calculation done" 
    else
-      echo "found some problems in HAMILTONIAN_COND calculation, stopping" ; exit 1
+      echo "found some problems in HAMILTONIAN_COND calculation, stopping" ; cat CRASH 
+      exit 1
    fi
    cd ..
-   cp COND/fort.103 H00_C
-# XXXX
-   $UTILITY_BIN/matrix_extract.sh COND/fort.104  1  24   1  13  > HCI_CB
-   $UTILITY_BIN/matrix_extract.sh COND/fort.104  10 24   1  24  > HCI_AC
 fi
+
 if [ "$HAMILTONIAN_LEADS" = ".TRUE." ] ; then  
    cd LEADS
    $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_leads.in  \
                            > $TEST_HOME/hamiltonian_leads.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "HAMILTONIAN_LEADS calculation done" 
    else
-      echo "found some problems in HAMILTONIAN_LEADS calculation, stopping" ; exit 1
+      echo "found some problems in HAMILTONIAN_LEADS calculation, stopping" ; cat CRASH
+      exit 1
    fi
    cd ..
-   cp LEADS/fort.103 H00_A
-   cp LEADS/fort.103 H00_B
-   cp LEADS/fort.104 H01_A
-   cp LEADS/fort.104 H01_B
 fi
 
 
@@ -353,15 +353,26 @@ fi
 # running CONDUCTOR
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
+   #
+   $UTILITY_BIN/matrix_extract.sh COND/fort.103    1 16   1 16  > H00_C
+   
+   $UTILITY_BIN/matrix_extract.sh COND/fort.104    1 16   1  8  > HCI_CB
+   $UTILITY_BIN/matrix_extract.sh COND/fort.104    9 16   1 16  > HCI_AC
+   
+   $UTILITY_BIN/matrix_extract.sh LEADS/fort.105   1  8   1  8  > H00_A
+   $UTILITY_BIN/matrix_extract.sh LEADS/fort.105   1  8   1  8  > H00_B
+   $UTILITY_BIN/matrix_extract.sh LEADS/fort.106   1  8   1  8  > H01_A
+   $UTILITY_BIN/matrix_extract.sh LEADS/fort.106   1  8   1  8  > H01_B
+
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "CODNDUCTOR calculation done" 
       #
       # also this needs to be improoved
       #
       cp dos.out cond.out $TEST_HOME
    else
-      echo "found some problems in CONDUCTOR calculation, stopping" ; exit 1
+      echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -372,14 +383,8 @@ fi
 if [ "$BULK" = ".TRUE." ] ; then  
    ln -sf COND/fort.103 H00.dat
    ln -sf COND/fort.104 H01.dat
-   #ln -sf LEADS/fort.102 H00.dat
-   #ln -sf LEADS/fort.103 H01.dat
-   #ln -sf LEADS/fort.103 H00.dat
-   #ln -sf LEADS/fort.104 H01.dat
-   #ln -sf LEADS/fort.105 H00.dat
-   #ln -sf LEADS/fort.106 H01.dat
    $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "BULK calculation done" 
       #
       # also this needs to be improoved
@@ -387,7 +392,7 @@ if [ "$BULK" = ".TRUE." ] ; then
       mv dos.out  $TEST_HOME/dos_bulk.out
       mv cond.out $TEST_HOME/cond_bulk.out
    else
-      echo "found some problems in BULK calculation, stopping" ; exit 1
+      echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
