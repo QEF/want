@@ -16,7 +16,7 @@
 !...  Energy conversion factor
 !     efac=1.0d0       ! energy in eV (default)
 !     efac=13.6058     ! energy in Ry
-!     efac=27.2116     ! energy in Ry
+!     efac=27.2116     ! energy in Ha
 
 !...  Matrix definition
 !
@@ -86,7 +86,8 @@
 
       REWIND 30
       READ ( 30, * ) nwa
-      IF ( nwa /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H00_A ', nwa )
+      IF ( nwa /= nmaxa ) & 
+           CALL errore(' readH ', ' wrong dimension in reading H00_A ', ABS(nwa-nmaxa) )
 
       DO j = 1, nwa
          READ ( 30, * ) 
@@ -104,7 +105,8 @@
 
       REWIND 31
       READ ( 31, * ) nwa
-      IF ( nwa /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H01_A ', nwa )
+      IF ( nwa /= nmaxa ) &
+           CALL errore(' readH ', ' wrong dimension in reading H01_A ', ABS(nwa-nmaxa) )
 
       DO j = 1, nwa
          READ ( 31, * ) 
@@ -122,7 +124,8 @@
 
       REWIND 40
       READ ( 40, * ) nwb
-      IF ( nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H00_B ', nwb )
+      IF ( nwb /= nmaxb ) & 
+           CALL errore(' readH ', ' wrong dimension in reading H00_B ', ABS(nwb-nmaxb) )
 
       DO j = 1, nwb
          READ ( 40, * ) 
@@ -140,7 +143,8 @@
 
       REWIND 41
       READ( 41, * ) nwb
-      IF ( nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H01_B ', nwb )
+      IF ( nwb /= nmaxb ) &
+           CALL errore(' readH ', ' wrong dimension in reading H01_B ', ABS(nwb-nmaxb) )
 
       DO j = 1, nwb
          READ ( 41, * ) 
@@ -159,7 +163,7 @@
       REWIND 51
       READ ( 51, * ) nwc
       IF ( nwc /= nmaxc ) &
-           CALL errore(' SreadH ', ' wrong dimension in reading H00_C ', nwc )
+           CALL errore(' readH ', ' wrong dimension in reading H00_C ', ABS(nwc-nmaxc) )
 
       DO j = 1, nwc
          READ ( 51, * ) 
@@ -178,7 +182,7 @@
       REWIND 61
       READ ( 61, * ) nwa, nwc
       IF ( nwa /= nmaxa .OR. nwc /= nmaxc ) &
-           CALL errore(' SreadH ', ' wrong dimension in reading HCI_AC ', nwc )
+           CALL errore(' readH ', ' wrong dimension in reading HCI_AC ', 100 )
 
       DO j = 1, nwc
          READ ( 61, * ) 
@@ -197,7 +201,7 @@
       REWIND 71
       READ ( 71, * ) nwc, nwb
       IF ( nwc /= nmaxc .OR. nwb /= nmaxb ) &
-           CALL errore(' SreadH ', ' wrong dimension in reading HCI_CB ', nwb )
+           CALL errore(' readH ', ' wrong dimension in reading HCI_CB ', 100 )
 
       DO j = 1, nwb
          READ ( 71, * ) 
@@ -221,7 +225,7 @@
         REWIND 32
         READ ( 32, * ) nwa
         IF ( nwa /= nmaxa ) & 
-             CALL errore(' SreadH ', ' wrong dimension in reading S00_A ', nwa )
+             CALL errore(' readH ', ' wrong dimension in reading S00_A ', ABS(nwa-nmaxa) )
 
         DO j = 1, nwa
            READ ( 32, * ) 
@@ -239,7 +243,7 @@
         REWIND 33
         READ ( 33, * ) nwa
         IF ( nwa /= nmaxa ) & 
-             CALL errore(' SreadH ', ' wrong dimension in reading S01_A ', nwa )
+             CALL errore(' readH ', ' wrong dimension in reading S01_A ', ABS(nwa-nmaxa) )
 
         DO j = 1, nwa
            READ ( 33, * ) 
@@ -256,7 +260,8 @@
 
         REWIND 42
         READ ( 42, * ) nwb
-        IF ( nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading S00_B ', nwb )
+        IF ( nwb /= nmaxb ) &
+             CALL errore(' readH ', ' wrong dimension in reading S00_B ', ABS(nwb-nmaxb) )
 
         DO j = 1, nwb
            READ ( 42, * ) 
@@ -274,7 +279,7 @@
         REWIND 43
         READ(43,*) nwb
         IF( nwb /= nmaxb ) &
-            CALL errore(' SreadH ', ' wrong dimension in reading S01_B ', nwb )
+            CALL errore(' readH ', ' wrong dimension in reading S01_B ', ABS(nwb-nmaxb) )
 
         DO j = 1, nwb
            READ( 43, * ) 
@@ -292,7 +297,7 @@
         REWIND 52
         READ ( 52, * ) nwc
         IF ( nwc /= nmaxc ) & 
-             CALL errore(' SreadH ', ' wrong dimension in reading S00_C ', nwc )
+             CALL errore(' readH ', ' wrong dimension in reading S00_C ', ABS(nwc-nmaxc) )
 
         DO j = 1, nwc
          READ ( 52, * ) 
@@ -310,7 +315,7 @@
         REWIND 62
         READ ( 62, * ) nwa, nwc
         IF ( nwa /= nmaxa .OR. nwc /= nmaxc ) &
-             CALL errore(' SreadH ', ' wrong dimension in reading SCI_AC ', nwa )
+             CALL errore(' readH ', ' wrong dimension in reading SCI_AC ', 101 )
 
         DO j = 1, nwc
            READ ( 62, * ) 
@@ -328,7 +333,7 @@
         REWIND 72
         READ(72,*) nwc, nwb
         IF( nwc /= nmaxc .OR. nwb /= nmaxb )  &
-            CALL errore(' SreadH ', ' wrong dimension in reading SCI_CB ', nwc )
+            CALL errore(' readH ', ' wrong dimension in reading SCI_CB ', 101 )
 
         DO j = 1, nwb
            READ ( 72, * ) 
