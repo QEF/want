@@ -409,7 +409,7 @@ CONTAINS
       INQUIRE(UNIT=unit,UNFORMATTED=form)
       IF ( TRIM(form) ==  "YES" ) &
            CALL errore('Timing_overview','UNIT unformatted',1)
-      WRITE(unit,"(3x,'<',a,' routines>')") TRIM(list%name)
+      WRITE(unit,"(/,3x,'<',a,' routines>')") TRIM(list%name)
       IF ( list%nclock == 0 ) THEN
          WRITE(unit,"(7x,'No clock to display',/)") 
          RETURN
