@@ -22,6 +22,7 @@
       USE io_global, ONLY : stdout
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
+      USE converters_module, ONLY : cart2cry
 
       IMPLICIT NONE
 
@@ -267,6 +268,23 @@
       READ(19) ( ( kgv(i,j), i=1,3 ), j=1,mxdgve )
 
       CLOSE(19)
+
+!
+! ...  Converting WANNIER centers from INPUT to CRYSTAL units
+!      AVEC is in units of ALAT which is in Bohr
+!
+       SELECT CASE ( TRIM(wannier_center_units) )
+       CASE ( 'angstrom' )
+           CALL cart2cry(rphiimx1,alat*bohr*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*bohr*avec(:,:),wannier_center_units)
+       CASE ( 'bohr' )
+           CALL cart2cry(rphiimx1,alat*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*avec(:,:),wannier_center_units)
+       CASE ( 'crystal' )
+       CASE DEFAULT
+           CALL errore('wannier','Invalid wannier center units : '  &
+                                 //TRIM(wannier_center_units),1 )
+       END SELECT
 
 
       natom = natom
@@ -767,7 +785,6 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rave r2ave ', 4*dimwann)
       
 
-      WRITE(stdout, fmt=" (2x, 'Trial Wannier centers and Spreads (Omega)')")
 
       CALL omega( dimwann, nkpts, nkpts, nntot(:), nnmx, nnlist(:,:), bk(:,:,:), wb(:,:), &
                   cm(:,:,:,:), csheet(:,:,:), sheet(:,:,:), rave(:,:), r2ave(:), rave2(:), &
