@@ -53,6 +53,7 @@
       INTEGER :: nnrx, nnry, nnrz
       LOGICAL :: okp( 3 )
       REAL(dbl) :: off
+      INTEGER :: ierr
 
       PARAMETER ( citpi = ( 0.0d0, twopi) )
 
@@ -69,7 +70,9 @@
       READ (21) dirc(1,3), dirc(2,3), dirc(3,3)
 
 
-      ALLOCATE( vkpt( 3, nkpts ) )
+      ALLOCATE( vkpt( 3, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating vkpt ', 3*nkpts )
+
       DO  nkp = 1 , nkpts
         READ (21) vkpt(1,nkp), vkpt(2,nkp), vkpt(3,nkp)
       END DO
@@ -84,19 +87,23 @@
         END DO
       END DO
 
-      ALLOCATE( nplwkp( nkpts ) )
+      ALLOCATE( nplwkp( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nplwkp ', nkpts )
       DO nkp = 1, nkpts
         READ(21) nplwkp(nkp)
       END DO
 
-      ALLOCATE( nindpw( MAX(mxddim,mplwv),nkpts) )
+      ALLOCATE( nindpw( MAX(mxddim,mplwv),nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nindpw ', MAX(mxddim,mplwv)*nkpts )
       DO nkp = 1, nkpts
         DO n = 1, mplwv
           READ(21) nindpw(n,nkp)
         END DO
       END DO
 
-      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ) )
+      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) &
+         CALL errore(' plot ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
       DO nkp = 1, nkpts
         DO nb = 1, dimwann
           DO m = 1, nplwkp(nkp)
@@ -109,7 +116,8 @@
 
       OPEN( 29, FILE='unitary.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
-      ALLOCATE( cu( dimwann, dimwann, nkpts ) )
+      ALLOCATE( cu( dimwann, dimwann, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating cu ', dimwann**2 *nkpts )
       READ(29) ( ( ( cu(j,i,n), j=1,dimwann ), i=1,dimwann ), n=1,nkpts )
 
       CLOSE(29)
@@ -117,9 +125,9 @@
 ! ... Initialize the data used for the fast fourier transforms
 
       READ(5,*) nwann, nrxl, nrxh, nryl, nryh, nrzl, nrzh
-      PRINT *, 'plotting WF n. ', nwann
-      PRINT *, 'plot grid      ', nrxl, nrxh, nryl, nryh, nrzl, nrzh
-      PRINT *, 'total grid     ', 1, ngx, 1, ngy, 1, ngz
+      WRITE(*,*) 'plotting WF n. ', nwann
+      WRITE(*,*) 'plot grid      ', nrxl, nrxh, nryl, nryh, nrzl, nrzh
+      WRITE(*,*) 'total grid     ', 1, ngx, 1, ngy, 1, ngz
 
       nrxd = ( nrxh - nrxl + 1 )
       nryd = ( nryh - nryl + 1 ) 
@@ -145,10 +153,14 @@
       END IF
       
 
-      ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh ) ) 
+      ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating cwann ', &
+                        (nrxh-nrxl+1)*(nryh-nryl+1)*(nrzh-nrzl+1)    )
       cwann = ( 0.0d0, 0.0d0 )
 !
-      ALLOCATE( cptwr(mplwv) )
+      ALLOCATE( cptwr(mplwv), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating cptwr ', mplwv )
+     
 
       DO nkp = 1, nkpts
         DO nb = 1, dimwann
@@ -245,7 +257,9 @@
         END DO
       END DO
 
-      ALLOCATE( poscarwin( 3, MAXVAL( natwin ), nspec ) )
+      ALLOCATE( poscarwin( 3, MAXVAL( natwin ), nspec ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating poscarwin ', &
+                        3 * MAXVAL( natwin ) * nspec ) 
 
       natwin = 0
       DO nsp = 1, nspec
@@ -329,8 +343,22 @@
 
       CLOSE(39)
 
-      DEALLOCATE( cwann )
-      DEALLOCATE( poscarwin )
+      DEALLOCATE( vkpt, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating vkpt ', ABS(ierr) )
+      DEALLOCATE( nplwkp, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating nplwkp ', ABS(ierr) )
+      DEALLOCATE( nindpw, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating nindpw ', ABS(ierr) )
+      DEALLOCATE( cptwfp, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cptwfp ', ABS(ierr) )
+      DEALLOCATE( cu, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cu ', ABS(ierr) )
+      DEALLOCATE( cptwr, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cptwr ', ABS(ierr) )
+      DEALLOCATE( cwann, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cwann ', ABS(ierr) )
+      DEALLOCATE( poscarwin, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating poscarwin ', ABS(ierr) )
 
       call gcube2plt( nwann )
 
