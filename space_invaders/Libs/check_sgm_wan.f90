@@ -71,6 +71,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
    INTEGER                             :: i,j,k,l,m
    INTEGER                             :: r1,r2, i1,i2
    INTEGER                             :: index1, index2
+   INTEGER                             :: ierr
 
 
 !------------------------------------------------
@@ -106,9 +107,12 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 !
 
    nkpts = PRODUCT( nk(:) )
-   ALLOCATE(indxws(3,nws))
-   ALLOCATE(indxws_ind(3,nkpts))
-   ALLOCATE(imap(nkpts))
+   ALLOCATE(indxws(3,nws), STAT=ierr)
+      IF(ierr/=0) CALL errore('check_sgm_wan',' allocating indxws ',3*nws)
+   ALLOCATE(indxws_ind(3,nkpts), STAT=ierr)
+      IF(ierr/=0) CALL errore('check_sgm_wan',' allocating indxws_ind ',3*nkpts)
+   ALLOCATE(imap(nkpts), STAT=ierr)
+      IF(ierr/=0) CALL errore('check_sgm_wan',' allocating imap ',nkpts)
    indxws(:,:) = NINT(Vct(:,:))
    
 
@@ -162,7 +166,8 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 !    R and \omega depending norm of the Sigma sub blocks
 !-------------------------------------------------
 !
-   ALLOCATE( dec(nws,Nisp,Nomega) )
+   ALLOCATE( dec(nws,Nisp,Nomega), STAT=ierr )
+      IF(ierr/=0) CALL errore('check_sgm_wan',' allocating dec ',nws*nisp*nomega)
    
    DO ie=1,Nomega
        DO isp=ispin,ispin
@@ -193,7 +198,8 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
       END DO
    CLOSE(80)
 
-   DEALLOCATE( dec )
+   DEALLOCATE( dec, STAT=ierr )
+      IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating dec ',ABS(ierr))
 
 
 
@@ -250,11 +256,16 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 
        Hdim=dimwann*nkpts
 
-       ALLOCATE( G_ret(Hdim,Hdim,Nisp,Nomega),   &
-                              As(Nisp,Nomega),   &
-                               tmp(Hdim,Hdim),   &
-                             ident(Hdim,Hdim),   &
-                                   ipiv(Hdim)    )
+       ALLOCATE( G_ret(Hdim,Hdim,Nisp,Nomega), STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' allocating G_ret ',hdim**2*nisp*nomega)
+       ALLOCATE(              As(Nisp,Nomega), STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' allocating As ',nisp*nomega)
+       ALLOCATE(               tmp(Hdim,Hdim), STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' allocating tmp ',hdim**2)
+       ALLOCATE(             ident(Hdim,Hdim), STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' allocating ident ',hdim**2)
+       ALLOCATE(                   ipiv(Hdim), STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' allocating ipiv ',hdim)
 
        !
        ! number of lattice vectors in each direction      
@@ -348,11 +359,30 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
        !
        ! cleaning
        !
-       DEALLOCATE( G_ret, As, tmp, ident, ipiv )
+       DEALLOCATE( G_ret, STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating G_ret ',ABS(ierr))
+       DEALLOCATE( As, STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating As ',ABS(ierr))
+       DEALLOCATE( tmp, STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating tmp ',ABS(ierr))
+       DEALLOCATE( ident, STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating ident ',ABS(ierr))
+       DEALLOCATE( ipiv, STAT=ierr )
+          IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating ipiv ',ABS(ierr))
    ENDIF
 
-   DEALLOCATE( E, Sgm, indxws, indxws_ind, Vct )
-   END SUBROUTINE  check_sgm_wan
+   DEALLOCATE( E, STAT=ierr )
+       IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating E ',ABS(ierr))
+   DEALLOCATE( Sgm, STAT=ierr )
+       IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating Sgm ',ABS(ierr))
+   DEALLOCATE( indxws, STAT=ierr )
+       IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating indxws ',ABS(ierr))
+   DEALLOCATE( indxws_ind, STAT=ierr )
+       IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating indxws_ind ',ABS(ierr))
+   DEALLOCATE( Vct, STAT=ierr )
+       IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating Vct',ABS(ierr))
+
+END SUBROUTINE  check_sgm_wan
 
 
 

@@ -69,7 +69,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
    COMPLEX(dbl), ALLOCATABLE          :: Sgm_out(:,:,:,:,:)
    COMPLEX                            :: ctmp
    
-   INTEGER                            :: isp,ie,iws
+   INTEGER                            :: isp,ie,iws, ierr
    INTEGER                            :: i,j,k, l,l1,l2, m,m1,m2
    
     
@@ -89,7 +89,9 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 
       dimwin(:) = imax(:) -imin(:) +1
       mxdimwin = MAXVAL( dimwin(:) )
-      ALLOCATE( eamp(mxdimwin,dimwann,nkpts) )
+      ALLOCATE( eamp(mxdimwin,dimwann,nkpts), STAT=ierr )
+          IF (ierr/=0) CALL errore('do_self_energy','allocating eamp', &
+                       mxdimwin*dimwann*nkpts)
       eamp(:,:,:) = 0.0
 
       DO k=1,nkpts
@@ -138,7 +140,9 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
 ! BAS_ROT = EAMP * CU
 !
-   ALLOCATE( bas_rot(mxdimwin,dimwann,nkpts) )
+   ALLOCATE( bas_rot(mxdimwin,dimwann,nkpts), STAT=ierr )
+       IF (ierr/=0) CALL errore('do_self_energy','allocating bas_rot', &
+                    mxdimwin*dimwann*nkpts)
    bas_rot(:,:,:) = 0.0
 
    DO k=1,nkpts
@@ -157,7 +161,8 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
 ! Fourier transform staff
 !
-   ALLOCATE( expo(nkpts,nws) )
+   ALLOCATE( expo(nkpts,nws), STAT=ierr )
+       IF (ierr/=0) CALL errore('do_self_energy','allocating expo', nkpts*nws)
    DO iws = 1,nws
        DO k=1,nkpts
        
@@ -185,8 +190,11 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
 !
 
-   ALLOCATE( Sgmk(dimwann,dimwann,nkpts))
-   ALLOCATE( Sgm_out(dimwann,dimwann,nws,Nisp,Nomega) )
+   ALLOCATE( Sgmk(dimwann,dimwann,nkpts), STAT=ierr)
+       IF (ierr/=0) CALL errore('do_self_energy','allocating sgmk', nkpts*dimwann**2)
+   ALLOCATE( Sgm_out(dimwann,dimwann,nws,Nisp,Nomega), STAT=ierr )
+       IF (ierr/=0) CALL errore('do_self_energy','allocating sgm_out',  &
+                                dimwann**2 * nws *nisp * nomega)
 
 
    omega: DO ie=1,Nomega
@@ -318,8 +326,10 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
 ! cleaning
 !
-   DEALLOCATE( expo, bas_rot, eamp, E)
-   DEALLOCATE( Sgm_in, Sgmk, Sgm_out)
+   DEALLOCATE( expo, bas_rot, eamp, E, STAT=ierr)
+       IF (ierr/=0) CALL errore('do_self_energy','deallocating expo -- E', ABS(ierr))
+   DEALLOCATE( Sgm_in, Sgmk, Sgm_out, STAT=ierr)
+       IF (ierr/=0) CALL errore('do_self_energy','deallocating Sgm_in Sgmk Sgm_out', ABS(ierr))
 
 
 
