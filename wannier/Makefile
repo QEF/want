@@ -1,5 +1,4 @@
 include ../make.sys
-include ../make.rules
 
 
 OBJS= compar.o domega.o dot_bloch.o error.o \
@@ -28,4 +27,4 @@ clean:
 	rm -rf *.o *.a *core *.F90 *.mod work.pc work.pcl
 
 # dependencies
-include .dependencies
+include make.depend
