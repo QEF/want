@@ -13,7 +13,8 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: pi, twopi => tpi, bohr => bohr_radius_angs
+      USE constants, ONLY: PI, TPI, bohr => bohr_radius_angs, &
+                           ZERO, CZERO, ONE, CONE, CI
       USE parameters, ONLY: npsx, natx
       USE fft_scalar, ONLY: cfft3d
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
@@ -23,8 +24,9 @@
 
       IMPLICIT NONE
 
-      INTEGER :: ngt, ngs
-      PARAMETER ( ngt = 2, ngs = ngt-1)
+      INTEGER,      PARAMETER :: ngt = 2
+      INTEGER,      PARAMETER :: ngs = ngt-1
+      COMPLEX(dbl), PARAMETER :: citpi = TPI * CI
 
       INTEGER :: ngx, ngy, ngz
       INTEGER :: nionst, nions, nspec, nkpts
@@ -45,7 +47,6 @@
       COMPLEX(dbl), ALLOCATABLE :: cu(:,:,:)      ! cu(dimwann,dimwann,nkpts)
       COMPLEX(dbl) :: catmp
       COMPLEX(dbl) :: cmod
-      COMPLEX(dbl) :: citpi
 
       REAL(dbl), ALLOCATABLE :: vkpt(:,:)         ! vkpt(3,nkpts)
 
@@ -70,8 +71,6 @@
       LOGICAL :: okp( 3 )
       REAL(dbl) :: off
       INTEGER :: ierr
-
-      PARAMETER ( citpi = ( 0.0d0, twopi) )
 
 ! ... End declarations and dimensions
 
@@ -178,7 +177,7 @@
       ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
          IF( ierr /=0 ) CALL errore(' plot ', ' allocating cwann ', &
                         (nrxh-nrxl+1)*(nryh-nryl+1)*(nrzh-nrzl+1)    )
-      cwann = ( 0.0d0, 0.0d0 )
+      cwann = CZERO
 !
       ALLOCATE( cptwr(mplwv), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' plot ', ' allocating cptwr ', mplwv )
@@ -188,7 +187,7 @@
         DO nb = 1, dimwann
 
           DO m = 1, mplwv
-            cptwr(m) = ( 0.0d0, 0.0d0 )
+            cptwr(m) = CZERO
           ENDDO
 
           DO m = 1, nplwkp(nkp)
@@ -228,8 +227,8 @@
 
 ! ... Fix the global phase by setting the wannier to be real at the point where it has max modulus
 
-      tmaxx = 0.0d0
-      cmod = ( 1.0d0, 0.0d0 )
+      tmaxx = ZERO
+      cmod = CONE
 
       DO nzz = nrzl, nrzh
         DO nyy = nryl, nryh

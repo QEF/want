@@ -1,5 +1,8 @@
 
 &INPUT_WAN
+   prefix = 'al'
+   postfix = '_WanT'
+   work_dir = './'
    win_min = -20.0
    win_max = 10.0                      ! win_min, win_max
    froz_min = -30.0

@@ -1,5 +1,8 @@
 
 &INPUT_WAN
+   prefix = 'chain8'
+   postfix = '_WanT'
+   work_dir = './COND/'
    win_min = -22.0
    win_max =  -4.5
    dimwann = 16   

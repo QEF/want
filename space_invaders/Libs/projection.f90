@@ -9,7 +9,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE projection( avec, lamp, evec, vkpt,                      & 
+       SUBROUTINE projection( avec, lamp, ca, evec, vkpt,                  & 
                   kgv, isort, npwk, dimwin, dimwann, dimfroz,              &
                   npwx, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,      &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
@@ -17,13 +17,13 @@
 !=----------------------------------------------------------------------------------=
 
        USE kinds
-       USE constants, ONLY : ZERO, CZERO, ONE, PI, twopi => TPI, ryd => RY, CI,&
+       USE constants, ONLY : ZERO, CZERO, ONE, PI, TPI, ryd => RY, CI,&
                              bohr => BOHR_RADIUS_ANGS
        USE fft_scalar
-       USE io_module, ONLY : stdout
+       USE io_module,     ONLY : stdout
        USE timing_module, ONLY : timing
-       USE sph_har, ONLY: gauss1
-       USE util, ONLY: gv_indexes, zmat_mul
+       USE sph_har,       ONLY : gauss1
+       USE util_module,   ONLY : gv_indexes, zmat_mul
 
        IMPLICIT NONE
 
@@ -42,6 +42,7 @@
        COMPLEX(dbl) :: evec( npwx + 1, ndwinx, mxdnrk )
        REAL(dbl) :: vkpt(3,mxdnrk)
        COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
+       COMPLEX(dbl) :: ca(mxdbnd,dimwann,nkpts)
 
        INTEGER :: gauss_typ(dimwann)
        REAL(dbl) :: rphiimx1(3,dimwann)
@@ -62,7 +63,7 @@
        REAL(dbl) :: aside, asidemin
        COMPLEX(dbl) :: catmp
 
-       COMPLEX(dbl), PARAMETER :: citpi = twopi * CI
+       COMPLEX(dbl), PARAMETER :: citpi = TPI * CI
 
        COMPLEX(dbl) :: ctmp, cphi
        INTEGER :: nwann 
@@ -71,13 +72,11 @@
        REAL(dbl) :: rx, ry, rz
        REAL(dbl) :: rpos1(3), rpos2(3)
        REAL(dbl) :: dist1, dist2
-!       REAL(dbl) :: dist_pl, dist_cos 
-!       REAL(dbl) :: th_cos, th_sin 
-!       REAL(dbl) :: ph_cos, ph_sin
        REAL(dbl) :: scalf
  
        INTEGER :: info
 
+       COMPLEX(dbl), ALLOCATABLE :: tmp(:,:)
        COMPLEX(dbl), ALLOCATABLE :: u(:,:)
        COMPLEX(dbl), ALLOCATABLE :: vt(:,:)
        COMPLEX(dbl), ALLOCATABLE :: work(:)
@@ -90,7 +89,6 @@
        INTEGER, ALLOCATABLE :: nphir(:)
 
        COMPLEX(dbl), ALLOCATABLE :: cptwr(:)
-       COMPLEX(dbl), ALLOCATABLE :: ca(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: cu(:,:)
 
        CHARACTER( LEN=6 ) :: verbosity = 'none'    ! none, low, medium, high
@@ -102,73 +100,51 @@
 
        mplwv = ngx * ngy * ( ngz+1 )
 
+       ALLOCATE( tmp(mxdbnd,dimwann), STAT = ierr )
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating tmp ', mxdbnd*dimwann )
+
        ALLOCATE( cptwr(ngx*ngy*(ngz+1)), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating cptwr ', ngx*ngy*(ngz+1) )
-       END IF
-       ALLOCATE( ca(mxdbnd,dimwann,nkpts), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating ca ', mxdbnd*dimwann*nkpts )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating cptwr ', ngx*ngy*(ngz+1) )
+
        ALLOCATE( cu(mxdbnd,dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating cu ', mxdbnd*dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating cu ', mxdbnd*dimwann )
+
        ALLOCATE( u(mxdbnd,mxdbnd), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating u ', mxdbnd*mxdbnd )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating u ', mxdbnd*mxdbnd )
+
        ALLOCATE( vt(dimwann,dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating vt ', dimwann*dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating vt ', dimwann*dimwann )
 
        ALLOCATE( work(4*mxdbnd), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating work ', 4*mxdbnd )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating work ', 4*mxdbnd )
 
        ALLOCATE( s(dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating s ', dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating s ', dimwann )
 
        ALLOCATE( rwork2(5*dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating rwork2 ', 5*dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating rwork2 ', 5*dimwann )
 
        ALLOCATE( rphicmx1(3,dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating rphicmx1 ', 3*dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating rphicmx1 ', 3*dimwann )
 
        ALLOCATE( rphicmx2(3,dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating rphicmx2 ', 3*dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating rphicmx2 ', 3*dimwann )
 
        ALLOCATE( nphimx1(3,dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating nphimx1 ', 3*dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating nphimx1 ', 3*dimwann )
 
        ALLOCATE( nphimx2(3,dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating nphimx2 ', 3*dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating nphimx2 ', 3*dimwann )
 
        ALLOCATE( nphir(dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating nphir ', dimwann )
-       END IF
+       IF( ierr /= 0 ) CALL errore( ' projection ', ' allocating nphir ', dimwann )
 
 
 
        DO nwann = 1, dimwann
          DO m = 1, 3
-           rphicmx1(m,nwann) = 0.0d0
-           rphicmx2(m,nwann) = 0.0d0
+           rphicmx1(m,nwann) = ZERO
+           rphicmx2(m,nwann) = ZERO
            DO j = 1, 3
              rphicmx1(m,nwann) = rphicmx1(m,nwann) + rphiimx1(j,nwann) * avec(m,j)
              rphicmx2(m,nwann) = rphicmx2(m,nwann) + rphiimx2(j,nwann) * avec(m,j)
@@ -181,14 +157,14 @@
        ngdim(3) = ngz
        DO nwann = 1, dimwann
         DO m = 1, 3
-         nphimx1(m,nwann)= INT( rphiimx1(m,nwann) * DBLE( ngdim(m) ) + 1.001d0 )
-         nphimx2(m,nwann)= INT( rphiimx2(m,nwann) * DBLE( ngdim(m) ) + 1.001d0 )
+         nphimx1(m,nwann)= INT( rphiimx1(m,nwann) * DBLE( ngdim(m) ) + 1.001*ONE )
+         nphimx2(m,nwann)= INT( rphiimx2(m,nwann) * DBLE( ngdim(m) ) + 1.001*ONE )
         END DO
        END DO
        
-      WRITE( stdout, fmt= " (2x, 'Gaussian centers: (cart. coord. in Bohr)' ) " )
+      WRITE( stdout, "(2x, 'Gaussian centers: (cart. coord. in Bohr)' ) " )
       DO nwann = 1, dimwann
-        WRITE( stdout, fmt="(4x,'Center = ', i3, ' Type =',i2,' Gaussian  = (', 3F10.6, ' ) '  )" ) &
+        WRITE( stdout, "(4x,'Center = ', i3,' Type =',i2,' Gaussian  = (',3F10.6,' ) ')") &
                nwann, gauss_typ(nwann), ( rphicmx1(m,nwann), m=1,3 )
         IF  ( gauss_typ(nwann) == 2 ) THEN
           WRITE( stdout, fmt="(26x,'Gaussian2 = (', 3F10.6, ' ) '  )" ) &
@@ -222,18 +198,18 @@
          IF  ( dimwann >  dimfroz(nkp) ) THEN  !IF  not, don't need to waste CPU time!
            DO nb = 1, dimwin(nkp)
 
-             cptwr = czero
+             cptwr = CZERO
 
 ! ...        Go through all the g-vectors inside the cutoff radius at the present k-point
 
-             CALL gv_indexes( kgv, isort(:,nkp), npwk(nkp), ngx, ngy, ngz, nindpw = nindpw(:) )
+             CALL gv_indexes( kgv, isort(:,nkp), npwk(nkp), ngx, ngy, ngz, NINDPW=nindpw(:) )
  
              DO J=1,npwk(NKP)           
 
                npoint = nindpw(j)
                cptwr(npoint) = evec(j,nb,nkp)
  
-             END DO ! g-vectors at present k (J)
+             ENDDO ! g-vectors at present k (J)
  
 ! ...        Compute the bloch state in the real space grid via fft from the g-space grid
  
@@ -252,7 +228,7 @@
 
              DO nwann = 1, dimwann
 
-               ca(nb,nwann,nkp) = czero    
+               ca(nb,nwann,nkp) = CZERO    
 
 ! ...          First gaussian
 
@@ -281,19 +257,21 @@
                                   ( rz - rphiimx1(3,nwann) ) * avec(m,3)
                      END DO
 
-                     dist1 = 0.0d0
+                     dist1 = ZERO
                      DO m = 1, 3
                        dist1 = dist1 + rpos1(m)**2
                      END DO
                      dist1 = SQRT(dist1)
- 
+!
 ! ...                Positive gaussian
-
-                     cphi = CMPLX( EXP( -( dist1 / rloc(nwann) )**2 ), 0.0d0 )
+!                    Both dist1 and rloc in Bohr
+!
+                     cphi = CMPLX( EXP( -( dist1 / rloc(nwann) )**2 ) )
 
                      IF  ( gauss_typ(nwann) == 1 ) THEN
 
-                       CALL gauss1( cphi, ndir_wann(nwann), l_wann(nwann), m_wann(nwann), rpos1, dist1 )
+                       CALL gauss1( cphi, ndir_wann(nwann), l_wann(nwann), &
+                                             m_wann(nwann), rpos1, dist1 )
 
                      END IF  ! orbital is of type 1
 
@@ -312,7 +290,7 @@
                    DO nyy = nphimx2(2,nwann) - nphir(nwann), nphimx2(2,nwann) + nphir(nwann)
                      ny = MOD( nyy, ngy )
                      IF ( ny < 1 ) ny = ny + ngy
-                     DO nxx = nphimx2(1,nwann) - nphir(nwann), nphimx2(1,nwann) + nphir(nwann)
+                     DO nxx = nphimx2(1,nwann) - nphir(nwann), nphimx2(1,nwann) +nphir(nwann)
                        nx = MOD( nxx, ngx )
                        IF  (nx < 1) nx = nx + ngx
 
@@ -331,31 +309,30 @@
                                     ( rz - rphiimx2(3,nwann) ) * avec(m,3)
                        END DO
 
-                       dist2 = 0.0d0
+                       dist2 = ZERO
                        DO m = 1, 3
                          dist2 = dist2 + rpos2(m)**2
                        END DO
                        dist2 = SQRT(dist2)
- 
+!
 ! ...                  Negative gaussian
-
-                       cphi = -CMPLX( EXP( -( dist2/rloc(nwann) )**2 ), 0.0d0 )
+!                      Both dist2 and rloc in Bohr
+!
+                       cphi = -CMPLX( EXP( -( dist2/rloc(nwann) )**2 ) )
 
                        ca(nb,nwann,nkp) = ca(nb,nwann,nkp) + catmp * cphi
 
-                     END DO ! nxx
-                   END DO  ! nyy
-                 END DO   ! nzz
+                     ENDDO ! nxx
+                   ENDDO  ! nyy
+                 ENDDO   ! nzz
                END IF 
-             END DO    ! nwann
 
-           END DO    ! nb
+             ENDDO    ! nwann
+           ENDDO    ! nb
       
-
          END IF  
 
-       END DO ! NKP
-
+       ENDDO ! NKP
        DEALLOCATE( nindpw )
 
  
@@ -376,8 +353,9 @@
          IF ( dimwann > dimfroz(nkp) ) THEN
  
 ! ...      Singular value decomposition
+           tmp(:,:) = ca(:,:,nkp)
  
-           CALL zgesvd( 'a', 'a', dimwin(nkp), dimwann, ca(1,1,nkp),              &
+           CALL zgesvd( 'a', 'a', dimwin(nkp), dimwann, tmp(1,1),              &
                 mxdbnd, s, u, mxdbnd, vt, dimwann, work, 4*mxdbnd, rwork2, info )
 
            IF ( info /= 0 )  &
@@ -385,7 +363,7 @@
  
            DO j=1,dimwann
              DO i=1,dimwin(nkp)
-               cu(i,j)=czero
+               cu(i,j)=CZERO
                DO l=1,dimwann
                  cu(i,j)=cu(i,j)+u(i,l)*CONJG(vt(j,l))
                END DO
@@ -402,10 +380,10 @@
 !            for the latter (what this means is that the columns of cu are orthonormal
 !            vectors).
  
-             WRITE(stdout,"(/,'transpose(cu).cu:')") 
+             WRITE(stdout,"(/,'Transpose(cu).cu:')") 
              DO i = 1, dimwann
                DO j = 1, dimwann
-                 ctmp = czero
+                 ctmp = CZERO
                  DO m = 1, dimwin(nkp)
                    ctmp = ctmp + CONJG( cu(m,i) ) * cu(m,j)
                  END DO
@@ -421,8 +399,8 @@
 
        DEALLOCATE( cptwr, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating cptwr',ABS(ierr))
-       DEALLOCATE( ca, STAT=ierr )
-           IF (ierr/=0) CALL errore(' projection ',' deallocating ca',ABS(ierr))
+       DEALLOCATE( tmp, STAT=ierr )
+           IF (ierr/=0) CALL errore(' projection ',' deallocating tmp',ABS(ierr))
        DEALLOCATE( cu, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating cu',ABS(ierr))
        DEALLOCATE( u, STAT=ierr )

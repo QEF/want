@@ -15,14 +15,15 @@
 ! ... Calculates the band structure and  the
 !     matrix elements H(R) in a Wigner-Seitz supercell
  
-! ... Input files: takeoff.dat, energies.dat, unitary.dat
+! ... Input files: DFT_DATA, energies.dat, unitary.dat
 !     Output files: band.gp, band.dat, matrix.dat, diagonal.dat
 
       USE kinds
+      USE parameters, ONLY : nstrx
       USE mp, ONLY: mp_start, mp_end, mp_env
       USE mp_global, ONLY: mp_global_start
       USE io_module, ONLY: io_global_start, io_global_getionode
-      USE io_module, ONLY : stdout
+      USE io_module, ONLY : stdout, ioname
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE startup_module, ONLY : startup
@@ -33,18 +34,16 @@
       IMPLICIT none
 
       INTEGER :: mxdnrk, mxdbnd
+      INTEGER, PARAMETER :: maxspts = 1000
  
-      INTEGER :: maxspts, maxpts
-      PARAMETER ( maxspts = 8 )
-      PARAMETER ( maxpts = 500 )
-
       REAL(dbl) :: avec(3,3), bvec(3,3) 
       INTEGER :: nkpts, dimwann
       INTEGER :: ntype
       INTEGER :: natom(mxdtyp)  
-      CHARACTER(LEN=2) :: nameat(mxdtyp)
+      CHARACTER(LEN=2)              :: nameat(mxdtyp)
       CHARACTER(LEN=2), ALLOCATABLE :: point(:) ! point(maxspts)
-      CHARACTER(LEN=6) :: verbosity = 'high'    ! none, low, medium, high
+      CHARACTER(LEN=6)              :: verbosity = 'high'    ! none, low, medium, high
+      CHARACTER(LEN=nstrx)          :: filename
 
       REAL(dbl) :: rat(3,mxdatm,mxdtyp)
       REAL(dbl) :: e_min, e_max
@@ -59,12 +58,12 @@
       INTEGER :: nspts, npts, tnkpts, nbands
       INTEGER :: nws
       REAL(dbl) :: s(3)
-      REAL(dbl), ALLOCATABLE :: skpt(:,:) , xval(:) ! skpt(3,maxpts), xval(maxspts*maxpts)
-      REAL(dbl), ALLOCATABLE :: sxval(:), kpt(:,:)  ! sxval(maxspts), kpt(3,maxspts*maxpts)
-      REAL(dbl), ALLOCATABLE :: vkpt(:,:)          ! vkpt(3,mxdnrk)
-      REAL(dbl), ALLOCATABLE :: en_band(:,:)       ! en_band(mxdbnd,maxspts*maxpts)
-      INTEGER, ALLOCATABLE :: indxws(:,:)       ! indxws(3,3*mxdnrk)
-      INTEGER, ALLOCATABLE :: degen(:)          ! degen(3*mxdnrk)
+      REAL(dbl), ALLOCATABLE :: skpt(:,:) , xval(:) 
+      REAL(dbl), ALLOCATABLE :: sxval(:), kpt(:,:)  
+      REAL(dbl), ALLOCATABLE :: vkpt(:,:)          
+      REAL(dbl), ALLOCATABLE :: en_band(:,:)      
+      INTEGER, ALLOCATABLE :: indxws(:,:)       
+      INTEGER, ALLOCATABLE :: degen(:)          
       INTEGER :: i, j, m, n, nkp, irk, idum
       INTEGER :: i1, i2, i3
       INTEGER :: iws
@@ -140,7 +139,8 @@
 !
 ! ... Read from file
 !
-      OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
+      CALL ioname('dft_data',filename)
+      OPEN( UNIT=19, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
 
        READ(19) alatt
        READ(19) ( avec(i,1), i=1,3 )

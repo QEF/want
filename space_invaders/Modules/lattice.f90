@@ -1,19 +1,20 @@
 MODULE lattice
 
   USE kinds
+  USE constants, ONLY : ZERO
 
   IMPLICIT NONE
   SAVE
 
   REAL(dbl) :: dirc(3,3), recc(3,3)
   REAL(dbl) :: avec(3,3), bvec(3,3)
-  REAL(dbl) :: alat = 0.0d0
+  REAL(dbl) :: alat = ZERO
 
 CONTAINS
 
   SUBROUTINE lattice_init()
 
-    USE constants, ONLY: pi, bohr => bohr_radius_angs
+    USE constants, ONLY: PI, bohr => bohr_radius_angs, ZERO, ONE, TPI
     USE io_module, ONLY: stdout
 
     INTEGER :: i,j
@@ -26,7 +27,7 @@ CONTAINS
     avec = avec * alat
 
     CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
-    bvec = bvec * 2.0d0 * pi
+    bvec = bvec * TPI
 
     dirc = TRANSPOSE( avec ) * bohr
     recc = TRANSPOSE( bvec ) / bohr

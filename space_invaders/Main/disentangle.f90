@@ -12,16 +12,20 @@
 !=----------------------------------------------------------------------------------=
 
        USE kinds
-       USE constants, ONLY: pi, ryd => ry, har => au, bohr => bohr_radius_angs
-       USE constants, ONLY: ONE, CZERO, ZERO 
+       USE constants, ONLY: pi, ryd => ry, har => au, bohr => bohr_radius_angs, &
+                            ZERO, ONE, CZERO, CONE
+       USE parameters, ONLY : nstrx
        USE mp, ONLY: mp_start, mp_end, mp_env
        USE mp_global, ONLY: mp_global_start
-       USE io_module, ONLY: io_global_start, io_global_getionode, stdout
+       USE io_module, ONLY: io_global_start, io_global_getionode, stdout, work_dir, &
+                            ioname, ovp_unit, space_unit, dft_unit
+       USE files_module, ONLY : file_open, file_close
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
-       USE input_wannier
+       USE input_module
        USE converters_module, ONLY : cart2cry
+       USE util_module, ONLY : zmat_unitary
        USE iotk_module
     
        USE kpoints_module, ONLY: nk, nkpts, s, vkpt, kpoints_init, kpoints_deallocate
@@ -31,10 +35,10 @@
        USE lattice, ONLY: avec, recc, alat, lattice_init
        USE windows_module,  ONLY : mxdbnd, dimwin, dimwinx, eiw, imin, imax, lcompspace, &
                                    dimfroz, indxfroz, indxnfroz, lfrozen, frozen
-       USE windows_module,  ONLY : windows_allocate, windows_deallocate
-       USE subspace_module, ONLY : wan_eig, ham, lamp, camp, eamp, eamp_save, &
+       USE windows_module,  ONLY : windows_allocate, windows_deallocate, windows_write
+       USE subspace_module, ONLY : wan_eig, lamp, camp, eamp, comp_eamp, &
                                    mtrx_in, mtrx_out
-       USE subspace_module, ONLY : subspace_allocate, subspace_deallocate
+       USE subspace_module, ONLY : subspace_allocate, subspace_deallocate, subspace_write
        USE overlap_module,  ONLY : cm, ca, overlap_allocate, overlap_deallocate, &
                                    overlap_read, overlap_write
        USE ggrids_module,   ONLY : mxdgve, emax => ecut, npwx, npwk, igv, &
@@ -48,14 +52,18 @@
        EXTERNAL  :: lambda_avg
        REAL(dbl) :: lambda_avg
 
-       CHARACTER(LEN=6) :: verbosity = 'none' ! none, low, medium, high
+       CHARACTER(LEN=6)     :: verbosity = 'none' ! none, low, medium, high
+       CHARACTER(LEN=nstrx) :: filename 
 
        REAL(dbl) :: klambda
        REAL(dbl) :: omega_i, omega_i_est, komegai
        REAL(dbl) :: o_error
-       REAL(dbl), ALLOCATABLE :: komega_i_est(:)
-       COMPLEX(dbl), ALLOCATABLE :: lvec(:,:)
+       REAL(dbl) :: aux, sgn
 
+       REAL(dbl), ALLOCATABLE :: komega_i_est(:)
+
+       COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
+       COMPLEX(dbl), ALLOCATABLE :: lamp_tmp(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: ap(:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
        COMPLEX(dbl), ALLOCATABLE :: work(:)
@@ -63,15 +71,11 @@
        REAL(dbl), ALLOCATABLE :: rwork(:)
        INTEGER, ALLOCATABLE :: ifail(:)
        INTEGER, ALLOCATABLE :: iwork(:)
+
+
        INTEGER :: info, m
- 
        INTEGER :: i, j, l, i1, i2, i3 
        INTEGER :: nkp, iter
-
-       REAL(dbl) :: aux
-       COMPLEX(dbl) :: ctmp
-       REAL(dbl) :: sgn
-
        INTEGER :: nt, ja, nbandi
        INTEGER :: ngx, ngy, ngz
        INTEGER :: ngm
@@ -111,53 +115,54 @@
        CALL startup(version_number,MAIN_NAME='disentangle')
 
 !      
-! ...  Read input parameters from takeoff.dat
+! ...  Read input parameters from DFT_DATA file
 !
        CALL read_input()
 
-       OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
+       CALL ioname('dft_data',filename)
+       OPEN( UNIT=dft_unit, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
 
        !    read lattice
        !
-       READ(19) alat
-       READ(19) ( avec(i,1), i=1,3 )
-       READ(19) ( avec(i,2), i=1,3 )
-       READ(19) ( avec(i,3), i=1,3 )
+       READ(dft_unit) alat
+       READ(dft_unit) ( avec(i,1), i=1,3 )
+       READ(dft_unit) ( avec(i,2), i=1,3 )
+       READ(dft_unit) ( avec(i,3), i=1,3 )
        !
        !    read ions
        !
-       READ(19) ntype
+       READ(dft_unit) ntype
        DO nt=1,ntype
-         READ(19) natom(nt),nameat(nt)
+         READ(dft_unit) natom(nt),nameat(nt)
          DO ja=1, natom(nt)
-           READ(19) ( rat(i,ja,nt), i=1,3 )
+           READ(dft_unit) ( rat(i,ja,nt), i=1,3 )
          END DO
        END DO
 
-       READ(19) emax, nbandi
-       READ(19) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
+       READ(dft_unit) emax, nbandi
+       READ(dft_unit) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
 
        ! ... standard input
 
-       READ(19) rdum ! win_min, win_max, froz_min, froz_max, dimwann
-       READ(19) rdum ! alpha, maxiter 
-       READ(19) idum ! iphase
-       READ(19) idum ! niter0, alphafix0
-       READ(19) idum ! niter, alphafix, ncg
-       READ(19) idum ! itrial, nshells
+       READ(dft_unit) rdum ! win_min, win_max, froz_min, froz_max, dimwann
+       READ(dft_unit) rdum ! alpha, maxiter 
+       READ(dft_unit) idum ! iphase
+       READ(dft_unit) idum ! niter0, alphafix0
+       READ(dft_unit) idum ! niter, alphafix, ncg
+       READ(dft_unit) idum ! itrial, nshells
 
-       READ(19) idum ! ( nwhich(i), i=1,nshells )
+       READ(dft_unit) idum ! ( nwhich(i), i=1,nshells )
 
-       READ(19) nkpts, npwx, mxdbnd
-       READ(19) ngx, ngy, ngz, ngm
+       READ(dft_unit) nkpts, npwx, mxdbnd
+       READ(dft_unit) ngx, ngy, ngz, ngm
       
-       READ(19) idum ! gauss_typ(1:dimwann)
-       READ(19) rdum ! rphiimx1(1:3,1:dimwann)
-       READ(19) rdum ! rphiimx2(1:3,1:dimwann)
-       READ(19) idum ! l_wann(1:dimwann)
-       READ(19) idum ! m_wann(1:dimwann)
-       READ(19) idum ! ndir_wann(1:dimwann)
-       READ(19) rdum ! rloc(1:dimwann)
+       READ(dft_unit) idum ! gauss_typ(1:dimwann)
+       READ(dft_unit) rdum ! rphiimx1(1:3,1:dimwann)
+       READ(dft_unit) rdum ! rphiimx2(1:3,1:dimwann)
+       READ(dft_unit) idum ! l_wann(1:dimwann)
+       READ(dft_unit) idum ! m_wann(1:dimwann)
+       READ(dft_unit) idum ! ndir_wann(1:dimwann)
+       READ(dft_unit) rdum ! rloc(1:dimwann)
 
 ! ... end standard input reading
 
@@ -182,11 +187,11 @@
 !
 ! ...  Read grid information, and G-vectors 
  
-       READ( 19 ) mxdgve 
+       READ( dft_unit ) mxdgve 
        !
        ! ... G vector grid allocations
        CALL  ggrids_allocate()
-       READ( 19 ) ( ( igv(i,j), i=1,3 ), j=1, mxdgve )
+       READ( dft_unit ) ( ( igv(i,j), i=1,3 ), j=1, mxdgve )
 
 
 !
@@ -195,7 +200,7 @@
        DO nkp = 1, nkpts
          !
          ! ..  Read all dimensions first, then k-dependent arrays
-         READ(19) npwk(nkp), imin(nkp), imax(nkp), dimwin(nkp)
+         READ(dft_unit) npwk(nkp), imin(nkp), imax(nkp), dimwin(nkp)
 
          IF ( dimwin(nkp) < dimwann )  &
             CALL errore(' disentangle ', ' dimwin < dimwan ', dimwin(nkp) )
@@ -215,29 +220,34 @@
        CALL wfc_allocate()
        DO nkp = 1, nkpts
 
-         READ(19) ( igsort(j,nkp), j=1, npwk(nkp) ) 
-         READ(19) ( eiw(j,nkp), j=1, dimwin(nkp) )
+         READ(dft_unit) ( igsort(j,nkp), j=1, npwk(nkp) ) 
+         READ(dft_unit) ( eiw(j,nkp), j=1, dimwin(nkp) )
 
          evc(:,:,nkp) = CZERO
 
-         READ(19) ( ( evc(j,i,nkp), j=1, npwk(nkp) ), i=1, dimwin(nkp) )
-         READ(19) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )
+         READ(dft_unit) ( ( evc(j,i,nkp), j=1, npwk(nkp) ), i=1, dimwin(nkp) )
+         READ(dft_unit) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )
 
          IF ( dimfroz(nkp) > 0 )  &
-                READ(19) ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
+                READ(dft_unit) ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
          IF ( dimfroz(nkp) < dimwin(nkp) )  &
-                READ(19) ( indxnfroz(i,nkp), i=1, dimwin(nkp)-dimfroz(nkp) )
+                READ(dft_unit) ( indxnfroz(i,nkp), i=1, dimwin(nkp)-dimfroz(nkp) )
 
          IF ( dimfroz(nkp) /= 0 ) lfrozen = .TRUE.
 
        ENDDO  ! nkp
 
-       CLOSE(19)
+       CLOSE(dft_unit)
 
 
 !
 ! ...  Remaning local allocations
 
+       ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ham ',(mxdbnd**2*nkpts))
+       ALLOCATE( lamp_tmp(mxdbnd,mxdbnd,nkpts), STAT=ierr )
+           IF( ierr /=0 ) &
+           CALL errore(' disentangle ', ' allocating lamp_tmp ',(mxdbnd**2*nkpts))
        ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
            IF( ierr /=0 )  &
            CALL errore(' disentangle ', ' allocating ap ', ((mxdbnd*(mxdbnd+1))/2) )
@@ -296,10 +306,28 @@
 !
 ! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
 
-       call overlap( igv, evc, igsort, npwk, dimwin,    &
-            nntot, nnlist, nncell, cm, mxdgve, npwx, nkpts,        &
-            mxdnn, mxdbnd, ngx, ngy, ngz, dimwinx )
 
+       CALL overlap( igv, evc, igsort, npwk, dimwin,               &
+            nntot, nnlist, nncell, cm, mxdgve, npwx, nkpts,        &
+            mxdnn, mxdbnd, ngx, ngy, ngz, dimwinx )                
+
+       CALL projection( avec, lamp_tmp, ca, evc, vkpt,                           &
+                        igv, igsort, npwk, dimwin, dimwann, dimfroz,             &
+                        npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,       &
+                        gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
+                        m_wann, ndir_wann, rloc, dimwinx)
+
+!
+! ...  writing projections and overlap on file
+       
+       CALL ioname('overlap_projection',filename)
+       CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+            CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
+       CALL file_close(ovp_unit,PATH="/",ACTION="write")
+
+       CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
+       WRITE( stdout,"(/,'  Overlap and projections written on file: ',a)") TRIM(filename)
+       
 
 !
 !=------------------------------------------------------------------------------------=
@@ -320,8 +348,8 @@
                DO nkp=1, nkpts
                  DO l=1, dimwann
                    DO j=1,dimwin(nkp)
-                     lamp(j,l,nkp) = czero
-                     IF ( j == l ) lamp(j,l,nkp) = cmplx(1.0d0,0.0d0)
+                     lamp(j,l,nkp) = CZERO
+                     IF ( j == l ) lamp(j,l,nkp) = CONE
                    END DO
                  END DO
                END DO
@@ -330,18 +358,14 @@
                DO nkp=1, nkpts
                  DO l=1, dimwann
                    DO j=1, dimwin(nkp)  
-                     lamp(j,l,nkp) = czero
-                     IF ( j == l+dimwin(nkp)-dimwann ) lamp(j,l,nkp) = cmplx(1.0d0,0.0d0)
+                     lamp(j,l,nkp) = CZERO
+                     IF ( j == l+dimwin(nkp)-dimwann ) lamp(j,l,nkp) = CONE
                    END DO
                  END DO
                END DO
              ELSE IF ( ITRIAL == 3 ) THEN
                WRITE(stdout,"(/,'  Initial trial subspace: projected localized orbitals',/)")
-               CALL projection( avec, lamp, evc, vkpt,             &
-                    igv, igsort, npwk, dimwin, dimwann, dimfroz,             &
-                    npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,   &
-                    gauss_typ, rphiimx1, rphiimx2, l_wann,                  &
-                    m_wann, ndir_wann, rloc, dimwinx)
+               lamp(:,:,:) = lamp_tmp(:,:,:)
              ELSE
                WRITE( stdout, fmt= "(/,2x, 'Invalid choice of itrial' )")
                CALL errore(' disentangle ', ' Invalid choice of itrial (I)', (itrial) )
@@ -357,34 +381,19 @@
              WRITE(stdout,"(2x,'Initial trial subspace: projected gaussians+frozen states' &
                    & ,/)")
 
-!            DO nkp = 1, nkpts
-!              IF ( dimfroz(nkp) == 0 ) THEN
-!                WRITE( stdout,"(4x, 'Frozen bands for k-point (',i3,' ) = none'  )") nkp
-!              ELSE
-!                WRITE( stdout,"(4x, 'Frozen bands for k-point (',i3,' ) = ',i4,':'  )") &
-!                       nkp,dimfroz(nkp)
-!                WRITE( stdout,"(20(i2,1x)   )") ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
-!              END IF
-!            END DO
-
 ! ...        First find the dimwmann-dimensional subspace s with maximal overlap onto the
 !            dimwann gaussians
 
-             IF ( ITRIAL == 3 ) THEN
-               CALL projection( avec, lamp, evc, vkpt,              &
-                    igv, igsort, npwk, dimwin, dimwann, dimfroz,              &
-                    npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,    &
-                    gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
-                    m_wann, ndir_wann, rloc, dimwinx )
+             IF ( ITRIAL == 3 ) THEN 
+                 lamp(:,:,:) = lamp_tmp(:,:,:)
              ELSE
-               WRITE( stdout,*) ' ' 
-               WRITE( stdout, fmt= "(2x, 'Invalid choice of itrial' )")
-               CALL errore(' disentangle ', ' Invalid choice of itrial (II)', (itrial) )
+                  WRITE( stdout, fmt= "(/,2x, 'Invalid choice of itrial' )")
+                  CALL errore(' disentangle ', ' Invalid choice of itrial (II)', (itrial) )
              END IF
 
 ! ...        Next find the (dimwann-dimfroz(nkp))-dimensional space of non-frozen states
 !            with largest overlap with s, and include it in the trial subspace 
-!           (put them above the frozen states in lamp)
+!            (put them above the frozen states in lamp)
 
              CALL projection_frozen( lamp, dimwann, dimwin,     &
                   dimfroz, frozen, nkpts, mxdbnd, nkpts)
@@ -398,13 +407,14 @@
                IF ( dimfroz(nkp) > 0 ) THEN
                  DO l = 1, dimfroz(nkp)
                    DO j = 1, dimwin(nkp)
-                     lamp(j,l,nkp)=czero
+                     lamp(j,l,nkp)= CZERO
                    END DO
-                   lamp(indxfroz(l,nkp),l,nkp) = cmplx(1.0d0,0.0d0)
+                   lamp(indxfroz(l,nkp),l,nkp) = CONE
                  END DO
                END IF
              END DO
 
+           ENDIF ! there are frozen states
 
 ! ...        Check that the states in the columns of the final matrix lamp are orthonormal
 !            at every k-point (i.e., that the matrix is unitary in the sense that
@@ -412,29 +422,20 @@
 !            In particular, this checks whether the projected gaussians are indeed 
 !            orthogonal to the frozen states, at those k-points where both are present in
 !            the trial subspace.
+!
+!            the subroutine zmat_unitary is called using SIDE='left' to perform A^{\dag}.A
+!            while it should be SIDE = 'right' to perform A.A^{\dag}
+!
 
-             DO nkp = 1, nkpts
-!              WRITE( stdout, fmt=" (/,2x, 'k-point', i4)") nkp
-               DO l = 1, dimwann
-                 DO m = 1, l
-                   ctmp = czero
-                   DO j = 1, dimwin(nkp)
-                     ctmp = ctmp + CONJG(lamp(j,m,nkp)) * lamp(j,l,nkp)
-                   END DO
-!                  WRITE( stdout, fmt="(4x,i2, 2x, i2, f16.12, 1x, f16.12)") l, m, ctmp
-                   IF ( l == m ) THEN
-                     IF ( ABS(ctmp-cmplx(1.0d0,0.0d0)) > 1.0e-8 ) &
-                       CALL errore(' disentangle ', 'Vectors in lamp not orthonormal (I)',l)
-                   ELSE
-                     IF ( ABS(ctmp) > 1.0e-8 ) &
-                       CALL errore(' disentangle ', 'Vectors in lamp not orthonormal (II)',l)
-                   END IF
-                 END DO
-               END DO
-             END DO
-                   
-           ENDIF ! there are frozen states
+           DO nkp = 1, nkpts
+               IF ( .NOT. zmat_unitary( lamp(1:dimwin(nkp),1:dimwann,nkp), &
+                                  SIDE='left', TOLL=1.0d-8 ) ) &
+                   CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',nkp)
+           ENDDO
 
+!
+! ... Iteration LOOP
+!
            WRITE( stdout, "(/,2x,70('='))" ) 
            WRITE( stdout, "(2x,'=',19x,'Starting Iteration loop',26x,'=')" ) 
            WRITE( stdout, "(2x,70('='),/)" ) 
@@ -555,7 +556,7 @@
  
                       DO i = 1, dimwin(nkp)
                          camp(i,j,nkp) = czero
-                         IF ( i == indxnfroz(j,nkp) )  camp(i,j,nkp) = cmplx(1.0d0,0.0d0)
+                         IF ( i == indxnfroz(j,nkp) )  camp(i,j,nkp) = CONE
                       END DO
                    END IF
                 END DO
@@ -575,8 +576,8 @@
 
 !        Compute omega_i using the updated subspaces at all K
  
-         omega_i = zero
-         o_error = zero
+         omega_i = ZERO
+         o_error = ZERO
          DO nkp = 1, nkpts
            aux = komegai( nkp, lamp, cm(1,1,1,nkp), wb, wbtot, nnlist, nshells, &
                           nwhich, nnshell, dimwann, dimwin, mxdbnd, nkpts, mxdnn )
@@ -621,56 +622,58 @@
                       omega_i,omega_i*bohr**2
        WRITE( stdout, "(' ',70('='))" ) 
 
+!
+! ...  writing main data related to the obtained subspace on the .SPACES datafile
+!      ( IOTK formatted )
  
-! ...  Diagonalize the hamiltonian within the optimized subspace at each K
- 
-       OPEN( UNIT=7, FILE='energies.dat', STATUS='UNKNOWN', FORM='FORMATTED' )
+! ...  Diagonalize the hamiltonian within the optimized subspace at each kpoint
+!      in order to re-define eigenvalues and eigenvectors
 
-!      nkp loop
        DO nkp = 1, nkpts
-         DO j = 1, dimwann
+           DO j = 1, dimwann
            DO i = 1, dimwann
-             ham(i,j,nkp) = czero
-             DO l = 1, dimwin(nkp)
-               ham(i,j,nkp) = ham(i,j,nkp) + conjg(lamp(l,i,nkp))*lamp(l,j,nkp)*eiw(l,nkp)
-             END DO
-           END DO
-         END DO
+               ham(i,j,nkp) = czero
+               DO l = 1, dimwin(nkp)
+                  ham(i,j,nkp) = ham(i,j,nkp) + conjg(lamp(l,i,nkp))*lamp(l,j,nkp)*eiw(l,nkp)
+               ENDDO
+           ENDDO
+           ENDDO
 
-         DO j=1,dimwann
-           DO i = 1, j
-             ap(i+((j-1)*j)/2) = ham(i,j,nkp)
-           END DO
-         END DO
+           DO j=1,dimwann
+              DO i = 1, j
+                 ap(i+((j-1)*j)/2) = ham(i,j,nkp)
+              ENDDO
+           ENDDO
 
-         CALL zhpevx( 'v', 'a', 'u', dimwann, ap(1), ZERO, ZERO, 0, 0, -ONE,           &
-              m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
-         IF ( info < 0 ) &
-           CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', -info )
-         IF ( info > 0 ) &
-           CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (II)',info)
+           CALL zhpevx( 'v', 'a', 'u', dimwann, ap(1), ZERO, ZERO, 0, 0, -ONE, m, & 
+                         wan_eig(1,nkp), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), &
+                         ifail(1), info )
+           IF ( info < 0 ) CALL errore(' disentangle ', &
+                                       ' zhpevx: info illegal value (II)', -info )
+           IF ( info > 0 ) CALL errore(' disentangle ', &
+                                       ' zhpevx: eigenvectors failed to converge (II)',info)
  
-! ...    Write the optimal subspace energy eigenvalues in eV (to be used in bands.f)
-         WRITE(7, fmt="(i5,4x,80f16.8)") nkp,( har*w(i), i=1, dimwann )
  
-! ...    Calculate amplitudes of the corresponding energy eigenvectors in terms of 
-!        the original ("window space") energy eigenvectors
+           !
+           ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
+           !      the original ("window space") energy eigenvectors
+           !
  
-         eamp(:,:,nkp) = czero
-         DO j = 1, dimwann
+           eamp(:,:,nkp) = CZERO
+           DO j = 1, dimwann
            DO i = 1, dimwin(nkp)
-             DO l = 1, dimwann
-               eamp(i,j,nkp) = eamp(i,j,nkp) + z(l,j)*lamp(i,l,nkp)
-             END DO
-           END DO
-         END DO
+               DO l = 1, dimwann
+                    eamp(i,j,nkp) = eamp(i,j,nkp) + z(l,j)*lamp(i,l,nkp)
+               END DO
+           ENDDO
+           ENDDO
  
-       ENDDO ! end of nkpa loop
-
-       CLOSE(7)
-
-! ...  Write to a file the optimal subspace energy eigenvectors
-!      in the basis of the "window space" energy eigenvectors
+       ENDDO ! end of nkp loop
+       !
+       ! ...  Convert the optimal subspace energy eigenvalues in eV 
+       !      to be used later on for reconstructing the hamiltonian on the 
+       !      Wannier basis
+       wan_eig(:,:) = har * wan_eig(:,:)
 
 ! ...  Note: for the purpose of minimizing Omegatld in wannier.f we could have simply
 !      have used the lambda eigenvectors as the basis set for the optimal subspace,
@@ -682,25 +685,9 @@
 !      the resulting spread and average location of the maxloc WFs are exactly the 
 !      same if we replace eamp by lamp in the write statement below.
  
-       OPEN( UNIT=8, FILE='subspace.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
-!
-! ...  Slight change in the format by ANDREA (28 jan 2004)
-!      REPETITA IUVANT for self-energy conversion to wannier basis  
-!      next 2 lines added
-!
-       WRITE(8) nkpts     
-       WRITE(8) ( imin(nkp), imax(nkp), nkp=1,nkpts )
-       DO nkp = 1, nkpts
-         WRITE(8) dimwann, ( (eamp(j,i,nkp), j=1, dimwin(nkp) ), i=1, dimwann )
-       END DO
-       CLOSE(8)
-
-       eamp_save = eamp
-
        IF ( .NOT. lcompspace )  THEN
          WRITE(stdout,"(/,2x,'Warning')")
          WRITE(stdout,"('  at some k-point(s) complement subspace has zero dimensionality')")
-         WRITE(stdout,"(2x,'=> did not create file compspace.dat')")
        ELSE
  
 ! ...  Diagonalize the hamiltonian in the complement subspace, write the
@@ -736,9 +723,9 @@
  
            DO j = 1, dimwin(nkp)-dimwann
              DO i = 1, dimwin(nkp)
-               eamp(i,j,nkp) = czero
+               comp_eamp(i,j,nkp) = CZERO
                do l = 1, dimwin(nkp)-dimwann
-                 eamp(i,j,nkp) = eamp(i,j,nkp)+z(l,j)*camp(i,l,nkp)
+                 comp_eamp(i,j,nkp) = comp_eamp(i,j,nkp)+z(l,j)*camp(i,l,nkp)
                END DO
              END DO
            END DO
@@ -747,49 +734,26 @@
 
        ENDIF    ! lcompspace
 
-
-! ...  Write to a file the energy "eigenvectors" in the complement subspace 
-!      in the basis of the "window space" energy eigenvectors
-
-       OPEN( UNIT=9, FILE='compspace.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
-
-       DO nkp = 1, nkpts
-         write(9) dimwin(nkp)-dimwann,     &
-                  ( ( eamp(j,i,nkp), j=1, dimwin(nkp)), i=1, dimwin(nkp)-dimwann )
-       END DO
-
-       CLOSE(9)
-
-       OPEN( UNIT=20, FILE='onfly.dat', FORM='UNFORMATTED')
-
-       ALLOCATE( lvec( npwx, mxdbnd ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating lvec ', npwx * mxdbnd )
-      
-       K_POINTS: DO nkp = 1, nkpts
-         
-         DO l = 1, dimwann 
-           DO i = 1, npwk( nkp )
-             lvec( i, l ) = CZERO
-             DO j = 1, dimwin( nkp )
-               lvec( i, l ) = lvec( i, l ) + &
-                 eamp_save( j, l, nkp ) * evc( i, j, nkp )
-             END DO
-           END DO
-         END DO
-         
-         WRITE(20) npwk( nkp ), dimwann 
-         WRITE(20) ( igsort( i, nkp ), i=1, npwk(nkp) )
-         WRITE(20) ( ( lvec( i, l ), i=1, npwk(nkp) ), l=1, dimwann )
+!
+! ...  actual writing procedures
        
-       END DO K_POINTS
-       
-       CLOSE(20)
-       
-       DEALLOCATE( lvec, STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating lvec ', ABS(ierr) )
+       CALL ioname('subspace',filename)
+       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+            CALL windows_write(space_unit,"WINDOWS")
+            CALL subspace_write(space_unit,"SUBSPACE")
+       CALL file_close(space_unit,PATH="/",ACTION="write")
+
+       CALL ioname('subspace',filename,LPATH=.FALSE.)
+       WRITE( stdout,"(/,'  Subspace data written on file: ',a)") TRIM(filename)
+
+!
+! ...  Deallocate local arrays
+
        DEALLOCATE( komega_i_est, STAT=ierr )
            IF( ierr /=0 ) &
            CALL errore(' disentangle ', ' deallocating k_omega_i_est ', ABS(ierr) )
+       DEALLOCATE( lamp_tmp, STAT=ierr )
+           IF (ierr/=0)  CALL errore('disentangle', 'deallocating LAMP_TMP', ABS(ierr))
 
        DEALLOCATE( ap, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ap ', ABS(ierr) )

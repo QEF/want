@@ -121,10 +121,6 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
    CALL read_dyn_op(Nk,Vct,Nbands,iband_start,Nisp,Nomega,E,Sgm_in,namein,   &
                     analit,form,basis)
 
-! XXX
-   ie=240
-   WRITE(9,"(6f15.9)") sgm_in(:,:,:,:,ie)
-
 
 !
 ! some checks

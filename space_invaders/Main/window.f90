@@ -14,12 +14,12 @@
        USE kinds
        USE constants, ONLY: ryd => ry, har => au, amu => uma_au, bohr => bohr_radius_angs, &
                             ZERO, ONE, TWO, CZERO
-       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
+       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx, nstrx
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-       USE io_module, ONLY : stdout
+       USE io_module, ONLY : stdout, ioname, work_dir
        USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
-       USE input_wannier
+       USE input_module
        USE converters_module, ONLY : cart2cry
        USE ions, ONLY: natom, rat, nameat
        USE kpoints_module, ONLY: nk, s
@@ -40,6 +40,7 @@
        INTEGER, ALLOCATABLE :: ig1(:), ig2(:), ig3(:)
 
        CHARACTER(LEN=3) :: namtmp
+       CHARACTER(LEN=nstrx) :: filename
  
        INTEGER :: nwann
 
@@ -89,10 +90,10 @@
        CALL read_input()
 
 !
-! ...  Read wavefunctions and eigenvalues from first principle calculation
+! ...  Read first principles calculation DATA (UNIT= 54)
 !
 
-       OPEN ( UNIT=54, FILE='launch.dat', STATUS='OLD', FORM='UNFORMATTED' )
+       OPEN (54, FILE=TRIM(work_dir)//'/'//'launch.dat', STATUS='old', FORM='unformatted' )
 
        READ( 54 ) alat
        READ( 54 ) ( avec(i,1),i=1,3 )
@@ -270,10 +271,11 @@
  
 !=----------------------------------------------------------------------------=!
   
-! ...  Open the output file takeoff.dat (UNIT 19) 
-!      window.out will be read by all further programs of the chain
+! ...  Open the output file DFT_DATA (UNIT 19) 
+!      that will be read by all further programs of the chain
  
-       OPEN ( UNIT=19, FILE='takeoff.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
+       CALL ioname('dft_data',FILENAME=filename)
+       OPEN ( UNIT=19, FILE=TRIM(filename), STATUS='UNKNOWN', FORM='UNFORMATTED' )
 
        WRITE(19) alat
        WRITE(19) ( avec(i,1), i=1,3 )
@@ -307,7 +309,7 @@
 
 !
 ! ...  Write G grid data
-!      position in the takeoff.dat file changed by ANDREA, 23 Nov 2004
+!      position in the DFT_DATA file changed by ANDREA, 23 Nov 2004
 
        WRITE(19) ngm0
        WRITE(19)( ig1(ig), ig2(ig), ig3(ig), ig = 1, ngm0 )

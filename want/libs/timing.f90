@@ -313,7 +313,8 @@ CONTAINS
       TYPE(clock),           INTENT(inout) :: obj    
 
       IF ( .NOT. obj%alloc  )   CALL errore('clock_stop','Clock NOT allocated',1)
-      IF ( .NOT. obj%running  ) CALL errore('clock_stop','Clock NOT running',1)
+      IF ( .NOT. obj%running  ) & 
+           CALL errore('clock_stop','Clock '//TRIM(obj%name)//'NOT running',1)
       
       obj%stop = cclock()
       obj%total_time = obj%total_time + obj%stop - obj%start

@@ -11,7 +11,8 @@
    MODULE windows_module
 !*********************************************
    USE kinds, ONLY : dbl
-   USE kpoints_module, ONLY : nkpts
+   USE parameters, ONLY : nstrx
+   USE kpoints_module, ONLY : nkpts, kpoints_alloc => alloc
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -23,6 +24,8 @@
 ! routines in this module:
 ! SUBROUTINE windows_allocate()
 ! SUBROUTINE windows_deallocate()
+! SUBROUTINE windows_write(unit,name)
+! SUBROUTINE windows_read(unit,name,found)
 
 !
 ! declarations of common variables
@@ -46,6 +49,7 @@
    LOGICAL                     :: lfrozen =.FALSE.   ! whether FROZEN states are present
    LOGICAL,      ALLOCATABLE   :: frozen(:,:)        ! which are the frozen states
                                                      ! dim: mxdbnd, nkpts
+   LOGICAL                     :: alloc=.FALSE.      ! 
 !
 ! end of declarations
 !
@@ -53,9 +57,12 @@
    PUBLIC :: nkpts, mxdbnd, dimwinx
    PUBLIC :: dimwin, imin, imax, eiw, lcompspace
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
+   PUBLIC :: alloc
 
    PUBLIC :: windows_allocate
    PUBLIC :: windows_deallocate
+   PUBLIC :: windows_write
+   PUBLIC :: windows_read
 
 CONTAINS
 
@@ -90,6 +97,8 @@ CONTAINS
            IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',nkpts)
        ALLOCATE( frozen(mxdbnd,nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',mxdbnd*nkpts)      
+
+       alloc = .TRUE.
 
    END SUBROUTINE windows_allocate
 
@@ -133,6 +142,102 @@ CONTAINS
             DEALLOCATE(frozen, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating frozen ',ABS(ierr))
        ENDIF
+       alloc = .FALSE.
    END SUBROUTINE windows_deallocate
+
+
+!**********************************************************
+   SUBROUTINE windows_write(unit,name)
+   !**********************************************************
+   IMPLICIT NONE
+       INTEGER,         INTENT(in) :: unit
+       CHARACTER(*),    INTENT(in) :: name
+       CHARACTER(nstrx)   :: attr
+       CHARACTER(13)      :: subname="windows_write"
+
+       IF ( .NOT. alloc ) RETURN
+       
+       CALL iotk_write_begin(unit,TRIM(name))
+       CALL iotk_write_attr(attr,"mxdbnd",mxdbnd,FIRST=.TRUE.)
+       CALL iotk_write_attr(attr,"nkpts",nkpts)
+       CALL iotk_write_attr(attr,"dimwinx",dimwinx)
+       CALL iotk_write_attr(attr,"lcompspace",lcompspace)
+       CALL iotk_write_attr(attr,"lfrozen",lfrozen)
+       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+
+       CALL iotk_write_dat(unit,"DIMWIN",dimwin)
+       CALL iotk_write_dat(unit,"IMIN",imin)
+       CALL iotk_write_dat(unit,"IMAX",imax)
+       CALL iotk_write_dat(unit,"EIW",eiw)
+
+       CALL iotk_write_dat(unit,"DIMFROZ",dimfroz)
+       CALL iotk_write_dat(unit,"INDXFROZ",indxfroz)
+       CALL iotk_write_dat(unit,"INDXNFROZ",indxnfroz)
+       CALL iotk_write_dat(unit,"FROZEN",frozen)
+
+       CALL iotk_write_end(unit,TRIM(name))
+   END SUBROUTINE windows_write
+   
+
+!**********************************************************
+   SUBROUTINE windows_read(unit,name,found)
+   !**********************************************************
+   IMPLICIT NONE
+       INTEGER,           INTENT(in) :: unit
+       CHARACTER(*),      INTENT(in) :: name
+       LOGICAL,           INTENT(out):: found
+       CHARACTER(nstrx)   :: attr
+       CHARACTER(12)      :: subname="windows_read"
+       INTEGER            :: nkpts_
+       INTEGER            :: ierr
+
+       IF ( alloc ) CALL windows_deallocate()
+    
+       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+       IF (.NOT. found) RETURN
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       found = .TRUE.
+
+       CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
+       CALL iotk_scan_attr(attr,'mxdbnd',mxdbnd,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr MXDBND',ABS(ierr))
+       CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+       CALL iotk_scan_attr(attr,'dimwinx',dimwinx,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
+       CALL iotk_scan_attr(attr,'lcompspace',lcompspace,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr LCOMPSPACE',ABS(ierr))
+       CALL iotk_scan_attr(attr,'lfrozen',lfrozen,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr LFROZEN',ABS(ierr))
+
+       IF ( kpoints_alloc ) THEN
+            IF ( nkpts_ /= nkpts ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_)+1)
+       ELSE
+            nkpts = nkpts_
+       ENDIF
+       CALL windows_allocate()
+
+       CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
+       CALL iotk_scan_dat(unit,'IMIN',imin,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find IMIN',ABS(ierr))
+       CALL iotk_scan_dat(unit,'IMAX',imax,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find IMAX',ABS(ierr))
+       CALL iotk_scan_dat(unit,'EIW',eiw,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find EIW',ABS(ierr))
+
+       CALL iotk_scan_dat(unit,'DIMFROZ',dimfroz,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find DIMFROZ',ABS(ierr))
+       CALL iotk_scan_dat(unit,'INDXFROZ',indxfroz,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find INDXFROZ',ABS(ierr))
+       CALL iotk_scan_dat(unit,'INDXNFROZ',indxnfroz,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find INDXNFROZ',ABS(ierr))
+       CALL iotk_scan_dat(unit,'FROZEN',frozen,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find FROZEN',ABS(ierr))
+
+       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+   END SUBROUTINE windows_read
 
 END MODULE windows_module

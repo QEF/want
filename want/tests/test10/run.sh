@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Test3
 # 
@@ -173,25 +173,21 @@ fi
 # running PWSCF SCF
 #
 if [ "$SCF_COND" = ".TRUE." ] ; then  
-   cd COND
    $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_cond.in > $TEST_HOME/scf_cond.out
    if [ $? = 0 ] ; then 
       echo "SCF_COND calculation done" 
    else
       echo "found some problems in SCF_COND calculation, stopping" ; exit 1
    fi
-   cd ..
 fi
 #
 if [ "$SCF_LEADS" = ".TRUE." ] ; then  
-   cd LEADS
    $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_leads.in > $TEST_HOME/scf_leads.out
    if [ $? = 0 ] ; then 
       echo "SCF_LEADS calculation done" 
    else
       echo "found some problems in SCF_LEADS calculation, stopping" ; exit 1
    fi
-   cd ..
 fi
 
 
@@ -199,32 +195,27 @@ fi
 # running PWSCF NSCF
 #
 if [ "$NSCF_COND" = ".TRUE." ] ; then  
-   cd COND
    $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX  < $TEST_HOME/nscf_cond.in > $TEST_HOME/nscf_cond.out
    if [ $? = 0 ] ; then 
       echo "NSCF_COND calculation done" 
    else
       echo "found some problems in NSCF_COND calculation, stopping" ; exit 1
    fi
-   cd ..
 fi
 #
 if [ "$NSCF_LEADS" = ".TRUE." ] ; then  
-   cd LEADS
    $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf_leads.in > $TEST_HOME/nscf_leads.out
    if [ $? = 0 ] ; then 
       echo "NSCF_LEADS calculation done" 
    else
       echo "found some problems in NSCF_LEADS calculation, stopping" ; exit 1
    fi
-   cd ..
 fi
    
 #
 # running PWSCF PW2WAN
 #
 if [ "$PW2WAN_COND" = ".TRUE." ] ; then  
-   cd COND
    $PARA_PREFIX  $PWSCF_BIN/pw2wan.x $PARA_POSTFIX \
               <  $TEST_HOME/pw2wan_cond.in > $TEST_HOME/pw2wan_cond.out
    if [ $? = 0 ] ; then 
@@ -232,11 +223,9 @@ if [ "$PW2WAN_COND" = ".TRUE." ] ; then
    else
       echo "found some problems in PW2WAN_COND calculation, stopping" ; exit 1
    fi
-   cd ..
 fi
 #
 if [ "$PW2WAN_LEADS" = ".TRUE." ] ; then  
-   cd LEADS
    $PARA_PREFIX  $PWSCF_BIN/pw2wan.x $PARA_POSTFIX  \
               <  $TEST_HOME/pw2wan_leads.in > $TEST_HOME/pw2wan_leads.out
    if [ $? = 0 ] ; then 
@@ -244,38 +233,32 @@ if [ "$PW2WAN_LEADS" = ".TRUE." ] ; then
    else
       echo "found some problems in PW2WAN_LEADS calculation, stopping" ; exit 1
    fi
-   cd ..
 fi
 
 #
 # running WINDOW
 #
 if [ "$WINDOW_COND" = ".TRUE." ] ; then  
-   cd COND
    $WANT_BIN/window.x < $TEST_HOME/want_cond.in > $TEST_HOME/window_cond.out
    if [ ! -e CRASH ] ; then 
       echo "WINDOW_COND calculation done" 
    else
       echo "found some problems in WINDOW_COND calculation, stopping" ; cat CRASH ;exit 1
    fi
-   cd ..
 fi
 if [ "$WINDOW_LEADS" = ".TRUE." ] ; then  
-   cd LEADS
    $WANT_BIN/window.x < $TEST_HOME/want_leads.in > $TEST_HOME/window_leads.out
    if [ ! -e CRASH ] ; then 
       echo "WINDOW_LEADS calculation done" 
    else
       echo "found some problems in WINDOW_LEADS calculation, stopping" ; cat CRASH; exit 1
    fi
-   cd ..
 fi
 
 #
 # running DISENTANGLE
 #
 if [ "$DISENTANGLE_COND" = ".TRUE." ] ; then  
-   cd COND
    $WANT_BIN/disentangle.x < $TEST_HOME/want_cond.in > $TEST_HOME/disentangle_cond.out
    if [ ! -e CRASH ] ; then 
       echo "DISENTANGLE_COND calculation done" 
@@ -283,10 +266,8 @@ if [ "$DISENTANGLE_COND" = ".TRUE." ] ; then
       echo "found some problems in DISENTANGLE_COND calculation, stopping" ; cat CRASH 
       exit 1
    fi
-   cd ..
 fi
 if [ "$DISENTANGLE_LEADS" = ".TRUE." ] ; then  
-   cd LEADS
    $WANT_BIN/disentangle.x < $TEST_HOME/want_leads.in > $TEST_HOME/disentangle_leads.out
    if [ ! -e CRASH ] ; then 
       echo "DISENTANGLE_LEADS calculation done" 
@@ -294,38 +275,32 @@ if [ "$DISENTANGLE_LEADS" = ".TRUE." ] ; then
       echo "found some problems in DISENTANGLE_LEADS calculation, stopping" ; cat CRASH  
       exit 1
    fi
-   cd ..
 fi
 
 #
 # running WANNIER
 #
 if [ "$WANNIER_COND" = ".TRUE." ] ; then  
-   cd COND
    $WANT_BIN/wannier.x < $TEST_HOME/want_cond.in > $TEST_HOME/wannier_cond.out
    if [ ! -e CRASH ] ; then 
       echo "WANNIER_COND calculation done" 
    else
       echo "found some problems in WANNIER_COND calculation, stopping" ; cat CRASH ; exit 1
    fi
-   cd ..
 fi
 if [ "$WANNIER_LEADS" = ".TRUE." ] ; then  
-   cd LEADS
    $WANT_BIN/wannier.x < $TEST_HOME/want_leads.in > $TEST_HOME/wannier_leads.out
    if [ ! -e CRASH ] ; then 
       echo "WANNIER_LEADS calculation done" 
    else
       echo "found some problems in WANNIER_LEADS calculation, stopping" ; cat CRASH ; exit 1
    fi
-   cd ..
 fi
 
 #
 # running HAMILTONIAN
 #
 if [ "$HAMILTONIAN_COND" = ".TRUE." ] ; then  
-   cd COND
    $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_cond.in  \
                            > $TEST_HOME/hamiltonian_cond.out
    if [ ! -e CRASH ] ; then 
@@ -334,11 +309,9 @@ if [ "$HAMILTONIAN_COND" = ".TRUE." ] ; then
       echo "found some problems in HAMILTONIAN_COND calculation, stopping" ; cat CRASH 
       exit 1
    fi
-   cd ..
 fi
 
 if [ "$HAMILTONIAN_LEADS" = ".TRUE." ] ; then  
-   cd LEADS
    $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_leads.in  \
                            > $TEST_HOME/hamiltonian_leads.out
    if [ ! -e CRASH ] ; then 
@@ -347,7 +320,6 @@ if [ "$HAMILTONIAN_LEADS" = ".TRUE." ] ; then
       echo "found some problems in HAMILTONIAN_LEADS calculation, stopping" ; cat CRASH
       exit 1
    fi
-   cd ..
 fi
 
 

@@ -15,7 +15,7 @@
 
       USE kinds
       USE timing_module, ONLY : timing 
-      USE constants, ONLY: pi
+      USE constants, ONLY: PI, CI, CZERO, ZERO
       USE io_module, ONLY : stdout
 
       IMPLICIT NONE
@@ -51,9 +51,6 @@
 
       REAL(dbl) rave(3,nbands), rnkb(nbands,nkpts,nnmx)
 
-      COMPLEX(dbl) ci
-      PARAMETER ( ci = ( 0.0d0, 1.0d0 ) )
-
       COMPLEX(dbl) :: csumt
       REAL(dbl) :: xx0
       REAL(dbl) :: det
@@ -71,7 +68,7 @@
 !       get average phase for each unique bk direction
 
         do na=1,nnh
-          csum(na)=(0.0,0.0)
+          csum(na)=CZERO
           do nkp=1,nkpts2
             nn=neigh(nkp,na)
             csum(na)=csum(na)+cm(nwann,nwann,nn,nkp)
@@ -80,14 +77,9 @@
 
 ! ...   Initialize smat and svec
 
-        DO j = 1, 3
-          DO i = 1, 3
-            smat(j,i) = 0.d0
-          END DO
-          svec(j) = 0.d0
-        END DO
-
-        write( stdout,*) ' '
+        smat(:,:) = ZERO
+        svec(:) = ZERO
+        WRITE( stdout,*)
 
         DO nn = 1, nnh
 
@@ -112,8 +104,9 @@
 
           END IF
 
-          WRITE (stdout ,  fmt= " (2x, 'nn = ', i4, 2x, 'bka = ', 3f7.3, 2x, 'xx = ', f9.5, 2x, 'mag = ', f9.5 ) " )  &
-                                        nn, (bka(j,nn), j=1,3 ), xx(nn), ABS( csum(nn) ) / DBLE(nkpts2)
+          WRITE (stdout ,  fmt= " (2x, 'nn = ', i4, 2x, 'bka = ', 3f7.3, 2x, &
+                                  & 'xx = ', f9.5, 2x, 'mag = ', f9.5 ) " )  &
+               nn, (bka(j,nn), j=1,3 ), xx(nn), ABS( csum(nn) ) / DBLE(nkpts2)
 
 ! ...     Update smat and svec
 
@@ -132,11 +125,12 @@
 ! ...       The inverse of smat is sinv/det
 
 ! ...       Evidently first three bka vectors are linearly dependent this is not allowed
-            IF ( ABS(det) < 1.e-06 ) CALL errore(' phase ', ' wrong dependency in findr', ABS(det) )
+            IF ( ABS(det) < 1.e-06 ) &
+                   CALL errore(' phase ', ' wrong dependency in findr', ABS(det) )
 
             IF ( irguide /= 0 ) THEN
               DO j = 1, 3
-                rguide(j,nwann) = 0.d0
+                rguide(j,nwann) = ZERO
                 DO i = 1, 3
                   rguide(j,nwann) = rguide(j,nwann) + sinv(j,i) * svec(i) / det
                 END DO
@@ -154,7 +148,7 @@
       DO nkp = 1, nkpts2
         DO nwann = 1, nbands
           DO nn = 1, nntot(nkp)
-            sheet(nwann,nkp,nn) = 0.d0
+            sheet(nwann,nkp,nn) = ZERO
             DO j = 1, 3
               sheet(nwann,nkp,nn) = sheet(nwann,nkp,nn) + bk(j,nkp,nn) * rguide(j,nwann)
             END DO
@@ -172,8 +166,8 @@
       DO nkp = 1, nkpts2
         DO m = 1, nbands
           DO nn = 1, nntot(nkp)
-            rnkb(m,nkp,nn) = 0.d0
-            brn = 0.d0
+            rnkb(m,nkp,nn) = ZERO
+            brn = ZERO
             DO ind = 1, 3
               brn = brn + bk(ind,nkp,nn) * rguide(ind,m)
             END DO
@@ -187,12 +181,12 @@
           DO nn = 1, nntot(nkp)
             pherr = AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nn,nkp) ) )           &
             -sheet(n,nkp,nn) + rnkb(n,nkp,nn) - AIMAG( LOG( cm(n,n,nn,nkp) ) )
-            IF ( ABS(pherr) > pi ) THEN
-              WRITE( stdout, fmt=" ( 2x, 3i4,f18.9,3f10.5 ) ")  nkp, n, nn, pherr, ( bk(i,nkp,nn), i=1,3 )
-            END IF
-          END DO
-        END DO
-      END DO
+            IF ( ABS(pherr) > PI ) &
+                 WRITE( stdout, " ( 2x, 3i4,f18.9,3f10.5 ) ")  &
+                                    nkp, n, nn, pherr, ( bk(i,nkp,nn), i=1,3 )
+          ENDDO
+        ENDDO
+      ENDDO
 
       CALL timing('phases',OPR='stop')
       RETURN

@@ -15,7 +15,7 @@
 !*********************************************
    USE kinds, ONLY: dbl
    USE constants, ONLY : ONE
-   USE parameters, ONLY : npkx => npk
+   USE parameters, ONLY : npkx 
 
    IMPLICIT NONE
    PRIVATE
@@ -45,7 +45,7 @@
 
   !
   ! ... Nearest neighbor data (b vectors)
-  INTEGER, PARAMETER             :: mxdnn  = 12    ! maximum number of NN
+  INTEGER, PARAMETER             :: mxdnn  = 12   ! maximum number of NN
   INTEGER, PARAMETER             :: mxdnnh = mxdnn/2 
 
   INTEGER, ALLOCATABLE           :: nntot(:)      ! DIM: nkpts
@@ -58,6 +58,8 @@
   REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: mxdnn
   REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*mxdnnh
   REAL(dbl)                      :: wbtot         ! sum of the b-weights
+
+  LOGICAL :: alloc = .FALSE.
 
 !
 ! end of declaration scope 
@@ -78,6 +80,7 @@
   PUBLIC :: dnn
   PUBLIC :: bka
   PUBLIC :: wbtot
+  PUBLIC :: alloc
 
   PUBLIC :: kpoints_init
   PUBLIC :: kpoints_allocate
@@ -127,6 +130,8 @@ CONTAINS
       ALLOCATE( bka(3,mxdnnh), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating bka ', 3*mxdnnh )
 
+      alloc = .TRUE.
+
    END SUBROUTINE kpoints_allocate
 
 
@@ -134,7 +139,7 @@ CONTAINS
    SUBROUTINE kpoints_init( nkpts_ )
    !**********************************************************
    USE lattice, ONLY : recc
-   USE input_wannier,  ONLY : nshells, nwhich
+   USE input_module,  ONLY : nshells, nwhich
     IMPLICIT NONE
     INTEGER :: nkpts_
     INTEGER :: i1, i2, i3, nkp
@@ -219,6 +224,7 @@ CONTAINS
        DEALLOCATE( bka, STAT=ierr )
        IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating bka',ABS(ierr))
     ENDIF
+    alloc = .FALSE.
 
    END SUBROUTINE kpoints_deallocate
 

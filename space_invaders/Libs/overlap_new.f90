@@ -15,10 +15,10 @@
 !=----------------------------------------------------------------------------------=
  
       USE kinds
-      USE constants, ONLY : CZERO
+      USE constants,     ONLY : CZERO
       USE timing_module, ONLY : timing 
-      USE io_module, ONLY : stdout
-      USE util, ONLY: gv_indexes
+      USE io_module,     ONLY : stdout
+      USE util_module,   ONLY : gv_indexes
 
       IMPLICIT NONE
 
@@ -91,6 +91,7 @@
 !=----------------------------------------------------------------------------------=
  
       USE kinds
+      USE constants, ONLY : CZERO
       USE timing_module, ONLY : timing 
       USE io_module, ONLY : stdout
 
@@ -110,9 +111,6 @@
 
       ! ... Local Variables
  
-      COMPLEX(dbl) :: czero
-      PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
-
       INTEGER :: nnx, ndnn, nnsh, nn
       INTEGER :: i, j ,nx, ny, nz, igk, ipw1, ipw2
       INTEGER :: nkp1, npoint1, dimw1
@@ -149,7 +147,7 @@
 !     Bloch notation). The integral gives a delta, and so we take G2s that
 !     are G1s+G0, i.e. nx+nncell, etc...
 
-      cm(:,:,:,:) = (0.d0, 0.d0)
+      cm(:,:,:,:) = CZERO
 
       DO nkp1 = 1, nkpts
 

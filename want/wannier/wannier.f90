@@ -13,18 +13,17 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: pi, twopi => tpi, ryd => ry, har => au, &
-                           bohr => bohr_radius_angs, &
-                           CZERO, CONE, ZERO, ONE, CI
-      USE fft_scalar, ONLY: cfft3d
-      USE input_wannier
+      USE constants, ONLY: ryd => ry, har => au, bohr => bohr_radius_angs, &
+                           CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
+      USE parameters, ONLY : nstrx
+      USE input_module
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-      USE io_module, ONLY : stdout
+      USE io_module, ONLY : stdout, dft_unit, wan_unit, ioname
+      USE files_module, ONLY : file_open, file_close
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
       USE converters_module, ONLY : cart2cry
-      USE sph_har, ONLY: gauss1
-      USE util, ONLY: zmat_mul, gv_indexes
+      USE util_module, ONLY: zmat_mul, zmat_unitary
 
       USE lattice, ONLY: avec, dirc, recc, alat, lattice_init
       USE ions, ONLY: rat, ntype, natom, nameat, poscart, poscart_set
@@ -33,10 +32,13 @@
                           nntot, nnlist, nncell, neigh, bk, wb, dnn, bka, wbtot, &
                           kpoints_init, kpoints_deallocate
  
-      USE windows_module, ONLY : dimwin, dimwinx, mxdbnd, &
+      USE windows_module, ONLY : dimwin, mxdbnd, &
                           windows_allocate, windows_deallocate
       USE subspace_module, ONLY : subspace_allocate, subspace_deallocate
-!      USE overlap_module, ONLY : ca, cm, overlap_allocate, overlap_deallocate
+      USE overlap_module,  ONLY : ca, cm, overlap_deallocate
+      USE localization_module, ONLY : cu, rave, rave2, r2ave, &
+                       Omega_I, Omega_OD, Omega_D, Omega_V, Omega_tot, &
+                       localization_allocate, localization_deallocate, localization_write
 
 !
 ! ... 
@@ -44,50 +46,36 @@
       IMPLICIT NONE
 
       INTEGER,      PARAMETER :: nprint = 10
-      COMPLEX(dbl), PARAMETER :: citpi = CI * twopi
       CHARACTER( LEN=6 )      :: verbosity = 'none'    ! none, low, medium, high
+      CHARACTER( LEN=nstrx )  :: filename
 
       ! external functions
       REAL(dbl) :: ranf
       EXTERNAL  :: ranf
+      LOGICAL   :: lselect
+!      EXTERNAL  :: lselect
 
-      INTEGER :: nr1, nr2, nr3
       INTEGER :: nkp, nkp2
-      INTEGER :: nplwv, mplwv
-
-      INTEGER :: nsp
       INTEGER :: i, j, k
-      INTEGER :: ni, m
-      INTEGER :: nx, ny, nz
-      INTEGER :: np, npoint
-      INTEGER :: iib, iseed
-      INTEGER :: l, n
+      INTEGER :: l, m, n
+      INTEGER :: iseed
       INTEGER :: info, nn, nnh
       INTEGER :: nwann, nb
-      INTEGER :: nzz, nyy, nxx
       INTEGER :: nsdim, irguide
       INTEGER :: nrguide, ncgfix, ncount
       LOGICAL :: lrguide, lcg
       REAL(dbl) :: epsilon
-      REAL(dbl) :: asidemin, aside
-      REAL(dbl) :: func_om1, func_om2, func_om3, func_o
+      REAL(dbl) :: func_om1, func_om2, func_om3
       REAL(dbl) :: func_old1, func_old2, func_old3
-      REAL(dbl) :: rx, ry, rz, scalf
-      REAL(dbl) :: dist1
-      REAL(dbl) :: dist2, select
       REAL(dbl) :: rre, rri, omt1, omt2, omt3, omiloc
       REAL(dbl) :: func_del, func_del1, func_del2, func_del3, func0
       REAL(dbl) :: gcnorm1, gcfac, gcnorm0, doda0
       REAL(dbl) :: funca, eqc, eqb, eqa, alphamin, falphamin
-      COMPLEX(dbl) :: catmp, cphi
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
-      COMPLEX(dbl), ALLOCATABLE ::  ca(:,:,:) ! ca(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cs(:,:,:) ! cs(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cu(:,:,:) ! cu(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) ! cu0(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:) ! csheet(dimwann,nkpts,nnmx)
-      COMPLEX(dbl), ALLOCATABLE ::  cm(:,:,:,:) ! cm(dimwann,dimwann, nnmx, nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cm0(:,:,:,:) ! cm0(dimwann,dimwann,nkpts,nnmx)
       COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:) ! cmtmp(dimwann,dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) ! cdodq(dimwann,dimwann,nkpts)
@@ -105,56 +93,17 @@
       REAL(dbl), ALLOCATABLE ::  singvd(:) !  singvd(dimwann)
       REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnmx)
 
-      REAL(dbl), ALLOCATABLE ::  rave(:,:) ! rave(3,dimwann)
-      REAL(dbl), ALLOCATABLE ::  r2ave(:) ,rave2(:) !  r2ave(dimwann), rave2(dimwann)
-      REAL(dbl), ALLOCATABLE :: rguide(:,:) ! rguide(3,dimwann)
-      REAL(dbl) :: rpos1(3), rpos2(3)
+      REAL(dbl), ALLOCATABLE :: rguide(:,:)!  rguide(3,dimwann)
+      COMPLEX(dbl), ALLOCATABLE :: cwschur1(:) !  cwschur1(dimwann)
+      COMPLEX(dbl), ALLOCATABLE :: cwschur2(:) !  cwschur2(10*dimwann)
+      REAL(dbl),    ALLOCATABLE :: cwschur3(:) !  cwschur3(dimwann)
+      LOGICAL,      ALLOCATABLE :: cwschur4(:) !  cwschur4(dimwann)
 
-      INTEGER, ALLOCATABLE :: nphimx1(:,:) ! nphimx1(3,dimwann)
-      INTEGER, ALLOCATABLE :: nphimx2(:,:) ! nphimx2(3,dimwann)
-      INTEGER :: ngdim(3)
-
-      REAL(dbl), ALLOCATABLE ::  rphicmx1(:,:) ! rphicmx1(3,dimwann)
-      REAL(dbl), ALLOCATABLE ::  rphicmx2(:,:) ! rphicmx2(3,dimwann)
-
-      COMPLEX(dbl), ALLOCATABLE :: cwschur1(:), cwschur2(:) 
-                                   !  cwschur1(dimwann),cwschur2(10*dimwann)
-
-      REAL(dbl), ALLOCATABLE :: cwschur3(:) ! cwschur3(dimwann)
-      LOGICAL, ALLOCATABLE :: cwschur4(:) ! cwschur4(dimwann)
-
-      COMPLEX(dbl), ALLOCATABLE ::  cptwr(:) ! cptwr(mplwv)
-
-      COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:) !  cptwfp(mxddim+1,dimwann,nkpts)
-
-      INTEGER, ALLOCATABLE :: nindpw(:,:) !  nindpw(mxddim,nkpts)
-      INTEGER, ALLOCATABLE :: ninvpw(:,:) !  ninvpw(0:nplwv,nkpts)
-      INTEGER, ALLOCATABLE :: npwk(:)   !  npwk(nkpts)
-      INTEGER, ALLOCATABLE :: igsort(:,:) !  igsort(mxddim,nkpts)
-
-      INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
-
-      INTEGER :: nt, ja, nbandi
-      INTEGER :: mxddim
-      INTEGER :: ngm
-
-      INTEGER, ALLOCATABLE :: igv(:,:)
-      INTEGER :: mxdgve
-      INTEGER :: nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
-
-      LOGICAL :: lselect
-      INTEGER :: nwork
-
-      COMPLEX(dbl) :: ctmp1, ctmp2
-
-      REAL(dbl) :: rtot(3), r2tot
-      REAL(dbl) :: func_i
-      REAL(dbl) :: func_od
-      REAL(dbl) :: func_d
-
-      INTEGER :: idum, rdum, ierr, igk
+      INTEGER      :: nwork
+      REAL(dbl)    :: rtot(3), r2tot
       COMPLEX(dbl) :: cfact
 
+      INTEGER :: idum, rdum, ierr
 
 !
 ! ... End declarations and dimensions
@@ -166,7 +115,7 @@
 ! ...  Startup
 !
        CALL startup(version_number,MAIN_NAME='wannier')
-       CALL timing('init',OPR='start')
+       CALL timing('overlap',OPR='start')
 
 !
 ! ...  Read input parameters from window.out
@@ -174,520 +123,107 @@
 
       CALL read_input()
 
-      OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
+      CALL ioname('dft_data',filename)
+      OPEN( UNIT=dft_unit, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
 
-      READ(19) alat
-      READ(19) (avec(i,1),i=1,3)
-      READ(19) (avec(i,2),i=1,3)
-      READ(19) (avec(i,3),i=1,3)
+      READ(dft_unit) alat
+      READ(dft_unit) (avec(i,1),i=1,3)
+      READ(dft_unit) (avec(i,2),i=1,3)
+      READ(dft_unit) (avec(i,3),i=1,3)
 
-      READ(19) ntype
-      DO nt = 1, ntype
-        READ(19) natom(nt), nameat(nt)
-        DO ja=1, natom(nt)
-          READ(19) (rat(i,ja,nt),i=1,3)
-        END DO
-      END DO
+      READ(dft_unit) ntype
+      DO i = 1, ntype
+          READ(dft_unit) natom(i), nameat(i)
+          DO j=1, natom(i)
+            READ(dft_unit) (rat(k,j,i),k=1,3)
+          ENDDO
+      ENDDO
 
-      READ(19) rdum, nbandi
-      READ(19) (nk(i),i=1,3), (s(i),i=1,3)
+      READ(dft_unit) rdum
+      READ(dft_unit) (nk(i),i=1,3), (s(i),i=1,3)
 
-      READ(19) rdum ! win_min, win_max, froz_min, froz_max, dimwann
+      READ(dft_unit) rdum ! win_min, win_max, froz_min, froz_max, dimwann
 
-      READ(19) rdum ! alpha, maxiter 
-      READ(19) idum ! iphase
-      READ(19) idum ! niter0, alphafix0
-      READ(19) idum ! niter, alphafix, ncg
-      READ(19) idum ! itrial, nshells
-      READ(19) idum ! (nwhich(i),i=1,nshells)
+      READ(dft_unit) rdum ! alpha, maxiter 
+      READ(dft_unit) idum ! iphase
+      READ(dft_unit) idum ! niter0, alphafix0
+      READ(dft_unit) idum ! niter, alphafix, ncg
+      READ(dft_unit) idum ! itrial, nshells
+      READ(dft_unit) idum ! (nwhich(i),i=1,nshells)
 
-      READ(19) nkpts, mxddim, mxdbnd
-      READ(19) nr1, nr2, nr3, ngm
-
-      READ(19) idum ! gauss_typ(1:dimwann)
-      READ(19) rdum ! rphiimx1(1:3,1:dimwann)
-      READ(19) rdum ! rphiimx2(1:3,1:dimwann)
-      READ(19) idum ! l_wann(1:dimwann)
-      READ(19) idum ! m_wann(1:dimwann)
-      READ(19) idum ! ndir_wann(1:dimwann)
-      READ(19) rdum ! rloc(1:dimwann)
+      READ(dft_unit) nkpts, idum, mxdbnd
 
 
 !
 ! ... Allocations and initializations
       CALL wannier_center_init( alat, avec )
       CALL lattice_init()
+      !
+      ! positions conversion
+      CALL poscart_set( avec )
 
 !
 ! ... Calculate grid of K-points and allocations (including bshells)
       CALL kpoints_init( nkpts )
+!
+! ... windows dimensions
+      CALL windows_allocate()
+!
+! ... wannier-specific variables init
+      CALL localization_allocate()
 
 !
-! ... positions conversion
-      CALL poscart_set( avec )
+! ... import overlap and projections from the disentangle sotred data
+      CALL overlap_extract(dimwann)
 
+      CALL timing('overlap',OPR='stop')
+      CALL timing('init',OPR='start')
 
-!
-! ... Read grid information, and G-vectors
-
-      READ(19) mxdgve 
-      ALLOCATE( igv( 3, mxdgve ), STAT=ierr )
-         IF ( ierr/=0 ) CALL errore(' wannier ', ' allocating igv ', 3*mxdgve )
-      READ(19) ( ( igv(i,j), i=1,3 ), j=1,mxdgve )
-
-      ALLOCATE( igsort( mxddim, nkpts ), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating igsort ', mxddim*nkpts )
-      ALLOCATE( npwk( nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating npwk ', nkpts )
-
-
-!
-! ...  Reading the dimensions of the "window space"
-
-      DO nkp = 1, nkpts
-         !
-         !  ... Read all dimensions first, then k-dependent arrays
-         !
-         READ(19) npwk(nkp), idum, idum, idum ! imin(nkp), imax(nkp), dimwin(nkp)
-         !
-      END DO
-      dimwinx = dimwann
-
-      CLOSE(19)
-
-
-!
-! ... wfc are no more read from TAKEOFF>dat but from ONFLY.dat 
-
-     
-! ... First set all elements of ninvpw to point to the "extra" plane wave
-!     (the mxddim+1 one) for which the wavefunction has been set to zero
-!     by hand (see next loop, read wavefunctions), and then fill up ninvpw 
-!     with those elements that point to plane-waves that are inside the cutoff
-!     note that ninvpw has also a zero element, that also points to the
-!     "extra" plane wave, corresponding to those plane waves that are not
-!     inside the cutoff radius (i.e. that go between npwk(nkp)+1 and
-!     mxddim) and thus for which there is no nindpw (i.e. its value has been
-!     set to zero) and thus for which nindv(nindpw) points to the mxddim1+1
-!     coefficient, that also has been set to zero
-
-      nplwv = nr1*nr2*nr3
-      mplwv = nr1*nr2*(nr3+1)
-
-      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nindpw ', mxddim*nkpts )
-
-      ALLOCATE( ninvpw(0:nplwv,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ninvpw ', (nplwv+1)*nkpts )
-
-! ... Read the energy eigenfunctions within the energy window at each K-point,
-!     the subspace basis vectors, from file "intf.out"
-
-      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) &
-         CALL errore(' wannier ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
-
-      cptwfp = CZERO
-
-      OPEN( UNIT=20, FILE='onfly.dat', STATUS='OLD' , FORM='UNFORMATTED' )
-
-!     Starting k-loop
-
-      nindpw = 0             !  new index
-      ninvpw = mxddim + 1    !  new index
-
-      K_POINTS:  DO nkp = 1, nkpts
-
-        READ(20) nsiz1_, nsiz2_ 
-
-        !
-        ! checks
-        IF( npwk(nkp) > nsiz1_ ) &
-          CALL errore('wannier','Reading onfly.dat WRONG ngk', ABS( npwk(nkp)-nsiz1_) )
-        IF( dimwann > nsiz2_ ) &
-          CALL errore('wannier','Reading onfly.dat WRONG dimwann', ABS( dimwann- nsiz2_))
-
-
-        READ(20) ( igsort( np, nkp ), np=1, npwk(nkp) )
-
-        CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), nr1, nr2, nr3, &
-                         ninvpw(:,nkp), nindpw(:,nkp) )
-
-        READ(20) ( ( cptwfp( np, iib, nkp ), np=1, npwk(nkp) ), iib=1, dimwann )
-
-        IF ( verbosity == 'high' ) THEN
-          DO np = 1, mxddim
-            WRITE(*,*) np, nindpw( np, nkp ), ninvpw( nindpw(np,nkp), nkp )
-          ENDDO
-        ENDIF
-
-        DO iib = 1, dimwann
-          DO np = npwk(nkp) + 1, mxddim + 1
-            cptwfp(np, iib, nkp) = CZERO
-          ENDDO
-        ENDDO
-
-      ENDDO K_POINTS
-
-      CLOSE(20)
-
-      CALL timing('init',OPR='stop')
-      CALL timing('trasf',OPR='start')
-
-      iseed   = -1
-      epsilon = ONE
-
-!
 !
 !...  Wannier Functions localization procedure
- 
-! ... now it defines the centers of the localized functions (e.g. gaussians)
-!     that are used to pick up the phases. this is system dependent 
-!     rphiimx is the center of the Gaussians in relative coordinates (as rat)
-
-       DO nwann = 1, dimwann
-
-         rloc(nwann) = rloc(nwann) * bohr
-
-         IF ( gauss_typ(nwann) == 1 ) THEN
-!...       values below don't really matter, since rphiimx2 is not used when  gauss_typ=1
-           rphiimx2(1,nwann) = 0.d0
-           rphiimx2(2,nwann) = 0.d0
-           rphiimx2(3,nwann) = 0.d0
-         ELSE IF( gauss_typ(nwann) == 2 ) THEN
-           continue 
-         ELSE
-           CALL errore(' wannier ', 'error in trial centers: wrong gauss_typ', gauss_typ(nwann) )
-         END IF
-
-       END DO
-
-       ALLOCATE( rphicmx1(3,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rphicmx1 ', 3*dimwann )
-       ALLOCATE( rphicmx2(3,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rphicmx2 ', 3*dimwann )
-
-       DO nb = 1, dimwann
-         DO m = 1, 3
-           rphicmx1(m,nb) = 0.d0
-           rphicmx2(m,nb) = 0.d0
-           DO j = 1, 3
-             rphicmx1(m,nb) = rphicmx1(m,nb) + rphiimx1(j,nb) * dirc(j,m)
-             rphicmx2(m,nb) = rphicmx2(m,nb) + rphiimx2(j,nb) * dirc(j,m)
-           END DO
-         END DO
-       END DO
-
-      ALLOCATE( nphimx1(3,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphimx1 ', 3*dimwann )
-      ALLOCATE( nphimx2(3,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphimx2 ', 3*dimwann )
-
-      ngdim(1) = nr1
-      ngdim(2) = nr2
-      ngdim(3) = nr3
-      DO nwann = 1, dimwann
-         DO m = 1, 3
-           nphimx1(m,nwann) = INT( rphiimx1(m,nwann) * DBLE( ngdim(m) ) + 1.001 )
-           nphimx2(m,nwann) = INT( rphiimx2(m,nwann) * DBLE( ngdim(m) ) + 1.001 )
-         END DO
-      END DO
-
-      WRITE( stdout, fmt= " (2x, 'Gaussian centers: (cart. coord. in Ang)' ) " )
-      DO nwann = 1, dimwann
-        WRITE( stdout, fmt="(4x,'Center = ', i3, ' Type =',i2,' Gaussian  = (', 3F10.6, ' ) '  )" ) &
-               nwann, gauss_typ(nwann), ( rphicmx1(m,nwann), m=1,3 )
-        IF  ( gauss_typ(nwann) == 2 ) THEN
-          WRITE( stdout, fmt="(26x,'Gaussian2 = (', 3F10.6, ' ) '  )" ) &
-                  ( rphicmx2(m,nwann), m=1,3 )
-        END IF
-      END DO
-      WRITE( stdout, fmt= " (' ' ) " )
-       
-      ALLOCATE( nphir(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphir ', dimwann )
-
-      DO nwann = 1, dimwann
-        asidemin = 100000.d0 * rloc( nwann )
-        DO j = 1, 3
-          aside    = SQRT( dirc(j,1)**2 + dirc(j,2)**2 + dirc(j,3)**2 )
-          asidemin = MIN( aside, asidemin )
-        END DO
-        nphir(nwann) = nint( 2 * ( rloc( nwann ) / asidemin ) * MIN( nr1, nr2, nr3 ) )
-
-      END DO
-
-      WRITE(stdout,*)
-      WRITE(stdout,*)' ====================================================================='
-      WRITE(stdout,*)' =                  Starting localization procedure                  ='
-      WRITE(stdout,*)' ====================================================================='
-      WRITE(stdout,*)
-
-
-! --- Transform the wavefunctions (u_nk) into real space:
-!
-! NB! The conjg is introduced to bring in the standard convention
-! for the Bloch theorem and the FFT.
 ! 
-! For Castep: psi_nk(r) = u_nk(r) exp(-ikr) (Bloch theorem with a minus sign)
-!             u_nk(r) = sum_G c_nk,G exp(-iGr)
-!             c_nk,G = sum_r u_nk(r) exp(iGr)
-!
-! the transform with -i is usually called forward transform, 
-! the one with i backward transform 
-!
-! in Castep the forward transform (i.e. -i) brings you from reciprocal to
-! real space, and is called with an FFT with isign=+1 (in the fft3d 
-! driver); the backward transform (with i) goes from real to reciprocal, 
-! and is called with isign=-1 in fft3d
-!
-! Usually: psi_nk(r) = u_nk(r) exp(ikr) (standard Bloch theorem)
-!          u_nk(r)= sum_G c_nk,G exp(iGr)
-!          c_nk,G = sum_r u_nk(r) exp(-iGr)
-! 
-! and the forward transform (i.e. -i) brings you from real space to 
-! reciprocal, and the backward from reciprocal to real space, as
-! described in the intro to fft3d.f --- note that fft3d.f describes
-! this usual convention, that is *not* actually used in Castep itself.
-!
-! talking about normalizations, nothing is needed in Castep when going
-! from reciprocal to real (isign=+1, exp(-iGr)), while a 1/N factor is needed
-! before using the output of the real to reciprocal transform (isign=-1,
-! exp(iGr)). In the ideal world nothing would be needed in either
-! directions (if our conventions were more standard); that is 
-! why MJR's alpha's driver has to multiply internally by N the array before 
-! a backward transform, since that Castep inevitably postprocesses it,
-! multiplying it by 1/N.  
-!
- 
-      ALLOCATE( cm(dimwann,dimwann,nnmx,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm ', dimwann**2 * nkpts*nnmx)
+
+      WRITE(stdout,"(/,2x,70('='))")
+      WRITE(stdout,"(2x,'=',18x,'Starting localization procedure',19x,'=')")
+      WRITE(stdout,"(2x,70('=')),/")
 
       !
-      ! overlap
-      CALL windows_allocate()
-      dimwin(:) = dimwann
-
-      CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
-          ninvpw, mxddim, nkpts, nnmx, dimwann, nr1, nr2, nr3, dimwann )
-
-      CALL windows_deallocate()
-
-      ! ... Conjg is due to the opposite bloch convention in CASTEP
-
-      cptwfp( :, :, : ) = CONJG( cptwfp( :, :, : ) )
+      ! ... Now calculate the average positions of the Wanns.
 
       ALLOCATE( csheet(dimwann,nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnmx)
       ALLOCATE( sheet(dimwann,nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', dimwann*nkpts*nnmx)
 
-      DO nkp = 1, nkpts
-        DO nn = 1, nntot(nkp)
-          DO nb = 1, dimwann
-            sheet(nb,nkp,nn)  = 0.d0 
-            csheet(nb,nkp,nn) = exp(ci*sheet(nb,nkp,nn))
-          END DO
-        END DO
-      END DO
-
-! ... Now calculate the average positions of the Wanns.
-
-      ALLOCATE( rave(3,dimwann), r2ave(dimwann), rave2(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rave r2ave ', 4*dimwann)
-
+      sheet(:,:,:) = ZERO
+      csheet(:,:,:) = CONE
 
       CALL omega( dimwann, nkpts, nkpts, nntot(:), nnmx, nnlist(:,:), bk(:,:,:), wb(:,:), &
                   cm(:,:,:,:), csheet(:,:,:), sheet(:,:,:), rave(:,:), r2ave(:), rave2(:), &
-                  func_om1, func_om2, func_om3, func_o, rtot, r2tot, func_i, func_d, & 
-                  func_od )
+                  func_om1, func_om2, func_om3, Omega_tot, rtot, r2tot, Omega_I, Omega_D, & 
+                  Omega_OD, Omega_V )
 
-!...  Write centers and spread
+      !
+      !...  Write centers and spread
+
       DO nwann = 1, dimwann
         WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
            &' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ),  &
                                         r2ave(nwann) - rave2(nwann)
       END DO  
-      WRITE( stdout, * ) '  ' 
-      WRITE( stdout, fmt= " ( 2x, '! Center Sum', &
+      WRITE( stdout, fmt= " ( /,2x, '! Center Sum', &
            &  1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
            (rtot(i),i=1,3), r2tot
               
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
-      WRITE( stdout, fmt="(4x,'OmegaI    =   ', f15.9 ) " ) func_i
-      WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
-      WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_o
+      WRITE( stdout, fmt="(/,2x, 'Spread Operator decomposition: ')")
+      WRITE( stdout, fmt="(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
+      WRITE( stdout, fmt="(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
+      WRITE( stdout, fmt="(  4x,'OmegaOD   =   ', f15.9i,/ ) " ) Omega_OD
+      WRITE( stdout, fmt="(  4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
 
       func_old1 = func_om1
       func_old2 = func_om2
       func_old3 = func_om3
-
-! ... Now pick up a consistent phase for the u_nk (the initial ones
-!     are provided by the ab-initio code, and so have almost random rotations)
-     
-      ALLOCATE( cptwr(mplwv), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cptwr ', mplwv)
-      ALLOCATE( ca(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ca ', dimwann**2 * nkpts)
-
-      DO nkp = 1, nkpts
-
-        DO nb = 1, dimwann
-
-          cptwr(:) = czero
-          DO m = 1, npwk(nkp)
-            cptwr(nindpw(m,nkp)) = cptwfp(m,nb,nkp)
-          END DO
-
-          CALL cfft3d( cptwr, nr1, nr2, nr3, nr1, nr2, nr3, -1 )
-
-          DO m = 1, mplwv
-            cptwr(m) = conjg(cptwr(m)) * nr1 * nr2 * nr3
-          END DO
-
-! ...     ca: the phase <u_nk(r) exp(ikr) | phi_nwann(r)>, given a real space
-!         localized function phi_nwann (e.g. a gaussian centered on the bond)
-!         note that the Castep convention would require |psi_nk>=|u_nk exp(-ikr)>
-!         but we have adopted the standard convention in entering this part
-!         of the program
-!
-! ...     nxx, nyy, nzz span a parallelogram in the real space mesh, of side
-!         2*nphir, and centered around the maximum of phi_i, nphimax(i,1:3)
-!
-! ...     nx ny nz are the nxx nyy nzz brought back to the unit cell in
-!         which u_nk(r)=cptwr is represented
-
-          DO nwann = 1, dimwann
-
-            ca(nb,nwann,nkp) = ( 0.d0,0.d0 )
-
-! ...       First gaussian
-
-            DO nzz = nphimx1(3,nwann) - nphir(nwann),  nphimx1(3,nwann) + nphir(nwann)
-              nz = MOD(nzz,nr3)
-              IF ( nz < 1 ) nz = nz + nr3
-              DO nyy = nphimx1(2,nwann) - nphir(nwann),  nphimx1(2,nwann) + nphir(nwann)
-                ny = MOD(nyy,nr2)
-                IF( ny  <  1 ) ny = ny + nr2
-                DO nxx = nphimx1(1,nwann) - nphir(nwann), nphimx1(1,nwann) +  nphir(nwann)
-                  nx = MOD(nxx,nr1)
-                  IF (nx < 1) nx = nx + nr1
-
-! ...               Here it calculates <exp(i*k.r) u_nk(r)|
-
-                  rx = DBLE(nxx-1)/DBLE(nr1)
-                  ry = DBLE(nyy-1)/DBLE(nr2)
-                  rz = DBLE(nzz-1)/DBLE(nr3)
-                  scalf = vkpt(1,nkp) * rx + vkpt(2,nkp) * ry + vkpt(3,nkp) * rz
-                  npoint = nx + (ny-1) * nr1 + (nz-1) * nr2 * nr1
-                  catmp = CONJG( EXP( citpi*scalf ) * cptwr(npoint) )
-       
-                  DO m = 1, 3
-                    rpos1(m) = ( rx - rphiimx1(1,nwann) ) * dirc(1,m) +    &
-                               ( ry - rphiimx1(2,nwann) ) * dirc(2,m) +    &
-                               ( rz - rphiimx1(3,nwann) ) * dirc(3,m)
-                  END DO
-  
-                  dist1 = 0.d0
-                  DO m = 1, 3
-                    dist1 = dist1 + rpos1(m)**2
-                  END DO
-                  dist1 = SQRT(dist1)
-
-! ...               The phi_nwann are defined here as gaussians centered on the max of the
-!                   bond. note that the distance from the max of the bond has to be
-!                   in cartesian coordinates (neglecting a factor 2*pi/a_0).
- 
-! ...               positive gaussian
- 
-                  cphi = CMPLX( EXP( -(dist1/rloc(nwann))**2 ), 0.d0 )
-
-                  IF ( gauss_typ(nwann) == 1 ) then
- 
-                    CALL gauss1( cphi, ndir_wann(nwann), l_wann(nwann), m_wann(nwann), rpos1, dist1 )
-
-                  END IF ! orbital is of type 1
-
-                  ca(nb,nwann,nkp)=ca(nb,nwann,nkp)+catmp*cphi
- 
-                END DO
-              END DO
-            END DO
-
-
-
-! ...       Second gaussian
-            IF ( gauss_typ(nwann) == 2 ) THEN
-
-              DO nzz = nphimx2(3,nwann) - nphir(nwann), nphimx2(3,nwann) + nphir(nwann)
-                nz = MOD(nzz,nr3)
-                IF ( nz < 1 ) nz = nz + nr3
-                DO nyy = nphimx2(2,nwann) - nphir(nwann), nphimx2(2,nwann) + nphir(nwann)
-                  ny = MOD(nyy,nr2)
-                  IF ( ny < 1 ) ny = ny + nr2
-                  DO nxx = nphimx2(1,nwann) - nphir(nwann), nphimx2(1,nwann) + nphir(nwann)
-                    nx = MOD(nxx,nr1)
-                    IF ( nx < 1 ) nx = nx + nr1
-
-! ...               Here it calculates <exp(i*k.r) u_nk(r)|
-
-                    rx = DBLE(nxx-1)/DBLE(nr1)
-                    ry = DBLE(nyy-1)/DBLE(nr2)
-                    rz = DBLE(nzz-1)/DBLE(nr3)
-                    scalf = vkpt(1,nkp)*rx +  vkpt(2,nkp)*ry + vkpt(3,nkp)*rz
-                    npoint = nx + (ny-1)*nr1 + (nz-1)*nr2*nr1
-                    catmp = CONJG(EXP(citpi*scalf)*cptwr(npoint))
-              
-                    DO m = 1, 3
-                      rpos2(m) = (rx-rphiimx2(1,nwann)) * dirc(1,m) +          &
-                                 (ry-rphiimx2(2,nwann)) * dirc(2,m) +          &
-                                 (rz-rphiimx2(3,nwann)) * dirc(3,m)
-                    END DO
-
-                    dist2 = 0.d0
-                    DO m = 1, 3
-                      dist2 = dist2 + rpos2(m)**2
-                    END DO
-                    dist2 = SQRT(dist2)
-
-! ...               The phi_nwann are defined here as gaussians centered on the max of the
-!                   bond. note that the distance from the max of the bond has to be
-!                   in cartesian coordinates (neglecting a factor 2*pi/a_0).
- 
-! ...               Negative gaussian
- 
-                    cphi = - CMPLX( EXP( -( dist2/rloc(nwann))**2 ), 0.d0 )
-
-                    ca(nb,nwann,nkp) = ca(nb,nwann,nkp) + catmp*cphi
-
-                  END DO ! nxx
-                END DO  ! nyy
-              END DO   ! nzz
-
-            END IF ! gauss_typ=2
-
-          END DO ! nwann
-
-        END DO ! nb
-
-      
-!       WRITE(*,*) '  '
-!       WRITE(*,'(a18,i4)') ' Matrix A, k-point', nkp
-!       WRITE(*,*) '  '
-!       IF ( dimwann <= 8 ) THEN
-!         DO i = 1, dimwann
-!           WRITE(*,'(8(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
-!         END DO
-!       END IF
-
-      END DO  !END k loop
-
-
-      DEALLOCATE( cptwr, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwr ', ABS(ierr))
 
 
 ! ... Now I calculate the transformation matrix CU = CS^(-1/2).CA,
@@ -718,130 +254,92 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cwschur3 ', dimwann)
       ALLOCATE( cwschur4(dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cwschur4 ', dimwann)
-      ALLOCATE( cu(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu ', dimwann**2 * nkpts)
 
+      !
+      ! .. loop over kpts
+      !
       DO nkp = 1, nkpts
-
         CALL zmat_mul( cs(:,:,nkp), ca(:,:,nkp), 'N', ca(:,:,nkp), 'C', dimwann )
-
-        IF ( verbosity == 'high' ) THEN
-          IF (nkp == 1) THEN
-            WRITE(stdout,*) '  '
-            WRITE(stdout,'(a18,i4)') ' Matrix S before zgees, k-point',nkp
-            WRITE(stdout,*) '  '
-            IF ( dimwann <= 8 ) THEN
-              DO i = 1, dimwann
-                write(stdout, fmt="( 8(0pe10.2))") ( cs(i,j,nkp), j=1,dimwann )
-              END DO
-            END IF
-          END IF
-        END IF
 
         CALL zgees( 'V', 'N', lselect, dimwann, cs(1,1,nkp), dimwann, nsdim,            &
              cwschur1, cz(1,1), dimwann, cwschur2, nwork, cwschur3, cwschur4, info )
 
-
-        cs(:,:,nkp)=(0.0,0.0)
+        cs(:,:,nkp)=CZERO
 
         DO m=1,dimwann
-          cfact = 1.d0/SQRT( REAL( cwschur1(m) ) )
-          DO j=1,dimwann
-            DO i=1,dimwann
+           cfact = ONE/SQRT( REAL( cwschur1(m) ) )
+           DO j=1,dimwann
+           DO i=1,dimwann
               cs(i,j,nkp) = cs(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
-            END DO
-          END DO
-        END DO
-
-        IF ( verbosity == 'high' ) THEN
-          IF (nkp == 1) THEN
-            WRITE(stdout,*) '  '
-            WRITE(stdout,'(a18,i4)') ' Matrix S after zgees, k-point',nkp
-            WRITE(stdout,*) '  '
-            IF ( dimwann <= 8 ) THEN
-              DO i = 1, dimwann
-                write(stdout, fmt="( 8(0pe10.2) )") ( cs(i,j,nkp), j=1,dimwann )
-              END DO
-            END IF
-          END IF
-        END IF
+           ENDDO
+           ENDDO
+        ENDDO
 
         CALL zmat_mul( cu(:,:,nkp), cs(:,:,nkp), 'N', ca(:,:,nkp), 'N', dimwann )
 
-        IF ( verbosity == 'high' ) THEN
-          WRITE (stdout,*) '  '
-          WRITE (stdout, fmt="(2x, ' Matrix U, k-point', i3)") nkp
-          WRITE (stdout,*) '  '
-          DO i = 1, dimwann
-            WRITE(stdout, fmt="(4x,2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5) ") ( cu(i,j,nkp), j=1,dimwann )
-          END DO
-! ...     unitariety is checked
-          WRITE (stdout,*) ' '
-          WRITE (stdout, fmt=" (2x, 'Check unitariery of U matrix ')")
-          DO i = 1, dimwann
-            DO j = 1, dimwann
-              ctmp1 = ( 0.d0, 0.d0 )
-              ctmp2 = ( 0.d0, 0.d0 )
-              DO m = 1, dimwann
-                ctmp1 = ctmp1 + cu(i,m,nkp) * CONJG( cu(j,m,nkp) )
-                ctmp2 = ctmp2 + cu(m,j,nkp) * CONJG( cu(m,i,nkp) )
-              END DO
-              WRITE (stdout,fmt="(4x,2i4,4f10.7)") i, j, ctmp1, ctmp2
-            END DO
-          END DO
-        END IF
+! ...  Unitariety is checked
+        IF ( .NOT. zmat_unitary( cu(:,:,nkp), SIDE='both', TOLL=1.0d-8 )  ) &
+             WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)") nkp
+
+!
+! ... Phases
+!
 
         IF (iphase /= 1) THEN
 
           IF ( iphase == 2 ) THEN
-! ...       check what happens if the heuristic phase is taken away
-            WRITE (*,*) 'NB: phase is taken away'
-            DO J = 1, dimwann
-              DO I = 1, dimwann
-                cu(i,j,nkp) = ( 0.d0, 0.d0 )
-                IF ( i == j ) cu(i,j,nkp) = ( 1.d0, 0.d0 )
-              END DO
-            END DO
-          ELSE
-! ...       check what happens if a random phase is given
-            WRITE(stdout, fmt=" (2x, 'NB: RANDOM phase is given' )")
-            DO m = 1, dimwann
-              DO n = m, dimwann
-                rre = ranf(iseed) * 10.d0 - 5.d0
-                rri = ranf(iseed) * 10.d0 - 5.d0
-                cu(m,n,nkp) = epsilon * CMPLX(rre,rri)
-                cu(n,m,nkp) = -CONJG( cu(m,n,nkp) )
-                IF ( m == n ) cu(n,m,nkp) = CMPLX( 0.d0, AIMAG( cu(m,n,nkp) ) )
-              END DO
-            END DO
-
-            CALL zgees( 'V', 'N', select, dimwann, cu(1,1,nkp), dimwann, nsdim,            &
-                 cwschur1, cz(1,1), dimwann, cwschur2, SIZE(cwschur2), cwschur3, cwschur4, info )
-
-            cu( :, :, nkp ) = ( 0.d0, 0.d0 )
-            DO m = 1, dimwann
-              cfact = EXP( cwschur1(m) )
+! ...         check what happens if the heuristic phase is taken away
+              WRITE (stdout,*) 'NB: phase is taken away'
               DO j = 1, dimwann
-                DO i = 1, dimwann
-                  cu(i,j,nkp) = cu(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
-                END DO
-              END DO
-            END DO
+              DO i = 1, dimwann
+                 cu(i,j,nkp) = CZERO
+                 IF ( i == j ) cu(i,j,nkp) = CONE
+              ENDDO
+              ENDDO
+          ELSE
+! ...         check what happens if a random phase is given
 
-          END IF
+              iseed   = -1
+              epsilon = ONE
 
-        END IF
+              WRITE(stdout, fmt=" (2x, 'NB: RANDOM phase is given' )")
+              DO m = 1, dimwann
+              DO n = m, dimwann
+                  rre = ranf(iseed) * 10.d0 - 5.d0
+                  rri = ranf(iseed) * 10.d0 - 5.d0
+                  cu(m,n,nkp) = epsilon * CMPLX(rre,rri)
+                  cu(n,m,nkp) = -CONJG( cu(m,n,nkp) )
+                  IF ( m == n ) cu(n,m,nkp) = CMPLX( ZERO , AIMAG( cu(m,n,nkp) ) )
+              ENDDO
+              ENDDO
+
+              CALL zgees( 'V', 'N', lselect, dimwann, cu(1,1,nkp), dimwann, nsdim,   &
+                 cwschur1, cz(1,1), dimwann, cwschur2, SIZE(cwschur2), cwschur3,    &
+                 cwschur4, info )
+
+              cu( :, :, nkp ) = CZERO
+              DO m = 1, dimwann
+                 cfact = EXP( cwschur1(m) )
+                 DO j = 1, dimwann
+                 DO i = 1, dimwann
+                     cu(i,j,nkp) = cu(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
+                 ENDDO
+                 ENDDO
+              ENDDO
+
+          ENDIF
+
+        ENDIF
 
         IF ( verbosity == 'high' ) THEN
-          WRITE (stdout,*) '  '
-          WRITE (stdout, fmt=" (2x,' Matrix U after zgees, k-point',i3)") nkp
-          WRITE (stdout,*) '  '
-          DO i = 1, dimwann
-            WRITE(stdout, fmt="(4x,2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5) ")  ( cu(i,j,nkp), j=1,dimwann )
-          END DO
-        END IF
+            WRITE (stdout, fmt=" (/,2x,' Matrix U after zgees, k-point',i3,/)") nkp
+            DO i = 1, dimwann
+                WRITE(stdout, fmt="(4x,2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5) ")  &
+                                   ( cu(i,j,nkp), j=1,dimwann )
+            ENDDO
+        ENDIF
 
-      END DO  ! k point loop
+      ENDDO  ! k point loop
 
       ALLOCATE( cmtmp(dimwann,dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu ', dimwann**2 )
@@ -854,19 +352,20 @@
         DO nn = 1, nntot(nkp)
           nkp2 = nnlist(nkp,nn)
           DO i = 1, dimwann
-            DO j = 1 ,dimwann
+          DO j = 1 ,dimwann
               cmtmp(i,j) = CZERO
               DO m = 1, dimwann
-                DO n = 1, dimwann
-                  cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,nkp)) * cu(n,j,nkp2) * cm(m,n,nn,nkp)
-                END DO
-              END DO
-            END DO
-          END DO
+              DO n = 1, dimwann
+                 cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,nkp)) * &
+                                                 cu(n,j,nkp2) * cm(m,n,nn,nkp)
+              ENDDO
+              ENDDO
+          ENDDO
+          ENDDO
           cm(:,:,nn,nkp) = cmtmp(:,:)
-        END DO
+        ENDDO
 
-      END DO
+      ENDDO
 
 ! ... Singular value decomposition
 
@@ -884,28 +383,29 @@
       ALLOCATE( cw2( nwork ), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cw2 ', nwork )
  
-      omt1 = 0.d0
-      omt2 = 0.d0
-      omt3 = 0.d0
+      omt1 = ZERO
+      omt2 = ZERO
+      omt3 = ZERO
 
       DO nkp = 1, nkpts
-        omiloc = 0.d0
+        omiloc = ZERO
         DO nn = 1, nntot(nkp)
           cmtmp(:,:) = cm(:,:,nn,nkp)
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
                singvd, cv1, dimwann, cv2, dimwann, cw1, nwork, cw2, info )
-          IF ( info /= 0 ) CALL errore(' wannier ', ' Singular value decomposition zgesvd failed 2 ', info )
+          IF ( info /= 0 ) &
+              CALL errore(' wannier ', ' Singular value decomposition failed 2 ', info )
 
           DO nb = 1, dimwann
-            omiloc = omiloc + wb(nkp,nn) * ( 1.d0 - singvd(nb)**2 )
-          END DO
+              omiloc = omiloc + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
+          ENDDO
           DO nb = 1, dimwann
-            omt1 = omt1 + wb(nkp,nn) * ( 1.d0 - singvd(nb)**2 )
-            omt2 = omt2 - wb(nkp,nn) * ( 2.d0 * LOG( singvd(nb) ) )
-            omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
-          END DO
-        END DO
-      END DO
+              omt1 = omt1 + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
+              omt2 = omt2 - wb(nkp,nn) * ( TWO * LOG( singvd(nb) ) )
+              omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
+          ENDDO
+        ENDDO
+      ENDDO
 
       omt1 = omt1/DBLE(nkpts)
       omt2 = omt2/DBLE(nkpts)
@@ -914,8 +414,8 @@
 ! ... Recalculate the average positions of the Wanns.
 
       CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,  &
-           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o , &
-           rtot, r2tot, func_i, func_d, func_od)
+           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot , &
+           rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
 
       func_del1 = func_om1 - func_old1
       func_del2 = func_om2 - func_old2
@@ -936,8 +436,8 @@
 ! ... Recalculate the average positions of the Wanns.
 
       CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,        &
-           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,     &
-           rtot, r2tot , func_i, func_d, func_od)
+           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot,     &
+           rtot, r2tot , Omega_I, Omega_D, Omega_OD, Omega_V)
 
       func0 = func_om1 + func_om2 + func_om3
       func_del1 = func_om1 - func_old1
@@ -949,9 +449,9 @@
 
 ! ... Singular value decomposition
 
-      omt1 = 0.d0
-      omt2 = 0.d0
-      omt3 = 0.d0
+      omt1 = ZERO
+      omt2 = ZERO
+      omt3 = ZERO
 
       DO nkp = 1, nkpts
         DO nn = 1, nntot(nkp)
@@ -960,18 +460,19 @@
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
                singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
 
-          IF ( info /= 0 ) CALL errore(' wannier ', ' Singular value decomposition zgesvd failed 3 ', info )
+          IF ( info /= 0 ) &
+          CALL errore(' wannier ', ' Singular value decomposition failed 3 ', info )
 
           CALL zmat_mul( cv3, cv1, 'N', cv2, 'N', dimwann )
 
           DO nb = 1, dimwann
-            omt1 = omt1 + wb(nkp,nn) * ( 1.d0 - singvd(nb)**2 )
-            omt2 = omt2 - wb(nkp,nn) * ( 2.d0 * LOG( singvd(nb) ) )
-            omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2)
-          END DO
+              omt1 = omt1 + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
+              omt2 = omt2 - wb(nkp,nn) * ( TWO * LOG( singvd(nb) ) )
+              omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2)
+          ENDDO
 
-        END DO     ! loop nn
-      END DO       ! loop nkp
+        ENDDO     ! loop nn
+      ENDDO       ! loop nkp
 
 
       omt1 = omt1/DBLE(nkpts)
@@ -982,11 +483,11 @@
 !     the wannier functions (for the R=0 cell) are calculated
 
 
-      lrguide = .false.
+      lrguide = .FALSE.
       nrguide = 10
 
       lcg = .true.
-      if ( ncg < 1 ) lcg = .false.
+      if ( ncg < 1 ) lcg = .FALSE.
 
 ! ... But first it starts the iterative cycle to solve "Poisson" phase
     
@@ -1017,180 +518,182 @@
       cdq     = CZERO
       cdodq   = CZERO
 
-      CALL timing('trasf',OPR='stop')
+      CALL timing('init',OPR='stop')
       CALL timing('iterations',OPR='start')
 
-      !
-      !
-      !  here start the iterative loop
-      !
-      !
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) ' =                     Starting iteration loop                        ='
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) '  '
+!
+!
+!  ... Here start the iterative loop
+!
+!
+      WRITE( stdout, "(/,2x,70('='))" ) 
+      WRITE( stdout, "(2x,'=',21x,'Starting iteration loop',24x,'=')" )
+      WRITE( stdout, "(2x,70('='),/)" ) 
 
-      DO ncount = 1, niter + niter0     ! finira' alla riga 2245!!!
+
+!
+! ... Main ITERATION loop
+!
+      iteration_loop : DO ncount = 1, niter + niter0     
 
         IF ( ncount <= niter0 ) THEN
-          ncg   = 1
-          alpha = alphafix0
+            ncg   = 1
+            alpha = alphafix0
         ELSE
-          ncg   = ncgfix
-          alpha = alphafix
+            ncg   = ncgfix
+            alpha = alphafix
         END IF
 
-! ...   Store cu and cm
 
+! ...   Store cu and cm
 
         cu0 = cu
         cm0 = cm
 
         IF ( lrguide ) THEN
+! XXXX  nnh = nntot(1)/2, vedi Marzari... to be fixed here
           IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )            &
             CALL phases( dimwann, nkpts, nkpts, nnmx, nnmxh, nntot, nnh, neigh,       &
                  bk, bka, cm, csheet, sheet, rguide, irguide )
-        END IF
+        ENDIF
 
         CALL domega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb,              &
              cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
 
         gcnorm1 = ZERO
         DO nkp = 1, nkpts
-          DO n = 1, dimwann
+            DO n = 1, dimwann
             DO m= 1, dimwann
-              gcnorm1 = gcnorm1 + REAL( cdodq(m,n,nkp) * CONJG( cdodq(m,n,nkp) ) )
-            END DO
-          END DO
-        END DO
+                gcnorm1 = gcnorm1 + REAL( cdodq(m,n,nkp) * CONJG( cdodq(m,n,nkp) ) )
+            ENDDO
+            ENDDO
+        ENDDO
 
         IF ( MOD( (ncount-1), ncg ) == 0 ) THEN
-          cdq = cdodq
+            cdq = cdodq
         ELSE
-          gcfac = gcnorm1/gcnorm0
-          cdq = cdodq + gcfac * cdqkeep
-        END IF
+            gcfac = gcnorm1/gcnorm0
+            cdq = cdodq + gcfac * cdqkeep
+        ENDIF
 
         gcnorm0 = gcnorm1
         cdqkeep = cdq
 
-        doda0 = 0.d0
+        doda0 = ZERO
         DO nkp = 1, nkpts
-          DO m = 1, dimwann
+            DO m = 1, dimwann
             DO n = 1, dimwann
-              doda0 = doda0 + REAL( cdq(m,n,nkp) * cdodq(n,m,nkp) )
-            END DO
-          END DO
-        END DO
-        doda0 = doda0 / wbtot / 4.d0
+                doda0 = doda0 + REAL( cdq(m,n,nkp) * cdodq(n,m,nkp) )
+            ENDDO
+            ENDDO
+        ENDDO
+        doda0 = doda0 / wbtot / FOUR
+
 
 ! ...   The cg step is calculated
+        cdq = alpha / wbtot / FOUR * cdq
 
-        cdq = alpha / wbtot / 4.d0 * cdq
-
-        cfunc_exp1 = ( 0.d0, 0.d0 )
-        cfunc_exp2 = ( 0.d0, 0.d0 )
-        cfunc_exp3 = ( 0.d0, 0.d0 )
+        cfunc_exp1 = CZERO
+        cfunc_exp2 = CZERO
+        cfunc_exp3 = CZERO
         DO nkp = 1, nkpts
-          DO i = 1, dimwann
+            DO i = 1, dimwann
             DO j = 1, dimwann
               cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
               cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
               cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
-            END DO
-          END DO
-        END DO
+            ENDDO
+            ENDDO
+        ENDDO
 
         DO nkp = 1, nkpts
 
-          CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,nkp), dimwann, nsdim,     &
-               cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,    &
-               cwschur4, info )
+            CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,nkp), dimwann, nsdim,     &
+                 cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,    &
+                 cwschur4, info )
 
-          IF ( info /= 0 ) CALL errore ('wannier', 'wrong schur procedure', info)
+            IF ( info /= 0 ) CALL errore ('wannier', 'wrong schur procedure', info)
 
-          cdq( :, :, nkp ) = ( 0.d0, 0.d0 )
-          DO m = 1, dimwann
-            cfact = EXP( cwschur1(m) )
-            DO j = 1, dimwann
-              DO i = 1, dimwann
-                cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
-              END DO
-            END DO
-          END DO
+            cdq( :, :, nkp ) = CZERO
+            DO m = 1, dimwann
+                cfact = EXP( cwschur1(m) )
+                DO j = 1, dimwann
+                DO i = 1, dimwann
+                     cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
+                ENDDO
+                ENDDO
+            ENDDO
 
-        END DO
+        ENDDO
 
 
 ! ...   The expected change in the functional is calculated
 
-        cfunc_exp1 = ( 0.d0, 0.d0 )
-        cfunc_exp2 = ( 0.d0, 0.d0 )
-        cfunc_exp3 = ( 0.d0, 0.d0 )
+        cfunc_exp1 = CZERO
+        cfunc_exp2 = CZERO
+        cfunc_exp3 = CZERO
 
         DO nkp = 1, nkpts
-          DO i = 1, dimwann
+            DO i = 1, dimwann
             DO j = 1, dimwann
-              cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
-              cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
-              cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
-            END DO
-          END DO
-        END DO
-
+                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
+                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
+                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
+            ENDDO
+            ENDDO
+        ENDDO
         cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
+
 
 ! ...   The orbitals are rotated 
 
         DO nkp = 1, nkpts
-          CALL zmat_mul( cmtmp(:,:), cu(:,:,nkp), 'N', cdq(:,:,nkp), 'N', dimwann )
-          cu(:,:,nkp) = cmtmp(:,:)
-        END DO
+            CALL zmat_mul( cmtmp(:,:), cu(:,:,nkp), 'N', cdq(:,:,nkp), 'N', dimwann )
+            cu(:,:,nkp) = cmtmp(:,:)
+        ENDDO
 
 
 ! ...   And the M_ij are updated
 
         DO nkp = 1, nkpts
-          DO nn = 1, nntot(nkp)
-            nkp2 = nnlist(nkp,nn)
-            DO i = 1, dimwann
-              DO j = 1, dimwann
-                cmtmp(i,j) = ( 0.d0, 0.d0 )
-                DO m = 1, dimwann
-                  DO n = 1, dimwann
-                    cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * cdq(n,j,nkp2) * cm(m,n,nn,nkp)
-                  END DO
-                END DO
-              END DO
-            END DO
-            cm(:,:,nn,nkp) = cmtmp(:,:)
-          END DO
-        END DO
+            DO nn = 1, nntot(nkp)
+                nkp2 = nnlist(nkp,nn)
+                DO i = 1, dimwann
+                DO j = 1, dimwann
+                    cmtmp(i,j) = CZERO
+                    DO m = 1, dimwann
+                    DO n = 1, dimwann
+                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * &
+                                                          cdq(n,j,nkp2) * cm(m,n,nn,nkp)
+                    ENDDO
+                    ENDDO
+                ENDDO
+                ENDDO
+                cm(:,:,nn,nkp) = cmtmp(:,:)
+            ENDDO
+        ENDDO
+
 
 ! ...   And the functional is recalculated
-        
 
         CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
-             csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
-             rtot, r2tot, func_i, func_d, func_od)
+             csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
+             rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
 
         IF ( ncount <= niter0 ) THEN
-          IF ( ( (ncount/nprint) * nprint +1) == ncount )  THEN
-            WRITE( stdout, * ) '  '
-            WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") ncount
-            WRITE(stdout, fmt=" (2x, 'Wannier centers and Spreads (Omega)')")
-            DO nwann = 1, dimwann
-               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',&
-                    &  f12.6, ' )  Omega = ', f13.6 )" )  &
-                    nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
-            END DO
-            WRITE( stdout, * ) '  '
-            WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
-                 & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
-                 (rtot(i),i=1,3), r2tot
-          END IF
-        END IF
+            IF ( ( (ncount/nprint) * nprint +1) == ncount )  THEN
+                WRITE( stdout," (/,2x,'Iteration = ',i5) ") ncount
+                WRITE(stdout, " (2x, 'Wannier centers and Spreads (Omega)')")
+                DO nwann = 1, dimwann
+                    WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',&
+                               &  f12.6, ' )  Omega = ', f13.6 )" )  &
+                               nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
+                ENDDO
+                WRITE( stdout, " (/, 2x, '! Center Sum', 1x, '= (',  & 
+                               &  f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )  &
+                               (rtot(i),i=1,3), r2tot
+             ENDIF
+        ENDIF
 
         funca = func_om1 + func_om2 + func_om3
         func_del1 = func_om1 - func_old1
@@ -1208,17 +711,14 @@
           eqa = ( funca - func0 - eqb * alpha ) / alpha
 
           IF ( ABS(eqa) > 1.0e-8 ) THEN
-            alphamin = -eqb / 2.d0 / eqa
+            alphamin = -eqb / TWO / eqa
           ELSE
             alphamin = alpha
           ENDIF
-          IF ( alphamin < 0.d0 ) alphamin = alpha * 2.d0
-          IF ( alphamin > 3.d0 * alpha ) alphamin = 3.d0 * alpha
+          IF ( alphamin < ZERO ) alphamin = alpha * TWO
+          IF ( alphamin > THREE * alpha ) alphamin = THREE * alpha
           falphamin = eqa * alphamin**2 + eqb * alphamin + eqc
 
-!         WRITE(*,*) ' '
-!         WRITE(*,*) 'alpha_min, f(alpha_min)', alphamin, falphamin
-!         WRITE(*,*) ' '
 
 ! ...     Restore cu and cm
 
@@ -1227,13 +727,51 @@
 
 ! ...     Take now optimal parabolic step
 
-           cdq = alphamin / wbtot / 4.d0 * cdqkeep
+           cdq = alphamin / wbtot / FOUR * cdqkeep
+
 
 ! ...     The expected change in the functional is calculated
 
-          cfunc_exp1 = ( 0.d0, 0.d0 )
-          cfunc_exp2 = ( 0.d0, 0.d0 )
-          cfunc_exp3 = ( 0.d0, 0.d0 )
+          cfunc_exp1 = CZERO
+          cfunc_exp2 = CZERO
+          cfunc_exp3 = CZERO
+          DO nkp = 1, nkpts
+              DO i = 1, dimwann
+              DO j = 1, dimwann
+                  cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
+                  cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
+                  cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
+              ENDDO
+              ENDDO
+          ENDDO
+
+
+          DO nkp = 1, nkpts
+
+              CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,nkp), dimwann, nsdim,       &
+                   cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,      &
+                   cwschur4, info )
+
+              IF ( info /= 0 ) CALL errore('wannier', 'wrong Schur procedure (II)', info)
+
+              cdq(:,:,nkp) = CZERO
+              DO m = 1, dimwann
+                  cfact =  EXP( cwschur1(m) ) 
+                  DO j = 1, dimwann
+                  DO i = 1, dimwann
+                      cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
+                  ENDDO
+                  ENDDO
+              ENDDO
+
+          ENDDO
+
+
+! ...     The expected change in the functional is calculated
+
+          cfunc_exp1 = CZERO
+          cfunc_exp2 = CZERO
+          cfunc_exp3 = CZERO
           DO nkp = 1, nkpts
             DO i = 1, dimwann
               DO j = 1, dimwann
@@ -1243,100 +781,54 @@
               END DO
             END DO
           END DO
-
-!         cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
-!         WRITE (*,8002) cfunc_exp1
-!         WRITE (*,8006) cfunc_exp2
-!         WRITE (*,8008) cfunc_exp3
-
-          DO nkp = 1, nkpts
-
-            CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,nkp), dimwann, nsdim,       &
-                 cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,      &
-                 cwschur4, info )
-
-            IF ( info /= 0 ) CALL errore('wannier', 'wrong Schur procedure (II)', info)
-
-            cdq(:,:,nkp) = ( 0.d0, 0.d0 )
-            DO m = 1, dimwann
-              cfact =  EXP( cwschur1(m) ) 
-              DO j = 1, dimwann
-                DO i = 1, dimwann
-                  cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
-                END DO
-              END DO
-            END DO
-
-          END DO
-
-
-! ...     The expected change in the functional is calculated
-
-          cfunc_exp1 = ( 0.d0, 0.d0 )
-          cfunc_exp2 = ( 0.d0, 0.d0 )
-          cfunc_exp3 = ( 0.d0 ,0.d0 )
-          DO nkp = 1, nkpts
-            DO i = 1, dimwann
-              DO j = 1, dimwann
-                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
-                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
-                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
-              END DO
-            END DO
-          END DO
-
           cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
-!         WRITE (*,8002) cfunc_exp1
-!         WRITE (*,8006) cfunc_exp2
-!         WRITE (*,8008) cfunc_exp3
-!         WRITE (*,8010) cfunc_exp
+
 
 ! ...     The orbitals are rotated 
 
           DO nkp = 1, nkpts
-            CALL zmat_mul( cmtmp(:,:), cu(:,:,nkp), 'N', cdq(:,:,nkp), 'N', dimwann )
-            cu(:,:,nkp) = cmtmp(:,:)
+              CALL zmat_mul( cmtmp(:,:), cu(:,:,nkp), 'N', cdq(:,:,nkp), 'N', dimwann )
+              cu(:,:,nkp) = cmtmp(:,:)
           END DO
 
 ! ...     And the M_ij are updated
 
           DO nkp = 1, nkpts
-            DO nn = 1, nntot(nkp)
-              nkp2 = nnlist(nkp,nn)
-              DO i = 1, dimwann
+             DO nn = 1, nntot(nkp)
+                nkp2 = nnlist(nkp,nn)
+                DO i = 1, dimwann
                 DO j = 1, dimwann
-                  cmtmp(i,j) = ( 0.d0, 0.d0 )
-                  DO m = 1, dimwann
+                    cmtmp(i,j) = CZERO
+                    DO m = 1, dimwann
                     DO n = 1, dimwann
-                      cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * cdq(n,j,nkp2) * cm(m,n,nn,nkp)
-                    END DO
-                  END DO
-                END DO
-              END DO
-              cm(:,:,nn,nkp) = cmtmp(:,:)
-            END DO
-          END DO
+                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * &
+                                                         cdq(n,j,nkp2) * cm(m,n,nn,nkp)
+                    ENDDO
+                    ENDDO
+                ENDDO
+                ENDDO
+                cm(:,:,nn,nkp) = cmtmp(:,:)
+             ENDDO
+          ENDDO
 
 ! ...     And the functional is recalculated
            
           CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
-               csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
-               rtot, r2tot, func_i , func_d, func_od)
+               csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
+               rtot, r2tot, Omega_I , Omega_D, Omega_OD, Omega_V)
 
           IF ( ( (ncount/nprint) * nprint +1) == ncount ) THEN
-            WRITE( stdout, * ) '  '
-            WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") ncount
-            WRITE(stdout, fmt=" (2x, 'Wannier centers and Spreads (Omega)')")
-            DO nwann = 1, dimwann
-               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
-                 &  f12.6, ' )  Omega = ', f13.6 )" )  &
-                 nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
-            END DO
-            WRITE( stdout, * ) '  '
-            WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
-                   & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
-                   (rtot(i),i=1,3), r2tot
-          END IF
+              WRITE( stdout, " (/,2x,'Iteration = ',i5) ") ncount
+              WRITE(stdout,  " (  2x, 'Wannier centers and Spreads (Omega)')")
+              DO nwann = 1, dimwann
+                  WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
+                         &  f12.6, ' )  Omega = ', f13.6 )" )  &
+                         nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
+              ENDDO
+              WRITE( stdout, " ( /,2x, '! Center Sum',    &
+                         & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" ) &
+                         (rtot(i),i=1,3), r2tot
+          ENDIF
 
           funca = func_om1 + func_om2 + func_om3
           func_del1 = func_om1 - func_old1
@@ -1356,51 +848,48 @@
      
 ! ...   Check convergence
 
-        IF ( ABS( func_del ) < 1.e-6 ) THEN
+        IF ( ABS( func_del ) < wannier_thr ) THEN
           !
           ! ... ordering wannier centers
           !
           CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_type)
 
-          WRITE( stdout, * ) '  '
-          WRITE( stdout, * ) ' ======================================================================'
-          WRITE( stdout, * ) ' =                     Convergence Achieved                           ='
-          WRITE( stdout, * ) ' ======================================================================'
+          WRITE( stdout, "(/,2x,70('='))" ) 
+          WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
+          WRITE( stdout, "(2x,70('='),/)" ) 
+
           WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
-          WRITE( stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
+          WRITE( stdout, " (2x, 'Final Wannier centers and Spreads (Omega)')")
           DO nwann = 1, dimwann
-            WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
+            WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
                & f12.6,' )  Omega = ', f13.6 )" )  &
                nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
           END DO
-          WRITE( stdout, * ) '  '
-          WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
+          WRITE( stdout, " ( /, 2x, '! Center Sum',    &
                & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
               (rtot(i),i=1,3), r2tot
 
-          WRITE( stdout, * ) '  '
-          WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
-          WRITE( stdout, fmt="(4x,'OmegaI    =   ', f15.9 ) " ) func_i
-          WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
-          WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
-          WRITE( stdout, * ) '  '
-          WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_o
+          WRITE( stdout, "(/,2x, 'Spread Operator decomposition: ')")
+          WRITE( stdout, "(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
+          WRITE( stdout, "(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
+          WRITE( stdout, "(  4x,'OmegaOD   =   ', f15.9 ) " ) Omega_OD
+          WRITE( stdout, "(/,4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
 
-          WRITE (stdout, fmt="(2x,' ')")
-          WRITE (stdout, fmt="(2x,'Omega variation:')")
-          WRITE (stdout, fmt="(4x,'Delta Omega 1   = ',0pe16.8)") func_del1
-          WRITE (stdout, fmt="(4x,'Delta Omega 2   = ',0pe16.8)") func_del2
-          WRITE (stdout, fmt="(4x,'Delta Omega 3   = ',0pe16.8)") func_del3
-          WRITE (stdout, fmt="(4x,'Delta Omega Tot = ',0pe16.8)") func_del
-          WRITE( stdout, * ) '  '
-          WRITE (stdout, fmt="(2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
-          WRITE( stdout, * ) '  '
-          WRITE( stdout, * ) ' ======================================================================'
+          WRITE (stdout, "(  2x,'Omega variation:')")
+          WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
+          WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
+          WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
+          WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
+          WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
+          WRITE( stdout, "(2x,70('='))" ) 
+
           GO TO 8100
         END IF  
-        ! EXIT
 
-      END DO !end loop ncount
+!
+! ...  End of the ITERATION loop
+!
+      ENDDO iteration_loop
 
 
       !
@@ -1408,40 +897,34 @@
       !
       CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_type)
 
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) ' =                 Max Number of iteration reached                    ='
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
-      WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
+      WRITE (stdout, "(/,2x,70('='))")
+      WRITE( stdout, "(2x,'=',18x,'Max Number of iteration reached',19x,'=')" ) 
+      WRITE (stdout, "(2x,70('='),/)")
+
+      WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
+      WRITE(stdout,  " (2x, 'Final Wannier centers and Spreads (Omega)')")
       DO nwann = 1, dimwann
-        WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
+        WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
            & ' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ), &
                                          r2ave(nwann) - rave2(nwann)
       END DO
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
+      WRITE( stdout, " (/,2x, '! Center Sum',    &
            & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
              (rtot(i),i=1,3), r2tot
 
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
-      WRITE( stdout, fmt="(4x,'OmegaI    =   ', f15.9 ) " ) func_i
-      WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
-      WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_o
+      WRITE( stdout, "(/,2x, 'Spread Operator decomposition: ')")
+      WRITE( stdout, "(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
+      WRITE( stdout, "(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
+      WRITE( stdout, "(  4x,'OmegaOD   =   ', f15.9 ) " ) Omega_OD
+      WRITE( stdout, "(/,4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
 
-      WRITE (stdout, fmt="(2x,' ')")
-      WRITE (stdout, fmt="(2x,'Omega variation:')")
-      WRITE (stdout, fmt="(4x,'Delta Omega 1   = ',0pe16.8)") func_del1
-      WRITE (stdout, fmt="(4x,'Delta Omega 2   = ',0pe16.8)") func_del2
-      WRITE (stdout, fmt="(4x,'Delta Omega 3   = ',0pe16.8)") func_del3
-      WRITE (stdout, fmt="(4x,'Delta Omega Tot = ',0pe16.8)") func_del
-      WRITE( stdout, * ) '  '
-      WRITE (stdout, fmt="(2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, * ) ' ======================================================================'
+      WRITE (stdout, "(/,2x,'Omega variation:')")
+      WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
+      WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
+      WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
+      WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
+      WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
+      WRITE (stdout, "(/,2x,70('='))")
 
 
 ! ... End of the minimization loop
@@ -1451,43 +934,32 @@
       CALL timing('iterations',OPR='stop')
       CALL timing('write',OPR='start')
 
-
-      IF ( verbosity == 'high' ) THEN
-! ... Unitariety is checked
-        DO nkp = 1, nkpts
-          DO i = 1, dimwann
-            DO j = 1, dimwann
-              ctmp1 = ( 0.d0, 0.d0 )
-              ctmp2 = ( 0.d0, 0.d0 )
-              DO m = 1, dimwann
-                ctmp1 = ctmp1 + cu(i,m,nkp) * CONJG( cu(j,m,nkp) )
-                ctmp2 = ctmp2 + cu(m,j,nkp) * CONJG( cu(m,i,nkp) )
-              END DO
-              WRITE(stdout,'(2i4,4f15.10)') i, j, ctmp1, ctmp2
-            END DO
-          END DO
-        END DO
-      END IF
+!
+! ... Unitariery of U matrix is checked
+      DO nkp = 1, nkpts
+          IF (  .NOT. zmat_unitary( cu(:,:,nkp), SIDE='both', TOLL=1.0d-8 )  )  &
+               WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")nkp
+      ENDDO
 
 ! ... Singular value decomposition
 
-      omt1 = 0.d0
-      omt2 = 0.d0
-      omt3 = 0.d0
+      omt1 = ZERO
+      omt2 = ZERO
+      omt3 = ZERO
 
       DO nkp = 1, nkpts
         DO nn = 1, nntot(nkp)
 
           cmtmp(:,:) = cm(:,:,nn,nkp)
-
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
-     &         singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
-          IF ( info /= 0 ) CALL errore('wannier', 'Singular value decomposition zgesvd failed 4', info)
+                       singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
+          IF ( info /= 0 ) &
+               CALL errore('wannier', 'Singular value decomposition failed 4', info)
 
           DO nb = 1, dimwann
-            omt1 = omt1 + wb(nkp,nn) * ( 1.d0 - singvd(nb)**2 )
-            omt2 = omt2 - wb(nkp,nn) * ( 2.d0 * LOG( singvd(nb) ) )
-            omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
+               omt1 = omt1 + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
+               omt2 = omt2 - wb(nkp,nn) * ( TWO * LOG( singvd(nb) ) )
+               omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
           END DO
 
         END DO
@@ -1498,61 +970,19 @@
       omt3 = omt3/DBLE(nkpts)
 
  
-! ... Write the final unitary transformations into a file
+! ... Write the final unitary transformations and all other data referring
+!     to the Wannier localization procedure to a file
  
-      OPEN( 29, FILE='unitary.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
+      CALL ioname('wannier',filename)
+      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+           CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
+      CALL file_close(wan_unit,PATH="/",ACTION="write")
 
-      WRITE(29) ( ( ( CU(J,I,N), J=1,dimwann ), i=1,dimwann ), n=1,nkpts )
+      CALL ioname('wannier',filename,LPATH=.FALSE.)
+      WRITE( stdout,"(/,'  Wannier transformation data written on file: ',a)") TRIM(filename)
 
-      CLOSE(29)
-
-! ... Write input file for plot wannier functions
-!
-      OPEN( 21, FILE='landing.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
-
-      WRITE (21) nkpts, nr1, nr2, nr3, mplwv, dimwann, mxddim, ntype
-      WRITE (21) recc(1,1), recc(2,1), recc(3,1)
-      WRITE (21) recc(1,2), recc(2,2), recc(3,2)
-      WRITE (21) recc(1,3), recc(2,3), recc(3,3)
-      WRITE (21) dirc(1,1), dirc(2,1), dirc(3,1)
-      WRITE (21) dirc(1,2), dirc(2,2), dirc(3,2)
-      WRITE (21) dirc(1,3), dirc(2,3), dirc(3,3)
-
-      DO  nkp = 1 , nkpts
-        WRITE (21) vkpt(1,nkp), vkpt(2,nkp), vkpt(3,nkp)
-      END DO
-
-      DO nsp = 1, ntype
-        write(21) natom(nsp), nameat(nsp)
-      END DO
-
-      DO nsp = 1, ntype
-        DO ni = 1, natom(nsp)
-          WRITE(21)( rat(i,ni,nsp), i=1,3 )
-        END DO
-      END DO
-
-      DO nkp = 1, nkpts
-        WRITE (21) npwk(nkp)
-      ENDDO
-
-      DO nkp = 1, nkpts
-        DO n = 1, mxddim
-          WRITE (21) nindpw(n,nkp)
-        END DO
-      END DO
-
-      DO nkp = 1, nkpts
-        DO nb= 1, dimwann
-          DO m = 1, npwk(nkp)
-            WRITE(21) cptwfp(m,nb,nkp)
-          END DO
-        END DO
-      END DO
-
-      CLOSE(21)
-
-! ... Deallocate arrays
+     
+! ... Deallocate local arrays
 
       DEALLOCATE( cwschur1, cwschur2, STAT=ierr )
            IF( ierr /=0 )&
@@ -1563,41 +993,17 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur3 ', ABS(ierr) )
       DEALLOCATE( cwschur4, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur4 ', ABS(ierr) )
-      DEALLOCATE( npwk, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating npwk ', ABS(ierr) )
       DEALLOCATE( cw1, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw1 ', ABS(ierr) )
       DEALLOCATE( cw2, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw2 ', ABS(ierr) )
-      DEALLOCATE( igv, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating igv ', ABS(ierr) )
-      DEALLOCATE( ninvpw, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ninvpw ', ABS(ierr) )
-      DEALLOCATE( cptwfp, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwfp ', ABS(ierr) )
 
-      DEALLOCATE( rphicmx1, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rphicmx1 ', ABS(ierr) )
-      DEALLOCATE( rphicmx2, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rphicmx2 ', ABS(ierr) )
-      DEALLOCATE( nphimx1, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nphimx1 ', ABS(ierr) )
-      DEALLOCATE( nphimx2, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nphimx2 ', ABS(ierr) )
-      DEALLOCATE( nphir, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nphir ', ABS(ierr) )
-      DEALLOCATE( cm, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cm ', ABS(ierr) )
       DEALLOCATE( csheet, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating csheet ', ABS(ierr) )
       DEALLOCATE( sheet, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating sheet ', ABS(ierr) )
-      DEALLOCATE( rave, r2ave, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rave r2ave ', ABS(ierr) )
-      DEALLOCATE( ca, cs, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ca cs ', ABS(ierr) )
-      DEALLOCATE( cu, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cu ', ABS(ierr) )
+      DEALLOCATE( cs, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cs ', ABS(ierr) )
       DEALLOCATE( cmtmp, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cmtmp ', ABS(ierr) )
       DEALLOCATE( singvd, STAT=ierr )
@@ -1624,13 +1030,12 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdodq3 ', ABS(ierr) )
       DEALLOCATE( cdq, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdq ', ABS(ierr) )
-      DEALLOCATE( nindpw, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nindpw ', ABS(ierr) )
 
       CALL deallocate_input()
+      CALL windows_deallocate()
       CALL kpoints_deallocate()
-!      CALL subspace_deallocate()
-!      CALL overlap_deallocate()
+      CALL subspace_deallocate()
+      CALL overlap_deallocate()
 
       CALL timing('write',OPR='stop')
       CALL timing('wannier',OPR='stop')

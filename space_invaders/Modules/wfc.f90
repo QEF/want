@@ -38,6 +38,8 @@
    !
    ! ... Bloch  EIGVEC
    COMPLEX(dbl), ALLOCATABLE :: evc(:,:,:)       ! wfc, DIM: npwkx+1, dimwinx, nkpts
+
+   LOGICAL :: alloc = .FALSE.
    
 
 !
@@ -48,6 +50,8 @@
    PUBLIC :: npwk
    PUBLIC :: igsort
    PUBLIC :: evc
+   PUBLIC :: alloc
+
    PUBLIC :: wfc_allocate, wfc_deallocate
 
 CONTAINS
@@ -72,6 +76,8 @@ CONTAINS
           IF (ierr/=0) CALL errore(subname,'allocating igsort',npwx*nkpts)
        ALLOCATE( evc(npwx+1,dimwinx,nkpts), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating eiw',(npwx+1)*dimwinx*nkpts)
+ 
+       alloc = .TRUE.
       
    END SUBROUTINE wfc_allocate
 
@@ -91,6 +97,7 @@ CONTAINS
             DEALLOCATE(evc, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating ecv ',ABS(ierr))
        ENDIF
+       alloc = .FALSE.
 
    END SUBROUTINE wfc_deallocate
 

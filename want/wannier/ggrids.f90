@@ -37,6 +37,7 @@
    REAL(dbl)                 :: ecut             ! energy cutoff (Ha)
    INTEGER,      ALLOCATABLE :: igv(:,:)         ! G vect components, DIM: 3*mxdgve
    
+   LOGICAL :: alloc = .FALSE.
 
 !
 ! end of declarations
@@ -45,6 +46,8 @@
    PUBLIC :: mxdgve, npwx
    PUBLIC :: npwk
    PUBLIC :: ecut, igv
+   PUBLIC :: alloc
+
    PUBLIC :: ggrids_allocate, ggrids_deallocate
 
 CONTAINS
@@ -67,6 +70,7 @@ CONTAINS
           IF (ierr/=0) CALL errore(subname,'allocating npwk',nkpts)
        ALLOCATE( igv(3,mxdgve), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating mxdgve',3*mxdgve)
+       alloc = .TRUE.
       
    END SUBROUTINE ggrids_allocate
 
@@ -86,6 +90,7 @@ CONTAINS
             DEALLOCATE(igv, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating igv ',ABS(ierr))
        ENDIF
+       alloc = .FALSE.
 
    END SUBROUTINE ggrids_deallocate
 

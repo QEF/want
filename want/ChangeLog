@@ -1,0 +1,35 @@
+
+=======================================================
+            WanT code:  Log of Changes 
+=======================================================
+
+01 Dec 2004      Utilities module updated. (AF)
+
+30 Nov 2004      Bug in the units of gaussians (disentangle) fixed. 
+                 Overlap_extract routine added and tested (do not re-compute overlaps 
+                 and projections but used the data produced by disentangle).
+                 PWs and wfc managing erased from wannier procedure.
+                 Onfly.dat, unitary.dat and landing.dat deleted. Other IOTK data files
+                 added. (AF) 
+
+28 Nov 2004      IOTK fmt used for the internal data files.
+                 Kpoints data collected in a module (update).
+                 Overlap, Subspace, Windows modules added. (AF)
+
+25 Nov 2004      Fized some portability bugs in the scripts: bash shell instead of
+                 sh (thanks to Abinit guys). (AF)
+
+20 Nov 2004      Severe bug in disentangle procedure fixed: nearest neighbor
+                 shell indexes were crazy in some routines. Very often the
+                 runtime execution was stable and only a minor error was produced;
+                 some other times it was not. Wannier localization procedure is
+                 usually poorly influenced by this change. (AF)
+
+10 Nov 2004      Tests updated. Test1 and 2 renamed to 2 and 3; Test1 on bulk
+                 silicon WFs added; Test4 about Al chains added. (AF) 
+                 Various other updates in the test scripts. 
+
+-------------------------------------------------
+Date: 01 Nov 2004    Version: WanT-1.1.0
+-------------------------------------------------
+

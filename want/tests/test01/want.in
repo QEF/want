@@ -1,5 +1,8 @@
 
 &INPUT_WAN
+    prefix = 'silicon'
+    postfix = '_WanT'
+    work_dir = './'
     win_min =  -13.0
     win_max =  14.8                    ! win_min, win_max
     dimwann = 8                        ! dimwann  

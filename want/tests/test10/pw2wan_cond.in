@@ -1,5 +1,6 @@
 
 &inputpp
+  outdir='./COND/'
   prefix='chain8'
   nk(1)=4,
   nk(2)=1,

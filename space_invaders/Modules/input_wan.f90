@@ -7,15 +7,16 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !=----------------------------------------------------------------------------=!
-MODULE input_wannier
+MODULE input_module
 !=----------------------------------------------------------------------------=!
 
   USE kinds
+  USE constants, ONLY : ZERO
+  USE parameters, ONLY : nshx      
   USE io_module, ONLY : prefix, postfix, work_dir, title
   IMPLICIT NONE
   SAVE
 
-  INTEGER, PARAMETER :: nshx = 100  ! maximum value for nshells
 
   REAL(dbl) :: win_min, win_max     ! outer energy window
   REAL(dbl) :: froz_min, froz_max   ! inner energy window
@@ -23,6 +24,7 @@ MODULE input_wannier
  
   REAL(dbl) :: alpha
   REAL(dbl) :: disentangle_thr      ! disentangle threshold for convergence
+  REAL(dbl) :: wannier_thr          ! wannier threshold 
   INTEGER :: maxiter, itrial
 
   INTEGER :: iphase
@@ -34,8 +36,8 @@ MODULE input_wannier
   INTEGER :: nwhich( nshx )
 
   namelist / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
-    alpha, maxiter, disentangle_thr, itrial, iphase, alphafix0, alphafix, niter, &
-    niter0, ncg, nshells, nwhich, ordering_type,  &
+    alpha, maxiter, disentangle_thr, wannier_thr, itrial, iphase, alphafix0, &
+    alphafix, niter, niter0, ncg, nshells, nwhich, ordering_type,  &
     prefix, postfix, work_dir, title
   
   CHARACTER(15)          :: wannier_center_units
@@ -57,7 +59,7 @@ CONTAINS
 
        USE io_module, ONLY: ionode, ionode_id
        USE mp, ONLY: mp_bcast
-       USE parser, ONLY: read_line, capital
+       USE parser_module, ONLY: read_line, capital
 
        !  win_min, win_max are the eigenvalues window bounds (in eV)
        !  froz_min, froz_max are the frozen eigenvalues window bounds (in eV)
@@ -77,13 +79,14 @@ CONTAINS
        work_dir = "./"
        title = "WanT Calculation"
 
-       win_min = 0.0d0
-       win_max = 0.0d0
+       win_min = ZERO
+       win_max = ZERO
        froz_min = -1.1d10 
        froz_max = -1.0d10
        alpha = 0.5d0
        maxiter = 1000
        disentangle_thr = 1d-8
+       wannier_thr = 1d-6
        iphase  = 1
        niter0 = 500
        alphafix0 = 0.5d0
@@ -106,48 +109,36 @@ CONTAINS
                      & ' reading namelist input_wan ', ABS(ios) )
        END IF
 
-       IF ( win_max <= win_min ) THEN
+       IF ( win_max <= win_min ) &
          CALL errore( ' read_input ', ' win_max is not larger than win_min ', 1 )
-       END IF
-       IF ( froz_max <= froz_min ) THEN
+       IF ( froz_max <= froz_min ) &
          CALL errore( ' read_input ', ' froz_max is not larger than froz_min ', 1 )
-       END IF
-       IF ( dimwann <= 0 ) THEN
+       IF ( dimwann <= 0 ) &
          CALL errore( ' read_input ', ' dimwann too small ', 1 )
-       END IF
-       IF ( alpha <= 0.0d0 ) THEN
+       IF ( alpha <= 0.0d0 ) &
          CALL errore( ' read_input ', ' alpha must be positive ', 1 )
-       END IF
-       IF ( maxiter <= 0 ) THEN
+       IF ( maxiter <= 0 ) &
          CALL errore( ' read_input ', ' maxiter must be positive ', 1 )
-       END IF
-       IF ( disentangle_thr <= 0 ) THEN
+       IF ( disentangle_thr <= 0 ) &
          CALL errore( ' read_input ', ' disentangle_thr must be positive ', 1 )
-       END IF
-       IF ( iphase /= 1 ) THEN
+       IF ( wannier_thr <= 0 ) &
+         CALL errore( ' read_input ', ' wannier_thr must be positive ', 1 )
+       IF ( iphase /= 1 ) &
          CALL errore( ' read_input ', ' iphase must be 1 (ONE) ', 1 )
-       END IF
-       IF ( niter0 < 0 ) THEN
+       IF ( niter0 < 0 ) &
          CALL errore( ' read_input ', ' niter0 must be non negative ', 1 )
-       END IF
-       IF ( niter <= 0 ) THEN
+       IF ( niter <= 0 ) &
          CALL errore( ' read_input ', ' niter must be positive ', 1 )
-       END IF
-       IF ( alphafix0 <= 0.0d0 ) THEN
+       IF ( alphafix0 <= 0.0d0 ) &
          CALL errore( ' read_input ', ' alphafix0 must be positive ', 1 )
-       END IF
-       IF ( alphafix <= 0.0d0 ) THEN
+       IF ( alphafix <= 0.0d0 ) &
          CALL errore( ' read_input ', ' alphafix must be positive ', 1 )
-       END IF
-       IF ( nshells <= 0 ) THEN
+       IF ( nshells <= 0 ) &
          CALL errore( ' read_input ', ' nshells must be greater than 0 ', 1 )
-       END IF
-       IF ( ANY( nwhich( 1:nshells ) <= 0 ) ) THEN
+       IF ( ANY( nwhich( 1:nshells ) <= 0 ) ) &
          CALL errore( ' read_input ', ' values for nwhich must be greater than 0 ', 1 )
-       END IF
-       IF ( itrial < 1 .OR. itrial > 3 ) THEN
+       IF ( itrial < 1 .OR. itrial > 3 ) &
          CALL errore( ' read_input ', ' itrial out of range ', 1 )
-       END IF
 
        DO i = 1, LEN_TRIM( ordering_type )
           ordering_type( i : i ) = capital( ordering_type( i : i ) )
@@ -209,7 +200,7 @@ CONTAINS
 
   SUBROUTINE card_wannier_center( input_line )
 
-    USE parser, ONLY: read_line, matches
+    USE parser_module, ONLY: read_line, matches
 
     IMPLICIT NONE
 
@@ -251,27 +242,26 @@ CONTAINS
 
 ! ...        Values below don't really matter, since rphiimx2 is not used when gauss_typ=1
 
-             rphiimx2(1,nwann)=0.0d0
-             rphiimx2(2,nwann)=0.0d0
-             rphiimx2(3,nwann)=0.0d0
+             rphiimx2(1,nwann)=ZERO
+             rphiimx2(2,nwann)=ZERO
+             rphiimx2(3,nwann)=ZERO
 
            ELSE IF ( gauss_typ(nwann) == 2 ) THEN
              READ(input_line,*) idum, ( rphiimx1(i,nwann), i=1,3 ), &
                ( rphiimx2(i,nwann), i=1,3 ), rloc(nwann)
 
            ELSE
-             WRITE(*,*) 'ERROR in trial Wannier centers: wrong gauss_typ'
-             STOP
+              CALL errore('card_wannier_center','Wrong wannier center type',nwann)
            END IF
          END DO
        ELSE
          gauss_typ = 0
-         rphiimx1 = 0.0d0
-         rphiimx2 = 0.0d0
+         rphiimx1 = ZERO
+         rphiimx2 = ZERO
          l_wann = 0
          m_wann = 0
          ndir_wann = 0
-         rloc = 0.0d0
+         rloc = ZERO
        END IF
 
      RETURN
@@ -280,7 +270,7 @@ CONTAINS
 !=----------------------------------------------------------------------------=!
 
   SUBROUTINE wannier_center_init( alat, avec )
-    USE constants, ONLY: bohr => bohr_radius_angs
+    USE constants, ONLY: bohr => bohr_radius_angs, ZERO
     USE converters_module, ONLY : cart2cry
 
     IMPLICIT NONE
@@ -289,10 +279,14 @@ CONTAINS
 ! ...  Converting WANNIER centers from INPUT to CRYSTAL units
 !      AVEC is in units of ALAT which is in Bohr
 !
+!      RLOC should be in Bohr and is converted here if is the case
+!      if wannier_center_units == crystal it is supposed to be already in Bohr
+!
        SELECT CASE ( TRIM(wannier_center_units) )
        CASE ( 'angstrom' )
            CALL cart2cry(rphiimx1,alat*bohr*avec(:,:),wannier_center_units)
            CALL cart2cry(rphiimx2,alat*bohr*avec(:,:),wannier_center_units)
+           rloc(:) = rloc(:) / bohr  
        CASE ( 'bohr' )
            CALL cart2cry(rphiimx1,alat*avec(:,:),wannier_center_units)
            CALL cart2cry(rphiimx2,alat*avec(:,:),wannier_center_units)
@@ -331,5 +325,5 @@ CONTAINS
   END SUBROUTINE deallocate_input
 
 !=----------------------------------------------------------------------------=!
-END MODULE
+END MODULE input_module
 !=----------------------------------------------------------------------------=!
