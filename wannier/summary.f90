@@ -250,7 +250,7 @@
           DO ik=1,nkpts
               WRITE(unit, " (/,4x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                               ik, vkpt(:,ik), dimwin(ik)
-              WRITE(unit, " (36x,'  imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
+              WRITE(unit, " (37x,'  imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
               WRITE(unit, "(3x,'Eigenvalues:')"  )
               WRITE(unit,'(2x, 8f9.4)') ( eig(i,ik), i=1,nbnd )
           ENDDO
