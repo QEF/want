@@ -78,7 +78,7 @@
 !
 ! ...  Startup
 !
-       CALL startup(version_number,MAIN_NAME='plot')
+       CALL startup( version_number, MAIN_NAME = 'plot' )
 
 !
 ! ...  Reading from file
