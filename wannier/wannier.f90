@@ -773,19 +773,21 @@
 
       WRITE(stdout, fmt=" (2x, 'Trial Wannier centers and Spreads (Omega)')")
 
-      CALL omega( dimwann, nkpts, nkpts, nntot(1), nnmx, nnlist(1,1), bk(1,1,1), wb(1,1),   &
-                  cm(1,1,1,1), csheet(1,1,1), sheet(1,1,1), rave(1,1), r2ave(1), rave2(1), func_om1,  &
-                  func_om2, func_om3, func_o, rtot, r2tot, func_i, func_d, func_od )
+      CALL omega( dimwann, nkpts, nkpts, nntot(1), nnmx, nnlist(1,1), bk(1,1,1), wb(1,1), &
+                  cm(1,1,1,1), csheet(1,1,1), sheet(1,1,1), rave(1,1), r2ave(1), rave2(1), &
+                  func_om1, func_om2, func_om3, func_o, rtot, r2tot, func_i, func_d, & 
+                  func_od )
 
 !...  Write centers and spread
       DO nwann = 1, dimwann
         WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
-           ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+           &' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ),  &
+                                        r2ave(nwann) - rave2(nwann)
       END DO  
       WRITE( stdout, * ) '  ' 
-      WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
-           1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
-          (rtot(ind),i=1,3), r2tot
+      WRITE( stdout, fmt= " ( 2x, '! Center Sum', &
+           &  1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+           (rtot(i),i=1,3), r2tot
               
       WRITE( stdout, * ) '  '
       WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
@@ -1332,9 +1334,9 @@
 
 ! ... Recalculate the average positions of the Wanns.
 
-      CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
-           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o ,   &
-           rtot, r2tot , func_d, func_od)
+      CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,  &
+           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o , &
+           rtot, r2tot, func_i, func_d, func_od)
 
       func_del1 = func_om1 - func_old1
       func_del2 = func_om2 - func_old2
@@ -1356,7 +1358,7 @@
 
       CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,        &
            csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,     &
-           rtot, r2tot , func_d, func_od)
+           rtot, r2tot , func_i, func_d, func_od)
 
       func0 = func_om1 + func_om2 + func_om3
       func_del1 = func_om1 - func_old1
@@ -1673,7 +1675,7 @@
 
         CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
              csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
-             rtot, r2tot , func_d, func_od)
+             rtot, r2tot, func_i, func_d, func_od)
 
         IF ( ncount <= niter0 ) THEN
           IF ( ( (ncount/nprint) * nprint +1) == ncount )  THEN
@@ -1681,13 +1683,14 @@
             WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") ncount
             WRITE(stdout, fmt=" (2x, 'Wannier centers and Spreads (Omega)')")
             DO nwann = 1, dimwann
-               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
-                     ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',&
+                    &  f10.6, ' )  Omega = ', f10.6 )" )  &
+                    nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
             END DO
             WRITE( stdout, * ) '  '
             WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
-                 1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
-                 (rtot(ind),i=1,3), r2tot
+                 & 1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+                 (rtot(i),i=1,3), r2tot
           END IF
         END IF
 
@@ -1863,20 +1866,21 @@
            
           CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
                csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
-               rtot, r2tot , func_d, func_od)
+               rtot, r2tot, func_i , func_d, func_od)
 
           IF ( ( (ncount/nprint) * nprint +1) == ncount ) THEN
             WRITE( stdout, * ) '  '
             WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") ncount
             WRITE(stdout, fmt=" (2x, 'Wannier centers and Spreads (Omega)')")
             DO nwann = 1, dimwann
-               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
-             ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',', &
+                 &  f10.6, ' )  Omega = ', f10.6 )" )  &
+                 nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
             END DO
             WRITE( stdout, * ) '  '
             WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
-                   1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
-                   (rtot(ind),i=1,3), r2tot
+                   & 1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+                   (rtot(i),i=1,3), r2tot
           END IF
 
           funca = func_om1 + func_om2 + func_om3
@@ -1905,13 +1909,14 @@
           WRITE( stdout, * ) '  '
           WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
           DO nwann = 1, dimwann
-            WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
-               ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+            WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',', &
+               & f10.6,' )  Omega = ', f10.6 )" )  &
+               nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
           END DO
           WRITE( stdout, * ) '  '
           WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
-               1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
-              (rtot(ind),i=1,3), r2tot
+               & 1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+              (rtot(i),i=1,3), r2tot
 
           WRITE( stdout, * ) '  '
           WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
@@ -1943,12 +1948,13 @@
       WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
       DO nwann = 1, dimwann
         WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
-           ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+           & ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), &
+                                         r2ave(nwann) - rave2(nwann)
       END DO
       WRITE( stdout, * ) '  '
       WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
-           1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
-          (rtot(ind),i=1,3), r2tot
+           & 1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+             (rtot(i),i=1,3), r2tot
 
       WRITE( stdout, * ) '  '
       WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
