@@ -258,6 +258,7 @@ CONTAINS
                 ntyp = ntyp + 1
                 atm(ntyp) = symb(ia)
                 na(ntyp) = 1
+                ityp(ia) = ntyp
           ENDIF
        ENDDO
        IF ( ntyp /= nsp ) CALL errore(subname,'Invalid NSP', ABS(ntyp-nsp) )
