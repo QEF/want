@@ -1929,7 +1929,7 @@
           WRITE (stdout, fmt="(4x,'Delta Omega Tot = ',0pe16.8)") func_del
           WRITE( stdout, * ) '  '
           WRITE( stdout, * ) ' ======================================================================'
-          EXIT
+          GO TO 8100
         END IF  
         ! EXIT
 
@@ -1969,6 +1969,8 @@
 
 
 ! ... End of the minimization loop
+
+8100  CONTINUE
 
       s3 = cclock()
 

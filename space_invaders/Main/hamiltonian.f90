@@ -194,6 +194,9 @@
 !
 !     Next lines (namelist reading) added by ANDREA (28 jan 2004)
       
+      nspts                       = 0
+      npts                        = 100
+      nbands                      = dimwann
       convert_self_energy         = .FALSE.
       check_self_energy           = .FALSE.
       calculate_spectral_func     = .FALSE.
@@ -207,8 +210,10 @@
 
 
 ! ... Usually nbands equals dimwann 
-      IF ( nbands > dimwann ) CALL errore('hamiltonian', 'wrong number of bands', nbands)
-      IF ( nspts > maxspts ) CALL errore('hamiltonian', 'wrong number of k-points',  nspts)
+      IF ( nbands > dimwann ) CALL errore('hamiltonian', 'nbands too large', nbands)
+      IF ( nspts > maxspts ) CALL errore('hamiltonian', 'nspts too large',  nspts)
+      IF ( nspts == 0 ) CALL errore('hamiltonian', 'nspts is mandatory',  1)
+ 
 
       ALLOCATE( point( nspts ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nspts )
