@@ -1,6 +1,6 @@
 
      Program POST-PROC v.2.1    starts ...
-     Today is 31Jan2005 at 16:59:58 
+     Today is 10Feb2005 at 17:26:31 
 
      Reading file gold1.save ...      only dimensions
      read complete
@@ -9,4 +9,4 @@
      read complete
 
      nbndx  =    10  nbnd   =    10  natomwfc =     9  npwx   =    2911
-     nelec  =   11.00 nkb   =    18  ngl    =    3604
+     nelec  =   11.00 nkb   =    18  ngl    =    4885

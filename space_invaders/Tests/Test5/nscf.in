@@ -18,7 +18,7 @@ Infinite Gold Chain USPP
       nat=1, 
       ntyp=1,
       ecutwfc=20.0,
-      ecutrho=160.0,
+      ecutrho=200.0,
       occupations='smearing',
       smearing='gaussian',
       degauss=0.01,

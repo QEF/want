@@ -55,7 +55,7 @@ MODULE uspp
   PRIVATE
   SAVE
   PUBLIC :: nlx, lpx, lpl, ap, aainit, indv, nhtol, nhtolm, nkb, nkbus, &
-       vkb, dvan, deeq, qq, qb, nhtoj, beta, becsum, deallocate_uspp
+       vkb, dvan, deeq, qq, qb, nhtoj, becsum, uspp_deallocate
   PUBLIC :: qq_so, dvan_so, deeq_nc 
   
 
@@ -87,7 +87,7 @@ MODULE uspp
        qq(:,:,:),             &! the q functions in the solid
        nhtoj(:,:)              ! correspondence n <-> total angular momentum
   COMPLEX(KIND=DP), ALLOCATABLE :: & 
-       qb(:,:,:,:)             ! the b FT of the Q(r) (i,j,ia,ib)
+       qb(:,:,:,:,:)           ! the b FT of the Q(r) for each kpt (i,j,ia,inn,ik)
   !
   COMPLEX(KIND=DP), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:
        qq_so(:,:,:,:),           &! Q_{nm}
@@ -96,9 +96,6 @@ MODULE uspp
   !
   ! spin-orbit coupling: qq and dvan are complex, qq has additional spin index
   ! noncolinear magnetism: deeq is complex (even in absence of spin-orbit)
-  !
-  REAL(KIND=DP), ALLOCATABLE :: &
-       beta(:,:,:)           ! beta functions for CP (without struct.factor)
   !
 CONTAINS
   !
@@ -254,7 +251,7 @@ CONTAINS
     return
   end function compute_ap
 
-  subroutine deallocate_uspp()
+  SUBROUTINE uspp_deallocate()
     IF( ALLOCATED( nhtol ) )    DEALLOCATE( nhtol )
     IF( ALLOCATED( indv ) )     DEALLOCATE( indv )
     IF( ALLOCATED( nhtolm ) )   DEALLOCATE( nhtolm )
@@ -268,7 +265,7 @@ CONTAINS
     IF( ALLOCATED( qq_so ) )    DEALLOCATE( qq_so )
     IF( ALLOCATED( dvan_so ) )  DEALLOCATE( dvan_so )
     IF( ALLOCATED( deeq_nc ) )  DEALLOCATE( deeq_nc )
-  end subroutine deallocate_uspp
+  END SUBROUTINE uspp_deallocate
 
 end module uspp
 

@@ -196,8 +196,8 @@
          DO i = 1, nwa
             READ ( 61, * ) hci_ac(i,j)
 !           hci_ac(i,j) = efac * hci_ac(i,j)
-         END DO
-      END DO
+         ENDDO
+      ENDDO
 
       CLOSE(61)
 

@@ -7,8 +7,12 @@ This test performs the calculation for the bulk conductance of a Gold chain
 as in Test2. The main difference is the here we adopt USPP instead of normal NCPP
 which requires the inclusion of augmentation terms both in overlap and projection
 calculation. The parameters of the DFT computations are exacly the same as before
-apart the kinetic energy cutoff which here is 20 Ry for the wfcs and 160 Ry for the 
+apart the kinetic energy cutoff which here is 20 Ry for the wfcs and 200 Ry for the 
 density.
+
+NOTE: if the cutoff for the density is lowered downto 160 Ry a WARNING is given
+      by wannier.x (and an error by hamiltonian.x) because the U rotations are
+      not strictly unitary. This is clearly due to USPP.
 
 
 

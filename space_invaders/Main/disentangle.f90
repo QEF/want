@@ -113,9 +113,9 @@
 
        ALLOCATE( ham(nbnd,nbnd,nkpts), STAT=ierr ) 
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ham ',(nbnd**2*nkpts))
-       ALLOCATE( lamp_tmp(nbnd,nbnd,nkpts), STAT=ierr )
+       ALLOCATE( lamp_tmp(dimwinx,dimwinx,nkpts), STAT=ierr )
            IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating lamp_tmp ',(nbnd**2*nkpts))
+           CALL errore(' disentangle ', ' allocating lamp_tmp ',(dimwinx**2*nkpts))
        ALLOCATE( z(nbnd,nbnd), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating z ', (nbnd*nbnd) )
        ALLOCATE( w(nbnd), STAT = ierr )
@@ -195,7 +195,7 @@
 !           NOTA BENE: instead of what happens in projections here no use od wfcs is done
 !                      moreover, wfcs have already been deallocated and wasted away
 
-             CALL projection_frozen( lamp, dimwann, dimwin,     &
+             CALL projection_frozen( lamp, dimwann, dimwin, dimwinx,  &
                   dimfroz, frozen, nkpts, nbnd)
 
 ! ...        Finally include the frozen states (if any) in the trial 
@@ -245,7 +245,7 @@
            DO ik = 1, nkpts
              IF ( dimwann > dimfroz(ik) )  THEN
                CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
-                    cm(1,1,1,ik), mtrx_in(1,1,ik), dimwann, dimwin,     &
+                    cm(1,1,1,ik), mtrx_in(1,1,ik), dimwann, dimwin, dimwinx,     &
                     dimfroz, indxnfroz, nbnd, nkpts, mxdnn )
              END IF
            END DO
@@ -290,7 +290,7 @@
 !              the subroutine lambda_avg
  
                klambda = lambda_avg( m, ik, lamp, cm(1,1,1,ik), nnlist, nshells, &
-                         nwhich, nnshell, wb, dimwann, dimwin, nbnd, nkpts, mxdnn )
+                         nwhich, nnshell, wb, dimwann, dimwin, dimwinx, nkpts, mxdnn )
                komega_i_est(ik) = komega_i_est(ik) - klambda
              END DO
            END IF
@@ -366,7 +366,7 @@
          o_error = ZERO
          DO ik = 1, nkpts
            aux = komegai( ik, lamp, cm(1,1,1,ik), wb, wbtot, nnlist, nshells, &
-                          nwhich, nnshell, dimwann, dimwin, nbnd, nkpts, mxdnn )
+                          nwhich, nnshell, dimwann, dimwin, dimwinx, nkpts, mxdnn )
            omega_i = omega_i + aux
 !          IF ( ( iter - INT (iter / DBLE(10) ) ) == 1 ) THEN
 !            WRITE( stdout, fmt=" (4x, 'K-point',i3, ' )     Komega_I Error =',f16.8 )") &
@@ -375,8 +375,9 @@
          END DO
          omega_i = omega_i/DBLE(nkpts)
  
-         WRITE( stdout, fmt=" (2x, 'Iteration = ',i5,'   Omega_I Error =',f16.8 )") &
-                iter, (omega_i_est - omega_i)/omega_i
+         WRITE( stdout, fmt=" (2x, 'Iteration = ',i5,'   Omega_I =',f16.8, &
+                              & 4x, 'Error =',f16.8 )") iter, omega_i_est, &
+                              (omega_i_est - omega_i)/omega_i
          o_error = ABS( (OMEGA_I_EST-OMEGA_I)/OMEGA_I )
 
  
@@ -385,7 +386,7 @@
          DO ik = 1, nkptS
            IF ( dimwann > dimfroz(ik) )  THEN
              CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,   &
-                  cm(1,1,1,ik), mtrx_out(1,1,ik), dimwann, dimwin,  &
+                  cm(1,1,1,ik), mtrx_out(1,1,ik), dimwann, dimwin, dimwinx,  &
                   dimfroz, indxnfroz, nbnd, nkpts, mxdnn )
            END IF
          END DO
@@ -530,11 +531,6 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating w ', ABS(ierr) )
 
        CALL cleanup()
-
-! XXX sistemare MPI environment
-!      CALL mp_end()
-
-!=---------------------------------------------------------------=
 
        STOP '*** THE END *** (disentangle.x)'
        END

@@ -8,7 +8,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE projection_frozen( lamp, dimwann, dimwin,  &
+       SUBROUTINE projection_frozen( lamp, dimwann, dimwin, dimwinx,  &
                   dimfroz, frozen, nkpts, nbnd)
 !=----------------------------------------------------------------------------------=
 
@@ -23,9 +23,9 @@
        INTEGER :: nbnd 
        INTEGER :: dimwann 
        INTEGER :: nkpts
-       INTEGER :: dimwin(nkpts) 
+       INTEGER :: dimwin(nkpts), dimwinx
        INTEGER :: dimfroz(nkpts)
-       COMPLEX(dbl) :: lamp(nbnd,nbnd,nkpts)
+       COMPLEX(dbl) :: lamp(dimwinx,dimwinx,nkpts)
        LOGICAL :: frozen(nbnd,nkpts)
 
        REAL(dbl),    ALLOCATABLE :: w(:)

@@ -15,7 +15,7 @@ OBJS= compar.o domega.o dot_bloch.o error.o \
       bachel.o simpsn.o ylmr2.o invmat.o rranf.o erf.o \
       init_us_1.o init_us_2.o qvan2.o sph_bes.o setqf.o \
       allocate_nlpot.o struct_fact.o ccalbec.o \
-      s_psi.o add_us_overlap.o
+      s_psi.o add_us_overlap.o check_us.o
 
 all : lib_invaders.a
 

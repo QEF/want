@@ -493,9 +493,6 @@
 
       CALL cleanup()
 
-! XXX sistemare MPI environment
-!       call mp_end()
-
       STOP '*** THE END *** (hamiltonian.x)'
       END
 
