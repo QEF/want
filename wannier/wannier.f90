@@ -262,10 +262,11 @@
          IF ( ierr/=0 ) CALL errore(' wannier ', ' allocating igv ', 3*mxdgve )
       READ(19) ( ( igv(i,j), i=1,3 ), j=1,mxdgve )
 
-      CLOSE(19)
-
       ALLOCATE( igsort( mxddim, nkpts ), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' allocating igsort ', mxddim*nkpts )
+
+      CLOSE(19)
+
 
 !
 ! ...  Converting WANNIER centers from INPUT to CRYSTAL units

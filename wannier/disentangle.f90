@@ -443,6 +443,7 @@
 ! ...  Setup the shells of b-vectors around each K-point
 
        recc = TRANSPOSE(bvec)
+       ! recc = bvec
        CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
             dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
 !
