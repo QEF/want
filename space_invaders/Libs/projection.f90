@@ -180,13 +180,14 @@
              !
              CALL gv_indexes( kgv, isort(:,ik), npwk(ik), ngx, ngy, ngz, NINDPW=nindpw(:) )
              !
-             ! ... apply the US augmentation
+             ! ... apply the US augmentation, supposing the input
+             !     localized functions behave as US orbitals
              !
-! XXX qui si puo' fare di meglio
-             CALL augment_psi( npwkx, npwk(ik), 1, ik, qq, evc(1,ib,ik), aux )
+             CALL s_psi( npwkx, npwk(ik), 1, ik, evc(1,ib,ik), aux )
 !
 ! DEBUG sostituisco con questo
 !             aux(1:npwk(ik)) = evc(1:npwk(ik),ib,ik)
+
              aux(npwk(ik)+1:npwkx) = CZERO
 
              cptwr = CZERO

@@ -188,7 +188,7 @@ SUBROUTINE s_psi( lda, n, m, ik, psi, spsi )
           END IF
        END DO
        !
-       CALL ZGEMM( 'N', 'N', n, m, nkb, (1.D0, 0.D0), vkb, &
+       CALL ZGEMM( 'N', 'N', n, m, nkb, (1.D0, 0.D0), vkb(1,1,ik), &
                    lda, ps, nkb, (1.D0, 0.D0), spsi, lda )
        !
        DEALLOCATE( ps )

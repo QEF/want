@@ -27,6 +27,15 @@
 ! SUBROUTINE  cry2cart(coord(3,:),basis(3,3)[,unit_str])
 ! </INFO>
 !
+
+   INTERFACE cart2cry
+      MODULE PROCEDURE cart2cry_rnk1
+      MODULE PROCEDURE cart2cry_rnk2
+   END INTERFACE
+   INTERFACE cry2cart
+      MODULE PROCEDURE cry2cart_rnk1
+      MODULE PROCEDURE cry2cart_rnk2
+   END INTERFACE
  
    PUBLIC :: cart2cry
    PUBLIC :: cry2cart
@@ -34,7 +43,22 @@
 CONTAINS
 
 !**********************************************************
-   SUBROUTINE cart2cry(coord,basis,unit_str)
+   SUBROUTINE cart2cry_rnk1(coord,basis,unit_str)
+   !**********************************************************
+      IMPLICIT NONE
+      REAL(dbl),   INTENT(inout)   :: coord(3)
+      REAL(dbl),   INTENT(in)      :: basis(3,3)
+      CHARACTER(*), OPTIONAL, INTENT(out)     :: unit_str
+      REAL(dbl)    :: coord_tmp(3,1)
+
+      coord_tmp(:,1) = coord(:) 
+      CALL cart2cry_rnk2(coord_tmp,basis,unit_str)
+      coord(:) = coord_tmp(:,1)
+   END SUBROUTINE cart2cry_rnk1
+
+
+!**********************************************************
+   SUBROUTINE cart2cry_rnk2(coord,basis,unit_str)
    !**********************************************************
       IMPLICIT NONE
       REAL(dbl),   INTENT(inout)   :: coord(:,:)
@@ -68,11 +92,26 @@ CONTAINS
       ENDDO
 
       IF ( PRESENT(unit_str) ) unit_str='crystal'
-   END SUBROUTINE cart2cry
+   END SUBROUTINE cart2cry_rnk2
 
 
 !**********************************************************
-   SUBROUTINE cry2cart(coord,basis,unit_str)
+   SUBROUTINE cry2cart_rnk1(coord,basis,unit_str)
+   !**********************************************************
+      IMPLICIT NONE
+      REAL(dbl),   INTENT(inout)   :: coord(3)
+      REAL(dbl),   INTENT(in)      :: basis(3,3)
+      CHARACTER(*), OPTIONAL, INTENT(out)     :: unit_str
+      REAL(dbl)    :: coord_tmp(3,1)
+
+      coord_tmp(:,1) = coord(:) 
+      CALL cry2cart_rnk2(coord_tmp,basis,unit_str)
+      coord(:) = coord_tmp(:,1)
+   END SUBROUTINE cry2cart_rnk1
+
+
+!**********************************************************
+   SUBROUTINE cry2cart_rnk2(coord,basis,unit_str)
    !**********************************************************
       IMPLICIT NONE
       REAL(dbl),   INTENT(inout)   :: coord(:,:)
@@ -100,7 +139,7 @@ CONTAINS
       ENDDO
 
       IF ( PRESENT(unit_str) ) unit_str='cartesian'
-   END SUBROUTINE cry2cart
+   END SUBROUTINE cry2cart_rnk2
 
 END MODULE converters_module
     

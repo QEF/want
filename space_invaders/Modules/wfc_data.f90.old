@@ -137,8 +137,12 @@ CONTAINS
               CALL init_us_2( npwk(ik), igsort(1,ik), xk(1,ik), vkb(1,1,ik) )
               CALL ccalbec( nkb, npwkx, npwk(ik), dimwinx, becp(1,1,ik), &
                             vkb(1,1,ik), evc(1,1,ik) )
-! XXX
-WRITE(8,"(2f15.9)") becp(:,:,ik)
+!! XXX
+!DO j = 1, nbnd
+!   WRITE(8,"('band = ',i3)") j
+!   WRITE(8,"(2f15.9)") becp(:,j,ik)
+!ENDDO
+
           ENDDO
       ENDIF
 

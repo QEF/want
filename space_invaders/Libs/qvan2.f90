@@ -20,7 +20,7 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
   !
   !
 #include "machine.h"
-  USE kinds, ONLY: DP => dbl
+  USE kinds, ONLY: dbl
   USE constants, ONLY : ZERO, CZERO, ONE, TWO, THREE, CI, EPS_m6
   USE us_module, ONLY: dq, qrad
   USE uspp_param, ONLY: lmaxq, nbrx
@@ -33,16 +33,16 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
   ! input: the second index of Q
   ! input: the number of the pseudopotential
 
-  real(kind=DP) :: ylmk0 (ngy, lmaxq * lmaxq), qmod (ngy)
+  real(kind=dbl) :: ylmk0 (ngy, lmaxq * lmaxq), qmod (ngy)
   ! the spherical harmonics
   ! input: moduli of the q+g vectors
-  complex(kind=DP) :: qg (ngy)
+  complex(kind=dbl) :: qg (ngy)
   ! output: the fourier transform of interest
   !
   !     here the local variables
   !
 
-  complex(kind=DP) :: sig
+  complex(kind=dbl) :: sig
   ! (-i)^L
 
   integer :: nb, mb, nmb, ivl, jvl, ig, lp, l, lm, i0, i1, i2, i3
@@ -57,7 +57,7 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
   ! the possible LM's compatible with ih,j
   ! counters for interpolation table
 
-  real(kind=DP) :: sixth, dqi, qm, px, ux, vx, wx, uvx, pwx, work
+  real(kind=dbl) :: sixth, dqi, qm, px, ux, vx, wx, uvx, pwx, work
   ! 1 divided by six
   ! 1 divided dq
   ! qmod/dq
@@ -129,7 +129,7 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
            i2 = i0 + 2
            i3 = i0 + 3
            uvx = ux * vx * sixth
-           pwx = px * wx * 0.5_DP
+           pwx = px * wx * 0.5_dbl
            work = qrad (i0, nmb, l, np) * uvx * wx + &
                   qrad (i1, nmb, l, np) * pwx * vx - &
                   qrad (i2, nmb, l, np) * pwx * ux + &

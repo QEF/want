@@ -13,24 +13,24 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
   !     lmax2 = (lmax+1)^2 is the total number of spherical harmonics
   !     Numerical recursive algorithm as given in Numerical Recipes
   !
-  USE kinds, ONLY: DP => dbl
-  USE constants, ONLY : PI, FPI, EPS_m9
+  USE kinds, ONLY: dbl
+  USE constants, ONLY : PI, FPI, EPS_m9, ZERO, ONE
   implicit none
   !
   ! Input
   !
-  integer :: lmax2, ng
-  real(kind=DP) :: g (3, ng), gg (ng)
+  INTEGER :: lmax2, ng
+  REAL(kind=dbl) :: g (3, ng), gg (ng)
   !
   ! Output
   !
-  real(kind=DP) :: ylm (ng,lmax2)
+  REAL(kind=dbl) :: ylm (ng,lmax2)
   !
   ! local variables
   !
-  real(kind=DP), parameter :: eps = EPS_m9
-  real(kind=DP), allocatable :: cost (:), phi (:), P(:,:,:)
-  real(kind=DP) :: c, gmod
+  real(kind=dbl), parameter :: eps = EPS_m9
+  real(kind=dbl), allocatable :: cost (:), phi (:), P(:,:,:)
+  real(kind=dbl) :: c, gmod
   integer :: lmax, ig, l, m, lm
   integer, external:: fact, semifact
   !
@@ -41,10 +41,10 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
   call errore (' ylmr', 'l > 6 or wrong number of Ylm required',lmax2)
 10 continue
   !
-  if (lmax == 0) then
-     ylm (:,1) =  sqrt (1.d0 / fpi)
-     return
-  end if
+  IF (lmax == 0) THEN
+     ylm (:,1) =  sqrt (ONE / FPI)
+     RETURN
+  ENDIF
   !
   !  theta and phi are polar angles, cost = cos(theta)
   !
@@ -52,7 +52,7 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
   do ig = 1, ng
      gmod = sqrt (gg (ig) )
      if (gmod < eps) then
-        cost(ig) = 0.d0
+        cost(ig) = ZERO
      else
         cost(ig) = g(3,ig)/gmod
      endif
@@ -61,10 +61,10 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
      !
      if (g(1,ig) > eps) then
         phi (ig) = atan( g(2,ig)/g(1,ig) )
-     else if (g(1,ig) < -1.d-9) then
-        phi (ig) = atan( g(2,ig)/g(1,ig) ) + pi
+     else if (g(1,ig) < -EPS_m9 ) then
+        phi (ig) = atan( g(2,ig)/g(1,ig) ) + PI
      else
-        phi (ig) = sign( pi/2.d0,g(2,ig) )
+        phi (ig) = sign( PI/2.0_dbl,g(2,ig) )
      end if
   enddo
   !
@@ -72,12 +72,12 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
   !
   lm = 0
   do l = 0, lmax
-     c = sqrt (dble(2*l+1) / fpi)
+     c = sqrt (dble(2*l+1) / FPI)
      if ( l == 0 ) then
-        P (:,0,0) = 1.d0
+        P (:,0,0) = ONE
      else if ( l == 1 ) then
         P (:,1,0) = cost(:)
-        P (:,1,1) = -sqrt(max(0d0,1.d0-cost(:)**2))
+        P (:,1,1) = -sqrt(max(ZERO,ONE-cost(:)**2))
      else
         !
         !  recursion on l for P(:,l,m)
@@ -86,7 +86,7 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
            P(:,l,m) = (cost(:)*(2*l-1)*P(:,l-1,m) - (l+m-1)*P(:,l-2,m))/(l-m)
         end do
         P(:,l,l-1) = cost(:) * (2*l-1) * P(:,l-1,l-1)
-        P(:,l,l)   = (-1)**l * semifact(2*l-1) * (max(0.d0,1.d0-cost(:)**2))**(dble(l)/2)
+        P(:,l,l)   = (-1)**l * semifact(2*l-1) * (max(ZERO,ONE-cost(:)**2))**(dble(l)/2)
      end if
      !
      ! Y_lm, m = 0

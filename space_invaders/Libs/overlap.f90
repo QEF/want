@@ -95,6 +95,8 @@
       USE uspp,           ONLY : qb
       USE kpoints_module, ONLY : dnn, ndnntot, bk   ! XXXX
       USE wfc_module,     ONLY : npwk
+      USE becmod,         ONLY : becp
+      USE ions_module,    ONLY : uspp_calculation
 
       IMPLICIT NONE
 
@@ -118,7 +120,7 @@
       INTEGER :: nkp2, npoint2, dimw2
       INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
       COMPLEX(dbl) :: cwin1( dimwinx ), cwin2
-      COMPLEX(dbl), ALLOCATABLE :: aug_psi(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
       REAL(dbl) :: norm
 
 ! ... END declarations
@@ -129,8 +131,8 @@
       IF( dimwinx /= MAXVAL( dimwin(:) ) ) THEN
         CALL errore(' overlap_base ', ' inconsistent window ', dimwinx )
       END IF
-      ALLOCATE( aug_psi(npwkx, dimwinx), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap_base','allocating aug_psi',npwkx*dimwinx)
+      ALLOCATE( aux(dimwinx, dimwinx), STAT=ierr )
+         IF (ierr/=0) CALL errore('overlap_base','allocating aux',dimwinx**2)
 
 ! ... Calculate cm(i,j,nkp,nn)=<u_i k|u_j k+dk> (keeping into account
 !     that if k+dk is outside (or should be outside) the first BZ it must be
@@ -193,17 +195,6 @@
                  IF ( ish == ndnntot)  &
                     CALL errore('overlap_base','unable to find the shell',1)
               ENDDO
-            
-              !
-              ! ... apply the augmentation operator to psi = S_aug * psi
-              !     accounting for the e^-ibr operator
-              !
-              CALL augment_psi(npwkx, npwk(nkp2), dimw2, nkp2, &
-                               qb(1,1,1,ish), evc(1,1,nkp2), aug_psi)
-              aug_psi(npwk(nkp2)+1:npwkx,:) = CZERO
-              aug_psi(:,dimw2+1:dimwinx) = CZERO
-
-
               ! XXXX
               ! this loop should be improved
 
@@ -217,7 +208,7 @@
 
                    cwin1( 1:dimw1 ) = CONJG( evc( ipw1, 1:dimw1, nkp1 ) ) 
                    DO j = 1, dimw2
-                       cwin2 = aug_psi(ipw2,j)       !evc( ipw2, j, nkp2 )
+                       cwin2 = evc( ipw2, j, nkp2 )
                        DO i = 1, dimw1
                             cm( i, j, nn, nkp1 ) = cm( i, j, nn, nkp1 ) + cwin1(i) * cwin2
                        ENDDO
@@ -227,11 +218,22 @@
               ENDDO
               ENDDO
 
+              !
+              ! ... add the augmentation term fo USPP
+              !
+              IF ( uspp_calculation ) THEN
+                  aux(:,:) = CZERO
+                  CALL add_us_overlap(dimwinx, dimw1, dimw2, ish,  &
+                                      becp(1,1,nkp1), becp(1,1,nkp2), aux)
+                  cm(1:dimw1,1:dimw2,nn,nkp1)= cm(1:dimw1,1:dimw2,nn,nkp1) + &
+                                               aux(1:dimw1,1:dimw2)
+              ENDIF
+
           ENDDO
       ENDDO
 
-      DEALLOCATE( aug_psi, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap_base','deallocating aug_psi',ABS(ierr))
+      DEALLOCATE( aux, STAT=ierr)
+         IF (ierr/=0) CALL errore('overlap_base','deallocating aux',ABS(ierr))
 
       CALL timing('overlap_base',OPR='stop')
 

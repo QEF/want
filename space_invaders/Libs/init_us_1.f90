@@ -346,10 +346,13 @@ SUBROUTINE init_us_1
   ! ... qb computation, added for WFs
   !     this function is radial in b and therefore need to be computed only for
   !     each b shell.  ( conversion from ang-1 to tpiba units is also performed)
+  !     Before gg is used instead of SQRT(gg) because there we are interested
+  !     only in the first element which is gg = 0
   !
   DO is=1,ndnntot
-      aux2(is) = ( dnn(is) * bohr / tpiba ) **2
+      aux2(is) = dnn(is) * bohr / tpiba 
   ENDDO
+
   !
   !
   do nt = 1, ntyp
@@ -362,6 +365,12 @@ SUBROUTINE init_us_1
       enddo
     endif
   enddo
+
+!! XXXX
+!DO is = 1,ndnntot
+!   WRITE(8,"('shell = ',i3)") is
+!   WRITE(8,"(2f15.9)") qb(:,:,:,is)
+!ENDDO
 
 
 #ifdef __PARA

@@ -3,6 +3,14 @@
             WanT code:  Log of Changes 
 =======================================================
 
+07 Feb 2005      Converters module updated with rank1 operations. Bugs fixed in
+                 the USPP implementation.
+
+06 Feb 2005      Undo of the below unification of augmentation routines.
+                 We keep on using s_psi but a different augmentation routine for
+                 overlap is used: add_us_overlap. This is for memory reason, 
+                 in order to avoid the allocation of large workspaces. (AF)
+              
 
 05 Feb 2005      s_psi and sb_psi routines unified in augment_psi routiene.
 
