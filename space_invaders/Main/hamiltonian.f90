@@ -404,13 +404,13 @@
       OPEN( 83, file='diagonal.dat', status='unknown', form='formatted' )
 
       DO iws = 1, nws
-        IF ( ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
-             ( ( indxws(1,iws) .eq.  1 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
-             ( ( indxws(1,iws) .eq. -1 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
-             ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  1 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
-!            ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq. -1 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
-!            ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq. -1 ) ) .or.  &
-             ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  1 ) ) ) THEN
+        IF ( ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  0) ) .OR. &
+             ( (indxws(1,iws) ==  1) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  0) ) .OR. &
+             ( (indxws(1,iws) == -1) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  0) ) .OR. &
+             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  1) .AND. (indxws(3,iws) ==  0) ) .OR. &
+             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) == -1) .AND. (indxws(3,iws) ==  0) ) .OR. &
+             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) == -1) ) .OR. &
+             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  1) ) ) THEN
 
           WRITE (100+iws,*) dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (82,*)' '
@@ -518,7 +518,7 @@
         END DO
         CALL zhpevx( 'n', 'i', 'u', dimwann, ap(1), zero, zero, 1, nbands, -um,     &
              m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
-        IF ( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (II)', info)
+        IF ( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (II)',-info)
         IF ( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (II)', info)
 
         DO i = 1, nbands
@@ -539,6 +539,7 @@
         DO irk = 1, tnkpts
           WRITE (27, fmt="(2e16.8)") xval(irk), en_band(i,irk)
         END DO
+        WRITE( 27, *) 
       END DO
 
       CLOSE( 27 )
