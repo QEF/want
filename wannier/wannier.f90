@@ -324,7 +324,8 @@
 
         READ(20) ( igsort( np, nkp ), np=1, npwk(nkp) )
 
-        CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), nr1, nr2, nr3, ninvpw(:,nkp), nindpw(:,nkp) )
+        CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), nr1, nr2, nr3, &
+                         ninvpw(:,nkp), nindpw(:,nkp) )
 
         READ(20) ( ( cptwfp( np, iib, nkp ), np=1, npwk(nkp) ), iib=1, dimwann )
 

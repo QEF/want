@@ -124,7 +124,7 @@
          WRITE( stdout, *) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
          CALL errore(' wigner_size ', ' wrong total number of points ', tot )
        ELSE
-         WRITE( stdout, fmt="(2x,'Generation K-ponts: SUCCESS!!!')")
+         WRITE( stdout, fmt="(2x,'K-points generation in Wigner-size: SUCCESS')")
        END IF
 
        RETURN

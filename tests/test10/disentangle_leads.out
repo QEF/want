@@ -1,0 +1,155 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =       Norm Conserv. Pseudopot. Impl.       =
+              =                                            =
+  ======================================================================
+  
+  
+  Program <disentangle>  v. -1.1.  starts ...
+  Date  5Nov2004 at 19: 0:16 
+
+  ======================================================================
+  =                         Lattice parameters                         =
+  ======================================================================
+   
+  Alat =  10.3557 (Bohr)
+  Alat =   5.4800 (Ang )
+   
+  Crystal axes:
+                in units of Bohr                 in lattice units
+    a(1) = ( 10.3557  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 23.3003  0.0000 )     (   0.0000  2.2500  0.0000 )
+    a(3) = (  0.0000  0.0000 23.3003 )     (   0.0000  0.0000  2.2500 )
+  Crystal axes: (Ang)
+    a(1) = (  5.4800  0.0000  0.0000 )
+    a(2) = (  0.0000 12.3300  0.0000 )
+    a(3) = (  0.0000  0.0000 12.3300 )
+  
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in lattice units
+    b(1) = (  0.6067  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.2697  0.0000 )     (   0.0000  0.4444  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.4444 )
+  
+  Kinetic energy cut-off =    20.00 (Ry)
+  
+  Uniform grid used in wannier calculations:
+    nk = (  8  1  1 )      s = (  0.00  0.00  0.00 )
+    total number of k points =    8
+   
+   Energy windows (in eV) and band-space minimization parameters:
+    outer window: E  = (-22.0000 ,  -4.5000 )
+    inner window: NOT used --> NO FROZEN STATES
+
+    Number of bands in PW calculation =   12
+    Max number of bands within the energy window =     8
+    Number of Wannier functions required =     8
+
+  K-point shells: 
+    Number of shells =   2
+    Selected shells  =   1  4
+
+  Minimization data: 
+    Mixing parameter (alpha)=  0.500
+    Max iter =   300
+    Starting guess orbitals (itrial) =     3
+  
+  ======================================================================
+  =                      B-shell calculations                          =
+  ======================================================================
+  
+  K-point calculation: (cartesian coordinates in Ang^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250
+    k point   2:   (   0.14332  0.00000  0.00000 ),   weight =   0.1250
+    k point   3:   (   0.28664  0.00000  0.00000 ),   weight =   0.1250
+    k point   4:   (   0.42996  0.00000  0.00000 ),   weight =   0.1250
+    k point   5:   (   0.57328  0.00000  0.00000 ),   weight =   0.1250
+    k point   6:   (   0.71660  0.00000  0.00000 ),   weight =   0.1250
+    k point   7:   (   0.85993  0.00000  0.00000 ),   weight =   0.1250
+    k point   8:   (   1.00325  0.00000  0.00000 ),   weight =   0.1250
+  
+  Nearest-neighbour shells for k-point 1: (in Ang^-1)
+    shell (  1 )    radius =   0.14332
+    shell (  2 )    radius =   0.28664
+    shell (  3 )    radius =   0.42996
+    shell (  4 )    radius =   0.50959
+    shell (  5 )    radius =   0.52936
+    shell (  6 )    radius =   0.57328
+    shell (  7 )    radius =   0.58467
+    shell (  8 )    radius =   0.66674
+    shell (  9 )    radius =   0.71660
+    shell ( 10 )    radius =   0.72066
+    shell ( 11 )    radius =   0.73478
+    shell ( 12 )    radius =   0.76703
+  
+  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
+    shell (  1 )    neighbours  =   2
+    shell (  4 )    neighbours  =   4
+  
+  Check shell dimensionality and weights:
+    shell (  1 )    dimensionality  =   1
+    w_b weight is 1/b^2 times  0.5000
+  
+  
+  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
+  otherwise code will stop! 
+  
+  Check shell dimensionality and weights:
+    shell (  4 )    dimensionality  =   2
+    w_b weight is 1/b^2 times  0.5000
+  
+  
+  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
+  otherwise code will stop! 
+  Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)
+  
+  List of the  6 vectors b_k: (Ang^-1) 
+    b_k   1:   (   0.14332  0.00000  0.00000 ),   weight =  24.3417
+    b_k   2:   (  -0.14332  0.00000  0.00000 ),   weight =  24.3417
+    b_k   3:   (   0.00000 -0.50959  0.00000 ),   weight =   1.9255
+    b_k   4:   (   0.00000  0.00000 -0.50959 ),   weight =   1.9255
+    b_k   5:   (   0.00000  0.00000  0.50959 ),   weight =   1.9255
+    b_k   6:   (   0.00000  0.50959  0.00000 ),   weight =   1.9255
+  
+  The  3  bk directions are:
+    dir 1:   (   0.14332  0.00000  0.00000 ) 
+    dir 2:   (   0.00000 -0.50959  0.00000 ) 
+    dir 3:   (   0.00000  0.00000 -0.50959 ) 
+  
+
+  Initial trial subspace: projected localized orbitals
+
+  Gaussian centers: (cart. coord. in Bohr)
+    Center =   1 Type = 1 Gaussian  = (  1.152733  0.000000  0.000000 ) 
+    Center =   2 Type = 1 Gaussian  = (  1.152733  0.000000  0.000000 ) 
+    Center =   3 Type = 1 Gaussian  = (  1.152733  0.000000  0.000000 ) 
+    Center =   4 Type = 1 Gaussian  = (  3.741658  0.000000  0.000000 ) 
+    Center =   5 Type = 1 Gaussian  = (  6.330584  0.000000  0.000000 ) 
+    Center =   6 Type = 1 Gaussian  = (  6.330584  0.000000  0.000000 ) 
+    Center =   7 Type = 1 Gaussian  = (  6.330584  0.000000  0.000000 ) 
+    Center =   8 Type = 1 Gaussian  = (  8.919510  0.000000  0.000000 ) 
+
+ ======================================================================
+ =                   Starting Iteration loop                          =
+ ======================================================================
+
+  Iteration =     1   Omega_I Error =      0.00000000
+
+  Convergence achieved!!
+
+  Final Omega_I (Bohr^2, Angstrom^2)     66.58715733       18.64628829
+ ======================================================================
+
+   <global routines>
+             clock number :     5
+
+              disentangle :    20.80s CPU 
+ 
+                  bshells :     0.02s CPU
+                  overlap :    11.14s CPU
+             overlap_base :    11.12s CPU
+               projection :     8.71s CPU
+
+

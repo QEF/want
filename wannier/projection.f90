@@ -401,9 +401,7 @@
 
            IF ( verbosity == 'high' ) THEN
 ! ...        Check unitariety
-             WRITE(stdout,*) ' '
-             WRITE(stdout,*) ' '
-             WRITE(stdout,*) 'k-point',nkp
+             WRITE(stdout,"(2/,'k-point')") nkp
  
 ! ...        Note that cu.transpose(cu) is *NOT* an identity dimwin(nkp) by dimwin(nkp) 
 !            matrix, but transpose(cu).cu is a dimwann by dimwann identity matrix. 
@@ -411,8 +409,7 @@
 !            for the latter (what this means is that the columns of cu are orthonormal
 !            vectors).
  
-             WRITE(stdout,*) ' '
-             WRITE(stdout,*) 'transpose(cu).cu:'
+             WRITE(stdout,"(/,'transpose(cu).cu:')") 
              DO i = 1, dimwann
                DO j = 1, dimwann
                  ctmp = czero
