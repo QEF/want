@@ -167,8 +167,8 @@
       REAL(dbl), ALLOCATABLE :: dnlg(:,:,:)   ! dnlg(mxddim,3,nkpts)
       REAL(dbl), ALLOCATABLE :: dnlkg(:,:,:)  ! dnlkg(mxddim,0:3,nkpts)
 
-      REAL(dbl) :: dirc(3,3), recc(3,3), dirl(3,3)
-      REAL(dbl) :: diri(3,3), reci(3,3)
+      REAL(dbl) :: dirc(3,3), recc(3,3)
+      REAL(dbl) :: reci(3,3)
       REAL(dbl) :: avec(3,3), bvec(3,3)
 
       INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
@@ -297,7 +297,6 @@
 
       dirc = TRANSPOSE( avec ) * bohr
       recc = TRANSPOSE( bvec ) / bohr
-      diri = dirc
       reci = recc
       
 !...  Start writing output
@@ -330,7 +329,7 @@
           DO m = 1, 3
             poscart(m,ni,nsp) = 0.d0
             DO j=1,3
-              poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * dirc(j,m)
+              poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * avec(m,j) * bohr
             END DO
           END DO
           WRITE( stdout, fmt="(4x, a, 2x,'tau( ',I3,' ) = (', 3F8.4, ' )' )" ) &
@@ -476,7 +475,6 @@
 
       K_POINTS:  DO nkp = 1, nkpts
 
-        ! SIZE( cptwfp, 1), SIZE( cptwfp, 2), SIZE( cptwfp, 3), nplwkp( nkp ), nbande
         READ(20) nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
 
         IF( ( SIZE( cptwfp, 1) < nsiz1_ ) .OR. ( SIZE( cptwfp, 2) < nsiz2_ ) &

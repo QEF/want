@@ -39,15 +39,15 @@
        CHARACTER(LEN=2) :: nameat(mxdtyp)
  
        INTEGER :: nkpts, nk(3)
-       INTEGER, ALLOCATABLE :: kgv(:,:)
+       INTEGER, ALLOCATABLE :: igv(:,:)
        INTEGER, ALLOCATABLE :: isort(:,:)
-       INTEGER, ALLOCATABLE :: mtxd(:)
+       INTEGER, ALLOCATABLE :: ngwk(:)
        REAL(dbl), ALLOCATABLE :: vkpt(:,:)
        REAL(dbl), ALLOCATABLE :: evecr(:,:,:)
        REAL(dbl), ALLOCATABLE :: eveci(:,:,:)
        REAL(dbl), ALLOCATABLE :: eiw(:,:)
        REAL(dbl) :: s(3)
-       REAL(dbl) :: emax
+       REAL(dbl) :: emax, enmax
  
        INTEGER, ALLOCATABLE :: nnshell(:,:)
        INTEGER, ALLOCATABLE :: nnlist(:,:)
@@ -70,6 +70,7 @@
        COMPLEX(dbl), ALLOCATABLE :: lamp(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: camp(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: eamp(:,:,:)
+       COMPLEX(dbl), ALLOCATABLE :: eamp_save(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: mtrx_in(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: mtrx_out(:,:,:)
        INTEGER, ALLOCATABLE :: dimwin(:)
@@ -260,9 +261,9 @@
 ! ...  Read grid information, and G-vectors 
  
        READ( 19 ) mxdgve 
-       ALLOCATE( kgv(3,mxdgve), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating kgv ', (3*mxdgve) )
-       READ( 19 ) ( ( kgv(i,j), i=1,3 ), j=1, mxdgve )
+       ALLOCATE( igv(3,mxdgve), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating igv ', (3*mxdgve) )
+       READ( 19 ) ( ( igv(i,j), i=1,3 ), j=1, mxdgve )
 !
 ! ...  Calculate grid of K-pointS
  
@@ -298,8 +299,8 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating iwork ', 5*mxdbnd )
        ALLOCATE( isort(mxddim,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating isort ', mxddim*nkpts )
-       ALLOCATE( mtxd(nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating mtxd ', nkpts )
+       ALLOCATE( ngwk(nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ngwk ', nkpts )
 
        ALLOCATE( eiw(mxdbnd,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating eiw ', mxdbnd*nkpts )
@@ -334,6 +335,8 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating camp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( eamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
+       ALLOCATE( eamp_save(mxdbnd,mxdbnd,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( mtrx_in(mxdbnd,mxdbnd,nkpts), STAT = ierr )
            IF( ierr /=0 ) &
            CALL errore(' disentangle ', ' allocating mtrx_in ', mxdbnd*mxdbnd*nkpts )
@@ -367,9 +370,9 @@
 !
 !        Read all dimensions first, then k-dependent arrais
 !
-         READ(19) mtxd(nkp), imin(nkp), imax(nkp), dimwin(nkp)
+         READ(19) ngwk(nkp), imin(nkp), imax(nkp), dimwin(nkp)
 
-!        WRITE( stdout,125) nkp, dimwin(nkp), mtxd(nkp)
+!        WRITE( stdout,125) nkp, dimwin(nkp), ngwk(nkp)
 !125     FORMAT('k-point',i5,2x,'dimwin ',i2,' ngwk ',i5)
 
          IF ( dimwin(nkp) < dimwann )  &
@@ -418,10 +421,10 @@
 
        DO nkp = 1, nkpts
 
-         READ(19) ( isort(j,nkp), j=1, mtxd(nkp) ) 
+         READ(19) ( isort(j,nkp), j=1, ngwk(nkp) ) 
          READ(19) ( eiw(j,nkp), j=1, dimwin(nkp) )
-         READ(19) ( ( evecr(j,i,nkp), j=1, mtxd(nkp) ), i=1, dimwin(nkp) )
-         READ(19) ( ( eveci(j,i,nkp), j=1, mtxd(nkp) ), i=1, dimwin(nkp) )
+         READ(19) ( ( evecr(j,i,nkp), j=1, ngwk(nkp) ), i=1, dimwin(nkp) )
+         READ(19) ( ( eveci(j,i,nkp), j=1, ngwk(nkp) ), i=1, dimwin(nkp) )
          READ(19) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )
 
          IF ( dimfroz(nkp) > 0 )  READ(19) ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
@@ -444,8 +447,9 @@
 !
 ! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
 
-       call overlap( kgv, vkpt, avec, evecr, eveci, isort, mtxd, dimwin,    &
-            nntot, nnlist, nncell, cm, emax, mxdgve, mxddim, nkpts,        &
+       enmax = emax ! overlap changes the input value
+       call overlap( igv, vkpt, avec, evecr, eveci, isort, ngwk, dimwin,    &
+            nntot, nnlist, nncell, cm, enmax, mxdgve, mxddim, nkpts,        &
             mxdnn, mxdbnd, ngx, ngy, ngz, mxddim, nkpts, ndwinx )
 !
 !=----------------------------------------------------------------------------------------------=
@@ -491,7 +495,7 @@
                WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected localized orbitals' )")
                WRITE( stdout,*) ' '
                CALL projection( avec, lamp, evecr, eveci, vkpt,             &
-                    kgv, isort, mtxd, dimwin, dimwann, dimfroz,             &
+                    igv, isort, ngwk, dimwin, dimwann, dimfroz,             &
                     mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,   &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                  &
                     m_wann, ndir_wann, rloc, ndwinx)
@@ -527,7 +531,7 @@
 
              IF ( ITRIAL == 3 ) THEN
                CALL projection( avec, lamp, evecr, eveci, vkpt,              &
-                    kgv, isort, mtxd, dimwin, dimwann, dimfroz,              &
+                    igv, isort, ngwk, dimwin, dimwann, dimfroz,              &
                     mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,    &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                     m_wann, ndir_wann, rloc, ndwinx )
@@ -845,7 +849,6 @@
 !      same if we replace eamp by lamp in the write statement below.
  
        OPEN( UNIT=8, FILE='subspace.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
-
 !
 ! ...  Slight change in the format by ANDREA (28 jan 2004)
 !      REPETITA IUVANT for self-energy conversion to wannier basis  
@@ -853,13 +856,12 @@
 !
        WRITE(8) nkpts     
        WRITE(8) ( imin(nkp), imax(nkp), nkp=1,nkpts )
-
-
        DO nkp = 1, nkpts
          WRITE(8) dimwann, ( (eamp(j,i,nkp), j=1, dimwin(nkp) ), i=1, dimwann )
        END DO
-
        CLOSE(8)
+
+       eamp_save = eamp
 
        IF ( cflag == 1 )  THEN
          WRITE(stdout,*) ' '
@@ -925,12 +927,17 @@
 
        CLOSE(9)
 
-       DEALLOCATE( kgv, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating kgv ', ABS(ierr) )
+
+       CALL intf( bvec, emax, nk, s, dimwann, nshells, nwhich, nkpts, mxddim, &
+         ndwinx, mxdbnd, ngx, ngy, ngz, ngm, igv, ngwk, dimwin, evecr, eveci, &
+         eamp_save, vkpt, isort )
+
+       DEALLOCATE( igv, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating igv ', ABS(ierr) )
        DEALLOCATE( isort, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating isort ', ABS(ierr) )
-       DEALLOCATE( mtxd, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating mtxd ', ABS(ierr) )
+       DEALLOCATE( ngwk, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ngwk ', ABS(ierr) )
        DEALLOCATE( vkpt, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating vkpt ', ABS(ierr) )
        DEALLOCATE( evecr, STAT=ierr )
@@ -1006,8 +1013,6 @@
 
 
        CALL deallocate_input()
-
-       CALL intf()
 
        CALL timing('disentangle',OPR='stop')
        CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='disentangle')
