@@ -18,10 +18,11 @@ info:
 	@echo "     test3         Gold chain (general geometry)"
 	@echo "     test4         Aluminum chain (within disentangle)"
 	@echo "     test5         Gold chain within USPP"
-	@echo "     test5         Silicon WFs within USPP"
+	@echo "     test6         Silicon WFs within USPP"
+	@echo "     test7         Spin polarized Nichel chain (USPP)"
 	@echo " "
 
-all: test1 test2 test3 test4 test5 test6
+all: test1 test2 test3 test4 test5 test6 test7
 
 
 test1:
@@ -36,6 +37,8 @@ test5:
 	cd Test5 ; $(MAKE) all
 test6:
 	cd Test6 ; $(MAKE) all
+test7:
+	cd Test7 ; $(MAKE) all
 
 
 want:
@@ -45,6 +48,7 @@ want:
 	cd Test4 ; $(MAKE) want
 	cd Test5 ; $(MAKE) want
 	cd Test6 ; $(MAKE) want
+	cd Test7 ; $(MAKE) want
 
 clean:
 	cd Test1 ; $(MAKE) clean
@@ -53,4 +57,5 @@ clean:
 	cd Test4 ; $(MAKE) clean
 	cd Test5 ; $(MAKE) clean
 	cd Test6 ; $(MAKE) clean
+	cd Test7 ; $(MAKE) clean
 
