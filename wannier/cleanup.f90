@@ -45,6 +45,8 @@ CONTAINS
       USE wfc_module,          ONLY : wfc_deallocate, wfc_alloc => alloc 
       USE localization_module, ONLY : localization_deallocate, loc_alloc => alloc 
       USE timing_module,       ONLY : timing_deallocate, timing_alloc => alloc 
+      USE struct_fact_data_module,  &
+                               ONLY : struct_fact_data_deallocate, strf_alloc => alloc 
       IMPLICIT NONE
       
       IF ( input_alloc )    CALL input_deallocate()
@@ -57,6 +59,7 @@ CONTAINS
       IF ( wfc_alloc )      CALL wfc_deallocate()
       IF ( loc_alloc )      CALL localization_deallocate()
       IF ( timing_alloc )   CALL timing_deallocate()
+      IF ( strf_alloc )     CALL struct_fact_data_deallocate()
 
    END SUBROUTINE cleanup
 

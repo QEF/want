@@ -249,7 +249,7 @@ CONTAINS
       IF( PRESENT( nindpw ) ) nindpw(np) = npoint  ! index
       IF( PRESENT( ninvpw ) ) ninvpw(npoint) = np  ! index
 
-    END DO
+    ENDDO
    
     RETURN
   END SUBROUTINE

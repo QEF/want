@@ -104,6 +104,7 @@
 
 ! 
 ! ...  other allocations
+
        CALL subspace_allocate()
        CALL overlap_allocate()
 

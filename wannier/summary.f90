@@ -19,14 +19,15 @@
    USE io_module, ONLY : title, prefix, work_dir
    USE input_module, ONLY : input_alloc => alloc
    USE input_module
-   USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat
+   USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
    USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, &
                               bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
-                              dimfroz, lfrozen, dimwinx
+                              dimfroz, lfrozen, dimwinx, nspin
    !
    ! pseudopotential modules
+   USE ions_module,     ONLY : uspp_calculation
    USE pseud_module,    ONLY : zp, alps, alpc, cc, aps, nlc, nnl, lmax, lloc, &
                               a_nlcc, b_nlcc, alpha_nlcc
    USE atom_module,     ONLY : mesh, xmin, dx, numeric, nlcc
@@ -157,8 +158,10 @@
       ! ... Lattice
       IF ( lattice_alloc ) THEN
           WRITE( unit, " (  '<LATTICE>')" )
-          WRITE( unit, " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
-          WRITE( unit, " (2x,'Alat = ', F8.4, ' (Ang )',/ )" ) alat * bohr
+          WRITE( unit, " (2x,'Alat  = ', F12.7, ' (Bohr)' )" ) alat
+          WRITE( unit, " (2x,'Alat  = ', F12.7, ' (Ang )' )" ) alat * bohr
+          WRITE( unit, " (2x,'Omega = ', F12.7, ' (Bohr^3)' )" ) omega
+          WRITE( unit, " (2x,'Omega = ', F12.7, ' (Ang^3 )',/ )" ) omega * bohr**3
           WRITE( unit, " (2x, 'Crystal axes:' ) ")
           WRITE( unit, " (16x,'in units of Bohr',17x,'in Alat units' )")
           DO j=1,3
@@ -186,8 +189,11 @@
       IF ( ions_alloc ) THEN 
           WRITE( unit, " (  '<IONS>')" )
           WRITE( unit, " (2x,'Number of chemical species =', i3 ) " ) nsp
-          IF ( assume_ncpp )  &
+          IF ( assume_ncpp )  THEN
              WRITE( unit, " (2x,'WARNING: Pseudopots not read, assumed to be norm cons.')") 
+          ELSEIF ( uspp_calculation ) THEN
+             WRITE( unit, " (2x,'Calculation is done within US pseudopot.',/)") 
+          ENDIF
           DO is=1, nsp
              WRITE( unit, "(5x, 'Pseudo(',i2,') = ',a)") is, TRIM(psfile(is))
           ENDDO
@@ -326,12 +332,13 @@
                               win_min, win_max
           WRITE( unit,"(4x,'Max number of bands within the energy window = ',i5)") dimwinx
           WRITE( unit,"(/,2x,'Electronic Structure from DFT calculation:')")
-          WRITE( unit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4)") nkpts, nbnd
+          WRITE( unit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4,',')") nkpts, nbnd
+          WRITE( unit,"(  4x,'nspin =',i4 ) " ) nspin
           WRITE( unit,"(  4x,'Fermi energy =',f15.9,' eV')") efermi
           DO ik=1,nkpts
               WRITE(unit, " (/,4x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                               ik, vkpt(:,ik), dimwin(ik)
-              WRITE(unit, " (37x,'  imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
+              WRITE(unit, " (41x,'imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
               WRITE(unit, "(3x,'Eigenvalues:')"  )
               WRITE(unit,'(2x, 8f9.4)') ( eig(i,ik), i=1,nbnd )
           ENDDO

@@ -367,7 +367,23 @@
       DEALLOCATE( vkpr, STAT=ierr )
       IF ( ierr /= 0) CALL errore('bshell', 'deallocating vkpr', ABS(ierr))
 
-
+!! XXXXX
+!WRITE(0,"(a,/)") 'NNCELL'
+!DO i=1,nkpts
+!   WRITE(0,"(a,i3)") 'kpt =',i
+!   DO nn = 1, nntot(i)
+!      WRITE(0,"(4x,'nn =',i3,3x,'cell ='3i2)") nn,nncell(:,i,nn)
+!   ENDDO
+!ENDDO
+!! XXXXX
+!WRITE(0,"(a,/)") 'BK'
+!DO i=1,nkpts
+!   WRITE(0,"(a,i3)") 'kpt =',i
+!   DO nn = 1, nntot(i)
+!      WRITE(0,"(4x,'nn =',i3,3x,'b ='3f7.4)") nn,bk(:,i,nn)
+!   ENDDO
+!ENDDO
+!
       CALL timing('bshells',OPR='stop')
 
       RETURN

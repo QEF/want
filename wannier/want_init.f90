@@ -27,9 +27,12 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE input_module,    ONLY : wannier_center_init, input_alloc => alloc, assume_ncpp
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
    USE ions_module,  ONLY : ions_read_ext, ions_init
-   USE windows_module,  ONLY : windows_read_ext, windows_init, eig
+   USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin
    USE kpoints_module,  ONLY : nk, s, nkpts, vkpt, &
                                kpoints_read_ext, bshells_init
+   USE us_module,   ONLY : okvan
+   USE uspp_param,  ONLY : tvanp
+   USE ions_module, ONLY : uspp_calculation
    IMPLICIT NONE
 
    LOGICAL, OPTIONAL, INTENT(in) :: want_input
@@ -86,6 +89,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
     CALL ioname('export',filename,LPOSTFIX=.FALSE.)
     CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
                              FORM='formatted')
+
 
 !
 ! ... read lattice data
@@ -146,6 +150,8 @@ SUBROUTINE want_init(want_input, windows, bshells)
 !
    IF ( .NOT. assume_ncpp ) THEN
       CALL readpp()
+      okvan = ANY( tvanp(:) )
+      uspp_calculation = okvan
    ENDIF
 
 

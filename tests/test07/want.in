@@ -4,7 +4,9 @@
    postfix = '_WanT'
    work_dir = './'
    win_min = -12.0
-   win_max =  0.0                      ! win_min, win_max
+   win_max =  0.0
+!   win_min = -12.0
+!   win_max =  0.0                      ! win_min, win_max
    froz_min = -30.0
    froz_max = -25.0
    dimwann = 6                         ! dimwann
@@ -15,6 +17,7 @@
    nshells = 2                         ! nshells
    nwhich(1) = 1                       ! nwhich(nshells)
    nwhich(2) = 2                       ! nwhich(nshells)
+!   itrial = 1                          ! itrial --> disentangle
    itrial = 3                          ! itrial --> disentangle
    ordering_type = 'complete'
 /

@@ -120,6 +120,8 @@ CONTAINS
 
        CALL iotk_write_dat(unit,"OVERLAP",cm,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'writing cm',ABS(ierr))
+       CALL iotk_write_dat(unit,"ROVERLAP",ABS(cm),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'writing ABS(cm)',ABS(ierr))
        CALL iotk_write_dat(unit,"PROJECTIONS",ca,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'writing ca',ABS(ierr))
 

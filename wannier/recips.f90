@@ -8,23 +8,27 @@
 !
 !---------------------------------------------------------------------
 
-subroutine recips (a1, a2, a3, b1, b2, b3)
+subroutine recips (a1, a2, a3, b1, b2, b3, omega)
   !---------------------------------------------------------------------
   !
   !   This routine generates the reciprocal lattice vectors b1,b2,b3
-  !   given the real space vectors a1,a2,a3. The b's are units of 2 pi/a.
+  !   given the real space vectors a1,a2,a3. The b's are units of 2 pi/@unit@, 
+  !   where @unit@ are the units of a1,a2,a3.
+  !   The volume of the unit cell is also computed (omega) and its in unit of
+  !   @unit@^3.
   !
   !     first the input variables
   !
   use kinds, ONLY: DP => dbl
   implicit none
-  real(kind=DP) :: a1 (3), a2 (3), a3 (3), b1 (3), b2 (3), b3 (3)
+  real(kind=DP) :: a1 (3), a2 (3), a3 (3), b1 (3), b2 (3), b3 (3), omega
   ! input: first direct lattice vector
   ! input: second direct lattice vector
   ! input: third direct lattice vector
   ! output: first reciprocal lattice vector
   ! output: second reciprocal lattice vector
   ! output: third reciprocal lattice vector
+  ! output: the volume of the unit cell
   !
   !   then the local variables
   !
@@ -73,5 +77,6 @@ subroutine recips (a1, a2, a3, b1, b2, b3)
      j = k
      k = l
   enddo
+  omega = den
   return
 end subroutine recips
