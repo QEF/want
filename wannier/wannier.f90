@@ -46,15 +46,10 @@
 !
       IMPLICIT NONE
 
-      INTEGER,      PARAMETER :: nprint = 10
-      CHARACTER( LEN=6 )      :: verbosity = 'none'    ! none, low, medium, high
-      CHARACTER( LEN=nstrx )  :: filename
-
       ! external functions
       REAL(dbl) :: ranf
       EXTERNAL  :: ranf
-      LOGICAL   :: lselect
-!      EXTERNAL  :: lselect
+      LOGICAL   :: lselect  ! external function non defined
 
       INTEGER :: nkp, nkp2
       INTEGER :: i, j, k
@@ -103,7 +98,7 @@
       INTEGER      :: nwork
       REAL(dbl)    :: rtot(3), r2tot
       COMPLEX(dbl) :: cfact
-
+      CHARACTER( LEN=nstrx )  :: filename
       INTEGER :: idum, rdum, ierr
 
 !
@@ -219,8 +214,8 @@
       WRITE( stdout, fmt="(/,2x, 'Spread Operator decomposition: ')")
       WRITE( stdout, fmt="(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
       WRITE( stdout, fmt="(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
-      WRITE( stdout, fmt="(  4x,'OmegaOD   =   ', f15.9i,/ ) " ) Omega_OD
-      WRITE( stdout, fmt="(  4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
+      WRITE( stdout, fmt="(  4x,'OmegaOD   =   ', f15.9 ) " ) Omega_OD
+      WRITE( stdout, fmt="(/,4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
 
       func_old1 = func_om1
       func_old2 = func_om2

@@ -8,7 +8,7 @@
 
 
   Program <wannier>  v. 1.1.1  starts ...
-  Date 23Nov2004 at 18:20:35 
+  Date  5Dec2004 at 12:27:18 
 
   ======================================================================
   =                         Lattice parameters                         =
@@ -33,6 +33,11 @@
     b(2) = (  0.0000  0.2697  0.0000 )     (   0.0000  0.4444  0.0000 )
     b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.4444 )
 
+  Atomic positions: (cart. coord.)
+    C   tau(   1 ) = (  0.0000  0.0000  0.0000 )
+    C   tau(   2 ) = (  1.2200  0.0000  0.0000 )
+    C   tau(   3 ) = (  2.7400  0.0000  0.0000 )
+    C   tau(   4 ) = (  3.9600  0.0000  0.0000 )
 
   ======================================================================
   =                      B-shell calculations                          =
@@ -96,49 +101,35 @@
     dir 2:   (   0.00000 -0.50959  0.00000 ) 
     dir 3:   (   0.00000  0.00000 -0.50959 ) 
   
-  Atomic positions: (cart. coord.)
-    C   tau(   1 ) = (  0.0000  0.0000  0.0000 )
-    C   tau(   2 ) = (  1.2200  0.0000  0.0000 )
-    C   tau(   3 ) = (  2.7400  0.0000  0.0000 )
-    C   tau(   4 ) = (  3.9600  0.0000  0.0000 )
-  Gaussian centers: (cart. coord. in Ang)
-    Center =   1 Type = 1 Gaussian  = (  0.610000  0.000000  0.000000 ) 
-    Center =   2 Type = 1 Gaussian  = (  0.610000  0.000000  0.000000 ) 
-    Center =   3 Type = 1 Gaussian  = (  0.610000  0.000000  0.000000 ) 
-    Center =   4 Type = 1 Gaussian  = (  1.980000  0.000000  0.000000 ) 
-    Center =   5 Type = 1 Gaussian  = (  3.350000  0.000000  0.000000 ) 
-    Center =   6 Type = 1 Gaussian  = (  3.350000  0.000000  0.000000 ) 
-    Center =   7 Type = 1 Gaussian  = (  3.350000  0.000000  0.000000 ) 
-    Center =   8 Type = 1 Gaussian  = (  4.719999  0.000000  0.000000 ) 
- 
- 
-  =====================================================================
-  =                  Starting localization procedure                  =
-  =====================================================================
- 
-    Center   1 = (   -2.496919,    0.000000,    0.000000 )  Omega =    245.401983
-    Center   2 = (    0.976564,    0.000000,    0.000000 )  Omega =    172.648923
-    Center   3 = (    7.428262,    0.000000,    0.000000 )  Omega =    210.799690
-    Center   4 = (   -0.728466,    0.000000,    0.000000 )  Omega =    211.897293
-    Center   5 = (    5.676816,    0.000000,    0.000000 )  Omega =     94.934252
-    Center   6 = (    2.729059,    0.000000,    0.000000 )  Omega =    104.591431
-    Center   7 = (   -0.050564,    0.000000,    0.000000 )  Omega =    153.294117
-    Center   8 = (    4.889861,    0.000000,    0.000000 )  Omega =    244.502389
-   
-  ! Center Sum = (   18.424613,    0.000000,    0.000000 )  Omega =   1438.070078
-   
+
+  Subspace data read from file: chain4_WanT.spaces
+  Overlap and projections read from file: chain4_WanT.ovp
+
+  ======================================================================
+  =                  Starting localization procedure                   =
+  ======================================================================
+    Center   1 = (    0.478075,    0.000000,    0.000000 )  Omega =    117.565262
+    Center   2 = (   -1.998430,    0.000000,    0.000000 )  Omega =     99.134403
+    Center   3 = (   -3.218322,    0.000000,    0.000000 )  Omega =     88.470164
+    Center   4 = (   -6.521881,    0.000000,    0.000000 )  Omega =    107.325626
+    Center   5 = (    2.291889,    0.000000,    0.000000 )  Omega =    112.474496
+    Center   6 = (   -0.187208,    0.000000,    0.000000 )  Omega =     99.255797
+    Center   7 = (   -2.695027,    0.000000,    0.000000 )  Omega =    197.110674
+    Center   8 = (    4.765948,    0.000000,    0.000000 )  Omega =    238.883787
+
+  ! Center Sum = (   -7.084956,    0.000000,    0.000000 )  Omega =   1060.220209
+
   Spread Operator decomposition: 
-    OmegaI    =       8.108036182
-    OmegaD    =    1305.751688974
-    OmegaOD   =     124.210353122
-   
-    Omega Tot =    1438.070078277
-   
+    OmegaI    =       8.108036164
+    OmegaD    =     933.897095520
+    OmegaOD   =     118.215077598
+    Omega Tot =    1060.220209282
+
   ======================================================================
   =                     Starting iteration loop                        =
   ======================================================================
-   
-   
+
+
   Iteration =     1
   Wannier centers and Spreads (Omega)
     Center   1 = (    0.609915,    0.000000,    0.000000 )  Omega =      0.541789
@@ -149,9 +140,9 @@
     Center   6 = (    3.349939,    0.000000,    0.000000 )  Omega =      1.839125
     Center   7 = (    3.349939,    0.000000,    0.000000 )  Omega =      1.839125
     Center   8 = (    4.719800,    0.000000,    0.000000 )  Omega =      0.624019
-   
+
   ! Center Sum = (   18.579187,    0.000000,    0.000000 )  Omega =      9.688117
-   
+
   Iteration =    11
   Wannier centers and Spreads (Omega)
     Center   1 = (    0.609915,    0.000000,    0.000000 )  Omega =      0.541673
@@ -162,9 +153,9 @@
     Center   6 = (    3.349939,    0.000000,    0.000000 )  Omega =      1.839125
     Center   7 = (    3.349939,    0.000000,    0.000000 )  Omega =      1.839125
     Center   8 = (    4.719801,    0.000000,    0.000000 )  Omega =      0.624094
-   
+
   ! Center Sum = (   18.579189,    0.000000,    0.000000 )  Omega =      9.688035
-   
+
   Iteration =    21
   Wannier centers and Spreads (Omega)
     Center   1 = (    0.609909,    0.000000,    0.000000 )  Omega =      0.540906
@@ -175,9 +166,9 @@
     Center   6 = (    3.349941,    0.000000,    0.000000 )  Omega =      1.839125
     Center   7 = (    3.349941,    0.000000,    0.000000 )  Omega =      1.839125
     Center   8 = (    4.719808,    0.000000,    0.000000 )  Omega =      0.624648
-   
+
   ! Center Sum = (   18.579197,    0.000000,    0.000000 )  Omega =      9.687608
-   
+
   Iteration =    31
   Wannier centers and Spreads (Omega)
     Center   1 = (    0.609904,    0.000000,    0.000000 )  Omega =      0.540282
@@ -188,9 +179,9 @@
     Center   6 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   7 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   8 = (    4.719814,    0.000000,    0.000000 )  Omega =      0.625123
-   
+
   ! Center Sum = (   18.579200,    0.000000,    0.000000 )  Omega =      9.687310
-   
+
   Iteration =    41
   Wannier centers and Spreads (Omega)
     Center   1 = (    0.609900,    0.000000,    0.000000 )  Omega =      0.539767
@@ -201,9 +192,9 @@
     Center   6 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   7 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   8 = (    4.719818,    0.000000,    0.000000 )  Omega =      0.625527
-   
+
   ! Center Sum = (   18.579203,    0.000000,    0.000000 )  Omega =      9.687089
-   
+
   Iteration =    51
   Wannier centers and Spreads (Omega)
     Center   1 = (    0.609897,    0.000000,    0.000000 )  Omega =      0.539323
@@ -214,12 +205,13 @@
     Center   6 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   7 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   8 = (    4.719821,    0.000000,    0.000000 )  Omega =      0.625887
-   
+
   ! Center Sum = (   18.579205,    0.000000,    0.000000 )  Omega =      9.686920
-   
+
   ======================================================================
-  =                     Convergence Achieved                           =
+  =                        Convergence Achieved                        =
   ======================================================================
+
 
   Wannier function ordering : NONE
 
@@ -232,36 +224,36 @@
     Center   6 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   7 = (    3.349942,    0.000000,    0.000000 )  Omega =      1.839125
     Center   8 = (    4.719823,    0.000000,    0.000000 )  Omega =      0.626048
-   
+
   ! Center Sum = (   18.579206,    0.000000,    0.000000 )  Omega =      9.686854
-   
+
   Spread Operator decomposition: 
-    OmegaI    =       8.108036182
+    OmegaI    =       8.108036164
     OmegaD    =       0.000000000
     OmegaOD   =       1.578817763
-   
-    Omega Tot =       9.686853945
-   
+
+    Omega Tot =       9.686853926
   Omega variation:
-    Delta Omega 1   =  -0.89518636E-06
-    Delta Omega 2   =   0.17844386E-07
-    Delta Omega 3   =  -0.17864345E-07
-    Delta Omega Tot =  -0.89520632E-06
-   
+    Delta Omega 1   =  -0.89518648E-06
+    Delta Omega 2   =   0.17843853E-07
+    Delta Omega 3   =  -0.17863826E-07
+    Delta Omega Tot =  -0.89520645E-06
+
   Derivative =   0.0000E+00 -0.8959E-06
-   
   ======================================================================
+
+  Wannier transformation data written on file: chain4_WanT.wan
 
    <global routines>
              clock number :     7
 
-                  wannier :    56.07s CPU 
+                  wannier :     1.08s CPU 
  
-                     init :     0.48s CPU
+                  overlap :     0.21s CPU
                   bshells :     0.01s CPU
-                    trasf :    29.14s CPU
-             overlap_base :    15.57s CPU
-               iterations :     2.56s CPU
-                    write :    23.88s CPU
+          overlap_extract :     0.20s CPU
+                     init :     0.02s CPU
+               iterations :     0.83s CPU
+                    write :     0.02s CPU
 
 

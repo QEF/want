@@ -5,7 +5,6 @@
    work_dir = './LEADS/'
    nspts  = 2
    npts   = 100
-   nbands = 8 
    efermi = -3.8798     !(-3.8798 +0.0000) from PWSCF scf_cond.out 20 Ry 
                         !                  + rigid matching shift
  /
