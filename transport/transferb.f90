@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------
-      SUBROUTINE Stransferb( nmaxb, nterx, tot, tott, c00_b, c01_b, ene )
+      SUBROUTINE transferb( nmaxb, nterx, tot, tott, c00_b, c01_b, ene )
 !----------------------------------------------------------------------
       USE kinds
 

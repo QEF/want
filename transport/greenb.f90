@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------
-      SUBROUTINE Sgreenb( nmaxb, tot, tott, c00_b, c01_b, ene, gm1, g, igreen, invert )
+      SUBROUTINE greenb( nmaxb, tot, tott, c00_b, c01_b, ene, gm1, g, igreen, invert )
 !----------------------------------------------------------------------
 
 !...  Construct green's functions

@@ -1,17 +1,17 @@
 #
-# Makefile for transfer.f
+# Makefile for transport programs
 #
 
 include ../make.sys
 include ../make.rules
 
-all: Sconductor.x bulk.x
+all: conductor.x bulk.x
 
-OBJS=Sconductor.o Sgreena.o Stransfera.o Sgreenb.o Stransferb.o \
-SreadH.o setv0.o
+OBJS=conductor.o greena.o transfera.o greenb.o transferb.o \
+readH.o setv0.o
 
-Sconductor.x: $(OBJS)
-	$(LD) -o Sconductor.x $(OBJS) ../Modules/*.o $(MODULES) $(LDFLAGS)
+conductor.x: $(OBJS)
+	$(LD) -o conductor.x $(OBJS) ../Modules/*.o $(MODULES) $(LDFLAGS)
 
 
 BOBJS = bulk.o green.o transfer.o TB_hamiltonian.o \
