@@ -1,4 +1,7 @@
       PROGRAM sconductor
+   
+      USE kinds
+      USE constants, ONLY: pi
 
       IMPLICIT NONE
 
@@ -10,67 +13,66 @@
       INTEGER :: norb, ne, nterx
       INTEGER :: nmaxa, nmaxb, nmaxc
 
-      REAL*8 :: emin, emax, de, enep
-      REAL*8 :: gamma0, bias
-      REAL*8, PARAMETER :: pi = 3.14159265358979323846d0 
+      REAL(dbl) :: emin, emax, de, enep
+      REAL(dbl) :: gamma0, bias
       
-      REAL*8, ALLOCATABLE :: h00_a(:,:)                 ! h00_a(nmaxa,nmaxa)
-      REAL*8, ALLOCATABLE :: h01_a(:,:)                 ! h01_a(nmaxa,nmaxa)
-      REAL*8, ALLOCATABLE :: h00_b(:,:)                 ! h00_b(nmaxb,nmaxb)
-      REAL*8, ALLOCATABLE :: h01_b(:,:)                 ! h01_b(nmaxb,nmaxb)
-      REAL*8, ALLOCATABLE :: h00_c(:,:)                 ! h00_c(nmaxc,nmaxc)
-      REAL*8, ALLOCATABLE :: hci_ac(:,:)                ! hci_ac(nmaxa,nmaxc)
-      REAL*8, ALLOCATABLE :: hci_cb(:,:)                ! hci_cb(nmaxc,nmaxb)
+      REAL(dbl), ALLOCATABLE :: h00_a(:,:)                 ! h00_a(nmaxa,nmaxa)
+      REAL(dbl), ALLOCATABLE :: h01_a(:,:)                 ! h01_a(nmaxa,nmaxa)
+      REAL(dbl), ALLOCATABLE :: h00_b(:,:)                 ! h00_b(nmaxb,nmaxb)
+      REAL(dbl), ALLOCATABLE :: h01_b(:,:)                 ! h01_b(nmaxb,nmaxb)
+      REAL(dbl), ALLOCATABLE :: h00_c(:,:)                 ! h00_c(nmaxc,nmaxc)
+      REAL(dbl), ALLOCATABLE :: hci_ac(:,:)                ! hci_ac(nmaxa,nmaxc)
+      REAL(dbl), ALLOCATABLE :: hci_cb(:,:)                ! hci_cb(nmaxc,nmaxb)
 
-      REAL*8, ALLOCATABLE :: hci_ca(:,:)                ! hci_ca(nmaxc,nmaxa)
-      REAL*8, ALLOCATABLE :: hci_bc(:,:)                ! hci_bc(nmaxb,nmaxc)
+      REAL(dbl), ALLOCATABLE :: hci_ca(:,:)                ! hci_ca(nmaxc,nmaxa)
+      REAL(dbl), ALLOCATABLE :: hci_bc(:,:)                ! hci_bc(nmaxb,nmaxc)
       
-      REAL*8, ALLOCATABLE :: s00_a(:,:)                 ! s00_a(nmaxa,nmaxa)
-      REAL*8, ALLOCATABLE :: s01_a(:,:)                 ! s01_a(nmaxa,nmaxa)
-      REAL*8, ALLOCATABLE :: s00_b(:,:)                 ! s00_b(nmaxb,nmaxb)
-      REAL*8, ALLOCATABLE :: s01_b(:,:)                 ! s01_b(nmaxb,nmaxb)
-      REAL*8, ALLOCATABLE :: s00_c(:,:)                 ! s00_c(nmaxc,nmaxc)
-      REAL*8, ALLOCATABLE :: sci_ac(:,:)                ! sci_ac(nmaxa,nmaxc)
-      REAL*8, ALLOCATABLE :: sci_cb(:,:)                ! sci_cb(nmaxc,nmaxb)
+      REAL(dbl), ALLOCATABLE :: s00_a(:,:)                 ! s00_a(nmaxa,nmaxa)
+      REAL(dbl), ALLOCATABLE :: s01_a(:,:)                 ! s01_a(nmaxa,nmaxa)
+      REAL(dbl), ALLOCATABLE :: s00_b(:,:)                 ! s00_b(nmaxb,nmaxb)
+      REAL(dbl), ALLOCATABLE :: s01_b(:,:)                 ! s01_b(nmaxb,nmaxb)
+      REAL(dbl), ALLOCATABLE :: s00_c(:,:)                 ! s00_c(nmaxc,nmaxc)
+      REAL(dbl), ALLOCATABLE :: sci_ac(:,:)                ! sci_ac(nmaxa,nmaxc)
+      REAL(dbl), ALLOCATABLE :: sci_cb(:,:)                ! sci_cb(nmaxc,nmaxb)
 
-      REAL*8, ALLOCATABLE :: sci_ca(:,:)                ! sci_ca(nmaxc,nmaxa)
-      REAL*8, ALLOCATABLE :: sci_bc(:,:)                ! sci_bc(nmaxb,nmaxc)
+      REAL(dbl), ALLOCATABLE :: sci_ca(:,:)                ! sci_ca(nmaxc,nmaxa)
+      REAL(dbl), ALLOCATABLE :: sci_bc(:,:)                ! sci_bc(nmaxb,nmaxc)
 
-      COMPLEX*16, ALLOCATABLE :: c00_a(:,:)             ! c00_a(nmaxa,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: c01_a(:,:)             ! c01_a(nmaxa,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: c00_b(:,:)             ! c00_b(nmaxb,nmaxb)
-      COMPLEX*16, ALLOCATABLE :: c01_b(:,:)             ! c01_b(nmaxb,nmaxb)
-      COMPLEX*16, ALLOCATABLE :: c00_c(:,:)             ! c00_c(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: cci_ac(:,:)            ! cci_ac(nmaxa,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: cci_cb(:,:)            ! cci_cb(nmaxc,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: c00_a(:,:)             ! c00_a(nmaxa,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: c01_a(:,:)             ! c01_a(nmaxa,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: c00_b(:,:)             ! c00_b(nmaxb,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: c01_b(:,:)             ! c01_b(nmaxb,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: c00_c(:,:)             ! c00_c(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: cci_ac(:,:)            ! cci_ac(nmaxa,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: cci_cb(:,:)            ! cci_cb(nmaxc,nmaxb)
 
-      COMPLEX*16, ALLOCATABLE :: cci_ca(:,:)            ! cci_ca(nmaxc,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: cci_bc(:,:)            ! cci_bc(nmaxb,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: cci_ca(:,:)            ! cci_ca(nmaxc,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: cci_bc(:,:)            ! cci_bc(nmaxb,nmaxc)
 
-      COMPLEX*16, ALLOCATABLE :: totA(:,:)              ! totA(nmaxa,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: totB(:,:)              ! totB(nmaxb,nmaxb)
-      COMPLEX*16, ALLOCATABLE :: tottA(:,:)             ! tottA(nmaxa,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: tottB(:,:)             ! tottB(nmaxb,nmaxb)
-      COMPLEX*16, ALLOCATABLE :: gR(:,:)                ! gR(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: gL(:,:)                ! gL(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: gA(:,:)                ! gA(nmaxa,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: gB(:,:)                ! gB(nmaxb,nmaxb)
-      COMPLEX*16, ALLOCATABLE :: gAm1(:,:)              ! gAm1(nmaxa,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: gBm1(:,:)              ! gBm1(nmaxb,nmaxb)
-      COMPLEX*16, ALLOCATABLE :: gintr(:,:)             ! gintr(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: ginta(:,:)             ! ginta(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: gintm1(:,:)            ! gintm1(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: sLa(:,:)               ! sLa(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: sRa(:,:)               ! sRa(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: sLr(:,:)               ! sLr(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: sRr(:,:)               ! sRr(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: s1(:,:)                ! s1(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: s2(:,:)                ! s2(nmaxc,nmaxc)
-      COMPLEX*16, ALLOCATABLE :: c1(:,:)                ! c1(nmaxc,nmaxa)
-      COMPLEX*16, ALLOCATABLE :: c2(:,:)                ! c2(nmaxc,nmaxb)
-      COMPLEX*16, ALLOCATABLE :: tran(:,:)              ! tran(nmaxc,nmaxc)
-      COMPLEX*16 :: ene, dos, conduct
-      COMPLEX*16 :: alpha, beta
+      COMPLEX(dbl), ALLOCATABLE :: totA(:,:)              ! totA(nmaxa,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: totB(:,:)              ! totB(nmaxb,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: tottA(:,:)             ! tottA(nmaxa,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: tottB(:,:)             ! tottB(nmaxb,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: gR(:,:)                ! gR(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: gL(:,:)                ! gL(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: gA(:,:)                ! gA(nmaxa,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: gB(:,:)                ! gB(nmaxb,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: gAm1(:,:)              ! gAm1(nmaxa,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: gBm1(:,:)              ! gBm1(nmaxb,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: gintr(:,:)             ! gintr(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: ginta(:,:)             ! ginta(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: gintm1(:,:)            ! gintm1(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: sLa(:,:)               ! sLa(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: sRa(:,:)               ! sRa(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: sLr(:,:)               ! sLr(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: sRr(:,:)               ! sRr(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: s1(:,:)                ! s1(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: s2(:,:)                ! s2(nmaxc,nmaxc)
+      COMPLEX(dbl), ALLOCATABLE :: c1(:,:)                ! c1(nmaxc,nmaxa)
+      COMPLEX(dbl), ALLOCATABLE :: c2(:,:)                ! c2(nmaxc,nmaxb)
+      COMPLEX(dbl), ALLOCATABLE :: tran(:,:)              ! tran(nmaxc,nmaxc)
+      COMPLEX(dbl) :: ene, dos, conduct
+      COMPLEX(dbl) :: alpha, beta
      
       LOGICAL :: l_overlap
      
@@ -284,10 +286,7 @@
          END DO
 
          CALL zgesv( nmaxc, nmaxc, gintm1, nmaxc, ipiv2, gintr, nmaxc, info )
-         IF ( info /= 0 ) THEN
-           PRINT*,'error in ZGESV - INFO = ', info
-           STOP
-         END IF
+            IF ( info /= 0 )  CALL errore(' Sconductor ', ' zgesv (I) ', info )
 
 !     G_C (advanced)
 
@@ -382,5 +381,4 @@
       DEALLOCATE ( tran )
 
 
-      STOP
       END 

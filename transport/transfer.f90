@@ -1,6 +1,7 @@
 !----------------------------------------------------------------------
       SUBROUTINE transfer( nmax, nterx, tot, tott, h0, h1, ene )
 !----------------------------------------------------------------------
+      USE kinds
 
       IMPLICIT NONE
 
@@ -12,19 +13,19 @@
       INTEGER :: ipiv(nmax)
       INTEGER :: i, j, k, l, m, info
 
-      REAL*8 :: h0(nmax,nmax)
-      REAL*8 :: h1(nmax,nmax)
-      REAL*8 :: conver, conver2
+      REAL(dbl) :: h0(nmax,nmax)
+      REAL(dbl) :: h1(nmax,nmax)
+      REAL(dbl) :: conver, conver2
 
 
-      COMPLEX*16 :: tau( nmax, nmax, 2 )
-      COMPLEX*16 :: taut( nmax, nmax, 2 )
-      COMPLEX*16 :: tot( nmax, nmax ), tott( nmax, nmax )
-      COMPLEX*16 :: tsum( nmax, nmax ), tsumt( nmax, nmax )
-      COMPLEX*16 :: t11( nmax, nmax ), t12( nmax, nmax )
-      COMPLEX*16 :: s1(nmax,nmax), s2( nmax, nmax )
-      COMPLEX*16 :: ene
-      COMPLEX*16 :: alpha, beta
+      COMPLEX(dbl) :: tau( nmax, nmax, 2 )
+      COMPLEX(dbl) :: taut( nmax, nmax, 2 )
+      COMPLEX(dbl) :: tot( nmax, nmax ), tott( nmax, nmax )
+      COMPLEX(dbl) :: tsum( nmax, nmax ), tsumt( nmax, nmax )
+      COMPLEX(dbl) :: t11( nmax, nmax ), t12( nmax, nmax )
+      COMPLEX(dbl) :: s1(nmax,nmax), s2( nmax, nmax )
+      COMPLEX(dbl) :: ene
+      COMPLEX(dbl) :: alpha, beta
 
 !...  Scalar for BLAS calls
       alpha = ( 1.d0, 0.d0 )
@@ -57,10 +58,7 @@
 
       CALL zgesv( nmax, nmax, t12, nmax, ipiv, t11, nmax, info )
 
-      IF ( info /= 0 ) THEN
-        PRINT*, 'error 1 in ZGESV - INFO = ', info
-        STOP
-      END IF
+      IF ( info /= 0 )  CALL errore(' transfer ', ' zgesv (I) ', info )
 
 !...  Compute intermediate t-matrices (defined as tau(nmax,nmax,niter)
 !     and taut(...)):
@@ -122,10 +120,7 @@
          END DO
 
          CALL zgesv( nmax, nmax, s1, nmax, ipiv, s2, nmax, info )
-         IF ( info /= 0 ) THEN
-           PRINT*,'error 2 in ZGESV - INFO = ', info
-           STOP
-         END IF
+         IF ( info /= 0 )  CALL errore(' transfer ', ' zgesv (II) ', info )
 
          t11(:,:) = ( 0.d0, 0.d0 ) 
          t12(:,:) = ( 0.d0, 0.d0 ) 
@@ -188,10 +183,7 @@
          IF ( conver < 1.d-7 .AND. conver2 <  1.d-7 ) RETURN
       END DO 
 
-      IF ( conver > 1.d-7 .OR. conver2 > 1.d-7 ) THEN
-        PRINT*,' bad t-matrix convergence', conver, conver2
-        STOP
-      END IF
+      IF ( conver > 1.d-7 .OR. conver2 > 1.d-7 ) CALL errore(' transfer ', ' bad t-matrix convergence ', conver )
 
       RETURN 
       END

@@ -5,11 +5,13 @@
 !...  Cut-off function to smoothly remove the long range interactions
 !     for Charlier et al. parametrization
 
+      USE kinds
+
       IMPLICIT NONE
     
-      REAL*8 :: tbpar(6), x
-      REAL*8 :: apu
-      REAL*8, PARAMETER :: ro=3.335d0
+      REAL(dbl) :: tbpar(6), x
+      REAL(dbl) :: apu
+      REAL(dbl), PARAMETER :: ro=3.335d0
 
       IF ( x < 2.60d0 ) THEN
          IF ( x > 1.85d0 ) THEN
