@@ -4,6 +4,10 @@
       USE constants, ONLY: pi, twopi => tpi, bohr => bohr_radius_angs
       USE parameters, ONLY: npsx, natx
       USE fft_scalar, ONLY: cfft3d
+      USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+      USE io_global, ONLY : stdout
+      USE startup_module, ONLY : startup
+      USE version_module, ONLY : version_number
 
       IMPLICIT NONE
 
@@ -59,6 +63,14 @@
 
 ! ... End declarations and dimensions
 
+!
+! ...  Startup
+!
+       CALL startup(version_number,MAIN_NAME='plot')
+
+!
+! ...  Reading from file
+!
       OPEN ( 21, FILE = 'landing.dat', STATUS='old', FORM='UNFORMATTED' )
 
       READ (21) nkpts, ngx, ngy, ngz, mplwv, dimwann, mxddim, nspec
@@ -361,6 +373,11 @@
          IF( ierr /=0 ) CALL errore(' plot ', ' deallocating poscarwin ', ABS(ierr) )
 
       call gcube2plt( nwann )
+
+      CALL timing('plot',OPR='stop')
+      CALL timing('global',OPR='stop')
+      CALL timing_overview(stdout,MAIN_NAME='plot')
+      CALL timing_deallocate()
 
       STOP '*** THE END *** (plot.f90)'
       END

@@ -5,7 +5,7 @@
        USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx, dp
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview
        USE io_global, ONLY : stdout
-       USE startup_Module, ONLY : startup
+       USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
        USE input_wannier
 

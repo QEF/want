@@ -5,7 +5,10 @@
        USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
        USE mp, ONLY: mp_start, mp_end, mp_env
        USE mp_global, ONLY: mp_global_start
-       USE io_global, ONLY: io_global_start, io_global_getionode
+       USE io_global, ONLY: io_global_start, io_global_getionode, stdout
+       USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+       USE startup_module, ONLY : startup
+       USE version_module, ONLY : version_number
        USE input_wannier
 
 
@@ -133,13 +136,15 @@
        CALL io_global_getionode( ionode, ionode_id )
 
 !=----------------------------------------------------------------------------=!
+
+!
+! ...  Startup
+!
+       CALL startup(version_number,MAIN_NAME='space')
+
 !      
 ! ...  Read input parameters from takeoff.dat
 !
-
-       WRITE(*,*)
-       WRITE(*,*) ' Starting Space '
-
        CALL read_input()
 
        OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
@@ -979,6 +984,11 @@
            IF( ierr /=0 ) CALL errore(' space ', ' deallocating ham ', ABS(ierr) )
 
        CALL deallocate_input()
+
+       CALL timing('space',OPR='stop')
+       CALL timing('global',OPR='stop')
+       CALL timing_overview(stdout,MAIN_NAME='space')
+       CALL timing_deallocate()
 
       CALL mp_end()
 

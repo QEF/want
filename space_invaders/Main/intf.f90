@@ -5,6 +5,10 @@
          ryd => ry, har => au, bohr => bohr_radius_angs
 
        USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
+       USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+       USE io_global, ONLY : stdout
+       USE startup_module, ONLY : startup
+       USE version_module, ONLY : version_number
 
        IMPLICIT NONE
 
@@ -85,6 +89,12 @@
 ! ...  End declarations and dimensions
 !
 !=----------------------------------------------------------------------------=!
+
+!
+! ...  Startup
+!
+       CALL startup(version_number,MAIN_NAME='intf')
+
 !
 ! ...  Read input parameters from window.out
 !
@@ -512,6 +522,11 @@
           IF( ierr /=0 ) CALL errore(' intf ', ' deallocating kdimwin ', ABS(ierr) )
        DEALLOCATE( mtxd, STAT=ierr )
           IF( ierr /=0 ) CALL errore(' intf ', ' deallocating mtxd ', ABS(ierr) )
+
+       CALL timing('intf',OPR='stop')
+       CALL timing('global',OPR='stop')
+       CALL timing_overview(stdout,MAIN_NAME='intf')
+       CALL timing_deallocate()
 
 ! *****************************************************************************
 
