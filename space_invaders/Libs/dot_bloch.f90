@@ -42,9 +42,11 @@
        IMPLICIT NONE
  
        COMPLEX*16 :: dot_bloch
+
+       INTEGER :: mxddim
        COMPLEX*16 :: vec1(mxddim+1)
        COMPLEX*16 :: vec2(mxddim+1)
-       INTEGER :: mxddim
+
        INTEGER :: mxdgve 
        INTEGER :: mtxd1, mtxd2 
        INTEGER :: isort1(mxddim), isort2(mxddim)

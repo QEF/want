@@ -10,11 +10,11 @@
       REAL*8 :: datake(*)
       REAL*8 :: recc(3,*)
       REAL*8 :: reci(3,*)
+      INTEGER :: nrplwv
+      INTEGER :: nkpts, iprint
       REAL*8 :: dnlg(nrplwv,3,nkpts), dnlkg(nrplwv,0:3,nkpts)
 
-      INTEGER :: nrplwv
       INTEGER :: ngx, ngy, ngz
-      INTEGER :: nkpts, iprint
       INTEGER :: n
       INTEGER :: nlboxi, nsboxi
       INTEGER :: nx, ny, nz

@@ -2,6 +2,24 @@
                  bk, bka, cm, csheet, sheet, rguide, irguide )
       
       IMPLICIT NONE
+
+      INTEGER :: nbands
+      INTEGER :: nkpts
+      INTEGER :: nkpts2
+      INTEGER :: nnmx
+      INTEGER :: nnmxh
+      INTEGER :: nnh
+      INTEGER :: irguide
+      INTEGER :: nwann
+      INTEGER :: na
+      INTEGER :: nkp
+      INTEGER :: nn
+      INTEGER :: j
+      INTEGER :: i
+      INTEGER :: m
+      INTEGER :: ind
+      INTEGER :: n
+
       COMPLEX*16 :: cm(nbands,nbands,nkpts,nnmx)
       COMPLEX*16 :: csum(nnmxh)
       REAL*8 ::  bk(3,nkpts,nnmx)
@@ -21,22 +39,6 @@
       PARAMETER ( ci = ( 0.0d0, 1.0d0 ) )
       PARAMETER ( pi = 3.14159265358979323846d0 )
 
-      INTEGER :: nbands
-      INTEGER :: nkpts
-      INTEGER :: nkpts2
-      INTEGER :: nnmx
-      INTEGER :: nnmxh
-      INTEGER :: nnh
-      INTEGER :: irguide
-      INTEGER :: nwann
-      INTEGER :: na
-      INTEGER :: nkp
-      INTEGER :: nn
-      INTEGER :: j
-      INTEGER :: i
-      INTEGER :: m
-      INTEGER :: ind
-      INTEGER :: n
       COMPLEX*16 :: csumt
       REAL*8 :: xx0
       REAL*8 :: det

@@ -3,6 +3,16 @@
       
       IMPLICIT NONE
 
+      INTEGER :: nbands
+      INTEGER :: nkpts 
+      INTEGER :: nkpts2 
+      INTEGER :: nnmx 
+      INTEGER :: nwann
+      INTEGER :: ind
+      INTEGER :: nkp
+      INTEGER :: nn
+      INTEGER :: i, m, n 
+
       INTEGER :: nnlist(nkpts,nnmx)
       INTEGER :: nntot(nkpts)
       REAL*8 :: wb(nkpts,nnmx)
@@ -16,15 +26,6 @@
       COMPLEX*16 :: craven(3,nbands), crtotn(3)
       REAL*8 :: r2aven(nbands), rave2n(nbands)
 
-      INTEGER :: nbands
-      INTEGER :: nkpts 
-      INTEGER :: nkpts2 
-      INTEGER :: nnmx 
-      INTEGER :: nwann
-      INTEGER :: ind
-      INTEGER :: nkp
-      INTEGER :: nn
-      INTEGER :: i, m, n 
       REAL*8 :: func_om1 
       REAL*8 :: func_om2 
       REAL*8 :: func_om3 
