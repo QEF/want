@@ -33,7 +33,7 @@ Infinite Gold Chain
 ATOMIC_SPECIES
   Au   196.9665   Au11pw91.mt.UPF
 ATOMIC_POSITIONS {angstrom}
-Au        0.00000     0.00000    0.00000
+Au        0.00000     0.00000    0.50000
 K_POINTS {automatic}
   1 1 4  0 0 1
 
