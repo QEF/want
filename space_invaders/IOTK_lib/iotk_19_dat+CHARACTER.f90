@@ -1,4 +1,4 @@
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -143,16 +143,22 @@
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 0 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_0(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -164,139 +170,154 @@ subroutine iotk_write_dat_CHARACTER1_0(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",1,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 144 "iotk_multitype.spp"
+  allocate(dattmp(1))
+# 156 "iotk_dat.spp"
      dattmp(1) = dat
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -304,8 +325,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -317,12 +338,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_0
 
-# 470 "iotk_multitype.spp"
 
-# 472 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
+
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -330,51 +356,53 @@ subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default 
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==1) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(1))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 517 "iotk_multitype.spp"
+# 553 "iotk_dat.spp"
         dat = tmpdat(1)
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -384,12 +412,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -398,216 +434,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_0
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 669 "iotk_multitype.spp"
-subroutine iotk_write_attr_CHARACTER1_0(attr,name,val,first,ierr)
-  use iotk_base
-  use iotk_interface
-  implicit none
-  character(*), intent(inout) :: attr
-  character(*), intent(in)    :: name
-  CHARACTER(kind=__IOTK_CHARACTER1,len=*), intent(in)  :: val 
-  logical, optional, intent(in)  :: first
-  integer, optional, intent(out) :: ierr
-  integer :: ierrl
-  integer :: attlen
-  integer :: vallen
-  integer :: namlen
-  integer :: iostat
-  character :: delim
-# 685 "iotk_multitype.spp"
-  logical :: lquot,lapos
-# 687 "iotk_multitype.spp"
-  character(iotk_vallenx) :: tmpval
-  ierrl = 0
-  iostat = 0
-  if(present(first)) then
-    if(first) attr(1:1) = iotk_eos
-  end if
-  if(.not.iotk_check_name(name)) then
-    call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
-# 694 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 694 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,'Wrong tag name')
-# 694 "iotk_multitype.spp"
-call iotk_error_write(ierrl,"name",trim(name))
-    goto 1
-  end if
-  attlen = iotk_strlen(attr)
-  if(attlen==len(attr)) attlen = len_trim(attr)
-  namlen = len_trim(name)
-# 701 "iotk_multitype.spp"
-  lquot=iotk_strscan(val,'"')>0
-  lapos=iotk_strscan(val,"'")>0
-  if(.not.lquot) then
-    delim='"'
-    call iotk_deescape(tmpval,val)
-  else if(.not.lapos) then
-    delim="'"
-    call iotk_deescape(tmpval,val)
-  else
-    delim='"'
-    call iotk_deescape(tmpval,val,quot=.true.,apos=.true.)
-  end if
-# 725 "iotk_multitype.spp"
-  vallen = iotk_strlen(tmpval)
-  if(attlen+vallen+namlen+5>len(attr)) then
-    call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
-# 727 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 727 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
-    goto 1
-  end if
-  attr(attlen+1:attlen+vallen+namlen+5) = " "//trim(name)//"="//delim//tmpval(1:vallen)//delim//iotk_eos
-1 continue
-  if(present(ierr)) then
-    ierr = ierrl
-  else
-    if(ierrl/=0) call iotk_error_handler(ierrl)
-  end if
-end subroutine iotk_write_attr_CHARACTER1_0
-
-# 740 "iotk_multitype.spp"
-subroutine iotk_scan_attr_CHARACTER1_0(attr,name,val,found,default,eos,ierr)
-  use iotk_base
-  use iotk_interface
-  implicit none
-  character(*),             intent(in)  :: attr
-  character(*),             intent(in)  :: name
-  CHARACTER(kind=__IOTK_CHARACTER1,len=*),           intent(out) :: val 
-  logical,        optional, intent(out) :: found
-  CHARACTER(kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default 
-  logical,        optional, intent(in)  :: eos
-  integer,        optional, intent(out) :: ierr
-  integer :: ierrl
-  integer :: attlen,pos,equal
-  character :: delim
-  logical :: foundl
-  character(iotk_vallenx) :: valc
-# 757 "iotk_multitype.spp"
-  character(iotk_vallenx) :: valctmp
-  integer :: vallen,defaultlen
-  logical :: leos
-# 764 "iotk_multitype.spp"
-  ierrl = 0
-  attlen=iotk_strlen(attr)
-  foundl = .false.
-  equal = 0
-  do
-    pos = verify(attr(equal+1:attlen)," ")
-    if(pos<=0) exit
-    equal = equal + pos
-    pos = scan(attr(equal+1:attlen),"=")
-    if(pos<=0) then
-      call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 774 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-      goto 1
-    end if
-    equal = equal + pos
-    if(trim(attr(equal-pos:equal-1))==trim(name)) foundl = .true.
-    pos = verify(attr(equal+1:attlen)," ")
-    if(pos<=0) then
-      call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 781 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-      goto 1
-    end if
-    equal = equal + pos
-    delim = attr(equal:equal)
-    if(delim/="'" .and. delim/='"') then
-      call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 787 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-      goto 1
-    end if
-    pos = scan(attr(equal+1:attlen),delim)
-    if(pos<=0) then
-      call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 792 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-      goto 1
-    end if
-    if(foundl) exit
-    equal = equal + pos
-  end do
-  if(foundl) then
-    call iotk_strcpy(valc,attr(equal+1:equal+pos-1),ierrl)
-    if(ierrl/=0) then
-      call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 801 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-      goto 1
-    end if
-  else
-    call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 805 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-    ierrl = - ierrl
-    goto 1
-  end if
-# 810 "iotk_multitype.spp"
-  call iotk_escape(valctmp,valc)
-  vallen = iotk_strlen(valctmp)
-  if(len(val) < vallen) then
-    call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 813 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-    goto 1
-  end if
-  leos=.false.
-  if(present(eos)) leos=eos
-  val(1:vallen) = valctmp(1:vallen)
-  if(len(val) > vallen) then
-    val(vallen+1:vallen+1) = iotk_eos
-    if(.not.leos) then
-      val(vallen+1:)=" "
-    end if
-  end if
-# 848 "iotk_multitype.spp"
-1 continue
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-# 855 "iotk_multitype.spp"
-    if(leos) then
-      if(ierrl/=0) then
-        defaultlen = min(iotk_strlen(default),len(val))
-        val(1:defaultlen) = default(1:defaultlen)
-        if(defaultlen<len(val)) val(defaultlen+1:defaultlen+1)=iotk_eos
-      end if
-    else
-      if(ierrl/=0) val = default
-    end if
-# 867 "iotk_multitype.spp"
-  end if
-  if(present(ierr)) then
-    ierr = ierrl
-  else if((present(found) .or. present(default)) .and. ierrl<0) then
-    call iotk_error_clear(ierrl)
-  else
-    if(ierrl/=0) call iotk_error_handler(ierrl)
-  end if
-end subroutine iotk_scan_attr_CHARACTER1_0
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_0
+subroutine iotk_dat_dummy_CHARACTER1_0
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_0
+end subroutine iotk_dat_dummy_CHARACTER1_0
 
-# 44 "iotk_multitype.spp"
+# 45 "iotk_dat.spp"
 
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -752,16 +589,22 @@ end subroutine iotk_dummy_CHARACTER1_0
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 1 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_1(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -773,145 +616,160 @@ subroutine iotk_write_dat_CHARACTER1_1(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 146 "iotk_multitype.spp"
-#ifdef __IOTK_WORKAROUND3
-# 148 "iotk_multitype.spp"
+  allocate(dattmp(size(dat)))
+# 158 "iotk_dat.spp"
+#if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
+# 160 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dattmp,dat,size(dattmp),len(dattmp))
-# 152 "iotk_multitype.spp"
+# 164 "iotk_dat.spp"
 #else
      dattmp = pack(dat,mask=.true.)
 #endif
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -919,8 +777,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -932,23 +790,16 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_1
 
-# 218 "iotk_multitype.spp"
-! This is needed as a workaround for bugged pack 
-subroutine iotk_private_pack_CHARACTER1(out,in,n,l)
-    use iotk_base
-    implicit none
-    integer,                                    intent(in)  :: n,l
-# 224 "iotk_multitype.spp"
-    CHARACTER (kind=__IOTK_CHARACTER1,len=l), intent(out) :: out(n)
-    CHARACTER (kind=__IOTK_CHARACTER1,len=l), intent(in)  :: in(n)
-# 230 "iotk_multitype.spp"
-    out = in
-end subroutine iotk_private_pack_CHARACTER1
 
-# 234 "iotk_multitype.spp"
+# 242 "iotk_dat.spp"
 recursive subroutine iotk_scan_dat_aux_CHARACTER1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only: iotk_read
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,         intent(in)  :: unit
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), intent(out) :: dat (:)
@@ -960,33 +811,38 @@ recursive subroutine iotk_scan_dat_aux_CHARACTER1(unit,dat,rkind,rlen,fmt,ierr)
   logical :: raw,binary
   integer :: lunit
   integer :: index,length,nexttag,iostat,altlength
+  type(iotk_unit), pointer :: this
   character(len=iotk_linlenx) :: line,altline
-# 250 "iotk_multitype.spp"
+# 264 "iotk_dat.spp"
   CHARACTER (kind=kind(dat), len=rlen) :: dattmp(ubound(dat,1))
-# 260 "iotk_multitype.spp"
+# 274 "iotk_dat.spp"
   lunit = iotk_phys_unit(unit)
   ierr = 0
   iostat = 0
   idummy = 0
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(unit=lunit,binary=binary,ierr=ierr)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 267 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
+# 285 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
     return
   end if
-# 271 "iotk_multitype.spp"
+# 289 "iotk_dat.spp"
   if(binary) then
     if(raw) then
       read(lunit,iostat=iostat) dattmp
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 275 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 275 "iotk_multitype.spp"
+# 293 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 293 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 275 "iotk_multitype.spp"
+# 293 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
@@ -994,25 +850,37 @@ call iotk_error_write(ierr,"iostat",iostat)
       read(lunit,iostat=iostat) idummy,dattmp
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 281 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 281 "iotk_multitype.spp"
+# 299 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 299 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 281 "iotk_multitype.spp"
+# 299 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     end if
   else
-    if(iotk_strcomp(fmt,"*")) then
+    if(raw) then
+      read(lunit,"(a)",iostat=iostat) dattmp
+      if(iostat/=0) then
+        call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
+# 307 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 307 "iotk_dat.spp"
+call iotk_error_msg(ierr,' ')
+# 307 "iotk_dat.spp"
+call iotk_error_write(ierr,"iostat",iostat)
+        return
+      end if
+    else if(iotk_strcomp(fmt,"*")) then
       read(lunit,fmt=*,  iostat=iostat) dattmp
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 289 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 289 "iotk_multitype.spp"
+# 313 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 313 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 289 "iotk_multitype.spp"
+# 313 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
@@ -1023,8 +891,8 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_getline(lunit,line,length,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 298 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
+# 322 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
           return
         end if
         nexttag = scan(line(1:length),"<")
@@ -1036,40 +904,40 @@ call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 309 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 309 "iotk_multitype.spp"
+# 333 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 333 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 309 "iotk_multitype.spp"
+# 333 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           call iotk_getline(lunit,altline,altlength,ierr)
           if(ierr/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 314 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
+# 338 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
             return
           end if
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 319 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 319 "iotk_multitype.spp"
+# 343 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 343 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 319 "iotk_multitype.spp"
+# 343 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           read(lunit,"(a)",advance="no",iostat=iostat) altline(1:nexttag-1 + altlength - length)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 324 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 324 "iotk_multitype.spp"
+# 348 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 348 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 324 "iotk_multitype.spp"
+# 348 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
@@ -1080,9 +948,9 @@ call iotk_error_write(ierr,"iostat",iostat)
         if(index == size(dat)) exit
         if(nexttag/=length + 1) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 333 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 333 "iotk_multitype.spp"
+# 357 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 357 "iotk_dat.spp"
 call iotk_error_msg(ierr,'Missing dat')
           return
         end if
@@ -1091,11 +959,11 @@ call iotk_error_msg(ierr,'Missing dat')
       read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) dattmp
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 340 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
-# 340 "iotk_multitype.spp"
+# 364 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
+# 364 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 340 "iotk_multitype.spp"
+# 364 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
@@ -1106,20 +974,24 @@ call iotk_error_write(ierr,"iostat",iostat)
   else
     dat (:) = dattmp (:) (1:len(dat))
   end if
-# 464 "iotk_multitype.spp"
+# 494 "iotk_dat.spp"
   if(idummy/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 465 "iotk_multitype.spp"
-call iotk_error_msg(ierr,"CVS $Revision: 1.1 $")
+# 495 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.2 ")
     return
   end if
 end subroutine iotk_scan_dat_aux_CHARACTER1
-# 470 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
 
-# 472 "iotk_multitype.spp"
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -1127,51 +999,53 @@ subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default (:)
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 519 "iotk_multitype.spp"
+# 555 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1181,12 +1055,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -1195,22 +1077,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_1
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_1
+subroutine iotk_dat_dummy_CHARACTER1_1
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_1
+end subroutine iotk_dat_dummy_CHARACTER1_1
 
-# 44 "iotk_multitype.spp"
+# 45 "iotk_dat.spp"
 
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -1355,16 +1232,22 @@ end subroutine iotk_dummy_CHARACTER1_1
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 2 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_2(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -1376,145 +1259,160 @@ subroutine iotk_write_dat_CHARACTER1_2(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 146 "iotk_multitype.spp"
-#ifdef __IOTK_WORKAROUND3
-# 148 "iotk_multitype.spp"
+  allocate(dattmp(size(dat)))
+# 158 "iotk_dat.spp"
+#if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
+# 160 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dattmp,dat,size(dattmp),len(dattmp))
-# 152 "iotk_multitype.spp"
+# 164 "iotk_dat.spp"
 #else
      dattmp = pack(dat,mask=.true.)
 #endif
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -1522,8 +1420,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -1535,12 +1433,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_2
 
-# 470 "iotk_multitype.spp"
 
-# 472 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
+
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -1548,51 +1451,53 @@ subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default (:,:)
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 519 "iotk_multitype.spp"
+# 555 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1602,12 +1507,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -1616,22 +1529,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_2
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_2
+subroutine iotk_dat_dummy_CHARACTER1_2
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_2
+end subroutine iotk_dat_dummy_CHARACTER1_2
 
-# 44 "iotk_multitype.spp"
+# 45 "iotk_dat.spp"
 
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -1776,16 +1684,22 @@ end subroutine iotk_dummy_CHARACTER1_2
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 3 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_3(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -1797,145 +1711,160 @@ subroutine iotk_write_dat_CHARACTER1_3(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 146 "iotk_multitype.spp"
-#ifdef __IOTK_WORKAROUND3
-# 148 "iotk_multitype.spp"
+  allocate(dattmp(size(dat)))
+# 158 "iotk_dat.spp"
+#if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
+# 160 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dattmp,dat,size(dattmp),len(dattmp))
-# 152 "iotk_multitype.spp"
+# 164 "iotk_dat.spp"
 #else
      dattmp = pack(dat,mask=.true.)
 #endif
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -1943,8 +1872,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -1956,12 +1885,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_3
 
-# 470 "iotk_multitype.spp"
 
-# 472 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
+
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -1969,51 +1903,53 @@ subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default (:,:,:)
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 519 "iotk_multitype.spp"
+# 555 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -2023,12 +1959,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -2037,22 +1981,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_3
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_3
+subroutine iotk_dat_dummy_CHARACTER1_3
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_3
+end subroutine iotk_dat_dummy_CHARACTER1_3
 
-# 44 "iotk_multitype.spp"
+# 45 "iotk_dat.spp"
 
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -2197,16 +2136,22 @@ end subroutine iotk_dummy_CHARACTER1_3
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 4 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_4(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -2218,145 +2163,160 @@ subroutine iotk_write_dat_CHARACTER1_4(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 146 "iotk_multitype.spp"
-#ifdef __IOTK_WORKAROUND3
-# 148 "iotk_multitype.spp"
+  allocate(dattmp(size(dat)))
+# 158 "iotk_dat.spp"
+#if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
+# 160 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dattmp,dat,size(dattmp),len(dattmp))
-# 152 "iotk_multitype.spp"
+# 164 "iotk_dat.spp"
 #else
      dattmp = pack(dat,mask=.true.)
 #endif
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -2364,8 +2324,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -2377,12 +2337,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_4
 
-# 470 "iotk_multitype.spp"
 
-# 472 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
+
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -2390,51 +2355,53 @@ subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default (:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 519 "iotk_multitype.spp"
+# 555 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -2444,12 +2411,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -2458,22 +2433,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_4
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_4
+subroutine iotk_dat_dummy_CHARACTER1_4
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_4
+end subroutine iotk_dat_dummy_CHARACTER1_4
 
-# 44 "iotk_multitype.spp"
+# 45 "iotk_dat.spp"
 
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -2618,16 +2588,22 @@ end subroutine iotk_dummy_CHARACTER1_4
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 5 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_5(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -2639,145 +2615,160 @@ subroutine iotk_write_dat_CHARACTER1_5(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 146 "iotk_multitype.spp"
-#ifdef __IOTK_WORKAROUND3
-# 148 "iotk_multitype.spp"
+  allocate(dattmp(size(dat)))
+# 158 "iotk_dat.spp"
+#if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
+# 160 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dattmp,dat,size(dattmp),len(dattmp))
-# 152 "iotk_multitype.spp"
+# 164 "iotk_dat.spp"
 #else
      dattmp = pack(dat,mask=.true.)
 #endif
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -2785,8 +2776,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -2798,12 +2789,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_5
 
-# 470 "iotk_multitype.spp"
 
-# 472 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
+
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -2811,51 +2807,53 @@ subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default (:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 519 "iotk_multitype.spp"
+# 555 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -2865,12 +2863,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -2879,22 +2885,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_5
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_5
+subroutine iotk_dat_dummy_CHARACTER1_5
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_5
+end subroutine iotk_dat_dummy_CHARACTER1_5
 
-# 44 "iotk_multitype.spp"
+# 45 "iotk_dat.spp"
 
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -3039,16 +3040,22 @@ end subroutine iotk_dummy_CHARACTER1_5
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 6 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_6(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -3060,145 +3067,160 @@ subroutine iotk_write_dat_CHARACTER1_6(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 146 "iotk_multitype.spp"
-#ifdef __IOTK_WORKAROUND3
-# 148 "iotk_multitype.spp"
+  allocate(dattmp(size(dat)))
+# 158 "iotk_dat.spp"
+#if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
+# 160 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dattmp,dat,size(dattmp),len(dattmp))
-# 152 "iotk_multitype.spp"
+# 164 "iotk_dat.spp"
 #else
      dattmp = pack(dat,mask=.true.)
 #endif
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -3206,8 +3228,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -3219,12 +3241,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_6
 
-# 470 "iotk_multitype.spp"
 
-# 472 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
+
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -3232,51 +3259,53 @@ subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default (:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 519 "iotk_multitype.spp"
+# 555 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -3286,12 +3315,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -3300,22 +3337,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_6
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_6
+subroutine iotk_dat_dummy_CHARACTER1_6
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_6
+end subroutine iotk_dat_dummy_CHARACTER1_6
 
-# 44 "iotk_multitype.spp"
+# 45 "iotk_dat.spp"
 
-# 46 "iotk_multitype.spp"
+# 47 "iotk_dat.spp"
 
 !------------------------------------------------------------------------------!
 ! Inclusion of configuration file
@@ -3460,16 +3492,22 @@ end subroutine iotk_dummy_CHARACTER1_6
 
 #endif
 
-# 56 "iotk_multitype.spp"
+# 57 "iotk_dat.spp"
 
-# 58 "iotk_multitype.spp"
+# 59 "iotk_dat.spp"
 
 #ifdef __IOTK_CHARACTER1
 #if 7 <= __IOTK_MAXRANK
-# 62 "iotk_multitype.spp"
+# 63 "iotk_dat.spp"
 subroutine iotk_write_dat_CHARACTER1_7(unit,name,dat,fmt,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_attr_interf, only : iotk_write_attr
+  use iotk_write_interf
+  use iotk_fmt_interf
+  use iotk_str_interf
+  use iotk_unit_interf
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
   character(*),           intent(in)  :: name
@@ -3481,145 +3519,160 @@ subroutine iotk_write_dat_CHARACTER1_7(unit,name,dat,fmt,ierr)
   integer(iotk_header_kind), parameter :: idummy=0
   character(300) :: usefmt,usefmt1
   character(iotk_attlenx) :: attr
-# 77 "iotk_multitype.spp"
+  type (iotk_unit), pointer :: this
+# 85 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)),allocatable :: dattmp(:)
   character(len=iotk_linlenx) :: linetmp
-# 82 "iotk_multitype.spp"
+# 90 "iotk_dat.spp"
   integer :: itmp
   ierrl = 0
   iostat = 0
   lunit = iotk_phys_unit(unit)
-  call iotk_unit_get(lunit,raw=raw)
+  call iotk_unit_get(lunit,pointer=this)
+  raw = .false.
+  if(associated(this)) then
+    raw = this%raw
+  end if
   call iotk_inquire(lunit,binary=binary,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 89 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 101 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 94 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 106 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 99 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 111 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 103 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 115 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",trim(name))
-# 103 "iotk_multitype.spp"
+# 115 "iotk_dat.spp"
 call iotk_error_write(ierrl,"fmt",trim(fmt))
     goto 1
   end if
   call iotk_write_attr(attr,"type",iotk_tolower("CHARACTER"),first=.true.,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 108 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 120 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-  call iotk_write_attr(attr,"size",iotk_size(dat),ierr=ierrl)
+  call iotk_write_attr(attr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 113 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 125 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 117 "iotk_multitype.spp"
+# 129 "iotk_dat.spp"
   call iotk_write_attr(attr,"len",len(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 119 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 131 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
-# 131 "iotk_multitype.spp"
+# 143 "iotk_dat.spp"
   if(.not.iotk_strcomp(usefmt,"!")) call iotk_write_attr(attr,"fmt",iotk_strtrim(usefmt),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 133 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 145 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,attr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 138 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 150 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 
-  allocate(dattmp(iotk_size(dat)))
-# 146 "iotk_multitype.spp"
-#ifdef __IOTK_WORKAROUND3
-# 148 "iotk_multitype.spp"
+  allocate(dattmp(size(dat)))
+# 158 "iotk_dat.spp"
+#if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
+# 160 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dattmp,dat,size(dattmp),len(dattmp))
-# 152 "iotk_multitype.spp"
+# 164 "iotk_dat.spp"
 #else
      dattmp = pack(dat,mask=.true.)
 #endif
-# 156 "iotk_multitype.spp"
+# 168 "iotk_dat.spp"
 
   if(binary) then
     if(raw) then
       write(lunit,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 161 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 173 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else
       write(lunit,iostat=iostat) idummy,(dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 167 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 179 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
   else
-    if(iotk_strcomp(usefmt,"*")) then
+    if(raw) then
+# 186 "iotk_dat.spp"
+      write(lunit,"(a)",iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
+# 190 "iotk_dat.spp"
+      if(iostat/=0) then
+        call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
+# 191 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+        goto 1
+      end if
+    else if(iotk_strcomp(usefmt,"*")) then
       write(lunit,*,iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 175 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 197 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
-# 180 "iotk_multitype.spp"
+# 202 "iotk_dat.spp"
      do itmp = 1 , size(dattmp)
        call iotk_deescape(linetmp,dattmp(itmp))
        write(lunit,"(a)",iostat=iostat) linetmp(1:iotk_strlen(linetmp))
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 184 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 206 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
         end if
      end do
-# 195 "iotk_multitype.spp"
+# 217 "iotk_dat.spp"
     else
       write(lunit,fmt=usefmt(1:iotk_strlen(usefmt)),iostat=iostat) (dattmp(itmp),itmp=1,size(dattmp))
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 198 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 220 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
         goto 1
       end if
     end if
@@ -3627,8 +3680,8 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   call iotk_write_end(unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
-# 205 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 227 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
 1 continue
@@ -3640,12 +3693,17 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_write_dat_CHARACTER1_7
 
-# 470 "iotk_multitype.spp"
 
-# 472 "iotk_multitype.spp"
+# 500 "iotk_dat.spp"
+
+# 502 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,found,default,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_dat_interf, only: iotk_scan_dat_aux
+  use iotk_scan_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
@@ -3653,51 +3711,53 @@ subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,found,default,ierr)
   logical,         optional, intent(out) :: found
   CHARACTER (kind=__IOTK_CHARACTER1,len=*), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 483 "iotk_multitype.spp"
+# 517 "iotk_dat.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=len(dat)), allocatable :: tmpdat(:)
-# 487 "iotk_multitype.spp"
+# 521 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
   character(iotk_vallenx) :: fmt
   character(iotk_attlenx) :: attr
-  logical :: inside
+  logical :: inside,foundl
   inside = .false.
   ierrl = 0
   ierrl2 = 0
-  call iotk_scan_begin(unit,name,attr,ierr=ierrl)
-  if(ierrl/=0) goto 1
+  foundl=.false.
+  call iotk_scan_begin(unit,name,attr,found=foundl,ierr=ierrl)
+  if(.not. foundl) goto 1
+  foundl = .true.
   inside = .true.
   call iotk_parse_dat(attr,rtype,rkind,rsize,rlen,fmt,ierrl)
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 502 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 538 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 502 "iotk_multitype.spp"
+# 538 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
-  if(.not. (rsize==-1 .or. rsize==iotk_size(dat)) ) then
+  if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 506 "iotk_multitype.spp"
-call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
+# 542 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 511 "iotk_multitype.spp"
+# 547 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 513 "iotk_multitype.spp"
+# 549 "iotk_dat.spp"
 
-  allocate(tmpdat(iotk_size(dat)))
+  allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 519 "iotk_multitype.spp"
+# 555 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 521 "iotk_multitype.spp"
+# 557 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -3707,12 +3767,20 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
       ierrl=ierrl2
     end if
   end if
-  if(present(found)) then
-    found = .false.
-    if(ierrl==0) found = .true.
-  end if
-  if(present(default)) then
-    if(ierrl/=0) dat = default
+  if(ierrl/=0) foundl=.false.
+  if(present(found)) found = foundl
+  if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
+    call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.2 ")
+# 569 "iotk_dat.spp"
+call iotk_error_msg(ierrl,'Dat not found')
+# 569 "iotk_dat.spp"
+call iotk_error_write(ierrl,"name",name)
+    ierrl = - ierrl
+  end if 
+  if(present(default) .and. .not. foundl) then
+    dat=default
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -3721,16 +3789,11 @@ call iotk_error_msg(ierrl,"CVS $Revision: 1.1 $")
   end if
 end subroutine iotk_scan_dat_CHARACTER1_7
 
-# 595 "iotk_multitype.spp"
-
-# 666 "iotk_multitype.spp"
-
-# 877 "iotk_multitype.spp"
 
 #endif
 #endif
 
-subroutine iotk_dummy_CHARACTER1_7
+subroutine iotk_dat_dummy_CHARACTER1_7
   write(0,*)
-end subroutine iotk_dummy_CHARACTER1_7
+end subroutine iotk_dat_dummy_CHARACTER1_7
 

@@ -1,5 +1,5 @@
 ! Input/Output Tool Kit (IOTK)
-! Copyright (C) 2004 Giovanni Bussi
+! Copyright (C) 2004,2005 Giovanni Bussi
 !
 ! This library is free software; you can redistribute it and/or
 ! modify it under the terms of the GNU Lesser General Public
@@ -164,14 +164,15 @@
 
 function iotk_basefmt_x(type,ikind,ilen)
   use iotk_base
-  use iotk_interface
+  use iotk_xtox_interf
+  use iotk_misc_interf
   implicit none
   character(100)           :: iotk_basefmt_x
   integer,      intent(in) :: ikind,ilen
   character(*), intent(in) :: type
   integer :: nexp,exp,ndig,baselen
   logical, save :: first_call = .true.
-# 44 "iotk_fmt.spp"
+# 45 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER1
   integer (__IOTK_INTEGER1) :: example_INTEGER1
   character(46), save :: save_basefmt_integer1 = ""
@@ -180,7 +181,7 @@ function iotk_basefmt_x(type,ikind,ilen)
   real (__IOTK_REAL1) :: example_REAL1
   character(46), save :: save_basefmt_real1 = ""
 #endif
-# 44 "iotk_fmt.spp"
+# 45 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER2
   integer (__IOTK_INTEGER2) :: example_INTEGER2
   character(46), save :: save_basefmt_integer2 = ""
@@ -189,7 +190,7 @@ function iotk_basefmt_x(type,ikind,ilen)
   real (__IOTK_REAL2) :: example_REAL2
   character(46), save :: save_basefmt_real2 = ""
 #endif
-# 44 "iotk_fmt.spp"
+# 45 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER3
   integer (__IOTK_INTEGER3) :: example_INTEGER3
   character(46), save :: save_basefmt_integer3 = ""
@@ -198,7 +199,7 @@ function iotk_basefmt_x(type,ikind,ilen)
   real (__IOTK_REAL3) :: example_REAL3
   character(46), save :: save_basefmt_real3 = ""
 #endif
-# 44 "iotk_fmt.spp"
+# 45 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER4
   integer (__IOTK_INTEGER4) :: example_INTEGER4
   character(46), save :: save_basefmt_integer4 = ""
@@ -207,9 +208,9 @@ function iotk_basefmt_x(type,ikind,ilen)
   real (__IOTK_REAL4) :: example_REAL4
   character(46), save :: save_basefmt_real4 = ""
 #endif
-# 53 "iotk_fmt.spp"
+# 54 "iotk_fmt.spp"
   if(first_call) then
-# 55 "iotk_fmt.spp"
+# 56 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER1
     baselen = range(example_INTEGER1) + 1
     save_basefmt_integer1 = "(i"//trim(iotk_itoa(baselen))//")"
@@ -228,7 +229,7 @@ function iotk_basefmt_x(type,ikind,ilen)
                 //trim(iotk_itoa(ndig-1))//"E"//trim(iotk_itoa(nexp))//")"
 
 #endif
-# 55 "iotk_fmt.spp"
+# 56 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER2
     baselen = range(example_INTEGER2) + 1
     save_basefmt_integer2 = "(i"//trim(iotk_itoa(baselen))//")"
@@ -247,7 +248,7 @@ function iotk_basefmt_x(type,ikind,ilen)
                 //trim(iotk_itoa(ndig-1))//"E"//trim(iotk_itoa(nexp))//")"
 
 #endif
-# 55 "iotk_fmt.spp"
+# 56 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER3
     baselen = range(example_INTEGER3) + 1
     save_basefmt_integer3 = "(i"//trim(iotk_itoa(baselen))//")"
@@ -266,7 +267,7 @@ function iotk_basefmt_x(type,ikind,ilen)
                 //trim(iotk_itoa(ndig-1))//"E"//trim(iotk_itoa(nexp))//")"
 
 #endif
-# 55 "iotk_fmt.spp"
+# 56 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER4
     baselen = range(example_INTEGER4) + 1
     save_basefmt_integer4 = "(i"//trim(iotk_itoa(baselen))//")"
@@ -285,7 +286,7 @@ function iotk_basefmt_x(type,ikind,ilen)
                 //trim(iotk_itoa(ndig-1))//"E"//trim(iotk_itoa(nexp))//")"
 
 #endif
-# 74 "iotk_fmt.spp"
+# 75 "iotk_fmt.spp"
     first_call = .false.
   end if
   select case(type)
@@ -293,75 +294,75 @@ function iotk_basefmt_x(type,ikind,ilen)
     iotk_basefmt_x = "(l1)"
   case("INTEGER")
     select case(ikind)
-# 82 "iotk_fmt.spp"
+# 83 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER1
     case(__IOTK_INTEGER1)
       iotk_basefmt_x = save_basefmt_integer1
 #endif
-# 82 "iotk_fmt.spp"
+# 83 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER2
     case(__IOTK_INTEGER2)
       iotk_basefmt_x = save_basefmt_integer2
 #endif
-# 82 "iotk_fmt.spp"
+# 83 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER3
     case(__IOTK_INTEGER3)
       iotk_basefmt_x = save_basefmt_integer3
 #endif
-# 82 "iotk_fmt.spp"
+# 83 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER4
     case(__IOTK_INTEGER4)
       iotk_basefmt_x = save_basefmt_integer4
 #endif
-# 87 "iotk_fmt.spp"
+# 88 "iotk_fmt.spp"
     end select
   case("REAL")
     select case(ikind)
-# 91 "iotk_fmt.spp"
+# 92 "iotk_fmt.spp"
 #ifdef __IOTK_REAL1
     case(__IOTK_REAL1)
       iotk_basefmt_x = save_basefmt_real1
 #endif
-# 91 "iotk_fmt.spp"
+# 92 "iotk_fmt.spp"
 #ifdef __IOTK_REAL2
     case(__IOTK_REAL2)
       iotk_basefmt_x = save_basefmt_real2
 #endif
-# 91 "iotk_fmt.spp"
+# 92 "iotk_fmt.spp"
 #ifdef __IOTK_REAL3
     case(__IOTK_REAL3)
       iotk_basefmt_x = save_basefmt_real3
 #endif
-# 91 "iotk_fmt.spp"
+# 92 "iotk_fmt.spp"
 #ifdef __IOTK_REAL4
     case(__IOTK_REAL4)
       iotk_basefmt_x = save_basefmt_real4
 #endif
-# 96 "iotk_fmt.spp"
+# 97 "iotk_fmt.spp"
     end select
   case("COMPLEX")
     select case(ikind)
-# 100 "iotk_fmt.spp"
+# 101 "iotk_fmt.spp"
 #ifdef __IOTK_REAL1
     case(__IOTK_REAL1)
       iotk_basefmt_x = "("//trim(save_basefmt_real1)//",',',"//trim(save_basefmt_real1)//")"
 #endif
-# 100 "iotk_fmt.spp"
+# 101 "iotk_fmt.spp"
 #ifdef __IOTK_REAL2
     case(__IOTK_REAL2)
       iotk_basefmt_x = "("//trim(save_basefmt_real2)//",',',"//trim(save_basefmt_real2)//")"
 #endif
-# 100 "iotk_fmt.spp"
+# 101 "iotk_fmt.spp"
 #ifdef __IOTK_REAL3
     case(__IOTK_REAL3)
       iotk_basefmt_x = "("//trim(save_basefmt_real3)//",',',"//trim(save_basefmt_real3)//")"
 #endif
-# 100 "iotk_fmt.spp"
+# 101 "iotk_fmt.spp"
 #ifdef __IOTK_REAL4
     case(__IOTK_REAL4)
       iotk_basefmt_x = "("//trim(save_basefmt_real4)//",',',"//trim(save_basefmt_real4)//")"
 #endif
-# 105 "iotk_fmt.spp"
+# 106 "iotk_fmt.spp"
     end select
   case("CHARACTER")
     if(ilen>=0) then
@@ -374,7 +375,9 @@ end function iotk_basefmt_x
 
 function iotk_wfmt_x(type,ikind,isize,ilen)
   use iotk_base
-  use iotk_interface
+  use iotk_xtox_interf
+  use iotk_fmt_interf
+  use iotk_misc_interf
   implicit none
   integer,       intent(in)  :: ikind
   character(*),  intent(in)  :: type

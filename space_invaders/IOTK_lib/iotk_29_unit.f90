@@ -1,5 +1,5 @@
 ! Input/Output Tool Kit (IOTK)
-! Copyright (C) 2004 Giovanni Bussi
+! Copyright (C) 2004,2005 Giovanni Bussi
 !
 ! This library is free software; you can redistribute it and/or
 ! modify it under the terms of the GNU Lesser General Public
@@ -165,7 +165,7 @@
 # 35 "iotk_unit.spp"
 subroutine iotk_free_unit_x(unit,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
   implicit none
 ! This subroutine sets 'unit' to the number of
 ! an I/O unit which is free (i.e. not already opened).
@@ -193,7 +193,7 @@ subroutine iotk_free_unit_x(unit,ierr)
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_free_unit",__FILE__,__LINE__)
 # 63 "iotk_unit.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.1 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.7 ")
 # 63 "iotk_unit.spp"
 call iotk_error_msg(ierrl,'Error inquiring')
 # 63 "iotk_unit.spp"
@@ -205,7 +205,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
   if(isearch>=nsearch) then
     call iotk_error_issue(ierrl,"iotk_free_unit",__FILE__,__LINE__)
 # 67 "iotk_unit.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.1 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.7 ")
 # 67 "iotk_unit.spp"
 call iotk_error_msg(ierrl,'There are no units left')
     goto 1
@@ -220,36 +220,33 @@ call iotk_error_msg(ierrl,'There are no units left')
 end subroutine iotk_free_unit_x
 
 # 80 "iotk_unit.spp"
-function iotk_phys_unit_x(unit)
+function iotk_phys_unit_x(unit) result(result)
   use iotk_base
-  use iotk_interface
+  use iotk_unit_interf
   implicit none
   integer, intent(in) :: unit
-  integer :: iotk_phys_unit_x
+  integer :: result
   integer :: ierrl
   type(iotk_unit), pointer :: this
   ierrl = 0
-  iotk_phys_unit_x = unit
+  result = unit
   if(.not. iotk_units_init) then
     iotk_units_init = .true.
     nullify(iotk_units)
   end if
   call iotk_unit_get(unit,pointer=this)
-  if(.not.associated(this)) then
-    iotk_phys_unit_x = unit
-    return
-  end if
+  if(.not.associated(this)) return
   do
     if(.not. associated(this%son)) exit
     this => this%son
   end do
-  iotk_phys_unit_x = this%unit
+  result = this%unit
 end function iotk_phys_unit_x
 
-# 107 "iotk_unit.spp"
+# 104 "iotk_unit.spp"
 subroutine iotk_unit_print_x(unit)
   use iotk_base
-  use iotk_interface
+  use iotk_str_interf
   implicit none 
   integer, intent(in) :: unit
   type (iotk_unit), pointer :: this
@@ -258,7 +255,7 @@ subroutine iotk_unit_print_x(unit)
   do
     if(.not. associated(this)) exit
     write(unit,"(a,i8)") "Unit :",this%unit
-    write(unit,"(a,a,a,i8)") "Root :",trim(this%root),"Level:",this%level
+    write(unit,"(a,a,a,i8)") "Root :",this%root(1:iotk_strlen_trim(this%root)),"Level:",this%level
     if(associated(this%son)) then
       write(unit,"(a,i8)") "Son :",this%son%unit
     end if
@@ -270,18 +267,14 @@ subroutine iotk_unit_print_x(unit)
   write(unit,"(a)") "end IOTK units"
 end subroutine iotk_unit_print_x
 
-# 131 "iotk_unit.spp"
-subroutine iotk_unit_add_x(unit,root,raw,close_at_end,skip_root,ierr)
+# 128 "iotk_unit.spp"
+subroutine iotk_unit_add_x(unit,this,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
   implicit none
-  integer,           intent(in)  :: unit
-  character(*),      intent(in)  :: root
-  logical,           intent(in)  :: raw
-  logical,           intent(in)  :: close_at_end
-  logical,           intent(in)  :: skip_root
-  integer,           intent(out) :: ierr
+  integer,      intent(in)  :: unit
   type (iotk_unit), pointer :: this
+  integer,      intent(out) :: ierr
   ierr = 0
   if(.not. iotk_units_init) then
     iotk_units_init = .true.
@@ -292,31 +285,33 @@ subroutine iotk_unit_add_x(unit,root,raw,close_at_end,skip_root,ierr)
     if(.not.associated(this)) exit
     if(this%unit == unit) then
       call iotk_error_issue(ierr,"iotk_unit_add",__FILE__,__LINE__)
-# 151 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
-# 151 "iotk_unit.spp"
+# 144 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 144 "iotk_unit.spp"
 call iotk_error_msg(ierr,'unit')
       return
     end if
     this => this%next
   end do
   allocate(this)
-  this%unit      = unit
-  this%root      = root
-  this%skip_root = skip_root
-  this%raw       = raw
+  this%unit         = unit
+  this%root         = ""
+  this%skip_root    = .false.
+  this%raw          = .false.
+  this%level        = 0
+  this%close_at_end = .false.
   this%next  => iotk_units
   nullify(this%son)
   nullify(this%parent)
-  this%level=0
-  this%close_at_end=close_at_end
   iotk_units => this
 end subroutine iotk_unit_add_x
 
-# 170 "iotk_unit.spp"
+# 163 "iotk_unit.spp"
 subroutine iotk_inquire_x(unit,binary,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_str_interf
+  use iotk_misc_interf
   implicit none
   integer,           intent(in)  :: unit
   logical,           intent(out) :: binary
@@ -329,9 +324,9 @@ subroutine iotk_inquire_x(unit,binary,ierr)
   inquire(unit=unit,form=form,iostat=iostat,access=access,pad=pad,blank=blank,opened=opened)
   if(iostat/=0) then
     call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 184 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
-# 184 "iotk_unit.spp"
+# 179 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 179 "iotk_unit.spp"
 call iotk_error_msg(ierr,'Error inquiring')
     return
   end if
@@ -342,30 +337,31 @@ call iotk_error_msg(ierr,'Error inquiring')
   end if
   if(opened .and. iotk_toupper(access)/="SEQUENTIAL") then
     call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 193 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 188 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
     return
   end if
   if(.not. binary) then
     if(opened .and. iotk_toupper(blank)/="NULL") then
       call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 198 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 193 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
       return
     end if
     if(opened .and. iotk_toupper(pad)  /="YES") then
       call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 202 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 197 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
       return
     end if
   end if
 end subroutine iotk_inquire_x
 
-# 209 "iotk_unit.spp"
+# 204 "iotk_unit.spp"
 subroutine iotk_unit_del_x(unit,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_misc_interf
   implicit none
   integer, intent(in)  :: unit
   integer, intent(out) :: ierr
@@ -380,8 +376,8 @@ subroutine iotk_unit_del_x(unit,ierr)
   do
     if(.not.associated(this)) then
       call iotk_error_issue(ierr,"iotk_unit_del",__FILE__,__LINE__)
-# 225 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 221 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
       return
     end if
     if(this%unit == unit) exit
@@ -390,8 +386,8 @@ call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
   end do
   if(associated(this%son)) then
     call iotk_error_issue(ierr,"iotk_unit_del",__FILE__,__LINE__)
-# 233 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 229 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
     return
   end if
   if(associated(this%parent)) then
@@ -405,10 +401,12 @@ call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
   deallocate(this)
 end subroutine iotk_unit_del_x
 
-# 248 "iotk_unit.spp"
+# 244 "iotk_unit.spp"
 subroutine iotk_unit_parent_x(parent,son,ierr)
   use iotk_base
-  use iotk_interface
+  use iotk_error_interf
+  use iotk_misc_interf
+  use iotk_unit_interf
   implicit none
   integer, intent(in) :: parent,son
   integer, intent(out) :: ierr
@@ -417,43 +415,41 @@ subroutine iotk_unit_parent_x(parent,son,ierr)
   call iotk_unit_get(parent,pointer=this_parent)
   if(.not.associated(this_parent)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 258 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 256 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
     return
   end if
   call iotk_unit_get(son,pointer=this_son)
   if(.not.associated(this_son)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 263 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 261 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
     return
   end if
   if(associated(this_parent%son)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 267 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 265 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
     return
   end if
   if(associated(this_son%parent)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 271 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.1 ")
+# 269 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
     return
   end if
   this_parent%son => this_son
   this_son%parent => this_parent
 end subroutine iotk_unit_parent_x
 
-# 279 "iotk_unit.spp"
-subroutine iotk_unit_get_x(unit,raw,pointer)
+# 277 "iotk_unit.spp"
+subroutine iotk_unit_get_x(unit,pointer)
   use iotk_base
-  use iotk_interface
+  use iotk_misc_interf
   implicit none
   integer,                intent(in)  :: unit
-  logical,      optional, intent(out) :: raw
   type(iotk_unit), optional, pointer :: pointer
   type (iotk_unit), pointer :: this
-  if(present(raw))  raw  = .false.
   if(present(pointer)) nullify(pointer)
   if(.not. iotk_units_init) then
     iotk_units_init = .true.
@@ -466,7 +462,6 @@ subroutine iotk_unit_get_x(unit,raw,pointer)
     this => this%next
   end do
   if(associated(this)) then
-    if(present(raw))  raw  = this%raw
     if(present(pointer)) pointer => this
   end if
 end subroutine iotk_unit_get_x

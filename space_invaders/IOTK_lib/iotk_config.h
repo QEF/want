@@ -16,7 +16,7 @@
 ! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 !
 !------------------------------------------------------------------------------!
-! CONFIGURATION FILE FOR IOTK 0.3.5
+! CONFIGURATION FILE FOR IOTK 1.0.0
 !------------------------------------------------------------------------------!
 ! The following lines map some commonly defined system macro to the internal
 ! iotk macros.
@@ -26,8 +26,10 @@
 #ifndef __IOTK_CONFIG_H
 #define __IOTK_CONFIG_H
 
+#define __IOTK_MAXRANK 4
+
+
 #ifdef __AIX
-#   define __IOTK_BINARY_FORMAT "IBM-SP/XLF"
 #   define __IOTK_LOGICAL1 1
 #   define __IOTK_LOGICAL2 2
 #   define __IOTK_LOGICAL3 4
@@ -43,7 +45,6 @@
 
 #ifdef __LINUX
 #   ifdef __INTEL
-#         define __IOTK_BINARY_FORMAT "PC-LINUX/IFC"
 #         define __IOTK_LOGICAL1 1
 #         define __IOTK_LOGICAL2 2
 #         define __IOTK_LOGICAL3 4
@@ -57,9 +58,9 @@
 #         define __IOTK_REAL3    16
 #         define __IOTK_WORKAROUND1
 #         define __IOTK_WORKAROUND3
+#         define __IOTK_WORKAROUND5
 #   endif
 #   ifdef __G95
-#         define __IOTK_BINARY_FORMAT "PC-LINUX/G95"
 #         define __IOTK_LOGICAL1 1
 #         define __IOTK_LOGICAL2 2
 #         define __IOTK_LOGICAL3 4
@@ -72,7 +73,6 @@
 #         define __IOTK_REAL2    8
 #   endif
 #   ifdef __PGI
-#         define __IOTK_BINARY_FORMAT "PC-LINUX/PGI"
 #         define __IOTK_LOGICAL1 1
 #         define __IOTK_LOGICAL2 2
 #         define __IOTK_LOGICAL3 4
@@ -84,11 +84,11 @@
 #         define __IOTK_REAL1    4
 #         define __IOTK_REAL2    8
 #         define __IOTK_WORKAROUND2
+#         define __IOTK_WORKAROUND4
 #   endif
 #endif
 
 #ifdef __SGI
-#   define __IOTK_BINARY_FORMAT "SGI-ORIGIN"
 #   define __IOTK_LOGICAL1 1
 #   define __IOTK_LOGICAL2 2
 #   define __IOTK_LOGICAL3 4
