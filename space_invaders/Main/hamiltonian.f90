@@ -36,11 +36,11 @@
       USE summary_module, ONLY : summary
       USE version_module, ONLY : version_number
       USE util_module, ONLY : zmat_unitary, zmat_hdiag
-      USE parser_module, ONLY : int2char
+      USE parser_module, ONLY : int2char, change_case
 
       USE lattice_module, ONLY : avec, bvec
       USE kpoints_module,       ONLY : nkpts, nk, vkpt
-      USE windows_module,       ONLY : imin, imax, eig, efermi, windows_read
+      USE windows_module,       ONLY : imin, imax, eig, efermi, windows_read, spin_component
       USE subspace_module,      ONLY : wan_eig, subspace_read
       USE localization_module,  ONLY : dimwann, cu, & 
                                        localization_read
@@ -80,15 +80,11 @@
       LOGICAL   :: calculate_spectral_func
       INTEGER   :: print_sgm_start
       INTEGER   :: print_sgm_end
-      INTEGER   :: spin_component
 
       NAMELIST /INPUT/ prefix, postfix, work_dir, verbosity, &
                        nkpts_in, nkpts_max, convert_self_energy, check_self_energy, & 
                        calculate_spectral_func, print_sgm_start, print_sgm_end,  &
-                       spin_component, unitary_thr
-!
-! nk are temporary read from STDIN waiting for a better implementation of BSHELLS
-!    
+                       unitary_thr, spin_component
 
 !
 ! ... End declarations and dimensions
@@ -116,7 +112,7 @@
       unitary_thr                 = EPS_m6
       print_sgm_start             = 0
       print_sgm_end               = 0
-      spin_component              = 1
+      spin_component              = 'none'
       
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('hamiltonian','Unable to read namelist INPUT',ABS(i))
@@ -126,6 +122,16 @@
       IF ( nkpts_in > nkpts_inx ) CALL errore('hamiltonian', 'nkpts_in too large',  nkpts_in)
       IF ( nkpts_in <= 0 ) CALL errore('hamiltonian', 'Invalid nkpts_in', ABS(nkpts_in)+1)
       IF ( unitary_thr <=0 ) CALL errore('hamiltonian', 'invalid unitary_thr', 3)
+
+      CALL change_case(verbosity,'lower')
+      IF ( TRIM(verbosity) /= 'low' .AND. TRIM(verbosity) /= 'medium' .AND. &
+           TRIM(verbosity) /= 'high' ) &
+           CALL errore('hamiltonian','Invalid verbosity = '//TRIM(verbosity),1)
+
+      CALL change_case(spin_component,'lower')
+      IF ( TRIM(spin_component) /= 'up' .AND. TRIM(spin_component) /= 'down' .AND. &
+           TRIM(spin_component) /= 'none' ) &
+           CALL errore('hamiltonian','Invalid spin_component = '//TRIM(spin_component),1)
  
       ALLOCATE( point( nkpts_in ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nkpts_in )
@@ -259,18 +265,21 @@
 !     its basis from BLOCH to WANNIER states; then writes the new
 !     matrix to file to be used later by the transport code
 !
-      IF (convert_self_energy)  THEN
-           CALL do_self_energy(dimwann,nkpts,nws,spin_component,cu,vkpt,indxws,bvec,     &
-                               'sigma.blc','sigma.wan')
-      END IF
+
+! XXX this part should be updated
+!      IF (convert_self_energy)  THEN
+!           CALL do_self_energy(dimwann,nkpts,nws,spin_component,cu,vkpt,indxws,bvec,     &
+!                               'sigma.blc','sigma.wan')
+!      END IF
 
 !
 ! ... checking, if CHECK_SELF_ENERGY=.TRUE.  (added by ANDREA 28 jan 2004)
 !
-      IF (check_self_energy)  THEN
-           CALL check_sgm_wan(dimwann,nws,nk,spin_component,rham,           &
-                              print_sgm_start,print_sgm_end,calculate_spectral_func)
-      END IF
+
+!      IF (check_self_energy)  THEN
+!           CALL check_sgm_wan(dimwann,nws,nk,spin_component,rham,           &
+!                              print_sgm_start,print_sgm_end,calculate_spectral_func)
+!      END IF
 
 
 !

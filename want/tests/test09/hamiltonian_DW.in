@@ -1,0 +1,15 @@
+
+ &INPUT
+   prefix = 'nichain'
+   postfix = '_WanT_DW'
+   work_dir = './'
+   nkpts_in  = 2
+   nkpts_max = 100
+   unitary_thr = 1.d-6
+   spin_component="DOWN"
+   
+ /
+G
+0.0 0.0 0.0
+Z
+0.0 0.0 0.5

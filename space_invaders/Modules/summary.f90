@@ -25,7 +25,7 @@
    USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, nshells, nwhich, &
                               bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
-                              dimfroz, lfrozen, dimwinx, nspin, &
+                              dimfroz, lfrozen, dimwinx, nspin, spin_component, &
                               win_min, win_max, froz_min, froz_max
    USE subspace_module,ONLY : dimwann, disentangle_thr, alpha_dis, maxiter_dis
    USE localization_module, ONLY : alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg, &
@@ -129,7 +129,8 @@
           WRITE( unit, " ( '</WANNIER_FUNCTIONS>',/)" )
 
           WRITE( unit, " ( '<DISENTANGLE>')" )
-          WRITE(unit, " (2x,'Input parameters for disentangling subspaces')")
+          WRITE(unit, " (2x,'Input parameters for subspace definition')")
+          WRITE( unit,"(4x,'Spin component = ', a )" ) TRIM(spin_component)
           WRITE( unit,"(4x,'Mixing parameter (alpha_dis)= ', f6.3 )" ) alpha_dis
           WRITE( unit,"(4x,'Max iteration number = ', i5 )" ) maxiter_dis
           WRITE( unit,"(4x,'Starting guess orbitals (trial_mode) = ', a )" ) TRIM(trial_mode)

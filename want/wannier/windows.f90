@@ -14,7 +14,7 @@
    USE constants, ONLY : RYD
    USE parameters, ONLY : nstrx
    USE parser_module, ONLY : change_case
-   USE kpoints_module, ONLY : nkpts, kpoints_alloc
+   USE kpoints_module, ONLY : iks, ike, nkpts, nkpts_tot, kpoints_alloc
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -40,7 +40,7 @@
    INTEGER                     :: nbnd               ! number of DFT bands
    INTEGER                     :: nspin              ! number of spin channels
    INTEGER                     :: dimwinx            ! MAX (dimwin(:)) over kpts
-   CHARACTER(10)               :: spin_component     ! 'up', 'down', 'none'
+   CHARACTER(10)               :: spin_component = 'none' ! 'up', 'down', 'none'
    !
    ! ... starting states within the energy window
    REAL(dbl)                   :: win_min, win_max   ! outer energy window
@@ -197,9 +197,6 @@ CONTAINS
            CALL errore(subname,' Invalid NBND or NKPTS ',1)
        IF ( nspin /= 1 .AND. nspin /=2 ) CALL errore(subname,'Invalid NSPIN',ABS(nspin)+1)
        !
-       ! ... this second error should be eliminated as soon as possible
-       IF ( nspin /= 1 ) CALL errore(subname,'NSPIN =2 not yet impleented',ABS(nspin))
-
        ALLOCATE( dimwin(nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating dimwin ',nkpts)      
        ALLOCATE( imin(nkpts), STAT=ierr )
@@ -282,6 +279,7 @@ CONTAINS
        CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr(attr,"nkpts",nkpts)
        CALL iotk_write_attr(attr,"nspin",nspin)
+       CALL iotk_write_attr(attr,"spin_component",TRIM(spin_component))
        CALL iotk_write_attr(attr,"efermi",efermi)
        CALL iotk_write_attr(attr,"dimwinx",dimwinx)
        CALL iotk_write_attr(attr,"lcompspace",lcompspace)
@@ -378,7 +376,7 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr, str
        CHARACTER(16)      :: subname="windows_read_ext"
-       INTEGER            :: idum, ik, ierr
+       INTEGER            :: idum, lindex, ik, ierr
 
        CALL iotk_scan_begin(unit,TRIM(name),ATTR=attr,FOUND=found,IERR=ierr)
        IF (.NOT. found) RETURN
@@ -389,11 +387,8 @@ CONTAINS
        IF (ierr/=0)  CALL errore(subname,'Unable to find NSPIN',ABS(ierr))
        CALL iotk_scan_attr(attr,'nk',idum,IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to find NK',ABS(ierr))
-       IF ( kpoints_alloc ) THEN
-           IF ( nkpts /= idum ) CALL errore(subname,'nkpts /= nk',ABS(idum)+1)
-       ELSE
-           nkpts = idum
-       ENDIF
+       IF ( nkpts_tot /= idum ) CALL errore(subname,'nkpts_tot /= nk',ABS(idum)+1)
+
        CALL iotk_scan_attr(attr,'nbnd',nbnd,IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',ABS(ierr))
        CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
@@ -411,10 +406,17 @@ CONTAINS
        ! ... allocating windows
        CALL windows_allocate()
    
-       DO ik=1,nkpts
-           CALL iotk_scan_dat(unit,'e'//TRIM(iotk_index(ik)),eig(:,ik),IERR=ierr)
+       !
+       ! take into account spin polarization by using the
+       ! predefined iks, ike
+       !
+       lindex = 0
+       DO ik= iks, ike
+           lindex = lindex + 1
+           CALL iotk_scan_dat(unit,'e'//TRIM(iotk_index(ik)),eig(:,lindex),IERR=ierr)
            IF (ierr/=0)  CALL errore(subname,'Unable to find EIGVAL',ik)
        ENDDO
+       IF ( lindex /= nkpts ) CALL errore(subname,'problems with spin and kpt ?',5)
        ! conversion to eV
        eig(:,:) = RYD * eig(:,:)
        efermi   = RYD * efermi

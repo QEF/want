@@ -15,6 +15,7 @@
    USE parameters, ONLY : nstrx
    USE wfc_info_module
    USE windows_module, ONLY : nbnd, nkpts, dimwinx, imin, imax
+   USE kpoints_module, ONLY : iks, ike
    USE iotk_module
    USE timing_module, ONLY: timing
    IMPLICIT NONE
@@ -187,12 +188,16 @@ CONTAINS
        IF ( ibs < imin(ik) ) CALL errore(subname,'Invalid iband_min',2)
        IF ( ibe > imax(ik) ) CALL errore(subname,'Invalid iband_max',3)
 
-       CALL iotk_scan_begin(unit,'Kpoint'//TRIM(iotk_index(ik)),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find Kpoint (vectors)',ik)
+       !
+       ! here we considere the doubling of kpoints when nspin == 2
+       ! by using iks and ike
+       !
+       CALL iotk_scan_begin(unit,'Kpoint'//TRIM(iotk_index(iks +ik -1)),IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to find Kpoint (vectors)',iks +ik -1)
        CALL iotk_scan_empty(unit,'Info',ATTR=attr,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find Info',ik)
+       IF (ierr/=0)  CALL errore(subname,'Unable to find Info',iks+ik-1)
        CALL iotk_scan_attr(attr,'nbnd',idum,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',ik)
+       IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',iks+ik-1)
        IF ( idum /= nbnd ) CALL errore(subname,'Invalid nbnd',6)
            
        DO ib=ibs,ibe
@@ -202,8 +207,10 @@ CONTAINS
             wfc(npwk(ik)+1:,lindex) = CZERO
             IF (ierr/=0 ) CALL errore(subname,'reading '//TRIM(name),ABS(ierr))
        ENDDO
-       CALL iotk_scan_end(unit,'Kpoint'//TRIM(iotk_index(ik)),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag Kpoint (vectors)',ik)
+       !
+       ! also here recorrect for the spin
+       CALL iotk_scan_end(unit,'Kpoint'//TRIM(iotk_index(iks+ik-1)),IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to end tag Kpoint (vectors)',iks+ik-1)
 
        CALL timing(subname,OPR='stop')
        RETURN

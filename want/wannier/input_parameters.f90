@@ -103,7 +103,7 @@
        ! the upper bound of the frozen energy window
 
    REAL(dbl) :: alpha_dis = 0.5_dbl
-       ! the mixing parameter for iterative minimization in diesentangle procedure
+       ! the mixing parameter for iterative minimization in disentangle procedure
 
    INTEGER :: maxiter_dis = 1000
        ! maximum number of iterations during the disentangle procedure
@@ -172,22 +172,21 @@
        ! the number of kpt nearest-neighbour shells used in the calculations
        ! Hopefully will be removed very soon
 
-   INTEGER :: nwhich(nnx)
+   INTEGER :: nwhich(nnx) = 0
        ! the indexes of the chosen shells
        ! as above, hopefully it will be removed very soon
 
    CHARACTER(nstrx) :: ordering_mode = "none"
-       ! ( "spatial" | "complete" | "none" ) 
+       ! ( "none" | "spatial" | "spread" | "complete" ) 
        ! after the minimization WF's maybe ordered for simplicity purposes
        ! following these three schemes
-       ! "spatial"  : orders by means of the spatial position of the centers
-       !              (distance from the origin)
-       ! "complete" : centers which are close to each other are ordered for
-       !              increasing spreads
        ! "none"     : disable the ordering
+       ! "spatial"  : ordering based on WF center positions (distance from the origin)
+       ! "spread"   : ordering based on WF increasing spreads
+       ! "complete" : SPATIAL + SPREAD for WF with the same centers
        !
-   CHARACTER(nstrx) :: ordering_mode_allowed(3)    
-   DATA ordering_mode_allowed / "spatial", "complete", "none" /
+   CHARACTER(nstrx) :: ordering_mode_allowed(4)    
+   DATA ordering_mode_allowed / "none", "spatial", "spread", "complete" /
 
 
    NAMELIST / LOCALIZATION / wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, &
@@ -250,7 +249,7 @@ CONTAINS
    IMPLICIT NONE
       INTEGER, INTENT(in)   :: unit
 
-      CHARACTER(22) :: subname='read__namelist_subspace'
+      CHARACTER(22) :: subname='read_namelist_subspace'
       LOGICAL :: allowed
       INTEGER :: i, ios, ierr
 

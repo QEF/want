@@ -214,7 +214,7 @@
               ! for half of the defined b vectors and then impose the
               ! other values by symmetry
               !
-              IF ( ANY( neigh(ik,1:nntot(ik)) == inn ) ) THEN
+              IF ( ANY( neigh(ik, 1:nntot(ik)/2 ) == inn ) ) THEN
                     !
                     ! neigh contains the indexes of the "positive" b vecotrs
                     ! (half of the total number)

@@ -39,30 +39,38 @@
 
   !
   ! ... usual kpt data (k vectors)
-  INTEGER                        :: nkpts         ! total kpt number
-  INTEGER                        :: nk(3)         ! component of the MP kgrid
-  REAL(dbl)                      :: s(3)          ! fractional shifts of the MP grid
-  REAL(dbl), ALLOCATABLE         :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts
-  REAL(dbl), ALLOCATABLE         :: wk(:)         ! weight of each kpt for BZ sums 
-  REAL(dbl)                      :: wksum         ! sum of the weights
+  INTEGER                 :: nkpts         ! kpt number (NOT doubled when nspin=2)
+  !
+  ! ... added to manage collinear spin from Espresso
+  !     when nspin == 2, ik = 1, nkpts are for isp=1,
+  !     while ik=nkpts+1, 2*nkpts are for isp=2
+  INTEGER                 :: nkpts_tot     ! the total number of kpoint (including spin)
+  INTEGER                 :: iks           ! the starting ik (at the current spin)
+  INTEGER                 :: ike           ! the ending ik (at the current spin)
+  !
+  INTEGER                 :: nk(3)         ! component of the MP kgrid
+  REAL(dbl)               :: s(3)          ! fractional shifts of the MP grid
+  REAL(dbl), ALLOCATABLE  :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts
+  REAL(dbl), ALLOCATABLE  :: wk(:)         ! weight of each kpt for BZ sums 
+  REAL(dbl)               :: wksum         ! sum of the weights
 
   !
   ! ... Nearest neighbor data (b vectors)
 
-  INTEGER                        :: nshells       ! input number of shells to be used
-  INTEGER                        :: nwhich(nnx)   ! the chosen shells
-  INTEGER                        :: ndnntot       ! number of dnn shells
-  INTEGER, ALLOCATABLE           :: nntot(:)      ! DIM: nkpts
-  INTEGER, ALLOCATABLE           :: nnshell(:,:)  ! DIM: nkpts*nnx
-  INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*nnx
-  INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nnx*nkpts
-  INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*nnhx
-  INTEGER, ALLOCATABLE           :: nreverse(:,:) ! DIM: nnx*nkpts
-  REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*nnx (bohr^-1)
-  REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*nnx
-  REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*nnhx (bohr^-1)
-  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: nnx (bohr^-1)
-  REAL(dbl)                      :: wbtot         ! sum of the b-weights
+  INTEGER                 :: nshells       ! input number of shells to be used
+  INTEGER                 :: nwhich(nnx)   ! the chosen shells
+  INTEGER                 :: ndnntot       ! number of dnn shells
+  INTEGER, ALLOCATABLE    :: nntot(:)      ! DIM: nkpts
+  INTEGER, ALLOCATABLE    :: nnshell(:,:)  ! DIM: nkpts*nnx
+  INTEGER, ALLOCATABLE    :: nnlist(:,:)   ! DIM: nkpts*nnx
+  INTEGER, ALLOCATABLE    :: nncell(:,:,:) ! DIM: 3*nnx*nkpts
+  INTEGER, ALLOCATABLE    :: neigh(:,:)    ! DIM: nkpts*nnhx
+  INTEGER, ALLOCATABLE    :: nreverse(:,:) ! DIM: nnx*nkpts
+  REAL(dbl), ALLOCATABLE  :: bk(:,:,:)     ! DIM: 3*nkpts*nnx (bohr^-1)
+  REAL(dbl), ALLOCATABLE  :: wb(:,:)       ! b-weights, DIM: nkpts*nnx
+  REAL(dbl), ALLOCATABLE  :: bka(:,:)      ! DIM: 3*nnhx (bohr^-1)
+  REAL(dbl), ALLOCATABLE  :: dnn(:)        ! DIM: nnx (bohr^-1)
+  REAL(dbl)               :: wbtot         ! sum of the b-weights
 
   LOGICAL :: kpoints_alloc = .FALSE.
   LOGICAL :: bshells_alloc = .FALSE.
@@ -71,7 +79,10 @@
 ! end of declaration scope 
 !
 
-  PUBLIC :: nk, s, nkpts
+  PUBLIC :: nkpts
+  PUBLIC :: nkpts_tot
+  PUBLIC :: iks, ike
+  PUBLIC :: nk, s
   PUBLIC :: vkpt
   PUBLIC :: wk, wksum
 
@@ -179,29 +190,49 @@ CONTAINS
        INTEGER,           INTENT(in) :: unit
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
+       INTEGER            :: lnkpts
        REAL(dbl)          :: tmp(3,3)
+       REAL(dbl),ALLOCATABLE :: lwk(:), lvkpt(:,:)
        CHARACTER(nstrx)   :: attr, string
        CHARACTER(16)      :: subname='kpoints_read_ext'
        INTEGER            :: ik, ierr
        
        IF ( kpoints_alloc ) CALL kpoints_deallocate()
+       IF ( nkpts <=0 .OR. nkpts_tot <=0 ) CALL errore(subname,'nkpts should be set',2) 
+       IF ( iks <=0 .OR. ike <=0 ) CALL errore(subname,'iks or ike not set',3) 
+       IF ( iks >= ike ) CALL errore(subname,'iks >= ike',4) 
+       IF ( ike - iks + 1 /= nkpts ) CALL errore(subname,'Invalid ike or iks',5)
 
        CALL iotk_scan_begin(unit,TRIM(name),ATTR=attr,FOUND=found,IERR=ierr)
        IF (.NOT. found) RETURN
        IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
        found = .TRUE.
 
-       CALL iotk_scan_attr(attr,'nk',nkpts,IERR=ierr)
+       CALL iotk_scan_attr(attr,'nk',lnkpts,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find NK',ABS(ierr))
-       IF ( nkpts <= 0) CALL errore(subname,'Invalid nkpts',ABS(nkpts)+1)
+       IF ( lnkpts <= 0) CALL errore(subname,'Invalid lnkpts',ABS(lnkpts)+1)
+       !
+       ! checking the spin polarized case
+       !
+       IF ( lnkpts /= nkpts_tot ) CALL errore(subname,'invalid nkpts_tot',5)
+       !
+       ! local variables
+       ALLOCATE( lwk(nkpts_tot), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating lwk',ABS(ierr))
+       ALLOCATE( lvkpt(3,nkpts_tot), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating lvkpt',ABS(ierr))
+
      
        CALL kpoints_allocate( )
 
-       CALL iotk_scan_dat(unit,'weights',wk(:),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag WIEGHTS',ABS(ierr))
+       CALL iotk_scan_dat(unit,'weights',lwk(:),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'reading tag weights',ABS(ierr))
+       !
+       ! passing to internal values
+       wk(:) = lwk(iks:ike)
        !
        ! due to a different convention in Espresso
-       wk(:) = wk(:) / TWO
+       wk(:) = wk(:) * nkpts_tot / ( TWO * nkpts )
        wksum = SUM(wk(:))
        DO ik = 1,nkpts
           IF( ABS( wk(ik) - ONE/REAL(nkpts) ) > EPS_m6 ) &
@@ -211,13 +242,20 @@ CONTAINS
        !
        ! ... kpoints are in cartesian units, in 2PI/alat
        !
-       CALL iotk_scan_dat(unit,'k',vkpt(:,:),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag K',ABS(ierr))
+       CALL iotk_scan_dat(unit,'k',lvkpt(:,:),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'reading tag k',ABS(ierr))
        !
-       ! ... convert them to crystal units as required throughout the code
+       ! passing to the internal variable 
+       vkpt(:,:) = lvkpt(:,iks:ike)
        !
+       ! convert them to crystal units as required throughout the code
        tmp(:,:) = alat/TPI * bvec
        CALL cart2cry(vkpt, tmp )
+
+       !
+       ! cleanup
+       DEALLOCATE( lwk, lvkpt, STAT=ierr)
+         IF(ierr/=0) CALL errore(subname,'deallocating lwk, lvkpt', ABS(ierr))
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr)) 

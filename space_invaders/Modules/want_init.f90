@@ -27,9 +27,10 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE trial_center_data_module, ONLY : trial, dimwann
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
    USE ions_module,  ONLY : ions_read_ext, ions_init
-   USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin
-   USE kpoints_module,  ONLY : nk, s, nkpts, vkpt, &
+   USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin, spin_component
+   USE kpoints_module,  ONLY : nkpts, nkpts_tot, iks, ike, nk, s, vkpt, &
                                kpoints_read_ext, bshells_init
+   USE dft_interface_module, ONLY : dft_interface_read_spin
    USE us_module,   ONLY : okvan
    USE uspp_param,  ONLY : tvanp
    USE ions_module, ONLY : uspp_calculation
@@ -90,6 +91,36 @@ SUBROUTINE want_init(want_input, windows, bshells)
     CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
                              FORM='formatted')
 
+
+!
+! ... managing the spin components
+!
+    CALL dft_interface_read_spin(dft_unit,nkpts_tot,nspin)
+    !
+    IF ( nspin == 1 ) THEN
+        nkpts = nkpts_tot
+        iks = 1
+        ike = nkpts
+        IF ( TRIM(spin_component) /= 'none' ) & 
+             CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
+    ELSE
+        !
+        ! this is because the Espresso convention which double the kpt
+        ! number instead of adding a second spin component when nspin == 2
+        !
+        nkpts = nkpts_tot / 2 
+        SELECT CASE ( TRIM(spin_component) )
+        CASE ( 'up' )
+            iks = 1
+            ike = nkpts
+        CASE ( 'down' )
+            iks = nkpts+1
+            ike = 2*nkpts
+        CASE DEFAULT
+            CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
+        END SELECT
+    ENDIF
+    
 
 !
 ! ... read lattice data
