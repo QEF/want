@@ -14,6 +14,7 @@
 !-----------------------------------------------------
 !
 ! Nv dim Nisp Nomega
+! index_band_start  ! the absolute index of the first band
 ! analiticity       ! integer FLAG (see below)
 ! form              ! integer FLAG (see below)
 ! basis             ! integer FLAG (see below)
@@ -70,7 +71,7 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE write_dyn_op(Nv,Vct,dim,Nisp,Nomega,E,Opr,name,analit,form,basis)
+   SUBROUTINE write_dyn_op(Nv,Vct,dim,index_band,Nisp,Nomega,E,Opr,name,analit,form,basis)
    !*********************************************************
    IMPLICIT NONE
 
@@ -83,6 +84,7 @@ CONTAINS
  
    INTEGER,INTENT(in)               :: Nv,             &
                                        dim,            &
+                                       index_band,     &
                                        Nisp,           &
                                        Nomega 
 
@@ -170,6 +172,7 @@ CONTAINS
       IF (ios /= 0) CALL errore('write_dyn_op','Unexpected error opening '//name,ios)
 
       WRITE(out) Nv_fmt,dim_fmt,Nisp_fmt,Nomega_fmt
+      WRITE(out) index_band
       WRITE(out) ianalit
       WRITE(out) iform
       WRITE(out) ibasis

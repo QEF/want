@@ -66,7 +66,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
    CHARACTER(80)                       :: string
 
    LOGICAL                             :: INDEPENDENT
-   INTEGER                             :: ie
+   INTEGER                             :: ie, idum
    INTEGER                             :: isp,iws, ios
    INTEGER                             :: i,j,k,l,m
    INTEGER                             :: r1,r2, i1,i2
@@ -82,7 +82,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 !
 !  reading self_energy from input file
 !
-   CALL read_dyn_op(Nv,Vct,dim,Nisp,Nomega,E,Sgm,name,   &
+   CALL read_dyn_op(Nv,Vct,dim,idum,Nisp,Nomega,E,Sgm,name,   &
                      analit,form,basis)
 
 

@@ -30,6 +30,7 @@
        REAL(dbl) :: s(3)
        INTEGER :: nk(3)
        INTEGER :: i, j, i1, i2, i3
+       INTEGER :: ierr
        INTEGER :: nkp
        INTEGER :: mtxd, neig, imax, imin, kdimwin
        INTEGER :: nkp_tot, kifroz_min, kifroz_max
@@ -68,9 +69,12 @@
 ! ...  Read input parameters
 !
 
-       ALLOCATE ( natom(mxdtyp) )
-       ALLOCATE ( nameat(mxdtyp) )
-       ALLOCATE ( rat(3,mxdatm,mxdtyp) )
+       ALLOCATE ( natom(mxdtyp), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating natom ', mxdtyp )
+       ALLOCATE ( nameat(mxdtyp), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating nameat ', mxdtyp )
+       ALLOCATE ( rat(3,mxdatm,mxdtyp), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating rat ', 3*mxdatm*mxdtyp )
 
 !
        CALL read_input()
@@ -116,7 +120,8 @@
        READ(54) emax, nbandi
 
        READ(54) (nk(i), i = 1, 3 ), ( s(i), i = 1, 3), ngm0
-       ALLOCATE( ig1( ngm0 ), ig2( ngm0 ), ig3( ngm0 ) )
+       ALLOCATE( ig1( ngm0 ), ig2( ngm0 ), ig3( ngm0 ), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating ig1 ig2 ig3 ', ngm0 )
        READ(54) ( ig1(ig), ig2(ig), ig3(ig), ig = 1, ngm0 )
 
        emax = emax / 2.0   !  convert to Hartree
@@ -124,15 +129,25 @@
 
        READ(54) mxddim, mxdbnd, nkpts
 
-       ALLOCATE( isort_k( mxddim, nkpts ) )
-       ALLOCATE( zvec_k(mxddim,mxdbnd,nkpts) )
-       ALLOCATE( ei_k(mxddim,nkpts) )
-       ALLOCATE( mtxd_k(nkpts) )
-       ALLOCATE( neig_k(nkpts) )
-       ALLOCATE( indxfroz(mxdbnd,nkpts) )
-       ALLOCATE( indxnfroz(mxdbnd,nkpts) )
-       ALLOCATE( dimfroz(nkpts) )
-       ALLOCATE( frozen(mxdbnd,nkpts) )
+       ALLOCATE( isort_k( mxddim, nkpts ), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating isort_k ', mxddim*nkpts )
+       ALLOCATE( zvec_k(mxddim,mxdbnd,nkpts), STAT=ierr )
+           IF( ierr /=0 ) &
+           CALL errore(' window ', ' allocating zvec_k ', mxddim*nkpts*mxdbnd )
+       ALLOCATE( ei_k(mxddim,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating ei_k ', mxddim*nkpts )
+       ALLOCATE( mtxd_k(nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating mtxd_k ', nkpts )
+       ALLOCATE( neig_k(nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating neig_k ', nkpts )
+       ALLOCATE( indxfroz(mxdbnd,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating indxfroz ', mxddim*nkpts )
+       ALLOCATE( indxnfroz(mxdbnd,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating indxnfroz ', mxddim*nkpts )
+       ALLOCATE( dimfroz(nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating dimfroz ', nkpts )
+       ALLOCATE( frozen(mxdbnd,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating frozen ', mxdbnd*nkpts )
 
        DO nkp = 1, nkp_tot
          READ(54) ( isort_k( i, nkp ), i = 1, mxddim )
@@ -149,7 +164,8 @@
          READ(54) igwx_
          READ(54) t0_
 
-         ALLOCATE( wtmp( igwx_ ) )
+         ALLOCATE( wtmp( igwx_ ), STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' window ', ' allocating wtmp ', igwx_ )
          wtmp = 0.0d0
          DO i = 1, nbnd_
            READ(54) ( wtmp(ig), ig=1,igwx_ )
@@ -162,7 +178,8 @@
            READ(54) idum_
 !          WRITE(6,*) '          ', idum_
          END DO
-         DEALLOCATE( wtmp )
+         DEALLOCATE( wtmp, STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' window ', ' deallocating wtmp ', ABS(ierr) )
        END DO
 
        CLOSE(54)
@@ -436,21 +453,36 @@
 
        CLOSE(19)
 !
-       DEALLOCATE( isort_k )
-       DEALLOCATE( natom )
-       DEALLOCATE( nameat )
-       DEALLOCATE( rat )
-       DEALLOCATE( zvec_k )
-       DEALLOCATE( ei_k )
-       DEALLOCATE( mtxd_k )
-       DEALLOCATE( neig_k )
-       DEALLOCATE( indxfroz )
-       DEALLOCATE( indxnfroz )
-       DEALLOCATE( dimfroz )
-       DEALLOCATE( frozen )
-       DEALLOCATE( ig1 )
-       DEALLOCATE( ig2 )
-       DEALLOCATE( ig3 )
+       DEALLOCATE( isort_k, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating isort_k ', ABS(ierr) )
+       DEALLOCATE( natom, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating natom ', ABS(ierr) )
+       DEALLOCATE( nameat, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating nameat ', ABS(ierr) )
+       DEALLOCATE( rat, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating rat ', ABS(ierr) )
+       DEALLOCATE( zvec_k, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating zvec_k ', ABS(ierr) )
+       DEALLOCATE( ei_k, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating ei_k ', ABS(ierr) )
+       DEALLOCATE( mtxd_k, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating mtxd_k ', ABS(ierr) )
+       DEALLOCATE( neig_k, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating neig_k ', ABS(ierr) )
+       DEALLOCATE( indxfroz, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating indxfroz ', ABS(ierr) )
+       DEALLOCATE( indxnfroz, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating indxnfroz', ABS(ierr) )
+       DEALLOCATE( dimfroz, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating dimfroz ', ABS(ierr) )
+       DEALLOCATE( frozen, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating frozen ', ABS(ierr) )
+       DEALLOCATE( ig1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating ig1 ', ABS(ierr) )
+       DEALLOCATE( ig2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating ig2 ', ABS(ierr) )
+       DEALLOCATE( ig3, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating ig3 ', ABS(ierr) )
 
        CALL deallocate_input()
 !

@@ -227,13 +227,15 @@
 ! ...  Read grid information, and G-vectors 
  
        READ( 19 ) mxdgve 
-       ALLOCATE( kgv(3,mxdgve) )
+       ALLOCATE( kgv(3,mxdgve), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating kgv ', (3*mxdgve) )
        READ( 19 ) ( ( kgv(i,j), i=1,3 ), j=1, mxdgve )
 !
 ! ...  Calculate grid of K-pointS
  
        nkp = 0
-       ALLOCATE( vkpt(3,nkpts) )
+       ALLOCATE( vkpt(3,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating vkpt ', (3*nkpts) )
        DO i1 = 0, nk(1)-1
          DO i2 = 0, nk(2)-1
            DO i3 = 0, nk(3)-1
@@ -247,139 +249,80 @@
        nkpts = nkp
 
        ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing ap ', ((mxdbnd*(mxdbnd+1))/2) )
-       END IF
+           IF( ierr /=0 )  &
+           CALL errore(' space ', ' allocating ap ', ((mxdbnd*(mxdbnd+1))/2) )
        ALLOCATE( z(mxdbnd,mxdbnd), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing z ', (mxdbnd*mxdbnd) )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating z ', (mxdbnd*mxdbnd) )
        ALLOCATE( work(2*mxdbnd), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing work ', 2*mxdbnd )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating work ', 2*mxdbnd )
        ALLOCATE( w(mxdbnd), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing w ', mxdbnd )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating w ', mxdbnd )
        ALLOCATE( rwork(7*mxdbnd), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing rwork ', 7*mxdbnd )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating rwork ', 7*mxdbnd )
        ALLOCATE( ifail(mxdbnd), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing ifail ', mxdbnd )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating ifail ', mxdbnd )
        ALLOCATE( iwork(5*mxdbnd), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing iwork ', 5*mxdbnd )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating iwork ', 5*mxdbnd )
        ALLOCATE( isort(mxddim,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing isort ', mxddim*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating isort ', mxddim*nkpts )
        ALLOCATE( mtxd(nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing mtxd ', nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating mtxd ', nkpts )
 
        ALLOCATE( eiw(mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing eiw ', mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating eiw ', mxdbnd*nkpts )
 
        ALLOCATE( nnshell(nkpts,mxdnn), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing nnshell ', nkpts*mxdnn )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating nnshell ', nkpts*mxdnn )
        ALLOCATE( nnlist(nkpts,mxdnn), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing nnlist ', nkpts*mxdnn )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating nnlist ', nkpts*mxdnn )
        ALLOCATE( nncell(3,nkpts,mxdnn), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing nncell ', 3*nkpts*mxdnn )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating nncell ', 3*nkpts*mxdnn )
        ALLOCATE( nntot(nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing nntot ', nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating nntot ', nkpts )
        ALLOCATE( neigh(nkpts,mxdnnh), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing neigh ', nkpts*mxdnnh )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating neigh ', nkpts*mxdnnh )
        ALLOCATE( bk(3,nkpts,mxdnn), STAT = ierr ) 
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing bk ', 3*nkpts*mxdnn )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating bk ', 3*nkpts*mxdnn )
        ALLOCATE( dnn(mxdnn), STAT = ierr ) 
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing dnn ', mxdnn )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating dnn ', mxdnn )
        ALLOCATE( wb(nkpts,mxdnn), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing wb ', nkpts*mxdnn )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating wb ', nkpts*mxdnn )
        ALLOCATE( bka(3,mxdnnh), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing bka ', 3*mxdnnh )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating bka ', 3*mxdnnh )
        ALLOCATE( cm(mxdbnd,mxdbnd,mxdnn,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing cm ', mxdbnd*mxdbnd*mxdnn*nkpts )
-       END IF
+           IF( ierr /=0 ) &
+           CALL errore(' space ', ' allocating cm ', mxdbnd*mxdbnd*mxdnn*nkpts )
 
        ALLOCATE( komega_i_est(nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing komega_i_est ', nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating komega_i_est ', nkpts )
        ALLOCATE( lamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing lamp ', mxdbnd*mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating lamp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( camp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing camp ', mxdbnd*mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating camp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( eamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing eamp ', mxdbnd*mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( mtrx_in(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing mtrx_in ', mxdbnd*mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) &
+           CALL errore(' space ', ' allocating mtrx_in ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( mtrx_out(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing mtrx_out ', mxdbnd*mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) &
+           CALL errore(' space ', ' allocating mtrx_out ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( dimwin(nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing dimwin ', nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating dimwin ', nkpts )
        ALLOCATE( dimfroz(nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing dimfroz ', nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating dimfroz ', nkpts )
        ALLOCATE( indxfroz(mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing indxfroz ', mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating indxfroz ', mxdbnd*nkpts )
        ALLOCATE( indxnfroz(mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing indxnfroz ', mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating indxnfroz ', mxdbnd*nkpts )
        ALLOCATE( frozen(mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing frozen ', mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating frozen ', mxdbnd*nkpts )
        ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing ham ', mxdbnd*mxdbnd*nkpts )
-       END IF
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating ham ', mxdbnd*mxdbnd*nkpts )
 !
 ! ...  Next line added by ANDREA (28 jan 2004) 
-       ALLOCATE( imin(nkpts), imax(nkpts) )
+       ALLOCATE( imin(nkpts), imax(nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' allocating imin imax ', nkpts )
 
 !
 ! ...  Read wave functions and energy eigenvalues defining the "window space"
@@ -414,13 +357,9 @@
        WRITE(*,*) ' Number of bands within window (ndwinx) : ', ndwinx
 
        ALLOCATE( evecr(mxddim,ndwinx,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing evecr ', mxddim*mxdbnd*nkpts )
-       END IF
+          IF( ierr /=0 ) CALL errore(' space ', ' allocating evecr ', mxddim*mxdbnd*nkpts )
        ALLOCATE( eveci(mxddim,ndwinx,nkpts), STAT = ierr )
-       IF( ierr /=0 ) THEN
-         CALL errore(' space ', ' allocateing eveci ', mxddim*mxdbnd*nkpts )
-       END IF
+          IF( ierr /=0 ) CALL errore(' space ', ' allocating eveci ', mxddim*mxdbnd*nkpts )
 
        DO nkp = 1, nkpts
 
@@ -954,51 +893,90 @@
        OPEN( UNIT=9, FILE='compspace.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
 
        DO nkp = 1, nkpts
-         write(9) dimwin(nkp)-dimwann, ( ( eamp(j,i,nkp), j=1, dimwin(nkp)), i=1, dimwin(nkp)-dimwann )
+         write(9) dimwin(nkp)-dimwann,     &
+                  ( ( eamp(j,i,nkp), j=1, dimwin(nkp)), i=1, dimwin(nkp)-dimwann )
        END DO
 
        CLOSE(9)
 
-       DEALLOCATE( kgv )
-       DEALLOCATE( isort )
-       DEALLOCATE( mtxd )
-       DEALLOCATE( vkpt )
-       DEALLOCATE( evecr )
-       DEALLOCATE( eveci )
-       DEALLOCATE( eiw )
+       DEALLOCATE( kgv, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating kgv ', ABS(ierr) )
+       DEALLOCATE( isort, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating isort ', ABS(ierr) )
+       DEALLOCATE( mtxd, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating mtxd ', ABS(ierr) )
+       DEALLOCATE( vkpt, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating vkpt ', ABS(ierr) )
+       DEALLOCATE( evecr, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating evecr ', ABS(ierr) )
+       DEALLOCATE( eveci, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating eveci ', ABS(ierr) )
+       DEALLOCATE( eiw, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating eiw ', ABS(ierr) )
 
-       DEALLOCATE( nnshell )
-       DEALLOCATE( nnlist )
-       DEALLOCATE( nncell )
-       DEALLOCATE( nntot )
-       DEALLOCATE( neigh )
-       DEALLOCATE( bk ) 
-       DEALLOCATE( dnn ) 
-       DEALLOCATE( wb )
-       DEALLOCATE( bka )
-       DEALLOCATE( cm )
+       DEALLOCATE( nnshell, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating nnshell ', ABS(ierr) )
+       DEALLOCATE( nnlist, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating nnlist ', ABS(ierr) )
+       DEALLOCATE( nncell, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating nncell ', ABS(ierr) )
+       DEALLOCATE( nntot, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating nntot ', ABS(ierr) )
+       DEALLOCATE( neigh, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating neigh ', ABS(ierr) )
+       DEALLOCATE( bk, STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating bk ', ABS(ierr) )
+       DEALLOCATE( dnn, STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating dnn ', ABS(ierr) )
+       DEALLOCATE( wb, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating wb ', ABS(ierr) )
+       DEALLOCATE( bka, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating bka ', ABS(ierr) )
+       DEALLOCATE( cm, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating cm ', ABS(ierr) )
 
-       DEALLOCATE( komega_i_est )
-       DEALLOCATE( lamp )
-       DEALLOCATE( camp )
-       DEALLOCATE( eamp )
-       DEALLOCATE( mtrx_in )
-       DEALLOCATE( mtrx_out )
-       DEALLOCATE( dimwin )
-       DEALLOCATE( dimfroz )
-       DEALLOCATE( indxfroz )
-       DEALLOCATE( indxnfroz )
-       DEALLOCATE( frozen )
+       DEALLOCATE( komega_i_est, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating k_omega_i_est ', ABS(ierr) )
+       DEALLOCATE( lamp, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating lamp ', ABS(ierr) )
+       DEALLOCATE( camp, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating camp ', ABS(ierr) )
+       DEALLOCATE( eamp, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating eamp ', ABS(ierr) )
+       DEALLOCATE( mtrx_in, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating mtrx_in ', ABS(ierr) )
+       DEALLOCATE( mtrx_out, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating mtrx_out ', ABS(ierr) )
+       DEALLOCATE( dimwin, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating dimwin ', ABS(ierr) )
+       DEALLOCATE( dimfroz, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating dimfroz ', ABS(ierr) )
+       DEALLOCATE( indxfroz, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating indxfroz ', ABS(ierr) )
+       DEALLOCATE( indxnfroz, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating indxnfroz ', ABS(ierr) )
+       DEALLOCATE( frozen, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating frozen ', ABS(ierr) )
 
-       DEALLOCATE( ap )
-       DEALLOCATE( z )
-       DEALLOCATE( work )
-       DEALLOCATE( w )
-       DEALLOCATE( rwork )
-       DEALLOCATE( ifail )
-       DEALLOCATE( iwork )
+       DEALLOCATE( ap, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating ap ', ABS(ierr) )
+       DEALLOCATE( z, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating z ', ABS(ierr) )
+       DEALLOCATE( work, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating work ', ABS(ierr) )
+       DEALLOCATE( w, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating w ', ABS(ierr) )
+       DEALLOCATE( rwork, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating rwork ', ABS(ierr) )
+       DEALLOCATE( ifail, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating ifail ', ABS(ierr) )
+       DEALLOCATE( iwork, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating iwork ', ABS(ierr) )
+       DEALLOCATE( imin, imax, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating imin imax ', ABS(ierr) )
 
-       DEALLOCATE( ham )
+       DEALLOCATE( ham, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' space ', ' deallocating ham ', ABS(ierr) )
 
        CALL deallocate_input()
 

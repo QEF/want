@@ -104,16 +104,14 @@
       INTEGER, ALLOCATABLE ::  neigh(:,:) ! neigh(nkpts,nnmxh)
       REAL(dbl), ALLOCATABLE ::  dimsingvd(:), dimbk(:,:)
       REAL(dbl), ALLOCATABLE ::  wb(:,:), dnn(:) ! wb(nkpts,nnmx),dnn(nnmx)
-      REAL(dbl), ALLOCATABLE ::  bk(:,:,:), rave(:,:), r2ave(:) !  bk(3,nkpts,nnmx), rave(3,dimwann), r2ave(dimwann)
+      REAL(dbl), ALLOCATABLE ::  bk(:,:,:), rave(:,:), r2ave(:) 
+                                 !  bk(3,nkpts,nnmx), rave(3,dimwann), r2ave(dimwann)
       REAL(dbl), ALLOCATABLE ::  bka(:,:) !  bka(3,nnmxh)
-
       REAL(dbl), ALLOCATABLE :: rguide(:,:) ! rguide(3,dimwann)
-
       REAL(dbl) :: rpos1(3), rpos2(3)
 
       INTEGER, ALLOCATABLE :: nphimx1(:,:) ! nphimx1(3,dimwann)
       INTEGER, ALLOCATABLE :: nphimx2(:,:) ! nphimx2(3,dimwann)
-
       INTEGER :: ngdim(3)
 
       REAL(dbl), ALLOCATABLE ::  rphicmx1(:,:) ! rphicmx1(3,dimwann)
@@ -125,7 +123,8 @@
       REAL(dbl), ALLOCATABLE :: vkpr(:,:) ! vkpr(3,nkpts)
       REAL(dbl) :: vkpp(3)
 
-      COMPLEX(dbl), ALLOCATABLE :: cwschur1(:), cwschur2(:) !  cwschur1(dimwann),cwschur2(10*dimwann)
+      COMPLEX(dbl), ALLOCATABLE :: cwschur1(:), cwschur2(:) 
+                                   !  cwschur1(dimwann),cwschur2(10*dimwann)
 
       REAL(dbl), ALLOCATABLE :: cwschur3(:) ! cwschur3(dimwann)
       LOGICAL, ALLOCATABLE :: cwschur4(:) ! cwschur4(dimwann)
@@ -182,7 +181,7 @@
       EXTERNAL :: cclock
       REAL(dbl) :: s0, s1, s2, s3, s4, s5, sf
  
-      INTEGER :: idum, rdum
+      INTEGER :: idum, rdum, ierr
 
 !
 ! ... End declarations and dimensions
@@ -233,20 +232,10 @@
       READ(19) idum ! niter0, alphafix0
       READ(19) idum ! niter, alphafix, ncg
       READ(19) idum ! itrial, nshells
-
-      !  ALLOCATE( nwhich(nshells) )
       READ(19) idum ! (nwhich(i),i=1,nshells)
 
       READ(19) nkpts, mxddim, mxdbnd
       READ(19) ngx, ngy, ngz, ngm
-
-      ! ALLOCATE( gauss_typ( dimwann ) )
-      ! ALLOCATE( rphiimx1( 3, dimwann ) )
-      ! ALLOCATE( rphiimx2( 3, dimwann ) )
-      ! ALLOCATE( l_wann( dimwann ) )
-      ! ALLOCATE( m_wann( dimwann ) )
-      ! ALLOCATE( ndir_wann( dimwann ) )
-      ! ALLOCATE( rloc( dimwann ) )
 
       READ(19) idum ! gauss_typ(1:dimwann)
       READ(19) rdum ! rphiimx1(1:3,1:dimwann)
@@ -259,7 +248,8 @@
 ! ... Read grid information, and G-vectors
 
       READ(19) mxdgve 
-      ALLOCATE( kgv( 3, mxdgve ) )
+      ALLOCATE( kgv( 3, mxdgve ), STAT=ierr )
+         IF ( ierr/=0 ) CALL errore(' space ', ' allocating kgv ', 3*mxdgve )
       READ(19) ( ( kgv(i,j), i=1,3 ), j=1,mxdgve )
 
       CLOSE(19)
@@ -332,9 +322,12 @@
 
       nkpts1 = nk(1)*nk(2)*nk(3)
 
-      ALLOCATE( vkpt(3, nkpts) )
-      ALLOCATE( wtkpt(nkpts) )
-      ALLOCATE( nfile( nkpts ) )
+      ALLOCATE( vkpt(3, nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' space ', ' allocating vkpt ', (3*nkpts) )
+      ALLOCATE( wtkpt(nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' space ', ' allocating wtkpt ', (nkpts) )
+      ALLOCATE( nfile( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' space ', ' allocating nfile ', (nkpts) )
 
       nkp = 0
       DO i1 = 0, nk(1)-1
@@ -368,7 +361,10 @@
       END DO
 
 
-      ALLOCATE( lpctx(ngx), lpcty(ngy), lpctz(ngz) )
+      ALLOCATE( lpctx(ngx), lpcty(ngy), lpctz(ngz), STAT=ierr )
+         IF( ierr/=0 )  &
+         CALL errore(' wannier ', ' allocating lpctx lpcty lpctz ', ngx+ngy+ngz )
+
 
 
 ! ... Initialize the loop counters lpctx,lpcty,lpctz that
@@ -401,14 +397,20 @@
 ! ... Subroutine genbtr calculate the g-vectors for each K_point
 !     within the kinetic energy cutoff
 
-      ALLOCATE( nindpw( mxddim, nkpts ) )
+      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nindpw ', mxddim*nkpts )
+
 
       nindpw = 0
 
-      ALLOCATE( nplwkp( nkpts ) )
-      ALLOCATE( datake( 7, mxddim, nkpts ) )
-      ALLOCATE( dnlg( mxddim, 3, nkpts ) )
-      ALLOCATE( dnlkg( mxddim, 0:3, nkpts ) )
+      ALLOCATE( nplwkp( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nplwkp ', nkpts )
+      ALLOCATE( datake( 7, mxddim, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating datake ', 7*mxddim*nkpts )
+      ALLOCATE( dnlg( mxddim, 3, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnlg ', 3*mxddim*nkpts )
+      ALLOCATE( dnlkg( mxddim, 0:3, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnlkg ', 4*mxddim*nkpts )
 
 
       CALL genbtr( mxddim, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt,   &
@@ -427,7 +429,8 @@
 
       nplwv = NGX*NGY*NGZ
       mplwv = NGX*NGY*(NGZ+1)
-      ALLOCATE( ninvpw(0:nplwv,nkpts) )
+      ALLOCATE( ninvpw(0:nplwv,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ninvpw ', (nplwv+1)*nkpts )
 
       DO nkp = 1, nkpts
         DO np = 0, nplwv
@@ -447,7 +450,9 @@
 ! ... Read the energy eigenfunctions within the energy window at each K-point,
 !     the subspace basis vectors, from file "intf.out"
 
-      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ) )
+      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) &
+         CALL errore(' wannier ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
 
       OPEN( UNIT=20, FILE='onfly.dat', STATUS='OLD' , FORM='UNFORMATTED' )
 
@@ -495,7 +500,9 @@
 
       ! pass the k-points in cartesian coordinates
 
-      ALLOCATE( vkpr(3,nkpts) )
+      ALLOCATE( vkpr(3,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating vkpr ', 3*nkpts )
+ 
 
       WRITE(*,*) ' '
       DO nkp = 1, nkpts
@@ -521,7 +528,8 @@
 ! 
 ! AC & MBN (April 2002) generic k grid allowed
 !
-      ALLOCATE( dnn(nnmx) )
+      ALLOCATE( dnn(nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnn ', nnmx )
 
       DO nlist = 1, nnmx
         DO nkp = 1, nkpts
@@ -558,10 +566,14 @@
 !     nearest-neighbour of the k-point nkp. Construct the nnx b-vectors that go from k-point
 !     nkp to each neighbour bk(1:3,nkp,1...nnx).
 
-      ALLOCATE ( nnshell(nkpts,nnmx) )
-      ALLOCATE ( nnlist(nkpts,nnmx), nntot(nkpts) ) 
-      ALLOCATE ( nncell(3,nkpts,nnmx) ) 
-      ALLOCATE ( bk(3,nkpts,nnmx) ) 
+      ALLOCATE ( nnshell(nkpts,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nnshell ', nkpts*nnmx )
+      ALLOCATE ( nnlist(nkpts,nnmx), nntot(nkpts), STAT=ierr ) 
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nnlist nntot ',nkpts*(nnmx+1))
+      ALLOCATE ( nncell(3,nkpts,nnmx), STAT=ierr ) 
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nncell ',3*nkpts*nnmx )
+      ALLOCATE ( bk(3,nkpts,nnmx), STAT=ierr ) 
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bk ', 3*nkpts*nnmx )
 
       DO nkp = 1, nkpts
         nnx = 0
@@ -631,10 +643,18 @@
 
 ! ... Now find the dimensionality of each shell of neighbours
 
-      ALLOCATE( dimsingvd(MAX(nnmx,3)), dimbk(3,nnmx), ndim(nnmx) )
-      ALLOCATE( v1(nnmx,nnmx) )
-      ALLOCATE( v2(nnmx,nnmx) )
-      ALLOCATE( w1(10*nnmx) )
+      ALLOCATE( dimsingvd(MAX(nnmx,3)), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dimsingvd ', MAX(nnmx,3) )
+      ALLOCATE( dimbk(3,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dimbk ', 3*nnmx )
+      ALLOCATE( ndim(nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ndim ', nnmx )
+      ALLOCATE( v1(nnmx,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating v1 ', nnmx**2 )
+      ALLOCATE( v2(nnmx,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating v2 ', nnmx**2 )
+      ALLOCATE( w1(10*nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating w1 ', 10*nnmx )
 
       nnx = 0
       DO ndnc = 1, nshells
@@ -668,11 +688,15 @@
         WRITE(*,*) ' '
       END DO
 
-      DEALLOCATE( v1 )
-      DEALLOCATE( v2 )
-      DEALLOCATE( w1 )
+      DEALLOCATE( v1, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating v1 ', ABS(ierr) )
+      DEALLOCATE( v2, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating v2 ', ABS(ierr) )
+      DEALLOCATE( w1, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating w1 ', ABS(ierr) )
 
-      ALLOCATE( wb(nkpts, nnmx) )
+      ALLOCATE( wb(nkpts, nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating wb ', nkpts*nnmx )
 
       DO nkp = 1, nkpts
         nnx = 0
@@ -717,7 +741,8 @@
 ! ... Make list of bka vectors from neighbours of first k-point
 !     delete any inverse vectors as you collect them
 
-      ALLOCATE( bka(3,nnmxh) )
+      ALLOCATE( bka(3,nnmxh), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bka ', 3*nnmxh )
 
       na = 0
       DO nn = 1, nntot(1)
@@ -758,7 +783,8 @@
 
 ! ... Find index array
 
-      ALLOCATE( neigh(nkpts,nnmxh) )
+      ALLOCATE( neigh(nkpts,nnmxh), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating neigh ', nkpts*nnmxh )
 
       DO nkp = 1, nkpts
         DO na = 1, nnh
@@ -820,8 +846,10 @@
 
        END DO
 
-       ALLOCATE( rphicmx1(3,dimwann) )
-       ALLOCATE( rphicmx2(3,dimwann) )
+       ALLOCATE( rphicmx1(3,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rphicmx1 ', 3*dimwann )
+       ALLOCATE( rphicmx2(3,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rphicmx2 ', 3*dimwann )
 
        DO nb = 1, dimwann
          DO m = 1, 3
@@ -834,8 +862,10 @@
          END DO
        END DO
 
-      ALLOCATE( nphimx1(3,dimwann) )
-      ALLOCATE( nphimx2(3,dimwann) )
+      ALLOCATE( nphimx1(3,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphimx1 ', 3*dimwann )
+      ALLOCATE( nphimx2(3,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphimx2 ', 3*dimwann )
 
       ngdim(1) = ngx
       ngdim(2) = ngy
@@ -871,7 +901,8 @@
           WRITE(*,'(a12,i6,3i4)')  'Gaussian 2: ', nwann, ( nphimx2(m,nwann), m=1,3 )
       END DO
 
-      ALLOCATE( nphir(dimwann) )
+      ALLOCATE( nphir(dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphir ', dimwann )
 
       DO nwann = 1, dimwann
         asidemin = 100000.d0 * rloc( nwann )
@@ -1003,11 +1034,16 @@
 ! Bloch notation). The integral gives a delta, and so we take G2s that
 ! are G1s+G0, i.e. nx+nncell, etc...
 
-      ALLOCATE( cm(dimwann,dimwann,nkpts,nnmx) )
+      ALLOCATE( cm(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm ', dimwann**2 * nkpts*nnmx)
+      ALLOCATE( nx2(ngx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nx2 ', ngx)
+      ALLOCATE( ny2(ngy), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ny2 ', ngy)
+      ALLOCATE( nz2(ngz), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nz2 ', ngz)
+
       cm(:,:,:,:) = (0.d0, 0.d0)
-      ALLOCATE( nx2(ngx) )
-      ALLOCATE( ny2(ngy) )
-      ALLOCATE( nz2(ngz) )
 
       DO nkp = 1, nkpts
         DO nn = 1, nntot(nkp)
@@ -1053,12 +1089,17 @@
         END DO
       END DO
 
-      DEALLOCATE( nx2 )
-      DEALLOCATE( ny2 )
-      DEALLOCATE( nz2 )
+      DEALLOCATE( nx2, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nx2 ', ABS(ierr))
+      DEALLOCATE( ny2, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ny2 ', ABS(ierr))
+      DEALLOCATE( nz2, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nz2 ', ABS(ierr))
 
-      ALLOCATE( csheet(dimwann,nkpts,nnmx) )
-      ALLOCATE( sheet(dimwann,nkpts,nnmx) )
+      ALLOCATE( csheet(dimwann,nkpts,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnmx)
+      ALLOCATE( sheet(dimwann,nkpts,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', dimwann*nkpts*nnmx)
 
       DO nkp = 1, nkpts
         DO nb = 1, dimwann
@@ -1072,7 +1113,8 @@
 
 ! ... Now calculate the average positions of the Wanns.
 
-      ALLOCATE( rave(3,dimwann), r2ave(dimwann) )
+      ALLOCATE( rave(3,dimwann), r2ave(dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rave r2ave ', 4*dimwann)
 
       CALL omega( dimwann, nkpts, nkpts, nntot(1), nnmx, nnlist(1,1), bk(1,1,1), wb(1,1),   &
                   cm(1,1,1,1), csheet(1,1,1), sheet(1,1,1), rave(1,1), r2ave(1), func_om1,  &
@@ -1094,8 +1136,10 @@
       sph21 = sqrt( 15.d0 / 2.d0 / twopi )
       sph22 = sqrt( 15.d0 / 2.d0 / twopi )
 
-      ALLOCATE( cptwr(mplwv) )
-      ALLOCATE( ca(dimwann,dimwann,nkpts) )
+      ALLOCATE( cptwr(mplwv), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cptwr ', mplwv)
+      ALLOCATE( ca(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ca ', dimwann**2 * nkpts)
 
       DO nkp = 1, nkpts
 
@@ -1369,7 +1413,8 @@
       write(*,*) ' '
       write(*,8000)
 
-      DEALLOCATE( cptwr )
+      DEALLOCATE( cptwr, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwr ', ABS(ierr))
 
 
 
@@ -1388,14 +1433,21 @@
  
 ! ... A complex matrix is in Schur form if it is upper triangular.
 
-      ALLOCATE( cs(dimwann,dimwann,nkpts) )
+      ALLOCATE( cs(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cs ', dimwann**2 * nkpts)
 
       nwork = dimwann * 10
-      ALLOCATE( cwschur1(dimwann), cwschur2( nwork ) )
-      ALLOCATE( cz(dimwann, dimwann) )
-      ALLOCATE( cwschur3(dimwann) )
-      ALLOCATE( cwschur4(dimwann) )
-      ALLOCATE( cu(dimwann,dimwann,nkpts) )
+      ALLOCATE( cwschur1(dimwann), cwschur2( nwork ), STAT=ierr )
+         IF( ierr /=0 ) &
+         CALL errore(' wannier ', ' allocating cwschur1 cwschur2 ', dimwann+nwork)
+      ALLOCATE( cz(dimwann, dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cz ', dimwann**2)
+      ALLOCATE( cwschur3(dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cwschur3 ', dimwann)
+      ALLOCATE( cwschur4(dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cwschur4 ', dimwann)
+      ALLOCATE( cu(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu ', dimwann**2 * nkpts)
 
       DO nkp = 1, nkpts
 
@@ -1529,7 +1581,8 @@
 
       ! STOP 'qui'
     
-      ALLOCATE( cmtmp(dimwann,dimwann) )
+      ALLOCATE( cmtmp(dimwann,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu ', dimwann**2 )
 
 ! ... So now we have the U's that rotate the wavefunctions at each k-point.
 !     the matrix elements M_ij have also to be updated 
@@ -1564,12 +1617,18 @@
 ! ... Singular value decomposition
 
       nwork = dimwann * 10
-      ALLOCATE( singvd(dimwann) )
-      ALLOCATE( cv1(dimwann,dimwann) )
-      ALLOCATE( cv2(dimwann,dimwann) )
-      ALLOCATE( cv3(dimwann,dimwann) )
-      ALLOCATE( cw1( nwork ) )
-      ALLOCATE( cw2( nwork ) )
+      ALLOCATE( singvd(dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating singvd ', dimwann )
+      ALLOCATE( cv1(dimwann,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv1 ', dimwann**2 )
+      ALLOCATE( cv2(dimwann,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv2 ', dimwann**2 )
+      ALLOCATE( cv3(dimwann,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv3 ', dimwann**2 )
+      ALLOCATE( cw1( nwork ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cw1 ', nwork )
+      ALLOCATE( cw2( nwork ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cw2 ', nwork )
  
       ! OPEN( 9, file='omega_i.local', status='unknown' )
 
@@ -1747,16 +1806,26 @@
       IF ( ncg == 0 ) ncg = ncg + 1
       ncgfix = ncg
 
-      ALLOCATE( cu0(dimwann,dimwann,nkpts) )
-      ALLOCATE( cm0(dimwann,dimwann,nkpts,nnmx) )
-      ALLOCATE( cdodq(dimwann,dimwann,nkpts) )
-      ALLOCATE( cdqkeep(dimwann,dimwann,nkpts) )
-      ALLOCATE( cdodq1(dimwann,dimwann,nkpts) )
-      ALLOCATE( cdodq2(dimwann,dimwann,nkpts) )
-      ALLOCATE( cdodq3(dimwann,dimwann,nkpts) )
-      ALLOCATE( cdq(dimwann,dimwann,nkpts) )
-      ALLOCATE( cpad1(dimwann*dimwann) )
-      ALLOCATE( cpad2(dimwann*dimwann) )
+      ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu0 ', dimwann*2 * nkpts )
+      ALLOCATE( cm0(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm0 ', dimwann**2*nkpts*nnmx )
+      ALLOCATE( cdodq(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq ', dimwann*2 * nkpts )
+      ALLOCATE( cdqkeep(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdqkeep ', dimwann*2 * nkpts )
+      ALLOCATE( cdodq1(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq1 ', dimwann*2 * nkpts )
+      ALLOCATE( cdodq2(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq2 ', dimwann*2 * nkpts )
+      ALLOCATE( cdodq3(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq3 ', dimwann*2 * nkpts )
+      ALLOCATE( cdq(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdq ', dimwann*2 * nkpts )
+      ALLOCATE( cpad1(dimwann*dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cpad1 ', dimwann*2 )
+      ALLOCATE( cpad2(dimwann*dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cpad2 ', dimwann*2 )
 
       cdqkeep = ( 0.0d0, 0.0d0 )
       cdodq1  = ( 0.0d0, 0.0d0 )
@@ -1803,17 +1872,23 @@
                  bk, bka, cm, csheet, sheet, rguide, irguide )
         END IF
 
-        ALLOCATE( cr(dimwann,dimwann,nkpts,nnmx) )
-        ALLOCATE( crt(dimwann,dimwann,nkpts,nnmx) )
-        ALLOCATE( rnkb(dimwann,nkpts,nnmx) )
+        ALLOCATE( cr(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cr ', dimwann*2*nkpts*nnmx )
+        ALLOCATE( crt(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating crt ', dimwann*2*nkpts*nnmx )
+        ALLOCATE( rnkb(dimwann,nkpts,nnmx), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rnkb ', dimwann*nkpts*nnmx )
 
         CALL domega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb,              &
              cm, csheet, sheet, cr, crt, rave, r2ave, rnkb, cdodq1, cdodq2, cdodq3,   &
              cdodq)
 
-        DEALLOCATE( cr )
-        DEALLOCATE( crt )
-        DEALLOCATE( rnkb )
+        DEALLOCATE( cr, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cr ', ABS(ierr) )
+        DEALLOCATE( crt, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating crt ', ABS(ierr) )
+        DEALLOCATE( rnkb, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rnkb ', ABS(ierr) )
 
         DO nkp = 1, nkpts
           DO m= 1, dimwann
@@ -2376,59 +2451,120 @@
 
 ! ... Deallocate arrays
 
-      DEALLOCATE( cwschur1, cwschur2 )
-      DEALLOCATE( cz )
-      DEALLOCATE( cwschur3 )
-      DEALLOCATE( cwschur4 )
+      DEALLOCATE( cwschur1, cwschur2, STAT=ierr )
+           IF( ierr /=0 )&
+           CALL errore(' wannier ', ' deallocating cwschur1 cwschur1 ', ABS(ierr) )
+      DEALLOCATE( cz, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cz ', ABS(ierr) )
+      DEALLOCATE( cwschur3, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur3 ', ABS(ierr) )
+      DEALLOCATE( cwschur4, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur4 ', ABS(ierr) )
 
+      DEALLOCATE( lpctx, lpcty, lpctz, STAT=ierr)
+           IF( ierr /=0 )  &
+           CALL errore(' wannier ', ' deallocating lpctx lpcty lpctz ', ABS(ierr) )
+      DEALLOCATE( nplwkp, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
+      DEALLOCATE( dnlkg, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlkg ', ABS(ierr) )
+      DEALLOCATE( cw1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw1 ', ABS(ierr) )
+      DEALLOCATE( cw2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw2 ', ABS(ierr) )
+      DEALLOCATE( vkpt, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating vkpt ', ABS(ierr) )
+      DEALLOCATE( kgv, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating kgv ', ABS(ierr) )
+      DEALLOCATE( wtkpt, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating wtkpt ', ABS(ierr) )
+      DEALLOCATE( nfile, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nfile ', ABS(ierr) )
+      DEALLOCATE( nplwkp, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
+      DEALLOCATE( datake, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating datake ', ABS(ierr) )
+      DEALLOCATE( dnlg, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlg ', ABS(ierr) )
+      DEALLOCATE( dnlkg, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlgk ', ABS(ierr) )
+      DEALLOCATE( ninvpw, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ninvpw ', ABS(ierr) )
+      DEALLOCATE( cptwfp, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwfp ', ABS(ierr) )
+      DEALLOCATE( vkpr, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating vkpr ', ABS(ierr) )
+      DEALLOCATE( dnn, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnn ', ABS(ierr) )
+      DEALLOCATE( nnshell, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nnshell ', ABS(ierr) )
+      DEALLOCATE( nnlist, nntot, STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nnlist ', ABS(ierr) )
+      DEALLOCATE( nncell, STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nncell ', ABS(ierr) )
+      DEALLOCATE( bk, STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating bk ', ABS(ierr) )
+      DEALLOCATE( dimsingvd, dimbk, ndim, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dimsingvd ', ABS(ierr) )
+      DEALLOCATE( wb, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating wb ', ABS(ierr) )
+      DEALLOCATE( bka, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating bka ', ABS(ierr) )
+      DEALLOCATE( neigh, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating neigh ', ABS(ierr) )
 
-      DEALLOCATE( vkpt )
-      DEALLOCATE( kgv )
-      DEALLOCATE( wtkpt )
-      DEALLOCATE( nfile )
-      DEALLOCATE( nplwkp )
-      DEALLOCATE( datake )
-      DEALLOCATE( dnlg )
-      DEALLOCATE( dnlkg )
-      DEALLOCATE( ninvpw )
-      DEALLOCATE( cptwfp )
-      DEALLOCATE( vkpr )
-      DEALLOCATE( dnn )
-      DEALLOCATE( nnshell )
-      DEALLOCATE( nnlist, nntot ) 
-      DEALLOCATE( nncell ) 
-      DEALLOCATE( bk ) 
-      DEALLOCATE( dimsingvd, dimbk, ndim )
-      DEALLOCATE( wb )
-      DEALLOCATE( bka )
-      DEALLOCATE( neigh )
-
-      DEALLOCATE( rphicmx1 )
-      DEALLOCATE( rphicmx2 )
-      DEALLOCATE( nphimx1 )
-      DEALLOCATE( nphimx2 )
-      DEALLOCATE( nphir )
-      DEALLOCATE( cm )
-      DEALLOCATE( csheet )
-      DEALLOCATE( sheet )
-      DEALLOCATE( rave, r2ave )
-      DEALLOCATE( ca, cs )
-      DEALLOCATE( cu )
-      DEALLOCATE( cmtmp )
-      DEALLOCATE( singvd )
-      DEALLOCATE( cv1 )
-      DEALLOCATE( cv2 )
-      DEALLOCATE( cv3 )
-      DEALLOCATE( cu0 )
-      DEALLOCATE( cm0 )
-      DEALLOCATE( cdodq )
-      DEALLOCATE( cdqkeep )
-      DEALLOCATE( cdodq1 )
-      DEALLOCATE( cdodq2 )
-      DEALLOCATE( cdodq3 )
-      DEALLOCATE( cdq )
-      DEALLOCATE( cpad1 )
-      DEALLOCATE( cpad2 )
+      DEALLOCATE( rphicmx1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rphicmx1 ', ABS(ierr) )
+      DEALLOCATE( rphicmx2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rphicmx2 ', ABS(ierr) )
+      DEALLOCATE( nphimx1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nphimx1 ', ABS(ierr) )
+      DEALLOCATE( nphimx2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nphimx2 ', ABS(ierr) )
+      DEALLOCATE( nphir, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nphir ', ABS(ierr) )
+      DEALLOCATE( cm, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cm ', ABS(ierr) )
+      DEALLOCATE( csheet, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating csheet ', ABS(ierr) )
+      DEALLOCATE( sheet, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating sheet ', ABS(ierr) )
+      DEALLOCATE( rave, r2ave, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rave r2ave ', ABS(ierr) )
+      DEALLOCATE( ca, cs, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ca cs ', ABS(ierr) )
+      DEALLOCATE( cu, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cu ', ABS(ierr) )
+      DEALLOCATE( cmtmp, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cmtmp ', ABS(ierr) )
+      DEALLOCATE( singvd, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating singvd ', ABS(ierr) )
+      DEALLOCATE( cv1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cv1 ', ABS(ierr) )
+      DEALLOCATE( cv2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cv2 ', ABS(ierr) )
+      DEALLOCATE( cv3, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cv3 ', ABS(ierr) )
+      DEALLOCATE( cu0, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cu0 ', ABS(ierr) )
+      DEALLOCATE( cm0, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cm0 ', ABS(ierr) )
+      DEALLOCATE( cdodq, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdodq ', ABS(ierr) )
+      DEALLOCATE( cdqkeep, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdqkeep ', ABS(ierr) )
+      DEALLOCATE( cdodq1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdodq1 ', ABS(ierr) )
+      DEALLOCATE( cdodq2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdodq2 ', ABS(ierr) )
+      DEALLOCATE( cdodq3, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdodq3 ', ABS(ierr) )
+      DEALLOCATE( cdq, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdq ', ABS(ierr) )
+      DEALLOCATE( cpad1, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cpad1 ', ABS(ierr) )
+      DEALLOCATE( cpad2, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cpad2 ', ABS(ierr) )
 
       CALL deallocate_input()
 

@@ -14,6 +14,7 @@
 !-----------------------------------------------------
 !
 ! Nv dim Nisp Nomega
+! index_band_start  ! the absolute index of the first band
 ! analiticity       ! integer FLAG (see below)
 ! form              ! integer FLAG (see below)
 ! basis             ! integer FLAG (see below)
@@ -70,7 +71,7 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE read_dyn_op(Nv,Vct,dim,Nisp,Nomega,E,Opr,name,analit,form,basis)
+   SUBROUTINE read_dyn_op(Nv,Vct,dim,index_band,Nisp,Nomega,E,Opr,name,analit,form,basis)
    !*********************************************************
    IMPLICIT NONE
 
@@ -84,6 +85,7 @@ CONTAINS
  
    INTEGER,INTENT(out)              :: Nv,             &
                                        dim,            &
+                                       index_band,     &
                                        Nisp,           &
                                        Nomega 
 
@@ -121,6 +123,7 @@ CONTAINS
       IF (ios /= 0) CALL errore('read_dyn_op','Unable to read from '//name,ios)
 
       READ(in) Nv_fmt,dim_fmt,Nisp_fmt,Nomega_fmt
+      READ(in) index_band
       READ(in) ianalit
       READ(in) iform
       READ(in) ibasis

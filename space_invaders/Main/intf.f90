@@ -80,6 +80,7 @@
        INTEGER, ALLOCATABLE :: ifrozdum(:)
        INTEGER :: dimfroz
        INTEGER :: ndwinx
+       INTEGER :: ierr
 !
 ! ...  End declarations and dimensions
 !
@@ -118,11 +119,13 @@
        READ(19) niter, alphafix, ncg
        READ(19) itrial, nshells
 
-       ALLOCATE( nwhich(nshells) )
+       ALLOCATE( nwhich(nshells), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' inft ', ' allocating nwhich ', nshells )
        READ(19) (nwhich(i),i=1,nshells)
        READ(19) nkpts, mxddim, mxdbnd
        READ(19) ngx, ngy, ngz, ngm
-       DEALLOCATE ( nwhich )
+       DEALLOCATE ( nwhich, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating nwhich ', ABS(ierr) )
 
        READ(19) rdum
        READ(19) rdum
@@ -143,7 +146,8 @@
 ! ...  Read grid information, and G-vectors
 
        READ(19) mxdgve 
-       ALLOCATE( kgv(3,mxdgve) )
+       ALLOCATE( kgv(3,mxdgve), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' allocating kgv ', (3*mxdgve) )
        READ(19) ( ( kgv(i,j), i=1,3 ), j=1,mxdgve )
 
        nkpts1 = nk(1) * nk(2) * nk(3)
@@ -185,8 +189,10 @@
 
       WRITE (*,*) ' '
 
-      ALLOCATE( vkpt( 3, nkpts ) )
-      ALLOCATE( wtkpt( nkpts ) )
+      ALLOCATE( vkpt( 3, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' inft ', ' allocating vkpt ', (3*nkpts) )
+      ALLOCATE( wtkpt( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' inft ', ' allocating wtkpt ', (nkpts) )
 
       nkp = 0
       DO i1 = 0, nk(1)-1
@@ -228,7 +234,8 @@
 !     of the reciprocal lattice arrays are 0,1,..,(ngx/2),-((ngx/2-1),..,-1
 !     times the x reciprocal lattice vector recc(1,*)
 
-      ALLOCATE ( lpctx(ngx), lpcty(ngy), lpctz(ngz) )
+      ALLOCATE ( lpctx(ngx), lpcty(ngy), lpctz(ngz), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating lpctx lpcty lpctz ', ngx+ngy+ngz )
 
       DO nx = 1 , (ngx/2)+1
         lpctx(nx)  = nx - 1
@@ -252,15 +259,22 @@
 ! ... Subroutine genbtr calculate the g-vectors for each K_point
 !     within the kinetic energy cutoff
 
-      ALLOCATE( nindpw( mxddim, nkpts ) )
+      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating nindpw ', mxddim*nkpts )
 
       nindpw = 0
 
-      ALLOCATE( cptwfp( mxddim+1, dimwann, nkpts ) )
-      ALLOCATE( nplwkp( nkpts ) )
-      ALLOCATE( datake( 7, mxddim, nkpts ) )
-      ALLOCATE( dnlg( mxddim, 3, nkpts ) )
-      ALLOCATE( dnlkg( mxddim, 0:3, nkpts ) ) 
+      ALLOCATE( cptwfp( mxddim+1, dimwann, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) &
+         CALL errore(' intf ', ' allocating cptwfp ', (mxddim+1)*nkpts*dimwann )
+      ALLOCATE( nplwkp( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating nplwkp ', nkpts )
+      ALLOCATE( datake( 7, mxddim, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating datake ', 7*mxddim*nkpts )
+      ALLOCATE( dnlg( mxddim, 3, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating dnlg ', 3*mxddim*nkpts )
+      ALLOCATE( dnlkg( mxddim, 0:3, nkpts ), STAT=ierr ) 
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating dnlkg ', 4*mxddim*nkpts )
 
       CALL genbtr( mxddim, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt,  &
            lpctx, lpcty, lpctz, datake, recc, recc, iprint, dnlg, dnlkg )
@@ -281,7 +295,8 @@
       nplwv = ngx * ngy * ngz
       WRITE(6,*) 'DEBUG nplwv = ', nplwv
 
-      ALLOCATE( ninvpw(0:nplwv,nkpts) )
+      ALLOCATE( ninvpw(0:nplwv,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating ninvpw ', (nplwv+1)*nkpts )
 
       DO nkp = 1, nkpts
         DO np = 0, nplwv
@@ -311,12 +326,18 @@
       READ(8)
       READ(8)
 
-      ALLOCATE( kisort(mxddim) )
-      ALLOCATE( keiw(mxdbnd) )
-      ALLOCATE( amp(mxdbnd,mxdbnd,nkpts) )
-      ALLOCATE( lvec(mxddim,mxdbnd) )
-      ALLOCATE( kdimwin( nkpts ) )
-      ALLOCATE( mtxd( nkpts ) )
+      ALLOCATE( kisort(mxddim), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating kisort ', mxddim )
+      ALLOCATE( keiw(mxdbnd), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating keiw ', mxdbnd )
+      ALLOCATE( amp(mxdbnd,mxdbnd,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating amp ', mxdbnd**2 * nkpts )
+      ALLOCATE( lvec(mxddim,mxdbnd), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating lvec ', mxddim * mxdbnd )
+      ALLOCATE( kdimwin( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating kdimwin ', nkpts )
+      ALLOCATE( mtxd( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' intf ', ' allocating mtxd ', nkpts )
 
 ! ... K-point loop
 
@@ -344,8 +365,10 @@
 
        ndwinx = MAXVAL( kdimwin )
        
-       ALLOCATE( evecr(mxddim,ndwinx) )
-       ALLOCATE( eveci(mxddim,ndwinx) )
+       ALLOCATE( evecr(mxddim,ndwinx), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' allocating evecr ', mxddim*ndwinx )
+       ALLOCATE( eveci(mxddim,ndwinx), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' allocating eveci ', mxddim*ndwinx )
 
        K_POINTS: DO nkp = 1, nkpts
 
@@ -354,13 +377,19 @@
          READ(19)( ( evecr(j,i), j=1,mtxd(nkp) ), i=1, kdimwin( nkp ) )
          READ(19)( ( eveci(j,i), j=1,mtxd(nkp) ), i=1, kdimwin( nkp ) )
 
-         ALLOCATE( frozen( kdimwin(nkp) ) )
+         ALLOCATE( frozen( kdimwin(nkp) ), STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' intf ', ' allocating frozen ', kdimwin(nkp) )
          READ(19) dimfroz, ( frozen(i), i=1, kdimwin(nkp) )
-         ALLOCATE( ifrozdum( MAX( kdimwin(nkp), dimfroz ) ) )
+         ALLOCATE( ifrozdum( MAX( kdimwin(nkp), dimfroz ) ), STAT=ierr )
+            IF( ierr /=0 ) &
+            CALL errore(' intf ', ' allocating ifrozdum ', MAX(kdimwin(nkp),dimfroz) )
          IF ( dimfroz > 0 )        READ(19) ( ifrozdum(i), i=1, dimfroz )
          IF ( dimfroz < kdimwin(nkp) )  READ(19) ( ifrozdum(i), i=1, kdimwin(nkp)-dimfroz )
-         DEALLOCATE( frozen )
-         DEALLOCATE( ifrozdum )
+
+         DEALLOCATE( frozen, STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' intf ', ' deallocating frozen ', ABS(ierr) )
+         DEALLOCATE( ifrozdum, STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' intf ', ' deallocating ifrozdum ', ABS(ierr) )
 
 
  
@@ -442,25 +471,47 @@
        CLOSE(19)
        CLOSE(20)
 
-       DEALLOCATE( cptwfp )
-       DEALLOCATE( kgv )
-       DEALLOCATE( vkpt )
-       DEALLOCATE( wtkpt )
-       DEALLOCATE( lpctx, lpcty, lpctz )
-       DEALLOCATE( nindpw )
-       DEALLOCATE( nplwkp )
-       DEALLOCATE( datake )
-       DEALLOCATE( dnlg )
-       DEALLOCATE( dnlkg ) 
-       DEALLOCATE( ninvpw )
-       DEALLOCATE( kisort )
-       DEALLOCATE( keiw )
-       DEALLOCATE( evecr )
-       DEALLOCATE( eveci )
-       DEALLOCATE( amp )
-       DEALLOCATE( lvec )
-       DEALLOCATE( kdimwin )
-       DEALLOCATE( mtxd )
+
+       DEALLOCATE( cptwfp, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating cptwfp ', ABS(ierr) )
+
+       DEALLOCATE( kgv, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating kgv ', ABS(ierr) )
+       DEALLOCATE( vkpt, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating vkpt ', ABS(ierr) )
+       DEALLOCATE( wtkpt, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating wtkpt ', ABS(ierr) )
+       DEALLOCATE( lpctx, lpcty, lpctz, STAT=ierr )
+          IF( ierr /=0 )  &
+          CALL errore(' intf ', ' deallocating lpctx lpcty lpctz ', ABS(ierr) )
+       DEALLOCATE( nindpw, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating nindpw ', ABS(ierr) )
+       DEALLOCATE( nplwkp, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating nplwkp ', ABS(ierr) )
+       DEALLOCATE( datake, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating datake ', ABS(ierr) )
+       DEALLOCATE( dnlg, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating dnlg ', ABS(ierr) )
+       DEALLOCATE( dnlkg, STAT=ierr ) 
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating dnlkg ', ABS(ierr) )
+       DEALLOCATE( ninvpw, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating ninvpw ', ABS(ierr) )
+       DEALLOCATE( kisort, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating kisort ', ABS(ierr) )
+       DEALLOCATE( keiw, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating keiw ', ABS(ierr) )
+       DEALLOCATE( evecr, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating evecr ', ABS(ierr) )
+       DEALLOCATE( eveci, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating eveci ', ABS(ierr) )
+       DEALLOCATE( amp, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating amp ', ABS(ierr) )
+       DEALLOCATE( lvec, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating lvec ', ABS(ierr) )
+       DEALLOCATE( kdimwin, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating kdimwin ', ABS(ierr) )
+       DEALLOCATE( mtxd, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating mtxd ', ABS(ierr) )
 
 ! *****************************************************************************
 

@@ -45,6 +45,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
                                          Nomega,          &
                                          ios,             &
                                          idum,            &
+                                         iband_start,     &
                                          dimwin(nkpts),   &
                                          mxdimwin,        & 
                                          imin(nkpts),     &
@@ -106,15 +107,15 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
 !  reading self_energy from input file
 !
-   CALL read_dyn_op(Nk,Vct,Nbands,Nisp,Nomega,E,Sgm_in,namein,   &
-                     analit,form,basis)
+   CALL read_dyn_op(Nk,Vct,Nbands,iband_start,Nisp,Nomega,E,Sgm_in,namein,   &
+                    analit,form,basis)
 
 
 
 !
 ! some checks
 !
-   IF ( MINVAL(imin(:)) <= 0  .OR. MAXVAL(imax(:)) >= Nbands ) &
+   IF ( MINVAL(imin(:)) <= 0  .OR. MAXVAL(imax(:)) >=  Nbands + iband_start -1 ) &
         CALL errore('do_self_energy','Nbands inconsistent with SUBSPACE.DAT',2)
 
    IF ( Nk /= nkpts .OR. ispin > Nisp)    &
@@ -208,7 +209,11 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
                           ! with PWSCF and NOT with SPACE_INVADERS
                           ! index "m" makes the conversion
                           !
-                          m=l+imin(k)-1
+                          ! IBAND_START takes into account the fact that 
+                          ! we are eventually eliminating IBAND_START-1 low bands 
+                          ! wrt PWSCF convention
+                          !
+                          m=l+imin(k) -iband_start
                           Sgmk(i,j,k) = Sgmk(i,j,k) +             &
                               CONJG( bas_rot(l,i,k) ) * Sgm_in(m,m,k,isp,ie) *  &
                               bas_rot(l,j,k)
@@ -233,8 +238,12 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
                           ! with PWSCF and NOT with SPACE_INVADERS
                           ! indeces "m_i" make the conversion
                           !
-                          m1=l1+imin(k)-1
-                          m2=l2+imin(k)-1
+                          ! IBAND_START takes into account the fact that 
+                          ! we are eventually eliminating IBAND_START-1 low bands 
+                          ! wrt PWSCF convention
+                          !
+                          m1=l1+imin(k) -iband_start 
+                          m2=l2+imin(k) -iband_start
                           Sgmk(i,j,k) = Sgmk(i,j,k) +                                   &
                                   CONJG( bas_rot(l1,i,k) ) * Sgm_in(m1,m2,k,isp,ie) *   &
                                   bas_rot(l2,j,k)
@@ -276,8 +285,8 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !  writing Sgm_out to file
 !
 
-   CALL write_dyn_op(nws,REAL(indxws,dbl),dimwann,Nisp,Nomega,E,Sgm_out,nameout,     &
-                     'time_ord','full_matrix','wannier')
+   CALL write_dyn_op(nws,REAL(indxws,dbl),dimwann,iband_start,Nisp,Nomega,E,Sgm_out, &
+                     nameout, 'time_ord','full_matrix','wannier')
    WRITE(*,*) 'SELF-ENERGY converted and written on file '//TRIM(nameout)
 
 
