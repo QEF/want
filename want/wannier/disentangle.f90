@@ -831,9 +831,9 @@
 ! ...    Calculate amplitudes of the corresponding energy eigenvectors in terms of 
 !        the original ("window space") energy eigenvectors
  
+         eamp(:,:,nkp) = czero
          DO j = 1, dimwann
            DO i = 1, dimwin(nkp)
-             eamp(i,j,nkp) = czero
              DO l = 1, dimwann
                eamp(i,j,nkp) = eamp(i,j,nkp) + z(l,j)*lamp(i,l,nkp)
              END DO

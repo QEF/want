@@ -134,8 +134,8 @@
 
       DO i = 1, 3
         DO j = 1, 3
-          dirc(i,j) = avec(i,j) * bohr
-          diri(i,j) = avec(i,j) * bohr
+          dirc(i,j) = avec(j,i) * bohr
+          diri(i,j) = avec(j,i) * bohr
         END DO
       END DO
       CALL bastr( dirc, recc, volc )
