@@ -14,7 +14,7 @@ CONTAINS
   SUBROUTINE lattice_init()
 
     USE constants, ONLY: pi, bohr => bohr_radius_angs
-    USE io_global, ONLY: stdout
+    USE io_module, ONLY: stdout
 
     INTEGER :: i,j
 

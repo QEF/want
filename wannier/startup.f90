@@ -10,7 +10,7 @@
 !*********************************************
    MODULE startup_module
 !*********************************************
-   USE io_global, ONLY : stdout
+   USE io_module, ONLY : stdout
    USE timing_module, ONLY : nclockx, timing, timing_allocate
    IMPLICIT NONE
    PRIVATE

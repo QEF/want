@@ -9,16 +9,16 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE projection( avec, lamp, evec, vkpt,              & 
+       SUBROUTINE projection( avec, lamp, evec, vkpt,                      & 
                   kgv, isort, npwk, dimwin, dimwann, dimfroz,              &
-                  npwx, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,    &
+                  npwx, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,      &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                   m_wann, ndir_wann, rloc, ndwinx)
 !=----------------------------------------------------------------------------------=
 
        USE kinds
        USE fft_scalar
-       USE io_global, ONLY : stdout
+       USE io_module, ONLY : stdout
        USE timing_module, ONLY : timing
        USE sph_har, ONLY: gauss1
        USE util, ONLY: gv_indexes, zmat_mul

@@ -15,7 +15,8 @@ module parameters
   !
   !       First all the parameter declaration
   !
-  integer , parameter ::                                                 &
+  INTEGER , PARAMETER ::                                                 &
+       nstrx  = 600,   &! max lenght for strings
        ntypx  = 6,     &! max number of different types of atom
        npsx   = ntypx, &! max number of different PPs (obsolete)
        npk    = 40000, &! max number of k-points               
@@ -23,7 +24,7 @@ module parameters
        nchix  = 6,     &! max number of atomic wavefunctions per atom
        ndm    = 2000    ! max number of points in the atomic radial mesh
 
-  integer, parameter  :: &
+  INTEGER, PARAMETER  :: &
        nbrx = 8,           &! max number of beta functions
        lqmax= 2*lmaxx+1,   &! max number of angular momenta of Q
        nqfm = 8             ! max number of coefficients in Q smoothing
