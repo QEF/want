@@ -1,82 +1,38 @@
 
-                  List of the available Test calculations
-
-Before running any test, please configure the ENVIRONMENT.CONF file as described
-in the header of the same file
-
-After cd-ing in the desired directory, type ./run.sh  without any flag
-in order to obtain a manual for the available options
-
-When available a reference copy of the outputs is provided in the directory
-<TEST_HOME>/Reference.
-
+==============================================================================
+   TESTs
 ==============================================================================
 
-TEST1
+ * HOW TO set up the environment
+     In order to get started with running tests you should modify the
+     environment.conf file in this directory according to your system.
+     You should provide the location of DFT calculation executables 
+     (i.e. PWscf) and the directory that will be used for temporary files
+     (scratch). In the case of parallel machine you are also requested to 
+     specify some special commands to run the DFT within an MPI environment.
 
-Wannier function calculation for Silicon bulk. No transport calculation is performed. 
-THe band structure along standard symmetry lines is computed by PWSCF (see the file
-/Reference/nscf_band.dat) and then recalculated by interpolation on the Wannier 
-function Hamiltonian. A comparison shows that valence bands are exactly represented 
-as expected while small discrepancies arise in the high energy region.  This is due 
-to the disentangle procedure which selects an optimal subspace (in the sence od WF 
-localization) out of the starting manyfold. 
+ * HOW TO run the tests
+     After this operation you can start running tests both by using the 
+     simple Makefile system implemented here (type make to get an help) or
+     by cd-ing in the test directories and typing ./run.sh <FLAG>. 
+     The list of possible flag is printed in output with a simple explaination
+     executing ./run.sh (typical flags are <FLAG> scf, nscf, disentangle
+     with obvious meaning). If you type ./run.sh all the test will be 
+     completely performed. 
 
+ * HOW TO check the tests
+     In each test directory you will find a further dir called "Reference"
+     containing all the reference output files previously produced. 
+     You are advised to check your output with a simple diff command:
+        diff myreport.out Reference/myreport.out
+     In doing this remenber that not all the quantities are expected to be
+     the same. 
 
-==============================================================================
+ * HOW TO understand the tests
+     In each test directory you will find a README file describing the 
+     physics of the tests and the results obtained in WanT output files.
+     Moreover also some tricky and subtle questions about WanT input
+     data are raised and discussed. 
 
-TEST2
-
-This test performs the calculation for the bulk conductance of a Gold chain.
-The calculation is done setting one atom in the unit cell, using a (1 1 4, 0 0 1) 
-(according to PWSCF notation) Monkrost-Pack grid in the SCF run and a (1 1 4, 0 0 0) 
-grid in the NSCF run. The wave-function and charge-density cutoff has been chosen 
-to be 20 Ry in order to make the test running fast, but results are of course 
-not converged. A cutoff of 40 Ry of more will lead to more physical results.
-Wannier functions for the s-d manifold (6-dim) of Gold are computed using also
-the disentanglement procedure, and transmittance is calculated through the bulk.x code.
-
-The main outputs of the transport calculation are written in the dos.out and cond.out
-files in the Test2 dir.
-
-
-==============================================================================
-
-TEST3
-
-Calculation of valence band transmittance for a dimerized Carbon chain (polyyne).
-The computation is first done using "bulk.x" code starting from a bulk unit cell
-containing 4 C atoms. Then the same is done coupling different lead and conductor
-calculations: 2 atoms per cell have been used for the leads while 4 for the conductor.
-We used 8 kpts along chain direction for the leads and 4 kpts for the
-conductor to sampling Brillouin zone, and a cutoff of 20 Ry. 
-As before, numerically safer results are obtained with higher cutoff (not less than 40 Ry).
-
-The output of the calculations are the conductance (namely the transmittance) 
-and dos from "bulk.x" code (cond_bulk.out and dos_bulk.out) and from 
-"conductor.x" (cond.out and dos.out).
-
-The difference between the two (results from conductor are less converged) is due
-to the number of atoms in the lead cell giving rise to a poor description of the
-so-called "principal layer" (you can try to increase the number of atoms to 8 and 16
-in the lead and conductor calculations). 
-
-
-==============================================================================
-
-TEST4
-
-This test performs the calculation for the bulk conductance of an Aluminum chain.
-It is different wrt test2 because of the entangled conduction band of Al.
-The calculation is done setting one atom in the unit cell, using a (1 1 40, 0 0 1) 
-(according to PWSCF notation) Monkrost-Pack grid in the SCF run and a (1 1 20, 0 0 0) 
-grid in the NSCF run. The wave-function and charge-density cutoff has been chosen 
-to be 15 Ry which can be considered converged. 
-The 1D Aluminum has and entangled sp bands which is extracted from a large manyfold
-using the disentangle code. The original DFT eigenvalues are accordingly slightly
-changed and written to the energies.dat file. After the Wannier minimization the
-interpolated band structure (file band.dat) should exactly reproduce the eigs
-written by disentangle.
-
-==============================================================================
-
+     
+  

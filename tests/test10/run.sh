@@ -5,7 +5,7 @@
 #================================================================
 #
 # This script runs all the codes in order to perform 
-# a simple transport calculation, starting from PWSCF
+# a simple transport calculation, starting from DFT
 # results, calculating Wannier functions and finally 
 # using them to evaluate Landauer transmittance
 # according to Fisher & Lee.
@@ -18,27 +18,27 @@ MANUAL=" Usage
  where FLAG is one of the following 
  (no FLAG will print this manual page) :
  
- scf_cond             PWSCF self-consistent calculation (conductor)
- nscf_cond            PWSCF non-self-consistent calculation (conductor)
- pwexport_cond        export PWSCF data (conductor) to WanT package
- pwscf_cond           perform SCF, NSCF, PWEXPORT all together (conductor)
+ scf_cond             DFT self-consistent calculation (conductor)
+ nscf_cond            DFT non-self-consistent calculation (conductor)
+ pwexport_cond        export DFT data (conductor) to WanT package
+ dft_cond             perform SCF, NSCF, PWEXPORT all together (conductor)
  disentangle_cond     wannier subspace definition (conductor)
  wannier_cond         wannier functions (conductor)
  hamiltonian_cond     writes the hamiltonian on the Wannier basis (conductor)
  want_cond            all the wannier function steps, DISENT., WANNIER (conductor)
- all_cond             PWSCF_COND and WANT_COND tigether
+ all_cond             DFT_COND and WANT_COND tigether
 
- scf_leads            PWSCF self-consistent calculation (leads)
- nscf_leads           PWSCF non-self-consistent calculation (leads)
- pwexport_leads       export PWSCF data (leads) to WanT package
- pwscf_leads          perform SCF, NSCF, PWEXPORT all together (leads)
+ scf_leads            DFT self-consistent calculation (leads)
+ nscf_leads           DFT non-self-consistent calculation (leads)
+ pwexport_leads       export DFT data (leads) to WanT package
+ dft_leads            perform SCF, NSCF, PWEXPORT all together (leads)
  disentangle_leads    wannier subspace definition (leads)
  wannier_leads        wannier functions (leads)
  hamiltonian_leads    writes the hamiltonian on the Wannier basis (leads)
  want_leads           all the wannier function steps, DISENT., WANNIER (leads)
- all_leads            PWSCF_LEADS and WANT_LEADS tigether
+ all_leads            DFT_LEADS and WANT_LEADS tigether
 
- pwscf                PWSCF_COND and PWSCF_LEADS toether
+ dft                  DFT_COND and DFT_LEADS toether
  want                 WANT_COND and WANT_LEADS together
  conductor            evaluate the transmittance for the general conductor geometry
  bulk                 evaluate the transmittance for the conductor region treated as a bulk
@@ -91,7 +91,7 @@ case $INPUT in
    ( scf_cond )          SCF_COND=".TRUE." ;;
    ( nscf_cond )         NSCF_COND=".TRUE." ;;
    ( pwexport_cond )     PWEXPORT_COND=".TRUE." ;;
-   ( pwscf_cond )        SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;;
+   ( dft_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;;
    ( disentangle_cond )  DISENTANGLE_COND=".TRUE." ;;
    ( wannier_cond )      WANNIER_COND=".TRUE." ;;
    ( hamiltonian_cond )  HAMILTONIAN_COND=".TRUE." ;;
@@ -104,7 +104,7 @@ case $INPUT in
    ( scf_leads )         SCF_LEADS=".TRUE." ;;
    ( nscf_leads )        NSCF_LEADS=".TRUE." ;;
    ( pwexport_leads )    PWEXPORT_LEADS=".TRUE." ;;
-   ( pwscf_leads )       SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
+   ( dft_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
    ( disentangle_leads ) DISENTANGLE_LEADS=".TRUE." ;;
    ( wannier_leads )     WANNIER_LEADS=".TRUE." ;;
    ( hamiltonian_leads ) HAMILTONIAN_LEADS=".TRUE." ;;
@@ -114,7 +114,7 @@ case $INPUT in
                          DISENTANGLE_LEADS=".TRUE." ;
                          WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
 
-   ( pwscf )             SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
+   ( dft )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
    ( want )              DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;
@@ -164,11 +164,11 @@ fi
 #-----------------------------------------------------------------------------
 
 #
-# running PWSCF SCF
+# running DFT SCF
 #
 if [ "$SCF_COND" = ".TRUE." ] ; then  
    echo "running SCF_COND calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_cond.in > $TEST_HOME/scf_cond.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_cond.in > $TEST_HOME/scf_cond.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -178,7 +178,7 @@ fi
 #
 if [ "$SCF_LEADS" = ".TRUE." ] ; then  
    echo "running SCF_LEADS calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_leads.in > $TEST_HOME/scf_leads.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_leads.in > $TEST_HOME/scf_leads.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -188,11 +188,11 @@ fi
 
 
 #
-# running PWSCF NSCF
+# running DFT NSCF
 #
 if [ "$NSCF_COND" = ".TRUE." ] ; then  
    echo "running NSCF_COND calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX  < $TEST_HOME/nscf_cond.in > $TEST_HOME/nscf_cond.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX  < $TEST_HOME/nscf_cond.in > $TEST_HOME/nscf_cond.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -202,7 +202,7 @@ fi
 #
 if [ "$NSCF_LEADS" = ".TRUE." ] ; then  
    echo "running NSCF_LEADS calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf_leads.in > $TEST_HOME/nscf_leads.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf_leads.in > $TEST_HOME/nscf_leads.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -211,11 +211,11 @@ if [ "$NSCF_LEADS" = ".TRUE." ] ; then
 fi
    
 #
-# running PWSCF PWEXPORT
+# running DFT PWEXPORT
 #
 if [ "$PWEXPORT_COND" = ".TRUE." ] ; then  
    echo "running PWEXPORT_COND calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw_export.x $PARA_POSTFIX \
+   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX \
               <  $TEST_HOME/pwexport_cond.in > $TEST_HOME/pwexport_cond.out
    if [ $? = 0 ] ; then 
       echo "done" 
@@ -226,7 +226,7 @@ fi
 #
 if [ "$PWEXPORT_LEADS" = ".TRUE." ] ; then  
    echo "running PWEXPORT_LEADS calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw_export.x $PARA_POSTFIX  \
+   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
               <  $TEST_HOME/pwexport_leads.in > $TEST_HOME/pwexport_leads.out
    if [ $? = 0 ] ; then 
       echo "done" 

@@ -236,7 +236,7 @@ CONTAINS
        CALL iotk_scan_dat(unit,'EAMP',eamp,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find EAMP',ABS(ierr))
        CALL iotk_scan_dat(unit,'COMP_EAMP',comp_eamp,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find COMP_EAMP',ABS(ierr))
+       IF (ierr>0) CALL errore(subname,'Wrong fmt in COMP_EAMP',ABS(ierr))
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))

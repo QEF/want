@@ -479,9 +479,9 @@
                ! ... Calculate amplitudes of the energy eigenvectors in the complement 
                !     subspace in terms of the original energy eigenvectors
                !  
+               comp_eamp(:,:,ik) = CZERO
                DO j = 1, dimwin(ik)-dimwann
                DO i = 1, dimwin(ik)
-                  comp_eamp(i,j,ik) = CZERO
                   DO l = 1, dimwin(ik)-dimwann
                      comp_eamp(i,j,ik) = comp_eamp(i,j,ik)+z(l,j)*camp(i,l,ik)
                   ENDDO

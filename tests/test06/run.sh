@@ -5,7 +5,7 @@
 #================================================================
 #
 # This script runs all the codes in order to perform 
-# a simple transport calculation, starting from PWSCF
+# a simple transport calculation, starting from DFT
 # results, calculating Wannier functions and finally 
 # using them to evaluate Landauer transmittance
 # according to Fisher & Lee.
@@ -18,10 +18,10 @@ MANUAL=" Usage
  where FLAG is one of the following 
  (no FLAG will print this manual page) :
  
- scf             PWSCF self-consistent calculation
- nscf            PWSCF non-self-consistent calculation
- pwexport        export PWSCF data to WanT package in IOTK fmt
- pwscf           perform SCF, NSCF, PWEXPORT all together
+ scf             DFT self-consistent calculation
+ nscf            DFT non-self-consistent calculation
+ pwexport        export DFT data to WanT package in IOTK fmt
+ dft             perform SCF, NSCF, PWEXPORT all together
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
@@ -66,7 +66,7 @@ case $INPUT in
    (scf)            SCF=".TRUE." ;;
    (nscf)           NSCF=".TRUE." ;;
    (pwexport)       PWEXPORT=".TRUE." ;;
-   (pwscf)          SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
+   (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
    (hamiltonian)    HAMILTONIAN=".TRUE." ;;
@@ -105,11 +105,11 @@ fi
 #-----------------------------------------------------------------------------
 
 #
-# running PWSCF SCF
+# running DFT SCF
 #
 if [ "$SCF" = ".TRUE." ] ; then  
    echo "running SCF calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -118,11 +118,11 @@ if [ "$SCF" = ".TRUE." ] ; then
 fi
 
 #
-# running PWSCF NSCF
+# running DFT NSCF
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
    echo "running NSCF calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -131,11 +131,11 @@ if [ "$NSCF" = ".TRUE." ] ; then
 fi
    
 #
-# running PWSCF PWEXPORT
+# running DFT PWEXPORT
 #
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
    echo "running PWEXPORT calculation" 
-   $PARA_PREFIX  $PWSCF_BIN/pw_export.x $PARA_POSTFIX  \
+   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
               <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
    if [ $? = 0 ] ; then 
       echo "done" 
