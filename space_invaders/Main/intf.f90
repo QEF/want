@@ -106,6 +106,7 @@
        END DO
        READ(19) emax, nbandi
        READ(19) (nk(i),i=1,3), (s(i),i=1,3)
+
        READ(19) win_min, win_max, froz_min, froz_max, dimwann
 
        CALL atomset(alatt, avec, ntype, natom, nameat, rat, mxdtyp, mxdatm)

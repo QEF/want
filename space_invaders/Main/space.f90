@@ -6,12 +6,12 @@
        USE mp, ONLY: mp_start, mp_end, mp_env
        USE mp_global, ONLY: mp_global_start
        USE io_global, ONLY: io_global_start, io_global_getionode
+       USE input_wannier
 
 
        IMPLICIT NONE
 
        INTEGER :: mxdbnd, mxddim
-       INTEGER :: nshells
        INTEGER :: mxdgve
 
        INTEGER, PARAMETER :: mxdnn = 72
@@ -35,7 +35,6 @@
        REAL(dbl) :: s(3)
        REAL(dbl) :: emax
  
-       INTEGER, ALLOCATABLE :: nwhich(:)
        INTEGER, ALLOCATABLE :: nnshell(:,:)
        INTEGER, ALLOCATABLE :: nnlist(:,:)
        INTEGER, ALLOCATABLE :: nncell(:,:,:)
@@ -50,7 +49,7 @@
  
        EXTERNAL komegai
 
-       REAL(dbl) :: klambda, alpha
+       REAL(dbl) :: klambda
        REAL(dbl) :: omega_i, omega_i_est, komegai
        REAL(dbl) :: o_error
        REAL(dbl), ALLOCATABLE :: komega_i_est(:)
@@ -68,15 +67,10 @@
        INTEGER, ALLOCATABLE :: dimfroz(:)
        INTEGER, ALLOCATABLE :: indxfroz(:,:)
        INTEGER, ALLOCATABLE :: indxnfroz(:,:)
-       INTEGER :: froz_flag, maxiter 
-       INTEGER :: itrial, cflag
-       INTEGER :: dimwann
+       INTEGER :: froz_flag 
+       INTEGER :: cflag
        LOGICAL, ALLOCATABLE :: frozen(:,:)
 
-       INTEGER :: iphase
-       REAL(dbl)  :: alphafix0, alphafix
-       INTEGER :: niter, niter0, ncg
- 
        COMPLEX(dbl), ALLOCATABLE :: ap(:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
        COMPLEX(dbl), ALLOCATABLE :: work(:)
@@ -95,8 +89,6 @@
 
        REAL(dbl) :: recc(3,3), aux
        REAL(dbl) :: lambda_avg, alatt
-       REAL(dbl) :: win_min, win_max
-       REAL(dbl) :: froz_min, froz_max
 
        COMPLEX(dbl) :: ctmp
 
@@ -110,13 +102,6 @@
        INTEGER :: ngx, ngy, ngz
        INTEGER :: ngm
        
-       INTEGER, ALLOCATABLE :: gauss_typ(:)
-       INTEGER, ALLOCATABLE :: l_wann(:)
-       INTEGER, ALLOCATABLE :: m_wann(:)
-       INTEGER, ALLOCATABLE :: ndir_wann(:)
-       REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
-       REAL(dbl), ALLOCATABLE :: rphiimx2(:,:)
-       REAL(dbl), ALLOCATABLE :: rloc(:)
        INTEGER :: nwann
        CHARACTER(LEN=6) :: verbosity = 'none' ! none, low, medium, high
 
@@ -125,6 +110,8 @@
        INTEGER :: ionode_id
        INTEGER :: ierr
        INTEGER :: ndwinx
+       INTEGER   :: idum
+       REAL(dbl) :: rdum
 
 !      
 ! ...  End declarations and dimensions
@@ -153,6 +140,8 @@
        WRITE(*,*)
        WRITE(*,*) ' Starting Space '
 
+       CALL read_input()
+
        OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
 !
        READ(19) alatt
@@ -168,34 +157,30 @@
        END DO
        READ(19) emax, nbandi
        READ(19) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
-       READ(19) win_min, win_max, froz_min, froz_max, dimwann
 
-       ALLOCATE( gauss_typ(dimwann) )
-       ALLOCATE( rphiimx1(3,dimwann) )
-       ALLOCATE( rphiimx2(3,dimwann) )
-       ALLOCATE( l_wann(dimwann) )
-       ALLOCATE( m_wann(dimwann) )
-       ALLOCATE( ndir_wann(dimwann) )
-       ALLOCATE( rloc(dimwann) )
+       ! ... standard input
 
-       READ(19) alpha, maxiter 
-       READ(19) iphase
-       READ(19) niter0, alphafix0
-       READ(19) niter, alphafix, ncg
-       READ(19) itrial, nshells
+       READ(19) rdum ! win_min, win_max, froz_min, froz_max, dimwann
+       READ(19) rdum ! alpha, maxiter 
+       READ(19) idum ! iphase
+       READ(19) idum ! niter0, alphafix0
+       READ(19) idum ! niter, alphafix, ncg
+       READ(19) idum ! itrial, nshells
 
-       ALLOCATE( nwhich(nshells) )
-       READ(19) ( nwhich(i), i=1,nshells )
+       READ(19) idum ! ( nwhich(i), i=1,nshells )
+
        READ(19) nkpts, mxddim, mxdbnd
        READ(19) ngx, ngy, ngz, ngm
       
-       READ(19) gauss_typ(1:dimwann)
-       READ(19) rphiimx1(1:3,1:dimwann)
-       READ(19) rphiimx2(1:3,1:dimwann)
-       READ(19) l_wann(1:dimwann)
-       READ(19) m_wann(1:dimwann)
-       READ(19) ndir_wann(1:dimwann)
-       READ(19) rloc(1:dimwann)
+       READ(19) idum ! gauss_typ(1:dimwann)
+       READ(19) rdum ! rphiimx1(1:3,1:dimwann)
+       READ(19) rdum ! rphiimx2(1:3,1:dimwann)
+       READ(19) idum ! l_wann(1:dimwann)
+       READ(19) idum ! m_wann(1:dimwann)
+       READ(19) idum ! ndir_wann(1:dimwann)
+       READ(19) rdum ! rloc(1:dimwann)
+
+       ! ... end standard input
 
        IF ( dimwann > 80 .OR. nkpts > 99999) THEN
          WRITE(*,*) '*** ERROR ***'
@@ -982,7 +967,6 @@
        DEALLOCATE( eveci )
        DEALLOCATE( eiw )
 
-       DEALLOCATE( nwhich )
        DEALLOCATE( nnshell )
        DEALLOCATE( nnlist )
        DEALLOCATE( nncell )
@@ -1015,6 +999,8 @@
        DEALLOCATE( iwork )
 
        DEALLOCATE( ham )
+
+       CALL deallocate_input()
 
       CALL mp_end()
 

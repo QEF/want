@@ -3,6 +3,7 @@
        USE kinds
        USE constants, ONLY: ryd => ry, har => au, amu => uma_au
        USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx, dp
+       USE input_wannier
 
        IMPLICIT NONE
  
@@ -24,36 +25,15 @@
        CHARACTER(LEN=2), ALLOCATABLE :: nameat(:)
        CHARACTER(LEN=3) :: namtmp
  
-       REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
-       REAL(dbl), ALLOCATABLE :: rphiimx2(:,:)
-       REAL(dbl), ALLOCATABLE :: rloc(:)
-       INTEGER, ALLOCATABLE :: gauss_typ(:)
-       INTEGER, ALLOCATABLE :: l_wann(:)
-       INTEGER, ALLOCATABLE :: m_wann(:)
-       INTEGER, ALLOCATABLE :: ndir_wann(:)
        INTEGER :: nwann
 
        REAL(dbl) :: s(3)
-       REAL(dbl) :: win_min, win_max     ! outer energy window
-       REAL(dbl) :: froz_min, froz_max   ! inner energy window
        INTEGER :: nk(3)
-       INTEGER :: dimwann             ! number of Wannier functions
        INTEGER :: i, j, i1, i2, i3
        INTEGER :: nkp
        INTEGER :: mtxd, neig, imax, imin, kdimwin
        INTEGER :: nkp_tot, kifroz_min, kifroz_max
 
-       REAL(dbl) :: alpha
-       INTEGER :: maxiter, itrial
-
-       INTEGER :: iphase
-       REAL(dbl)  :: alphafix0, alphafix
-       INTEGER :: niter, niter0, ncg
-
-       INTEGER :: nshells
-       INTEGER, ALLOCATABLE :: nwhich(:)
-
- 
        REAL(dbl) :: emax, rdum
        INTEGER :: ntype
        INTEGER :: nr1, nr2, nr3, nbandi 
@@ -93,72 +73,7 @@
        ALLOCATE ( rat(3,mxdatm,mxdtyp) )
 
 !
-       !  win_min, win_max are the eigenvalues window bounds (in eV)
-       !  froz_min, froz_max are the frozen eigenvalues window bounds (in eV)
-       !  dimwann is the minimal dimension of the window
-
-       READ(5,*) win_min, win_max
-       READ(5,*) froz_min, froz_max
-
-       IF ( win_max <= win_min ) THEN
-         WRITE(6,*) '*** ERROR *** energy window'
-         WRITE(6,*) 'win_max is not larger than win_min'
-         STOP
-       END IF       
-
-       READ(5,*) dimwann
-       READ(5,*) alpha
-       READ(5,*) maxiter
-       READ(5,*) iphase
-       READ(5,*) niter0, alphafix0
-       READ(5,*) niter, alphafix, ncg
-
-       READ(5,*) nshells
-       ALLOCATE( nwhich( nshells ) )
-       READ(5,*) ( nwhich(i), i=1,nshells )
-
-       READ(5,*) itrial
-       ALLOCATE( gauss_typ(dimwann) )
-       ALLOCATE( rphiimx1(3,dimwann) )
-       ALLOCATE( rphiimx2(3,dimwann) )
-       ALLOCATE( l_wann(dimwann) )
-       ALLOCATE( m_wann(dimwann) )
-       ALLOCATE( ndir_wann(dimwann) )
-       ALLOCATE( rloc(dimwann) )
-
-       IF( itrial == 3 ) THEN
-         READ(5,*) ( gauss_typ(nwann), nwann = 1, dimwann )
-         DO nwann = 1, dimwann
-           IF ( gauss_typ(nwann) == 1 ) THEN
-             l_wann(nwann) = 0
-             m_wann(nwann) = 0
-             ndir_wann(nwann) = 3
-             READ(5,*) ( rphiimx1(i,nwann), i=1,3 ), &
-               l_wann(nwann), m_wann(nwann), ndir_wann(nwann), rloc(nwann)
-
-! ...        Values below don't really matter, since rphiimx2 is not used when gauss_typ=1
-
-             rphiimx2(1,nwann)=0.0d0
-             rphiimx2(2,nwann)=0.0d0
-             rphiimx2(3,nwann)=0.0d0
-
-           ELSE IF ( gauss_typ(nwann) == 2 ) THEN
-             READ(5,*) ( rphiimx1(i,nwann), i=1,3 ), ( rphiimx2(i,nwann), i=1,3 ), rloc(nwann)
-
-           ELSE
-             WRITE(*,*) 'ERROR in trial Wannier centers: wrong gauss_typ'
-             STOP
-           END IF
-         END DO
-       ELSE
-         gauss_typ = 0
-         rphiimx1 = 0.0d0
-         rphiimx2 = 0.0d0
-         l_wann = 0
-         m_wann = 0
-         ndir_wann = 0
-         rloc = 0.0d0
-       END IF
+       CALL read_input()
 
 !
 ! ...  Read wavefunctions and eigenvalues from first principle calculation
@@ -533,17 +448,11 @@
        DEALLOCATE( indxnfroz )
        DEALLOCATE( dimfroz )
        DEALLOCATE( frozen )
-       DEALLOCATE( nwhich )
-       DEALLOCATE( gauss_typ )
-       DEALLOCATE( rphiimx1 )
-       DEALLOCATE( rphiimx2 )
-       DEALLOCATE( l_wann )
-       DEALLOCATE( m_wann )
-       DEALLOCATE( ndir_wann )
-       DEALLOCATE( rloc )
        DEALLOCATE( ig1 )
        DEALLOCATE( ig2 )
        DEALLOCATE( ig3 )
+
+       CALL deallocate_input()
 !
        STOP '*** THE END *** (window.f90)'
        END
