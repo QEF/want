@@ -15,7 +15,6 @@
    USE parameters, ONLY : nstrx
    USE parser_module, ONLY : change_case
    USE kpoints_module, ONLY : nkpts, kpoints_alloc
-   USE input_module, ONLY : win_min, win_max, froz_min, froz_max, dimwann
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -29,7 +28,7 @@
 ! routines in this module:
 ! SUBROUTINE windows_allocate()
 ! SUBROUTINE windows_deallocate()
-! SUBROUTINE windows_init()
+! SUBROUTINE windows_init(eig, dimwann)
 ! SUBROUTINE windows_write(unit,name)
 ! SUBROUTINE windows_read(unit,name,found)
 ! SUBROUTINE windows_read_ext(unit,name,found)
@@ -43,6 +42,9 @@
    INTEGER                     :: dimwinx            ! MAX (dimwin(:)) over kpts
    !
    ! ... starting states within the energy window
+   REAL(dbl)                   :: win_min, win_max   ! outer energy window
+   REAL(dbl)                   :: froz_min, froz_max ! inner energy window
+
    INTEGER,      ALLOCATABLE   :: dimwin(:)          ! define which eigenv are in the
    INTEGER,      ALLOCATABLE   :: imin(:)            ! chosen energy window
    INTEGER,      ALLOCATABLE   :: imax(:)            ! dim: nkpts
@@ -83,10 +85,11 @@ CONTAINS
 !
 
 !**********************************************************
-   SUBROUTINE windows_init( eig_ )
+   SUBROUTINE windows_init( eig_, dimwann )
    !**********************************************************
    IMPLICIT NONE
        REAL(dbl), INTENT(in) :: eig_(:,:)
+       INTEGER,   INTENT(in) :: dimwann
        CHARACTER(12)         :: subname="windows_init"
        INTEGER               :: kifroz_max, kifroz_min, idum
        INTEGER               :: i, ik, ierr

@@ -13,7 +13,7 @@
    USE kinds, ONLY : dbl
    USE windows_module, ONLY : dimwinx, windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, mxdnn, kpoints_alloc
-   USE input_module,  ONLY : dimwann, input_alloc => alloc
+   USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
    IMPLICIT NONE
@@ -174,7 +174,7 @@ CONTAINS
        ELSE
           nkpts = nkpts_
        ENDIF
-       IF ( input_alloc ) THEN
+       IF ( subspace_alloc ) THEN
            IF ( dimwann_ /= dimwann) &
                 CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_-dimwann))
        ELSE

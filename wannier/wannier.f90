@@ -15,7 +15,9 @@
       USE kinds
       USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR, EPS_m8
       USE parameters, ONLY : nstrx
-      USE input_module
+      USE input_module, ONLY : iphase, verbosity, ncg, niter, niter0, alphafix, &
+                               alpha, alphafix0, wannier_thr, ordering_type , nprint
+      USE input_module, ONLY : input_read
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ioname
       USE files_module, ONLY : file_open, file_close
@@ -30,7 +32,7 @@
       USE kpoints_module, ONLY: nkpts, &
                           nnmx => mxdnn, nnmxh => mxdnnh, &
                           nntot, nnlist, nncell, neigh, bk, wb, dnn, bka, wbtot
-      USE overlap_module,  ONLY : ca, cm
+      USE overlap_module,  ONLY : dimwann, ca, cm
       USE localization_module, ONLY : cu, rave, rave2, r2ave, &
                        Omega_I, Omega_OD, Omega_D, Omega_V, Omega_tot, &
                        localization_allocate, localization_write

@@ -35,7 +35,6 @@ CONTAINS
 !**********************************************************
    SUBROUTINE cleanup()
 !**********************************************************
-      USE input_module,        ONLY : input_deallocate, input_alloc => alloc 
       USE kpoints_module,      ONLY : kpoints_deallocate, kpoints_alloc 
       USE kpoints_module,      ONLY : bshells_deallocate, bshells_alloc
       USE windows_module,      ONLY : windows_deallocate, windows_alloc => alloc 
@@ -44,6 +43,8 @@ CONTAINS
       USE ggrids_module,       ONLY : ggrids_deallocate, ggrids_alloc => alloc 
       USE wfc_module,          ONLY : wfc_deallocate, wfc_alloc => alloc 
       USE localization_module, ONLY : localization_deallocate, loc_alloc => alloc 
+      USE trial_center_data_module, &
+                               ONLY : trial_center_data_deallocate, trial_alloc => alloc 
       USE timing_module,       ONLY : timing_deallocate, timing_alloc => alloc 
       USE struct_fact_data_module,  &
                                ONLY : struct_fact_data_deallocate, strf_alloc => alloc 
@@ -51,7 +52,6 @@ CONTAINS
       USE uspp,                ONLY : uspp_deallocate
       IMPLICIT NONE
       
-      IF ( input_alloc )    CALL input_deallocate()
       IF ( kpoints_alloc )  CALL kpoints_deallocate()
       IF ( bshells_alloc )  CALL bshells_deallocate()
       IF ( windows_alloc )  CALL windows_deallocate()
@@ -60,6 +60,7 @@ CONTAINS
       IF ( ggrids_alloc )   CALL ggrids_deallocate()
       IF ( wfc_alloc )      CALL wfc_deallocate()
       IF ( loc_alloc )      CALL localization_deallocate()
+      IF ( trial_alloc )    CALL trial_center_data_deallocate()
       IF ( timing_alloc )   CALL timing_deallocate()
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
                             CALL us_deallocate()

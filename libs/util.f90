@@ -23,7 +23,6 @@
 ! SUBROUTINE  zmat_mul( c, a, opa, b, opb, m, n, k )
 ! SUBROUTINE  zmat_hdiag( z, w, a, n)
 ! LOGICAL FUNCTION  zmat_unitary( z [,side] [,toll] )
-! SUBROUTINE  gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, ninvpw, nindpw )
 ! 
 ! </INFO>
 !
@@ -34,7 +33,6 @@ PUBLIC :: zmat_unpack
 PUBLIC :: zmat_mul
 PUBLIC :: zmat_unitary
 PUBLIC :: zmat_hdiag
-PUBLIC :: gv_indexes
 
 CONTAINS
 
@@ -222,37 +220,6 @@ CONTAINS
     RETURN
   END SUBROUTINE zmat_hdiag
 
-
-!**********************************************************
-   SUBROUTINE gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, ninvpw, nindpw )
-   !**********************************************************
-    IMPLICIT NONE
-    INTEGER, INTENT(IN) :: igv(:,:)
-    INTEGER, INTENT(IN) :: igsort(:)
-    INTEGER, INTENT(IN) :: npwk, nr1, nr2, nr3
-    INTEGER, OPTIONAL, INTENT(OUT) :: ninvpw(0:)
-    INTEGER, OPTIONAL, INTENT(OUT) :: nindpw(:)
-    INTEGER :: igk, np, nx, ny, nz, npoint
-
-    DO np = 1, npwk
-
-      igk = igsort( np )
-      IF ( igv(1,igk) >= 0 ) nx = igv(1,igk) + 1
-      IF ( igv(1,igk) <  0 ) nx = igv(1,igk) + 1 + nr1
-      IF ( igv(2,igk) >= 0 ) ny = igv(2,igk) + 1
-      IF ( igv(2,igk) <  0 ) ny = igv(2,igk) + 1 + nr2
-      IF ( igv(3,igk) >= 0 ) nz = igv(3,igk) + 1
-      IF ( igv(3,igk) <  0 ) nz = igv(3,igk) + 1 + nr3
-
-      npoint = nx + (ny-1)*nr1 + (nz-1)*nr1*nr2
-
-      IF( PRESENT( nindpw ) ) nindpw(np) = npoint  ! index
-      IF( PRESENT( ninvpw ) ) ninvpw(npoint) = np  ! index
-
-    ENDDO
-   
-    RETURN
-  END SUBROUTINE
 
 !**********************************************************
    FUNCTION  zmat_unitary( z, side, toll )
