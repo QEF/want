@@ -27,6 +27,7 @@
 ! DATA in ioname routine should be:
 ! 
 ! * 'dft_data'
+! * 'export'
 ! * 'subspace'
 ! * 'wannier'
 ! * 'self_energy'
@@ -39,12 +40,13 @@
           stdin = 5,               &! std input unit
          stdout = 6,               &! std output unit
        dft_unit = 10,              &! input file (DFT data) unit
-       ovp_unit = 11,              &! overlap and projections unit
-     space_unit = 12,              &! dos and pdos unit
-       wan_unit = 13,              &! G integrals unit
-       sgm_unit = 14,              &! SGM unit
-       ham_unit = 15,              &! HAM unit
-      save_unit = 99                ! restart file unit
+    pseudo_unit = 11,              &! input pseudopotential data unit
+       ovp_unit = 20,              &! overlap and projections unit
+     space_unit = 21,              &! dos and pdos unit
+       wan_unit = 22,              &! G integrals unit
+       sgm_unit = 23,              &! SGM unit
+       ham_unit = 24,              &! HAM unit
+      save_unit = 60                ! restart file unit
 
 
    CHARACTER(4), PARAMETER    ::  suffix_dft_data=".dft"
@@ -75,8 +77,10 @@
    PUBLIC ::  ionode, ionode_id
 
    PUBLIC ::  stdin, stdout 
-   PUBLIC ::  dft_unit, ovp_unit, space_unit, wan_unit, &
-              sgm_unit, ham_unit, save_unit
+   PUBLIC ::  dft_unit, pseudo_unit 
+   PUBLIC ::  ovp_unit, space_unit, wan_unit, sgm_unit, ham_unit 
+   PUBLIC ::  save_unit
+
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
    PUBLIC ::  ioname
    PUBLIC ::  read_iodata

@@ -48,6 +48,7 @@ MODULE ions_module
       !     tau( 1:3, i ) = position of the i-th atom
 
       INTEGER,   ALLOCATABLE :: ityp(:)
+      REAL(dbl), ALLOCATABLE :: zv(:)         !  pseudo atomic charge
       REAL(dbl), ALLOCATABLE :: tau(:,:)      !  initial positions read from stdin (in bohr)
       REAL(dbl), ALLOCATABLE :: tau_srt(:,:)  !  tau sorted by specie in bohr
       INTEGER,   ALLOCATABLE :: ind_srt( : )  !  index of tau sorted by specie
@@ -61,7 +62,7 @@ MODULE ions_module
 ! end of declaration scope
 !
 
-   PUBLIC :: nsp, na, nax, nat
+   PUBLIC :: nsp, na, nax, nat, zv
    PUBLIC :: tau
    PUBLIC :: tau_srt, ind_srt
    PUBLIC :: ityp, atm, symb
@@ -91,6 +92,8 @@ CONTAINS
 
       ALLOCATE(na(nsp), STAT=ierr) 
          IF(ierr/=0) CALL errore(subname,'allocating na',nsp)
+      ALLOCATE(zv(nsp), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating zv',nsp)
       ALLOCATE(ityp(nat), STAT=ierr) 
          IF(ierr/=0) CALL errore(subname,'allocating ityp',nat)
       ALLOCATE(symb(nat), STAT=ierr) 
@@ -119,6 +122,10 @@ CONTAINS
       IF ( ALLOCATED( na ) ) THEN
           DEALLOCATE( na, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating na',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( zv ) ) THEN
+          DEALLOCATE( zv, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating zv',ABS(ierr))
       ENDIF
       IF ( ALLOCATED( ityp ) ) THEN
           DEALLOCATE( ityp, STAT=ierr )
@@ -177,6 +184,9 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find nsp',ABS(ierr))
 
        CALL ions_allocate( nat, nsp ) 
+       !
+       ! some simple initializations
+       zv(:) = ZERO
 
        CALL iotk_scan_begin(unit,'Positions',IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find Positions',ABS(ierr))

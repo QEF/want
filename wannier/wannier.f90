@@ -41,14 +41,12 @@
       IMPLICIT NONE
 
       ! external functions
-      REAL(dbl) :: ranf
-      EXTERNAL  :: ranf
       LOGICAL   :: lselect  ! external function non defined
+      REAL(dbl) :: rndm     ! external function giving random numbers (from NR)
 
       INTEGER :: ik, ik2
       INTEGER :: i, j, k
       INTEGER :: l, m, n
-      INTEGER :: iseed
       INTEGER :: info, nn, nnh
       INTEGER :: nwann, nb
       INTEGER :: nsdim, irguide
@@ -252,14 +250,12 @@
           ELSE
 ! ...         check what happens if a random phase is given
 
-              iseed   = -1
               epsilon = ONE
-
               WRITE(stdout, fmt=" (2x, 'NB: RANDOM phase is given' )")
               DO m = 1, dimwann
               DO n = m, dimwann
-                  rre = ranf(iseed) * 10*ONE - 5*ONE
-                  rri = ranf(iseed) * 10*ONE - 5*ONE
+                  rre = rndm() * 10*ONE - 5*ONE
+                  rri = rndm() * 10*ONE - 5*ONE
                   cu(m,n,ik) = epsilon * CMPLX(rre,rri)
                   cu(n,m,ik) = -CONJG( cu(m,n,ik) )
                   IF ( m == n ) cu(n,m,ik) = CMPLX( ZERO , AIMAG( cu(m,n,ik) ) )

@@ -9,9 +9,8 @@
       INTEGER, PARAMETER :: dbl = selected_real_kind(14,200)
       INTEGER, PARAMETER :: sgl = selected_real_kind(6,30)
       INTEGER, PARAMETER :: i4b = selected_int_kind(9)
-      INTEGER, PARAMETER :: DP = kind(0.0d0) ! compatibility with PWSCF
       PRIVATE
-      PUBLIC :: i4b, dbl, sgl, print_kind_info, DP
+      PUBLIC :: i4b, dbl, sgl, print_kind_info
 !
 !------------------------------------------------------------------------------!
 !
