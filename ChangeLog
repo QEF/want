@@ -3,11 +3,13 @@
             WanT code:  Log of Changes 
 =======================================================
 
+25 Mar 2005      Instabilities found using MKL 7.2; solved using v6.1 . (AF)
 
 24 Mar 2005      Important changes in the input format: 3 namelist instead of one,
                  variables renamed, input_parameters,f90 and input_base.f90 added;
                  many variables renamed through the code; intel compiler warning
-                 on temporary array creation eliminated; references to all tests updated. (AF)
+                 on temporary array creation eliminated; references to all tests updated. 
+                 (AF)
 
 21 Mar 2005      DFT data filename written in output corrected. 
                  Timing modified in order to avoid initializations in derived types (not f90 std).
