@@ -81,6 +81,7 @@
       INTEGER :: nt
       REAL(dbl) :: win_min, win_max, froz_min, froz_max
       REAL(dbl) :: emax, sgn
+      INTEGER   :: ierr
 !
 ! ... Next lines added by ANDREA (28 jan 2004) 
 !     PRINT_SGM_START and PRINT_SGM_END are energy indeces 
@@ -95,7 +96,8 @@
       REAL(dbl) :: Efermi
 
       NAMELIST /INPUT/ nspts, npts, nbands, convert_self_energy, check_self_energy, & 
-                 calculate_spectral_func, print_sgm_start, print_sgm_end, spin_component, efermi     
+                       calculate_spectral_func, print_sgm_start, print_sgm_end,  &
+                       spin_component, efermi     
 
        INTEGER :: root, mpime, gid, nproc
        LOGICAL :: ionode
@@ -204,8 +206,10 @@
       IF ( nspts > maxspts ) STOP 'INCREASE MAXSPTS'
       IF ( nbands > 100 ) STOP 'CHANGE FORMAT IN LINE 650'
 
-      ALLOCATE( point( nspts ) )
-      ALLOCATE( skpt( 3, nspts ) )
+      ALLOCATE( point( nspts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating point ', nspts )
+      ALLOCATE( skpt( 3, nspts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating skpt ', 3*nspts )
 
       DO j = 1, nspts
         READ (5,202) point(j)
@@ -222,7 +226,8 @@
  
 ! ... Calculate grid of k-points
 
-      ALLOCATE( vkpt( 3, mxdnrk) )
+      ALLOCATE( vkpt( 3, mxdnrk), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating vkpt ', 3*mxdnrk )
  
       nkp = 0
       DO i1 = 0, nk(1)-1
@@ -247,7 +252,8 @@
 
       OPEN ( 7, FILE='energies.dat', STATUS='OLD', FORM='FORMATTED' )
 
-      ALLOCATE( ei( dimwann, mxdnrk ) )
+      ALLOCATE( ei( dimwann, mxdnrk ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating vkpt ', dimwann*mxdnrk )
 
       DO nkp = 1, nkpts
         READ( 7, * ) idum, ( ei( i, nkp ), i = 1, dimwann )
@@ -267,7 +273,8 @@
  
       OPEN (29, FILE='unitary.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
-      ALLOCATE( cu( dimwann, dimwann, nkpts ) )
+      ALLOCATE( cu( dimwann, dimwann, nkpts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating cu ', dimwann**2 * nkpts )
       READ (29) ( ( ( cu(j,i,nkp), j=1,dimwann ), i=1,dimwann ), nkp=1,nkpts )
 
       CLOSE(29)
@@ -313,7 +320,8 @@
 ! ... Calculate H(k)=U^{dagger}(k).H_0(k).U(k)
 !     (hamiltonian matrix elements between the rotated bloch states)
 
-      ALLOCATE( kham( dimwann, dimwann, nkpts ) )
+      ALLOCATE( kham( dimwann, dimwann, nkpts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating khan ', dimwann**2 * nkpts )
  
       DO nkp = 1, nkpts
         DO j = 1, dimwann
@@ -333,10 +341,17 @@
       IF ( verbosity == 'high' ) THEN
         WRITE (6,*)
         WRITE (6,*) 'CHECKING EIGENVALUES...'
-        ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ) )
-        ALLOCATE( w( dimwann ), ifail( dimwann ) )
-        ALLOCATE( z( dimwann, dimwann ), work( 2 * dimwann ) )
-        ALLOCATE( rwork( 7 * dimwann ), iwork( 5 * dimwann ) )
+
+        ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' bands ', ' allocating ap ', dimwann*(dimwann+1)/2 )
+        ALLOCATE( w( dimwann ), ifail( dimwann ), STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' bands ', ' allocating w ifail ', 2*dimwann )
+        ALLOCATE( z( dimwann, dimwann ), work( 2 * dimwann ), STAT=ierr )
+            IF( ierr /=0 ) &
+            CALL errore(' bands ', ' allocating z work ', 2*dimwann + dimwann**2 )
+        ALLOCATE( rwork( 7 * dimwann ), iwork( 5 * dimwann ), STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' bands ', ' allocating rwork iwork', 12*dimwann )
+
         DO nkp = 1, nkpts
           DO j = 1, dimwann
             DO i = 1 ,j
@@ -361,7 +376,8 @@
           WRITE (6,743) nkp, ( w(m), m=1,dimwann ), ( ei(m,nkp), m=1,dimwann )
  743      FORMAT(i4,2x,10(f10.5,1x))
         END DO
-        DEALLOCATE( ap, w, z, work, rwork, iwork, ifail )
+        DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ap ... ifail', ABS(ierr) )
       END IF
 
  
@@ -369,12 +385,15 @@
 
 ! ... Find real-space grid points R in Wigner-Seitz supercell
 
-      ALLOCATE( indxws( 3, 3*nkpts ) )
-      ALLOCATE( degen( 3*nkpts ) )
+      ALLOCATE( indxws( 3, 3*nkpts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating indxws', 9*nkpts )
+      ALLOCATE( degen( 3*nkpts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating degen', 3*nkpts )
 
       CALL wigner_seitz( adot, nk, indxws, nws, degen, nkpts  )        
 
-      ALLOCATE( rham( dimwann, dimwann, nws ) )
+      ALLOCATE( rham( dimwann, dimwann, nws ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating rham', dimwann**2 *nws )
 
       DO iws = 1, nws
         DO j = 1, dimwann
@@ -475,9 +494,12 @@
  
 ! ... Determine the k-points used in the band structure plot
 
-      ALLOCATE( xval( nspts * npts ) )
-      ALLOCATE( sxval( nspts ) )
-      ALLOCATE( kpt(3,nspts*npts) )
+      ALLOCATE( xval( nspts * npts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating xval', nspts * npts )
+      ALLOCATE( sxval( nspts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating sxval', nspts )
+      ALLOCATE( kpt(3,nspts*npts), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating kpt', 3*nspts * npts )
  
       CALL get_points( nspts, npts, nspts, npts, bdot, skpt, kpt, xval, sxval, tnkpts )
  
@@ -485,12 +507,14 @@
 !     H_ij(k') ~ sum_R e^{ik'R} H_ij(R)/degen(R), where the sum over R is over a 
 !     finite grid (truncation)
  
-      ALLOCATE( ham_tmp( dimwann, dimwann ) )
+      ALLOCATE( ham_tmp( dimwann, dimwann ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating ham_tmp', dimwann**2 )
  
       e_min = 1.e8         ! some large number
       e_max = -1.e8
 
-      ALLOCATE( en_band( nbands, tnkpts ) )
+      ALLOCATE( en_band( nbands, tnkpts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bands ', ' allocating en_band', nbands*tnkpts )
  
       DO irk = 1, tnkpts
 
@@ -519,10 +543,16 @@
 
 ! ...   Diagonalize the hamiltonian at the present k-point
 
-        ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ) )
-        ALLOCATE( w( dimwann ), ifail( dimwann ) )
-        ALLOCATE( z( dimwann, dimwann ), work( 2 * dimwann ) )
-        ALLOCATE( rwork( 7 * dimwann ), iwork( 5 * dimwann ) )
+        ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
+            IF( ierr /=0 ) & 
+            CALL errore(' bands ', ' allocating ap', dimwann * (dimwann+1)/2 )
+        ALLOCATE( w( dimwann ), ifail( dimwann ), STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' bands ', ' allocating w ifail', 2*dimwann )
+        ALLOCATE( z( dimwann, dimwann ), STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' bands ', ' allocating z', dimwann**2 )
+        ALLOCATE( work(2*dimwann), rwork( 7 * dimwann ), iwork( 5 * dimwann ), STAT=ierr )
+            IF( ierr /=0 ) &
+            CALL errore(' bands ', ' allocating work rwork iwork', 14*dimwann )
  
         DO j = 1, dimwann
           DO i = 1, j
@@ -547,7 +577,8 @@
           IF( w(i) > e_max ) e_max = w(i)
         END DO
 
-        DEALLOCATE( ap, w, z, work, rwork, iwork, ifail )
+        DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
+            IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ap ... ifail', ABS(ierr) )
 
       END DO ! IRK
 
@@ -572,9 +603,6 @@
       DO i = 2, nspts
         WRITE(28,705) sxval(i), e_min,sxval(i), e_maX
       END DO
-!      WRITE (28,702) ( point(i), sxval(i), i=1,nspts-1 )
-!      WRITE (28,703) point(nspts), sxval(nspts)
-!      WRITE (28,702) ( point(i), sxval(i), i=1,nspts )
       WRITE (stringa2,706) nspts-1
       WRITE (*,*) stringa2
       WRITE (28,stringa2) ( point(i), sxval(i), i=1,nspts )
@@ -582,15 +610,55 @@
 
       CLOSE( 28 )
 
+
+! ... cleaning
+      DEALLOCATE( point, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating point', ABS(ierr) )
+      DEALLOCATE( skpt, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating skpt', ABS(ierr) )
+      DEALLOCATE( vkpt, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating vkpt', ABS(ierr) )
+      DEALLOCATE( ei, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ei', ABS(ierr) )
+      DEALLOCATE( cu, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating cu', ABS(ierr) )
+      DEALLOCATE( kham, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating kham', ABS(ierr) )
+      DEALLOCATE( indxws, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating indxws', ABS(ierr) )
+      DEALLOCATE( degen, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating degen', ABS(ierr) )
+      DEALLOCATE( rham, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating rham', ABS(ierr) )
+      DEALLOCATE( xval, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating xval', ABS(ierr) )
+      DEALLOCATE( sxval, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating sxval', ABS(ierr) )
+      DEALLOCATE( kpt, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating kpt', ABS(ierr) )
+      DEALLOCATE( ham_tmp, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ham_tmp', ABS(ierr) )
+      DEALLOCATE( en_band, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating en_band', ABS(ierr) )
+
+
       call mp_end()
 
- 701  FORMAT('set data style dots',/,'set nokey',/,'set xrange [0:',F8.5,']',/,'set yrange [',F9.5,' :',F9.5,']')
-! 702  FORMAT('set xtics (',:20('"',A2,'" ',F8.5,','))
+ 701  FORMAT('set data style dots',/,'set nokey',/,'set xrange [0:',F8.5,']', &
+             & /,'set yrange [',F9.5,' :',F9.5,']')
  702  FORMAT('set xtics (',:20('"',A2,'" ',F8.5,','),')')
  703  FORMAT( A2,'" ',F8.5,')' )
- 704  FORMAT('plot "band.dat"',/,'pause -1',/,'set output "band.ps"',/, 'set terminal postscript color',/,'replot')
+ 704  FORMAT('plot "band.dat"',/,'pause -1',/,'set output "band.ps"',/, & 
+             & 'set terminal postscript color',/,'replot')
  705  FORMAT('set arrow from ',F8.5,',',F10.5,' to ',F8.5,',',F10.5, ' nohead')
- 706  FORMAT('(''set xtics ('',', I4,'( ''"'',A2,''"'',F8.5,'',''), ''"'',A2,''"'',F8.5,'')'')')
+ 706  FORMAT('(''set xtics ('',', I4,'( ''"'',A2,''"'',F8.5,'',''), ''"'',A2,''"'', &
+             & F8.5,'')'')')
 
       STOP '*** THE END *** (bands.f90)'
       END
+
+
+
+
+
+
