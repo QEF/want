@@ -2781,7 +2781,7 @@ aix:*xlf* )
 	try_fflags="-q64 -qalias=noaryovrlp -O3 -qstrict \
 -qarch=auto -qtune=auto -qsuffix=cpp=f90 -qdpc -Q -qalias=nointptr"
 	try_f90flags="\$(FFLAGS) -qfree=f90"
-	try_fflags_noopt="-q64 -O0"
+	try_fflags_noopt="-q64 -O0 -qsuffix=cpp=f90"
 	try_ldflags="-q64"
 	# try_ldflags_static="-bstatic"
 	pre_fdflags="-WF,"
