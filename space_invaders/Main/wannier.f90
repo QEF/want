@@ -163,12 +163,7 @@
       INTEGER, ALLOCATABLE ::  lpcty(:) 
       INTEGER, ALLOCATABLE ::  lpctz(:) 
 
-      REAL(dbl), ALLOCATABLE :: datake(:,:,:) ! datake(7,mxddim,nkpts)
-      REAL(dbl), ALLOCATABLE :: dnlg(:,:,:)   ! dnlg(mxddim,3,nkpts)
-      REAL(dbl), ALLOCATABLE :: dnlkg(:,:,:)  ! dnlkg(mxddim,0:3,nkpts)
-
       REAL(dbl) :: dirc(3,3), recc(3,3)
-      REAL(dbl) :: reci(3,3)
       REAL(dbl) :: avec(3,3), bvec(3,3)
 
       INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
@@ -297,7 +292,6 @@
 
       dirc = TRANSPOSE( avec ) * bohr
       recc = TRANSPOSE( bvec ) / bohr
-      reci = recc
       
 !...  Start writing output
       WRITE( stdout, * ) ' ======================================================================'
@@ -420,16 +414,10 @@
 
       ALLOCATE( nplwkp( nkpts ), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nplwkp ', nkpts )
-      ALLOCATE( datake( 7, mxddim, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating datake ', 7*mxddim*nkpts )
-      ALLOCATE( dnlg( mxddim, 3, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnlg ', 3*mxddim*nkpts )
-      ALLOCATE( dnlkg( mxddim, 0:3, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnlkg ', 4*mxddim*nkpts )
 
 
       CALL genbtr( mxddim, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt,   &
-           lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
+           lpctx, lpcty, lpctz, recc, iprint )
 
 ! ... First set all elements of ninvpw to point to the "extra" plane wave
 !     (the mxddim+1 one) for which the wavefunction has been set to zero
@@ -2110,8 +2098,6 @@
            CALL errore(' wannier ', ' deallocating lpctx lpcty lpctz ', ABS(ierr) )
       DEALLOCATE( nplwkp, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
-      DEALLOCATE( dnlkg, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlkg ', ABS(ierr) )
       DEALLOCATE( cw1, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw1 ', ABS(ierr) )
       DEALLOCATE( cw2, STAT=ierr )
@@ -2126,12 +2112,6 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nfile ', ABS(ierr) )
 !     DEALLOCATE( nplwkp, STAT=ierr )
 !          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
-      DEALLOCATE( datake, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating datake ', ABS(ierr) )
-      DEALLOCATE( dnlg, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlg ', ABS(ierr) )
-!     DEALLOCATE( dnlkg, STAT=ierr )
-!          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlgk ', ABS(ierr) )
       DEALLOCATE( ninvpw, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ninvpw ', ABS(ierr) )
       DEALLOCATE( cptwfp, STAT=ierr )

@@ -44,7 +44,6 @@
       ! ... Local Variables
  
       REAL(dbl) :: dirc(3,3),recc(3,3)
-      REAL(dbl) :: reci(3,3)
       REAL(dbl) :: bvec(3,3)
 
       INTEGER :: nplwv,mplwv
@@ -59,9 +58,6 @@
       INTEGER :: nkp2, npoint2, nn, iprint, nb
 
       COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)
-      REAL(dbl), ALLOCATABLE  :: dnlg(:,:,:)
-      REAL(dbl), ALLOCATABLE  :: dnlkg(:,:,:)
-      REAL(dbl), ALLOCATABLE  :: datake(:,:,:)
       INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
       INTEGER, ALLOCATABLE  :: ninvpw(:,:)
       INTEGER, ALLOCATABLE  :: nindpw(:,:)
@@ -91,18 +87,6 @@
       ALLOCATE( cptwfp( nrplwv+1 , ndwinx, nkpts ), STAT=ierr )
       IF( ierr /= 0 ) THEN
         CALL errore(' overlap ', ' allocating cptwfp ', ( (nrplwv+1) * ndwinx * nkpts ) )
-      END IF
-      ALLOCATE( dnlg(nrplwv,3,nkpts), STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating dnlg ', (nrplwv*3*nkpts) )
-      END IF
-      ALLOCATE( dnlkg(nrplwv,0:3,nkpts), STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating dnlkg ', (nrplwv*4*nkpts) )
-      END IF
-      ALLOCATE( datake(7,nrplwv,nkpts), STAT = ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating datake ', (7*nrplwv*nkpts) )
       END IF
       ALLOCATE( ninvpw(0:(ngx*ngy*ngz),mxdnrk), STAT = ierr )
       IF( ierr /= 0 ) THEN
@@ -137,7 +121,6 @@
       !recc = TRANSPOSE( bvec ) / bohr
       dirc = avec * bohr
       recc = bvec / bohr
-      reci = recc
 
 
 ! ... Generate the array ninvpw (taken from wannier)
@@ -178,7 +161,7 @@
       IPRINT=1
 
       CALL genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
-           lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
+           lpctx, lpcty, lpctz, recc, iprint )
 
       DO nkp = 1, nkpts
         IF ( nplwkp(nkp) > mxddim ) THEN
@@ -319,12 +302,6 @@
          IF (ierr/=0) CALL errore(' overlap ',' deallocating nz2',ABS(ierr))
       DEALLOCATE( cptwfp, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating cptwfp',ABS(ierr))
-      DEALLOCATE( dnlg, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating dnlg',ABS(ierr))
-      DEALLOCATE( dnlkg, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating dnlgk',ABS(ierr))
-      DEALLOCATE( datake, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating datake',ABS(ierr))
       DEALLOCATE( ninvpw, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
       DEALLOCATE( nindpw, STAT=ierr )

@@ -46,9 +46,6 @@
  
        REAL(dbl) :: recc(3,3)
 
-       REAL(dbl), ALLOCATABLE :: dnlg(:,:,:) 
-       REAL(dbl), ALLOCATABLE :: dnlkg(:,:,:) 
-       REAL(dbl), ALLOCATABLE :: datake(:,:,:) 
        INTEGER, ALLOCATABLE :: nindpw(:,:)  
        INTEGER, ALLOCATABLE :: nplwkp(:)   
        INTEGER, ALLOCATABLE :: ninvpw(:,:)
@@ -112,17 +109,11 @@
          IF( ierr /=0 ) CALL errore(' intf ', ' allocating nindpw ', mxddim*nkpts )
       ALLOCATE( nplwkp( nkpts ), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' intf ', ' allocating nplwkp ', nkpts )
-      ALLOCATE( datake( 7, mxddim, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' intf ', ' allocating datake ', 7*mxddim*nkpts )
-      ALLOCATE( dnlg( mxddim, 3, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' intf ', ' allocating dnlg ', 3*mxddim*nkpts )
-      ALLOCATE( dnlkg( mxddim, 0:3, nkpts ), STAT=ierr ) 
-         IF( ierr /=0 ) CALL errore(' intf ', ' allocating dnlkg ', 4*mxddim*nkpts )
 
       nindpw = 0
 
       CALL genbtr( mxddim, nr1, nr2, nr3, nkpts, enmax, nindpw, nplwkp, vkpt,  &
-           lpctx, lpcty, lpctz, datake, recc, recc, iprint, dnlg, dnlkg )
+           lpctx, lpcty, lpctz, recc, iprint )
 
 ! ... Check G-space dimensions 
 
@@ -215,12 +206,6 @@
           IF( ierr /=0 ) CALL errore(' intf ', ' deallocating nindpw ', ABS(ierr) )
        DEALLOCATE( nplwkp, STAT=ierr )
           IF( ierr /=0 ) CALL errore(' intf ', ' deallocating nplwkp ', ABS(ierr) )
-       DEALLOCATE( datake, STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating datake ', ABS(ierr) )
-       DEALLOCATE( dnlg, STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating dnlg ', ABS(ierr) )
-       DEALLOCATE( dnlkg, STAT=ierr ) 
-          IF( ierr /=0 ) CALL errore(' intf ', ' deallocating dnlkg ', ABS(ierr) )
        DEALLOCATE( ninvpw, STAT=ierr )
           IF( ierr /=0 ) CALL errore(' intf ', ' deallocating ninvpw ', ABS(ierr) )
        DEALLOCATE( lvec, STAT=ierr )
