@@ -417,7 +417,7 @@
 
         ! ...      Conjg is due to the opposite bloch convention in CASTEP
 
-        cptwfp( :, :, nkp ) = CONJG( cptwfp( :, :, nkp ) )
+        ! cptwfp( :, :, nkp ) = CONJG( cptwfp( :, :, nkp ) )
 
         IF ( verbosity == 'high' ) THEN
           DO np = 1, mxddim
@@ -630,6 +630,8 @@
           ninvpw, mxddim, nkpts, nnmx, dimwann, nr1, nr2, nr3, dimwann )
 
       DEALLOCATE( dimwin )
+
+      cptwfp( :, :, : ) = CONJG( cptwfp( :, :, : ) )
 
       ALLOCATE( csheet(dimwann,nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnmx)
