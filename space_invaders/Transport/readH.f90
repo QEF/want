@@ -53,7 +53,7 @@
 
       INTEGER :: i, j, k, l, m, n
       INTEGER :: nmaxa, nmaxb, nmaxc
-      INTEGER :: nw, mw
+      INTEGER :: nwa, nwb, nwc
 
       REAL(dbl) :: efac
       REAL(dbl) :: h00_a(nmaxa,nmaxa)
@@ -85,12 +85,12 @@
       OPEN( 30, FILE="H00_A", STATUS='OLD' )
 
       REWIND 30
-      READ ( 30, * ) nw
-      IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H00_A ', nw )
+      READ ( 30, * ) nwa
+      IF ( nwa /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H00_A ', nwa )
 
-      DO j = 1, nw
+      DO i = 1, nwa
          READ ( 30, * ) 
-         DO i = 1, nw
+         DO j = 1, nwa
             READ ( 30, * ) h00_a(i,j)
  !          h00_a(i,j) = efac * h00(i,j)
          END DO
@@ -103,12 +103,12 @@
       OPEN( 31, FILE="H01_A", STATUS='OLD' )
 
       REWIND 31
-      READ ( 31, * ) nw
-      IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H01_A ', nw )
+      READ ( 31, * ) nwa
+      IF ( nwa /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H01_A ', nwa )
 
-      DO j = 1, nw
+      DO i = 1, nwa
          READ ( 31, * ) 
-         DO i = 1, nw
+         DO j = 1, nwa
             READ ( 31, * ) h01_a(i,j)
 !           h01_a(i,j) = efac * h01_a(i,j)
          END DO
@@ -121,12 +121,12 @@
       OPEN( 40, FILE="H00_B", STATUS='OLD' )
 
       REWIND 40
-      READ ( 40, * ) nw
-      IF ( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H00_B ', nw )
+      READ ( 40, * ) nwb
+      IF ( nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H00_B ', nwb )
 
-      DO j = 1, nw
+      DO i = 1, nwb
          READ ( 40, * ) 
-         DO i = 1, nw
+         DO j = 1, nwb
             READ ( 40, * ) h00_b(i,j)
 !           h00_b(i,j) = efac * h00_b(i,j)
          END DO
@@ -139,12 +139,12 @@
       OPEN( 41, FILE="H01_B", STATUS='OLD' )
 
       REWIND 41
-      READ( 41, * ) nw
-      IF ( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H01_B ', nw )
+      READ( 41, * ) nwb
+      IF ( nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H01_B ', nwb )
 
-      DO j = 1, nw
+      DO i = 1, nwb
          READ ( 41, * ) 
-         DO i = 1, nw
+         DO j = 1, nwb
             READ ( 41, * ) h01_b(i,j)
 !           h01_b(i,j) = efac * h01_b(i,j)
          END DO
@@ -157,12 +157,12 @@
       OPEN( 51, FILE="H00_C", STATUS='OLD' )
 
       REWIND 51
-      READ ( 51, * ) nw
-      IF ( nw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading H00_C ', nw )
+      READ ( 51, * ) nwc
+      IF ( nwc /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading H00_C ', nwc )
 
-      DO j = 1, nw
+      DO i = 1, nwc
          READ ( 51, * ) 
-         DO i = 1, nw
+         DO j = 1, nwc
             READ( 51, * ) h00_c(i,j)
 !           h00_c(i,j) = efac * h00_c(i,j)
          END DO
@@ -175,12 +175,12 @@
       OPEN( 61, FILE="HCI_AC", STATUS='OLD' )
 
       REWIND 61
-      READ ( 61, * ) nw, mw
-      IF ( nw /= nmaxa .OR. mw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading HCI_AC ', nw )
+      READ ( 61, * ) nwa, nwc
+      IF ( nwa /= nmaxa .OR. nwc /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading HCI_AC ', nwc )
 
-      DO j = 1, nw
+      DO i = 1, nwa
          READ ( 61, * ) 
-         DO i = 1, mw
+         DO j = 1, nwc
             READ ( 61, * ) hci_ac(i,j)
 !           hci_ac(i,j) = efac * hci_ac(i,j)
          END DO
@@ -193,12 +193,12 @@
       OPEN( 71, FILE="HCI_CB", STATUS='OLD' )
 
       REWIND 71
-      READ ( 71, * ) nw, mw
-      IF ( nw /= nmaxc .OR. mw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading HCI_CB ', nw )
+      READ ( 71, * ) nwc, nwb
+      IF ( nwc /= nmaxc .OR. nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading HCI_CB ', nwb )
 
-      DO j = 1, nw
+      DO j = 1, nwc
          READ ( 71, * ) 
-         DO i = 1, mw
+         DO i = 1, nwb
             READ ( 71, * ) hci_cb(i,j)
 !           hci_cb(i,j) = efac * hci_cb(i,j)
          END DO
@@ -214,15 +214,14 @@
         OPEN( 32, FILE="S00_A", STATUS='OLD' )
   
         REWIND 32
-        READ ( 32, * ) nw
-        IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading S00_A ', nw )
+        READ ( 32, * ) nwa
+        IF ( nwa /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading S00_A ', nwa )
 
-        DO j = 1, nw
+        DO i = 1, nwa
            READ ( 32, * ) 
-           DO i = 1, nw
+           DO j = 1, nwa
               READ ( 32, *) s00_a(i,j)
            END DO
-  
         END DO
 
         CLOSE(32)
@@ -232,12 +231,12 @@
         OPEN( 33, FILE="S01_A", STATUS='OLD' )
 
         REWIND 33
-        READ ( 33, * ) nw
-        IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading S01_A ', nw )
+        READ ( 33, * ) nwa
+        IF ( nwa /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading S01_A ', nwa )
 
-        DO j = 1, nw
+        DO i = 1, nwa
            READ ( 33, * ) 
-           DO i = 1, nw
+           DO j = 1, nwa
             READ(33,*) s01_a(i,j)
            END DO
         END DO
@@ -249,12 +248,12 @@
         OPEN( 42, FILE="S00_B", STATUS='OLD' )
 
         REWIND 42
-        READ ( 42, * ) nw
-        IF ( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading S00_B ', nw )
+        READ ( 42, * ) nwb
+        IF ( nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading S00_B ', nwb )
 
-        DO j = 1, nw
+        DO i = 1, nwb
            READ ( 42, * ) 
-           DO i = 1, nw
+           DO j = 1, nwb
               READ( 42, * ) s00_B(i,j)
            END DO
         END DO
@@ -266,12 +265,12 @@
         OPEN( 43, FILE="S01_B", STATUS='OLD' )
 
         REWIND 43
-        READ(43,*) nw
-        IF( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading S01_B ', nw )
+        READ(43,*) nwb
+        IF( nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading S01_B ', nwb )
 
-        DO j = 1, nw
+        DO i = 1, nwb
            READ( 43, * ) 
-           DO i = 1, nw
+           DO j = 1, nwb
               READ( 43, * ) s01_b(i,j)
            END DO
         END DO
@@ -283,12 +282,12 @@
         OPEN( 52, FILE="S00_C", STATUS='OLD' ) 
 
         REWIND 52
-        READ ( 52, * ) nw
-        IF ( nw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading S00_C ', nw )
+        READ ( 52, * ) nwc
+        IF ( nwc /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading S00_C ', nwc )
 
-        DO j = 1, nw
+        DO i = 1, nwc
          READ ( 52, * ) 
-           DO i = 1, nw
+           DO j = 1, nwc
               READ ( 52, * ) s00_c(i,j)
            END DO
         END DO
@@ -300,12 +299,12 @@
         OPEN( 62, FILE="SCI_AC", STATUS='OLD' )
 
         REWIND 62
-        READ ( 62, * ) nw, mw
-        IF ( nw /= nmaxa .OR. mw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading SCI_AC ', nw )
+        READ ( 62, * ) nwa, nwc
+        IF ( nwa /= nmaxa .OR. nwc /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading SCI_AC ', nwa )
 
-        DO j =1, nw
+        DO i =1, nwa
            READ ( 62, * ) 
-           DO i = 1, mw
+           DO j = 1, nwc
               READ ( 62, * ) sci_ac(i,j)
            END DO
         END DO
@@ -317,12 +316,12 @@
         OPEN( 72, FILE="SCI_CB", STATUS='OLD' )
 
         REWIND 72
-        READ(72,*) nw, mw
-        IF( nw /= nmaxc .OR. mw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading SCI_CB ', nw )
+        READ(72,*) nwc, nwb
+        IF( nwc /= nmaxc .OR. nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading SCI_CB ', nwc )
 
-        DO j = 1, nw
+        DO i = 1, nwc
            READ ( 72, * ) 
-           DO i = 1, mw
+           DO j = 1, nwb
               READ ( 72, * ) sci_cb(i,j)
            END DO
         END DO
