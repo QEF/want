@@ -37,7 +37,7 @@
    USE trial_center_data_module,   ONLY : trial
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz, imin, imax
    USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, nnx, &
-                              nntot, nnlist, nncell
+                              nntot, nnlist, nncell, neigh, nreverse
    USE overlap_module, ONLY : cm, ca, overlap_alloc => alloc, overlap_write
    USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
                               ggrids_read_ext, ggrids_deallocate
@@ -206,40 +206,60 @@
          DO inn=1,nntot(ik)
               ikb = nnlist(ik, inn)
 
-              CALL wfc_data_kread(dft_unit, ikb, "IKB", evc, evc_info)
               !
-              IF( uspp_calculation ) THEN
-                  !
-                  xk(:) = vkpt(:,ikb)
-                  CALL cry2cart( xk, bvec_tmp )
-                  !
-                  index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
-                  !
-                  CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
-                  vkb_ik = ikb
-                  CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb), &
-                                vkb, evc(1,index))
-              ENDIF
+              ! here impose the symmetrization on Mkb: i.e.
+              ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
+              !
+              ! In order to do that we compute the Mkb integrals only 
+              ! for half of the defined b vectors and then impose the
+              ! other values by symmetry
+              !
+              IF ( ANY( neigh(ik,1:nntot(ik)) == inn ) ) THEN
+                    !
+                    ! neigh contains the indexes of the "positive" b vecotrs
+                    ! (half of the total number)
+                    !
+                    CALL wfc_data_kread(dft_unit, ikb, "IKB", evc, evc_info)
+                    !
+                    IF( uspp_calculation ) THEN
+                        !
+                        xk(:) = vkpt(:,ikb)
+                        CALL cry2cart( xk, bvec_tmp )
+                        !
+                        index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
+                        !
+                        CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
+                        vkb_ik = ikb
+                        CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb), &
+                                      vkb, evc(1,index))
+                    ENDIF
 
-              CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), imin(ik), imin(ikb),  &
-                            dimwinx, evc, evc_info,  &
-                            igsort, nncell(1,inn,ik), cm(1,1,inn,ik) )
+                    CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), imin(ik), imin(ikb),  &
+                                  dimwinx, evc, evc_info,  &
+                                  igsort, nncell(1,inn,ik), cm(1,1,inn,ik) )
 
-              !
-              ! ... add the augmentation term fo USPP
-              !
-              IF ( uspp_calculation ) THEN
-                 CALL add_us_overlap(dimwinx, dimwin(ik), dimwin(ikb), ik, ikb, inn, aux)
-                 cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
-                            cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
-                            aux(1:dimwin(ik),1:dimwin(ikb))
-              ENDIF
+                    !
+                    ! ... add the augmentation term fo USPP
+                    !
+                    IF ( uspp_calculation ) THEN
+                        CALL add_us_overlap(dimwinx, dimwin(ik), dimwin(ikb), &
+                                            ik, ikb, inn, aux)
+                        cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
+                                     cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
+                                     aux(1:dimwin(ik),1:dimwin(ikb))
+                    ENDIF
               
-              !
-              ! clean nn wfc data (but not free memory!)
-              !
-              CALL wfc_info_delete(evc_info, LABEL="IKB" )
- 
+                    !
+                    ! clean nn wfc data (but not free memory!)
+                    !
+                    CALL wfc_info_delete(evc_info, LABEL="IKB" )
+
+                    !
+                    ! apply the symmetrization
+                    ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
+                    !
+                    cm(:,:, nreverse(inn,ik), ikb ) = CONJG( TRANSPOSE( cm(:,:,inn,ik) ) )
+              ENDIF
          ENDDO neighbours
 
 
@@ -264,19 +284,19 @@
               CALL cry2cart( xk, bvec_tmp )
               CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
               vkb_ik = ik
-          ENDIF
-          !
-          CALL s_psi(npwkx, npwk(ik), dimwin(ik), ik, evc(1,indin), evc(1,indout) )
+         ENDIF
+         !
+         CALL s_psi(npwkx, npwk(ik), dimwin(ik), ik, evc(1,indin), evc(1,indout) )
 
-          CALL projection( ik, dimwin(ik), imin(ik), dimwinx, evc, evc_info, dimwann, &
-                           trial, ca(1,1,ik) )
+         CALL projection( ik, dimwin(ik), imin(ik), dimwinx, evc, evc_info, dimwann, &
+                          trial, ca(1,1,ik) )
 
-          !
-          ! clean the ik wfc data
-          CALL wfc_info_delete(evc_info, LABEL="IK")
-          CALL wfc_info_delete(evc_info, LABEL="SPSI_IK")
+         !
+         ! clean the ik wfc data
+         CALL wfc_info_delete(evc_info, LABEL="IK")
+         CALL wfc_info_delete(evc_info, LABEL="SPSI_IK")
 
-          CALL timing_upto_now(stdout)
+         CALL timing_upto_now(stdout)
       ENDDO kpoints
 
       !

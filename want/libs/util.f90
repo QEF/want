@@ -21,6 +21,7 @@
 ! SUBROUTINE  zmat_pack( zp, z, n)
 ! SUBROUTINE  zmat_unpack( z, zp, n)
 ! SUBROUTINE  zmat_svd( m, n, a, s, u, vt)
+! SUBROUTINE  dmat_svd( m, n, a, s, u, vt)
 ! SUBROUTINE  zmat_mul( c, a, opa, b, opb, m, n, k)
 ! SUBROUTINE  zmat_hdiag( z, w, a, n)
 ! LOGICAL FUNCTION  zmat_unitary( z [,side] [,toll])
@@ -28,10 +29,15 @@
 ! </INFO>
 !
 
+INTERFACE mat_svd
+   MODULE PROCEDURE zmat_svd
+   MODULE PROCEDURE dmat_svd
+END INTERFACE
+
 
 PUBLIC :: zmat_pack
 PUBLIC :: zmat_unpack
-PUBLIC :: zmat_svd
+PUBLIC ::  mat_svd
 PUBLIC :: zmat_mul
 PUBLIC :: zmat_hdiag
 PUBLIC :: zmat_unitary
@@ -82,6 +88,64 @@ CONTAINS
 
     RETURN
   END SUBROUTINE
+
+
+!**********************************************************
+   SUBROUTINE dmat_svd(m, n, a, s, u, vt)
+   !**********************************************************
+   !
+   !  computes the singular value decomposition (SVD) of a REAL(DP)
+   !  M-by-N matrix A. The SVD is written
+   !
+   !       A = U * SIGMA * transpose(V)
+   !
+   !  where SIGMA is an M-by-N matrix which is zero except for its
+   !  min(m,n) diagonal elements, U is an M-by-M unitary matrix, and
+   !  V is an N-by-N unitary matrix.  The diagonal elements of SIGMA
+   !  are the singular values of A; they are real and non-negative, and
+   !  are returned in descending order. 
+   !  Note that the routine returns V**T, not V.
+   !
+   IMPLICIT NONE
+   INTEGER, INTENT(IN)    :: m, n
+   REAL(dbl), INTENT(IN)  :: a(:,:)
+   REAL(dbl), INTENT(OUT) :: s(:)
+   REAL(dbl), INTENT(OUT) :: u(:,:), vt(:,:)
+
+   INTEGER :: ierr, info, lwork
+   REAL(dbl), ALLOCATABLE :: atmp(:,:), work(:)
+
+   IF ( m <= 0 .OR. n<=0 ) CALL errore('dmat_svd','Invalid DIMs',1)
+   IF ( m > SIZE(a,1) .OR. m > SIZE(u,1) .OR. m > SIZE(u,2) ) &
+           CALL errore('dmat_svd','m too large',m)
+   IF ( n > SIZE(a,2) .OR. n > SIZE(vt,1) .OR. n > SIZE(vt,2) ) &
+           CALL errore('dmat_svd','n too large',n)
+   IF ( SIZE(s) < MIN(m,n) ) CALL errore('dmat_svd','s dimension too small',1)
+
+   !
+   ! allocate local variables and workspace
+   !
+   lwork = MAX( 3*MIN(m,n) + MAX(m,n), 5*MIN(m,n) )
+   ALLOCATE( atmp(m,n), STAT=ierr )
+      IF (ierr/=0)  CALL errore('dmat_svd','allocating atmp',ABS(ierr))
+   ALLOCATE( work(lwork), STAT=ierr )
+      IF (ierr/=0)  CALL errore('dmat_svd','allocating work',ABS(ierr))
+
+   !
+   ! save A (which is intent IN)
+   atmp(:,:) = a(:,:)
+
+   CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
+                work, lwork, info)
+
+   IF ( info < 0 ) CALL errore('dmat_svd', 'DGESVD: info illegal value', -info )
+   IF ( info > 0 ) CALL errore('dmat_svd', 'DGESVD: DBESQR not converged', info )
+    
+   DEALLOCATE( atmp, work, STAT=ierr)
+      IF(ierr/=0) CALL errore('dmat_svd','deallocating atpm, work',ABS(ierr))
+
+   RETURN
+END SUBROUTINE dmat_svd
 
 
 !**********************************************************

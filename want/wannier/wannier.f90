@@ -23,7 +23,7 @@
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
-      USE util_module, ONLY: zmat_mul, zmat_unitary, zmat_svd
+      USE util_module, ONLY: zmat_mul, zmat_unitary, mat_svd
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
@@ -212,7 +212,7 @@
       DO ik = 1, nkpts
           !
           !
-          CALL zmat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
+          CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
           CALL zmat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
           !
           ! Unitariery is checked
@@ -255,7 +255,7 @@
         omiloc = ZERO
         DO nn = 1, nntot(ik)
 
-          CALL zmat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
+          CALL mat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
 
           DO nb = 1, dimwann
               omiloc = omiloc + wb(ik,nn) * ( ONE - singvd(nb)**2 )
@@ -317,7 +317,7 @@
       DO ik = 1, nkpts
         DO nn = 1, nntot(ik)
 
-          CALL zmat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
+          CALL mat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
           CALL zmat_mul( cv3, cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
 
           DO nb = 1, dimwann
@@ -810,7 +810,7 @@
       DO ik = 1, nkpts
         DO nn = 1, nntot(ik)
 
-          CALL zmat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
+          CALL mat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
           DO nb = 1, dimwann
                omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
                omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
