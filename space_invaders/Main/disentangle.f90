@@ -40,7 +40,7 @@
  
        INTEGER :: nkpts, nk(3)
        INTEGER, ALLOCATABLE :: igv(:,:)
-       INTEGER, ALLOCATABLE :: isort(:,:)
+       INTEGER, ALLOCATABLE :: igsort(:,:)
        INTEGER, ALLOCATABLE :: ngwk(:)
        REAL(dbl), ALLOCATABLE :: vkpt(:,:)
        REAL(dbl), ALLOCATABLE :: evecr(:,:,:)
@@ -297,8 +297,8 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ifail ', mxdbnd )
        ALLOCATE( iwork(5*mxdbnd), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating iwork ', 5*mxdbnd )
-       ALLOCATE( isort(mxddim,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating isort ', mxddim*nkpts )
+       ALLOCATE( igsort(mxddim,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating igsort ', mxddim*nkpts )
        ALLOCATE( ngwk(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ngwk ', nkpts )
 
@@ -421,7 +421,7 @@
 
        DO nkp = 1, nkpts
 
-         READ(19) ( isort(j,nkp), j=1, ngwk(nkp) ) 
+         READ(19) ( igsort(j,nkp), j=1, ngwk(nkp) ) 
          READ(19) ( eiw(j,nkp), j=1, dimwin(nkp) )
          READ(19) ( ( evecr(j,i,nkp), j=1, ngwk(nkp) ), i=1, dimwin(nkp) )
          READ(19) ( ( eveci(j,i,nkp), j=1, ngwk(nkp) ), i=1, dimwin(nkp) )
@@ -448,7 +448,7 @@
 ! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
 
        enmax = emax ! overlap changes the input value
-       call overlap( igv, vkpt, avec, evecr, eveci, isort, ngwk, dimwin,    &
+       call overlap( igv, vkpt, avec, evecr, eveci, igsort, ngwk, dimwin,    &
             nntot, nnlist, nncell, cm, enmax, mxdgve, mxddim, nkpts,        &
             mxdnn, mxdbnd, ngx, ngy, ngz, mxddim, nkpts, ndwinx )
 !
@@ -495,7 +495,7 @@
                WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected localized orbitals' )")
                WRITE( stdout,*) ' '
                CALL projection( avec, lamp, evecr, eveci, vkpt,             &
-                    igv, isort, ngwk, dimwin, dimwann, dimfroz,             &
+                    igv, igsort, ngwk, dimwin, dimwann, dimfroz,             &
                     mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,   &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                  &
                     m_wann, ndir_wann, rloc, ndwinx)
@@ -531,7 +531,7 @@
 
              IF ( ITRIAL == 3 ) THEN
                CALL projection( avec, lamp, evecr, eveci, vkpt,              &
-                    igv, isort, ngwk, dimwin, dimwann, dimfroz,              &
+                    igv, igsort, ngwk, dimwin, dimwann, dimfroz,              &
                     mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,    &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                     m_wann, ndir_wann, rloc, ndwinx )
@@ -930,12 +930,12 @@
 
        CALL intf( bvec, emax, nk, s, dimwann, nshells, nwhich, nkpts, mxddim, &
          ndwinx, mxdbnd, ngx, ngy, ngz, ngm, igv, ngwk, dimwin, evecr, eveci, &
-         eamp_save, vkpt, isort )
+         eamp_save, vkpt, igsort )
 
        DEALLOCATE( igv, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating igv ', ABS(ierr) )
-       DEALLOCATE( isort, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating isort ', ABS(ierr) )
+       DEALLOCATE( igsort, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating igsort ', ABS(ierr) )
        DEALLOCATE( ngwk, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ngwk ', ABS(ierr) )
        DEALLOCATE( vkpt, STAT=ierr )

@@ -194,7 +194,9 @@
          END DO G_VECTORS
 
          WRITE(20) SIZE( cptwfp, 1), SIZE( cptwfp, 2), nkpts, nplwkp( nkp ), dimwann
-         WRITE(20) ( ( cptwfp( np, iib ), np=1, nplwkp(nkp) ), iib=1, dimwann )  
+         WRITE(20) ( igsort( np, nkp ), np=1, nplwkp(nkp) )
+         ! WRITE(20) ( ( cptwfp( np, iib ), np=1, nplwkp(nkp) ), iib=1, dimwann )  
+         WRITE(20) ( ( lvec( np, iib ), np=1, nplwkp(nkp) ), iib=1, dimwann )  
 
        END DO K_POINTS
 
