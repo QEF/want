@@ -14,25 +14,30 @@
    MODULE kpoints_module
 !*********************************************
    USE kinds, ONLY: dbl
-   USE constants, ONLY : ONE
-   USE parameters, ONLY : npkx 
+   USE constants, ONLY : ONE, TWO, TPI, EPS_m6
+   USE parameters, ONLY : npkx, nstrx 
+   USE converters_module, ONLY : cart2cry
+   USE lattice_module, ONLY : alat, avec, bvec, lattice_alloc => alloc
+   USE iotk_module
 
    IMPLICIT NONE
    PRIVATE
    SAVE
 
-! This module handles kpoint data (including the treatment
-! of their nearest neighbors b).
+! This module handles kpoints data (including the treatment
+! of their nearest neighbors b, bshells).
 !
 ! routines in this module:
 ! SUBROUTINE kpoints_allocate()
 ! SUBROUTINE kpoints_deallocate()
-! SUBROUTINE kpoints_init( nkpts )
+! SUBROUTINE bshells_allocate()
+! SUBROUTINE bshells_deallocate()
+! SUBROUTINE bshells_init( )
+! SUBROUTINE kpoints_read_ext( unit, name, found )
 
 !
 ! declarations
 !
-  LOGICAL :: first = .TRUE.
 
   !
   ! ... usual kpt data (k vectors)
@@ -40,14 +45,15 @@
   INTEGER                        :: nk(3)         ! component of the MP kgrid
   REAL(dbl)                      :: s(3)          ! fractional shifts of the MP grid
   REAL(dbl), ALLOCATABLE         :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts
-  REAL(dbl), ALLOCATABLE         :: wtkpt(:)      ! weight of each kpt for BZ sums 
-  REAL(dbl)                      :: wtktot        ! sum of the weights
+  REAL(dbl), ALLOCATABLE         :: wk(:)         ! weight of each kpt for BZ sums 
+  REAL(dbl)                      :: wksum         ! sum of the weights
 
   !
   ! ... Nearest neighbor data (b vectors)
   INTEGER, PARAMETER             :: mxdnn  = 12   ! maximum number of NN
   INTEGER, PARAMETER             :: mxdnnh = mxdnn/2 
 
+  INTEGER                        :: ndnntot       ! number of dnn shells
   INTEGER, ALLOCATABLE           :: nntot(:)      ! DIM: nkpts
   INTEGER, ALLOCATABLE           :: nnshell(:,:)  ! DIM: nkpts*mxdnn
   INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*mxdnn
@@ -55,11 +61,12 @@
   INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*mxdnnh
   REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*mxdnn
   REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*mxdnn
-  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: mxdnn
   REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*mxdnnh
+  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: mxdnn
   REAL(dbl)                      :: wbtot         ! sum of the b-weights
 
-  LOGICAL :: alloc = .FALSE.
+  LOGICAL :: kpoints_alloc = .FALSE.
+  LOGICAL :: bshells_alloc = .FALSE.
 
 !
 ! end of declaration scope 
@@ -67,7 +74,7 @@
 
   PUBLIC :: nk, s, nkpts
   PUBLIC :: vkpt
-  PUBLIC :: wtkpt, wtktot
+  PUBLIC :: wk, wksum
 
   PUBLIC :: mxdnn, mxdnnh
   PUBLIC :: nntot
@@ -77,14 +84,17 @@
   PUBLIC :: neigh
   PUBLIC :: bk
   PUBLIC :: wb
-  PUBLIC :: dnn
+  PUBLIC :: dnn, ndnntot
   PUBLIC :: bka
   PUBLIC :: wbtot
-  PUBLIC :: alloc
+  PUBLIC :: kpoints_alloc, bshells_alloc
 
-  PUBLIC :: kpoints_init
+  PUBLIC :: bshells_init
   PUBLIC :: kpoints_allocate
+  PUBLIC :: bshells_allocate
+  PUBLIC :: kpoints_read_ext
   PUBLIC :: kpoints_deallocate
+  PUBLIC :: bshells_deallocate
 
 
 CONTAINS
@@ -102,12 +112,21 @@ CONTAINS
       IF ( nkpts <= 0) CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
       ALLOCATE( vkpt(3,nkpts),STAT=ierr )
          IF (ierr/=0) CALL errore(subname,'allocating vkpt',3*nkpts)
-      ALLOCATE( wtkpt(nkpts),STAT=ierr )
-         IF (ierr/=0) CALL errore(subname,'allocating wtkpt',nkpts)
+      ALLOCATE( wk(nkpts),STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'allocating wk',nkpts)
 
-      !
-      ! b vectors
-      !
+      kpoints_alloc = .TRUE.
+   END SUBROUTINE kpoints_allocate
+
+
+!**********************************************************
+   SUBROUTINE bshells_allocate()
+   !**********************************************************
+   IMPLICIT NONE
+      INTEGER   :: ierr
+      CHARACTER(16)     :: subname="bshells_allocate"
+
+      IF ( nkpts <= 0)  CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
       IF ( mxdnn <= 0 ) CALL errore(subname,'Invalid MXDNN',ABS(mxdnn)+1)
       IF ( mxdnnh <= 0) CALL errore(subname,'Invalid MXDNNH ',ABS(mxdnnh)+1)
 
@@ -130,52 +149,75 @@ CONTAINS
       ALLOCATE( bka(3,mxdnnh), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating bka ', 3*mxdnnh )
 
-      alloc = .TRUE.
-
-   END SUBROUTINE kpoints_allocate
+      bshells_alloc = .TRUE.
+   END SUBROUTINE bshells_allocate
 
 
 !**********************************************************
-   SUBROUTINE kpoints_init( nkpts_, bshell )
+   SUBROUTINE bshells_init( )
    !**********************************************************
-   USE lattice, ONLY : recc
    USE input_module,  ONLY : nshells, nwhich
     IMPLICIT NONE
-    INTEGER,           INTENT(in) :: nkpts_
-    LOGICAL, OPTIONAL, INTENT(in) :: bshell
-    LOGICAL :: bshell_
-    INTEGER :: i1, i2, i3, nkp
 
-      nkpts = nkpts_
-      IF ( nkpts > npkx ) CALL errore('kpoints_init','Nkpts too large',nkpts)
-      CALL kpoints_allocate()
-
-      bshell_ = .TRUE.
-      IF (PRESENT(bshell)) bshell_ = bshell
-
-      nkp = 0
-      DO i1 = 0, nk(1)-1
-        DO i2 = 0, nk(2)-1
-          DO i3 = 0, nk(3)-1
-            nkp = nkp + 1
-            vkpt(1,nkp) = DBLE(i1)/DBLE(nk(1)) + s(1)
-            vkpt(2,nkp) = DBLE(i2)/DBLE(nk(2)) + s(2)
-            vkpt(3,nkp) = DBLE(i3)/DBLE(nk(3)) + s(3)
-          END DO
-        END DO
-      END DO
-
-      IF( nkp /= nkpts ) &
-        CALL errore( ' kpoints_init ', ' nkp and nkpts differs ', nkpts )
-      wtkpt( 1 : nkpts ) = ONE/DBLE( nkpts )
-      wtktot = SUM( wtkpt( 1 : nkpts ) )
-
+      IF ( .NOT. lattice_alloc ) CALL errore('bshells_init','Lattice NOT allocated',1)
       ! ... Setup the shells of b-vectors around each K-point
       ! 
-      IF ( bshell_ ) CALL bshells(recc, nshells, nwhich)
+      CALL bshells_allocate()
+      CALL bshells(bvec, nshells, nwhich)
 
     RETURN
-   END SUBROUTINE
+   END SUBROUTINE bshells_init
+
+
+!**********************************************************
+   SUBROUTINE kpoints_read_ext( unit, name, found )
+   !**********************************************************
+    IMPLICIT NONE
+       INTEGER,           INTENT(in) :: unit
+       CHARACTER(*),      INTENT(in) :: name
+       LOGICAL,           INTENT(out):: found
+       CHARACTER(nstrx)   :: attr, string
+       CHARACTER(16)      :: subname='kpoints_read_ext'
+       INTEGER            :: ik, ierr
+       
+       IF ( kpoints_alloc ) CALL kpoints_deallocate()
+
+       CALL iotk_scan_begin(unit,TRIM(name),ATTR=attr,FOUND=found,IERR=ierr)
+       IF (.NOT. found) RETURN
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       found = .TRUE.
+
+       CALL iotk_scan_attr(attr,'nk',nkpts,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find NK',ABS(ierr))
+       IF ( nkpts <= 0) CALL errore(subname,'Invalid nkpts',ABS(nkpts)+1)
+     
+       CALL kpoints_allocate( )
+
+       CALL iotk_scan_dat(unit,'weights',wk(:),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find tag WIEGHTS',ABS(ierr))
+       !
+       ! due to a different convention in Espresso
+       wk(:) = wk(:) / TWO
+       wksum = SUM(wk(:))
+       DO ik = 1,nkpts
+          IF( ABS( wk(ik) - ONE/REAL(nkpts) ) > EPS_m6 ) &
+              CALL errore(subname,'Invalid kpt weight',ik)
+       ENDDO
+
+       !
+       ! ... kpoints are in cartesian units, in 2PI/alat
+       !
+       CALL iotk_scan_dat(unit,'k',vkpt(:,:),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find tag K',ABS(ierr))
+       !
+       ! ... convert them to crystal units as required throughout the code
+       !
+       CALL cart2cry(vkpt, alat/TPI * bvec )
+
+       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr)) 
+
+   END SUBROUTINE kpoints_read_ext
 
 
 !**********************************************************
@@ -188,49 +230,59 @@ CONTAINS
        DEALLOCATE( vkpt, STAT=ierr )
        IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating vkpt',ABS(ierr))
     ENDIF
-    IF ( ALLOCATED( wtkpt ) ) THEN
-       DEALLOCATE( wtkpt, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wtkpt',ABS(ierr))
+    IF ( ALLOCATED( wk ) ) THEN
+       DEALLOCATE( wk, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wk',ABS(ierr))
     ENDIF
+
+    kpoints_alloc = .FALSE.
+   END SUBROUTINE kpoints_deallocate
+
+
+!**********************************************************
+   SUBROUTINE bshells_deallocate()
+   !**********************************************************
+   IMPLICIT NONE
+    INTEGER   :: ierr
 
     IF ( ALLOCATED( nntot ) ) THEN
        DEALLOCATE( nntot, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nntot',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nntot',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( nnshell ) ) THEN
        DEALLOCATE( nnshell, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nnshell',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnshell',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( nnlist ) ) THEN
        DEALLOCATE( nnlist, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nnlist',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnlist',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( nncell ) ) THEN
        DEALLOCATE( nncell, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nncell',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nncell',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( neigh ) ) THEN
        DEALLOCATE( neigh, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating neigh',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating neigh',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( bk ) ) THEN
        DEALLOCATE( bk, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating bk',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating bk',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( wb ) ) THEN
        DEALLOCATE( wb, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wb',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating wb',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( dnn ) ) THEN
        DEALLOCATE( dnn, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating dnn',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating dnn',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( bka ) ) THEN
        DEALLOCATE( bka, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating bka',ABS(ierr))
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating bka',ABS(ierr))
     ENDIF
-    alloc = .FALSE.
 
-   END SUBROUTINE kpoints_deallocate
+    bshells_alloc = .FALSE.
+   END SUBROUTINE bshells_deallocate
 
 END MODULE kpoints_module

@@ -23,11 +23,13 @@
 ! lattice basis matrix.
 ! 
 ! routines in this module:
-! SUBROUTINE  cart2cry(coord(3,:),basis(3,3),unit_str )
+! SUBROUTINE  cart2cry(coord(3,:),basis(3,3)[,unit_str])
+! SUBROUTINE  cry2cart(coord(3,:),basis(3,3)[,unit_str])
 ! </INFO>
 !
  
    PUBLIC :: cart2cry
+   PUBLIC :: cry2cart
 
 CONTAINS
 
@@ -37,18 +39,15 @@ CONTAINS
       IMPLICIT NONE
       REAL(dbl),   INTENT(inout)   :: coord(:,:)
       REAL(dbl),   INTENT(in)      :: basis(3,3)
-      CHARACTER(*),INTENT(out)     :: unit_str
+      CHARACTER(*), OPTIONAL, INTENT(out)     :: unit_str
 
-      REAL(dbl), ALLOCATABLE :: dtmp(:)
+      REAL(dbl):: dtmp(3)
       REAL(dbl):: transf(3,3), det
       INTEGER  :: nvect 
       INTEGER  :: i,j,l, ierr
 
       nvect = SIZE(coord(:,:),2)
       IF ( SIZE( coord(:,:),1 ) /= 3 ) CALL errore('cart2cry','Invalid COORD lead DIM',1)
-
-      ALLOCATE(dtmp(3), STAT=ierr) 
-      IF (ierr/=0) CALL errore('cart2cry','allocating DTMP',ABS(ierr))
 
       !
       ! TRANSF is the inverse of the basis matrix because
@@ -71,12 +70,40 @@ CONTAINS
           coord(:,j) = dtmp(:)
       ENDDO
 
-      unit_str='crystal'
-
-      DEALLOCATE( dtmp, STAT=ierr) 
-      IF (ierr/=0) CALL errore('cart2cry','deallocating DTMP',ABS(ierr) )
-
+      IF ( PRESENT(unit_str) ) unit_str='crystal'
    END SUBROUTINE cart2cry
+
+
+!**********************************************************
+   SUBROUTINE cry2cart(coord,basis,unit_str)
+   !**********************************************************
+      IMPLICIT NONE
+      REAL(dbl),   INTENT(inout)   :: coord(:,:)
+      REAL(dbl),   INTENT(in)      :: basis(3,3)
+      CHARACTER(*),OPTIONAL,INTENT(out) :: unit_str
+
+      REAL(dbl):: dtmp(3)
+      INTEGER  :: nvect 
+      INTEGER  :: i,j,l, ierr
+
+      nvect = SIZE(coord(:,:),2)
+      IF ( SIZE( coord(:,:),1 ) /= 3 ) CALL errore('cry2cart','Invalid COORD lead DIM',1)
+
+      !
+      ! use the direct transformation
+      !
+      DO j=1,nvect 
+          DO i=1,3
+             dtmp(i) = ZERO
+             DO l=1,3
+                 dtmp(i) = dtmp(i) + basis(i,l) * coord(l,j)
+             ENDDO
+          ENDDO
+          coord(:,j) = dtmp(:)
+      ENDDO
+
+      IF ( PRESENT(unit_str) ) unit_str='cartesian'
+   END SUBROUTINE cry2cart
 
 END MODULE converters_module
     

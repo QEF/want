@@ -12,8 +12,8 @@
 !=----------------------------------------------------------------------------------=
 
        USE kinds
-       USE constants, ONLY: pi, ryd => ry, har => au, bohr => bohr_radius_angs, &
-                            ZERO, ONE, CZERO, CONE
+       USE constants, ONLY: PI, RYD, har => au, bohr => bohr_radius_angs, &
+                            ZERO, ONE, CZERO, CONE, EPS_m8
        USE parameters, ONLY : nstrx
        USE io_module, ONLY: stdout, work_dir, &
                             ioname, ovp_unit, space_unit, dft_unit
@@ -23,26 +23,25 @@
        USE cleanup_module, ONLY : cleanup
        USE version_module, ONLY : version_number
        USE input_module
+       USE want_init_module, ONLY : want_init
        USE converters_module, ONLY : cart2cry
        USE util_module, ONLY : zmat_unitary, zmat_hdiag
+       USE summary_module, ONLY : summary
+       USE wfc_data_module, ONLY : wfc_data
        USE iotk_module
     
-       USE kpoints_module, ONLY: nk, nkpts, s, vkpt, kpoints_init, kpoints_deallocate
+       USE kpoints_module, ONLY: nkpts, vkpt
        USE kpoints_module, ONLY: mxdnn, mxdnnh, nntot, nnshell, nnlist, nncell, &
                                  neigh, bk, wb, dnn, bka, wbtot
-       USE ions, ONLY: rat, atmass, ntype, natom, nameat
-       USE lattice, ONLY: avec, recc, alat, lattice_init
+       USE lattice_module, ONLY: avec
        USE windows_module,  ONLY : mxdbnd, dimwin, dimwinx, eiw, imin, imax, lcompspace, &
                                    dimfroz, indxfroz, indxnfroz, lfrozen, frozen
-       USE windows_module,  ONLY : windows_allocate, windows_deallocate, windows_write
+       USE windows_module,  ONLY : windows_allocate, windows_write
        USE subspace_module, ONLY : wan_eig, lamp, camp, eamp, comp_eamp, &
                                    mtrx_in, mtrx_out
-       USE subspace_module, ONLY : subspace_allocate, subspace_deallocate, subspace_write
-       USE overlap_module,  ONLY : cm, ca, overlap_allocate, overlap_deallocate, &
+       USE subspace_module, ONLY : subspace_allocate, subspace_write
+       USE overlap_module,  ONLY : cm, ca, overlap_allocate, &
                                    overlap_read, overlap_write
-       USE ggrids_module,   ONLY : mxdgve, emax => ecut, npwx, npwk, igv, &
-                                   ggrids_allocate, ggrids_deallocate
-       USE wfc_module,      ONLY : igsort, evc, wfc_allocate, wfc_deallocate
 
 
        IMPLICIT NONE
@@ -52,6 +51,7 @@
        REAL(dbl) :: lambda_avg
 
        CHARACTER(LEN=nstrx) :: filename 
+       CHARACTER(LEN=nstrx) :: attr
 
        REAL(dbl) :: klambda
        REAL(dbl) :: omega_i, omega_i_est, komegai
@@ -68,7 +68,7 @@
        INTEGER :: info, m, dim
        INTEGER :: i, j, l, i1, i2, i3 
        INTEGER :: nkp, iter
-       INTEGER :: nt, ja, nbandi
+       INTEGER :: nt, ja
        INTEGER :: ngx, ngy, ngz
        INTEGER :: ngm
        INTEGER :: nwann
@@ -92,129 +92,23 @@
 !
        CALL input_read()
 
-       CALL ioname('dft_data',filename)
-       OPEN( UNIT=dft_unit, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
-
-       !    read lattice
-       !
-       READ(dft_unit) alat
-       READ(dft_unit) ( avec(i,1), i=1,3 )
-       READ(dft_unit) ( avec(i,2), i=1,3 )
-       READ(dft_unit) ( avec(i,3), i=1,3 )
-       !
-       !    read ions
-       !
-       READ(dft_unit) ntype
-       DO nt=1,ntype
-         READ(dft_unit) natom(nt),nameat(nt)
-         DO ja=1, natom(nt)
-           READ(dft_unit) ( rat(i,ja,nt), i=1,3 )
-         END DO
-       END DO
-
-       READ(dft_unit) emax, nbandi
-       READ(dft_unit) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
-
-       ! ... standard input
-
-       READ(dft_unit) rdum ! win_min, win_max, froz_min, froz_max, dimwann
-       READ(dft_unit) rdum ! alpha, maxiter 
-       READ(dft_unit) idum ! iphase
-       READ(dft_unit) idum ! niter0, alphafix0
-       READ(dft_unit) idum ! niter, alphafix, ncg
-       READ(dft_unit) idum ! itrial, nshells
-
-       READ(dft_unit) idum ! ( nwhich(i), i=1,nshells )
-
-       READ(dft_unit) nkpts, npwx, mxdbnd
-       READ(dft_unit) ngx, ngy, ngz, ngm
-      
-       READ(dft_unit) idum ! gauss_typ(1:dimwann)
-       READ(dft_unit) rdum ! rphiimx1(1:3,1:dimwann)
-       READ(dft_unit) rdum ! rphiimx2(1:3,1:dimwann)
-       READ(dft_unit) idum ! l_wann(1:dimwann)
-       READ(dft_unit) idum ! m_wann(1:dimwann)
-       READ(dft_unit) idum ! ndir_wann(1:dimwann)
-       READ(dft_unit) rdum ! rloc(1:dimwann)
-
-! ... end standard input reading
-
-
+!
+! ...  Global data init
+!
+       CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE.)
 
 !
-! ...  allocations and initializations
-       CALL wannier_center_init( alat, avec )
-       CALL lattice_init()
-
+! ...  Summary of the input and DFT data
 !
-! ...  Calculate grid of K-points and allocations (including bshells)
-       CALL kpoints_init( nkpts )
+       CALL summary( stdout )
 
 ! 
 ! ...  other allocations
-       CALL windows_allocate()
        CALL subspace_allocate()
        CALL overlap_allocate()
 
-
 !
-! ...  Read grid information, and G-vectors 
- 
-       READ( dft_unit ) mxdgve 
-       !
-       ! ... G vector grid allocations
-       CALL  ggrids_allocate()
-       READ( dft_unit ) ( ( igv(i,j), i=1,3 ), j=1, mxdgve )
-
-
-!
-! ...  Reading the dimensions of the "window space"
-
-       DO nkp = 1, nkpts
-         !
-         ! ..  Read all dimensions first, then k-dependent arrays
-         READ(dft_unit) npwk(nkp), imin(nkp), imax(nkp), dimwin(nkp)
-
-         IF ( dimwin(nkp) < dimwann )  &
-            CALL errore(' disentangle ', ' dimwin < dimwan ', dimwin(nkp) )
-         IF ( dimwin(nkp) > mxdbnd )  &
-            CALL errore(' disentangle ', ' increase max number of band ', dimwin(nkp) )
-
-       ENDDO
-       dimwinx = MAXVAL( dimwin(1:nkpts) )
-       npwx    = MAXVAL( npwk(1:nkpts) )
-
-
-!
-! ...  Read wfcs and eigenvalues
-
-       !
-       ! ... massive allocations
-       CALL wfc_allocate()
-       DO nkp = 1, nkpts
-
-         READ(dft_unit) ( igsort(j,nkp), j=1, npwk(nkp) ) 
-         READ(dft_unit) ( eiw(j,nkp), j=1, dimwin(nkp) )
-
-         evc(:,:,nkp) = CZERO
-
-         READ(dft_unit) ( ( evc(j,i,nkp), j=1, npwk(nkp) ), i=1, dimwin(nkp) )
-         READ(dft_unit) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )
-
-         IF ( dimfroz(nkp) > 0 )  &
-                READ(dft_unit) ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
-         IF ( dimfroz(nkp) < dimwin(nkp) )  &
-                READ(dft_unit) ( indxnfroz(i,nkp), i=1, dimwin(nkp)-dimfroz(nkp) )
-
-         IF ( dimfroz(nkp) /= 0 ) lfrozen = .TRUE.
-
-       ENDDO  ! nkp
-
-       CLOSE(dft_unit)
-
-
-!
-! ...  Remaning local allocations
+! ...  Local allocations
 
        ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT=ierr ) 
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ham ',(mxdbnd**2*nkpts))
@@ -228,73 +122,12 @@
        ALLOCATE( komega_i_est(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating komega_i_est ', nkpts )
 
-! 
-!...   Writing the summary in the std output
-
-       ! NOTA BENE:
-       ! ... emax is reported in output in Rydberg, but it used in Hartree in the code
-       WRITE( stdout, "(2x,'Kinetic energy cut-off =  ', F7.2, ' (Ry)',/ )") emax * 2.0
-       WRITE( stdout, "(2x, 'Uniform grid used in wannier calculations:' )")
-       WRITE( stdout, "(4x, 'nk = (', 3i3, ' )      s = (', 3f6.2, ' )' )" ) &
-                               nk(1), nk(2), nk(3), s(1), s(2), s(3)
-       WRITE( stdout, "(4x,'total number of k points =',i5,/ )" )nk(1) * nk(2) * nk(3)
-       !
-       ! ...  Write energy windows and band-space minimization parameters
-       WRITE(stdout,"(2x,' Energy windows (in eV) and band-space minimization parameters:')")
-       WRITE(stdout,"(4x,'outer window: E  = (', f8.4, ' , ',f8.4, ' )' )") win_min, win_max
-       IF ( froz_max < win_min  .OR. froz_min > win_max ) THEN
-           WRITE(stdout,"(4x, 'inner window: NOT used --> NO FROZEN STATES' )" )
-       ELSE
-           WRITE( stdout,"(4x, 'inner window: E  = (', f8.4, ' ,&
-                  & ',f8.4, ' ) --> FROZEN STATES' )" ) froz_min, froz_max
-       END IF
-
-       WRITE( stdout,"(/,4x,'Number of bands in PW calculation =', i5 )") mxdbnd
-       WRITE( stdout,"(4x,'Max number of bands within the energy window = ', i5 )") dimwinx
-       WRITE( stdout,"(4x,'Number of Wannier functions required = ', i5,/ )") dimwann
-
-       WRITE( stdout,"(2x,'K-point shells: ' )" ) 
-       WRITE( stdout,"(4x,'Number of shells = ', i3 )") nshells
-       WRITE( stdout,"(4x,'Selected shells  = ', 3i3 )") ( nwhich(i), i = 1, nshells )
-
-       WRITE( stdout,"(/,2x,'Minimization data: ' )" ) 
-       WRITE( stdout,"(4x,'Mixing parameter (alpha)= ', f6.3 )" ) alpha
-       WRITE( stdout,"(4x,'Max iter = ', i5 )" ) maxiter
-       WRITE( stdout,"(4x,'Starting guess orbitals (itrial) = ', i5 )" ) itrial
-
-
 !
-!=------------------------------------------------------------------------------------=
+! ... Compute the OVERLAP and PROJECTION matrix elements
 !
-! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
+      CALL wfc_data(lamp_tmp)
 
-       CALL overlap( igv, evc, igsort, npwk, dimwin,               &
-            nntot, nnlist, nncell, cm, mxdgve, npwx, nkpts,        &
-            mxdnn, mxdbnd, ngx, ngy, ngz, dimwinx )                
 
-       CALL projection( avec, lamp_tmp, ca, evc, vkpt,                           &
-                        igv, igsort, npwk, dimwin, dimwann, dimfroz,             &
-                        npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,       &
-                        gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
-                        m_wann, ndir_wann, rloc, dimwinx)
-       !
-       ! ... clean a large amount of memory
-       CALL ggrids_deallocate()
-       CALL wfc_deallocate()
-
-!
-! ...  writing projections and overlap on file
-       
-       CALL ioname('overlap_projection',filename)
-       CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
-            CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
-       CALL file_close(ovp_unit,PATH="/",ACTION="write")
-
-       CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
-       WRITE( stdout,"(/,'  Overlap and projections written on file: ',a)") TRIM(filename)
-       
-
-!
 !=------------------------------------------------------------------------------------=
 !
 ! ...  Start iteration loop
@@ -304,9 +137,8 @@
 
 ! ...    Choose an initial trial subspace at each K
 
-           IF ( .NOT. lfrozen ) THEN
-
 ! ...      No frozen states
+           IF ( .NOT. lfrozen ) THEN
 
              IF ( ITRIAL == 1 ) THEN
                WRITE( stdout,"(/,'  Initial trial subspace: lowest energy eigenvectors',/)")
@@ -394,7 +226,7 @@
 
            DO nkp = 1, nkpts
                IF ( .NOT. zmat_unitary( lamp(1:dimwin(nkp),1:dimwann,nkp), &
-                                  SIDE='left', TOLL=1.0d-8 ) ) &
+                                  SIDE='left', TOLL=EPS_m8 ) ) &
                    CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',nkp)
            ENDDO
 
@@ -439,7 +271,7 @@
            IF ( dimwann > dimfroz(nkp) )  THEN
                  dim = dimwin(nkp)-dimfroz(nkp)
                  CALL zmat_hdiag( z(:,:), w(:), mtrx_in(:,:,nkp), dim)
-           END IF
+           ENDIF
  
 ! ...      Calculate K-point contribution to omega_i_est
  
@@ -610,6 +442,7 @@
        ! ...  Convert the optimal subspace energy eigenvalues in eV 
        !      to be used later on for reconstructing the hamiltonian on the 
        !      Wannier basis
+! XXXXXXX
        wan_eig(:,:) = har * wan_eig(:,:)
 
 ! ...  Note: for the purpose of minimizing Omegatld in wannier.f we could have simply

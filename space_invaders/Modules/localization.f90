@@ -12,7 +12,7 @@
 !*********************************************
    USE kinds, ONLY : dbl
    USE constants, ONLY : ZERO
-   USE kpoints_module, ONLY : nkpts, kpoints_alloc => alloc
+   USE kpoints_module, ONLY : nkpts, kpoints_alloc
    USE input_module, ONLY : dimwann, input_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx

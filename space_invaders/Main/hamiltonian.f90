@@ -29,15 +29,14 @@
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
-      USE util_module, ONLY : zmat_unitary
+      USE util_module, ONLY : zmat_unitary, zmat_hdiag
 
-      USE lattice
-      USE kpoints_module,       ONLY : nkpts, nk, s, vkpt, &
-                                       kpoints_init, kpoints_deallocate
-      USE windows_module,       ONLY : windows_read, windows_deallocate
-      USE subspace_module,      ONLY : wan_eig, subspace_read, subspace_deallocate
+      USE lattice_module, ONLY : alat, avec, bvec, lattice_init
+      USE kpoints_module,       ONLY : nkpts, nk, s, vkpt
+      USE windows_module,       ONLY : windows_read
+      USE subspace_module,      ONLY : wan_eig, subspace_read
       USE localization_module,  ONLY : dimwann, cu, & 
-                                       localization_read, localization_deallocate 
+                                       localization_read
 
 
       IMPLICIT NONE 
@@ -46,6 +45,7 @@
       COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)    ! kham(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE :: rham(:,:,:)    ! rham(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE :: ham_tmp(:,:)   ! ham_tmp(dimwann,dimwann)
+      COMPLEX(dbl), ALLOCATABLE :: z(:,:)         ! z(dimwann,dimwann) 
 
       INTEGER :: ntype
       INTEGER :: nspts, npts, tnkpts
@@ -63,15 +63,6 @@
       CHARACTER(LEN=2), ALLOCATABLE :: point(:)    
       CHARACTER(LEN=nstrx)          :: filename
  
-      COMPLEX(dbl), ALLOCATABLE :: ap(:)            ! ap((dimwann*(dimwann+1))/2)
-      COMPLEX(dbl), ALLOCATABLE :: z(:,:)           ! z(dimwann,dimwann) 
-      COMPLEX(dbl), ALLOCATABLE :: work(:)          ! work(2*dimwann)
-      REAL(dbl), ALLOCATABLE :: w(:)                 ! w(dimwann)
-      REAL(dbl), ALLOCATABLE :: rwork(:)             ! rwork(7*dimwann)
-      INTEGER, ALLOCATABLE :: iwork(:)             ! iwork(5*dimwann) 
-      INTEGER, ALLOCATABLE :: ifail(:)            ! ifail(dimwann)
-      INTEGER :: info
-
       INTEGER :: nt
       INTEGER   :: ierr
       LOGICAL   :: lfound
@@ -168,7 +159,8 @@
  
 ! ... Get K-point mesh and data
       nkpts = PRODUCT(nk(:))
-      CALL kpoints_init( nkpts, BSHELL=.FALSE. )
+! XXXX
+!      CALL bshells_init( LBSHELLS=.FALSE. )
 
 ! ... Read energy eigenvalues in electron-volt
       CALL ioname('subspace',filename)
@@ -229,39 +221,6 @@
          ENDDO
          ENDDO
       ENDDO
-
-
-! ... Check that eigenvalues of H(k) are the same as those of H_0(k)
-      IF ( verbosity == 'high' ) THEN
-
-        ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
-            IF( ierr /=0 ) &
-            CALL errore(' hamiltonian ', ' allocating ap',dimwann*(dimwann+1)/2 )
-        ALLOCATE( w( dimwann ), ifail( dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating w ifail ', 2*dimwann )
-        ALLOCATE( z( dimwann, dimwann ), work( 2 * dimwann ), STAT=ierr )
-            IF( ierr /=0 ) &
-            CALL errore(' hamiltonian ', ' allocating z work ', 2*dimwann + dimwann**2 )
-        ALLOCATE( rwork( 7 * dimwann ), iwork( 5 * dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', 'allocating rwork iwork',12*dimwann)
-
-        DO nkp = 1, nkpts
-          DO j = 1, dimwann
-            DO i = 1 ,j
-              ap( i + ( (j-1)*j ) / 2 ) = kham(i,j,nkp)
-            END DO
-          END DO
-          CALL zhpevx( 'n', 'a', 'u', dimwann, ap(1), ZERO, ZERO, 0, 0, -ONE,            &
-               m, w(1), z(1,1), dimwann, work(1), rwork(1), iwork(1), ifail(1), info )
-
-          IF( info < 0 ) CALL errore('hamiltonian','zhpevx had an illegal value (I)', info)
-
-          IF( info > 0 ) CALL errore('hamiltonian','zhpevx diagonalization failed (I)', info)
-
-        END DO
-        DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', 'deallocating ap...ifail', ABS(ierr))
-      END IF
 
  
 ! ... Fourier transform it: H_ij(k) --> H_ij(R) = (1/N_kpts) sum_k e^{-ikR} H_ij(k)
@@ -419,66 +378,46 @@
 !     finite grid (truncation)
  
       ALLOCATE( ham_tmp( dimwann, dimwann ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating ham_tmp', dimwann**2 )
- 
+          IF( ierr /=0 ) CALL errore(' hamiltonian ',' allocating ham_tmp',dimwann**2 )
       ALLOCATE( en_band( dimwann, tnkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating en_band', dimwann*tnkpts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ',' allocating en_band',dimwann*tnkpts )
  
       DO irk = 1, tnkpts
 
-        DO j = 1, dimwann
-          DO i = 1, dimwann
+         DO j = 1, dimwann
+         DO i = 1, dimwann
             ham_tmp(i,j) = czero
             DO iws = 1, nws
-              expo = EXP( CI * TPI * ( kpt(1,irk) * DBLE( indxws(1,iws) ) +  &     
-              kpt(2,irk) * DBLE( indxws(2,iws) ) +                             &
-              kpt(3,irk) * DBLE( indxws(3,iws) ) ) ) 
-              ham_tmp(i,j) = ham_tmp(i,j) + expo * rham(i,j,iws) / degen(iws)
+               expo = EXP( CI * TPI * ( kpt(1,irk) * DBLE( indxws(1,iws) ) +  &     
+               kpt(2,irk) * DBLE( indxws(2,iws) ) +                             &
+               kpt(3,irk) * DBLE( indxws(3,iws) ) ) ) 
+               ham_tmp(i,j) = ham_tmp(i,j) + expo * rham(i,j,iws) / degen(iws)
             ENDDO
-          ENDDO
-        ENDDO
+         ENDDO
+         ENDDO
  
-! ...   Diagonalize the hamiltonian at the present k-point
-
-        ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
-            IF( ierr /=0 ) & 
-            CALL errore(' hamiltonian ', ' allocating ap', dimwann * (dimwann+1)/2 )
-        ALLOCATE( w( dimwann ), ifail( dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating w ifail', 2*dimwann )
-        ALLOCATE( z( dimwann, dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating z', dimwann**2 )
-        ALLOCATE( work(2*dimwann), rwork( 7 * dimwann ), iwork( 5 * dimwann ), STAT=ierr )
-            IF( ierr /=0 ) &
-            CALL errore(' hamiltonian ', ' allocating work rwork iwork', 14*dimwann )
+         !
+         ! ... Diagonalize the hamiltonian at the present k-point
+         ALLOCATE( z( dimwann, dimwann ), STAT=ierr )
+             IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating z', dimwann**2 )
  
-        DO j = 1, dimwann
-          DO i = 1, j
-            ap( i + ( (j-1)*j ) / 2 ) = ham_tmp(i,j)
-          END DO
-        END DO
+         CALL zmat_hdiag( z, en_band(:,irk), ham_tmp(:,:), dimwann)
 
-        CALL ZHPEVX( 'n', 'i', 'u', dimwann, ap(1), ZERO, ZERO, 1, dimwann, -ONE,     &
-             m, w(1), z(1,1), dimwann, work(1), rwork(1), iwork(1), ifail(1), info )
-        IF ( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (II)',-info)
-        IF ( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (II)',info)
+         DEALLOCATE( z, STAT=ierr )
+             IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating z', ABS(ierr))
 
-        en_band(:,irk) = w(:)
+      ENDDO 
 
-        DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ap-ifail', ABS(ierr))
-
-      ENDDO ! IRK
-
- 
+! 
+! ... to be updated soon or later (?)
+! 
       OPEN( 27, FILE='band.dat', STATUS='UNKNOWN', FORM='FORMATTED' )
-
       DO i = 1, dimwann
         DO irk = 1, tnkpts
           WRITE (27, fmt="(2e16.8)") xval(irk), en_band(i,irk)
         END DO
         WRITE( 27, *) 
       END DO
-
       CLOSE( 27 )
  
 !

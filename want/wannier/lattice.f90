@@ -1,21 +1,62 @@
-MODULE lattice
+!
+! Copyright (C) 2004 Carlo Cavazzoni, Andrea Ferretti
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!*********************************************************
+MODULE lattice_module
+   !*********************************************************
+   USE kinds
+   USE constants, ONLY : ZERO
+   USE parameters, ONLY : nstrx
+   USE iotk_module
+   IMPLICIT NONE
+   PRIVATE
+   SAVE
+!
+! <INFO>
+! This module contains all the variables and the subroutines 
+! used to manage the lattice data.
+!
+! Subroutines in this module:
+! SUBROUTINE lattice_init()
+! SUBROUTINE lattice_read_ext(unit, name, found)
+!
+! </INFO>
+!
 
-  USE kinds
-  USE constants, ONLY : ZERO
+  REAL(dbl)        :: alat  = ZERO        ! dir space units (Bohr)
+  REAL(dbl)        :: tpiba = ZERO        ! 2pi/alat
+  REAL(dbl)        :: avec(3,3)           ! dir lattice vects (Bohr)
+  REAL(dbl)        :: bvec(3,3)           ! rec lattice vects (Bohr^-1)
 
-  IMPLICIT NONE
-  SAVE
+  LOGICAL          :: alloc = .FALSE.
 
-  REAL(dbl) :: dirc(3,3), recc(3,3)
-  REAL(dbl) :: avec(3,3), bvec(3,3)
-  REAL(dbl) :: alat = ZERO
+!
+! ... end of declarations
+!
+
+  PUBLIC :: alat
+  PUBLIC :: tpiba
+  PUBLIC :: avec, bvec
+  PUBLIC :: alloc
+  PUBLIC :: lattice_read_ext, lattice_init
 
 CONTAINS
 
-  SUBROUTINE lattice_init()
+!
+! Subroutines
+!
 
-    USE constants, ONLY: PI, bohr => bohr_radius_angs, ZERO, ONE, TPI
+!*********************************************************
+   SUBROUTINE lattice_init()
+   !*********************************************************
+    USE constants, ONLY: PI, ZERO, ONE, TPI
     USE io_module, ONLY: stdout
+    IMPLICIT NONE
 
     INTEGER :: i,j
 
@@ -24,42 +65,56 @@ CONTAINS
     !  avec(:,2) == a2(:)  should be in unit of alat
     !  avec(:,3) == a3(:)  should be in unit of alat
 
-    avec = avec * alat
+    ! Now this quantities are NO-LONGER in alat units, but in Bohr
+    ! and no normalization is needed....
+    !avec = avec * alat
 
     CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
     bvec = bvec * TPI
 
-    dirc = TRANSPOSE( avec ) * bohr
-    recc = TRANSPOSE( bvec ) / bohr
-
-    WRITE( stdout, " (2x,70('='))" ) 
-    WRITE( stdout, " (2x,'=',25x,'Lattice parameters',25x,'=')" ) 
-    WRITE( stdout, " (2x,70('='),/)" ) 
-
-    WRITE( stdout, " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
-    WRITE( stdout, " (2x,'Alat = ', F8.4, ' (Ang )',/ )" ) alat * bohr
-    WRITE( stdout, " (2x, 'Crystal axes:' ) ")
-    WRITE( stdout, " (16x,'in units of Bohr',17x,'in lattice units' )")
-    DO j=1,3
-       WRITE ( stdout, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
-                j, ( avec(i,j), i=1,3 ), ( avec(i,j)/alat, i=1,3 )
-    END DO
-    WRITE( stdout, fmt= " (2x, 'Crystal axes: (Ang)' ) ")
-    DO j=1,3
-       WRITE ( stdout, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )'  )" ) &
-               j, ( dirc(j,i), i=1,3 )
-    END DO
-
-    WRITE( stdout, " (/,2x, ' Reciprocal lattice vectors:' ) " )
-    WRITE( stdout, " (16x,'in units of Bohr^-1',14x,'in lattice units' )")
-    DO j=1,3
-       WRITE ( stdout, fmt="(4x,'b(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
-                j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / (2* pi), i=1,3 )
-    END DO
-    WRITE( stdout, "()" ) 
-
+    alloc = .TRUE.
 
     RETURN
-  END SUBROUTINE
+   END SUBROUTINE lattice_init
 
-END MODULE lattice
+!*********************************************************
+   SUBROUTINE lattice_read_ext(unit, name, found)
+   !*********************************************************
+   IMPLICIT NONE
+       INTEGER,           INTENT(in) :: unit
+       CHARACTER(*),      INTENT(in) :: name
+       LOGICAL,           INTENT(out):: found
+       CHARACTER(nstrx)   :: attr
+       CHARACTER(16)      :: subname="lattice_read_ext"
+       INTEGER            :: ierr
+
+       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+       IF (.NOT. found) RETURN
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       found = .TRUE.
+
+       CALL iotk_scan_empty(unit,"Data",ATTR=attr,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find Data',ABS(ierr))
+       CALL iotk_scan_attr(attr,"alat",alat,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find alat',ABS(ierr))
+       CALL iotk_scan_attr(attr,"tpiba",tpiba,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find tpiba',ABS(ierr))
+
+       CALL iotk_scan_empty(unit,"a1",ATTR=attr,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find a1',ABS(ierr))
+       CALL iotk_scan_attr(attr,"xyz",avec(:,1),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find xyz in a1',ABS(ierr))
+       CALL iotk_scan_empty(unit,"a2",ATTR=attr,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find a2',ABS(ierr))
+       CALL iotk_scan_attr(attr,"xyz",avec(:,2),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find xyz in a2',ABS(ierr))
+       CALL iotk_scan_empty(unit,"a3",ATTR=attr,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find a3',ABS(ierr))
+       CALL iotk_scan_attr(attr,"xyz",avec(:,3),IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find xyz in a3',ABS(ierr))
+
+       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+   END SUBROUTINE lattice_read_ext
+
+END MODULE lattice_module

@@ -1,64 +1,298 @@
 !
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
-! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
-! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
-!
+! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2002 FPMD group
+! 
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
+! <INFO>
+!*********************************************************
+MODULE ions_module
+   !*********************************************************
+   USE kinds,      ONLY : dbl
+   USE constants,  ONLY : ZERO, BOHR => bohr_radius_angs
+   USE parameters, ONLY : ntypx, natx, nstrx
+   USE io_module,  ONLY : pseudo_dir
+   USE iotk_module
+   IMPLICIT NONE
+   PRIVATE
+   SAVE
+!
+! This module contains all the data related to atomic positions
+! and atomic species.
+!
+! Subroutines in this module:
+! SUBROUTINE ions_allocate( nat_, nsp_ )
+! SUBROUTINE ions_deallocate()
+! SUBROUTINE ions_init()
+! SUBROUTINE ions_read_ext( unit, name, lfound)
+! SUBROUTINE ions_tau_sort( tausrt, isrt, tau_, isp, na_ )
+!
+! </INFO>
 !
 
-MODULE ions
-  !
+      !     nsp       = number of species
+      !     na(is)    = number of atoms of species is
+      !     nax       = max number of atoms of a given species
+      !     nat       = total number of atoms of all species
 
-  USE kinds, ONLY: dbl
-  USE parameters, ONLY: npsx, natx
+      INTEGER              :: nsp     = 0
+      INTEGER, ALLOCATABLE :: na(:) 
+      INTEGER              :: nax     = 0
+      INTEGER              :: nat     = 0
 
-  IMPLICIT NONE
-  SAVE
+      !     ityp( i ) = the type of i-th atom 
+      !     atm( j )  = name of the type of the j-th atomic specie
+      !     tau( 1:3, i ) = position of the i-th atom
 
-  LOGICAL :: first = .TRUE.
+      INTEGER,   ALLOCATABLE :: ityp(:)
+      REAL(dbl), ALLOCATABLE :: tau(:,:)      !  initial positions read from stdin (in bohr)
+      REAL(dbl), ALLOCATABLE :: tau_srt(:,:)  !  tau sorted by specie in bohr
+      INTEGER,   ALLOCATABLE :: ind_srt( : )  !  index of tau sorted by specie
+      CHARACTER(LEN=2), ALLOCATABLE :: atm(:) !  DIM: nsp
+      CHARACTER(LEN=2), ALLOCATABLE :: symb(:)!  DIM: nat
+      CHARACTER(LEN=nstrx), ALLOCATABLE :: psfile(:)!  DIM: nsp
 
-  REAL(dbl) :: rat(3,natx,npsx), atmass(npsx)
-  INTEGER   :: ntype, natom(npsx)
-  CHARACTER(LEN=2) :: nameat(npsx)
-  REAL(dbl) :: poscart(3,natx,npsx)
+      LOGICAL :: alloc = .FALSE.
+
+!
+! end of declaration scope
+!
+
+   PUBLIC :: nsp, na, nax, nat
+   PUBLIC :: tau
+   PUBLIC :: tau_srt, ind_srt
+   PUBLIC :: ityp, atm, symb
+   PUBLIC :: psfile
+   PUBLIC :: alloc
+
+   PUBLIC :: ions_allocate, ions_deallocate
+   PUBLIC :: ions_read_ext, ions_init
+
 
 CONTAINS
 
-  SUBROUTINE ions_init(  )
-    RETURN
-  END SUBROUTINE
+!**********************************************************
+   SUBROUTINE ions_allocate( nat_, nsp_)
+   !**********************************************************
+   IMPLICIT NONE
+      INTEGER :: nat_, nsp_
+      CHARACTER(12)  :: subname='ions_allocate'
+      INTEGER :: ierr
 
-  SUBROUTINE poscart_set( avec )
-    !
-    USE io_module, ONLY: stdout
-    USE constants, ONLY: bohr => bohr_radius_angs
-    !
-    IMPLICIT NONE
-    !
-    REAL(dbl) :: avec(3,3)
-    INTEGER :: nsp, ni, m, j, i
+      IF ( nat_ <= 0) CALL errore(subname,'Invalid nat_',ABS(nat_)+1)
+      IF ( nsp_ <= 0) CALL errore(subname,'Invalid nsp_',ABS(nsp_)+1)
+      IF ( nat_ > natx ) CALL errore(subname,'Nat too large',nat_)
+      IF ( nsp_ > ntypx ) CALL errore(subname,'Nsp too large',nsp_)
+      nat = nat_
+      nsp = nsp_
 
-    WRITE( stdout, fmt="(2x, 'Atomic positions: (cart. coord.)' ) " )
+      ALLOCATE(na(nsp), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating na',nsp)
+      ALLOCATE(ityp(nat), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating ityp',nat)
+      ALLOCATE(symb(nat), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating symb',nat)
+      ALLOCATE(tau(3,nat), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating tau',nat*nsp)
+      ALLOCATE(tau_srt(3,nat), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating tau_srt',nat*nsp)
+      ALLOCATE(ind_srt(nat), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating ind_srt',nat)
+      ALLOCATE(atm(nsp), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating atm',nsp)
+      ALLOCATE(psfile(nsp), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating psfile',nsp)
 
-    DO nsp = 1 , ntype
-      DO ni = 1 , natom(nsp)
-        DO m = 1, 3
-          poscart(m,ni,nsp) = 0.d0
-          DO j=1,3
-            !poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * dirc(j,m)
-            poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * avec(m,j) * bohr
-          END DO
-        END DO
-        WRITE( stdout, fmt="(4x, a, 2x,'tau( ',I3,' ) = (', 3F8.4, ' )' )" ) &
-        nameat( nsp ), ni, ( poscart(i,ni,nsp), i=1,3 )
+      alloc = .TRUE.
+  END SUBROUTINE ions_allocate
+
+!**********************************************************
+   SUBROUTINE ions_deallocate( )
+   !**********************************************************
+   IMPLICIT NONE
+      CHARACTER(14)  :: subname='ions_deallocate'
+      INTEGER :: ierr
+
+      IF ( ALLOCATED( na ) ) THEN
+          DEALLOCATE( na, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating na',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( ityp ) ) THEN
+          DEALLOCATE( ityp, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating ityp',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( symb ) ) THEN
+          DEALLOCATE( symb, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating symb',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( tau ) ) THEN
+          DEALLOCATE( tau, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating tau',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( tau_srt ) ) THEN
+          DEALLOCATE( tau_srt, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating tau_srt',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( ind_srt ) ) THEN
+          DEALLOCATE( ind_srt, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating ind_srt',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( atm ) ) THEN
+          DEALLOCATE( atm, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating atm',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( psfile ) ) THEN
+          DEALLOCATE( psfile, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating psfile',ABS(ierr))
+      ENDIF
+
+      alloc = .FALSE.
+  END SUBROUTINE ions_deallocate
+
+
+!*********************************************************
+   SUBROUTINE ions_read_ext(unit, name, found)
+   !*********************************************************
+   IMPLICIT NONE
+       INTEGER,           INTENT(in) :: unit
+       CHARACTER(*),      INTENT(in) :: name
+       LOGICAL,           INTENT(out):: found
+       CHARACTER(nstrx)   :: attr
+       CHARACTER(13)       :: subname="ions_read_ext"
+       INTEGER            :: ia, is, ierr
+
+       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+       IF (.NOT. found) RETURN
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       found = .TRUE.
+
+       CALL iotk_scan_empty(unit,'Data',ATTR=attr,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find Data',ABS(ierr))
+       CALL iotk_scan_attr(attr,"natoms",nat,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find nat',ABS(ierr))
+       CALL iotk_scan_attr(attr,"nspecies",nsp,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find nsp',ABS(ierr))
+
+       CALL ions_allocate( nat, nsp ) 
+
+       CALL iotk_scan_begin(unit,'Positions',IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find Positions',ABS(ierr))
+       DO ia=1,nat
+           CALL iotk_scan_empty(unit,'atom'//TRIM(iotk_index(ia)), ATTR=attr, IERR=ierr)
+             IF (ierr/=0) &
+             CALL errore(subname,'Unable to find atom'//TRIM(iotk_index(ia)),ABS(ierr))
+           CALL iotk_scan_attr(attr, 'type', symb(ia), IERR=ierr)
+             IF (ierr/=0) CALL errore(subname,'reading attr TYPE',ia)
+           CALL iotk_scan_attr(attr, 'xyz', tau(:,ia), IERR=ierr)
+             IF (ierr/=0) CALL errore(subname,'reading attr XYZ',ia)
+       ENDDO
+       CALL iotk_scan_end(unit,'Positions',IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to end Positions',ABS(ierr))
+
+       CALL iotk_scan_begin(unit,'Types',IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find Types',ABS(ierr))
+       CALL iotk_scan_empty(unit, 'Data', ATTR=attr, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find Data',ABS(ierr))
+       CALL iotk_scan_attr(attr, 'pseudo_dir', pseudo_dir, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_DIR',ABS(ierr))
+       !
+       DO is=1,nsp
+           CALL iotk_scan_empty(unit,'specie'//TRIM(iotk_index(is)), ATTR=attr, IERR=ierr)
+             IF (ierr/=0) &
+             CALL errore(subname,'Unable to find specia'//TRIM(iotk_index(is)),ABS(ierr))
+           CALL iotk_scan_attr(attr, 'pseudo_file', psfile(is), IERR=ierr)
+             IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_FILE',is)
+       ENDDO
+       CALL iotk_scan_end(unit,'Types',IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to end Types',ABS(ierr))
+
+       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+   END SUBROUTINE ions_read_ext
+
+
+!*********************************************************
+   SUBROUTINE ions_init( )
+   !*********************************************************
+   IMPLICIT NONE
+       CHARACTER(9)       :: subname="ions_init"
+       LOGICAL            :: equal
+       INTEGER            :: ia, i, j, ntyp
+       INTEGER            :: ierr
+ 
+       IF ( .NOT. alloc ) CALL errore(subname,'IONS not allocated',1)
+
+       !
+       ! setting species and atomic symbols
+       !
+       atm(1) = symb(1)
+       ityp(1) = 1
+       ntyp = 1
+       na(:) = 0
+       na(1) = 1
+       DO ia=2,nat
+          equal = .FALSE.
+          DO i=1,ntyp
+             IF ( symb(ia) == atm(i) ) THEN
+                  ityp(ia) = i
+                  na(i) = na(i) + 1
+                  equal = .TRUE.
+             ENDIF
+          ENDDO
+          IF ( .NOT. equal ) THEN
+                ntyp = ntyp + 1
+                atm(ntyp) = symb(ia)
+                na(ntyp) = 1
+          ENDIF
+       ENDDO
+       IF ( ntyp /= nsp ) CALL errore(subname,'Invalid NSP', ABS(ntyp-nsp) )
+       nax = MAXVAL( na(:) )
+
+       !
+       ! sorting atoms by species
+       !
+       CALL ions_sort_tau(tau_srt, ind_srt, tau, ityp, na )
+
+   END SUBROUTINE ions_init
+
+
+!*********************************************************
+   SUBROUTINE ions_sort_tau( tausrt, isrt, tau_, isp, na_ )
+   !*********************************************************
+   !
+   ! Freely inspired to the similar subroutine in ESPRESSO package
+   !
+      IMPLICIT NONE
+      REAL(dbl), INTENT(OUT) :: tausrt( :, : )
+      INTEGER, INTENT(OUT) :: isrt( : )
+      REAL(dbl), INTENT(IN) :: tau_( :, : )
+      INTEGER, INTENT(IN) :: isp( : ), na_(:)
+      INTEGER :: ina( SIZE(na_) ), na_tmp( SIZE(na_) )
+      INTEGER :: nsp_, is, ia
+
+      nsp_ = SIZE(na_)
+      IF ( nsp_ /= nsp) CALL errore('ions_sort_tau','Invalid nsp',ABS(nsp-nsp_))
+
+      ! ... compute the index of the first atom in each specie
+      ina( 1 ) = 0
+      DO is = 2, nsp_
+        ina( is ) = ina( is - 1 ) + na_( is - 1 )
       END DO
-    END DO
 
-    RETURN
-  END SUBROUTINE
+      ! ... sort the position according to atomic specie
+      na_tmp  = 0
+      DO ia = 1, nat
+        is  =  isp( ia )
+        na_tmp( is ) = na_tmp( is ) + 1
+        tausrt( :, na_tmp(is) + ina(is) ) = tau(:, ia )
+        isrt  (    na_tmp(is) + ina(is) ) = ia
+      END DO
+      RETURN
+    END SUBROUTINE ions_sort_tau
 
-END MODULE
+
+END MODULE ions_module
+

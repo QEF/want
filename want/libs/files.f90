@@ -400,7 +400,7 @@ CONTAINS
       !
       ELSE
          CLOSE(unit,IOSTAT=ierr)
-         IF ( ierr/= 0) CALL errore(subname,"During closing",1)
+         IF ( ierr/= 0) CALL errore(subname,"During closing",2)
 
       ENDIF
 

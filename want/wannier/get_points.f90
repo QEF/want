@@ -14,6 +14,7 @@
 !      Determines the k-points for calculating the band structure
 !
        USE kinds
+       USE constants, ONLY : ZERO
        USE io_module, ONLY : stdout
 
        IMPLICIT NONE
@@ -78,7 +79,7 @@
                 CALL errore(' get_points ', ' tnkpts too large  ', tnkpts )
 
            IF ( tnkpts ==  1 ) THEN
-             xval(tnkpts) = 0.d0
+             xval(tnkpts) = ZERO
            ELSE
              xval(tnkpts) = xval(tnkpts-1) + length(i)/DBLE(n)
            END IF

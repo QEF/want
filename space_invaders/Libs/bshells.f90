@@ -10,45 +10,45 @@
 !
 
 !=----------------------------------------------------------------------------------=
-      SUBROUTINE bshells( recc, nshells, nwhich )
+      SUBROUTINE bshells( bvec, nshells, nwhich )
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY : ZERO, CZERO, ONE
+      USE constants, ONLY : ZERO, CZERO, ONE, BOHR => bohr_radius_angs, EPS_m10
       USE timing_module, ONLY : timing
-      USE io_module, ONLY: stdout
 
-      USE kpoints_module, ONLY : vkpt, nkpts, nnshell, &
-                                 bk, dnn, wb, wbtot, nnlist, nncell, &
+      USE kpoints_module, ONLY : vkpt, nkpts, wk, nnshell, &
+                                 bk, dnn, ndnntot, wb, wbtot, nnlist, nncell, &
                                  nntot, bka, neigh, &
                                  nnmx => mxdnn, nnmxh => mxdnnh , &
-                                 kpoints_alloc => alloc
+                                 kpoints_alloc 
  
 ! ... Computes the shells of b-vectors connecting every k-point to its
 !     neighbors, as well as their weights for the finite-difference formulas
 !     for the k-derivatives
  
       IMPLICIT NONE
+
+      INTEGER, INTENT(in)   :: nshells
+      INTEGER, INTENT(in)   :: nwhich(nshells)
+      REAL(dbl), INTENT(in) :: bvec(3,3)
  
       REAL(dbl) :: eta, eps
       PARAMETER( eta = 99999999.0d0 )
       PARAMETER( eps = 1d-6 )
  
-      INTEGER :: nshells
-      INTEGER :: nwhich(nshells), ndnc
-      REAL(dbl) :: recc(3,3)
  
       REAL(dbl) :: ddelta
  
+      INTEGER :: ndnc
       INTEGER :: i, j, l, m, n, nn, nnx, na, nap, ierr
       INTEGER :: nkp, nkp2, nkpts2
       INTEGER :: nlist, ndnn, nddn
-      INTEGER :: ndnntot, nnsh, nnh
+      INTEGER :: nnsh, nnh
       INTEGER :: ifpos, ifneg, ifound, info, ind
       INTEGER :: ndim(nnmx)
 
       REAL(dbl), ALLOCATABLE :: vkpr(:,:)
-      REAL(dbl), ALLOCATABLE :: wtkpt(:)
       REAL(dbl) :: vkpp(3)
       REAL(dbl) :: dimsingvd(nnmx)
       REAL(dbl) :: dimbk(3,nnmx)
@@ -65,33 +65,20 @@
 
       ALLOCATE( vkpr(3,nkpts), STAT=ierr )
       IF ( ierr /= 0) CALL errore('bshell', 'allocating vkpr', ABS(ierr))
-      ALLOCATE( wtkpt(nkpts), STAT=ierr )
-      IF ( ierr /= 0) CALL errore('bshell', 'allocating wtkpt', ABS(ierr))
 
-! ... Just so that knpt2 and wtkpt(nkp) are used properly later on
- 
+! ... Just so that nkpt2 is used properly later on
       nkpts2 = nkpts
-      DO nkp = 1, nkpts
-        wtkpt(nkp) = ONE / DBLE(nkpts)
-      END DO
-
-      WRITE( stdout, "(/,2x,70('='))" ) 
-      WRITE( stdout, "(2x,'=',22x,'B-shell calculations',26x,'=')" ) 
-      WRITE( stdout, "(2x,70('='),/)" ) 
-      WRITE( stdout, "(2x, 'K-point calculation: (cartesian coordinates in Ang^-1)' ) " )
 
 ! ... Pass the k-points in cartesian coordinates
 
       DO nkp = 1, nkpts
-        DO i = 1, 3
-          vkpr(i,nkp) = ZERO
-          DO j = 1, 3
-            vkpr(i,nkp) = vkpr(i,nkp) + vkpt(j,nkp) * recc(j,i)
-          END DO
-        END DO 
-      WRITE( stdout, " (4x, 'k point', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) & 
-            nkp, ( vkpr(i,nkp), i=1,3 ), wtkpt(nkp)
-      END DO
+         DO i = 1, 3
+            vkpr(i,nkp) = ZERO
+            DO j = 1, 3
+              vkpr(i,nkp) = vkpr(i,nkp) + vkpt(j,nkp) * bvec(i,j)  
+            ENDDO
+         ENDDO 
+      ENDDO
 
 ! ... Find the distance between k-point 1 and its nearest-neighbour shells
 !     if we have only one k-point, the n-neighbours are its periodic images 
@@ -107,12 +94,12 @@
           DO l = -5, 5
             DO m = -5, 5
               DO n = -5, 5
-                vkpp(1) = vkpr(1,nkp) + l*recc(1,1) + m*recc(2,1) + n*recc(3,1)
-                vkpp(2) = vkpr(2,nkp) + l*recc(1,2) + m*recc(2,2) + n*recc(3,2)
-                vkpp(3) = vkpr(3,nkp) + l*recc(1,3) + m*recc(2,3) + n*recc(3,3)
+                vkpp(1) = vkpr(1,nkp) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
+                vkpp(2) = vkpr(2,nkp) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
+                vkpp(3) = vkpr(3,nkp) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
                 dist=SQRT( (vkpr(1,1)-vkpp(1))**2 + &
                            (vkpr(2,1)-vkpp(2))**2 + &
-                           (vkpr(3,1)-vkpp(3))**2 )
+                           (vkpr(3,1)-vkpp(3))**2 ) / bohr
                 IF ( (dist > eps) .AND. (dist > dnn0+eps) ) dnn1 = MIN( dnn1, dist )
               END DO
             END DO
@@ -122,23 +109,13 @@
         dnn(nlist) = dnn1
         dnn0 = dnn1
         dnn1 = eta
-      END DO
-
-      WRITE( stdout,"(/,2x, 'Nearest-neighbour shells for k-point 1: (in Ang^-1)' ) " )
-
-      DO ndnn = 1, ndnntot
-         WRITE( stdout, "(4x, 'shell (',i3,' )    radius = ', f9.5 )")  ndnn, dnn(ndnn)
-      END DO
-      WRITE( stdout,*) 
+      ENDDO
 
 ! ... Now build up the list of nearest-neighbour shells for each k-point.
 !     nnlist(nkp,1...nnx) points to the nnx neighbours (ordered along increasing shells)
 !     of the k-point nkp. nncell(i,nkp,nnth) tells us in which BZ is the nnth 
 !     nearest-neighbour of the k-point nkp. Construct the nnx b-vectors that go from k-point
 !     nkp to each neighbour bk(1:3,nkp,1...nnx).
-
-      WRITE(stdout, "(2x,'Number of nearest-neighbours for K-point 1', &
-                         &' (representetive for the BZ):')")
 
       DO nkp = 1, nkpts
         nnx = 0
@@ -149,12 +126,12 @@
             DO l = -5, 5
               DO m = -5, 5
                 DO n = -5, 5
-                  vkpp(1) = vkpr(1,nkp2) + l*recc(1,1) + m*recc(2,1) + n*recc(3,1)
-                  vkpp(2) = vkpr(2,nkp2) + l*recc(1,2) + m*recc(2,2) + n*recc(3,2)
-                  vkpp(3) = vkpr(3,nkp2) + l*recc(1,3) + m*recc(2,3) + n*recc(3,3)
+                  vkpp(1) = vkpr(1,nkp2) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
+                  vkpp(2) = vkpr(2,nkp2) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
+                  vkpp(3) = vkpr(3,nkp2) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
                   dist = SQRT( ( vkpr(1,nkp) - vkpp(1) )**2 + &
                                ( vkpr(2,nkp) - vkpp(2) )**2 + &
-                               ( vkpr(3,nkp) - vkpp(3) )**2 )
+                               ( vkpr(3,nkp) - vkpp(3) )**2 ) / bohr
                   IF ( ( dist >=  dnn(ndnn) * 0.9999d0 )  .AND. &
                        ( dist <= dnn(ndnn) * 1.0001d0 ) )  THEN
                     nnx = nnx + 1   
@@ -163,25 +140,22 @@
                     nncell(1,nkp,nnx) = l
                     nncell(2,nkp,nnx) = m
                     nncell(3,nkp,nnx) = n
-                    DO ind = 1, 3
-                      bk(ind,nkp,nnx) = vkpp(ind) - vkpr(ind,nkp)
-                    END DO
-                  END IF
-                END DO
-              END DO
-            END DO
-          END DO
-          IF ( nkp == 1) &
-              WRITE( stdout, " (4x,'shell (', i3, ' )    neighbours  = ', i3 )")  &
-                   ndnn, nnshell(nkp,ndnn)
+                    !
+                    ! units are in bohr-1, here converted for bk to ang-1
+                    bk(:,nkp,nnx) = ( vkpp(:) - vkpr(:,nkp) ) / bohr  
+                  ENDIF
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
 
           IF ( nnshell(nkp,ndnn) <= 0 ) &
               CALL errore(' bshell ', ' Shell is empty! ', ABS(nnshell(nkp,ndnn))+1 )
-          IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( WTKPT(NKP) > 1e-10) ) &
+          IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( wk(nkp) > EPS_m10) ) &
               CALL errore(' bshell ', ' Non uniform neighbours! ', &
                        ABS(nnshell(nkp,ndnn)-nnshell(1,ndnn)) )
 
-        END DO
+        ENDDO  ! kpoints
 
         IF ( nnx > nnmx ) CALL errore(' bshell ', ' Too many neighbours !', nnx )
 
@@ -229,7 +203,7 @@
         IF( nnsh > nnmx ) &
           CALL errore(' wannier ',' nnsh too big ', nnsh )
 
-        dimsingvd(:) = 0.d0
+        dimsingvd(:) = ZERO
 
         CALL dgesvd( 'A', 'A', 3, nnsh, dimbk, 3, dimsingvd, v1, 3, v2, &
                     nnsh, w1, 10*nnsh, info )
@@ -241,38 +215,38 @@
           IF ( ABS( dimsingvd(nn) ) > 1e-5 ) ndim(ndnn) = ndim(ndnn) + 1
         END DO
 
-        factor = DBLE( ndim(ndnn) ) / nnshell(1,ndnn)
-        WRITE( stdout, " (/,2x,'Check shell dimensionality and weights:')")
-        WRITE( stdout, " (4x, 'shell (', i3, ' )    dimensionality  = ', i3 )")  &
-                       ndnn, ndim(ndnn)
-        WRITE( stdout, " (4x, 'w_b weight is 1/b^2 times', f8.4,/ )")  factor
+        ! <DEBUG>
+        ! factor = DBLE( ndim(ndnn) ) / nnshell(1,ndnn)
+        ! WRITE( stdout, " (4x, 'shell (', i3, ' )    dimensionality  = ', i3 )")  &
+        !                ndnn, ndim(ndnn)
+        ! WRITE( stdout, " (4x, 'w_b weight is 1/b^2 times', f8.4,/ )")  factor
+        ! </DEBUG>
 
-
-!...    17/06/2004
+!
+!...    Some checks on the NNs
+!
         IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
           IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
                ( nnshell(1,ndnn) /= 12 ) ) THEN
-            WRITE(stdout, " (/,2x, 'Warning: weights must be as defined in Ref:', &
-                     & ' PRB 56 12847 (1997)' )")
-            WRITE(stdout, " (2x, 'otherwise code will stop! ')")
-            END IF
-        END IF
-        IF ( ( nshells /= 1 ) .OR. ( ndim(1) /= 3 ) ) THEN
-          WRITE(stdout, "(/,2x, 'Warning: weights must be as defined in Ref:', &
-                     & ' PRB 56 12847 (1997)' )")
-          WRITE(stdout, "(2x, 'otherwise code will stop! ')")
-        END IF
+               !
+               ! for a more detailed treatment see Ref. PRB 56, 12847 (1997)
+               !
+               CALL errore('bshells','Invalid number of NNeighb.',ABS(nnshell(1,ndnn))+1)
+            ENDIF
+       !  ELSE
+       !    CALL errore('bshells','Invalid number of NNeighb. II',ABS(nshells)+1)
+        ENDIF
 !...
 
-      END DO
+      ENDDO
 
       DO nkp = 1, nkpts2
         nnx = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
           DO nnsh = 1, nnshell(nkp,ndnn)
-            bb1 = 0.0d0
-            bbn = 0.0d0
+            bb1 = ZERO
+            bbn = ZERO
             nnx = nnx + 1
             DO i = 1, 3
               bb1 = bb1 + bk(i,1,nnx) * bk(i,1,nnx)
@@ -291,7 +265,7 @@
 
         DO i = 1, 3
           DO j = 1, 3
-            ddelta = 0.0
+            ddelta = ZERO
             nnx = 0
 
             DO ndnc = 1, nshells
@@ -303,18 +277,20 @@
             END DO
 
             IF ( ( i == j ) .AND. ( ABS( ddelta - 1.0d0 ) > eps ) ) &
-              CALL errore(' bshell ', ' B1 not satisfied (I)', 1 )
+              CALL errore('bshell', 'B1 not satisfied (I)', 1 )
          
             IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) &
-              CALL errore(' bshell ', ' B1 not satisfied (II)', 1 )
+              CALL errore('bshell', 'B1 not satisfied (II)', 1 )
         
           END DO
         END DO
 
       END DO
+      !
+      ! Completeness relation is fully satisfied!
+      ! ( see Appendix B, PRB 56 12847 (1997) for more details )
+      !
 
-      WRITE( stdout, "(2x,'Completeness relation is fully satisfied!', &
-                     & ' (see Appendix B, PRB 56 12847 (1997)',/ )")
 !...  
 
       wbtot = ZERO
@@ -335,7 +311,7 @@
         ndnn = nwhich(ndnc)
         nnh = nnshell(1,ndnn) / 2
         IF ( nnh*2 /= nnshell(1,ndnn) ) &
-          CALL errore(' bshell ', 'Number of neighbours not EVEN in each shell',ABS(nnh)+1 )
+          CALL errore('bshell', 'Number of neighbours not EVEN in each shell',ABS(nnh)+1 )
 
       ENDDO
       nnh = nntot(1) / 2
@@ -363,22 +339,8 @@
         END IF
 
       END DO
-
       IF ( na /= nnh ) CALL errore(' bshell ', ' Wrong number of bk directions', ABS(na-nnh))
 
-      WRITE (stdout , "(2x, 'List of the ' , i2, ' vectors b_k: (Ang^-1) ') ") nntot(1)
-
-      DO i = 1, nntot(1)
-        WRITE( stdout, " (4x, 'b_k', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
-        i, ( bk(j,1,i), j=1,3 ), wb(1,i)
-      END DO
-
-      WRITE (stdout , "(/,2x, 'The ',i2, '  bk directions are:' )") nnh
-
-      DO i=1,nnh
-        WRITE( stdout, " (4x,'dir',i2,':   ( ',3f9.5, ' ) ' )" ) i, ( bka(j,i), j=1,3 )
-      END DO
-      WRITE (stdout, *) ' '
 
 ! ... Find index array
 
@@ -404,8 +366,6 @@
 
       DEALLOCATE( vkpr, STAT=ierr )
       IF ( ierr /= 0) CALL errore('bshell', 'deallocating vkpr', ABS(ierr))
-      DEALLOCATE( wtkpt, STAT=ierr )
-      IF ( ierr /= 0) CALL errore('bshell', 'deallocating wtkpt', ABS(ierr))
 
       CALL timing('bshells',OPR='stop')
 

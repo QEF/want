@@ -82,7 +82,7 @@
 
 ! ...        Sort the 27 vectors R by increasing value of |r-R| (from Numerical Recipes)
 
-             CALL INDEXX(27,DIST,INDX)
+             CALL indexx(27,DIST,INDX)
 
 ! ...        Find all the vectors R with the (same) smallest |r-R|;
 !            if R=0 is one of them, then the current point r belongs to 

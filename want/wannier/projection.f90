@@ -11,35 +11,35 @@
 !=----------------------------------------------------------------------------------=
        SUBROUTINE projection( avec, lamp, ca, evec, vkpt,                  & 
                   kgv, isort, npwk, dimwin, dimwann, dimfroz,              &
-                  npwx, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,      &
+                  npwkx, mxdbnd, mxdnrk, npw, ngx, ngy, ngz, nkpts,      &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                   m_wann, ndir_wann, rloc, ndwinx)
 !=----------------------------------------------------------------------------------=
 
        USE kinds
-       USE constants, ONLY : ZERO, CZERO, ONE, PI, TPI, ryd => RY, CI,&
-                             bohr => BOHR_RADIUS_ANGS
+       USE constants, ONLY : ZERO, CZERO, ONE, PI, TPI, RYD , CI, &
+                             bohr => BOHR_RADIUS_ANGS, EPS_m8
        USE fft_scalar
-       USE io_module,     ONLY : stdout
        USE timing_module, ONLY : timing
+       USE input_module,  ONLY : verbosity
        USE sph_har,       ONLY : gauss1
-       USE util_module,   ONLY : gv_indexes, zmat_mul
+       USE util_module,   ONLY : gv_indexes, zmat_mul, zmat_unitary
 
        IMPLICIT NONE
 
        ! ... arguments
 
-       INTEGER :: npwx, mxdbnd, mxdnrk
-       INTEGER :: mxdgve, ndwinx
+       INTEGER :: npwkx, mxdbnd, mxdnrk
+       INTEGER :: npw, ndwinx
        INTEGER :: ngx, ngy, ngz, nkpts
        INTEGER :: npwk(mxdnrk)
-       INTEGER :: kgv(3,mxdgve)
-       INTEGER :: isort(npwx,mxdnrk)
+       INTEGER :: kgv(3,npw)
+       INTEGER :: isort(npwkx,mxdnrk)
        INTEGER :: dimwann
        INTEGER :: dimwin(mxdnrk)
        INTEGER :: dimfroz(mxdnrk)
        REAL(dbl) :: avec(3,3)
-       COMPLEX(dbl) :: evec( npwx + 1, ndwinx, mxdnrk )
+       COMPLEX(dbl) :: evec( npwkx + 1, ndwinx, mxdnrk )
        REAL(dbl) :: vkpt(3,mxdnrk)
        COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
        COMPLEX(dbl) :: ca(mxdbnd,dimwann,nkpts)
@@ -91,7 +91,6 @@
        COMPLEX(dbl), ALLOCATABLE :: cptwr(:)
        COMPLEX(dbl), ALLOCATABLE :: cu(:,:)
 
-       CHARACTER( LEN=6 ) :: verbosity = 'none'    ! none, low, medium, high
        INTEGER :: ierr
 
 ! ...  End of declaration
@@ -162,16 +161,6 @@
         END DO
        END DO
        
-      WRITE( stdout, "(2x, 'Gaussian centers: (cart. coord. in Bohr)' ) " )
-      DO nwann = 1, dimwann
-        WRITE( stdout, "(4x,'Center = ', i3,' Type =',i2,' Gaussian  = (',3F10.6,' ) ')") &
-               nwann, gauss_typ(nwann), ( rphicmx1(m,nwann), m=1,3 )
-        IF  ( gauss_typ(nwann) == 2 ) THEN
-          WRITE( stdout, fmt="(26x,'Gaussian2 = (', 3F10.6, ' ) '  )" ) &
-                  ( rphicmx2(m,nwann), m=1,3 )
-        END IF
-      END DO
-
        DO nwann = 1, dimwann
          asidemin = 100000.0d0 * rloc(nwann)
          DO j = 1, 3
@@ -192,7 +181,7 @@
 ! ...  Now pick up a consistent phase for the u_nk (the initial ones
 !      are provided by the ab-initio code, and so have almost random rotations)
 
-       ALLOCATE( nindpw( npwx ) )
+       ALLOCATE( nindpw( npwkx ) )
      
        DO nkp = 1, nkpts
          IF  ( dimwann >  dimfroz(nkp) ) THEN  !IF  not, don't need to waste CPU time!
@@ -370,32 +359,18 @@
              END DO
            END DO
 
-           IF ( verbosity == 'high' ) THEN
-! ...        Check unitariety
-             WRITE(stdout,"(2/,'k-point')") nkp
- 
 ! ...        Note that cu.transpose(cu) is *NOT* an identity dimwin(nkp) by dimwin(nkp) 
 !            matrix, but transpose(cu).cu is a dimwann by dimwann identity matrix. 
 !            I have once checked the former statement, now I will just leave here the code
 !            for the latter (what this means is that the columns of cu are orthonormal
-!            vectors).
+!            vectors). For this reasons SIDE is set = 'left' in the next function call
  
-             WRITE(stdout,"(/,'Transpose(cu).cu:')") 
-             DO i = 1, dimwann
-               DO j = 1, dimwann
-                 ctmp = CZERO
-                 DO m = 1, dimwin(nkp)
-                   ctmp = ctmp + CONJG( cu(m,i) ) * cu(m,j)
-                 END DO
-                 WRITE(stdout,'(2i4,2f10.7)') i, j, ctmp
-               END DO
-             END DO
-           END IF
- 
+           IF ( .NOT. zmat_unitary( cu(1:dimwin(nkp),1:dimwann), &
+                                    SIDE='left', TOLL=EPS_m8 ) ) &
+                  CALL errore('projection', 'Vectors in CU not orthonormal ',nkp)
            lamp(  1:dimwin(nkp), 1:dimwann , nkp) = cu( 1:dimwin(nkp), 1:dimwann )
-!
-         END IF 
-       END DO ! NKP
+         ENDIF
+       ENDDO ! kpoints nkp
 
        DEALLOCATE( cptwr, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating cptwr',ABS(ierr))

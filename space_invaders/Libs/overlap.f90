@@ -10,7 +10,7 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE overlap( igv, evec, igsort, npwk, dimwin, nntot, nnlist,  &
-                           nncell, cm, mxdgve, npwx, nkpts, mxdnn, mxdbnd, ngx,     &
+                           nncell, cm, npw, npwkx, nkpts, mxdnn, mxdbnd, ngx,     &
                            ngy, ngz, ndwinx )
 !=----------------------------------------------------------------------------------=
  
@@ -24,15 +24,15 @@
 
       ! ... Input Variables
 
-      INTEGER :: mxdgve, npwx, nkpts, mxdnn, mxdbnd 
+      INTEGER :: npw, npwkx, nkpts, mxdnn, mxdbnd 
       INTEGER :: ngx, ngy, ngz, ndwinx
-      INTEGER :: igv( 3, mxdgve ), igsort( npwx, nkpts )
+      INTEGER :: igv( 3, npw ), igsort( npwkx, nkpts )
       INTEGER :: npwk( nkpts )
       INTEGER :: nnlist( nkpts, mxdnn )
       INTEGER :: nntot( nkpts )
       INTEGER :: nncell( 3, nkpts, mxdnn )
       INTEGER :: dimwin( nkpts )
-      COMPLEX(dbl) :: evec( npwx + 1, ndwinx, nkpts )
+      COMPLEX(dbl) :: evec( npwkx + 1, ndwinx, nkpts )
       COMPLEX(dbl) :: cm( mxdbnd, mxdbnd, mxdnn, nkpts )
 
       ! ... Local Variables
@@ -62,7 +62,7 @@
         CALL errore(' overlap ', ' allocating ninvpw ', ( (ngx*ngy*ngz+1)*nkpts ) ) 
       END IF
 
-      ninvpw = npwx + 1
+      ninvpw = npwkx + 1
 
 ! ... Transform wave-functions in CASTEP format
 
@@ -74,7 +74,7 @@
       END DO     ! nkp loop
 
       CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, evec,    &
-          ninvpw, npwx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
+          ninvpw, npwkx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
 
       DEALLOCATE( ninvpw, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
@@ -87,7 +87,7 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
-          ninvpw, npwx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
+          ninvpw, npwkx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
 !=----------------------------------------------------------------------------------=
  
       USE kinds
@@ -99,14 +99,14 @@
 
       ! ... Input Variables
 
-      INTEGER :: npwx, nkpts, mxdnn, mxdbnd 
+      INTEGER :: npwkx, nkpts, mxdnn, mxdbnd 
       INTEGER :: ngx, ngy, ngz, ndwinx
       INTEGER :: nnlist( nkpts, mxdnn )
       INTEGER :: nntot( nkpts )
       INTEGER :: nncell( 3, nkpts, mxdnn )
       INTEGER :: dimwin( nkpts )
       COMPLEX(dbl) :: cm( mxdbnd, mxdbnd, mxdnn, nkpts )
-      COMPLEX(dbl) :: cptwfp( npwx+1 , ndwinx, nkpts )
+      COMPLEX(dbl) :: cptwfp( npwkx+1 , ndwinx, nkpts )
       INTEGER :: ninvpw( 0:(ngx*ngy*ngz), nkpts )
 
       ! ... Local Variables

@@ -9,11 +9,11 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !=-----------------------------------------------------------------------------------
-       FUNCTION dot_bloch( vec1, vec2, isort1, isort2, mtxd1, mtxd2, mxddim, mxdgve )
+       FUNCTION dot_bloch( vec1, vec2, isort1, isort2, mtxd1, mtxd2, mxddim, npw )
 !=-----------------------------------------------------------------------------------
 
        USE kinds   
-
+       USE parameters, ONLY : npwx
        IMPLICIT NONE
  
        COMPLEX(dbl) :: dot_bloch
@@ -21,25 +21,25 @@
        INTEGER :: mxddim
        COMPLEX(dbl) :: vec1(mxddim+1)
        COMPLEX(dbl) :: vec2(mxddim+1)
+       INTEGER      :: isort1(mxddim)
+       INTEGER      :: isort2(mxddim)
 
-       INTEGER :: mxdgve 
+       INTEGER :: npw 
        INTEGER :: mtxd1, mtxd2 
-       INTEGER :: isort1(mxddim), isort2(mxddim)
-
-       INTEGER ::  mxdgve_loc
-       PARAMETER ( mxdgve_loc = 140000 )
- 
-       INTEGER INDX1(MXDGVE_loc),INDX2(MXDGVE_loc),GMAX1,GMAX2,GMAX
- 
-       INTEGER I, J       
+       INTEGER :: gmax1,gmax2,gmax
+       INTEGER, ALLOCATABLE :: indx1(:),indx2(:)
+       INTEGER :: i, j, ierr
 
 !
 !
- 
-       IF ( mxdgve_loc < mxdgve ) &
-            CALL errore(' dot_bloch ', ' wrong mxdgve_loc in dot_bloch ',  mxdgve_loc )
  
 ! ...  Calculate gmax
+
+       IF ( npw <= 0) CALL errore('dot_bloch','Invalid npw',ABS(npw)+1)
+       IF ( npw >  npwx) CALL errore('dot_bloch','npw too large',npw)
+       ALLOCATE( indx1(npw), indx2(npw), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore('dot_bloch','allocating indx1,indx2',2*npw)
+       IF ( mxddim <= 0) CALL errore('dot_bloch','Invalid mxddim',ABS(mxddim)+1)
  
        gmax1 = isort1(1)
        DO i = 2, mtxd1

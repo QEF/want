@@ -209,7 +209,7 @@ CONTAINS
 
      alloc = .TRUE.
      RETURN
-  END SUBROUTINE
+  END SUBROUTINE input_read
 
 !=----------------------------------------------------------------------------=!
 
@@ -284,27 +284,26 @@ CONTAINS
 
 !=----------------------------------------------------------------------------=!
 
-  SUBROUTINE wannier_center_init( alat, avec )
+  SUBROUTINE wannier_center_init( avec )
     USE constants, ONLY: bohr => bohr_radius_angs, ZERO
     USE converters_module, ONLY : cart2cry
 
     IMPLICIT NONE
-    REAL(dbl), INTENT(IN) :: alat, avec(3,3)
+    REAL(dbl), INTENT(IN) :: avec(3,3)
 !
 ! ...  Converting WANNIER centers from INPUT to CRYSTAL units
-!      AVEC is in units of ALAT which is in Bohr
-!
+!      AVEC is in Bohr
 !      RLOC should be in Bohr and is converted here if is the case
 !      if wannier_center_units == crystal it is supposed to be already in Bohr
 !
        SELECT CASE ( TRIM(wannier_center_units) )
        CASE ( 'angstrom' )
-           CALL cart2cry(rphiimx1,alat*bohr*avec(:,:),wannier_center_units)
-           CALL cart2cry(rphiimx2,alat*bohr*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx1, bohr*avec, wannier_center_units)
+           CALL cart2cry(rphiimx2, bohr*avec, wannier_center_units)
            rloc(:) = rloc(:) / bohr  
        CASE ( 'bohr' )
-           CALL cart2cry(rphiimx1,alat*avec(:,:),wannier_center_units)
-           CALL cart2cry(rphiimx2,alat*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx1, avec, wannier_center_units)
+           CALL cart2cry(rphiimx2, avec, wannier_center_units)
        CASE ( 'crystal' )
        CASE DEFAULT
            CALL errore('wannier_center_init','Invalid wannier center units : '  &

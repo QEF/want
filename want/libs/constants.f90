@@ -6,7 +6,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 
-      MODULE constants
+    MODULE constants
 
         USE kinds
   !
@@ -33,8 +33,20 @@
         REAL(dbl), PARAMETER ::  SQRTPI = 1.77245385090551602729_dbl
         REAL(dbl), PARAMETER :: SQRTPM1 = 1.0_dbl / SQRTPI
 
-! ...   System related constants
-        REAL(dbl) :: ALAT, TPIBA, TPIBA2
+        REAL(dbl), PARAMETER ::      EPS_m1  = 0.1_dbl
+        REAL(dbl), PARAMETER ::      EPS_m2  = 0.01_dbl
+        REAL(dbl), PARAMETER ::      EPS_m3  = 0.001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m4  = 0.0001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m5  = 0.00001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m6  = 0.000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m7  = 0.0000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m8  = 0.00000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m9  = 0.000000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m10 = 0.0000000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m11 = 0.00000000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m12 = 0.000000000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m13 = 0.0000000000001_dbl
+        REAL(dbl), PARAMETER ::      EPS_m14 = 0.00000000000001_dbl
 
 ! ...   Physical constants
         REAL(dbl), PARAMETER :: K_BOLTZMAN_SI    = 1.38066D-23       ! J K^-1 
@@ -57,7 +69,7 @@
         REAL(dbl), PARAMETER :: AU_KB            = 294210.0D0        ! Kbar
         REAL(dbl), PARAMETER :: KB_AU            = 1.0D0/294210.0D0  ! au
         REAL(dbl), PARAMETER :: AU               = 27.211652d0       ! eV
-        REAL(dbl), PARAMETER :: RY               = 13.605826d0       ! eV 
+        REAL(dbl), PARAMETER :: RYD              = 13.605826d0       ! eV 
         REAL(dbl), PARAMETER :: SCMASS           = 1822.89D0         ! uma to au
         REAL(dbl), PARAMETER :: UMA_AU           = 1822.89D0         ! au
         REAL(dbl), PARAMETER :: AU_TERAHERTZ     = 2.418D-5          ! THz
@@ -78,17 +90,4 @@
         REAL(dbl), PARAMETER :: uakbar= 147105.d0
 
 
-      CONTAINS
-
-        SUBROUTINE constants_setup(CELLDM)
-           REAL(dbl), INTENT(IN) :: celldm
-           If(celldm.le.0.0d0) THEN
-             CALL errore(' constants_setup ', ' zero or negative CELLDM ',1)
-           END IF
-           alat   = celldm
-           tpiba  = tpi / celldm       ! scaling constant: 2*pi/alat
-           tpiba2 = tpiba ** 2
-           RETURN
-        END SUBROUTINE constants_setup
-
-      END MODULE constants
+  END MODULE constants

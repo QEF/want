@@ -12,7 +12,7 @@
 !*********************************************
    USE kinds, ONLY : dbl
    USE windows_module, ONLY : mxdbnd, windows_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, mxdnn, kpoints_alloc => alloc
+   USE kpoints_module, ONLY : nkpts, mxdnn, kpoints_alloc
    USE input_module,  ONLY : dimwann, input_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
@@ -46,6 +46,7 @@
 !
 
    PUBLIC :: cm, ca 
+   PUBLIC :: mxdbnd, nkpts, mxdnn, dimwann
    PUBLIC :: overlap_allocate
    PUBLIC :: overlap_deallocate
    PUBLIC :: overlap_write
@@ -116,8 +117,8 @@ CONTAINS
        CALL iotk_write_attr(attr,"nkpts",nkpts)
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
-       CALL iotk_write_dat(unit,"OVERLAP",cm,FMT="(2f15.9)")
-       CALL iotk_write_dat(unit,"PROJECTIONS",ca,FMT="(2f15.9)")
+       CALL iotk_write_dat(unit,"OVERLAP",cm)
+       CALL iotk_write_dat(unit,"PROJECTIONS",ca)
 
        CALL iotk_write_end(unit,TRIM(name))
    END SUBROUTINE overlap_write

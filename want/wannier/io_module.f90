@@ -47,6 +47,7 @@
 
 
    CHARACTER(4), PARAMETER    ::  suffix_dft_data=".dft"
+   CHARACTER(17),PARAMETER    ::  suffix_export=".export/index.xml"
    CHARACTER(7), PARAMETER    ::  suffix_subspace=".spaces"
    CHARACTER(4), PARAMETER    ::  suffix_ovp=".ovp"
    CHARACTER(4), PARAMETER    ::  suffix_wannier=".wan"
@@ -58,6 +59,7 @@
    CHARACTER(nstrx)           :: postfix
    CHARACTER(nstrx)           :: work_dir
    CHARACTER(nstrx)           :: title
+   CHARACTER(nstrx)           :: pseudo_dir
          
    INTEGER :: ionode_id = 0
    LOGICAL :: ionode = .TRUE.
@@ -73,7 +75,7 @@
 
    PUBLIC ::  stdout, dft_unit, ovp_unit, space_unit, wan_unit, &
               sgm_unit, ham_unit, save_unit
-   PUBLIC ::  prefix, postfix, work_dir, title
+   PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
    PUBLIC ::  ioname
    PUBLIC ::  read_iodata
    PUBLIC ::  write_iodata
@@ -122,6 +124,8 @@
       SELECT CASE( TRIM(data) )
       CASE ( "dft_data" ) 
            suffix_ = TRIM(suffix_dft_data)
+      CASE ( "export" ) 
+           suffix_ = TRIM(suffix_export)
       CASE ( "subspace" ) 
            suffix_ = TRIM(suffix_subspace)
       CASE ( "overlap_projection" ) 

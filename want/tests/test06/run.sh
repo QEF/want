@@ -20,15 +20,13 @@ MANUAL=" Usage
  
  scf             PWSCF self-consistent calculation
  nscf            PWSCF non-self-consistent calculation
- pw2wan          export PWSCF data to WanT package
- pwscf           perform SCF, NSCF, PW2WAN all together
- window          determine which bads are in the energy window
-                 of interest and then write data accoding to it
+ pwexport        export PWSCF data to WanT package in IOTK fmt
+ pwscf           perform SCF, NSCF, PWEXPORT all together
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
  hamiltonian     writes the hamiltonian matrix elements on the Wannier basis
- want            perform WINDOW, DISENTANGLE, WANNIER and HAMILTONIAN all together 
+ want            perform DISENTANGLE, WANNIER and HAMILTONIAN all together 
  bulk            evaluate the transmittance, for the bulk case
  conductor       as for BULK but using the general conductor geometry code
  all             perform all the above described steps
@@ -53,8 +51,7 @@ PSEUDO_NAME=Au11pw91.mt.UPF
 
 SCF=
 NSCF=
-PW2WAN=
-WINDOW=
+PWEXPORT=
 DISENTANGLE=
 WANNIER=
 HAMILTONIAN=
@@ -68,18 +65,17 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in 
    (scf)            SCF=".TRUE." ;;
    (nscf)           NSCF=".TRUE." ;;
-   (pw2wan)         PW2WAN=".TRUE." ;;
-   (pwscf)          SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ;;
-   (window)         WINDOW=".TRUE." ;;
+   (pwexport)       PWEXPORT=".TRUE." ;;
+   (pwscf)          SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
    (hamiltonian)    HAMILTONIAN=".TRUE." ;;
-   (want)           WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
+   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
                     HAMILTONIAN=".TRUE." ;;
    (bulk)           BULK=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ; 
-                    WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
+   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
+                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
                     HAMILTONIAN=".TRUE." ; BULK=".TRUE." ; CONDUCTOR=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -133,27 +129,15 @@ if [ "$NSCF" = ".TRUE." ] ; then
 fi
    
 #
-# running PWSCF PW2WAN
+# running PWSCF PWEXPORT
 #
-if [ "$PW2WAN" = ".TRUE." ] ; then  
-   $PARA_PREFIX  $PWSCF_BIN/pw2wan.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pw2wan.in > $TEST_HOME/pw2wan.out
+if [ "$PWEXPORT" = ".TRUE." ] ; then  
+   $PARA_PREFIX  $PWSCF_BIN/pw_export.x $PARA_POSTFIX  \
+              <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
    if [ $? = 0 ] ; then 
-      echo "PW2WAN calculation done" 
+      echo "PWEXPORT calculation done" 
    else
-      echo "found some problems in PW2WAN calculation, stopping" ; exit 1
-   fi
-fi
-
-#
-# running WINDOW
-#
-if [ "$WINDOW" = ".TRUE." ] ; then  
-   $WANT_BIN/window.x < $TEST_HOME/want.in > $TEST_HOME/window.out
-   if [ ! -e CRASH ] ; then 
-      echo "WINDOW calculation done" 
-   else
-      echo "found some problems in WINDOW calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in PWEXPORT calculation, stopping" ; exit 1
    fi
 fi
 
