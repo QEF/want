@@ -8,10 +8,50 @@
 
 
   Program <hamiltonian>  v. 1.1.1  starts ...
-  Date 23Nov2004 at 18:21:31 
+  Date  5Dec2004 at 23:22:58 
 
  
+  ======================================================================
+  =                         Lattice parameters                         =
+  ======================================================================
+
+  Alat =  10.3557 (Bohr)
+  Alat =   5.4800 (Ang )
+
+  Crystal axes:
+                in units of Bohr                 in lattice units
+    a(1) = ( 10.3557  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 23.3003  0.0000 )     (   0.0000  2.2500  0.0000 )
+    a(3) = (  0.0000  0.0000 23.3003 )     (   0.0000  0.0000  2.2500 )
+  Crystal axes: (Ang)
+    a(1) = (  5.4800  0.0000  0.0000 )
+    a(2) = (  0.0000 12.3300  0.0000 )
+    a(3) = (  0.0000  0.0000 12.3300 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in lattice units
+    b(1) = (  0.6067  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.2697  0.0000 )     (   0.0000  0.4444  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.4444 )
+
+
+  Subspace data read from file: chain4_WanT.spaces
+
+  Wannier data read from file: chain4_WanT.wan
   K-points generation in Wigner-size: SUCCESS
+
+  Decay of the real space Hamiltonian:
+     R [cry]     |R| [Bohr]      Norm of H(R) [eV]
+   -4   0   0    41.4228120        0.007431100
+   -3   0   0    31.0671090        0.017463210
+   -2   0   0    20.7114060        0.081612524
+   -1   0   0    10.3557030        2.377746407
+    0   0   0     0.0000000       28.718604292
+    1   0   0    10.3557030        2.377746407
+    2   0   0    20.7114060        0.081612524
+    3   0   0    31.0671090        0.017463210
+    4   0   0    41.4228120        0.007431100
+ 
 
   Generating kpts:   2      Segments:   1
   Total kpts number: 100    Max kpt number: 100
@@ -130,7 +170,7 @@
    <global routines>
              clock number :     1
 
-              hamiltonian :     0.17s CPU 
+              hamiltonian :     0.29s CPU 
  
 
 

@@ -5,7 +5,6 @@
    work_dir = './COND/'
    nspts  = 2
    npts   = 100
-   nbands = 16
    efermi = -3.8798    ! from PWSCF scf_cond.out 20 Ry
  /
 G

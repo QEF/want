@@ -21,6 +21,7 @@
 ! SUBROUTINE  zmat_pack( zp, z, n)
 ! SUBROUTINE  zmat_unpack( z, zp, n)
 ! SUBROUTINE  zmat_mul( c, a, opa, b, opb, n )
+! SUBROUTINE  zmat_hdiag( z, w, a, n)
 ! LOGICAL FUNCTION  zmat_unitary( z [,side] [,toll] )
 ! SUBROUTINE  gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, ninvpw, nindpw )
 ! 
@@ -32,6 +33,7 @@ PUBLIC :: zmat_pack
 PUBLIC :: zmat_unpack
 PUBLIC :: zmat_mul
 PUBLIC :: zmat_unitary
+PUBLIC :: zmat_hdiag
 PUBLIC :: gv_indexes
 
 CONTAINS
@@ -140,6 +142,60 @@ CONTAINS
     END IF
     RETURN
   END SUBROUTINE
+
+
+!**********************************************************
+   SUBROUTINE zmat_hdiag( z, w, a, n )
+   !**********************************************************
+    IMPLICIT NONE
+    COMPLEX(dbl), INTENT(IN)  :: a(:,:)
+    COMPLEX(dbl), INTENT(OUT) :: z(:,:)
+    REAL(dbl),    INTENT(OUT) :: w(:)
+    INTEGER,      INTENT(in)  :: n
+
+    INTEGER :: i, j, ierr, info
+    COMPLEX(dbl), ALLOCATABLE :: ap(:)
+    COMPLEX(dbl), ALLOCATABLE :: work(:)
+    REAL(dbl), ALLOCATABLE :: rwork(:)
+    INTEGER, ALLOCATABLE :: ifail(:)
+    INTEGER, ALLOCATABLE :: iwork(:)
+
+    ! get the dimension of the problem
+    IF ( n <= 0 ) CALL errore('zmat_hdiag','Invalid N',ABS(n)+1)
+    IF ( n > SIZE(a,1) .OR. n > SIZE(a,2) ) &
+         CALL errore('zmat_hdiag','Invalid A dimensions',ABS(n)+1)
+    IF ( n > SIZE(z,1) .OR. n > SIZE(z,2) ) &
+         CALL errore('zmat_hdiag','Invalid Z dimensions',ABS(n)+1)
+    
+    ALLOCATE( ap(n*(n+1)/2), STAT=ierr )
+       IF(ierr/=0) CALL errore('zmat_hdiag','allocating ap',ABS(ierr))
+    ALLOCATE( work(2*n), STAT=ierr )
+       IF(ierr/=0) CALL errore('zmat_hdiag','allocating work',ABS(ierr))
+    ALLOCATE( rwork(7*n), STAT=ierr )
+       IF(ierr/=0) CALL errore('zmat_hdiag','allocating rwork',ABS(ierr))
+    ALLOCATE( ifail(n), STAT=ierr )
+       IF(ierr/=0) CALL errore('zmat_hdiag','allocating ifail',ABS(ierr))
+    ALLOCATE( iwork(5*n), STAT=ierr )
+       IF(ierr/=0) CALL errore('zmat_hdiag','allocating iwork',ABS(ierr))
+
+    DO j = 1, n
+    DO i = 1, j
+       ap(i + ( (j-1)*j)/2 ) = a(i,j)
+    ENDDO
+    ENDDO
+
+    CALL ZHPEVX( 'v', 'a', 'u', n, ap(1), ZERO, ZERO, 0, 0, -ONE, i, w(1), &
+                  z(1,1), SIZE(z,1), work(1), rwork(1), iwork(1), ifail(1), info )
+
+    IF ( info < 0 ) CALL errore('zmat_hdiag', 'zhpevx: info illegal value', -info )
+    IF ( info > 0 ) &
+         CALL errore('zmat_hdiag', 'zhpevx: eigenvectors not converged', info )
+     
+    DEALLOCATE( ap, work, rwork, iwork, ifail, STAT=ierr)
+       IF(ierr/=0) CALL errore('zmat_hdiag','deallocating ap...ifail',ABS(ierr))
+
+    RETURN
+  END SUBROUTINE zmat_hdiag
 
 
 !**********************************************************

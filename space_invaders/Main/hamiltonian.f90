@@ -19,16 +19,16 @@
 !     Output files: band.gp, band.dat, matrix.dat, diagonal.dat
 
       USE kinds
-      USE parameters, ONLY : nstrx
+      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE
+      USE input_module, ONLY : verbosity
+      USE parameters, ONLY : nstrx, nsptsx
       USE io_module, ONLY : stdout, ioname, dft_unit, space_unit, wan_unit
       USE io_module, ONLY : work_dir, prefix, postfix
       USE files_module, ONLY : file_open, file_close
-      USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
-      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE
       USE util_module, ONLY : zmat_unitary
 
       USE lattice
@@ -40,25 +40,15 @@
                                        localization_read, localization_deallocate 
 
 
-      IMPLICIT none
+      IMPLICIT NONE 
 
-      INTEGER, PARAMETER :: maxspts = 1000
- 
-      INTEGER :: ntype
-      INTEGER :: natom(mxdtyp)  
-      CHARACTER(LEN=2)              :: nameat(mxdtyp)
-      CHARACTER(LEN=2), ALLOCATABLE :: point(:) ! point(maxspts)
-      CHARACTER(LEN=6)              :: verbosity = 'high'    ! none, low, medium, high
-      CHARACTER(LEN=nstrx)          :: filename
-
-      REAL(dbl) :: rat(3,mxdatm,mxdtyp)
-      REAL(dbl) :: e_min, e_max
       COMPLEX(dbl) :: expo
       COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)    ! kham(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE :: rham(:,:,:)    ! rham(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE :: ham_tmp(:,:)   ! ham_tmp(dimwann,dimwann)
 
-      INTEGER :: nspts, npts, tnkpts, nbands
+      INTEGER :: ntype
+      INTEGER :: nspts, npts, tnkpts
       INTEGER :: nws
       REAL(dbl), ALLOCATABLE :: skpt(:,:) , xval(:) 
       REAL(dbl), ALLOCATABLE :: sxval(:), kpt(:,:)  
@@ -68,9 +58,10 @@
       INTEGER :: i, j, m, n, nkp, irk, idum
       INTEGER :: i1, i2, i3
       INTEGER :: iws
-      REAL(dbl) :: rmod, vec(3)
-      COMPLEX(dbl) :: ctmp
-      CHARACTER(LEN=80) :: stringa, stringa2
+      REAL(dbl) :: rmod, rdum, vec(3)
+      CHARACTER(LEN=80)             :: stringa
+      CHARACTER(LEN=2), ALLOCATABLE :: point(:)    
+      CHARACTER(LEN=nstrx)          :: filename
  
       COMPLEX(dbl), ALLOCATABLE :: ap(:)            ! ap((dimwann*(dimwann+1))/2)
       COMPLEX(dbl), ALLOCATABLE :: z(:,:)           ! z(dimwann,dimwann) 
@@ -82,8 +73,6 @@
       INTEGER :: info
 
       INTEGER :: nt
-      REAL(dbl) :: win_min, win_max, froz_min, froz_max
-      REAL(dbl) :: emax, sgn
       INTEGER   :: ierr
       LOGICAL   :: lfound
 !
@@ -99,8 +88,8 @@
       INTEGER   :: spin_component
       REAL(dbl) :: Efermi
 
-      NAMELIST /INPUT/ prefix, postfix, work_dir, &
-                       nspts, npts, nbands, convert_self_energy, check_self_energy, & 
+      NAMELIST /INPUT/ prefix, postfix, work_dir, verbosity, &
+                       nspts, npts, convert_self_energy, check_self_energy, & 
                        calculate_spectral_func, print_sgm_start, print_sgm_end,  &
                        spin_component, efermi     
 
@@ -122,9 +111,9 @@
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
+      verbosity                   = 'medium' 
       nspts                       = 0
       npts                        = 100
-      nbands                      = dimwann
       convert_self_energy         = .FALSE.
       check_self_energy           = .FALSE.
       calculate_spectral_func     = .FALSE.
@@ -137,9 +126,9 @@
       IF ( i /= 0 )  CALL errore('hamiltonian','Unable to read namelist INPUT',ABS(i))
 
 
-! ... Some checks
-      IF ( nspts > maxspts ) CALL errore('hamiltonian', 'nspts too large',  nspts)
-      IF ( nspts == 0 ) CALL errore('hamiltonian', 'nspts is mandatory',  1)
+! ... Some checks (but many more should be included)
+      IF ( nspts > nsptsx ) CALL errore('hamiltonian', 'nspts too large',  nspts)
+      IF ( nspts <= 0 ) CALL errore('hamiltonian', 'Invalid nspts', ABS(nspts)+1)
  
       ALLOCATE( point( nspts ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nspts )
@@ -163,19 +152,16 @@
       READ(dft_unit) ( avec(i,3), i=1,3 )
       READ(dft_unit) ntype
       DO nt = 1, ntype
-          READ(dft_unit) natom(nt), nameat(nt)
-          DO j = 1, natom(nt)
-             READ(dft_unit) ( rat( i, j, nt ), i=1,3 )
+          READ(dft_unit) idum
+          DO j = 1, idum
+             READ(dft_unit) rdum
           ENDDO
       ENDDO
-      READ(dft_unit) emax
+      READ(dft_unit) rdum
       READ(dft_unit) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
-      READ(dft_unit) win_min, win_max, froz_min, froz_max, dimwann
 
       CLOSE(dft_unit)
 
-      ! ... Usually nbands equals dimwann 
-      IF ( nbands > dimwann ) CALL errore('hamiltonian', 'nbands too large', nbands)
 
 ! ... Get crystal data
       CALL lattice_init()
@@ -231,18 +217,18 @@
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating khan ',dimwann**2 *nkpts)
  
       DO nkp = 1, nkpts
-        DO j = 1, dimwann
-          DO i = 1, j
+         DO j = 1, dimwann
+         DO i = 1, j
             kham(i,j,nkp) = CZERO
             DO m = 1, dimwann
               kham(i,j,nkp) = kham(i,j,nkp) + wan_eig(m,nkp) * &
                                               CONJG( cu(m,i,nkp) ) * cu(m,j,nkp)
-            END DO
+            ENDDO
 ! ...       use hermiticity
             kham(j,i,nkp) = CONJG( kham(i,j,nkp) )
-          END DO
-        END DO
-      END DO
+         ENDDO
+         ENDDO
+      ENDDO
 
 
 ! ... Check that eigenvalues of H(k) are the same as those of H_0(k)
@@ -279,7 +265,6 @@
 
  
 ! ... Fourier transform it: H_ij(k) --> H_ij(R) = (1/N_kpts) sum_k e^{-ikR} H_ij(k)
-
 ! ... Find real-space grid points R in Wigner-Seitz supercell
 
       ALLOCATE( indxws( 3, 3*nkpts ), STAT=ierr )
@@ -293,19 +278,19 @@
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating rham', dimwann**2 *nws )
 
       DO iws = 1, nws
-        DO j = 1, dimwann
-          DO i = 1, dimwann
+         DO j = 1, dimwann
+         DO i = 1, dimwann
             rham(i,j,iws) = CZERO
             DO nkp = 1, nkpts
               expo = EXP( -CI * TPI * (vkpt(1,nkp) * DBLE( indxws(1,iws) ) +   &
               vkpt(2,nkp) * DBLE( indxws(2,iws) ) +                              &
               vkpt(3,nkp) * DBLE( indxws(3,iws) ) ) )
               rham(i,j,iws)=rham(i,j,iws)+expo*kham(i,j,nkp)
-            END DO
+            ENDDO
             rham(i,j,iws) = rham(i,j,iws) / DBLE(nkpts)
-          END DO
-        END DO
-      END DO
+         ENDDO
+         ENDDO
+      ENDDO
  
 
 !
@@ -405,11 +390,14 @@
                  dble( indxws(3,iws) ) * avec(3,3)
         rmod = SQRT( vec(1)**2 + vec(2)**2 + vec(3)**2 )
         !
-        ! summing over all the elements ABS is equivalent to compute
-        ! the 1-norm of the matrix 
-        !
-        WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") indxws(:,iws), rmod, &
-                                                SUM( ABS( rham(:,:,iws) ) )
+        ! compute the 2-norm of H_ij(R)
+        rdum = ZERO
+        DO j=1,dimwann
+        DO i=1,dimwann
+             rdum = rdum + REAL( CONJG( rham(i,j,iws)) * rham(i,j,iws) )
+        ENDDO
+        ENDDO
+        WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") indxws(:,iws), rmod, SQRT(rdum)
       ENDDO
       WRITE(stdout,*) 
 
@@ -433,11 +421,8 @@
       ALLOCATE( ham_tmp( dimwann, dimwann ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating ham_tmp', dimwann**2 )
  
-      e_min = 1.e8         ! some large number
-      e_max = -1.e8
-
-      ALLOCATE( en_band( nbands, tnkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating en_band', nbands*tnkpts )
+      ALLOCATE( en_band( dimwann, tnkpts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating en_band', dimwann*tnkpts )
  
       DO irk = 1, tnkpts
 
@@ -472,16 +457,12 @@
           END DO
         END DO
 
-        CALL ZHPEVX( 'n', 'i', 'u', dimwann, ap(1), ZERO, ZERO, 1, nbands, -ONE,     &
+        CALL ZHPEVX( 'n', 'i', 'u', dimwann, ap(1), ZERO, ZERO, 1, dimwann, -ONE,     &
              m, w(1), z(1,1), dimwann, work(1), rwork(1), iwork(1), ifail(1), info )
         IF ( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (II)',-info)
         IF ( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (II)',info)
 
-        DO i = 1, nbands
-          en_band(i,irk) = w(i)
-          IF( w(i) < e_min ) e_min = w(i)
-          IF( w(i) > e_max ) e_max = w(i)
-        END DO
+        en_band(:,irk) = w(:)
 
         DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
             IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ap-ifail', ABS(ierr))
@@ -491,7 +472,7 @@
  
       OPEN( 27, FILE='band.dat', STATUS='UNKNOWN', FORM='FORMATTED' )
 
-      DO i = 1, nbands
+      DO i = 1, dimwann
         DO irk = 1, tnkpts
           WRITE (27, fmt="(2e16.8)") xval(irk), en_band(i,irk)
         END DO

@@ -13,7 +13,7 @@
    USE kinds, ONLY : dbl
    USE windows_module, ONLY : mxdbnd, windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, mxdnn, kpoints_alloc => alloc
-   USE input_module,  ONLY : dimwann
+   USE input_module,  ONLY : dimwann, input_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
    IMPLICIT NONE
@@ -168,7 +168,12 @@ CONTAINS
        ELSE
           nkpts = nkpts_
        ENDIF
-       IF ( dimwann_ /= dimwann) CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_-dimwann))
+       IF ( input_alloc ) THEN
+           IF ( dimwann_ /= dimwann) &
+                CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_-dimwann))
+       ELSE
+          dimwann = dimwann_
+       ENDIF
 
        !
        CALL overlap_allocate()       

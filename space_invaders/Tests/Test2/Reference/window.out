@@ -8,7 +8,7 @@
 
 
   Program <window>  v. 1.1.1  starts ...
-  Date 23Nov2004 at 18:16: 3 
+  Date  7Dec2004 at 15:59:18 
 
   ======================================================================
   =                   Input data from PW calculation                   =
@@ -97,7 +97,7 @@
    <global routines>
              clock number :     1
 
-                   window :     0.25s CPU 
+                   window :     0.09s CPU 
  
 
 

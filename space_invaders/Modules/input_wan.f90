@@ -26,19 +26,21 @@ MODULE input_module
   REAL(dbl) :: disentangle_thr      ! disentangle threshold for convergence
   REAL(dbl) :: wannier_thr          ! wannier threshold 
   INTEGER :: maxiter, itrial
+  INTEGER :: nprint                 ! each nprint iterations write to stdout
 
   INTEGER :: iphase
   REAL(dbl)  :: alphafix0, alphafix
   INTEGER :: niter, niter0, ncg
-  CHARACTER(10) :: ordering_type    ! should be 'spatial' .OR. 'complete' .OR. 'none' 
+  CHARACTER(10) :: ordering_type    ! should be 'spatial', 'complete', 'none' 
+  CHARACTER(6)  :: verbosity        ! should be 'none', 'low', 'medium', 'high' 
 
   INTEGER :: nshells
   INTEGER :: nwhich( nshx )
 
   namelist / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
     alpha, maxiter, disentangle_thr, wannier_thr, itrial, iphase, alphafix0, &
-    alphafix, niter, niter0, ncg, nshells, nwhich, ordering_type,  &
-    prefix, postfix, work_dir, title
+    alphafix, niter, niter0, ncg, nshells, nwhich, ordering_type, verbosity, &
+    nprint, prefix, postfix, work_dir, title
   
   CHARACTER(15)          :: wannier_center_units
   REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
@@ -94,11 +96,13 @@ CONTAINS
        niter = 500  
        alphafix = 0.5d0
        ncg = 3
+       nprint = 10
        dimwann = 1
        nshells = 1
        nwhich = 1 
        itrial = 3
        ordering_type = 'none'
+       verbosity = 'medium'
 
        ios = 0
        IF( ionode ) THEN
@@ -134,6 +138,8 @@ CONTAINS
          CALL errore( ' input_read ', ' alphafix0 must be positive ', 1 )
        IF ( alphafix <= 0.0d0 ) &
          CALL errore( ' input_read ', ' alphafix must be positive ', 1 )
+       IF ( nprint <= 0 ) &
+         CALL errore( ' input_read ', ' nprint must be positive ', ABS(nprint)+1 )
        IF ( nshells <= 0 ) &
          CALL errore( ' input_read ', ' nshells must be greater than 0 ', 1 )
        IF ( ANY( nwhich( 1:nshells ) <= 0 ) ) &
@@ -147,6 +153,13 @@ CONTAINS
        IF ( TRIM(ordering_type) /= 'NONE'   .AND. TRIM(ordering_type) /= 'SPATIAL' .AND. &
             TRIM(ordering_type) /= 'SPREAD' .AND. TRIM(ordering_type) /= 'COMPLETE' ) &
             CALL errore( ' input_read ', ' invalid ORDERING_TYPE = '//TRIM(ordering_type),1)
+
+       DO i = 1, LEN_TRIM( verbosity )
+          verbosity( i : i ) = capital( verbosity( i : i ) )
+       END DO
+       IF ( TRIM(verbosity) /= 'NONE'   .AND. TRIM(verbosity) /= 'LOW' .AND. &
+            TRIM(verbosity) /= 'MEDIUM' .AND. TRIM(verbosity) /= 'HIGH' ) &
+            CALL errore( ' input_read ', ' invalid verbosity = '//TRIM(verbosity),1)
 
        ALLOCATE( gauss_typ(dimwann), STAT=ierr )
           IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating gauss_typ ', dimwann )

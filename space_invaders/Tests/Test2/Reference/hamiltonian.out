@@ -8,10 +8,46 @@
 
 
   Program <hamiltonian>  v. 1.1.1  starts ...
-  Date 23Nov2004 at 18:16:15 
+  Date  7Dec2004 at 15:59:20 
 
  
+  ======================================================================
+  =                         Lattice parameters                         =
+  ======================================================================
+
+  Alat =  20.0000 (Bohr)
+  Alat =  10.5835 (Ang )
+
+  Crystal axes:
+                in units of Bohr                 in lattice units
+    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.5835  0.0000  0.0000 )
+    a(2) = (  0.0000 10.5835  0.0000 )
+    a(3) = (  0.0000  0.0000  2.5000 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in lattice units
+    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+
+
+  Subspace data read from file: gold1_WanT.spaces
+
+  Wannier data read from file: gold1_WanT.wan
   K-points generation in Wigner-size: SUCCESS
+
+  Decay of the real space Hamiltonian:
+     R [cry]     |R| [Bohr]      Norm of H(R) [eV]
+    0   0  -2     9.4486400        0.000000003
+    0   0  -1     4.7243200        0.000000003
+    0   0   0     0.0000000       12.413769066
+    0   0   1     4.7243200        0.000000003
+    0   0   2     9.4486400        0.000000003
+ 
 
   Generating kpts:   2      Segments:   1
   Total kpts number: 100    Max kpt number: 100
@@ -130,7 +166,7 @@
    <global routines>
              clock number :     1
 
-              hamiltonian :     0.03s CPU 
+              hamiltonian :     0.24s CPU 
  
 
 

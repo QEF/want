@@ -14,7 +14,7 @@
    USE windows_module, ONLY : dimwin, mxdbnd, lcompspace, windows_alloc => alloc, &
                               windows_allocate
    USE kpoints_module, ONLY : nkpts, kpoints_alloc => alloc
-   USE input_module, ONLY : dimwann
+   USE input_module, ONLY : dimwann, input_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
    IMPLICIT NONE
@@ -199,11 +199,13 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr MXDBND',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+       CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
 
        IF ( kpoints_alloc ) THEN
            IF ( nkpts_ /= nkpts ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts-nkpts_))
        ELSE
-          nkpts = nkpts_
+           nkpts = nkpts_
        ENDIF
        IF ( windows_alloc ) THEN
            IF ( mxdbnd_ /=mxdbnd) CALL errore(subname,'Invalid MXDBND',ABS(mxdbnd-mxdbnd_))
@@ -211,10 +213,12 @@ CONTAINS
            mxdbnd = mxdbnd_
            CALL windows_allocate()
        ENDIF
+       IF ( input_alloc ) THEN
+           IF ( dimwann_ /= dimwann) CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_)+1)
+       ELSE
+           dimwann = dimwann_
+       ENDIF
 
-       CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
-       IF ( dimwann_ /= dimwann) CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_)+1)
        !
        ! no check is done for dimwin
        CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)

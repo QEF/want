@@ -13,7 +13,7 @@
    USE kinds, ONLY : dbl
    USE constants, ONLY : ZERO
    USE kpoints_module, ONLY : nkpts, kpoints_alloc => alloc
-   USE input_module, ONLY : dimwann
+   USE input_module, ONLY : dimwann, input_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
    IMPLICIT NONE
@@ -191,11 +191,14 @@ CONTAINS
 
        CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
-       IF ( dimwann_ /= dimwann) CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_)+1)
+       IF ( input_alloc ) THEN
+          IF ( dimwann_ /= dimwann) CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_)+1)
+       ELSE
+          dimwann = dimwann_
+       ENDIF
 
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
-       !
        IF ( kpoints_alloc ) THEN
            IF ( nkpts_ /= nkpts ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts-nkpts_))
        ELSE

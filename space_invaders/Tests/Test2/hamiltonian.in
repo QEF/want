@@ -5,7 +5,6 @@
    work_dir = './'
    nspts  = 2
    npts   = 100
-   nbands = 6
    efermi = -5.0679    ! from PWSCF scf.out 25 Ry
  /
 G

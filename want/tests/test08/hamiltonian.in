@@ -5,7 +5,6 @@
    work_dir = './'
    nspts  = 2
    npts   = 100
-   nbands = 4
    efermi = -3.0895
 /
 G

@@ -24,7 +24,7 @@
        USE version_module, ONLY : version_number
        USE input_module
        USE converters_module, ONLY : cart2cry
-       USE util_module, ONLY : zmat_unitary
+       USE util_module, ONLY : zmat_unitary, zmat_hdiag
        USE iotk_module
     
        USE kpoints_module, ONLY: nk, nkpts, s, vkpt, kpoints_init, kpoints_deallocate
@@ -51,7 +51,6 @@
        EXTERNAL  :: lambda_avg
        REAL(dbl) :: lambda_avg
 
-       CHARACTER(LEN=6)     :: verbosity = 'none' ! none, low, medium, high
        CHARACTER(LEN=nstrx) :: filename 
 
        REAL(dbl) :: klambda
@@ -63,16 +62,10 @@
 
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: lamp_tmp(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: ap(:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
-       COMPLEX(dbl), ALLOCATABLE :: work(:)
        REAL(dbl), ALLOCATABLE :: w(:)
-       REAL(dbl), ALLOCATABLE :: rwork(:)
-       INTEGER, ALLOCATABLE :: ifail(:)
-       INTEGER, ALLOCATABLE :: iwork(:)
 
-
-       INTEGER :: info, m
+       INTEGER :: info, m, dim
        INTEGER :: i, j, l, i1, i2, i3 
        INTEGER :: nkp, iter
        INTEGER :: nt, ja, nbandi
@@ -228,21 +221,10 @@
        ALLOCATE( lamp_tmp(mxdbnd,mxdbnd,nkpts), STAT=ierr )
            IF( ierr /=0 ) &
            CALL errore(' disentangle ', ' allocating lamp_tmp ',(mxdbnd**2*nkpts))
-       ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
-           IF( ierr /=0 )  &
-           CALL errore(' disentangle ', ' allocating ap ', ((mxdbnd*(mxdbnd+1))/2) )
        ALLOCATE( z(mxdbnd,mxdbnd), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating z ', (mxdbnd*mxdbnd) )
-       ALLOCATE( work(2*mxdbnd), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating work ', 2*mxdbnd )
        ALLOCATE( w(mxdbnd), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating w ', mxdbnd )
-       ALLOCATE( rwork(7*mxdbnd), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating rwork ', 7*mxdbnd )
-       ALLOCATE( ifail(mxdbnd), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ifail ', mxdbnd )
-       ALLOCATE( iwork(5*mxdbnd), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating iwork ', 5*mxdbnd )
        ALLOCATE( komega_i_est(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating komega_i_est ', nkpts )
 
@@ -448,29 +430,15 @@
              END IF
            END DO
          ENDIF    !   iter = 1
-!
-!        WRITE( stdout, fmt=" (/,2x,'Iteration = ',i5) ") iter
-         omega_i_est = zero
+         omega_i_est = ZERO
 
          DO nkp = 1, nkpts
  
 ! ...    Diagonalize z matrix mtrx_in at all relevant K-points
  
            IF ( dimwann > dimfroz(nkp) )  THEN
-             DO j = 1, dimwin(nkp)-dimfroz(nkp)
-               DO i = 1, j
-                 ap(i + ( (j-1)*j)/2 ) = mtrx_in(i,j,nkp)
-               END DO
-             END DO
-
-             CALL zhpevx( 'v', 'a', 'u', dimwin(nkp)-dimfroz(nkp), ap(1),             &
-                  ZERO, ZERO, 0, 0, -ONE, m, w(1), z(1,1), mxdbnd, work(1), rwork(1),  &
-                  iwork(1), ifail(1), info )
-
-             IF ( info < 0 ) &
-                   CALL errore(' disentangle ', ' zhpevx: info illegal value (I)', info )
-             IF ( info > 0 ) CALL errore(' disentangle ', &
-                                   ' zhpevx: eigenvectors failed to converge (I)', info )
+                 dim = dimwin(nkp)-dimfroz(nkp)
+                 CALL zmat_hdiag( z(:,:), w(:), mtrx_in(:,:,nkp), dim)
            END IF
  
 ! ...      Calculate K-point contribution to omega_i_est
@@ -621,21 +589,7 @@
                ENDDO
            ENDDO
            ENDDO
-
-           DO j=1,dimwann
-              DO i = 1, j
-                 ap(i+((j-1)*j)/2) = ham(i,j,nkp)
-              ENDDO
-           ENDDO
-
-           CALL zhpevx( 'v', 'a', 'u', dimwann, ap(1), ZERO, ZERO, 0, 0, -ONE, m, & 
-                         wan_eig(1,nkp), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), &
-                         ifail(1), info )
-           IF ( info < 0 ) CALL errore(' disentangle ', &
-                                       ' zhpevx: info illegal value (II)', -info )
-           IF ( info > 0 ) CALL errore(' disentangle ', &
-                                       ' zhpevx: eigenvectors failed to converge (II)',info)
- 
+           CALL zmat_hdiag(z(:,:), w(:), ham(:,:,nkp), dimwann)
  
            !
            ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
@@ -678,42 +632,38 @@
  
 !        nkp loop
          DO nkp = 1, nkpts
-           DO j = 1, dimwin(nkp)-dimwann
-             DO i = 1, dimwin(nkp)-dimwann
-               ham(i,j,nkp) = czero
-               DO l = 1, dimwin(nkp)
-                 ham(i,j,nkp) = ham(i,j,nkp) + CONJG(camp(l,i,nkp))*camp(l,j,nkp)*eiw(l,nkp)
-               END DO
-             END DO
-           END DO
 
-           DO j = 1, dimwin(nkp)-dimwann
-             DO i = 1, j
-               ap(i+((j-1)*j)/2) = ham(i,j,nkp)
-             END DO
-           END DO
+            IF ( dimwin(nkp)-dimwann > 0 ) THEN
+               DO j = 1, dimwin(nkp)-dimwann
+               DO i = 1, dimwin(nkp)-dimwann
+                   ham(i,j,nkp) = czero
+                   DO l = 1, dimwin(nkp)
+                      ham(i,j,nkp) = ham(i,j,nkp) + CONJG(camp(l,i,nkp)) * &
+                                                    camp(l,j,nkp) * eiw(l,nkp)
+                   ENDDO
+               ENDDO
+               ENDDO
 
-           CALL zhpevx( 'v', 'a', 'u', dimwin(nkp)-dimwann, ap(1),             &
-                ZERO, ZERO, 0, 0, -ONE, m, w(1), z(1,1), mxdbnd, work(1),      &
-                rwork(1), iwork(1), ifail(1), info )
-           IF ( info < 0 ) CALL errore(' disentangle ', &
-                                ' zhpevx: info illegal value (II)', -info )
-           IF ( info > 0 ) CALL errore(' disentangle ', &
-                                ' zhpevx: eigenvectors did not convergence (II)', info )
+               dim = dimwin(nkp)-dimwann
+               CALL zmat_hdiag( z(:,:), w(:), ham(:,:,nkp), dim )
  
-! ...      Calculate amplitudes of the energy eigenvectors in the complement subspace in
-!          terms of the original energy eigenvectors
- 
-           DO j = 1, dimwin(nkp)-dimwann
-             DO i = 1, dimwin(nkp)
-               comp_eamp(i,j,nkp) = CZERO
-               do l = 1, dimwin(nkp)-dimwann
-                 comp_eamp(i,j,nkp) = comp_eamp(i,j,nkp)+z(l,j)*camp(i,l,nkp)
-               END DO
-             END DO
-           END DO
+               ! ... Calculate amplitudes of the energy eigenvectors in the complement 
+               !     subspace in terms of the original energy eigenvectors
+               !  
+               DO j = 1, dimwin(nkp)-dimwann
+               DO i = 1, dimwin(nkp)
+                  comp_eamp(i,j,nkp) = CZERO
+                  DO l = 1, dimwin(nkp)-dimwann
+                     comp_eamp(i,j,nkp) = comp_eamp(i,j,nkp)+z(l,j)*camp(i,l,nkp)
+                  ENDDO
+               ENDDO
+               ENDDO
 
-         END DO ! end ok nkp loop
+            ELSE
+               comp_eamp(:,:,nkp) = CZERO
+            ENDIF
+
+         ENDDO ! end ok nkp loop
 
        ENDIF    ! lcompspace
 
@@ -744,20 +694,10 @@
        DEALLOCATE( lamp_tmp, STAT=ierr )
            IF (ierr/=0)  CALL errore('disentangle', 'deallocating LAMP_TMP', ABS(ierr))
 
-       DEALLOCATE( ap, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ap ', ABS(ierr) )
        DEALLOCATE( z, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating z ', ABS(ierr) )
-       DEALLOCATE( work, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating work ', ABS(ierr) )
        DEALLOCATE( w, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating w ', ABS(ierr) )
-       DEALLOCATE( rwork, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating rwork ', ABS(ierr) )
-       DEALLOCATE( ifail, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ifail ', ABS(ierr) )
-       DEALLOCATE( iwork, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating iwork ', ABS(ierr) )
 
        CALL cleanup()
 

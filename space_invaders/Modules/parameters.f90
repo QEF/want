@@ -15,33 +15,26 @@ module parameters
   !
   !       First all the parameter declaration
   !
-  INTEGER , PARAMETER ::                                                 &
-       nstrx  = 600,   &! max lenght for strings
-       ntypx  = 6,     &! max number of different types of atom
-       npsx   = ntypx, &! max number of different PPs (obsolete)
-       npkx   = 40000, &! max number of k-points               
-       nshx   = 200,   &! max number of nearest neighb. k-point shells
-       lmaxx  = 3,     &! max non local angular momentum       
-       nchix  = 6,     &! max number of atomic wavefunctions per atom
-       ndm    = 2000    ! max number of points in the atomic radial mesh
+  INTEGER , PARAMETER ::   &
+       nstrx  = 600,       &! max lenght for strings
+       ntypx  = 6,         &! max number of different types of atom
+       npsx   = ntypx,     &! max number of different PPs (obsolete)
+       npkx   = 40000,     &! max number of k-points               
+       nshx   = 200,       &! max number of nearest neighb. k-point shells
+       lmaxx  = 3,         &! max non local angular momentum       
+       nchix  = 6,         &! max number of atomic wavefunctions per atom
+       ndm    = 2000        ! max number of points in the atomic radial mesh
 
-  INTEGER, PARAMETER  :: &
+  INTEGER , PARAMETER  ::  &
        nbrx = 8,           &! max number of beta functions
        lqmax= 2*lmaxx+1,   &! max number of angular momenta of Q
        nqfm = 8             ! max number of coefficients in Q smoothing
 
-  !
-  ! ...   More parameter for the CP codes
-  !
-  INTEGER, PARAMETER :: mmaxx = 1301    ! maximum mesh size for pseudo
-  INTEGER, PARAMETER :: cp_lmax = 4     ! maximum number of channels
-                                        ! (s,p,d,f)
-  INTEGER, PARAMETER :: nacx  = 10      ! maximum number of averaged 
-                                        ! quantities saved to the restart
-  INTEGER, PARAMETER :: nsx  = 13       ! maximum number of species
-  INTEGER, PARAMETER :: natx  = 599     ! maximum number of atoms
+  INTEGER , PARAMETER  ::  &
+       nsptsx = 1000       ! max number of interpolated kpoints 
+
+  INTEGER, PARAMETER :: natx  = 600     ! maximum number of atoms
   INTEGER, PARAMETER :: nbndxx = 1000   ! maximum number of electronic states
-  INTEGER, PARAMETER :: ncnsx = 101     ! maximum number of constraints
   INTEGER, PARAMETER :: nspinx = 2      ! maximum number of spinors
   !
 end module parameters

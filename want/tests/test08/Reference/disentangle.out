@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 23Nov2004 at 18:18:28 
+  Date  5Dec2004 at 11:45:41 
 
   ======================================================================
   =                         Lattice parameters                         =
@@ -130,14 +130,16 @@
     Mixing parameter (alpha)=  0.500
     Max iter =   500
     Starting guess orbitals (itrial) =     3
-
-  Initial trial subspace: projected localized orbitals
-
   Gaussian centers: (cart. coord. in Bohr)
     Center =   1 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
     Center =   2 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
     Center =   3 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
     Center =   4 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
+
+  Overlap and projections written on file: al_WanT.ovp
+
+  Initial trial subspace: projected localized orbitals
+
 
   ======================================================================
   =                   Starting Iteration loop                          =
@@ -649,14 +651,16 @@
   Final Omega_I (Bohr^2, Angstrom^2)      7.20290471        2.01701714
  ======================================================================
 
+  Subspace data written on file: al_WanT.spaces
+
    <global routines>
              clock number :     5
 
-              disentangle :  2m56.92s CPU 
+              disentangle :  5m32.16s CPU 
  
-                  bshells :     0.19s CPU
-                  overlap :    59.26s CPU
-             overlap_base :    59.25s CPU
-               projection :    16.45s CPU
+                  bshells :     0.04s CPU
+                  overlap :    11.19s CPU
+             overlap_base :    11.18s CPU
+               projection :     8.63s CPU
 
 
