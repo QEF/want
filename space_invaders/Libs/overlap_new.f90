@@ -47,6 +47,8 @@
  
       IMPLICIT NONE
 
+      ! ... Input Variables
+
       INTEGER :: mxdgve, mxddim, mxdnrk, mxdnn, mxdbnd 
       INTEGER :: ngx, ngy, ngz, nrplwv, nkpts
       INTEGER :: kgv(3,mxdgve), isort(mxddim,mxdnrk)
@@ -56,14 +58,15 @@
       INTEGER :: nncell(3,mxdnrk,mxdnn)
       REAL*8 :: evecr(mxddim,mxdbnd,mxdnrk)
       REAL*8 :: eveci(mxddim,mxdbnd,mxdnrk)
- 
-      COMPLEX*16 :: cptwfp(nrplwv+1,mxdbnd,nkpts)
       COMPLEX*16 :: cm(mxdbnd,mxdbnd,mxdnn,mxdnrk)
-      REAL*8 :: dnlg(nrplwv,3,nkpts)
-      REAL*8 :: dnlkg(nrplwv,0:3,nkpts)
-      REAL*8 :: datake(7,nrplwv,nkpts)
-      REAL*8 :: dirc(3,3),recc(3,3)
+      REAL*8 :: vkpt(3,mxdnrk)
+      INTEGER :: dimwin(mxdnrk)
       REAL*8 :: avec(3,3)
+      REAL*8 :: enmax
+
+      ! ... Local Variables
+ 
+      REAL*8 :: dirc(3,3),recc(3,3)
       REAL*8 :: diri(3,3),reci(3,3)
 
       INTEGER :: nplwv,mplwv
@@ -76,17 +79,20 @@
       INTEGER :: nkp, np, npoint
       INTEGER :: nkb
       INTEGER :: nkp2, npoint2, nn, iprint, nb
+
+      COMPLEX*16, ALLOCATABLE :: cptwfp(:,:,:)
+      REAL*8, ALLOCATABLE  :: dnlg(:,:,:)
+      REAL*8, ALLOCATABLE  :: dnlkg(:,:,:)
+      REAL*8, ALLOCATABLE  :: datake(:,:,:)
       INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
+      INTEGER, ALLOCATABLE  :: ninvpw(:,:)
+      INTEGER, ALLOCATABLE  :: nindpw(:,:)
+      INTEGER, ALLOCATABLE  :: lpctx(:), lpcty(:), lpctz(:)
+      INTEGER, ALLOCATABLE  :: nplwkp(:)
 
-      INTEGER :: ninvpw(0:(ngx*ngy*ngz),mxdnrk)
-      INTEGER :: nindpw(nrplwv,nkpts)
-      INTEGER :: lpctx(ngx), lpcty(ngy), lpctz(ngz)
-      INTEGER :: nplwkp(mxdnrk)
+      INTEGER :: ierr
 
-      REAL*8 :: vkpt(3,mxdnrk)
-      INTEGER :: dimwin(mxdnrk)
-
-      REAL*8 :: volc, voli, enmax
+      REAL*8 :: volc, voli
       REAL*8 :: bohr, har, ryd
       PARAMETER ( ryd  = 13.605826d0 )
       PARAMETER ( har  = 2.d0 * ryd )
@@ -103,6 +109,46 @@
 
       enmax = enmax * har
 
+      ALLOCATE( cptwfp( nrplwv+1 , mxdbnd, nkpts ), STAT=ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating cptwfp ', ( (nrplwv+1) * mxdbnd * nkpts ) )
+      END IF
+      ALLOCATE( dnlg(nrplwv,3,nkpts), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating dnlg ', (nrplwv*3*nkpts) )
+      END IF
+      ALLOCATE( dnlkg(nrplwv,0:3,nkpts), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating dnlkg ', (nrplwv*4*nkpts) )
+      END IF
+      ALLOCATE( datake(7,nrplwv,nkpts), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating datake ', (7*nrplwv*nkpts) )
+      END IF
+      ALLOCATE( ninvpw(0:(ngx*ngy*ngz),mxdnrk), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating ninvpw ', ( (ngx*ngy*ngz+1)*mxdnrk ) ) 
+      END IF
+      ALLOCATE( nindpw(nrplwv,nkpts),  STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating nindpw ', ( nrplwv*nkpts ) )
+      END IF
+      ALLOCATE( lpctx(ngx), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating lpctx ', ( ngx ) )
+      END IF
+      ALLOCATE( lpcty(ngy), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating lpcty ', ( ngy ) )
+      END IF
+      ALLOCATE( lpctz(ngz), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating lpctz ', ( ngz ) )
+      END IF
+      ALLOCATE( nplwkp(mxdnrk), STAT = ierr )
+      IF( ierr /= 0 ) THEN
+        CALL errore(' overlap ', ' allocating nplwkp ', ( mxdnrk ) )
+      END IF
 
 ! ... do the dot product as in wannier and define indeces for G vectors
 
@@ -294,6 +340,17 @@
       DEALLOCATE( nx2 )
       DEALLOCATE( ny2 )
       DEALLOCATE( nz2 )
+      DEALLOCATE( cptwfp )
+      DEALLOCATE( dnlg )
+      DEALLOCATE( dnlkg )
+      DEALLOCATE( datake )
+      DEALLOCATE( ninvpw )
+      DEALLOCATE( nindpw )
+      DEALLOCATE( lpctx )
+      DEALLOCATE( lpcty )
+      DEALLOCATE( lpctz )
+      DEALLOCATE( nplwkp )
+
  
       WRITE(*,*) ' Overlap, done. '
       WRITE(*,*) 

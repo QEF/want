@@ -123,6 +123,7 @@
        INTEGER :: root, mpime, gid, nproc
        LOGICAL :: ionode
        INTEGER :: ionode_id
+       INTEGER :: ierr
 
 !      
 ! ...  End declarations and dimensions
@@ -256,42 +257,144 @@
        ENDDO
        nkpts = nkp
 
-       ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2) )
-       ALLOCATE( z(mxdbnd,mxdbnd) )
-       ALLOCATE( work(2*mxdbnd) )
-       ALLOCATE( w(mxdbnd) )
-       ALLOCATE( rwork(7*mxdbnd) )
-       ALLOCATE( ifail(mxdbnd) )
-       ALLOCATE( iwork(5*mxdbnd) )
-       ALLOCATE( isort(mxddim,nkpts) )
-       ALLOCATE( mtxd(nkpts) )
-       ALLOCATE( evecr(mxddim,mxdbnd,nkpts) )
-       ALLOCATE( eveci(mxddim,mxdbnd,nkpts) )
-       ALLOCATE( eiw(mxdbnd,nkpts) )
+       ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing ap ', ((mxdbnd*(mxdbnd+1))/2) )
+       END IF
+       ALLOCATE( z(mxdbnd,mxdbnd), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing z ', (mxdbnd*mxdbnd) )
+       END IF
+       ALLOCATE( work(2*mxdbnd), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing work ', 2*mxdbnd )
+       END IF
+       ALLOCATE( w(mxdbnd), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing w ', mxdbnd )
+       END IF
+       ALLOCATE( rwork(7*mxdbnd), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing rwork ', 7*mxdbnd )
+       END IF
+       ALLOCATE( ifail(mxdbnd), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing ifail ', mxdbnd )
+       END IF
+       ALLOCATE( iwork(5*mxdbnd), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing iwork ', 5*mxdbnd )
+       END IF
+       ALLOCATE( isort(mxddim,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing isort ', mxddim*nkpts )
+       END IF
+       ALLOCATE( mtxd(nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing mtxd ', nkpts )
+       END IF
+       ALLOCATE( evecr(mxddim,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing evecr ', mxddim*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( eveci(mxddim,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing eveci ', mxddim*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( eiw(mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing eiw ', mxdbnd*nkpts )
+       END IF
 
-       ALLOCATE( nnshell(nkpts,mxdnn) )
-       ALLOCATE( nnlist(nkpts,mxdnn) )
-       ALLOCATE( nncell(3,nkpts,mxdnn) )
-       ALLOCATE( nntot(nkpts) )
-       ALLOCATE( neigh(nkpts,mxdnnh) )
-       ALLOCATE( bk(3,nkpts,mxdnn) ) 
-       ALLOCATE( dnn(mxdnn) ) 
-       ALLOCATE( wb(nkpts,mxdnn) )
-       ALLOCATE( bka(3,mxdnnh) )
-       ALLOCATE( cm(mxdbnd,mxdbnd,mxdnn,nkpts) )
+       ALLOCATE( nnshell(nkpts,mxdnn), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing nnshell ', nkpts*mxdnn )
+       END IF
+       ALLOCATE( nnlist(nkpts,mxdnn), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing nnlist ', nkpts*mxdnn )
+       END IF
+       ALLOCATE( nncell(3,nkpts,mxdnn), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing nncell ', 3*nkpts*mxdnn )
+       END IF
+       ALLOCATE( nntot(nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing nntot ', nkpts )
+       END IF
+       ALLOCATE( neigh(nkpts,mxdnnh), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing neigh ', nkpts*mxdnnh )
+       END IF
+       ALLOCATE( bk(3,nkpts,mxdnn), STAT = ierr ) 
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing bk ', 3*nkpts*mxdnn )
+       END IF
+       ALLOCATE( dnn(mxdnn), STAT = ierr ) 
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing dnn ', mxdnn )
+       END IF
+       ALLOCATE( wb(nkpts,mxdnn), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing wb ', nkpts*mxdnn )
+       END IF
+       ALLOCATE( bka(3,mxdnnh), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing bka ', 3*mxdnnh )
+       END IF
+       ALLOCATE( cm(mxdbnd,mxdbnd,mxdnn,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing cm ', mxdbnd*mxdbnd*mxdnn*nkpts )
+       END IF
 
-       ALLOCATE( komega_i_est(nkpts) )
-       ALLOCATE( lamp(mxdbnd,mxdbnd,nkpts) )
-       ALLOCATE( camp(mxdbnd,mxdbnd,nkpts) )
-       ALLOCATE( eamp(mxdbnd,mxdbnd,nkpts) )
-       ALLOCATE( mtrx_in(mxdbnd,mxdbnd,nkpts) )
-       ALLOCATE( mtrx_out(mxdbnd,mxdbnd,nkpts) )
-       ALLOCATE( dimwin(nkpts) )
-       ALLOCATE( dimfroz(nkpts) )
-       ALLOCATE( indxfroz(mxdbnd,nkpts) )
-       ALLOCATE( indxnfroz(mxdbnd,nkpts) )
-       ALLOCATE( frozen(mxdbnd,nkpts) )
-       ALLOCATE( ham(mxdbnd,mxdbnd,nkpts) )
+       ALLOCATE( komega_i_est(nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing komega_i_est ', nkpts )
+       END IF
+       ALLOCATE( lamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing lamp ', mxdbnd*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( camp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing camp ', mxdbnd*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( eamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing eamp ', mxdbnd*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( mtrx_in(mxdbnd,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing mtrx_in ', mxdbnd*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( mtrx_out(mxdbnd,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing mtrx_out ', mxdbnd*mxdbnd*nkpts )
+       END IF
+       ALLOCATE( dimwin(nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing dimwin ', nkpts )
+       END IF
+       ALLOCATE( dimfroz(nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing dimfroz ', nkpts )
+       END IF
+       ALLOCATE( indxfroz(mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing indxfroz ', mxdbnd*nkpts )
+       END IF
+       ALLOCATE( indxnfroz(mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing indxnfroz ', mxdbnd*nkpts )
+       END IF
+       ALLOCATE( frozen(mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing frozen ', mxdbnd*nkpts )
+       END IF
+       ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT = ierr )
+       IF( ierr /=0 ) THEN
+         CALL errore(' space ', ' allocateing ham ', mxdbnd*mxdbnd*nkpts )
+       END IF
 !
 ! ...  Next line added by ANDREA (28 jan 2004) 
        ALLOCATE( imin(nkpts), imax(nkpts) )
