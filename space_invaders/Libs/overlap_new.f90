@@ -1,16 +1,15 @@
-       SUBROUTINE overlap( kgv, vkpt, avec, evecr, eveci, isort, mtxd, dimwin,                  &
-                           nntot, nnlist, nncell, cm, enmax,  mxdgve, mxddim, mxdnrk, mxdnn,    &
-                           mxdbnd, ngx, ngy, ngz, nrplwv, nkpts )
-
-
+       SUBROUTINE overlap( kgv, vkpt, avec, evecr, eveci, isort, mtxd, &
+                           dimwin, nntot, nnlist, nncell, cm, enmax, &
+                           mxdgve, mxddim, mxdnrk, mxdnn, mxdbnd, &
+                           ngx, ngy, ngz, nrplwv, nkpts )
  
-!...............................................................................................
-! april 2002: rewritten for improved performance based on the original version
-! by Ivo Souza, using the wannier.f convention (MBN)
+!.....................................................................
+! april 2002: rewritten for improved performance based on the original
+! version by Ivo Souza, using the wannier.f convention (MBN)
 !
 ! input:
 !
-! nkpts             # of k-points at which the overlap matrix is being calculated
+! nkpts             # of k-points where the overlap matrix is being calculated
 ! kgv(i,n)          i-th component (reciprocal lattice coordinates) of
 !                   the n-th g-vector ordered by stars of increasing length
 ! vkpt(i,nkp)       special k-points in reciprocal lattice coordinates
@@ -43,7 +42,7 @@
 !                   and vkpt(1:3,nnlist(kpt,nnx) is k+b (or its periodic image
 !                   in the "home brillouin zone")
 !
-!...............................................................................................
+!.....................................................................
 
  
       IMPLICIT NONE
@@ -75,8 +74,9 @@
       INTEGER :: nnx, ndnn, nnsh
       INTEGER :: l, m, n, i, j ,nx, ny, nz
       INTEGER :: nkp, np, npoint
-      INTEGER :: nkb, nx2, ny2, nz2
+      INTEGER :: nkb
       INTEGER :: nkp2, npoint2, nn, iprint, nb
+      INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
 
       INTEGER :: ninvpw(0:(ngx*ngy*ngz),mxdnrk)
       INTEGER :: nindpw(nrplwv,nkpts)
@@ -161,7 +161,7 @@
 !     WRITE(*,*) ' DEBUG intf ENMAX ', enmax
 !     WRITE(*,*) ' DEBUG intf NRPLWV ', nrplwv
 
-      CALL genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt,   &
+      CALL genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
            lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
 
       DO nkp = 1, nkpts
@@ -242,35 +242,58 @@
 !     Bloch notation). The integral gives a delta, and so we take G2s that
 !     are G1s+G0, i.e. nx+nncell, etc...
 
+      cm(:,:,:,:) = (0.d0, 0.d0)
+      ALLOCATE( nx2(ngx) )
+      ALLOCATE( ny2(ngy) )
+      ALLOCATE( nz2(ngz) )
+
       DO nkp = 1, nkpts
         DO nn = 1 ,nntot(nkp)
           nkp2 = nnlist(nkp,nn)
-          DO i = 1, dimwin(nkp)
-            DO j = 1, dimwin(nkp2)
-              cm(i,j,nn,nkp) = ( 0.d0, 0.d0 )
-              DO nz = 1, ngz
-                DO ny = 1, ngy
-                  DO nx = 1, ngx
-                    npoint = nx + (ny-1)*ngx + (nz-1)*ngy*ngx
-                    nx2 = nx + nncell(1,nkp,nn)
-                    ny2 = ny + nncell(2,nkp,nn)
-                    nz2 = nz + nncell(3,nkp,nn)
-                    IF( nx2 < 1 ) nx2 = nx2 + ngx
-                    IF( ny2 < 1 ) ny2 = ny2 + ngy
-                    IF( nz2 < 1 ) nz2 = nz2 + ngz
-                    IF( nx2 > ngx ) nx2 = nx2 - ngx
-                    IF( ny2 > ngy ) ny2 = ny2 - ngy
-                    IF( nz2 > ngz ) nz2 = nz2 - ngz
-                    npoint2 = nx2 + (ny2-1)*ngx + (nz2-1)*ngy*ngx   
-                    cm(i,j,nn,nkp)=cm(i,j,nn,nkp) + cptwfp(ninvpw(npoint,nkp),i,nkp) *  &
-     &              CONJG( cptwfp(ninvpw(npoint2,nkp2),j,nkp2) )
-                  END DO
+
+          ! set up indices
+          DO nx = 1, ngx
+            nx2(nx) = nx + nncell(1,nkp,nn)
+            IF( nx2(nx) < 1 ) nx2(nx) = nx2(nx) + ngx
+            IF( nx2(nx) > ngx ) nx2(nx) = nx2(nx) - ngx
+          END DO
+          DO ny = 1, ngy
+            ny2(ny) = ny + nncell(2,nkp,nn)
+            IF( ny2(ny) < 1 ) ny2(ny) = ny2(ny) + ngy
+            IF( ny2(ny) > ngy ) ny2(ny) = ny2(ny) - ngy
+            ny2(ny) = (ny2(ny) - 1) * ngx
+          END DO
+          DO nz = 1, ngz
+            nz2(nz) = nz + nncell(3,nkp,nn)
+            IF( nz2(nz) < 1 ) nz2(nz) = nz2(nz) + ngz
+            IF( nz2(nz) > ngz ) nz2(nz) = nz2(nz) - ngz
+            nz2(nz) = (nz2(nz) - 1) * ngx * ngy
+          END DO
+
+          npoint = 0
+          DO nz = 1, ngz
+            DO ny = 1, ngy
+              DO nx = 1, ngx
+                npoint = npoint + 1
+                npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
+
+                DO j = 1, dimwin(nkp2)
+                  cm(1:dimwin(nkp), j, nn, nkp) = &
+                      cm(1:dimwin(nkp), j, nn, nkp) + &
+                      cptwfp(ninvpw(npoint,nkp), 1:dimwin(nkp), nkp) * &
+                      CONJG( cptwfp(ninvpw(npoint2,nkp2), j, nkp2) )
                 END DO
+
               END DO
             END DO
           END DO
+
         END DO
       END DO
+
+      DEALLOCATE( nx2 )
+      DEALLOCATE( ny2 )
+      DEALLOCATE( nz2 )
  
       WRITE(*,*) ' Overlap, done. '
       WRITE(*,*) 
