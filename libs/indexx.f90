@@ -107,7 +107,7 @@
         indx(j) = indxt
         jstack = jstack + 2
 
-        IF ( jstack > nstack) PAUSE 'NSTACK too small in indexx'
+        IF ( jstack > nstack) CALL errore('indexx', 'NSTACK too small in indexx', jstack)
 
         IF ( ir - i+1 >= j-l) THEN
 
