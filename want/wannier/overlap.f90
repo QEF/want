@@ -88,7 +88,6 @@
 !     are G1s+G0, i.e. nx+nncell, etc...
 !
 
-! XXX
 cm = CZERO
 
       DO ik1 = 1, nkpts
@@ -110,18 +109,6 @@ cm = CZERO
               CALL set_overlap_map( npwk(ik2), npwx_g, ngx, ngy, ngz, igsort(1,ik2), &
                                     nncell(1,ik1,nn), map)
               map( npwk(ik2)+1: npwkx ) = 0
-
-!! XXXX
-!    IF ( nncell(1,ik1,nn) /= 0 .OR. nncell(2,ik1,nn) /= 0 .OR. nncell(3,ik1,nn) /= 0) &
-!    THEN
-!
-!   WRITE(0,*) 'XXX'
-!   WRITE(0,*) 'ik1 ik2', ik1, ik2
-!   WRITE(0,*) 'cell', nncell(:,ik1,nn)
-!   DO ig=1,npwk(ik2)
-!       WRITE(0,*) igv(:,igsort(ig,ik2) ), '<><><>', igv(:,map(ig) )
-!   ENDDO
-!   WRITE(0,*) 
 
               !
               ! loops over bands
@@ -155,8 +142,6 @@ cm = CZERO
                   CALL add_us_overlap(dimwinx, dimw1, dimw2, ik1, ik2, nn, aux)
                   cm(:,:,nn,ik1)= cm(:,:,nn,ik1) + aux(:,:)
               ENDIF
-!! XXXX
-!ENDIF
 
           ENDDO
           CALL timing_upto_now(stdout)

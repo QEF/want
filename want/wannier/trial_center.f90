@@ -125,13 +125,12 @@ CONTAINS
       COMPLEX(dbl),       INTENT(out):: vect(npwk)
 
       INTEGER                    :: i,j, ig, ierr, l, ilm, lmax2
-      INTEGER                    :: ig1, ig2
       INTEGER                    :: igvect(3)
       REAL(dbl)                  :: decay, x1(3), x2(3), vk(3)
       REAL(dbl)                  :: arg, prefactor 
       REAL(dbl),    ALLOCATABLE  :: vkg(:,:), vkgg(:)
       REAL(dbl),    ALLOCATABLE  :: ylm(:,:)
-      COMPLEX(dbl)               :: bphase(3), kphase, rmean(3), r2mean
+      COMPLEX(dbl)               :: bphase(3), kphase
       COMPLEX(dbl), ALLOCATABLE  :: phase(:)
 
    !-------------------------------------------------------
@@ -231,46 +230,8 @@ CONTAINS
            ENDIF
 
 
-!           !
-!           ! ... set the spherical harmonics
-!           !     we should add here the possibility of changing the sph_har polar axis
-!           !
-!           CALL ylmr2( lmax2, npwk, vkg, vkgg**2, ylm)
-!           !
-!           ! ge the right index in this 'delirio' of ordering
-!           ! which is:
-!           ! l=0m=0,  l=1m=0 l=1m=1 l=1m=-1  ... l=il,m=0 ... l=il,m=im l=ilm=-im ...
-!           !
-!           ilm = 0
-!           IF ( obj%l == 0 ) THEN 
-!              ilm = 1
-!           ELSE
-!              DO l=0,obj%l -1
-!                 ilm = ilm + 2*l+1 
-!              ENDDO
-!              IF ( obj%m == 0 ) THEN
-!                 ilm = ilm + 1
-!              ELSE
-!                 ! 
-!                 ! we are now pointing to the negative m comp
-!                 ilm = ilm +1 + 2* ABS( obj%m )
-!                 ! 
-!                 ! here we come back to the positive one
-!                 IF ( obj%m > 0 ) ilm = ilm -1 
-!              ENDIF
-!           ENDIF
-!
-!!! XXX
-!!IF( obj%l == 2 .AND. obj%m == 1 ) THEN
-!!   DO ig=1,npwk
-!!      WRITE(0,"(3f15.9,3x,f15.9)") vkg(:,ig), ylm(ig,ilm)
-!!   ENDDO
-!!STOP
-!!ENDIF
-
-
-            CALL sph_har_setup( npwk, -vkg, vkgg, obj%ndir, obj%l, obj%m, ylm(:,1) )
-            ilm = 1
+           CALL sph_har_setup( npwk, -vkg, vkgg, obj%ndir, obj%l, obj%m, ylm(:,1) )
+           ilm = 1
 
 
 
@@ -315,84 +276,6 @@ CONTAINS
            CASE DEFAULT
                CALL errore('trial_center_setup','Invalid l channel' ,ABS(obj%l) +1)
            END SELECT 
-
-! XXX
-IF ( obj%l == 2 .AND. obj%m == -2 .AND. ik == 3) THEN
-   j = 200
-   DO i = 1,j
-      bphase(:) = 0.0
-      DO ig=1,npwk
-        igvect(:) = igv(:,igsort(ig,ik))
-        bphase(1) = bphase(1) + vect(ig) * EXP( CI*TPI* REAL(igvect(1)*(i-j/2+1) )/REAL(j) )
-        bphase(2) = bphase(2) + vect(ig) * EXP( CI*TPI* REAL(igvect(2)*(i-j/2+1) )/REAL(j) )
-        bphase(3) = bphase(3) + vect(ig) * EXP( CI*TPI* REAL(igvect(3)*(i-j/2+1) )/REAL(j) )
-      ENDDO
-      WRITE(8,"(4f15.9)") avec(3,3)* REAL(i-j/2+1)/REAL(j), ABS(bphase(3:1:-1) )**2
-   ENDDO
-ENDIF
-
-
-
-
-!! XXXX
-!arg = 0.0
-!DO ig=1,npwk
-!   arg = arg + REAL( vect(ig) * CONJG(vect(ig)) )
-!ENDDO
-!WRITE(0,"(a,i3,2x,2i3,2x,f15.9)") 'ik, l, norm ', ik, obj%l, obj%m, arg
-
-
-!! XXXX
-!! compute the <r> value
-!rmean = 0.0
-!r2mean = 0.0
-!DO ig1=1,npwk
-!   DO ig2 = 1, npwk
-!       igvect(:) = igv(:,igsort(ig2,ik)) - igv(:,igsort(ig1,ik))
-!
-!       ! x comp
-!       IF ( igvect(1) == 0 .AND.  igvect(2) == 0  .AND. igvect(3) == 0) THEN
-!            r2mean = r2mean + avec(1,1)**2 / 12.0 * CONJG (vect(ig1)) * vect(ig2)
-!       ELSEIF ( igvect(2) == 0  .AND. igvect(3) == 0 ) THEN
-!            rmean(1) = rmean(1) - CI * avec(1,1) / REAL( TPI * igvect(1) ) * &
-!                       CONJG (vect(ig1)) * vect(ig2) * EXP( -CI * PI * REAL(igvect(1)) )
-!            r2mean = r2mean + avec(1,1)**2 * 2.0 * COS( PI * REAL(igvect(1)) ) / &
-!                     REAL(TPI *igvect(1))**2 * CONJG (vect(ig1)) * vect(ig2) 
-!       ENDIF
-!       
-!       ! y comp
-!       IF ( igvect(1) == 0 .AND.  igvect(2) == 0  .AND. igvect(3) == 0) THEN
-!            r2mean = r2mean + avec(2,2)**2 / 12.0 * CONJG (vect(ig1)) * vect(ig2)
-!       ELSEIF ( igvect(1) == 0  .AND. igvect(3) == 0 ) THEN
-!            rmean(2) = rmean(2) - CI * avec(2,2) / REAL( TPI * igvect(2) ) * &
-!                       CONJG (vect(ig1)) * vect(ig2) * EXP( -CI * PI * REAL(igvect(2)))
-!            r2mean = r2mean + avec(2,2)**2 * 2.0 * COS( PI * REAL(igvect(2)) ) / &
-!                     REAL(TPI* igvect(2))**2 * CONJG (vect(ig1)) * vect(ig2)
-!       ENDIF
-!       ! z comp
-!       IF ( igvect(1) == 0 .AND.  igvect(2) == 0  .AND. igvect(3) == 0) THEN
-!            r2mean = r2mean + avec(3,3)**2 / 12.0 * CONJG (vect(ig1)) * vect(ig2)
-!       ELSEIF ( igvect(1) == 0  .AND. igvect(2) == 0 ) THEN
-!            rmean(3) = rmean(3) - CI * avec(3,3) / REAL( TPI*igvect(3) ) * &
-!                       CONJG (vect(ig1)) * vect(ig2) * EXP( -CI * PI * REAL(igvect(3)) )
-!            r2mean = r2mean + avec(3,3)**2 * 2.0 * COS( PI * REAL(igvect(3)) ) / &
-!                     REAL(TPI * igvect(3))**2  * CONJG (vect(ig1)) * vect(ig2)
-!       ENDIF
-!   ENDDO
-!ENDDO
-!WRITE(0,"(a10,2f15.9)") '<r_x> ', REAL(rmean(1))
-!WRITE(0,"(a10,2f15.9)") '<r_y> ', REAL(rmean(2))
-!WRITE(0,"(a10,2f15.9)") '<r_z> ', REAL(rmean(3))
-!WRITE(0,"(a10,3f15.9)") '<trasl> ', x1
-!
-!WRITE(0,"(a10,2f15.9)") '<r2> ', REAL(r2mean)
-!
-!WRITE(0,"(a10,2f15.9)") '<spread>', &
-!      SQRT( REAL(r2mean-rmean(1)**2 -rmean(2)**2 -rmean(3)**2) ), &
-!      obj%decay/2.0 * SQRT ( REAL(2 * obj%l +3 ) )
-!      
-!
-!WRITE(0,"()")
 
                
       END SELECT

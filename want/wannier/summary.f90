@@ -143,7 +143,7 @@
 
           WRITE( unit, "(2x, 'Trial centers: (cart. coord. in Bohr)' ) " )
           DO i = 1, dimwann
-              WRITE( unit, "(4x,'Center = ',i3,' Type =',a,'  Center  = (',3F10.6,' )')")&
+              WRITE( unit, "(4x,'Center = ',i3,' Type = ',a,'  Center  = (',3F10.6,' )')")&
                      i, TRIM(trial(i)%type), center_cart1(:,i)
               IF  ( TRIM(trial(i)%type) == "2gauss" ) THEN
                   WRITE( unit, fmt="(26x,' Center2 = (', 3F10.6, ' ) ' )" ) &

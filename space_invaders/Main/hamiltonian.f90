@@ -23,7 +23,7 @@
 !
 
       USE kinds
-      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m8
+      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m6
       USE input_module, ONLY : verbosity
       USE parameters, ONLY : nstrx, nkpts_inx
       USE io_module, ONLY : stdout, stdin, ioname, ham_unit, space_unit, wan_unit
@@ -115,7 +115,7 @@
       convert_self_energy         = .FALSE.
       check_self_energy           = .FALSE.
       calculate_spectral_func     = .FALSE.
-      unitary_thr                 = EPS_m8
+      unitary_thr                 = EPS_m6
       print_sgm_start             = 0
       print_sgm_end               = 0
       spin_component              = 1
