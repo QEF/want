@@ -317,47 +317,61 @@ iwann    ixs  ixe     iys  iye     izs  ize
 INPUT file layout
 -----------------------------------
 
-nmx
-norb
-ne
-nterx
-gamma0  emin  emax
-efieldx  efieldy  efieldz
-model
+&INPUT_BULK
+   ...
+/
 
 -----------------------------------
 
 ==============================================================================
 
+NAMELIST &INPUT_BULK
+
 nmx         INTEGER
             number of sites for the TB hamiltonian of the bulk. Using WFs this value
             should be set equal to DIMWANN (or almost < DIMWANN if some basis functions
             have been eliminated)
+            DEFAULT : 0
 
 norb        INTEGER
             number of orbital per site. Fro the use with Wannier functions should be
             set to 1
+            DEFAULT : 1
 
 ne          INTEGER
             dimension of the energy grid for transmittance and spectral function
             calculation
+            DEFAULT : 1000
 
 nterx       INTEGER
             maximun namber of iterations in the calculation of transfer matrices
+            DEFAULT : 200
 
 gamma0      REAL
             used in the generation of the tight binding hamiltonian  (MODEL == 1)
             this value has no effect on the calculation using WFs and it is left
             for completeness.
+            DEFAULT : 0.0
              
 emin        REAL
             lower limit [eV] of the energy grid dimensoned by NE
+            DEFAULT : -10.0
 
 emax        REAL
             upper limit [eV] of the energy grid dimensoned by NE
+            DEFAULT :  10.0
 
-efieldx,y,z  REAL
-            cartesian component [eV] of an external bias field
+efieldx     REAL
+            x component [eV] of an external bias field
+            DEFAULT : 0.0 
+
+efieldy     REAL
+            y component [eV] of an external bias field
+            DEFAULT : 0.0 
+
+efieldz     REAL
+            z component [eV] of an external bias field
+            DEFAULT : 0.0 
 
 model       INTEGER
             can assume values from 1 to 4 and defines how to make up the tight binding
@@ -365,6 +379,7 @@ model       INTEGER
             for specific cases and should no longer be used. MODEL = 4 read the
             parameters of the real space hamiltonian from file and it is the case
             when using Wannier functionsa as basis set.  
+            DEFAULT : 4
 
 ==============================================================================
 
@@ -380,52 +395,58 @@ model       INTEGER
 INPUT file layout
 -----------------------------------
 
-nmxa  nmxb  nmxc
-norb
-ne
-nterx
-gamma0  emin  emax
-l_overlap
-bias
+&INPUT_CONDUCTOR
+   ...
+/
 
 -----------------------------------
 
 ==============================================================================
 
+NAMELIST &INPUT_CONDUCTOR
+
 nmxa        INTEGER
             number of sites in the lead A
+            DEFAULT : 0
             
 nmxb        INTEGER
             number of sites in the lead B
+            DEFAULT : 0
 
 nmxc        INTEGER
             number of sites in the conductor C
+            DEFAULT : 0
 
 norb        INTEGER
             number of orbital per site. Fro the use with Wannier functions should be
             set to 1
+            DEFAULT : 1
 
 ne          INTEGER
             dimension of the energy grid for transmittance and spectral function
             calculation
+            DEFAULT : 1000
 
 nterx       INTEGER
             maximun namber of iterations in the calculation of transfer matrices
+            DEFAULT : 200
 
-gamma0      REAL
-             
 emin        REAL
             lower limit [eV] of the energy grid dimensoned by NE
+            DEFAULT : -10.0
 
 emax        REAL
             upper limit [eV] of the energy grid dimensoned by NE
+            DEFAULT : +10.0
 
 l_overlap   LOGICAL
             If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
             is assumed (which is by definition the case of Wannier functions)
+            DEFAULT : .FALSE.
 
 bias        REAL
             bias voltage [eV] across the conductor region.
+            DEFAULT : 0.0
 
 ==============================================================================
 
