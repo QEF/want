@@ -154,6 +154,7 @@ CONTAINS
           !
           ! ... Generate index array for frozen states inside inner window
           ! 
+          indxfroz(:,ik) = 0
           IF ( dimfroz(ik) > 0 ) THEN
                lfrozen = .TRUE.
                DO i = 1, dimfroz(ik)
@@ -162,14 +163,13 @@ CONTAINS
                ENDDO
                IF ( indxfroz(dimfroz(ik),ik) /= kifroz_max ) &
                    CALL errore(subname,'wrong number of frozen states',ik )
-          ELSE
-               indxfroz(:,ik) = 0
           ENDIF
    
           !
           ! ... Generate index array for non-frozen states
           !
           idum = 0
+          indxnfroz(:,ik) = 0
           DO i = 1, dimwin(ik)
               IF( .NOT. frozen(i,ik) ) THEN
                   idum = idum + 1

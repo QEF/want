@@ -133,6 +133,7 @@
 !=------------------------------------------------------------------------------------=
 !
 ! ...  Start iteration loop
+       CALL timing('iterations',OPR='START')
 
        DO iter = 1, maxiter
          IF ( iter == 1 ) THEN
@@ -399,6 +400,7 @@
 
  9999  continue
        WRITE( stdout, fmt="(/,2x, 'Convergence achieved!!',/)")
+       CALL timing('iterations',OPR='STOP')
 
 
 ! ...  Write the final omega_i. This should equal the one given by wannier

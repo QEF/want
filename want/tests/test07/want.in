@@ -17,6 +17,7 @@
    nwhich(2) = 2                       ! nwhich(nshells)
    itrial = 3                          ! itrial --> disentangle
    ordering_type = 'complete'
+   unitary_thr = 5.d-6
 /
 
 WANNIER_CENTER {angstrom}

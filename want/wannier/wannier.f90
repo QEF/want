@@ -13,10 +13,11 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR, EPS_m8
+      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : iphase, verbosity, ncg, niter, niter0, alphafix, &
-                               alpha, alphafix0, wannier_thr, ordering_type , nprint
+                               alpha, alphafix0, wannier_thr, ordering_type , nprint, &
+                               unitary_thr
       USE input_module, ONLY : input_read
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ioname
@@ -231,7 +232,7 @@
                        dimwann, dimwann, dimwann )
 
 ! ...  Unitariety is checked
-        IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8 )  ) &
+        IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  ) &
              WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)") ik
 
 !
@@ -890,7 +891,7 @@
 !
 ! ... Unitariery of U matrix is checked
       DO ik = 1, nkpts
-          IF (  .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8 )  )  &
+          IF (  .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  )  &
                WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")ik
       ENDDO
 

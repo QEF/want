@@ -23,7 +23,7 @@
 !
 
       USE kinds
-      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m6
+      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m8
       USE input_module, ONLY : verbosity
       USE parameters, ONLY : nstrx, nkpts_inx
       USE io_module, ONLY : stdout, stdin, ioname, ham_unit, space_unit, wan_unit
@@ -71,15 +71,12 @@
       CHARACTER(LEN=80)             :: stringa
       CHARACTER(LEN=2), ALLOCATABLE :: point(:)    
       CHARACTER(LEN=nstrx)          :: filename
+      REAL(dbl) :: unitary_thr
  
       INTEGER   :: nt
       INTEGER   :: ierr, unit_tmp
       LOGICAL   :: lfound
-!
-! ... Next lines added by ANDREA (28 jan 2004) 
-!     PRINT_SGM_START and PRINT_SGM_END are energy indeces 
-!     for check self-energy matrix elements
-!
+
       LOGICAL   :: convert_self_energy
       LOGICAL   :: check_self_energy
       LOGICAL   :: calculate_spectral_func
@@ -90,7 +87,7 @@
       NAMELIST /INPUT/ prefix, postfix, work_dir, verbosity, &
                        nkpts_in, nkpts_max, convert_self_energy, check_self_energy, & 
                        calculate_spectral_func, print_sgm_start, print_sgm_end,  &
-                       spin_component
+                       spin_component, unitary_thr
 !
 ! nk are temporary read from STDIN waiting for a better implementation of BSHELLS
 !    
@@ -118,6 +115,7 @@
       convert_self_energy         = .FALSE.
       check_self_energy           = .FALSE.
       calculate_spectral_func     = .FALSE.
+      unitary_thr                 = EPS_m8
       print_sgm_start             = 0
       print_sgm_end               = 0
       spin_component              = 1
@@ -129,6 +127,7 @@
 ! ... Some checks (but many more should be included)
       IF ( nkpts_in > nkpts_inx ) CALL errore('hamiltonian', 'nkpts_in too large',  nkpts_in)
       IF ( nkpts_in <= 0 ) CALL errore('hamiltonian', 'Invalid nkpts_in', ABS(nkpts_in)+1)
+      IF ( unitary_thr <=0 ) CALL errore('hamiltonian', 'invalid unitary_thr', 3)
  
       ALLOCATE( point( nkpts_in ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nkpts_in )
@@ -187,7 +186,7 @@
       WRITE( stdout,"('  Wannier data read from file: ',a,/)") TRIM(filename)
  
       DO ik = 1,nkpts
-         IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m6)  ) &
+         IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr)  ) &
              CALL errore('hamiltonian',"U matrices not orthogonal",ik)
       ENDDO
 

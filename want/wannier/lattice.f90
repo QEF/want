@@ -62,15 +62,10 @@ CONTAINS
 
     INTEGER :: i,j
 
-    !  alat read from file should be in bohr
-    !  avec(:,1) == a1(:)  should be in unit of alat
-    !  avec(:,2) == a2(:)  should be in unit of alat
-    !  avec(:,3) == a3(:)  should be in unit of alat
-
-    ! Now this quantities are NO-LONGER in alat units, but in Bohr
-    ! and no normalization is needed....
-    !avec = avec * alat
-
+    !
+    ! avec and bvec are in units of bohr and bohr^-1 respectively
+    ! omega in bohr^3, alat and tpiba in bohr and bohr^-1
+    !
     CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3), omega)
     bvec = bvec * TPI
 

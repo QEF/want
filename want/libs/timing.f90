@@ -104,7 +104,7 @@ CONTAINS
       ! clock NOT found
       !
       IF ( .NOT. found ) THEN
-         IF ( .NOT. PRESENT(opr) .OR. TRIM(opr_) == "start" )  THEN
+         IF ( .NOT. PRESENT(opr) .OR. TRIM(opr_) == "start" .OR. TRIM(opr_) == "START") THEN
             opr_ = "start"
             CALL clock_allocate(TRIM(name), global_list%nclock, global_list%clock(index))
          ELSE 
@@ -116,7 +116,7 @@ CONTAINS
       ! clock found
       !
          IF ( global_list%clock(index)%running )  THEN
-            IF ( PRESENT(opr) .AND. TRIM(opr_) /= "stop" )  &
+            IF ( PRESENT(opr) .AND. TRIM(opr_) /= "stop" .AND. TRIM(opr_) /= "STOP" )  &
                CALL errore('timing','Operation '//TRIM(opr_)//' NOT permitted in '&
                            //TRIM(name),1)
             opr_ = "stop"
@@ -131,9 +131,9 @@ CONTAINS
       ! case selection
       ! 
       SELECT CASE ( TRIM(opr_) )  
-      CASE("start") 
+      CASE("start","START") 
          CALL clock_start( global_list%clock(index) ) 
-      CASE("stop")
+      CASE("stop","STOP")
          CALL clock_stop( global_list%clock(index) ) 
       CASE DEFAULT
          CALL errore('timing','Invalid operation '//TRIM(opr_),1)

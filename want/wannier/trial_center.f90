@@ -109,7 +109,7 @@ CONTAINS
    ! center in input (obj) according to the chosen kpt
    ! Implemented formulas are reported below
    !
-   USE constants,         ONLY : TPI, PI, TWO
+   USE constants,         ONLY : TPI, PI, ZERO, ONE, TWO, CZERO, CI
    USE kinds,             ONLY : dbl
    USE lattice_module,    ONLY : alat, tpiba, avec, bvec, omega 
    USE kpoints_module,    ONLY : vkpt     
@@ -125,12 +125,13 @@ CONTAINS
       COMPLEX(dbl),       INTENT(out):: vect(npwk)
 
       INTEGER                    :: i,j, ig, ierr, l, ilm, lmax2
+      INTEGER                    :: ig1, ig2
       INTEGER                    :: igvect(3)
       REAL(dbl)                  :: decay, x1(3), x2(3), vk(3)
       REAL(dbl)                  :: arg, prefactor 
       REAL(dbl),    ALLOCATABLE  :: vkg(:,:), vkgg(:)
       REAL(dbl),    ALLOCATABLE  :: ylm(:,:)
-      COMPLEX(dbl)               :: bphase(3), kphase
+      COMPLEX(dbl)               :: bphase(3), kphase, rmean(3), r2mean
       COMPLEX(dbl), ALLOCATABLE  :: phase(:)
 
    !-------------------------------------------------------
@@ -152,6 +153,7 @@ CONTAINS
       x1(:) = obj%x1
       x2(:) = obj%x2
       vk(:) = vkpt(:,ik)
+
       CALL cry2cart(x1, avec )
       CALL cry2cart(x2, avec )
       CALL cry2cart(vk, bvec )
@@ -176,17 +178,17 @@ CONTAINS
            ALLOCATE( ylm(npwk,lmax2), STAT=ierr )
               IF (ierr/=0) CALL errore('trial_center_setup','Allocating ylm' ,ABS(ierr))
 
-CALL timing('__phases')
 
            !
            ! ... bphase = e^-i b*x1
            DO i=1,3
-               arg = TPI * DOT_PRODUCT( bvec(:,i) , x1(:) )
+               arg = DOT_PRODUCT( bvec(:,i) , x1(:) )
                bphase(i) = CMPLX( COS(arg), -SIN(arg) )
            ENDDO
+
            !
            ! ... kphase = e^-i vk*x1
-           arg = TPI * DOT_PRODUCT( vk(:) , x1(:) )
+           arg = DOT_PRODUCT( vk(:) , x1(:) )
            kphase = CMPLX( COS(arg), -SIN(arg) )
 
            !
@@ -197,9 +199,6 @@ CALL timing('__phases')
            DO ig = 1, npwk
                 vkg(:,ig) = vk(:) + g(:,igsort(ig,ik) ) * tpiba
                 vkgg(ig)  = SQRT ( DOT_PRODUCT( vkg(:,ig) , vkg(:,ig) ) )
-                !
-                !  arg =  TPI * DOT_PRODUCT( vkg(:,ig) , x1(:) ) 
-                !  phase(ig) = CMPLX( COS(arg), -SIN(arg) )
                 !
                 igvect(:) = igv(:,igsort(ig,ik))
                 phase(ig) = kphase * ( bphase(1) )**igvect(1) * &
@@ -215,12 +214,12 @@ CALL timing('__phases')
                !
                ! ... bphase = e^-i b*x2
                DO i=1,3
-                   arg = TPI * DOT_PRODUCT( bvec(:,i) , x2(:) )
+                   arg = DOT_PRODUCT( bvec(:,i) , x2(:) )
                    bphase(i) = CMPLX( COS(arg), -SIN(arg) )
                ENDDO
                !
                ! ... kphase = e^-i vk*x2
-               arg = TPI * DOT_PRODUCT( vk(:) , x2(:) )
+               arg = DOT_PRODUCT( vk(:) , x2(:) )
                kphase = CMPLX( COS(arg), -SIN(arg) )
 
                DO ig = 1, npwk
@@ -231,8 +230,6 @@ CALL timing('__phases')
                ENDDO
            ENDIF
 
-CALL timing('__phases')
-CALL timing('__sphharm')
 
 !           !
 !           ! ... set the spherical harmonics
@@ -256,27 +253,26 @@ CALL timing('__sphharm')
 !              ELSE
 !                 ! 
 !                 ! we are now pointing to the negative m comp
-!                 ilm = ilm + 2* ABS( obj%m )
+!                 ilm = ilm +1 + 2* ABS( obj%m )
 !                 ! 
 !                 ! here we come back to the positive one
 !                 IF ( obj%m > 0 ) ilm = ilm -1 
 !              ENDIF
 !           ENDIF
 !
-!! XXX
-!IF( obj%l == 2 .AND. obj%m == 1 ) THEN
-!   DO ig=1,npwk
-!      WRITE(0,"(3f15.9,3x,f15.9)") vkg(:,ig), ylm(ig,ilm)
-!   ENDDO
-!STOP
-!ENDIF
+!!! XXX
+!!IF( obj%l == 2 .AND. obj%m == 1 ) THEN
+!!   DO ig=1,npwk
+!!      WRITE(0,"(3f15.9,3x,f15.9)") vkg(:,ig), ylm(ig,ilm)
+!!   ENDDO
+!!STOP
+!!ENDIF
+
 
             CALL sph_har_setup( npwk, -vkg, vkgg, obj%ndir, obj%l, obj%m, ylm(:,1) )
             ilm = 1
 
 
-CALL timing('__sphharm')
-CALL timing('__radial')
 
            !
            ! ... construct the vector
@@ -291,7 +287,7 @@ CALL timing('__radial')
            SELECT CASE ( obj%l ) 
            !
            ! mod = |k+G| = vkgg(ig)
-           ! g_rad_l( mod ) = prefactor * e^{ -(mod*dec)^2/4.0} * ( mod * dec)^{l}
+           ! g_rad_l( mod ) = prefactor * e^{ -(mod*dec)^2/4.0} * ( mod * dec)^{l} * CI^l
            !
            CASE ( 0 )
                DO ig = 1, npwk
@@ -302,25 +298,41 @@ CALL timing('__radial')
                prefactor = prefactor / SQRT( 3.0_dbl)
                DO ig = 1, npwk
                     vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * decay * vkgg(ig)
-                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
+                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig) * CI
                ENDDO
            CASE ( 2 )
                prefactor = prefactor / SQRT( 15.0_dbl)
                DO ig = 1, npwk
                     vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * (decay*vkgg(ig))**2
-                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
+                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig) * (-ONE)
                ENDDO
            CASE ( 3 )
                prefactor = prefactor / SQRT( 105.0_dbl)
                DO ig = 1, npwk
                     vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * (decay*vkgg(ig))**3
-                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
+                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig) * (-CI)
                ENDDO
            CASE DEFAULT
                CALL errore('trial_center_setup','Invalid l channel' ,ABS(obj%l) +1)
            END SELECT 
 
-CALL timing('__radial')
+! XXX
+IF ( obj%l == 2 .AND. obj%m == -2 .AND. ik == 3) THEN
+   j = 200
+   DO i = 1,j
+      bphase(:) = 0.0
+      DO ig=1,npwk
+        igvect(:) = igv(:,igsort(ig,ik))
+        bphase(1) = bphase(1) + vect(ig) * EXP( CI*TPI* REAL(igvect(1)*(i-j/2+1) )/REAL(j) )
+        bphase(2) = bphase(2) + vect(ig) * EXP( CI*TPI* REAL(igvect(2)*(i-j/2+1) )/REAL(j) )
+        bphase(3) = bphase(3) + vect(ig) * EXP( CI*TPI* REAL(igvect(3)*(i-j/2+1) )/REAL(j) )
+      ENDDO
+      WRITE(8,"(4f15.9)") avec(3,3)* REAL(i-j/2+1)/REAL(j), ABS(bphase(3:1:-1) )**2
+   ENDDO
+ENDIF
+
+
+
 
 !! XXXX
 !arg = 0.0
@@ -328,6 +340,60 @@ CALL timing('__radial')
 !   arg = arg + REAL( vect(ig) * CONJG(vect(ig)) )
 !ENDDO
 !WRITE(0,"(a,i3,2x,2i3,2x,f15.9)") 'ik, l, norm ', ik, obj%l, obj%m, arg
+
+
+!! XXXX
+!! compute the <r> value
+!rmean = 0.0
+!r2mean = 0.0
+!DO ig1=1,npwk
+!   DO ig2 = 1, npwk
+!       igvect(:) = igv(:,igsort(ig2,ik)) - igv(:,igsort(ig1,ik))
+!
+!       ! x comp
+!       IF ( igvect(1) == 0 .AND.  igvect(2) == 0  .AND. igvect(3) == 0) THEN
+!            r2mean = r2mean + avec(1,1)**2 / 12.0 * CONJG (vect(ig1)) * vect(ig2)
+!       ELSEIF ( igvect(2) == 0  .AND. igvect(3) == 0 ) THEN
+!            rmean(1) = rmean(1) - CI * avec(1,1) / REAL( TPI * igvect(1) ) * &
+!                       CONJG (vect(ig1)) * vect(ig2) * EXP( -CI * PI * REAL(igvect(1)) )
+!            r2mean = r2mean + avec(1,1)**2 * 2.0 * COS( PI * REAL(igvect(1)) ) / &
+!                     REAL(TPI *igvect(1))**2 * CONJG (vect(ig1)) * vect(ig2) 
+!       ENDIF
+!       
+!       ! y comp
+!       IF ( igvect(1) == 0 .AND.  igvect(2) == 0  .AND. igvect(3) == 0) THEN
+!            r2mean = r2mean + avec(2,2)**2 / 12.0 * CONJG (vect(ig1)) * vect(ig2)
+!       ELSEIF ( igvect(1) == 0  .AND. igvect(3) == 0 ) THEN
+!            rmean(2) = rmean(2) - CI * avec(2,2) / REAL( TPI * igvect(2) ) * &
+!                       CONJG (vect(ig1)) * vect(ig2) * EXP( -CI * PI * REAL(igvect(2)))
+!            r2mean = r2mean + avec(2,2)**2 * 2.0 * COS( PI * REAL(igvect(2)) ) / &
+!                     REAL(TPI* igvect(2))**2 * CONJG (vect(ig1)) * vect(ig2)
+!       ENDIF
+!       ! z comp
+!       IF ( igvect(1) == 0 .AND.  igvect(2) == 0  .AND. igvect(3) == 0) THEN
+!            r2mean = r2mean + avec(3,3)**2 / 12.0 * CONJG (vect(ig1)) * vect(ig2)
+!       ELSEIF ( igvect(1) == 0  .AND. igvect(2) == 0 ) THEN
+!            rmean(3) = rmean(3) - CI * avec(3,3) / REAL( TPI*igvect(3) ) * &
+!                       CONJG (vect(ig1)) * vect(ig2) * EXP( -CI * PI * REAL(igvect(3)) )
+!            r2mean = r2mean + avec(3,3)**2 * 2.0 * COS( PI * REAL(igvect(3)) ) / &
+!                     REAL(TPI * igvect(3))**2  * CONJG (vect(ig1)) * vect(ig2)
+!       ENDIF
+!   ENDDO
+!ENDDO
+!WRITE(0,"(a10,2f15.9)") '<r_x> ', REAL(rmean(1))
+!WRITE(0,"(a10,2f15.9)") '<r_y> ', REAL(rmean(2))
+!WRITE(0,"(a10,2f15.9)") '<r_z> ', REAL(rmean(3))
+!WRITE(0,"(a10,3f15.9)") '<trasl> ', x1
+!
+!WRITE(0,"(a10,2f15.9)") '<r2> ', REAL(r2mean)
+!
+!WRITE(0,"(a10,2f15.9)") '<spread>', &
+!      SQRT( REAL(r2mean-rmean(1)**2 -rmean(2)**2 -rmean(3)**2) ), &
+!      obj%decay/2.0 * SQRT ( REAL(2 * obj%l +3 ) )
+!      
+!
+!WRITE(0,"()")
+
                
       END SELECT
 
