@@ -366,7 +366,7 @@ CONTAINS
       DO i=1,nclock 
          IF ( TRIM(clocks(i)%name) == TRIM(main_name) .OR. &
               clocks(i)%total_time >= 1000           ) THEN 
-            CALL clock_write(unit,clocks(i),FORM="hms")
+              CALL clock_write(unit,clocks(i),FORM="hms")
             IF ( TRIM(clocks(i)%name) == TRIM(main_name) )  &
                WRITE(unit,*)
          ELSE
