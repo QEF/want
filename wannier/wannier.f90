@@ -471,11 +471,17 @@
 
       K_POINTS:  DO nkp = 1, nkpts
 
-        READ(20) nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
+        READ(20) nsiz1_, nsiz2_ 
 
-        IF( ( SIZE( cptwfp, 1) < nsiz1_ ) .OR. ( SIZE( cptwfp, 2) < nsiz2_ ) &
-            .OR. ( SIZE( cptwfp, 3) < nsiz3_ ) ) THEN
-          WRITE( stdout, * ) '*** READING cptwfp WRONG DIMENSIONS ***' 
+        IF( nplwkp(nkp) > nsiz1_ ) THEN
+          WRITE( stdout, * ) '*** READING onfly.dat WRONG ngk ***'
+          WRITE( stdout, * ) nplwkp(nkp), nsiz1_
+          STOP
+        END IF
+
+        IF( dimwann > nsiz2_ ) THEN
+          WRITE( stdout, * ) '*** READING onfly.dat WRONG dimwann ***'
+          WRITE( stdout, * ) dimwann, nsiz2_
           STOP
         END IF
 

@@ -73,6 +73,7 @@
        COMPLEX(dbl), ALLOCATABLE :: eamp_save(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: mtrx_in(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: mtrx_out(:,:,:)
+       COMPLEX(dbl), ALLOCATABLE :: lvec(:,:)
        INTEGER, ALLOCATABLE :: dimwin(:)
 
 ! ...  Next 2 lines added by ANDREA (28 jan 2004) 
@@ -928,9 +929,37 @@
        CLOSE(9)
 
 
-       CALL intf( bvec, emax, nk, s, dimwann, nshells, nwhich, nkpts, mxddim, &
-         ndwinx, mxdbnd, ngx, ngy, ngz, ngm, igv, ngwk, dimwin, evecr, eveci, &
-         eamp_save, vkpt, igsort )
+       !CALL intf( dimwann, nkpts, mxddim, ndwinx, mxdbnd, ngm, igv, ngwk, dimwin, &
+       !  evecr, eveci, eamp_save, igsort )
+
+       OPEN( UNIT=20, FILE='onfly.dat', FORM='UNFORMATTED')
+
+       ALLOCATE( lvec( mxddim, mxdbnd ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating lvec ', mxddim * mxdbnd )
+      
+       K_POINTS: DO nkp = 1, nkpts
+         
+         DO l = 1, dimwann 
+           DO i = 1, ngwk( nkp )
+             lvec( i, l ) = cmplx(0.0d0,0.0d0)
+             DO j = 1, dimwin( nkp )
+               lvec( i, l ) = lvec( i, l ) + &
+                 eamp_save( j, l, nkp ) * cmplx( evecr( i, j, nkp ), eveci( i, j, nkp ) )
+             END DO
+           END DO
+         END DO
+         
+         WRITE(20) ngwk( nkp ), dimwann 
+         WRITE(20) ( igsort( i, nkp ), i=1, ngwk(nkp) )
+         WRITE(20) ( ( lvec( i, l ), i=1, ngwk(nkp) ), l=1, dimwann )
+       
+       END DO K_POINTS
+       
+       CLOSE(20)
+       
+       DEALLOCATE( lvec, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating lvec ', ABS(ierr) )
+
 
        DEALLOCATE( igv, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating igv ', ABS(ierr) )
