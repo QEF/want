@@ -3,6 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
+01 Apr 2005      Mkb symmetrization performed. Some updates in bshells and util module.
+
 31 Mar 2005      Routine zmat_svd added to util_module. Direct use of lapack for SVD removed
                  from subspace_init and wannier. Wannier keeps on calling ZGEES for
                  schur factorization (maybe removable if the case). S^{-1/2}*A computed
