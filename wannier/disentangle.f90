@@ -17,7 +17,7 @@
        USE mp, ONLY: mp_start, mp_end, mp_env
        USE mp_global, ONLY: mp_global_start
        USE io_global, ONLY: io_global_start, io_global_getionode, stdout
-       USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
        USE input_wannier
@@ -1001,8 +1001,7 @@
        CALL intf()
 
        CALL timing('disentangle',OPR='stop')
-       CALL timing('global',OPR='stop')
-       CALL timing_overview(stdout,MAIN_NAME='disentangle')
+       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='disentangle')
        CALL timing_deallocate()
 
       CALL mp_end()

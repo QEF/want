@@ -16,7 +16,7 @@
       USE constants, ONLY: pi, twopi => tpi, bohr => bohr_radius_angs
       USE parameters, ONLY: npsx, natx
       USE fft_scalar, ONLY: cfft3d
-      USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+      USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE io_global, ONLY : stdout
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
@@ -385,8 +385,7 @@
       call gcube2plt( nwann )
 
       CALL timing('plot',OPR='stop')
-      CALL timing('global',OPR='stop')
-      CALL timing_overview(stdout,MAIN_NAME='plot')
+      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='plot')
       CALL timing_deallocate()
 
       STOP '*** THE END *** (plot.x)'

@@ -45,7 +45,6 @@ CONTAINS
       !
       CALL timing_allocate(nclockx)
       CALL timing(TRIM(main_name),OPR="start")
-      CALL timing("global",OPR="start")
       !
       ! description
       ! 
