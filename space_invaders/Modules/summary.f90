@@ -19,12 +19,15 @@
    USE io_module, ONLY : title, prefix, work_dir
    USE input_module, ONLY : input_alloc => alloc
    USE input_module
+   USE trial_center_data_module, ONLY : trial
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
-   USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, &
+   USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, nshells, nwhich, &
                               bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
-                              dimfroz, lfrozen, dimwinx, nspin
+                              dimfroz, lfrozen, dimwinx, nspin, &
+                              win_min, win_max, froz_min, froz_max
+   USE subspace_module,ONLY : dimwann
    !
    ! pseudopotential modules
    USE ions_module,     ONLY : uspp_calculation
@@ -122,27 +125,30 @@
           WRITE( unit,"(4x,'Disentangle convergence threshold = ', f15.9 )") disentangle_thr
           WRITE( unit, " ( '</DISENTANGLE>',/)" )
 
-          WRITE( unit, " ( '<WANNIER_CENTERS>')" )
+          WRITE( unit, " ( '<TRIAL_CENTERS>')" )
           ALLOCATE( center_cart1(3,dimwann), center_cart2(3,dimwann), STAT=ierr )
              IF (ierr/=0) CALL errore('summary','allocating center_cart*',ABS(ierr))
           ! ... initialize with crystal coordinates and then convert
-          center_cart1(:,:) = rphiimx1(:,:)
-          center_cart2(:,:) = rphiimx2(:,:)
+! XXX atomic case
+          DO i = 1, dimwann
+             center_cart1(:,i) = trial(i)%x1
+             center_cart2(:,i) = trial(i)%x2
+          ENDDO
           CALL cry2cart(center_cart1, avec )
           CALL cry2cart(center_cart2, avec )
 
-          WRITE( unit, "(2x, 'Gaussian centers: (cart. coord. in Bohr)' ) " )
+          WRITE( unit, "(2x, 'Trial centers: (cart. coord. in Bohr)' ) " )
           DO i = 1, dimwann
-              WRITE( unit, "(4x,'Center = ',i3,' Type =',i2,' Gaussian  = (',3F10.6,' )')")&
-                     i, gauss_typ(i), center_cart1(:,i)
-              IF  ( gauss_typ(i) == 2 ) THEN
-                  WRITE( unit, fmt="(26x,'Gaussian2 = (', 3F10.6, ' ) ' )" ) &
+              WRITE( unit, "(4x,'Center = ',i3,' Type =',a,'  Center  = (',3F10.6,' )')")&
+                     i, TRIM(trial(i)%type), center_cart1(:,i)
+              IF  ( TRIM(trial(i)%type) == "2gauss" ) THEN
+                  WRITE( unit, fmt="(26x,' Center2 = (', 3F10.6, ' ) ' )" ) &
                      center_cart2(:,i)
               ENDIF
           ENDDO
           DEALLOCATE( center_cart1, center_cart2, STAT=ierr )
              IF (ierr/=0) CALL errore('summary','deallocating center_cart*',ABS(ierr))
-          WRITE( unit, " ( '</WANNIER_CENTERS>',/)" )
+          WRITE( unit, " ( '</TRIAL_CENTERS>',/)" )
 
       ENDIF
       WRITE(unit,"()")      

@@ -34,6 +34,7 @@
 
    INTEGER                   :: npwkx            ! max number of G vects over kpts +1 
                                                  ! the last position is used in overlap
+   INTEGER                   :: npwx_g           ! total number of G (+1) for wfcs
    INTEGER,      ALLOCATABLE :: npwk(:)          ! number of G for each kpt, DIM: nkpts
    INTEGER,      ALLOCATABLE :: igsort(:,:)      ! G map between the global IGV array and
                                                  ! the local ordering for each kpt
@@ -64,6 +65,7 @@
 
    PUBLIC :: npwkx
    PUBLIC :: npwk
+   PUBLIC :: npwx_g
    PUBLIC :: igsort
    PUBLIC :: evc
    PUBLIC :: alloc
@@ -163,6 +165,11 @@ CONTAINS
        IF ( npwkx /= MAXVAL(npwk(:)) +1 ) CALL errore(subname,'Invalid npwkx II',5)
        CALL iotk_scan_end(unit,'Wfc_grids',IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag Wfc_grids',ABS(ierr))
+
+       !
+       ! defining the total number of G used for the wfcs
+       ! the +1 is for overlap purposes as npwkx
+       npwx_g = MAXVAL(igsort(:,:)) +1 
 
        !
        ! ... wfc components

@@ -24,7 +24,9 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE files_module, ONLY : file_open, file_close
    USE iotk_module
    USE parser_base_module, ONLY : change_case
-   USE input_module,    ONLY : wannier_center_init, input_alloc => alloc, assume_ncpp
+   USE input_module,    ONLY : input_alloc => alloc, assume_ncpp
+   USE trial_center_module, ONLY : trial_center_convert
+   USE trial_center_data_module, ONLY : trial, dimwann
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
    USE ions_module,  ONLY : ions_read_ext, ions_init
    USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin
@@ -65,7 +67,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
    LOGICAL                   :: want_input_
    LOGICAL                   :: windows_
    LOGICAL                   :: bshells_
-   INTEGER                   :: ierr, ik, idum
+   INTEGER                   :: ierr, ik, iwann, idum
    
 
 ! ... end of declarations
@@ -101,7 +103,11 @@ SUBROUTINE want_init(want_input, windows, bshells)
     CALL lattice_init()
     !
     ! ... want_input if required
-    IF ( want_input_ ) CALL wannier_center_init( avec )
+    IF ( want_input_ ) THEN 
+        DO iwann=1,dimwann
+            CALL trial_center_convert( avec, trial(iwann) )
+        ENDDO 
+    ENDIF
 
 
 !
@@ -132,7 +138,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
            IF ( .NOT. lfound ) CALL errore('want_init','Unable to find Eigenvalues',6)
         !
         ! ... init windows
-        CALL windows_init( eig(:,:) )
+        CALL windows_init( eig(:,:), dimwann )
     ENDIF
 
 !

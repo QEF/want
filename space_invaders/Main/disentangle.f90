@@ -22,26 +22,26 @@
        USE startup_module, ONLY : startup
        USE cleanup_module, ONLY : cleanup
        USE version_module, ONLY : version_number
-       USE input_module
+       USE input_module, ONLY : input_read
+       USE input_module, ONLY : maxiter, itrial, disentangle_thr, alpha, verbosity 
        USE want_init_module, ONLY : want_init
        USE converters_module, ONLY : cart2cry
        USE util_module, ONLY : zmat_unitary, zmat_hdiag
        USE summary_module, ONLY : summary
-       USE wfc_data_module, ONLY : wfc_data
+       USE wfc_manager_module, ONLY : wfc_manager
        USE iotk_module
     
        USE kpoints_module, ONLY: nkpts, vkpt
        USE kpoints_module, ONLY: mxdnn, mxdnnh, nntot, nnshell, nnlist, nncell, &
-                                 neigh, bk, wb, dnn, bka, wbtot
+                                 neigh, bk, wb, dnn, bka, wbtot, nshells, nwhich
        USE lattice_module, ONLY: avec
        USE windows_module,  ONLY : nbnd, dimwin, dimwinx, eig, imin, imax, lcompspace, &
                                    dimfroz, indxfroz, indxnfroz, lfrozen, frozen
        USE windows_module,  ONLY : windows_allocate, windows_write
-       USE subspace_module, ONLY : wan_eig, lamp, camp, eamp, comp_eamp, &
+       USE subspace_module, ONLY : dimwann, wan_eig, lamp, camp, eamp, comp_eamp, &
                                    mtrx_in, mtrx_out
        USE subspace_module, ONLY : subspace_allocate, subspace_write
-       USE overlap_module,  ONLY : cm, ca, overlap_allocate, &
-                                   overlap_read, overlap_write
+       USE overlap_module,  ONLY : cm, overlap_allocate
 
 
        IMPLICIT NONE
@@ -126,7 +126,7 @@
 !
 ! ... Compute the OVERLAP and PROJECTION matrix elements
 !
-      CALL wfc_data(lamp_tmp)
+      CALL wfc_manager(lamp_tmp)
 
 
 !=------------------------------------------------------------------------------------=
@@ -368,10 +368,6 @@
            aux = komegai( ik, lamp, cm(1,1,1,ik), wb, wbtot, nnlist, nshells, &
                           nwhich, nnshell, dimwann, dimwin, dimwinx, nkpts, mxdnn )
            omega_i = omega_i + aux
-!          IF ( ( iter - INT (iter / DBLE(10) ) ) == 1 ) THEN
-!            WRITE( stdout, fmt=" (4x, 'K-point',i3, ' )     Komega_I Error =',f16.8 )") &
-!                   ik, (komega_i_est(ik)-aux)/aux
-!          END IF
          END DO
          omega_i = omega_i/DBLE(nkpts)
  

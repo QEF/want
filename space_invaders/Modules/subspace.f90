@@ -14,7 +14,6 @@
    USE windows_module, ONLY : dimwin, dimwinx, lcompspace, windows_alloc => alloc, &
                               efermi, windows_allocate
    USE kpoints_module, ONLY : nkpts, kpoints_alloc
-   USE input_module, ONLY : dimwann, input_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
    IMPLICIT NONE
@@ -35,6 +34,9 @@
 ! declarations of common variables
 !   
 
+   !
+   ! ... the number of Wannier functions
+   INTEGER                     :: dimwann
    !
    ! ... the hamiltonian eigs in the final subspace
    REAL(dbl),    ALLOCATABLE   :: wan_eig(:,:)       ! the eigenvalues in the new subspace
@@ -185,7 +187,7 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="subspace_read"
-       INTEGER            :: nkpts_, dimwinx_, dimwann_
+       INTEGER            :: nkpts_, dimwinx_
        INTEGER            :: ierr
 
        IF ( alloc ) CALL subspace_deallocate()
@@ -201,7 +203,7 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
-       CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
+       CALL iotk_scan_attr(attr,'dimwann',dimwann,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
 
        IF ( kpoints_alloc ) THEN
@@ -214,11 +216,6 @@ CONTAINS
        ELSE
           dimwinx = dimwinx_
           CALL windows_allocate()
-       ENDIF
-       IF ( input_alloc ) THEN
-           IF ( dimwann_ /= dimwann) CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_)+1)
-       ELSE
-           dimwann = dimwann_
        ENDIF
 
        !

@@ -8,7 +8,7 @@
 ! 
 ! <INFO>
 !*********************************************
-   MODULE wfc_data_module
+   MODULE wfc_manager_module
 !*********************************************
    USE kinds
    USE parameters,     ONLY : nstrx
@@ -22,14 +22,15 @@
    USE util_module,    ONLY : zmat_mul
    
    USE lattice_module, ONLY : avec, bvec, tpiba, alat
-   USE input_module,   ONLY : gauss_typ, rphiimx1, rphiimx2, l_wann, rloc, m_wann, ndir_wann
+   USE subspace_module,ONLY : dimwann
+   USE trial_center_data_module,   ONLY : trial
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz
    USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, mxdnn, &
                               nntot, nnlist, nncell
-   USE overlap_module, ONLY : cm, ca, overlap_alloc => alloc, dimwann, overlap_write
+   USE overlap_module, ONLY : cm, ca, overlap_alloc => alloc, overlap_write
    USE ggrids_module,  ONLY : npw, nr, ecutwfc, ecutrho, igv, &
                               ggrids_read_ext, ggrids_deallocate
-   USE wfc_module,     ONLY : npwkx, npwk, igsort, evc, &
+   USE wfc_module,     ONLY : npwkx, npwx_g, npwk, igsort, evc, &
                               wfc_read_ext, wfc_deallocate 
    USE struct_fact_data_module, ONLY : struct_fact_data_init
    USE uspp,           ONLY : nkb, vkb
@@ -42,7 +43,7 @@
 ! (OVERLAP and PROJECTIONS matrix elements).
 !
 ! Interface:
-! SUBROUTINE wfc_data()
+! SUBROUTINE wfc_manager()
 !
 ! Tasks performed:
 ! * read and init G grids
@@ -54,16 +55,16 @@
 !
 ! </INFO>
 
-   PUBLIC :: wfc_data
+   PUBLIC :: wfc_manager
 
 CONTAINS
 
 !*********************************************************
-   SUBROUTINE wfc_data(lamp)
+   SUBROUTINE wfc_manager(lamp)
    !*********************************************************
    IMPLICIT NONE
       COMPLEX(dbl), INTENT(out) :: lamp(:,:,:)
-      CHARACTER(8)              :: subname="wfc_data"
+      CHARACTER(11)             :: subname="wfc_manager"
       CHARACTER(nstrx)          :: filename
       REAL(dbl), ALLOCATABLE    :: xk(:,:)
       REAL(dbl)                 :: tmp
@@ -71,7 +72,7 @@ CONTAINS
       INTEGER                   :: i, j, ig 
 
 
-      CALL timing('wfc_data',OPR='start')
+      CALL timing('wfc_manager',OPR='start')
 
 
 !
@@ -147,13 +148,14 @@ CONTAINS
 !
       WRITE(stdout, "(/)")
       WRITE(stdout, "(2x,70('='))" )
-      WRITE(stdout, "(2x,'=',23x,'Overlap and Projections',23x,'=')" )
+      WRITE(stdout, "(2x,'=',23x,'Overlap and Projections',22x,'=')" )
       WRITE(stdout, "(2x,70('='),/)" )
-      WRITE(stdout, "(2x,'Kinetic energy cut-off for wfcs =  ', F7.2, ' (Ry)' )") ecutwfc
-      WRITE(stdout, "(2x,'                       for rho  =  ', F7.2, ' (Ry)' )") ecutrho
-      WRITE(stdout, "(2x,'Total number of PW for rho  =  ', i9 )") npw
-      WRITE(stdout, "(2x,'  Max number of PW for wfcs =  ', i9 )") npwkx
-      WRITE(stdout, "(2x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nr(:)
+      WRITE(stdout, "(2x,'Kinetic energy cut-off for wfcs =  ', 5x, F7.2, ' (Ry)' )") ecutwfc
+      WRITE(stdout, "(2x,'                       for rho  =  ', 5x, F7.2, ' (Ry)' )") ecutrho
+      WRITE(stdout, "(2x,'    Total number of PW for rho  =  ', i9 )") npw
+      WRITE(stdout, "(2x,'      Max number of PW for wfc  =  ', i9 )") npwkx
+      WRITE(stdout, "(2x,'    Total number of PW for wfcs =  ', i9 )") npwx_g
+      WRITE(stdout, "(2x,'      FFT grid components (rho) =  ( ', 3i5,' )' )") nr(:)
       WRITE(stdout, "()")
 
 !
@@ -164,15 +166,14 @@ CONTAINS
       IF ( .NOT. windows_alloc) CALL errore(subname,'windows NOT alloc',4) 
       IF ( .NOT. overlap_alloc) CALL errore(subname,'overlap NOT alloc',5) 
 
-      CALL overlap( igv, evc, igsort, npwk, dimwin,                        &
-                    nntot, nnlist, nncell, cm, npw, npwkx, nkpts,          &
+
+      CALL overlap( evc, igsort, npwk, dimwin,                     &
+                    nntot, nnlist, nncell, cm, npw, npwkx, nkpts,  &
                     mxdnn, nr(1), nr(2), nr(3), dimwinx )
 
-      CALL projection( avec, lamp, ca, evc, vkpt,                          &
-                       igv, igsort, npwk, dimwin, dimwann, dimfroz,        &
-                       npwkx, npw, nr(1), nr(2), nr(3), nkpts,             &
-                       gauss_typ, rphiimx1, rphiimx2, l_wann,              &
-                       m_wann, ndir_wann, rloc, dimwinx)
+      CALL projection( avec, lamp, ca, evc, vkpt,                  &
+                       npwk, dimwin, dimwann, dimfroz,             &
+                       npwkx, nkpts, dimwinx, trial)
 
       !
       ! ... clean a large amount of memory
@@ -199,9 +200,9 @@ CONTAINS
       WRITE( stdout,"(/,'  Overlap and projections written on file: ',a)") TRIM(filename)
 
 
-      CALL timing('wfc_data',OPR='stop')
+      CALL timing('wfc_manager',OPR='stop')
       RETURN
-   END SUBROUTINE wfc_data
+   END SUBROUTINE wfc_manager
 
-END MODULE wfc_data_module
+END MODULE wfc_manager_module
 

@@ -13,6 +13,7 @@
 MODULE sph_har
   !
 
+  USE constants, ONLY : EPS_m9, PI, TPI, ZERO
   USE kinds, ONLY: dbl
 
   IMPLICIT NONE
@@ -26,23 +27,21 @@ MODULE sph_har
 CONTAINS
 
   SUBROUTINE sph_har_init( )
-    USE constants, ONLY: pi, twopi => tpi
-    sph00 = 1.d0/sqrt( 2.d0 * twopi )
-    sph1m1 = sqrt( 1.5d0 / twopi )
-    sph10 = sqrt( 1.5d0 / twopi )
-    sph11 = sqrt( 1.5d0 / twopi )
-    sph2m2 = sqrt( 15.d0 / 2.d0 / twopi )
-    sph2m1 = sqrt( 15.d0 / 2.d0 / twopi )
-    sph20 = sqrt(  5.d0 / 8.d0 / twopi )
-    sph21 = sqrt( 15.d0 / 2.d0 / twopi )
-    sph22 = sqrt( 15.d0 / 2.d0 / twopi )
+    sph00 = 1.d0/SQRT( 2.d0 * TPI )
+    sph1m1 = SQRT( 1.5d0 / TPI )
+    sph10 = SQRT( 1.5d0 / TPI )
+    sph11 = SQRT( 1.5d0 / TPI )
+    sph2m2 = SQRT( 15.d0 / 2.d0 / TPI )
+    sph2m1 = SQRT( 15.d0 / 2.d0 / TPI )
+    sph20 = SQRT(  5.d0 / 8.d0 / TPI )
+    sph21 = SQRT( 15.d0 / 2.d0 / TPI )
+    sph22 = SQRT( 15.d0 / 2.d0 / TPI )
     RETURN
   END SUBROUTINE
 
   
   SUBROUTINE gauss1( cphi, ndir, l_wann, m_wann, rpos1, dist1 )
-
-    USE io_module, ONLY : stdout
+    IMPLICIT NONE
 
     INTEGER :: ndir, l_wann, m_wann
     REAL(dbl) :: rpos1(3), dist1
@@ -57,34 +56,36 @@ CONTAINS
       first = .FALSE.
     END IF
 
-    IF  ( ndir == 3 ) THEN
-      dist_pl  = SQRT( rpos1(1)**2 + rpos1(2)**2 )
-      dist_cos = rpos1(3)
-    ELSE IF  ( ndir == 2 ) THEN
-      dist_pl  = SQRT( rpos1(1)**2 + rpos1(3)**2 )
-      dist_cos = rpos1(2)
-    ELSE IF  ( ndir == 1 ) THEN
-      dist_pl  = SQRT( rpos1(2)**2 + rpos1(3)**2 )
-      dist_cos = rpos1(1)
-    ELSE 
-      WRITE(stdout,*) 'ERROR: Wrong z-direction'
-      CALL errore(' gauss1 ', ' wrong z- direction ', ndir )
-    END IF 
+ 
+    SELECT CASE ( ndir )
+    CASE ( 3 )
+        dist_pl  = SQRT( rpos1(1)**2 + rpos1(2)**2 )
+        dist_cos = rpos1(3)
+    CASE ( 2 )
+        dist_pl  = SQRT( rpos1(1)**2 + rpos1(3)**2 )
+        dist_cos = rpos1(2)
+    CASE ( 1 )
+        dist_pl  = SQRT( rpos1(2)**2 + rpos1(3)**2 )
+        dist_cos = rpos1(1)
+    CASE DEFAULT
+        CALL errore(' gauss1 ', ' wrong z- direction ', ABS(ndir)+1 )
+    END SELECT
+
 
     ! ... IF  rpos is on the origin, or on the z axis, I give arbitrary
     !     values to cos/sin of theta, or of phi, respectively
 
-    IF  ( ABS( dist1 ) <= 1.d-10 ) THEN
-      th_cos = 0.0d0
-      th_sin = 0.0d0
+    IF  ( ABS( dist1 ) <= EPS_m9 ) THEN
+      th_cos = ZERO
+      th_sin = ZERO
     ELSE
       th_cos = dist_cos / dist1
       th_sin = dist_pl / dist1
     END IF
 
     IF  (ABS( dist_pl ) <= 1.d-10 ) THEN
-      ph_cos = 0.0d0
-      ph_sin = 0.0d0
+      ph_cos = ZERO
+      ph_sin = ZERO
     ELSE
       IF ( ndir == 3 ) THEN
         ph_cos = rpos1(1) / dist_pl
@@ -111,7 +112,6 @@ CONTAINS
       ELSE IF ( m_wann == 2 ) THEN
         cphi = sph22 * cphi * ( th_sin**2 ) * 2.0d0 * ph_sin * ph_cos
       ELSE
-        WRITE(stdout,*) 'ERROR: check the spherical harmonics (I)'
         CALL errore(' gauss1 ', ' check the spherical harmonics (I)', m_wann )
       END IF
 
@@ -124,7 +124,6 @@ CONTAINS
       ELSE IF ( m_wann == 1 ) THEN
         cphi = sph11 * cphi * th_sin * ph_sin
       ELSE
-        WRITE(stdout,*) 'ERROR: check the spherical harmonics (II)'
         CALL errore(' gauss1 ', ' check the spherical harmonics (II)', m_wann )
       END IF
 
@@ -169,11 +168,9 @@ CONTAINS
         cphi = cphi * ( sph00 + sph1m1 * th_sin * ph_cos +        &
                sph11 * th_sin * ph_sin - sph10 * th_cos ) / 2.0d0
       ELSE
-        WRITE (stdout, *)  '*** ERROR *** in sp^3 hybrid gaussian: check m_wann'
         CALL errore(' gauss1 ', ' sp^3 hybrid gaussian ', m_wann )
       END IF
     ELSE
-      WRITE(stdout,*) '*** ERROR *** : check the spherical harmonics (III)'
       CALL errore(' gauss1 ', ' check the spherical harmonics (III)', m_wann )
     END IF
 

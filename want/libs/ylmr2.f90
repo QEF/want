@@ -49,24 +49,24 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
   !  theta and phi are polar angles, cost = cos(theta)
   !
   allocate(cost(ng), phi(ng), P(ng,0:lmax,0:lmax) )
-  do ig = 1, ng
-     gmod = sqrt (gg (ig) )
-     if (gmod < eps) then
+  DO ig = 1, ng
+     gmod = SQRT (gg (ig) )
+     IF (gmod < eps) THEN
         cost(ig) = ZERO
-     else
+     ELSE
         cost(ig) = g(3,ig)/gmod
-     endif
+     ENDIF
      !
      !  beware the arc tan, it is defined modulo pi
      !
-     if (g(1,ig) > eps) then
-        phi (ig) = atan( g(2,ig)/g(1,ig) )
-     else if (g(1,ig) < -EPS_m9 ) then
-        phi (ig) = atan( g(2,ig)/g(1,ig) ) + PI
-     else
-        phi (ig) = sign( PI/2.0_dbl,g(2,ig) )
-     end if
-  enddo
+     IF (g(1,ig) > eps) THEN
+        phi (ig) = ATAN( g(2,ig)/g(1,ig) )
+     ELSE if (g(1,ig) < -EPS_m9 ) THEN
+        phi (ig) = ATAN( g(2,ig)/g(1,ig) ) + PI
+     ELSE
+        phi (ig) = SIGN( PI/2.0_dbl,g(2,ig) )
+     ENDIF
+  ENDDO
   !
   !  P(:,l,m), are the Legendre Polynomials (0 <= m <= l)
   !

@@ -3,6 +3,32 @@
             WanT code:  Log of Changes 
 =======================================================
 
+25 Feb 2005     
+                 G95 compilation tested. Trial_center_setup routine completed except
+                 for the case of l = -1 (tetrahedron case, used e.g. for silicon). (AF)
+
+21 Feb 2005     
+                 Some varibles moved away from INPUT_MODULE to other data modules
+                 (such as windows_module, subspace_module, kpoints_module) in order to
+                 avoid circular dependencies. (AF)
+
+18 Feb 2005      
+                 Projection routine started being re-written. Wfc_data renamed as
+                 wfc_manager.f90. TRIAL_CENTER module containing definitions and 
+                 subroutines for the trial_center type and TRIAL_CENTER_DATA module
+                 added to Modules. File input_wan.f90 moved to input.f90. (AF)
+
+17 Feb 2005      
+                 The gaussians used as trials for WFs are now defined with the prefactor
+                 |r|^l, i.e.   gauss(|r|) = r^l * e^{-(r/a)^2} . This is useful for 
+                 the direct analytical calculation of their Fourier transform. (AF)
+
+15 Feb 2005
+                 Bugs fixed, new overlap procedure working and checked. (AF)
+
+14 Feb 2005      gv_indexes routine moved from util_module to ggrids_module and improved.
+                 set_overlap_map routine added. (AF) 
+
 10 Feb 2005      Bug fixed in init_us_1 subroutine, USPP implementation is working. 
                  Test6 added (silicon USPP). Perl script added in utilities for CVS log
                  managing. (AF)
@@ -14,9 +40,8 @@
                  We keep on using s_psi but a different augmentation routine for
                  overlap is used: add_us_overlap. This is for memory reason, 
                  in order to avoid the allocation of large workspaces. (AF)
-              
 
-05 Feb 2005      s_psi and sb_psi routines unified in augment_psi routiene.
+05 Feb 2005      s_psi and sb_psi routines unified in augment_psi routine. (AF)
 
 04 Feb 2005      Subtle bug in pw_export fixed. USPP are rightly initialized
                  (init_us_1 and init_us_2 + ccalbec). The augmentation routine

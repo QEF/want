@@ -53,6 +53,8 @@
   INTEGER, PARAMETER             :: mxdnn  = 12   ! maximum number of NN
   INTEGER, PARAMETER             :: mxdnnh = mxdnn/2 
 
+  INTEGER                        :: nshells       ! input number of shells to be used
+  INTEGER                        :: nwhich(mxdnn) ! the chosen shells
   INTEGER                        :: ndnntot       ! number of dnn shells
   INTEGER, ALLOCATABLE           :: nntot(:)      ! DIM: nkpts
   INTEGER, ALLOCATABLE           :: nnshell(:,:)  ! DIM: nkpts*mxdnn
@@ -77,6 +79,8 @@
   PUBLIC :: wk, wksum
 
   PUBLIC :: mxdnn, mxdnnh
+  PUBLIC :: nshells
+  PUBLIC :: nwhich
   PUBLIC :: nntot
   PUBLIC :: nnshell
   PUBLIC :: nnlist
@@ -156,7 +160,6 @@ CONTAINS
 !**********************************************************
    SUBROUTINE bshells_init( )
    !**********************************************************
-   USE input_module,  ONLY : nshells, nwhich
     IMPLICIT NONE
 
       IF ( .NOT. lattice_alloc ) CALL errore('bshells_init','Lattice NOT allocated',1)
