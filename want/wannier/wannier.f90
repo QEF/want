@@ -795,7 +795,7 @@
       WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
       WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
       WRITE( stdout, * ) '  '
-      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_od  + func_d
+      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_o
 
       func_old1 = func_om1
       func_old2 = func_om2
@@ -1924,7 +1924,7 @@
           WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
           WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
           WRITE( stdout, * ) '  '
-          WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_od  + func_d
+          WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_o
 
           WRITE (stdout, fmt="(2x,' ')")
           WRITE (stdout, fmt="(2x,'Omega variation:')")
@@ -1932,6 +1932,8 @@
           WRITE (stdout, fmt="(4x,'Delta Omega 2   = ',0pe16.8)") func_del2
           WRITE (stdout, fmt="(4x,'Delta Omega 3   = ',0pe16.8)") func_del3
           WRITE (stdout, fmt="(4x,'Delta Omega Tot = ',0pe16.8)") func_del
+          WRITE( stdout, * ) '  '
+          WRITE (stdout, fmt="(2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
           WRITE( stdout, * ) '  '
           WRITE( stdout, * ) ' ======================================================================'
           GO TO 8100
@@ -1962,7 +1964,7 @@
       WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
       WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
       WRITE( stdout, * ) '  '
-      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_od  + func_d
+      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_o
 
       WRITE (stdout, fmt="(2x,' ')")
       WRITE (stdout, fmt="(2x,'Omega variation:')")
@@ -1970,6 +1972,8 @@
       WRITE (stdout, fmt="(4x,'Delta Omega 2   = ',0pe16.8)") func_del2
       WRITE (stdout, fmt="(4x,'Delta Omega 3   = ',0pe16.8)") func_del3
       WRITE (stdout, fmt="(4x,'Delta Omega Tot = ',0pe16.8)") func_del
+      WRITE( stdout, * ) '  '
+      WRITE (stdout, fmt="(2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
       WRITE( stdout, * ) '  '
       WRITE( stdout, * ) ' ======================================================================'
 
