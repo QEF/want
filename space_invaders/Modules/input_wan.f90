@@ -52,7 +52,7 @@ CONTAINS
 
        INTEGER :: ios
        INTEGER :: nwann
-       INTEGER :: i
+       INTEGER :: i, ierr
 
        CHARACTER(LEN=256) :: input_line
        CHARACTER(LEN=80)  :: card
@@ -127,13 +127,20 @@ CONTAINS
          CALL errore( ' read_input ', ' itrial out of range ', 1 )
        END IF
 
-       ALLOCATE( gauss_typ(dimwann) )
-       ALLOCATE( rphiimx1(3,dimwann) )
-       ALLOCATE( rphiimx2(3,dimwann) )
-       ALLOCATE( l_wann(dimwann) )
-       ALLOCATE( m_wann(dimwann) )
-       ALLOCATE( ndir_wann(dimwann) )
-       ALLOCATE( rloc(dimwann) )
+       ALLOCATE( gauss_typ(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating gauss_typ ', dimwann )
+       ALLOCATE( rphiimx1(3,dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating rphiimx1 ', 3*dimwann )
+       ALLOCATE( rphiimx2(3,dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating rphiimx2 ', 3*dimwann )
+       ALLOCATE( l_wann(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating l_wann ', dimwann )
+       ALLOCATE( m_wann(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating m_wann ', dimwann )
+       ALLOCATE( ndir_wann(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating ndir_wann ', dimwann )
+       ALLOCATE( rloc(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating rloc ', dimwann )
        !
        !
  100   CALL read_line( input_line, end_of_file=tend )
@@ -229,14 +236,24 @@ CONTAINS
 !=----------------------------------------------------------------------------=!
 
   SUBROUTINE deallocate_input
+    IMPLICIT NONE
+    INTEGER :: ierr
 
-    IF( ALLOCATED( gauss_typ ) )   DEALLOCATE( gauss_typ )
-    IF( ALLOCATED( rphiimx1 ) )   DEALLOCATE( rphiimx1 )
-    IF( ALLOCATED( rphiimx2 ) )   DEALLOCATE( rphiimx2 )
-    IF( ALLOCATED( l_wann ) )   DEALLOCATE( l_wann )
-    IF( ALLOCATED( m_wann ) )   DEALLOCATE( m_wann )
-    IF( ALLOCATED( ndir_wann ) )   DEALLOCATE( ndir_wann )
-    IF( ALLOCATED( rloc ) )   DEALLOCATE( rloc )
+    ierr = 0
+    IF( ALLOCATED( gauss_typ ) )   DEALLOCATE( gauss_typ, STAT=ierr )
+        IF (ierr/=0) CALL errore('deallocate_input','deallocating gauss_type', ABS(ierr))
+    IF( ALLOCATED( rphiimx1 ) )   DEALLOCATE( rphiimx1, STAT=ierr )
+        IF (ierr/=0) CALL errore('deallocate_input','deallocating rphiimx1', ABS(ierr))
+    IF( ALLOCATED( rphiimx2 ) )   DEALLOCATE( rphiimx2, STAT=ierr )
+        IF (ierr/=0) CALL errore('deallocate_input','deallocating rphiimx2', ABS(ierr))
+    IF( ALLOCATED( l_wann ) )   DEALLOCATE( l_wann, STAT=ierr )
+        IF (ierr/=0) CALL errore('deallocate_input','deallocating l_wann', ABS(ierr))
+    IF( ALLOCATED( m_wann ) )   DEALLOCATE( m_wann, STAT=ierr )
+        IF (ierr/=0) CALL errore('deallocate_input','deallocating m_wann', ABS(ierr))
+    IF( ALLOCATED( ndir_wann ) )   DEALLOCATE( ndir_wann, STAT=ierr )
+        IF (ierr/=0) CALL errore('deallocate_input','deallocating ndir_wann', ABS(ierr))
+    IF( ALLOCATED( rloc ) )   DEALLOCATE( rloc, STAT=ierr )
+        IF (ierr/=0) CALL errore('deallocate_input','deallocating rloc', ABS(ierr))
 
     RETURN
   END SUBROUTINE deallocate_input

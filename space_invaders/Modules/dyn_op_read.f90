@@ -109,7 +109,7 @@ CONTAINS
  
 
    INTEGER                          :: isp,i,j,k,ios
-   INTEGER                          :: j1,j2
+   INTEGER                          :: j1,j2, ierr
 
 
 
@@ -138,10 +138,20 @@ CONTAINS
 !
 ! allocation
 !
-      ALLOCATE(  E(Nomega_fmt), E_fmt(Nomega_fmt),                         & 
-                 Opr(dim_fmt,dim_fmt,Nv_fmt,Nisp_fmt,Nomega_fmt),          & 
-                 Opr_fmt(dim_fmt,dim_fmt,Nv_fmt,Nisp_fmt,Nomega_fmt),      & 
-                 Vct(3,Nv_fmt), Vct_fmt(3,Nv_fmt)                          )
+      ALLOCATE( E(Nomega_fmt), STAT=ierr )
+         IF (ierr/=0) CALL errore('read_dyn_op','allocating E', Nomega_fmt)
+      ALLOCATE( E_fmt(Nomega_fmt), STAT=ierr )   
+         IF (ierr/=0) CALL errore('read_dyn_op','allocating E_fmt', Nomega_fmt)
+      ALLOCATE( Opr(dim_fmt,dim_fmt,Nv_fmt,Nisp_fmt,Nomega_fmt), STAT=ierr )
+         IF (ierr/=0) CALL errore('read_dyn_op','allocating Opr', & 
+                           dim_fmt**2 * Nv_fmt * Nisp_fmt * Nomega_fmt)
+      ALLOCATE( Opr_fmt(dim_fmt,dim_fmt,Nv_fmt,Nisp_fmt,Nomega_fmt), STAT=ierr ) 
+         IF (ierr/=0) CALL errore('read_dyn_op','allocating Opr_fmt', & 
+                           dim_fmt**2 * Nv_fmt * Nisp_fmt * Nomega_fmt)
+      ALLOCATE( Vct(3,Nv_fmt), STAT=ierr )
+         IF (ierr/=0) CALL errore('read_dyn_op','allocating Vct', 3* Nv_fmt)
+      ALLOCATE( Vct_fmt(3,Nv_fmt), STAT=ierr ) 
+         IF (ierr/=0) CALL errore('read_dyn_op','allocating Vct_fmt', 3* Nv_fmt)
 
 
       READ(in) dum(1)
@@ -245,7 +255,12 @@ CONTAINS
    Vct(:,:)        = Vct_fmt(:,:)
 
 
-   DEALLOCATE(  E_fmt, Opr_fmt, Vct_fmt )  
+   DEALLOCATE(  E_fmt, STAT=ierr )
+       IF (ierr/=0) CALL errore('read_dyn_op','deallocating E_fmt', ABS(ierr))
+   DEALLOCATE(  Opr_fmt, STAT=ierr )
+       IF (ierr/=0) CALL errore('read_dyn_op','deallocating Opr_fmt', ABS(ierr))
+   DEALLOCATE(  Vct_fmt, STAT=ierr )  
+       IF (ierr/=0) CALL errore('read_dyn_op','deallocating Vct_fmt', ABS(ierr))
 
 
    END SUBROUTINE read_dyn_op
