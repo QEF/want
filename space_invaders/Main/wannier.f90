@@ -773,8 +773,8 @@
 
       WRITE(stdout, fmt=" (2x, 'Trial Wannier centers and Spreads (Omega)')")
 
-      CALL omega( dimwann, nkpts, nkpts, nntot(1), nnmx, nnlist(1,1), bk(1,1,1), wb(1,1), &
-                  cm(1,1,1,1), csheet(1,1,1), sheet(1,1,1), rave(1,1), r2ave(1), rave2(1), &
+      CALL omega( dimwann, nkpts, nkpts, nntot(:), nnmx, nnlist(:,:), bk(:,:,:), wb(:,:), &
+                  cm(:,:,:,:), csheet(:,:,:), sheet(:,:,:), rave(:,:), r2ave(:), rave2(:), &
                   func_om1, func_om2, func_om3, func_o, rtot, r2tot, func_i, func_d, & 
                   func_od )
 
