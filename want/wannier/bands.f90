@@ -10,6 +10,9 @@
 !     Output files: band.gp, band.dat
 
       USE kinds
+      USE mp, ONLY: mp_start, mp_end, mp_env
+      USE mp_global, ONLY: mp_global_start
+      USE io_global, ONLY: io_global_start, io_global_getionode
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
 
 
@@ -101,8 +104,36 @@
       NAMELIST /INPUT/ nspts, npts, nbands, convert_self_energy, check_self_energy, & 
                  calculate_spectral_func, print_sgm_start, print_sgm_end, spin_component, efermi     
 
+       INTEGER :: root, mpime, gid, nproc
+       LOGICAL :: ionode
+       INTEGER :: ionode_id
+
 !
 ! ... End declarations and dimensions
+!
+
+
+!
+! ... parallel environment init
+!
+       root = 0
+       CALL mp_start()
+       CALL mp_env( nproc, mpime, gid )
+       CALL mp_global_start( root, mpime, gid, nproc )
+
+! ... mpime = processor number, starting from 0
+! ... nproc = number of processors
+! ... gid   = group index
+! ... root  = index of the root processor
+
+! ... initialize input output
+
+       CALL io_global_start( mpime, root )
+       CALL io_global_getionode( ionode, ionode_id )
+
+
+!
+! ... starting 
 !
 
       OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
@@ -561,6 +592,8 @@
       WRITE (28,704)
 
       CLOSE( 28 )
+
+      call mp_end()
 
  701  FORMAT('set data style dots',/,'set nokey',/,'set xrange [0:',F8.5,']',/,'set yrange [',F9.5,' :',F9.5,']')
 ! 702  FORMAT('set xtics (',:20('"',A2,'" ',F8.5,','))

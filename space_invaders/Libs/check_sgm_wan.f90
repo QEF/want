@@ -317,7 +317,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
            ! depending on OMEGA and SPIN
            ! 
            G_ret(:,:,isp,ie) = ident(:,:)
-           CALL ZGESV(Hdim, Hdim, tmp, Hdim, ipiv, G_ret(:,:,isp,ie), Hdim, info) 
+           CALL ZGESV(Hdim, Hdim, tmp, Hdim, ipiv, G_ret(1,1,isp,ie), Hdim, info) 
            IF ( info < 0 )   &
                CALL errore('check_sgm_wan','ZGEVS failed : wrong input param',-info)
            IF ( info > 0 )   &  
