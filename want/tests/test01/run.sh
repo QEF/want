@@ -30,6 +30,7 @@ MANUAL=" Usage
  hamiltonian     writes the hamiltonian matrix elements on the Wannier basis
  want            perform WINDOW, DISENTANGLE, WANNIER and HAMILTONIAN all together 
  bulk            evaluate the transmittance, for the bulk case
+ conductor       as for BULK but using the general conductor geometry code
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -57,6 +58,7 @@ DISENTANGLE=
 WANNIER=
 HAMILTONIAN=
 BULK=
+CONDUCTOR=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -74,9 +76,10 @@ case $INPUT in
    (want)           WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
                     HAMILTONIAN=".TRUE." ;;
    (bulk)           BULK=".TRUE." ;;
+   (conductor)      CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ; 
                     WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ;;
+                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ; CONDUCTOR=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -95,6 +98,7 @@ if [ ! -e $TMPDIR/$TEST_NAME/HOME ] ; then
     cd $TMPDIR/$TEST_NAME
     ln -sf $TEST_HOME ./HOME
 fi
+test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
 
 
 #-----------------------------------------------------------------------------
@@ -142,10 +146,10 @@ fi
 #
 if [ "$WINDOW" = ".TRUE." ] ; then  
    $WANT_BIN/window.x < $TEST_HOME/want.in > $TEST_HOME/window.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "WINDOW calculation done" 
    else
-      echo "found some problems in WINDOW calculation, stopping" ; exit 1
+      echo "found some problems in WINDOW calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -154,10 +158,10 @@ fi
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
    $WANT_BIN/disentangle.x < $TEST_HOME/want.in > $TEST_HOME/disentangle.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "DISENTANGLE calculation done" 
    else
-      echo "found some problems in DISENTANGLE calculation, stopping" ; exit 1
+      echo "found some problems in DISENTANGLE calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -166,10 +170,10 @@ fi
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
    $WANT_BIN/wannier.x < $TEST_HOME/want.in > $TEST_HOME/wannier.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "WANNIER calculation done" 
    else
-      echo "found some problems in WANNIER calculation, stopping" ; exit 1
+      echo "found some problems in WANNIER calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -178,15 +182,10 @@ fi
 #
 if [ "$HAMILTONIAN" = ".TRUE." ] ; then  
    $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian.in > $TEST_HOME/hamiltonian.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "HAMILTONIAN calculation done" 
-      #
-      # hopefully will be improoved very soon...
-      #
-      ln -sf fort.103 H00.dat
-      ln -sf fort.104 H01.dat
    else
-      echo "found some problems in HAMILTONIAN calculation, stopping" ; exit 1
+      echo "found some problems in HAMILTONIAN calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -195,17 +194,53 @@ fi
 # running BULK
 #
 if [ "$BULK" = ".TRUE." ] ; then  
+   #
+   # hopefully will be improoved very soon...
+   #
+   ln -sf fort.103 H00.dat
+   ln -sf fort.104 H01.dat
+   #
    $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
-   if [ $? = 0 ] ; then 
+   if [ ! -e CRASH ] ; then 
       echo "BULK calculation done" 
       #
       # also this needs to be improoved
       #
-      cp dos.out cond.out $TEST_HOME
+      mv dos.out $TEST_HOME/dos_bulk.out
+      mv cond.out $TEST_HOME/cond_bulk.out
    else
-      echo "found some problems in BULK calculation, stopping" ; exit 1
+      echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
+
+
+#
+# running CONDUCTOR
+#
+if [ "$CONDUCTOR" = ".TRUE." ] ; then  
+   #
+   # hopefully will be improoved very soon...
+   #
+   ln -sf fort.103 H00_A
+   ln -sf fort.103 H00_B
+   ln -sf fort.103 H00_C
+   ln -sf fort.104 H01_B
+   ln -sf fort.104 H01_A
+   ln -sf fort.104 HCI_AC
+   ln -sf fort.104 HCI_CB
+   #
+   $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
+   if [ ! -e CRASH ] ; then 
+      echo "CONDUCTOR calculation done" 
+      #
+      # also this needs to be improoved
+      #
+      mv dos.out cond.out $TEST_HOME
+   else
+      echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
+   fi
+fi
+
 
 #
 # eventually clean
