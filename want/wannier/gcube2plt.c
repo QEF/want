@@ -437,6 +437,8 @@ long int GCUBE2PLT( int * iwann )
     WriteInputData();
 
     printf("Job done ...\n");
+
+    return 0L;
 }
 
 
