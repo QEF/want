@@ -3,6 +3,7 @@
 SUBROUTINE diag_gemat(matrix,dim,eig,vcts,vcts_flag)
   !*********************************************************
    USE kinds, ONLY: dbl
+   USE timing_module, ONLY : timing
    IMPLICIT NONE
 
 ! <INFO>
@@ -37,7 +38,7 @@ SUBROUTINE diag_gemat(matrix,dim,eig,vcts,vcts_flag)
 
 !-----------------------------------
 
-
+   CALL timing('diag_gemat',OPR='start')
    matrix_work(:,:) = matrix(:,:)
   
    SELECT CASE (vcts_flag)
@@ -73,6 +74,7 @@ SUBROUTINE diag_gemat(matrix,dim,eig,vcts,vcts_flag)
    IF ( vcts_flag == 'L' )  vcts(:,:) = vcts_work_L(:,:) 
    IF ( vcts_flag == 'R' )  vcts(:,:) = vcts_work_R(:,:) 
 
+   CALL timing('diag_gemat',OPR='stop')
 
    END SUBROUTINE diag_gemat
 

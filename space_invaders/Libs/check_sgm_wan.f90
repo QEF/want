@@ -5,6 +5,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
    USE kinds, ONLY : dbl
    USE constants, ONLY : PI
    USE dyn_op_read
+   USE timing_module, ONLY : timing
    IMPLICIT NONE
 
 ! <INFO>
@@ -76,9 +77,8 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 
 !------------------------------------------------
 
-   WRITE(*,*) 
-   WRITE(*,*) 'Subroutine CHECK_SGM_WAN'
-   WRITE(*,*) 
+   CALL timing('check_sgm_wan',OPR='start')
+   WRITE(*,"(/,'Subroutine CHECK_SGM_WAN',/)") 
 
 !
 !  reading self_energy from input file
@@ -381,6 +381,9 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
        IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating indxws_ind ',ABS(ierr))
    DEALLOCATE( Vct, STAT=ierr )
        IF(ierr/=0) CALL errore('check_sgm_wan',' deallocating Vct',ABS(ierr))
+
+
+   CALL timing('check_sgm_wan',OPR='stop')
 
 END SUBROUTINE  check_sgm_wan
 

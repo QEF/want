@@ -1,5 +1,6 @@
       SUBROUTINE bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell,   &
                   bk, dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, mxdnrk )
+      USE timing_module, ONLY : timing
  
 ! ... Computes the shells of b-vectors connecting every k-point to its
 !     neighbors, as well as their weights for the finite-difference formulas
@@ -49,6 +50,8 @@
       REAL*8 :: dnn0, dnn1, dist, bb1, bbn, factor
 
 !
+
+      CALL timing('bshells',OPR='start')
 
       IF ( nkpts_loc < nkpts ) THEN
         WRITE(6,*) ' '
@@ -354,9 +357,9 @@
       END DO
       WRITE(*,*) ' '
 
-      WRITE(*,*) 
-      WRITE(*,*) ' BSHELL, done. '
-      WRITE(*,*) 
+      WRITE(*,"(/, ' BSHELL, done. ',/)" )
+
+      CALL timing('bshells',OPR='stop')
 
       RETURN
       END SUBROUTINE

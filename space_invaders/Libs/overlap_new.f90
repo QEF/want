@@ -44,7 +44,7 @@
 !
 !.....................................................................
 
- 
+      USE timing_module, ONLY : timing 
       IMPLICIT NONE
 
       ! ... Input Variables
@@ -101,8 +101,8 @@
 
 ! ... END declarations
 
-      WRITE(*,*) 
-      WRITE(*,*) ' Starting Overlap '
+      CALL timing('overlap',OPR='start')
+      WRITE(*,"(/, ' Starting Overlap ',/)")
 
 
       nplwv = ngx * ngy * ngz
@@ -376,8 +376,8 @@
          IF (ierr/=0) CALL errore(' overlap ',' deallocating nplwkp',ABS(ierr))
 
  
-      WRITE(*,*) ' Overlap, done. '
-      WRITE(*,*) 
+      WRITE(*,"(/, ' Overlap, done. ',/)")
+      CALL timing('overlap',OPR='stop')
 
       RETURN
       END SUBROUTINE

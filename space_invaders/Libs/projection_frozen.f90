@@ -39,6 +39,7 @@
 !
 !.............................................................................
 
+       USE timing_module, ONLY : timing
 
        IMPLICIT NONE
 
@@ -69,6 +70,8 @@
        PARAMETER( czero = ( 0.0d0, 0.0d0 ) ) 
 
 ! ...  End of declarations
+
+       CALL timing('projection_frozen',OPR='start')
  
        ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
        IF( ierr /= 0 ) THEN
@@ -261,6 +264,8 @@
           IF (ierr/=0) CALL errore('projection_frozen','deallocating w',ABS(ierr))
        DEALLOCATE( rwork, STAT=ierr )
           IF (ierr/=0) CALL errore('projection_frozen','deallocating rwork',ABS(ierr))
+
+       CALL timing('projection_frozen',OPR='stop')
 
        RETURN
        END SUBROUTINE

@@ -6,6 +6,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
    USE kinds
    USE dyn_op_write
    USE dyn_op_read
+   USE timing_module, ONLY : timing
    IMPLICIT NONE
 
 ! <INFO>
@@ -75,6 +76,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
     
 !--------------------------------------------------
 
+   CALL timing('do_self_energy',OPR='start')
 
 !
 ! reading EAMP matrices from 'subspace.dat'
@@ -331,6 +333,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
    DEALLOCATE( Sgm_in, Sgmk, Sgm_out, STAT=ierr)
        IF (ierr/=0) CALL errore('do_self_energy','deallocating Sgm_in Sgmk Sgm_out', ABS(ierr))
 
+   CALL timing('do_self_energy',OPR='stop')
 
 
    END SUBROUTINE do_self_energy

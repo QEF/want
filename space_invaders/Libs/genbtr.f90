@@ -1,6 +1,7 @@
       SUBROUTINE genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
                  lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
 
+      USE timing_module, ONLY : timing
       IMPLICIT none
 
       INTEGER :: nindpw(*)
@@ -47,6 +48,8 @@
 !     enmax is too large so that there are more than nrplwv plane wave basis
 !     states of energy less than enmax at any k point, enmax is
 !     automatically reduced
+
+      CALL timing('genbtr',OPR='start')
 
       accmxc = 0.d0
       accmxi = 0.d0
@@ -159,6 +162,8 @@
       WRITE(*,2030) accmxi
       WRITE(*,2040) accmxc
       WRITE(*,*) ' ' 
+
+      CALL timing('genbtr',OPR='stop')
  
  2020 FORMAT( /, 1x, 'GENTR: ENMAX, TESTMAX, NSBOXI, NRPLWV', 2f12.6, 2i7 )
  2030 FORMAT( 2x, 'PLANE-WAVES UP TO ', f8.2, ' eV IN ORIGINAL CELL ', 'HAVE BEEN ACCEPTED ' )

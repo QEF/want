@@ -33,6 +33,7 @@
 !...............................................................................
 
        USE fft_scalar
+       USE timing_module, ONLY : timing
 
        IMPLICIT NONE
 
@@ -120,6 +121,8 @@
        INTEGER :: ierr
 
 ! ...  End of declaration
+
+       CALL timing('projection',OPR='start')
 
        mplwv = ngx * ngy * ( ngz+1 )
 
@@ -683,6 +686,7 @@
        DEALLOCATE( nphir, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating nphir',ABS(ierr))
 
+       CALL timing('projection',OPR='stop')
 
        RETURN
        END SUBROUTINE
