@@ -45,32 +45,42 @@
        INTEGER :: mxdbnd 
        INTEGER :: mxdnrk 
        INTEGER :: dimwann 
-       INTEGER :: dimwin(mxdnrk) 
        INTEGER :: nkpts
+       INTEGER :: dimwin(mxdnrk) 
        INTEGER :: dimfroz(mxdnrk)
        COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
        LOGICAL :: frozen(mxdbnd,mxdnrk)
 
-       COMPLEX*16 :: ap((mxdbnd*(mxdbnd+1))/2)
-       COMPLEX*16 :: z(mxdbnd,mxdbnd)
-       COMPLEX*16 :: work(2*mxdbnd)
-       REAL*8 :: w(mxdbnd) ,rwork(7*mxdbnd)
-       INTEGER :: iwork(5*mxdbnd), ifail(mxdbnd)
-       INTEGER :: info
-       INTEGER :: m, il, iu
- 
-       COMPLEX*16 :: p_s(mxdbnd,mxdbnd)
-       COMPLEX*16 :: q_froz(mxdbnd,mxdbnd)
-       COMPLEX*16 :: pq(mxdbnd,mxdbnd)
-       COMPLEX*16 :: qpq(mxdbnd,mxdbnd)
+       COMPLEX*16, ALLOCATABLE :: ap(:)
+       COMPLEX*16, ALLOCATABLE :: z(:,:)
+       COMPLEX*16, ALLOCATABLE :: work(:)
+       COMPLEX*16, ALLOCATABLE :: p_s(:,:)
+       COMPLEX*16, ALLOCATABLE :: q_froz(:,:)
+       COMPLEX*16, ALLOCATABLE :: pq(:,:)
+       COMPLEX*16, ALLOCATABLE :: qpq(:,:)
+       INTEGER, ALLOCATABLE :: iwork(:), ifail(:)
+       REAL*8, ALLOCATABLE :: w(:) ,rwork(:)
  
        INTEGER :: nkp, j, l, n
+       INTEGER :: info
+       INTEGER :: m, il, iu
        COMPLEX*16 :: ctmp
        COMPLEX*16 :: czero
        PARAMETER( czero = ( 0.0d0, 0.0d0 ) ) 
 
 ! ...  End of declarations
  
+       ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2) )
+       ALLOCATE( z(mxdbnd,mxdbnd) )
+       ALLOCATE( work(2*mxdbnd) )
+       ALLOCATE( p_s(mxdbnd,mxdbnd) )
+       ALLOCATE( q_froz(mxdbnd,mxdbnd) )
+       ALLOCATE( pq(mxdbnd,mxdbnd) )
+       ALLOCATE( qpq(mxdbnd,mxdbnd) )
+       ALLOCATE( iwork(5*mxdbnd) )
+       ALLOCATE( ifail(mxdbnd) )
+       ALLOCATE( w(mxdbnd) )
+       ALLOCATE( rwork(7*mxdbnd) )
 
        DO nkp =1, nkpts
  
@@ -184,6 +194,18 @@
          END IF ! DIMWANN>DIMFROZ(NKP)
 
        END DO ! NKP
+
+       DEALLOCATE( ap )
+       DEALLOCATE( z )
+       DEALLOCATE( work )
+       DEALLOCATE( p_s )
+       DEALLOCATE( q_froz )
+       DEALLOCATE( pq )
+       DEALLOCATE( qpq )
+       DEALLOCATE( iwork )
+       DEALLOCATE( ifail )
+       DEALLOCATE( w )
+       DEALLOCATE( rwork )
 
        RETURN
        END SUBROUTINE
