@@ -227,7 +227,7 @@
        WRITE( stdout, fmt= " (2x,'Atomic positions: (cart. coord. in units of crystal)' ) " )
        DO nt = 1, ntype
          DO ja = 1, natom( nt )
-           WRITE( stdout, fmt="(4x, a, 2x,'tau(',I1,') = (', 3F8.4, ' )' )" ) &
+           WRITE( stdout, fmt="(4x, a, 2x,'tau(',I3,') = (', 3F8.4, ' )' )" ) &
                   nameat( nt ), ja, (rat( i, ja, nt ), i = 1, 3)
          END DO
        END DO
@@ -235,7 +235,7 @@
        ! ****ATTENTION 
        ! emax is reported in output in Rydberg, but it used in Hartree in the code
        WRITE( stdout, * ) ' ' 
-       WRITE( stdout, fmt= " (2x, 'Kinetic energy cut-off =  ', F5.2, ' (Ry)' ) " ) emax * 2.0
+       WRITE( stdout, fmt= " (2x, 'Kinetic energy cut-off = ', F7.2, ' (Ry)' ) " ) emax * 2.0
        WRITE( stdout, * ) ' ' 
        WRITE( stdout, fmt= " (2x, 'Uniform grid used in wannier calculations:' ) " )
        WRITE( stdout, fmt= " (4x,'nk = (', 3i3, ' )      s = (', 3f6.2, ' )' )" ) &
@@ -361,9 +361,10 @@
 
          kdimwin = imax - imin + 1
          WRITE( stdout, * )' ' 
-         WRITE(stdout,fmt= " (2x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i3, &
-                           & '    mtxd = ', i7 )" )  nkp, dble(I1)/dble(NK(1)), &
+         WRITE(stdout,fmt= " (2x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4, &
+                           & '   mtxd = ', i7 )" )  nkp, dble(I1)/dble(NK(1)), &
                            dble(I2)/dble(NK(2)), dble(I3)/dble(NK(3)), kdimwin, mtxd
+         WRITE(stdout,fmt= " (37x,'  imin = ', i4, '   imax = ', i4)" ) imin, imax
          WRITE( stdout, * ) ' Eigenvalues:'
          WRITE( stdout,'(8f9.4)') ( har * ei_k(i,nkp), i=1,neig )
 
