@@ -6,6 +6,10 @@
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
       USE fft_scalar, ONLY: cfft3d
       USE input_wannier
+      USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+      USE io_global, ONLY : stdout
+      USE startup_module, ONLY : startup
+      USE version_module, ONLY : version_number
 
       IMPLICIT NONE
 
@@ -191,16 +195,10 @@
 
       s0 = cclock()
 
-      WRITE (*,*)'                                                    '
-      WRITE (*,*)'                                                    '
-      WRITE (*,*)'   -------------------------------------------------'
-      WRITE (*,*)'   =      Welcome to the Maximally Localized       ='
-      WRITE (*,*)'   =      Generalized Wannier Functions code       ='
-      WRITE (*,*)'   -------------------------------------------------'
-      WRITE (*,*)'  '
-      WRITE (*,*)'  '
-      WRITE (*,*)'  '
-
+!
+! ...  Startup
+!
+       CALL startup(version_number,MAIN_NAME='wannier')
 
 !
 ! ...  Read input parameters from window.out
@@ -2568,12 +2566,18 @@
 
       CALL deallocate_input()
 
-      sf = cclock()
-      WRITE( *, * ) 'Total Time (sec) : ', sf - s0
-      WRITE( *, * ) 'Init  Time (sec) : ', s1 - s0
-      WRITE( *, * ) 'Trasf Time (sec) : ', s2 - s1
-      WRITE( *, * ) 'Iter  Time (sec) : ', s3 - s2
-      WRITE( *, * ) 'Write Time (sec) : ', sf - s3
+      CALL timing('wannier',OPR='stop')
+      CALL timing('global',OPR='stop')
+      CALL timing_overview(stdout,MAIN_NAME='wannier')
+      CALL timing_deallocate()
+
+! Da aggiornare tramite il module TIMING_MODULE
+!      sf = cclock()
+!      WRITE( *, * ) 'Total Time (sec) : ', sf - s0
+!      WRITE( *, * ) 'Init  Time (sec) : ', s1 - s0
+!      WRITE( *, * ) 'Trasf Time (sec) : ', s2 - s1
+!      WRITE( *, * ) 'Iter  Time (sec) : ', s3 - s2
+!      WRITE( *, * ) 'Write Time (sec) : ', sf - s3
 
       STOP '*** THE END *** (wannier.f90)'
       END PROGRAM wannier

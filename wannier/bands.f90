@@ -14,6 +14,10 @@
       USE mp_global, ONLY: mp_global_start
       USE io_global, ONLY: io_global_start, io_global_getionode
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
+      USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+      USE io_global, ONLY : stdout
+      USE startup_module, ONLY : startup
+      USE version_module, ONLY : version_number
 
 
       IMPLICIT none
@@ -107,7 +111,6 @@
 ! ... End declarations and dimensions
 !
 
-
 !
 ! ... parallel environment init
 !
@@ -128,9 +131,13 @@
 
 
 !
-! ... starting 
+! ...  Startup
 !
+       CALL startup(version_number,MAIN_NAME='bands')
 
+!
+! ... Read from file
+!
       OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
        READ(19) alatt
@@ -641,6 +648,10 @@
       DEALLOCATE( en_band, STAT=ierr)
           IF( ierr /=0 ) CALL errore(' bands ', ' deallocating en_band', ABS(ierr) )
 
+      CALL timing('bands',OPR='stop')
+      CALL timing('global',OPR='stop')
+      CALL timing_overview(stdout,MAIN_NAME='bands')
+      CALL timing_deallocate()
 
       call mp_end()
 
