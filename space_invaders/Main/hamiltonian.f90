@@ -404,11 +404,14 @@
       OPEN( 83, file='diagonal.dat', status='unknown', form='formatted' )
 
       DO iws = 1, nws
-        IF ( ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq. 0 ) .and. ( indxws(3,iws) .eq. 0 ) ) .or.  &
-             ( ( indxws(1,iws) .eq.  1 ) .and. ( indxws(2,iws) .eq. 0 ) .and. ( indxws(3,iws) .eq. 0 ) ) .or.  &
-             ( ( indxws(1,iws) .eq. -1 ) .and. ( indxws(2,iws) .eq. 0 ) .and. ( indxws(3,iws) .eq. 0 ) ) .or.  &
-             ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq. 1 ) .and. ( indxws(3,iws) .eq. 0 ) ) .or.  &
-             ( ( indxws(1,iws) .eq. 0 ) .and. ( indxws(2,iws) .eq. 0 ) .and. ( indxws(3,iws) .eq. 1 ) ) ) THEN
+        IF ( ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
+             ( ( indxws(1,iws) .eq.  1 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
+             ( ( indxws(1,iws) .eq. -1 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
+             ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  1 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
+!            ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq. -1 ) .and. ( indxws(3,iws) .eq.  0 ) ) .or.  &
+!            ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq. -1 ) ) .or.  &
+             ( ( indxws(1,iws) .eq.  0 ) .and. ( indxws(2,iws) .eq.  0 ) .and. ( indxws(3,iws) .eq.  1 ) ) ) THEN
+
           WRITE (100+iws,*) dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (82,*)' '
           WRITE (82,*) dimwann, ( indxws(i,iws), i=1,3 )
@@ -416,14 +419,18 @@
           WRITE (83,*)' '
           WRITE (83,*) dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (83,*)' '
-          DO i = 1, dimwann
-            WRITE (100+iws,*)
-            DO j = 1, dimwann
-              WRITE(100+iws,*) REAL( rham(i,j,iws) )
+
+          DO j = 1, dimwann
+            WRITE (100+iws,*)' '
+            DO i = 1, dimwann
+              WRITE( 100+iws, * ) REAL( rham(i,j,iws) )
             END DO
+          END DO
+          DO i = 1, dimwann
             WRITE(82,stringa)( REAL( rham(i,j,iws) ), j=1,dimwann )
             WRITE(83,*)REAL( rham(i,i,iws) )
           END DO
+
         END IF
       END DO
 

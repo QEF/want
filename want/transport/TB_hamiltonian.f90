@@ -389,9 +389,9 @@
       READ ( 30, * ) nw
       IF ( nw /= nmax  )  CALL errore(' TB_hamiltonian ', ' wrong nmax in reading (I)', nw )
 
-      DO i = 1, nmax
+      DO j = 1, nmax
          READ( 30, * ) 
-         DO j = 1, nmax
+         DO i = 1, nmax
             READ( 30, * ) h0(i,j)
          END DO
       END DO
@@ -402,9 +402,9 @@
       READ ( 40, * ) nw
       IF ( nw /= nmax ) CALL errore(' TB_hamiltonian ', ' wrong nmax in reading (II)', nw )
 
-      DO i = 1, nmax
+      DO j = 1, nmax
          READ ( 40, * ) 
-         DO j = 1, nmax
+         DO i = 1, nmax
             READ ( 40, * ) h1(i,j)
          END DO
       END DO

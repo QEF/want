@@ -230,15 +230,15 @@
                    h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac,  &
                    sci_ac, hci_cb, sci_cb , l_overlap )
 
-      DO i = 1, nmaxa
-         DO j = 1, nmaxc
+      DO j = 1, nmaxc
+         DO i = 1, nmaxa
             hci_ca(j,i) = hci_ac(i,j)
             sci_ca(j,i) = sci_ac(i,j)
          END DO
       END DO
 
-      DO i = 1, nmaxc
-         DO j = 1, nmaxb
+      DO j = 1, nmaxb
+         DO i = 1, nmaxc
             hci_bc(j,i) = hci_cb(i,j)
             sci_bc(j,i) = sci_cb(i,j)
          END DO
@@ -266,40 +266,40 @@
 
          ene = enep + ( 0.d0, 0.00001d0 )
 
-         DO i = 1, nmaxa
-            DO j = 1, nmaxa
+         DO j = 1, nmaxa
+            DO i = 1, nmaxa
                c00_a(i,j) = ( 1.d0, 0.d0 ) * h00_a(i,j) - ene * s00_a(i,j)
                c01_a(i,j) = ( 1.d0, 0.d0 ) * h01_a(i,j) - ene * s01_a(i,j)
             END DO
          END DO
-         DO i = 1, nmaxb
-            DO j = 1, nmaxb
+         DO j = 1, nmaxb
+            DO i = 1, nmaxb
                c00_b(i,j) = ( 1.d0, 0.d0 ) * h00_b(i,j) - ene * s00_b(i,j)
                c01_b(i,j) = ( 1.d0, 0.d0 ) * h01_b(i,j) - ene * s01_b(i,j)
             END DO
          END DO
-         DO i = 1, nmaxc
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxc
                c00_c(i,j) = ( 1.d0, 0.d0 ) * h00_c(i,j) - ene * s00_c(i,j)
             END DO
          END DO
-         DO i = 1, nmaxa
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxa
                cci_ac(i,j) = ( 1.d0, 0.d0 ) * hci_ac(i,j) - ene * sci_ac(i,j)
             END DO
          END DO
-         DO i = 1, nmaxb
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxb
                cci_bc(i,j) = ( 1.d0, 0.d0 ) * hci_bc(i,j) - ene * sci_bc(i,j)
             END DO
          END DO
-         DO i = 1, nmaxc
-            DO j = 1, nmaxa
+         DO j = 1, nmaxa
+            DO i = 1, nmaxc
                cci_ca(i,j) = ( 1.d0, 0.d0 ) * hci_ca(i,j) - ene * sci_ca(i,j)
             END DO
          END DO
-         DO i = 1, nmaxc
-            DO j = 1, nmaxb
+         DO j = 1, nmaxb
+            DO i = 1, nmaxc
                cci_cb(i,j) = ( 1.d0, 0.d0 ) * hci_cb(i,j) - ene * sci_cb(i,j)
             END DO
          END DO
@@ -322,15 +322,15 @@
 
 !...     Advanced
 
-         DO i = 1, nmaxc
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxc
                sLa(i,j) = CONJG( sLr(j,i) )
                sRa(i,j) = CONJG( sRr(j,i) )
             END DO
          END DO
 
-         DO i = 1, nmaxc
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxc
                gL(i,j) = ( 0.d0, 1.d0 ) * ( sLr(i,j) - sLa(i,j) )
                gR(i,j) = ( 0.d0, 1.d0 ) * ( sRr(i,j) - sRa(i,j) )
             END DO
@@ -343,14 +343,14 @@
 !...     Initialization
          gintm1(:,:) = ( 0.0d0, 0.0d0 )
 
-         DO i = 1, nmaxc
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxc
                gintm1(i,j) = ( -1.d0, 0.d0 ) * c00_c(i,j) - sLr(i,j) - sRr(i,j)
             END DO
          END DO
  
-         DO i = 1, nmaxc
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxc
                gintr(i,j) = ( 0.d0, 0.d0 )
                IF ( i == j ) gintr(i,j)=( 1.d0, 0.d0 )
             END DO
@@ -361,8 +361,8 @@
 
 !     G_C (advanced)
 
-         DO i = 1, nmaxc
-            DO j = 1, nmaxc
+         DO j = 1, nmaxc
+            DO i = 1, nmaxc
                ginta(i,j) = CONJG( gintr(j,i) )
             END DO
          END DO
