@@ -1,13 +1,12 @@
-# this is the main makefile
+MAKE=make
 
+# this is the main makefile
 all:
-	cd lib; make;
-	cd main; make;
+	cd modules; $(MAKE);
+	cd lib; $(MAKE);
+	cd main; $(MAKE);
 
 clean:
-	cd band; make clean;
-	cd interface; make clean;
-	cd lib; make clean;
-	cd libutils; make clean;
-	cd space; make clean;
-	cd main; make clean;
+	cd modules; $(MAKE) clean;
+	cd lib; $(MAKE) clean;
+	cd main; $(MAKE) clean;
