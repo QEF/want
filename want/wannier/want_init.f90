@@ -24,7 +24,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE files_module, ONLY : file_open, file_close
    USE iotk_module
    USE parser_base_module, ONLY : change_case
-   USE input_module,    ONLY : wannier_center_init, input_alloc => alloc
+   USE input_module,    ONLY : wannier_center_init, input_alloc => alloc, assume_ncpp
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
    USE ions_module,  ONLY : ions_read_ext, ions_init
    USE windows_module,  ONLY : windows_read_ext, windows_init, eig
@@ -131,8 +131,6 @@ SUBROUTINE want_init(want_input, windows, bshells)
         CALL windows_init( eig(:,:) )
     ENDIF
 
-
-
 !
 ! ... closing the main data file 
 !
@@ -141,6 +139,16 @@ SUBROUTINE want_init(want_input, windows, bshells)
    CALL ioname('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
    WRITE( stdout,"(/,'  PW-DFT data read from file: ',a)") TRIM(filename)   
     
+
+!
+! ... read pseudopotentials (according to Espresso fmts)
+!     use ASSUME_NCPP = .TRUE. to skip this section (meaningful only if all PPs are NCPP)
+!
+   IF ( .NOT. assume_ncpp ) THEN
+      CALL readpp()
+   ENDIF
+
+
    CALL timing('want_init',OPR='stop')
 
 END SUBROUTINE want_init

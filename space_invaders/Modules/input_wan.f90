@@ -25,6 +25,7 @@ MODULE input_module
   REAL(dbl) :: alpha
   REAL(dbl) :: disentangle_thr      ! disentangle threshold for convergence
   REAL(dbl) :: wannier_thr          ! wannier threshold 
+  LOGICAL   :: assume_ncpp          ! implicitly assume NCPP without reading them
   INTEGER :: maxiter, itrial
   INTEGER :: nprint                 ! each nprint iterations write to stdout
 
@@ -40,7 +41,7 @@ MODULE input_module
   namelist / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
     alpha, maxiter, disentangle_thr, wannier_thr, itrial, iphase, alphafix0, &
     alphafix, niter, niter0, ncg, nshells, nwhich, ordering_type, verbosity, &
-    nprint, prefix, postfix, work_dir, title
+    nprint, assume_ncpp, prefix, postfix, work_dir, title
   
   CHARACTER(15)          :: wannier_center_units
   REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
@@ -103,6 +104,7 @@ CONTAINS
        itrial = 3
        ordering_type = 'none'
        verbosity = 'medium'
+       assume_ncpp = .FALSE.
 
        ios = 0
        IF( ionode ) THEN

@@ -1,0 +1,28 @@
+
+&INPUT_WAN
+   prefix = 'gold1'
+   postfix = '_WanT'
+   work_dir = './'
+   win_min = -12.0
+   win_max =  0.0                      ! win_min, win_max
+   froz_min = -30.0
+   froz_max = -25.0
+   dimwann = 6                         ! dimwann
+   alpha = 0.5                         ! alpha0 -->  disentangle
+   niter0 = 100, alphafix0 =  0.5      ! niter0, alphafix0 --> wannier
+   niter = 1500,   alphafix = 0.5
+   ncg = 5                             ! niter, alphafix, ncg --> wannier
+   nshells = 2                         ! nshells
+   nwhich(1) = 1                       ! nwhich(nshells)
+   nwhich(2) = 2                       ! nwhich(nshells)
+   itrial = 3                          ! itrial --> disentangle
+   ordering_type = 'complete'
+/
+
+WANNIER_CENTER {angstrom}
+1   0.000000    0.000000     0.500000  0  0  3  0.2
+1   0.000000    0.000000     0.500000  2 -2  3  0.2
+1   0.000000    0.000000     0.500000  2 -1  3  0.2
+1   0.000000    0.000000     0.500000  2  0  3  0.2
+1   0.000000    0.000000     0.500000  2  1  3  0.2
+1   0.000000    0.000000     0.500000  2  2  3  0.2

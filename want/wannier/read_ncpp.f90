@@ -12,7 +12,7 @@ subroutine read_ncpp (np, iunps)
   !
   USE kinds, only: dp => dbl
   USE parameters, ONLY: nchix, lmaxx, ndmx
-  USE atom,  ONLY: zmesh, msh, mesh, xmin, dx, r, rab, chi, oc, &
+  USE atom_module,  ONLY: zmesh, msh, mesh, xmin, dx, r, rab, chi, oc, &
        nchi, lchi, rho_at, rho_atc, numeric, nlcc
   USE pseud_module, ONLY: cc, alpc, zp, aps, alps, nlc, nnl, lmax, lloc, &
        a_nlcc, b_nlcc, alpha_nlcc

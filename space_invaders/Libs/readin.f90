@@ -15,7 +15,7 @@ subroutine readpp
   !
   USE constants,  ONLY : ZERO,CZERO
   USE kinds,      ONLY : dbl
-  USE atom,       ONLY : numeric, xmin, dx
+  USE atom_module,ONLY : numeric, xmin, dx
   USE uspp_param, ONLY : iver, tvanp, newpseudo
   USE ions_module,ONLY : ntyp => nsp, psfile
   USE funct_module,ONLY: iexch, icorr, igcx, igcc
@@ -47,8 +47,8 @@ subroutine readpp
      !
      open (unit = iunps, file = file_pseudo, status = 'old', form = &
           'formatted', iostat = ios)
-     call errore ('readpp', 'file '//trim(file_pseudo)//' not found', ios)
-     call read_pseudo (nt, iunps, isupf)
+     IF (ios/=0) CALL errore ('readpp', 'file '//trim(file_pseudo)//' not found', ios)
+     CALL read_pseudo (nt, iunps, isupf)
      !   The new pseudopotential UPF format is detected via the presence
      !   of the keyword '<PP_HEADER>' at the beginning of the file
      if (isupf /= 0) then

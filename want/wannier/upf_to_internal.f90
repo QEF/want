@@ -23,7 +23,7 @@ subroutine set_pseudo_upf (is, upf)
   !
   ! PWSCF modules
   !
-  USE atom,  ONLY: zmesh, mesh, msh, dx, r, rab, &
+  USE atom_module,  ONLY: zmesh, mesh, msh, dx, r, rab, &
        chi, oc, nchi, lchi, jchi, rho_at, rho_atc, nlcc
   USE pseud_module, ONLY: lloc, lmax, zp
   USE uspp_param, ONLY: vloc_at, dion, betar, qqq, qfcoef, qfunc, nqf, nqlc, &

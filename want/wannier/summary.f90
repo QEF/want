@@ -25,6 +25,14 @@
                               bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
                               dimfroz, lfrozen, dimwinx
+   !
+   ! pseudopotential modules
+   USE pseud_module,    ONLY : zp, alps, alpc, cc, aps, nlc, nnl, lmax, lloc, &
+                              a_nlcc, b_nlcc, alpha_nlcc
+   USE atom_module,     ONLY : mesh, xmin, dx, numeric, nlcc
+   USE uspp_param,      ONLY : nqf, rinner, nqlc, nbeta, iver, lll, psd, tvanp
+   USE spin_orb_module, ONLY : lspinorb
+   USE funct_module
    
    IMPLICIT NONE
    PRIVATE
@@ -66,11 +74,12 @@
    !**********************************************************
       IMPLICIT NONE
       INTEGER,   INTENT(in)  :: unit
-      INTEGER                :: ik, ia, idnn 
-      INTEGER                :: i, j, m, is
+      INTEGER                :: ik, ia, ib, idnn 
+      INTEGER                :: i, j, m, is, nt, l
       REAL(dbl), ALLOCATABLE :: kpt_cart(:,:)
       REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:)
       INTEGER                :: ierr
+      CHARACTER(5)           :: ps
 
    !
    ! <MAIN & INPUT> section
@@ -96,7 +105,7 @@
 ! XXX check whether it is true
           WRITE( unit,"(4x,'SD minim: Mixing parameter (alphafix) = ', f6.3 )" ) alphafix
           WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) niter
-          WRITE( unit,"(4x,'Every ',i3,' XX iteration perform a CG minimi (ncg)')" ) ncg
+          WRITE( unit,"(4x,'Every ',i3,' iteration perform a CG minimization (ncg)')" ) ncg
           WRITE(unit, " (4x,'Number of k-point shells = ', i3 )" ) nshells
           WRITE(unit, " (4x,'Chosen shells (indexes) = ', 100i3 )" ) nwhich(1:nshells)
           WRITE(unit, " (4x,'Print each ', i3,' iterations' )" ) nprint
@@ -123,7 +132,7 @@
 
           WRITE( unit, "(2x, 'Gaussian centers: (cart. coord. in Bohr)' ) " )
           DO i = 1, dimwann
-              WRITE( unit, "(4x,'Center = ', i3,' Type =',i2,' Gaussian  = (',3F10.6,' ) ')") &
+              WRITE( unit, "(4x,'Center = ',i3,' Type =',i2,' Gaussian  = (',3F10.6,' )')")&
                      i, gauss_typ(i), center_cart1(:,i)
               IF  ( gauss_typ(i) == 2 ) THEN
                   WRITE( unit, fmt="(26x,'Gaussian2 = (', 3F10.6, ' ) ' )" ) &
@@ -177,12 +186,81 @@
       IF ( ions_alloc ) THEN 
           WRITE( unit, " (  '<IONS>')" )
           WRITE( unit, " (2x,'Number of chemical species =', i3 ) " ) nsp
+          IF ( assume_ncpp )  &
+             WRITE( unit, " (2x,'WARNING: Pseudopots not read, assumed to be norm cons.')") 
           DO is=1, nsp
-             WRITE( unit, "(4x, 'Pseudo(',i3,') = ',a)") is, TRIM(psfile(is))
+             WRITE( unit, "(5x, 'Pseudo(',i2,') = ',a)") is, TRIM(psfile(is))
           ENDDO
+          !
+          !
+          ! ... pseudo summary from Espresso
+          !
+          IF ( .NOT. assume_ncpp ) THEN 
+             DO nt = 1, nsp
+                IF (tvanp (nt) ) THEN
+                   ps = '(US)'
+                   WRITE( unit, '(/5x,"Pseudo(",i2,") is ",a2, &
+                        &        1x,a5,"   zval =",f5.1,"   lmax=",i2, &
+                        &        "   lloc=",i2)') nt, psd (nt) , ps, zp (nt) , lmax (nt) &
+                        &, lloc (nt)
+                   WRITE( unit, '(5x,"Version ", 3i3, " of US pseudo code")') &
+                        (iver (i, nt) , i = 1, 3)
+                   WRITE( unit, '(5x,"Using log mesh of ", i5, " points")') mesh (nt)
+                   WRITE( unit, '(5x,"The pseudopotential has ",i2, &
+                        &       " beta functions with: ")') nbeta (nt)
+                   DO ib = 1, nbeta (nt)
+                      WRITE( unit, '(15x," l(",i1,") = ",i3)') ib, lll (ib, nt)
+                   ENDDO
+                   WRITE( unit, '(5x,"Q(r) pseudized with ", &
+                        &          i2," coefficients,  rinner = ",3f8.3,/ &
+                        &          52x,3f8.3,/ &
+                        &          52x,3f8.3)') nqf(nt), (rinner(i,nt), i=1,nqlc(nt) )
+                ELSE
+                   IF (nlc(nt) == 1 .AND. nnl(nt) == 1) THEN
+                       ps = '(vbc)'
+                   ELSEIF (nlc(nt) == 2 .AND. nnl(nt) == 3) THEN
+                       ps = '(bhs)'
+                   ELSEIF (nlc(nt) == 1 .AND. nnl(nt) == 3) THEN
+                       ps = '(our)'
+                   ELSE
+                       ps = '     '
+                   ENDIF
+  
+                   WRITE( unit, '(/5x,"Pseudo(",i2,") is ",a2, 1x,a5,"   zval =",f5.1,&
+                        &      "   lmax=",i2,"   lloc=",i2)') &
+                                   nt, psd(nt), ps, zp(nt), lmax(nt), lloc(nt)
+                   IF (numeric (nt) ) THEN
+                       WRITE( unit, '(5x,"(in numerical form: ",i5,&
+                            &" grid points",", xmin = ",f5.2,", dx = ",f6.4,")")')&
+                            & mesh (nt) , xmin (nt) , dx (nt)
+                   ELSE
+                       WRITE( unit, '(/14x,"i=",7x,"1",13x,"2",10x,"3")')
+                       WRITE( unit, '(/5x,"core")')
+                       WRITE( unit, '(5x,"alpha =",4x,3g13.5)') (alpc (i, nt) , i = 1, 2)
+                       WRITE( unit, '(5x,"a(i)  =",4x,3g13.5)') (cc (i, nt) , i = 1, 2)
+                       DO l = 0, lmax (nt)
+                           WRITE( unit, '(/5x,"l = ",i2)') l
+                           WRITE( unit, '(5x,"alpha =",4x,3g13.5)') (alps (i, l, nt), i=1,3)
+                           WRITE( unit, '(5x,"a(i)  =",4x,3g13.5)') (aps (i, l, nt) , i=1,3)
+                           WRITE( unit, '(5x,"a(i+3)=",4x,3g13.5)') (aps (i, l, nt) , i=4,6)
+                       ENDDO
+                       IF (nlcc(nt)) WRITE(unit,200) a_nlcc(nt), b_nlcc(nt), alpha_nlcc(nt)
+200                    format(/5x,'nonlinear core correction: ', &
+                            &     'rho(r) = ( a + b r^2) exp(-alpha r^2)', &
+                            & /,5x,'a    =',4x,g11.5, &
+                            & /,5x,'b    =',4x,g11.5, &
+                            & /,5x,'alpha=',4x,g11.5)
+                   ENDIF
+                ENDIF  ! PP type
+             ENDDO     ! atomic species
+          ENDIF        ! whether PP are read
+          !
+          ! ... end of pseudo summary from Espresso
+          !
+          !
           WRITE( unit, " (/,2x,'Atomic positions: (cart. coord. in units of alat)' ) " )
           DO ia = 1, nat
-             WRITE( unit, "(4x, a, 2x,'tau( ',I3,' ) = (', 3F8.4, ' )' )" ) &
+             WRITE( unit, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
                       symb(ia), ia, (tau( i, ia ), i = 1, 3)
           ENDDO
           WRITE( unit, " (  '</IONS>',/)" )

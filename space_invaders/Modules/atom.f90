@@ -7,7 +7,7 @@
 !
 !--------------------------------------------------------------------------
 !
-MODULE atom
+MODULE atom_module
   !
   ! ... The variables needed to describe the atoms and related quantities
   !
@@ -36,4 +36,4 @@ MODULE atom
        numeric(npsx),            &! if .TRUE. the potential is in numeric form
        nlcc(npsx)                 ! if .TRUE. the atom has nlcc
   !
-END MODULE atom
+END MODULE atom_module
