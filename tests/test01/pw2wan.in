@@ -1,6 +1,6 @@
 
 &inputpp
-  prefix='gold_chain'
+  prefix='gold1'
   nk(1)=1,
   nk(2)=1,
   nk(3)=4,
