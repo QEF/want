@@ -18,7 +18,7 @@
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
       USE fft_scalar, ONLY: cfft3d
       USE input_wannier
-      USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+      USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE io_global, ONLY : stdout
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
@@ -201,10 +201,6 @@
       REAL(dbl) :: func_od
       REAL(dbl) :: func_d
 
-      REAL(dbl) :: cclock
-      EXTERNAL :: cclock
-      REAL(dbl) :: s0, s1, s2, s3, s4, s5, sf
- 
       INTEGER :: idum, rdum, ierr
 
 
@@ -214,12 +210,11 @@
 !=----------------------------------------------------------------------------=!
 
 
-      s0 = cclock()
-
 !
 ! ...  Startup
 !
        CALL startup(version_number,MAIN_NAME='wannier')
+       CALL timing('init',OPR='start')
 
 !
 ! ...  Read input parameters from window.out
@@ -505,7 +500,8 @@
 
       CLOSE(20)
 
-      s1 = cclock()
+      CALL timing('init',OPR='stop')
+      CALL timing('trasf',OPR='start')
 
 !     WRITE(*,*) ' '
 
@@ -1446,7 +1442,8 @@
       cdq     = ( 0.0d0, 0.0d0 )
       cdodq   = ( 0.0d0, 0.0d0 )
 
-      s2 = cclock()
+      CALL timing('trasf',OPR='stop')
+      CALL timing('iterations',OPR='start')
 
       !
       !
@@ -1982,7 +1979,8 @@
 
 8100  CONTINUE
 
-      s3 = cclock()
+      CALL timing('iterations',OPR='stop')
+      CALL timing('write',OPR='start')
 
 
       IF ( verbosity == 'high' ) THEN
@@ -2208,18 +2206,10 @@
 
       CALL deallocate_input()
 
+      CALL timing('write',OPR='stop')
       CALL timing('wannier',OPR='stop')
-      CALL timing('global',OPR='stop')
-      CALL timing_overview(stdout,MAIN_NAME='wannier')
+      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='wannier')
       CALL timing_deallocate()
-
-! Da aggiornare tramite il module TIMING_MODULE
-!      sf = cclock()
-!      WRITE( *, * ) 'Total Time (sec) : ', sf - s0
-!      WRITE( *, * ) 'Init  Time (sec) : ', s1 - s0
-!      WRITE( *, * ) 'Trasf Time (sec) : ', s2 - s1
-!      WRITE( *, * ) 'Iter  Time (sec) : ', s3 - s2
-!      WRITE( *, * ) 'Write Time (sec) : ', sf - s3
 
       STOP '*** THE END *** (wannier.f90)'
       END PROGRAM wannier

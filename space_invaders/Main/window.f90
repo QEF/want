@@ -14,7 +14,7 @@
        USE kinds
        USE constants, ONLY: ryd => ry, har => au, amu => uma_au
        USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx, dp
-       USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE io_global, ONLY : stdout
        USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
@@ -589,8 +589,7 @@
        CALL deallocate_input()
 
        CALL timing('window',OPR='stop')
-       CALL timing('global',OPR='stop')
-       CALL timing_overview(stdout,MAIN_NAME='window')
+       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='window')
        CALL timing_deallocate()
 !
        STOP '*** THE END *** (window.x)'

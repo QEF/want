@@ -23,7 +23,7 @@
       USE mp_global, ONLY: mp_global_start
       USE io_global, ONLY: io_global_start, io_global_getionode
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
-      USE timing_module, ONLY : timing, timing_deallocate, timing_overview
+      USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE io_global, ONLY : stdout
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
@@ -583,8 +583,7 @@
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating en_band', ABS(ierr) )
 
       CALL timing('hamiltonian',OPR='stop')
-      CALL timing('global',OPR='stop')
-      CALL timing_overview(stdout,MAIN_NAME='hamiltonian')
+      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='hamiltonian')
       CALL timing_deallocate()
 
       call mp_end()
