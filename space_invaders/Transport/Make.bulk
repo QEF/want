@@ -1,0 +1,33 @@
+#
+# Makefile for transfer.f
+#
+
+#-- Defines for Linux
+FC=ifc
+OPTS = -w -c -r8 -tpp6 -O3 -save
+ATLAS=/usr/local/cicaia/intel/lib/ATLAS/OLD_NODE
+LAPACK=/usr/local/cicaia/intel/lib
+LIBS= -L$(LAPACK) -llapack -L$(ATLAS) -lf77blas -latlas /usr/lib/libpthread.a
+
+#-----  End of configurable parameters -----
+
+FFLAGS = $(OPTS) 
+LDFLAGS = ifc
+
+SRCS = bulk.f90 green.f90 transfer.f90 hamiltonian.f90 \
+smooth.f90 scale.f90 setv0.f90
+
+PRJS = $(SRCS:.f=.prj)
+OBJS = $(SRCS:.f=.o)
+
+bulk.x: $(OBJS) 
+	$(FC) -o $@  $(OBJS) $(LIBS) 
+
+clean:
+	rm -f *.[ou] *.x *.dvi *.lst *.log core *.prj
+
+cleanall:
+	rm -f *.[ou] *.x *.dvi *.lst *.log core *.prj fort.* va.job.*
+
+check: $(PRJS)
+	ftnchek $(PRJS)
