@@ -1,6 +1,6 @@
       SUBROUTINE phases( nbands, nkpts, nkpts2, nnmx, nnmxh, nntot, nnh, neigh, &
                  bk, bka, cm, csheet, sheet, rguide, irguide )
-      
+      USE timing_module, ONLY : timing 
       IMPLICIT NONE
 
       INTEGER :: nbands
@@ -44,6 +44,9 @@
       REAL*8 :: det
       REAL*8 :: brn
       REAL*8 :: pherr
+
+    
+      CALL timing('phases',OPR='start')
 
 ! ... Report problem to solve for each band, csum is determined and then its appropriate
 !     guiding center rguide(3,nwann)
@@ -181,5 +184,6 @@
         END DO
       END DO
 
+      CALL timing('phases',OPR='stop')
       RETURN
       END SUBROUTINE
