@@ -223,11 +223,17 @@
 
       REAL(dbl) :: debug
 
+      REAL(dbl) :: cclock
+      EXTERNAL :: cclock
+      REAL(dbl) :: s0, s1, s2, s3, s4, s5, sf
+
 !
 ! ... End declarations and dimensions
 !
 !=----------------------------------------------------------------------------=!
 
+
+      s0 = cclock()
 
       WRITE (*,*)'                                                    '
       WRITE (*,*)'                                                    '
@@ -530,6 +536,7 @@
 
       CLOSE(20)
 
+      s1 = cclock()
 
       WRITE(*,*) ' '
 
@@ -1795,6 +1802,8 @@
       cdq     = ( 0.0d0, 0.0d0 )
       cdodq   = ( 0.0d0, 0.0d0 )
 
+      s2 = cclock()
+
       !
       !
       !  here start the iterative loop
@@ -2287,6 +2296,8 @@
 
 ! ... End of the minimization loop
 
+      s3 = cclock()
+
 
       IF ( verbosity == 'high' ) THEN
 ! ... Unitariety is checked
@@ -2372,7 +2383,7 @@
       END DO
 
       DO nsp = 1, ntype
-        write(21) natom(nsp)
+        write(21) natom(nsp), nameat(nsp)
       END DO
 
       DO nsp = 1, ntype
@@ -2455,6 +2466,13 @@
       DEALLOCATE( cdq )
       DEALLOCATE( cpad1 )
       DEALLOCATE( cpad2 )
+
+      sf = cclock()
+      WRITE( *, * ) 'Total Time (sec) : ', sf - s0
+      WRITE( *, * ) 'Init  Time (sec) : ', s1 - s0
+      WRITE( *, * ) 'Trasf Time (sec) : ', s2 - s1
+      WRITE( *, * ) 'Iter  Time (sec) : ', s3 - s2
+      WRITE( *, * ) 'Write Time (sec) : ', sf - s3
 
       STOP '*** THE END *** (wannier.f90)'
       END PROGRAM wannier
