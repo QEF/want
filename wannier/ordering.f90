@@ -38,10 +38,11 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
    COMPLEX(dbl), INTENT(inout) :: cu(dimwann,dimwann,nkpts)
    CHARACTER(*), INTENT(in)    :: ordering_type
 
-   REAL(dbl), ALLOCATABLE      :: rtmp(:), rtmp2(:)
+   REAL(dbl), ALLOCATABLE      :: rtmp(:), rtmp2(:), rswap(:)
+   COMPLEX(dbl), ALLOCATABLE   :: cswap(:,:,:)
    INTEGER, ALLOCATABLE        :: index(:)
    LOGICAL                     :: lspatial, lspread
-   INTEGER                     :: i,is,ie, ierr
+   INTEGER                     :: i,j,is,ie, ierr
 
 
 !------------------------------------------------
@@ -65,6 +66,10 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
    IF (ierr/=0) CALL errore('ordering','allocating RTMP',ABS(ierr))
    ALLOCATE(rtmp2(dimwann), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating RTMP2',ABS(ierr))
+   ALLOCATE(rswap(dimwann), STAT=ierr)
+   IF (ierr/=0) CALL errore('ordering','allocating rswap',ABS(ierr))
+   ALLOCATE(cswap(dimwann,dimwann,nkpts), STAT=ierr)
+   IF (ierr/=0) CALL errore('ordering','allocating cswap',ABS(ierr))
    
    !
    ! distance of the center from the origin
@@ -79,7 +84,8 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
    !
    IF ( lspatial ) THEN
        CALL hpsort_eps(dimwann, rtmp(:), index(:), toll_dist )
-       rtmp2(:) = rtmp2( index(:) )
+       rswap(:) = rtmp2(:)
+       rtmp2(:) = rswap( index(:) )
    ENDIF
    !
    ! sorting by spread
@@ -112,14 +118,22 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
    !
    ! ordering main quantities
    !
-   rave(:,:) = rave( :, index(:) )
-   rave2(:)  = rave2( index(:) )
-   r2ave(:)  = r2ave( index(:) )
-   cu(:,:,:) = cu( :, index(:), : ) 
+   DO i=1,3
+      rswap(:) = rave(i,:)
+      rave(i,:) = rswap( index(:) )
+   ENDDO
+   rswap(:)  = rave2(:)
+   rave2(:)  = rswap( index(:) )
+   rswap(:)  = r2ave(:)
+   r2ave(:)  = rswap( index(:) )
+   cswap(:,:,:) = cu(:,:,:)
+   cu(:,:,:) = cswap( :, index(:), : ) 
 
    DEALLOCATE( index, STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','deallocating INDEX',ABS(ierr))
    DEALLOCATE( rtmp, rtmp2, STAT=ierr)
-   IF (ierr/=0) CALL errore('ordering','deallocating RTMP RTMP2',ABS(ierr))
+   IF (ierr/=0) CALL errore('ordering','deallocating RTMP, RTMP2',ABS(ierr))
+   DEALLOCATE( rswap, cswap, STAT=ierr)
+   IF (ierr/=0) CALL errore('ordering','deallocating RSWAP, CSWAP',ABS(ierr))
 
    END SUBROUTINE ordering
