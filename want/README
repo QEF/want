@@ -1,0 +1,31 @@
+WanT is an open-source, GNU General Public License suite of codes that provides an 
+integrated approach for the study of coherent electronic transport in nanostructures. 
+
+The core methodology combines state-of-the-art Density Functional Theory (DFT), 
+plane-wave, norm-conserving pseudopotentials calculations with a Green's functions 
+method based on the Landauer formalism to describe quantum conductance. 
+The essential connection between the two, and a crucial step in the calculation, 
+is the use of the maximally-localized Wannier function representation to introduce 
+naturally the ground-state electronic structure into the lattice Green's function 
+approach at the basis of the evaluation of the quantum conductance. 
+Moreover, the knowledge of the Wannier functions of the system allows for the direct 
+link between the electronic transport properties of the device with the nature of the 
+chemical bonds, providing insight onto the mechanisms that govern electron flow 
+at the nanoscale. 
+
+The WanT package operates, in principles, as a simple post-processing of any 
+standard electronic structure code. In its present version (1.0) the user 
+will find a wrapper to run WanT from the results of a self-consistent 
+calculation done using the Pwscf package (www.pwscf.org). 
+
+WanT calculations will provide the user with: 
+- Quantum conductance spectrum for a bulk (infinite, periodic) system and for a 
+lead-conductor-lead geometry 
+- Density of states spectrum in the conductor region 
+- Centers and spreads of the maximally-localized Wannier functions of the system 
+
+Current limitations (and planned developments): 
+- Transport can be described only under quasi-equilibrium conditions (small bias, linear response) 
+- Parallel execution of Wannier functions calculation is not implemented 
+- Only norm-conserving (not ultrasoft) pseudopotentials can be used 
+- Need of a uniform Monkhorst-Pack k-points grid (not Gamma only)
