@@ -108,6 +108,7 @@ CONTAINS
        CHARACTER(*),    INTENT(in) :: name
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="overlap_write"
+       INTEGER            :: ierr
 
        IF ( .NOT. alloc ) RETURN
        CALL iotk_write_begin(unit,TRIM(name))
@@ -117,8 +118,10 @@ CONTAINS
        CALL iotk_write_attr(attr,"nkpts",nkpts)
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
-       CALL iotk_write_dat(unit,"OVERLAP",cm)
-       CALL iotk_write_dat(unit,"PROJECTIONS",ca)
+       CALL iotk_write_dat(unit,"OVERLAP",cm,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'writing cm',ABS(ierr))
+       CALL iotk_write_dat(unit,"PROJECTIONS",ca,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'writing ca',ABS(ierr))
 
        CALL iotk_write_end(unit,TRIM(name))
    END SUBROUTINE overlap_write

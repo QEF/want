@@ -3,6 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
+11 Jan 2005      Incompatibility of IOTK v.0.3.5 with MKL 7.0 libs detected. 
+
 29 Dec 2004      Hamiltonian output files now are all written in work_dir from input.
                  Iotk updated to 0.3.5 and test checked. Small bugs fixed. (AF) 
 

@@ -382,6 +382,9 @@ extern char *Number2Name(int);
 #if defined __SGI | defined __FUJITSU | defined __SX4 | defined __INTEL | defined __LAHEY | defined __SX6 | defined SUN | defined __ALTIX
 #  define GCUBE2PLT gcube2plt_
 #endif
+#if defined __G95 
+#  define GCUBE2PLT gcube2plt_
+#endif
 #if defined __PGI
 #  if defined __GNU_LINK
 #     define GCUBE2PLT gcube2plt__
