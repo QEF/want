@@ -1,0 +1,11 @@
+
+ &INPUT
+   nspts  = 2
+   npts   = 100
+   nbands = 12
+   efermi = -5.3388    ! from PWSCF scf_cond.out 25 Ry
+ /
+G
+0.0 0.0 0.0
+Z
+0.0 0.0 0.5
