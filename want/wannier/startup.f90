@@ -49,17 +49,15 @@ CONTAINS
       ! description
       ! 
       CALL date_and_tim(cdate,ctime)
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) '             =                                            ='            
-      WRITE( stdout, * ) '             =     *** WanT *** Wannier Transport Code    ='   
-      WRITE( stdout, * ) '             =        (www.wannier-transport.org)         ='
-      WRITE( stdout, * ) '             =       Norm Conserv. Pseudopot. Impl.       ='
-      WRITE( stdout, * ) '             =                                            ='            
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) ' '
-      WRITE( stdout, * ) ' '
+      WRITE( stdout, "(2x,70('=') )" ) 
+      WRITE( stdout, "(a)" ) '             =                                            ='
+      WRITE( stdout, "(a)" ) '             =     *** WanT *** Wannier Transport Code    ='   
+      WRITE( stdout, "(a)" ) '             =        (www.wannier-transport.org)         ='
+      WRITE( stdout, "(a)" ) '             =       Norm Conserv. Pseudopot. Impl.       ='
+      WRITE( stdout, "(a)" ) '             =                                            ='
+      WRITE( stdout, "(2x,70('='),2/ )" ) 
       WRITE(stdout, FMT='(2x,"Program <",a,">  v. ",A5,"  starts ..." )') &
-                   TRIM(main_name),version(5:9) 
+                   TRIM(main_name),version(6:10) 
       WRITE(stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
 
 

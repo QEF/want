@@ -60,7 +60,7 @@ WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
 UTILITY_BIN=$TEST_HOME/../../utility
 TEST_NAME=Test3
-PSEUDO_NAME=Au11pw91.mt.UPF
+PSEUDO_NAME=C.blyp-mt.UPF
 
 #
 # evaluate the starting choice about what is to run 

@@ -143,6 +143,7 @@
 ! ...  Startup
 !
        CALL startup(version_number,MAIN_NAME='hamiltonian')
+       WRITE(stdout,*)
 
 !
 ! ... Read from file
