@@ -17,7 +17,7 @@
      by cd-ing in the test directories and typing ./run.sh <FLAG>. 
      The list of possible flag is printed in output with a simple explaination
      executing ./run.sh (typical flags are <FLAG> scf, nscf, disentangle
-     with obvious meaning). If you type ./run.sh all the test will be 
+     with obvious meaning). If you type "./run.sh all" the test will be 
      completely performed. 
 
  * HOW TO check the tests
@@ -25,14 +25,14 @@
      containing all the reference output files previously produced. 
      You are advised to check your output with a simple diff command:
         diff myreport.out Reference/myreport.out
-     In doing this remenber that not all the quantities are expected to be
+     In doing this remenber that NOT all the quantities are expected to be
      the same. 
 
  * HOW TO understand the tests
      In each test directory you will find a README file describing the 
-     physics of the tests and the results obtained in WanT output files.
-     Moreover also some tricky and subtle questions about WanT input
-     data are raised and discussed. 
+     physics of the tests and the results obtained in the calculation.
+     Moreover also some tricky and subtle questions about the input
+     data are eventually raised and discussed. 
 
      
   
