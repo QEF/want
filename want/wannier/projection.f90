@@ -20,7 +20,7 @@
        USE fft_scalar
        USE io_global, ONLY : stdout
        USE timing_module, ONLY : timing
-       USE sph_har
+       USE sph_har, ONLY: gauss1
 
        IMPLICIT NONE
 
@@ -77,9 +77,9 @@
        REAL(dbl) :: rx, ry, rz
        REAL(dbl) :: rpos1(3), rpos2(3)
        REAL(dbl) :: dist1, dist2
-       REAL(dbl) :: dist_pl, dist_cos 
-       REAL(dbl) :: th_cos, th_sin 
-       REAL(dbl) :: ph_cos, ph_sin
+!       REAL(dbl) :: dist_pl, dist_cos 
+!       REAL(dbl) :: th_cos, th_sin 
+!       REAL(dbl) :: ph_cos, ph_sin
        REAL(dbl) :: scalf
  
        INTEGER :: info
@@ -233,8 +233,6 @@
 ! ...  Now pick up a consistent phase for the u_nk (the initial ones
 !      are provided by the ab-initio code, and so have almost random rotations)
      
-       CALL sph_har_init  !  initialize spherical harmonics constants
-
        DO nkp = 1, nkpts
          IF  ( dimwann >  dimfroz(nkp) ) THEN  !IF  not, don't need to waste CPU time!
            DO nb = 1, dimwin(nkp)
@@ -332,132 +330,7 @@
 
                      IF  ( gauss_typ(nwann) == 1 ) THEN
 
-                       IF  ( ndir_wann(nwann) == 3 ) THEN
-                         dist_pl  = SQRT( rpos1(1)**2 + rpos1(2)**2 )
-                         dist_cos = rpos1(3)
-                       ELSE IF  ( ndir_wann(nwann) == 2 ) THEN
-                         dist_pl  = SQRT( rpos1(1)**2 + rpos1(3)**2 )
-                         dist_cos = rpos1(2)
-                       ELSE IF  ( ndir_wann(nwann) == 1 ) THEN
-                         dist_pl  = SQRT( rpos1(2)**2 + rpos1(3)**2 )
-                         dist_cos = rpos1(1)
-                       ELSE
-                         WRITE(stdout,*) 'ERROR: Wrong z-direction'
-                         CALL errore(' projection ', ' wrong z- direction ', ndir_wann(nwann) )
-                       END IF 
-
-! ...                  IF  rpos is on the origin, or on the z axis, I give arbitrary
-!                      values to cos/sin of theta, or of phi, respectively
-  
-                       IF  ( ABS( dist1 ) <= 1.e-10 ) THEN
-                         th_cos = 0.0d0
-                         th_sin = 0.0d0
-                       ELSE
-                         th_cos = dist_cos / dist1
-                         th_sin = dist_pl / dist1
-                       END IF 
-
-                       IF  (ABS( dist_pl ) <= 1.e-10 ) THEN
-                         ph_cos = 0.0d0
-                         ph_sin = 0.0d0
-                       ELSE
-                         IF ( ndir_wann(nwann) == 3 ) THEN
-                           ph_cos = rpos1(1) / dist_pl
-                           ph_sin = rpos1(2) / dist_pl
-                         ELSE IF ( ndir_wann(nwann) == 2 ) THEN
-                           ph_cos = rpos1(3) / dist_pl
-                           ph_sin = rpos1(1) / dist_pl
-                         ELSE 
-                           ph_cos = rpos1(2) / dist_pl
-                           ph_sin = rpos1(3) / dist_pl
-                         END IF 
-                       END IF 
-
-                       IF ( l_wann(nwann) == 2 ) THEN
-  
-                         IF ( m_wann(nwann) == -2 ) THEN
-                           cphi = sph2m2 * cphi * ( th_sin**2 ) * ( ph_cos**2 - ph_sin**2 )
-                         ELSE IF ( m_wann(nwann) == -1 ) THEN
-                           cphi = sph2m1 * cphi * th_sin * th_cos * ph_cos
-                         ELSE IF ( m_wann(nwann) == 0 ) THEN
-                           cphi = sph20 * cphi * ( 3.0d0 * th_cos**2 - 1.0d0 )
-                         ELSE IF ( m_wann(nwann) == 1 ) THEN
-                           cphi = sph21 * cphi * th_sin * th_cos * ph_sin
-                         ELSE IF ( m_wann(nwann) == 2 ) THEN
-                           cphi = sph22 * cphi * ( th_sin**2 ) * 2.0d0 * ph_sin * ph_cos
-                         ELSE 
-                           WRITE(stdout,*) 'ERROR: check the spherical harmonics (I)'
-                           CALL errore(' projection ', ' check the spherical harmonics (I)', m_wann(nwann) )
-                         END IF 
-  
-                       ELSE IF ( l_wann(nwann) == 1 ) THEN
-
-                         IF ( m_wann(nwann) == -1 ) THEN
-                           cphi = sph1m1 * cphi * th_sin * ph_cos
-                         ELSE IF ( m_wann(nwann) == 0 ) THEN
-                           cphi = sph10 * cphi * th_cos
-                         ELSE IF ( m_wann(nwann) == 1 ) THEN
-                           cphi = sph11 * cphi * th_sin * ph_sin
-                         ELSE 
-                           WRITE(stdout,*) 'ERROR: check the spherical harmonics (II)'
-                           CALL errore(' projection ', ' check the spherical harmonics (II)', m_wann(nwann) )
-                         END IF 
-  
-                       ELSE IF ( l_wann(nwann) == 0 ) THEN
-                         cphi = sph00 * cphi
-
-                       ELSE IF ( l_wann(nwann) == -1 ) THEN
-! ...                    sp^3 orbitals
-
-                         IF ( m_wann(nwann) == 1 ) THEN 
-! ...                      sp^3 along 111 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 + sph1m1 * th_sin * ph_cos +        &
-                                  sph11 * th_sin * ph_sin + sph10 * th_cos ) / 2.0d0
-  
-                         ELSE IF ( m_wann(nwann) == 2 ) THEN
-! ...                      sp^3 along 1,-1,-1 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 + sph1m1 * th_sin * ph_cos -        &
-                                  sph11 * th_sin * ph_sin - sph10 * th_cos ) / 2.0d0
-  
-                         ELSE IF ( m_wann(nwann) == 3 ) THEN
-! ...                      sp^3 along -1,1,-1 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 - sph1m1 * th_sin * ph_cos +        &
-                                  sph11 * th_sin * ph_sin - sph10 * th_cos ) / 2.0d0
-
-                         ELSE IF ( m_wann(nwann) == 4 ) THEN
-! ...                      sp^3 along -1,-1,1 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 - sph1m1 * th_sin * ph_cos -        &
-                                  sph11 * th_sin * ph_sin + sph10 * th_cos ) / 2.0d0
-
-                         ELSE IF ( m_wann(nwann) == -1 ) THEN 
-! ...                      sp^3 along -1,-1,-1 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 - sph1m1 * th_sin * ph_cos -        &
-                                  sph11 * th_sin * ph_sin - sph10 * th_cos ) / 2.0d0
-  
-                         ELSE IF ( m_wann(nwann) == -2 ) THEN
-! ...                      sp^3 along -1,1,1 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 - sph1m1 * th_sin * ph_cos +        &
-                                  sph11 * th_sin * ph_sin + sph10 * th_cos ) / 2.0d0
-
-                         ELSE IF ( m_wann(nwann) == -3 ) THEN
-! ...                      sp^3 along 1,-1,1 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 + sph1m1 * th_sin * ph_cos -        &
-                                  sph11 * th_sin * ph_sin + sph10 * th_cos ) / 2.0d0
-  
-                         ELSE IF ( m_wann(nwann) == -4 ) THEN
-! ...                      sp^3 along 1,1,-1 direction IF  ndir_wann(nwann)=3
-                           cphi = cphi * ( sph00 + sph1m1 * th_sin * ph_cos +        &
-                                  sph11 * th_sin * ph_sin - sph10 * th_cos ) / 2.0d0
-
-                         ELSE
-                           WRITE (stdout, *)  '*** ERROR *** in sp^3 hybrid gaussian: check m_wann'
-                           CALL errore(' projection ', ' sp^3 hybrid gaussian ', m_wann(nwann) )
-                         END IF 
-
-                       ELSE 
-                         WRITE(stdout,*) '*** ERROR *** : check the spherical harmonics (III)'
-                         CALL errore(' projection ', ' check the spherical harmonics (III)', m_wann(nwann) )
-                       END IF 
+                       CALL gauss1( cphi, ndir_wann(nwann), l_wann(nwann), m_wann(nwann), rpos1, dist1 )
 
                      END IF  ! orbital is of type 1
 

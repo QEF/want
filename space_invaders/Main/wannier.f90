@@ -23,7 +23,7 @@
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
       USE converters_module, ONLY : cart2cry
-      USE sph_har
+      USE sph_har, ONLY: gauss1
 
       IMPLICIT NONE
 
@@ -75,8 +75,8 @@
       REAL(dbl) :: func_om1, func_om2, func_om3, func_o
       REAL(dbl) :: func_old1, func_old2, func_old3
       REAL(dbl) :: rx, ry, rz, scalf
-      REAL(dbl) :: dist1, dist_pl, dist_cos
-      REAL(dbl) :: th_cos, th_sin, ph_cos, ph_sin, dist2, select
+      REAL(dbl) :: dist1
+      REAL(dbl) :: dist2, select
       REAL(dbl) :: rre, rri, omt1, omt2, omt3, omiloc
       REAL(dbl) :: func_del1, func_del2, func_del3, func0
       REAL(dbl) :: gcnorm1, gcfac, gcnorm0, doda0
@@ -775,8 +775,6 @@
 ! ... Now pick up a consistent phase for the u_nk (the initial ones
 !     are provided by the ab-initio code, and so have almost random rotations)
      
-      CALL sph_har_init  !  initialize spherical harmonics constants
-
       ALLOCATE( cptwr(mplwv), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cptwr ', mplwv)
       ALLOCATE( ca(dimwann,dimwann,nkpts), STAT=ierr )
@@ -856,127 +854,10 @@
 
                   IF ( gauss_typ(nwann) == 1 ) then
  
-                    IF ( ndir_wann(nwann) == 3 ) THEN
-                      dist_pl = SQRT( rpos1(1)**2 + rpos1(2)**2 )
-                      dist_cos = rpos1(3)
-                    ELSE IF ( ndir_wann(nwann) == 2 ) THEN
-                      dist_pl = SQRT( rpos1(1)**2 + rpos1(3)**2 )
-                      dist_cos = rpos1(2)
-                    ELSE IF ( ndir_wann(nwann) == 1 ) THEN
-                      dist_pl = SQRT( rpos1(2)**2 + rpos1(3)**2 )
-                      dist_cos = rpos1(1)
-                    ELSE
-                      WRITE(stdout,*) 'ERROR: Wrong z-direction'
-                      CALL errore(' wannier ', ' wrong z- direction ', ndir_wann(nwann) )
-                    END IF
-
-! ...               If rpos is on the origin, or on the z axis, I give arbitrary
-!                   values to cos/sin of theta, or of phi, respectively
-
-                    IF ( ABS(dist1) <= 1.e-10 ) THEN
-                      th_cos = 0.d0
-                      th_sin = 0.d0
-                    ELSE
-                      th_cos = dist_cos/dist1
-                      th_sin = dist_pl/dist1
-                    END IF
- 
-                    IF ( ABS(dist_pl) <= 1.e-10 ) THEN
-                      ph_cos = 0.d0
-                      ph_sin = 0.d0
-                    ELSE
-                      IF ( ndir_wann(nwann) == 3 ) THEN
-                        ph_cos = rpos1(1)/dist_pl
-                        ph_sin = rpos1(2)/dist_pl
-                      ELSE IF ( ndir_wann(nwann) == 2 ) THEN
-                        ph_cos = rpos1(3)/dist_pl
-                        ph_sin = rpos1(1)/dist_pl
-                      ELSE 
-                        ph_cos = rpos1(2)/dist_pl
-                        ph_sin = rpos1(3)/dist_pl
-                      END IF
-                    END IF
-
-                    IF ( l_wann(nwann) == 2 ) THEN
-
-                      IF ( m_wann(nwann) == -2 ) THEN
-                        cphi = sph2m2 * cphi * (th_sin**2) * ( ph_cos**2 - ph_sin**2 )
-                      ELSE IF ( m_wann(nwann) == -1 ) THEN
-                        cphi = sph2m1 * cphi * th_sin * th_cos * ph_cos
-                      ELSE IF ( m_wann(nwann) == 0 ) THEN
-                        cphi = sph20 * cphi * ( 3.0 * th_cos**2 - 1.0 )
-                      ELSE IF ( m_wann(nwann) == 1 ) THEN
-                        cphi = sph21 * cphi * th_sin * th_cos * ph_sin
-                      ELSE IF ( m_wann(nwann) == 2 ) THEN
-                        cphi = sph22 * cphi * (th_sin**2) * 2.0 * ph_sin * ph_cos
-                      ELSE 
-                        WRITE(stdout,*) 'ERROR: check the spherical harmonics (I)'
-                        CALL errore(' wannier ', ' check the spherical harmonics (I)', m_wann(nwann) )
-                      END IF
-
-                    ELSE IF ( l_wann(nwann) == 1 ) THEN
-
-                      IF ( m_wann(nwann) == -1 ) THEN
-                        cphi = sph1m1 * cphi * th_sin * ph_cos
-                      ELSE IF ( m_wann(nwann) == 0 ) THEN
-                        cphi = sph10 * cphi * th_cos
-                      ELSE IF ( m_wann(nwann) == 1 ) THEN
-                        cphi = sph11 * cphi * th_sin * ph_sin
-                      ELSE 
-                        WRITE(stdout,*) 'ERROR: check the spherical harmonics (II)'
-                        CALL errore(' wannier ', ' check the spherical harmonics (II)', m_wann(nwann) )
-                      END IF
-
-                    ELSE IF ( l_wann(nwann) == 0 ) THEN
-
-                      cphi = sph00 * cphi
-
-! ...                 sp^3 orbitals
-                    ELSE If(l_wann(nwann) == -1) THEN
-   
-                      IF ( m_wann(nwann) == 1 ) THEN 
-! ...                   sp^3 along 111 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 + sph1m1*th_sin*ph_cos + sph11*th_sin*ph_sin + sph10*th_cos )/2.0d0
-
-                      ELSE IF ( m_wann(nwann) == 2 ) THEN
-! ...                   sp^3 along 1,-1,-1 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 + sph1m1*th_sin*ph_cos - sph11*th_sin*ph_sin - sph10*th_cos )/2.0d0
-
-                      ELSE IF ( m_wann(nwann) == 3 ) THEN
-! ...                   sp^3 along -1,1,-1 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 - sph1m1*th_sin*ph_cos + sph11*th_sin*ph_sin - sph10*th_cos )/2.0d0
-
-                      ELSE IF ( m_wann(nwann) == 4 ) THEN
-! ...                   sp^3 along -1,-1,1 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 - sph1m1*th_sin*ph_cos - sph11*th_sin*ph_sin + sph10*th_cos )/2.0d0
-
-                      ELSE IF ( m_wann(nwann) == -1 ) THEN 
-! ...                   sp^3 along -1,-1,-1 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 - sph1m1*th_sin*ph_cos - sph11*th_sin*ph_sin - sph10*th_cos )/2.0d0
-
-                      ELSE IF ( m_wann(nwann) == -2 ) THEN
-! ...                   sp^3 along -1,1,1 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 - sph1m1*th_sin*ph_cos + sph11*th_sin*ph_sin + sph10*th_cos )/2.0d0
-
-                      ELSE IF ( m_wann(nwann) == -3 ) THEN
-! ...                   sp^3 along 1,-1,1 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 + sph1m1*th_sin*ph_cos - sph11*th_sin*ph_sin + sph10*th_cos )/2.0d0
-
-                      ELSE IF ( m_wann(nwann) == -4 ) THEN
-! ...                   sp^3 along 1,1,-1 direction if ndir_wann(nwann)=3
-                        cphi = cphi * ( sph00 + sph1m1*th_sin*ph_cos + sph11*th_sin*ph_sin - sph10*th_cos )/2.0d0
-
-                      ELSE
-                        WRITE (stdout, *)  '*** ERROR *** in sp^3 hybrid gaussian: check m_wann'
-                        CALL errore(' wannier ', ' sp^3 hybrid gaussian ', m_wann(nwann) )
-                      END IF
-
-                    ELSE 
-                      WRITE(stdout,*) '*** ERROR *** : check the spherical harmonics (III)'
-                      CALL errore(' wannier ', ' check the spherical harmonics (III)', m_wann(nwann) )
-                    END IF
+                    CALL gauss1( cphi, ndir_wann(nwann), l_wann(nwann), m_wann(nwann), rpos1, dist1 )
 
                   END IF ! orbital is of type 1
+
                   ca(nb,nwann,nkp)=ca(nb,nwann,nkp)+catmp*cphi
  
                 END DO
