@@ -283,13 +283,13 @@ CONTAINS
          nsec = (obj%total_time-3600 * nhour) - 60 * nmin
          IF ( obj%call_number == 1 )  THEN
             IF (nhour > 0) THEN
-               WRITE (unit, '(5x,a20," : ",3x,i2,"h",i2,"m CPU "/)') &
+               WRITE (unit, '(5x,a20," : ",3x,i2,"h",i2,"m CPU ")') &
                               TRIM(obj%name), nhour, nmin
             ELSEIF (nmin > 0) THEN
-               WRITE (unit, '(5x,a20," : ",i2,"m",f5.2,"s CPU "/)') &
+               WRITE (unit, '(5x,a20," : ",i2,"m",f5.2,"s CPU ")') &
                     TRIM(obj%name), nmin, nsec
             ELSE
-               WRITE (unit, '(5x,a20," : ",3x,f5.2,"s CPU "/)') &
+               WRITE (unit, '(5x,a20," : ",3x,f5.2,"s CPU ")') &
                     TRIM(obj%name), nsec
             ENDIF
          ELSE
@@ -367,8 +367,10 @@ CONTAINS
          IF ( TRIM(clocks(i)%name) == TRIM(main_name) .OR. &
               clocks(i)%total_time >= 1000           ) THEN 
             CALL clock_write(unit,clocks(i),FORM="hms")
+            IF ( TRIM(clocks(i)%name) == TRIM(main_name) )  &
+               WRITE(unit,*)
          ELSE
-            CALL clock_write(unit,clocks(i),FORM="hms")
+            CALL clock_write(unit,clocks(i),FORM="sec")
          ENDIF
       ENDDO
       WRITE(unit,"(/)")
