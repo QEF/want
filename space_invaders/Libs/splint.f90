@@ -35,7 +35,7 @@
 
       rh = xa(khi) - xa(klo)
 
-      IF ( rh == 0.d0 ) PAUSE 'bad xa input in splint'
+      IF ( rh == 0.d0 ) CALL errore('splint', 'bad xa input in splint', 1)
 
       a = ( xa(khi) - x ) / rh
       b = ( x - xa(klo) ) / rh
