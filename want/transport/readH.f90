@@ -52,6 +52,7 @@
       IMPLICIT NONE
 
       INTEGER :: i, j, k, l, m, n
+      INTEGER :: ierr
       INTEGER :: nmaxa, nmaxb, nmaxc
       INTEGER :: nwa, nwb, nwc
 
@@ -82,7 +83,8 @@
 
 !=--------------------------------------------------------------
 
-      OPEN( 30, FILE="H00_A", STATUS='OLD' )
+      OPEN( 30, FILE="H00_A", STATUS='OLD', IOSTAT=ierr )
+      IF (ierr/=0) CALL  errore(' readH ', ' opening H00_A ',ABS(ierr) )     
 
       REWIND 30
       READ ( 30, * ) nwa, nwa
@@ -101,7 +103,8 @@
 
 !=--------------------------------------------------------------
           
-      OPEN( 31, FILE="H01_A", STATUS='OLD' )
+      OPEN( 31, FILE="H01_A", STATUS='OLD', IOSTAT=ierr )
+      IF (ierr/=0) CALL  errore(' readH ', ' opening H01_A ',ABS(ierr) )     
 
       REWIND 31
       READ ( 31, * ) nwa, nwa
@@ -120,7 +123,8 @@
 
 !=--------------------------------------------------------------
 
-      OPEN( 40, FILE="H00_B", STATUS='OLD' )
+      OPEN( 40, FILE="H00_B", STATUS='OLD', IOSTAT=ierr )
+      IF (ierr/=0) CALL  errore(' readH ', ' opening H00_B ',ABS(ierr) )     
 
       REWIND 40
       READ ( 40, * ) nwb, nwb
@@ -139,7 +143,8 @@
 
 !=--------------------------------------------------------------
           
-      OPEN( 41, FILE="H01_B", STATUS='OLD' )
+      OPEN( 41, FILE="H01_B", STATUS='OLD', IOSTAT=ierr )
+      IF (ierr/=0) CALL  errore(' readH ', ' opening H01_B ',ABS(ierr) )     
 
       REWIND 41
       READ( 41, * ) nwb, nwb
@@ -158,7 +163,8 @@
 
 !=--------------------------------------------------------------
 
-      OPEN( 51, FILE="H00_C", STATUS='OLD' )
+      OPEN( 51, FILE="H00_C", STATUS='OLD', IOSTAT=ierr )
+      IF (ierr/=0) CALL  errore(' readH ', ' opening H00_C ',ABS(ierr) )     
 
       REWIND 51
       READ ( 51, * ) nwc, nwc
@@ -177,7 +183,8 @@
 
 !=--------------------------------------------------------------
 
-      OPEN( 61, FILE="HCI_AC", STATUS='OLD' )
+      OPEN( 61, FILE="HCI_AC", STATUS='OLD', IOSTAT=ierr )
+      IF (ierr/=0) CALL  errore(' readH ', ' opening HCI_AC ',ABS(ierr) )     
 
       REWIND 61
       READ ( 61, * ) nwa, nwc
@@ -196,7 +203,8 @@
 
 !=--------------------------------------------------------------
 
-      OPEN( 71, FILE="HCI_CB", STATUS='OLD' )
+      OPEN( 71, FILE="HCI_CB", STATUS='OLD', IOSTAT=ierr )
+      IF (ierr/=0) CALL  errore(' readH ', ' opening HCI_CB ',ABS(ierr) )     
 
       REWIND 71
       READ ( 71, * ) nwc, nwb
@@ -220,7 +228,8 @@
       IF ( l_overlap ) THEN
 
 
-        OPEN( 32, FILE="S00_A", STATUS='OLD' )
+        OPEN( 32, FILE="S00_A", STATUS='OLD', IOSTAT=ierr )
+        IF (ierr/=0) CALL  errore(' readH ', ' opening S00_A ',ABS(ierr) )     
   
         REWIND 32
         READ ( 32, * ) nwa
@@ -238,7 +247,8 @@
 
 !=--------------------------------------------------------------
 
-        OPEN( 33, FILE="S01_A", STATUS='OLD' )
+        OPEN( 33, FILE="S01_A", STATUS='OLD', IOSTAT=ierr )
+        IF (ierr/=0) CALL  errore(' readH ', ' opening S01_A ',ABS(ierr) )     
 
         REWIND 33
         READ ( 33, * ) nwa
@@ -256,7 +266,8 @@
 
 !=--------------------------------------------------------------
 
-        OPEN( 42, FILE="S00_B", STATUS='OLD' )
+        OPEN( 42, FILE="S00_B", STATUS='OLD', IOSTAT=ierr )
+        IF (ierr/=0) CALL  errore(' readH ', ' opening S00_B ',ABS(ierr) )     
 
         REWIND 42
         READ ( 42, * ) nwb
@@ -274,7 +285,8 @@
 
 !=--------------------------------------------------------------
 
-        OPEN( 43, FILE="S01_B", STATUS='OLD' )
+        OPEN( 43, FILE="S01_B", STATUS='OLD', IOSTAT=ierr )
+        IF (ierr/=0) CALL  errore(' readH ', ' opening S01_B ',ABS(ierr) )     
 
         REWIND 43
         READ(43,*) nwb
@@ -292,7 +304,8 @@
 
 !=--------------------------------------------------------------
 
-        OPEN( 52, FILE="S00_C", STATUS='OLD' ) 
+        OPEN( 52, FILE="S00_C", STATUS='OLD', IOSTAT=ierr ) 
+        IF (ierr/=0) CALL  errore(' readH ', ' opening S00_C ',ABS(ierr) )     
 
         REWIND 52
         READ ( 52, * ) nwc
@@ -310,7 +323,8 @@
 
 !=--------------------------------------------------------------
 
-        OPEN( 62, FILE="SCI_AC", STATUS='OLD' )
+        OPEN( 62, FILE="SCI_AC", STATUS='OLD', IOSTAT=ierr )
+        IF (ierr/=0) CALL  errore(' readH ', ' opening SCI_AC ',ABS(ierr) )     
 
         REWIND 62
         READ ( 62, * ) nwa, nwc
@@ -328,7 +342,8 @@
 
 !=--------------------------------------------------------------
 
-        OPEN( 72, FILE="SCI_CB", STATUS='OLD' )
+        OPEN( 72, FILE="SCI_CB", STATUS='OLD', IOSTAT=ierr )
+        IF (ierr/=0) CALL  errore(' readH ', ' opening SCI_CB ',ABS(ierr) )     
 
         REWIND 72
         READ(72,*) nwc, nwb
