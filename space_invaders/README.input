@@ -2,18 +2,26 @@
 
 ==============================================================================
     
-       ********* codes: WINDOW.x DISENTANGLE.x WANNIER.x  **********
+              ********* codes: DISENTANGLE.x WANNIER.x  **********
     
 ==============================================================================
 
 INPUT file layout
 -----------------------------------
 
-&INPUT_WAN
-   ...
+&CONTROL
+  ...
 /
 
-WANNIER_CENTER
+&SUBSPACE
+  ...
+/
+
+&LOCALIZATION
+  ...
+/
+
+WANNIER_CENTERS ( crystal | angstrom | bohr )
 gauss_typ1    x1  y1  z1    [l1  m1  ndir1]    [ xx1  yy1  zz1 ]    rloc1
     ....
 gauss_typN    xN  yN  zN    [lN  mN  ndirN]    [ xxN  yyN  zzN ]    rlocN
@@ -22,8 +30,53 @@ gauss_typN    xN  yN  zN    [lN  mN  ndirN]    [ xxN  yyN  zzN ]    rlocN
 
 ==============================================================================
 
-NAMELIST &INPUT_WAN
+NAMELIST &CONTROL
 
+prefix        STRING
+              the first part of the name of all the file written by the code
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
+
+title         STRING
+              the title of the calculation
+              DEFAULT: "Wannier Transport Calculation"
+
+verbosity     STRING
+              ( "low" | "medium" | "high" )
+              the level of detail of the code output
+              DEFAULT: "medium"
+
+assume_ncpp   LOGICAL
+              if .TRUE. avoids the reading of pseudopotential files
+              assuming that the DFT calculation has been performed within norm-conserving
+              pseudopotentials (no knowledge of them is required in the WanT calc)
+              DEFAULT: .FALSE.
+
+unitary_thr   REAL
+              threshold for the check of matrix unitariery
+              DEFAULT: 1.0d-8
+
+nprint        INTEGER
+              each nprint iterations in wannier minimizations write to stdout
+              DEFAULT: 10
+
+
+==============================================================================
+
+NAMELIST &SUBSPACE
+
+dimwann       INTEGER
+              the number of wannier functions, i.e. the dimension of the wannier subspace
+              DEFAULT : mandatory
+ 
 win_min       REAL
               the lower limit [eV] of the energy window containing the states
               forming the starting subspace for Wannier functions
@@ -36,99 +89,107 @@ win_max       REAL
 froz_min      REAL
               the lower limit [eV] of the energy window containing 'frozen' states
               which will not enter the calculation of WFs
-              DEFAULT : -1.1d10
+              DEFAULT : -2.0000000  
               
 froz_max      REAL
               upper limit [eV] of the frozen window above described
-              DEFAULT : -1.0d10
+              DEFAULT : -1.0000000
 
-dimwann       INTEGER
-              dimension of the required WF subspace
-              DEFAULT : 1
- 
-alpha         REAL
-              mixing parameter for the iterative procedure 
-              (at the moment it is used by the program disentangle.x)
+alpha_dis     REAL
+              mixing parameter for the disentangle iterative procedure 
               DEFAULT : 0.5
 
-maxiter       INTEGER
-              maximum number of iteration for the disentanglement procedure
-              (used only by disentangle.x)
+maxiter_dis   INTEGER
+              maximum number of iterations during the disentangle procedure
               DEFAULT : 1000
 
-itrial        INTEGER
-              determines the initial trial subspace in the disentanglement procedure
-              (used only by disentangle.x)
-              itrial = 1 : the subspace is formed by the lowest energy eigenvectors 
-              itrial = 2 : the subspace is formed by the highest energy eigenvectors 
-              itrial = 3 : the subspace is formed by projected localized orbital 
-                           (suggested choice) 
-              DEFAULT : 3
+disentangle_thr    REAL
+              threshold for convergence of the iterative disentangle procedure
+              DEFAULT: 1.0d-8
 
-niter0        INTEGER
-              maximum number of initial iterations in the spread functional minimization
-              for which the conjugate-gradient (CG) procedure is done at each step
-              (used only by wannier.x)
-              DEFAULT : 500
+trial_mode    STRING
+              ( "lower_states", "upper_states", "center_projections" )
+              Determine how the trial subspace is chosen
+              "lower_states" : the lower DIMWANN bands from DFT calculation are
+                 used to define the subspace
+              "upper_states" : the upper DIMWANN bands from DFT calculation are
+                 used to define the subspace
+              "center_projections" : a subspace is extracted from the DFT bands
+                 by means of a projections on the given WANNIER_TRIAL_CENTERS
+                 (see the section WANNIER_CENTERS)
+              DEFAULT : "center_projections"
 
-niter         INTEGER
-              maximum number of the iteration in the second part of the spread functional  
-              minimization where CG procedure is done every NCG steps
-              (used only by wannier.x)
-              DEFAULT : 500
+spin_component    STRING
+              ( "up" | "down" | "none" )
+              define whether the calculation is spin polarized and if the case 
+              which spin component is to be treated
+              DEFAULT: "none"
+ 
+
+==============================================================================
+
+NAMELIST &LOCALIZATION
+
+wannier_thr   REAL
+              threshold for convergence of the iterative wannier minimization
+              DEFAULT: 1.0d-6           
+ 
+alpha0_wan    REAL
+              mixing parameter during the first CG part of the wannier minimization
+              DEFAULT: 0.5
+
+alpha1_wan    REAL
+              mixing parameter during the second part of the wannier minimization
+              DEFAULT: 0.5
+
+maxiter0_wan  INTEGER
+              maximum number of iterations for the first minim part
+              DEFAULT: 500
+
+maxiter1_wan  INTEGER
+              maximum number of iterations for the second minim part
+              DEFAULT: 500
 
 ncg           INTEGER
-              every NCG steps the CG procedure is applied in the second part of the 
-              spread function minimization (NITER maximum iterations)
-              (used only by wannier.x)
+              each ncg iterations in the second minimization part, do a CG minimization
               DEFAULT : 3
 
-alphafix0     REAL
-              mixing parameter for the iterative procedure in the first NITER0 steps 
-              (used only by wannier.x)
-              DEFAULT : 0.5
-
-alphafix      REAL
-              mixing parameter for the iterative procedure in the further NITER steps 
-              (used only by wannier.x)
-              DEFAULT : 0.5
-
 nshells       INTEGER
-              number of different  nearest neighbour k-point shell
-              DEFAULT : 1
+              number of different nearest-neighbour k-point shells used in the calc
+              DEFAULT : mandatory
 
 nwhich(ish)   INTEGER
-              specifies the number of k-points for each nearest neighbour k-point
-              DEFAULT : nwhich(1) = 1
-              shell ( ISH = 1, nshells ) 
+              the indexes of the chosen shells
+              DEFAULT: mandatory (ish =1, nshells)
            
-ordering_type CHARACTER(10)
+ordering_mode STRING
+              ( "none" | "spatial" | "spread" | "complete" ) 
               specifies whether to order the computed Wannier functions and
-              which ordering criterion adopt. Allowed values are
-              'none'      no ordering is performed
-              'spatial'   ordering based on WF center positions
-              'spread'    ordering based on WF increasing spreads
-              'complete'  SPATIAL + SPREAD for WF with the same centers
-              DEFAULT : 'none'
+              which ordering criterion adopt. 
+              "none":      no ordering is performed
+              "spatial":   ordering based on WF center positions
+              "spread":    ordering based on WF increasing spreads
+              "complete":  SPATIAL + SPREAD for WF with the same centers
+              DEFAULT: "none"
               
 
 ==============================================================================
 
-CARD WANNIER_CENTER
+CARD WANNIER_CENTERS
 
 Contains DIMWANN lines giving the trial centers for the WFs. 
-Depending on the first integer in the line (GAUSS_TYP) which could be 1 or 2, 
+Depending on the first flag in the line (GAUSS_TYP) which could be 1 or 2, 
 the format is different:
 
-IF ( gauss_typ == 1 ) THEN
+IF ( gauss_typ == "1gauss" ) THEN
    gauss_typ      x  y  z      l  m  ndir     rloc  
 ENDIF
 
-IF ( gauss_typ == 2 ) THEN
+IF ( gauss_typ == "2gauss" ) THEN
    gauss_typ      x  y  z      xx  yy  zz     rloc  
 ENDIF
 
-In the case GAUSS_TYP == 1, 
+In the case GAUSS_TYP == "1gauss", 
    x,y,z    REAL
             are the crystal components (i.e. r = x * a1 + y * a2 + z * a3 , 
             where a_i are the direct lattice basis vectors) of the position 
@@ -167,9 +228,9 @@ In the case GAUSS_TYP == 1,
             trial WF
 
 
-In the case GAUSS_TYP == 2, 
+In the case GAUSS_TYP == "2gauss", 
    x,y,z    REAL
-            as before for GAUSS_TYP == 1
+            as before for GAUSS_TYP == "1gauss"
      
  xx,yy,zz   REAL
             as before for x,y,z for the units, specify the center of a second gaussian 
@@ -177,7 +238,7 @@ In the case GAUSS_TYP == 2,
             anti-bonding WF.
 
   rloc      REAL
-            as before for GAUSS_TYP == 1
+            as before for GAUSS_TYP == "1gauss"
           
 ==============================================================================
 
@@ -208,65 +269,39 @@ kpt_labelN
 
 NAMELIST &INPUT
 
-nspts         INTEGER
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
+
+verbosity     STRING
+              ( "low" | "medium" | "high" )
+              the level of detail of the code output
+              DEFAULT: "medium"
+
+nkpts_in      INTEGER
               number of edge kpts defining the directions on which bands will
               be calculated
-              DEFAULT : mandatory field
+              DEFAULT: mandatory
 
-npts          INTEGER
-              number of kpts on which the real space hamiltonian on the WF basis set
-              will be calculated. Heuristically the comparison with the 'original' 
-              PW-computed band structure it is useful as a check of the 'quality' 
-              of the real space (WF) hamiltonian
-              DEFAULT : 100
+nkpts_max     INTEGER
+              maximum number of interpolated kpoints
+              DEFAULT: 100
 
-nbands        INTEGER
-              number of bands giving the dimension of the re-calculated hamiltonian
-              the maximum value is DIMWANN (which is the typical choice)
-              DEFAULT : dimwann
+unitary_thr   REAL
+              threshold for the check of matrix unitariery
+              DEFAULT: 1.0d-6
 
-efermi        REAL
-              Fermi energy value [eV] for the hamiltonian eigenvalues from the 
-              DFT calculation
-              DEFAULT : 0.0
-
-#
-# now follow some feature related to the conversion of an eventual correlation
-# self-energy which should be provided as en external input
-# These features are not completely implemented and generalized and are reported
-# here for completeness
-#
-
-convert_self_energy    LOGICAL
-              If .TRUE. convert an input self-energy operator from Bloch to Wannier
-              basis. IF set .FALSE. all the other flag related to self-energy conversion
-              would be ignored
-              DEFAULT : .FALSE.
-
-check_self_energy      LOGICAL
-              If .TRUE. does some consistency check on the converted self-energy operator 
-              DEFAULT : .FALSE.
-
-calculate_spectral_function  LOGICAL
-              If .TRUE. perform the calculation of the spectral function on the Wannier 
-              basis as a check of the corrected conversion of the self-energy
-              DEFAULT : .FALSE.
-          
-spin_component  INTEGER
-              spin channel of the input self-energy to be read and treated. Allowed
-              values are 1 or 2. This is an obsolete feature because the wannier code
-              at the moment is able to manage one spin component at the time.
-              DEFAULT : 1
-
-print_sgm_start  INTEGER
-              lower index of the self-energy omega grid from which the operator will be
-              written down for direct check. ) is an allowed value which disanables the
-              writing
-              DEFAULT : 0
-
-print_sgm_end    INTEGER
-              upper limit of the above energy grid to be printed out
-              DEFAULT : 0
 
 ==============================================================================
 
