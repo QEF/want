@@ -76,7 +76,7 @@ case $INPUT in
    (bulk)           BULK=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ; 
                     WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BULK=".TRUE." ;;
+                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
 esac
 
@@ -86,7 +86,7 @@ esac
 cd $TMPDIR
 test -e $TEST_NAME || mkdir $TEST_NAME 
 cd $TEST_NAME
-ln -sf $TEST_HOME/../Pseudo/* .
+ln -sf $TEST_HOME/../Pseudo/*.UPF .
 ln -sf $TMPDIR/$TEST_NAME $TEST_HOME/SCRATCH
 ln -sf $TEST_HOME $TMPDIR/$TEST_NAME/HOME
 
