@@ -101,13 +101,13 @@
       beta = ( 0.d0, 0.d0 ) 
 
 !...  Read standard input
-      READ ( 5, * ) nmxa, nmxc, nmxb
-      READ ( 5, * ) norb
-      READ ( 5, * ) ne
-      READ ( 5, * ) nterx
-      READ ( 5, * ) gamma0, emin, emax
-      READ ( 5, *)  l_overlap
-      READ ( 5, * ) bias
+!     READ ( 5, * ) nmxa, nmxc, nmxb
+!     READ ( 5, * ) norb
+!     READ ( 5, * ) ne
+!     READ ( 5, * ) nterx
+!     READ ( 5, * ) gamma0, emin, emax
+!     READ ( 5, *)  l_overlap
+!     READ ( 5, * ) bias
 
 !...  Read namelist
       nmxa = 0
