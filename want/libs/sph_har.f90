@@ -27,17 +27,17 @@
    !
    ! ... constants for the normalization of spherical harmonics
    !
-   REAL(dbl), PARAMETER  :: sph00  = 1.0_dbl/SQRT( 2.0_dbl * TPI )
+   REAL(dbl), SAVE :: sph00  
    !
-   REAL(dbl), PARAMETER  :: sph1m1 = SQRT(  1.5_dbl / TPI )
-   REAL(dbl), PARAMETER  :: sph10  = SQRT(  1.5_dbl / TPI )
-   REAL(dbl), PARAMETER  :: sph11  = SQRT(  1.5_dbl / TPI )
+   REAL(dbl), SAVE :: sph1m1
+   REAL(dbl), SAVE :: sph10
+   REAL(dbl), SAVE :: sph11
    !
-   REAL(dbl), PARAMETER  :: sph2m2 = SQRT( 15.0_dbl / 8.0_dbl / TPI )
-   REAL(dbl), PARAMETER  :: sph2m1 = SQRT( 15.0_dbl / 2.0_dbl / TPI )
-   REAL(dbl), PARAMETER  :: sph20  = SQRT(  5.0_dbl / 8.0_dbl / TPI )
-   REAL(dbl), PARAMETER  :: sph21  = SQRT( 15.0_dbl / 2.0_dbl / TPI )
-   REAL(dbl), PARAMETER  :: sph22  = SQRT( 15.0_dbl / 8.0_dbl / TPI )
+   REAL(dbl), SAVE :: sph2m2
+   REAL(dbl), SAVE :: sph2m1
+   REAL(dbl), SAVE :: sph20
+   REAL(dbl), SAVE :: sph21
+   REAL(dbl), SAVE :: sph22
 
 !
 ! end of declarations
@@ -69,6 +69,18 @@ CONTAINS
      REAL(dbl) :: dist_pl, dist_cos
      REAL(dbl) :: th_cos, th_sin
      REAL(dbl) :: ph_cos, ph_sin
+
+     sph00  = 1.0_dbl/SQRT( 2.0_dbl * TPI )
+     !
+     sph1m1 = SQRT(  1.5_dbl / TPI )
+     sph10  = SQRT(  1.5_dbl / TPI )
+     sph11  = SQRT(  1.5_dbl / TPI )
+     
+     sph2m2 = SQRT( 15.0_dbl / 8.0_dbl / TPI )
+     sph2m1 = SQRT( 15.0_dbl / 2.0_dbl / TPI )
+     sph20  = SQRT(  5.0_dbl / 8.0_dbl / TPI )
+     sph21  = SQRT( 15.0_dbl / 2.0_dbl / TPI )
+     sph22  = SQRT( 15.0_dbl / 8.0_dbl / TPI )
    
      DO ig =1, ndim
          !

@@ -17,8 +17,9 @@
    USE parser_module, ONLY: log2char
    USE converters_module, ONLY: cry2cart
    USE io_module, ONLY : title, prefix, work_dir
-   USE input_module, ONLY : input_alloc => alloc
-   USE input_module
+   USE input_module, ONLY : input_alloc => alloc, alphafix0, niter0, alphafix, &
+                            niter, ncg, nprint, ordering_type, verbosity, alpha, &
+                            maxiter, itrial, disentangle_thr, assume_ncpp
    USE trial_center_data_module, ONLY : trial
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile

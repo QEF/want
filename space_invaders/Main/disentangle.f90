@@ -11,23 +11,22 @@
        PROGRAM disentangle
 !=----------------------------------------------------------------------------------=
 
-       USE kinds
-       USE constants, ONLY: PI, RYD, har => au, bohr => bohr_radius_angs, &
-                            ZERO, ONE, CZERO, CONE, EPS_m8
-       USE parameters, ONLY : nstrx
-       USE io_module, ONLY: stdout, work_dir, &
-                            ioname, ovp_unit, space_unit, dft_unit
-       USE files_module, ONLY : file_open, file_close
-       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-       USE startup_module, ONLY : startup
-       USE cleanup_module, ONLY : cleanup
-       USE version_module, ONLY : version_number
-       USE input_module, ONLY : input_read
-       USE input_module, ONLY : maxiter, itrial, disentangle_thr, alpha, verbosity 
-       USE want_init_module, ONLY : want_init
+       USE kinds,          ONLY: dbl
+       USE constants,      ONLY: PI, RYD, har => au, bohr => bohr_radius_angs, &
+                                 ZERO, ONE, CZERO, CONE, EPS_m8
+       USE parameters,     ONLY: nstrx
+       USE version_module, ONLY: version_number
+       USE startup_module, ONLY: startup
+       USE cleanup_module, ONLY: cleanup
+       USE io_module,      ONLY: stdout, work_dir, &
+                                 ioname, ovp_unit, space_unit, dft_unit
+       USE files_module,   ONLY : file_open, file_close
+       USE timing_module,  ONLY : timing, timing_deallocate, timing_overview, global_list
+       USE input_module,   ONLY : input_read
+       USE input_module,   ONLY : maxiter, itrial, disentangle_thr, alpha, verbosity 
+       USE want_init_module,  ONLY : want_init
        USE converters_module, ONLY : cart2cry
-       USE util_module, ONLY : zmat_unitary, zmat_hdiag
-       USE summary_module, ONLY : summary
+       USE util_module,    ONLY : zmat_unitary, zmat_hdiag
        USE wfc_manager_module, ONLY : wfc_manager
        USE iotk_module
     
@@ -42,6 +41,7 @@
                                    mtrx_in, mtrx_out
        USE subspace_module, ONLY : subspace_allocate, subspace_write
        USE overlap_module,  ONLY : cm, overlap_allocate
+       USE summary_module, ONLY : summary
 
 
        IMPLICIT NONE
@@ -107,6 +107,7 @@
 
        CALL subspace_allocate()
        CALL overlap_allocate()
+
 
 !
 ! ...  Local allocations
