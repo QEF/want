@@ -79,35 +79,21 @@ CONTAINS
    INTEGER, PARAMETER               :: in=10
 
    CHARACTER(*),INTENT(in)          :: name
-   CHARACTER(*),INTENT(out)         :: analit,         &
-                                       form,           &
-                                       basis
- 
-   INTEGER,INTENT(out)              :: Nv,             &
-                                       dim,            &
+   CHARACTER(*),INTENT(out)         :: analit, form, basis
+   INTEGER,INTENT(out)              :: Nv, dim,        &
                                        index_band,     &
-                                       Nisp,           &
-                                       Nomega 
+                                       Nisp, Nomega 
+   REAL(dbl),POINTER, INTENT(out)   :: E(:), Vct(:,:)
+   COMPLEX(dbl),POINTER, INTENT(out):: Opr(:,:,:,:,:)
 
-   INTEGER(i4b)                     :: Nv_fmt,         &
-                                       dim_fmt,        &
-                                       Nisp_fmt,       &
-                                       Nomega_fmt,     &
+   INTEGER                          :: Nv_fmt, dim_fmt,      &
+                                       Nisp_fmt, Nomega_fmt, &
                                        dum(4)
 
-   INTEGER(i4b)                     :: ianalit,        &
-                                       iform,          &
-                                       ibasis 
-
-   REAL(dbl),POINTER                :: E(:),           &
-                                       Vct(:,:)
-   REAL(sgl),ALLOCATABLE            :: E_fmt(:),       &
-                                       Vct_fmt(:,:)
-
-   COMPLEX(dbl),POINTER             :: Opr(:,:,:,:,:)
+   INTEGER                          :: ianalit, iform, ibasis 
+   REAL(sgl),ALLOCATABLE            :: E_fmt(:), Vct_fmt(:,:)
    COMPLEX(sgl),ALLOCATABLE         :: Opr_fmt(:,:,:,:,:)
  
-
    INTEGER                          :: isp,i,j,k,ios
    INTEGER                          :: j1,j2, ierr
 

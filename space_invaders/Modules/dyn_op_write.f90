@@ -78,42 +78,36 @@ CONTAINS
    INTEGER, PARAMETER               :: out=10
 
    CHARACTER(*),INTENT(in)          :: name
-   CHARACTER(*),INTENT(in)          :: analit,         &
-                                       form,           &
-                                       basis
- 
-   INTEGER,INTENT(in)               :: Nv,             &
-                                       dim,            &
+   CHARACTER(*),INTENT(in)          :: analit, form, basis
+   INTEGER,INTENT(in)               :: Nv, dim,        &
                                        index_band,     &
-                                       Nisp,           &
-                                       Nomega 
-
-   INTEGER(i4b)                     :: Nv_fmt,         &
-                                       dim_fmt,        &
-                                       Nisp_fmt,       &
-                                       Nomega_fmt 
-
-   INTEGER(i4b)                     :: ianalit,        &
-                                       iform,          &
-                                       ibasis 
-
-   REAL(dbl),INTENT(in)             :: E(Nomega),      &
-                                       Vct(3,Nv)
-   REAL(sgl)                        :: E_fmt(Nomega),  &
-                                       Vct_fmt(3,Nv)
-
+                                       Nisp, Nomega 
+   REAL(dbl),INTENT(in)             :: E(Nomega), Vct(3,Nv)
    COMPLEX(dbl),INTENT(in)          :: Opr(dim,dim,Nv,Nisp,Nomega)
-   COMPLEX(sgl)                     :: Opr_fmt(dim,dim,Nv,Nisp,Nomega)
- 
+
+   INTEGER                          :: Nv_fmt, dim_fmt,&
+                                       Nisp_fmt, Nomega_fmt 
+
+   INTEGER                          :: ianalit, iform, ibasis 
+
+   REAL(sgl), ALLOCATABLE           :: E_fmt(:), Vct_fmt(:,:)
+   COMPLEX(sgl), ALLOCATABLE        :: Opr_fmt(:,:,:,:,:)
 
    INTEGER                          :: isp,i,j,k,ios
-   INTEGER                          :: j1,j2
+   INTEGER                          :: j1,j2, ierr
 
 
 
 !-------------------------------------------
 
 
+   ALLOCATE( E_fmt(Nomega), STAT=ierr)
+      IF (ierr/=0) CALL errore(' write_dyn_op ',' allocating E ', Nomega)
+   ALLOCATE( Vct_fmt(3,Nv), STAT=ierr)
+      IF (ierr/=0) CALL errore(' write_dyn_op ',' allocating Vct_fmt ', 3*Nv)
+   ALLOCATE( Opr_fmt(dim,dim,Nv,Nisp,Nomega), STAT=ierr)
+      IF (ierr/=0) CALL errore(' write_dyn_op ',' allocating Opr_fmt ', &
+                                 dim**2 *Nv*Nisp*Nomega )
 
 
    SELECT CASE ( trim(analit) )
