@@ -36,7 +36,7 @@
       INTEGER :: ncg, i, j, k
       INTEGER :: ni, m, nkp
       INTEGER :: nkp2, nx, ny, nz
-      INTEGER :: maxgpx, maxgpy, maxgpz, np, npoint
+      INTEGER :: np, npoint
       INTEGER :: iib, iseed
       INTEGER :: ndnntot, nlist, l, n, ndnn, nshells
       INTEGER :: nnx, ndnc, ind, nnsh, info, nn, nnh, na
@@ -398,15 +398,6 @@
       DO nz = (ngz/2)+2 , ngz
         lpctz(nz)  = nz - 1 - ngz
       END DO
-
- 
-! ... New check which stops execution if violated
- 
-      IF ( ngx < (2*maxgpx+1) .OR. ngy < (2*maxgpy+1) .OR. ngz < (2*maxgpz+1) ) THEN
-        WRITE (*,3811) ngx, maxgpx, ngy, maxgpy, ngz, maxgpz
-        STOP 33
-       END IF
- 3811  FORMAT (/,' NOT ENOUGH ROOM FOR EWALD ROUTINE - DECREASE MAXGP'/ ' X:', 2i4/' Y:', 2i4/' Z:', 2i4)
 
 
 ! ... Subroutine genbtr calculate the g-vectors for each K_point
