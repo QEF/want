@@ -23,7 +23,7 @@
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
-      USE util_module, ONLY: zmat_mul, zmat_unitary
+      USE util_module, ONLY: zmat_mul, zmat_unitary, zmat_svd
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
@@ -62,25 +62,22 @@
       REAL(dbl) :: funca, eqc, eqb, eqa, alphamin, falphamin
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
-      COMPLEX(dbl), ALLOCATABLE ::  cs(:,:,:) ! cs(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) ! cu0(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:) ! csheet(dimwann,nkpts,nnx)
-      COMPLEX(dbl), ALLOCATABLE ::  cm0(:,:,:,:) ! cm0(dimwann,dimwann,nkpts,nnx)
-      COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:) ! cmtmp(dimwann,dimwann)
-      COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) ! cdodq(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:) ! cdqkeep(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cdodq1(:,:,:) ! cdodq1(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cdodq2(:,:,:) ! cdodq2(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cdodq3(:,:,:) ! cdodq3(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cdq(:,:,:) ! cdq(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  cz(:,:) ! cz(dimwann,dimwann)
-      COMPLEX(dbl), ALLOCATABLE ::  cv1(:,:) ! cv1(dimwann,dimwann)
-      COMPLEX(dbl), ALLOCATABLE ::  cv2(:,:) ! cv2(dimwann,dimwann)
-      COMPLEX(dbl), ALLOCATABLE ::  cv3(:,:) ! cv3(dimwann,dimwann)
-      COMPLEX(dbl), ALLOCATABLE ::  cw1(:) ! cw1(10*dimwann)
-      COMPLEX(dbl), ALLOCATABLE ::  cw2(:) ! cw2(10*dimwann)
-      REAL(dbl), ALLOCATABLE ::  singvd(:) !  singvd(dimwann)
-      REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnx)
+      COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  cm0(:,:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  cdodq1(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  cdodq2(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  cdodq3(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  cdq(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  cz(:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  cv1(:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  cv2(:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  cv3(:,:) 
+      REAL(dbl), ALLOCATABLE ::  singvd(:) 
+      REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) 
 
       REAL(dbl), ALLOCATABLE :: rguide(:,:)!  rguide(3,dimwann)
       COMPLEX(dbl), ALLOCATABLE :: cwschur1(:) !  cwschur1(dimwann)
@@ -178,24 +175,6 @@
       func_old3 = func_om3
 
 
-! ... Now I calculate the transformation matrix CU = CS^(-1/2).CA,
-!     where CS = CA.CA^\dagger. CS is diagonalized with a Schur
-!     factorization, to be on the safe side of numerical stability.
-
-! ... From LAPACK:
-!     ZGEES computes for an N-by-N complex nonsymmetric matrix Y, the eigen-
-!     values, the Schur form T, and, optionally, the matrix of Schur vectors Z.
-!     This gives the Schur factorization Y = Z*T*(Z**H).
-!     Optionally, it also orders the eigenvalues on the diagonal of the Schur
-!     form so that selected eigenvalues are at the top left.  The leading columns
-!     of Z then form an orthonormal basis for the invariant subspace correspond-
-!     ing to the selected eigenvalues.
- 
-! ... A complex matrix is in Schur form if it is upper triangular.
-
-      ALLOCATE( cs(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cs ', dimwann**2 * nkpts)
-
       nwork = dimwann * 10
       ALLOCATE( cwschur1(dimwann), cwschur2( nwork ), STAT=ierr )
          IF( ierr /=0 ) &
@@ -207,94 +186,41 @@
       ALLOCATE( cwschur4(dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cwschur4 ', dimwann)
 
+      ALLOCATE( cmtmp(dimwann,dimwann), STAT=ierr )
+         IF (ierr/=0) CALL errore('wannier','allocating CMTMP',ABS(ierr))
+      ALLOCATE( singvd(dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating singvd ', dimwann )
+      ALLOCATE( cv1(dimwann,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv1 ', dimwann**2 )
+      ALLOCATE( cv2(dimwann,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv2 ', dimwann**2 )
+      ALLOCATE( cv3(dimwann,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv3 ', dimwann**2 )
+ 
       !
-      ! .. loop over kpts
+      ! Here we calculate the transformation matrix 
+      !
+      !    cu = cs^{-1/2} * ca,       where  cs = ca*ca^{\dag}. 
+      !
+      ! Using the SVD factorization fo the CA matrix we have
+      ! 
+      ! ca = cz * cd * cv^{\dag},      which gives
+      ! cu = cz * cv^{dag}
+      !
+      ! NOTE that lapack routine returns cv^{\dag} directly
       !
       DO ik = 1, nkpts
-        CALL zmat_mul( cs(:,:,ik), ca(:,:,ik), 'N', ca(:,:,ik), 'C', & 
-                       dimwann, dimwann, dimwann )
+          !
+          !
+          CALL zmat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
+          CALL zmat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
+          !
+          ! Unitariery is checked
+          !
+          IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  ) &
+               CALL errore('wannier','SVD yields non unitary matrices', ik)
+      ENDDO 
 
-        CALL zgees( 'V', 'N', lselect, dimwann, cs(1,1,ik), dimwann, nsdim,            &
-             cwschur1, cz(1,1), dimwann, cwschur2, nwork, cwschur3, cwschur4, info )
-
-        cs(:,:,ik)=CZERO
-
-        DO m=1,dimwann
-           cfact = ONE/SQRT( REAL( cwschur1(m) ) )
-           DO j=1,dimwann
-           DO i=1,dimwann
-              cs(i,j,ik) = cs(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
-           ENDDO
-           ENDDO
-        ENDDO
-
-        CALL zmat_mul( cu(:,:,ik), cs(:,:,ik), 'N', ca(:,:,ik), 'N', & 
-                       dimwann, dimwann, dimwann )
-
-! ...  Unitariety is checked
-        IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  ) &
-             WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)") ik
-
-!
-! ... Phases
-!
-
-        IF (iphase /= 1) THEN
-
-          IF ( iphase == 2 ) THEN
-! ...         check what happens if the heuristic phase is taken away
-              WRITE (stdout,*) 'NB: phase is taken away'
-              DO j = 1, dimwann
-              DO i = 1, dimwann
-                 cu(i,j,ik) = CZERO
-                 IF ( i == j ) cu(i,j,ik) = CONE
-              ENDDO
-              ENDDO
-          ELSE
-! ...         check what happens if a random phase is given
-
-              epsilon = ONE
-              WRITE(stdout, fmt=" (2x, 'NB: RANDOM phase is given' )")
-              DO m = 1, dimwann
-              DO n = m, dimwann
-                  rre = rndm() * 10*ONE - 5*ONE
-                  rri = rndm() * 10*ONE - 5*ONE
-                  cu(m,n,ik) = epsilon * CMPLX(rre,rri)
-                  cu(n,m,ik) = -CONJG( cu(m,n,ik) )
-                  IF ( m == n ) cu(n,m,ik) = CMPLX( ZERO , AIMAG( cu(m,n,ik) ) )
-              ENDDO
-              ENDDO
-
-              CALL zgees( 'V', 'N', lselect, dimwann, cu(1,1,ik), dimwann, nsdim,   &
-                 cwschur1, cz(1,1), dimwann, cwschur2, SIZE(cwschur2), cwschur3,    &
-                 cwschur4, info )
-
-              cu( :, :, ik ) = CZERO
-              DO m = 1, dimwann
-                 cfact = EXP( cwschur1(m) )
-                 DO j = 1, dimwann
-                 DO i = 1, dimwann
-                     cu(i,j,ik) = cu(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
-                 ENDDO
-                 ENDDO
-              ENDDO
-
-          ENDIF
-
-        ENDIF   ! phases
-
-        IF ( verbosity == 'high' ) THEN
-            WRITE (stdout, fmt=" (/,2x,' Matrix U after zgees, k-point',i3,/)") ik
-            DO i = 1, dimwann
-                WRITE(stdout, fmt="(4x,2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5) ")  &
-                                   ( cu(i,j,ik), j=1,dimwann )
-            ENDDO
-        ENDIF
-
-      ENDDO  ! k point loop
-
-      ALLOCATE( cmtmp(dimwann,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu ', dimwann**2 )
 
 ! ... So now we have the U's that rotate the wavefunctions at each k-point.
 !     the matrix elements M_ij have also to be updated 
@@ -308,7 +234,7 @@
               cmtmp(i,j) = CZERO
               DO m = 1, dimwann
               DO n = 1, dimwann
-                 cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,ik)) * &
+                cmtmp(i,j)  =  cmtmp(i,j) + CONJG(cu(m,i,ik)) * &
                                                  cu(n,j,ik2) * cm(m,n,nn,ik)
               ENDDO
               ENDDO
@@ -321,20 +247,6 @@
 
 ! ... Singular value decomposition
 
-      nwork = dimwann * 10
-      ALLOCATE( singvd(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating singvd ', dimwann )
-      ALLOCATE( cv1(dimwann,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv1 ', dimwann**2 )
-      ALLOCATE( cv2(dimwann,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv2 ', dimwann**2 )
-      ALLOCATE( cv3(dimwann,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv3 ', dimwann**2 )
-      ALLOCATE( cw1( nwork ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cw1 ', nwork )
-      ALLOCATE( cw2( nwork ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cw2 ', nwork )
- 
       omt1 = ZERO
       omt2 = ZERO
       omt3 = ZERO
@@ -342,11 +254,8 @@
       DO ik = 1, nkpts
         omiloc = ZERO
         DO nn = 1, nntot(ik)
-          cmtmp(:,:) = cm(:,:,nn,ik)
-          CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
-               singvd, cv1, dimwann, cv2, dimwann, cw1, nwork, cw2, info )
-          IF ( info /= 0 ) &
-              CALL errore(' wannier ', ' Singular value decomposition failed 2 ', info )
+
+          CALL zmat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
 
           DO nb = 1, dimwann
               omiloc = omiloc + wb(ik,nn) * ( ONE - singvd(nb)**2 )
@@ -408,13 +317,7 @@
       DO ik = 1, nkpts
         DO nn = 1, nntot(ik)
 
-          cmtmp(:,:) = cm(:,:,nn,ik)
-          CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
-               singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
-
-          IF ( info /= 0 ) &
-          CALL errore(' wannier ', ' Singular value decomposition failed 3 ', info )
-
+          CALL zmat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
           CALL zmat_mul( cv3, cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
 
           DO nb = 1, dimwann
@@ -486,7 +389,8 @@
 !
 ! ... Main ITERATION loop
 !
-      iteration_loop : DO ncount = 1, maxiter0_wan + maxiter1_wan
+      iteration_loop : &
+      DO ncount = 1, maxiter0_wan + maxiter1_wan
 
         IF ( ncount <= maxiter0_wan ) THEN
             ncg   = 1
@@ -498,13 +402,11 @@
 
 
 ! ...   Store cu and cm
-
         cu0 = cu
         cm0 = cm
 
         IF ( lrguide ) THEN
-! XXXX  nnh = nntot(1)/2, vedi Marzari... to be fixed here
-          IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )       &
+            IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )   &
             CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,       &
                  bk, bka, cm, csheet, sheet, rguide, irguide )
         ENDIF
@@ -680,7 +582,7 @@
 
 ! ...     Take now optimal parabolic step
 
-           cdq = alphamin / wbtot / FOUR * cdqkeep
+          cdq = alphamin / wbtot / FOUR * cdqkeep
 
 
 ! ...     The expected change in the functional is calculated
@@ -908,12 +810,7 @@
       DO ik = 1, nkpts
         DO nn = 1, nntot(ik)
 
-          cmtmp(:,:) = cm(:,:,nn,ik)
-          CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
-                       singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
-          IF ( info /= 0 ) &
-               CALL errore('wannier', 'Singular value decomposition failed 4', info)
-
+          CALL zmat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
           DO nb = 1, dimwann
                omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
                omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
@@ -957,17 +854,11 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur3 ', ABS(ierr) )
       DEALLOCATE( cwschur4, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur4 ', ABS(ierr) )
-      DEALLOCATE( cw1, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw1 ', ABS(ierr) )
-      DEALLOCATE( cw2, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw2 ', ABS(ierr) )
 
       DEALLOCATE( csheet, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating csheet ', ABS(ierr) )
       DEALLOCATE( sheet, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating sheet ', ABS(ierr) )
-      DEALLOCATE( cs, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cs ', ABS(ierr) )
       DEALLOCATE( cmtmp, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cmtmp ', ABS(ierr) )
       DEALLOCATE( singvd, STAT=ierr )

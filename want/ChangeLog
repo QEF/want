@@ -3,6 +3,11 @@
             WanT code:  Log of Changes 
 =======================================================
 
+31 Mar 2005      Routine zmat_svd added to util_module. Direct use of lapack for SVD removed
+                 from subspace_init and wannier. Wannier keeps on calling ZGEES for
+                 schur factorization (maybe removable if the case). S^{-1/2}*A computed
+                 by means of SVD and not directly in the beginiing of wannier. Subspace_init
+                 routine fully checked. (AF)
 
 30 Mar 2005      PROJECTION and OVERLAP further tested, also on USPP. SUBSPACE_INIT
                  routine added to CVS. (AF)
