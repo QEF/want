@@ -87,10 +87,14 @@ esac
 test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
 cd $TMPDIR/$TEST_NAME
 ln -sf $TEST_HOME/../Pseudo/*.UPF .
-cd $TEST_HOME
-ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-cd $TMPDIR/$TEST_NAME
-ln -sf $TEST_HOME ./HOME
+if [ ! -e $TEST_HOME/SCRATCH ] ; then
+    cd $TEST_HOME
+    ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
+fi
+if [ ! -e $TMPDIR/$TEST_NAME/HOME ] ; then
+    cd $TMPDIR/$TEST_NAME
+    ln -sf $TEST_HOME ./HOME
+fi
 
 
 #-----------------------------------------------------------------------------
