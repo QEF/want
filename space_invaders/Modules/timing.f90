@@ -357,10 +357,11 @@ CONTAINS
 
       WRITE(unit,"(13x,'clock number : ',i5,/)") nclock
       DO i=1,nclock 
-         IF ( TRIM(clocks(i)%name) == TRIM(main_name) ) THEN 
+         IF ( TRIM(clocks(i)%name) == TRIM(main_name) .OR. &
+              clocks(i)%total_time >= 1000           ) THEN 
             CALL clock_write(unit,clocks(i),FORM="hms")
          ELSE
-            CALL clock_write(unit,clocks(i),FORM="sec")
+            CALL clock_write(unit,clocks(i),FORM="hms")
          ENDIF
       ENDDO
       WRITE(unit,"(/)")
