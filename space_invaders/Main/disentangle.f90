@@ -433,7 +433,6 @@
        END DO
        CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
             dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
-       STOP ! arrigo
 !
 ! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
 

@@ -1,41 +1,44 @@
       SUBROUTINE genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
                  lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
 
+      USE kinds
       USE timing_module, ONLY : timing
+      USE io_global, ONLY : stdout
+
       IMPLICIT none
 
       INTEGER :: nindpw(*)
       INTEGER :: nplwkp(*)
-      REAL*8 :: vkpt(3,*)
+      REAL(dbl) :: vkpt(3,*)
       INTEGER :: lpctx(*), lpcty(*), lpctz(*)
-      REAL*8 :: datake(*)
-      REAL*8 :: recc(3,*)
-      REAL*8 :: reci(3,*)
+      REAL(dbl) :: datake(*)
+      REAL(dbl) :: recc(3,*)
+      REAL(dbl) :: reci(3,*)
       INTEGER :: nrplwv
       INTEGER :: nkpts, iprint
-      REAL*8 :: dnlg(nrplwv,3,nkpts), dnlkg(nrplwv,0:3,nkpts)
+      REAL(dbl) :: dnlg(nrplwv,3,nkpts), dnlkg(nrplwv,0:3,nkpts)
 
       INTEGER :: ngx, ngy, ngz
       INTEGER :: n
       INTEGER :: nlboxi, nsboxi
       INTEGER :: nx, ny, nz
       INTEGER :: nindx
-      REAL*8 :: enmax
-      REAL*8 :: tpi, rhsqdtm
-      REAL*8 :: testmx
-      REAL*8 :: accmxc, accmxi
-      REAL*8 :: gzx, gzy, gzz
-      REAL*8 :: gizx, gizy, gizz
-      REAL*8 :: gyx, gyy, gyz
-      REAL*8 :: giyx, giyy, giyz
-      REAL*8 :: gxx, gxy, gxz
-      REAL*8 :: gx, gy, gz
-      REAL*8 :: gixx, gixy, gixz
-      REAL*8 :: g1, g2, g3
-      REAL*8 :: energx, energy, energz
-      REAL*8 :: energ, energi
-      REAL*8 :: enerix, eneriy, eneriz
-      REAL*8 :: dum
+      REAL(dbl) :: enmax
+      REAL(dbl) :: tpi, rhsqdtm
+      REAL(dbl) :: testmx
+      REAL(dbl) :: accmxc, accmxi
+      REAL(dbl) :: gzx, gzy, gzz
+      REAL(dbl) :: gizx, gizy, gizz
+      REAL(dbl) :: gyx, gyy, gyz
+      REAL(dbl) :: giyx, giyy, giyz
+      REAL(dbl) :: gxx, gxy, gxz
+      REAL(dbl) :: gx, gy, gz
+      REAL(dbl) :: gixx, gixy, gixz
+      REAL(dbl) :: g1, g2, g3
+      REAL(dbl) :: energx, energy, energz
+      REAL(dbl) :: energ, energi
+      REAL(dbl) :: enerix, eneriy, eneriz
+      REAL(dbl) :: dum
 
       DATA rhsqdtm /3.81001845d0/
       testmx = 0.d0
@@ -107,10 +110,8 @@
               IF( energi <= enmax ) THEN 
 
                 nsboxi = nsboxi + 1
-                IF ( nsboxi > nrplwv ) THEN
-                 WRITE (*,*) ' GENBTR: nrplwv=',nrplwv,' too small !'
-                 STOP
-                END IF
+                IF ( nsboxi > nrplwv ) &
+                  CALL errore(' genbtr ', '  nrplwv too small ! ', nrplwv )
 
                 IF( energ > accmxc ) accmxc = energ
                 IF( energi > accmxi ) accmxi = energi
@@ -154,21 +155,19 @@
 !       if not reduce enmax and start the whole process again
 
         nplwkp(n) = nsboxi
-        IF( iprint >= 1 ) WRITE(*,2050) nsboxi, n
+        IF( iprint >= 1 ) &
+         WRITE(stdout , fmt= " (2x,'Genbtr: ',i5, 'plane waves for k-point No',i5 )") nsboxi, n
 
       END DO
 
-      WRITE(*,*) ' ' 
-      WRITE(*,2030) accmxi
-      WRITE(*,2040) accmxc
-      WRITE(*,*) ' ' 
+      WRITE(stdout, *) ' '
+      WRITE(stdout, fmt= " (2x, 'Plane-waves up to ', F8.2, ' eV in original cell ', & 
+            'have been accepted ' )  )" ) accmxi
+      WRITE(stdout, fmt= " (2x, 'Plane-waves up to ', F8.2, ' eV in   new    cell ', & 
+            'have been accepted ' )  )" ) accmxc
+      WRITE(stdout, *) ' '
 
       CALL timing('genbtr',OPR='stop')
  
- 2020 FORMAT( /, 1x, 'GENTR: ENMAX, TESTMAX, NSBOXI, NRPLWV', 2f12.6, 2i7 )
- 2030 FORMAT( 2x, 'PLANE-WAVES UP TO ', f8.2, ' eV IN ORIGINAL CELL ', 'HAVE BEEN ACCEPTED ' )
- 2040 FORMAT( 2x, 'PLANE-WAVES UP TO ', f8.2, ' eV IN   N E W  CELL ', 'HAVE BEEN ACCEPTED ' )
- 2050 FORMAT( '  GENTR:', i5, ' PLANE-WAVES FOR K-POINT No', I5 )
-
       RETURN
       END SUBROUTINE

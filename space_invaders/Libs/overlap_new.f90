@@ -44,7 +44,10 @@
 !
 !.....................................................................
 
+      USE kinds
       USE timing_module, ONLY : timing 
+      USE io_global, ONLY : stdout
+
       IMPLICIT NONE
 
       ! ... Input Variables
@@ -56,23 +59,23 @@
       INTEGER :: nnlist(mxdnrk,mxdnn)
       INTEGER :: nntot(mxdnrk)
       INTEGER :: nncell(3,mxdnrk,mxdnn)
-      REAL*8 :: evecr(mxddim,ndwinx,mxdnrk)
-      REAL*8 :: eveci(mxddim,ndwinx,mxdnrk)
-      COMPLEX*16 :: cm(mxdbnd,mxdbnd,mxdnn,mxdnrk)
-      REAL*8 :: vkpt(3,mxdnrk)
       INTEGER :: dimwin(mxdnrk)
       INTEGER :: ndwinx
-      REAL*8 :: avec(3,3)
-      REAL*8 :: enmax
+      REAL(dbl) :: evecr(mxddim,ndwinx,mxdnrk)
+      REAL(dbl) :: eveci(mxddim,ndwinx,mxdnrk)
+      REAL(dbl) :: vkpt(3,mxdnrk)
+      REAL(dbl) :: avec(3,3)
+      REAL(dbl) :: enmax
+      COMPLEX(dbl) :: cm(mxdbnd,mxdbnd,mxdnn,mxdnrk)
 
       ! ... Local Variables
  
-      REAL*8 :: dirc(3,3),recc(3,3)
-      REAL*8 :: diri(3,3),reci(3,3)
+      REAL(dbl) :: dirc(3,3),recc(3,3)
+      REAL(dbl) :: diri(3,3),reci(3,3)
 
       INTEGER :: nplwv,mplwv
 
-      COMPLEX*16 :: czero
+      COMPLEX(dbl) :: czero
       PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
 
       INTEGER :: nnx, ndnn, nnsh
@@ -81,10 +84,10 @@
       INTEGER :: nkb
       INTEGER :: nkp2, npoint2, nn, iprint, nb
 
-      COMPLEX*16, ALLOCATABLE :: cptwfp(:,:,:)
-      REAL*8, ALLOCATABLE  :: dnlg(:,:,:)
-      REAL*8, ALLOCATABLE  :: dnlkg(:,:,:)
-      REAL*8, ALLOCATABLE  :: datake(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)
+      REAL(dbl), ALLOCATABLE  :: dnlg(:,:,:)
+      REAL(dbl), ALLOCATABLE  :: dnlkg(:,:,:)
+      REAL(dbl), ALLOCATABLE  :: datake(:,:,:)
       INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
       INTEGER, ALLOCATABLE  :: ninvpw(:,:)
       INTEGER, ALLOCATABLE  :: nindpw(:,:)
@@ -93,8 +96,8 @@
 
       INTEGER :: ierr
 
-      REAL*8 :: volc, voli
-      REAL*8 :: bohr, har, ryd
+      REAL(dbl) :: volc, voli
+      REAL(dbl) :: bohr, har, ryd
       PARAMETER ( ryd  = 13.605826d0 )
       PARAMETER ( har  = 2.d0 * ryd )
       PARAMETER ( bohr = 0.52917715d0 )
@@ -102,7 +105,7 @@
 ! ... END declarations
 
       CALL timing('overlap',OPR='start')
-      WRITE(*,"(/, ' Starting Overlap ',/)")
+      WRITE( stdout , fmt= "( /, ' Starting Overlap ',/)")
 
 
       nplwv = ngx * ngy * ngz
@@ -114,8 +117,8 @@
         CALL errore(' overlap ', ' inconsistent window ', ndwinx )
       END IF
 
-      WRITE(*,*) ' Number of bands               (mxdbnd) : ', mxdbnd
-      WRITE(*,*) ' Number of bands within window (ndwinx) : ', ndwinx
+      WRITE( stdout, fmt= " (2x,'Number of bands in PW calculation =', i5 ) " ) mxdbnd
+      WRITE( stdout, fmt= " (2x,'Max number of bands within the energy window = ', i5 )" ) ndwinx
 
       ALLOCATE( cptwfp( nrplwv+1 , ndwinx, nkpts ), STAT=ierr )
       IF( ierr /= 0 ) THEN
@@ -206,22 +209,23 @@
 
       IPRINT=1
 
-!     WRITE(*,*) ' DEBUG intf RECC ', recc
-!     WRITE(*,*) ' DEBUG intf RECI ', reci
-!     WRITE(*,*) ' DEBUG intf VKPT ', vkpt
-!     WRITE(*,*) ' DEBUG intf LPCTX ', lpctx
-!     WRITE(*,*) ' DEBUG intf LPCTY ', lpcty
-!     WRITE(*,*) ' DEBUG intf LPCTZ ', lpctz
-!     WRITE(*,*) ' DEBUG intf ENMAX ', enmax
-!     WRITE(*,*) ' DEBUG intf NRPLWV ', nrplwv
+!     WRITE(stdout,*) ' DEBUG intf RECC ', recc
+!     WRITE(stdout,*) ' DEBUG intf RECI ', reci
+!     WRITE(stdout,*) ' DEBUG intf VKPT ', vkpt
+!     WRITE(stdout,*) ' DEBUG intf LPCTX ', lpctx
+!     WRITE(stdout,*) ' DEBUG intf LPCTY ', lpcty
+!     WRITE(stdout,*) ' DEBUG intf LPCTZ ', lpctz
+!     WRITE(stdout,*) ' DEBUG intf ENMAX ', enmax
+!     WRITE(stdout,*) ' DEBUG intf NRPLWV ', nrplwv
 
       CALL genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
            lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
 
       DO nkp = 1, nkpts
         IF ( nplwkp(nkp) > mxddim ) THEN
-          WRITE(*,*) 'For nkp = ', nkp, ', nplwkp = ', nplwkp(nkp), 'and mxddim = ', mxddim, '. Increase mxddim'
-          STOP
+          WRITE( stdout, fmt= " ('For nkp = ', i4, ', nplwkp = ', i5, 'and mxddim = ', &
+                  i5, '. Increase mxddim' ) " )nkp, nplwkp(nkp), mxddim
+          CALL errore(' overlap ', ' Increase mxddim ', mxddim )
         END IF
       END DO
 
@@ -376,7 +380,7 @@
          IF (ierr/=0) CALL errore(' overlap ',' deallocating nplwkp',ABS(ierr))
 
  
-      WRITE(*,"(/, ' Overlap, done. ',/)")
+      WRITE( stdout , fmt= "( /, ' Overlap done. ',/)")
       CALL timing('overlap',OPR='stop')
 
       RETURN

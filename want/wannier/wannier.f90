@@ -247,7 +247,7 @@
 
       READ(19) mxdgve 
       ALLOCATE( kgv( 3, mxdgve ), STAT=ierr )
-         IF ( ierr/=0 ) CALL errore(' space ', ' allocating kgv ', 3*mxdgve )
+         IF ( ierr/=0 ) CALL errore(' wannier ', ' allocating kgv ', 3*mxdgve )
       READ(19) ( ( kgv(i,j), i=1,3 ), j=1,mxdgve )
 
       CLOSE(19)
@@ -321,11 +321,11 @@
       nkpts1 = nk(1)*nk(2)*nk(3)
 
       ALLOCATE( vkpt(3, nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' space ', ' allocating vkpt ', (3*nkpts) )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating vkpt ', (3*nkpts) )
       ALLOCATE( wtkpt(nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' space ', ' allocating wtkpt ', (nkpts) )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating wtkpt ', (nkpts) )
       ALLOCATE( nfile( nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' space ', ' allocating nfile ', (nkpts) )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nfile ', (nkpts) )
 
       nkp = 0
       DO i1 = 0, nk(1)-1
@@ -2478,14 +2478,14 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating wtkpt ', ABS(ierr) )
       DEALLOCATE( nfile, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nfile ', ABS(ierr) )
-      DEALLOCATE( nplwkp, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
+!     DEALLOCATE( nplwkp, STAT=ierr )
+!          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
       DEALLOCATE( datake, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating datake ', ABS(ierr) )
       DEALLOCATE( dnlg, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlg ', ABS(ierr) )
-      DEALLOCATE( dnlkg, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlgk ', ABS(ierr) )
+!     DEALLOCATE( dnlkg, STAT=ierr )
+!          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnlgk ', ABS(ierr) )
       DEALLOCATE( ninvpw, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ninvpw ', ABS(ierr) )
       DEALLOCATE( cptwfp, STAT=ierr )

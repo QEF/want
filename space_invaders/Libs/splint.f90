@@ -1,9 +1,11 @@
       SUBROUTINE splint( xa, ya, y2a, n, x, y )
 
+      Use kinds
+
       IMPLICIT NONE  
-      INTEGER :: N, klo, khi, k
-      REAL*8 :: xa(n), ya(n), y2a(n)
-      REAL*8 :: x, y, a, b, rh
+      INTEGER :: n, klo, khi, k
+      REAL(dbl) :: xa(n), ya(n), y2a(n)
+      REAL(dbl) :: x, y, a, b, rh
 
 
       klo = 1

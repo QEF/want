@@ -1,17 +1,18 @@
       SUBROUTINE indexx( n, arr, indx )
  
+      USE kinds
       IMPLICIT NONE
 
       INTEGER :: m, nstack
       PARAMETER ( M = 7 )
       PARAMETER ( NSTACK = 50 )
 
-      INTEGER :: n, indx(n)
-      REAL*8 :: arr(n)
+      INTEGER :: n, indx( n )
+      REAL(dbl) :: arr(n)
       INTEGER :: i, j, k, l
       INTEGER :: indxt, ir, itemp
       INTEGER :: jstack, istack(NSTACK)
-      REAL*8 :: a
+      REAL(dbl) :: a
 
       DO 11 j = 1, n
         indx(j) = j

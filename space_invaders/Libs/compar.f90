@@ -1,7 +1,10 @@
       SUBROUTINE compar(a,b,ifpos,ifneg)
 
+        USE kinds
+
         IMPLICIT NONE
-        REAL*8 :: a(3),b(3), rrp, rrm
+
+        REAL(dbl) :: a(3),b(3), rrp, rrm
         INTEGER :: ifpos, ifneg
 
         rrp = ( a(1) - b(1) )**2 + ( a(2) - b(2) )**2 + ( a(3) - b(3) )**2

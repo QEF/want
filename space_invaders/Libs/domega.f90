@@ -2,6 +2,8 @@
                  cm, csheet, sheet, cr, crt, rave, r2ave, rnkb, cdodq1, cdodq2, cdodq3,    &
                  cdodq )
       
+      USE kinds
+
       IMPLICIT NONE 
 
       INTEGER :: nbands
@@ -15,19 +17,19 @@
       INTEGER :: m, n 
 
       INTEGER :: nnlist(nkpts,nnmx), nntot(nkpts)
-      REAL*8 :: wb(nkpts,nnmx)
-      REAL*8 :: bk(3,nkpts,nnmx), rave(3,nbands)
-      REAL*8 :: r2ave(nbands), rnkb(nbands,nkpts,nnmx)
-      REAL*8 :: sheet(nbands,nkpts,nnmx)
-      REAL*8 :: brn 
-      COMPLEX*16 :: csheet(nbands,nkpts,nnmx)
-      COMPLEX*16 :: cm(nbands,nbands,nkpts,nnmx)
-      COMPLEX*16 :: cr(nbands,nbands,nkpts,nnmx)
-      COMPLEX*16 :: crt(nbands,nbands,nkpts,nnmx)
-      COMPLEX*16 :: cdodq(nbands,nbands,nkpts)
-      COMPLEX*16 :: cdodq1(nbands,nbands,nkpts)
-      COMPLEX*16 :: cdodq2(nbands,nbands,nkpts)
-      COMPLEX*16 :: cdodq3(nbands,nbands,nkpts)
+      REAL(dbl) :: wb(nkpts,nnmx)
+      REAL(dbl) :: bk(3,nkpts,nnmx), rave(3,nbands)
+      REAL(dbl) :: r2ave(nbands), rnkb(nbands,nkpts,nnmx)
+      REAL(dbl) :: sheet(nbands,nkpts,nnmx)
+      REAL(dbl) :: brn 
+      COMPLEX(dbl) :: csheet(nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: cm(nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: cr(nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: crt(nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: cdodq(nbands,nbands,nkpts)
+      COMPLEX(dbl) :: cdodq1(nbands,nbands,nkpts)
+      COMPLEX(dbl) :: cdodq2(nbands,nbands,nkpts)
+      COMPLEX(dbl) :: cdodq3(nbands,nbands,nkpts)
 
 ! ... Recalculate rave
 

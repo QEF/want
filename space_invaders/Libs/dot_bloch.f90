@@ -39,13 +39,15 @@
 !
 !....................................................................................
 
+       USE kinds   
+
        IMPLICIT NONE
  
-       COMPLEX*16 :: dot_bloch
+       COMPLEX(dbl) :: dot_bloch
 
        INTEGER :: mxddim
-       COMPLEX*16 :: vec1(mxddim+1)
-       COMPLEX*16 :: vec2(mxddim+1)
+       COMPLEX(dbl) :: vec1(mxddim+1)
+       COMPLEX(dbl) :: vec2(mxddim+1)
 
        INTEGER :: mxdgve 
        INTEGER :: mtxd1, mtxd2 
@@ -61,10 +63,8 @@
 !
 !
  
-       IF ( mxdgve_loc < mxdgve ) THEN
-         PRINT*, '*** ERROR ***: wrong mxdgve_loc in dot_bloch', mxdgve_loc, mxdgve
-         STOP
-       END IF
+       IF ( mxdgve_loc < mxdgve ) &
+            CALL errore(' dot_bloch ', ' wrong mxdgve_loc in dot_bloch ',  mxdgve_loc )
  
 ! ...  Calculate gmax
  

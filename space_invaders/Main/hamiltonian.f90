@@ -1,4 +1,4 @@
-      PROGRAM bandS
+      PROGRAM hamiltonian
   
 ! ... Calculates the band structure and  the
 !     matrix elements H(R) in a Wigner-Seitz supercell
@@ -133,7 +133,7 @@
 !
 ! ...  Startup
 !
-       CALL startup(version_number,MAIN_NAME='bands')
+       CALL startup(version_number,MAIN_NAME='hamiltonian')
 
 !
 ! ... Read from file
@@ -204,7 +204,7 @@
       efermi                      = 0.0
       
       READ(5, INPUT, IOSTAT=i)
-      IF ( i /= 0 )  CALL errore('bands','Unable to read namelist INPUT',ABS(i))
+      IF ( i /= 0 )  CALL errore('hamiltonian','Unable to read namelist INPUT',ABS(i))
 
 
 ! ... Usually nbands equals dimwann 
@@ -214,9 +214,9 @@
       IF ( nbands > 100 ) STOP 'CHANGE FORMAT IN LINE 650'
 
       ALLOCATE( point( nspts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating point ', nspts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nspts )
       ALLOCATE( skpt( 3, nspts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating skpt ', 3*nspts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating skpt ', 3*nspts )
 
       DO j = 1, nspts
         READ (5,202) point(j)
@@ -234,7 +234,7 @@
 ! ... Calculate grid of k-points
 
       ALLOCATE( vkpt( 3, mxdnrk), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating vkpt ', 3*mxdnrk )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating vkpt ', 3*mxdnrk )
  
       nkp = 0
       DO i1 = 0, nk(1)-1
@@ -260,7 +260,7 @@
       OPEN ( 7, FILE='energies.dat', STATUS='OLD', FORM='FORMATTED' )
 
       ALLOCATE( ei( dimwann, mxdnrk ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating vkpt ', dimwann*mxdnrk )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating vkpt ', dimwann*mxdnrk )
 
       DO nkp = 1, nkpts
         READ( 7, * ) idum, ( ei( i, nkp ), i = 1, dimwann )
@@ -281,7 +281,7 @@
       OPEN (29, FILE='unitary.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
       ALLOCATE( cu( dimwann, dimwann, nkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating cu ', dimwann**2 * nkpts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating cu ', dimwann**2 * nkpts )
       READ (29) ( ( ( cu(j,i,nkp), j=1,dimwann ), i=1,dimwann ), nkp=1,nkpts )
 
       CLOSE(29)
@@ -328,7 +328,7 @@
 !     (hamiltonian matrix elements between the rotated bloch states)
 
       ALLOCATE( kham( dimwann, dimwann, nkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating khan ', dimwann**2 * nkpts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating khan ', dimwann**2 * nkpts )
  
       DO nkp = 1, nkpts
         DO j = 1, dimwann
@@ -350,14 +350,14 @@
         WRITE (6,*) 'CHECKING EIGENVALUES...'
 
         ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' bands ', ' allocating ap ', dimwann*(dimwann+1)/2 )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating ap ', dimwann*(dimwann+1)/2 )
         ALLOCATE( w( dimwann ), ifail( dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' bands ', ' allocating w ifail ', 2*dimwann )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating w ifail ', 2*dimwann )
         ALLOCATE( z( dimwann, dimwann ), work( 2 * dimwann ), STAT=ierr )
             IF( ierr /=0 ) &
-            CALL errore(' bands ', ' allocating z work ', 2*dimwann + dimwann**2 )
+            CALL errore(' hamiltonian ', ' allocating z work ', 2*dimwann + dimwann**2 )
         ALLOCATE( rwork( 7 * dimwann ), iwork( 5 * dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' bands ', ' allocating rwork iwork', 12*dimwann )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating rwork iwork', 12*dimwann )
 
         DO nkp = 1, nkpts
           DO j = 1, dimwann
@@ -384,7 +384,7 @@
  743      FORMAT(i4,2x,10(f10.5,1x))
         END DO
         DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ap ... ifail', ABS(ierr) )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ap ... ifail', ABS(ierr) )
       END IF
 
  
@@ -393,14 +393,14 @@
 ! ... Find real-space grid points R in Wigner-Seitz supercell
 
       ALLOCATE( indxws( 3, 3*nkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating indxws', 9*nkpts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating indxws', 9*nkpts )
       ALLOCATE( degen( 3*nkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating degen', 3*nkpts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating degen', 3*nkpts )
 
       CALL wigner_seitz( adot, nk, indxws, nws, degen, nkpts  )        
 
       ALLOCATE( rham( dimwann, dimwann, nws ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating rham', dimwann**2 *nws )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating rham', dimwann**2 *nws )
 
       DO iws = 1, nws
         DO j = 1, dimwann
@@ -502,11 +502,11 @@
 ! ... Determine the k-points used in the band structure plot
 
       ALLOCATE( xval( nspts * npts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating xval', nspts * npts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating xval', nspts * npts )
       ALLOCATE( sxval( nspts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating sxval', nspts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating sxval', nspts )
       ALLOCATE( kpt(3,nspts*npts), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating kpt', 3*nspts * npts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt', 3*nspts * npts )
  
       CALL get_points( nspts, npts, nspts, npts, bdot, skpt, kpt, xval, sxval, tnkpts )
  
@@ -515,13 +515,13 @@
 !     finite grid (truncation)
  
       ALLOCATE( ham_tmp( dimwann, dimwann ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating ham_tmp', dimwann**2 )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating ham_tmp', dimwann**2 )
  
       e_min = 1.e8         ! some large number
       e_max = -1.e8
 
       ALLOCATE( en_band( nbands, tnkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' bands ', ' allocating en_band', nbands*tnkpts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating en_band', nbands*tnkpts )
  
       DO irk = 1, tnkpts
 
@@ -552,14 +552,14 @@
 
         ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
             IF( ierr /=0 ) & 
-            CALL errore(' bands ', ' allocating ap', dimwann * (dimwann+1)/2 )
+            CALL errore(' hamiltonian ', ' allocating ap', dimwann * (dimwann+1)/2 )
         ALLOCATE( w( dimwann ), ifail( dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' bands ', ' allocating w ifail', 2*dimwann )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating w ifail', 2*dimwann )
         ALLOCATE( z( dimwann, dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' bands ', ' allocating z', dimwann**2 )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating z', dimwann**2 )
         ALLOCATE( work(2*dimwann), rwork( 7 * dimwann ), iwork( 5 * dimwann ), STAT=ierr )
             IF( ierr /=0 ) &
-            CALL errore(' bands ', ' allocating work rwork iwork', 14*dimwann )
+            CALL errore(' hamiltonian ', ' allocating work rwork iwork', 14*dimwann )
  
         DO j = 1, dimwann
           DO i = 1, j
@@ -585,7 +585,7 @@
         END DO
 
         DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ap ... ifail', ABS(ierr) )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ap ... ifail', ABS(ierr) )
 
       END DO ! IRK
 
@@ -620,37 +620,37 @@
 
 ! ... cleaning
       DEALLOCATE( point, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating point', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating point', ABS(ierr) )
       DEALLOCATE( skpt, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating skpt', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating skpt', ABS(ierr) )
       DEALLOCATE( vkpt, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating vkpt', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating vkpt', ABS(ierr) )
       DEALLOCATE( ei, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ei', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ei', ABS(ierr) )
       DEALLOCATE( cu, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating cu', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating cu', ABS(ierr) )
       DEALLOCATE( kham, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating kham', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating kham', ABS(ierr) )
       DEALLOCATE( indxws, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating indxws', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating indxws', ABS(ierr) )
       DEALLOCATE( degen, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating degen', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating degen', ABS(ierr) )
       DEALLOCATE( rham, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating rham', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating rham', ABS(ierr) )
       DEALLOCATE( xval, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating xval', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating xval', ABS(ierr) )
       DEALLOCATE( sxval, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating sxval', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating sxval', ABS(ierr) )
       DEALLOCATE( kpt, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating kpt', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating kpt', ABS(ierr) )
       DEALLOCATE( ham_tmp, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating ham_tmp', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ham_tmp', ABS(ierr) )
       DEALLOCATE( en_band, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' bands ', ' deallocating en_band', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating en_band', ABS(ierr) )
 
-      CALL timing('bands',OPR='stop')
+      CALL timing('hamiltonian',OPR='stop')
       CALL timing('global',OPR='stop')
-      CALL timing_overview(stdout,MAIN_NAME='bands')
+      CALL timing_overview(stdout,MAIN_NAME='hamiltonian')
       CALL timing_deallocate()
 
       call mp_end()
@@ -665,7 +665,7 @@
  706  FORMAT('(''set xtics ('',', I4,'( ''"'',A2,''"'',F8.5,'',''), ''"'',A2,''"'', &
              & F8.5,'')'')')
 
-      STOP '*** THE END *** (bands.f90)'
+      STOP '*** THE END *** (hamiltonian.f90)'
       END
 
 

@@ -1,6 +1,8 @@
       SUBROUTINE bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell,   &
                   bk, dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, mxdnrk )
+      USE kinds
       USE timing_module, ONLY : timing
+      USE io_global, ONLY: stdout
  
 ! ... Computes the shells of b-vectors connecting every k-point to its
 !     neighbors, as well as their weights for the finite-difference formulas
@@ -9,21 +11,22 @@
       IMPLICIT none
  
       INTEGER :: nnmx, nnmxh
-      PARAMETER( nnmx = 24 )
+      PARAMETER( nnmx = 12 )
       PARAMETER( nnmxh = nnmx/2 )
-      REAL*8 :: eta, eps
+      REAL(dbl) :: eta, eps
       PARAMETER( eta = 99999999.0d0 )
       PARAMETER( eps = 1d-6 )
  
       INTEGER :: nkpts, nshells
       INTEGER :: mxdnrk, ndnc
-      REAL*8 :: vkpt(3,mxdnrk), recc(3,3)
+      REAL(dbl) :: vkpt(3,mxdnrk), recc(3,3)
  
-      REAL*8 :: bk(3,mxdnrk,nnmx)
-      REAL*8 :: dnn(nnmx)
-      REAL*8 :: wb(mxdnrk,nnmx)
-      REAL*8 :: wbtot
-      REAL*8 :: bka(3,nnmxh)
+      REAL(dbl) :: bk(3,mxdnrk,nnmx)
+      REAL(dbl) :: ddelta
+      REAL(dbl) :: dnn(nnmx)
+      REAL(dbl) :: wb(mxdnrk,nnmx)
+      REAL(dbl) :: wbtot
+      REAL(dbl) :: bka(3,nnmxh)
       INTEGER :: nnlist(mxdnrk,nnmx)
       INTEGER :: nntot(mxdnrk)
       INTEGER :: nwhich(nshells)
@@ -40,26 +43,32 @@
       INTEGER :: nkpts_loc
       PARAMETER( nkpts_loc = 2000 )
 
-      REAL*8 :: vkpr(3,nkpts_loc)
-      REAL*8 :: vkpp(3)
-      REAL*8 :: dimsingvd(nnmx)
-      REAL*8 :: dimbk(3,nnmx)
-      REAL*8 :: v1(nnmx,nnmx), v2(nnmx,nnmx)
-      REAL*8 :: w1(10*nnmx)
-      REAL*8 :: wtkpt(nkpts_loc)
-      REAL*8 :: dnn0, dnn1, dist, bb1, bbn, factor
+      REAL(dbl) :: vkpr(3,nkpts_loc)
+      REAL(dbl) :: vkpp(3)
+      REAL(dbl) :: dimsingvd(nnmx)
+      REAL(dbl) :: dimbk(3,nnmx)
+      REAL(dbl) :: v1(nnmx,nnmx), v2(nnmx,nnmx)
+      REAL(dbl) :: w1(10*nnmx)
+      REAL(dbl) :: wtkpt(nkpts_loc)
+      REAL(dbl) :: dnn0, dnn1, dist, bb1, bbn, factor
 
 !
 
       CALL timing('bshells',OPR='start')
 
       IF ( nkpts_loc < nkpts ) THEN
-        WRITE(6,*) ' '
-        WRITe(6,*) 'In bshells.f'
-        WRITE(6,*) 'nkpts_loc=', nkpts_loc
-        WRITE(6,*) 'nkpts=', nkpts
-        WRITE(6,*) 'increase nkpts_loc'
-        STOP
+        WRITE( stdout, * ) '  '
+        WRITE( stdout, * ) '  '
+        WRITE( stdout, * ) ' ******************* ERROR MESSAGE ******************'
+        WRITE( stdout, * ) '  '
+        WRITE( stdout, fmt= " (16x, ' NKPTS_LOC TOO SMALL ' )")
+        WRITE( stdout, fmt= " (18x, 'nkpts_loc = ', i3 )" ) nkpts_loc
+        WRITE( stdout, fmt= " (18x, 'nkpts = ', i3 )" ) nkpts
+        WRITE( stdout, * ) '  '
+        WRITE( stdout, * ) ' ****************************************************'
+        WRITE( stdout, * ) '  '
+        WRITE( stdout, * ) '  '
+        CALL errore(' new_bshell ', ' nkpts_loc too small ', nkpts_loc )
       END IF
  
 ! ... Just so that knpt2 and wtkpt(nkp) are used properly later on
@@ -70,13 +79,15 @@
       END DO
 
 
-      WRITE(*,*) 
-      WRITE(*,*) ' Starting BSHELL '
-      WRITE(*,*) ' GEOMETRY PRELIMS ---------------------------------'
+      WRITE( stdout, *) ' ' 
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) ' =                      B-shell calculations                          ='
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, *) ' ' 
+      WRITE( stdout, fmt= " (2x, 'K-point calculation: (cartesian coordinates in Bohr^-1)' ) " )
 
 ! ... Pass the k-points in cartesian coordinates
 
-      WRITE(*,*) ' '
       DO nkp = 1, nkpts
         DO i = 1, 3
           vkpr(i,nkp) = 0.0d0
@@ -84,9 +95,9 @@
             vkpr(i,nkp) = vkpr(i,nkp) + vkpt(j,nkp) * recc(j,i)
           END DO
         END DO 
-        WRITE(*,7017) nkp, ( vkpr(i,nkp), i=1,3 ), wtkpt(nkp)
+      WRITE( stdout, fmt= " (4x, 'k point', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) & 
+            nkp, ( vkpr(i,nkp), i=1,3 ), wtkpt(nkp)
       END DO
- 7017 FORMAT( '  K-POINT (CARTESIAN)', i6, ':',3F10.5, '   WEIGHT =', F10.5 )
 
 ! ... Find the distance between k-point 1 and its nearest-neighbour shells
 !     if we have only one k-point, the n-neighbours are its periodic images 
@@ -117,14 +128,14 @@
         dnn1 = eta
       END DO
 
-      WRITE(*,*) ' '
-      WRITE(*,*) ' Nearest-neighbour shells for k-point 1 are (in Bohr^-1)'
-      WRITE(*,*) ' '
+      WRITE( stdout,*) ' '
+      WRITE( stdout, fmt= " (2x, 'Nearest-neighbour shells for k-point 1: (in Bohr^-1)' ) " )
 
       DO ndnn = 1, ndnntot
-        WRITE(*,*) ndnn, dnn(ndnn)
+      WRITE( stdout, fmt= " (4x, 'shell (',i3,' )    radius = ', f9.5 )")  ndnn, dnn(ndnn)
+      !  WRITE(*,*) ndnn, dnn(ndnn)
       END DO
-      WRITE(*,*) ' '
+      WRITE( stdout,*) ' '
 
 ! ... Now build up the list of nearest-neighbour shells for each k-point.
 !     nnlist(nkp,1...nnx) points to the nnx neighbours (ordered along increasing shells)
@@ -162,19 +173,16 @@
             END DO
           END DO
           WRITE(*,8003) nkp, nnshell(nkp,ndnn), ndnn
-          IF ( nnshell(nkp,ndnn) <= 0 ) THEN
-            WRITE(*,*) ' Shell is empty ! ', nkp, nnx, nnshell(nkp,ndnn), ndnn
-            STOP
-          END IF
-          IF (( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( WTKPT(NKP) > 1e-10) ) THEN
-            WRITE(*,*) ' Non uniform neighbours !', nkp,nnx,nnshell(nkp,ndnn), ndnn
-            STOP
-          END IF
+
+          IF ( nnshell(nkp,ndnn) <= 0 ) &
+            CALL errore(' new_bshell ', ' Shell is empty! ', nnshell(nkp,ndnn) )
+          IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( WTKPT(NKP) > 1e-10) ) &
+            CALL errore(' new_bshell ', ' Non uniform neighbours! ', nnshell(nkp,ndnn) )
+
         END DO
-        IF ( nnx > nnmx ) THEN
-          WRITE(*,*) ' Too many neighbours !'
-          STOP
-        END IF
+
+        IF ( nnx > nnmx ) CALL errore(' new_bshell ', ' Too many neighbours !', nnx )
+
         nntot(nkp) = nnx
       END DO
 
@@ -194,10 +202,10 @@
               bb1 = bb1 + bk(i,1,nnx) * bk(i,1,nnx)
               bbn = bbn + bk(i,nkp,nnx) * bk(i,nkp,nnx)
             END DO
-            IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) THEN
-              WRITE(*,*) ' Non-symmetric k-point neighbours !',bb1,bbn
-              STOP
-            END IF
+
+            IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
+              CALL errore(' new_bshell ', ' Non-symmetric k-point neighbours!', bb1 )
+
           END DO
         END DO
       END DO
@@ -224,10 +232,8 @@
 
         CALL dgesvd( 'A', 'A', 3, nnsh, dimbk, 3, dimsingvd, v1, 3, v2, nnsh, w1, 10*nnsh, info )
 
-        IF ( info /=0 ) THEN
-          WRITE(*,*) 'Singular value decomposition dgesvd failed'
-          STOP
-        END IF
+        IF ( info /=0 ) &
+          CALL errore(' new_bshell ', ' Singular value decomposition dgesvd failed ', info )
 
         DO nn = 1, nnsh
           IF ( ABS( dimsingvd(nn) ) > 1e-5 ) ndim(ndnn) = ndim(ndnn) + 1
@@ -239,6 +245,24 @@
         WRITE(*,*) ' dimensionality is        ', ndim(ndnn)
         WRITE(*,*) ' w_b weight is 1/b^2 times', factor
         WRITE(*,*) ' '
+
+!...    Arrigo 17/06/2004
+        IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
+          IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
+               ( nnshell(1,ndnn) /= 12 ) ) THEN
+            WRITE(*,*) ' '
+            WRITE(*,*) ' WARNING: WEIGHTS MUST BE AS IN (B1) PRB 56 12847 (1997)'
+            WRITE(*,*)  ' (the code will stop if they are not...)'
+            END IF
+        END IF
+        IF ( ( nshells /= 1 ) .OR. ( ndim(1) /= 3 ) ) THEN
+          WRITE(*,*) ' '
+          WRITE(*,*) ' WARNING: WEIGHTS MUST BE AS IN (B1) PRB 56 12847 (1997)'
+          WRITE(*,*)  ' (the code will stop if they are not...)'
+        END IF
+        WRITE(*,*) ' '
+!...    Fine Arrigo
+
       END DO
 
       DO nkp = 1, nkpts2
@@ -258,6 +282,41 @@
         END DO
       END DO
 
+!...  Arrigo 17/06/2004
+!     now check that the completeness relation is satisfied
+!     Eq. B1 in Appendix  B PRB 56 12847 (1997)
+
+      DO nkp = 1, nkpts2
+
+        DO i = 1, 3
+          DO j = 1, 3
+            ddelta = 0.0
+            nnx = 0
+
+            DO ndnc = 1, nshells
+              ndnn = nwhich(ndnc)
+              DO nnsh =1, nnshell(1,ndnn)
+                nnx = nnx + 1
+                ddelta = ddelta + wb(nkp,nnx) * bk(i,nkp,nnx) * bk(j,nkp,nnx)
+              END DO
+            END DO
+
+            IF ( ( i == j ) .AND. ( ABS( ddelta - 1.0d0 ) > eps ) ) &
+              CALL errore(' new_bshell ', ' B1 not satisfied (I)', 1 )
+         
+            IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) &
+              CALL errore(' new_bshell ', ' B1 not satisfied (II)', 1 )
+        
+          END DO
+        END DO
+
+      END DO
+
+      WRITE(*,*) ' Completeness relation is fully satisfied'
+      WRITE(*,*) ' [(B1) in Appendix B, PRB 56 12847 (1997)]'
+      WRITE(*,*) ' '
+!...  Fine Arrigo
+
       wbtot = 0.0d0
       nnx = 0
       DO ndnc = 1, nshells
@@ -272,12 +331,19 @@
 !     consistent directions
 
       DO ndnc = 1, nshells
+
         ndnn = nwhich(ndnc)
         nnh = nnshell(1,ndnn) / 2
         IF ( nnh*2 /= nnshell(1,ndnn) ) THEN
-          WRITE (*,*) 'The number of neighbours in each shell must be even',ndnn,nnshell(1,ndnn)
-          STOP
+           WRITE( stdout, * ) ' ******************* ERROR MESSAGE ******************'
+           WRITE( stdout, * ) '  '
+           WRITE( stdout, fmt= " (6x, 'The number of neighbours in each shell must be even ' &
+                                  2i5 )")  ndnn, nnshell(1,ndnn)
+           WRITE( stdout, * ) '  '
+           WRITE( stdout, * ) ' ****************************************************'
+          CALL errore(' new_bshell ', ' Number of neighbours in each shell is too small !', nnh*2 )
         END IF
+
       END DO
       nnh = nntot(1) / 2
 
@@ -305,10 +371,7 @@
 
       END DO
 
-      IF ( na /= nnh ) THEN
-        WRITE (*,*) ' Did not find right number of bk directions'
-        STOP
-      END IF
+      IF ( na /= nnh ) CALL errore(' new_bshell ', ' Did not find right number of bk directions', na )
 
       WRITE (*,*) ' The vectors b_k are ',nntot(1)
       WRITE (*,*) ' '
@@ -346,10 +409,7 @@
           END DO
 
 ! ...     check found
-          IF ( neigh(nkp,na) == 0 ) THEN
-            WRITE (*,*) ' nkp,na=', nkp, na
-            STOP
-          END IF
+          IF ( neigh(nkp,na) == 0 ) CALL errore(' new_bshell ', ' Check failed ', na )
 
         END DO
         WRITE (*,'(i6,6x,6i6)') nkp, ( neigh(nkp,na), na=1,nnh )

@@ -37,14 +37,14 @@
 !
 !................................................................
 
+      USE kinds
+      USE constants, ONLY: pi, twopi => tpi
+
       IMPLICIT NONE
 
-      REAL*8 :: dir(3,3)
-      REAL*8 :: rec(3,3)
-      REAL*8 :: vol
-      REAL*8 :: pi, twopi
-      PARAMETER ( pi = 3.14159265358979323846d0 )
-      PARAMETER ( twopi = 2.0d0 * pi )
+      REAL(dbl) :: dir(3,3)
+      REAL(dbl) :: rec(3,3)
+      REAL(dbl) :: vol
  
       INTEGER :: i, j
  

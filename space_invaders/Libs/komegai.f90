@@ -41,21 +41,23 @@
 !.................................................................................
  
 
+       USE kinds
+
        IMPLICIT NONE
  
-       REAL*8 :: komegai
        INTEGER :: mxdbnd, mxdnrk, mxdnn
        INTEGER :: kpt, nnlist(mxdnrk,mxdnn)
        INTEGER :: nshells, nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)
-       REAL*8 ::  wb(mxdnrk,mxdnn), wbtot
-       COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
-       COMPLEX*16 :: kcm(mxdbnd,mxdbnd,mxdnn)
+       REAL(dbl) :: komegai
+       REAL(dbl) ::  wb(mxdnrk,mxdnn), wbtot
+       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
+       COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
  
        INTEGER :: j, l, m, n 
        INTEGER :: ndnn, nnsh, nnx, k_pls_b
-       COMPLEX*16 :: dot_bloch1
-       COMPLEX*16 :: czero
+       COMPLEX(dbl) :: dot_bloch1
+       COMPLEX(dbl) :: czero
        PARAMETER( CZERO = ( 0.0d0, 0.0d0 ) )
  
 

@@ -30,22 +30,22 @@
 !      TNKPTS      NUMBER OF K-POINTS USED TO PLOT THE BAND STRUCTURE
 !
 !..................................................................................................
-
+       USE kinds
 
        IMPLICIT NONE
  
        INTEGER :: maxspts, maxpts
        INTEGER :: nspts, npts, tnkpts
-       REAL*8 :: bdot(3,3)
-       REAL*8 :: skpt(3,maxpts)
-       REAL*8 :: xval(maxspts*maxpts)
-       REAL*8 :: sxval(maxspts)
-       REAL*8 :: kpt(3,maxspts*maxpts)
+       REAL(dbl) :: bdot(3,3)
+       REAL(dbl) :: skpt(3,maxpts)
+       REAL(dbl) :: xval(maxspts*maxpts)
+       REAL(dbl) :: sxval(maxspts)
+       REAL(dbl) :: kpt(3,maxspts*maxpts)
  
        INTEGER :: i, j, n
-       REAL*8 :: length0, length
-       REAL*8 :: vec(3)
-       REAL*8 :: eps
+       REAL(dbl) :: length0, length
+       REAL(dbl) :: vec(3)
+       REAL(dbl) :: eps
        PARAMETER( eps = 1.e-6 )
 
 
@@ -58,7 +58,7 @@
                  vec(3) * ( bdot(3,1) * vec(1) + bdot(3,2) * vec(2) + bdot(3,3) * vec(3) ) 
        length0 = SQRT( length0 )
 
-       IF ( length0 < eps ) STOP '*** ERROR *** IN GET_POINTS: LENGTH0 TOO SMALL'
+       IF ( length0 < eps ) CALL errore(' get_points ', ' length0 too small ', length0 )
  
        tnkpts = 0
        DO i = 1, nspts - 1
@@ -70,14 +70,14 @@
                   vec(3) * ( bdot(3,1) * vec(1) + bdot(3,2) * vec(2) + bdot(3,3) * vec(3) ) 
          length = SQRT( length )
 
-         IF ( LENGTH <  EPS ) STOP '*** ERROR *** IN GET_POINTS: LENGTH TOO SMALL'
+         IF ( length0 < eps ) CALL errore(' get_points ', ' length too small ', length0 )
  
          n = nint( DBLE(npts) * length / length0 )
-         IF ( n ==  0 ) STOP '*** ERROR *** IN get_points.f'
+         IF ( n ==  0 ) CALL errore(' get_points ', ' nint=0  ', n )
  
          DO j = 1, n
            tnkpts = tnkpts + 1
-           IF ( tnkpts+1 > maxspts*maxpts ) STOP '*** ERROR *** IN GET_POINTS'
+           IF ( tnkpts+1 > maxspts*maxpts ) CALL errore(' get_points ', ' tnkpts too large  ', tnkpts )
 
            IF ( tnkpts ==  1 ) THEN
              xval(tnkpts) = 0.d0

@@ -1,10 +1,12 @@
       SUBROUTINE inv3( a, b, det )
  
+      USE kinds
+
       IMPLICIT NONE
       INTEGER :: i, j, k, l, kk, ll
-      REAL*8 ::  det
-      REAL*8 ::  a(3,3), b(3,3)
-      REAL*8 ::  z(6,6)
+      REAL(dbl) ::  det
+      REAL(dbl) ::  a(3,3), b(3,3)
+      REAL(dbl) ::  z(6,6)
 
 ! ... Quick routine to invert 3x3 matrix
 !     inverse is of a(i,j) is b(i,j)/det

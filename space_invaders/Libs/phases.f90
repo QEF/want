@@ -1,6 +1,10 @@
       SUBROUTINE phases( nbands, nkpts, nkpts2, nnmx, nnmxh, nntot, nnh, neigh, &
                  bk, bka, cm, csheet, sheet, rguide, irguide )
+      USE kinds
       USE timing_module, ONLY : timing 
+      USE constants, ONLY: pi
+      USE io_global, ONLY : stdout
+
       IMPLICIT NONE
 
       INTEGER :: nbands
@@ -20,30 +24,28 @@
       INTEGER :: ind
       INTEGER :: n
 
-      COMPLEX*16 :: cm(nbands,nbands,nkpts,nnmx)
-      COMPLEX*16 :: csum(nnmxh)
-      REAL*8 ::  bk(3,nkpts,nnmx)
-      REAL*8 ::  bka(3,nnmxh)
       INTEGER :: nntot(nkpts)
       INTEGER :: neigh(nkpts,nnmxh)
-      REAL*8 :: rguide(3,nbands)
-      REAL*8 :: xx(nnmx)
-      REAL*8 :: smat(3,3), svec(3), sinv(3,3)
-      COMPLEX*16 :: csheet(nbands,nkpts,nnmx)
-      REAL*8 :: sheet(nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: cm(nbands,nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: csum(nnmxh)
+      COMPLEX(dbl) :: csheet(nbands,nkpts,nnmx)
+      REAL(dbl) ::  bk(3,nkpts,nnmx)
+      REAL(dbl) ::  bka(3,nnmxh)
+      REAL(dbl) :: rguide(3,nbands)
+      REAL(dbl) :: xx(nnmx)
+      REAL(dbl) :: smat(3,3), svec(3), sinv(3,3)
+      REAL(dbl) :: sheet(nbands,nkpts,nnmx)
 
-      REAL*8 rave(3,nbands), rnkb(nbands,nkpts,nnmx)
+      REAL(dbl) rave(3,nbands), rnkb(nbands,nkpts,nnmx)
 
-      COMPLEX*16 ci
-      REAL*8 pi
+      COMPLEX(dbl) ci
       PARAMETER ( ci = ( 0.0d0, 1.0d0 ) )
-      PARAMETER ( pi = 3.14159265358979323846d0 )
 
-      COMPLEX*16 :: csumt
-      REAL*8 :: xx0
-      REAL*8 :: det
-      REAL*8 :: brn
-      REAL*8 :: pherr
+      COMPLEX(dbl) :: csumt
+      REAL(dbl) :: xx0
+      REAL(dbl) :: det
+      REAL(dbl) :: brn
+      REAL(dbl) :: pherr
 
     
       CALL timing('phases',OPR='start')
@@ -72,7 +74,7 @@
           svec(j) = 0.d0
         END DO
 
-        write(*,*) ' '
+        write( stdout,*) ' '
 
         DO nn = 1, nnh
 
@@ -97,8 +99,8 @@
 
           END IF
 
-          WRITE (*,'(a,i5,3f7.3,2f10.5)') 'nn, bka, xx, mag =',                    &
-                nn, (bka(j,nn), j=1,3 ), xx(nn), ABS( csum(nn) ) / DBLE(nkpts2)
+          WRITE (stdout ,  fmt= " (2x, 'nn = ', i4, 2x, 'bka = ', 3f7.3, 2x, 'xx = ', f9.5, 2x, 'mag = ', f9.5 ) " )  &
+                                        nn, (bka(j,nn), j=1,3 ), xx(nn), ABS( csum(nn) ) / DBLE(nkpts2)
 
 ! ...     Update smat and svec
 
@@ -116,13 +118,8 @@
 
 ! ...       The inverse of smat is sinv/det
 
-            IF ( ABS(det) < 1.e-06 ) THEN
-
-! ...         Evidently first three bka vectors are linearly dependent this is not allowed
-              WRITE (*,*) ' *** ERROR *** in findr: dependency'
-              STOP
-
-            END IF
+! ...       Evidently first three bka vectors are linearly dependent this is not allowed
+            IF ( ABS(det) < 1.e-06 ) CALL errore(' phase ', ' wrong dependency in findr', ABS(det) )
 
             IF ( irguide /= 0 ) THEN
               DO j = 1, 3
@@ -132,7 +129,7 @@
                 END DO
               END DO
             END IF
-            WRITE (*,'(a,3f10.5)') 'rguide =', ( rguide(i,nwann), i=1,3 )
+            WRITE (stdout, fmt= " (2x, 'rguide = ', 3f9.4) " )( rguide(i,nwann), i=1,3 )
           ENDIF
 
         END DO
@@ -178,7 +175,7 @@
             pherr = AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nkp,nn) ) )           &
             -sheet(n,nkp,nn) + rnkb(n,nkp,nn) - AIMAG( LOG( cm(n,n,nkp,nn) ) )
             IF ( ABS(pherr) > pi ) THEN
-              WRITE (*,'(3i4,f18.9,3f10.5)') nkp, n, nn, pherr, ( bk(i,nkp,nn), i=1,3 )
+              WRITE( stdout, fmt=" ( 2x, 3i4,f18.9,3f10.5 ) ")  nkp, n, nn, pherr, ( bk(i,nkp,nn), i=1,3 )
             END IF
           END DO
         END DO

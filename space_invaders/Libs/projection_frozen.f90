@@ -1,10 +1,6 @@
        SUBROUTINE projection_frozen( lamp, dimwann, dimwin,  &
                   dimfroz, frozen, nkpts, mxdbnd, mxdnrk)
 
-
-
-!.............................................................................
-! Computes the leading eigenvectors of q_FROZ . p_S . q_FROZ, where p_S is the
 ! projector operator onto the subspace s of the projected gaussians, p_FROZ iS
 ! the projector onto the frozen states, and q_FROZ = 1 - p_FROZ, all expressed
 ! in the basis of the bloch eigenstates inside the outer energy window
@@ -39,7 +35,9 @@
 !
 !.............................................................................
 
+       USE kinds
        USE timing_module, ONLY : timing
+       USE io_global, ONLY : stdout
 
        IMPLICIT NONE
 
@@ -49,24 +47,24 @@
        INTEGER :: nkpts
        INTEGER :: dimwin(mxdnrk) 
        INTEGER :: dimfroz(mxdnrk)
-       COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
+       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
        LOGICAL :: frozen(mxdbnd,mxdnrk)
 
-       COMPLEX*16, ALLOCATABLE :: ap(:)
-       COMPLEX*16, ALLOCATABLE :: z(:,:)
-       COMPLEX*16, ALLOCATABLE :: work(:)
-       COMPLEX*16, ALLOCATABLE :: p_s(:,:)
-       COMPLEX*16, ALLOCATABLE :: q_froz(:,:)
-       COMPLEX*16, ALLOCATABLE :: pq(:,:)
-       COMPLEX*16, ALLOCATABLE :: qpq(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: ap(:)
+       COMPLEX(dbl), ALLOCATABLE :: z(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: work(:)
+       COMPLEX(dbl), ALLOCATABLE :: p_s(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: q_froz(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: pq(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: qpq(:,:)
        INTEGER, ALLOCATABLE :: iwork(:), ifail(:)
-       REAL*8, ALLOCATABLE :: w(:) ,rwork(:)
+       REAL(dbl), ALLOCATABLE :: w(:) ,rwork(:)
  
        INTEGER :: nkp, j, l, n
        INTEGER :: info
        INTEGER :: m, il, iu, ierr
-       COMPLEX*16 :: ctmp
-       COMPLEX*16 :: czero
+       COMPLEX(dbl) :: ctmp
+       COMPLEX(dbl) :: czero
        PARAMETER( czero = ( 0.0d0, 0.0d0 ) ) 
 
 ! ...  End of declarations
@@ -181,20 +179,16 @@
                 -1, m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
 
            IF ( INFO < 0 ) THEN
-             WRITE(6,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING QPQ MATRIX'
-             WRITE(6,*) 'THE ',-info, ' ARGUMENT OF ZHPEVX HAD AN ILLEGAL VALUE'
-             STOP
+             CALL errore(' projection_frozen ', ' the info argument of zhpevx had an illegal value ', info )
            ELSE IF ( INFO > 0 ) THEN
-             WRITE(6,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING QPQ MATRIX'
-             WRITE(6,*) info, 'EIGENVECTORS FAILED TO CONVERGE'
-             STOP
+             CALL errore(' projection_frozen ', ' eigenvectors failed to converge ', info )
            END IF
 
            IF( m /= dimwin(nkp) ) THEN
-             WRITE(*,*) '*** ERROR *** in projection_frozen.f'
-             WRITE(*,*) 'number of eigenvalues/vectors obtained is',     &
+             WRITE(stdout ,*) '*** ERROR *** in projection_frozen.f'
+             WRITE(stdout ,*) 'number of eigenvalues/vectors obtained is',     &
                         m,' not equal to the number asked,', dimwin(nkp)
-             STOP
+             CALL errore(' projection_frozen ', ' number of eigenstates different from required ', m )
            END IF
          
 ! ...      Pick the dimwann-dimfroz(nkp) leading eigenvectors to be trial states; 
@@ -207,11 +201,7 @@
              il = il + 1   
            END DO
 
-           IF( il - 1 /= iu ) THEN
-             WRITE(*,*) '*** ERROR *** in projection_frozen.f'
-             WRITE(*,*) 'il-1.ne.iu'
-             STOP
-           END IF
+           IF( il - 1 /= iu ) CALL errore(' projection_frozen ', ' check failed ', il )
 
            DO l = dimfroz(nkp) + 1, dimwann
              DO m = dimfroz(nkp) + 1, l
@@ -219,20 +209,18 @@
                DO j = 1, dimwin(nkp)
                  ctmp = ctmp + CONJG( lamp(j,m,nkp) ) * lamp(j,l,nkp)
                END DO
-               WRITE(*,'(i2,2x,i2,f16.12,1x,f16.12)') l, m, ctmp
+               WRITE(stdout ,'(i2,2x,i2,f16.12,1x,f16.12)') l, m, ctmp
                IF ( l == m ) THEN
                  IF ( ABS( ctmp - CMPLX( 1.0d0, 0.0d0 ) ) > 1.0e-8 ) THEN
-                   WRITE(*,*) '*** ERROR *** in projection_frozen.f'
-                   WRITE(*,*) 'projected gaussians in lamp not orthonormal'
-                   WRITE(*,'(a11,i4)') 'at k-point ', nkp
-                   STOP
+                   WRITE(stdout ,*) 'projected gaussians in lamp not orthonormal'
+                   WRITE(stdout ,'(a11,i4)') 'at k-point ', nkp
+                   CALL errore(' projection_frozen ', ' projected gaussians in lamp not orthonormal (I)', ABS( ctmp - CMPLX( 1.0d0, 0.0d0 ) ) )
                  END IF
                ELSE
                  IF ( ABS(ctmp) > 1.0e-8 ) THEN
-                   WRITE(*,*) '*** ERROR *** in projection_frozen.f'
-                   WRITE(*,*) 'projected gaussians in lamp not orthonormal'
-                   WRITE(*,'(a11,i4)') 'at k-point ', nkp
-                   STOp
+                   WRITE(stdout ,*) 'projected gaussians in lamp not orthonormal'
+                   WRITE(stdout ,'(a11,i4)') 'at k-point ', nkp
+                   CALL errore(' projection_frozen ', ' projected gaussians in lamp not orthonormal (II)', ABS( ctmp ) )
                  END IF
                END IF
              END DO

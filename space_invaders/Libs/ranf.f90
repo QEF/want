@@ -1,9 +1,11 @@
       FUNCTION ranf(idum)
 
+      USE kinds
+
       IMPLICIT NONE
 
       INTEGER :: m, ia, ic, maxir
-      REAL*8 :: rm, ranf
+      REAL(dbl) :: rm, ranf
       PARAMETER ( m = 714025 ) 
       PARAMETER ( ia = 1366 )
       PARAMETER ( ic = 150889 ) 
@@ -32,10 +34,7 @@
 
       j = 1 + ( maxir * iy ) / m
 
-      IF ( ( j > maxir ) .OR. ( j < 1 ) ) THEN
-        PRINT *,' RANF: J=', j
-        STOP
-      END IF
+      IF ( ( j > maxir ) .OR. ( j < 1 ) ) CALL errore(' ranf ', ' ranf: j ', j ) 
 
       iy = ir(j)
       ranf = iy * rm

@@ -39,21 +39,23 @@
 !
 !.......................................................................................
 
+       USE kinds   
+
        IMPLICIT NONE
 
-       REAL*8 :: lambda_avg
+       REAL(dbl) :: lambda_avg
 
        INTEGER :: mxdbnd, mxdnrk, mxdnn
        INTEGER :: m, kpt, nnlist(mxdnrk,mxdnn)
        INTEGER :: nshells, nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)      
-       REAL*8 :: wb(mxdnrk,mxdnn)
-       COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
-       COMPLEX*16 :: kcm(mxdbnd,mxdbnd,mxdnn)
+       REAL(dbl) :: wb(mxdnrk,mxdnn)
+       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
+       COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
  
        INTEGER :: n, l, j
        INTEGER :: nnx, ndnn, nnsh, k_pls_b
-       COMPLEX*16 :: dot_bloch
+       COMPLEX(dbl) :: dot_bloch
 
 
        lambda_avg = 0.0d0

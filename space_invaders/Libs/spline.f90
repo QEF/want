@@ -1,11 +1,13 @@
       SUBROUTINE spline( x, y, n, y2 )
 
+      USE kinds
+
       IMPLICIT NONE
 
       INTEGER :: n, nmax, i ,k
       PARAMETER( nmax = 500 )
-      REAL*8 :: qn, un, sig, p
-      REAL*8 ::  x(n), y(n), y2(n), u(nmax)
+      REAL(dbl) :: qn, un, sig, p
+      REAL(dbl) ::  x(n), y(n), y2(n), u(nmax)
 
       y2(1) = 0.d0
       u(1) = 0.d0
