@@ -22,7 +22,7 @@
 ! XXX mettere a posto input_module
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
-   USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, &
+   USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, &
                               bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax, &
                               dimfroz, lfrozen, dimwinx
@@ -193,6 +193,9 @@
       IF ( kpoints_alloc ) THEN 
           WRITE( unit, " (  '<K-POINTS>')" )
           WRITE( unit, "(2x, 'nkpts = ',i4 ) " ) nkpts
+          WRITE( unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i3,' ),', &
+                        & 6x,'shift = (',3i3,' )' ) " ) & 
+                          nk(:), s(:)
           WRITE( unit, "(2x, 'K-point calculation: (cart. coord. in Ang^-1)' ) " )
           
           ALLOCATE( kpt_cart(3,nkpts), STAT=ierr)

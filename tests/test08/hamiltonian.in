@@ -5,9 +5,6 @@
    work_dir = './'
    nkpts_in  = 2
    nkpts_max = 100
-   nk(1) = 1
-   nk(2) = 1 
-   nk(3) = 20
 /
 G
 0.0 0.0 0.0

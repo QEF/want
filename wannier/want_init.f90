@@ -25,10 +25,11 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE iotk_module
    USE parser_base_module, ONLY : change_case
    USE input_module,    ONLY : wannier_center_init, input_alloc => alloc
-   USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec
+   USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
    USE ions_module,  ONLY : ions_read_ext, ions_init
    USE windows_module,  ONLY : windows_read_ext, windows_init, eig
-   USE kpoints_module,  ONLY : kpoints_read_ext, bshells_init
+   USE kpoints_module,  ONLY : nk, s, nkpts, vkpt, &
+                               kpoints_read_ext, bshells_init
    IMPLICIT NONE
 
    LOGICAL, OPTIONAL, INTENT(in) :: want_input
@@ -111,6 +112,8 @@ SUBROUTINE want_init(want_input, windows, bshells)
 !
     CALL kpoints_read_ext(dft_unit, "Kmesh", lfound)
     IF ( .NOT. lfound ) CALL errore(subname,'Tag '//'Kmesh'//' not found',2)
+    CALL get_monkpack(nk,s,nkpts,vkpt,'CRYSTAL',bvec,ierr)
+    IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
     !
     ! ...  allocations and initializations
     IF ( bshells_ .AND. .NOT. input_alloc ) &

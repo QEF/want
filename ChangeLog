@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+15 Jan 2005      GET_MONKPACK routine (compute the nk(:) and s(:) param of the 
+                 Monkhorst-Pack grid from theinput kpts) added and hamiltonian
+                 input accordingly modified. SOme other minor changes done. (AF)
+
 14 Jan 2005      IOTK updated to v1.0.0beta4, including the workarounds for ifort and
                  pgi compilaers. (AF) 
 

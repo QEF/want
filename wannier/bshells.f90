@@ -17,7 +17,7 @@
       USE constants, ONLY : ZERO, CZERO, ONE, BOHR => bohr_radius_angs, EPS_m10
       USE timing_module, ONLY : timing
 
-      USE kpoints_module, ONLY : vkpt, nkpts, wk, nnshell, &
+      USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, &
                                  bk, dnn, ndnntot, wb, wbtot, nnlist, nncell, &
                                  nntot, bka, neigh, &
                                  nnmx => mxdnn, nnmxh => mxdnnh , &
@@ -366,6 +366,7 @@
 
       DEALLOCATE( vkpr, STAT=ierr )
       IF ( ierr /= 0) CALL errore('bshell', 'deallocating vkpr', ABS(ierr))
+
 
       CALL timing('bshells',OPR='stop')
 
