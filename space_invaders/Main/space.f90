@@ -28,7 +28,6 @@
        INTEGER, ALLOCATABLE :: kgv(:,:)
        INTEGER, ALLOCATABLE :: isort(:,:)
        INTEGER, ALLOCATABLE :: mtxd(:)
-       INTEGER, ALLOCATABLE :: nfile(:)
        REAL(dbl), ALLOCATABLE :: vkpt(:,:)
        REAL(dbl), ALLOCATABLE :: evecr(:,:,:)
        REAL(dbl), ALLOCATABLE :: eveci(:,:,:)
@@ -90,11 +89,11 @@
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
  
        INTEGER :: i, j, l, i1, i2, i3 
-       INTEGER :: nkp, nunit, iter, idum
+       INTEGER :: nkp, iter
 
        EXTERNAL lambda_avg
 
-       REAL(dbl) :: recc(3,3), rdum, aux
+       REAL(dbl) :: recc(3,3), aux
        REAL(dbl) :: lambda_avg, alatt
        REAL(dbl) :: win_min, win_max
        REAL(dbl) :: froz_min, froz_max
@@ -107,7 +106,6 @@
        PARAMETER ( zero = 0.0d0, um = 1.0d0 )
        PARAMETER ( czero = ( 0.0d0, 0.0d0 ) )
 
-       CHARACTER(LEN=80) :: title
        INTEGER :: nt, ja, nbandi
        INTEGER :: ngx, ngy, ngz
        INTEGER :: ngm
@@ -267,7 +265,6 @@
        ALLOCATE( iwork(5*mxdbnd) )
        ALLOCATE( isort(mxddim,nkpts) )
        ALLOCATE( mtxd(nkpts) )
-       ALLOCATE( nfile(nkpts) )
        ALLOCATE( evecr(mxddim,mxdbnd,nkpts) )
        ALLOCATE( eveci(mxddim,mxdbnd,nkpts) )
        ALLOCATE( eiw(mxdbnd,nkpts) )
@@ -862,7 +859,6 @@
        DEALLOCATE( kgv )
        DEALLOCATE( isort )
        DEALLOCATE( mtxd )
-       DEALLOCATE( nfile )
        DEALLOCATE( vkpt )
        DEALLOCATE( evecr )
        DEALLOCATE( eveci )

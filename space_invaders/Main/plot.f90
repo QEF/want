@@ -7,42 +7,35 @@
 
       IMPLICIT NONE
 
-      INTEGER :: ngt, ngs, ngrid
-      PARAMETER ( ngt = 2, ngs = ngt-1, ngrid = 4 )
+      INTEGER :: ngt, ngs
+      PARAMETER ( ngt = 2, ngs = ngt-1)
 
       INTEGER :: ngx, ngy, ngz
-      INTEGER :: nrplwv
-      INTEGER :: nionst, nions, nspec, nbands, nkpts
-      INTEGER :: nplwv
+      INTEGER :: nionst, nions, nspec, nkpts
       INTEGER :: mplwv
-      INTEGER :: nionbig
-      INTEGER :: npoint, iplwv, jplwv
+      INTEGER :: npoint
       INTEGER :: nwann, nzz, nyy, nxx
-      INTEGER :: nx, ny, nz, nw1, nw2, nw, l
-      INTEGER :: nx2, ny2, nz2, nii
+      INTEGER :: nx, ny, nz
       INTEGER :: nkp, nb, m, nsp
-      INTEGER :: ngptwann(3)
-      INTEGER :: n, j, nrx, nry, ni
+      INTEGER :: n, j, ni
       INTEGER :: i, nmod, nt, nlim
       INTEGER, ALLOCATABLE :: nplwkp(:)           ! nplwkp(nkpts)
-      INTEGER, ALLOCATABLE :: nindpw(:,:)         ! nindpw(nrplwv,nkpts)
+      INTEGER, ALLOCATABLE :: nindpw(:,:)         ! nindpw(mxddim,nkpts)
       INTEGER :: nionsp(npsx)           ! nionsp(nspec)
 
-      COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)  ! cptwfp(nrplwv+1,nbands,nkpts)
+      COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)  ! cptwfp(mxddim+1,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:)   ! cwann(-ngx:ngs*ngx-1,-ngy:ngs*ngy-1,-ngz:ngs*ngz-1)
       COMPLEX(dbl), ALLOCATABLE :: cptwr(:)       ! cptwr(mplwv)
-      COMPLEX(dbl), ALLOCATABLE :: cwork2(:)      ! cwork2(mplwv)
-      COMPLEX(dbl), ALLOCATABLE :: cu(:,:,:)      ! cu(nbands,nbands,nkpts)
+      COMPLEX(dbl), ALLOCATABLE :: cu(:,:,:)      ! cu(dimwann,dimwann,nkpts)
       COMPLEX(dbl) :: catmp
       COMPLEX(dbl) :: cmod
       COMPLEX(dbl) :: citpi
 
       REAL(dbl), ALLOCATABLE :: vkpt(:,:)         ! vkpt(3,nkpts)
 
-      REAL(dbl) :: scalf, tmaxx, tmax, ratmax, ratio
+      REAL(dbl) :: scalf, tmaxx, tmax
       REAL(dbl) :: dirc( 3, 3 ), recc( 3, 3 ), dirl( 3, 3 )
       REAL(dbl) :: pos( 3 )
-      REAL(dbl) :: gxx, gyy, gzz, testcubic
       REAL(dbl) :: x_0ang, y_0ang, z_0ang 
       REAL(dbl), ALLOCATABLE :: poscarwin( :, :, : )
       REAL(dbl) :: posion( 3, natx, npsx )
@@ -59,7 +52,7 @@
       INTEGER :: nrxd, nryd, nrzd
       INTEGER :: nnrx, nnry, nnrz
       LOGICAL :: okp( 3 )
-      REAL(dbl) :: aa
+      REAL(dbl) :: off
 
       PARAMETER ( citpi = ( 0.0d0, twopi) )
 
@@ -75,9 +68,6 @@
       READ (21) dirc(1,2), dirc(2,2), dirc(3,2)
       READ (21) dirc(1,3), dirc(2,3), dirc(3,3)
 
-      nbands = dimwann
-      nrplwv = mxddim
-      
 
       ALLOCATE( vkpt( 3, nkpts ) )
       DO  nkp = 1 , nkpts
@@ -99,16 +89,16 @@
         READ(21) nplwkp(nkp)
       END DO
 
-      ALLOCATE( nindpw( MAX(nrplwv,mplwv),nkpts) )
+      ALLOCATE( nindpw( MAX(mxddim,mplwv),nkpts) )
       DO nkp = 1, nkpts
         DO n = 1, mplwv
           READ(21) nindpw(n,nkp)
         END DO
       END DO
 
-      ALLOCATE( cptwfp( nrplwv + 1, nbands, nkpts ) )
+      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ) )
       DO nkp = 1, nkpts
-        DO nb = 1, nbands
+        DO nb = 1, dimwann
           DO m = 1, nplwkp(nkp)
             READ(21) cptwfp(m,nb,nkp)
           END DO
@@ -119,8 +109,8 @@
 
       OPEN( 29, FILE='unitary.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
-      ALLOCATE( cu( nbands, nbands, nkpts ) )
-      READ(29) ( ( ( cu(j,i,n), j=1,nbands ), i=1,nbands ), n=1,nkpts )
+      ALLOCATE( cu( dimwann, dimwann, nkpts ) )
+      READ(29) ( ( ( cu(j,i,n), j=1,dimwann ), i=1,dimwann ), n=1,nkpts )
 
       CLOSE(29)
 
@@ -159,14 +149,12 @@
       cwann = ( 0.0d0, 0.0d0 )
 !
       ALLOCATE( cptwr(mplwv) )
-      ALLOCATE( cwork2(mplwv) )
 
       DO nkp = 1, nkpts
-        DO nb = 1, nbands
+        DO nb = 1, dimwann
 
           DO m = 1, mplwv
             cptwr(m) = ( 0.0d0, 0.0d0 )
-            cwork2(m) = ( 0.0d0, 0.0d0 )
           ENDDO
 
           DO m = 1, nplwkp(nkp)
@@ -290,10 +278,11 @@
         dirl(3,i) = dirc(3,i) / ngz / bohr
       END DO
 
-      aa = 0.0
-      x_0ang = ( nrxl - aa ) * dirl( 1, 1 ) + ( nryl - aa ) * dirl( 2, 1 ) + ( nrzl - aa ) * dirl( 3, 1 )
-      y_0ang = ( nrxl - aa ) * dirl( 1, 2 ) + ( nryl - aa ) * dirl( 2, 2 ) + ( nrzl - aa ) * dirl( 3, 2 )
-      z_0ang = ( nrxl - aa ) * dirl( 1, 3 ) + ( nryl - aa ) * dirl( 2, 3 ) + ( nrzl - aa ) * dirl( 3, 3 )
+!     Offset for position and WF's allignment
+      off = 0.0
+      x_0ang = ( nrxl - off ) * dirl( 1, 1 ) + ( nryl - off ) * dirl( 2, 1 ) + ( nrzl - off ) * dirl( 3, 1 )
+      y_0ang = ( nrxl - off ) * dirl( 1, 2 ) + ( nryl - off ) * dirl( 2, 2 ) + ( nrzl - off ) * dirl( 3, 2 )
+      z_0ang = ( nrxl - off ) * dirl( 1, 3 ) + ( nryl - off ) * dirl( 2, 3 ) + ( nrzl - off ) * dirl( 3, 3 )
 
       IF ( nwann <= 9 ) THEN
         WRITE( frfft, ' ( ''WFR00'', i1, ''.gau'' ) ' ) nwann
@@ -355,6 +344,9 @@
         INTEGER :: indat( npsx )
         INTEGER :: ntyp
 
+!       The case loop is implemented only for a few
+!       selected chemical species, otherwise the label
+!       is set equal to carbon by default
         DO is = 1, ntyp
           SELECT CASE ( TRIM( nameat( is ) ) )
             CASE ( 'H' )
@@ -363,6 +355,71 @@
               indat( is ) = 2
             CASE ( 'Li' )
               indat( is ) = 3
+            CASE ( 'Be' )
+              indat( is ) = 4
+            CASE ( 'B' )
+              indat( is ) = 5
+            CASE ( 'C' )
+              indat( is ) = 6
+            CASE ( 'N' )
+              indat( is ) = 7
+            CASE ( 'O' )
+              indat( is ) = 8
+            CASE ( 'F' )
+              indat( is ) = 9
+            CASE ( 'Ne' )
+              indat( is ) = 10
+            CASE ( 'Na' )
+              indat( is ) = 11
+            CASE ( 'Mg' )
+              indat( is ) = 12
+            CASE ( 'Al' )
+              indat( is ) = 13
+            CASE ( 'Si' )
+              indat( is ) = 14
+            CASE ( 'P' )
+              indat( is ) = 15
+            CASE ( 'S' )
+              indat( is ) = 16
+            CASE ( 'Cl' )
+              indat( is ) = 17
+            CASE ( 'Ar' )
+              indat( is ) = 18
+            CASE ( 'K' )
+              indat( is ) = 19
+            CASE ( 'Ca' )
+              indat( is ) = 20
+!           ......
+            CASE ( 'Mn' )
+              indat( is ) = 25
+            CASE ( 'Fe' )
+              indat( is ) = 26
+            CASE ( 'Co' )
+              indat( is ) = 27
+            CASE ( 'Ni' )
+              indat( is ) = 28
+            CASE ( 'Cu' )
+              indat( is ) = 29
+            CASE ( 'Zn' )
+              indat( is ) = 30
+            CASE ( 'Ga' )
+              indat( is ) = 31
+!           ......
+            CASE ( 'As' )
+              indat( is ) = 33
+            CASE ( 'Sr' )
+              indat( is ) = 38
+            CASE ( 'Ag' )
+              indat( is ) = 47
+            CASE ( 'In' )
+              indat( is ) = 49
+            CASE ( 'Cs' )
+              indat( is ) = 55
+            CASE ( 'Pt' )
+              indat( is ) = 78
+            CASE ( 'Au' )
+              indat( is ) = 79
+!           ......
             CASE DEFAULT
               indat( is ) = 6
           END SELECT

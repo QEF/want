@@ -32,7 +32,7 @@
  
       INTEGER :: i, j, l, m, n, nn, nnx, na, nap
       INTEGER :: nkp, nkp2, nkpts2
-      INTEGER :: nkppro, nlist, ndnn, nddn
+      INTEGER :: nlist, ndnn, nddn
       INTEGER :: ndnntot, nnsh, nnh
       INTEGER :: ifpos, ifneg, ifound, info, ind
 
@@ -92,9 +92,6 @@
       dnn1 = eta
       ndnntot = 0
 
-      nkppro = nkpts
-
-  
 ! ... AC & MBN (April 2002) generic k grid allowed
  
       DO nlist = 1, nnmx

@@ -57,7 +57,6 @@
        REAL(dbl) :: emax, rdum
        INTEGER :: ntype
        INTEGER :: nr1, nr2, nr3, nbandi 
-       CHARACTER(LEN=80) :: title
        
        INTEGER :: ngwx
        INTEGER :: mxddim       ! max number of G-vectors
@@ -69,7 +68,7 @@
        REAL(dbl) :: avec(3,3)
        REAL(dbl) :: alat, sgn
        REAL(dbl) :: zero, um, tres
-       INTEGER :: ja, jmax, nt, ntt, ig
+       INTEGER :: ja, jmax, nt, ig
        PARAMETER ( zero = 0.0d0, um = 1.0d0, tres = 3.0d0 )
 
 ! ...  Test versione parallela
@@ -227,19 +226,12 @@
        READ(54) ( neig_k(nkp), nkp=1,nkp_tot )
        READ(54) nr1, nr2, nr3, ngm, ngwx
 
-!      WRITE(6,*) ' DDDDEBUG ', mxddim, mxdbnd, nk(1)*nk(2)*nk(3)
-!      WRITE(6,*) ' DDDDEBUG ', nr1, nr2, nr3
-
        zvec_k = 0.0d0
        DO nkp = 1, nkp_tot
          READ(54) twrite, file_version, section_name
-!        WRITE(6,*) ' DDDDEBUG ', twrite, file_version, section_name
          READ(54) ngw_, nbnd_, ik_, nk_, kunit_, ispin_, nspin_, scal_
-!        WRITE(6,*) ' DDDDEBUG ', ngw_, nbnd_, ik_, nk_, kunit_, ispin_, nspin_, scal_
          READ(54) igwx_
-!        WRITE(6,*) ' DDDDEBUG ', igwx_
          READ(54) t0_
-!        WRITE(6,*) ' DDDDEBUG ', t0_
          ALLOCATE( wtmp( igwx_ ) )
          wtmp = 0.0d0
          DO i = 1, nbnd_
@@ -249,7 +241,6 @@
            END DO
          END DO
          READ(54) t0_
-!        WRITE(6,*) ' DDDDEBUG ', t0_
          DO i = 1, nbnd_
            READ(54) idum_
 !          WRITE(6,*) '          ', idum_

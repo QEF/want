@@ -87,12 +87,9 @@
 
        COMPLEX*16 :: cptwr(ngx*ngy*(ngz+1))
        COMPLEX*16 :: cwork2(ngx*ngy*(ngz+1))
-       ! COMPLEX*16 :: cptwr((ngx+1)*ngy*(ngz+1))
-       ! COMPLEX*16 :: cwork2((ngx+1)*ngy*(ngz+1))
        COMPLEX*16 :: ca(mxdbnd,dimwann,nkpts)
        COMPLEX*16 :: cu(mxdbnd,dimwann)
        COMPLEX*16 :: ctmp, cphi
-       INTEGER :: ngptar(3)
        INTEGER :: nwann 
        INTEGER :: nxx, nyy, nzz 
        INTEGER :: nx, ny, nz
@@ -210,12 +207,6 @@
        sph21  = SQRT( 15.0d0 / 2.0d0 / twopi )
        sph22  = SQRT( 15.0d0 / 2.0d0 / twopi )
 
-! ...  Initialize the data used for the fast fourier transforms
-
-       ngptar(1) = ngx
-       ngptar(2) = ngy
-       ngptar(3) = ngz
-
        DO nkp = 1, nkpts
          IF  ( dimwann >  dimfroz(nkp) ) THEN  !IF  not, don't need to waste CPU time!
            DO nb = 1, dimwin(nkp)
@@ -260,8 +251,7 @@
 ! ...        last argument is isign=-1 since we are using the usual bloch convention.
 !            isign = -1 : backward fft: recip --> real : exp(+iqr)
  
-             !CALL fft3d( cptwr(1), cwork2, ngptar, -1 )
-             CALL cfft3d( cptwr, ngptar(1), ngptar(2), ngptar(3), ngptar(1), ngptar(2), ngptar(3), 1)
+             CALL cfft3d( cptwr, ngx, ngy, ngz, ngx, ngy, ngz, 1)
  
 ! ...        ca: the phase <u_nk(r) exp(ikr) | phi_nwann(r)>, given a real space
 !            localized function phi_nwann (e.g. a gaussian centered on the bond)

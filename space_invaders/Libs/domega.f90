@@ -4,22 +4,22 @@
       
       IMPLICIT NONE 
 
-      INTEGER :: NBANDS
-      INTEGER :: NKPTS
-      INTEGER :: NKPTS2
-      INTEGER :: NNMX
-      INTEGER :: NWANN
-      INTEGER :: IND
-      INTEGER :: NKP
-      INTEGER :: NN
-      INTEGER :: M, N 
+      INTEGER :: nbands
+      INTEGER :: nkpts
+      INTEGER :: nkpts2
+      INTEGER :: nnmx
+      INTEGER :: nwann
+      INTEGER :: ind
+      INTEGER :: nkp
+      INTEGER :: nn
+      INTEGER :: m, n 
 
       INTEGER :: nnlist(nkpts,nnmx), nntot(nkpts)
       REAL*8 :: wb(nkpts,nnmx)
       REAL*8 :: bk(3,nkpts,nnmx), rave(3,nbands)
       REAL*8 :: r2ave(nbands), rnkb(nbands,nkpts,nnmx)
       REAL*8 :: sheet(nbands,nkpts,nnmx)
-      REAL*8 :: BRN 
+      REAL*8 :: brn 
       COMPLEX*16 :: csheet(nbands,nkpts,nnmx)
       COMPLEX*16 :: cm(nbands,nbands,nkpts,nnmx)
       COMPLEX*16 :: cr(nbands,nbands,nkpts,nnmx)

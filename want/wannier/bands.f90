@@ -6,8 +6,8 @@
 ! ... Originally written by IVO SOUZA 9 nov 2000
 !     New Version by A. Calzolari & C. Cavazzoni 2003
 
-! ... Input files: pw.dat, energies.dat, unitary, kg_grids.dat
-!     Output files: band.gp, band.dat
+! ... Input files: takeoff.dat, energies.dat, unitary.dat
+!     Output files: band.gp, band.dat, matrix.dat, diagonal.dat
 
       USE kinds
       USE mp, ONLY: mp_start, mp_end, mp_env
@@ -19,24 +19,21 @@
       IMPLICIT none
 
       INTEGER :: mxdnrk, mxdbnd
-      INTEGER :: nshells
  
       INTEGER :: maxspts, maxpts
       PARAMETER ( maxspts = 8 )
       PARAMETER ( maxpts = 500 )
 
       REAL(dbl) :: vcell, avec(3,3), bvec(3,3) 
-      REAL(dbl) :: aminv(3),adot(3,3),bdot(3,3)
+      REAL(dbl) :: aminv(3), adot(3,3), bdot(3,3)
       INTEGER :: nkpts, dimwann
       INTEGER :: ntype
       INTEGER :: natom(mxdtyp)  
       CHARACTER(LEN=2) :: nameat(mxdtyp)
-      CHARACTER(LEN=4) :: vdriv
       CHARACTER(LEN=2), ALLOCATABLE :: point(:) ! point(maxspts)
       CHARACTER(LEN=6) :: verbosity = 'none'    ! none, low, medium, high
 
       REAL(dbl) :: rat(3,mxdatm,mxdtyp)
-      REAL(dbl) :: atmass(mxdtyp)
       REAL(dbl) :: e_min, e_max
       REAL(dbl), ALLOCATABLE :: ei(:,:)   !ei(mxdbnd,mxdnrk)
       COMPLEX(dbl) :: expo
@@ -55,12 +52,11 @@
       REAL(dbl), ALLOCATABLE :: en_band(:,:)       ! en_band(mxdbnd,maxspts*maxpts)
       INTEGER, ALLOCATABLE :: indxws(:,:)       ! indxws(3,3*mxdnrk)
       INTEGER, ALLOCATABLE :: degen(:)          ! degen(3*mxdnrk)
-      INTEGER :: i, j, m, n, nkp, irk, nrp, idum
-      INTEGER :: i1, i2, i3, j1, j2, j3, jj1, jj2, jj3
-      INTEGER :: j1min, j2min, j3min, j1max, j2max, j3max, iws
-      REAL(dbl) :: rdum, rmod, vec(3)
+      INTEGER :: i, j, m, n, nkp, irk, idum
+      INTEGER :: i1, i2, i3
+      INTEGER :: iws
+      REAL(dbl) :: rmod, vec(3)
       COMPLEX(dbl) :: ctmp
-      INTEGER, ALLOCATABLE :: idummy(:)          ! idummy(nshells)
       CHARACTER(LEN=80) :: stringa, stringa2
  
       COMPLEX(dbl), ALLOCATABLE :: ap(:)            ! ap((mxdbnd*(mxdbnd+1))/2)
@@ -83,11 +79,8 @@
       PARAMETER ( ci = ( 0.0d0, 1.0d0 ) )
 
       INTEGER :: nt
-      INTEGER :: nbandi
       REAL(dbl) :: win_min, win_max, froz_min, froz_max
       REAL(dbl) :: emax, sgn
-
-      REAL(dbl) :: dk, dkl
 !
 ! ... Next lines added by ANDREA (28 jan 2004) 
 !     PRINT_SGM_START and PRINT_SGM_END are energy indeces 
@@ -149,14 +142,13 @@
            READ(19) ( rat( i, j, nt ), i=1,3 )
          END DO
        END DO
-       READ(19) emax, nbandi
+       READ(19) emax, mxdbnd
        READ(19) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
        READ(19) win_min, win_max, froz_min, froz_max, dimwann
 
        CLOSE(19)
 
        mxdnrk = nk(1) * nk(2) * nk(3)
-       mxdbnd = nbandi
 
        DO j=1,3
          DO i=1,3
@@ -173,9 +165,6 @@
          WRITE(6,213) j,( avec(i,j), i=1,3 ), ( avec(i,j)/alatt, i=1,3 )
        END DO
  213   FORMAT( '  A',i1,'=',3(2x,E11.5), 5x, 3(2x,F7.3) )
-
-       WRITE(6,120) nshells
- 120   FORMAT( 'NUMBER OF SHELLS: NSHELLS=',i2,/ )
 
 !
 ! ...  Get crystal data
