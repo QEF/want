@@ -135,7 +135,7 @@ CONTAINS
    ! save A (which is intent IN)
    atmp(:,:) = a(:,:)
 
-   CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
+   CALL DGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
                 work, lwork, info)
 
    IF ( info < 0 ) CALL errore('dmat_svd', 'DGESVD: info illegal value', -info )
