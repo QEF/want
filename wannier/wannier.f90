@@ -15,8 +15,9 @@
 
       ! 12 is the maximum number of nearest neighbours
 
-      INTEGER, PARAMETER :: nnmx  = 24 
+      INTEGER, PARAMETER :: nnmx  = 12 
       INTEGER, PARAMETER :: nnmxh = nnmx/2 
+      INTEGER, PARAMETER :: nprint = 10
 
       COMPLEX(dbl) :: czero
       COMPLEX(dbl) :: ci, citpi
@@ -52,22 +53,23 @@
       INTEGER :: nsdim, irguide
       INTEGER :: nrguide, ncgfix, ncount
       LOGICAL :: lrguide, lcg
-      REAL(dbl)  :: enmax
-      REAL(dbl)  :: volc, voli, wtktot
-      REAL(dbl)  :: epsilon, eta, eps, dnn0, dnn1, dist
-      REAL(dbl)  :: bb1, bbn, factor, wbtot
-      REAL(dbl)  :: asidemin, aside
-      REAL(dbl)  :: func_om1, func_om2, func_om3, func_o
-      REAL(dbl)  :: func_old1, func_old2, func_old3
-      REAL(dbl)  :: sph00, sph1m1, sph10, sph11, sph2m2
-      REAL(dbl)  :: sph2m1, sph20, sph21, sph22
-      REAL(dbl)  :: rx, ry, rz, scalf
-      REAL(dbl)  :: dist1, dist_pl, dist_cos
-      REAL(dbl)  :: th_cos, th_sin, ph_cos, ph_sin, dist2, select
-      REAL(dbl)  :: rre, rri, omt1, omt2, omt3, omiloc
-      REAL(dbl)  :: func_del1, func_del2, func_del3, func0
-      REAL(dbl)  :: gcnorm1, gcfac, gcnorm0, doda0
-      REAL(dbl)  :: funca, func_del, eqc, eqb, eqa, alphamin, falphamin
+      REAL(dbl) :: enmax
+      REAL(dbl) :: ddelta
+      REAL(dbl) :: volc, voli, wtktot
+      REAL(dbl) :: epsilon, eta, eps, dnn0, dnn1, dist
+      REAL(dbl) :: bb1, bbn, factor, wbtot
+      REAL(dbl) :: asidemin, aside
+      REAL(dbl) :: func_om1, func_om2, func_om3, func_o
+      REAL(dbl) :: func_old1, func_old2, func_old3
+      REAL(dbl) :: sph00, sph1m1, sph10, sph11, sph2m2
+      REAL(dbl) :: sph2m1, sph20, sph21, sph22
+      REAL(dbl) :: rx, ry, rz, scalf
+      REAL(dbl) :: dist1, dist_pl, dist_cos
+      REAL(dbl) :: th_cos, th_sin, ph_cos, ph_sin, dist2, select
+      REAL(dbl) :: rre, rri, omt1, omt2, omt3, omiloc
+      REAL(dbl) :: func_del1, func_del2, func_del3, func0
+      REAL(dbl) :: gcnorm1, gcfac, gcnorm0, doda0
+      REAL(dbl) :: funca, func_del, eqc, eqb, eqa, alphamin, falphamin
       COMPLEX(dbl) :: catmp, cphi, calpha, cbeta
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
@@ -108,8 +110,9 @@
       INTEGER, ALLOCATABLE ::  neigh(:,:) ! neigh(nkpts,nnmxh)
       REAL(dbl), ALLOCATABLE ::  dimsingvd(:), dimbk(:,:)
       REAL(dbl), ALLOCATABLE ::  wb(:,:), dnn(:) ! wb(nkpts,nnmx),dnn(nnmx)
-      REAL(dbl), ALLOCATABLE ::  bk(:,:,:), rave(:,:), r2ave(:) 
-                                 !  bk(3,nkpts,nnmx), rave(3,dimwann), r2ave(dimwann)
+      REAL(dbl), ALLOCATABLE ::  bk(:,:,:)   !  bk(3,nkpts,nnmx)
+      REAL(dbl), ALLOCATABLE ::  rave(:,:), r2ave(:) ,rave2(:)
+                                 ! rave(3,dimwann), r2ave(dimwann), rave2(dimwann)
       REAL(dbl), ALLOCATABLE ::  bka(:,:) !  bka(3,nnmxh)
       REAL(dbl), ALLOCATABLE :: rguide(:,:) ! rguide(3,dimwann)
       REAL(dbl) :: rpos1(3), rpos2(3)
@@ -164,7 +167,7 @@
       REAL(dbl) :: posion(3,mxdatm,mxdtyp) ! posion(3,nions,ntype)
       REAL(dbl) :: poscart(3,mxdatm,mxdtyp) ! poscart(3,nions,ntype)
 
-      REAL(dbl) :: alatt
+      REAL(dbl) :: alat
       REAL(dbl) :: s(3)
       INTEGER :: nt, ja, nbandi
       INTEGER :: nk(3)
@@ -181,11 +184,17 @@
 
       COMPLEX(dbl) :: ctmp1, ctmp2
 
+      REAL(dbl) :: rtot(3), r2tot
+      REAL(dbl) :: func_i
+      REAL(dbl) :: func_od
+      REAL(dbl) :: func_d
+
       REAL(dbl) :: cclock
       EXTERNAL :: cclock
       REAL(dbl) :: s0, s1, s2, s3, s4, s5, sf
  
       INTEGER :: idum, rdum, ierr
+
 
 !
 ! ... End declarations and dimensions
@@ -208,7 +217,7 @@
 
       OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
-      READ(19) alatt
+      READ(19) alat
       READ(19) (avec(i,1),i=1,3)
       READ(19) (avec(i,2),i=1,3)
       READ(19) (avec(i,3),i=1,3)
@@ -256,7 +265,7 @@
       natom = natom
       enmax  = enmax * har
 
-      CALL atomset( alatt, avec, ntype, natom, nameat, rat, mxdtyp, mxdatm )
+      CALL atomset( alat, avec, ntype, natom, nameat, rat, mxdtyp, mxdatm )
       CALL latti( avec, bvec, vcell, bdot, aminv, adot )
 
       IPRINT = 1
@@ -274,34 +283,44 @@
         END DO
       END DO
       CALL bastr( diri, reci, voli )
- 
 
-      WRITE(*,*)' THE BASIS-SET USED WHEN PLACING ATOMS ( DIRC(I,J) ):'
-      WRITE(*,*) ' '
-      WRITE(*,101) ( ( dirc(i,j), i=1,3 ), j=1,3 )
-      WRITE(*,*) ' '
-      WRITE(*,*) ' THE RECIPROCAL SPACE BASIS ( RECC(I,J) ): '
-      WRITE(*,*) ' '
-      WRITE(*,101) ( ( recc(i,j), i=1,3 ), j=1,3 )
- 101  FORMAT(1X,3F10.6)
-      WRITE (*,*) ' '
-      WRITE(*,*) ' NOTE: VECTORS A1 A2 A3 AND B1 B2 B3 ARE GIVEN IN *COLUMNS* '
-      WRITE (*,*) ' '
-      WRITE (*,*) ' VOLUME OF CURRENT UNIT CELL:', volc
+!...  Start writing output
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) ' =                         Input parameters                           ='
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, fmt= " (2x,'Alat = ', F8.4, ' (Ang)' )" ) alat * bohr
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, fmt= " (2x, 'Crystal axes: (Ang)' ) ")
+      DO j=1,3
+        WRITE ( stdout, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )'  )" ) &
+               j, ( dirc(j,i), i=1,3 )
+      END DO
+ 
+      WRITE( stdout,*) ' '
+      WRITE( stdout, fmt= " (2x, ' Reciprocal lattice vectors:' ) " )
+      DO j=1,3
+        WRITE ( stdout, fmt="(4x,'b(',I1,') = (', 3F8.4, ' )'  )" ) &
+               j,  ( recc(j,i), i=1,3 )
+      END DO
+      WRITE( stdout, * ) ' '
+      WRITE( stdout, fmt="(2x, 'Cell volume = ', F12.6, ' (Ang)^3' )" ) volc
+      WRITE( stdout,*) ' '
 
       ng = 1
 
-      WRITE (*,*) ' '
+      WRITE( stdout, fmt="(2x, 'Atomic positions: (cart. coord.)' ) " )
       DO nsp = 1 , ntype
         DO ni = 1 , natom(nsp)
           posion(:,ni,nsp) = rat(:,ni,nsp)/twopi
-          WRITE (*,7004) ni, nsp, ( posion(i,ni,nsp), i=1,3 )
+!          WRITE( stdout, fmt="(4x, a, 2x,'tau(',I1,') = (', 3F8.4, ' )' )" ) &
+!                 nameat( nsp ), ni, ( posion(i,ni,nsp), i=1,3 )
+!         WRITE (*,7004) ni, nsp, ( posion(i,ni,nsp), i=1,3 )
           ng = ng + 1
         END DO
       END DO
- 7004 FORMAT( 2x, 'ION ', i3, ' TYPE ', i1, ' AT (',3f12.7,') (A_i UNITS)' )
+!7004 FORMAT( 2x, 'ION ', i3, ' TYPE ', i1, ' AT (',3f12.7,') (A_i UNITS)' )
 
-      write(*,*) ' '
       DO nsp = 1 , ntype
         DO ni = 1 , natom(nsp)
           DO m = 1, 3
@@ -310,13 +329,11 @@
               poscart(m,ni,nsp) = poscart(m,ni,nsp) + posion(j,ni,nsp) * dirc(j,m)
             END DO
           END DO
-          WRITE (*,7034) ni, nsp, ( poscart(i,ni,nsp), i=1,3 )
+          WRITE( stdout, fmt="(4x, a, 2x,'tau(',I1,') = (', 3F8.4, ' )' )" ) &
+          nameat( nsp ), ni, ( poscart(i,ni,nsp), i=1,3 )
         END DO
       END DO
- 7034 FORMAT( 2x, 'ION ', i3, ' TYPE ', i1, ' AT (',3F12.7,') (CARTESIAN)' )
 
- 
- 
 
       nkpts1 = nk(1)*nk(2)*nk(3)
 
@@ -339,13 +356,12 @@
         END DO
       END DO
 
-      WRITE (*,*) ' '
-
+!     WRITE( stdout, fmt= " (2x, 'K-point calculation: (cartesian coordinates in lattice units)' ) " )
       DO nkp = 1 , nkpts
         wtkpt(nkp) =  1.0d0/DBLE(nkpts)
-        WRITE (*,7014) nkp, vkpt(1,nkp), vkpt(2,nkp), vkpt(3,nkp), wtkpt(nkp)
+!       WRITE( stdout, fmt= " (4x, 'k point', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
+!           nkp, ( vkpt(i,nkp), i=1,3 ), wtkpt(nkp)
       END DO
- 7014 FORMAT( '  SPECIAL K-POINT', i6, ':',3F10.5, '   WEIGHT =', F10.5 )
 
       wtktot = 0.d0
       DO nkp = 1 , nkpts
@@ -459,8 +475,6 @@
 
       K_POINTS:  DO nkp = 1, nkpts
 
-        WRITE(*,*) 'nkp = ', nkp
-
         ! SIZE( cptwfp, 1), SIZE( cptwfp, 2), SIZE( cptwfp, 3), nplwkp( nkp ), nbande
         READ(20) nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
 
@@ -483,7 +497,7 @@
 
       s1 = cclock()
 
-      WRITE(*,*) ' '
+!     WRITE(*,*) ' '
 
 !
 !-------------------------------------------------------------------------
@@ -494,7 +508,8 @@
       epsilon = 1.d0
 
 
-      WRITE(*,*) ' GEOMETRY PRELIMS ----------------------------------'
+      WRITE( stdout, *) ' '
+      WRITE( stdout, fmt= " (2x, 'K-point calculation: (cartesian coordinates in Ang^-1)' ) " )
 
       ! pass the k-points in cartesian coordinates
 
@@ -502,7 +517,6 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating vkpr ', 3*nkpts )
  
 
-      WRITE(*,*) ' '
       DO nkp = 1, nkpts
         DO i = 1, 3
           vkpr(i,nkp) = 0.d0
@@ -510,9 +524,9 @@
             vkpr(i,nkp) = vkpr(i,nkp) + vkpt(j,nkp) * recc(j,i)
           END DO
         END DO 
-        WRITE(*,7017) nkp, ( vkpr(i,nkp), i=1,3 ), wtkpt(nkp)
+        WRITE( stdout, fmt= " (4x, 'k point', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
+            nkp, ( vkpr(i,nkp), i=1,3 ), wtkpt(nkp)
       END DO
- 7017 FORMAT('  K-POINT (CARTESIAN)',i6,':',3F10.5,'   WEIGHT =', F10.5)
 
 ! ... Find the distance between k-point 1 and its nearest-neighbour shells
 !     if we have only one k-point, the n-neighbours are its periodic images 
@@ -549,14 +563,15 @@
         dnn1 = eta
       END DO
 
-      WRITE(*,*) ' '
-      WRITE(*,*) ' Nearest-neighbour shells for k-point 1 are (in Angstrom^-1)'
-      WRITE(*,*) ' '
+      WRITE( stdout,*) ' '
+      WRITE( stdout, fmt= " (2x, 'Nearest-neighbour shells for k-point 1: (in Ang^-1)' ) " )
+      WRITE( stdout,*) ' '
+
 
       DO ndnn = 1, ndnntot
-        WRITE(*,*) ndnn, dnn(ndnn)
+      WRITE( stdout, fmt= " (4x, 'shell (',i3,' )    radius = ', f9.5 )")  ndnn, dnn(ndnn)
       END DO
-      WRITE(*,*) ' '
+      WRITE( stdout,*) ' '
 
 ! ... Now build up the list of nearest-neighbour shells for each k-point.
 !     nnlist(nkp,1...nnx) points to the nnx neighbours (ordered along increasing shells)
@@ -572,6 +587,8 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nncell ',3*nkpts*nnmx )
       ALLOCATE ( bk(3,nkpts,nnmx), STAT=ierr ) 
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bk ', 3*nkpts*nnmx )
+
+      WRITE(stdout, fmt=" (2x,'Number of nearest-neighbours for K-point 1 (representetive for the BZ):')")
 
       DO nkp = 1, nkpts
         nnx = 0
@@ -601,19 +618,20 @@
               END DO
             END DO
           END DO
-          IF ( nnshell(nkp,ndnn) <= 0 ) THEN
-            WRITE(*,*) ' Shell is empty ! ', nkp, nnx, nnshell(nkp,ndnn), ndnn
-            STOP
+
+          IF ( nkp == 1) THEN
+            WRITE( stdout, fmt= " (4x, 'shell (', i3, ' )    neighbours  = ', i3 )")  ndnn, nnshell(nkp,ndnn)
           END IF
-          IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( wtkpt(nkp) > 1d-10 ) ) THEN
-            WRITE(*,*) ' Non uniform neighbours !', nkp, nnx, nnshell(nkp,ndnn), ndnn
-            STOP
-          END IF
+
+          IF ( nnshell(nkp,ndnn) <= 0 ) &
+            CALL errore(' wannier ', ' Shell is empty! ', nnshell(nkp,ndnn) )
+          IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( WTKPT(NKP) > 1e-10) ) &
+            CALL errore(' wannier ', ' Non uniform neighbours! ', nnshell(nkp,ndnn) )
+
         END DO
-        IF ( nnx > nnmx ) THEN
-          WRITE(*,*) ' Too many neighbours !'
-          STOP
-        END IF
+
+        IF ( nnx > nnmx ) CALL errore(' wannier ', ' Too many neighbours !', nnx )
+
         nntot(nkp) = nnx
       END DO
 
@@ -631,10 +649,10 @@
               bb1 = bb1 + bk(i,1,nnx)*bk(i,1,nnx)
               bbn = bbn + bk(i,nkp,nnx)*bk(i,nkp,nnx)
             END DO
-            IF ( abs(sqrt(bb1) - sqrt(bbn) ) > eps ) THEN
-              WRITE(*,*) ' Non-symmetric k-point neighbours !', bb1, bbn
-              STOP
-            END IF
+
+            IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
+              CALL errore(' new_bshell ', ' Non-symmetric k-point neighbours!', bb1 )
+
           END DO
         END DO
       END DO
@@ -658,32 +676,53 @@
       DO ndnc = 1, nshells
         ndnn = nwhich(ndnc)
         ndim(ndnn) = 0
+
         DO nnsh = 1, nnshell(1,ndnn)
           nnx = nnx + 1
           DO i = 1, 3
             dimbk(i,nnsh) = bk(i,1,nnx)
           END Do
         END DO
+
         nnsh = nnshell(1,ndnn)
+
         IF( nnsh > nnmx ) &
           CALL errore(' wannier ',' nnsh too big ', nnsh )
-        dimsingvd = 0.d0
+
+        dimsingvd(:) = 0.d0
 
         CALL dgesvd( 'A', 'A', 3, nnsh, dimbk, 3, dimsingvd, v1, 3, v2, nnsh, w1, 10*nnsh, info )
 
-        IF ( info /= 0 ) THEN
-          WRITE(*,*) 'Singular value decomposition dgesvd failed 1'
-          STOP
-        END IF
+        IF ( info /=0 ) &
+          CALL errore(' wannier ', ' Singular value decomposition dgesvd failed ', info )
+
         DO nn = 1, nnsh
           IF ( ABS(dimsingvd(nn) ) > 1d-05 ) ndim(ndnn) = ndim(ndnn) + 1
         END DO
         factor = DBLE(ndim(ndnn))/nnshell(1,ndnn)
-        WRITE(*,*) ndnn, ' shell '
-        WRITE(*,*) ' '
-        WRITE(*,*) ' dimensionality is        ', ndim(ndnn)
-        WRITE(*,*) ' w_b weight is 1/b^2 times', factor
-        WRITE(*,*) ' '
+
+        WRITE( stdout, *) ' '
+        WRITE( stdout, fmt= " (2x,'Check shell dimensionality and weights:')")
+        WRITE( stdout, fmt= " (4x, 'shell (', i3, ' )    dimensionality  = ', i3 )")  ndnn, ndim(ndnn)
+        WRITE( stdout, fmt= " (4x, 'w_b weight is 1/b^2 times', f8.4 )")  factor
+        WRITE( stdout, *) ' '
+
+!...    17/06/2004
+        IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
+          IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
+               ( nnshell(1,ndnn) /= 12 ) ) THEN
+            WRITE( stdout, *) ' '
+            WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
+            WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
+            END IF
+        END IF
+        IF ( ( nshells /= 1 ) .OR. ( ndim(1) /= 3 ) ) THEN
+          WRITE( stdout, *) ' '
+          WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
+          WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
+        END IF
+!...
+
       END DO
 
       DEALLOCATE( v1, STAT=ierr )
@@ -713,6 +752,40 @@
         END DO
       END DO
 
+!...  17/06/2004
+!     now check that the completeness relation is satisfied
+!     Eq. B1 in Appendix  B PRB 56 12847 (1997)
+
+      DO nkp = 1, nkpts
+
+        DO i = 1, 3
+          DO j = 1, 3
+            ddelta = 0.0
+            nnx = 0
+
+            DO ndnc = 1, nshells
+              ndnn = nwhich(ndnc)
+              DO nnsh =1, nnshell(1,ndnn)
+                nnx = nnx + 1
+                ddelta = ddelta + wb(nkp,nnx) * bk(i,nkp,nnx) * bk(j,nkp,nnx)
+              END DO
+            END DO
+
+            IF ( ( i == j ) .AND. ( ABS( ddelta - 1.0d0 ) > eps ) ) &
+              CALL errore(' new_bshell ', ' B1 not satisfied (I)', 1 )
+
+            IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) &
+              CALL errore(' new_bshell ', ' B1 not satisfied (II)', 1 )
+
+          END DO
+        END DO
+
+      END DO
+
+      WRITE( stdout, fmt=" (2x, 'Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)' )")
+      WRITE(*,*) ' '
+!...
+
       wbtot = 0.d0
       nnx = 0
       DO ndnc = 1, nshells
@@ -728,11 +801,16 @@
 
       DO ndnc = 1, nshells
         ndnn = nwhich(ndnc)
-       nnh = nnshell(1,ndnn)/2
-       IF ( nnh*2 /= nnshell(1,ndnn) ) THEN
-        WRITE (*,*) 'The number of neighbours in each shell must be even', ndnn, nnshell(1,ndnn)
-        STOP
-       END IF
+        nnh = nnshell(1,ndnn)/2
+        IF ( nnh*2 /= nnshell(1,ndnn) ) THEN
+           WRITE( stdout, * ) ' ******************* ERROR MESSAGE ******************'
+           WRITE( stdout, * ) '  '
+           WRITE( stdout, fmt= " (6x, 'The number of neighbours in each shell must be even ' &
+                                  2i5 )")  ndnn, nnshell(1,ndnn)
+           WRITE( stdout, * ) '  '
+           WRITE( stdout, * ) ' ****************************************************'
+          CALL errore(' new_bshell ', ' Number of neighbours in each shell is too small !', nnh*2 )
+        END IF
       END DO
       nnh = nntot(1)/2
 
@@ -744,6 +822,7 @@
 
       na = 0
       DO nn = 1, nntot(1)
+
         ifound = 0
         IF ( na /= 0 ) THEN
           DO nap = 1, na
@@ -751,7 +830,9 @@
             IF ( ifneg == 1 ) ifound = 1
           END DO
         ENDIF
-        IF ( ifound == 0 ) THEN    ! found new vector to add to set
+
+        IF ( ifound == 0 ) THEN    
+! ...     Found new vector to add to set
           na = na + 1
           bka(1,na) = bk(1,1,nn)
           bka(2,na) = bk(2,1,nn)
@@ -759,25 +840,22 @@
         END IF
       END DO
 
-      IF ( na /= nnh ) THEN
-       WRITE (*,*) ' NA = ', na, ' NNH = ', nnh
-       WRITE (*,*) ' Did not find right number of bk directions'
-       STOP
-      END IF
+      IF ( na /= nnh ) CALL errore(' new_bshell ', ' Did not find right number of bk directions', na )
 
-      WRITE (*,*) ' The vectors b_k are ', nntot(1)
-      WRITE (*,*) ' '
+      WRITE (stdout , fmt="(2x, 'List of the ' , i2, ' vectors b_k: (Bohr ^-1) ') ") nntot(1)
+
       DO i = 1, nntot(1)
-        WRITE (*, '(4f10.5)') ( bk(j,1,i), j=1,3 ), wb(1,i)
+        WRITE( stdout, fmt= " (4x, 'b_k', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
+        i, ( bk(j,1,i), j=1,3 ), wb(1,i)
       END DO
-      WRITE (*,*) ' '
-      WRITE (*,*) ' The bk directions are ', nnh
-      WRITE (*,*) ' '
-      DO i = 1, nnh
-        WRITE (*,'(3f10.5)') ( bka(j,i), j=1,3 )
-      END DO
-      WRITE (*,*) ' '
 
+      WRITE (stdout, *) ' '
+      WRITE (stdout , fmt="(2x, 'The ',i2, '  bk directions are:' )") nnh
+
+      DO i=1,nnh
+        WRITE( stdout, fmt= " (4x, 'dir', i2, ':   ( ',3f9.5, ' ) ' )" ) i, ( bka(j,i), j=1,3 )
+      END DO
+      WRITE (stdout, *) ' '
 
 ! ... Find index array
 
@@ -785,6 +863,7 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating neigh ', nkpts*nnmxh )
 
       DO nkp = 1, nkpts
+
         DO na = 1, nnh
 
 ! ...     first, zero the index array so we can check it gets filled
@@ -799,25 +878,21 @@
           END DO
 
 ! ...     check found
+          IF ( neigh(nkp,na) == 0 ) CALL errore(' new_bshell ', ' Check failed ', na )
 
-          IF ( neigh(nkp,na) == 0 ) THEN
-            WRITE (*,*) ' nkp,na=', nkp, na
-            STOP
-          ENDIF
         END DO
 
       END DO
-      WRITE(*,*) ' '
 
 
 !     check we got it right -- should just see bka vectors
       IF ( verbosity == 'high' ) THEN
-        WRITE(*,*) 'Check we got it right -- should just see bka vectors'
+        WRITE(stdout, fmt="( 'Check we got it right -- should just see bka vectors')")
         DO nkp = 1, nkpts
           WRITE (*,*)
           DO na = 1, nnh
             nn = neigh(nkp,na)
-            WRITE (*,'(3f10.5)') ( bk(j,nkp,nn), j=1,3 )
+            WRITE (stdout, fmt="(3f10.5)") ( bk(j,nkp,nn), j=1,3 )
           END DO
         END DO
       END IF
@@ -831,15 +906,14 @@
          rloc(nwann) = rloc(nwann) * bohr
 
          IF ( gauss_typ(nwann) == 1 ) THEN
-!          values below don't really matter, since rphiimx2 is not used when  gauss_typ=1
+!...       values below don't really matter, since rphiimx2 is not used when  gauss_typ=1
            rphiimx2(1,nwann) = 0.d0
            rphiimx2(2,nwann) = 0.d0
            rphiimx2(3,nwann) = 0.d0
          ELSE IF( gauss_typ(nwann) == 2 ) THEN
            continue 
          ELSE
-           WRITE(*,*) 'error in trial centers: wrong gauss_typ'
-           STOP
+           CALL errore(' wannier ', 'error in trial centers: wrong gauss_typ', gauss_typ(nwann) )
          END IF
 
        END DO
@@ -874,31 +948,18 @@
            nphimx2(m,nwann) = INT( rphiimx2(m,nwann) * DBLE( ngdim(m) ) + 1.001 )
          END DO
       END DO
+
+      WRITE( stdout, fmt= " (2x, 'Gaussian centers: (cart. coord. in Ang)' ) " )
+      DO nwann = 1, dimwann
+        WRITE( stdout, fmt="(4x,'Center = ', i3, ' Type =',i2,' Gaussian  = (', 3F10.6, ' ) '  )" ) &
+               nwann, gauss_typ(nwann), ( rphicmx1(m,nwann), m=1,3 )
+        IF  ( gauss_typ(nwann) == 2 ) THEN
+          WRITE( stdout, fmt="(26x,'Gaussian2 = (', 3F10.6, ' ) '  )" ) &
+                  ( rphicmx2(m,nwann), m=1,3 )
+        END IF
+      END DO
+      WRITE( stdout, fmt= " (' ' ) " )
        
-      WRITE(*,*) ' Gaussian centers, in cartesian coordinates'
-      WRITE(*,*) ' '
-      DO nwann = 1, dimwann
-        WRITE(*,'(a12,i4,3f10.5)') 'Gaussian 1: ', nwann, ( rphicmx1(m,nwann), m=1,3 )
-        IF ( gauss_typ(nwann) == 2 ) WRITE(*,'(a12,i4,3f10.5)') 'Gaussian 2: ', nwann,( rphicmx2(m,nwann), m=1,3 )
-      END DO
-
-      WRITE(*,*) ' '
-      WRITE(*,*)  ' Gaussian centers, in relative coordinates'
-      WRITE(*,*) ' '
-      DO nwann = 1, dimwann
-        WRITE(*,'(a12,i4,3f10.5)') 'Gaussian 1: ', nwann, ( rphiimx1(m,nwann), m=1,3 )
-        IF ( gauss_typ(nwann) == 2 )  WRITE(*,'(a12,i4,3f10.5)') 'Gaussian 2: ', nwann, ( rphiimx2(m,nwann), m=1,3 )
-      END DO
-
-      WRITE(*,*) ' '
-      WRITE(*,*) ' Gaussian centers, nearest grid coordinates'
-      WRITE(*,*) ' '
-      DO nwann = 1, dimwann
-        WRITE(*,'(a12,i6,3i4)')  'Gaussian 1: ', nwann, ( nphimx1(m,nwann), m=1,3 )
-        IF ( gauss_typ(nwann) == 2 )  &
-          WRITE(*,'(a12,i6,3i4)')  'Gaussian 2: ', nwann, ( nphimx2(m,nwann), m=1,3 )
-      END DO
-
       ALLOCATE( nphir(dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphir ', dimwann )
 
@@ -909,17 +970,17 @@
           asidemin = MIN( aside, asidemin )
         END DO
         nphir(nwann) = nint( 2 * ( rloc( nwann ) / asidemin ) * MIN( ngx, ngy, ngz ) )
-        WRITE(*,*) ' '
-        WRITE(*,'(a14,i3)') 'Trial orbital ', nwann
-        WRITE(*,*) ' Gaussian width, in angstrom      ', rloc(nwann)
-        WRITE(*,*) ' Half-width of integration region ', nphir(nwann)
-        WRITE(*,*) ' '
-        WRITE(*,8000)
-8000    FORMAT (1x,'-------------------------------------------------------------------------------')
+
       END DO
 
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) ' =                  Starting localization procedure                   ='
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) '  '
 
-! --- transform the wavefunctions (u_nk) into real space:
+
+! --- Transform the wavefunctions (u_nk) into real space:
 !
 ! NB! The conjg is introduced to bring in the standard convention
 ! for the Bloch theorem and the FFT.
@@ -954,84 +1015,7 @@
 ! a backward transform, since that Castep inevitably postprocesses it,
 ! multiplying it by 1/N.  
 !
-! check what the scalar products in real and reciprocal space do,
-! and thus what is the charge density in real and reciprocal space
-
-! INVERSION SYMMETRY IS ALL TO BE SET UP IF WE ARE USING THE TWO MESHES
-! RESORT OUT ALL NKPH, NKPTS, NKPTS, nkpts
-!     do nkp=1,nkpts
-!      do nb=1,dimwann
-!       do m=1,mplwv
-!        cptwr(m,nb,nkp)=(0.,0.)
-!        cwork2(m)=(0.,0.)
-!       enddo
-!       do m=1,nplwkp(nkp)
-!        cptwr(nindpw(m,nkp),nb,nkp)=cptwfp(m,nb,nkp)
-!       enddo
-!      call fft3d(cptwr(1,nb,nkp),cwork2,ngptar,1)
-!      end do
-!     end do
-!
-!     ncheck=0
-!     if(invsymm == 1) then
-!      do nkp=nkpts+1,nkpts
-!       do n=1,nkpts
-!        call compar(vkpt(1,nkp),vkpt(1,n),ifpos,ifneg)
-!        if (ifneg == 1) then
-!         ncheck=ncheck+1
-!         write(*,'(2i4,x3f12.5,x,3f12.5)') nkp,n,(vkpt(i,nkp),i=1,3),
-!    &                                 (vkpt(i,n),i=1,3)
-!         nkp_inv(nkp)=n
-!         nkp_inv(n)=nkp
-!         goto 1010
-!        end if
-!       end do
-!1010    continue
-!       write(*,*) 'nkp, nkp_inv'
-!       do nb=1,dimwann
-!        write(*,*) nkp,nkp_inv(nkp)
-!        do m=1,mplwv
-!         cptwr(m,nb,nkp)=conjg(cptwr(m,nb,nkp_inv(nkp)))
-!        end do
-!       end do
-!      end do
-!      if (ncheck /= nkpts) then
-!       write(*,*) "ERROR: not enough inversion-related k-points"
-!       stop
-!      end if
-!     end if
  
-! so, here is the conjg. Think again on this; what we are doing,
-! is going to psi_nk*=u_nk* exp(ikr)
-!
-!     do nkp=1,nkpts
-!      do nb=1,dimwann
-!       do m=1,mplwv
-!        cptwr(m,nb,nkp)=conjg(cptwr(m,nb,nkp))
-!       enddo
-!      end do
-!     end do
- 
-! calculate cm(i,j,nkp,nn)=<u_i k|u_j k+dk> (keeping into account 
-! that if k+dk is outside (or should be outside) the first BZ it must be 
-! brought from there (or there)
-! with a exp(-iG.r) factor (given the proper convention for the sign)
-! for a standard, non-Castep convention:
-! psi_nk=psi_nk+G -> u_nk exp(ikr)=u_nk+G exp(ikr) exp (iGr) ->
-!                    u_nk+G = u_nk exp(-iGr)
-!
-! Now, we are using the Castep u_nk, so the conjugation to go to the
-! standard Bloch formalism (and that was done in real space above) 
-! implies that we deal with v_nk=u_nk*=sum_G c_nk,G* exp(iGr).
-! Additionally, we might have a exp (iG_0r) that has to be introduced,
-! if we need a nkp2 that lies outside the BZ. In our reciprocal space
-! products, that means that we have <v_m,k1|v_n,k2>=\sum_G1,G2 c_m,k1,G1
-! c_n,k2,G2* \int exp [i(G2-G1-G0)r], if G0 is the vector that, say,
-! brings a k2 inside the BZ just outside it, to be a neighbour of a 
-! k1 that lies just inside the boundary (and the u are now in standard
-! Bloch notation). The integral gives a delta, and so we take G2s that
-! are G1s+G0, i.e. nx+nncell, etc...
-
       ALLOCATE( cm(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm ', dimwann**2 * nkpts*nnmx)
       ALLOCATE( nx2(ngx), STAT=ierr )
@@ -1104,19 +1088,40 @@
           DO nn = 1, nntot(nkp)
             sheet(nb,nkp,nn)  = 0.d0 
             csheet(nb,nkp,nn) = exp(ci*sheet(nb,nkp,nn))
-            ! WRITE(*,fmt="(3I5,2F18.12)" ) nb, nkp, nn, csheet(nb,nkp,nn)
           END DO
         END DO
       END DO
 
 ! ... Now calculate the average positions of the Wanns.
 
-      ALLOCATE( rave(3,dimwann), r2ave(dimwann), STAT=ierr )
+      ALLOCATE( rave(3,dimwann), r2ave(dimwann), rave2(dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating rave r2ave ', 4*dimwann)
+      
+
+      WRITE(stdout, fmt=" (2x, 'Trial Wannier centers and Spreads (Omega)')")
 
       CALL omega( dimwann, nkpts, nkpts, nntot(1), nnmx, nnlist(1,1), bk(1,1,1), wb(1,1),   &
-                  cm(1,1,1,1), csheet(1,1,1), sheet(1,1,1), rave(1,1), r2ave(1), func_om1,  &
-                  func_om2, func_om3, func_o )
+                  cm(1,1,1,1), csheet(1,1,1), sheet(1,1,1), rave(1,1), r2ave(1), rave2(1), func_om1,  &
+                  func_om2, func_om3, func_o, rtot, r2tot, func_i, func_d, func_od )
+
+!...  Write centers and spread
+      DO nwann = 1, dimwann
+        WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
+           ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+      END DO  
+      WRITE( stdout, * ) '  ' 
+      WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
+           1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+          (rtot(ind),i=1,3), r2tot
+              
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
+      WRITE( stdout, fmt="(4x,'OmegaI    =   ', f15.9 ) " ) func_i
+      WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
+      WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_od  + func_d
+
       func_old1 = func_om1
       func_old2 = func_om2
       func_old3 = func_om3
@@ -1148,7 +1153,6 @@
             cptwr(nindpw(m,nkp)) = cptwfp(m,nb,nkp)
           END DO
 
-          ! write(6,*) 'DEBUG: ', SUM(cptwr(1:mplwv))
           CALL cfft3d( cptwr, ngx, ngy, ngz, ngx, ngy, ngz, -1 )
 
           DO m = 1, mplwv
@@ -1224,8 +1228,8 @@
                       dist_pl = SQRT( rpos1(2)**2 + rpos1(3)**2 )
                       dist_cos = rpos1(1)
                     ELSE
-                      WRITE (*,*) 'ERROR: Wrong z-direction'
-                      STOP
+                      WRITE(stdout,*) 'ERROR: Wrong z-direction'
+                      CALL errore(' wannier ', ' wrong z- direction ', ndir_wann(nwann) )
                     END IF
 
 ! ...               If rpos is on the origin, or on the z axis, I give arbitrary
@@ -1268,8 +1272,8 @@
                       ELSE IF ( m_wann(nwann) == 2 ) THEN
                         cphi = sph22 * cphi * (th_sin**2) * 2.0 * ph_sin * ph_cos
                       ELSE 
-                        WRITE (*,*) 'ERROR: check the spherical harmonics'
-                        STOP
+                        WRITE(stdout,*) 'ERROR: check the spherical harmonics (I)'
+                        CALL errore(' wannier ', ' check the spherical harmonics (I)', m_wann(nwann) )
                       END IF
 
                     ELSE IF ( l_wann(nwann) == 1 ) THEN
@@ -1281,8 +1285,8 @@
                       ELSE IF ( m_wann(nwann) == 1 ) THEN
                         cphi = sph11 * cphi * th_sin * ph_sin
                       ELSE 
-                        WRITE(*,*) 'ERROR: check the spherical harmonics'
-                        STOP
+                        WRITE(stdout,*) 'ERROR: check the spherical harmonics (II)'
+                        CALL errore(' wannier ', ' check the spherical harmonics (II)', m_wann(nwann) )
                       END IF
 
                     ELSE IF ( l_wann(nwann) == 0 ) THEN
@@ -1325,12 +1329,13 @@
                         cphi = cphi * ( sph00 + sph1m1*th_sin*ph_cos + sph11*th_sin*ph_sin - sph10*th_cos )/2.0d0
 
                       ELSE
-                        STOP 'ERROR in sp^3 hybrid gaussian: check m_wann'
+                        WRITE (stdout, *)  '*** ERROR *** in sp^3 hybrid gaussian: check m_wann'
+                        CALL errore(' wannier ', ' sp^3 hybrid gaussian ', m_wann(nwann) )
                       END IF
 
                     ELSE 
-                      WRITE (*,*) 'ERROR: check the spherical harmonics'
-                      STOP
+                      WRITE(stdout,*) '*** ERROR *** : check the spherical harmonics (III)'
+                      CALL errore(' wannier ', ' check the spherical harmonics (III)', m_wann(nwann) )
                     END IF
 
                   END IF ! orbital is of type 1
@@ -1397,19 +1402,19 @@
         END DO ! nb
 
       
-        WRITE(*,*) '  '
-        WRITE(*,'(a18,i4)') ' Matrix A, k-point', nkp
-        WRITE(*,*) '  '
-        IF ( dimwann <= 8 ) THEN
-          DO i = 1, dimwann
-            WRITE(*,'(8(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
-          END DO
-        END IF
+!       WRITE(*,*) '  '
+!       WRITE(*,'(a18,i4)') ' Matrix A, k-point', nkp
+!       WRITE(*,*) '  '
+!       IF ( dimwann <= 8 ) THEN
+!         DO i = 1, dimwann
+!           WRITE(*,'(8(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
+!         END DO
+!       END IF
 
       END DO  !END k loop
 
-      write(*,*) ' '
-      write(*,8000)
+!     write(*,*) ' '
+!     write(*,8000)
 
       DEALLOCATE( cptwr, STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwr ', ABS(ierr))
@@ -1460,12 +1465,12 @@
 
         IF ( verbosity == 'high' ) THEN
           IF (nkp == 1) THEN
-            WRITE(*,*) '  '
-            WRITE(*,'(a18,i4)') ' Matrix S before zgees, k-point',nkp
-            WRITE(*,*) '  '
+            WRITE(stdout,*) '  '
+            WRITE(stdout,'(a18,i4)') ' Matrix S before zgees, k-point',nkp
+            WRITE(stdout,*) '  '
             IF ( dimwann <= 8 ) THEN
               DO i = 1, dimwann
-                write(*,'(8(0pe10.2))') ( cs(i,j,nkp), j=1,dimwann )
+                write(stdout, fmt="( 8(0pe10.2))") ( cs(i,j,nkp), j=1,dimwann )
               END DO
             END IF
           END IF
@@ -1485,12 +1490,12 @@
 
         IF ( verbosity == 'high' ) THEN
           IF (nkp == 1) THEN
-            WRITE(*,*) '  '
-            WRITE(*,'(a18,i4)') ' Matrix S after zgees, k-point',nkp
-            WRITE(*,*) '  '
+            WRITE(stdout,*) '  '
+            WRITE(stdout,'(a18,i4)') ' Matrix S after zgees, k-point',nkp
+            WRITE(stdout,*) '  '
             IF ( dimwann <= 8 ) THEN
               DO i = 1, dimwann
-                write(*,'(8(0pe10.2))') ( cs(i,j,nkp), j=1,dimwann )
+                write(stdout, fmt="( 8(0pe10.2) )") ( cs(i,j,nkp), j=1,dimwann )
               END DO
             END IF
           END IF
@@ -1506,15 +1511,15 @@
         END DO
 
         IF ( verbosity == 'high' ) THEN
-          WRITE (*,*) '  '
-          WRITE (*,'(a18,i4)') ' Matrix U, k-point', nkp
-          WRITE (*,*) '  '
+          WRITE (stdout,*) '  '
+          WRITE (stdout, fmt="(2x, ' Matrix U, k-point', i3)") nkp
+          WRITE (stdout,*) '  '
           DO i = 1, dimwann
-            WRITE(*,'(2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5)') ( cu(i,j,nkp), j=1,dimwann )
+            WRITE(stdout, fmt="(4x,2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5) ") ( cu(i,j,nkp), j=1,dimwann )
           END DO
 ! ...     unitariety is checked
-          WRITE (*,*) ' '
-          WRITE (*,*) '*** check unitariery of U matrix ***'
+          WRITE (stdout,*) ' '
+          WRITE (stdout, fmt=" (2x, 'Check unitariery of U matrix ')")
           DO i = 1, dimwann
             DO j = 1, dimwann
               ctmp1 = ( 0.d0, 0.d0 )
@@ -1523,7 +1528,7 @@
                 ctmp1 = ctmp1 + cu(i,m,nkp) * CONJG( cu(j,m,nkp) )
                 ctmp2 = ctmp2 + cu(m,j,nkp) * CONJG( cu(m,i,nkp) )
               END DO
-              WRITE (*,'(2i4,4f10.7)') i, j, ctmp1, ctmp2
+              WRITE (stdout,fmt="(4x,2i4,4f10.7)") i, j, ctmp1, ctmp2
             END DO
           END DO
         END IF
@@ -1541,7 +1546,7 @@
             END DO
           ELSE
 ! ...       check what happens if a random phase is given
-            WRITE(*,*) 'NB: RANDOM phase is given'
+            WRITE(stdout, fmt=" (2x, 'NB: RANDOM phase is given' )")
             DO m = 1, dimwann
               DO n = m, dimwann
                 rre = ranf(iseed) * 10.d0 - 5.d0
@@ -1566,26 +1571,22 @@
         END IF
 
         IF ( verbosity == 'high' ) THEN
-          WRITE (*,*) '  '
-          WRITE (*,'(a18,i4)') ' Matrix U after zgees, k-point',nkp
-          WRITE (*,*) '  '
+          WRITE (stdout,*) '  '
+          WRITE (stdout, fmt=" (2x,' Matrix U after zgees, k-point',i3)") nkp
+          WRITE (stdout,*) '  '
           DO i = 1, dimwann
-            WRITE(*,'(2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5)') ( cu(i,j,nkp), j=1,dimwann )
+            WRITE(stdout, fmt="(4x,2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5) ")  ( cu(i,j,nkp), j=1,dimwann )
           END DO
         END IF
 
       END DO  ! k point loop
 
-
-      ! STOP 'qui'
-    
       ALLOCATE( cmtmp(dimwann,dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu ', dimwann**2 )
 
 ! ... So now we have the U's that rotate the wavefunctions at each k-point.
 !     the matrix elements M_ij have also to be updated 
 
-!     write (50,*) ((((cm(i,j,k,l), i=1,dimwann), j=1,dimwann), k=1,nkpts), l=1,nnmx)
       DO nkp = 1, nkpts
 
         DO nn = 1, nntot(nkp)
@@ -1608,9 +1609,6 @@
         END DO
 
       END DO
-!     write (50,*) '----****----'
-!     write (50,*) ((((cm(i,j,k,l), i=1,dimwann), j=1,dimwann), k=1,nkpts), l=1,nnmx)
-
 
 ! ... Singular value decomposition
 
@@ -1628,8 +1626,6 @@
       ALLOCATE( cw2( nwork ), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cw2 ', nwork )
  
-      ! OPEN( 9, file='omega_i.local', status='unknown' )
-
       omt1 = 0.d0
       omt2 = 0.d0
       omt3 = 0.d0
@@ -1642,16 +1638,10 @@
               cmtmp(na,nb) = cm(na,nb,nkp,nn)
             END DO
           END DO
-          WRITE (*,*) 'dimwann=', dimwann, ' nwork=', nwork
-!         write (50,*) '----****----'
-!         write (50,*) ((cmtmp(i,j), i=1,dimwann), j=1,dimwann)
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
                singvd, cv1, dimwann, cv2, dimwann, cw1, nwork, cw2, info )
-          IF ( info /= 0 ) THEN
-            WRITE (*,*) 'Singular value decomposition zgesvd failed 2', &
-                        ' info = ', info
-            STOP
-          END IF
+          IF ( info /= 0 ) CALL errore(' wannier ', ' Singular value decomposition zgesvd failed 2 ', info )
+
           DO nb = 1, dimwann
             omiloc = omiloc + wb(nkp,nn) * ( 1.d0 - singvd(nb)**2 )
           END DO
@@ -1661,25 +1651,17 @@
             omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
           END DO
         END DO
-        ! WRITE(9,'(3f15.9,3x,f15.9)') ( vkpt(i,nkp), i=1,3 ), omiloc
       END DO
 
       omt1 = omt1/DBLE(nkpts)
       omt2 = omt2/DBLE(nkpts)
       omt3 = omt3/DBLE(nkpts)
 
-      WRITE (*,*) ' '
-      WRITE (*,*) ' Omega invariant (1-s^2, -2 log s, acos^2 s) '
-      WRITE (*,*) ' '
-      WRITE (*,'(3f10.5)') omt1, omt2, omt3
-      WRITE (*,*) ' '
-
-      ! CLOSE (9)
-
 ! ... Recalculate the average positions of the Wanns.
 
       CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
-           csheet, sheet, rave, r2ave, func_om1, func_om2, func_om3, func_o )
+           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o ,   &
+           rtot, r2tot , func_d, func_od)
 
       func_del1 = func_om1 - func_old1
       func_del2 = func_om2 - func_old2
@@ -1688,14 +1670,6 @@
       func_old2 = func_om2
       func_old3 = func_om3
 
-      WRITE (*,8001) func_del1
-      WRITE (*,8005) func_del2
-      WRITE (*,8007) func_del3
-
-8001  FORMAT(1x,'Delta Omega 1   is  ',0pe16.8)
-8005  FORMAT(1x,'Delta Omega 2   is  ',0pe16.8)
-8007  FORMAT(1x,'Delta Omega 3   is  ',0pe16.8)
-8009  FORMAT(1x,'Delta Omega tot is  ',0pe16.8)
 
 ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
 !     the complex logarithms
@@ -1708,7 +1682,8 @@
 ! ... Recalculate the average positions of the Wanns.
 
       CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,        &
-           csheet, sheet, rave, r2ave, func_om1, func_om2, func_om3, func_o )
+           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,     &
+           rtot, r2tot , func_d, func_od)
 
       func0 = func_om1 + func_om2 + func_om3
       func_del1 = func_om1 - func_old1
@@ -1717,24 +1692,6 @@
       func_old1 = func_om1
       func_old2 = func_om2
       func_old3 = func_om3
-
-      WRITE(*,8001) func_del1
-      WRITE(*,8005) func_del2
-      WRITE(*,8007) func_del3
-
-
-!      OPEN( 20, file='wannier.rot', form='formatted', status='unknown' )
-!      DO nkp=1,nkpts
-!        DO i=1,dimwann
-!          DO j=1,dimwann
-!            write(20,*) cu(i,j,nkp)
-!            DO nn=1,nntot(nkp)
-!              write(20,*) cm(i,j,nkp,nn)
-!            END DO
-!          END DO
-!        END DO
-!      END DO
-!      CLOSE(20)
 
 ! ... Singular value decomposition
 
@@ -1751,27 +1708,16 @@
           END DO
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
                singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
-          IF ( info /= 0 ) THEN
-            WRITE (*,*) 'Singular value decomposition zgesvd failed 3'
-            STOP
-          END IF
+          IF ( info /= 0 ) CALL errore(' wannier ', ' Singular value decomposition zgesvd failed 3 ', info )
           calpha = ( 1.d0, 0.d0 )
           cbeta = ( 0.d0, 0.d0 )
           CALL zgemm( 'N', 'N', dimwann, dimwann, dimwann, calpha, cv1, dimwann,   &
                cv2, dimwann, cbeta, cv3, dimwann)
 
-! ...     Uncomment to have the purified m's
-!         DO na = 1, dimwann
-!           DO nb = 1, dimwann
-!             cm(na,nb,nkp,nn) = cv3(na,nb)
-!           END DO
-!         END DO
-
           DO nb = 1, dimwann
             omt1 = omt1 + wb(nkp,nn) * ( 1.d0 - singvd(nb)**2 )
             omt2 = omt2 - wb(nkp,nn) * ( 2.d0 * LOG( singvd(nb) ) )
             omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2)
-!           WRITE (*,'(i4,4x,f10.5,4x,3f10.5)') nb, singvd(nb), omt1, omt2, omt3
           END DO
 
         END DO     ! loop nn
@@ -1781,17 +1727,10 @@
       omt1 = omt1/DBLE(nkpts)
       omt2 = omt2/DBLE(nkpts)
       omt3 = omt3/DBLE(nkpts)
-      WRITE (*,*) ' '
-      WRITE (*,*) ' Omega invariant (1-s^2, -2 log s, acos^2 s) '
-      WRITE (*,*) ' '
-      WRITE (*,'(3f10.5)') omt1, omt2, omt3
-      WRITE (*,*) ' '
 
 ! ... Now that the consistent phase factors have been chosen
 !     the wannier functions (for the R=0 cell) are calculated
 
-      WRITE (*,*) ' '
-      WRITE (*,8000)
 
       lrguide = .false.
       nrguide = 10
@@ -1839,6 +1778,11 @@
       !  here start the iterative loop
       !
       !
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) ' =                     Starting iteration loop                        ='
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) '  '
 
       DO ncount = 1, niter + niter0     ! finira' alla riga 2245!!!
 
@@ -1892,7 +1836,6 @@
           DO m= 1, dimwann
             DO n = 1, dimwann
               gcnorm1 = gcnorm1 + REAL( cdodq(m,n,nkp) * CONJG( cdodq(m,n,nkp) ) )
-              ! WRITE(*,*) cdodq(m,n,nkp)
             END DO
           END DO
         END DO
@@ -1935,10 +1878,6 @@
         END DO
         doda0 = doda0 / wbtot / 4.d0
 
-        WRITE (*,*) ' '
-        WRITE (*,*) ' alpha_trial ', alpha
-        WRITE (*,*) ' '
-
 ! ...   The cg step is calculated
 
         DO nkp = 1, nkpts
@@ -1962,35 +1901,6 @@
           END DO
         END DO
 
-!       cfunc_exp = cfunc_exp1 + cfunc_exp2+cfunc_exp3
-!       WRITE(*,8002) cfunc_exp1
-!       WRITE(*,8006) cfunc_exp2
-!       WRITE(*,8008) cfunc_exp3
-!       WRITE(*,8010) cfunc_exp
-
-!       DO nkp = 1, nkpts
-! ...     What if a random antihermitian dq is chosen
-!         WRITE (*,*) 'NB: RANDOM ANTIHERMITIAN dQ IS CHOSEN !  '
-!         DO m = 1, dimwann
-!           DO n = m, dimwann
-!             rre = ranf(iseed) * 10.d0- 5.d0
-!             rri = ranf(iseed) * 10.d0- 5.d0
-!             cdq(m,n,nkp) = epsilon * CMPLX(rre,rri)
-!             cdq(n,m,nkp) = -CONJG( cdq(m,n,nkp) )
-!             IF (m == n) cdq(n,m,nkp) = CMPLX( 0.d0, AIMAG( cdq(m,n,nkp) ) )
-!           END DO
-!         END DO
-!       END DO
-
-!       DO nkp = 1, nkpts
-!         WRITE (*,*) '  '
-!         WRITE (*,'(a19,i4)') ' Matrix dQ, k-point', nkp
-!         WRITE (*,*) '  '
-!         DO i = 1, dimwann
-!           WRITE (*,'(8(pe10.2))') ( cdq(i,j,nkp), j=1,dimwann )
-!         END DO
-!       END DO
-
         DO nkp = 1, nkpts
 
           ind = 1
@@ -2003,10 +1913,7 @@
           CALL zgees( 'V', 'N', lselect, dimwann, cpad1, dimwann, nsdim,     &
                cwschur1, cpad2, dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,    &
                cwschur4, info )
-          IF ( info /= 0 ) THEN
-            WRITE (*,*) 'SCHUR: ', info
-            STOP
-          END IF
+          IF ( info /= 0 ) CALL errore ('wannier', 'wrong schur procedure', info)
 
           ind = 1
           DO j = 1, dimwann
@@ -2025,18 +1932,8 @@
             END DO
           END DO
 
-! ...     dq is antihermitian, exp(dq) is unitary
-!         WRITE(*,*) '  '
-!         WRITE(*,'(a24,i4)') ' Matrix exp(dQ), k-point', nkp
-!         WRITE(*,*) '  '
-!         DO i = 1, dimwann
-!           WRITE (*,'(8(pe10.2))') ( cdq(i,j,nkp), j=1,dimwann )
-!         END DO
-
         END DO
 
-
-        WRITE (*,*) '  '
 
 ! ...   The expected change in the functional is calculated
 
@@ -2055,15 +1952,6 @@
         END DO
 
         cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
-        WRITE (*,8002) cfunc_exp1
-        WRITE (*,8006) cfunc_exp2
-        WRITE (*,8008) cfunc_exp3
-        WRITE (*,8010) cfunc_exp
-
-8002    FORMAT(1x,'Delta0 Omega 1   (',0pe16.8,',',0pe16.8,')')
-8006    FORMAT(1x,'Delta0 Omega 2   (',0pe16.8,',',0pe16.8,')')
-8008    FORMAT(1x,'Delta0 Omega 3   (',0pe16.8,',',0pe16.8,')')
-8010    FORMAT(1x,'Delta0 Omega tot (',0pe16.8,',',0pe16.8,')')
 
 ! ...   The orbitals are rotated 
 
@@ -2108,21 +1996,33 @@
         END DO
 
 ! ...   And the functional is recalculated
+        
 
         CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
-             csheet, sheet, rave, r2ave, func_om1, func_om2, func_om3, func_o )
+             csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
+             rtot, r2tot , func_d, func_od)
+
+        IF ( ncount <= niter0 ) THEN
+          IF ( ( (ncount/nprint) * nprint +1) == ncount )  THEN
+            WRITE( stdout, * ) '  '
+            WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") ncount
+            WRITE(stdout, fmt=" (2x, 'Wannier centers and Spreads (Omega)')")
+            DO nwann = 1, dimwann
+               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
+                     ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+            END DO
+            WRITE( stdout, * ) '  '
+            WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
+                 1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+                 (rtot(ind),i=1,3), r2tot
+          END IF
+        END IF
+
         funca = func_om1 + func_om2 + func_om3
         func_del1 = func_om1 - func_old1
         func_del2 = func_om2 - func_old2
         func_del3 = func_om3 - func_old3
         func_del = func_del1 + func_del2 + func_del3
-        WRITE (*,8001) func_del1
-        WRITE (*,8005) func_del2
-        WRITE (*,8007) func_del3
-        WRITE (*,8009) func_del
-       
-        WRITE (*,*) ' '
-        WRITE (*,'(a12,2e12.4)') ' derivative ', funca - func0, doda0 * alpha
 
 ! ...   If lcg is false, or still in the first niter0 iterations, 
 !       it skips the optimal alpha paraphernalia 
@@ -2142,9 +2042,9 @@
           IF ( alphamin > 3.d0 * alpha ) alphamin = 3.d0 * alpha
           falphamin = eqa * alphamin**2 + eqb * alphamin + eqc
 
-          WRITE(*,*) ' '
-          WRITE(*,*) 'alpha_min, f(alpha_min)', alphamin, falphamin
-          WRITE(*,*) ' '
+!         WRITE(*,*) ' '
+!         WRITE(*,*) 'alpha_min, f(alpha_min)', alphamin, falphamin
+!         WRITE(*,*) ' '
 
 ! ...     Restore cu and cm
 
@@ -2202,11 +2102,7 @@
             CALL zgees( 'V', 'N', lselect, dimwann, cpad1, dimwann, nsdim,       &
                  cwschur1, cpad2, dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,      &
                  cwschur4, info )
-
-            IF ( info /= 0 ) THEN
-              WRITE(*,*) 'SCHUR: ', info
-              STOP
-            END IF
+            IF ( info /= 0 ) CALL errore('wannier', 'wrong Schur procedure (II)', info)
 
             ind = 1
             DO j = 1, dimwann
@@ -2227,7 +2123,6 @@
 
           END DO
 
-          WRITE (*,*) '  '
 
 ! ...     The expected change in the functional is calculated
 
@@ -2245,10 +2140,10 @@
           END DO
 
           cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
-          WRITE (*,8002) cfunc_exp1
-          WRITE (*,8006) cfunc_exp2
-          WRITE (*,8008) cfunc_exp3
-          WRITE (*,8010) cfunc_exp
+!         WRITE (*,8002) cfunc_exp1
+!         WRITE (*,8006) cfunc_exp2
+!         WRITE (*,8008) cfunc_exp3
+!         WRITE (*,8010) cfunc_exp
 
 ! ...     The orbitals are rotated 
 
@@ -2292,19 +2187,30 @@
           END DO
 
 ! ...     And the functional is recalculated
-
+           
           CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
-     &         csheet, sheet, rave, r2ave, func_om1, func_om2, func_om3, func_o )
+               csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
+               rtot, r2tot , func_d, func_od)
+
+          IF ( ( (ncount/nprint) * nprint +1) == ncount ) THEN
+            WRITE( stdout, * ) '  '
+            WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") ncount
+            WRITE(stdout, fmt=" (2x, 'Wannier centers and Spreads (Omega)')")
+            DO nwann = 1, dimwann
+               WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
+             ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+            END DO
+            WRITE( stdout, * ) '  '
+            WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
+                   1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+                   (rtot(ind),i=1,3), r2tot
+          END IF
 
           funca = func_om1 + func_om2 + func_om3
           func_del1 = func_om1 - func_old1
           func_del2 = func_om2 - func_old2
           func_del3 = func_om3 - func_old3
           func_del = func_del1 + func_del2 + func_del3
-          WRITE (*,8001) func_del1
-          WRITE (*,8005) func_del2
-          WRITE (*,8007) func_del3
-          WRITE (*,8009) func_del
 
 ! ...   end of the lcg skip of the optimal alpha paraphernalia 
         END IF
@@ -2316,18 +2222,78 @@
 
         func0 = funca
      
-        WRITE (*,*) ' '
-        WRITE (*,8020) ncount, func0
-        WRITE (*,*) ' '
-        WRITE (*,8000)
-8020    FORMAT(1x,'Omega at iteration ',i7,' is ',f22.15)
-
 ! ...   Check convergence
 
-        IF ( ABS( func_del ) < 1.e-8 ) EXIT
+        IF ( ABS( func_del ) < 1.e-6 ) THEN
+          WRITE( stdout, * ) '  '
+          WRITE( stdout, * ) ' ======================================================================'
+          WRITE( stdout, * ) ' =                     Convergence Achieved                           ='
+          WRITE( stdout, * ) ' ======================================================================'
+          WRITE( stdout, * ) '  '
+          WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
+          DO nwann = 1, dimwann
+            WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
+               ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+          END DO
+          WRITE( stdout, * ) '  '
+          WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
+               1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+              (rtot(ind),i=1,3), r2tot
+
+          WRITE( stdout, * ) '  '
+          WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
+          WRITE( stdout, fmt="(4x,'OmegaI    =   ', f15.9 ) " ) func_i
+          WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
+          WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
+          WRITE( stdout, * ) '  '
+          WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_od  + func_d
+
+          WRITE (stdout, fmt="(2x,' ')")
+          WRITE (stdout, fmt="(2x,'Omega variation:')")
+          WRITE (stdout, fmt="(4x,'Delta Omega 1   = ',0pe16.8)") func_del1
+          WRITE (stdout, fmt="(4x,'Delta Omega 2   = ',0pe16.8)") func_del2
+          WRITE (stdout, fmt="(4x,'Delta Omega 3   = ',0pe16.8)") func_del3
+          WRITE (stdout, fmt="(4x,'Delta Omega Tot = ',0pe16.8)") func_del
+          WRITE( stdout, * ) '  '
+          WRITE( stdout, * ) ' ======================================================================'
+          EXIT
+        END IF  
         ! EXIT
 
       END DO !end loop ncount
+
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) ' =                 Max Number of iteration reached                    ='
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) '  '
+      WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
+      DO nwann = 1, dimwann
+        WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f10.6,',',f10.6,',',f10.6,  &
+           ' )  Omega = ', f10.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+      END DO
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
+           1x, '= (',f10.6,',',f10.6,',',f10.6,' )  Omega = ', f10.6 )" )     &
+          (rtot(ind),i=1,3), r2tot
+
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, fmt="(2x, 'Spread Operator decomposition: ')")
+      WRITE( stdout, fmt="(4x,'OmegaI    =   ', f15.9 ) " ) func_i
+      WRITE( stdout, fmt="(4x,'OmegaD    =   ', f15.9 ) " ) func_d
+      WRITE( stdout, fmt="(4x,'OmegaOD   =   ', f15.9 ) " ) func_od
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, fmt="(4x,'Omega Tot =   ', f15.9 ) " ) func_od  + func_d
+
+      WRITE (stdout, fmt="(2x,' ')")
+      WRITE (stdout, fmt="(2x,'Omega variation:')")
+      WRITE (stdout, fmt="(4x,'Delta Omega 1   = ',0pe16.8)") func_del1
+      WRITE (stdout, fmt="(4x,'Delta Omega 2   = ',0pe16.8)") func_del2
+      WRITE (stdout, fmt="(4x,'Delta Omega 3   = ',0pe16.8)") func_del3
+      WRITE (stdout, fmt="(4x,'Delta Omega Tot = ',0pe16.8)") func_del
+      WRITE( stdout, * ) '  '
+      WRITE( stdout, * ) ' ======================================================================'
+
 
 ! ... End of the minimization loop
 
@@ -2345,7 +2311,7 @@
                 ctmp1 = ctmp1 + cu(i,m,nkp) * CONJG( cu(j,m,nkp) )
                 ctmp2 = ctmp2 + cu(m,j,nkp) * CONJG( cu(m,i,nkp) )
               END DO
-              WRITE(*,'(2i4,4f15.10)') i, j, ctmp1, ctmp2
+              WRITE(stdout,'(2i4,4f15.10)') i, j, ctmp1, ctmp2
             END DO
           END DO
         END DO
@@ -2368,16 +2334,12 @@
 
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
      &         singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
-          IF ( info /= 0 ) THEN
-            WRITE(*,*) 'Singular value decomposition zgesvd failed 4'
-            STOP
-          END IF
+          IF ( info /= 0 ) CALL errore('wannier', 'Singular value decomposition zgesvd failed 4', info)
 
           DO nb = 1, dimwann
             omt1 = omt1 + wb(nkp,nn) * ( 1.d0 - singvd(nb)**2 )
             omt2 = omt2 - wb(nkp,nn) * ( 2.d0 * LOG( singvd(nb) ) )
             omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
-!           WRITE(*,'(i4,4x,f10.5,4x,3f10.5)') nb, singvd(nb), omt1, omt2, omt3
           END DO
 
         END DO
@@ -2386,18 +2348,13 @@
       omt1 = omt1/DBLE(nkpts)
       omt2 = omt2/DBLE(nkpts)
       omt3 = omt3/DBLE(nkpts)
-      WRITE (*,*) ' '
-      WRITE (*,*) ' Omega invariant (1-s^2, -2 log s, acos^2 s) '
-      WRITE (*,*) ' '
-      WRITE (*,'(3f10.5)') omt1, omt2, omt3
-      WRITE (*,*) ' '
 
  
 ! ... Write the final unitary transformations into a file
  
       OPEN( 29, FILE='unitary.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
 
-      WRITE(29) ( ( ( CU(J,I,N), J=1,dimwann ), I=1,dimwann ), N=1,NKPTS )
+      WRITE(29) ( ( ( CU(J,I,N), J=1,dimwann ), i=1,dimwann ), n=1,nkpts )
 
       CLOSE(29)
 
