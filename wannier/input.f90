@@ -23,6 +23,7 @@
    REAL(dbl) :: alpha
    REAL(dbl) :: disentangle_thr      ! disentangle threshold for convergence
    REAL(dbl) :: wannier_thr          ! wannier threshold 
+   REAL(dbl) :: unitary_thr          ! thr for unitariery check
    LOGICAL   :: assume_ncpp          ! implicitly assume NCPP without reading them
    INTEGER :: maxiter, itrial
    INTEGER :: nprint                 ! each nprint iterations write to stdout
@@ -36,13 +37,14 @@
    LOGICAL              :: alloc = .FALSE.
 
    NAMELIST / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
-     alpha, maxiter, disentangle_thr, wannier_thr, itrial, iphase, alphafix0, &
+     alpha, maxiter, disentangle_thr, wannier_thr, unitary_thr, itrial, iphase, alphafix0, &
      alphafix, niter, niter0, ncg, nshells, nwhich, ordering_type, verbosity, &
      nprint, assume_ncpp, prefix, postfix, work_dir, title
   
    PUBLIC :: alpha
    PUBLIC :: disentangle_thr
    PUBLIC :: wannier_thr
+   PUBLIC :: unitary_thr
    PUBLIC :: assume_ncpp
    PUBLIC :: maxiter, itrial
    PUBLIC :: nprint
@@ -94,6 +96,7 @@ CONTAINS
       maxiter = 1000
       disentangle_thr = 1d-8
       wannier_thr = 1d-6
+      unitary_thr = 1d-8
       iphase  = 1
       niter0 = 500
       alphafix0 = 0.5d0
@@ -131,6 +134,8 @@ CONTAINS
           CALL errore( ' input_read ', ' disentangle_thr must be positive ', 1 )
       IF ( wannier_thr <= 0 ) &
           CALL errore( ' input_read ', ' wannier_thr must be positive ', 1 )
+      IF ( unitary_thr <= 0 ) &
+          CALL errore( ' input_read ', ' unitary_thr must be positive ', 1 )
       IF ( iphase /= 1 ) &
           CALL errore( ' input_read ', ' iphase must be 1 (ONE) ', 1 )
       IF ( niter0 < 0 ) &

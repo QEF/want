@@ -434,8 +434,6 @@
   Derivative =   0.0000E+00 -0.6143E-06
   ======================================================================
 
-  WARNING: U matrix NOT unitary at ikpt =    3
-
   Wannier transformation data written on file: gold1_WanT.wan
 
    <global routines>

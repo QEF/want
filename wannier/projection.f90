@@ -89,10 +89,6 @@
         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating rwork2 ', 5*dimwann )
 
 
-! ...  Since we are working in bohr, not angstroms (Recall that rloc was also 
-!   converted to bohr.), and cexp --> exp 
-
-
        !
        ! ... kpts
        DO ik = 1, nkpts
