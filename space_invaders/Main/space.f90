@@ -3,6 +3,10 @@
        USE kinds
        USE constants, ONLY: ryd => ry, har => au, bohr => bohr_radius_angs
        USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
+       USE mp, ONLY: mp_start, mp_end, mp_env
+       USE mp_global, ONLY: mp_global_start
+       USE io_global, ONLY: io_global_start, io_global_getionode
+
 
        IMPLICIT NONE
 
@@ -118,9 +122,29 @@
        INTEGER :: nwann
        CHARACTER(LEN=6) :: verbosity = 'none' ! none, low, medium, high
 
+       INTEGER :: root, mpime, gid, nproc
+       LOGICAL :: ionode
+       INTEGER :: ionode_id
+
 !      
 ! ...  End declarations and dimensions
 !      
+
+       root = 0
+       CALL mp_start()
+       CALL mp_env( nproc, mpime, gid )
+       CALL mp_global_start( root, mpime, gid, nproc )
+
+! ... mpime = processor number, starting from 0
+! ... nproc = number of processors
+! ... gid   = group index
+! ... root  = index of the root processor
+
+! ... initialize input output
+
+       CALL io_global_start( mpime, root )
+       CALL io_global_getionode( ionode, ionode_id )
+
 !=----------------------------------------------------------------------------=!
 !      
 ! ...  Read input parameters from takeoff.dat
@@ -877,6 +901,8 @@
        DEALLOCATE( iwork )
 
        DEALLOCATE( ham )
+
+      CALL mp_end()
 
 !=---------------------------------------------------------------=
 
