@@ -60,6 +60,7 @@ WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
 UTILITY_BIN=$TEST_HOME/../../utility
 TEST_NAME=Test3
+PSEUDO_NAME=Au11pw91.mt.UPF
 
 #
 # evaluate the starting choice about what is to run 
@@ -146,7 +147,7 @@ esac
 if [ -z "$CLEAN" ] ; then
    test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
    cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME/../Pseudo/*.UPF .
+   ln -sf $TEST_HOME/../Pseudo/$PSEUDO_NAME .
    if [ ! -e $TEST_HOME/SCRATCH ] ; then
        cd $TEST_HOME
        ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
