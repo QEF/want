@@ -23,7 +23,7 @@
 !
 
       USE kinds
-      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, EPS_m8
+      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m8
       USE input_module, ONLY : verbosity
       USE parameters, ONLY : nstrx, nkpts_inx
       USE io_module, ONLY : stdout, stdin, ioname, ham_unit, space_unit, wan_unit
@@ -415,11 +415,19 @@
 ! 
 ! ... to be updated soon or later (?)
 ! 
-      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_iband.dat'
+      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_intband.dat'
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted' )
       DO i = 1, dimwann
           DO ik = 1, nkpts_tot
-            WRITE (ham_unit, "(2e16.8)") xval(ik), eig_int(i,ik)
+            WRITE (ham_unit, "(2e16.8)") xval(ik)/(TWO*xval(nkpts_tot)), eig_int(i,ik)
+            !
+            ! Note that the factor TWO appear in order to be consistent with the 
+            ! x units of the other two plots (wanband and dftband) in the case where
+            ! a 1D BZ is treated, dft kpts are uniform in the BZ and the interpolated
+            ! kpts go from Gamma to X,Y, or Z.
+            ! 
+            ! This is a particular case, bu the most common in WF calculation for transport
+            !
           ENDDO
           WRITE( ham_unit, "()") 
       ENDDO
@@ -432,7 +440,7 @@
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted' )
       DO i = 1, dimwann
           DO ik = 1, nkpts
-            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik), wan_eig(i,ik)
+            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik-1)/REAL(nkpts), wan_eig(i,ik)
           ENDDO
           WRITE( ham_unit, "()") 
       ENDDO
@@ -443,7 +451,7 @@
       DO i = 1, dimwann
           DO ik = 1, nkpts
             j= imin(ik)-1 +i
-            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik), eig(j,ik)
+            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik-1)/REAL(nkpts), eig(j,ik)
           ENDDO
           WRITE( ham_unit, "()") 
       ENDDO
