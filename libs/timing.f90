@@ -59,9 +59,12 @@
 !
 ! end of declarations
 !
+   INTERFACE ASSIGNMENT(=)
+      MODULE PROCEDURE clock_assignment
+   END INTERFACE
 
    PUBLIC ::  nclockx
-   PUBLIC ::  clock, clock_list
+   PUBLIC ::  clock, clock_list, ASSIGNMENT(=)
    PUBLIC ::  global_list
    PUBLIC ::  timing
    PUBLIC ::  timing_allocate
@@ -234,6 +237,26 @@ CONTAINS
 
 
 !**********************************************************
+   SUBROUTINE clock_assignment(obj1,obj2)
+   !**********************************************************
+      IMPLICIT NONE
+      TYPE(clock),    INTENT(inout) :: obj1    
+      TYPE(clock),    INTENT(in)    :: obj2    
+
+      IF ( .NOT. obj2%alloc ) CALL errore('clock_assignment','Clock2 not allocated',1)
+      obj1%name = obj2%name
+      obj1%call_number = obj2%call_number
+      obj1%start = obj2%start
+      obj1%stop = obj2%stop
+      obj1%rate = obj2%rate
+      obj1%total_time = obj2%total_time
+      obj1%running = obj2%running
+      obj1%alloc = .TRUE.
+      
+  END SUBROUTINE clock_assignment
+
+
+!**********************************************************
    SUBROUTINE clock_find(list,name,found,index)
    !**********************************************************
       IMPLICIT NONE
@@ -402,6 +425,7 @@ CONTAINS
       TYPE(clock_list),       INTENT(in) :: list
       INTEGER,                INTENT(in) :: unit
       CHARACTER(*),           INTENT(in) :: main_name
+      TYPE(clock)                        :: tmp_clock
       CHARACTER(20)                      :: form
       INTEGER                            :: i
 
@@ -417,13 +441,14 @@ CONTAINS
 
       WRITE(unit,"(13x,'clock number : ',i5,/)") list%nclock
       DO i=1,list%nclock 
+         tmp_clock = list%clock(i)
          IF ( TRIM(list%clock(i)%name) == TRIM(main_name) .OR. &
                    list%clock(i)%total_time >= 1000           ) THEN 
-              CALL clock_write(unit,list%clock(i),FORM="hms")
+              CALL clock_write(unit,tmp_clock,FORM="hms")
               IF ( TRIM(list%clock(i)%name) == TRIM(main_name) )  &
                    WRITE(unit,*)
          ELSE
-            CALL clock_write(unit,list%clock(i),FORM="sec")
+            CALL clock_write(unit,tmp_clock,FORM="sec")
          ENDIF
       ENDDO
       WRITE(unit,"(/)")
