@@ -215,7 +215,7 @@
        WRITE( stdout, fmt= " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
        WRITE( stdout, * ) '  '
        WRITE( stdout, fmt= " (2x, 'Crystal axes:' ) ")
-       WRITE( stdout, fmt="(16x,'in units of a_0',18x,'in lattice units' )")
+       WRITE( stdout, fmt="(16x,'in units of Bohr',17x,'in lattice units' )")
        DO j=1,3
          WRITE ( stdout, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
                 j, ( avec(i,j), i=1,3 ), ( avec(i,j)/alat, i=1,3 )
@@ -227,7 +227,7 @@
 !
        WRITE( stdout,*) ' '
        WRITE( stdout, fmt= " (2x, ' Reciprocal lattice vectors:' ) " )
-       WRITE( stdout, fmt="(16x,'in units of a_0',18x,'in lattice units' )")
+       WRITE( stdout, fmt="(16x,'in units of Bohr^-1',14x,'in lattice units' )")
        DO j=1,3
          WRITE ( stdout, fmt="(4x,'b(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
                 j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / (2* pi), i=1,3 )
