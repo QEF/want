@@ -54,7 +54,7 @@ MODULE us_module
        tab(:,:,:),            &! interpolation table for PPs
        tab_at(:,:,:)           ! interpolation table for atomic wfc
   LOGICAL :: &
-       okvan                  ! if .TRUE. at least one pseudo is Vanderbilt
+       okvan                   ! if .TRUE. at least one pseudo is Vanderbilt
   !
 END MODULE us_module
 !
@@ -67,7 +67,7 @@ MODULE spin_orb_module
   SAVE
 
   LOGICAL :: &
-      lspinorb, domag    ! if .TRUE. this is a spin-robit calculation
+      lspinorb, domag    ! if .TRUE. this is a spin-orbit calculation
 
   COMPLEX (kind=dp) :: rot_ylm(2*lmaxx+1,2*lmaxx+1)  ! transform real
                          ! spherical harmonics into complex ones

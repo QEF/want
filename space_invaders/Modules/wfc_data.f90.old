@@ -11,23 +11,29 @@
    MODULE wfc_data_module
 !*********************************************
    USE kinds
-   USE parameters, ONLY : nstrx
+   USE parameters,     ONLY : nstrx
+   USE constants,      ONLY : ZERO
    USE iotk_module
-   USE io_module, ONLY : stdout, dft_unit, ovp_unit, ioname, pseudo_dir
-   USE timing_module, ONLY : timing
-   USE ions_module, ONLY : psfile
-   USE files_module, ONLY : file_open, file_close
+   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, ioname, pseudo_dir
+   USE timing_module,  ONLY : timing
+   USE ions_module,    ONLY : psfile, uspp_calculation
+   USE files_module,   ONLY : file_open, file_close
+   USE converters_module, ONLY : cry2cart
+   USE util_module,    ONLY : zmat_mul
    
-   USE lattice_module, ONLY : avec
-   USE input_module, ONLY : gauss_typ, rphiimx1, rphiimx2, l_wann, rloc, m_wann, ndir_wann
+   USE lattice_module, ONLY : avec, bvec, tpiba, alat
+   USE input_module,   ONLY : gauss_typ, rphiimx1, rphiimx2, l_wann, rloc, m_wann, ndir_wann
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, nbnd, dimfroz
    USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, mxdnn, &
                               nntot, nnlist, nncell
    USE overlap_module, ONLY : cm, ca, overlap_alloc => alloc, dimwann, overlap_write
    USE ggrids_module,  ONLY : npw, nr, ecutwfc, ecutrho, igv, &
                               ggrids_read_ext, ggrids_deallocate
-   USE wfc_module, ONLY : npwkx, npwk, igsort, evc, &
-                          wfc_read_ext, wfc_deallocate 
+   USE wfc_module,     ONLY : npwkx, npwk, igsort, evc, &
+                              wfc_read_ext, wfc_deallocate 
+   USE struct_fact_data_module, ONLY : struct_fact_data_init
+   USE uspp,           ONLY : nkb, vkb
+   USE becmod,         ONLY : becp
    IMPLICIT NONE
    PRIVATE
 !
@@ -59,11 +65,14 @@ CONTAINS
       COMPLEX(dbl), INTENT(out) :: lamp(:,:,:)
       CHARACTER(8)              :: subname="wfc_data"
       CHARACTER(nstrx)          :: filename
+      REAL(dbl), ALLOCATABLE    :: xk(:,:)
+      REAL(dbl)                 :: tmp
       INTEGER                   :: ierr, ik, idum
-      INTEGER                   :: i, j 
+      INTEGER                   :: i, j, ig 
 
 
-      CALL timing('wfc_dat',OPR='start')
+      CALL timing('wfc_data',OPR='start')
+
 
 !
 ! ... Read ggrids and wfcs
@@ -73,20 +82,67 @@ CONTAINS
       CALL ioname('export',filename,LPOSTFIX=.FALSE.)
       CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
                                FORM='formatted')
-      !
-      ! ... grids
-      CALL ggrids_read_ext(dft_unit)
+      CALL ioname('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
 
       !
+      ! ... grids
+      WRITE( stdout,"(/,2x,'Reading density G-grid from file: ',a)") TRIM(filename)
+      CALL ggrids_read_ext(dft_unit)
+
+      
+      !
       ! ... wfcs
+      WRITE( stdout,"(  2x,'Reading Wfcs from file: ',a)") TRIM(filename)
       CALL wfc_read_ext(dft_unit)
 
       !
       ! ... closing the main data file
       CALL file_close(dft_unit,PATH="/",ACTION="read")
 
-      CALL ioname('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
-      WRITE( stdout,"(/,'  WFC and GRIDS data read from file: ',a)") TRIM(filename)
+
+      ! 
+      ! ... if USPP are used, initialize the related quantities
+      WRITE( stdout,"(/,2x,'Initizlizing US pseudopot. data')")
+      IF ( uspp_calculation ) THEN
+          !
+          ! ... data required by USPP
+          CALL allocate_nlpot()
+          !
+          ! ... first initialization
+          !     here we compute (among other quantities) \int dr Q_ij(r)
+          !                                              \int dr e^ibr Q_ij(r)
+          CALL init_us_1()
+          !
+          ! ... structure factors 
+          CALL struct_fact_data_init()
+
+          !
+          ! ... beta functions in reciproc space within struct_facts
+          !     and their projections <beta|psi>
+          ! 
+          IF ( nkb <= 0 ) CALL errore(subname,'no beta functions while using USPP',-nkb+1)
+          ALLOCATE( becp(nkb, dimwinx, nkpts), STAT=ierr )
+              IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
+
+              !
+              ! kpts should be in the same unit as g, gg (i.e. tpiba) while they currently
+              ! are in crystal units
+              !
+          ALLOCATE( xk(3,nkpts), STAT=ierr)
+              IF (ierr/=0) CALL errore(subname,'allocating xk',ABS(ierr))
+          xk(:,:) = vkpt(:,:)
+          CALL cry2cart( xk, bvec / tpiba )
+
+          DO ik=1,nkpts 
+              CALL init_us_2( npwk(ik), igsort(1,ik), xk(1,ik), vkb(1,1,ik) )
+              CALL ccalbec( nkb, npwkx, npwk(ik), dimwinx, becp(1,1,ik), &
+                            vkb(1,1,ik), evc(1,1,ik) )
+! XXX
+WRITE(8,"(2f15.9)") becp(:,:,ik)
+          ENDDO
+      ENDIF
+
+
 
 !
 ! ... stdout summary about grids and wfcs
@@ -97,9 +153,9 @@ CONTAINS
       WRITE(stdout, "(2x,70('='),/)" )
       WRITE(stdout, "(2x,'Kinetic energy cut-off for wfcs =  ', F7.2, ' (Ry)' )") ecutwfc
       WRITE(stdout, "(2x,'                       for rho  =  ', F7.2, ' (Ry)' )") ecutrho
-      WRITE(stdout, "(2x,'Total number of PW for rho =  ', i9 )") npw
-      WRITE(stdout, "(2x,'Max number of PW for wfcs =  ', i9 )") npwkx
-      WRITE(stdout, "(2x,'FFT grid components (rho) =  ( ', 3i5,' )' )") nr(:)
+      WRITE(stdout, "(2x,'Total number of PW for rho  =  ', i9 )") npw
+      WRITE(stdout, "(2x,'  Max number of PW for wfcs =  ', i9 )") npwkx
+      WRITE(stdout, "(2x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nr(:)
       WRITE(stdout, "()")
 
 !
@@ -114,32 +170,50 @@ CONTAINS
                     nntot, nnlist, nncell, cm, npw, npwkx, nkpts,          &
                     mxdnn, nbnd, nr(1), nr(2), nr(3), dimwinx )
 
-       CALL projection( avec, lamp, ca, evc, vkpt,                               &
-                        igv, igsort, npwk, dimwin, dimwann, dimfroz,             &
-                        npwkx, nbnd, npw, nr(1), nr(2), nr(3), nkpts,          &
-                        gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
-                        m_wann, ndir_wann, rloc, dimwinx)
+      CALL projection( avec, lamp, ca, evc, vkpt,                          &
+                       igv, igsort, npwk, dimwin, dimwann, dimfroz,        &
+                       npwkx, nbnd, npw, nr(1), nr(2), nr(3), nkpts,       &
+                       gauss_typ, rphiimx1, rphiimx2, l_wann,              &
+                       m_wann, ndir_wann, rloc, dimwinx)
 
-       !
-       ! ... clean a large amount of memory
-       CALL ggrids_deallocate()
-       CALL wfc_deallocate()
+! XXXX
+DO ik=1,nkpts
+DO j=1,dimwann
+   WRITE(2,*) 'nk=', ik,'   iwan=',j
+   DO i=1,dimwinx
+      WRITE(2,"(3f20.9)") ca(i,j,ik), ABS(ca(i,j,ik))
+   ENDDO
+ENDDO
+ENDDO
+
+
+      !
+      ! ... clean a large amount of memory
+      CALL ggrids_deallocate()
+      CALL wfc_deallocate()
+
+      IF ( uspp_calculation ) THEN
+         DEALLOCATE( becp, STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'deallocating becp',ABS(ierr))
+         DEALLOCATE( xk, STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'deallocating xk',ABS(ierr))
+      ENDIF
 
 !
-! ...  writing projections and overlap on file
+! ... writing projections and overlap on file
 !
 
-       CALL ioname('overlap_projection',filename)
-       CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
-            CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
-       CALL file_close(ovp_unit,PATH="/",ACTION="write")
+      CALL ioname('overlap_projection',filename)
+      CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+           CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
+      CALL file_close(ovp_unit,PATH="/",ACTION="write")
 
-       CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
-       WRITE( stdout,"(/,'  Overlap and projections written on file: ',a)") TRIM(filename)
+      CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
+      WRITE( stdout,"(/,'  Overlap and projections written on file: ',a)") TRIM(filename)
 
 
-       CALL timing('wfc_dat',OPR='stop')
-       RETURN
+      CALL timing('wfc_data',OPR='stop')
+      RETURN
    END SUBROUTINE wfc_data
 
 END MODULE wfc_data_module

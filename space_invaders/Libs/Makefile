@@ -12,7 +12,10 @@ OBJS= compar.o domega.o dot_bloch.o error.o \
       ordering.o sort.o recips.o overlap_extract.o \
       get_monkpack.o \
       readin.o read_pseudo.o read_ncpp.o readnewvan.o readvan.o \
-      bachel.o simpsn.o ylmr2.o invmat.o rranf.o erf.o
+      bachel.o simpsn.o ylmr2.o invmat.o rranf.o erf.o \
+      init_us_1.o init_us_2.o qvan2.o sph_bes.o setqf.o \
+      allocate_nlpot.o struct_fact.o ccalbec.o \
+      augment_psi.o
 
 all : lib_invaders.a
 

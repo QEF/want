@@ -9,9 +9,9 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE overlap( igv, evec, igsort, npwk, dimwin, nntot, nnlist,  &
+       SUBROUTINE overlap( igv, evc, igsort, npwk, dimwin, nntot, nnlist,  &
                            nncell, cm, npw, npwkx, nkpts, mxdnn, nbnd, ngx,     &
-                           ngy, ngz, ndwinx )
+                           ngy, ngz, dimwinx )
 !=----------------------------------------------------------------------------------=
  
       USE kinds
@@ -25,14 +25,14 @@
       ! ... Input Variables
 
       INTEGER :: npw, npwkx, nkpts, mxdnn, nbnd 
-      INTEGER :: ngx, ngy, ngz, ndwinx
+      INTEGER :: ngx, ngy, ngz, dimwinx
       INTEGER :: igv( 3, npw ), igsort( npwkx, nkpts )
       INTEGER :: npwk( nkpts )
       INTEGER :: nnlist( nkpts, mxdnn )
       INTEGER :: nntot( nkpts )
       INTEGER :: nncell( 3, nkpts, mxdnn )
       INTEGER :: dimwin( nkpts )
-      COMPLEX(dbl) :: evec( npwkx + 1, ndwinx, nkpts )
+      COMPLEX(dbl) :: evc( npwkx, dimwinx, nkpts )
       COMPLEX(dbl) :: cm( nbnd, nbnd, mxdnn, nkpts )
 
       ! ... Local Variables
@@ -53,8 +53,8 @@
       !WRITE( stdout , fmt= "( /,2x,'Starting OVERLAP ',/)")
 
 
-      IF( ndwinx /= MAXVAL( dimwin(:) ) ) THEN
-        CALL errore(' overlap ', ' inconsistent window ', ndwinx )
+      IF( dimwinx /= MAXVAL( dimwin(:) ) ) THEN
+        CALL errore(' overlap ', ' inconsistent window ', dimwinx )
       END IF
 
       ALLOCATE( ninvpw( 0:(ngx*ngy*ngz), nkpts ), STAT = ierr )
@@ -62,19 +62,17 @@
         CALL errore(' overlap ', ' allocating ninvpw ', ( (ngx*ngy*ngz+1)*nkpts ) ) 
       END IF
 
-      ninvpw = npwkx + 1
-
-! ... Transform wave-functions in CASTEP format
+      !
+      ! NOTE: npwkx is the maximum of npwk(:) + 1
+      ninvpw = npwkx 
 
       DO nkp = 1, nkpts
+           CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), ngx, ngy, ngz, &
+                            NINVPW=ninvpw(:,nkp) )
+      ENDDO     
 
-        CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), ngx, ngy, ngz, &
-                         ninvpw = ninvpw(:,nkp) )
-
-      END DO     ! nkp loop
-
-      CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, evec,    &
-          ninvpw, npwkx, nkpts, mxdnn, nbnd, ngx, ngy, ngz, ndwinx )
+      CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, evc,    &
+          ninvpw, npwkx, nkpts, mxdnn, nbnd, ngx, ngy, ngz, dimwinx )
 
       DEALLOCATE( ninvpw, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
@@ -86,46 +84,53 @@
 
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
-          ninvpw, npwkx, nkpts, mxdnn, nbnd, ngx, ngy, ngz, ndwinx )
+       SUBROUTINE overlap_base( dimwin, nntot, nnlist, nncell, cm, evc,    &
+          ninvpw, npwkx, nkpts, mxdnn, nbnd, ngx, ngy, ngz, dimwinx )
 !=----------------------------------------------------------------------------------=
  
       USE kinds
-      USE constants, ONLY : CZERO
-      USE timing_module, ONLY : timing 
-      USE io_module, ONLY : stdout
+      USE constants,      ONLY : CZERO, EPS_m8, BOHR => bohr_radius_angs
+      USE timing_module,  ONLY : timing 
+      USE io_module,      ONLY : stdout
+      USE uspp,           ONLY : qb
+      USE kpoints_module, ONLY : dnn, ndnntot, bk   ! XXXX
+      USE wfc_module,     ONLY : npwk
 
       IMPLICIT NONE
 
       ! ... Input Variables
 
       INTEGER :: npwkx, nkpts, mxdnn, nbnd 
-      INTEGER :: ngx, ngy, ngz, ndwinx
+      INTEGER :: ngx, ngy, ngz, dimwinx
       INTEGER :: nnlist( nkpts, mxdnn )
       INTEGER :: nntot( nkpts )
       INTEGER :: nncell( 3, nkpts, mxdnn )
       INTEGER :: dimwin( nkpts )
       COMPLEX(dbl) :: cm( nbnd, nbnd, mxdnn, nkpts )
-      COMPLEX(dbl) :: cptwfp( npwkx+1 , ndwinx, nkpts )
+      COMPLEX(dbl) :: evc( npwkx , dimwinx, nkpts )
       INTEGER :: ninvpw( 0:(ngx*ngy*ngz), nkpts )
 
       ! ... Local Variables
  
-      INTEGER :: nnx, ndnn, nnsh, nn
+      INTEGER :: nnx, ndnn, nnsh, nn, ish, ierr
       INTEGER :: i, j ,nx, ny, nz, igk, ipw1, ipw2
       INTEGER :: nkp1, npoint1, dimw1
       INTEGER :: nkp2, npoint2, dimw2
       INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
-      COMPLEX(dbl) :: cwin1( ndwinx ), cwin2
+      COMPLEX(dbl) :: cwin1( dimwinx ), cwin2
+      COMPLEX(dbl), ALLOCATABLE :: aug_psi(:,:)
+      REAL(dbl) :: norm
 
 ! ... END declarations
 
       CALL timing('overlap_base',OPR='start')
 
 
-      IF( ndwinx /= MAXVAL( dimwin(:) ) ) THEN
-        CALL errore(' overlap_base ', ' inconsistent window ', ndwinx )
+      IF( dimwinx /= MAXVAL( dimwin(:) ) ) THEN
+        CALL errore(' overlap_base ', ' inconsistent window ', dimwinx )
       END IF
+      ALLOCATE( aug_psi(npwkx, dimwinx), STAT=ierr )
+         IF (ierr/=0) CALL errore('overlap_base','allocating aug_psi',npwkx*dimwinx)
 
 ! ... Calculate cm(i,j,nkp,nn)=<u_i k|u_j k+dk> (keeping into account
 !     that if k+dk is outside (or should be outside) the first BZ it must be
@@ -150,61 +155,83 @@
       cm(:,:,:,:) = CZERO
 
       DO nkp1 = 1, nkpts
+          DO nn = 1, nntot( nkp1 )
 
-        DO nn = 1, nntot( nkp1 )
+              nkp2 = nnlist( nkp1, nn )
 
-          nkp2 = nnlist( nkp1, nn )
-
-          ! set up indices
-          DO nx = 1, ngx
-            nx2(nx) = nx + nncell( 1, nkp1, nn )
-            IF( nx2(nx) < 1   ) nx2(nx) = nx2(nx) + ngx
-            IF( nx2(nx) > ngx ) nx2(nx) = nx2(nx) - ngx
-          END DO
-          DO ny = 1, ngy
-            ny2(ny) = ny + nncell( 2, nkp1, nn )
-            IF( ny2(ny) < 1   ) ny2(ny) = ny2(ny) + ngy
-            IF( ny2(ny) > ngy ) ny2(ny) = ny2(ny) - ngy
-            ny2(ny) = (ny2(ny) - 1) * ngx
-          END DO
-          DO nz = 1, ngz
-            nz2(nz) = nz + nncell( 3, nkp1, nn )
-            IF( nz2(nz) < 1   ) nz2(nz) = nz2(nz) + ngz
-            IF( nz2(nz) > ngz ) nz2(nz) = nz2(nz) - ngz
-            nz2(nz) = (nz2(nz) - 1) * ngx * ngy
-          END DO
-
-          dimw1 = dimwin(nkp1)
-          dimw2 = dimwin(nkp2)
-
-          DO nz = 1, ngz
-            DO ny = 1, ngy
+              ! set up indices
               DO nx = 1, ngx
-                npoint1 = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
-                npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
-                ipw1 = ninvpw( npoint1, nkp1 )
-                ipw2 = ninvpw( npoint2, nkp2 )
+                  nx2(nx) = nx + nncell( 1, nkp1, nn )
+                  IF( nx2(nx) < 1   ) nx2(nx) = nx2(nx) + ngx
+                  IF( nx2(nx) > ngx ) nx2(nx) = nx2(nx) - ngx
+              ENDDO
+              DO ny = 1, ngy
+                  ny2(ny) = ny + nncell( 2, nkp1, nn )
+                  IF( ny2(ny) < 1   ) ny2(ny) = ny2(ny) + ngy
+                  IF( ny2(ny) > ngy ) ny2(ny) = ny2(ny) - ngy
+                  ny2(ny) = (ny2(ny) - 1) * ngx
+              ENDDO
+              DO nz = 1, ngz
+                  nz2(nz) = nz + nncell( 3, nkp1, nn )
+                  IF( nz2(nz) < 1   ) nz2(nz) = nz2(nz) + ngz
+                  IF( nz2(nz) > ngz ) nz2(nz) = nz2(nz) - ngz
+                  nz2(nz) = (nz2(nz) - 1) * ngx * ngy
+              ENDDO
 
-                cwin1( 1:dimw1 ) = CONJG( cptwfp( ipw1, 1:dimw1, nkp1 ) ) 
-                DO j = 1, dimw2
-                  cwin2 = cptwfp( ipw2, j, nkp2 )
-                  DO i = 1, dimw1
-                    cm( i, j, nn, nkp1 ) = cm( i, j, nn, nkp1 ) + cwin1( i ) * cwin2
-                  END DO
-                END DO
+              dimw1 = dimwin(nkp1)
+              dimw2 = dimwin(nkp2)
 
-!                DO j = 1, dimwin(nkp2)
-!                  cm( 1:dimwin(nkp1), j, nn, nkp1 ) = cm( 1:dimwin(nkp1), j, nn, nkp1 ) + &
-!                      CONJG( cptwfp( ipw1, 1:dimwin(nkp1), nkp1 ) ) * &
-!                             cptwfp( ipw2, j, nkp2 )
-!                END DO
+              !
+              ! ... get ish, the index of kpt2 in the shell list
+              !
+              ish = 0
+              norm = bk(1,nkp1,nn)**2 + bk(2,nkp1,nn)**2 + bk(3,nkp1,nn)**2 
+              norm = SQRT( norm )
+              !
+              DO ish = 1, ndnntot
+                 IF ( ABS(norm - dnn(ish) ) < EPS_m8 ) EXIT 
+                 IF ( ish == ndnntot)  &
+                    CALL errore('overlap_base','unable to find the shell',1)
+              ENDDO
+            
+              !
+              ! ... apply the augmentation operator to psi = S_aug * psi
+              !     accounting for the e^-ibr operator
+              !
+              CALL augment_psi(npwkx, npwk(nkp2), dimw2, nkp2, &
+                               qb(1,1,1,ish), evc(1,1,nkp2), aug_psi)
+              aug_psi(npwk(nkp2)+1:npwkx,:) = CZERO
+              aug_psi(:,dimw2+1:dimwinx) = CZERO
 
-              END DO
-            END DO
-          END DO
 
-        END DO
-      END DO
+              ! XXXX
+              ! this loop should be improved
+
+              DO nz = 1, ngz
+              DO ny = 1, ngy
+              DO nx = 1, ngx
+                   npoint1 = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
+                   npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
+                   ipw1 = ninvpw( npoint1, nkp1 )
+                   ipw2 = ninvpw( npoint2, nkp2 )
+
+                   cwin1( 1:dimw1 ) = CONJG( evc( ipw1, 1:dimw1, nkp1 ) ) 
+                   DO j = 1, dimw2
+                       cwin2 = aug_psi(ipw2,j)       !evc( ipw2, j, nkp2 )
+                       DO i = 1, dimw1
+                            cm( i, j, nn, nkp1 ) = cm( i, j, nn, nkp1 ) + cwin1(i) * cwin2
+                       ENDDO
+                   ENDDO
+
+              ENDDO
+              ENDDO
+              ENDDO
+
+          ENDDO
+      ENDDO
+
+      DEALLOCATE( aug_psi, STAT=ierr)
+         IF (ierr/=0) CALL errore('overlap_base','deallocating aug_psi',ABS(ierr))
 
       CALL timing('overlap_base',OPR='stop')
 

@@ -5,4 +5,5 @@
   psfile(1) = 'Au.pw91-d-van.UPF'
   single_file = .FALSE.
   ascii = .FALSE.
+  uspp_spsi=.TRUE.
 /

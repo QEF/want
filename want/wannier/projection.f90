@@ -9,9 +9,9 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE projection( avec, lamp, ca, evec, vkpt,                  & 
+       SUBROUTINE projection( avec, lamp, ca, evc, vkpt,                   & 
                   kgv, isort, npwk, dimwin, dimwann, dimfroz,              &
-                  npwkx, nbnd, npw, ngx, ngy, ngz, nkpts,      &
+                  npwkx, nbnd, npw, ngx, ngy, ngz, nkpts,                  &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                   m_wann, ndir_wann, rloc, ndwinx)
 !=----------------------------------------------------------------------------------=
@@ -24,6 +24,7 @@
        USE input_module,  ONLY : verbosity
        USE sph_har,       ONLY : gauss1
        USE util_module,   ONLY : gv_indexes, zmat_mul, zmat_unitary
+       USE uspp,          ONLY : qq
 
        IMPLICIT NONE
 
@@ -39,7 +40,7 @@
        INTEGER :: dimwin(nkpts)
        INTEGER :: dimfroz(nkpts)
        REAL(dbl) :: avec(3,3)
-       COMPLEX(dbl) :: evec( npwkx + 1, ndwinx, nkpts )
+       COMPLEX(dbl) :: evc( npwkx, ndwinx, nkpts )
        REAL(dbl) :: vkpt(3,nkpts)
        COMPLEX(dbl) :: lamp(nbnd,nbnd,nkpts)
        COMPLEX(dbl) :: ca(nbnd,dimwann,nkpts)
@@ -55,8 +56,7 @@
  
        ! ... local variables
 
-       INTEGER :: mplwv
-       INTEGER :: nb, i, j, l, m 
+       INTEGER :: ib, i, j, l, m 
        INTEGER :: ik, npoint
        INTEGER, ALLOCATABLE :: nindpw(:)
        INTEGER :: ngdim(3)
@@ -80,6 +80,7 @@
        COMPLEX(dbl), ALLOCATABLE :: u(:,:)
        COMPLEX(dbl), ALLOCATABLE :: vt(:,:)
        COMPLEX(dbl), ALLOCATABLE :: work(:)
+       COMPLEX(dbl), ALLOCATABLE :: aux(:)
        REAL(dbl), ALLOCATABLE :: s(:)
        REAL(dbl), ALLOCATABLE :: rwork2(:)
        REAL(dbl), ALLOCATABLE :: rphicmx1(:,:)
@@ -97,8 +98,6 @@
 
        CALL timing('projection',OPR='start')
 
-       mplwv = ngx * ngy * ( ngz+1 )
-
        ALLOCATE( tmp(nbnd,dimwann), STAT = ierr )
          IF( ierr /= 0 ) CALL errore( 'projection', 'allocating tmp ', nbnd*dimwann )
        ALLOCATE( cptwr(ngx*ngy*(ngz+1)), STAT = ierr )
@@ -111,6 +110,8 @@
          IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vt ', dimwann*dimwann )
        ALLOCATE( work(4*nbnd), STAT = ierr )
          IF( ierr /= 0 ) CALL errore( 'projection', 'allocating work ', 4*nbnd )
+       ALLOCATE( aux(npwkx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating aux ', npwkx )
        ALLOCATE( s(dimwann), STAT = ierr )
          IF( ierr /= 0 ) CALL errore( 'projection', 'allocating s ', dimwann )
        ALLOCATE( rwork2(5*dimwann), STAT = ierr )
@@ -169,26 +170,32 @@
 !      are provided by the ab-initio code, and so have almost random rotations)
 
        ALLOCATE( nindpw( npwkx ) )
-     
+
+       ca(:,:,:) = CZERO
        DO ik = 1, nkpts
          IF  ( dimwann >  dimfroz(ik) ) THEN  !IF  not, don't need to waste CPU time!
-           DO nb = 1, dimwin(ik)
+           DO ib = 1, dimwin(ik)
+             !
+             ! ... Go through all the g-vectors inside the cutoff radius 
+             !
+             CALL gv_indexes( kgv, isort(:,ik), npwk(ik), ngx, ngy, ngz, NINDPW=nindpw(:) )
+             !
+             ! ... apply the US augmentation
+             !
+! XXX qui si puo' fare di meglio
+             CALL augment_psi( npwkx, npwk(ik), 1, ik, qq, evc(1,ib,ik), aux )
+!
+! DEBUG sostituisco con questo
+!             aux(1:npwk(ik)) = evc(1:npwk(ik),ib,ik)
+             aux(npwk(ik)+1:npwkx) = CZERO
 
              cptwr = CZERO
-
-! ...        Go through all the g-vectors inside the cutoff radius at the present k-point
-
-             CALL gv_indexes( kgv, isort(:,ik), npwk(ik), ngx, ngy, ngz, NINDPW=nindpw(:) )
- 
-             DO J=1,npwk(ik)           
-
-               npoint = nindpw(j)
-               cptwr(npoint) = evec(j,nb,ik)
- 
-             ENDDO ! g-vectors at present k (J)
+             DO j=1,npwk(ik)           
+                 npoint = nindpw(j)
+                 cptwr(npoint) = aux(j)
+             ENDDO 
  
 ! ...        Compute the bloch state in the real space grid via fft from the g-space grid
- 
 ! ...        last argument is isign=-1 since we are using the usual bloch convention.
 !            isign = -1 : backward fft: recip --> real : exp(+iqr)
  
@@ -204,10 +211,10 @@
 
              DO iwann = 1, dimwann
 
-               ca(nb,iwann,ik) = CZERO    
-
-! ...          First gaussian
-
+               ca(ib,iwann,ik) = CZERO    
+               !
+               ! ... First gaussian
+               !
                DO nzz = nphimx1(3,iwann) - nphir(iwann), nphimx1(3,iwann) + nphir(iwann)
                  nz = MOD( nzz, ngz )
                  IF  ( nz < 1 ) nz = nz + ngz
@@ -217,9 +224,10 @@
                    DO nxx = nphimx1(1,iwann) - nphir(iwann), nphimx1(1,iwann) + nphir(iwann)
                      nx = MOD( nxx, ngx )
                      IF  (nx < 1 ) nx = nx + ngx
-
-! ...                Here it calculates <exp(i*k.r) u_nk(r)|
-
+                 
+                     !
+                     ! ... Here it calculates <exp(i*k.r) u_nk(r)|
+                     !
                      rx = DBLE(nxx-1) / DBLE(ngx)
                      ry = DBLE(nyy-1) / DBLE(ngy)
                      rz = DBLE(nzz-1) / DBLE(ngz)
@@ -238,10 +246,10 @@
                        dist1 = dist1 + rpos1(m)**2
                      END DO
                      dist1 = SQRT(dist1)
-!
-! ...                Positive gaussian
-!                    Both dist1 and rloc in Bohr
-!
+                     !
+                     ! ...  Positive gaussian
+                     !      Both dist1 and rloc in Bohr
+                     !
                      cphi = CMPLX( EXP( -( dist1 / rloc(iwann) )**2 ) )
 
                      IF  ( gauss_typ(iwann) == 1 ) THEN
@@ -251,14 +259,14 @@
 
                      END IF  ! orbital is of type 1
 
-                     ca(nb,iwann,ik) = ca(nb,iwann,ik) + catmp * cphi
+                     ca(ib,iwann,ik) = ca(ib,iwann,ik) + catmp * cphi
 
                    END DO ! nxx
                  END DO  ! nyy
                END DO   ! nzz
 
                IF ( gauss_typ(iwann) == 2 ) THEN
-! ...            second gaussian
+                 ! ... second gaussian
 
                  DO nzz = nphimx2(3,iwann) - nphir(iwann), nphimx2(3,iwann) + nphir(iwann)
                    nz = MOD( nzz, ngz )
@@ -270,7 +278,7 @@
                        nx = MOD( nxx, ngx )
                        IF  (nx < 1) nx = nx + ngx
 
-! ...                  here it calculates <exp(i*k.r) u_nk(r)|
+                       ! ... here it calculates <exp(i*k.r) u_nk(r)|
 
                        rx = DBLE(nxx-1) / DBLE(ngx)
                        ry = DBLE(nyy-1) / DBLE(ngy)
@@ -290,13 +298,13 @@
                          dist2 = dist2 + rpos2(m)**2
                        END DO
                        dist2 = SQRT(dist2)
-!
-! ...                  Negative gaussian
-!                      Both dist2 and rloc in Bohr
-!
+                       !
+                       ! ... Negative gaussian
+                       !     Both dist2 and rloc in Bohr
+                       !
                        cphi = -CMPLX( EXP( -( dist2/rloc(iwann) )**2 ) )
 
-                       ca(nb,iwann,ik) = ca(nb,iwann,ik) + catmp * cphi
+                       ca(ib,iwann,ik) = ca(ib,iwann,ik) + catmp * cphi
 
                      ENDDO ! nxx
                    ENDDO  ! nyy
@@ -304,7 +312,7 @@
                END IF 
 
              ENDDO    ! iwann
-           ENDDO    ! nb
+           ENDDO    ! ib
       
          END IF  
 

@@ -13,8 +13,10 @@
    USE kinds, ONLY : dbl
    USE parameters, ONLY : nstrx
    USE windows_module, ONLY : nkpts
+   USE lattice_module, ONLY : lattice_alloc => alloc, bvec, tpiba 
    USE iotk_module
    USE parser_module, ONLY : change_case
+   USE converters_module, ONLY : cry2cart
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -34,10 +36,12 @@
    INTEGER                   :: npw              ! number of G vects for the density
    INTEGER                   :: nr(3)            ! dimension of the FFT space grid
    !
-   REAL(dbl)                 :: ecutwfc          ! energy cutoff for wfc(Ry)
-   REAL(dbl)                 :: ecutrho          ! energy cutoff for dthe density (Ry)
-   INTEGER,      ALLOCATABLE :: igv(:,:)         ! G vect components, DIM: 3*npw
-   
+   REAL(dbl)                 :: ecutwfc          ! energy cutoff for wfc (Ry)
+   REAL(dbl)                 :: ecutrho          ! energy cutoff for the density (Ry)
+   INTEGER,      ALLOCATABLE :: igv(:,:)         ! G vect cry comp (density), DIM: 3*npw
+   REAL(dbl),    ALLOCATABLE :: g(:,:)           ! G vect cart comp (density) (tpiba)
+   REAL(dbl),    ALLOCATABLE :: gg(:)            ! moduli of the above vectors (tpiba**2)
+
    LOGICAL :: alloc = .FALSE.
 
 !
@@ -45,7 +49,8 @@
 !
 
    PUBLIC :: npw, nr 
-   PUBLIC :: ecutwfc, ecutrho, igv
+   PUBLIC :: ecutwfc, ecutrho
+   PUBLIC :: igv, g, gg
    PUBLIC :: alloc
 
    PUBLIC :: ggrids_allocate, ggrids_deallocate
@@ -68,7 +73,11 @@ CONTAINS
        IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
 
        ALLOCATE( igv(3,npw), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating npw',3*npw)
+          IF (ierr/=0) CALL errore(subname,'allocating igv',3*npw)
+       ALLOCATE( g(3,npw), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating g',3*npw)
+       ALLOCATE( gg(npw), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating gg',npw)
        alloc = .TRUE.
       
    END SUBROUTINE ggrids_allocate
@@ -85,6 +94,14 @@ CONTAINS
             DEALLOCATE(igv, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating igv ',ABS(ierr))
        ENDIF
+       IF ( ALLOCATED(g) ) THEN
+            DEALLOCATE(g, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating g ',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(gg) ) THEN
+            DEALLOCATE(gg, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating gg ',ABS(ierr))
+       ENDIF
        alloc = .FALSE.
 
    END SUBROUTINE ggrids_deallocate
@@ -98,7 +115,7 @@ CONTAINS
        CHARACTER(nstrx)   :: attr
        CHARACTER(nstrx)   :: str
        CHARACTER(15)      :: subname="ggrids_read_ext"
-       INTEGER            :: ierr
+       INTEGER            :: i, ierr
 
        !
        ! ... Various parameters
@@ -145,6 +162,16 @@ CONTAINS
        !
        CALL iotk_scan_end(unit,'Main_grid',IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag Main_grid',ABS(ierr))
+
+       !
+       ! ... init, units are in tpiba (2pi/alat) according to Espresso units
+       !
+       IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice quantities not allocated',4)
+       g(:,:) = REAL( igv(:,:) )
+       CALL cry2cart(g, bvec / tpiba )
+       DO i=1,SIZE(igv,2)
+           gg(i) = g(1,i)**2 + g(2,i)**2 + g(3,i)**2
+       ENDDO
 
    END SUBROUTINE ggrids_read_ext
 

@@ -29,7 +29,8 @@ MODULE lattice_module
 !
 
   REAL(dbl)        :: alat  = ZERO        ! dir space units (Bohr)
-  REAL(dbl)        :: tpiba = ZERO        ! 2pi/alat
+  REAL(dbl)        :: tpiba = ZERO        ! 2pi/alat (Bohr^-1)
+  REAL(dbl)        :: omega = ZERO        ! volume of the unit cell (Bohr^3)
   REAL(dbl)        :: avec(3,3)           ! dir lattice vects (Bohr)
   REAL(dbl)        :: bvec(3,3)           ! rec lattice vects (Bohr^-1)
 
@@ -41,6 +42,7 @@ MODULE lattice_module
 
   PUBLIC :: alat
   PUBLIC :: tpiba
+  PUBLIC :: omega
   PUBLIC :: avec, bvec
   PUBLIC :: alloc
   PUBLIC :: lattice_read_ext, lattice_init
@@ -69,7 +71,7 @@ CONTAINS
     ! and no normalization is needed....
     !avec = avec * alat
 
-    CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
+    CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3), omega)
     bvec = bvec * TPI
 
     alloc = .TRUE.

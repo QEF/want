@@ -38,7 +38,8 @@
 ! declarations of common variables
 !   
 
-   INTEGER                     :: nbnd             ! number of DFT bands
+   INTEGER                     :: nbnd               ! number of DFT bands
+   INTEGER                     :: nspin              ! number of spin channels
    INTEGER                     :: dimwinx            ! MAX (dimwin(:)) over kpts
    !
    ! ... starting states within the energy window
@@ -62,7 +63,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, nbnd, dimwinx
+   PUBLIC :: nkpts, nbnd, nspin, dimwinx
    PUBLIC :: win_min, win_max, froz_min, froz_max
    PUBLIC :: dimwin, imin, imax, eig, efermi, lcompspace
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
@@ -190,6 +191,10 @@ CONTAINS
 
        IF ( nbnd <= 0 .OR. nkpts <= 0 ) &
            CALL errore(subname,' Invalid NBND or NKPTS ',1)
+       IF ( nspin /= 1 .AND. nspin /=2 ) CALL errore(subname,'Invalid NSPIN',ABS(nspin)+1)
+       !
+       ! ... this second error should be eliminated as soon as possible
+       IF ( nspin /= 1 ) CALL errore(subname,'NSPIN =2 not yet impleented',ABS(nspin))
 
        ALLOCATE( dimwin(nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating dimwin ',nkpts)      
@@ -271,6 +276,7 @@ CONTAINS
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr(attr,"nkpts",nkpts)
+       CALL iotk_write_attr(attr,"nspin",nspin)
        CALL iotk_write_attr(attr,"efermi",efermi)
        CALL iotk_write_attr(attr,"dimwinx",dimwinx)
        CALL iotk_write_attr(attr,"lcompspace",lcompspace)
@@ -316,6 +322,8 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NBND',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+       CALL iotk_scan_attr(attr,'nspin',nspin,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr NSPIN',ABS(ierr))
        CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr EFERMI',ABS(ierr))
        CALL iotk_scan_attr(attr,'dimwinx',dimwinx,IERR=ierr)
@@ -371,6 +379,8 @@ CONTAINS
        IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
        found = .TRUE.
 
+       CALL iotk_scan_attr(attr,'nspin',nspin,IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to find NSPIN',ABS(ierr))
        CALL iotk_scan_attr(attr,'nk',idum,IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to find NK',ABS(ierr))
        IF ( kpoints_alloc ) THEN

@@ -32,7 +32,8 @@
 ! declarations of common variables
 !   
 
-   INTEGER                   :: npwkx            ! max number of G vects over kpts
+   INTEGER                   :: npwkx            ! max number of G vects over kpts +1 
+                                                 ! the last position is used in overlap
    INTEGER,      ALLOCATABLE :: npwk(:)          ! number of G for each kpt, DIM: nkpts
    INTEGER,      ALLOCATABLE :: igsort(:,:)      ! G map between the global IGV array and
                                                  ! the local ordering for each kpt
@@ -40,7 +41,7 @@
 
    !
    ! ... Bloch  EIGVEC
-   COMPLEX(dbl), ALLOCATABLE :: evc(:,:,:)       ! wfc, DIM: npwkx+1, dimwinx, nkpts
+   COMPLEX(dbl), ALLOCATABLE :: evc(:,:,:)       ! wfc, DIM: npwkx, dimwinx, nkpts
 
    LOGICAL :: alloc = .FALSE.
 
@@ -91,8 +92,8 @@ CONTAINS
           IF (ierr/=0) CALL errore(subname,'allocating npwk',nkpts)
        ALLOCATE( igsort(npwkx,nkpts), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating igsort',npwkx*nkpts)
-       ALLOCATE( evc(npwkx+1,dimwinx,nkpts), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating evc',(npwkx+1)*dimwinx*nkpts)
+       ALLOCATE( evc(npwkx,dimwinx,nkpts), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating evc',npwkx*dimwinx*nkpts)
  
        alloc = .TRUE.
       
@@ -141,6 +142,10 @@ CONTAINS
        CALL iotk_scan_attr(attr,'npwx',npwkx,IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to find npwkx',ABS(ierr))
    
+       !
+       ! WARINIG: nasty redefinition
+       npwkx = npwkx + 1
+
        CALL wfc_allocate()
        igsort(:,:) = 0
   
@@ -155,7 +160,7 @@ CONTAINS
            CALL iotk_scan_end(unit,'Kpoint'//TRIM(iotk_index(ik)),IERR=ierr)
            IF (ierr/=0)  CALL errore(subname,'Unable to end tag Kpoint',ik)
        ENDDO
-       IF ( npwkx /= MAXVAL(npwk(:)) ) CALL errore(subname,'Invalid npwkx II',5)
+       IF ( npwkx /= MAXVAL(npwk(:)) +1 ) CALL errore(subname,'Invalid npwkx II',5)
        CALL iotk_scan_end(unit,'Wfc_grids',IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag Wfc_grids',ABS(ierr))
 
@@ -179,11 +184,13 @@ CONTAINS
            
            DO ib=imin(ik),imax(ik)
                index = ib - imin(ik) +1
-               evc(:,index,ik) = CZERO
                CALL iotk_scan_dat(unit,'Wfc'//TRIM(iotk_index(ib)), &
                     wtmp(1:npwk(ik)),IERR=ierr)
                IF (ierr/=0)  CALL errore(subname,'Unable to find Wfc',ABS(ierr))
+               !
+               ! XXX se funziona eliminare wtmp
                evc( 1:npwk(ik),index,ik) = wtmp( 1:npwk(ik) )
+               evc( npwk(ik)+1:npwkx, index, ik) = CZERO
            ENDDO
            CALL iotk_scan_end(unit,'Kpoint'//TRIM(iotk_index(ik)),IERR=ierr)
            IF (ierr/=0)  CALL errore(subname,'Unable to end tag Kpoint (vectors)',ik)

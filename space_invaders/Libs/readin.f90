@@ -13,7 +13,7 @@ subroutine readpp
   !
   !    Read pseudopotentials
   !
-  USE constants,  ONLY : ZERO,CZERO
+  USE constants,  ONLY : ZERO, CZERO
   USE kinds,      ONLY : dbl
   USE atom_module,ONLY : numeric, xmin, dx
   USE uspp_param, ONLY : iver, tvanp, newpseudo
@@ -114,7 +114,8 @@ subroutine readpp
      end if
 
   enddo
-  return
+  RETURN
+  
 end subroutine readpp
 !-----------------------------------------------------------------------
 integer function pseudo_type (psfile)

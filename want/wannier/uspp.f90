@@ -55,8 +55,10 @@ MODULE uspp
   PRIVATE
   SAVE
   PUBLIC :: nlx, lpx, lpl, ap, aainit, indv, nhtol, nhtolm, nkb, nkbus, &
-       vkb, dvan, deeq, qq, nhtoj, beta, becsum, deallocate_uspp
+       vkb, dvan, deeq, qq, qb, nhtoj, beta, becsum, deallocate_uspp
   PUBLIC :: qq_so, dvan_so, deeq_nc 
+  
+
   INTEGER, PARAMETER :: &
        nlx  = (lmaxx+1)**2, &! maximum number of combined angular momentum
        mx   = 2*lqmax-1      ! maximum magnetic angular momentum of Q
@@ -76,12 +78,14 @@ MODULE uspp
        nhtolm(:,:)        ! correspondence n <-> combined lm index for (l,m)
   !
   COMPLEX(KIND=DP), ALLOCATABLE, TARGET :: &
-       vkb(:,:)                ! all beta functions in reciprocal space
+       vkb(:,:,:)              ! all beta functions in reciprocal space
+                               ! indeces: plw, betaf, nkpts
   REAL(KIND=DP), ALLOCATABLE :: &
        dvan(:,:,:),           &! the D functions of the solid
        deeq(:,:,:,:),         &! the integral of V_eff and Q_{nm} 
        becsum(:,:,:),         &! \sum_i f(i) <psi(i)|beta_l><beta_m|psi(i)>
        qq(:,:,:),             &! the q functions in the solid
+       qb(:,:,:,:),           &! the b FT of the Q(r) (i,j,ia,ib)
        nhtoj(:,:)              ! correspondence n <-> total angular momentum
   !
   COMPLEX(KIND=DP), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:

@@ -10,7 +10,8 @@ OBJS = constants.o fft_scalar.o kind.o parameters.o \
        ggrids.o  files.o  parser_base.o  localization.o \
        cleanup.o  want_init.o  summary.o  ions.o  wfc_data.o \
        upf_to_internal.o  uspp.o  read_pseudo_base.o  pwcom.o \
-       pseudo_types.o  functionals.o  atom.o
+       pseudo_types.o  functionals.o  atom.o  becmod.o \
+       struct_fact_data.o
 
 all: $(OBJS)
 

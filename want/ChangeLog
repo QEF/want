@@ -3,6 +3,36 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+05 Feb 2005      s_psi and sb_psi routines unified in augment_psi routiene.
+
+04 Feb 2005      Subtle bug in pw_export fixed. USPP are rightly initialized
+                 (init_us_1 and init_us_2 + ccalbec). The augmentation routine
+                 sb_psi added to repository. (AF)
+
+03 Feb 2005      Wfc are now named evc everywhere (exept plot!) and their dimensions
+                 are consistent with Espresso (npwkx for pw and no longer npwkx+1 as
+                 was used in WanT before). Projection array (ca) is completely initialized
+                 to zero. (AF)  
+
+02 Feb 2005      init_us_2, ccalbec added in wfc_data in order to compute US basic
+                 quantities. s_psi added in projections. (AF)
+
+01 Feb 2005      Other routines imported from Espresso: sph_bes.f90, setqf.f90, 
+                 allocate_nlpot.f90 . Nspin moved from kpoints_module to windows_module.
+                 Variable allocation and init checked. init_us_2.f90, s_psi.f90 and
+                 ccalbec.f90 added from Espresso. (AF)
+
+31 Jan 2005      Pseudopotential routines from Espresso package inported in order 
+                 to deal with USPP. Summary updated in order to describe the read PPs
+                 (when they are). Added Test5 managing the calculation for the Gold
+                 chain within USPP. Many old routines replaced with better versions
+                 from Espresso. The g and gg (G vect in cartesian coord, their moduli) 
+                 added to ggrid_module. Routines init_us_1.f90 and qvan2.f90 added.
+                 (AF) 
+
+30 Jan 2005      Few bugs fixed. (AF)
+
 15 Jan 2005      GET_MONKPACK routine (compute the nk(:) and s(:) param of the 
                  Monkhorst-Pack grid from theinput kpts) added and hamiltonian
                  input accordingly modified. SOme other minor changes done. (AF)
