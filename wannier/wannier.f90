@@ -5,6 +5,7 @@
          ryd => ry, har => au, bohr => bohr_radius_angs
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
       USE fft_scalar, ONLY: cfft3d
+      USE input_wannier
 
       IMPLICIT NONE
 
@@ -31,22 +32,21 @@
     
       INTEGER :: nplwv, mplwv
 
-      INTEGER :: niter
       INTEGER :: iprint, nsp, idummy
-      INTEGER :: ncg, i, j, k
+      INTEGER :: i, j, k
       INTEGER :: ni, m, nkp
       INTEGER :: nkp2, nx, ny, nz
       INTEGER :: np, npoint
       INTEGER :: iib, iseed
-      INTEGER :: ndnntot, nlist, l, n, ndnn, nshells
+      INTEGER :: ndnntot, nlist, l, n, ndnn
       INTEGER :: nnx, ndnc, ind, nnsh, info, nn, nnh, na
       INTEGER :: ifound, nap, ifpos, ifneg
       INTEGER :: nwann, nb
       INTEGER :: npoint2
       INTEGER, ALLOCATABLE :: nx2(:), ny2(:), nz2(:)
       INTEGER :: nzz, nyy, nxx
-      INTEGER :: iphase, nsdim, irguide
-      INTEGER :: nrguide, niter0, ncgfix, ncount
+      INTEGER :: nsdim, irguide
+      INTEGER :: nrguide, ncgfix, ncount
       LOGICAL :: lrguide, lcg
       REAL(dbl)  :: enmax
       REAL(dbl)  :: volc, voli, wtktot
@@ -62,7 +62,6 @@
       REAL(dbl)  :: th_cos, th_sin, ph_cos, ph_sin, dist2, select
       REAL(dbl)  :: rre, rri, omt1, omt2, omt3, omiloc
       REAL(dbl)  :: func_del1, func_del2, func_del3, func0
-      REAL(dbl)  :: alphafix0, alphafix, alpha
       REAL(dbl)  :: gcnorm1, gcfac, gcnorm0, doda0
       REAL(dbl)  :: funca, func_del, eqc, eqb, eqa, alphamin, falphamin
       COMPLEX(dbl) :: catmp, cphi, calpha, cbeta
@@ -100,9 +99,7 @@
       REAL(dbl), ALLOCATABLE ::  w1(:) !  w1(10*nnmx)
 
       INTEGER, ALLOCATABLE :: ndim(:) !  dimsingvd(nnmx),dimbk(3,nnmx),ndim(nnmx)
-      INTEGER, ALLOCATABLE :: l_wann(:), m_wann(:), nkp_inv(:) ! l_wann(dimwann),m_wann(dimwann),nkp_inv(nkpts)
-      INTEGER, ALLOCATABLE :: ndir_wann(:) ! ndir_wann(dimwann)
-      INTEGER, ALLOCATABLE :: nwhich(:) ! nwhich(nnmx)
+      INTEGER, ALLOCATABLE :: nkp_inv(:) ! l_wann(dimwann),m_wann(dimwann),nkp_inv(nkpts)
       INTEGER, ALLOCATABLE :: nnshell(:,:) ! nnshell(nkpts,nnmx)
       INTEGER, ALLOCATABLE ::  neigh(:,:) ! neigh(nkpts,nnmxh)
       REAL(dbl), ALLOCATABLE ::  dimsingvd(:), dimbk(:,:)
@@ -119,8 +116,6 @@
 
       INTEGER :: ngdim(3)
 
-      REAL(dbl), ALLOCATABLE ::  rphiimx1(:,:) ! rphiimx1(3,dimwann)
-      REAL(dbl), ALLOCATABLE ::  rphiimx2(:,:) ! rphiimx2(3,dimwann)
       REAL(dbl), ALLOCATABLE ::  rphicmx1(:,:) ! rphicmx1(3,dimwann)
       REAL(dbl), ALLOCATABLE ::  rphicmx2(:,:) ! rphicmx2(3,dimwann)
 
@@ -158,9 +153,7 @@
       REAL(dbl) :: avec(3,3), bvec(3,3)
       REAL(dbl) :: vcell, aminv(3), adot(3,3), bdot(3,3)
 
-      REAL(dbl), ALLOCATABLE :: rloc(:) ! rloc(dimwann)
       INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
-      INTEGER, ALLOCATABLE :: gauss_typ(:) ! gauss_typ(dimwann)
 
       CHARACTER( LEN = 2 ) :: nameat(mxdtyp)
       INTEGER :: ntype, natom(mxdtyp)
@@ -170,11 +163,9 @@
 
       REAL(dbl) :: alatt
       REAL(dbl) :: s(3)
-      REAL(dbl) :: win_min, win_max, froz_min, froz_max
       INTEGER :: nt, ja, nbandi
-      INTEGER :: dimwann
       INTEGER :: nk(3)
-      INTEGER :: maxiter, itrial, mxddim, mxdbnd
+      INTEGER :: mxddim, mxdbnd
       INTEGER :: ngm
 
       INTEGER, ALLOCATABLE :: kgv(:,:)
@@ -190,6 +181,8 @@
       REAL(dbl) :: cclock
       EXTERNAL :: cclock
       REAL(dbl) :: s0, s1, s2, s3, s4, s5, sf
+ 
+      INTEGER :: idum, rdum
 
 !
 ! ... End declarations and dimensions
@@ -214,6 +207,8 @@
 ! ...  Read input parameters from window.out
 !
 
+      CALL read_input()
+
       OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
       READ(19) alatt
@@ -230,34 +225,36 @@
 
       READ(19) enmax, nbandi
       READ(19) (nk(i),i=1,3), (s(i),i=1,3)
-      READ(19) win_min, win_max, froz_min, froz_max, dimwann
 
-      READ(19) alpha, maxiter 
-      READ(19) iphase
-      READ(19) niter0, alphafix0
-      READ(19) niter, alphafix, ncg
-      READ(19) itrial, nshells
+      READ(19) rdum ! win_min, win_max, froz_min, froz_max, dimwann
 
-      ALLOCATE( nwhich(nshells) )
-      READ(19) (nwhich(i),i=1,nshells)
+      READ(19) rdum ! alpha, maxiter 
+      READ(19) idum ! iphase
+      READ(19) idum ! niter0, alphafix0
+      READ(19) idum ! niter, alphafix, ncg
+      READ(19) idum ! itrial, nshells
+
+      !  ALLOCATE( nwhich(nshells) )
+      READ(19) idum ! (nwhich(i),i=1,nshells)
+
       READ(19) nkpts, mxddim, mxdbnd
       READ(19) ngx, ngy, ngz, ngm
 
-      ALLOCATE( gauss_typ( dimwann ) )
-      ALLOCATE( rphiimx1( 3, dimwann ) )
-      ALLOCATE( rphiimx2( 3, dimwann ) )
-      ALLOCATE( l_wann( dimwann ) )
-      ALLOCATE( m_wann( dimwann ) )
-      ALLOCATE( ndir_wann( dimwann ) )
-      ALLOCATE( rloc( dimwann ) )
+      ! ALLOCATE( gauss_typ( dimwann ) )
+      ! ALLOCATE( rphiimx1( 3, dimwann ) )
+      ! ALLOCATE( rphiimx2( 3, dimwann ) )
+      ! ALLOCATE( l_wann( dimwann ) )
+      ! ALLOCATE( m_wann( dimwann ) )
+      ! ALLOCATE( ndir_wann( dimwann ) )
+      ! ALLOCATE( rloc( dimwann ) )
 
-      READ(19) gauss_typ(1:dimwann)
-      READ(19) rphiimx1(1:3,1:dimwann)
-      READ(19) rphiimx2(1:3,1:dimwann)
-      READ(19) l_wann(1:dimwann)
-      READ(19) m_wann(1:dimwann)
-      READ(19) ndir_wann(1:dimwann)
-      READ(19) rloc(1:dimwann)
+      READ(19) idum ! gauss_typ(1:dimwann)
+      READ(19) rdum ! rphiimx1(1:3,1:dimwann)
+      READ(19) rdum ! rphiimx2(1:3,1:dimwann)
+      READ(19) idum ! l_wann(1:dimwann)
+      READ(19) idum ! m_wann(1:dimwann)
+      READ(19) idum ! ndir_wann(1:dimwann)
+      READ(19) rdum ! rloc(1:dimwann)
 
 ! ... Read grid information, and G-vectors
 
@@ -2384,7 +2381,7 @@
       DEALLOCATE( cwschur3 )
       DEALLOCATE( cwschur4 )
 
-      DEALLOCATE( nwhich )
+
       DEALLOCATE( vkpt )
       DEALLOCATE( kgv )
       DEALLOCATE( wtkpt )
@@ -2405,6 +2402,7 @@
       DEALLOCATE( wb )
       DEALLOCATE( bka )
       DEALLOCATE( neigh )
+
       DEALLOCATE( rphicmx1 )
       DEALLOCATE( rphicmx2 )
       DEALLOCATE( nphimx1 )
@@ -2431,6 +2429,8 @@
       DEALLOCATE( cdq )
       DEALLOCATE( cpad1 )
       DEALLOCATE( cpad2 )
+
+      CALL deallocate_input()
 
       sf = cclock()
       WRITE( *, * ) 'Total Time (sec) : ', sf - s0
