@@ -368,11 +368,8 @@
         END DO
       END DO
 
-!     WRITE( stdout, fmt= " (2x, 'K-point calculation: (cartesian coordinates in lattice units)' ) " )
       DO nkp = 1 , nkpts
         wtkpt(nkp) =  1.0d0/DBLE(nkpts)
-!       WRITE( stdout, fmt= " (4x, 'k point', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
-!           nkp, ( vkpt(i,nkp), i=1,3 ), wtkpt(nkp)
       END DO
 
       wtktot = 0.d0
@@ -490,8 +487,9 @@
         ! SIZE( cptwfp, 1), SIZE( cptwfp, 2), SIZE( cptwfp, 3), nplwkp( nkp ), nbande
         READ(20) nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
 
-        IF( ( SIZE( cptwfp, 1) < nsiz1_ ) .OR. ( SIZE( cptwfp, 2) < nsiz2_ ) .OR. ( SIZE( cptwfp, 3) < nsiz3_ ) ) THEN
-          WRITE( *, * ) '*** READING cptwfp WRONG DIMENSIONS ***' 
+        IF( ( SIZE( cptwfp, 1) < nsiz1_ ) .OR. ( SIZE( cptwfp, 2) < nsiz2_ ) &
+            .OR. ( SIZE( cptwfp, 3) < nsiz3_ ) ) THEN
+          WRITE( stdout, * ) '*** READING cptwfp WRONG DIMENSIONS ***' 
           STOP
         END IF
 
@@ -511,86 +509,13 @@
 
 !     WRITE(*,*) ' '
 
-!
-!-------------------------------------------------------------------------
-! ... Wannier Functions localization procedure
-!
-
       iseed   = -1
       epsilon = 1.d0
-
-
-      WRITE( stdout, *) ' '
-      WRITE( stdout, fmt= " (2x, 'K-point calculation: (cartesian coordinates in Ang^-1)' ) " )
-
-      ! pass the k-points in cartesian coordinates
-
+!
+!-------------------------------------------------------------------------
+!     Arrigo
       ALLOCATE( vkpr(3,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating vkpr ', 3*nkpts )
- 
-
-      DO nkp = 1, nkpts
-        DO i = 1, 3
-          vkpr(i,nkp) = 0.d0
-          DO j = 1, 3
-            vkpr(i,nkp) = vkpr(i,nkp) + vkpt(j,nkp) * recc(j,i)
-          END DO
-        END DO 
-        WRITE( stdout, fmt= " (4x, 'k point', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
-            nkp, ( vkpr(i,nkp), i=1,3 ), wtkpt(nkp)
-      END DO
-
-! ... Find the distance between k-point 1 and its nearest-neighbour shells
-!     if we have only one k-point, the n-neighbours are its periodic images 
-
-      eta = 99999999.d0
-      eps = 0.000001
-      dnn0 = 0.d0
-      dnn1 = eta
-      ndnntot = 0
-
-! 
-! AC & MBN (April 2002) generic k grid allowed
-!
-      ALLOCATE( dnn(nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnn ', nnmx )
-
-      DO nlist = 1, nnmx
-        DO nkp = 1, nkpts
-          DO l = -5, 5
-            DO m = -5, 5
-              DO n = -5, 5
-                vkpp(1) = vkpr(1,nkp) + l*recc(1,1) + m*recc(2,1) + n*recc(3,1)
-                vkpp(2) = vkpr(2,nkp) + l*recc(1,2) + m*recc(2,2) + n*recc(3,2)
-                vkpp(3) = vkpr(3,nkp) + l*recc(1,3) + m*recc(2,3) + n*recc(3,3)
-                dist = sqrt( (vkpr(1,1)-vkpp(1))**2 + (vkpr(2,1)-vkpp(2))**2 + (vkpr(3,1)-vkpp(3))**2 )
-                IF ( ( dist > eps) .AND. ( dist > dnn0+eps ) ) dnn1 = min(dnn1,dist)
-              END DO
-            END DO
-          END DO
-        END DO
-        IF ( dnn1 < eta-eps ) ndnntot = ndnntot + 1
-        dnn(nlist) = dnn1
-        dnn0 = dnn1
-        dnn1 = eta
-      END DO
-
-      WRITE( stdout,*) ' '
-      WRITE( stdout, fmt= " (2x, 'Nearest-neighbour shells for k-point 1: (in Ang^-1)' ) " )
-      WRITE( stdout,*) ' '
-
-
-      DO ndnn = 1, ndnntot
-      WRITE( stdout, fmt= " (4x, 'shell (',i3,' )    radius = ', f9.5 )")  ndnn, dnn(ndnn)
-      END DO
-      WRITE( stdout,*) ' '
-
-! ... Now build up the list of nearest-neighbour shells for each k-point.
-!     nnlist(nkp,1...nnx) points to the nnx neighbours (ordered along increasing shells)
-!     of the k-point nkp. nncell(i,nkp,nnth) tells us in which BZ is the nnth 
-!     nearest-neighbour of the k-point nkp. Construct the nnx b-vectors that go from k-point
-!     nkp to each neighbour bk(1:3,nkp,1...nnx).
-
       ALLOCATE ( nnshell(nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nnshell ', nkpts*nnmx )
       ALLOCATE ( nnlist(nkpts,nnmx), nntot(nkpts), STAT=ierr ) 
@@ -599,78 +524,6 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nncell ',3*nkpts*nnmx )
       ALLOCATE ( bk(3,nkpts,nnmx), STAT=ierr ) 
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bk ', 3*nkpts*nnmx )
-
-      WRITE(stdout, fmt=" (2x,'Number of nearest-neighbours for K-point 1 (representetive for the BZ):')")
-
-      DO nkp = 1, nkpts
-        nnx = 0
-        DO ndnc = 1, nshells
-          ndnn = nwhich(ndnc)
-          nnshell(nkp,ndnn) = 0
-          DO nkp2 = 1, nkpts
-            DO l = -5, 5
-              DO m = -5, 5
-                DO n = -5, 5
-                  vkpp(1) = vkpr(1,nkp2) + l*recc(1,1) + m*recc(2,1) + n*recc(3,1)
-                  vkpp(2) = vkpr(2,nkp2) + l*recc(1,2) + m*recc(2,2) + n*recc(3,2)
-                  vkpp(3) = vkpr(3,nkp2) + l*recc(1,3) + m*recc(2,3) + n*recc(3,3)
-                  dist = sqrt( (vkpr(1,nkp)-vkpp(1))**2 + (vkpr(2,nkp)-vkpp(2))**2 + (vkpr(3,nkp)-vkpp(3))**2 )
-                  IF ( ( dist >= dnn(ndnn)*0.9999 ) .AND. ( dist <= dnn(ndnn)*1.0001 ) )  THEN
-                    nnx = nnx + 1   
-                    nnshell(nkp,ndnn) = nnshell(nkp,ndnn) + 1
-                    nnlist(nkp,nnx) = nkp2
-                    nncell(1,nkp,nnx) = l
-                    nncell(2,nkp,nnx) = m
-                    nncell(3,nkp,nnx) = n
-                    DO ind = 1, 3
-                      bk(ind,nkp,nnx) = vkpp(ind) - vkpr(ind,nkp)
-                    END DO
-                  END IF
-                END DO
-              END DO
-            END DO
-          END DO
-
-          IF ( nkp == 1) THEN
-            WRITE( stdout, fmt= " (4x, 'shell (', i3, ' )    neighbours  = ', i3 )")  ndnn, nnshell(nkp,ndnn)
-          END IF
-
-          IF ( nnshell(nkp,ndnn) <= 0 ) &
-            CALL errore(' wannier ', ' Shell is empty! ', nnshell(nkp,ndnn) )
-          IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( WTKPT(NKP) > 1e-10) ) &
-            CALL errore(' wannier ', ' Non uniform neighbours! ', nnshell(nkp,ndnn) )
-
-        END DO
-
-        IF ( nnx > nnmx ) CALL errore(' wannier ', ' Too many neighbours !', nnx )
-
-        nntot(nkp) = nnx
-      END DO
-
-! ... Check that the moduli of the b-vectors inside a shell are all identical
-
-      DO nkp = 1, nkpts
-        nnx = 0
-        DO ndnc = 1, nshells
-          ndnn = nwhich(ndnc)
-          DO nnsh = 1, nnshell(nkp,ndnn)
-            bb1 = 0.d0
-            bbn = 0.d0
-            nnx = nnx + 1
-            DO i = 1, 3
-              bb1 = bb1 + bk(i,1,nnx)*bk(i,1,nnx)
-              bbn = bbn + bk(i,nkp,nnx)*bk(i,nkp,nnx)
-            END DO
-
-            IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
-              CALL errore(' new_bshell ', ' Non-symmetric k-point neighbours!', bb1 )
-
-          END DO
-        END DO
-      END DO
-
-! ... Now find the dimensionality of each shell of neighbours
-
       ALLOCATE( dimsingvd(MAX(nnmx,3)), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dimsingvd ', MAX(nnmx,3) )
       ALLOCATE( dimbk(3,nnmx), STAT=ierr )
@@ -683,59 +536,21 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating v2 ', nnmx**2 )
       ALLOCATE( w1(10*nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating w1 ', 10*nnmx )
-
-      nnx = 0
-      DO ndnc = 1, nshells
-        ndnn = nwhich(ndnc)
-        ndim(ndnn) = 0
-
-        DO nnsh = 1, nnshell(1,ndnn)
-          nnx = nnx + 1
-          DO i = 1, 3
-            dimbk(i,nnsh) = bk(i,1,nnx)
-          END Do
-        END DO
-
-        nnsh = nnshell(1,ndnn)
-
-        IF( nnsh > nnmx ) &
-          CALL errore(' wannier ',' nnsh too big ', nnsh )
-
-        dimsingvd(:) = 0.d0
-
-        CALL dgesvd( 'A', 'A', 3, nnsh, dimbk, 3, dimsingvd, v1, 3, v2, nnsh, w1, 10*nnsh, info )
-
-        IF ( info /=0 ) &
-          CALL errore(' wannier ', ' Singular value decomposition dgesvd failed ', info )
-
-        DO nn = 1, nnsh
-          IF ( ABS(dimsingvd(nn) ) > 1d-05 ) ndim(ndnn) = ndim(ndnn) + 1
-        END DO
-        factor = DBLE(ndim(ndnn))/nnshell(1,ndnn)
-
-        WRITE( stdout, *) ' '
-        WRITE( stdout, fmt= " (2x,'Check shell dimensionality and weights:')")
-        WRITE( stdout, fmt= " (4x, 'shell (', i3, ' )    dimensionality  = ', i3 )")  ndnn, ndim(ndnn)
-        WRITE( stdout, fmt= " (4x, 'w_b weight is 1/b^2 times', f8.4 )")  factor
-        WRITE( stdout, *) ' '
-
-!...    17/06/2004
-        IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
-          IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
-               ( nnshell(1,ndnn) /= 12 ) ) THEN
-            WRITE( stdout, *) ' '
-            WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
-            WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
-            END IF
-        END IF
-        IF ( ( nshells /= 1 ) .OR. ( ndim(1) /= 3 ) ) THEN
-          WRITE( stdout, *) ' '
-          WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
-          WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
-        END IF
-!...
-
-      END DO
+      ALLOCATE( bka(3,nnmxh), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bka ', 3*nnmxh )
+      ALLOCATE( neigh(nkpts,nnmxh), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating neigh ', nkpts*nnmxh )
+      ALLOCATE( dnn(nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnn', nnmx )
+      ALLOCATE( wb(nkpts,nnmx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating wb', nnmx )
+!
+! ... Wannier Functions localization procedure
+!
+!     Call b-shell
+      CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
+            dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
+!...  FINE ARRIGO
 
       DEALLOCATE( v1, STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating v1 ', ABS(ierr) )
@@ -743,159 +558,6 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating v2 ', ABS(ierr) )
       DEALLOCATE( w1, STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating w1 ', ABS(ierr) )
-
-      ALLOCATE( wb(nkpts, nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating wb ', nkpts*nnmx )
-
-      DO nkp = 1, nkpts
-        nnx = 0
-        DO ndnc = 1, nshells
-          ndnn = nwhich(ndnc)
-          DO nnsh = 1, nnshell(nkp,ndnn)
-            bb1 = 0.d0
-            bbn = 0.d0
-            nnx = nnx + 1
-            DO i = 1, 3
-              bb1 = bb1 + bk(i,1,nnx) * bk(i,1,nnx)
-              bbn = bbn + bk(i,nkp,nnx) * bk(i,nkp,nnx)
-            END DO
-            wb(nkp,nnx) = DBLE( ndim(ndnn) ) / bbn / nnshell(nkp,ndnn)
-          END DO
-        END DO
-      END DO
-
-!...  17/06/2004
-!     now check that the completeness relation is satisfied
-!     Eq. B1 in Appendix  B PRB 56 12847 (1997)
-
-      DO nkp = 1, nkpts
-
-        DO i = 1, 3
-          DO j = 1, 3
-            ddelta = 0.0
-            nnx = 0
-
-            DO ndnc = 1, nshells
-              ndnn = nwhich(ndnc)
-              DO nnsh =1, nnshell(1,ndnn)
-                nnx = nnx + 1
-                ddelta = ddelta + wb(nkp,nnx) * bk(i,nkp,nnx) * bk(j,nkp,nnx)
-              END DO
-            END DO
-
-            IF ( ( i == j ) .AND. ( ABS( ddelta - 1.0d0 ) > eps ) ) &
-              CALL errore(' new_bshell ', ' B1 not satisfied (I)', 1 )
-
-            IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) &
-              CALL errore(' new_bshell ', ' B1 not satisfied (II)', 1 )
-
-          END DO
-        END DO
-
-      END DO
-
-      WRITE( stdout, fmt=" (2x, 'Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)' )")
-      WRITE(*,*) ' '
-!...
-
-      wbtot = 0.d0
-      nnx = 0
-      DO ndnc = 1, nshells
-        ndnn = nwhich(ndnc)
-       DO nnsh = 1, nnshell(1,ndnn)
-        nnx = nnx + 1
-        wbtot = wbtot + wb(1,nnx)
-       END DO
-      END DO
-
-! ... Now it regroups the bk, in order to have an index that runs along
-!     consistent directions
-
-      DO ndnc = 1, nshells
-        ndnn = nwhich(ndnc)
-        nnh = nnshell(1,ndnn)/2
-        IF ( nnh*2 /= nnshell(1,ndnn) ) THEN
-           WRITE( stdout, * ) ' ******************* ERROR MESSAGE ******************'
-           WRITE( stdout, * ) '  '
-           WRITE( stdout, fmt= " (6x, 'The number of neighbours in each shell must be even ' &
-                                  2i5 )")  ndnn, nnshell(1,ndnn)
-           WRITE( stdout, * ) '  '
-           WRITE( stdout, * ) ' ****************************************************'
-          CALL errore(' new_bshell ', ' Number of neighbours in each shell is too small !', nnh*2 )
-        END IF
-      END DO
-      nnh = nntot(1)/2
-
-! ... Make list of bka vectors from neighbours of first k-point
-!     delete any inverse vectors as you collect them
-
-      ALLOCATE( bka(3,nnmxh), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bka ', 3*nnmxh )
-
-      na = 0
-      DO nn = 1, nntot(1)
-
-        ifound = 0
-        IF ( na /= 0 ) THEN
-          DO nap = 1, na
-            CALL compar( bka(1,nap), bk(1,1,nn), ifpos, ifneg )
-            IF ( ifneg == 1 ) ifound = 1
-          END DO
-        ENDIF
-
-        IF ( ifound == 0 ) THEN    
-! ...     Found new vector to add to set
-          na = na + 1
-          bka(1,na) = bk(1,1,nn)
-          bka(2,na) = bk(2,1,nn)
-          bka(3,na) = bk(3,1,nn)
-        END IF
-      END DO
-
-      IF ( na /= nnh ) CALL errore(' new_bshell ', ' Did not find right number of bk directions', na )
-
-      WRITE (stdout , fmt="(2x, 'List of the ' , i2, ' vectors b_k: (Bohr ^-1) ') ") nntot(1)
-
-      DO i = 1, nntot(1)
-        WRITE( stdout, fmt= " (4x, 'b_k', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
-        i, ( bk(j,1,i), j=1,3 ), wb(1,i)
-      END DO
-
-      WRITE (stdout, *) ' '
-      WRITE (stdout , fmt="(2x, 'The ',i2, '  bk directions are:' )") nnh
-
-      DO i=1,nnh
-        WRITE( stdout, fmt= " (4x, 'dir', i2, ':   ( ',3f9.5, ' ) ' )" ) i, ( bka(j,i), j=1,3 )
-      END DO
-      WRITE (stdout, *) ' '
-
-! ... Find index array
-
-      ALLOCATE( neigh(nkpts,nnmxh), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating neigh ', nkpts*nnmxh )
-
-      DO nkp = 1, nkpts
-
-        DO na = 1, nnh
-
-! ...     first, zero the index array so we can check it gets filled
-
-          neigh(nkp,na) = 0
-
-! ...     now search through list of neighbours of this k-point
-
-          DO nn = 1, nntot(nkp)
-            CALL compar( bka(1,na), bk(1,nkp,nn), ifpos, ifneg )
-            IF ( ifpos == 1 ) neigh(nkp,na) = nn
-          END DO
-
-! ...     check found
-          IF ( neigh(nkp,na) == 0 ) CALL errore(' new_bshell ', ' Check failed ', na )
-
-        END DO
-
-      END DO
-
 
 !     check we got it right -- should just see bka vectors
       IF ( verbosity == 'high' ) THEN
