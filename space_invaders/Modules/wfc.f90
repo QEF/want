@@ -12,9 +12,10 @@
 !*********************************************
    USE kinds, ONLY : dbl
    USE constants, ONLY : CZERO
+   USE parameters, ONLY : nstrx
    USE windows_module, ONLY : nbnd, nkpts, dimwinx, imin, imax
    USE iotk_module
-   USE parameters, ONLY : nstrx
+   USE timing_module, ONLY: timing
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -136,6 +137,7 @@ CONTAINS
        INTEGER            :: ik,ib,ig, index, idum, ierr
        COMPLEX(dbl), ALLOCATABLE :: wtmp(:)
 
+       CALL timing(subname,OPR='start')
        !
        ! ... wfc grids
        !
@@ -208,6 +210,8 @@ CONTAINS
        CALL iotk_scan_end(unit,'Eigenvectors',IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag Eigenvector',ABS(ierr))
         
+       CALL timing(subname,OPR='stop')
+       RETURN
    END SUBROUTINE wfc_read_ext
 
 

@@ -43,7 +43,7 @@
       REAL(dbl)                   :: stop              ! last stop 
       REAL(dbl)                   :: total_time        ! total time up to now
       LOGICAL                     :: running           ! true if clock is counting
-      LOGICAL                     :: alloc = .FALSE.
+      LOGICAL                     :: alloc 
    END TYPE clock
       
    TYPE clock_list
@@ -51,7 +51,7 @@
       CHARACTER(str_len)          :: name              ! list name
       INTEGER                     :: nclock            ! actual number of clocks
       INTEGER                     :: nclock_max        ! max number of clocks
-      LOGICAL                     :: alloc = .FALSE.
+      LOGICAL                     :: alloc 
    END TYPE clock_list
 
    TYPE(clock_list), SAVE         :: internal_list     ! internal use clock
@@ -154,11 +154,13 @@ CONTAINS
       !
       ! public clocks
       !
+      global_list%alloc = .FALSE.
       CALL clock_list_allocate(global_list,nclock_max_,'global')
 
       !
       ! internal clock
       !
+      internal_list%alloc = .FALSE.
       CALL clock_list_allocate(internal_list,1,'internal')
       CALL clock_allocate('internal',internal_list%nclock,internal_list%clock(1))
       CALL clock_start(internal_list%clock(1))
@@ -187,7 +189,7 @@ CONTAINS
       INTEGER,                INTENT(in)    :: nclock_max_     
       CHARACTER(*),           INTENT(in)    :: name
       CHARACTER(19)                         :: sub_name='clock_list_allocate'
-      INTEGER                               :: ierr
+      INTEGER                               :: iclock, ierr
  
       IF ( obj%alloc ) CALL errore(sub_name,'List already allocated',1)
       IF ( nclock_max_ < 1 ) CALL errore(sub_name,'Invalid NCLOCK_MAX',1)
@@ -195,6 +197,11 @@ CONTAINS
 
       ALLOCATE( obj%clock(nclock_max_), STAT=ierr )
       IF ( ierr /= 0 ) CALL errore(sub_name,'Unable to allocate CLOCK',ABS(ierr))
+
+      DO iclock=1,nclock_max_
+         obj%clock(iclock)%alloc = .FALSE.
+      ENDDO
+
       obj%name = TRIM(name)
       obj%nclock = 0
       obj%nclock_max = nclock_max_

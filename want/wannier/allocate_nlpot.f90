@@ -87,20 +87,28 @@ subroutine allocate_nlpot
      if (tvanp(nt)) nkbus = nkbus + nh (nt)
   enddo
   !
-  ALLOCATE (indv( nhm, ntyp))    
-  ALLOCATE (nhtol(nhm, ntyp))    
-  ALLOCATE (nhtolm(nhm, ntyp))    
-  ALLOCATE (nhtoj(nhm, ntyp))    
-  ALLOCATE (deeq( nhm, nhm, nat, nspin))    
-  if (lspinorb) then
+  ALLOCATE (indv( nhm, ntyp), STAT=ierr)    
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating indv',ABS(ierr))
+  ALLOCATE (nhtol(nhm, ntyp), STAT=ierr)    
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating nhtol',ABS(ierr))
+  ALLOCATE (nhtolm(nhm, ntyp), STAT=ierr)    
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating nhtolm',ABS(ierr))
+  ALLOCATE (nhtoj(nhm, ntyp), STAT=ierr)    
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating nntoj',ABS(ierr))
+  ALLOCATE (deeq( nhm, nhm, nat, nspin), STAT=ierr)    
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating deeq',ABS(ierr))
+
+  IF (lspinorb) then
     ! spin orbit is not implemented
     CALL errore('allocate_nlpot','spinorb not implemented',1)
-    !allocate (qq_so(nhm, nhm, 4, ntyp))    
-    !allocate (dvan_so( nhm, nhm, nspin, ntyp))    
-    !allocate (fcoef(nhm,nhm,2,2,ntyp))
+    !ALLOCATE (qq_so(nhm, nhm, 4, ntyp))    
+    !ALLOCATE (dvan_so( nhm, nhm, nspin, ntyp))    
+    !ALLOCATE (fcoef(nhm,nhm,2,2,ntyp))
   else
-    allocate (qq(   nhm, nhm, ntyp))    
-    allocate (dvan( nhm, nhm, ntyp))    
+    ALLOCATE (qq(   nhm, nhm, ntyp), STAT=ierr)    
+       IF (ierr/=0) CALL errore('allocate_nlpot','allocating qq',ABS(ierr))
+    ALLOCATE (dvan( nhm, nhm, ntyp), STAT=ierr)    
+       IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
     !
     ! added for Wannier calc. (ANDREA)
     ALLOCATE (qb(   nhm, nhm, ntyp, mxdnn, nkpts ), STAT=ierr)
@@ -111,22 +119,31 @@ subroutine allocate_nlpot
           / dq + 4) * cell_factor
   lmaxq = 2*lmaxkb+1
   !
-  if (lmaxq > 0) ALLOCATE (qrad( nqxq, nbrx*(nbrx+1)/2, lmaxq, ntyp))    
+  IF (lmaxq > 0) THEN 
+       ALLOCATE (qrad( nqxq, nbrx*(nbrx+1)/2, lmaxq, ntyp), STAT=ierr)    
+       IF (ierr/=0) CALL errore('allocate_nlpot','allocating qrad',ABS(ierr))
+  ENDIF
   !
   ! WFs: here we want to manage all projections at the same time
   !      an extra kpt index is added
   !
-  if (nkb > 0) allocate (vkb( npwx,  nkb, nkpts))    
-  allocate (becsum( nhm * (nhm + 1)/2, nat, nspin))    
+  IF (nkb > 0) THEN 
+       ALLOCATE (vkb( npwx,  nkb, nkpts), STAT=ierr)    
+       IF (ierr/=0) CALL errore('allocate_nlpot','allocating vkb',ABS(ierr))
+  ENDIF
+  ALLOCATE (becsum( nhm * (nhm + 1)/2, nat, nspin), STAT=ierr)    
+       IF (ierr/=0) CALL errore('allocate_nlpot','allocating becsum',ABS(ierr))
   !
   !     Calculate dimensions for array tab (including a possible factor
   !     coming from cell contraction during variable cell relaxation/MD)
   !
   nqx = (sqrt (ecutwfc) / dq + 4) * cell_factor
 
-  allocate (tab( nqx , nbrx , ntyp))    
-  allocate (tab_at( nqx , nchix , ntyp))
+  ALLOCATE (tab( nqx , nbrx , ntyp), STAT=ierr)    
+      IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab',ABS(ierr))
+  ALLOCATE (tab_at( nqx , nchix , ntyp), STAT=ierr)
+      IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab_at',ABS(ierr))
 
-  return
+  RETURN
 end subroutine allocate_nlpot
 

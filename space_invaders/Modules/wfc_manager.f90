@@ -90,11 +90,11 @@ CONTAINS
       WRITE( stdout,"(/,2x,'Reading density G-grid from file: ',a)") TRIM(filename)
       CALL ggrids_read_ext(dft_unit)
 
-      
       !
       ! ... wfcs
       WRITE( stdout,"(  2x,'Reading Wfcs from file: ',a)") TRIM(filename)
       CALL wfc_read_ext(dft_unit)
+
 
       !
       ! ... closing the main data file
