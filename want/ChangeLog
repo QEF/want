@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+21 Mar 2005      DFT data filename written in output corrected. (AF)
+
 18 Mar 2005      Fixed a bug in ions.f90: different atomic species were not properly
                  treated. (AF)
 
