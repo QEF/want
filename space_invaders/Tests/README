@@ -1,6 +1,9 @@
 
                   List of the available Test calculations
 
+Before run any test, please configure the ENVIRONMENT.CONF file as described
+in the header of the same file
+
 ==============================================================================
 
 TEST1
