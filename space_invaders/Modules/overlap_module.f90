@@ -37,9 +37,9 @@
 ! declarations of common variables
 !   
 
-   COMPLEX(dbl), POINTER       :: cm(:,:,:,:)    ! <u_nk|u_mk+b> overlap
+   COMPLEX(dbl), ALLOCATABLE   :: cm(:,:,:,:)    ! <u_nk|u_mk+b> overlap
                                                  ! DIM: mxdbnd,mxdbnd,mxdnn,nkpts
-   COMPLEX(dbl), POINTER       :: ca(:,:,:)      ! <u_nk|phi_lk> projection
+   COMPLEX(dbl), ALLOCATABLE   :: ca(:,:,:)      ! <u_nk|phi_lk> projection
                                                  ! DIM: mxdbnd,dimwann,nkpts
    
 
@@ -84,11 +84,11 @@ CONTAINS
        CHARACTER(18)      :: subname="overlap_deallocate"
        INTEGER            :: ierr 
 
-       IF ( ASSOCIATED(cm) ) THEN
+       IF ( ALLOCATED(cm) ) THEN
             DEALLOCATE(cm, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating cm ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(ca) ) THEN
+       IF ( ALLOCATED(ca) ) THEN
             DEALLOCATE(ca, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating ca ',ABS(ierr))
        ENDIF

@@ -34,23 +34,23 @@
 
    !
    ! ... the hamiltonian in the final subspace
-   REAL(dbl),    POINTER       :: s_eig(:,:)         ! the eigenvalues in the new subspace
-   COMPLEX(dbl), POINTER       :: ham(:,:,:)         ! the hamiltonian in the subspace
+   REAL(dbl),    ALLOCATABLE   :: s_eig(:,:)         ! the eigenvalues in the new subspace
+   COMPLEX(dbl), ALLOCATABLE   :: ham(:,:,:)         ! the hamiltonian in the subspace
                                                      ! mxdbnd, mxdbnd, nkpts
    !
    ! ... rotations defining the chosen subspace
-   COMPLEX(dbl), POINTER       :: lamp(:,:,:)        ! mxdbnd, mxdbnd, nkpts
-   COMPLEX(dbl), POINTER       :: camp(:,:,:)        ! equal
-   COMPLEX(dbl), POINTER       :: eamp(:,:,:)        ! equal
-   COMPLEX(dbl), POINTER       :: eamp_save(:,:,:)        ! equal
+   COMPLEX(dbl), ALLOCATABLE   :: lamp(:,:,:)        ! mxdbnd, mxdbnd, nkpts
+   COMPLEX(dbl), ALLOCATABLE   :: camp(:,:,:)        ! equal
+   COMPLEX(dbl), ALLOCATABLE   :: eamp(:,:,:)        ! equal
+   COMPLEX(dbl), ALLOCATABLE   :: eamp_save(:,:,:)   ! equal
    !
    ! NOTE: the second dimension should be DIMWANN instead of MXDBND but, 
    !       for coherence with the old notation about frozen states 
    !       (the total number of states is DIMWANN + DIMFROZ_max) matrixes are
    !       overallocated.
    !
-   COMPLEX(dbl), POINTER       :: mtrx_in(:,:,:)   ! equal
-   COMPLEX(dbl), POINTER       :: mtrx_out(:,:,:)  ! equal
+   COMPLEX(dbl), ALLOCATABLE   :: mtrx_in(:,:,:)   ! equal
+   COMPLEX(dbl), ALLOCATABLE   :: mtrx_out(:,:,:)  ! equal
    
 
 !
@@ -112,35 +112,35 @@ CONTAINS
        CHARACTER(19)      :: subname="subspace_deallocate"
        INTEGER            :: ierr 
       
-       IF ( ASSOCIATED(s_eig) ) THEN 
+       IF ( ALLOCATED(s_eig) ) THEN 
             DEALLOCATE(s_eig, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating s_eig ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(ham) ) THEN 
+       IF ( ALLOCATED(ham) ) THEN 
             DEALLOCATE(ham, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating ham ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(lamp) ) THEN 
+       IF ( ALLOCATED(lamp) ) THEN 
             DEALLOCATE(lamp, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating lamp ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(camp) ) THEN 
+       IF ( ALLOCATED(camp) ) THEN 
             DEALLOCATE(camp, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating camp ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(eamp) ) THEN 
+       IF ( ALLOCATED(eamp) ) THEN 
             DEALLOCATE(eamp, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating eamp ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(eamp_save) ) THEN 
+       IF ( ALLOCATED(eamp_save) ) THEN 
             DEALLOCATE(eamp_save, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating eamp_save ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(mtrx_in) ) THEN 
+       IF ( ALLOCATED(mtrx_in) ) THEN 
             DEALLOCATE(mtrx_in, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating mtrx_in ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(mtrx_out) ) THEN 
+       IF ( ALLOCATED(mtrx_out) ) THEN 
             DEALLOCATE(mtrx_out, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating mtrx_out ',ABS(ierr))
        ENDIF

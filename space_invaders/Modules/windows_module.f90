@@ -31,19 +31,19 @@
    INTEGER                     :: mxdbnd             ! = MAX(dimwin (:)) over kpts
    !
    ! ... starting states within the energy window
-   INTEGER,      POINTER       :: dimwin(:)          ! define which eigenv are in the
-   INTEGER,      POINTER       :: imin(:)            ! chosen energy window
-   INTEGER,      POINTER       :: imax(:)            ! dim: nkpts
-   REAL(dbl),    POINTER       :: eig(:,:)           ! DFT eigenv; dim: mxdbnd, nkpts
+   INTEGER,      ALLOCATABLE   :: dimwin(:)          ! define which eigenv are in the
+   INTEGER,      ALLOCATABLE   :: imin(:)            ! chosen energy window
+   INTEGER,      ALLOCATABLE   :: imax(:)            ! dim: nkpts
+   REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: mxdbnd, nkpts
    LOGICAL                     :: lcompspace=.TRUE.  ! whether COMPLEMENT space is NOT null
 
    !
    ! ... frozen states
-   INTEGER,      POINTER       :: dimfroz(:)         ! variable for using frozen (dim: nkpts)
-   INTEGER,      POINTER       :: indxfroz(:,:)      ! states which are kept equal
-   INTEGER,      POINTER       :: indxnfroz(:,:)     ! dim: mxdbnd nkpts
+   INTEGER,      ALLOCATABLE   :: dimfroz(:)         ! variable for using frozen (dim: nkpts)
+   INTEGER,      ALLOCATABLE   :: indxfroz(:,:)      ! states which are kept equal
+   INTEGER,      ALLOCATABLE   :: indxnfroz(:,:)     ! dim: mxdbnd nkpts
    LOGICAL                     :: lfrozen =.FALSE.   ! whether FROZEN states are present
-   LOGICAL,      POINTER       :: frozen(:,:)        ! which are the frozen states
+   LOGICAL,      ALLOCATABLE   :: frozen(:,:)        ! which are the frozen states
                                                      ! dim: mxdbnd, nkpts
 !
 ! end of declarations
@@ -100,35 +100,35 @@ CONTAINS
        CHARACTER(18)      :: subname="windows_deallocate"
        INTEGER            :: ierr
 
-       IF ( ASSOCIATED(dimwin) ) THEN
+       IF ( ALLOCATED(dimwin) ) THEN
             DEALLOCATE(dimwin, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating dimwin ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(imin) ) THEN
+       IF ( ALLOCATED(imin) ) THEN
             DEALLOCATE(imin, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating imin ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(imax) ) THEN
+       IF ( ALLOCATED(imax) ) THEN
             DEALLOCATE(imax, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating imax ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(eig) ) THEN
+       IF ( ALLOCATED(eig) ) THEN
             DEALLOCATE(eig, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating eig ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(dimfroz) ) THEN
+       IF ( ALLOCATED(dimfroz) ) THEN
             DEALLOCATE(dimfroz, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating dimfroz ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(indxfroz) ) THEN
+       IF ( ALLOCATED(indxfroz) ) THEN
             DEALLOCATE(indxfroz, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating indxfroz ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(indxnfroz) ) THEN
+       IF ( ALLOCATED(indxnfroz) ) THEN
             DEALLOCATE(indxnfroz, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating indxnfroz ',ABS(ierr))
        ENDIF
-       IF ( ASSOCIATED(frozen) ) THEN
+       IF ( ALLOCATED(frozen) ) THEN
             DEALLOCATE(frozen, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating frozen ',ABS(ierr))
        ENDIF
