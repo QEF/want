@@ -117,10 +117,10 @@
         READ(21) nplwkp(nkp)
       END DO
 
-      ALLOCATE( nindpw( MAX(mxddim,mplwv),nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nindpw ', MAX(mxddim,mplwv)*nkpts )
+      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nindpw ', mxddim*nkpts )
       DO nkp = 1, nkpts
-        DO n = 1, mplwv
+        DO n = 1, mxddim
           READ(21) nindpw(n,nkp)
         END DO
       END DO

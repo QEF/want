@@ -2100,7 +2100,7 @@
       ENDDO
 
       DO nkp = 1, nkpts
-        DO n = 1, mplwv
+        DO n = 1, mxddim
           WRITE (21) nindpw(n,nkp)
         END DO
       END DO
@@ -2231,6 +2231,8 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cpad1 ', ABS(ierr) )
       DEALLOCATE( cpad2, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cpad2 ', ABS(ierr) )
+      DEALLOCATE( nindpw, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nindpw ', ABS(ierr) )
 
       CALL deallocate_input()
 
