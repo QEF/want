@@ -56,6 +56,7 @@ clean:
 	cd Libs; $(MAKE) clean;
 	cd Main; $(MAKE) clean;
 	cd Transport; $(MAKE) clean;
+        cd Tests; $(MAKE) clean;
 
 veryclean : clean
 	- /bin/rm -rf make.rules make.sys */.dependencies \
