@@ -1,0 +1,170 @@
+!
+! Copyright (C) 2004 Andrea Ferretti
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License\'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+
+!*********************************************
+   MODULE overlap_module
+!*********************************************
+   USE kinds, ONLY : dbl
+   USE windows_module, ONLY : mxdbnd
+   USE kpoints_module, ONLY : nkpts, mxdnn
+   USE input_wannier,  ONLY : dimwann
+   USE iotk_module
+   USE parameters, ONLY : nstrx
+   IMPLICIT NONE
+   PRIVATE
+   SAVE
+
+! This module handles data referring to OVERLAP among
+! the periodic part of bloch wfcs and thier projections
+! onto the localized starting orbitals.
+!
+! XXX implementare il caso in cui le proiezioni non vengono
+!     fatte da disentangle (farle fare cmq per esportarle)
+!
+! routines in this module:
+! SUBROUTINE overlap_allocate()
+! SUBROUTINE overlap_deallocate()
+! SUBROUTINE overlap_write(unit,name)
+! SUBROUTINE overlap_read(unit,name,found)
+
+!
+! declarations of common variables
+!   
+
+   COMPLEX(dbl), POINTER       :: cm(:,:,:,:)    ! <u_nk|u_mk+b> overlap
+                                                 ! DIM: mxdbnd,mxdbnd,mxdnn,nkpts
+   COMPLEX(dbl), POINTER       :: ca(:,:,:)      ! <u_nk|phi_lk> projection
+                                                 ! DIM: mxdbnd,dimwann,nkpts
+   
+
+!
+! end of declarations
+!
+
+   PUBLIC :: cm, ca
+   PUBLIC :: overlap_allocate
+   PUBLIC :: overlap_deallocate
+   PUBLIC :: overlap_write
+   PUBLIC :: overlap_read
+
+CONTAINS
+
+!
+! subroutines
+!
+
+!**********************************************************
+   SUBROUTINE overlap_allocate()
+   !**********************************************************
+   IMPLICIT NONE
+       CHARACTER(16)      :: subname="overlap_allocate"
+       INTEGER            :: ierr 
+
+       IF ( mxdbnd <= 0 .OR. nkpts <= 0 .OR. dimwann <= 0) &
+           CALL errore(subname,' Invalid MXDBND, NKPTS, DIMWANN ',1)
+
+       ALLOCATE( cm(mxdbnd,mxdbnd,mxdnn,nkpts), STAT=ierr )       
+           IF ( ierr/=0 ) CALL errore(subname,' allocating cm ',mxdbnd**2*mxdnn*nkpts)
+       ALLOCATE( ca(mxdbnd,dimwann,nkpts), STAT=ierr )       
+           IF ( ierr/=0 ) CALL errore(subname,' allocating ca ',mxdbnd*dimwann*nkpts)
+      
+   END SUBROUTINE overlap_allocate
+
+
+!**********************************************************
+   SUBROUTINE overlap_deallocate()
+   !**********************************************************
+   IMPLICIT NONE
+       CHARACTER(18)      :: subname="overlap_deallocate"
+       INTEGER            :: ierr 
+
+       IF ( ASSOCIATED(cm) ) THEN
+            DEALLOCATE(cm, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating cm ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(ca) ) THEN
+            DEALLOCATE(ca, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating ca ',ABS(ierr))
+       ENDIF
+
+   END SUBROUTINE overlap_deallocate
+
+
+!**********************************************************
+   SUBROUTINE overlap_write(unit,name)
+   !**********************************************************
+   IMPLICIT NONE
+       INTEGER,         INTENT(in) :: unit
+       CHARACTER(*),    INTENT(in) :: name
+       CHARACTER(nstrx)   :: attr
+       CHARACTER(13)      :: subname="overlap_write"
+
+       CALL iotk_write_begin(unit,TRIM(name))
+       CALL iotk_write_attr(attr,"mxdbnd",mxdbnd,FIRST=.TRUE.)
+       CALL iotk_write_attr(attr,"dimwann",dimwann)
+       CALL iotk_write_attr(attr,"mxdnn",mxdnn)
+       CALL iotk_write_attr(attr,"nkpts",nkpts)
+       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+
+       CALL iotk_write_dat(unit,"OVERLAP",cm)
+       CALL iotk_write_dat(unit,"PROJECTIONS",ca)
+
+       CALL iotk_write_end(unit,TRIM(name))
+   END SUBROUTINE overlap_write
+
+
+!**********************************************************
+   SUBROUTINE overlap_read(unit,name,found)
+   !**********************************************************
+   IMPLICIT NONE
+       INTEGER,           INTENT(in) :: unit
+       CHARACTER(*),      INTENT(in) :: name
+       LOGICAL,           INTENT(out):: found
+       CHARACTER(nstrx)   :: attr
+       CHARACTER(12)      :: subname="overlap_read"
+       INTEGER            :: mxdbnd_, dimwann_, mxdnn_, nkpts_
+       INTEGER            :: ierr
+
+       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+       IF (.NOT. found) RETURN
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+
+       CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
+
+       CALL iotk_scan_attr(attr,'mxdbnd',mxdbnd_,IERR=ierr)
+          IF (ierr/=0) CALL errore(subname,'Unable to find attr MXDBND',ABS(ierr))
+          IF ( mxdbnd_ /= mxdbnd) &
+               CALL errore(subname,'Invalid MXDBND',ABS(mxdbnd_-mxdbnd))
+       CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
+          IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
+          IF ( dimwann_ /= dimwann) &
+               CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_-dimwann))
+       CALL iotk_scan_attr(attr,'mxdnn',mxdnn_,IERR=ierr)
+          IF (ierr/=0) CALL errore(subname,'Unable to find attr MXDNN',ABS(ierr))
+          IF ( mxdnn_ /= mxdnn) &
+               CALL errore(subname,'Invalid MXDNN',ABS(mxdnn_-mxdnn))
+       CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
+          IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+          IF ( nkpts_ /= nkpts) &
+               CALL errore(subname,'Invalid NKPTS',ABS(nkpts_-nkpts))
+
+       CALL overlap_allocate()       
+
+       CALL iotk_scan_dat(unit,'OVERLAP',cm,IERR=ierr)
+          IF (ierr/=0) CALL errore(subname,'Unable to find OVERLAP',ABS(ierr))
+       CALL iotk_scan_dat(unit,'PROJECTION',ca,IERR=ierr)
+          IF (ierr/=0) CALL errore(subname,'Unable to find PROJECTION',ABS(ierr))
+
+       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+   END SUBROUTINE overlap_read
+
+END MODULE overlap_module
+
