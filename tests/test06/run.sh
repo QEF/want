@@ -100,11 +100,12 @@ if [ -z "$CLEAN" ] ; then
        ln -sf $TEST_HOME ./HOME
    fi
    test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
+
+   cd $TMPDIR/$TEST_NAME
 fi
 
 
 #-----------------------------------------------------------------------------
-cd $TMPDIR/$TEST_NAME
 
 #
 # running PWSCF SCF
@@ -252,7 +253,6 @@ if [ "$CLEAN" = ".TRUE." ] ; then
       rm -rf *.out 2> /dev/null
       test -e SCRATCH && rm SCRATCH
    cd $TMPDIR
-      test -e $TEST_NAME/HOME && rm $TEST_NAME/HOME
       test -d $TEST_NAME && rm -rf $TEST_NAME
    exit 0
 fi

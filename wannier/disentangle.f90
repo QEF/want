@@ -13,6 +13,7 @@
 
        USE kinds
        USE constants, ONLY: pi, ryd => ry, har => au, bohr => bohr_radius_angs
+       USE constants, ONLY: ONE, CZERO, ZERO 
        USE mp, ONLY: mp_start, mp_end, mp_env
        USE mp_global, ONLY: mp_global_start
        USE io_module, ONLY: io_global_start, io_global_getionode, stdout
@@ -21,21 +22,26 @@
        USE version_module, ONLY : version_number
        USE input_wannier
        USE converters_module, ONLY : cart2cry
-       USE kpoints, ONLY: nk, s, vkpt, kpoints_init
+       USE iotk_module
+
+       USE kpoints_module, ONLY: nk, nkpts, s, vkpt, kpoints_init
        USE ions, ONLY: rat, atmass, ntype, natom, nameat
        USE lattice, ONLY: avec, recc, alat, lattice_init
-       USE iotk_module
+       USE windows_module, ONLY : mxdbnd, dimwin, imin, imax, eig, lcompspace, &
+                                  dimfroz, indxfroz, indxnfroz, lfrozen, frozen
+       USE windows_module, ONLY : windows_allocate, windows_deallocate
+       USE subspace_module, ONLY : s_eig, ham, lamp, camp, eamp, eamp_save, mtrx_in, mtrx_out
+       USE subspace_module, ONLY : subspace_allocate, subspace_deallocate
 
 
        IMPLICIT NONE
 
-       INTEGER :: mxdbnd, npwx
+       INTEGER :: npwx
        INTEGER :: mxdgve
 
        INTEGER, PARAMETER :: mxdnn = 12
        INTEGER, PARAMETER :: mxdnnh = mxdnn/2
 
-       INTEGER :: nkpts
        INTEGER, ALLOCATABLE :: igv(:,:)
        INTEGER, ALLOCATABLE :: igsort(:,:)
        INTEGER, ALLOCATABLE :: npwk(:)
@@ -61,25 +67,7 @@
        REAL(dbl) :: omega_i, omega_i_est, komegai
        REAL(dbl) :: o_error
        REAL(dbl), ALLOCATABLE :: komega_i_est(:)
-       COMPLEX(dbl), ALLOCATABLE :: lamp(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: camp(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: eamp(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: eamp_save(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: mtrx_in(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: mtrx_out(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: lvec(:,:)
-       INTEGER, ALLOCATABLE :: dimwin(:)
-
-! ...  Next 2 lines added by ANDREA (28 jan 2004) 
-       INTEGER, ALLOCATABLE :: imin(:)
-       INTEGER, ALLOCATABLE :: imax(:)
-
-       INTEGER, ALLOCATABLE :: dimfroz(:)
-       INTEGER, ALLOCATABLE :: indxfroz(:,:)
-       INTEGER, ALLOCATABLE :: indxnfroz(:,:)
-       INTEGER :: froz_flag 
-       INTEGER :: cflag
-       LOGICAL, ALLOCATABLE :: frozen(:,:)
 
        COMPLEX(dbl), ALLOCATABLE :: ap(:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
@@ -90,23 +78,14 @@
        INTEGER, ALLOCATABLE :: iwork(:)
        INTEGER :: info, m
  
-       COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
- 
        INTEGER :: i, j, l, i1, i2, i3 
        INTEGER :: nkp, iter
 
        EXTERNAL lambda_avg
-
        REAL(dbl) :: aux
        REAL(dbl) :: lambda_avg
-
        COMPLEX(dbl) :: ctmp
-
-
-       REAL(dbl) :: zero, sgn, um
-       COMPLEX(dbl) :: czero
-       PARAMETER ( zero = 0.0d0, um = 1.0d0 )
-       PARAMETER ( czero = ( 0.0d0, 0.0d0 ) )
+       REAL(dbl) :: sgn
 
        INTEGER :: nt, ja, nbandi
        INTEGER :: ngx, ngy, ngz
@@ -201,20 +180,17 @@
        ! ... end standard input
 
        CALL wannier_center_init( alat, avec )
-
        CALL lattice_init()
 
 !...   Start writing output
 
        ! ****ATTENTION
        ! emax is reported in output in Rydberg, but it used in Hartree in the code
-       WRITE( stdout, fmt= " (2x,'Kinetic energy cut-off =  ', F7.2, ' (Ry)' ) " ) emax * 2.0
-       WRITE( stdout, * ) ' '
-       WRITE( stdout, fmt= " (2x, 'Uniform grid used in wannier calculations:' )")
-       WRITE( stdout, fmt= " (4x, 'nk = (', 3i3, ' )      s = (', 3f6.2, ' )' )" ) &
+       WRITE( stdout, "(2x,'Kinetic energy cut-off =  ', F7.2, ' (Ry)',/ )") emax * 2.0
+       WRITE( stdout, "(2x, 'Uniform grid used in wannier calculations:' )")
+       WRITE( stdout, "(4x, 'nk = (', 3i3, ' )      s = (', 3f6.2, ' )' )" ) &
                                nk(1), nk(2), nk(3), s(1), s(2), s(3)
-       WRITE( stdout, fmt= " (4x,'total number of k points =',i5 )" )nk(1) * nk(2) * nk(3)
-       WRITE( stdout, * ) '  '
+       WRITE( stdout, "(4x,'total number of k points =',i5,/ )" )nk(1) * nk(2) * nk(3)
 !
 ! ...  Read grid information, and G-vectors 
  
@@ -226,6 +202,8 @@
 ! ...  Calculate grid of K-pointS
  
        CALL kpoints_init( nkpts )
+       CALL windows_allocate()
+       CALL subspace_allocate()
 
 
        ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
@@ -272,50 +250,11 @@
        ALLOCATE( cm(mxdbnd,mxdbnd,mxdnn,nkpts), STAT = ierr )
            IF( ierr /=0 ) &
            CALL errore(' disentangle ', ' allocating cm ', mxdbnd*mxdbnd*mxdnn*nkpts )
-
        ALLOCATE( komega_i_est(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating komega_i_est ', nkpts )
-       ALLOCATE( lamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating lamp ', mxdbnd*mxdbnd*nkpts )
-       ALLOCATE( camp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating camp ', mxdbnd*mxdbnd*nkpts )
-       ALLOCATE( eamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
-       ALLOCATE( eamp_save(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
-       ALLOCATE( mtrx_in(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating mtrx_in ', mxdbnd*mxdbnd*nkpts )
-       ALLOCATE( mtrx_out(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating mtrx_out ', mxdbnd*mxdbnd*nkpts )
-       ALLOCATE( dimwin(nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating dimwin ', nkpts )
-       ALLOCATE( dimfroz(nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating dimfroz ', nkpts )
-       ALLOCATE( indxfroz(mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating indxfroz ',mxdbnd*nkpts)
-       ALLOCATE( indxnfroz(mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating indxnfroz ',mxdbnd*nkpts)
-       ALLOCATE( frozen(mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating frozen ', mxdbnd*nkpts )
-       ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating ham ', mxdbnd*mxdbnd*nkpts )
 !
-! ...  Next line added by ANDREA (28 jan 2004) 
-       ALLOCATE( imin(nkpts), imax(nkpts), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating imin imax ', nkpts )
-
 !
 ! ...  Read wave functions and energy eigenvalues defining the "window space"
-
-       froz_flag = 0
-
 
        DO nkp = 1, nkpts
 !
@@ -379,7 +318,7 @@
          IF ( dimfroz(nkp) < dimwin(nkp) )  &
                 READ(19) ( indxnfroz(i,nkp), i=1, dimwin(nkp)-dimfroz(nkp) )
 
-         IF ( dimfroz(nkp) /= 0 ) froz_flag = 1
+         IF ( dimfroz(nkp) /= 0 ) lfrozen = .TRUE.
 
        END DO  ! nkp
 
@@ -402,13 +341,12 @@
 !
 ! ...  Start iteration loop
 
-       cflag = 0
        DO iter = 1, maxiter
          IF ( iter == 1 ) THEN
 
 ! ...    Choose an initial trial subspace at each K
 
-           IF ( froz_flag == 0 ) THEN
+           IF ( .NOT. lfrozen ) THEN
 
 ! ...      No frozen states
 
@@ -554,7 +492,7 @@
              IF ( dimwann > dimfroz(nkp) )  THEN
                DO i = 1, dimwin(nkp)-dimfroz(nkp)
                  DO j = 1, i
-                   mtrx_in(j,i,nkp) = alpha*mtrx_out(j,i,nkp) + (um-alpha)*mtrx_in(j,i,nkp)
+                   mtrx_in(j,i,nkp) = alpha*mtrx_out(j,i,nkp) + (ONE-alpha)*mtrx_in(j,i,nkp)
                    mtrx_in(i,j,nkp) = conjg(mtrx_in(j,i,nkp))         ! hermiticity
                  END DO
                END DO
@@ -577,7 +515,7 @@
              END DO
 
              CALL zhpevx( 'v', 'a', 'u', dimwin(nkp)-dimfroz(nkp), ap(1),             &
-                  zero, zero, 0, 0, -um, m, w(1), z(1,1), mxdbnd, work(1), rwork(1),  &
+                  ZERO, ZERO, 0, 0, -ONE, m, w(1), z(1,1), mxdbnd, work(1), rwork(1),  &
                   iwork(1), ifail(1), info )
 
              IF ( info < 0 ) &
@@ -658,7 +596,7 @@
                 END DO
                
              ELSE
-                cflag = 1
+                lcompspace = .FALSE.
                 WRITE( stdout, fmt="(/,2x, 'Warning!' )")
                 WRITE( stdout, fmt="(4x, 'at k-point ',i4,' the complement subspace '// &
                        & 'has zero dimensions' )") nkp
@@ -742,7 +680,7 @@
            END DO
          END DO
 
-         CALL zhpevx( 'v', 'a', 'u', dimwann, ap(1), zero, zero, 0, 0, -um,           &
+         CALL zhpevx( 'v', 'a', 'u', dimwann, ap(1), ZERO, ZERO, 0, 0, -ONE,           &
               m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
          IF ( info < 0 ) &
            CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', -info )
@@ -797,7 +735,7 @@
 
        eamp_save = eamp
 
-       IF ( cflag == 1 )  THEN
+       IF ( .NOT. lcompspace )  THEN
          WRITE(stdout,"(/,2x,'Warning')")
          WRITE(stdout,"('  at some k-point(s) complement subspace has zero dimensionality')")
          WRITE(stdout,"(2x,'=> did not create file compspace.dat')")
@@ -824,7 +762,7 @@
            END DO
 
            CALL zhpevx( 'v', 'a', 'u', dimwin(nkp)-dimwann, ap(1),             &
-                zero, zero, 0, 0, -um, m, w(1), z(1,1), mxdbnd, work(1),       &
+                ZERO, ZERO, 0, 0, -ONE, m, w(1), z(1,1), mxdbnd, work(1),       &
                 rwork(1), iwork(1), ifail(1), info )
            IF ( info < 0 ) &
              CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', -info )
@@ -845,7 +783,7 @@
 
          END DO ! end ok nkp loop
 
-       ENDIF    ! cflag=1
+       ENDIF    ! lcompspace
 
 
 ! ...  Write to a file the energy "eigenvectors" in the complement subspace 
@@ -920,30 +858,9 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating bka ', ABS(ierr) )
        DEALLOCATE( cm, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating cm ', ABS(ierr) )
-
        DEALLOCATE( komega_i_est, STAT=ierr )
            IF( ierr /=0 ) &
            CALL errore(' disentangle ', ' deallocating k_omega_i_est ', ABS(ierr) )
-       DEALLOCATE( lamp, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating lamp ', ABS(ierr) )
-       DEALLOCATE( camp, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating camp ', ABS(ierr) )
-       DEALLOCATE( eamp, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating eamp ', ABS(ierr) )
-       DEALLOCATE( mtrx_in, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating mtrx_in ', ABS(ierr) )
-       DEALLOCATE( mtrx_out, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating mtrx_out ', ABS(ierr) )
-       DEALLOCATE( dimwin, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating dimwin ', ABS(ierr) )
-       DEALLOCATE( dimfroz, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating dimfroz ', ABS(ierr) )
-       DEALLOCATE( indxfroz, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating indxfroz ', ABS(ierr) )
-       DEALLOCATE( indxnfroz, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating indxnfroz ',ABS(ierr) )
-       DEALLOCATE( frozen, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating frozen ', ABS(ierr) )
 
        DEALLOCATE( ap, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ap ', ABS(ierr) )
@@ -959,14 +876,11 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ifail ', ABS(ierr) )
        DEALLOCATE( iwork, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating iwork ', ABS(ierr) )
-       DEALLOCATE( imin, imax, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating imin imax ', ABS(ierr))
-
-       DEALLOCATE( ham, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ham ', ABS(ierr) )
-
 
        CALL deallocate_input()
+       CALL windows_deallocate()
+       CALL subspace_deallocate()
+
 
        CALL timing('disentangle',OPR='stop')
        CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='disentangle')

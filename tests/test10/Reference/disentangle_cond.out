@@ -8,7 +8,7 @@
   
   
   Program <disentangle>  v. -1.1.  starts ...
-  Date  5Nov2004 at 17:57:22 
+  Date 15Nov2004 at 11:43:47 
 
   ======================================================================
   =                         Lattice parameters                         =
@@ -34,23 +34,23 @@
     b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.8889 )
   
   Kinetic energy cut-off =    20.00 (Ry)
-  
+
   Uniform grid used in wannier calculations:
     nk = (  4  1  1 )      s = (  0.00  0.00  0.00 )
     total number of k points =    4
-   
+
    Energy windows (in eV) and band-space minimization parameters:
     outer window: E  = (-22.0000 ,  -4.5000 )
     inner window: NOT used --> NO FROZEN STATES
-  
+
     Number of bands in PW calculation =   20
     Max number of bands within the energy window =    16
     Number of Wannier functions required =    16
-  
+
   K-point shells: 
     Number of shells =   2
     Selected shells  =   1  4
-  
+
   Minimization data: 
     Mixing parameter (alpha)=  0.500
     Max iter =   300
@@ -114,9 +114,9 @@
     dir 2:   (   0.00000 -0.50959  0.00000 ) 
     dir 3:   (   0.00000  0.00000 -0.50959 ) 
   
-  
+
   Initial trial subspace: projected localized orbitals
-  
+
   Gaussian centers: (cart. coord. in Bohr)
     Center =   1 Type = 1 Gaussian  = (  1.152733  0.000000  0.000000 ) 
     Center =   2 Type = 1 Gaussian  = (  1.152733  0.000000  0.000000 ) 
@@ -134,26 +134,26 @@
     Center =  14 Type = 1 Gaussian  = ( 16.686287  0.000000  0.000000 ) 
     Center =  15 Type = 1 Gaussian  = ( 16.686287  0.000000  0.000000 ) 
     Center =  16 Type = 1 Gaussian  = ( 19.275213  0.000000  0.000000 ) 
-   
-  ======================================================================
-  =                   Starting Iteration loop                          =
-  ======================================================================
-   
+
+ ======================================================================
+ =                   Starting Iteration loop                          =
+ ======================================================================
+
   Iteration =     1   Omega_I Error =      0.00000000
-  
+
   Convergence achieved!!
-  
+
   Final Omega_I (Bohr^2, Angstrom^2)    133.17498494       37.29276428
-  ======================================================================
+ ======================================================================
 
    <global routines>
              clock number :     5
 
-              disentangle :    25.73s CPU 
+              disentangle :    33.20s CPU 
  
-                  bshells :     0.24s CPU
-                  overlap :    17.53s CPU
-             overlap_base :    17.51s CPU
-               projection :     6.36s CPU
+                  bshells :     0.02s CPU
+                  overlap :    21.27s CPU
+             overlap_base :    21.24s CPU
+               projection :    10.44s CPU
 
 
