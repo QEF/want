@@ -30,6 +30,10 @@ do
 	fi
 done
 
+# TEMPORARY by Carlo Cavazzoni Parallelism not yet implemented
+no_parallel=1
+##############################################################
+
 # configure for current directory by default
 if test "$topdir" = "" ; then topdir="`pwd`" ; fi
 
@@ -300,9 +304,7 @@ ia64-*-linux-gnu:ifort )
 		# old versions of ifc require this stuff
 		echo $ECHO_N "setting up ifc environment... $ECHO_C"
 		try_f90flags="\$(FFLAGS) -cl,./intel.pcl"
-		pcl_ph="D3"
-		pcl_pw="PH PP Gamma PWNC PWCOND pwtools $pcl_ph"
-		pcl_modules="PW FPMD CPV flib upftools $pcl_pw"
+		pcl_modules="Transport Main Libs"
 		pcl_dot=". Modules $pcl_modules"
 		for dir in $pcl_dot
 		do
@@ -311,14 +313,6 @@ ia64-*-linux-gnu:ifort )
 		for dir in $pcl_modules
 		do
 			echo ../Modules/work.pc >> $topdir/$dir/intel.pcl
-		done
-		for dir in $pcl_pw
-		do
-			echo ../PW/work.pc >> $topdir/$dir/intel.pcl
-		done
-		for dir in $pcl_ph
-		do
-			echo ../PH/work.pc >> $topdir/$dir/intel.pcl
 		done
 		echo "${ECHO_T}done"
 	fi
@@ -877,7 +871,7 @@ AC_OUTPUT
 
 # final warnings
 echo -----------------------------------------------------------------
-echo PWscf can take advantage of several optimized numerical libraries
+echo WanT can take advantage of several optimized numerical libraries
 echo \(essl, fftw, mkl...\).  This configure script attempts to find them,
 echo but may fail if they have been installed in non-standard locations.
 echo
@@ -894,7 +888,7 @@ echo If any libraries are missing, you may specify a list of directories
 echo to search and retry, as follows:
 echo "  ./configure LIBDIRS=\"list of directories, separated by spaces\""
 echo
-echo For more information, read the INSTALL file or the PWscf manuals.
+echo For more information, read the README file.
 echo -----------------------------------------------------------------
 
 if ! test $no_parallel && ! test $parallel
