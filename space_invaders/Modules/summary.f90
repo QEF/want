@@ -19,12 +19,11 @@
    USE io_module, ONLY : title, prefix, work_dir
    USE input_module, ONLY : input_alloc => alloc
    USE input_module
-! XXX mettere a posto input_module
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
    USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, &
                               bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
-   USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax, &
+   USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
                               dimfroz, lfrozen, dimwinx
    
    IMPLICIT NONE
@@ -94,8 +93,9 @@
           WRITE(unit, " (4x,'Number of Wannier functions required = ', i4 )" ) dimwann
           WRITE( unit,"(4x,'CG minim: Mixing parameter (alphafix0)= ', f6.3 )" ) alphafix0
           WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) niter0
-          WRITE( unit,"(4x,'XX minim: Mixing parameter (alphafix) = ', f6.3 )" ) alphafix
-          WRITE( unit,"(4x,'XX minim: Max iteration number = ', i5 )" ) niter
+! XXX check whether it is true
+          WRITE( unit,"(4x,'SD minim: Mixing parameter (alphafix) = ', f6.3 )" ) alphafix
+          WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) niter
           WRITE( unit,"(4x,'Every ',i3,' XX iteration perform a CG minimi (ncg)')" ) ncg
           WRITE(unit, " (4x,'Number of k-point shells = ', i3 )" ) nshells
           WRITE(unit, " (4x,'Chosen shells (indexes) = ', 100i3 )" ) nwhich(1:nshells)

@@ -18,17 +18,19 @@ module parameters
   INTEGER , PARAMETER ::   &
        nstrx  = 600,       &! max lenght for strings
        ntypx  = 10,        &! max number of different types of atom
+       npsx   =  ntypx,    &! obsolete, for PWscf compatibility
        npkx   = 40000,     &! max number of k-points               
        npwx   = 100000000, &! max number of density G vectors
        nshx   = 200,       &! max number of nearest neighb. k-point shells
        lmaxx  = 3,         &! max non local angular momentum       
        nchix  = 6,         &! max number of atomic wavefunctions per atom
-       ndm    = 2000        ! max number of points in the atomic radial mesh
+       ndmx   = 2000        ! max number of points in the atomic radial mesh
 
   INTEGER , PARAMETER  ::  &
+    cp_lmax = lmaxx + 1,   &! maximum number of channels
        nbrx = 8,           &! max number of beta functions
        lqmax= 2*lmaxx+1,   &! max number of angular momenta of Q
-       nqfm = 8             ! max number of coefficients in Q smoothing
+       nqfx = 8             ! max number of coefficients in Q smoothing
 
   INTEGER , PARAMETER  ::  &
        nkpts_inx = 100      ! max number of interpolated kpoints 

@@ -8,7 +8,7 @@ include ../make.sys
 include ../make.rules
 
 # specific redefinition
-FFLAGS=$(FFLAGS_NOOPT)
+# FFLAGS=$(FFLAGS_NOOPT)
 
 OBJS = \
     iotk_01_base.o  \

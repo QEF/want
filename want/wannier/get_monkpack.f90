@@ -147,12 +147,6 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
            ENDDO
        ENDDO
 
-! XXX
-    !   WRITE(0,*) 'INPUT'
-    !   WRITE(0,"(3f15.9)") kpt_loc(:,:)
-    !   WRITE(0,*) 'GEN'
-    !   WRITE(0,"(3f15.9)") kpt_gen(:,:)
-
        !
        ! check the points
        generated: DO ik=1,nkpts

@@ -52,13 +52,10 @@ CONTAINS
       !
       ! TRANSF is the inverse of the basis matrix because
       ! vcart(i) = \Sum_{j} vcry(j) * basis(j,i)
+      ! Instead of the INV3 routine here TRANSF is directly theinverse of BASIS
       !
-      CALL inv3( basis, transf, det )
+      CALL invmat( 3, basis, transf, det )
       IF ( det == 0 ) CALL errore('cart2cry','basis vectors are linearly dependent',1)
-      !
-      ! this last operation is due to the INV3 routine 
-      !
-      transf(:,:) = transf(:,:)/det
 
       DO j=1,nvect 
           DO i=1,3

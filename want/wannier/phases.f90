@@ -15,7 +15,7 @@
 
       USE kinds
       USE timing_module, ONLY : timing 
-      USE constants, ONLY: PI, CI, CZERO, ZERO
+      USE constants, ONLY: PI, CI, CZERO, ZERO, EPS_m6
       USE io_module, ONLY : stdout
 
       IMPLICIT NONE
@@ -120,19 +120,18 @@
           IF ( nn >= 3 ) THEN
 
 ! ...       Determine rguide
-            CALL inv3( smat, sinv, det )
-
-! ...       The inverse of smat is sinv/det
+!           instead inv3, here sinv is directly the inverse of smat 
+            CALL invmat( 3, smat, sinv, det )
 
 ! ...       Evidently first three bka vectors are linearly dependent this is not allowed
-            IF ( ABS(det) < 1.e-06 ) &
+            IF ( ABS(det) < EPS_m6 ) &
                    CALL errore(' phase ', ' wrong dependency in findr', ABS(det) )
 
             IF ( irguide /= 0 ) THEN
               DO j = 1, 3
                 rguide(j,nwann) = ZERO
                 DO i = 1, 3
-                  rguide(j,nwann) = rguide(j,nwann) + sinv(j,i) * svec(i) / det
+                  rguide(j,nwann) = rguide(j,nwann) + sinv(j,i) * svec(i)
                 END DO
               END DO
             END IF

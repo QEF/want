@@ -10,8 +10,8 @@ do
     # set inter-directory dependencies
     case $DIR in
         IOTK_lib )    DEPENDS=""                        ;;
-        Modules )     DEPENDS="../IOTK_lib"             ;;
-        Libs | Main ) DEPENDS="../Modules ../IOTK_lib"  ;;
+        Modules )     DEPENDS="../IOTK_lib ../Include"  ;;
+        Libs | Main ) DEPENDS="../Modules ../Include ../IOTK_lib"  ;;
     esac
 
     # generate dependencies file
