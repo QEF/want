@@ -33,7 +33,8 @@ MODULE input_wannier
   namelist / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
     alpha, maxiter, itrial, iphase, alphafix0, alphafix, niter, niter0, ncg, &
     nshells, nwhich
-
+  
+  CHARACTER(15)          :: wannier_center_units
   REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
   REAL(dbl), ALLOCATABLE :: rphiimx2(:,:)
   REAL(dbl), ALLOCATABLE :: rloc(:)
@@ -52,7 +53,7 @@ CONTAINS
 
        USE io_global, ONLY: ionode, ionode_id
        USE mp, ONLY: mp_bcast
-       USE parser, ONLY: read_line
+       USE parser, ONLY: read_line, capital
 
        !  win_min, win_max are the eigenvalues window bounds (in eV)
        !  froz_min, froz_max are the frozen eigenvalues window bounds (in eV)
@@ -64,7 +65,6 @@ CONTAINS
 
        CHARACTER(LEN=256) :: input_line
        CHARACTER(LEN=80)  :: card
-       CHARACTER(LEN=1), EXTERNAL :: capital
        LOGICAL            :: tend
        !
 
@@ -113,7 +113,8 @@ CONTAINS
        IF ( iphase /= 1 ) THEN
          CALL errore( ' read_input ', ' iphase must be 1 (ONE) ', 1 )
        END IF
-       IF ( niter0 <= 0 ) THEN
+! XXX
+       IF ( niter0 < 0 ) THEN
          CALL errore( ' read_input ', ' niter0 must be positive ', 1 )
        END IF
        IF ( niter <= 0 ) THEN
@@ -157,11 +158,11 @@ CONTAINS
        IF( input_line == ' ' .OR. input_line(1:1) == '#' ) GO TO 100
        !
        READ (input_line, *) card
-       !
-       !DO i = 1, LEN_TRIM( input_line )
-       !   input_line( i : i ) = capital( input_line( i : i ) )
-       !END DO
-       !
+       
+       DO i = 1, LEN_TRIM( input_line )
+          input_line( i : i ) = capital( input_line( i : i ) )
+       END DO
+       
        !
        IF ( TRIM(card) == 'WANNIER_CENTER' ) THEN
           !
@@ -188,7 +189,7 @@ CONTAINS
 
   SUBROUTINE card_wannier_center( input_line )
 
-    USE parser, ONLY: read_line
+    USE parser, ONLY: read_line, matches
 
     IMPLICIT NONE
 
@@ -200,6 +201,21 @@ CONTAINS
        !
        IF ( tread ) THEN
           CALL errore( ' card_wannier_center  ', ' two occurrence ', 2 )
+       END IF
+
+       IF ( matches('CRYSTAL', input_line ) ) THEN
+            wannier_center_units = 'crystal'
+       ELSEIF ( matches('BOHR', input_line ) ) THEN
+            wannier_center_units = 'bohr'
+       ELSEIF ( matches('ANGSTROM', input_line ) ) THEN
+            wannier_center_units = 'angstrom'
+       ELSE
+          IF ( TRIM( ADJUSTL( input_line ) ) /= 'WANNIER_CENTER' ) THEN
+             CALL errore( ' read_cards ', &
+                        & ' unknow unit option for WANNIER_CENTER: '&
+                        & //input_line, 1 )
+          END IF
+          wannier_center_units = 'crystal'
        END IF
 
        IF( itrial == 3 ) THEN
