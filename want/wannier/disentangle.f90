@@ -32,8 +32,7 @@
        INTEGER, PARAMETER :: mxdnn = 12
        INTEGER, PARAMETER :: mxdnnh = mxdnn/2
 
-       REAL(dbl) :: vcell, avec(3,3), bvec(3,3), aminv(3)
-       REAL(dbl) :: adot(3,3), bdot(3,3)
+       REAL(dbl) :: avec(3,3), bvec(3,3), recc(3,3)
 
        REAL(dbl) :: rat(3,mxdatm,mxdtyp), atmass(mxdtyp)
        INTEGER   :: ntype, natom(mxdtyp)
@@ -102,7 +101,7 @@
 
        EXTERNAL lambda_avg
 
-       REAL(dbl) :: recc(3,3), aux
+       REAL(dbl) :: aux
        REAL(dbl) :: lambda_avg, alat
 
        COMPLEX(dbl) :: ctmp
@@ -217,15 +216,9 @@
        END SELECT
 
 
-! ...
-       DO j=1,3
-         DO i=1,3
-           sgn = 1.0d0
-           IF ( avec(i,j) < zero ) sgn = -sgn
-           avec(i,j) = ABS(avec(i,j))
-           avec(i,j) = sgn * alat * avec(i,j)
-         END DO
-       END DO
+! ...  alat to bohr units
+
+       avec = avec * alat
 
 !...   Start writing output
        WRITE( stdout, * ) ' ======================================================================'
@@ -243,7 +236,8 @@
 !
 ! ...  Get crystal data
  
-       CALL latti( avec, bvec, vcell, bdot, aminv, adot )
+       CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
+       bvec = bvec * 2.0d0 * pi
 !
        WRITE( stdout,*) ' '
        WRITE( stdout, fmt= " (2x, ' Reciprocal lattice vectors:' ) " )
@@ -253,8 +247,6 @@
                 j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / (2* pi), i=1,3 )
        END DO
        WRITE( stdout, * ) ' '
-       WRITE( stdout, fmt="(2x, 'Cell volume = ', F12.6, ' (Bohr)^3' )" ) vcell
-       WRITE( stdout,*) ' '
        ! ****ATTENTION
        ! emax is reported in output in Rydberg, but it used in Hartree in the code
        WRITE( stdout, fmt= " (2x,'Kinetic energy cut-off =  ', F7.2, ' (Ry)' ) " ) emax * 2.0
@@ -445,13 +437,8 @@
 
 !
 ! ...  Setup the shells of b-vectors around each K-point
-!      NOTE: transpose bvec (opposite convention between cpw and castep...)
- 
-       DO i = 1, 3
-         DO j = 1, 3
-           recc(i,j) = bvec(j,i)
-         END DO
-       END DO
+
+       recc = TRANSPOSE( bvec )
        CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
             dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
 !

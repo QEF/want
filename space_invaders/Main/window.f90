@@ -13,7 +13,7 @@
  
        USE kinds
        USE constants, ONLY: ryd => ry, har => au, amu => uma_au, bohr => bohr_radius_angs
-       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx, dp
+       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE io_global, ONLY : stdout
        USE startup_module, ONLY : startup

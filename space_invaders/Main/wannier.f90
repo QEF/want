@@ -170,14 +170,12 @@
       REAL(dbl) :: dirc(3,3), recc(3,3), dirl(3,3)
       REAL(dbl) :: diri(3,3), reci(3,3)
       REAL(dbl) :: avec(3,3), bvec(3,3)
-      REAL(dbl) :: vcell, aminv(3), adot(3,3), bdot(3,3)
 
       INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
 
       CHARACTER( LEN = 2 ) :: nameat(mxdtyp)
       INTEGER :: ntype, natom(mxdtyp)
       REAL(dbl) :: rat(3,mxdatm,mxdtyp)
-      REAL(dbl) :: posion(3,mxdatm,mxdtyp) ! posion(3,nions,ntype)
       REAL(dbl) :: poscart(3,mxdatm,mxdtyp) ! poscart(3,nions,ntype)
 
       REAL(dbl) :: alat
@@ -290,8 +288,10 @@
       natom = natom
       enmax  = enmax * har
 
-      CALL atomset( alat, avec, ntype, natom, nameat, rat, mxdtyp, mxdatm )
-      CALL latti( avec, bvec, vcell, bdot, aminv, adot )
+      avec = avec * alat
+
+      CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
+      bvec = bvec * 2.0d0 * pi
 
       IPRINT = 1
       
@@ -335,23 +335,13 @@
       ng = 1
 
       WRITE( stdout, fmt="(2x, 'Atomic positions: (cart. coord.)' ) " )
-      DO nsp = 1 , ntype
-        DO ni = 1 , natom(nsp)
-          posion(:,ni,nsp) = rat(:,ni,nsp)/twopi
-!          WRITE( stdout, fmt="(4x, a, 2x,'tau(',I1,') = (', 3F8.4, ' )' )" ) &
-!                 nameat( nsp ), ni, ( posion(i,ni,nsp), i=1,3 )
-!         WRITE (*,7004) ni, nsp, ( posion(i,ni,nsp), i=1,3 )
-          ng = ng + 1
-        END DO
-      END DO
-!7004 FORMAT( 2x, 'ION ', i3, ' TYPE ', i1, ' AT (',3f12.7,') (A_i UNITS)' )
 
       DO nsp = 1 , ntype
         DO ni = 1 , natom(nsp)
           DO m = 1, 3
             poscart(m,ni,nsp) = 0.d0
             DO j=1,3
-              poscart(m,ni,nsp) = poscart(m,ni,nsp) + posion(j,ni,nsp) * dirc(j,m)
+              poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * dirc(j,m)
             END DO
           END DO
           WRITE( stdout, fmt="(4x, a, 2x,'tau( ',I3,' ) = (', 3F8.4, ' )' )" ) &
@@ -586,7 +576,7 @@
  
 ! ... now it defines the centers of the localized functions (e.g. gaussians)
 !     that are used to pick up the phases. this is system dependent 
-!     rphiimx is the center of the Gaussians in relative coordinates (as posion)
+!     rphiimx is the center of the Gaussians in relative coordinates (as rat)
 
        DO nwann = 1, dimwann
 
@@ -2091,7 +2081,7 @@
 
       DO nsp = 1, ntype
         DO ni = 1, natom(nsp)
-          WRITE(21)( posion(i,ni,nsp), i=1,3 )
+          WRITE(21)( rat(i,ni,nsp), i=1,3 )
         END DO
       END DO
 

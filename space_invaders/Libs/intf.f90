@@ -77,8 +77,8 @@
        COMPLEX(dbl), ALLOCATABLE :: lvec(:,:) !  lvec(mxddim,mxdbnd)
      
        REAL(dbl) :: alatt
-       REAL(dbl) :: vcell, avec(3,3), bvec(3,3), aminv(3) 
-       REAL(dbl) :: adot(3,3), bdot(3,3), rkpt(3)
+       REAL(dbl) :: avec(3,3), bvec(3,3) 
+       REAL(dbl) :: rkpt(3)
        REAL(dbl) :: win_min, win_max, froz_min, froz_max
        REAL(dbl) :: sgn
        REAL(dbl) :: alpha
@@ -131,8 +131,11 @@
 
        READ(19) win_min, win_max, froz_min, froz_max, dimwann
 
-       CALL atomset(alatt, avec, ntype, natom, nameat, rat, mxdtyp, mxdatm)
-       CALL latti(avec, bvec, vcell, bdot, aminv, adot)
+       avec = avec * alatt
+
+       CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
+
+       bvec = bvec * 2.0d0 * pi
 
        READ(19) alpha, maxiter 
        READ(19) iphase

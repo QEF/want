@@ -8,7 +8,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=------------------------------------------------------------------------------------------------=
-       SUBROUTINE get_points( maxspts, maxpts, nspts, npts, bdot, skpt, kpt, xval, sxval, tnkpts )
+       SUBROUTINE get_points( maxspts, maxpts, nspts, npts, bvec, skpt, kpt, xval, sxval, tnkpts )
 !=------------------------------------------------------------------------------------------------=
 !
 !      Determines the k-points for calculating the band structure
@@ -19,7 +19,7 @@
  
        INTEGER :: maxspts, maxpts
        INTEGER :: nspts, npts, tnkpts
-       REAL(dbl) :: bdot(3,3)
+       REAL(dbl) :: bvec(3,3)
        REAL(dbl) :: skpt(3,maxpts)
        REAL(dbl) :: xval(maxspts*maxpts)
        REAL(dbl) :: sxval(maxspts)
@@ -29,9 +29,20 @@
        REAL(dbl) :: length0, length
        REAL(dbl) :: vec(3)
        REAL(dbl) :: eps
+       REAL(dbl) :: bdot(3,3)
        PARAMETER( eps = 1.e-6 )
 
+! ...  Compute metric bdot(i,j)
 
+       bdot(1,1) = bvec(1,1) * bvec(1,1) + bvec(2,1) * bvec(2,1) + bvec(3,1) * bvec(3,1)
+       bdot(2,2) = bvec(1,2) * bvec(1,2) + bvec(2,2) * bvec(2,2) + bvec(3,2) * bvec(3,2)
+       bdot(3,3) = bvec(1,3) * bvec(1,3) + bvec(2,3) * bvec(2,3) + bvec(3,3) * bvec(3,3)
+       bdot(1,2) = bvec(1,1) * bvec(1,2) + bvec(2,1) * bvec(2,2) + bvec(3,1) * bvec(3,2)
+       bdot(1,3) = bvec(1,1) * bvec(1,3) + bvec(2,1) * bvec(2,3) + bvec(3,1) * bvec(3,3)
+       bdot(2,3) = bvec(1,2) * bvec(1,3) + bvec(2,2) * bvec(2,3) + bvec(3,2) * bvec(3,3)
+       bdot(2,1) = bdot(1,2)
+       bdot(3,1) = bdot(1,3)
+       bdot(3,2) = bdot(2,3)
  
        vec(1) = skpt(1,2) - skpt(1,1)
        vec(2) = skpt(2,2) - skpt(2,1)

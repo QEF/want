@@ -83,7 +83,7 @@
         WRITE( stdout, * ) '  '
         CALL errore(' new_bshell ', ' nkpts_loc too small ', nkpts_loc )
       END IF
- 
+
 ! ... Just so that knpt2 and wtkpt(nkp) are used properly later on
  
       nkpts2 = nkpts

@@ -8,7 +8,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE wigner_seitz( adot, nk, indxws, nws, degen, mxdnrk )
+       SUBROUTINE wigner_seitz( avec, nk, indxws, nws, degen, mxdnrk )
 !=----------------------------------------------------------------------------------=
      
        USE kinds
@@ -16,7 +16,7 @@
 
        IMPLICIT NONE
 
-       REAL(dbl) :: adot(3,3)
+       REAL(dbl) :: avec(3,3)
        INTEGER :: nk(3)
        INTEGER :: mxdnrk
 
@@ -29,10 +29,24 @@
        INTEGER :: nn, ndeg
        REAL(dbl) :: dist(27), dist_min
        REAL(dbl) :: tot
+       REAL(dbl) :: adot(3,3)
 
 ! ...  Loop over grid points r on a unit cell that is 8 times larger than a 
 !      primitive supercell. In the end nws contains the total number of grids 
 !      points that have been found in the Wigner-Seitz cell
+
+! ...  Compute metric in real space
+
+       adot(1,1) = avec(1,1) * avec(1,1) + avec(2,1) * avec(2,1) + avec(3,1) * avec(3,1)
+       adot(2,2) = avec(1,2) * avec(1,2) + avec(2,2) * avec(2,2) + avec(3,2) * avec(3,2)
+       adot(3,3) = avec(1,3) * avec(1,3) + avec(2,3) * avec(2,3) + avec(3,3) * avec(3,3)
+       adot(1,2) = avec(1,1) * avec(1,2) + avec(2,1) * avec(2,2) + avec(3,1) * avec(3,2)
+       adot(1,3) = avec(1,1) * avec(1,3) + avec(2,1) * avec(2,3) + avec(3,1) * avec(3,3)
+       adot(2,3) = avec(1,2) * avec(1,3) + avec(2,2) * avec(2,3) + avec(3,2) * avec(3,3)
+       adot(2,1) = adot(1,2)
+       adot(3,1) = adot(1,3)
+       adot(3,2) = adot(2,3)
+
 
        nws = 0
        DO n1 = 0, 2 * nk(1)

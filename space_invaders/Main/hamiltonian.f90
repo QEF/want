@@ -27,6 +27,7 @@
       USE io_global, ONLY : stdout
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
+      USE constants, ONLY: pi
 
 
       IMPLICIT none
@@ -37,8 +38,7 @@
       PARAMETER ( maxspts = 8 )
       PARAMETER ( maxpts = 500 )
 
-      REAL(dbl) :: vcell, avec(3,3), bvec(3,3) 
-      REAL(dbl) :: aminv(3), adot(3,3), bdot(3,3)
+      REAL(dbl) :: avec(3,3), bvec(3,3) 
       INTEGER :: nkpts, dimwann
       INTEGER :: ntype
       INTEGER :: natom(mxdtyp)  
@@ -180,7 +180,9 @@
 !
 ! ...  Get crystal data
 
-       CALL latti( avec, bvec, vcell, bdot, aminv, adot )
+       CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
+       bvec = bvec * 2.0d0 * pi
+
 
       IF ( ( s(1) /= zero ) .OR. ( s(2) /= zero ) .OR. ( s(3) /= zero ) ) THEN
         CALL errore ('hamiltonian', 'S(I) IS NOT ZERO ==> H(R) NOT PERIODIC', INT( s(1) ))
@@ -352,7 +354,7 @@
       ALLOCATE( degen( 3*nkpts ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating degen', 3*nkpts )
 
-      CALL wigner_seitz( adot, nk, indxws, nws, degen, nkpts  )        
+      CALL wigner_seitz( avec, nk, indxws, nws, degen, nkpts  )        
 
       ALLOCATE( rham( dimwann, dimwann, nws ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating rham', dimwann**2 *nws )
@@ -473,7 +475,7 @@
       ALLOCATE( kpt(3,nspts*npts), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt', 3*nspts * npts )
  
-      CALL get_points( nspts, npts, nspts, npts, bdot, skpt, kpt, xval, sxval, tnkpts )
+      CALL get_points( nspts, npts, nspts, npts, bvec, skpt, kpt, xval, sxval, tnkpts )
  
 ! ... Estimate H_ij(k') at those k-points by fourier interpolation
 !     H_ij(k') ~ sum_R e^{ik'R} H_ij(R)/degen(R), where the sum over R is over a 
