@@ -23,17 +23,25 @@ do
         $TOPDIR/includedep.sh $DEPENDS >> make.depend
     fi
 
-    # special case: Libs/fft_stick.c includes Libs/fftw.c
+    # handle special cases
     if test "$DIR" = "Libs"
     then
         mv make.depend make.depend.tmp
         sed 's/@fftw.c@/fftw.c/' make.depend.tmp > make.depend
-        rm -f make.depend.tmp
     fi
+
+    rm -f make.depend.tmp
 
     # check for missing dependencies
     if grep @ make.depend
     then
-        echo WARNING: modules not found in directory $DIR
+        notfound=1
+        echo WARNING: dependencies not found in directory $DIR
+    else
+        echo directory $DIR : ok
     fi
 done
+if test "$notfound" = ""
+then
+    echo all dependencies updated successfully
+fi
