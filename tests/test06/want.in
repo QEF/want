@@ -1,5 +1,8 @@
 
 &INPUT_WAN
+   prefix = 'gold1'
+   postfix = '_WanT'
+   work_dir = './'
    win_min = -12.0
    win_max =  0.0                      ! win_min, win_max
    froz_min = -30.0

@@ -3,6 +3,7 @@ Carbon dimer chain; NC-PP
  &CONTROL
     calculation = 'nscf'
     restart_mode='from_scratch',
+    outdir='./COND/'
     prefix='chain8',
     tstress = .false.
     tprnfor = .true.

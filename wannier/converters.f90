@@ -11,6 +11,7 @@
    MODULE converters_module
 !*********************************************
    USE kinds, ONLY : dbl
+   USE constants, ONLY : ZERO
    IMPLICIT NONE
    PRIVATE
 
@@ -62,7 +63,7 @@ CONTAINS
 
       DO j=1,nvect 
           DO i=1,3
-             dtmp(i) = 0.0
+             dtmp(i) = ZERO
              DO l=1,3
                  dtmp(i) = dtmp(i) + transf(i,l) * coord(l,j)
              ENDDO

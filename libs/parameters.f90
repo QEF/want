@@ -19,7 +19,8 @@ module parameters
        nstrx  = 600,   &! max lenght for strings
        ntypx  = 6,     &! max number of different types of atom
        npsx   = ntypx, &! max number of different PPs (obsolete)
-       npk    = 40000, &! max number of k-points               
+       npkx   = 40000, &! max number of k-points               
+       nshx   = 200,   &! max number of nearest neighb. k-point shells
        lmaxx  = 3,     &! max non local angular momentum       
        nchix  = 6,     &! max number of atomic wavefunctions per atom
        ndm    = 2000    ! max number of points in the atomic radial mesh
@@ -40,7 +41,6 @@ module parameters
   INTEGER, PARAMETER :: nsx  = 13       ! maximum number of species
   INTEGER, PARAMETER :: natx  = 599     ! maximum number of atoms
   INTEGER, PARAMETER :: nbndxx = 1000   ! maximum number of electronic states
-  INTEGER, PARAMETER :: npkx = 300      ! maximum number of K points
   INTEGER, PARAMETER :: ncnsx = 101     ! maximum number of constraints
   INTEGER, PARAMETER :: nspinx = 2      ! maximum number of spinors
   !

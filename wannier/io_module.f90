@@ -38,15 +38,17 @@
    INTEGER, PARAMETER         ::   &
          stdout = 6,               &! std output unit
        dft_unit = 10,              &! input file (DFT data) unit
-     space_unit = 11,              &! dos and pdos unit
-       wan_unit = 12,              &! G integrals unit
-       sgm_unit = 13,              &! SGM unit
-       ham_unit = 14,              &! HAM unit
+       ovp_unit = 11,              &! overlap and projections unit
+     space_unit = 12,              &! dos and pdos unit
+       wan_unit = 13,              &! G integrals unit
+       sgm_unit = 14,              &! SGM unit
+       ham_unit = 15,              &! HAM unit
       save_unit = 99                ! restart file unit
 
 
-   CHARACTER(7), PARAMETER    ::  suffix_dft_data=".XMLpun"
+   CHARACTER(4), PARAMETER    ::  suffix_dft_data=".dft"
    CHARACTER(7), PARAMETER    ::  suffix_subspace=".spaces"
+   CHARACTER(4), PARAMETER    ::  suffix_ovp=".ovp"
    CHARACTER(4), PARAMETER    ::  suffix_wannier=".wan"
    CHARACTER(4), PARAMETER    ::  suffix_self_energy=".sgm"
    CHARACTER(4), PARAMETER    ::  suffix_hamiltonian=".ham"
@@ -69,7 +71,7 @@
    PUBLIC ::  io_global_start, io_global_getionode
    PUBLIC ::  ionode, ionode_id
 
-   PUBLIC ::  stdout, dft_unit, space_unit, wan_unit, &
+   PUBLIC ::  stdout, dft_unit, ovp_unit, space_unit, wan_unit, &
               sgm_unit, ham_unit, save_unit
    PUBLIC ::  prefix, postfix, work_dir, title
    PUBLIC ::  ioname
@@ -111,8 +113,9 @@
       !
       ! add the / if needed
       length = LEN_TRIM( path_ )
-      IF ( length /= 0 .AND. path_(length:length) /= "/"  ) &
-           path_ = TRIM(path_)//"/"
+      IF ( length /= 0 ) THEN
+         IF ( path_(length:length) /= "/"  ) path_ = TRIM(path_)//"/"
+      ENDIF
           
 
       SELECT CASE( TRIM(data) )
@@ -120,6 +123,8 @@
            suffix_ = TRIM(suffix_dft_data)
       CASE ( "subspace" ) 
            suffix_ = TRIM(suffix_subspace)
+      CASE ( "overlap_projection" ) 
+           suffix_ = TRIM(suffix_ovp)
       CASE ( "wannier" ) 
            suffix_ = TRIM(suffix_wannier)
       CASE ( "self_energy" )
@@ -153,6 +158,7 @@
       CALL iotk_scan_empty(unit,name,FOUND=found,ATTR=attr,IERR=ierr)
       IF ( .NOT. found ) RETURN
       IF ( ierr > 0 ) CALL errore(sub_name,'Wrong format in tag '//TRIM(name),ierr)
+      found = .TRUE.
 
       CALL iotk_scan_attr(attr,'prefix',prefix_,IERR=ierr)
          IF (ierr /= 0) CALL errore(sub_name,'Wrong input format in PREFIX',ABS(ierr))

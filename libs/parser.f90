@@ -25,11 +25,12 @@
 !                               routine error and show by the second string the
 !                               name of the field where read-error occurred.
 !----------------------------------------------------------------------------
-MODULE parser
+MODULE parser_module
   !----------------------------------------------------------------------------
   !
   USE io_module, ONLY : stdout
   USE kinds
+  USE parser_base_module
   !
   CONTAINS
   !
@@ -339,4 +340,4 @@ MODULE parser
     return
   end function capital
 
-END MODULE parser
+END MODULE parser_module
