@@ -105,9 +105,10 @@ fi
 # running PWSCF SCF
 #
 if [ "$SCF" = ".TRUE." ] ; then  
+   echo "running SCF calculation" 
    $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
    if [ $? = 0 ] ; then 
-      echo "SCF calculation done" 
+      echo "done" 
    else
       echo "found some problems in SCF calculation, stopping" ; exit 1
    fi
@@ -117,9 +118,10 @@ fi
 # running PWSCF NSCF
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
+   echo "running NSCF calculation" 
    $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
    if [ $? = 0 ] ; then 
-      echo "NSCF calculation done" 
+      echo "done" 
    else
       echo "found some problems in NSCF calculation, stopping" ; exit 1
    fi
@@ -129,10 +131,11 @@ fi
 # running PWSCF PWEXPORT
 #
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
+   echo "running PWEXPORT calculation" 
    $PARA_PREFIX  $PWSCF_BIN/pw_export.x $PARA_POSTFIX  \
               <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
    if [ $? = 0 ] ; then 
-      echo "PWEXPORT calculation done" 
+      echo "done" 
    else
       echo "found some problems in PWEXPORT calculation, stopping" ; exit 1
    fi
@@ -142,10 +145,11 @@ fi
 # running PWSCF BAND
 #
 if [ "$BAND" = ".TRUE." ] ; then  
+   echo "running BAND calculation" 
    $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX \
                < $TEST_HOME/nscf_band.in > $TEST_HOME/nscf_band.out
    if [ $? = 0 ] ; then 
-      echo "BAND calculation done" 
+      echo "done" 
    else
       echo "found some problems in BAND calculation, stopping" ; exit 1
    fi
@@ -155,9 +159,10 @@ fi
 # running DISENTANGLE
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
+   echo "running DISENTANGLE calculation" 
    $WANT_BIN/disentangle.x < $TEST_HOME/want.in > $TEST_HOME/disentangle.out
    if [ ! -e CRASH ] ; then 
-      echo "DISENTANGLE calculation done" 
+      echo "done" 
    else
       echo "found some problems in DISENTANGLE calculation, stopping" ; cat CRASH ; exit 1
    fi
@@ -167,9 +172,10 @@ fi
 # running WANNIER
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
+   echo "running WANNIER calculation" 
    $WANT_BIN/wannier.x < $TEST_HOME/want.in > $TEST_HOME/wannier.out
    if [ ! -e CRASH ] ; then 
-      echo "WANNIER calculation done" 
+      echo "done" 
    else
       echo "found some problems in WANNIER calculation, stopping" ; cat CRASH ; exit 1
    fi
@@ -179,9 +185,10 @@ fi
 # running HAMILTONIAN
 #
 if [ "$HAMILTONIAN" = ".TRUE." ] ; then  
+   echo "running HAMILTONIAN calculation" 
    $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian.in > $TEST_HOME/hamiltonian.out
    if [ ! -e CRASH ] ; then 
-      echo "HAMILTONIAN calculation done" 
+      echo "done" 
    else
       echo "found some problems in HAMILTONIAN calculation, stopping" ; cat CRASH ; exit 1
    fi
