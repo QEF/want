@@ -1,4 +1,4 @@
-       PROGRAM intf
+       SUBROUTINE intf
 
        USE kinds
        USE constants, ONLY: pi, twopi => tpi, &
@@ -93,7 +93,7 @@
 !
 ! ...  Startup
 !
-       CALL startup(version_number,MAIN_NAME='intf')
+       ! CALL startup(version_number,MAIN_NAME='intf')
 
 !
 ! ...  Read input parameters from window.out
@@ -523,13 +523,14 @@
        DEALLOCATE( mtxd, STAT=ierr )
           IF( ierr /=0 ) CALL errore(' intf ', ' deallocating mtxd ', ABS(ierr) )
 
-       CALL timing('intf',OPR='stop')
-       CALL timing('global',OPR='stop')
-       CALL timing_overview(stdout,MAIN_NAME='intf')
-       CALL timing_deallocate()
+       !CALL timing('intf',OPR='stop')
+       !CALL timing('global',OPR='stop')
+       !CALL timing_overview(stdout,MAIN_NAME='intf')
+       !CALL timing_deallocate()
 
 ! *****************************************************************************
 
-       STOP '*** THE END *** (intf.f90)'
-       END
+       ! STOP '*** THE END *** (intf.f90)'
+       RETURN
+       END SUBROUTINE
 

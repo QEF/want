@@ -4,7 +4,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
    !*********************************************************
    USE kinds, ONLY : dbl
    USE constants, ONLY : PI
-   USE dyn_op_read
+   USE dyn_op_read, ONLY :  read_dyn_op
    USE timing_module, ONLY : timing
    IMPLICIT NONE
 
@@ -27,7 +27,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
    
    REAL(dbl), PARAMETER                :: delta=0.0400
    COMPLEX(dbl), PARAMETER             :: ci=(0.0, 1.0)
-   CHARACTER(80), PARAMETER            :: name='sigma.wan' 
+   CHARACTER(9), SAVE                  :: name='sigma.wan' 
 
    INTEGER, INTENT(in)                 :: dimwann
    INTEGER, INTENT(in)                 :: nws
@@ -53,11 +53,11 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
                                           imap(:)
 
    REAL(dbl), ALLOCATABLE              :: dec(:,:,:)
-   REAL(dbl), POINTER                  :: E(:), Vct(:,:),      &
-                                          As(:,:)
+   REAL(dbl), POINTER                  :: E(:), Vct(:,:)
+   REAL(dbl), POINTER                  :: As(:,:)
 
-   COMPLEX(dbl), POINTER               :: Sgm(:,:,:,:,:),      &
-                                          G_ret(:,:,:,:),      &
+   COMPLEX(dbl), POINTER               :: Sgm(:,:,:,:,:)
+   COMPLEX(dbl), POINTER               :: G_ret(:,:,:,:),      &
                                           tmp(:,:),            &
                                           ident(:,:)
 
@@ -83,8 +83,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 !
 !  reading self_energy from input file
 !
-   CALL read_dyn_op(Nv,Vct,dim,idum,Nisp,Nomega,E,Sgm,name,   &
-                     analit,form,basis)
+   CALL read_dyn_op(Nv, Vct, dim, idum, Nisp, Nomega, E, Sgm, name, analit, form, basis)
 
 
 !

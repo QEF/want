@@ -1020,7 +1020,10 @@
        DEALLOCATE( ham, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ham ', ABS(ierr) )
 
+
        CALL deallocate_input()
+
+       CALL intf()
 
        CALL timing('disentangle',OPR='stop')
        CALL timing('global',OPR='stop')

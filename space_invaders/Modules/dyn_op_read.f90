@@ -1,8 +1,11 @@
 
    MODULE dyn_op_read
+
    USE kinds, ONLY: sgl, i4b, dbl
    USE timing_module, ONLY : timing
+
    IMPLICIT NONE
+   SAVE
 
 ! <INFO>
 !  
@@ -72,18 +75,15 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE read_dyn_op(Nv,Vct,dim,index_band,Nisp,Nomega,E,Opr,name,analit,form,basis)
+   SUBROUTINE read_dyn_op( Nv, Vct, dim, index_band, Nisp, Nomega, E, Opr, name, analit, form, basis )
    !*********************************************************
    IMPLICIT NONE
 
-
    INTEGER, PARAMETER               :: in=10
 
-   CHARACTER(*),INTENT(in)          :: name
-   CHARACTER(*),INTENT(out)         :: analit, form, basis
-   INTEGER,INTENT(out)              :: Nv, dim,        &
-                                       index_band,     &
-                                       Nisp, Nomega 
+   CHARACTER(LEN=*),INTENT(in)      :: name
+   CHARACTER(LEN=*),INTENT(out)     :: analit, form, basis
+   INTEGER,INTENT(out)              :: Nv, dim, index_band, Nisp, Nomega 
    REAL(dbl),POINTER    :: E(:), Vct(:,:)
    COMPLEX(dbl),POINTER :: Opr(:,:,:,:,:)
 
@@ -255,5 +255,11 @@ CONTAINS
    END SUBROUTINE read_dyn_op
 
 
+!   SUBROUTINE dyn_dum( a )
+!     COMPLEX(dbl),POINTER :: a(:,:,:,:,:)
+!     ALLOCATE( a(2,2,2,2,2) )
+!     RETURN
+!   END SUBROUTINE dyn_dum
 
-   END MODULE dyn_op_read
+
+END MODULE dyn_op_read
