@@ -97,7 +97,7 @@
       WRITE( stdout, * ) ' =                      B-shell calculations                          ='
       WRITE( stdout, * ) ' ======================================================================'
       WRITE( stdout, *) ' ' 
-      WRITE( stdout, fmt= " (2x, 'K-point calculation: (cartesian coordinates in Bohr^-1)' ) " )
+      WRITE( stdout, fmt= " (2x, 'K-point calculation: (cartesian coordinates in Ang^-1)' ) " )
 
 ! ... Pass the k-points in cartesian coordinates
 
@@ -142,7 +142,7 @@
       END DO
 
       WRITE( stdout,*) ' '
-      WRITE( stdout, fmt= " (2x, 'Nearest-neighbour shells for k-point 1: (in Bohr^-1)' ) " )
+      WRITE( stdout, fmt= " (2x, 'Nearest-neighbour shells for k-point 1: (in Ang^-1)' ) " )
 
       DO ndnn = 1, ndnntot
       WRITE( stdout, fmt= " (4x, 'shell (',i3,' )    radius = ', f9.5 )")  ndnn, dnn(ndnn)
@@ -386,7 +386,7 @@
 
       IF ( na /= nnh ) CALL errore(' new_bshell ', ' Did not find right number of bk directions', na )
 
-      WRITE (stdout , fmt="(2x, 'List of the ' , i2, ' vectors b_k: (Bohr ^-1) ') ") nntot(1)
+      WRITE (stdout , fmt="(2x, 'List of the ' , i2, ' vectors b_k: (Ang^-1) ') ") nntot(1)
 
       DO i = 1, nntot(1)
         WRITE( stdout, fmt= " (4x, 'b_k', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &

@@ -17,6 +17,7 @@
       USE kinds
       USE timing_module, ONLY : timing 
       USE io_global, ONLY : stdout
+      USE util, ONLY: gv_indexes
 
       IMPLICIT NONE
 
@@ -69,27 +70,7 @@
 
       DO nkp = 1, nkpts
 
-        DO j = 1, npwk( nkp )
-
-          igk = igsort(j,nkp)
-          IF ( igv(1,igk ) >= 0 ) nx = igv( 1,igk ) + 1
-          IF ( igv(1,igk ) <  0 ) nx = igv( 1,igk ) + 1 + ngx
-          IF ( igv(2,igk ) >= 0 ) ny = igv( 2,igk ) + 1
-          IF ( igv(2,igk ) <  0 ) ny = igv( 2,igk ) + 1 + ngy
-          IF ( igv(3,igk ) >= 0 ) nz = igv( 3,igk ) + 1
-          IF ( igv(3,igk ) <  0 ) nz = igv( 3,igk ) + 1 + ngz
-          npoint = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
-
-          ninvpw( npoint, nkp ) = j
-
-! ...       Npoint is the absolute (k-independent) castep index of the gvector
-!           igv(*,igsort(j,nkp)). Note that in general it is not equal to nindpw(j,nkp),
-!           since both the ordering of the g-vectors at any given k-point and their
-!           absolute orderinging is different in cpw and in castep. (In cpw the
-!           absolute ordering is by stars of increasing length.) Think more about this,
-!           to make sure all that I said is correct.
-
-        END DO ! g-vectors at present k (J)
+        CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), ngx, ngy, ngz, ninvpw = ninvpw(:,nkp) )
 
       END DO     ! nkp loop
 

@@ -20,6 +20,8 @@
        USE version_module, ONLY : version_number
        USE input_wannier
        USE converters_module, ONLY : cart2cry
+       USE ions, ONLY: natom, rat, nameat
+       USE kpoints, ONLY: nk, s
 
        IMPLICIT NONE
  
@@ -36,15 +38,10 @@
 
        INTEGER, ALLOCATABLE :: ig1(:), ig2(:), ig3(:)
 
-       INTEGER, ALLOCATABLE :: natom(:)
-       REAL(dbl), ALLOCATABLE :: rat(:,:,:)
-       CHARACTER(LEN=2), ALLOCATABLE :: nameat(:)
        CHARACTER(LEN=3) :: namtmp
  
        INTEGER :: nwann
 
-       REAL(dbl) :: s(3)
-       INTEGER :: nk(3)
        INTEGER :: i, j, i1, i2, i3
        INTEGER :: ierr
        INTEGER :: nkp
@@ -87,17 +84,8 @@
 !
        CALL startup(version_number,MAIN_NAME='window')
 
-
 !
 ! ...  Read input parameters
-!
-       ALLOCATE ( natom(mxdtyp), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' allocating natom ', mxdtyp )
-       ALLOCATE ( nameat(mxdtyp), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' allocating nameat ', mxdtyp )
-       ALLOCATE ( rat(3,mxdatm,mxdtyp), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' allocating rat ', 3*mxdatm*mxdtyp )
-
 !
        CALL read_input()
 
@@ -111,7 +99,6 @@
        READ( 54 ) ( avec(i,1),i=1,3 )
        READ( 54 ) ( avec(i,2),i=1,3 )
        READ( 54 ) ( avec(i,3),i=1,3 )
-
 
        READ( 54 ) ntype
        IF ( ntype > mxdtyp .OR. ntype < 0 ) THEN
@@ -474,11 +461,8 @@
          WRITE(19) ( isort_k(j,nkp), j = 1, npw )
          WRITE(19) ( ei_k(j,nkp), j = imin, imax )
          WRITE(19) ( ( zvec_k(j,i,nkp), j = 1, npw ), i = imin, imax )
-         !WRITE(19) ( ( REAL(zvec_k(j,i,nkp)), j = 1, npw ), i = imin, imax )
-         !WRITE(19) ( ( 1.0d0*AIMAG(zvec_k(j,i,nkp)), j = 1, npw ), i = imin, imax )
 
          frozen(:,nkp) = .false.
-
 
 ! ...    Check which eigenvalues (if any) fall within the inner energy window
 
@@ -577,12 +561,6 @@
 !
        DEALLOCATE( isort_k, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' deallocating isort_k ', ABS(ierr) )
-       DEALLOCATE( natom, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' deallocating natom ', ABS(ierr) )
-       DEALLOCATE( nameat, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' deallocating nameat ', ABS(ierr) )
-       DEALLOCATE( rat, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' deallocating rat ', ABS(ierr) )
        DEALLOCATE( zvec_k, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' deallocating zvec_k ', ABS(ierr) )
        DEALLOCATE( ei_k, STAT=ierr )

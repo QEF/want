@@ -23,6 +23,7 @@
        USE converters_module, ONLY : cart2cry
        USE kpoints, ONLY: nk, s, vkpt, kpoints_init
        USE ions, ONLY: rat, atmass, ntype, natom, nameat
+       USE lattice, ONLY: avec, recc, alat, lattice_init
 
 
        IMPLICIT NONE
@@ -33,8 +34,6 @@
        INTEGER, PARAMETER :: mxdnn = 12
        INTEGER, PARAMETER :: mxdnnh = mxdnn/2
 
-       REAL(dbl) :: avec(3,3), bvec(3,3), recc(3,3)
- 
        INTEGER :: nkpts
        INTEGER, ALLOCATABLE :: igv(:,:)
        INTEGER, ALLOCATABLE :: igsort(:,:)
@@ -98,7 +97,7 @@
        EXTERNAL lambda_avg
 
        REAL(dbl) :: aux
-       REAL(dbl) :: lambda_avg, alat
+       REAL(dbl) :: lambda_avg
 
        COMPLEX(dbl) :: ctmp
 
@@ -200,55 +199,12 @@
 
        ! ... end standard input
 
-!
-! ...  Converting WANNIER centers from INPUT to CRYSTAL units
-!      AVEC is in units of ALAT which is in Bohr
-!
-       SELECT CASE ( TRIM(wannier_center_units) )
-       CASE ( 'angstrom' )
-           CALL cart2cry(rphiimx1,alat*bohr*avec(:,:),wannier_center_units)
-           CALL cart2cry(rphiimx2,alat*bohr*avec(:,:),wannier_center_units)
-       CASE ( 'bohr' )
-           CALL cart2cry(rphiimx1,alat*avec(:,:),wannier_center_units)
-           CALL cart2cry(rphiimx2,alat*avec(:,:),wannier_center_units)
-       CASE ( 'crystal' )
-       CASE DEFAULT
-           CALL errore('disentangle','Invalid wannier center units : '  &
-                                 //TRIM(wannier_center_units),1 )
-       END SELECT
+       CALL wannier_center_init( alat, avec )
 
-
-! ...  alat to bohr units
-
-       avec = avec * alat
+       CALL lattice_init()
 
 !...   Start writing output
-       WRITE( stdout, * ) ' ======================================================================'
-       WRITE( stdout, * ) ' =                         Input parameters                           ='
-       WRITE( stdout, * ) ' ======================================================================'
-       WRITE( stdout, * ) '  ' 
-       WRITE( stdout, fmt= " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
-       WRITE( stdout, * ) '  '
-       WRITE( stdout, fmt= " (2x, 'Crystal axes:' ) ")
-       WRITE( stdout, fmt="(16x,'in units of Bohr',17x,'in lattice units' )")
-       DO j=1,3
-         WRITE ( stdout, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
-                j, ( avec(i,j), i=1,3 ), ( avec(i,j)/alat, i=1,3 )
-       END DO
-!
-! ...  Get crystal data
- 
-       CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
-       bvec = bvec * 2.0d0 * pi
-!
-       WRITE( stdout,*) ' '
-       WRITE( stdout, fmt= " (2x, ' Reciprocal lattice vectors:' ) " )
-       WRITE( stdout, fmt="(16x,'in units of Bohr^-1',14x,'in lattice units' )")
-       DO j=1,3
-         WRITE ( stdout, fmt="(4x,'b(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
-                j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / (2* pi), i=1,3 )
-       END DO
-       WRITE( stdout, * ) ' '
+
        ! ****ATTENTION
        ! emax is reported in output in Rydberg, but it used in Hartree in the code
        WRITE( stdout, fmt= " (2x,'Kinetic energy cut-off =  ', F7.2, ' (Ry)' ) " ) emax * 2.0
@@ -430,7 +386,6 @@
 !
 ! ...  Setup the shells of b-vectors around each K-point
 
-       recc = TRANSPOSE(bvec)
        CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
             dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
 !

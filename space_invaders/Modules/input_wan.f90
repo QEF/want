@@ -267,6 +267,34 @@ CONTAINS
 
 !=----------------------------------------------------------------------------=!
 
+  SUBROUTINE wannier_center_init( alat, avec )
+    USE constants, ONLY: bohr => bohr_radius_angs
+    USE converters_module, ONLY : cart2cry
+
+    IMPLICIT NONE
+    REAL(dbl), INTENT(IN) :: alat, avec(3,3)
+!
+! ...  Converting WANNIER centers from INPUT to CRYSTAL units
+!      AVEC is in units of ALAT which is in Bohr
+!
+       SELECT CASE ( TRIM(wannier_center_units) )
+       CASE ( 'angstrom' )
+           CALL cart2cry(rphiimx1,alat*bohr*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*bohr*avec(:,:),wannier_center_units)
+       CASE ( 'bohr' )
+           CALL cart2cry(rphiimx1,alat*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*avec(:,:),wannier_center_units)
+       CASE ( 'crystal' )
+       CASE DEFAULT
+           CALL errore('wannier_center_init','Invalid wannier center units : '  &
+                                 //TRIM(wannier_center_units),1 )
+       END SELECT
+
+    RETURN
+  END SUBROUTINE
+
+!=----------------------------------------------------------------------------=!
+
   SUBROUTINE deallocate_input
     IMPLICIT NONE
     INTEGER :: ierr
