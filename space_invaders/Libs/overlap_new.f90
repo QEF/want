@@ -18,6 +18,7 @@
       USE kinds
       USE timing_module, ONLY : timing 
       USE io_global, ONLY : stdout
+      USE constants, ONLY: bohr => bohr_radius_angs, ryd => ry, har => au, pi
 
       IMPLICIT NONE
 
@@ -42,7 +43,8 @@
       ! ... Local Variables
  
       REAL(dbl) :: dirc(3,3),recc(3,3)
-      REAL(dbl) :: diri(3,3),reci(3,3)
+      REAL(dbl) :: reci(3,3)
+      REAL(dbl) :: bvec(3,3)
 
       INTEGER :: nplwv,mplwv
 
@@ -67,12 +69,6 @@
 
       INTEGER :: ierr
 
-      REAL(dbl) :: volc, voli
-      REAL(dbl) :: bohr, har, ryd
-      PARAMETER ( ryd  = 13.605826d0 )
-      PARAMETER ( har  = 2.d0 * ryd )
-      PARAMETER ( bohr = 0.52917715d0 )
-
 ! ... END declarations
 
       CALL timing('overlap',OPR='start')
@@ -87,7 +83,6 @@
       IF( ndwinx /= MAXVAL( dimwin(:) ) ) THEN
         CALL errore(' overlap ', ' inconsistent window ', ndwinx )
       END IF
-
 
       ALLOCATE( cptwfp( nrplwv+1 , ndwinx, nkpts ), STAT=ierr )
       IF( ierr /= 0 ) THEN
@@ -132,14 +127,12 @@
 
 ! ... do the dot product as in wannier and define indeces for G vectors
 
-      DO i = 1, 3
-        DO j = 1, 3
-          dirc(i,j) = avec(i,j) * bohr
-          diri(i,j) = avec(i,j) * bohr
-        END DO
-      END DO
-      CALL bastr( dirc, recc, volc )
-      CALL bastr( diri, reci, voli )
+      CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
+      bvec = bvec * 2.0d0 * pi
+      dirc = TRANSPOSE( avec ) * bohr
+      recc = TRANSPOSE( bvec ) / bohr
+      reci = recc
+
 
 ! ... Generate the array ninvpw (taken from wannier)
  

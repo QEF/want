@@ -2,7 +2,7 @@ include ../make.sys
 include ../make.rules
 
 
-OBJS= bastr.o compar.o domega.o dot_bloch.o error.o        \
+OBJS= compar.o domega.o dot_bloch.o error.o        \
       genbtr.o get_points.o indexx.o inv3.o komegai.o   \
       lambda_avg.o new_bshells.o omega.o overlap_new.o       \
       phases.o projection.o projection_frozen.o ranf.o      \

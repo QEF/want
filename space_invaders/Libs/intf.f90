@@ -51,7 +51,7 @@
        INTEGER :: iprint
        PARAMETER ( iprint = 1 )
 
-       REAL(dbl) :: dirc(3,3), recc(3,3), volc
+       REAL(dbl) :: dirc(3,3), recc(3,3)
        REAL(dbl), ALLOCATABLE :: wtkpt(:) 
        REAL(dbl), ALLOCATABLE :: vkpt(:,:), dnlg(:,:,:)     ! vkpt(3,nkpts), dnlg(mxddim,3,nkpts)
        REAL(dbl), ALLOCATABLE :: dnlkg(:,:,:),datake(:,:,:) ! dnlkg(mxddim,0:3,nkpts),datake(7,mxddim,nkpts)
@@ -187,13 +187,9 @@
          STOP
        END IF
 
-      DO i = 1, 3
-        DO j = 1, 3
-          dirc(i,j) = avec(j,i) * bohr
-        END DO
-      END DO
-
-      CALL bastr( dirc, recc, volc )
+      dirc = TRANSPOSE( avec ) * bohr
+      recc = TRANSPOSE( bvec ) / bohr
+      
 
 !     WRITE(*,*)' THE BASIS-SET USED WHEN PLACING ATOMS ( DIRC(I,J) ):'
 !     WRITE(*,*) ' '
@@ -206,8 +202,6 @@
 
 !     WRITE (*,*) ' '
 !     WRITE(*,*) ' NOTE: VECTORS A1 A2 A3 AND B1 B2 B3 ARE GIVEN IN *COLUMNS* '
-!     WRITE (*,*) ' '
-!     WRITE (*,*) ' VOLUME OF CURRENT UNIT CELL:', VOLC
 
 ! ... Read in atomic positions (same as payne's original one)
 
