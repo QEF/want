@@ -51,7 +51,7 @@
 
       IMPLICIT NONE
 
-      INTEGER :: i, j, k, l, m, n, idum
+      INTEGER :: i, j, k, l, m, n
       INTEGER :: nmaxa, nmaxb, nmaxc
       INTEGER :: nwa, nwb, nwc
 
@@ -85,7 +85,7 @@
       OPEN( 30, FILE="H00_A", STATUS='OLD' )
 
       REWIND 30
-      READ ( 30, * ) nwa, nwa, idum, idum, idum
+      READ ( 30, * ) nwa, nwa
       IF ( nwa /= nmaxa ) & 
            CALL errore(' readH ', ' wrong dimension in reading H00_A ', ABS(nwa-nmaxa) )
 
@@ -104,7 +104,7 @@
       OPEN( 31, FILE="H01_A", STATUS='OLD' )
 
       REWIND 31
-      READ ( 31, * ) nwa, nwa, idum, idum, idum
+      READ ( 31, * ) nwa, nwa
       IF ( nwa /= nmaxa ) &
            CALL errore(' readH ', ' wrong dimension in reading H01_A ', ABS(nwa-nmaxa) )
 
@@ -123,7 +123,7 @@
       OPEN( 40, FILE="H00_B", STATUS='OLD' )
 
       REWIND 40
-      READ ( 40, * ) nwb, nwb, idum, idum, idum
+      READ ( 40, * ) nwb, nwb
       IF ( nwb /= nmaxb ) & 
            CALL errore(' readH ', ' wrong dimension in reading H00_B ', ABS(nwb-nmaxb) )
 
@@ -142,7 +142,7 @@
       OPEN( 41, FILE="H01_B", STATUS='OLD' )
 
       REWIND 41
-      READ( 41, * ) nwb, nwb, idum, idum, idum
+      READ( 41, * ) nwb, nwb
       IF ( nwb /= nmaxb ) &
            CALL errore(' readH ', ' wrong dimension in reading H01_B ', ABS(nwb-nmaxb) )
 
@@ -161,7 +161,7 @@
       OPEN( 51, FILE="H00_C", STATUS='OLD' )
 
       REWIND 51
-      READ ( 51, * ) nwc, nwc, idum, idum, idum
+      READ ( 51, * ) nwc, nwc
       IF ( nwc /= nmaxc ) &
            CALL errore(' readH ', ' wrong dimension in reading H00_C ', ABS(nwc-nmaxc) )
 
@@ -180,7 +180,7 @@
       OPEN( 61, FILE="HCI_AC", STATUS='OLD' )
 
       REWIND 61
-      READ ( 61, * ) nwa, nwc, idum, idum, idum
+      READ ( 61, * ) nwa, nwc
       IF ( nwa /= nmaxa .OR. nwc /= nmaxc ) &
            CALL errore(' readH ', ' wrong dimension in reading HCI_AC ', 100 )
 
@@ -199,7 +199,7 @@
       OPEN( 71, FILE="HCI_CB", STATUS='OLD' )
 
       REWIND 71
-      READ ( 71, * ) nwc, nwb, idum, idum, idum
+      READ ( 71, * ) nwc, nwb
       IF ( nwc /= nmaxc .OR. nwb /= nmaxb ) &
            CALL errore(' readH ', ' wrong dimension in reading HCI_CB ', 100 )
 
