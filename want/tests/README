@@ -1,10 +1,10 @@
 
                   List of the available Test calculations
 
-Before run any test, please configure the ENVIRONMENT.CONF file as described
+Before running any test, please configure the ENVIRONMENT.CONF file as described
 in the header of the same file
 
-After cd-ing in the desidered directory, type ./run.sh  without any flag
+After cd-ing in the desired directory, type ./run.sh  without any flag
 in order to obtain a manual for the available options
 
 ==============================================================================
@@ -17,7 +17,7 @@ The calculation is done setting one atom in the unit cell, using a (1 1 4, 0 0 1
 grid in the NSCF run. The wave-function and charge-density cutoff has been chosen 
 to be 20 Ry in order to make the test running fast, but results are of course 
 not converged. A cutoff of 40 Ry of more will lead to more physical results.
-Wannier functions for the s-d manyfold (6-dim) of Gold are computed using also
+Wannier functions for the s-d manifold (6-dim) of Gold are computed using also
 the disentanglement procedure, and transmittance is calculated through the bulk.x code.
 
 The main outputs of the transport calculation are written in the dos.out and cond.out
@@ -29,7 +29,7 @@ files in the Test1 dir.
 TEST2
 
 Calculation of valence band transmittance for a dimerized Carbon chain (polyyne).
-The computaion is first done using "bulk.x" code starting from a bulk unit cell
+The computation is first done using "bulk.x" code starting from a bulk unit cell
 containing 4 C atoms. Then the same is done coupling different lead and conductor
 calculations: 2 atoms per cell have been used for the leads while 4 for the conductor.
 We used 8 kpts along chain direction for the leads and 4 kpts for the

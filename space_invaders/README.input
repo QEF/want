@@ -34,7 +34,7 @@ win_max       REAL
               DEFAULT : 0.0
               
 froz_min      REAL
-              the lower limit [eV] of the enrgy window containig 'frozen' states
+              the lower limit [eV] of the energy window containing 'frozen' states
               which will not enter the calculation of WFs
               DEFAULT : -1.1
               
@@ -52,7 +52,7 @@ alpha         REAL
               DEFAULT : 0.5
 
 maxiter       INTEGER
-              maximun number of iteration for the disentanglement procedure
+              maximum number of iteration for the disentanglement procedure
               (used only by disentangle.x)
               DEFAULT : 1000
 
@@ -79,7 +79,7 @@ niter         INTEGER
 
 ncg           INTEGER
               every NCG steps the CG procedure is applied in the second part of the 
-              spread function minimization (NITER maximun iterations)
+              spread function minimization (NITER maximum iterations)
               (used only by wannier.x)
               DEFAULT : 3
 
@@ -103,7 +103,7 @@ nwhich(ish)   INTEGER
               shell ( ISH = 1, nshells ) 
            
 ordering_type CHARACTER(10)
-              speficies whether to order the computed Wannier functions and
+              specifies whether to order the computed Wannier functions and
               which ordering criterion adopt. Allowed values are
               'none'      no ordering is performed
               'spatial'   ordering based on WF center positions
@@ -138,7 +138,7 @@ In the case GAUSS_TYP == 1,
             are the angular momentum quantum numbers for the spherical harmonics
             giving the angular part of the trial WF. l can be set equal to 0, 1, or 2, 
             (and m values are then as usual) for standard spherical harmonics or l == -1
-            indicate the sp^3 geometry. Here spherical armonics are the real ones:
+            indicate the sp^3 geometry. Here spherical harmonics are the real ones:
             l == -1:   m = -4 -->   1, 1,-1 dir  
                        m = -3 -->   1,-1, 1 dir 
                        m = -2 -->  -1, 1, 1 dir 
@@ -209,14 +209,14 @@ kpt_labelN
 NAMELIST &INPUT
 
 nspts         INTEGER
-              number of extrema kpts defining the directions on which bands will
+              number of edge kpts defining the directions on which bands will
               be calculated
               DEFAULT : mandatory field
 
 npts          INTEGER
               number of kpts on which the real space hamiltonian on the WF basis set
               will be calculated. Heuristically the comparison with the 'original' 
-              PW-computed band structure it is usefull as a check of the 'quality' 
+              PW-computed band structure it is useful as a check of the 'quality' 
               of the real space (WF) hamiltonian
               DEFAULT : 100
 
@@ -231,7 +231,7 @@ efermi        REAL
               DEFAULT : 0.0
 
 #
-# now follow some feature related to the convertion of an eventual correlation
+# now follow some feature related to the conversion of an eventual correlation
 # self-energy which should be provided as en external input
 # These features are not completely implemented and generalized and are reported
 # here for completeness
@@ -254,7 +254,7 @@ calculate_spectral_function  LOGICAL
           
 spin_component  INTEGER
               spin channel of the input self-energy to be read and treated. Allowed
-              values are 1 or 2. This is an obsoloscent feature because the wannier code
+              values are 1 or 2. This is an obsolete feature because the wannier code
               at the moment is able to manage one spin component at the time.
               DEFAULT : 1
 
@@ -353,7 +353,7 @@ ne          INTEGER
             DEFAULT : 1000
 
 nterx       INTEGER
-            maximun namber of iterations in the calculation of transfer matrices
+            maximum number of iterations in the calculation of transfer matrices
             DEFAULT : 200
 
 gamma0      REAL
@@ -363,11 +363,11 @@ gamma0      REAL
             DEFAULT : 0.0
              
 emin        REAL
-            lower limit [eV] of the energy grid dimensoned by NE
+            lower limit [eV] of the energy grid dimensioned by NE
             DEFAULT : -10.0
 
 emax        REAL
-            upper limit [eV] of the energy grid dimensoned by NE
+            upper limit [eV] of the energy grid dimensioned by NE
             DEFAULT :  10.0
 
 efieldx     REAL
@@ -384,10 +384,10 @@ efieldz     REAL
 
 model       INTEGER
             can assume values from 1 to 4 and defines how to make up the tight binding
-            hamiltonian. Values 1 to 3 are related to old external parametrizations
+            hamiltonian. Values 1 to 3 are related to old external parameterizations
             for specific cases and should no longer be used. MODEL = 4 read the
             parameters of the real space hamiltonian from file and it is the case
-            when using Wannier functionsa as basis set.  
+            when using Wannier functions as basis set.  
             DEFAULT : 4
 
 ==============================================================================
@@ -437,15 +437,15 @@ ne          INTEGER
             DEFAULT : 1000
 
 nterx       INTEGER
-            maximun namber of iterations in the calculation of transfer matrices
+            maximum number of iterations in the calculation of transfer matrices
             DEFAULT : 200
 
 emin        REAL
-            lower limit [eV] of the energy grid dimensoned by NE
+            lower limit [eV] of the energy grid dimensioned by NE
             DEFAULT : -10.0
 
 emax        REAL
-            upper limit [eV] of the energy grid dimensoned by NE
+            upper limit [eV] of the energy grid dimensioned by NE
             DEFAULT : +10.0
 
 l_overlap   LOGICAL

@@ -46,7 +46,7 @@ interruption of operations. Due to the limited human resources involved in the d
 of this software package, no support will be given to individual users for either installation 
 or execution of the codes.
 Finally, in the spirit of every open source project, any contribution from external users is welcome, 
-encouraged and, if appropriate, will be included in future releses. 
+encouraged and, if appropriate, will be included in future releases. 
 
 =-------------------------------------------------------------------------------------------------=
 
@@ -69,7 +69,7 @@ write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, 
 
 TECHNICAL NOTES
 
-- Instalation procedure is reported in INSTALL file
+- Installation procedure is reported in INSTALL file
 - README.run describes how to run the code step by step
 - README.input description of the input files
 

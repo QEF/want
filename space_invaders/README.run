@@ -18,7 +18,7 @@ we will refer to that code in the following description.
       UNIFORM k-point grid in the COMPLETE Brillouin Zone; Gamma point
       must be included.
 
-(iii) From Pwsc to wannier code. Using the post processing pw2wann 
+(iii) From Pwsc to Wannier code. Using the post processing pw2wann 
       (already included in the Pwscf package) we extract the starting
       data (launch.dat) for the following Wannier calculations.
 
@@ -42,7 +42,7 @@ input file, that will be used for the following 3 steps (a-c).
 (b)   Running disentangle.x (using the same input of point (a) ), it is 
       possible to extract, from an entangled group, selected bands along 
       the Brillouin Zone. 
-      Particular attention must be payed in the definition of the 
+      Particular attention must be paid in the definition of the 
       nearest-neighbour shells for k-point: the completeness relation must  
       be fully satisfied, for details see Appendix B, PRB 56 12847 (1997).
       Trial wannier centers are not mandatory in this step (depending 
@@ -58,7 +58,7 @@ input file, that will be used for the following 3 steps (a-c).
       In this step the definition of the trial centers is necessary, even 
       in the case they have not been used in step (b).
       Wannier.x produces a standard output with the main results, and 
-      two internal bynary files: landing.dat, unitary.dat.
+      two internal binary files: landing.dat, unitary.dat.
 
 (d)   Running hamiltonian.x we calculate the hamiltonian matrix in the 
       basis of the calculated WFs.  hamiltonian.x requires a separate 
@@ -67,24 +67,24 @@ input file, that will be used for the following 3 steps (a-c).
       hamiltonian matrices, written by columns. The first two integers 
       in the first line give the dimension of the matrix, the last
       three integers describe the lattice vector, the WFs are belonging 
-      to (e.g. 0 0 0 is the refernce cell, 1 0 0 is the first neighbour 
+      to (e.g. 0 0 0 is the reference cell, 1 0 0 is the first neighbour 
       cell along the first axis direction, etc).
       These files will be the input for the transport calculation.
-      The code calculates also the intepolated bandstructure (band.dat) 
+      The code calculates also the interpolated bandstructure (band.dat) 
       for the system. band.gp may be used for a direct gnuplot visualization.
       The comparison with the original band structure calculated 
-      using the pwscf code constitutes a good test to check the accuracy 
+      using the Pwscf code constitutes a good test to check the accuracy 
       of the results. 
 
 (e)   plot.x is a post-processing. It is not necessary for the 
       transport calculation, but it is useful for the 3D visualization 
       of the WFs. The code requires a separate input, to be generated 
-      following README.input. You can use free visualization softweare 
+      following README.input. You can use free visualization software 
       (e.g. gOpenMol) to plot Wfs. 
 
 Note. Steps (b) and (c) are the most expensive ones of the overall procedure, 
 both in term of memory and in term of CPU time. Calculations for big systems 
-may take over several hours! On the contrary other steps of the chais are 
+may take over several hours! On the contrary other steps of the chain are 
 quite inexpensive.
 
 3) Calculation of electronic transport.
@@ -131,10 +131,10 @@ in a different way, depending on the case.
       HCI_AC, HCI_CB = coupling matrix between leads and conductor; these matrices
                        have to be adapted (from H01 of supercell calculation )
                        in order to allow the matching between the leads and the 
-                       conductur.  The definition of the coupling matrices HCI_ 
+                       conductor.  The definition of the coupling matrices HCI_ 
                        MUST BE DONE CAREFULLY case by case, depending on the 
                        particular system definition.
-                       An utulity (Tools/matrix_extract.sh) is provided to 
+                       An utility (Tools/matrix_extract.sh) is provided to 
                        manipulate matrices written in the current format.
 
 NOTE. In order to match the hamiltonian matrices at the boundary, it is necessary 
@@ -142,8 +142,8 @@ to check that the diagonal elements of the H00 matrices were aligned. If not
 a rigid shift must be done.
 
 ------------------------------------------------------------------------------
-GENERAL NOTES: The mathematical description, the ground phylosophy and further 
-               details are extensively discussed in the orinal papers:
+GENERAL NOTES: The mathematical description, the ground philosophy and further 
+               details are extensively discussed in the original papers:
 
 [1] A. Calzolari, N. Marzari, I. Souza and M. Buongiorno Nardelli, 
     Phys. Rev. B 69, 035108 (2004).
