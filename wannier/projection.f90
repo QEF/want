@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE projection( avec, lamp, ca, evc, vkpt,         & 
+   SUBROUTINE projection( lamp, ca, evc,               & 
               npwk, dimwin, dimwann, dimfroz,                &
               npwkx, nkpts, dimwinx, trial)
    !*******************************************************************
@@ -21,7 +21,7 @@
    !      analytical form for the FT of the gaussian orbitals.
    !
    USE kinds
-   USE constants, ONLY : CZERO, bohr => BOHR_RADIUS_ANGS, EPS_m8
+   USE constants, ONLY : CZERO, EPS_m8
    USE timing_module, ONLY : timing
    USE input_module,  ONLY : verbosity
    USE util_module,   ONLY : zmat_mul, zmat_unitary
@@ -39,9 +39,7 @@
    INTEGER :: dimwann
    INTEGER :: dimwin(nkpts)
    INTEGER :: dimfroz(nkpts)
-   REAL(dbl) :: avec(3,3)
    COMPLEX(dbl) :: evc( npwkx, dimwinx, nkpts )
-   REAL(dbl) :: vkpt(3,nkpts)
    COMPLEX(dbl) :: lamp(dimwinx,dimwinx,nkpts)
    COMPLEX(dbl) :: ca(dimwinx,dimwann,nkpts)
    TYPE(trial_center) :: trial(dimwann)

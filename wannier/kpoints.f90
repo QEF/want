@@ -61,10 +61,10 @@
   INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*mxdnn
   INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nkpts*mxdnn
   INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*mxdnnh
-  REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*mxdnn
+  REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*mxdnn (bohr^-1)
   REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*mxdnn
-  REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*mxdnnh
-  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: mxdnn
+  REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*mxdnnh (bohr^-1)
+  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: mxdnn (bohr^-1)
   REAL(dbl)                      :: wbtot         ! sum of the b-weights
 
   LOGICAL :: kpoints_alloc = .FALSE.

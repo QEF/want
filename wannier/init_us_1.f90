@@ -32,8 +32,7 @@ SUBROUTINE init_us_1
   !
   USE kinds,           ONLY : dbl
   USE parameters,      ONLY : lmaxx, nbrx, lqmax
-  USE constants,       ONLY : FPI, ZERO, CZERO, ONE, CONE, SQRT2_constant => SQRT2, &
-                              BOHR => bohr_radius_angs, EPS_m8
+  USE constants,       ONLY : FPI, ZERO, CZERO, ONE, CONE, SQRT2_constant => SQRT2, EPS_m8
   USE atom_module,     ONLY : r, rab
   USE ions_module,     ONLY : ntyp => nsp
   USE lattice_module,  ONLY : omega, tpiba
@@ -352,14 +351,14 @@ SUBROUTINE init_us_1
     IF ( ierr/=0) CALL errore('init_us_1','deallocating aux',ABS(ierr))
   !
   ! ... qb computation, added for WFs
-  !     Conversion from ang-1 to tpiba units is performed for the bk vecotrs.
+  !     Conversion from bohr^-1 to tpiba units is performed for the bk vecotrs.
   !     Before gg is used instead of SQRT(gg) because there we are interested
   !     only in the first element which is gg = 0
   !
   DO ik=1,nkpts
       nbkvect = nntot(ik)
       DO nn=1,nbkvect
-         bkvect(1:3,nn) = bk(1:3,ik,nn) * bohr / tpiba
+         bkvect(1:3,nn) = bk(1:3,ik,nn) / tpiba
          bkmod(nn) = SQRT( bkvect(1,nn)**2 + bkvect(2,nn)**2 + bkvect(3,nn)**2 )
       ENDDO
 

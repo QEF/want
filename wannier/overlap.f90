@@ -20,8 +20,6 @@
       USE io_module,      ONLY : stdout
 
       USE uspp,           ONLY : qb
-      USE kpoints_module, ONLY : dnn, ndnntot, bk   ! XXXX
-      USE ggrids_module,  ONLY : igv                ! XXXX
       USE wfc_module,     ONLY : npwx_g             ! XXXX
       USE becmod,         ONLY : becp
       USE ions_module,    ONLY : uspp_calculation
