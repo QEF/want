@@ -68,7 +68,7 @@ CONTAINS
       dist_cos = rpos1(1)
     ELSE 
       WRITE(stdout,*) 'ERROR: Wrong z-direction'
-      CALL errore(' projection ', ' wrong z- direction ', ndir )
+      CALL errore(' gauss1 ', ' wrong z- direction ', ndir )
     END IF 
 
     ! ... IF  rpos is on the origin, or on the z axis, I give arbitrary
@@ -112,7 +112,7 @@ CONTAINS
         cphi = sph22 * cphi * ( th_sin**2 ) * 2.0d0 * ph_sin * ph_cos
       ELSE
         WRITE(stdout,*) 'ERROR: check the spherical harmonics (I)'
-        CALL errore(' projection ', ' check the spherical harmonics (I)', m_wann )
+        CALL errore(' gauss1 ', ' check the spherical harmonics (I)', m_wann )
       END IF
 
     ELSE IF ( l_wann == 1 ) THEN
@@ -125,7 +125,7 @@ CONTAINS
         cphi = sph11 * cphi * th_sin * ph_sin
       ELSE
         WRITE(stdout,*) 'ERROR: check the spherical harmonics (II)'
-        CALL errore(' projection ', ' check the spherical harmonics (II)', m_wann )
+        CALL errore(' gauss1 ', ' check the spherical harmonics (II)', m_wann )
       END IF
 
     ELSE IF ( l_wann == 0 ) THEN
@@ -170,11 +170,11 @@ CONTAINS
                sph11 * th_sin * ph_sin - sph10 * th_cos ) / 2.0d0
       ELSE
         WRITE (stdout, *)  '*** ERROR *** in sp^3 hybrid gaussian: check m_wann'
-        CALL errore(' projection ', ' sp^3 hybrid gaussian ', m_wann )
+        CALL errore(' gauss1 ', ' sp^3 hybrid gaussian ', m_wann )
       END IF
     ELSE
       WRITE(stdout,*) '*** ERROR *** : check the spherical harmonics (III)'
-      CALL errore(' projection ', ' check the spherical harmonics (III)', m_wann )
+      CALL errore(' gauss1 ', ' check the spherical harmonics (III)', m_wann )
     END IF
 
     RETURN

@@ -10,7 +10,7 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE projection( avec, lamp, evec, vkpt,              & 
-                  kgv, isort, mtxd, dimwin, dimwann, dimfroz,              &
+                  kgv, isort, npwk, dimwin, dimwann, dimfroz,              &
                   npwx, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,    &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                   m_wann, ndir_wann, rloc, ndwinx)
@@ -21,6 +21,7 @@
        USE io_global, ONLY : stdout
        USE timing_module, ONLY : timing
        USE sph_har, ONLY: gauss1
+       USE util, ONLY: gv_indexes, zmat_mul
 
        IMPLICIT NONE
 
@@ -29,7 +30,7 @@
        INTEGER :: npwx, mxdbnd, mxdnrk
        INTEGER :: mxdgve, ndwinx
        INTEGER :: ngx, ngy, ngz, nkpts
-       INTEGER :: mtxd(mxdnrk)
+       INTEGER :: npwk(mxdnrk)
        INTEGER :: kgv(3,mxdgve)
        INTEGER :: isort(npwx,mxdnrk)
        INTEGER :: dimwann
@@ -54,6 +55,7 @@
        INTEGER :: mplwv
        INTEGER :: nb, i, j, l, m 
        INTEGER :: nkp, npoint
+       INTEGER, ALLOCATABLE :: nindpw(:)
        INTEGER :: ngdim(3)
        REAL(dbl) :: aside, asidemin
        COMPLEX(dbl) :: catmp
@@ -87,7 +89,6 @@
        COMPLEX(dbl), ALLOCATABLE :: vt(:,:)
        COMPLEX(dbl), ALLOCATABLE :: work(:)
        REAL(dbl), ALLOCATABLE :: s(:)
-       REAL(dbl), ALLOCATABLE :: rwork1(:)
        REAL(dbl), ALLOCATABLE :: rwork2(:)
        REAL(dbl), ALLOCATABLE :: rphicmx1(:,:)
        REAL(dbl), ALLOCATABLE :: rphicmx2(:,:)
@@ -96,7 +97,6 @@
        INTEGER, ALLOCATABLE :: nphir(:)
 
        COMPLEX(dbl), ALLOCATABLE :: cptwr(:)
-       COMPLEX(dbl), ALLOCATABLE :: cwork2(:)
        COMPLEX(dbl), ALLOCATABLE :: ca(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: cu(:,:)
 
@@ -112,10 +112,6 @@
        ALLOCATE( cptwr(ngx*ngy*(ngz+1)), STAT = ierr )
        IF( ierr /= 0 ) THEN
          CALL errore( ' projection ', ' allocating cptwr ', ngx*ngy*(ngz+1) )
-       END IF
-       ALLOCATE( cwork2(ngx*ngy*(ngz+1)), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating cwork2 ', ngx*ngy*(ngz+1) )
        END IF
        ALLOCATE( ca(mxdbnd,dimwann,nkpts), STAT = ierr )
        IF( ierr /= 0 ) THEN
@@ -142,11 +138,6 @@
        ALLOCATE( s(dimwann), STAT = ierr )
        IF( ierr /= 0 ) THEN
          CALL errore( ' projection ', ' allocating s ', dimwann )
-       END IF
-
-       ALLOCATE( rwork1(3*dimwann), STAT = ierr )
-       IF( ierr /= 0 ) THEN
-         CALL errore( ' projection ', ' allocating rwork1 ', 3*dimwann )
        END IF
 
        ALLOCATE( rwork2(5*dimwann), STAT = ierr )
@@ -231,42 +222,22 @@
 
 ! ...  Now pick up a consistent phase for the u_nk (the initial ones
 !      are provided by the ab-initio code, and so have almost random rotations)
+
+       ALLOCATE( nindpw( npwx ) )
      
        DO nkp = 1, nkpts
          IF  ( dimwann >  dimfroz(nkp) ) THEN  !IF  not, don't need to waste CPU time!
            DO nb = 1, dimwin(nkp)
 
-             DO m = 1 ,mplwv
-               cptwr(m) = czero
-               cwork2(m) = czero
-             END DO
+             cptwr = czero
 
 ! ...        Go through all the g-vectors inside the cutoff radius at the present k-point
+
+             CALL gv_indexes( kgv, isort(:,nkp), npwk(nkp), ngx, ngy, ngz, nindpw = nindpw(:) )
  
-             DO J=1,MTXD(NKP)           
+             DO J=1,npwk(NKP)           
 
-! ...          Use IF  ...THEN ...ELSE instead! (also in interface.f and intf_mwf.f) 
-
-               IF  ( kgv( 1, isort(j,nkp) ) >=  0 ) nx = kgv( 1, isort(j,nkp) ) + 1
-               IF  ( kgv( 1, isort(j,nkp) ) <   0 ) nx = kgv( 1, isort(j,nkp) ) + 1 + ngx
-
-               IF  ( kgv( 2, isort(j,nkp) ) >=  0 ) ny = kgv( 2, isort(j,nkp) ) + 1
-               IF  ( kgv( 2, isort(j,nkp) ) <   0 ) ny = kgv( 2, isort(j,nkp) ) + 1 + ngy
-
-               IF  ( kgv( 3, isort(j,nkp) ) >=  0 ) nz = kgv( 3, isort(j,nkp) ) + 1
-               IF  ( kgv( 3, isort(j,nkp) ) <   0 ) nz = kgv( 3, isort(j,nkp) ) + 1 + ngZ
-
-               npoint = nx + (ny-1)*ngx + (nz-1)*ngx*ngy
-
-! ...          Npoint is the absolute (k-independent) castep index of the gvector 
-!              kgv(*,isort(j,nkp)). Note that in general it is not equal to nindpw(j,nkp), 
-!              since both the ordering of the g-vectors at any given k-point and their 
-!              absolute orderinging is dIF ferent in cpw and in castep. (In cpw the 
-!              absolute ordering is by stars of increasing length.) Think more about this,
-!              to make sure all that I said is correct.
-! ...          Bloch state in the g-space grid
-
- 
+               npoint = nindpw(j)
                cptwr(npoint) = evec(j,nb,nkp)
  
              END DO ! g-vectors at present k (J)
@@ -392,6 +363,8 @@
 
        END DO ! NKP
 
+       DEALLOCATE( nindpw )
+
  
 ! ...  Compute the dimwin(k) x dimwann matrix cu that yields, from the dimwin(k) 
 !      original bloch states, the dimwann bloch-like states with maximal projection
@@ -413,6 +386,7 @@
  
            CALL zgesvd( 'a', 'a', dimwin(nkp), dimwann, ca(1,1,nkp),              &
                 mxdbnd, s, u, mxdbnd, vt, dimwann, work, 4*mxdbnd, rwork2, info )
+
            IF ( info /= 0 )  &
              CALL errore( ' projection ', ' zgesvd: info has illegal value ', info )
  
@@ -424,7 +398,7 @@
                END DO
              END DO
            END DO
- 
+
            IF ( verbosity == 'high' ) THEN
 ! ...        Check unitariety
              WRITE(stdout,*) ' '
@@ -450,19 +424,13 @@
              END DO
            END IF
  
-           DO j = 1, dimwann
-             DO i = 1, dimwin(nkp)
-               lamp(i,j,nkp) = cu(i,j)
-             END DO
-           END DO
+           lamp(  1:dimwin(nkp), 1:dimwann , nkp) = cu( 1:dimwin(nkp), 1:dimwann )
 !
          END IF 
        END DO ! NKP
 
        DEALLOCATE( cptwr, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating cptwr',ABS(ierr))
-       DEALLOCATE( cwork2, STAT=ierr )
-           IF (ierr/=0) CALL errore(' projection ',' deallocating cwork2',ABS(ierr))
        DEALLOCATE( ca, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating ca',ABS(ierr))
        DEALLOCATE( cu, STAT=ierr )
@@ -475,8 +443,6 @@
            IF (ierr/=0) CALL errore(' projection ',' deallocating work',ABS(ierr))
        DEALLOCATE( s, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating s',ABS(ierr))
-       DEALLOCATE( rwork1, STAT=ierr )
-           IF (ierr/=0) CALL errore(' projection ',' deallocating rwork1',ABS(ierr))
        DEALLOCATE( rwork2, STAT=ierr )
            IF (ierr/=0) CALL errore(' projection ',' deallocating rwork2',ABS(ierr))
        DEALLOCATE( rphicmx1, STAT=ierr )
