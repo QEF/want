@@ -44,6 +44,8 @@ CONTAINS
         END DO
       END DO
 
+      IF( nkp /= nkpts ) &
+        CALL errore( ' kpoints_init ', ' nkp and nkpts differs ', nkpts )
       wtkpt( 1 : nkpts ) = 1.0d0/DBLE( nkpts )
       wtktot = SUM( wtkpt( 1 : nkpts ) )
 
