@@ -227,7 +227,7 @@
        WRITE( stdout, fmt= " (2x,'Atomic positions: (cart. coord. in units of crystal)' ) " )
        DO nt = 1, ntype
          DO ja = 1, natom( nt )
-           WRITE( stdout, fmt="(4x, a, 2x,'tau(',I3,') = (', 3F8.4, ' )' )" ) &
+           WRITE( stdout, fmt="(4x, a, 2x,'tau( ',I3,' ) = (', 3F8.4, ' )' )" ) &
                   nameat( nt ), ja, (rat( i, ja, nt ), i = 1, 3)
          END DO
        END DO
