@@ -13,7 +13,6 @@ F90            = @f90@
 FFLAGS         = @fflags@ $(IFLAGS)
 FFLAGS_NOOPT   = @fflags_noopt@
 F77FLAGS       = $(FFLAGS)
-FF77LAGS_NOOPT = @fflags_noopt@
 F90FLAGS       = @f90flags@ @pre_fdflags@$(FDFLAGS)
 LD             = @ld@
 LDFLAGS        = @ldflags@ $(LIBOBJS) $(LIBS)
