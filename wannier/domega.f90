@@ -3,6 +3,17 @@
                  cdodq )
       
       IMPLICIT NONE 
+
+      INTEGER :: NBANDS
+      INTEGER :: NKPTS
+      INTEGER :: NKPTS2
+      INTEGER :: NNMX
+      INTEGER :: NWANN
+      INTEGER :: IND
+      INTEGER :: NKP
+      INTEGER :: NN
+      INTEGER :: M, N 
+
       INTEGER :: nnlist(nkpts,nnmx), nntot(nkpts)
       REAL*8 :: wb(nkpts,nnmx)
       REAL*8 :: bk(3,nkpts,nnmx), rave(3,nbands)
@@ -17,16 +28,6 @@
       COMPLEX*16 :: cdodq1(nbands,nbands,nkpts)
       COMPLEX*16 :: cdodq2(nbands,nbands,nkpts)
       COMPLEX*16 :: cdodq3(nbands,nbands,nkpts)
-
-      INTEGER :: NBANDS
-      INTEGER :: NKPTS
-      INTEGER :: NKPTS2
-      INTEGER :: NNMX
-      INTEGER :: NWANN
-      INTEGER :: IND
-      INTEGER :: NKP
-      INTEGER :: NN
-      INTEGER :: M, N 
 
 ! ... Recalculate rave
 
