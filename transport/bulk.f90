@@ -23,7 +23,7 @@
       INTEGER :: i, j, k, l, m, n
 
       REAL(dbl) :: gamma0, rcut
-      REAL(dbl) :: bias, efieldx, efieldy, efieldz
+      REAL(dbl) :: efieldx, efieldy, efieldz
       REAL(dbl), ALLOCATABLE :: r(:,:)        ! r( 3, natmax )
       REAL(dbl), ALLOCATABLE :: h0(:,:)       ! h0( nmax, nmax )
       REAL(dbl), ALLOCATABLE :: h1(:,:)       ! h1( nmax, nmax )
@@ -70,7 +70,7 @@
       READ ( 5, * ) ne
       READ ( 5, * ) nterx
       READ ( 5, * ) gamma0, emin, emax
-      READ ( 5, * ) bias, efieldx, efieldy, efieldz
+      READ ( 5, * ) efieldx, efieldy, efieldz
       READ ( 5, * ) model
 
       ALLOCATE ( r( 3, natmax ) )
