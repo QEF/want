@@ -1521,6 +1521,7 @@
         DEALLOCATE( rnkb, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rnkb ', ABS(ierr) )
 
+        gcnorm1 = 0.0d0  !  bug fix - Carlo
         DO nkp = 1, nkpts
           DO m= 1, dimwann
             DO n = 1, dimwann
