@@ -19,6 +19,7 @@
       USE timing_module, ONLY : timing 
       USE io_global, ONLY : stdout
       USE constants, ONLY: bohr => bohr_radius_angs, ryd => ry, har => au, pi
+      !USE constants, ONLY: ryd => ry, har => au, pi
 
       IMPLICIT NONE
 
@@ -68,6 +69,9 @@
       INTEGER, ALLOCATABLE  :: nplwkp(:)
 
       INTEGER :: ierr
+
+!      REAL(dbl) :: bohr
+!      PARAMETER ( bohr = 0.52917715d0 )
 
 ! ... END declarations
 
