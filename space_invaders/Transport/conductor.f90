@@ -28,7 +28,7 @@
       INTEGER :: nmaxa, nmaxb, nmaxc
 
       REAL(dbl) :: emin, emax, de, enep
-      REAL(dbl) :: gamma0, bias
+      REAL(dbl) :: bias
       
       REAL(dbl), ALLOCATABLE :: h00_a(:,:)                 ! h00_a(nmaxa,nmaxa)
       REAL(dbl), ALLOCATABLE :: h01_a(:,:)                 ! h01_a(nmaxa,nmaxa)
@@ -87,9 +87,10 @@
       COMPLEX(dbl), ALLOCATABLE :: tran(:,:)              ! tran(nmaxc,nmaxc)
       COMPLEX(dbl) :: ene, dos, conduct
       COMPLEX(dbl) :: alpha, beta
-     
       LOGICAL :: l_overlap
      
+      NAMELIST /INPUT_CONDUCTOR/ nmxa, nmxb, nmxc, norb, ne, nterx, emin,  &
+                                 emax, l_overlap, bias
 !
 ! ... Startup
 !
@@ -99,14 +100,27 @@
       alpha = ( 1.d0, 0.d0 )
       beta = ( 0.d0, 0.d0 ) 
 
-!...  Read standard input
-      READ ( 5, * ) nmxa, nmxb, nmxc
-      READ ( 5, * ) norb
-      READ ( 5, * ) ne
-      READ ( 5, * ) nterx
-      READ ( 5, * ) gamma0, emin, emax
-      READ ( 5, *)  l_overlap
-      READ ( 5, * ) bias
+!...  Read namelist
+      nmxa = 0
+      nmxb = 0
+      nmxc = 0
+      norb = 1
+      ne = 1000
+      nterx = 200
+      emin = -10.0
+      emax =  10.0
+      l_overlap = .FALSE.
+      bias = 0.0
+
+      READ( 5, input_conductor, IOSTAT=ierr)
+      IF ( ierr/= 0) CALL errore('conductor','reading input namelist',ABS(ierr))
+      
+      IF ( nmxa <= 0) CALL errore('conductor','Invalid NMXA',1)
+      IF ( nmxb <= 0) CALL errore('conductor','Invalid NMXB',1)
+      IF ( nmxc <= 0) CALL errore('conductor','Invalid NMXB',1)
+      IF ( emax <= emin ) CALL errore('conductor','Invalid EMIN EMAX',1)
+      IF ( ne <= 0 ) CALL errore('conductor','Invalid NE',1)
+      IF ( nterx <= 0 ) CALL errore('conductor','Invalid NTERX',1)
       
       nmaxa=norb*nmxa
       nmaxb=norb*nmxb
