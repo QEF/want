@@ -12,8 +12,24 @@ lib: mod
 main: lib mod
 	cd Main; $(MAKE);
 
+window: lib mod
+	cd Main; $(MAKE) window.x;
+disentangle: lib mod
+	cd Main; $(MAKE) disentangle.x;
+wannier: lib mod
+	cd Main; $(MAKE) wannier.x;
+hamiltonian: lib mod
+	cd Main; $(MAKE) hamiltonian.x;
+plot: lib mod
+	cd Main; $(MAKE) plot.x;
+
+
 tran: lib mod
 	cd Transport; $(MAKE);
+bulk: lib mod
+	cd Transport; $(MAKE) bulk.x;
+conductor: lib mod
+	cd Transport; $(MAKE) conductor.x;
 
 clean:
 	cd Modules; $(MAKE) clean;

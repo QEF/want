@@ -21,6 +21,7 @@ MODULE input_wannier
   INTEGER   :: dimwann              ! number of Wannier functions
  
   REAL(dbl) :: alpha
+  REAL(dbl) :: disentangle_thr      ! disentangle threshold for convergence
   INTEGER :: maxiter, itrial
 
   INTEGER :: iphase
@@ -32,8 +33,8 @@ MODULE input_wannier
   INTEGER :: nwhich( nshx )
 
   namelist / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
-    alpha, maxiter, itrial, iphase, alphafix0, alphafix, niter, niter0, ncg, &
-    nshells, nwhich, ordering_type
+    alpha, maxiter, disentangle_thr, itrial, iphase, alphafix0, alphafix, niter, &
+    niter0, ncg, nshells, nwhich, ordering_type
   
   CHARACTER(15)          :: wannier_center_units
   REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
@@ -75,6 +76,7 @@ CONTAINS
        froz_max = -1.0d10
        alpha = 0.5d0
        maxiter = 1000
+       disentangle_thr = 1d-8
        iphase  = 1
        niter0 = 500
        alphafix0 = 0.5d0
@@ -111,6 +113,9 @@ CONTAINS
        END IF
        IF ( maxiter <= 0 ) THEN
          CALL errore( ' read_input ', ' maxiter must be positive ', 1 )
+       END IF
+       IF ( disentangle_thr <= 0 ) THEN
+         CALL errore( ' read_input ', ' disentangle_thr must be positive ', 1 )
        END IF
        IF ( iphase /= 1 ) THEN
          CALL errore( ' read_input ', ' iphase must be 1 (ONE) ', 1 )

@@ -275,13 +275,17 @@
        ALLOCATE( komega_i_est(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating komega_i_est ', nkpts )
        ALLOCATE( lamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating lamp ', mxdbnd*mxdbnd*nkpts )
+           IF( ierr /=0 ) &
+           CALL errore(' disentangle ', ' allocating lamp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( camp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating camp ', mxdbnd*mxdbnd*nkpts )
+           IF( ierr /=0 ) &
+           CALL errore(' disentangle ', ' allocating camp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( eamp(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
+           IF( ierr /=0 ) &
+           CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( eamp_save(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
+           IF( ierr /=0 ) &
+           CALL errore(' disentangle ', ' allocating eamp ', mxdbnd*mxdbnd*nkpts )
        ALLOCATE( mtrx_in(mxdbnd,mxdbnd,nkpts), STAT = ierr )
            IF( ierr /=0 ) &
            CALL errore(' disentangle ', ' allocating mtrx_in ', mxdbnd*mxdbnd*nkpts )
@@ -293,13 +297,14 @@
        ALLOCATE( dimfroz(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating dimfroz ', nkpts )
        ALLOCATE( indxfroz(mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating indxfroz ', mxdbnd*nkpts )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating indxfroz ',mxdbnd*nkpts)
        ALLOCATE( indxnfroz(mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating indxnfroz ', mxdbnd*nkpts )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating indxnfroz ',mxdbnd*nkpts)
        ALLOCATE( frozen(mxdbnd,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating frozen ', mxdbnd*nkpts )
        ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ham ', mxdbnd*mxdbnd*nkpts )
+           IF( ierr /=0 ) &
+           CALL errore(' disentangle ', ' allocating ham ', mxdbnd*mxdbnd*nkpts )
 !
 ! ...  Next line added by ANDREA (28 jan 2004) 
        ALLOCATE( imin(nkpts), imax(nkpts), STAT=ierr )
@@ -332,35 +337,31 @@
        ndwinx = MAXVAL( dimwin(1:nkpts) )
 !
 ! ...  Write energy windows and band-space minimization parameters
-       WRITE( stdout, fmt= " (2x,' Energy windows (in eV) and band-space minimization parameters:') " )
-       WRITE( stdout, fmt= " (4x,'outer window: E  = (', f8.4, ' , ',f8.4, ' )' )" ) &
-                               win_min, win_max
+       WRITE(stdout,"(2x,' Energy windows (in eV) and band-space minimization parameters:')")
+       WRITE(stdout,"(4x,'outer window: E  = (', f8.4, ' , ',f8.4, ' )' )") win_min, win_max
        IF ( froz_max < win_min  .OR. froz_min > win_max ) THEN
-         WRITE(stdout, fmt= " (4x, 'inner window: NOT used --> NO FROZEN STATES' )" )
+           WRITE(stdout,"(4x, 'inner window: NOT used --> NO FROZEN STATES' )" )
        ELSE
-         WRITE( stdout, fmt= " (4x, 'inner window: E  = (', f8.4, ' , ',f8.4, ' ) --> FROZEN STATES' )" ) &
-                                 froz_min, froz_max
+           WRITE( stdout,"(4x, 'inner window: E  = (', f8.4, ' ,&
+                  & ',f8.4, ' ) --> FROZEN STATES' )" ) froz_min, froz_max
        END IF
 
-       WRITE( stdout, * ) ' '
-       WRITE( stdout, fmt= " (4x,'Number of bands in PW calculation =', i5 ) " ) mxdbnd
-       WRITE( stdout, fmt= " (4x,'Max number of bands within the energy window = ', i5 )" ) ndwinx
-       WRITE( stdout, fmt= " (4x,'Number of Wannier functions required = ', i5 )" ) dimwann
-       WRITE( stdout, * ) ' '   
+       WRITE( stdout,"(/,4x,'Number of bands in PW calculation =', i5 )") mxdbnd
+       WRITE( stdout,"(4x,'Max number of bands within the energy window = ', i5 )") ndwinx
+       WRITE( stdout,"(4x,'Number of Wannier functions required = ', i5,/ )") dimwann
 
-       WRITE( stdout, fmt= " (2x,'K-point shells: ' )" ) 
-       WRITE( stdout, fmt= " (4x,'Number of shells = ', i3 )" ) nshells
-       WRITE( stdout, fmt= " (4x,'Selected shells  = ', 3i3 )" ) ( nwhich(i), i = 1, nshells )
+       WRITE( stdout,"(2x,'K-point shells: ' )" ) 
+       WRITE( stdout,"(4x,'Number of shells = ', i3 )") nshells
+       WRITE( stdout,"(4x,'Selected shells  = ', 3i3 )") ( nwhich(i), i = 1, nshells )
 
-       WRITE( stdout, * ) ' '   
-       WRITE( stdout, fmt= " (2x,'Minimization data: ' )" ) 
-       WRITE( stdout, fmt= " (4x,'Mixing parameter (alpha)= ', f6.3 )" ) alpha
-       WRITE( stdout, fmt= " (4x,'Max iter = ', i5 )" ) maxiter
-       WRITE( stdout, fmt= " (4x,'Starting guess orbitals (itrial) = ', i5 )" ) itrial
+       WRITE( stdout,"(/,2x,'Minimization data: ' )" ) 
+       WRITE( stdout,"(4x,'Mixing parameter (alpha)= ', f6.3 )" ) alpha
+       WRITE( stdout,"(4x,'Max iter = ', i5 )" ) maxiter
+       WRITE( stdout,"(4x,'Starting guess orbitals (itrial) = ', i5 )" ) itrial
 
 
        ALLOCATE( evec( npwx + 1, ndwinx, nkpts ), STAT = ierr )
-          IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating evec ', npwx*mxdbnd*nkpts )
+          IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating evec ',npwx*mxdbnd*nkpts)
 
        DO nkp = 1, nkpts
 
@@ -372,9 +373,10 @@
          READ(19) ( ( evec(j,i,nkp), j=1, npwk(nkp) ), i=1, dimwin(nkp) )
          READ(19) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )
 
-         IF ( dimfroz(nkp) > 0 )  READ(19) ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
-
-         IF ( dimfroz(nkp) < dimwin(nkp) )  READ(19) ( indxnfroz(i,nkp), i=1, dimwin(nkp)-dimfroz(nkp) )
+         IF ( dimfroz(nkp) > 0 )  &
+                READ(19) ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
+         IF ( dimfroz(nkp) < dimwin(nkp) )  &
+                READ(19) ( indxnfroz(i,nkp), i=1, dimwin(nkp)-dimfroz(nkp) )
 
          IF ( dimfroz(nkp) /= 0 ) froz_flag = 1
 
@@ -395,7 +397,7 @@
             nntot, nnlist, nncell, cm, mxdgve, npwx, nkpts,        &
             mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
 !
-!=----------------------------------------------------------------------------------------------=
+!=------------------------------------------------------------------------------------=
 !
 ! ...  Start iteration loop
 
@@ -410,9 +412,7 @@
 ! ...      No frozen states
 
              IF ( ITRIAL == 1 ) THEN
-               WRITE( stdout,*) ' '
-               WRITE( stdout, fmt= "(2x, 'Initial trial subspace: lowest energy eigenvectors' )")
-               WRITE( stdout,*) ' '
+               WRITE( stdout,"(/,'  Initial trial subspace: lowest energy eigenvectors',/)")
                DO nkp=1, nkpts
                  DO l=1, dimwann
                    DO j=1,dimwin(nkp)
@@ -422,9 +422,7 @@
                  END DO
                END DO
              ELSE IF ( itrial == 2 ) THEN
-               WRITE( stdout,*) ' '
-               WRITE( stdout, fmt= "(2x, 'Initial trial subspace: highest energy eigenvectors' )")
-               WRITE( stdout,*) ' '
+               WRITE( stdout,"(/,'  Initial trial subspace: highest energy eigenvectors',/)")
                DO nkp=1, nkpts
                  DO l=1, dimwann
                    DO j=1, dimwin(nkp)  
@@ -434,17 +432,14 @@
                  END DO
                END DO
              ELSE IF ( ITRIAL == 3 ) THEN
-               WRITE( stdout,*) ' ' 
-               WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected localized orbitals' )")
-               WRITE( stdout,*) ' '
+               WRITE(stdout,"(/,'  Initial trial subspace: projected localized orbitals',/)")
                CALL projection( avec, lamp, evec, vkpt,             &
                     igv, igsort, npwk, dimwin, dimwann, dimfroz,             &
                     npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,   &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                  &
                     m_wann, ndir_wann, rloc, ndwinx)
              ELSE
-               WRITE( stdout,*) ' ' 
-               WRITE( stdout, fmt= "(2x, 'Invalid choice of itrial' )")
+               WRITE( stdout, fmt= "(/,2x, 'Invalid choice of itrial' )")
                CALL errore(' disentangle ', ' Invalid choice of itrial (I)', (itrial) )
 
              END IF     !   No frozen states
@@ -454,18 +449,17 @@
 ! ...      There are frozen states. 
 !          Choose the non-frozen trial states using the modified projection technique
 
-             WRITE( stdout,*) ' ' 
-             WRITE( stdout, fmt= "(2x, 'There are frozen states' )")
-             WRITE( stdout,*) ' ' 
-             WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected gaussians+frozen states' )")
-             WRITE( stdout,*) ' ' 
+             WRITE(stdout,"(/,2x, 'There are frozen states',/)")
+             WRITE(stdout,"(2x,'Initial trial subspace: projected gaussians+frozen states' &
+                   & ,/)")
 
 !            DO nkp = 1, nkpts
 !              IF ( dimfroz(nkp) == 0 ) THEN
-!                WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = none'  )") nkp
+!                WRITE( stdout,"(4x, 'Frozen bands for k-point (',i3,' ) = none'  )") nkp
 !              ELSE
-!                WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = ',i4,':'  )") nkp,dimfroz(nkp)
-!                WRITE( stdout, fmt= "(20(i2,1x)   )") ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
+!                WRITE( stdout,"(4x, 'Frozen bands for k-point (',i3,' ) = ',i4,':'  )") &
+!                       nkp,dimfroz(nkp)
+!                WRITE( stdout,"(20(i2,1x)   )") ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
 !              END IF
 !            END DO
 
@@ -516,8 +510,7 @@
 !            the trial subspace.
 
              DO nkp = 1, nkpts
-!              WRITE( stdout,*) ' ' 
-!              WRITE( stdout, fmt=" (2x, 'k-point', i4)") nkp
+!              WRITE( stdout, fmt=" (/,2x, 'k-point', i4)") nkp
                DO l = 1, dimwann
                  DO m = 1, l
                    ctmp = czero
@@ -538,11 +531,9 @@
                    
            ENDIF ! there are frozen states
 
-           WRITE( stdout, * ) '  '
-           WRITE( stdout, * ) ' ======================================================================'
-           WRITE( stdout, * ) ' =                   Starting Iteration loop                          ='
-           WRITE( stdout, * ) ' ======================================================================'
-           WRITE( stdout, * ) '  '
+           WRITE( stdout, "(/,x,70('='))" ) 
+           WRITE( stdout, "(x,'=',19x,'Starting Iteration loop',26x,'=')" ) 
+           WRITE( stdout, "(x,70('='),/)" ) 
 
 ! ...      Compute the initial z matrix mtrx_in at all relevant K-points
 
@@ -570,8 +561,7 @@
            END DO
          ENDIF    !   iter = 1
 !
-!        WRITE( stdout, * ) '  '
-!        WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") iter
+!        WRITE( stdout, fmt=" (/,2x,'Iteration = ',i5) ") iter
          omega_i_est = zero
 
          DO nkp = 1, nkpts
@@ -590,9 +580,9 @@
                   iwork(1), ifail(1), info )
 
              IF ( info < 0 ) &
-               CALL errore(' disentangle ', ' zhpevx: info illegal value (I)', info )
-             IF ( info > 0 ) &
-               CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (I)', info )
+                   CALL errore(' disentangle ', ' zhpevx: info illegal value (I)', info )
+             IF ( info > 0 ) CALL errore(' disentangle ', &
+                                   ' zhpevx: eigenvectors failed to converge (I)', info )
            END IF
  
 ! ...      Calculate K-point contribution to omega_i_est
@@ -624,17 +614,16 @@
                m = m+1
                komega_i_est(nkp) = komega_i_est(nkp) - w(j)
                DO i = 1, dimwin(nkp)
-                 lamp(i,m,nkp) = czerO
+                 lamp(i,m,nkp) = czero
                END DO
                DO i = 1, dimwin(nkp)-dimfroz(nkp)
                  lamp(indxnfroz(i,nkp),m,nkp) = z(i,j)     ! *** CHECK!!! ***
                END DO
              END DO
              IF ( verbosity == 'high' ) THEN
-                WRITE(stdout,*)
-                WRITE(stdout, fmt="(2x, 'All eigenvalues:' )")
+                WRITE(stdout, fmt="(/,2x, 'All eigenvalues:' )")
                 DO j = 1, dimwin(nkp)-dimfroz(nkp)
-                  WRITE(*,fmt="(4x,'j=',i2,', lambda(j)=', f10.5)") j, w(j)
+                  WRITE(stdout,fmt="(4x,'j=',i2,', lambda(j)=', f10.5)") j, w(j)
                 END DO
                 WRITE(stdout,fmt="(4x,'Wbtot = ')")wbtot
              END IF
@@ -642,6 +631,7 @@
  
            OMEGA_I_EST=OMEGA_I_EST+KOMEGA_I_EST(NKP)
  
+
 ! ...      At the last iteration find a basis for the (dimwin(nkp)-dimwann)-dimensional
 !          complement space
  
@@ -668,9 +658,9 @@
                
              ELSE
                 cflag = 1
-                WRITE( stdout,*)
-                WRITE( stdout, fmt="(2x, 'Warning!' )")
-                WRITE( stdout, fmt="(4x, 'at k-point ',i4,' the complement subspace has zero dimensions' )") nkp
+                WRITE( stdout, fmt="(/,2x, 'Warning!' )")
+                WRITE( stdout, fmt="(4x, 'at k-point ',i4,' the complement subspace '// &
+                       & 'has zero dimensions' )") nkp
              END IF
            END IF
  
@@ -689,12 +679,14 @@
                  mxdbnd, nkpts, mxdnn )
            omega_i = omega_i + aux
 !          IF ( ( iter - INT (iter / DBLE(10) ) ) == 1 ) THEN
-!            WRITE( stdout, fmt=" (4x, 'K-point',i3, ' )     Komega_I Error =',f16.8 )") nkp, (komega_i_est(nkp)-aux)/aux
+!            WRITE( stdout, fmt=" (4x, 'K-point',i3, ' )     Komega_I Error =',f16.8 )") &
+!                   nkp, (komega_i_est(nkp)-aux)/aux
 !          END IF
          END DO
          omega_i = omega_i/DBLE(nkpts)
  
-         WRITE( stdout, fmt=" (2x, 'Iteration = ',i5,'   Omega_I Error =',f16.8 )") iter, (omega_i_est - omega_i)/omega_i
+         WRITE( stdout, fmt=" (2x, 'Iteration = ',i5,'   Omega_I Error =',f16.8 )") &
+                iter, (omega_i_est - omega_i)/omega_i
          o_error = ABS( (OMEGA_I_EST-OMEGA_I)/OMEGA_I )
 
  
@@ -708,26 +700,24 @@
            END IF
          END DO
 
-         IF ( o_error < 1.e-8 ) GO TO 9999
+         IF ( o_error < disentangle_thr ) GO TO 9999
 
        ENDDO ! iter
 !
 ! ...  End of iter loop
-!=-------------------------------------------------------------------------------------------------=
+!=----------------------------------------------------------------------------------------=
 
 ! ...  Convergence achieved
 
  9999  continue
-       WRITE( stdout, *) ' '
-       WRITE( stdout, fmt="(2x, 'Convergence achieved!!')")
-       WRITE( stdout, *) ' '
-
+       WRITE( stdout, fmt="(/,2x, 'Convergence achieved!!',/)")
 
 
 ! ...  Write the final omega_i. This should equal the one given by wannier
  
-       WRITE( stdout, fmt=" (2x, 'Final Omega_I (Bohr^2, Angstrom^2)', f16.8,2x,f16.8)")omega_i,omega_i*bohr**2
-       WRITE( stdout, * ) ' ======================================================================'
+       WRITE( stdout, fmt=" (2x, 'Final Omega_I (Bohr^2, Angstrom^2)', f16.8,2x,f16.8)") &
+                      omega_i,omega_i*bohr**2
+       WRITE( stdout, "(' ',70('='))" ) 
 
  
 ! ...  Diagonalize the hamiltonian within the optimized subspace at each K
@@ -754,9 +744,9 @@
          CALL zhpevx( 'v', 'a', 'u', dimwann, ap(1), zero, zero, 0, 0, -um,           &
               m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
          IF ( info < 0 ) &
-           CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', info )
+           CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', -info )
          IF ( info > 0 ) &
-           CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (II)', info )
+           CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (II)',info)
  
 ! ...    Write the optimal subspace energy eigenvalues in eV (to be used in bands.f)
  
@@ -807,10 +797,9 @@
        eamp_save = eamp
 
        IF ( cflag == 1 )  THEN
-         WRITE(stdout,*) ' '
-         WRITE(stdout, fmt="(2x,'Warning')")
-         WRITE(stdout, fmt="(2x,'at some k-point(s) complement subspace has zero dimensionality')")
-         WRITE(stdout, fmt="(2x,'=> did not create file compspace.dat')")
+         WRITE(stdout,"(/,2x,'Warning')")
+         WRITE(stdout,"('  at some k-point(s) complement subspace has zero dimensionality')")
+         WRITE(stdout,"(2x,'=> did not create file compspace.dat')")
        ELSE
  
 ! ...  Diagonalize the hamiltonian in the complement subspace, write the
@@ -837,9 +826,9 @@
                 zero, zero, 0, 0, -um, m, w(1), z(1,1), mxdbnd, work(1),       &
                 rwork(1), iwork(1), ifail(1), info )
            IF ( info < 0 ) &
-             CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', info )
+             CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', -info )
            IF ( info > 0 ) &
-             CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (II)', info )
+             CALL errore(' disentangle ', ' zhpevx: eigenvectors did not convergence (II)', info )
  
 ! ...      Calculate amplitudes of the energy eigenvectors in the complement subspace in
 !          terms of the original energy eigenvectors
@@ -932,7 +921,8 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating cm ', ABS(ierr) )
 
        DEALLOCATE( komega_i_est, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating k_omega_i_est ', ABS(ierr) )
+           IF( ierr /=0 ) &
+           CALL errore(' disentangle ', ' deallocating k_omega_i_est ', ABS(ierr) )
        DEALLOCATE( lamp, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating lamp ', ABS(ierr) )
        DEALLOCATE( camp, STAT=ierr )
@@ -950,7 +940,7 @@
        DEALLOCATE( indxfroz, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating indxfroz ', ABS(ierr) )
        DEALLOCATE( indxnfroz, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating indxnfroz ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating indxnfroz ',ABS(ierr) )
        DEALLOCATE( frozen, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating frozen ', ABS(ierr) )
 
@@ -969,7 +959,7 @@
        DEALLOCATE( iwork, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating iwork ', ABS(ierr) )
        DEALLOCATE( imin, imax, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating imin imax ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating imin imax ', ABS(ierr))
 
        DEALLOCATE( ham, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating ham ', ABS(ierr) )

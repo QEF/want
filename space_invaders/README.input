@@ -36,11 +36,11 @@ win_max       REAL
 froz_min      REAL
               the lower limit [eV] of the energy window containing 'frozen' states
               which will not enter the calculation of WFs
-              DEFAULT : -1.1
+              DEFAULT : -1.1d10
               
 froz_max      REAL
               upper limit [eV] of the frozen window above described
-              DEFAULT : -1.0
+              DEFAULT : -1.0d10
 
 dimwann       INTEGER
               dimension of the required WF subspace
@@ -274,7 +274,7 @@ After the INPUT namelist for each of the NSPTS kpts two lines with the following
 format must be provided:
 
  kpt_label
-    kx  ky  kz
+   kx  ky  kz
 
    kpt_label     CHARACTER(*)
                  it is a string with the name of the kpoint

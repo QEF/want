@@ -297,14 +297,14 @@
 !     (hamiltonian matrix elements between the rotated bloch states)
 
       ALLOCATE( kham( dimwann, dimwann, nkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating khan ', dimwann**2 * nkpts )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating khan ',dimwann**2 *nkpts)
  
       DO nkp = 1, nkpts
         DO j = 1, dimwann
           DO i = 1, j
             kham(i,j,nkp) = czero
             DO m = 1, dimwann
-              kham(i,j,nkp) = kham(i,j,nkp) + ei(m,nkp) * CONJG( cu(m,i,nkp) ) * cu(m,j,nkp)                  
+              kham(i,j,nkp) = kham(i,j,nkp) + ei(m,nkp) * CONJG( cu(m,i,nkp) ) * cu(m,j,nkp)
             END DO
 ! ...       use hermiticity
             kham(j,i,nkp) = CONJG( kham(i,j,nkp) )
@@ -317,14 +317,15 @@
       IF ( verbosity == 'high' ) THEN
 
         ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating ap ', dimwann*(dimwann+1)/2 )
+            IF( ierr /=0 ) &
+            CALL errore(' hamiltonian ', ' allocating ap',dimwann*(dimwann+1)/2 )
         ALLOCATE( w( dimwann ), ifail( dimwann ), STAT=ierr )
             IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating w ifail ', 2*dimwann )
         ALLOCATE( z( dimwann, dimwann ), work( 2 * dimwann ), STAT=ierr )
             IF( ierr /=0 ) &
             CALL errore(' hamiltonian ', ' allocating z work ', 2*dimwann + dimwann**2 )
         ALLOCATE( rwork( 7 * dimwann ), iwork( 5 * dimwann ), STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating rwork iwork', 12*dimwann )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', 'allocating rwork iwork',12*dimwann)
 
         DO nkp = 1, nkpts
           DO j = 1, dimwann
@@ -335,9 +336,9 @@
           CALL zhpevx( 'n', 'a', 'u', dimwann, ap(1), zero, zero, 0, 0, -um,            &
                m, w(1), z(1,1), dimwann, work(1), rwork(1), iwork(1), ifail(1), info )
 
-          IF( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (I)', info)
+          IF( info < 0 ) CALL errore('hamiltonian','zhpevx had an illegal value (I)', info)
 
-          IF( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (I)', info)
+          IF( info > 0 ) CALL errore('hamiltonian','zhpevx diagonalization failed (I)', info)
 
         END DO
         DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
@@ -406,13 +407,27 @@
       OPEN( 83, file='diagonal.dat', status='unknown', form='formatted' )
 
       DO iws = 1, nws
-        IF ( ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  0) ) .OR. &
-             ( (indxws(1,iws) ==  1) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  0) ) .OR. &
-             ( (indxws(1,iws) == -1) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  0) ) .OR. &
-             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  1) .AND. (indxws(3,iws) ==  0) ) .OR. &
-             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) == -1) .AND. (indxws(3,iws) ==  0) ) .OR. &
-             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) == -1) ) .OR. &
-             ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  1) ) ) THEN
+        IF ( ( (indxws(1,iws) ==  0) .AND. &
+               (indxws(2,iws) ==  0) .AND. &
+               (indxws(3,iws) ==  0) )         .OR. &
+             ( (indxws(1,iws) ==  1) .AND. &
+               (indxws(2,iws) ==  0) .AND. &
+               (indxws(3,iws) ==  0) )         .OR. &
+             ( (indxws(1,iws) == -1) .AND. &
+               (indxws(2,iws) ==  0) .AND. &  
+               (indxws(3,iws) ==  0) )         .OR. &
+             ( (indxws(1,iws) ==  0) .AND. &
+               (indxws(2,iws) ==  1) .AND. &
+               (indxws(3,iws) ==  0) )         .OR. &
+             ( (indxws(1,iws) ==  0) .AND. &
+               (indxws(2,iws) == -1) .AND. &
+               (indxws(3,iws) ==  0) )         .OR. &
+             ( (indxws(1,iws) ==  0) .AND. &
+               (indxws(2,iws) ==  0) .AND. &
+               (indxws(3,iws) == -1) )         .OR. &
+             ( (indxws(1,iws) ==  0) .AND. &
+               (indxws(2,iws) ==  0) .AND. & 
+               (indxws(3,iws) ==  1) )              ) THEN
 
           WRITE (100+iws,*) dimwann, dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (82,*)' '
@@ -468,14 +483,15 @@
  
 ! ... Determine the k-points used in the band structure plot
 
-      ALLOCATE( xval( nspts * npts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating xval', nspts * npts )
+! XXX
+      ALLOCATE( xval( npts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating xval', npts )
       ALLOCATE( sxval( nspts ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating sxval', nspts )
-      ALLOCATE( kpt(3,nspts*npts), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt', 3*nspts * npts )
+      ALLOCATE( kpt(3, npts), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt', 3* npts )
  
-      CALL get_points( nspts, npts, nspts, npts, bvec, skpt, kpt, xval, sxval, tnkpts )
+      CALL get_points( nspts, npts, bvec, skpt, kpt, xval, sxval, tnkpts )
  
 ! ... Estimate H_ij(k') at those k-points by fourier interpolation
 !     H_ij(k') ~ sum_R e^{ik'R} H_ij(R)/degen(R), where the sum over R is over a 
@@ -525,7 +541,7 @@
         CALL zhpevx( 'n', 'i', 'u', dimwann, ap(1), zero, zero, 1, nbands, -um,     &
              m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
         IF ( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (II)',-info)
-        IF ( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (II)', info)
+        IF ( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (II)',info)
 
         DO i = 1, nbands
           en_band(i,irk) = w(i)
@@ -534,7 +550,7 @@
         END DO
 
         DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
-            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ap ... ifail', ABS(ierr) )
+            IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ap-ifail', ABS(ierr))
 
       END DO ! IRK
 
@@ -551,19 +567,19 @@
       CLOSE( 27 )
  
 
-! ... Make a gnuplot data file
- 
-      OPEN( 28, FILE='band.gp', STATUS='UNKNOWN', FORM='FORMATTED')
-
-      WRITE (28,701) xval(tnkpts),e_min,e_max
-      DO i = 2, nspts
-        WRITE(28,705) sxval(i), e_min,sxval(i), e_maX
-      END DO
-      WRITE (stringa2,706) nspts-1
-      WRITE (28,stringa2) ( point(i), sxval(i), i=1,nspts )
-      WRITE (28,704)
-
-      CLOSE( 28 )
+!! ... Make a gnuplot data file
+! 
+!      OPEN( 28, FILE='band.gp', STATUS='UNKNOWN', FORM='FORMATTED')
+!
+!      WRITE (28,701) xval(tnkpts),e_min,e_max
+!      DO i = 2, nspts
+!        WRITE(28,705) sxval(i), e_min,sxval(i), e_maX
+!      END DO
+!      WRITE (stringa2,706) nspts-1
+!      WRITE (28,stringa2) ( point(i), sxval(i), i=1,nspts )
+!      WRITE (28,704)
+!
+!      CLOSE( 28 )
 
 
 ! ... cleaning

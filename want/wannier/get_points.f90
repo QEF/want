@@ -7,30 +7,33 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=------------------------------------------------------------------------------------------------=
-       SUBROUTINE get_points( maxspts, maxpts, nspts, npts, bvec, skpt, kpt, xval, sxval, tnkpts )
-!=------------------------------------------------------------------------------------------------=
+!=----------------------------------------------------------------------------------------=
+       SUBROUTINE get_points( nspts, npts, bvec, skpt, kpt, xval, sxval, tnkpts )
+!=----------------------------------------------------------------------------------------=
 !
 !      Determines the k-points for calculating the band structure
 !
        USE kinds
+       USE io_global, ONLY : stdout
 
        IMPLICIT NONE
+
+       REAL(dbl), PARAMETER :: eps = 1.d-6
  
-       INTEGER :: maxspts, maxpts
-       INTEGER :: nspts, npts, tnkpts
+       INTEGER :: nspts        ! Number of k-points generating the line (edges)
+       INTEGER :: npts         ! maximum number of points in the line
+       INTEGER :: tnkpts       ! actual number of point in the line
        REAL(dbl) :: bvec(3,3)
-       REAL(dbl) :: skpt(3,maxpts)
-       REAL(dbl) :: xval(maxspts*maxpts)
-       REAL(dbl) :: sxval(maxspts)
-       REAL(dbl) :: kpt(3,maxspts*maxpts)
+       REAL(dbl) :: skpt(3,npts)
+       REAL(dbl) :: xval(npts)
+       REAL(dbl) :: sxval(nspts)
+       REAL(dbl) :: kpt(3,npts)
  
        INTEGER :: i, j, n
-       REAL(dbl) :: length0, length
+       INTEGER :: knum(nspts-1)
+       REAL(dbl) :: length0, length(nspts-1)
        REAL(dbl) :: vec(3)
-       REAL(dbl) :: eps
        REAL(dbl) :: bdot(3,3)
-       PARAMETER( eps = 1.e-6 )
 
 ! ...  Compute metric bdot(i,j)
 
@@ -44,39 +47,40 @@
        bdot(3,1) = bdot(1,3)
        bdot(3,2) = bdot(2,3)
  
-       vec(1) = skpt(1,2) - skpt(1,1)
-       vec(2) = skpt(2,2) - skpt(2,1)
-       vec(3) = skpt(3,2) - skpt(3,1)
-       length0 = vec(1) * ( bdot(1,1) * vec(1) + bdot(1,2) * vec(2) + bdot(1,3) * vec(3) ) +   &
-                 vec(2) * ( bdot(2,1) * vec(1) + bdot(2,2) * vec(2) + bdot(2,3) * vec(3) ) +   &
-                 vec(3) * ( bdot(3,1) * vec(1) + bdot(3,2) * vec(2) + bdot(3,3) * vec(3) ) 
-       length0 = SQRT( length0 )
 
-       IF ( length0 < eps ) CALL errore(' get_points ', ' length0 too small ', length0 )
- 
        tnkpts = 0
+       length0 = 0
        DO i = 1, nspts - 1
          vec(1) = skpt(1,i+1) - skpt(1,i)
          vec(2) = skpt(2,i+1) - skpt(2,i)
          vec(3) = skpt(3,i+1) - skpt(3,i)
-         length = vec(1) * ( bdot(1,1) * vec(1) + bdot(1,2) * vec(2) + bdot(1,3) * vec(3) ) +  &
-                  vec(2) * ( bdot(2,1) * vec(1) + bdot(2,2) * vec(2) + bdot(2,3) * vec(3) ) +  &
-                  vec(3) * ( bdot(3,1) * vec(1) + bdot(3,2) * vec(2) + bdot(3,3) * vec(3) ) 
-         length = SQRT( length )
+         length(i) = vec(1) *( bdot(1,1) * vec(1) +bdot(1,2) * vec(2) +bdot(1,3) * vec(3))+&
+                     vec(2) *( bdot(2,1) * vec(1) +bdot(2,2) * vec(2) +bdot(2,3) * vec(3))+&
+                     vec(3) *( bdot(3,1) * vec(1) +bdot(3,2) * vec(2) +bdot(3,3) * vec(3)) 
+         length(i) = SQRT( length(i) )
+         IF ( length(i) < eps ) CALL errore(' get_points ', ' length(i) too small ', i )
 
-         IF ( length0 < eps ) CALL errore(' get_points ', ' length too small ', length0 )
- 
-         n = nint( DBLE(npts) * length / length0 )
+       ENDDO
+       length0 = SUM(length(:))
+
+
+       DO i = 1, nspts - 1
+         n = INT( npts * length(i) / length0 )
+         knum(i) = n
          IF ( n ==  0 ) CALL errore(' get_points ', ' nint=0  ', n )
  
-         DO j = 1, n
+         DO j = 1, n-1
            tnkpts = tnkpts + 1
-           IF ( tnkpts+1 > maxspts*maxpts ) CALL errore(' get_points ', ' tnkpts too large  ', tnkpts )
+           !
+           ! ANDREA: changed MAXSPTS*MAXPTS to MAXPTS
+           !
+           IF ( tnkpts+1 > npts ) &
+                CALL errore(' get_points ', ' tnkpts too large  ', tnkpts )
 
            IF ( tnkpts ==  1 ) THEN
              xval(tnkpts) = 0.d0
            ELSE
-             xval(tnkpts) = xval(tnkpts-1) + length/DBLE(n)
+             xval(tnkpts) = xval(tnkpts-1) + length(i)/DBLE(n)
            END IF
 
            IF ( j ==  1 ) sxval(i) = xval(tnkpts)
@@ -91,12 +95,29 @@
 ! ...  Last point
  
        tnkpts = tnkpts + 1
-       xval(tnkpts) = xval(tnkpts-1) + length/DBLE(n)
+       xval(tnkpts) = xval(tnkpts-1) + length(nspts-1)/DBLE(n)
        kpt(1,tnkpts) = skpt(1,nspts)
        kpt(2,tnkpts) = skpt(2,nspts)
        kpt(3,tnkpts) = skpt(3,nspts)
        sxval(nspts) = xval(tnkpts) 
-       
+
+       WRITE(stdout, "(/,2x,'Generating kpts: ',i3,6x,'Segments: ',i3)") nspts, nspts-1
+       WRITE(stdout, "(2x,'Total kpts number: ',i3,4x,'Max kpt number: ',i3)") &
+                      tnkpts, npts
+
+       WRITE(stdout, "(2/,2x,'Generating kpts [crystal coord.]')" )
+       DO i=1,nspts
+          WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, skpt(:,i)
+       ENDDO
+       WRITE(stdout, "(/,2x,'Number of kpts in each segment')" )
+       DO i=1,nspts-1
+          WRITE(stdout, "(6x, 'line', i4, ':   ',i5 ) ') " ) i, knum(i)
+       ENDDO
+       WRITE(stdout, "(2/,2x,'Generated kpts [crystal coord.]')" )
+       DO i=1,tnkpts
+          WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, kpt(:,i)
+       ENDDO
+
        RETURN
        END SUBROUTINE
                     

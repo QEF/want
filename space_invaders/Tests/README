@@ -11,6 +11,13 @@ in order to obtain a manual for the available options
 
 TEST1
 
+Wannier function calculation for Silicon bulk. No transport calculation is performed. 
+
+
+==============================================================================
+
+TEST2
+
 This test performs the calculation for the bulk conductance of a Gold chain.
 The calculation is done setting one atom in the unit cell, using a (1 1 4, 0 0 1) 
 (according to PWSCF notation) Monkrost-Pack grid in the SCF run and a (1 1 4, 0 0 0) 
@@ -21,12 +28,12 @@ Wannier functions for the s-d manifold (6-dim) of Gold are computed using also
 the disentanglement procedure, and transmittance is calculated through the bulk.x code.
 
 The main outputs of the transport calculation are written in the dos.out and cond.out
-files in the Test1 dir.
+files in the Test2 dir.
 
 
 ==============================================================================
 
-TEST2
+TEST3
 
 Calculation of valence band transmittance for a dimerized Carbon chain (polyyne).
 The computation is first done using "bulk.x" code starting from a bulk unit cell

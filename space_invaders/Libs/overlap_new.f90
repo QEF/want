@@ -70,7 +70,8 @@
 
       DO nkp = 1, nkpts
 
-        CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), ngx, ngy, ngz, ninvpw = ninvpw(:,nkp) )
+        CALL gv_indexes( igv, igsort(:,nkp), npwk(nkp), ngx, ngy, ngz, &
+                         ninvpw = ninvpw(:,nkp) )
 
       END DO     ! nkp loop
 
@@ -198,7 +199,8 @@
 
 !                DO j = 1, dimwin(nkp2)
 !                  cm( 1:dimwin(nkp1), j, nn, nkp1 ) = cm( 1:dimwin(nkp1), j, nn, nkp1 ) + &
-!                      CONJG( cptwfp( ipw1, 1:dimwin(nkp1), nkp1 ) ) * cptwfp( ipw2, j, nkp2 )
+!                      CONJG( cptwfp( ipw1, 1:dimwin(nkp1), nkp1 ) ) * &
+!                             cptwfp( ipw2, j, nkp2 )
 !                END DO
 
               END DO
