@@ -1,0 +1,79 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                          %
+%              (C) Copyright 2004  ...                                     %
+%                      All Rights Reserved                                 %
+%								  	   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{makeidx}
+\usepackage{psfig}
+
+\makeindex
+
+% define margins, etc
+\topmargin	0.1in
+\oddsidemargin	0in
+\evensidemargin	0in
+\textheight	8.80in
+\textwidth	6.50in
+\marginparsep	0.25cm
+\headheight	0in
+\headsep	0in
+%\footskip	0.5in
+%\footheight	0in%
+
+% define macros
+\input{want_macros}
+
+\setcounter{secnumdepth}{3}
+%% \setcounter{tocdepth}{5} %% very detailed table of contents
+\setcounter{tocdepth}{4}
+
+%
+% the document itself
+%
+
+\begin{document}
+
+
+% initial pages for the guide - title, TOC, etc.
+\input{want_begindoc}
+
+% Introduction
+\input{want_intro}
+
+% Input and output files
+\newpage
+\input{want_io}
+
+% Input simulation parameters
+% (INPUT)
+\newpage
+\input{want_input}
+
+% Sample configuration files
+\newpage
+\input{want_sample}
+
+% Description of how to run PDAC
+\newpage
+\input{want_runit}
+
+% How to get and install PDAC
+\newpage
+\input{want_avail}
+
+\newpage
+\addtocontents{toc}{\contentsline {section}{References}{\thepage}}
+\bibliographystyle{abbrv}
+%\bibliography{group,tbpub,ug}
+\bibliography{ug}
+
+\newpage
+\addtocontents{toc}{\contentsline {section}{Index}{\thepage}}
+\printindex
+
+% that's all, folks
+\end{document}
