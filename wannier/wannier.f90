@@ -68,7 +68,7 @@
       LOGICAL :: lrguide, lcg
       REAL(dbl) :: enmax
       REAL(dbl) :: ddelta
-      REAL(dbl) :: volc, voli, wtktot
+      REAL(dbl) :: wtktot
       REAL(dbl) :: epsilon, eta, eps, dnn0, dnn1, dist
       REAL(dbl) :: bb1, bbn, factor, wbtot
       REAL(dbl) :: asidemin, aside
@@ -294,21 +294,12 @@
       bvec = bvec * 2.0d0 * pi
 
       IPRINT = 1
+
+      dirc = TRANSPOSE( avec ) * bohr
+      recc = TRANSPOSE( bvec ) / bohr
+      diri = dirc
+      reci = recc
       
-      DO i = 1, 3
-        DO j = 1, 3
-          dirc(i,j) = avec(j,i) * bohr
-        END DO
-      END DO
-      CALL bastr( dirc, recc, volc )
-
-      DO i = 1, 3
-        DO j = 1, 3
-          diri(i,j) = avec(j,i) * bohr
-        END DO
-      END DO
-      CALL bastr( diri, reci, voli )
-
 !...  Start writing output
       WRITE( stdout, * ) ' ======================================================================'
       WRITE( stdout, * ) ' =                         Input parameters                           ='
@@ -329,8 +320,6 @@
                j,  ( recc(j,i), i=1,3 )
       END DO
       WRITE( stdout, * ) ' '
-      WRITE( stdout, fmt="(2x, 'Cell volume = ', F12.6, ' (Ang)^3' )" ) volc
-      WRITE( stdout,*) ' '
 
       ng = 1
 
