@@ -187,8 +187,8 @@ if [ "$BULK" = ".TRUE." ] ; then
    #
    # hopefully will be improoved very soon...
    #
-   ln -sf fort.111 H00.dat
-   ln -sf fort.112 H01.dat
+   ln -sf RHAM.111 H00.dat
+   ln -sf RHAM.112 H01.dat
    #
    echo "running BULK calculation" 
    $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
