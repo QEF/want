@@ -13,10 +13,13 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 ! following  \Sigma(k) = U^{dagger} * EAMP(k)^{dagger} \Sigma_in(k) * EAMP(k) * U(k)
 ! then       \Sigma(R) = 1/Nk \Sum_{k} e^{-ikR} \Sigma(k)
 !
-! NOTA BENE2: \Sigma is by definition NOT hermitean  
+! NOTA BENE1: due to the unfortunate Castep convention, the WFC with k
+!             are redefined as those in -k. This makes the need to
+!             CONJG the atomic proj coeff from PWSCF (to be done before this package). 
+! NOTA BENE2: \Sigma is by definition NOT hermitean.  
 ! NOTA BENE3: At the moment ISPIN indicates the spin component
 !             to manage and the other, if eventually present, 
-!             has SE set to 0
+!             has SE set to 0.
 !
 ! </INFO>
 
@@ -95,10 +98,10 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
           IF ( idum /= dimwann)  &
              CALL errore('do_self_energy','Wrong DIMWANN from SUBSPACE.DAT',1)
       END DO
+
+   WRITE(*,"(/,'File SUBSPACE.DAT successfully read')")
    CLOSE(8)
 
-   WRITE(*,*)
-   WRITE(*,*) 'File SUBSPACE.DAT successfully read'
 
 !
 !  reading self_energy from input file

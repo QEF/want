@@ -31,7 +31,7 @@
       INTEGER :: natom(mxdtyp)  
       CHARACTER(LEN=2) :: nameat(mxdtyp)
       CHARACTER(LEN=2), ALLOCATABLE :: point(:) ! point(maxspts)
-      CHARACTER(LEN=6) :: verbosity = 'none'    ! none, low, medium, high
+      CHARACTER(LEN=6) :: verbosity = 'high'    ! none, low, medium, high
 
       REAL(dbl) :: rat(3,mxdatm,mxdtyp)
       REAL(dbl) :: e_min, e_max
@@ -268,7 +268,7 @@
       OPEN (29, FILE='unitary.dat', STATUS='OLD', FORM='UNFORMATTED' )
 
       ALLOCATE( cu( dimwann, dimwann, nkpts ) )
-      READ (29) ( ( ( CU(J,I,NKP), J=1,DIMWANN ), I=1,DIMWANN ), NKP=1,NKPTS )
+      READ (29) ( ( ( cu(j,i,nkp), j=1,dimwann ), i=1,dimwann ), nkp=1,nkpts )
 
       CLOSE(29)
 
@@ -294,7 +294,7 @@
 ! ... Check unitarity
       IF ( verbosity == 'high' ) THEN
         WRITE(6,*) ' '
-        WRITE(6,*) 'checking unitarity...'
+        WRITE(6,*) 'checking unitarity of operators CU(k)' 
         DO nkp = 1, nkpts
           DO i = 1, dimwann
             DO j = 1, dimwann

@@ -185,6 +185,7 @@
 
        DO nt = 1, ntype
          READ ( 54 ) natom(nt), namtmp
+
          IF ( natom(nt) > mxdatm .OR. natom(nt) < 0 ) THEN
            WRITE(6, fmt="('*** error: natom out of range ***')")
            STOP
@@ -199,6 +200,7 @@
        !  s(1), s(2), s(3) is the origin of the k-points grid
 
        READ(54) emax, nbandi
+
        READ(54) (nk(i), i = 1, 3 ), ( s(i), i = 1, 3), ngm0
        ALLOCATE( ig1( ngm0 ), ig2( ngm0 ), ig3( ngm0 ) )
        READ(54) ( ig1(ig), ig2(ig), ig3(ig), ig = 1, ngm0 )
@@ -232,6 +234,7 @@
          READ(54) ngw_, nbnd_, ik_, nk_, kunit_, ispin_, nspin_, scal_
          READ(54) igwx_
          READ(54) t0_
+
          ALLOCATE( wtmp( igwx_ ) )
          wtmp = 0.0d0
          DO i = 1, nbnd_

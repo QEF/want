@@ -140,13 +140,6 @@ CONTAINS
    END SELECT
 
 
-   !
-   ! FULL_MATRIX CASE
-   !
-   IF ( form /= 'full_matrix')  &
-        CALL errore('write_dyn_op','FORM is incosistent with Opr input rank',2)
-  
-
    SELECT CASE ( trim(basis) )
    CASE ( 'bloch' )
       ibasis=0
