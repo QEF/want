@@ -123,7 +123,7 @@
 
                 nsboxi = nsboxi + 1
                 IF ( nsboxi > nrplwv ) &
-                  CALL errore(' genbtr ', '  nrplwv too small ! ', nrplwv )
+                    CALL errore(' genbtr ', '  nrplwv too small ! ', nrplwv )
 
                 IF( energ > accmxc ) accmxc = energ
                 IF( energi > accmxi ) accmxi = energi
@@ -167,17 +167,19 @@
 !       if not reduce enmax and start the whole process again
 
         nplwkp(n) = nsboxi
-        IF( iprint > 1 ) &
-         WRITE(stdout , fmt= " (2x,'Genbtr: ',i5, 'plane waves for k-point No',i5 )") nsboxi, n
+        IF( iprint > 1 ) WRITE(stdout , fmt= " (2x,'Genbtr: ',i5, &
+                               &  'plane waves for k-point No',i5 )") nsboxi, n
 
       END DO
 
+! 
 !     WRITE(stdout, *) ' '
 !     WRITE(stdout, fmt= " (2x, 'Plane-waves up to ', F8.2, ' eV in original cell ', & 
 !           'have been accepted ' )  )" ) accmxi
 !     WRITE(stdout, fmt= " (2x, 'Plane-waves up to ', F8.2, ' eV in   new    cell ', & 
 !           'have been accepted ' )  )" ) accmxc
 !     WRITE(stdout, *) ' '
+!
 
       CALL timing('genbtr',OPR='stop')
  
