@@ -20,6 +20,7 @@
         REAL(dbl), PARAMETER ::    ZERO = 0.0_dbl
         REAL(dbl), PARAMETER ::     ONE = 1.0_dbl
         COMPLEX(dbl), PARAMETER:: CZERO = (0.0_dbl, 0.0_dbl)
+        COMPLEX(dbl), PARAMETER::    CI = (0.0_dbl, 1.0_dbl)
 
         REAL(dbl), PARAMETER ::      PI = 3.14159265358979323846_dbl
         REAL(dbl), PARAMETER ::     TPI = 2.0_dbl * 3.14159265358979323846_dbl

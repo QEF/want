@@ -27,7 +27,7 @@
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
-      USE constants, ONLY: pi
+      USE constants, ONLY: PI, twopi => TPI, ZERO, CZERO, CI, ONE
 
 
       IMPLICIT none
@@ -81,15 +81,7 @@
       INTEGER, ALLOCATABLE :: ifail(:)            ! ifail(mxdbnd)
       INTEGER :: info
 
-      REAL(dbl) :: twopi
       REAL(dbl) :: alatt
-      REAL(dbl) :: zero, um
-      COMPLEX(dbl) :: czero, ci
-      PARAMETER ( twopi = 2.0d0 * 3.141592653589793d0)
-      PARAMETER ( zero = 0.0d0 )
-      PARAMETER ( um = 1.0d0 )
-      PARAMETER ( czero = ( 0.0d0, 0.0d0 ) )
-      PARAMETER ( ci = ( 0.0d0, 1.0d0 ) )
 
       INTEGER :: nt
       REAL(dbl) :: win_min, win_max, froz_min, froz_max
@@ -334,7 +326,7 @@
               ap( i + ( (j-1)*j ) / 2 ) = kham(i,j,nkp)
             END DO
           END DO
-          CALL zhpevx( 'n', 'a', 'u', dimwann, ap(1), zero, zero, 0, 0, -um,            &
+          CALL zhpevx( 'n', 'a', 'u', dimwann, ap(1), ZERO, ZERO, 0, 0, -ONE,            &
                m, w(1), z(1,1), dimwann, work(1), rwork(1), iwork(1), ifail(1), info )
 
           IF( info < 0 ) CALL errore('hamiltonian','zhpevx had an illegal value (I)', info)
@@ -539,7 +531,7 @@
             ap( i + ( (j-1)*j ) / 2 ) = ham_tmp(i,j)
           END DO
         END DO
-        CALL zhpevx( 'n', 'i', 'u', dimwann, ap(1), zero, zero, 1, nbands, -um,     &
+        CALL zhpevx( 'n', 'i', 'u', dimwann, ap(1), ZERO, ZERO, 1, nbands, -ONE,     &
              m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
         IF ( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (II)',-info)
         IF ( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (II)',info)

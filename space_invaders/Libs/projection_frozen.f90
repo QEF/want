@@ -13,6 +13,7 @@
 !=----------------------------------------------------------------------------------=
 
        USE kinds
+       USE constants, ONLY : ZERO, CZERO, ONE
        USE timing_module, ONLY : timing
        USE io_module, ONLY : stdout
 
@@ -41,8 +42,6 @@
        INTEGER :: info
        INTEGER :: m, il, iu, ierr
        COMPLEX(dbl) :: ctmp
-       COMPLEX(dbl) :: czero
-       PARAMETER( czero = ( 0.0d0, 0.0d0 ) ) 
 
 ! ...  End of declarations
 
@@ -100,7 +99,7 @@
 
        ALLOCATE( rwork(7*mxdbnd), STAT = ierr )
        IF( ierr /= 0 ) THEN
-         CALL errore( ' projection_frozen ', ' allocating rwork ', (7*mxdbnd) )
+         CALL errore( ' projection_frozen ', ' allocating rwork ', 7*mxdbnd )
        END IF
 
 
@@ -152,8 +151,8 @@
            il = dimwin(nkp) - ( dimwann - dimfroz(nkp) ) + 1
            iu = dimwin(nkp)
 
-           CALL zhpevx( 'v', 'a', 'u', dimwin(nkp), ap(1), 0.0d0, 0.0d0, il, iu,     &
-                -1, m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
+           CALL zhpevx( 'v', 'a', 'u', dimwin(nkp), ap(1), ZERO, ZERO, il, iu,     &
+                -ONE, m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
 
            IF ( INFO < 0 ) THEN
              CALL errore(' projection_frozen ', ' the info argument of zhpevx had an illegal value ', info )

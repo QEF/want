@@ -17,6 +17,8 @@
 !=----------------------------------------------------------------------------------=
 
        USE kinds
+       USE constants, ONLY : ZERO, CZERO, ONE, PI, twopi => TPI, ryd => RY, CI,&
+                             bohr => BOHR_RADIUS_ANGS
        USE fft_scalar
        USE io_module, ONLY : stdout
        USE timing_module, ONLY : timing
@@ -60,16 +62,7 @@
        REAL(dbl) :: aside, asidemin
        COMPLEX(dbl) :: catmp
 
-       REAL(dbl) :: bohr, ryd, pi, twopi, zero
-       COMPLEX(dbl) :: czero, ci, citpi
-       PARAMETER ( pi = 3.14159265358979323846d0 )
-       PARAMETER ( twopi = 2.0d0 * pi )
-       PARAMETER ( zero = 0.0d0 )
-       PARAMETER ( bohr = 0.52917715d0 )
-       PARAMETER ( ryd  = 13.605826d0 )
-       PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
-       PARAMETER( ci = ( 0.0d0, 1.0d0 ) )
-       PARAMETER( citpi = ( zero, twopi ) )
+       COMPLEX(dbl), PARAMETER :: citpi = twopi * CI
 
        COMPLEX(dbl) :: ctmp, cphi
        INTEGER :: nwann 
