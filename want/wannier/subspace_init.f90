@@ -96,7 +96,7 @@
         ENDDO           
    
    CASE ( 'center_projections' )
-        WRITE( stdout,"(/,'  Initial trial subspace: highest energy eigenvectors')")
+        WRITE( stdout,"(/,'  Initial trial subspace: projected localized orbitals')")
 
         !
         ! If CENTER_PROJECTIONS are selected for the starting subspace
@@ -216,7 +216,7 @@
                                 SIDE='left', TOLL=unitary_thr ) ) &
        CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',ik)
    ENDDO
- 
+
 
    CALL timing('subapce_init', OPR='stop')
    RETURN

@@ -59,7 +59,6 @@
        REAL(dbl), ALLOCATABLE :: komega_i_est(:)
 
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: lamp_tmp(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
        REAL(dbl), ALLOCATABLE :: w(:)
 
@@ -112,9 +111,6 @@
 
        ALLOCATE( ham(nbnd,nbnd,nkpts), STAT=ierr ) 
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ham ',(nbnd**2*nkpts))
-       ALLOCATE( lamp_tmp(dimwinx,dimwinx,nkpts), STAT=ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating lamp_tmp ',(dimwinx**2*nkpts))
        ALLOCATE( z(nbnd,nbnd), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating z ', (nbnd*nbnd) )
        ALLOCATE( w(nbnd), STAT = ierr )
@@ -135,7 +131,7 @@
 !
 ! ...  Initialize the starting subspace
 !
-       CALL subspace_init(trial_mode, dimwann, dimwinx, nkpts, ca, lamp)
+       CALL subspace_init(trial_mode, dimwann, dimwin, dimwinx, nkpts, ca, lamp)
 
 
 !
@@ -147,39 +143,45 @@
        WRITE( stdout, "(/,2x,70('='))" ) 
        WRITE( stdout, "(2x,'=',19x,'Starting Iteration loop',26x,'=')" ) 
        WRITE( stdout, "(2x,70('='),/)" ) 
-       !
-       !  Compute the initial z matrix mtrx_in at all relevant K-points
-       !
-       DO ik = 1, nkpts
-           IF ( dimwann > dimfroz(ik) )  THEN
-              CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
-                            cm(1,1,1,ik), mtrx_in(1,1,ik), dimwann, dimwin, dimwinx,     &
-                            dimfroz, indxnfroz, nbnd, nkpts, nnx )
-           ENDIF
-       ENDDO
 
 
        iteration_loop : &
-       DO iter = 2, maxiter_dis
+       DO iter = 1, maxiter_dis
 
+           IF ( iter == 1 ) THEN
+                !
+                !  Compute the initial z matrix mtrx_in at all relevant K-points
+                !
+                DO ik = 1, nkpts
+                    IF ( dimwann > dimfroz(ik) )  THEN
+                       CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
+                            cm(1,1,1,ik), mtrx_in(1,1,ik), dimwann, dimwin, dimwinx,     &
+                            dimfroz, indxnfroz, nbnd, nkpts, nnx )
+                    ENDIF
+                ENDDO
            !
-           ! Compute the current z-matrix at each relevant K-point 
-           ! using the mixing scheme
-           ! 
-           DO ik = 1, nkpts
-                IF ( dimwann > dimfroz(ik) )  THEN
-                    DO i = 1, dimwin(ik)-dimfroz(ik)
-                    DO j = 1, i
-                        mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
-                                         (ONE-alpha_dis) * mtrx_in(j,i,ik)
-                        !
-                        ! use hermiticity
-                        !
-                        mtrx_in(i,j,ik) = conjg(mtrx_in(j,i,ik))     
-                    ENDDO
-                    ENDDO
-                ENDIF
-           ENDDO
+           ! further iterations (/= 1) 
+           !
+           ELSE
+                !
+                ! Compute the current z-matrix at each relevant K-point 
+                ! using the mixing scheme
+                ! 
+                DO ik = 1, nkpts
+                     IF ( dimwann > dimfroz(ik) )  THEN
+                         DO i = 1, dimwin(ik)-dimfroz(ik)
+                         DO j = 1, i
+                            mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
+                                              (ONE-alpha_dis) * mtrx_in(j,i,ik)
+                            !
+                            ! use hermiticity
+                            !
+                            mtrx_in(i,j,ik) = conjg(mtrx_in(j,i,ik))     
+                         ENDDO
+                         ENDDO
+                     ENDIF
+                ENDDO
+           ENDIF
            omega_i_est = ZERO
 
 
@@ -437,15 +439,12 @@
 ! ...  Deallocate local arrays
 
        DEALLOCATE( komega_i_est, STAT=ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' deallocating k_omega_i_est ', ABS(ierr) )
-       DEALLOCATE( lamp_tmp, STAT=ierr )
-           IF (ierr/=0)  CALL errore('disentangle', 'deallocating LAMP_TMP', ABS(ierr))
+           IF( ierr/=0 ) CALL errore('disentangle', 'deallocating k_omega_i_est',ABS(ierr) )
 
        DEALLOCATE( z, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating z ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating z', ABS(ierr) )
        DEALLOCATE( w, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating w ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating w', ABS(ierr) )
 
        CALL cleanup()
 
