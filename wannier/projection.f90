@@ -24,7 +24,6 @@
    USE constants, ONLY : CZERO, bohr => BOHR_RADIUS_ANGS, EPS_m8
    USE timing_module, ONLY : timing
    USE input_module,  ONLY : verbosity
-   USE sph_har,       ONLY : gauss1
    USE util_module,   ONLY : zmat_mul, zmat_unitary
    USE becmod,        ONLY : becp
    USE trial_center_module, ONLY : trial_center, trial_center_setup
@@ -100,25 +99,26 @@
            IF  ( dimwann >  dimfroz(ik) ) THEN  !IF  not, don't need to waste CPU time!
 
                !
-               ! ... bands 
-               DO ib = 1, dimwin(ik)
+               ! ... wannier trials
+               DO iwann = 1, dimwann
+                  !
+                  ! set the trial centers in PW represent.
+                  CALL trial_center_setup(ik, trial(iwann), npwk(ik), trial_vect)
 
                   !
-                  ! ... apply the US augmentation, supposing the input
-                  !     localized functions behave as US orbitals
-                  !
-                  IF ( .NOT. ALLOCATED(becp) ) ALLOCATE( becp(1,dimwinx,nkpts))
+                  ! ... bands 
+                  DO ib = 1, dimwin(ik)
 
-                  CALL s_psi( npwkx, npwk(ik), 1, ik, becp(1,ib,ik), evc(1,ib,ik), aux )
-                  aux(npwk(ik)+1:npwkx) = CZERO
- 
-                  !
-                  ! ... wannier trials
-                  ! INDEXES SHOULD BE INVERTED XXX
-                  DO iwann = 1, dimwann
                      !
-                     ! set the trial centers in PW represent.
-                     CALL trial_center_setup(ik, trial(iwann), npwk(ik), trial_vect)
+                     ! ... apply the US augmentation, supposing the input
+                     !     localized functions behave as US orbitals
+                     !
+                     IF ( .NOT. ALLOCATED(becp) ) ALLOCATE( becp(1,dimwinx,nkpts))
+
+                     CALL s_psi( npwkx, npwk(ik), 1, ik, becp(1,ib,ik), evc(1,ib,ik), aux )
+                     aux(npwk(ik)+1:npwkx) = CZERO
+ 
+
                      ca(ib,iwann,ik) = CZERO    
                      DO ig = 1, npwk(ik)
                          ca(ib,iwann,ik) = ca(ib,iwann,ik) +  &

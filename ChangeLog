@@ -3,6 +3,19 @@
             WanT code:  Log of Changes 
 =======================================================
 
+27 Feb 2005    
+                 The bug in the IOTK lib evidenced by the use of G95 has been fixed.
+                 Some optimization improvements in trial_center_setup when calculating
+                 the phases and a major improvement in projection.f90 by inverting the
+                 band and wannier function loops (the trial center setup calls have been
+                 scaled by the number of bands). (AF)
+
+26 Feb 2005    
+                 Module sph_har_module updated (bug fixed in the normalization of 
+                 Y_22, Y2m2). ROutine gauss1 renamed to sph_har_setup; f-spherical harmonics 
+                 added to the module. IOTK updated to version 1.0.0test . A bug already 
+                 present in the previous version with G95 is also present here.... (AF)
+
 25 Feb 2005     
                  G95 compilation tested. Trial_center_setup routine completed except
                  for the case of l = -1 (tetrahedron case, used e.g. for silicon). (AF)
