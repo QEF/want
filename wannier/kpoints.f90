@@ -136,17 +136,22 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE kpoints_init( nkpts_ )
+   SUBROUTINE kpoints_init( nkpts_, bshell )
    !**********************************************************
    USE lattice, ONLY : recc
    USE input_module,  ONLY : nshells, nwhich
     IMPLICIT NONE
-    INTEGER :: nkpts_
+    INTEGER,           INTENT(in) :: nkpts_
+    LOGICAL, OPTIONAL, INTENT(in) :: bshell
+    LOGICAL :: bshell_
     INTEGER :: i1, i2, i3, nkp
 
       nkpts = nkpts_
       IF ( nkpts > npkx ) CALL errore('kpoints_init','Nkpts too large',nkpts)
       CALL kpoints_allocate()
+
+      bshell_ = .TRUE.
+      IF (PRESENT(bshell)) bshell_ = bshell
 
       nkp = 0
       DO i1 = 0, nk(1)-1
@@ -167,7 +172,7 @@ CONTAINS
 
       ! ... Setup the shells of b-vectors around each K-point
       ! 
-      CALL bshells(recc, nshells, nwhich)
+      IF ( bshell_ ) CALL bshells(recc, nshells, nwhich)
 
     RETURN
    END SUBROUTINE

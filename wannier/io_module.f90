@@ -110,6 +110,7 @@
       IF ( lpath_ )  path_ = TRIM(work_dir)
       IF ( lpostfix_ ) postfix_ = TRIM(postfix)
 
+
       !
       ! add the / if needed
       length = LEN_TRIM( path_ )

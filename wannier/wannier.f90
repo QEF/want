@@ -21,6 +21,7 @@
       USE io_module, ONLY : stdout, dft_unit, wan_unit, ioname
       USE files_module, ONLY : file_open, file_close
       USE startup_module, ONLY : startup
+      USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
       USE converters_module, ONLY : cart2cry
       USE util_module, ONLY: zmat_mul, zmat_unitary
@@ -121,7 +122,7 @@
 ! ...  Read input parameters from window.out
 !
 
-      CALL read_input()
+      CALL input_read()
 
       CALL ioname('dft_data',filename)
       OPEN( UNIT=dft_unit, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
@@ -981,7 +982,13 @@
       CALL ioname('wannier',filename,LPATH=.FALSE.)
       WRITE( stdout,"(/,'  Wannier transformation data written on file: ',a)") TRIM(filename)
 
+!
+! ... Finalize timing
+      CALL timing('write',OPR='stop')
+      CALL timing('wannier',OPR='stop')
+      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='wannier')
      
+!
 ! ... Deallocate local arrays
 
       DEALLOCATE( cwschur1, cwschur2, STAT=ierr )
@@ -1031,16 +1038,7 @@
       DEALLOCATE( cdq, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdq ', ABS(ierr) )
 
-      CALL deallocate_input()
-      CALL windows_deallocate()
-      CALL kpoints_deallocate()
-      CALL subspace_deallocate()
-      CALL overlap_deallocate()
-
-      CALL timing('write',OPR='stop')
-      CALL timing('wannier',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='wannier')
-      CALL timing_deallocate()
+      CALL cleanup
 
       STOP '*** THE END *** (wannier.f90)'
       END PROGRAM wannier

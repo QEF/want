@@ -3,6 +3,11 @@
             WanT code:  Log of Changes 
 =======================================================
 
+04 Dec 2004      Hamiltonian code updated and sincronized with the
+                 new IO fmt of other codes. Internal and output FMT of
+                 Hamiltonian changed (not yet completed). 
+                 Cleanup and startup routines updated. (AF)
+
 01 Dec 2004      Utilities module updated. (AF)
 
 30 Nov 2004      Bug in the units of gaussians (disentangle) fixed. 

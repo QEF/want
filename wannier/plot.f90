@@ -20,6 +20,7 @@
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE io_module, ONLY : stdout
       USE startup_module, ONLY : startup
+      USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
 
       IMPLICIT NONE
@@ -364,6 +365,12 @@
 
       CLOSE(39)
 
+!
+! ... Finalize timing
+      CALL timing('plot',OPR='stop')
+      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='plot')
+!
+! ... Clean up memory
       DEALLOCATE( vkpt, STAT=ierr )
          IF( ierr /=0 ) CALL errore(' plot ', ' deallocating vkpt ', ABS(ierr) )
       DEALLOCATE( nplwkp, STAT=ierr )
@@ -381,15 +388,16 @@
       DEALLOCATE( poscarwin, STAT=ierr )
          IF( ierr /=0 ) CALL errore(' plot ', ' deallocating poscarwin ', ABS(ierr) )
 
-      call gcube2plt( nwann )
+      CALL cleanup 
 
-      CALL timing('plot',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='plot')
-      CALL timing_deallocate()
+!
+! ... convert output to PLT fmt
+      call gcube2plt( nwann )
 
       STOP '*** THE END *** (plot.x)'
       END
 
+! =----------------------------------------------------------------------------------=
 
       SUBROUTINE convert_label( nameat, indat, ntyp )
         USE parameters, ONLY: npsx, natx
