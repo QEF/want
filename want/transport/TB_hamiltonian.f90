@@ -1,21 +1,23 @@
 !=--------------------------------------------------------------------=
-      SUBROUTINE hamiltonian( r, natmax, rcut, h0, h1, nmx, nmax,    &
+      SUBROUTINE TB_hamiltonian( r, natmax, rcut, h0, h1, nmx, nmax,    &
                              gamma0, model, efieldx, efieldy, efieldz )
 !=--------------------------------------------------------------------=
+
+      USE kinds
 
       IMPLICIT NONE
 
       INTEGER :: i,j,k,l,m,n,model,nw
       INTEGER :: natmax,nmx,nmax
 
-      REAL*8 :: r(3,natmax), tbpar(6)
-      REAL*8 :: h0(nmax,nmax), h1(nmax,nmax)
+      REAL(dbl) :: r(3,natmax), tbpar(6)
+      REAL(dbl) :: h0(nmax,nmax), h1(nmax,nmax)
 
-      REAL*8 :: gamma0, rcut
-      REAL*8 :: efieldx, efieldy, efieldz
-      REAL*8 :: x, y, z
-      REAL*8 :: rr, apu, d2, d2q, rsq
-      REAL*8 :: smooth
+      REAL(dbl) :: gamma0, rcut
+      REAL(dbl) :: efieldx, efieldy, efieldz
+      REAL(dbl) :: x, y, z
+      REAL(dbl) :: rr, apu, d2, d2q, rsq
+      REAL(dbl) :: smooth
 
       EXTERNAL smooth, scale
 
@@ -30,10 +32,7 @@
 
 !...  Pi orbital model TB
 
-      IF ( nmx /= nmax ) then
-         PRINT*, 'ERROR in nmx - nmax' , nmx, nmax
-         STOP
-      END IF
+      IF ( nmx /= nmax ) CALL errore(' TB_hamiltonian ', ' ERROR in nmx - nmax ', nmx )
 
       apu = 1.0
 
@@ -379,10 +378,7 @@
       OPEN ( 30, FILE="H00.dat", STATUS='OLD' )
       REWIND 30
       READ ( 30, * ) nw
-      IF ( nw /= nmax ) THEN
-        PRINT*,'wrong nmax in reading'
-        STOP
-      END IF
+      IF ( nw /= nmax  )  CALL errore(' TB_hamiltonian ', ' wrong nmax in reading (I)', nw )
 
       DO i = 1, nmax
          READ( 30, * ) 
@@ -395,10 +391,7 @@
       OPEN ( 40, FILE="H01.dat", STATUS='OLD' )
       REWIND 40
       READ ( 40, * ) nw
-      IF ( nw /= nmax ) THEN
-        PRINT*,'wrong nmax in reading'
-        STOP
-      END IF
+      IF ( nw /= nmax ) CALL errore(' TB_hamiltonian ', ' wrong nmax in reading (II)', nw )
 
       DO i = 1, nmax
          READ ( 40, * ) 

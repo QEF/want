@@ -14,7 +14,7 @@ Sconductor.x: $(OBJS)
 	$(LD) -o Sconductor.x $(OBJS) ../Modules/*.o $(MODULES) $(LDFLAGS)
 
 
-BOBJS = bulk.o green.o transfer.o hamiltonian.o \
+BOBJS = bulk.o green.o transfer.o TB_hamiltonian.o \
 smooth.o scale.o setv0.o
 
 bulk.x: $(BOBJS) 

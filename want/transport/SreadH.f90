@@ -38,28 +38,30 @@
 !
 !=-------------------------------------------------------------------------------------------
  
+      USE KINDS
+
       IMPLICIT NONE
 
       INTEGER :: i, j, k, l, m, n
       INTEGER :: nmaxa, nmaxb, nmaxc
       INTEGER :: nw, mw
 
-      REAL*8 :: efac
-      REAL*8 :: h00_a(nmaxa,nmaxa)
-      REAL*8 :: h01_a(nmaxa,nmaxa)
-      REAL*8 :: h00_b(nmaxb,nmaxb)
-      REAL*8 :: h01_b(nmaxb,nmaxb)
-      REAL*8 :: h00_c(nmaxc,nmaxc)
-      REAL*8 :: hci_ac(nmaxa,nmaxc)
-      REAL*8 :: hci_cb(nmaxc,nmaxb)
+      REAL(dbl) :: efac
+      REAL(dbl) :: h00_a(nmaxa,nmaxa)
+      REAL(dbl) :: h01_a(nmaxa,nmaxa)
+      REAL(dbl) :: h00_b(nmaxb,nmaxb)
+      REAL(dbl) :: h01_b(nmaxb,nmaxb)
+      REAL(dbl) :: h00_c(nmaxc,nmaxc)
+      REAL(dbl) :: hci_ac(nmaxa,nmaxc)
+      REAL(dbl) :: hci_cb(nmaxc,nmaxb)
       
-      REAL*8 :: s00_a(nmaxa,nmaxa)
-      REAL*8 :: s01_a(nmaxa,nmaxa)
-      REAL*8 :: s00_b(nmaxb,nmaxb)
-      REAL*8 :: s01_b(nmaxb,nmaxb)
-      REAL*8 :: s00_c(nmaxc,nmaxc)
-      REAL*8 :: sci_ac(nmaxa,nmaxc)
-      REAL*8 :: sci_cb(nmaxc,nmaxb)
+      REAL(dbl) :: s00_a(nmaxa,nmaxa)
+      REAL(dbl) :: s01_a(nmaxa,nmaxa)
+      REAL(dbl) :: s00_b(nmaxb,nmaxb)
+      REAL(dbl) :: s01_b(nmaxb,nmaxb)
+      REAL(dbl) :: s00_c(nmaxc,nmaxc)
+      REAL(dbl) :: sci_ac(nmaxa,nmaxc)
+      REAL(dbl) :: sci_cb(nmaxc,nmaxb)
 
       LOGICAL :: l_overlap
 
@@ -75,10 +77,7 @@
 
       REWIND 30
       READ ( 30, * ) nw
-      IF ( nw /= nmaxa ) THEN
-        PRINT*,'wrong dimension in reading H00_A'
-        STOP
-      END IF
+      IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H00_A ', nw )
 
       DO j = 1, nw
          READ ( 30, * ) 
@@ -96,10 +95,7 @@
 
       REWIND 31
       READ ( 31, * ) nw
-      IF ( nw /= nmaxa ) THEN
-        PRINT*,'wrong dimension in reading H01_A'
-        stop
-      END IF
+      IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading H01_A ', nw )
 
       DO j = 1, nw
          READ ( 31, * ) 
@@ -117,10 +113,7 @@
 
       REWIND 40
       READ ( 40, * ) nw
-      IF ( nw /= nmaxa ) THEN
-        PRINT*,'wrong dimension in reading H00_B'
-        STOP
-      END IF
+      IF ( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H00_B ', nw )
 
       DO j = 1, nw
          READ ( 40, * ) 
@@ -138,10 +131,7 @@
 
       REWIND 41
       READ( 41, * ) nw
-      IF ( nw /= nmaxa ) THEN
-        PRINT*,'wrong dimension in reading H01_B'
-        STOP
-      END IF
+      IF ( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading H01_B ', nw )
 
       DO j = 1, nw
          READ ( 41, * ) 
@@ -159,10 +149,7 @@
 
       REWIND 51
       READ ( 51, * ) nw
-      IF ( nw /= nmaxa ) THEN
-        PRINT*,'wrong dimension in reading H00_C'
-        STOP
-      END IF
+      IF ( nw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading H00_C ', nw )
 
       DO j = 1, nw
          READ ( 51, * ) 
@@ -180,10 +167,7 @@
 
       REWIND 61
       READ ( 61, * ) nw, mw
-      IF ( nw /= nmaxa .OR. mw /= nmaxc ) THEN
-        PRINT*, 'wrong dimension  in reading HCI_AC'
-        STOP
-      END IF
+      IF ( nw /= nmaxa .OR. mw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading HCI_AC ', nw )
 
       DO j = 1, nw
          READ ( 61, * ) 
@@ -201,10 +185,7 @@
 
       REWIND 71
       READ ( 71, * ) nw, mw
-      IF ( nw /= nmaxc .OR. mw /= nmaxb ) THEN
-        PRINT*,'wrong dimension in reading HCI_CB'
-        STOP
-      END IF
+      IF ( nw /= nmaxc .OR. mw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading HCI_CB ', nw )
 
       DO j = 1, nw
          READ ( 71, * ) 
@@ -225,10 +206,7 @@
   
         REWIND 32
         READ ( 32, * ) nw
-        IF ( nw /= nmaxa ) THEN
-          PRINT*,'wrong dimension in reading S00_A'
-          STOP
-        END IF
+        IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading S00_A ', nw )
 
         DO j = 1, nw
            READ ( 32, * ) 
@@ -246,10 +224,7 @@
 
         REWIND 33
         READ ( 33, * ) nw
-        IF ( nw /= nmaxa ) THEN
-          PRINT*,'wrong dimension in reading S01_A'
-          STOP
-        END IF
+        IF ( nw /= nmaxa ) CALL errore(' SreadH ', ' wrong dimension in reading S01_A ', nw )
 
         DO j = 1, nw
            READ ( 33, * ) 
@@ -266,10 +241,7 @@
 
         REWIND 42
         READ ( 42, * ) nw
-        IF ( nw /= nmaxa ) THEN
-          PRINT*, 'wrong dimension in reading S00_B'
-          STOP
-        END IF
+        IF ( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading S00_B ', nw )
 
         DO j = 1, nw
            READ ( 42, * ) 
@@ -286,10 +258,7 @@
 
         REWIND 43
         READ(43,*) nw
-        IF( nw /= nmaxa ) THEN
-          PRINT*,'wrong dimension in reading S01_B'
-          STOP
-        END IF
+        IF( nw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading S01_B ', nw )
 
         DO j = 1, nw
            READ( 43, * ) 
@@ -306,10 +275,7 @@
 
         REWIND 52
         READ ( 52, * ) nw
-        IF ( nw /= nmaxa ) THEN
-          PRINT*, 'wrong dimension in reading S00_C'
-          STOP
-        END IF
+        IF ( nw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading S00_C ', nw )
 
         DO j = 1, nw
          READ ( 52, * ) 
@@ -326,10 +292,7 @@
 
         REWIND 62
         READ ( 62, * ) nw, mw
-        IF ( nw /= nmaxa .OR. mw /= nmaxc ) THEN
-          PRINT*, 'wrong dimension in reading SCI_AC'
-          STOP
-        END IF
+        IF ( nw /= nmaxa .OR. mw /= nmaxc ) CALL errore(' SreadH ', ' wrong dimension in reading SCI_AC ', nw )
 
         DO j =1, nw
            READ ( 62, * ) 
@@ -346,10 +309,7 @@
 
         REWIND 72
         READ(72,*) nw, mw
-        IF( nw /= nmaxc .OR. mw /= nmaxb ) THEN
-          PRINT*,'wrong dimension in reading SCI_CB'
-          STOP
-        END IF
+        IF( nw /= nmaxc .OR. mw /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading SCI_CB ', nw )
 
         DO j = 1, nw
            READ ( 72, * ) 

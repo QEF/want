@@ -2,41 +2,43 @@
       PROGRAM bulk
 !=---------------------------------------------------------------------=
 
+      USE kinds   
+      USE constants, ONLY: pi
+
       IMPLICIT NONE
 
       INTEGER :: nmx, natmax, norb, nterx
       INTEGER :: ne, model, nmax
       INTEGER :: i, j, k, l, m, n
 
-      REAL*8 :: pi, gamma0, rcut
-      REAL*8 :: bias, efieldx, efieldy, efieldz
-      REAL*8, ALLOCATABLE :: r(:,:)        ! r( 3, natmax )
-      REAL*8, ALLOCATABLE :: h0(:,:)       ! h0( nmax, nmax )
-      REAL*8, ALLOCATABLE :: h1(:,:)       ! h1( nmax, nmax )
-      REAL*8 :: emin, emax, de, enep
+      REAL(dbl) :: gamma0, rcut
+      REAL(dbl) :: bias, efieldx, efieldy, efieldz
+      REAL(dbl), ALLOCATABLE :: r(:,:)        ! r( 3, natmax )
+      REAL(dbl), ALLOCATABLE :: h0(:,:)       ! h0( nmax, nmax )
+      REAL(dbl), ALLOCATABLE :: h1(:,:)       ! h1( nmax, nmax )
+      REAL(dbl) :: emin, emax, de, enep
 
-      COMPLEX*16, ALLOCATABLE :: tot(:,:)  ! tot( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: tott(:,:) ! tott( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: g(:,:)    ! g( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: gR(:,:)   ! gR( nmax,nmax )
-      COMPLEX*16, ALLOCATABLE :: gL(:,:)   ! gL( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: gAa(:,:)  ! gAa( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: gAr(:,:)  ! gAr( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: gAm1(:,:) ! gAm1( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: sLa(:,:)  ! sLa( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: sRa(:,:)  ! sRa( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: sLr(:,:)  ! sLr( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: sRr(:,:)  ! sRr( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: s1(:,:)   ! s1( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: s2(:,:)   ! s2( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: c1(:,:)   ! c1( nmax, nmax )
-      COMPLEX*16, ALLOCATABLE :: tran(:,:) ! tran( nmax, nmax )
-      COMPLEX*16 :: ene, dos, conduct
-      COMPLEX*16 :: alpha, beta
+      COMPLEX(dbl), ALLOCATABLE :: tot(:,:)  ! tot( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: tott(:,:) ! tott( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: g(:,:)    ! g( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: gR(:,:)   ! gR( nmax,nmax )
+      COMPLEX(dbl), ALLOCATABLE :: gL(:,:)   ! gL( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: gAa(:,:)  ! gAa( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: gAr(:,:)  ! gAr( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: gAm1(:,:) ! gAm1( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: sLa(:,:)  ! sLa( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: sRa(:,:)  ! sRa( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: sLr(:,:)  ! sLr( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: sRr(:,:)  ! sRr( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: s1(:,:)   ! s1( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: s2(:,:)   ! s2( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: c1(:,:)   ! c1( nmax, nmax )
+      COMPLEX(dbl), ALLOCATABLE :: tran(:,:) ! tran( nmax, nmax )
+      COMPLEX(dbl) :: ene, dos, conduct
+      COMPLEX(dbl) :: alpha, beta
      
-      PARAMETER ( pi = 3.14159265358979323846d0 )
 
-      EXTERNAL hamiltonian, transfer, green, setv0
+      EXTERNAL TB_hamiltonian, transfer, green, setv0
       
 
 !...  Scalar for BLAS calls
@@ -55,9 +57,6 @@
       READ ( 5, * ) gamma0, emin, emax
       READ ( 5, * ) bias, efieldx, efieldy, efieldz
       READ ( 5, * ) model
-!     WRITE ( 6, * ) 'nterx= ', nterx, 'ne= ', ne
-!     WRITE ( 6, * ) 'gamma0= ', gamma0, 'emin= ', emin, 'emax= ', emax
-!     WRITE ( 6, * ) 'model= ', model 
 
       ALLOCATE ( r( 3, natmax ) )
       rcut = 0.0d00
@@ -81,7 +80,7 @@
       ALLOCATE ( h0( nmax, nmax ) )
       ALLOCATE ( h1( nmax, nmax ) )
 
-      CALL hamiltonian( r, natmax, rcut, h0, h1, nmx, nmax, gamma0,      &
+      CALL TB_hamiltonian( r, natmax, rcut, h0, h1, nmx, nmax, gamma0,      &
                        model, efieldx, efieldy, efieldz )
 
 !...  Loop over the energies

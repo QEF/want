@@ -1,6 +1,7 @@
 !----------------------------------------------------------------------
       SUBROUTINE Stransferb( nmaxb, nterx, tot, tott, c00_b, c01_b, ene )
 !----------------------------------------------------------------------
+      USE kinds
 
       IMPLICIT NONE
 
@@ -12,21 +13,21 @@
       INTEGER :: ipiv(nmaxb)
       INTEGER :: i, j, k, l, m, info
 
-      REAL*8 :: conver, conver2
-      COMPLEX*16 :: c00_b(nmaxb,nmaxb)
-      COMPLEX*16 :: c01_b(nmaxb,nmaxb)
+      REAL(dbl) :: conver, conver2
+      COMPLEX(dbl) :: c00_b(nmaxb,nmaxb)
+      COMPLEX(dbl) :: c01_b(nmaxb,nmaxb)
 
-      COMPLEX*16 :: tau(nmaxb,nmaxb,2)
-      COMPLEX*16 :: taut(nmaxb,nmaxb,2)
-      COMPLEX*16 :: tot(nmaxb,nmaxb)
-      COMPLEX*16 :: tott(nmaxb,nmaxb)
-      COMPLEX*16 :: tsum(nmaxb,nmaxb)
-      COMPLEX*16 :: tsumt(nmaxb,nmaxb)
-      COMPLEX*16 :: t11(nmaxb,nmaxb)
-      COMPLEX*16 :: t12(nmaxb,nmaxb)
-      COMPLEX*16 :: s1(nmaxb,nmaxb)
-      COMPLEX*16 :: s2(nmaxb,nmaxb)
-      COMPLEX*16 :: ene, alpha, beta
+      COMPLEX(dbl) :: tau(nmaxb,nmaxb,2)
+      COMPLEX(dbl) :: taut(nmaxb,nmaxb,2)
+      COMPLEX(dbl) :: tot(nmaxb,nmaxb)
+      COMPLEX(dbl) :: tott(nmaxb,nmaxb)
+      COMPLEX(dbl) :: tsum(nmaxb,nmaxb)
+      COMPLEX(dbl) :: tsumt(nmaxb,nmaxb)
+      COMPLEX(dbl) :: t11(nmaxb,nmaxb)
+      COMPLEX(dbl) :: t12(nmaxb,nmaxb)
+      COMPLEX(dbl) :: s1(nmaxb,nmaxb)
+      COMPLEX(dbl) :: s2(nmaxb,nmaxb)
+      COMPLEX(dbl) :: ene, alpha, beta
 
 !...  Scalar for BLAS calls
       alpha = ( 1.d0, 0.d0 )
@@ -50,10 +51,7 @@
       END DO
 
       CALL zgesv( nmaxb, nmaxb, t12, nmaxb, ipiv, t11, nmaxb, info )
-      IF( info /= 0 ) THEN
-        PRINT*,'error in ZGESV - INFO = ', info
-        STOP
-      END IF
+      IF ( info /= 0 )  CALL errore(' Stransfreb ', ' zgesv (I) ', info )
 
 !...  Compute intermediate t-matrices (defined as tau(nmaxb,nmaxb,niter)
 !     and taut(...))
@@ -115,10 +113,7 @@
          END DO
 
          CALL zgesv( nmaxb, nmaxb, s1, nmaxb, ipiv, s2, nmaxb, info )
-         IF ( info /= 0 ) THEN
-           PRINT*,'error in ZGESV - INFO = ', info
-           STOP
-         END IF
+         IF ( info /= 0 )  CALL errore(' Stransfreb ', ' zgesv (II) ', info )
 
          t11(:,:) = ( 0.0, 0.0 ) 
          t12(:,:) = ( 0.0, 0.0 ) 
@@ -185,10 +180,7 @@
 
       END DO 
 
-      IF( conver > 1.d-7 .OR. conver2 > 1.d-7 ) THEN
-        PRINT*,' bad t-matrix convergence', conver, conver2
-        STOP
-      END IF
+      IF( conver > 1.d-7 .OR. conver2 > 1.d-7 )  CALL errore(' Stransfreb ', ' bad t-matrix convergence ', conver )
 
       RETURN 
       END

@@ -5,18 +5,21 @@
 !...  Cut-off function to smoothly remove the long range interactions
 !     for Ho et al. TB parametrization
 
+      USE kinds
+
       IMPLICIT NONE
 
-      REAL*8 :: x, xx
 
-      REAL*8, PARAMETER ::  rctb = 2.18d0 
-      REAL*8, PARAMETER ::  ro = 1.536329d0 
-      REAL*8, PARAMETER ::  xnc = 6.5d0 
-      REAL*8, PARAMETER ::  aa2 = 0.10284431 
-      REAL*8, PARAMETER ::  ttb0 = 6.7392620074314d-03 
-      REAL*8, PARAMETER ::  ttb1 = -8.1885359517898d-02 
-      REAL*8, PARAMETER ::  ttb2 = 0.1932365259144d0 
-      REAL*8, PARAMETER ::  ttb3 = 0.354287433238d0 
+      REAL(dbl) :: x, xx
+
+      REAL(dbl), PARAMETER ::  rctb = 2.18d0 
+      REAL(dbl), PARAMETER ::  ro = 1.536329d0 
+      REAL(dbl), PARAMETER ::  xnc = 6.5d0 
+      REAL(dbl), PARAMETER ::  aa2 = 0.10284431 
+      REAL(dbl), PARAMETER ::  ttb0 = 6.7392620074314d-03 
+      REAL(dbl), PARAMETER ::  ttb1 = -8.1885359517898d-02 
+      REAL(dbl), PARAMETER ::  ttb2 = 0.1932365259144d0 
+      REAL(dbl), PARAMETER ::  ttb3 = 0.354287433238d0 
       
       IF ( x < 2.60d0 ) THEN
          IF ( x < 2.00d0 ) THEN

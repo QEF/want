@@ -10,6 +10,8 @@
 
 !...  invert = 0 computes g^-1
 !     invert = 1 computes g^-1 and g
+    
+      USE kinds
 
       IMPLICIT NONE
 
@@ -18,22 +20,23 @@
       INTEGER :: i, j, k, l, m
       INTEGER :: igreen, invert, info
 
-      COMPLEX*16 c00_b(nmaxb,nmaxb), c01_b(nmaxb,nmaxb)
+      COMPLEX(dbl) c00_b(nmaxb,nmaxb)
+      COMPLEX(dbl) c01_b(nmaxb,nmaxb)
 
-      COMPLEX*16 :: tot(nmaxb,nmaxb)
-      COMPLEX*16 :: tott(nmaxb,nmaxb)
-      COMPLEX*16 :: eh0(nmaxb,nmaxb)
-      COMPLEX*16 :: s1(nmaxb,nmaxb)
-      COMPLEX*16 :: s2(nmaxb,nmaxb)
-      COMPLEX*16 :: g(nmaxb,nmaxb)
-      COMPLEX*16 :: gm1(nmaxb,nmaxb)
-      COMPLEX*16 :: ene, dos, alpha, beta
+      COMPLEX(dbl) :: tot(nmaxb,nmaxb)
+      COMPLEX(dbl) :: tott(nmaxb,nmaxb)
+      COMPLEX(dbl) :: eh0(nmaxb,nmaxb)
+      COMPLEX(dbl) :: s1(nmaxb,nmaxb)
+      COMPLEX(dbl) :: s2(nmaxb,nmaxb)
+      COMPLEX(dbl) :: g(nmaxb,nmaxb)
+      COMPLEX(dbl) :: gm1(nmaxb,nmaxb)
+      COMPLEX(dbl) :: ene, dos, alpha, beta
 
 !...  Scalar for BLAS calls
       alpha = ( 1.d0, 0.d0 )
       beta = ( 0.d0, 0.d0 )
 
-      IF (igreen.eq.1) THEN 
+      IF ( igreen == 1 ) THEN 
 
 !...  Construct the surface green's function g00 
 
@@ -57,10 +60,7 @@
       
          IF ( invert == 1 ) THEN
             CALL zgesv( nmaxb, nmaxb, eh0, nmaxb, ipiv, g, nmaxb, info )
-            IF ( info /= 0 ) THEN
-              PRINT*,'error in ZGESV - INFO = ', info
-              STOP
-            END IF
+            IF ( info /= 0 )  CALL errore(' Sgreenb ', ' zgesv (I) ', info )
          END IF
 
       END IF
@@ -89,10 +89,7 @@
 
          IF ( invert == 1 ) THEN
             CALL zgesv( nmaxb, nmaxb, eh0, nmaxb, ipiv, g, nmaxb, info )
-            IF ( info /= 0 ) THEN
-               PRINT*,'error in ZGESV - INFO = ', info
-            STOP
-            END IF
+            IF ( info /= 0 )  CALL errore(' Sgreenb ', ' zgesv (II) ', info )
          END IF
       
       END IF
@@ -125,10 +122,7 @@
 
          IF ( invert == 1 ) THEN
             CALL zgesv( nmaxb, nmaxb, eh0, nmaxb, ipiv, g, nmaxb, info )
-            IF ( info /= 0 ) THEN
-              PRINT*,'error in ZGESV - INFO = ', info
-              STOP
-            END IF
+            IF ( info /= 0 )  CALL errore(' Sgreenb ', ' zgesv (III) ', info )
          END IF
 
       END IF

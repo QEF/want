@@ -1,6 +1,7 @@
 !=---------------------------------------------------------------------=
       SUBROUTINE green( nmax, tot, tott, h0, h1, ene, gm1, g, igreen, invert )
 !=---------------------------------------------------------------------=
+      USE kinds
 
       IMPLICIT NONE
 
@@ -18,16 +19,16 @@
       INTEGER :: igreen, invert, info
       INTEGER :: ipiv(nmax)
 
-      COMPLEX*16 :: alpha,beta
+      COMPLEX(dbl) :: alpha,beta
 
-      REAL*8 :: h0(nmax,nmax) 
-      REAL*8 :: h1(nmax,nmax)
+      REAL(dbl) :: h0(nmax,nmax) 
+      REAL(dbl) :: h1(nmax,nmax)
 
-      COMPLEX*16 :: tot(nmax,nmax), tott(nmax,nmax)
-      COMPLEX*16 :: eh0(nmax,nmax), c1(nmax,nmax)
-      COMPLEX*16 :: s1(nmax,nmax), s2(nmax,nmax)
-      COMPLEX*16 :: g(nmax,nmax), gm1(nmax,nmax)
-      COMPLEX*16 :: ene, dos
+      COMPLEX(dbl) :: tot(nmax,nmax), tott(nmax,nmax)
+      COMPLEX(dbl) :: eh0(nmax,nmax), c1(nmax,nmax)
+      COMPLEX(dbl) :: s1(nmax,nmax), s2(nmax,nmax)
+      COMPLEX(dbl) :: g(nmax,nmax), gm1(nmax,nmax)
+      COMPLEX(dbl) :: ene, dos
 
 !...  Scalar for BLAS calls
       alpha = ( 1.d0, 0.d0 )
@@ -65,10 +66,7 @@
       
          IF ( invert == 1 ) THEN
             CALL zgesv( nmax, nmax, eh0, nmax, ipiv, g, nmax, info )
-            IF ( info /= 0 ) THEN
-              PRINT*,'error in ZGESV - INFO = ', info
-              STOP
-            END IF
+            IF ( info /= 0 )  CALL errore(' green ', ' zgesv (I) ', info )
          END IF
 
       END IF
@@ -99,10 +97,7 @@
 
          IF ( invert == 1 ) THEN
             CALL zgesv( nmax, nmax, eh0, nmax, ipiv, g, nmax, info )
-            IF ( info /=  0 ) THEN
-               PRINT*,'error in ZGESV - INFO = ', info
-            STOP
-            END IF
+            IF ( info /= 0 )  CALL errore(' green ', ' zgesv (II) ', info )
          END IF
       
       END IF
@@ -136,10 +131,7 @@
 
          IF ( invert == 1 ) THEN
             CALL zgesv( nmax, nmax, eh0, nmax, ipiv, g, nmax, info )
-            IF ( info /= 0 ) THEN
-              PRINT*,'error in zgesv - INFO = ', info
-              STOP
-            END IF
+            IF ( info /= 0 )  CALL errore(' green ', ' zgesv (III) ', info )
          END IF
 
       END IF
