@@ -410,16 +410,17 @@
       END DO
       CLOSE ( 40 )
 
-!...  Check: write hamiltonian h0 and h1
-!     DO i = 1, nmax
-!        WRITE ( *, '(16(f6.2))' ) ( h0(i,j), j = 1, nmax )
-!     END DO
-!     PRINT*,'=============================================='
 
-!     DO i = 1, nmax
-!        WRITE ( *, '(16(f6.2))' ) ( h1(i,j), j = 1, nmax )
-!     END DO
-!     PRINT*,'=============================================='
+!...  Check: write hamiltonian h0 and h1
+     DO i = 1, nmax
+        WRITE ( *, '(6(f6.2))' ) ( h0(i,j), j = 1, nmax )
+     END DO
+     PRINT*,'=============================================='
+
+     DO i = 1, nmax
+        WRITE ( *, '(6(f6.2))' ) ( h1(i,j), j = 1, nmax )
+     END DO
+     PRINT*,'=============================================='
 !     STOP
 
 !............................................................

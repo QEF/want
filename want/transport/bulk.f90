@@ -52,9 +52,9 @@
       EXTERNAL TB_hamiltonian, transfer, green, setv0
       
 !
-! ...  Startup
+! ... Startup
 !
-       CALL startup(version_number,MAIN_NAME='bulk')
+      CALL startup(version_number,MAIN_NAME='bulk')
 
 !...  Scalar for BLAS calls
       alpha = (1.d0,0.d0)
