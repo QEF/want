@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2005 Andrea Ferretti
+! Copyright (C) 2005 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License\'
@@ -117,7 +117,7 @@ CONTAINS
    USE lattice_module,    ONLY : alat, tpiba, avec, bvec, omega 
    USE kpoints_module,    ONLY : vkpt     
    USE ggrids_module,     ONLY : g, igv
-   USE wfc_module,        ONLY : igsort
+   USE wfc_data_module,   ONLY : igsort
    USE timing_module,     ONLY : timing
    USE sph_har_module,    ONLY : sph_har_setup
    USE converters_module, ONLY : cry2cart
@@ -138,12 +138,13 @@ CONTAINS
 
    !-------------------------------------------------------
 
-      CALL timing('trial_center_setup',OPR='start')
       !
       ! loop over plane waves
       !
-      IF ( npwk <0 ) CALL errore('trial_center_setup','Invalid npwk',-npwk)
+      IF ( npwk < 0 ) CALL errore('trial_center_setup','Invalid npwk',-npwk)
       IF ( npwk == 0 ) RETURN
+
+      CALL timing('trial_center_setup',OPR='start')
 
       ! TO BE eliminated XXX
       IF ( obj%l < 0 ) CALL errore('trial_center_setup','Invalid Y_l value',-obj%l)

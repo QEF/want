@@ -1,5 +1,5 @@
 ! 
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli 
+! Copyright (C) 2004 WanT Group
 ! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt 
 ! Copyright (C) 1997 Nicola Marzari, David Vanderbilt 
 ! 
@@ -11,6 +11,7 @@
       SUBROUTINE compar(a,b,ifpos,ifneg)
 
         USE kinds
+        USE constants, ONLY : EPS_m8
 
         IMPLICIT NONE
 
@@ -21,10 +22,10 @@
         rrm = ( a(1) + b(1) )**2 + ( a(2) + b(2) )**2 + ( a(3) + b(3) )**2
 
         ifpos = 0
-        IF ( ABS(rrp) < 1.e-08 ) ifpos = 1
+        IF ( ABS(rrp) < EPS_m8 ) ifpos = 1
 
         ifneg = 0
-        IF ( ABS(rrm) < 1.e-08 ) ifneg = 1
+        IF ( ABS(rrm) < EPS_m8 ) ifneg = 1
 
       RETURN
-      END SUBROUTINE
+      END SUBROUTINE compar

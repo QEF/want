@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2004 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License\'
@@ -89,7 +89,6 @@
       INTEGER                :: ierr
       CHARACTER(5)           :: ps
 
-!#define __DEBUG
 
    !
    ! <MAIN & INPUT> section
@@ -269,7 +268,7 @@
                            WRITE( unit, '(5x,"a(i+3)=",4x,3g13.5)') (aps (i, l, nt) , i=4,6)
                        ENDDO
                        IF (nlcc(nt)) WRITE(unit,200) a_nlcc(nt), b_nlcc(nt), alpha_nlcc(nt)
-200                    format(/5x,'nonlinear core correction: ', &
+                       200 FORMAT(/5x,'nonlinear core correction: ', &
                             &     'rho(r) = ( a + b r^2) exp(-alpha r^2)', &
                             & /,5x,'a    =',4x,g11.5, &
                             & /,5x,'b    =',4x,g11.5, &

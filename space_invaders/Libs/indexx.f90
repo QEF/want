@@ -1,12 +1,12 @@
 !
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
-! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
-! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+! Copyright (C) 2004 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
+!
+! Taken from Numerical Recipies
 !
 !=----------------------------------------------------------------------------------=
       SUBROUTINE indexx( n, arr, indx )

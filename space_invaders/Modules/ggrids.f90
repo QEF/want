@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2004 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License\'
@@ -35,12 +35,12 @@
 ! declarations of common variables
 !   
 
-   INTEGER                   :: npw              ! number of G vects for the density
-   INTEGER                   :: nr(3)            ! dimension of the FFT space grid
+   INTEGER                   :: npw_rho          ! number of G vects for the density
+   INTEGER                   :: nfft(3)          ! dimension of the FFT space grid
    !
    REAL(dbl)                 :: ecutwfc          ! energy cutoff for wfc (Ry)
    REAL(dbl)                 :: ecutrho          ! energy cutoff for the density (Ry)
-   INTEGER,      ALLOCATABLE :: igv(:,:)         ! G vect cry comp (density), DIM: 3*npw
+   INTEGER,      ALLOCATABLE :: igv(:,:)         ! G vect cry comp (density), DIM: 3*npw_rho
    REAL(dbl),    ALLOCATABLE :: g(:,:)           ! G vect cart comp (density) (tpiba)
    REAL(dbl),    ALLOCATABLE :: gg(:)            ! moduli of the above vectors (tpiba**2)
 
@@ -50,7 +50,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: npw, nr 
+   PUBLIC :: npw_rho, nfft
    PUBLIC :: ecutwfc, ecutrho
    PUBLIC :: igv, g, gg
    PUBLIC :: alloc
@@ -72,15 +72,15 @@ CONTAINS
        CHARACTER(18)      :: subname="ggrids_allocate"
        INTEGER            :: ierr 
 
-       IF ( npw <= 0 ) CALL errore(subname,'npw <= 0',ABS(npw)+1)
+       IF ( npw_rho <= 0 ) CALL errore(subname,'npw_rho <= 0',ABS(npw_rho)+1)
        IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
 
-       ALLOCATE( igv(3,npw), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating igv',3*npw)
-       ALLOCATE( g(3,npw), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating g',3*npw)
-       ALLOCATE( gg(npw), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating gg',npw)
+       ALLOCATE( igv(3,npw_rho), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating igv',3*npw_rho)
+       ALLOCATE( g(3,npw_rho), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating g',3*npw_rho)
+       ALLOCATE( gg(npw_rho), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating gg',npw_rho)
        alloc = .TRUE.
       
    END SUBROUTINE ggrids_allocate
@@ -142,11 +142,11 @@ CONTAINS
 
        CALL iotk_scan_empty(unit,"Space_grid",ATTR=attr,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'unable to find Space_grid',ABS(ierr))
-       CALL iotk_scan_attr(attr,"nr1",nr(1),IERR=ierr)
+       CALL iotk_scan_attr(attr,"nr1",nfft(1),IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'unable to find nr1',ABS(ierr))
-       CALL iotk_scan_attr(attr,"nr2",nr(2),IERR=ierr)
+       CALL iotk_scan_attr(attr,"nr2",nfft(2),IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'unable to find nr2',ABS(ierr))
-       CALL iotk_scan_attr(attr,"nr3",nr(3),IERR=ierr)
+       CALL iotk_scan_attr(attr,"nr3",nfft(3),IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'unable to find nr3',ABS(ierr))
        !
        CALL iotk_scan_end(unit,'Other_parameters',IERR=ierr)
@@ -158,8 +158,8 @@ CONTAINS
        CALL iotk_scan_begin(unit,'Main_grid',ATTR=attr,IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to find Main_grid',ABS(ierr))
        !
-       CALL iotk_scan_attr(attr,"npw",npw,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find npw',ABS(ierr))
+       CALL iotk_scan_attr(attr,"npw",npw_rho,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'unable to find npw_rho',ABS(ierr))
 
        CALL ggrids_allocate() 
 

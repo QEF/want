@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2004 WanT Group
 ! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 ! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
 !
@@ -32,7 +32,7 @@
       USE subspace_module, ONLY : wan_eig, efermi, subspace_read
       USE localization_module, ONLY : dimwann, cu, localization_read
       USE ggrids_module
-      USE wfc_module 
+      USE wfc_data_module 
       
 
       IMPLICIT NONE

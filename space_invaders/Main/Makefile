@@ -7,7 +7,7 @@ include ../make.sys
 EXE = disentangle.x hamiltonian.x plot.x wannier.x
 all: $(EXE)
 
-$(EXE): ../Libs/lib_invaders.a
+$(EXE): ../Libs/lib_invaders.a ../Modules/*.o
 
 clean: 
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x

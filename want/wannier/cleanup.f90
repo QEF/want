@@ -1,5 +1,5 @@
 ! 
-! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2004 WanT Group
 ! 
 ! This file is distributed under the terms of the 
 ! GNU General Public License. See the file `License' 
@@ -41,7 +41,7 @@ CONTAINS
       USE subspace_module,     ONLY : subspace_deallocate, subspace_alloc => alloc 
       USE overlap_module,      ONLY : overlap_deallocate, overlap_alloc => alloc 
       USE ggrids_module,       ONLY : ggrids_deallocate, ggrids_alloc => alloc 
-      USE wfc_module,          ONLY : wfc_deallocate, wfc_alloc => alloc 
+      USE wfc_data_module,     ONLY : wfc_data_deallocate, wfc_data_alloc => alloc 
       USE localization_module, ONLY : localization_deallocate, loc_alloc => alloc 
       USE trial_center_data_module, &
                                ONLY : trial_center_data_deallocate, trial_alloc => alloc 
@@ -58,7 +58,7 @@ CONTAINS
       IF ( subspace_alloc ) CALL subspace_deallocate()
       IF ( overlap_alloc )  CALL overlap_deallocate()
       IF ( ggrids_alloc )   CALL ggrids_deallocate()
-      IF ( wfc_alloc )      CALL wfc_deallocate()
+      IF ( wfc_data_alloc ) CALL wfc_data_deallocate()
       IF ( loc_alloc )      CALL localization_deallocate()
       IF ( trial_alloc )    CALL trial_center_data_deallocate()
       IF ( timing_alloc )   CALL timing_deallocate()

@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2004 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License\'
@@ -13,7 +13,7 @@
    USE kinds, ONLY : dbl
    USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, ityp, tau
    USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba
-   USE ggrids_module,     ONLY : ggrids_alloc => alloc, npw, nr, g, igv
+   USE ggrids_module,     ONLY : ggrids_alloc => alloc, npw => npw_rho, nr => nfft, g, igv
    USE converters_module, ONLY : cry2cart
    IMPLICIT NONE
    PRIVATE

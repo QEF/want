@@ -1,5 +1,5 @@
 ! 
-! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2004 WanT Group
 ! 
 ! This file is distributed under the terms of the 
 ! GNU General Public License. See the file `License' 
@@ -7,10 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 
-!*********************************************
-   MODULE want_init_module
-!*********************************************
-
+MODULE want_init_module
 CONTAINS
 
 !*********************************************************
@@ -163,5 +160,6 @@ SUBROUTINE want_init(want_input, windows, bshells)
    CALL timing('want_init',OPR='stop')
 
 END SUBROUTINE want_init
-END MODULE want_init_module
 
+
+END MODULE want_init_module

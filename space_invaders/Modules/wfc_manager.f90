@@ -1,21 +1,32 @@
 ! 
-! Copyright (C) 2004 Andrea Ferretti
+! Copyright (C) 2004 WanT Group
 ! 
 ! This file is distributed under the terms of the 
 ! GNU General Public License. See the file `License' 
 ! in the root directory of the present distribution, 
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
-! <INFO>
-!*********************************************
-   MODULE wfc_manager_module
-!*********************************************
+!*********************************************************
+   SUBROUTINE wfc_manager()
+   !*********************************************************
+   !
+   ! This subroutine permforms all the
+   ! operations needed to obtain the internal data from DFT wfcs
+   ! (OVERLAP and PROJECTIONS matrix elements).
+   !
+   ! Tasks performed:
+   ! * read and init G grids
+   ! * compute the overlaps (reading the needed wfcs)
+   ! * compute the projections (reading the needed wfcs)
+   ! * write overlap and projections to file
+   ! * waste ggrids and wfcs data
+   !
    USE kinds
    USE parameters,     ONLY : nstrx
-   USE constants,      ONLY : ZERO
+   USE constants,      ONLY : CZERO, ZERO
    USE iotk_module
    USE io_module,      ONLY : stdout, dft_unit, ovp_unit, ioname, pseudo_dir
-   USE timing_module,  ONLY : timing
+   USE timing_module,  ONLY : timing, timing_upto_now
    USE ions_module,    ONLY : psfile, uspp_calculation
    USE files_module,   ONLY : file_open, file_close
    USE converters_module, ONLY : cry2cart
@@ -24,56 +35,32 @@
    USE lattice_module, ONLY : avec, bvec, tpiba, alat
    USE subspace_module,ONLY : dimwann
    USE trial_center_data_module,   ONLY : trial
-   USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz
+   USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz, imin, imax
    USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, nnx, &
                               nntot, nnlist, nncell
    USE overlap_module, ONLY : cm, ca, overlap_alloc => alloc, overlap_write
-   USE ggrids_module,  ONLY : npw, nr, ecutwfc, ecutrho, igv, &
+   USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
                               ggrids_read_ext, ggrids_deallocate
-   USE wfc_module,     ONLY : npwkx, npwx_g, npwk, igsort, evc, &
-                              wfc_read_ext, wfc_deallocate 
+   USE wfc_data_module,ONLY : npwkx, npwk, igsort, evc, evc_info, &
+                              wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate 
+   USE wfc_info_module
    USE struct_fact_data_module, ONLY : struct_fact_data_init
-   USE uspp,           ONLY : nkb, vkb
+   USE uspp,           ONLY : nkb, vkb, vkb_ik
    USE becmod,         ONLY : becp
+   !
+   ! few local variables
+   !
    IMPLICIT NONE
-   PRIVATE
-!
-! This module contains a subroutine that permforms all the
-! operations needed to obtain the internal data from DFT wfcs
-! (OVERLAP and PROJECTIONS matrix elements).
-!
-! Interface:
-! SUBROUTINE wfc_manager()
-!
-! Tasks performed:
-! * read and init G grids
-! * read and init wfcs
-! * compute the projections
-! * compute the overlap
-! * write overlap and projections to file
-! * waste ggrids and wfcs data
-!
-! </INFO>
-
-   PUBLIC :: wfc_manager
-
-CONTAINS
-
-!*********************************************************
-   SUBROUTINE wfc_manager(lamp)
-   !*********************************************************
-   IMPLICIT NONE
-      COMPLEX(dbl), INTENT(out) :: lamp(:,:,:)
       CHARACTER(11)             :: subname="wfc_manager"
       CHARACTER(nstrx)          :: filename
-      REAL(dbl), ALLOCATABLE    :: xk(:,:)
-      REAL(dbl)                 :: tmp(3,3)
-      INTEGER                   :: ierr, ik, idum
-      INTEGER                   :: i, j, ig 
+      REAL(dbl)                 :: xk(3), bvec_tmp(3,3)
+      COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
+      INTEGER                   :: ig, ib, ikb, ik, inn
+      INTEGER                   :: indin, indout, index
+      INTEGER                   :: i, j, ierr
 
 
       CALL timing('wfc_manager',OPR='start')
-
 
 !
 ! ... Read ggrids and wfcs
@@ -92,17 +79,33 @@ CONTAINS
 
       !
       ! ... wfcs
-      WRITE( stdout,"(  2x,'Reading Wfcs from file: ',a)") TRIM(filename)
-      CALL wfc_read_ext(dft_unit)
-
+      WRITE( stdout,"(  2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
+      CALL wfc_data_grids_read(dft_unit)
 
       !
       ! ... closing the main data file
       CALL file_close(dft_unit,PATH="/",ACTION="read")
 
 
-      ! 
-      ! ... if USPP are used, initialize the related quantities
+!
+! ... stdout summary about grids
+!
+      WRITE(stdout, "(/)")
+      WRITE(stdout, "(2x,70('='))" )
+      WRITE(stdout, "(2x,'=',23x,'Overlap and Projections',22x,'=')" )
+      WRITE(stdout, "(2x,70('='),/)" )
+      WRITE(stdout, "(2x,'Kinetic energy cut-off for wfcs =  ', 5x, F7.2, ' (Ry)' )") ecutwfc
+      WRITE(stdout, "(2x,'                       for rho  =  ', 5x, F7.2, ' (Ry)' )") ecutrho
+      WRITE(stdout, "(2x,'    Total number of PW for rho  =  ', i9 )") npw_rho
+      WRITE(stdout, "(2x,'      Max number of PW for wfc  =  ', i9 )") npwkx
+      WRITE(stdout, "(2x,'    Total number of PW for wfcs =  ', i9 )") MAXVAL(igsort(:,:))+1
+      WRITE(stdout, "(2x,'      FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
+      WRITE(stdout, "()")
+
+
+! 
+! ... if USPP are used, initialize the related quantities
+!
       IF ( uspp_calculation ) THEN
           WRITE( stdout,"(/,2x,'Initializing US pseudopot. data')")
           !
@@ -125,39 +128,18 @@ CONTAINS
           ALLOCATE( becp(nkb, dimwinx, nkpts), STAT=ierr )
               IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
 
-              !
-              ! kpts should be in the same unit as g, gg (i.e. tpiba) while they currently
-              ! are in crystal units
-              !
-          ALLOCATE( xk(3,nkpts), STAT=ierr)
-              IF (ierr/=0) CALL errore(subname,'allocating xk',ABS(ierr))
-          xk(:,:) = vkpt(:,:)
-          tmp(:,:) = bvec / tpiba
-          CALL cry2cart( xk, tmp )
-
-          DO ik=1,nkpts 
-              CALL init_us_2( npwk(ik), igsort(1,ik), xk(1,ik), vkb(1,1,ik) )
-              CALL ccalbec( nkb, npwkx, npwk(ik), dimwinx, becp(1,1,ik), &
-                            vkb(1,1,ik), evc(1,1,ik) )
-          ENDDO
       ENDIF
+      !
+      ! we need anyway to have becp allocated even if it is not used
+      IF ( .NOT. ALLOCATED(becp) ) THEN
+           ALLOCATE( becp(1,1,nkpts), STAT=ierr )
+           IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
+      ENDIF
+      !
+      ! local workspace
+      ALLOCATE( aux(dimwinx, dimwinx), STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'allocating aux',ABS(ierr))
 
-
-
-!
-! ... stdout summary about grids and wfcs
-!
-      WRITE(stdout, "(/)")
-      WRITE(stdout, "(2x,70('='))" )
-      WRITE(stdout, "(2x,'=',23x,'Overlap and Projections',22x,'=')" )
-      WRITE(stdout, "(2x,70('='),/)" )
-      WRITE(stdout, "(2x,'Kinetic energy cut-off for wfcs =  ', 5x, F7.2, ' (Ry)' )") ecutwfc
-      WRITE(stdout, "(2x,'                       for rho  =  ', 5x, F7.2, ' (Ry)' )") ecutrho
-      WRITE(stdout, "(2x,'    Total number of PW for rho  =  ', i9 )") npw
-      WRITE(stdout, "(2x,'      Max number of PW for wfc  =  ', i9 )") npwkx
-      WRITE(stdout, "(2x,'    Total number of PW for wfcs =  ', i9 )") npwx_g
-      WRITE(stdout, "(2x,'      FFT grid components (rho) =  ( ', 3i5,' )' )") nr(:)
-      WRITE(stdout, "()")
 
 !
 ! ... actual calculation 
@@ -167,25 +149,152 @@ CONTAINS
       IF ( .NOT. windows_alloc) CALL errore(subname,'windows NOT alloc',4) 
       IF ( .NOT. overlap_alloc) CALL errore(subname,'overlap NOT alloc',5) 
 
+      !
+      ! ... allocating wfcs
+      CALL wfc_info_allocate(npwkx, dimwinx, nkpts, 2*dimwinx, evc_info)
+      ALLOCATE( evc(npwkx, 2*dimwinx ), STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
 
-      CALL overlap( evc, igsort, npwk, dimwin,                          &
-                    nntot, nnlist, nncell, cm, npw, npwkx, nkpts,       &
-                    nnx, nr(1), nr(2), nr(3), dimwinx )
 
-      CALL projection( lamp, ca, evc, npwk, dimwin, dimwann, dimfroz,   &
-                       npwkx, nkpts, dimwinx, trial)
+      !
+      ! ... reclosing the main data file
+      CALL ioname('export',filename,LPOSTFIX=.FALSE.)
+      CALL file_open(dft_unit,TRIM(filename),PATH="/Eigenvectors/",ACTION="read", &
+                               FORM='formatted')
+
+
+      !
+      ! initializing CA and CM 
+      ca(:,:,:) = CZERO
+      cm(:,:,:,:) = CZERO
+      
+      !
+      ! kpts should be in the same unit as g, gg (i.e. tpiba) while they currently
+      ! are in crystal units
+      !
+      bvec_tmp(:,:) = bvec / tpiba
+
+
+      !
+      ! main loop on kpts
+      !
+      kpoints : &
+      DO ik=1,nkpts
+         WRITE( stdout , "( 4x,'Overlap and Projection calculation for k-point ',i3)") ik
+
+         CALL wfc_data_kread(dft_unit, ik, "IK", evc, evc_info)
+
+         IF ( uspp_calculation ) THEN
+             !
+             xk(:) = vkpt(:,ik)
+             CALL cry2cart( xk, bvec_tmp )
+             !
+             ! determine the index related to the first wfc of the current ik
+             ! to be used in evc to get the right starting point
+             !
+             index = wfc_info_getindex(imin(ik), ik, "IK", evc_info )
+             !
+             CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
+             vkb_ik = ik
+             CALL ccalbec( nkb, npwkx, npwk(ik), dimwin(ik), becp(1,1,ik), vkb, evc(1,index))
+         ENDIF
+
+         !
+         ! overlap
+         !
+         neighbours : &
+         DO inn=1,nntot(ik)
+              ikb = nnlist(ik, inn)
+
+              CALL wfc_data_kread(dft_unit, ikb, "IKB", evc, evc_info)
+              !
+              IF( uspp_calculation ) THEN
+                  !
+                  xk(:) = vkpt(:,ikb)
+                  CALL cry2cart( xk, bvec_tmp )
+                  !
+                  index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
+                  !
+                  CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
+                  vkb_ik = ikb
+                  CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb), &
+                                vkb, evc(1,index))
+              ENDIF
+
+              CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), imin(ik), imin(ikb),  &
+                            dimwinx, evc, evc_info,  &
+                            igsort, nncell(1,inn,ik), cm(1,1,inn,ik) )
+
+              !
+              ! ... add the augmentation term fo USPP
+              !
+              IF ( uspp_calculation ) THEN
+                 CALL add_us_overlap(dimwinx, dimwin(ik), dimwin(ikb), ik, ikb, inn, aux)
+                 cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
+                            cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
+                            aux(1:dimwin(ik),1:dimwin(ikb))
+              ENDIF
+              
+              !
+              ! clean nn wfc data (but not free memory!)
+              !
+              CALL wfc_info_delete(evc_info, LABEL="IKB" )
+ 
+         ENDDO neighbours
+
+
+         !
+         ! projections
+         !
+         ! construct S \psi and use them istead of the base \psi 
+         ! (they are equal if NCPP case)
+         ! after the call to s_psi evc will contain the S \psi wfc
+         ! with the label SPSI_IK
+         ! 
+         indin = wfc_info_getindex(imin(ik), ik, "IK", evc_info)
+         !
+         DO ib = imin(ik), imax(ik)
+               CALL wfc_info_add(npwk(ik), ib, ik, 'SPSI_IK', evc_info)
+         ENDDO
+         !
+         indout = wfc_info_getindex(imin(ik), ik, "SPSI_IK", evc_info)
+
+         IF( uspp_calculation ) THEN
+              xk(:) = vkpt(:,ik)
+              CALL cry2cart( xk, bvec_tmp )
+              CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
+              vkb_ik = ik
+          ENDIF
+          !
+          CALL s_psi(npwkx, npwk(ik), dimwin(ik), ik, evc(1,indin), evc(1,indout) )
+
+          CALL projection( ik, dimwin(ik), imin(ik), dimwinx, evc, evc_info, dimwann, &
+                           trial, ca(1,1,ik) )
+
+          !
+          ! clean the ik wfc data
+          CALL wfc_info_delete(evc_info, LABEL="IK")
+          CALL wfc_info_delete(evc_info, LABEL="SPSI_IK")
+
+          CALL timing_upto_now(stdout)
+      ENDDO kpoints
+
+      !
+      ! ... reclosing the main data file
+      CALL file_close(dft_unit,PATH="/Eigenvectors/",ACTION="read")
 
       !
       ! ... clean a large amount of memory
       CALL ggrids_deallocate()
-      CALL wfc_deallocate()
+      CALL wfc_data_deallocate()
 
-      IF ( uspp_calculation ) THEN
-         DEALLOCATE( becp, STAT=ierr )
+      !
+      ! ... local cleaning
+      DEALLOCATE( becp, STAT=ierr )
          IF (ierr/=0) CALL errore(subname,'deallocating becp',ABS(ierr))
-         DEALLOCATE( xk, STAT=ierr )
-         IF (ierr/=0) CALL errore(subname,'deallocating xk',ABS(ierr))
-      ENDIF
+      DEALLOCATE( aux, STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'deallocating aux',ABS(ierr))
+
 
 !
 ! ... writing projections and overlap on file
@@ -202,7 +311,7 @@ CONTAINS
 
       CALL timing('wfc_manager',OPR='stop')
       RETURN
+
    END SUBROUTINE wfc_manager
 
-END MODULE wfc_manager_module
 

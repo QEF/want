@@ -55,7 +55,7 @@ MODULE uspp
   PRIVATE
   SAVE
   PUBLIC :: nlx, lpx, lpl, ap, aainit, indv, nhtol, nhtolm, nkb, nkbus, &
-       vkb, dvan, deeq, qq, qb, nhtoj, becsum, uspp_deallocate
+       vkb, vkb_ik, dvan, deeq, qq, qb, nhtoj, becsum, uspp_deallocate
   PUBLIC :: qq_so, dvan_so, deeq_nc 
   
 
@@ -77,9 +77,10 @@ MODULE uspp
        nhtol(:,:),       &! correspondence n <-> angular momentum l
        nhtolm(:,:)        ! correspondence n <-> combined lm index for (l,m)
   !
+  INTEGER :: vkb_ik       ! indicate for which ik vkb has been calculated
   COMPLEX(KIND=DP), ALLOCATABLE, TARGET :: &
-       vkb(:,:,:)              ! all beta functions in reciprocal space
-                               ! indeces: plw, betaf, nkpts
+       vkb(:,:)                ! all beta functions in reciprocal space
+                               ! indeces: plw, betaf
   REAL(KIND=DP), ALLOCATABLE :: &
        dvan(:,:,:),           &! the D functions of the solid
        deeq(:,:,:,:),         &! the integral of V_eff and Q_{nm} 

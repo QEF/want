@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2005 Andrea Ferretti
+! Copyright (C) 2005 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License\'

@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2004 WanT Group
 ! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 !
 ! This file is distributed under the terms of the
@@ -19,8 +19,8 @@
 
        IMPLICIT NONE
 
-       INTEGER,      INTENT(in)  :: nkpts_in   ! Number of k-points generating the line (edges)
-       INTEGER,      INTENT(in)  :: nkpts_max  ! maximum number of interpolated point
+       INTEGER,      INTENT(in)  :: nkpts_in ! Number of k-points generating the line (edges)
+       INTEGER,      INTENT(in)  :: nkpts_max ! maximum number of interpolated point
        INTEGER,      INTENT(out) :: nkpts_tot ! actual number of point in the line
        REAL(dbl),    INTENT(in)  :: bvec(3,3)
        REAL(dbl),    INTENT(in)  :: kpt_in(3,nkpts_in)

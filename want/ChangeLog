@@ -4,6 +4,24 @@
 =======================================================
 
 
+30 Mar 2005      PROJECTION and OVERLAP further tested, also on USPP. SUBSPACE_INIT
+                 routine added to CVS. (AF)
+
+29 Mar 2005      WFC_MANAGER completed within the new wfc treatment; wfc_info module
+                 further updated; overlap tested; wfc_manager becomes a routine and
+                 not a module. (AF)
+
+28 Mar 2005      Global cleanup: GNU headers changed in source files giving copyright
+                 to "WanT Group" instead of the list of all the people working to
+                 the project. DOT_BLOCH routine and a non used copy of KINDS module
+                 removed from LIBS. OVERLAP syncronized woth the new implementation
+                 of wfcs.
+
+27 Mar 2005      WFC_INFO module updated and further tested. (AF)
+
+26 Mar 2005      Type WFC moved to WFC_INFO and updated. WFC_MANAGER updated and
+                 partially rewritten. Updates in Overlap and projections still missing.
+
 25 Mar 2005      Instabilities found using MKL 7.2; solved using v6.1 . 
                  Starting hard changes in wfc data storage. TYPE WFC added, wfc_data
                  module, storing the data added. (AF)
