@@ -63,24 +63,68 @@
  
        INTEGER :: nkp, j, l, n
        INTEGER :: info
-       INTEGER :: m, il, iu
+       INTEGER :: m, il, iu, ierr
        COMPLEX*16 :: ctmp
        COMPLEX*16 :: czero
        PARAMETER( czero = ( 0.0d0, 0.0d0 ) ) 
 
 ! ...  End of declarations
  
-       ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2) )
-       ALLOCATE( z(mxdbnd,mxdbnd) )
-       ALLOCATE( work(2*mxdbnd) )
-       ALLOCATE( p_s(mxdbnd,mxdbnd) )
-       ALLOCATE( q_froz(mxdbnd,mxdbnd) )
-       ALLOCATE( pq(mxdbnd,mxdbnd) )
-       ALLOCATE( qpq(mxdbnd,mxdbnd) )
-       ALLOCATE( iwork(5*mxdbnd) )
-       ALLOCATE( ifail(mxdbnd) )
-       ALLOCATE( w(mxdbnd) )
-       ALLOCATE( rwork(7*mxdbnd) )
+       ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating ap ', (mxdbnd*(mxdbnd+1))/2 )
+       END IF
+
+       ALLOCATE( z(mxdbnd,mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating z ', (mxdbnd*mxdbnd) )
+       END IF
+
+       ALLOCATE( work(2*mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating work ', (mxdbnd*mxdbnd) )
+       END IF
+
+       ALLOCATE( p_s(mxdbnd,mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating p_s ', (mxdbnd*mxdbnd) )
+       END IF
+
+       ALLOCATE( q_froz(mxdbnd,mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating q_froz ', (mxdbnd*mxdbnd) )
+       END IF
+
+       ALLOCATE( pq(mxdbnd,mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating pq ', (mxdbnd*mxdbnd) )
+       END IF
+
+       ALLOCATE( qpq(mxdbnd,mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating qpq ', (mxdbnd*mxdbnd) )
+       END IF
+
+       ALLOCATE( iwork(5*mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating iwork ', (5*mxdbnd) )
+       END IF
+
+       ALLOCATE( ifail(mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating ifail ', (mxdbnd) )
+       END IF
+
+       ALLOCATE( w(mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating w ', (mxdbnd) )
+       END IF
+
+       ALLOCATE( rwork(7*mxdbnd), STAT = ierr )
+       IF( ierr /= 0 ) THEN
+         CALL errore( ' projection_frozen ', ' allocating rwork ', (7*mxdbnd) )
+       END IF
+
 
        DO nkp =1, nkpts
  

@@ -160,7 +160,6 @@
          rloc = 0.0d0
        END IF
 
-
 !
 ! ...  Read wavefunctions and eigenvalues from first principle calculation
 !
@@ -347,7 +346,7 @@
 ! ...  Start K-loop
  
        nkp = 0
-       loop_x: DO i1 = 0, nk(1)-1
+       loop_z: DO i3 = 0, nk(3)-1
        loop_y: DO i2 = 0, nk(2)-1
        loop_z: DO i3 = 0, nk(3)-1
 
@@ -417,7 +416,7 @@
 
 
  
-! ...  Start K-loop
+! ...  Start K-loop again
  
        nkp = 0
        loop_xx: DO i1 = 0, nk(1)-1
