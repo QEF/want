@@ -1,0 +1,281 @@
+
+     Program PWSCF     v.2.0.4  starts ...
+     Today is 10Nov2004 at 18:50:35 
+
+     Ultrasoft (Vanderbilt) Pseudopotentials
+
+     Current dimensions of program pwscf are:
+     ntypx =10   npk =40000  lmax = 3
+     nchix = 6  ndim = 2000  nbrx = 8 nqfm = 8
+     warning: symmetry operation #  5 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation #  6 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation #  7 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation #  8 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation #  9 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 10 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 11 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 12 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 13 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 14 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 15 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 16 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 25 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 26 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 27 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 28 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 41 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 42 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 43 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 44 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 45 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 46 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 47 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+     warning: symmetry operation # 48 not allowed.   fractional translation:
+      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+
+
+     bravais-lattice index     =            2
+     lattice parameter (a_0)   =      10.5995  a.u.
+     unit-cell volume          =     297.7100 (a.u.)^3
+     number of atoms/cell      =            2
+     number of atomic types    =            1
+     kinetic-energy cutoff     =      30.0000  Ry
+     charge density cutoff     =     120.0000  Ry
+     convergence threshold     =      1.0E-08
+     beta                      =       0.7000
+     number of iterations used =            8  plain     mixing
+     Exchange-correlation      =  SLA  PZ   NOGX NOGC (1100)
+     iswitch =  0
+
+     celldm(1)=  10.599478  celldm(2)=   0.000000  celldm(3)=   0.000000
+     celldm(4)=   0.000000  celldm(5)=   0.000000  celldm(6)=   0.000000
+
+     crystal axes: (cart. coord. in units of a_0)
+               a(1) = ( -0.500000  0.000000  0.500000 )  
+               a(2) = (  0.000000  0.500000  0.500000 )  
+               a(3) = ( -0.500000  0.500000  0.000000 )  
+
+     reciprocal axes: (cart. coord. in units 2 pi/a_0)
+               b(1) = ( -1.000000 -1.000000  1.000000 )  
+               b(2) = (  1.000000  1.000000  1.000000 )  
+               b(3) = ( -1.000000  1.000000 -1.000000 )  
+
+
+     PSEUDO 1 is Si         zval =  4.0   lmax= 1   lloc= 0
+     (in numerical form:   431 grid points, xmin =  0.00, dx = 0.0000)
+
+     atomic species   valence    mass     pseudopotential
+        Si             4.00    28.08600     Si( 1.00)
+
+     24 Sym.Ops. (no inversion)
+
+
+   Cartesian axes
+
+     site n.     atom                  positions (a_0 units)
+         1           Si  tau(  1) = (  0.0000000  0.0000000  0.0000000  )
+         2           Si  tau(  2) = ( -0.2500000  0.2500000  0.2500000  )
+
+     number of k points=   10
+                       cart. coord. in units 2pi/a_0
+        k(   1) = (  -0.1250000   0.1250000   0.1250000), wk =   0.0625000
+        k(   2) = (  -0.3750000   0.3750000  -0.1250000), wk =   0.1875000
+        k(   3) = (   0.3750000  -0.3750000   0.6250000), wk =   0.1875000
+        k(   4) = (   0.1250000  -0.1250000   0.3750000), wk =   0.1875000
+        k(   5) = (  -0.1250000   0.6250000   0.1250000), wk =   0.1875000
+        k(   6) = (   0.6250000  -0.1250000   0.8750000), wk =   0.3750000
+        k(   7) = (   0.3750000   0.1250000   0.6250000), wk =   0.3750000
+        k(   8) = (  -0.1250000  -0.8750000   0.1250000), wk =   0.1875000
+        k(   9) = (  -0.3750000   0.3750000   0.3750000), wk =   0.0625000
+        k(  10) = (   0.3750000  -0.3750000   1.1250000), wk =   0.1875000
+
+     G cutoff =  341.4998  (   6615 G-vectors)     FFT grid: ( 27, 27, 27)
+
+     nbndx  =    64  nbnd   =    16  natomwfc =     8  npwx   =     845
+     nelec  =    8.00 nkb   =     8  ngl    =     117
+
+     Initial potential from superposition of free atoms
+
+     starting charge =   7.99901
+     Starting wfc are atomic +   8 random wfc
+
+     total cpu time spent up to now is      1.95 secs
+
+     iteration #  1     ecut=    30.00 ryd     beta=0.70
+     Davidson diagonalization (with overlap)
+     ethr =  1.00E-02,  avg # of iterations =  5.7
+
+     Threshold (ethr) on eigenvalues was too large:
+     Diagonalizing with lowered threshold
+
+     Davidson diagonalization (with overlap)
+     ethr =  6.49E-03,  avg # of iterations =  1.0
+
+     total energy              =   -15.83803927 ryd
+     estimated scf accuracy    <     0.05168215 ryd
+
+     total cpu time spent up to now is      9.78 secs
+
+     iteration #  2     ecut=    30.00 ryd     beta=0.70
+     Davidson diagonalization (with overlap)
+     ethr =  6.46E-04,  avg # of iterations =  3.8
+
+     total energy              =   -15.84217788 ryd
+     estimated scf accuracy    <     0.00174685 ryd
+
+     total cpu time spent up to now is     12.73 secs
+
+     iteration #  3     ecut=    30.00 ryd     beta=0.70
+     Davidson diagonalization (with overlap)
+     ethr =  2.18E-05,  avg # of iterations =  3.6
+
+     total energy              =   -15.84220541 ryd
+     estimated scf accuracy    <     0.00004889 ryd
+
+     total cpu time spent up to now is     15.88 secs
+
+     iteration #  4     ecut=    30.00 ryd     beta=0.70
+     Davidson diagonalization (with overlap)
+     ethr =  6.11E-07,  avg # of iterations =  4.8
+
+     total energy              =   -15.84220635 ryd
+     estimated scf accuracy    <     0.00000004 ryd
+
+     total cpu time spent up to now is     19.13 secs
+
+     iteration #  5     ecut=    30.00 ryd     beta=0.70
+     Davidson diagonalization (with overlap)
+     ethr =  4.81E-10,  avg # of iterations = 10.8
+
+          k =-0.1250 0.1250 0.1250 (  845 PWs)   bands (ev):
+
+    -6.0267   3.4934   4.8170   4.8170   7.2019   7.9686   7.9686   8.9537
+    12.3087  12.3087  13.1375  15.3197  16.9815  16.9815  20.7014  24.8235
+
+          k =-0.3750 0.3750-0.1250 (  831 PWs)   bands (ev):
+
+    -5.0678   0.6345   2.9453   4.3576   7.4336   8.6499   8.7868  10.8596
+    11.5471  14.2244  14.6036  16.7368  18.2914  19.7048  20.5723  21.7180
+
+          k = 0.3750-0.3750 0.6250 (  825 PWs)   bands (ev):
+
+    -4.0182  -1.2928   2.9351   3.6427   7.0391   8.4425   9.1130  12.0469
+    13.6682  15.2074  15.8290  16.1627  16.4211  18.9980  22.0626  23.6790
+
+          k = 0.1250-0.1250 0.3750 (  836 PWs)   bands (ev):
+
+    -5.5327   1.9199   3.8829   3.9047   7.1513   8.3310   9.3295   9.6783
+    11.9113  13.1777  14.4385  16.0633  17.6508  18.8016  21.6756  21.8905
+
+          k =-0.1250 0.6250 0.1250 (  829 PWs)   bands (ev):
+
+    -4.5686   0.2559   2.6348   3.0628   6.4480   7.9168  10.6114  11.0176
+    14.1619  14.8029  15.9993  17.6270  18.0420  18.9893  20.2397  21.2307
+
+          k = 0.6250-0.1250 0.8750 (  824 PWs)   bands (ev):
+
+    -3.0497  -1.5903   1.3868   2.3922   7.4222   9.2230   9.9993  12.0163
+    12.9963  15.4989  16.4858  18.5392  19.4802  19.9661  21.6030  22.2980
+
+          k = 0.3750 0.1250 0.6250 (  826 PWs)   bands (ev):
+
+    -4.1858  -0.5296   2.0199   3.3186   7.8111   8.4624   9.8343  10.7109
+    13.6138  14.2082  16.4515  17.0587  18.4026  19.3380  21.3839  21.9827
+
+          k =-0.1250-0.8750 0.1250 (  819 PWs)   bands (ev):
+
+    -3.1946  -1.5061   1.9544   2.6228   6.0544   7.0485  12.7563  12.8469
+    15.0392  15.4323  16.6536  16.9338  18.8415  19.3514  20.1813  22.5240
+
+          k =-0.3750 0.3750 0.3750 (  826 PWs)   bands (ev):
+
+    -4.6680  -0.5500   4.0714   4.0714   6.3520   8.5052   8.5052  12.5278
+    13.4385  13.4385  13.7856  17.8509  18.1254  18.1254  20.4691  22.6874
+
+          k = 0.3750-0.3750 1.1250 (  828 PWs)   bands (ev):
+
+    -3.5541  -1.2670   1.4194   3.3496   6.8944  10.1510  10.3442  11.6263
+    12.4089  12.8797  17.0182  18.8029  19.1527  20.0829  20.4787  22.3371
+
+!    total energy              =   -15.84220638 ryd
+     estimated scf accuracy    <     0.00000000 ryd
+
+     band energy sum           =     0.17069964 ryd
+     one-electron contribution =     3.93959418 ryd
+     hartree contribution      =     1.17641890 ryd
+     xc contribution           =    -4.69538671 ryd
+     ewald contribution        =   -16.26283275 ryd
+
+     convergence has been achieved
+
+     Forces acting on atoms (Ry/au):
+
+     atom   1 type  1   force =     0.00000000    0.00000000    0.00000000
+     atom   2 type  1   force =     0.00000000    0.00000000    0.00000000
+
+     Total force =     0.000000     Total SCF correction =     0.000000
+
+     Writing file silicon.pun   for program phonon
+ 
+     PWSCF        :    25.18s CPU time
+
+     init_run     :     1.67s CPU
+     electrons    :    23.04s CPU
+     forces       :     0.09s CPU
+ 
+     electrons    :    23.04s CPU
+     c_bands      :    19.04s CPU (       6 calls,   3.173 s avg)
+     sum_band     :     3.57s CPU (       6 calls,   0.595 s avg)
+     v_of_rho     :     0.24s CPU (      12 calls,   0.020 s avg)
+     mix_rho      :     0.15s CPU (       6 calls,   0.025 s avg)
+ 
+     c_bands      :    19.04s CPU (       6 calls,   3.173 s avg)
+     init_us_2    :     0.19s CPU (     140 calls,   0.001 s avg)
+     cegterg      :    18.76s CPU (      60 calls,   0.313 s avg)
+ 
+     sum_band     :     3.57s CPU (       6 calls,   0.595 s avg)
+ 
+     wfcrot       :     1.19s CPU (      10 calls,   0.119 s avg)
+     cegterg      :    18.76s CPU (      60 calls,   0.313 s avg)
+     h_psi        :    14.76s CPU (     367 calls,   0.040 s avg)
+     g_psi        :     0.09s CPU (     297 calls,   0.000 s avg)
+     overlap      :     1.60s CPU (     297 calls,   0.005 s avg)
+     cdiaghg      :     1.18s CPU (     307 calls,   0.004 s avg)
+     update       :     0.76s CPU (     297 calls,   0.003 s avg)
+     last         :     0.77s CPU (      80 calls,   0.010 s avg)
+ 
+     h_psi        :    14.76s CPU (     367 calls,   0.040 s avg)
+     init         :     0.06s CPU (     367 calls,   0.000 s avg)
+     firstfft     :     6.64s CPU (    3098 calls,   0.002 s avg)
+     secondfft    :     6.84s CPU (    3098 calls,   0.002 s avg)
+     add_vuspsi   :     0.18s CPU (     367 calls,   0.000 s avg)
+ 
+      General routines
+     ccalbec      :     0.28s CPU (     377 calls,   0.001 s avg)
+     cft3         :     0.23s CPU (      48 calls,   0.005 s avg)
+     cft3s        :    15.74s CPU (    7156 calls,   0.002 s avg)
+     davcio       :     0.33s CPU (     200 calls,   0.002 s avg)
+ 

@@ -21,6 +21,7 @@ MANUAL=" Usage
  scf             PWSCF self-consistent calculation
  nscf            PWSCF non-self-consistent calculation
  pw2wan          export PWSCF data to WanT package
+ band            compute Silicon bands using PWSCF
  pwscf           perform SCF, NSCF, PW2WAN all together
  window          determine which bads are in the energy window
                  of interest and then write data accoding to it
@@ -51,6 +52,7 @@ TEST_NAME=Test1
 SCF=
 NSCF=
 PW2WAN=
+BAND=
 WINDOW=
 DISENTANGLE=
 WANNIER=
@@ -64,14 +66,15 @@ case $INPUT in
    (scf)            SCF=".TRUE." ;;
    (nscf)           NSCF=".TRUE." ;;
    (pw2wan)         PW2WAN=".TRUE." ;;
-   (pwscf)          SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ;;
+   (band)           BAND=".TRUE." ;;
+   (pwscf)          SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ; BAND=".TRUE." ;;
    (window)         WINDOW=".TRUE." ;;
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
    (hamiltonian)    HAMILTONIAN=".TRUE." ;;
    (want)           WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
                     HAMILTONIAN=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ; 
+   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ;
                     WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
                     HAMILTONIAN=".TRUE." ;; 
    (clean)          CLEAN=".TRUE." ;;
@@ -136,6 +139,20 @@ if [ "$PW2WAN" = ".TRUE." ] ; then
       echo "found some problems in PW2WAN calculation, stopping" ; exit 1
    fi
 fi
+
+#
+# running PWSCF BAND
+#
+if [ "$BAND" = ".TRUE." ] ; then  
+   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX \
+               < $TEST_HOME/nscf_band.in > $TEST_HOME/nscf_band.out
+   if [ $? = 0 ] ; then 
+      echo "BAND calculation done" 
+   else
+      echo "found some problems in BAND calculation, stopping" ; exit 1
+   fi
+fi
+   
 
 #
 # running WINDOW
