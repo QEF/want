@@ -12,7 +12,6 @@
 !*********************************************
    IMPLICIT NONE
    PRIVATE
-   SAVE
 
 ! This module contains the definition of CLOCK type and CLOCK_LIST type;
 ! handles the timing all over the code

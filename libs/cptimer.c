@@ -11,31 +11,7 @@
 #include<ctype.h>
 #include<sys/types.h>
 #include<sys/time.h>
-
-
-#if defined __T3E | defined __ABSOFT
-#  define CCLOCK CCLOCK
-#endif
-#if defined __SGI | defined __FUJITSU | defined __SX4 | defined __INTEL | defined __LAHEY | defined __SX6 | defined SUN | defined __ALTIX
-#  define CCLOCK cclock_
-#endif
-#if defined __PGI
-#  if defined __GNU_LINK
-#     define CCLOCK cclock__
-#  else
-#     define CCLOCK cclock_
-#  endif
-#endif
-#if defined __AIX | defined __HP 
-#  define CCLOCK cclock
-#endif
-#if defined __ALPHA 
-#  if defined __LINUX
-#    define CCLOCK cclock_
-#  else
-#    define CCLOCK cclock_
-#  endif
-#endif
+#include"cp.h"
 
 
 double ELAPSED_SECONDS()
