@@ -94,7 +94,6 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
          ie = 1
 
          DO i=2,dimwann
-            WRITE(*,*) i,is,ie
             IF ( ABS(rtmp(is) - rtmp(i)) < toll_dist ) THEN 
                 ie = i
                 IF ( i == dimwann ) &
