@@ -13,6 +13,8 @@
 
       USE kinds   
       USE constants, ONLY: pi
+      USE startup_module, ONLY : startup
+      USE version_module, ONLY : version_number
 
       IMPLICIT NONE
 
@@ -49,6 +51,10 @@
 
       EXTERNAL TB_hamiltonian, transfer, green, setv0
       
+!
+! ...  Startup
+!
+       CALL startup(version_number,MAIN_NAME='bulk')
 
 !...  Scalar for BLAS calls
       alpha = (1.d0,0.d0)
