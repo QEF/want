@@ -196,9 +196,9 @@
       READ ( 71, * ) nwc, nwb
       IF ( nwc /= nmaxc .OR. nwb /= nmaxb ) CALL errore(' SreadH ', ' wrong dimension in reading HCI_CB ', nwb )
 
-      DO j = 1, nwc
+      DO i = 1, nwc
          READ ( 71, * ) 
-         DO i = 1, nwb
+         DO j = 1, nwb
             READ ( 71, * ) hci_cb(i,j)
 !           hci_cb(i,j) = efac * hci_cb(i,j)
          END DO
