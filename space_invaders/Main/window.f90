@@ -222,7 +222,7 @@
        END DO
        
        WRITE( stdout, * ) ' '
-       WRITE( stdout, fmt= " (2x,'Number of chemical species =', i3, ) " ) ntype
+       WRITE( stdout, fmt= " (2x,'Number of chemical species =', i3 ) " ) ntype
        WRITE( stdout, * ) ' ' 
        WRITE( stdout, fmt= " (2x,'Atomic positions: (cart. coord. in units of crystal)' ) " )
        DO nt = 1, ntype
@@ -508,7 +508,7 @@
              WRITE( stdout, * ) ' ********** ERROR MESSAGE **********'
              WRITE( stdout, * ) '  '
              WRITE( stdout, fmt= " ( 4x,'WRONG NUMBER OF FROZEN STATES ' )")
-             WRITE( stdout, fmt= " ( 4x,'k-point ', nkp, ' frozen band #' )") i
+             WRITE( stdout, fmt= " ( 4x,'k-point ',i5,' frozen band #',i4 )") nkp, i
              WRITE( stdout, fmt= " ( 4x,'dimfroz = ' )") dimfroz(nkp)
              WRITE( stdout, fmt= " ( 4x,'kifroz_min = ' )") kifroz_min
              WRITE( stdout, fmt= " ( 4x,'kifroz_max = ' )") kifroz_max
