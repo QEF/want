@@ -443,16 +443,14 @@
 ! ...  Setup the shells of b-vectors around each K-point
 
        recc = TRANSPOSE(bvec)
-       ! recc = bvec
        CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
             dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
 !
 ! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
 
-       enmax = emax ! overlap changes the input value
-       call overlap( igv, vkpt, avec, evecr, eveci, igsort, ngwk, dimwin,    &
-            nntot, nnlist, nncell, cm, enmax, mxdgve, mxddim, nkpts,        &
-            mxdnn, mxdbnd, ngx, ngy, ngz, mxddim, nkpts, ndwinx )
+       call overlap( igv, evecr, eveci, igsort, ngwk, dimwin,    &
+            nntot, nnlist, nncell, cm, mxdgve, mxddim, nkpts,        &
+            mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
 !
 !=----------------------------------------------------------------------------------------------=
 !
@@ -928,10 +926,6 @@
        END DO
 
        CLOSE(9)
-
-
-       !CALL intf( dimwann, nkpts, mxddim, ndwinx, mxdbnd, ngm, igv, ngwk, dimwin, &
-       !  evecr, eveci, eamp_save, igsort )
 
        OPEN( UNIT=20, FILE='onfly.dat', FORM='UNFORMATTED')
 
