@@ -15,6 +15,7 @@
       USE constants, ONLY: pi
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
+      USE cleanup_module, ONLY : cleanup
 
       IMPLICIT NONE
 
@@ -226,25 +227,47 @@
       CLOSE ( 24 )
       CLOSE ( 22 )
       
-      DEALLOCATE ( r )
-      DEALLOCATE ( h0 )
-      DEALLOCATE ( h1 )
-      DEALLOCATE ( tot )
-      DEALLOCATE ( tott )
-      DEALLOCATE ( g )
-      DEALLOCATE ( gR)
-      DEALLOCATE ( gL )
-      DEALLOCATE ( gAa )
-      DEALLOCATE ( gAr )
-      DEALLOCATE ( gAm1 )
-      DEALLOCATE ( sLa )
-      DEALLOCATE ( sRa )
-      DEALLOCATE ( sLr )
-      DEALLOCATE ( sRr )
-      DEALLOCATE ( s1 )
-      DEALLOCATE ( s2 )
-      DEALLOCATE ( c1 )
-      DEALLOCATE ( tran )
+      DEALLOCATE ( r, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating r', ABS(ierr) )
+      DEALLOCATE ( h0, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating h0', ABS(ierr) )
+      DEALLOCATE ( h1, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating h1', ABS(ierr) )
+      DEALLOCATE ( tot, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating tot', ABS(ierr) )
+      DEALLOCATE ( tott, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating tott', ABS(ierr) )
+      DEALLOCATE ( g, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating g', ABS(ierr) )
+      DEALLOCATE ( gR, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating gR', ABS(ierr) )
+      DEALLOCATE ( gL, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating gL', ABS(ierr) )
+      DEALLOCATE ( gAa, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating gAa', ABS(ierr) )
+      DEALLOCATE ( gAr, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating gAr', ABS(ierr) )
+      DEALLOCATE ( gAm1, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating gAm1', ABS(ierr) )
+      DEALLOCATE ( sLa, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating sLa', ABS(ierr) )
+      DEALLOCATE ( sRa, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating sRa', ABS(ierr) )
+      DEALLOCATE ( sLr, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating sLr', ABS(ierr) )
+      DEALLOCATE ( sRr, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating sRr', ABS(ierr) )
+      DEALLOCATE ( s1, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating s1', ABS(ierr) )
+      DEALLOCATE ( s2, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating s2', ABS(ierr) )
+      DEALLOCATE ( c1, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating c1', ABS(ierr) )
+      DEALLOCATE ( tran, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' bulk ', ' deallocating tran', ABS(ierr) )
 
-      STOP
+      CALL cleanup()
+
+      STOP '*** THE END *** (bulk.x)'
       END 
+

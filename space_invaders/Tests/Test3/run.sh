@@ -314,15 +314,15 @@ fi
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
-   $UTILITY_BIN/matrix_extract.sh COND/fort.103    1 16   1 16  > H00_C
+   $UTILITY_BIN/matrix_extract.sh COND/RHAM.103    1 16   1 16  > H00_C
    
-   $UTILITY_BIN/matrix_extract.sh COND/fort.104    1 16   1  8  > HCI_CB
-   $UTILITY_BIN/matrix_extract.sh COND/fort.104    9 16   1 16  > HCI_AC
+   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    1 16   1  8  > HCI_CB
+   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    9 16   1 16  > HCI_AC
    
-   $UTILITY_BIN/matrix_extract.sh LEADS/fort.105   1  8   1  8  > H00_A
-   $UTILITY_BIN/matrix_extract.sh LEADS/fort.105   1  8   1  8  > H00_B
-   $UTILITY_BIN/matrix_extract.sh LEADS/fort.106   1  8   1  8  > H01_A
-   $UTILITY_BIN/matrix_extract.sh LEADS/fort.106   1  8   1  8  > H01_B
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  8   1  8  > H00_A
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  8   1  8  > H00_B
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  8   1  8  > H01_A
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  8   1  8  > H01_B
 
    echo "running CODNDUCTOR calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
@@ -342,8 +342,8 @@ fi
 # running BULK  (eventually)
 #
 if [ "$BULK" = ".TRUE." ] ; then  
-   ln -sf COND/fort.103 H00.dat
-   ln -sf COND/fort.104 H01.dat
+   ln -sf COND/RHAM.103 H00.dat
+   ln -sf COND/RHAM.104 H01.dat
    echo "running BULK calculation" 
    $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
    if [ ! -e CRASH ] ; then 

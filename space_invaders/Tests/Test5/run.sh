@@ -184,8 +184,8 @@ if [ "$BULK" = ".TRUE." ] ; then
    #
    # hopefully will be improoved very soon...
    #
-   ln -sf fort.103 H00.dat
-   ln -sf fort.104 H01.dat
+   ln -sf RHAM.103 H00.dat
+   ln -sf RHAM.104 H01.dat
    #
    echo "running BULK calculation" 
    $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
@@ -209,13 +209,13 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    #
    # hopefully will be improoved very soon...
    #
-   ln -sf fort.103 H00_A
-   ln -sf fort.103 H00_B
-   ln -sf fort.103 H00_C
-   ln -sf fort.104 H01_B
-   ln -sf fort.104 H01_A
-   ln -sf fort.104 HCI_AC
-   ln -sf fort.104 HCI_CB
+   ln -sf RHAM.103 H00_A
+   ln -sf RHAM.103 H00_B
+   ln -sf RHAM.103 H00_C
+   ln -sf RHAM.104 H01_B
+   ln -sf RHAM.104 H01_A
+   ln -sf RHAM.104 HCI_AC
+   ln -sf RHAM.104 HCI_CB
    #
    echo "running CONDUCTOR calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out

@@ -68,14 +68,12 @@
       INTEGER :: i1, i2, i3
       INTEGER :: iws
       REAL(dbl) :: rmod, rdum, vec(3)
-      CHARACTER(LEN=80)             :: stringa
       CHARACTER(LEN=2), ALLOCATABLE :: point(:)    
       CHARACTER(LEN=nstrx)          :: filename
       REAL(dbl) :: unitary_thr
  
-      INTEGER   :: nt
-      INTEGER   :: ierr, unit_tmp
-      LOGICAL   :: lfound
+      INTEGER   :: ierr
+      LOGICAL   :: lfound, opened
 
       LOGICAL   :: convert_self_energy
       LOGICAL   :: check_self_energy
@@ -275,14 +273,13 @@
       END IF
 
 
+!
+! ... writing matrix elements to file (and partially to stdout)
+!     for transport calculation
+!
 
-! ... Arrigo
-!     standard output for conduction calculations
-
-      WRITE (stringa,"(a,i2,a)") "(",dimwann,"f7.3)"
-
-      OPEN( 82, FILE=TRIM(work_dir)//'/matrix.dat', STATUS='unknown', FORM='formatted' )
-      OPEN( 83, FILE=TRIM(work_dir)//'/diagonal.dat', STATUS='unknown', FORM='formatted' )
+      WRITE(stdout,"(2/,2x,'Diagonal matrix elements of H on Wannier basis')")
+      WRITE(stdout,"(   2x,'dimwann = ',i5)") dimwann
 
       DO iws = 1, nws
         IF ( ( (indxws(1,iws) ==  0) .AND. &
@@ -307,43 +304,40 @@
                (indxws(2,iws) ==  0) .AND. & 
                (indxws(3,iws) ==  1) )              ) THEN
 
-          unit_tmp = 100+iws
-          OPEN(UNIT=unit_tmp,FILE=TRIM(work_dir)//'/fort.'//TRIM(int2char(unit_tmp)), &
-               STATUS='unknown')
+          INQUIRE(ham_unit, OPENED=opened)
+          IF ( opened ) CALL errore('hamiltonian','Unit already opened',ham_unit)
+
+          idum = 100+iws
+          filename=TRIM(work_dir)//'/RHAM.'//TRIM(int2char(idum))
+          OPEN(UNIT=ham_unit,FILE=TRIM(filename),  STATUS='unknown', FORM='formatted' )
   
-          WRITE (unit_tmp,*) dimwann, dimwann, ( indxws(i,iws), i=1,3 )
-          WRITE (82,*)' '
-          WRITE (82,*) dimwann, ( indxws(i,iws), i=1,3 )
-          WRITE (82,*)' '
-          WRITE (83,*)' '
-          WRITE (83,*) dimwann, ( indxws(i,iws), i=1,3 )
-          WRITE (83,*)' '
+              WRITE (ham_unit,"(2i5,3x,3i4)") dimwann, dimwann, ( indxws(i,iws), i=1,3 )
+              DO j = 1, dimwann
+                  WRITE (ham_unit,"()")
+                  DO i = 1, dimwann
+                     WRITE(ham_unit, "(2f20.12)" ) rham(i,j,iws)
+                  ENDDO
+              ENDDO
+          CLOSE(ham_unit)
 
-          DO j = 1, dimwann
-            WRITE (unit_tmp,*)' '
-            DO i = 1, dimwann
-              WRITE( unit_tmp, * ) REAL( rham(i,j,iws) )
-            END DO
-          END DO
-          CLOSE( unit_tmp )
-
+          !
+          ! stdout (diagonal elements)
+          !
+          WRITE (stdout,"(/,4x,'R = (',3i4,' )')") ( indxws(i,iws), i=1,3 )
           DO i = 1, dimwann
-            WRITE(82,stringa)( REAL( rham(i,j,iws) ), j=1,dimwann )
-            WRITE(83,*)REAL( rham(i,i,iws) )
-          END DO
+              WRITE(stdout,"(2f15.9)") rham(i,i,iws)
+          ENDDO
 
-        END IF
-      END DO
-
-      CLOSE(82)
-      CLOSE(83)
+        ENDIF
+      ENDDO
+      WRITE (stdout,"()") 
 
 
 ! ... Check that magnitude of matrix elements |H_ij(R)| decreases with |R|.
 !     Should expect it to decrease *faster* using the rotated Bloch functions
 !     (again, except in the single-band case, where it should be exactly the same)
 
-      WRITE(stdout,"(/,2x,'Decay of the real space Hamiltonian:')") 
+      WRITE(stdout,"(/,2x,'Decay of the real space Hamiltonian:',/)") 
       WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of H(R) [eV]')") 
       DO iws = 1, nws
         vec(1) = dble( indxws(1,iws) ) * avec(1,1) +     &

@@ -15,6 +15,7 @@
       USE constants, ONLY: pi
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
+      USE cleanup_module, ONLY : cleanup
 
       IMPLICIT NONE
 
@@ -527,4 +528,9 @@
            IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating c2 ', 1 )
       DEALLOCATE ( tran, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' conductor ', ' deallocating tran ', 1 )
-      END 
+
+      CALL cleanup()
+
+      STOP '*** THE END *** (conductor.x)'
+      END PROGRAM 
+  
