@@ -9,7 +9,7 @@ OBJS = constants.o fft_scalar.o kind.o parameters.o \
 all: $(OBJS)
 
 clean: 
-	rm -rf *.o *.a *core  work.pc work.pcl *.mod
+	rm -rf *.o *.a *core  work.pc intel.pcl *.mod *.d
 
 # dependencies
 
