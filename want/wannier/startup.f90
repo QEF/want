@@ -52,7 +52,7 @@ CONTAINS
       WRITE( stdout, * ) ' ======================================================================'
       WRITE( stdout, * ) '             =                                            ='            
       WRITE( stdout, * ) '             =     *** WanT *** Wannier Transport Code    ='   
-      WRITE( stdout, * ) '             =        (www.wannier_transport.org)         ='
+      WRITE( stdout, * ) '             =        (www.wannier-transport.org)         ='
       WRITE( stdout, * ) '             =       Norm Conserv. Pseudopot. Impl.       ='
       WRITE( stdout, * ) '             =                                            ='            
       WRITE( stdout, * ) ' ======================================================================'
