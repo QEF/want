@@ -13,7 +13,6 @@
 
        USE kinds
        USE constants, ONLY: pi, ryd => ry, har => au, bohr => bohr_radius_angs
-       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
        USE mp, ONLY: mp_start, mp_end, mp_env
        USE mp_global, ONLY: mp_global_start
        USE io_global, ONLY: io_global_start, io_global_getionode, stdout
@@ -22,6 +21,8 @@
        USE version_module, ONLY : version_number
        USE input_wannier
        USE converters_module, ONLY : cart2cry
+       USE kpoints, ONLY: nk, s, vkpt, kpoints_init
+       USE ions, ONLY: rat, atmass, ntype, natom, nameat
 
 
        IMPLICIT NONE
@@ -33,19 +34,13 @@
        INTEGER, PARAMETER :: mxdnnh = mxdnn/2
 
        REAL(dbl) :: avec(3,3), bvec(3,3), recc(3,3)
-
-       REAL(dbl) :: rat(3,mxdatm,mxdtyp), atmass(mxdtyp)
-       INTEGER   :: ntype, natom(mxdtyp)
-       CHARACTER(LEN=2) :: nameat(mxdtyp)
  
-       INTEGER :: nkpts, nk(3)
+       INTEGER :: nkpts
        INTEGER, ALLOCATABLE :: igv(:,:)
        INTEGER, ALLOCATABLE :: igsort(:,:)
        INTEGER, ALLOCATABLE :: npwk(:)
-       REAL(dbl), ALLOCATABLE :: vkpt(:,:)
        COMPLEX(dbl), ALLOCATABLE :: evec(:,:,:)
        REAL(dbl), ALLOCATABLE :: eiw(:,:)
-       REAL(dbl) :: s(3)
        REAL(dbl) :: emax, enmax
  
        INTEGER, ALLOCATABLE :: nnshell(:,:)
@@ -161,10 +156,15 @@
 
        OPEN( UNIT=19, FILE='takeoff.dat', STATUS='OLD', FORM='UNFORMATTED' )
 !
+       !    read lattice
+       !
        READ(19) alat
        READ(19) ( avec(i,1), i=1,3 )
        READ(19) ( avec(i,2), i=1,3 )
        READ(19) ( avec(i,3), i=1,3 )
+       !
+       !    read ions
+       !
        READ(19) ntype
        DO nt=1,ntype
          READ(19) natom(nt),nameat(nt)
@@ -172,6 +172,7 @@
            READ(19) ( rat(i,ja,nt), i=1,3 )
          END DO
        END DO
+
        READ(19) emax, nbandi
        READ(19) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
 
@@ -267,20 +268,8 @@
 !
 ! ...  Calculate grid of K-pointS
  
-       nkp = 0
-       ALLOCATE( vkpt(3,nkpts), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating vkpt ', (3*nkpts) )
-       DO i1 = 0, nk(1)-1
-         DO i2 = 0, nk(2)-1
-           DO i3 = 0, nk(3)-1
-             nkp = nkp+1
-             vkpt(1,nkp) = DBLE(i1)/DBLE(nk(1)) + s(1)
-             vkpt(2,nkp) = DBLE(i2)/DBLE(nk(2)) + s(2)
-             vkpt(3,nkp) = DBLE(i3)/DBLE(nk(3)) + s(3)
-           ENDDO
-         ENDDO
-       ENDDO
-       nkpts = nkp
+       CALL kpoints_init( nkpts )
+
 
        ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
            IF( ierr /=0 )  &
@@ -961,8 +950,6 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating igsort ', ABS(ierr) )
        DEALLOCATE( npwk, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating npwk ', ABS(ierr) )
-       DEALLOCATE( vkpt, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating vkpt ', ABS(ierr) )
        DEALLOCATE( evec, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating evec ', ABS(ierr) )
        DEALLOCATE( eiw, STAT=ierr )

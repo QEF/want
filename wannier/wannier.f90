@@ -15,7 +15,6 @@
       USE kinds
       USE constants, ONLY: pi, twopi => tpi, &
          ryd => ry, har => au, bohr => bohr_radius_angs
-      USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
       USE fft_scalar, ONLY: cfft3d
       USE input_wannier
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
@@ -25,6 +24,7 @@
       USE converters_module, ONLY : cart2cry
       USE sph_har, ONLY: gauss1
       USE kpoints, ONLY: nk, s, vkpt, wtkpt, kpoints_init
+      USE ions, ONLY: rat, ntype, natom, nameat, poscart, poscart_set
 
       IMPLICIT NONE
 
@@ -48,7 +48,6 @@
       REAL(dbl) :: ranf
 
       INTEGER :: nr1, nr2, nr3
-      INTEGER :: ng
       INTEGER :: nkpts, nkp, nkp2
     
       INTEGER :: nplwv, mplwv
@@ -156,11 +155,6 @@
 
       INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
 
-      CHARACTER( LEN = 2 ) :: nameat(mxdtyp)
-      INTEGER :: ntype, natom(mxdtyp)
-      REAL(dbl) :: rat(3,mxdatm,mxdtyp)
-      REAL(dbl) :: poscart(3,mxdatm,mxdtyp) ! poscart(3,nions,ntype)
-
       REAL(dbl) :: alat
       INTEGER :: nt, ja, nbandi
       INTEGER :: mxddim, mxdbnd
@@ -209,6 +203,7 @@
       READ(19) (avec(i,1),i=1,3)
       READ(19) (avec(i,2),i=1,3)
       READ(19) (avec(i,3),i=1,3)
+
       READ(19) ntype
       DO nt = 1, ntype
         READ(19) natom(nt), nameat(nt)
@@ -318,23 +313,10 @@
       END DO
       WRITE( stdout, * ) ' '
 
-      ng = 1
+      !
+      ! compute atomic positions in Angstrom
 
-      WRITE( stdout, fmt="(2x, 'Atomic positions: (cart. coord.)' ) " )
-
-      DO nsp = 1 , ntype
-        DO ni = 1 , natom(nsp)
-          DO m = 1, 3
-            poscart(m,ni,nsp) = 0.d0
-            DO j=1,3
-              !poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * dirc(j,m)
-              poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * avec(m,j) * bohr
-            END DO
-          END DO
-          WRITE( stdout, fmt="(4x, a, 2x,'tau( ',I3,' ) = (', 3F8.4, ' )' )" ) &
-          nameat( nsp ), ni, ( poscart(i,ni,nsp), i=1,3 )
-        END DO
-      END DO
+      CALL poscart_set( avec )
 
       !
       ! initialize kpoints module
@@ -879,17 +861,17 @@
 
       DO nkp = 1, nkpts
 
-        !DO na = 1, dimwann
-        !  DO nb = 1, dimwann
-        !    cs(na,nb,nkp) = ( 0.d0, 0.d0 )
-        !    DO ni = 1, dimwann
-        !      cs(na,nb,nkp) = cs(na,nb,nkp) + ca(na,ni,nkp) * CONJG( ca(nb,ni,nkp) )
-        !    END DO
-        !   END DO
-        !END DO
+        DO nb = 1, dimwann
+          DO na = 1, dimwann
+            cs(na,nb,nkp) = ( 0.d0, 0.d0 )
+            DO ni = 1, dimwann
+              cs(na,nb,nkp) = cs(na,nb,nkp) + ca(na,ni,nkp) * CONJG( ca(nb,ni,nkp) )
+            END DO
+          END DO
+        END DO
 
-        CALL ZGEMM( 'N', 'C', dimwann, dimwann, dimwann, cone, ca(1,1,nkp), &
-              SIZE(ca,1), ca(1,1,nkp), SIZE(ca,1), czero, cs(1,1,nkp), SIZE(cs,1) )
+        !CALL ZGEMM( 'N', 'C', dimwann, dimwann, dimwann, cone, ca(1,1,nkp), &
+        !      SIZE(ca,1), ca(1,1,nkp), SIZE(ca,1), czero, cs(1,1,nkp), SIZE(cs,1) )
 
 
         IF ( verbosity == 'high' ) THEN
@@ -934,14 +916,17 @@
           END IF
         END IF
 
-        DO i = 1, dimwann
-          DO j = 1, dimwann
+        DO j = 1, dimwann
+          DO i = 1, dimwann
             cu(i,j,nkp) = ( 0.d0, 0.d0 )
             DO l = 1, dimwann
               cu(i,j,nkp) = cu(i,j,nkp) + cs(i,l,nkp) * ca(l,j,nkp)
             END DO
           END DO
         END DO
+
+        !CALL ZGEMM( 'N', 'N', dimwann, dimwann, dimwann, cone, cs(1,1,nkp), &
+        !      SIZE(cs,1), ca(1,1,nkp), SIZE(ca,1), czero, cu(1,1,nkp), SIZE(cu,1) )
 
         IF ( verbosity == 'high' ) THEN
           WRITE (stdout,*) '  '
@@ -971,8 +956,8 @@
           IF ( iphase == 2 ) THEN
 ! ...       check what happens if the heuristic phase is taken away
             WRITE (*,*) 'NB: phase is taken away'
-            DO I = 1, dimwann
-              DO J = 1, dimwann
+            DO J = 1, dimwann
+              DO I = 1, dimwann
                 cu(i,j,nkp) = ( 0.d0, 0.d0 )
                 IF ( i == j ) cu(i,j,nkp) = ( 1.d0, 0.d0 )
               END DO
@@ -991,14 +976,17 @@
             END DO
             CALL zgees( 'V', 'N', select, dimwann, cu(1,1,nkp), dimwann, nsdim,            &
                  cwschur1, cz, dimwann, cwschur2, SIZE(cwschur2), cwschur3, cwschur4, info )
-            DO i = 1, dimwann
+
+            cu( :, :, nkp ) = ( 0.d0, 0.d0 )
+            DO m = 1, dimwann
+              cfact = EXP( cwschur1(m) )
               DO j = 1, dimwann
-                cu(i,j,nkp) = ( 0.d0, 0.d0 )
-                DO m = 1, dimwann
-                  cu(i,j,nkp) = cu(i,j,nkp) + cz(i,m) * ( EXP( cwschur1(m) ) ) * CONJG( cz(j,m) )
+                DO i = 1, dimwann
+                  cu(i,j,nkp) = cu(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
                 END DO
               END DO
             END DO
+
           END IF
 
         END IF
@@ -1178,7 +1166,7 @@
 
       ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu0 ', dimwann*2 * nkpts )
-      ALLOCATE( cm0(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
+      ALLOCATE( cm0(dimwann,dimwann,nnmx,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm0 ', dimwann**2*nkpts*nnmx )
       ALLOCATE( cdodq(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq ', dimwann*2 * nkpts )
@@ -1231,16 +1219,8 @@
 ! ...   Store cu and cm
 
 
-        DO nkp = 1, nkpts
-          DO i = 1, dimwann
-            DO j = 1, dimwann
-              cu0(i,j,nkp) = cu(i,j,nkp)
-              DO nn = 1, nntot(nkp)
-                cm0(i,j,nkp,nn) = cm(i,j,nn,nkp)
-              END DO
-            END DO
-          END DO
-        END DO
+        cu0 = cu
+        cm0 = cm
 
         IF ( lrguide ) THEN
           IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )            &
@@ -1251,9 +1231,10 @@
         CALL domega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb,              &
              cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
 
+        gcnorm1 = 0.0d0
         DO nkp = 1, nkpts
-          DO m= 1, dimwann
-            DO n = 1, dimwann
+          DO n = 1, dimwann
+            DO m= 1, dimwann
               gcnorm1 = gcnorm1 + REAL( cdodq(m,n,nkp) * CONJG( cdodq(m,n,nkp) ) )
             END DO
           END DO
@@ -1279,13 +1260,7 @@
         END IF
 
         gcnorm0 = gcnorm1
-        DO nkp = 1, nkpts
-          DO n= 1, dimwann
-            DO m = 1, dimwann
-              cdqkeep(m,n,nkp) = cdq(m,n,nkp)
-            END DO
-          END DO
-        END DO
+        cdqkeep = cdq
 
         doda0 = 0.d0
         DO nkp = 1, nkpts
@@ -1342,11 +1317,13 @@
               ind = ind + 1
             END DO
           END DO
-          DO i = 1, dimwann
+
+          cdq( :, :, nkp ) = ( 0.d0, 0.d0 )
+          DO m = 1, dimwann
+            cfact = EXP( cwschur1(m) )
             DO j = 1, dimwann
-              cdq(i,j,nkp) = ( 0.d0, 0.d0 )
-              DO m = 1, dimwann
-                cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * ( EXP( cwschur1(m) ) ) * CONJG( cz(j,m) )
+              DO i = 1, dimwann
+                cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
               END DO
             END DO
           END DO
@@ -1468,16 +1445,19 @@
 
 ! ...     Restore cu and cm
 
-          DO nkp=1,nkpts
-            DO i=1,dimwann
-              DO j=1,dimwann
-                cu(i,j,nkp)=cu0(i,j,nkp)
-                DO nn=1,nntot(nkp)
-                  cm(i,j,nn,nkp)=cm0(i,j,nkp,nn)
-                END DO
-              END DO
-            END DO
-          END DO
+          cu = cu0
+          cm = cm0
+
+          !DO nkp=1,nkpts
+          !  DO i=1,dimwann
+          !    DO j=1,dimwann
+          !      cu(i,j,nkp)=cu0(i,j,nkp)
+          !      DO nn=1,nntot(nkp)
+          !        cm(i,j,nn,nkp)=cm0(i,j,nn,nkp)
+          !      END DO
+          !    END DO
+          !  END DO
+          !END DO
 
 ! ...     Take now optimal parabolic step
 
