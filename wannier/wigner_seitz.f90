@@ -1,24 +1,15 @@
-       SUBROUTINE wigner_seitz( adot, nk, indxws, nws, degen, mxdnrk )
-
-!..............................................................................
-! Calculates a grid of points that fall inside of (and eventually on the 
-! surface of) the Wigner-Seitz supercell centered on the origin of the Bravais
-! lattice with primitive translations nk(1)*a_1+nk(2)*a_2+nk(3)*a_3
-! INPUT:
-! ADOT(I,J)        Real space metric
-! NK(I)            Number of points along the direction of the i-th lattice
-!                  vector
-! MXDNRK
-! OUTPUT:
-
-! INDXWS(I,IWS)    The iws-th Wigner-Seitz grid point has components
-!                  indxws(1:3,iws) in the basis of the lattice vectors 
-! DEGEN(IWS)       Weight of the iws-th point is 1/degen(iws)
 !
-! Written 15 Feb 2001 by Ivo Souza
-! Modified April 18,2002 by MBN and AC (space invaders!)
-!..............................................................................
-
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
+       SUBROUTINE wigner_seitz( adot, nk, indxws, nws, degen, mxdnrk )
+!=----------------------------------------------------------------------------------=
      
        USE kinds
        USE io_global, ONLY : stdout
@@ -48,9 +39,6 @@
          DO n2 = 0, 2 * nk(2)
            DO n3 = 0, 2 * nk(3)
 
-             WRITE(stdout, *)  ' '
-             WRITE(stdout, 321) 'r point: ', n1, n2, n3
- 321         FORMAT( a9, 3(i2,1x) )
 
 ! ...        Loop over the 27 points R. R=0 corresponds to i1=i2=i3=1, or icnt=14
 
@@ -73,8 +61,6 @@
                      END DO
                    END DO
            
-                   WRITE(stdout, 123) 'icnt=', icnt, ' dist=', dist(icnt)
- 123               FORMAT(a5, i3, a6, f14.7)
 
                  END DO
                END DO
@@ -105,8 +91,6 @@
                indxws(1,nws) = n1 - nk(1)
                indxws(2,nws) = n2 - nk(2)
                indxws(3,nws) = n3 - nk(3)
-               WRITE( stdout,*)  'This point is in!'
-               WRITE( stdout,*) 'degeneracy:',nws,degen(nws)
              END IF
 
            END DO !n3
@@ -118,7 +102,6 @@
        tot = 0.0d0
        DO i = 1, nws
          tot = tot + 1.0d0 / DBLE(degen(i))
-         WRITE( stdout,*) 'i=', i, ' degen(i)=', degen(i)
        END DO
 
        IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > 1.0e-8 ) THEN
@@ -127,9 +110,7 @@
          WRITE( stdout, *) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
          CALL errore(' wigner_size ', ' wrong total number of points ', tot )
        ELSE
-         WRITE( stdout, *) '*** SUCCESS!!! ***'
-         WRITE( stdout, *) 'TOT=', tot
-         WRITE( stdout, *) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
+         WRITE( stdout, fmt="(2x,'Generation K-ponts: SUCCESS!!!')")
        END IF
 
        RETURN
