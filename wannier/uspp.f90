@@ -85,8 +85,9 @@ MODULE uspp
        deeq(:,:,:,:),         &! the integral of V_eff and Q_{nm} 
        becsum(:,:,:),         &! \sum_i f(i) <psi(i)|beta_l><beta_m|psi(i)>
        qq(:,:,:),             &! the q functions in the solid
-       qb(:,:,:,:),           &! the b FT of the Q(r) (i,j,ia,ib)
        nhtoj(:,:)              ! correspondence n <-> total angular momentum
+  COMPLEX(KIND=DP), ALLOCATABLE :: & 
+       qb(:,:,:,:)             ! the b FT of the Q(r) (i,j,ia,ib)
   !
   COMPLEX(KIND=DP), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:
        qq_so(:,:,:,:),           &! Q_{nm}
@@ -254,18 +255,19 @@ CONTAINS
   end function compute_ap
 
   subroutine deallocate_uspp()
-    IF( ALLOCATED( nhtol ) ) DEALLOCATE( nhtol )
-    IF( ALLOCATED( indv ) ) DEALLOCATE( indv )
-    IF( ALLOCATED( nhtolm ) ) DEALLOCATE( nhtolm )
-    IF( ALLOCATED( nhtoj ) ) DEALLOCATE( nhtoj )
-    IF( ALLOCATED( vkb ) ) DEALLOCATE( vkb )
-    IF( ALLOCATED( becsum ) ) DEALLOCATE( becsum )
-    IF( ALLOCATED( qq ) ) DEALLOCATE( qq )
-    IF( ALLOCATED( dvan ) ) DEALLOCATE( dvan )
-    IF( ALLOCATED( deeq ) ) DEALLOCATE( deeq )
-    IF( ALLOCATED( qq_so ) ) DEALLOCATE( qq_so )
-    IF( ALLOCATED( dvan_so ) ) DEALLOCATE( dvan_so )
-    IF( ALLOCATED( deeq_nc ) ) DEALLOCATE( deeq_nc )
+    IF( ALLOCATED( nhtol ) )    DEALLOCATE( nhtol )
+    IF( ALLOCATED( indv ) )     DEALLOCATE( indv )
+    IF( ALLOCATED( nhtolm ) )   DEALLOCATE( nhtolm )
+    IF( ALLOCATED( nhtoj ) )    DEALLOCATE( nhtoj )
+    IF( ALLOCATED( vkb ) )      DEALLOCATE( vkb )
+    IF( ALLOCATED( becsum ) )   DEALLOCATE( becsum )
+    IF( ALLOCATED( qq ) )       DEALLOCATE( qq )
+    IF( ALLOCATED( qb ) )       DEALLOCATE( qb )
+    IF( ALLOCATED( dvan ) )     DEALLOCATE( dvan )
+    IF( ALLOCATED( deeq ) )     DEALLOCATE( deeq )
+    IF( ALLOCATED( qq_so ) )    DEALLOCATE( qq_so )
+    IF( ALLOCATED( dvan_so ) )  DEALLOCATE( dvan_so )
+    IF( ALLOCATED( deeq_nc ) )  DEALLOCATE( deeq_nc )
   end subroutine deallocate_uspp
 
 end module uspp
