@@ -15,11 +15,6 @@ MODULE input_wannier
   IMPLICIT NONE
   SAVE
 
-!
-! for the moment 
-!
-  PRIVATE :: prefix, postfix, work_dir, title
-
   INTEGER, PARAMETER :: nshx = 100  ! maximum value for nshells
 
   REAL(dbl) :: win_min, win_max     ! outer energy window

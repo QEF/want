@@ -22,7 +22,7 @@
       USE version_module, ONLY : version_number
       USE converters_module, ONLY : cart2cry
       USE sph_har, ONLY: gauss1
-      USE kpoints, ONLY: nk, s, vkpt, wtkpt, kpoints_init
+      USE kpoints_module, ONLY: nk, s, vkpt, wtkpt, kpoints_init
       USE ions, ONLY: rat, ntype, natom, nameat, poscart, poscart_set
       USE util, ONLY: zmat_mul, gv_indexes
       USE lattice, ONLY: avec, dirc, recc, alat, lattice_init

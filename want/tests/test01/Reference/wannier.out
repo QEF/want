@@ -10,14 +10,6 @@
   Program <wannier>  v. -1.1.  starts ...
   Date 11Nov2004 at 19:45:36 
 
-Warning: card 1  0.700   0.700   0.700    -1  1  3   1.0       ! (CENTERS FOR VALENCE) ignored
-Warning: card 1  0.700  -0.700  -0.700    -1  2  3   1.0 ignored
-Warning: card 1 -0.700   0.700  -0.700    -1  3  3   1.0 ignored
-Warning: card 1 -0.700  -0.700   0.700    -1  4  3   1.0 ignored
-Warning: card 1   0.1250  0.1250  0.1250      0   0   3    0.5 ignored
-Warning: card 1  -0.3750  0.1250  0.1250      0   0   3    0.5 ignored
-Warning: card 1   0.1250 -0.3750  0.1250      0   0   3    0.5 ignored
-Warning: card 1   0.1250  0.1250 -0.3750      0   0   3    0.5 ignored
   ======================================================================
   =                         Lattice parameters                         =
   ======================================================================

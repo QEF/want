@@ -11,7 +11,7 @@
    MODULE windows_module
 !*********************************************
    USE kinds, ONLY : dbl
-   USE kpts_module, ONLY : nkpts
+   USE kpoints_module, ONLY : nkpts
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -23,8 +23,6 @@
 ! routines in this module:
 ! SUBROUTINE windows_allocate()
 ! SUBROUTINE windows_deallocate()
-! SUBROUTINE windows_write(unit)
-! SUBROUTINE windows_read(unit)
 
 !
 ! declarations of common variables
@@ -37,16 +35,14 @@
    INTEGER,      POINTER       :: imin(:)            ! chosen energy window
    INTEGER,      POINTER       :: imax(:)            ! dim: nkpts
    REAL(dbl),    POINTER       :: eig(:,:)           ! DFT eigenv; dim: mxdbnd, nkpts
-   LOGICAL                     :: comp_flag =.FALSE. ! whether COMPLEMENT subspace is null
-
-   COMPLEX(dbl), POINTER       :: evc(:,:,:)         ! wfc, dim: npwk, mxdbnd, nkpts
+   LOGICAL                     :: lcompspace=.TRUE.  ! whether COMPLEMENT space is NOT null
 
    !
    ! ... frozen states
-   INTEGER,      POINTER       :: dimfroz(:)         ! variable for using frozen
-   INTEGER,      POINTER       :: indxfroz(:)        ! states which are kept equal
-   INTEGER,      POINTER       :: indxnfroz(:)       ! dim: nkpts
-   LOGICAL                     :: froz_flag =.FALSE. ! whether FROZEN states are present
+   INTEGER,      POINTER       :: dimfroz(:)         ! variable for using frozen (dim: nkpts)
+   INTEGER,      POINTER       :: indxfroz(:,:)      ! states which are kept equal
+   INTEGER,      POINTER       :: indxnfroz(:,:)     ! dim: mxdbnd nkpts
+   LOGICAL                     :: lfrozen =.FALSE.   ! whether FROZEN states are present
    LOGICAL,      POINTER       :: frozen(:,:)        ! which are the frozen states
                                                      ! dim: mxdbnd, nkpts
 !
@@ -54,9 +50,11 @@
 !
 
    PUBLIC :: nkpts, mxdbnd
-   PUBLIC :: dimwin, imin, imax, eig, comp_flag
-   PUBLIC :: evc
-   PUBLIC :: dimfroz, indxfroz, indxnfroz, froz_flag, frozen
+   PUBLIC :: dimwin, imin, imax, eig, lcompspace
+   PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
+
+   PUBLIC :: windows_allocate
+   PUBLIC :: windows_deallocate
 
 CONTAINS
 
@@ -65,11 +63,75 @@ CONTAINS
 !
 
 !**********************************************************
-   SUBROUTINE allocate(iatm,pdos)
+   SUBROUTINE windows_allocate()
    !**********************************************************
-   USE grids_module, ONLY : icalc, egrid_set
    IMPLICIT NONE
-      INTEGER,                        INTENT(in) :: iatm
-      TYPE(projdos),                  INTENT(in) :: pdos
+       CHARACTER(16)      :: subname="windows_allocate"
+       INTEGER            :: ierr
+
+       IF ( mxdbnd <= 0 .OR. nkpts <= 0 ) &
+           CALL errore(subname,' Invalid MXDBND or NKPTS ',1)
+
+       ALLOCATE( dimwin(nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating dimwin ',nkpts)      
+       ALLOCATE( imin(nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating imin ',nkpts)      
+       ALLOCATE( imax(nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating imax ',nkpts)      
+       ALLOCATE( eig(mxdbnd,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating eig ',mxdbnd*nkpts)      
+
+       ALLOCATE( dimfroz(nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',nkpts)      
+       ALLOCATE( indxfroz(mxdbnd,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',nkpts)      
+       ALLOCATE( indxnfroz(mxdbnd,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',nkpts)      
+       ALLOCATE( frozen(mxdbnd,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',mxdbnd*nkpts)      
+
+   END SUBROUTINE windows_allocate
+
+
+!**********************************************************
+   SUBROUTINE windows_deallocate()
+   !**********************************************************
+   IMPLICIT NONE
+       CHARACTER(18)      :: subname="windows_deallocate"
+       INTEGER            :: ierr
+
+       IF ( ASSOCIATED(dimwin) ) THEN
+            DEALLOCATE(dimwin, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating dimwin ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(imin) ) THEN
+            DEALLOCATE(imin, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating imin ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(imax) ) THEN
+            DEALLOCATE(imax, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating imax ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(eig) ) THEN
+            DEALLOCATE(eig, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating eig ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(dimfroz) ) THEN
+            DEALLOCATE(dimfroz, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating dimfroz ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(indxfroz) ) THEN
+            DEALLOCATE(indxfroz, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating indxfroz ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(indxnfroz) ) THEN
+            DEALLOCATE(indxnfroz, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating indxnfroz ',ABS(ierr))
+       ENDIF
+       IF ( ASSOCIATED(frozen) ) THEN
+            DEALLOCATE(frozen, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating frozen ',ABS(ierr))
+       ENDIF
+   END SUBROUTINE windows_deallocate
 
 END MODULE windows_module

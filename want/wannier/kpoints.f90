@@ -10,28 +10,68 @@
 !
 !
 
-MODULE kpoints
+MODULE kpoints_module
   !
 
   USE kinds, ONLY: dbl
-  USE parameters, ONLY: npkx => npk
+  USE parameters, ONLY : npkx => npk
 
   IMPLICIT NONE
+  PRIVATE
   SAVE
 
+!
+! declarations
+!
   LOGICAL :: first = .TRUE.
 
-  INTEGER :: nk(3)
-  REAL(dbl) :: s(3)
-  REAL(dbl) :: vkpt( 3, npkx )
-  REAL(dbl) :: wtkpt( npkx )
-  REAL(dbl) :: wtktot
+  INTEGER                :: nk(3)
+  INTEGER                :: nkpts
+  REAL(dbl)              :: s(3)
+  REAL(dbl), ALLOCATABLE :: vkpt(:,:)
+  REAL(dbl), ALLOCATABLE :: wtkpt(:)
+  REAL(dbl)              :: wtktot
+
+!
+! end of declaration scope 
+!
+
+  PUBLIC :: nk, s, nkpts
+  PUBLIC :: vkpt
+  PUBLIC :: wtkpt, wtktot
+
+  PUBLIC :: kpoints_init
+  PUBLIC :: kpoints_deallocate
+
 
 CONTAINS
 
-  SUBROUTINE kpoints_init( nkpts )
-    INTEGER :: nkpts
+!**********************************************************
+   SUBROUTINE kpoints_allocate()
+   !**********************************************************
+   IMPLICIT NONE
+    INTEGER   :: ierr
+
+    IF ( nkpts <= 0) CALL errore('kpoints_allocate','Invalid NKPTS',1)
+    ALLOCATE( vkpt(3,nkpts),STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_allocate','allocating VKPT',ABS(ierr))
+    ALLOCATE( wtkpt(nkpts),STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_allocate','allocating WTKPT',ABS(ierr))
+
+   END SUBROUTINE kpoints_allocate
+
+
+!**********************************************************
+   SUBROUTINE kpoints_init( nkpts_ )
+   !**********************************************************
+    IMPLICIT NONE
+    INTEGER :: nkpts_
     INTEGER :: i1, i2, i3, nkp
+
+      nkpts = nkpts_
+      IF ( nkpts > npkx ) CALL errore('kpoints_init','Nkpts too large',nkpts)
+      CALL kpoints_allocate()
+
       nkp = 0
       DO i1 = 0, nk(1)-1
         DO i2 = 0, nk(2)-1
@@ -50,6 +90,24 @@ CONTAINS
       wtktot = SUM( wtkpt( 1 : nkpts ) )
 
     RETURN
-  END SUBROUTINE
+   END SUBROUTINE
 
-END MODULE
+
+!**********************************************************
+   SUBROUTINE kpoints_deallocate()
+   !**********************************************************
+   IMPLICIT NONE
+    INTEGER   :: ierr
+
+    IF ( ALLOCATED( vkpt ) ) THEN
+       DEALLOCATE( vkpt, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating VKPT',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( wtkpt ) ) THEN
+       DEALLOCATE( wtkpt, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_allocate','deallocating WTKPT',ABS(ierr))
+    ENDIF
+
+   END SUBROUTINE kpoints_deallocate
+
+END MODULE kpoints_module

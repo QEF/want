@@ -162,10 +162,11 @@ if [ -z "$CLEAN" ] ; then
    # 2 sub scratch directories
    test -e $TMPDIR/$TEST_NAME/COND || mkdir $TMPDIR/$TEST_NAME/COND
    test -e $TMPDIR/$TEST_NAME/LEADS || mkdir $TMPDIR/$TEST_NAME/LEADS
+
+   cd $TMPDIR/$TEST_NAME
 fi
 
 #-----------------------------------------------------------------------------
-cd $TMPDIR/$TEST_NAME
 
 #
 # running PWSCF SCF
@@ -406,10 +407,7 @@ if [ "$CLEAN" = ".TRUE." ] ; then
       rm -rf *.out 2> /dev/null
       test -e SCRATCH && rm SCRATCH
    cd $TMPDIR
-      test -e $TEST_NAME/HOME && rm $TEST_NAME/HOME
       test -d $TEST_NAME && rm -rf $TEST_NAME
-      test -d $TEST_NAME/COND && rm -rf $TEST_NAME/COND
-      test -d $TEST_NAME/LEADS && rm -rf $TEST_NAME/LEADS
    exit 0
 fi
 

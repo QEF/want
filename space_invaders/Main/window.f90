@@ -21,7 +21,7 @@
        USE input_wannier
        USE converters_module, ONLY : cart2cry
        USE ions, ONLY: natom, rat, nameat
-       USE kpoints, ONLY: nk, s
+       USE kpoints_module, ONLY: nk, s
 
        IMPLICIT NONE
  
