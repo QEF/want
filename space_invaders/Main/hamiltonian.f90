@@ -183,7 +183,7 @@
        CALL latti( avec, bvec, vcell, bdot, aminv, adot )
 
       IF ( ( s(1) /= zero ) .OR. ( s(2) /= zero ) .OR. ( s(3) /= zero ) ) THEN
-        CALL errore ('hamiltonian', 'S(I) IS NOT ZERO ==> H(R) NOT PERIODIC', s(1))
+        CALL errore ('hamiltonian', 'S(I) IS NOT ZERO ==> H(R) NOT PERIODIC', INT( s(1) ))
       END IF
 
  
@@ -412,7 +412,7 @@
              ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) == -1) ) .OR. &
              ( (indxws(1,iws) ==  0) .AND. (indxws(2,iws) ==  0) .AND. (indxws(3,iws) ==  1) ) ) THEN
 
-          WRITE (100+iws,*) dimwann, ( indxws(i,iws), i=1,3 )
+          WRITE (100+iws,*) dimwann, dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (82,*)' '
           WRITE (82,*) dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (82,*)' '
