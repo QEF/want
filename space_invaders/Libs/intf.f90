@@ -15,7 +15,6 @@
 
        USE kinds
        USE constants, ONLY: pi, twopi => tpi, ryd => ry, har => au, bohr => bohr_radius_angs
-       ! USE constants, ONLY: pi, twopi => tpi, ryd => ry, har => au
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview
        USE io_global, ONLY : stdout
        USE startup_module, ONLY : startup
@@ -62,9 +61,6 @@
        INTEGER :: i1, i2, i3, i, j, l
        INTEGER :: nnr
        INTEGER :: iprint = 1
-
-      !REAL(dbl) :: bohr
-      !PARAMETER ( bohr = 0.52917715d0 )
 
 !
 ! ...  End declarations and dimensions

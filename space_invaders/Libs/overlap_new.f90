@@ -18,8 +18,8 @@
       USE kinds
       USE timing_module, ONLY : timing 
       USE io_global, ONLY : stdout
-      USE constants, ONLY: bohr => bohr_radius_angs, ryd => ry, har => au, pi
-      !USE constants, ONLY: ryd => ry, har => au, pi
+      !USE constants, ONLY: bohr => bohr_radius_angs, ryd => ry, har => au, pi
+      USE constants, ONLY: ryd => ry, har => au, pi
 
       IMPLICIT NONE
 
@@ -70,8 +70,8 @@
 
       INTEGER :: ierr
 
-!      REAL(dbl) :: bohr
-!      PARAMETER ( bohr = 0.52917715d0 )
+      REAL(dbl) :: bohr
+      PARAMETER ( bohr = 0.52917715d0 )
 
 ! ... END declarations
 
@@ -133,8 +133,10 @@
 
       CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3) )
       bvec = bvec * 2.0d0 * pi
-      dirc = TRANSPOSE( avec ) * bohr
-      recc = TRANSPOSE( bvec ) / bohr
+      !dirc = TRANSPOSE( avec ) * bohr
+      !recc = TRANSPOSE( bvec ) / bohr
+      dirc = avec * bohr
+      recc = bvec / bohr
       reci = recc
 
 
