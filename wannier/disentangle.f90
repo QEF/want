@@ -441,7 +441,7 @@
 !
 ! ...  Setup the shells of b-vectors around each K-point
 
-       recc = TRANSPOSE( bvec )
+       recc = TRANSPOSE(bvec)
        CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
             dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
 !
@@ -822,9 +822,9 @@
 ! ...    Calculate amplitudes of the corresponding energy eigenvectors in terms of 
 !        the original ("window space") energy eigenvectors
  
+         eamp(:,:,nkp) = czero
          DO j = 1, dimwann
            DO i = 1, dimwin(nkp)
-             eamp(i,j,nkp) = czero
              DO l = 1, dimwann
                eamp(i,j,nkp) = eamp(i,j,nkp) + z(l,j)*lamp(i,l,nkp)
              END DO
