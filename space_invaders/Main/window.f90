@@ -346,7 +346,7 @@
 ! ...  Start K-loop
  
        nkp = 0
-       loop_z: DO i3 = 0, nk(3)-1
+       loop_x: DO i1 = 0, nk(1)-1
        loop_y: DO i2 = 0, nk(2)-1
        loop_z: DO i3 = 0, nk(3)-1
 
