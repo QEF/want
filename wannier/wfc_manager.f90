@@ -83,7 +83,7 @@ CONTAINS
       CALL ioname('export',filename,LPOSTFIX=.FALSE.)
       CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
                                FORM='formatted')
-      CALL ioname('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
+      CALL ioname('export',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
 
       !
       ! ... grids

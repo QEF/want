@@ -146,7 +146,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
 !
    CALL file_close(dft_unit,PATH="/",ACTION="read")
 
-   CALL ioname('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
+   CALL ioname('export',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
    WRITE( stdout,"(/,'  PW-DFT data read from file: ',a)") TRIM(filename)   
     
 
