@@ -202,21 +202,21 @@
        WRITE( stdout, * ) ' =                   Input data from PW calculation                   ='
        WRITE( stdout, * ) ' ======================================================================'
        WRITE( stdout, * ) '  '
-       WRITE( stdout, fmt= " ('  Alat = ', F8.4, ' (Bohr)' )" ) alat
+       WRITE( stdout, fmt= " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
        WRITE( stdout, * ) '  '
-       WRITE( stdout, * ) ' Crystal axes: (cart. coord. in units of a_0)  '
+       WRITE( stdout, fmt= " (2x,'Crystal axes: (cart. coord. in units of a_0)' ) " )
        DO i = 1, 3
-         WRITE ( stdout, fmt="('          a(',I1,') = (', 3F8.4, ' )' )" ) &
+         WRITE ( stdout, fmt="(10x,'a(',I1,') = (', 3F8.4, ' )' )" ) &
                 i, avec(1,i), avec(2,i), avec(3,i)
        END DO
        
        WRITE( stdout, * ) ' '
-       WRITE( stdout, fmt= " ('  Number of chemical species =', i3, ) " ) ntype
+       WRITE( stdout, fmt= " (2x,'Number of chemical species =', i3, ) " ) ntype
        WRITE( stdout, * ) ' ' 
-       WRITE( stdout, * ) ' Atomic positions: (cart. coord. in units of crystal)  '
+       WRITE( stdout, fmt= " (2x,'Atomic positions: (cart. coord. in units of crystal)' ) " )
        DO nt = 1, ntype
          DO ja = 1, natom( nt )
-           WRITE( stdout, fmt="('    ', a, '  tau(',I1,') = (', 3F8.4, ' )' )" ) &
+           WRITE( stdout, fmt="(4x, a, 2x,'tau(',I1,') = (', 3F8.4, ' )' )" ) &
                   nameat( nt ), ja, (rat( i, ja, nt ), i = 1, 3)
          END DO
        END DO
@@ -224,20 +224,20 @@
        ! ****ATTENTION 
        ! emax is reported in output in Rydberg, but it used in Hartree in the code
        WRITE( stdout, * ) ' ' 
-       WRITE( stdout, fmt= " ('  Kinetic energy cut-off =  ', F5.2, ' (Ry)' ) " ) emax * 2.0
+       WRITE( stdout, fmt= " (2x, 'Kinetic energy cut-off =  ', F5.2, ' (Ry)' ) " ) emax * 2.0
        WRITE( stdout, * ) ' ' 
-       WRITE( stdout, * ) ' Uniform grid used in wannier calculations:'
-       WRITE( stdout, fmt= " ('    nk = (', 3i3, ' )      s = (', 3f6.2, ' )' )" ) &
+       WRITE( stdout, fmt= " (2x, 'Uniform grid used in wannier calculations:' ) " )
+       WRITE( stdout, fmt= " (4x,'nk = (', 3i3, ' )      s = (', 3f6.2, ' )' )" ) &
                                nk(1), nk(2), nk(3), s(1), s(2), s(3)
-       WRITE( stdout, fmt= " ('    total number of k points =',i5 )" ) nkp_tot
+       WRITE( stdout, fmt= " (4x,'total number of k points =',i5 )" ) nkp_tot
 
        WRITE( stdout, * ) ' ' 
-       WRITE( stdout, fmt= " ('  Number of energy bands =', i5 ) " ) nbandi
+       WRITE( stdout, fmt= " (2x,'Number of energy bands =', i5 ) " ) nbandi
        WRITE( stdout, * ) ' ' 
-       WRITE( stdout,* ) ' Grids and array dimensions:'
-       WRITE( stdout, fmt= " ('    FFT grid ( ', 3i3, ' )' )" )  nr1, nr2, nr3
-       WRITE( stdout, fmt= " ('    max dimension of hamiltonian rows = ', i7 )" )  mxddim
-       WRITE( stdout, fmt= " ('    max number of G-vectors = ', i7 )" )  ngm
+       WRITE( stdout, fmt= " (2x, 'Grids and array dimensions:'  )" )
+       WRITE( stdout, fmt= " (4x, 'FFT grid ( ', 3i3, ' )' )" )  nr1, nr2, nr3
+       WRITE( stdout, fmt= " (4x, 'max dimension of hamiltonian rows = ', i7 )" )  mxddim
+       WRITE( stdout, fmt= " (4x, 'max number of G-vectors = ', i7 )" )  ngm
 
 
        WRITE( stdout, * ) '  '
@@ -246,20 +246,19 @@
        WRITE( stdout, * ) ' =          Input parameters for Wannier function calculation         ='
        WRITE( stdout, * ) ' ======================================================================'
        WRITE( stdout, * ) '  '
-       WRITE( stdout, * ) ' Definition of energy windows: (energies in eV)  '
-       WRITE( stdout, fmt= " ('    outer window: E  = (', f8.4, ' , ',f8.4, ' )' )" ) &
+       WRITE( stdout, fmt= " (2x, 'Definition of energy windows: (energies in eV)' ) " )
+       WRITE( stdout, fmt= " (4x, 'outer window: E  = (', f8.4, ' , ',f8.4, ' )' )" ) &
                                win_min, win_max
        IF ( froz_max < win_min  .OR. froz_min > win_max ) THEN
-       ! IF ( froz_min < -1.1d3  .AND. froz_max < -1.1d3 ) THEN
-         WRITE(stdout, fmt= " ('    inner window: NOT used --> NO FROZEN STATES' )" )
+         WRITE(stdout, fmt= " (4x,'inner window: NOT used --> NO FROZEN STATES' )" )
        ELSE
-         WRITE(stdout, fmt= " ('    inner window: E  = (', f8.4, ' , ',f8.4, ' ) --> FROZEN STATES' )" ) &
+         WRITE(stdout, fmt= " (4x,'inner window: E  = (', f8.4, ' , ',f8.4, ' ) --> FROZEN STATES' )" ) &
                                  froz_min, froz_max
        END IF
 
        WRITE(stdout,*) ' ' 
-       WRITE(stdout, fmt= " ('  Number of Wannier functions required = ', i5 )" ) dimwann
-       WRITE(stdout, fmt= " ('  Number of k-point shells = ', i5 )" ) nshells
+       WRITE(stdout, fmt= " (2x,'Number of Wannier functions required = ', i4 )" ) dimwann
+       WRITE(stdout, fmt= " (2x,'Number of k-point shells = ', i3 )" ) nshells
 
        WRITE( stdout, * ) ' ' 
        WRITE( stdout, * ) ' ' 
@@ -327,16 +326,16 @@
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' ******************* ERROR MESSAGE ******************'
            WRITE( stdout, * ) '  '
-           WRITE( stdout, * ) '     ENERGY WINDOW CONTAINS NO EIGENSTATES '
-           WRITE( stdout, fmt= " ( '      k-point = ', i3 )" ) nkp
-           WRITE( stdout, fmt= " ( '      energy window (eV):    ( ',  f8.4, ',', f8.4,' )' )")  win_min, win_max
-           WRITE( stdout, fmt= " ( '      eigenvalue range (eV): ( ',  f8.4, ',', f8.4,' )' )") &
+           WRITE( stdout, fmt= " (6x, 'ENERGY WINDOW CONTAINS NO EIGENVALUES ' )")
+           WRITE( stdout, fmt= " (8x, 'k-point = ', i3 )" ) nkp
+           WRITE( stdout, fmt= " (8x, 'energy window (eV):    ( ',  f8.4, ',', f8.4,' )' )")  win_min, win_max
+           WRITE( stdout, fmt= " (8x,'eigenvalue range (eV): ( ',  f8.4, ',', f8.4,' )' )") &
                                har*ei_k(1,nkp), har*ei_k(neig,nkp)
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' ****************************************************'
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) '  '
-           CALL errore(' window ', ' energy window contains no eiggenstates ', 1 )
+           CALL errore(' window ', ' energy window contains no eigenvalues ', 1 )
          END IF
 
          imin = 0
@@ -351,7 +350,7 @@
 
          kdimwin = imax - imin + 1
          WRITE( stdout, * )' ' 
-         WRITE(stdout,fmt= " ('  kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i3, &
+         WRITE(stdout,fmt= " (2x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i3, &
                            & '    mtxd = ', i7 )" )  nkp, dble(I1)/dble(NK(1)), &
                            dble(I2)/dble(NK(2)), dble(I3)/dble(NK(3)), kdimwin, mtxd
          WRITE( stdout, * ) ' Eigenvalues:'
@@ -362,9 +361,9 @@
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' ************************* ERROR MESSAGE *****************************'
            WRITE( stdout, * ) '  '
-           WRITE( stdout, * ) '   ENERGY WINDOW CONTAINS LESS BANDS THAN REQUIRED WANNIER FUNCTIONS'
-           WRITE( stdout, fmt= " ( '    k-point = ', i3 )" ) nkp
-           WRITE( stdout, fmt= " ( '    dimwin (', i3, ')  <  dimwann (', i3,')' )")  kdimwin, dimwann
+           WRITE( stdout, fmt= " (4x, 'ENERGY WINDOW CONTAINS LESS BANDS THAN REQUIRED WANNIER FUNCTIONS' )")
+           WRITE( stdout, fmt= " (6x, 'k-point = ', i3 )" ) nkp
+           WRITE( stdout, fmt= " (6x, 'dimwin (', i3, ')  <  dimwann (', i3,')' )")  kdimwin, dimwann
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' *********************************************************************'
            WRITE( stdout, * ) '  '
@@ -377,17 +376,13 @@
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' ************************* ERROR MESSAGE *****************************'
            WRITE( stdout, * ) '  '
-           WRITE( stdout, fmt= " ( '    ERROR IN ENERGY WINDOW AT K-POINT = ', i3 )" ) nkp
-           WRITE( stdout, fmt= " ( '    nkp  = ', i3 ) " ) nkp
-           WRITE( stdout, fmt= " ( '    imin = ', i3 ) " ) imin
-           WRITE( stdout, fmt= " ( '    imax = ', i3 ) " ) imax
-           WRITE( stdout, fmt= " ( '    energy window (eV):    ( ',  f8.4, ',', f8.4,' )' )")  win_min, win_max
-           WRITE( stdout, fmt= " ( '    eigenvalue range (eV): ( ',  f8.4, ',', f8.4,' )' )") &
+           WRITE( stdout, fmt= " ( 4x, 'ERROR IN ENERGY WINDOW AT K-POINT = ', i3 )" ) nkp
+           WRITE( stdout, fmt= " ( 6x,'nkp  = ', i3 ) " ) nkp
+           WRITE( stdout, fmt= " ( 6x,'imin = ', i3 ) " ) imin
+           WRITE( stdout, fmt= " ( 6x,'imax = ', i3 ) " ) imax
+           WRITE( stdout, fmt= " ( 6x,'energy window (eV):    ( ',  f8.4, ',', f8.4,' )' )")  win_min, win_max
+           WRITE( stdout, fmt= " ( 6x,'eigenvalue range (eV): ( ',  f8.4, ',', f8.4,' )' )") &
                              har*ei_k(1,nkp), har*ei_k(neig,nkp)
-           !WRITE( stdout, * ) 'Eigenvalues:'
-           ! DO i = 1, neig
-           !   WRITE(stdout,*) har*ei_k(i,nkp)
-           ! END DO
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' *********************************************************************'
            WRITE( stdout, * ) '  '
@@ -417,9 +412,9 @@
        WRITE( stdout, * ) ' ======================================================================'
        WRITE( stdout, * ) ' ' 
        IF ( froz_max < win_min  .OR. froz_min > win_max ) THEN
-         WRITE( stdout, fmt= " ( '  No frozen states ' ) " )
+         WRITE( stdout, fmt= " ( 2x,'No frozen states ' ) " )
        ELSE
-         WRITE( stdout, fmt= " ( '  Counting frozen states: ' ) " ) 
+         WRITE( stdout, fmt= " ( 2x,'Counting frozen states: ' ) " ) 
          WRITE( stdout, *) ' '
        END IF
 
@@ -479,11 +474,11 @@
            WRITE( stdout, * ) ' ************************* ERROR MESSAGE **************************'
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) '   THE NUMBER OF BAND IN THE INNER WINDOW IS GRATER THAN DIMWANN '
-           WRITE( stdout, fmt= " ( '    At K-point ', i4, ' there are ', i2, &
+           WRITE( stdout, fmt= " ( 4x,'At K-point ', i4, ' there are ', i2, &
                          &   ' bands inside the inner window and only ', i2,   &
                          &   ' target bands')" ) nkp, dimfroz(nkp), dimwann
-           WRITE( stdout, fmt= " ( '    bands: (eV)' ) " )
-           WRITE( stdout,'(8f9.4)') ( har * ei_k(i,nkp), i=imin, imax )
+           WRITE( stdout, fmt= " ( 4x,'bands: (eV)' ) " )
+           WRITE( stdout, fmt= " ( 8f9.4) ") ( har * ei_k(i,nkp), i=imin, imax )
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' ******************************************************************'
            CALL errore(' window ', ' wrong number of bands ', dimfroz(nkp) )
@@ -501,12 +496,12 @@
              WRITE( stdout, * ) '  '
              WRITE( stdout, * ) ' ********** ERROR MESSAGE **********'
              WRITE( stdout, * ) '  '
-             WRITE( stdout, * ) '   WRONG NUMBER OF FROZEN STATES '
-             WRITE( stdout, * ) '   k-point ', nkp, ' frozen band #', i
-             WRITE( stdout, * ) '   dimfroz=', dimfroz(nkp)
-             WRITE( stdout, * ) '   kifroz_min=', kifroz_min
-             WRITE( stdout, * ) '   kifroz_max=', kifroz_max
-             WRITE( stdout, * ) '   indxfroz(i,nkp)=', indxfroz(i,nkp)
+             WRITE( stdout, fmt= " ( 4x,'WRONG NUMBER OF FROZEN STATES ' )")
+             WRITE( stdout, fmt= " ( 4x,'k-point ', nkp, ' frozen band #' )") i
+             WRITE( stdout, fmt= " ( 4x,'dimfroz = ' )") dimfroz(nkp)
+             WRITE( stdout, fmt= " ( 4x,'kifroz_min = ' )") kifroz_min
+             WRITE( stdout, fmt= " ( 4x,'kifroz_max = ' )") kifroz_max
+             WRITE( stdout, fmt= " ( 4x,'indxfroz(i,nkp) = ' )") indxfroz(i,nkp)
              WRITE( stdout, * ) '  '
              WRITE( stdout, * ) ' *********************************** '
              CALL errore(' window ', ' wrong number of frozen states ', indxfroz(i,nkp) )
@@ -528,7 +523,7 @@
 
          WRITE(19) dimfroz(nkp),( frozen(i,nkp), i=1,kdimwin )
          IF ( dimfroz(nkp) > 0 ) THEN
-           WRITE( stdout, fmt= " ( '    there are ', i3, ' frozen states at k-point = ', i5 ) " ) &
+           WRITE( stdout, fmt= " ( 4x, 'there are ', i3, ' frozen states at k-point = ', i5 ) " ) &
                                  dimfroz(nkp), nkp
            WRITE(19) ( indxfroz(i,nkp), i=1,dimfroz(nkp) )
          END IF
