@@ -34,8 +34,6 @@
       COMPLEX(dbl), ALLOCATABLE :: cptwr(:)       ! cptwr(mplwv)
       COMPLEX(dbl), ALLOCATABLE :: cwork2(:)      ! cwork2(mplwv)
       COMPLEX(dbl), ALLOCATABLE :: cu(:,:,:)      ! cu(nbands,nbands,nkpts)
-      COMPLEX(dbl), ALLOCATABLE :: cwfft1(:)      ! cwfft1(iplwv)
-      COMPLEX(dbl), ALLOCATABLE :: cwfft2(:)      ! cwfft2(iplwv)
       COMPLEX(dbl) :: catmp
       COMPLEX(dbl) :: cmod
       COMPLEX(dbl) :: citpi
@@ -217,11 +215,6 @@
       END DO
 
 ! ... Now define the cartesian grid of points poscar, that is going to be  plotted 
-
-      write(*,*) ' '
-      write(*,*) ' POSCAR ---  ' 
-      write(*,*) ' '
-
 ! ... This is to be made more user-friendly
 
       DO nry = 1, ngrid+1
@@ -238,11 +231,6 @@
       gridzy = 0.0d0
 
 ! ... And pass it into reciprocal coordinates 
-
-      write(*,*) ' '
-      write(*,*) ' POSREL ---  ' 
-      write(*,*) ' '
-
       DO nrx = 1, ngrid+1
         DO nry = 1, ngrid+1
           DO m = 1, 3
@@ -264,29 +252,7 @@
       ngptwann(2) = ngt * ngy
       ngptwann(3) = ngt * ngz
 
-      ALLOCATE( cwfft1(iplwv) )
-      ALLOCATE( cwfft2(iplwv) )
-      cwfft1 = ( 0.0d0, 0.0d0 )
-      cwfft2 = ( 0.0d0, 0.0d0 )
 
-      m = 1
-      DO nzz = -ngz, ngs*ngz-1
-        DO nyy = -ngy, ngs*ngy-1
-          DO nxx = -ngx, ngs*ngx-1
-
-! ...       One could here impose the reality of the wannier functions cwfft1(m)=real(cwann....
-
-            cwfft1(m) = cwann(nxx,nyy,nzz) / jplwv
-            m = m + 1
-          END DO
-        END DO
-      END DO
-
-      CALL cfft3d( cwfft1, ngptwann(1), ngptwann(2), ngptwann(3), ngptwann(1), ngptwann(2), ngptwann(3), 1)
-
-      WRITE(*,*) ' '
-      WRITE(*,*) 'FFT(1)',cwfft1(1),m-1,jplwv
-      WRITE(*,*) ' '
 
 ! ... We prepare a graphic output for gopenmol or for dan, depending on the geometry of the cell; 
 !     if it is orthorombic, gopenmol is used (this includes the cubic case); otherwise, dan is used.
@@ -389,6 +355,7 @@
 
       CLOSE(39)
 
+      ! write( *, * ) nb, nwann, selected_int_kind( nwann )
       call gcube2plt( nwann )
 
       STOP '*** THE END *** (plot.f90)'

@@ -402,7 +402,7 @@ extern char *Number2Name(int);
 
 
 /**************************************************************************/
-int GCUBE2PLT( int iwann )
+long int GCUBE2PLT( int * iwann )
 /**************************************************************************/
 {
     int i;
@@ -416,9 +416,10 @@ int GCUBE2PLT( int iwann )
     printf("*                               Version: 17/08/95        *\n");
     printf("**********************************************************\n\n");
 
-    sprintf( InputFile, "WFR%03d.gau", iwann);
-    sprintf( OutputFile, "WFR%03d.plt", iwann);
-    sprintf( CoordinateFile, "WFR%03d.crd", iwann);
+    /* printf( "%d %d\n", (int)(*iwann), sizeof(int) ); */
+    sprintf( InputFile, "WFR%03d.gau", (int)(*iwann));
+    sprintf( OutputFile, "WFR%03d.plt", (int)(*iwann));
+    sprintf( CoordinateFile, "WFR%03d.crd", (int)(*iwann));
 
     printf("File names:\n");
     printf("Input file:      '%s'\n",InputFile);

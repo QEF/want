@@ -8,6 +8,8 @@ include ../make.rules
 EXE = bands.x intf.x plot.x space.x wannier.x window.x
 all: $(EXE)
 
+$(EXE): ../Libs/lib_invaders.a
+
 clean: 
 	rm -rf *.o *.a *core  work.pc work.pcl *.mod *.x
 
