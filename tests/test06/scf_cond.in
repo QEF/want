@@ -1,42 +1,44 @@
-Infinite Gold Chain
-4 atom/cell, Lattice Parameter = 2.5 Ang
-   &CONTROL
-      calculation = 'scf',
-      restart_mode='from_scratch',
-      verbosity='default',
-      prefix='gold4',
-      nstep=100,
-      tstress = .false.,
-      tprnfor = .true.,
-      pseudo_dir = '../',
-   /
-   &SYSTEM
-      ibrav=8, 
-      celldm(1)=20.0, 
-      celldm(2)=1.0,
-      celldm(3)=1.0960416,
-      nat=4, 
+Carbon dimer chain; NC-PP
+8 atoms per cell
+ &CONTROL
+    calculation = 'scf'
+    restart_mode='from_scratch',
+    prefix='chain8',
+    tstress = .false.
+    tprnfor = .true.
+    pseudo_dir = '../'
+    etot_conv_thr=1.0e-4,
+    forc_conv_thr=1.0e-3
+ /
+ &SYSTEM    
+      ibrav=8,
+      celldm(1)=20.711406,
+      celldm(2)=1.125,
+      celldm(3)=1.125,
+      nat=8,
       ntyp=1,
-      ecutwfc=25.0,
-      ecutrho=100.0,
+      ecutwfc=20.0,
+      ecutrho=80.0,
       occupations='smearing',
       smearing='gaussian',
-      degauss=0.01,
-      nbnd=30
-   /
-   &ELECTRONS
-      electron_maxstep = 100,
-      mixing_mode = 'plain',
-      mixing_beta = 0.3,
-      conv_thr =  1.0d-8,
-   /
+      degauss=0.02,
+ /
+ &ELECTRONS
+    electron_maxstep = 50,
+    mixing_mode = 'plain'
+    mixing_beta = 0.3 
+    conv_thr =  1.0d-8
+ /
 ATOMIC_SPECIES
-  Au   196.9665   Au11pw91.mt.UPF
-ATOMIC_POSITIONS {crystal}
-Au        0.00000     0.00000    0.00000
-Au        0.00000     0.00000    0.25000
-Au        0.00000     0.00000    0.50000
-Au        0.00000     0.00000    0.75000
+ C  12.011  C.blyp-mt.UPF
+ATOMIC_POSITIONS (crystal)
+C        0.00000000      0.00000000      0.00000000   1   1   1
+C        0.11131385      0.00000000      0.00000000   1   1   1
+C        0.25000000      0.00000000      0.00000000   1   1   1
+C        0.36131385      0.00000000      0.00000000   1   1   1
+C        0.50000000      0.00000000      0.00000000   1   1   1
+C        0.61131385      0.00000000      0.00000000   1   1   1
+C        0.75000000      0.00000000      0.00000000   1   1   1
+C        0.86131385      0.00000000      0.00000000   1   1   1
 K_POINTS {automatic}
-  1 1 4  0 0 1
-
+ 2 1 1     1 0 0

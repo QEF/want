@@ -1,13 +1,13 @@
 
 &INPUT_CONDUCTOR
-   nmxa = 12
-   nmxc = 24 
-   nmxb = 12 
+   nmxa = 8
+   nmxc = 16
+   nmxb = 8
    norb = 1
-   ne = 1000
+   ne = 2000
    nterx = 200
-   emin = -10.0
-   emax = 5.0
+   emin = -20.0
+   emax = 0.0
    l_overlap = .FALSE.
    bias = 0.0
 /
