@@ -512,8 +512,9 @@
       iseed   = -1
       epsilon = 1.d0
 !
-!-------------------------------------------------------------------------
-!     Arrigo
+!
+!...  Wannier Functions localization procedure
+
       ALLOCATE( vkpr(3,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating vkpr ', 3*nkpts )
       ALLOCATE ( nnshell(nkpts,nnmx), STAT=ierr )
@@ -544,13 +545,11 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnn', nnmx )
       ALLOCATE( wb(nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating wb', nnmx )
+
 !
-! ... Wannier Functions localization procedure
-!
-!     Call b-shell
+!...  Call b-shell
       CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
             dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
-!...  FINE ARRIGO
 
       DEALLOCATE( v1, STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating v1 ', ABS(ierr) )
