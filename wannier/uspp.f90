@@ -130,7 +130,8 @@ CONTAINS
     ! the inverse of ylm considered as a matrix: mly(llx,llx)
     real(kind=DP) :: dum
     !
-    if (lli < 0) call errore('aainit','lli not allowed',lli)
+    ! ANDREA: mortal error is given
+    if (lli < 0) call errore('aainit','lli not allowed',-lli)
 
     if (lli*lli > nlx) call errore('aainit','nlx is too small ',lli*lli)
 

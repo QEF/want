@@ -15,12 +15,12 @@ subroutine readnewvan (is, iunps)
   !     It is compatible only with the ld1 atomic code
   !
   USE kinds, only: dp => dbl
-  USE parameters, ONLY: nchix, lmaxx, nbrx, ndmx, npsx, lqmax
-  USE constants, ONLY: fpi
-  USE atom,  ONLY: zmesh, mesh, xmin, dx, r, rab, chi, oc, nchi, &
+  USE parameters,   ONLY: nchix, lmaxx, nbrx, ndmx, npsx, lqmax
+  USE constants,    ONLY: fpi
+  USE atom_module,  ONLY: zmesh, mesh, xmin, dx, r, rab, chi, oc, nchi, &
        lchi, rho_at, rho_atc, nlcc
   USE pseud_module, ONLY: zp, lmax, lloc
-  USE uspp_param, only: vloc_at, dion, betar, qqq, qfcoef, qfunc, nqlc, &
+  USE uspp_param,   ONLY: vloc_at, dion, betar, qqq, qfcoef, qfunc, nqlc, &
        rinner, nbeta, kkbeta, lll, psd, tvanp
   USE funct_module
   !

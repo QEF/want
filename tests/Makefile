@@ -17,9 +17,10 @@ info:
 	@echo "     test2         Gold chain (bulk conductance)"
 	@echo "     test3         Gold chain (general geometry)"
 	@echo "     test4         Aluminum chain (within disentangle)"
+	@echo "     test5         Gold chain (bulk cond, USPP)"
 	@echo " "
 
-all: test1 test2 test3 test4
+all: test1 test2 test3 test4 test5
 
 
 test1:
@@ -30,6 +31,8 @@ test3:
 	cd Test3 ; $(MAKE) run
 test4:
 	cd Test4 ; $(MAKE) run
+test5:
+	cd Test5 ; $(MAKE) run
 
 
 want:
@@ -37,10 +40,12 @@ want:
 	cd Test2 ; $(MAKE) want
 	cd Test3 ; $(MAKE) want
 	cd Test4 ; $(MAKE) want
+	cd Test5 ; $(MAKE) want
 
 clean:
 	cd Test1 ; $(MAKE) clean
 	cd Test2 ; $(MAKE) clean
 	cd Test3 ; $(MAKE) clean
 	cd Test4 ; $(MAKE) clean
+	cd Test5 ; $(MAKE) clean
 

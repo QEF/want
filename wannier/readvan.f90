@@ -18,11 +18,11 @@ subroutine readvan (is, iunps)
   !     It assume multiple rinner values.
   !
   USE kinds, only: dp => dbl
-  USE parameters, ONLY: nchix, lmaxx, nbrx, ndmx, npsx, nqfx, lqmax
-  USE atom,  only: zmesh, mesh,dx, r, rab, chi, oc, nchi, lchi, &
+  USE parameters,   ONLY: nchix, lmaxx, nbrx, ndmx, npsx, nqfx, lqmax
+  USE atom_module,  ONLY: zmesh, mesh,dx, r, rab, chi, oc, nchi, lchi, &
        rho_at, rho_atc, nlcc
   USE pseud_module, ONLY: zp, lmax, lloc
-  USE uspp_param, only: vloc_at, dion, betar, qqq, qfcoef, qfunc, nqf, nqlc, &
+  USE uspp_param,   ONLY: vloc_at, dion, betar, qqq, qfcoef, qfunc, nqf, nqlc, &
        rinner, nbeta, kkbeta, lll, iver, ifqopt, psd, tvanp
   USE funct_module, ONLY: dft, which_dft
   IMPLICIT NONE

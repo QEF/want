@@ -1,0 +1,14 @@
+
+==============================================================================
+TEST5  Gold chain bulk within Ultra Soft pseudo-potentials (USPP)
+==============================================================================
+
+This test performs the calculation for the bulk conductance of a Gold chain
+as in Test2. The main difference is the here we adopt USPP instead of normal NCPP
+which requires the inclusion of augmentation terms both in overlap and projection
+calculation. The parameters of the DFT computations are exacly the same as before
+apart the kinetic energy cutoff which here is 20 Ry for the wfcs and 160 Ry for the 
+density.
+
+
+
