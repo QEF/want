@@ -26,7 +26,7 @@
 
        IMPLICIT NONE
 
-       INTEGER :: mxdbnd, mxddim
+       INTEGER :: mxdbnd, npwx
        INTEGER :: mxdgve
 
        INTEGER, PARAMETER :: mxdnn = 12
@@ -43,8 +43,7 @@
        INTEGER, ALLOCATABLE :: igsort(:,:)
        INTEGER, ALLOCATABLE :: npwk(:)
        REAL(dbl), ALLOCATABLE :: vkpt(:,:)
-       REAL(dbl), ALLOCATABLE :: evecr(:,:,:)
-       REAL(dbl), ALLOCATABLE :: eveci(:,:,:)
+       COMPLEX(dbl), ALLOCATABLE :: evec(:,:,:)
        REAL(dbl), ALLOCATABLE :: eiw(:,:)
        REAL(dbl) :: s(3)
        REAL(dbl) :: emax, enmax
@@ -187,7 +186,7 @@
 
        READ(19) idum ! ( nwhich(i), i=1,nshells )
 
-       READ(19) nkpts, mxddim, mxdbnd
+       READ(19) nkpts, npwx, mxdbnd
        READ(19) ngx, ngy, ngz, ngm
       
        READ(19) idum ! gauss_typ(1:dimwann)
@@ -298,8 +297,8 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ifail ', mxdbnd )
        ALLOCATE( iwork(5*mxdbnd), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating iwork ', 5*mxdbnd )
-       ALLOCATE( igsort(mxddim,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating igsort ', mxddim*nkpts )
+       ALLOCATE( igsort(npwx,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating igsort ', npwx*nkpts )
        ALLOCATE( npwk(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating npwk ', nkpts )
 
@@ -415,17 +414,17 @@
        WRITE( stdout, fmt= " (4x,'Starting guess orbitals (itrial) = ', i5 )" ) itrial
 
 
-       ALLOCATE( evecr(mxddim,ndwinx,nkpts), STAT = ierr )
-          IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating evecr ', mxddim*mxdbnd*nkpts )
-       ALLOCATE( eveci(mxddim,ndwinx,nkpts), STAT = ierr )
-          IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating eveci ', mxddim*mxdbnd*nkpts )
+       ALLOCATE( evec( npwx + 1, ndwinx, nkpts ), STAT = ierr )
+          IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating evec ', npwx*mxdbnd*nkpts )
 
        DO nkp = 1, nkpts
 
          READ(19) ( igsort(j,nkp), j=1, npwk(nkp) ) 
          READ(19) ( eiw(j,nkp), j=1, dimwin(nkp) )
-         READ(19) ( ( evecr(j,i,nkp), j=1, npwk(nkp) ), i=1, dimwin(nkp) )
-         READ(19) ( ( eveci(j,i,nkp), j=1, npwk(nkp) ), i=1, dimwin(nkp) )
+
+         evec(:,:,nkp) = 0.0d0
+
+         READ(19) ( ( evec(j,i,nkp), j=1, npwk(nkp) ), i=1, dimwin(nkp) )
          READ(19) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )
 
          IF ( dimfroz(nkp) > 0 )  READ(19) ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
@@ -448,8 +447,8 @@
 !
 ! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
 
-       call overlap( igv, evecr, eveci, igsort, npwk, dimwin,    &
-            nntot, nnlist, nncell, cm, mxdgve, mxddim, nkpts,        &
+       call overlap( igv, evec, igsort, npwk, dimwin,    &
+            nntot, nnlist, nncell, cm, mxdgve, npwx, nkpts,        &
             mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
 !
 !=----------------------------------------------------------------------------------------------=
@@ -494,9 +493,9 @@
                WRITE( stdout,*) ' ' 
                WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected localized orbitals' )")
                WRITE( stdout,*) ' '
-               CALL projection( avec, lamp, evecr, eveci, vkpt,             &
+               CALL projection( avec, lamp, evec, vkpt,             &
                     igv, igsort, npwk, dimwin, dimwann, dimfroz,             &
-                    mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,   &
+                    npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,   &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                  &
                     m_wann, ndir_wann, rloc, ndwinx)
              ELSE
@@ -530,9 +529,9 @@
 !            dimwann gaussians
 
              IF ( ITRIAL == 3 ) THEN
-               CALL projection( avec, lamp, evecr, eveci, vkpt,              &
+               CALL projection( avec, lamp, evec, vkpt,              &
                     igv, igsort, npwk, dimwin, dimwann, dimfroz,              &
-                    mxddim, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,    &
+                    npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,    &
                     gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                     m_wann, ndir_wann, rloc, ndwinx )
              ELSE
@@ -929,8 +928,8 @@
 
        OPEN( UNIT=20, FILE='onfly.dat', FORM='UNFORMATTED')
 
-       ALLOCATE( lvec( mxddim, mxdbnd ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating lvec ', mxddim * mxdbnd )
+       ALLOCATE( lvec( npwx, mxdbnd ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating lvec ', npwx * mxdbnd )
       
        K_POINTS: DO nkp = 1, nkpts
          
@@ -939,7 +938,7 @@
              lvec( i, l ) = cmplx(0.0d0,0.0d0)
              DO j = 1, dimwin( nkp )
                lvec( i, l ) = lvec( i, l ) + &
-                 eamp_save( j, l, nkp ) * cmplx( evecr( i, j, nkp ), eveci( i, j, nkp ) )
+                 eamp_save( j, l, nkp ) * evec( i, j, nkp )
              END DO
            END DO
          END DO
@@ -964,10 +963,8 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating npwk ', ABS(ierr) )
        DEALLOCATE( vkpt, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating vkpt ', ABS(ierr) )
-       DEALLOCATE( evecr, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating evecr ', ABS(ierr) )
-       DEALLOCATE( eveci, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating eveci ', ABS(ierr) )
+       DEALLOCATE( evec, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating evec ', ABS(ierr) )
        DEALLOCATE( eiw, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating eiw ', ABS(ierr) )
 

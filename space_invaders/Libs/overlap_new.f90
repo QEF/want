@@ -9,7 +9,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE overlap( igv, evecr, eveci, igsort, npwk, dimwin, nntot, nnlist,  &
+       SUBROUTINE overlap( igv, evec, igsort, npwk, dimwin, nntot, nnlist,  &
                            nncell, cm, mxdgve, npwx, nkpts, mxdnn, mxdbnd, ngx,     &
                            ngy, ngz, ndwinx )
 !=----------------------------------------------------------------------------------=
@@ -30,8 +30,7 @@
       INTEGER :: nntot( nkpts )
       INTEGER :: nncell( 3, nkpts, mxdnn )
       INTEGER :: dimwin( nkpts )
-      REAL(dbl) :: evecr( npwx, ndwinx, nkpts )
-      REAL(dbl) :: eveci( npwx, ndwinx, nkpts )
+      COMPLEX(dbl) :: evec( npwx + 1, ndwinx, nkpts )
       COMPLEX(dbl) :: cm( mxdbnd, mxdbnd, mxdnn, nkpts )
 
       ! ... Local Variables
@@ -45,7 +44,6 @@
       INTEGER :: nkp2, npoint2, nn, nb
       INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
 
-      COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)
       INTEGER, ALLOCATABLE  :: ninvpw(:,:)
 
       INTEGER :: ierr
@@ -60,10 +58,6 @@
         CALL errore(' overlap ', ' inconsistent window ', ndwinx )
       END IF
 
-      ALLOCATE( cptwfp( npwx+1 , ndwinx, nkpts ), STAT=ierr )
-      IF( ierr /= 0 ) THEN
-        CALL errore(' overlap ', ' allocating cptwfp ', ( (npwx+1) * ndwinx * nkpts ) )
-      END IF
       ALLOCATE( ninvpw( 0:(ngx*ngy*ngz), nkpts ), STAT = ierr )
       IF( ierr /= 0 ) THEN
         CALL errore(' overlap ', ' allocating ninvpw ', ( (ngx*ngy*ngz+1)*nkpts ) ) 
@@ -72,8 +66,6 @@
       ninvpw = npwx + 1
 
 ! ... Transform wave-functions in CASTEP format
-
-      cptwfp = czero
 
       DO nkp = 1, nkpts
 
@@ -99,27 +91,11 @@
 
         END DO ! g-vectors at present k (J)
 
-
-        DO nb = 1, dimwin( nkp )
- 
-! ...     Go through all the g-vectors inside the cutoff radius at the present k-point
- 
-          DO j = 1, npwk( nkp )
-
-! ...       Bloch state in the g-space grid
- 
-            cptwfp( j, nb, nkp ) = CONJG( CMPLX( evecr(j,nb,nkp), eveci(j,nb,nkp) ) )
-
-          END DO ! g-vectors at present k (J)
-
-        END DO   ! nb  loop 
       END DO     ! nkp loop
 
-      CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
+      CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, evec,    &
           ninvpw, npwx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
 
-      DEALLOCATE( cptwfp, STAT=ierr )
-         IF (ierr/=0) CALL errore(' overlap ',' deallocating cptwfp',ABS(ierr))
       DEALLOCATE( ninvpw, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
  
@@ -157,11 +133,12 @@
       COMPLEX(dbl) :: czero
       PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
 
-      INTEGER :: nnx, ndnn, nnsh
-      INTEGER :: j ,nx, ny, nz, igk, ipw1, ipw2
-      INTEGER :: nkp, npoint
-      INTEGER :: nkp2, npoint2, nn
+      INTEGER :: nnx, ndnn, nnsh, nn
+      INTEGER :: i, j ,nx, ny, nz, igk, ipw1, ipw2
+      INTEGER :: nkp1, npoint1, dimw1
+      INTEGER :: nkp2, npoint2, dimw2
       INTEGER :: nx2(ngx), ny2(ngy), nz2(ngz)
+      COMPLEX(dbl) :: cwin1( ndwinx ), cwin2
 
 ! ... END declarations
 
@@ -194,43 +171,54 @@
 
       cm(:,:,:,:) = (0.d0, 0.d0)
 
-      DO nkp = 1, nkpts
+      DO nkp1 = 1, nkpts
 
-        DO nn = 1, nntot(nkp)
+        DO nn = 1, nntot( nkp1 )
 
-          nkp2 = nnlist(nkp,nn)
+          nkp2 = nnlist( nkp1, nn )
 
           ! set up indices
           DO nx = 1, ngx
-            nx2(nx) = nx + nncell(1,nkp,nn)
+            nx2(nx) = nx + nncell( 1, nkp1, nn )
             IF( nx2(nx) < 1   ) nx2(nx) = nx2(nx) + ngx
             IF( nx2(nx) > ngx ) nx2(nx) = nx2(nx) - ngx
           END DO
           DO ny = 1, ngy
-            ny2(ny) = ny + nncell(2,nkp,nn)
+            ny2(ny) = ny + nncell( 2, nkp1, nn )
             IF( ny2(ny) < 1   ) ny2(ny) = ny2(ny) + ngy
             IF( ny2(ny) > ngy ) ny2(ny) = ny2(ny) - ngy
             ny2(ny) = (ny2(ny) - 1) * ngx
           END DO
           DO nz = 1, ngz
-            nz2(nz) = nz + nncell(3,nkp,nn)
+            nz2(nz) = nz + nncell( 3, nkp1, nn )
             IF( nz2(nz) < 1   ) nz2(nz) = nz2(nz) + ngz
             IF( nz2(nz) > ngz ) nz2(nz) = nz2(nz) - ngz
             nz2(nz) = (nz2(nz) - 1) * ngx * ngy
           END DO
 
+          dimw1 = dimwin(nkp1)
+          dimw2 = dimwin(nkp2)
+
           DO nz = 1, ngz
             DO ny = 1, ngy
               DO nx = 1, ngx
-                npoint = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
+                npoint1 = nx + (ny-1) * ngx + (nz-1) * ngx * ngy
                 npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
-                ipw1 = ninvpw(npoint,nkp)
-                ipw2 = ninvpw(npoint2,nkp2)
+                ipw1 = ninvpw( npoint1, nkp1 )
+                ipw2 = ninvpw( npoint2, nkp2 )
 
-                DO j = 1, dimwin(nkp2)
-                  cm( 1:dimwin(nkp), j, nn, nkp ) = cm( 1:dimwin(nkp), j, nn, nkp ) + &
-                      cptwfp( ipw1, 1:dimwin(nkp), nkp ) * CONJG( cptwfp( ipw2, j, nkp2 ) )
+                cwin1( 1:dimw1 ) = CONJG( cptwfp( ipw1, 1:dimw1, nkp1 ) ) 
+                DO j = 1, dimw2
+                  cwin2 = cptwfp( ipw2, j, nkp2 )
+                  DO i = 1, dimw1
+                    cm( i, j, nn, nkp1 ) = cm( i, j, nn, nkp1 ) + cwin1( i ) * cwin2
+                  END DO
                 END DO
+
+!                DO j = 1, dimwin(nkp2)
+!                  cm( 1:dimwin(nkp1), j, nn, nkp1 ) = cm( 1:dimwin(nkp1), j, nn, nkp1 ) + &
+!                      CONJG( cptwfp( ipw1, 1:dimwin(nkp1), nkp1 ) ) * cptwfp( ipw2, j, nkp2 )
+!                END DO
 
               END DO
             END DO

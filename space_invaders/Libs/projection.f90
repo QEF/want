@@ -9,9 +9,9 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE projection( avec, lamp, evecr, eveci, vkpt,              & 
+       SUBROUTINE projection( avec, lamp, evec, vkpt,              & 
                   kgv, isort, mtxd, dimwin, dimwann, dimfroz,              &
-                  mxddim, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,    &
+                  npwx, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,    &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                   m_wann, ndir_wann, rloc, ndwinx)
 !=----------------------------------------------------------------------------------=
@@ -26,18 +26,17 @@
 
        ! ... arguments
 
-       INTEGER :: mxddim, mxdbnd, mxdnrk
+       INTEGER :: npwx, mxdbnd, mxdnrk
        INTEGER :: mxdgve, ndwinx
        INTEGER :: ngx, ngy, ngz, nkpts
        INTEGER :: mtxd(mxdnrk)
        INTEGER :: kgv(3,mxdgve)
-       INTEGER :: isort(mxddim,mxdnrk)
+       INTEGER :: isort(npwx,mxdnrk)
        INTEGER :: dimwann
        INTEGER :: dimwin(mxdnrk)
        INTEGER :: dimfroz(mxdnrk)
        REAL(dbl) :: avec(3,3)
-       REAL(dbl) :: evecr(mxddim,ndwinx,mxdnrk)
-       REAL(dbl) :: eveci(mxddim,ndwinx,mxdnrk)
+       COMPLEX(dbl) :: evec( npwx + 1, ndwinx, mxdnrk )
        REAL(dbl) :: vkpt(3,mxdnrk)
        COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
 
@@ -268,7 +267,7 @@
 ! ...          Bloch state in the g-space grid
 
  
-               cptwr(npoint) = CMPLX( evecr(j,nb,nkp), eveci(j,nb,nkp) )
+               cptwr(npoint) = evec(j,nb,nkp)
  
              END DO ! g-vectors at present k (J)
  

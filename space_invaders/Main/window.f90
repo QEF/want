@@ -27,7 +27,7 @@
        COMPLEX(kind=DP), ALLOCATABLE, TARGET :: wtmp(:)
        REAL(dbl), ALLOCATABLE :: ei_k(:,:)
        INTEGER, ALLOCATABLE :: isort_k(:,:)
-       INTEGER, ALLOCATABLE :: mtxd_k(:)
+       INTEGER, ALLOCATABLE :: npwk(:)
        INTEGER, ALLOCATABLE :: neig_k(:)
        INTEGER, ALLOCATABLE :: indxfroz(:,:)
        INTEGER, ALLOCATABLE :: indxnfroz(:,:)
@@ -48,7 +48,7 @@
        INTEGER :: i, j, i1, i2, i3
        INTEGER :: ierr
        INTEGER :: nkp
-       INTEGER :: mtxd, neig, imax, imin, kdimwin
+       INTEGER :: npw, neig, imax, imin, kdimwin
        INTEGER :: nkp_tot, kifroz_min, kifroz_max
 
        REAL(dbl) :: emax, rdum
@@ -157,8 +157,8 @@
            CALL errore(' window ', ' allocating zvec_k ', mxddim*nkpts*mxdbnd )
        ALLOCATE( ei_k(mxddim,nkpts), STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' allocating ei_k ', mxddim*nkpts )
-       ALLOCATE( mtxd_k(nkpts), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' allocating mtxd_k ', nkpts )
+       ALLOCATE( npwk(nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' allocating npwk ', nkpts )
        ALLOCATE( neig_k(nkpts), STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' allocating neig_k ', nkpts )
        ALLOCATE( indxfroz(mxdbnd,nkpts), STAT=ierr )
@@ -174,7 +174,7 @@
          READ(54) ( isort_k( i, nkp ), i = 1, mxddim )
        END DO
        READ(54) ( (ei_k(i,nkp), i=1,mxdbnd ), nkp=1,nkp_tot )
-       READ(54) ( mtxd_k(nkp), nkp=1,nkp_tot )
+       READ(54) ( npwk(nkp), nkp=1,nkp_tot )
        READ(54) ( neig_k(nkp), nkp=1,nkp_tot )
        READ(54) nr1, nr2, nr3, ngm, ngwx
 
@@ -190,7 +190,7 @@
          wtmp = 0.0d0
          DO i = 1, nbnd_
            READ(54) ( wtmp(ig), ig=1,igwx_ )
-           DO ig = 1, mtxd_k( nkp )
+           DO ig = 1, npwk( nkp )
              zvec_k( ig, i, nkp ) = wtmp( isort_k( ig, nkp ) )
            END DO
          END DO
@@ -346,7 +346,7 @@
 
          nkp = nkp + 1
          neig = neig_k(nkp)
-         mtxd = mtxd_k(nkp)
+         npw = npwk(nkp)
 
 ! ...    Check which eigenvalues fall within the outer energy window
  
@@ -380,8 +380,8 @@
          kdimwin = imax - imin + 1
          WRITE( stdout, * )' ' 
          WRITE(stdout,fmt= " (2x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4, &
-                           & '   mtxd = ', i7 )" )  nkp, dble(I1)/dble(NK(1)), &
-                           dble(I2)/dble(NK(2)), dble(I3)/dble(NK(3)), kdimwin, mtxd
+                           & '   npw = ', i7 )" )  nkp, dble(I1)/dble(NK(1)), &
+                           dble(I2)/dble(NK(2)), dble(I3)/dble(NK(3)), kdimwin, npw
          WRITE(stdout,fmt= " (37x,'  imin = ', i4, '   imax = ', i4)" ) imin, imax
          WRITE( stdout, * ) ' Eigenvalues:'
          WRITE( stdout,'(8f9.4)') ( har * ei_k(i,nkp), i=1,neig )
@@ -428,7 +428,7 @@
 !
 !        Last change by carlo, first all dimensions, then all k-dependent vectors
 !
-         WRITE(19) mtxd, imin, imax, imax-imin+1 
+         WRITE(19) npw, imin, imax, imax-imin+1 
 
        END DO loop_z
        END DO loop_y
@@ -457,7 +457,7 @@
 
          nkp = nkp + 1
          neig = neig_k(nkp)
-         mtxd = mtxd_k(nkp)
+         npw = npwk(nkp)
 
          imin = 0
          DO i = 1, neig
@@ -471,10 +471,11 @@
 
          kdimwin = imax - imin + 1
 
-         WRITE(19) ( isort_k(j,nkp), j = 1, mtxd )
+         WRITE(19) ( isort_k(j,nkp), j = 1, npw )
          WRITE(19) ( ei_k(j,nkp), j = imin, imax )
-         WRITE(19) ( ( REAL(zvec_k(j,i,nkp)), j = 1, mtxd ), i = imin, imax )
-         WRITE(19) ( ( 1.0d0*AIMAG(zvec_k(j,i,nkp)), j = 1, mtxd ), i = imin, imax )
+         WRITE(19) ( ( zvec_k(j,i,nkp), j = 1, npw ), i = imin, imax )
+         !WRITE(19) ( ( REAL(zvec_k(j,i,nkp)), j = 1, npw ), i = imin, imax )
+         !WRITE(19) ( ( 1.0d0*AIMAG(zvec_k(j,i,nkp)), j = 1, npw ), i = imin, imax )
 
          frozen(:,nkp) = .false.
 
@@ -586,8 +587,8 @@
            IF( ierr /=0 ) CALL errore(' window ', ' deallocating zvec_k ', ABS(ierr) )
        DEALLOCATE( ei_k, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' deallocating ei_k ', ABS(ierr) )
-       DEALLOCATE( mtxd_k, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' window ', ' deallocating mtxd_k ', ABS(ierr) )
+       DEALLOCATE( npwk, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' window ', ' deallocating npwk ', ABS(ierr) )
        DEALLOCATE( neig_k, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' deallocating neig_k ', ABS(ierr) )
        DEALLOCATE( indxfroz, STAT=ierr )
