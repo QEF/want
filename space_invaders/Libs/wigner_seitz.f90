@@ -125,12 +125,9 @@
        END DO
 
        IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > EPS_m8 ) THEN
-         WRITE( stdout, *) '*** ERROR *** in finding Wigner-Seitz points'
-         WRITE( stdout, *) 'TOT=', tot
-         WRITE( stdout, *) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
-         CALL errore(' wigner_size ', ' wrong total number of points ', NINT(tot) )
+           CALL errore(' wigner_size ', ' wrong total number of points ', NINT(tot) )
        ELSE
-         WRITE( stdout, "(2x,'K-points generation in Wigner-size: SUCCESS')")
+           WRITE( stdout, "(2x,'K-points generation in Wigner-size: SUCCESS')")
        END IF
 
        RETURN

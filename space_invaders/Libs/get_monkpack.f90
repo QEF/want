@@ -10,8 +10,7 @@
 SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    !*********************************************************
    USE kinds
-   USE constants,  ONLY : ZERO, EPS_m6, ONE, TWO
-   USE parameters, ONLY : nstrx
+   USE constants,  ONLY : EPS_m6, ONE, TWO
    USE converters_module, ONLY : cart2cry
    IMPLICIT NONE
 
