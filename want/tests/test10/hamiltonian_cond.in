@@ -5,9 +5,6 @@
    work_dir = './COND/'
    nkpts_in  = 2
    nkpts_max = 100
-   nk(1) = 4
-   nk(2) = 1
-   nk(3) = 1
  /
 G
 0.0 0.0 0.0

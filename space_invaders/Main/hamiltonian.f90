@@ -90,7 +90,7 @@
       NAMELIST /INPUT/ prefix, postfix, work_dir, verbosity, &
                        nkpts_in, nkpts_max, convert_self_energy, check_self_energy, & 
                        calculate_spectral_func, print_sgm_start, print_sgm_end,  &
-                       spin_component, nk
+                       spin_component
 !
 ! nk are temporary read from STDIN waiting for a better implementation of BSHELLS
 !    
@@ -113,9 +113,6 @@
       postfix                     = ' ' 
       work_dir                    = './' 
       verbosity                   = 'medium' 
-      nk(1)                       = 0
-      nk(2)                       = 0
-      nk(3)                       = 0
       nkpts_in                    = 0
       nkpts_max                   = 100
       convert_self_energy         = .FALSE.

@@ -9,7 +9,8 @@ OBJS= compar.o domega.o dot_bloch.o error.o        \
       wigner_seitz.o zmatrix.o fft_stick.o         \
       write_op.o check_sgm_kpt.o check_sgm_wan.o do_self_energy.o    \
       gcube2plt.o cptimer.o date_and_tim.o \
-      ordering.o sort.o recips.o overlap_extract.o 
+      ordering.o sort.o recips.o overlap_extract.o  \
+      get_monkpack.o
 
 all : lib_invaders.a
 
