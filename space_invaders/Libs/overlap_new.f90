@@ -297,9 +297,12 @@
 !     are G1s+G0, i.e. nx+nncell, etc...
 
       cm(:,:,:,:) = (0.d0, 0.d0)
-      ALLOCATE( nx2(ngx) )
-      ALLOCATE( ny2(ngy) )
-      ALLOCATE( nz2(ngz) )
+      ALLOCATE( nx2(ngx), STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' allocating nx2 ', ngx)
+      ALLOCATE( ny2(ngy), STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' allocating ny2 ', ngy)
+      ALLOCATE( nz2(ngz), STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' allocating nz2 ', ngz)
 
       DO nkp = 1, nkpts
         DO nn = 1, nntot(nkp)
@@ -345,19 +348,32 @@
         END DO
       END DO
 
-      DEALLOCATE( nx2 )
-      DEALLOCATE( ny2 )
-      DEALLOCATE( nz2 )
-      DEALLOCATE( cptwfp )
-      DEALLOCATE( dnlg )
-      DEALLOCATE( dnlkg )
-      DEALLOCATE( datake )
-      DEALLOCATE( ninvpw )
-      DEALLOCATE( nindpw )
-      DEALLOCATE( lpctx )
-      DEALLOCATE( lpcty )
-      DEALLOCATE( lpctz )
-      DEALLOCATE( nplwkp )
+      DEALLOCATE( nx2, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating nx2',ABS(ierr))
+      DEALLOCATE( ny2, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating ny2',ABS(ierr))
+      DEALLOCATE( nz2, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating nz2',ABS(ierr))
+      DEALLOCATE( cptwfp, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating cptwfp',ABS(ierr))
+      DEALLOCATE( dnlg, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating dnlg',ABS(ierr))
+      DEALLOCATE( dnlkg, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating dnlgk',ABS(ierr))
+      DEALLOCATE( datake, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating datake',ABS(ierr))
+      DEALLOCATE( ninvpw, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
+      DEALLOCATE( nindpw, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating nindpw',ABS(ierr))
+      DEALLOCATE( lpctx, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating lpctx',ABS(ierr))
+      DEALLOCATE( lpcty, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating lpcty',ABS(ierr))
+      DEALLOCATE( lpctz, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating lpctz',ABS(ierr))
+      DEALLOCATE( nplwkp, STAT=ierr )
+         IF (ierr/=0) CALL errore(' overlap ',' deallocating nplwkp',ABS(ierr))
 
  
       WRITE(*,*) ' Overlap, done. '
