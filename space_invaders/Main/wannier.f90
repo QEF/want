@@ -24,6 +24,7 @@
       USE version_module, ONLY : version_number
       USE converters_module, ONLY : cart2cry
       USE sph_har, ONLY: gauss1
+      USE kpoints, ONLY: nk, s, vkpt, wtkpt, kpoints_init
 
       IMPLICIT NONE
 
@@ -33,9 +34,10 @@
       INTEGER, PARAMETER :: nnmxh = nnmx/2 
       INTEGER, PARAMETER :: nprint = 10
 
-      COMPLEX(dbl) :: czero
+      COMPLEX(dbl) :: czero, cone
       COMPLEX(dbl) :: ci, citpi
       PARAMETER ( czero = ( 0.0d0, 0.0d0 ) )
+      PARAMETER ( cone  = ( 1.0d0, 0.0d0 ) )
       PARAMETER ( ci = ( 0.0, 1.0 ) )
       PARAMETER ( citpi = ( 0.0, 6.283185307179 ) )
 
@@ -47,14 +49,14 @@
 
       INTEGER :: nr1, nr2, nr3
       INTEGER :: ng
-      INTEGER :: nkpts
+      INTEGER :: nkpts, nkp, nkp2
     
       INTEGER :: nplwv, mplwv
 
       INTEGER :: iprint, nsp, idummy
       INTEGER :: i, j, k
-      INTEGER :: ni, m, nkp
-      INTEGER :: nkp2, nx, ny, nz
+      INTEGER :: ni, m
+      INTEGER :: nx, ny, nz
       INTEGER :: np, npoint
       INTEGER :: iib, iseed
       INTEGER :: ndnntot, nlist, l, n, ndnn
@@ -68,7 +70,6 @@
       LOGICAL :: lrguide, lcg
       REAL(dbl) :: enmax
       REAL(dbl) :: ddelta
-      REAL(dbl) :: wtktot
       REAL(dbl) :: epsilon, eta, eps, dnn0, dnn1, dist
       REAL(dbl) :: bb1, bbn, factor, wbtot
       REAL(dbl) :: asidemin, aside
@@ -106,7 +107,6 @@
       COMPLEX(dbl), ALLOCATABLE ::  cpad2(:) ! cpad2(dimwann*dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cw1(:) ! cw1(10*dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cw2(:) ! cw2(10*dimwann)
-      COMPLEX(dbl), ALLOCATABLE ::  lvec(:,:) ! lvec(mxddim,dimwann)
       REAL(dbl), ALLOCATABLE ::  singvd(:) !  singvd(dimwann)
       REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnmx)
       REAL(dbl), ALLOCATABLE ::  v1(:,:) ! v1(nnmx,nnmx)
@@ -136,9 +136,6 @@
       INTEGER, ALLOCATABLE :: nnlist(:,:), nntot(:) ! nnlist(nkpts,nnmx), nntot(nkpts)
       INTEGER, ALLOCATABLE :: nncell(:,:,:) ! nncell(3,nkpts,nnmx)
 
-      REAL(dbl), ALLOCATABLE :: vkpr(:,:) ! vkpr(3,nkpts)
-      REAL(dbl) :: vkpp(3)
-
       COMPLEX(dbl), ALLOCATABLE :: cwschur1(:), cwschur2(:) 
                                    !  cwschur1(dimwann),cwschur2(10*dimwann)
 
@@ -147,18 +144,12 @@
 
       COMPLEX(dbl), ALLOCATABLE ::  cptwr(:) ! cptwr(mplwv)
 
-      REAL(dbl), ALLOCATABLE :: vkpt(:,:), wtkpt(:) ! vkpt(3,nkpts), wtkpt(nkpts)
-      INTEGER, ALLOCATABLE :: nfile(:)         !  nfile(nkpts)
       COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:) !  cptwfp(mxddim+1,dimwann,nkpts)
 
       INTEGER, ALLOCATABLE :: nindpw(:,:) !  nindpw(mxddim,nkpts)
       INTEGER, ALLOCATABLE :: ninvpw(:,:) !  ninvpw(0:nplwv,nkpts)
-      INTEGER, ALLOCATABLE :: nplwkp(:)   !  nplwkp(nkpts)
+      INTEGER, ALLOCATABLE :: npwk(:)   !  npwk(nkpts)
       INTEGER, ALLOCATABLE :: igsort(:,:) !  igsort(mxddim,nkpts)
-
-      INTEGER, ALLOCATABLE ::  lpctx(:) !  lpctx(nr1),lpcty(nr2),lpctz(nr3)
-      INTEGER, ALLOCATABLE ::  lpcty(:) 
-      INTEGER, ALLOCATABLE ::  lpctz(:) 
 
       REAL(dbl) :: dirc(3,3), recc(3,3)
       REAL(dbl) :: avec(3,3), bvec(3,3)
@@ -171,16 +162,13 @@
       REAL(dbl) :: poscart(3,mxdatm,mxdtyp) ! poscart(3,nions,ntype)
 
       REAL(dbl) :: alat
-      REAL(dbl) :: s(3)
       INTEGER :: nt, ja, nbandi
-      INTEGER :: nk(3)
       INTEGER :: mxddim, mxdbnd
       INTEGER :: ngm
 
       INTEGER, ALLOCATABLE :: igv(:,:)
       INTEGER, ALLOCATABLE :: dimwin(:)
-      INTEGER :: mxdgve, nkpts1
-      INTEGER :: i1, i2, i3
+      INTEGER :: mxdgve
       INTEGER :: nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
 
       LOGICAL :: lselect
@@ -194,6 +182,7 @@
       REAL(dbl) :: func_d
 
       INTEGER :: idum, rdum, ierr, igk
+      COMPLEX(dbl) :: cfact
 
 
 !
@@ -260,6 +249,19 @@
 
       ALLOCATE( igsort( mxddim, nkpts ), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' allocating igsort ', mxddim*nkpts )
+
+      ALLOCATE( npwk( nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating npwk ', nkpts )
+
+
+      DO nkp = 1, nkpts
+!
+!        Read all dimensions first, then k-dependent arrais
+!
+         READ(19) npwk(nkp), idum, idum, idum ! imin(nkp), imax(nkp), dimwin(nkp)
+
+      END DO
+
 
       CLOSE(19)
 
@@ -334,92 +336,11 @@
         END DO
       END DO
 
+      !
+      ! initialize kpoints module
+      !
 
-      nkpts1 = nk(1)*nk(2)*nk(3)
-
-      ALLOCATE( vkpt(3, nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating vkpt ', (3*nkpts) )
-      ALLOCATE( wtkpt(nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating wtkpt ', (nkpts) )
-      ALLOCATE( nfile( nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nfile ', (nkpts) )
-
-      nkp = 0
-      DO i1 = 0, nk(1)-1
-        DO i2 = 0, nk(2)-1
-          DO i3 = 0, nk(3)-1
-            nkp = nkp + 1
-            vkpt(1,nkp) = DBLE(i1)/DBLE(nk(1)) + s(1)
-            vkpt(2,nkp) = DBLE(i2)/DBLE(nk(2)) + s(2)
-            vkpt(3,nkp) = DBLE(i3)/DBLE(nk(3)) + s(3)
-          END DO
-        END DO
-      END DO
-
-      DO nkp = 1 , nkpts
-        wtkpt(nkp) =  1.0d0/DBLE(nkpts)
-      END DO
-
-      wtktot = 0.d0
-      DO nkp = 1 , nkpts
-        wtktot = wtktot + wtkpt(nkp)
-      END DO
-
-! ... Do destinato a morire visto che legge da un file unico
-
-      DO nkp = 1, nkpts
-        nfile(nkp) = nkp
-      END DO
-
-
-      ALLOCATE( lpctx(nr1), lpcty(nr2), lpctz(nr3), STAT=ierr )
-         IF( ierr/=0 )  &
-         CALL errore(' wannier ', ' allocating lpctx lpcty lpctz ', nr1+nr2+nr3 )
-
-
-
-! ... Initialize the loop counters lpctx,lpcty,lpctz that
-!     label the number of the reciprocal lattice vectors in the x,y,z
-!     directions, respectively. For the x direction the reciprocal lattice
-!     vectors corresponding to the first,second,...,nr1th elements in all
-!     of the reciprocal lattice arrays are 0,1,..,(nr1/2),-((nr1/2-1),..,-1
-!     times the x reciprocal lattice vector recc(1,*)
-
-      DO nx = 1 , (nr1/2)+1
-        lpctx(nx)  = nx - 1
-      END DO
-      DO nx = (nr1/2)+2 , nr1
-        lpctx(nx)  = nx - 1 - nr1
-      END DO
-      DO ny = 1 , (nr2/2)+1
-        lpcty(ny)  = ny - 1
-      END DO
-      DO ny = (nr2/2)+2 , nr2
-        lpcty(ny)  = ny - 1 - nr2
-      END DO
-      DO nz = 1 , (nr3/2)+1
-        lpctz(nz)  = nz - 1
-      END DO
-      DO nz = (nr3/2)+2 , nr3
-        lpctz(nz)  = nz - 1 - nr3
-      END DO
-
-
-! ... Subroutine genbtr calculate the g-vectors for each K_point
-!     within the kinetic energy cutoff
-
-      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nindpw ', mxddim*nkpts )
-
-
-      nindpw = 0
-
-      ALLOCATE( nplwkp( nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nplwkp ', nkpts )
-
-
-      CALL genbtr( mxddim, nr1, nr2, nr3, nkpts, enmax, nindpw, nplwkp, vkpt,   &
-           lpctx, lpcty, lpctz, recc, iprint )
+      CALL kpoints_init( nkpts )
 
 ! ... First set all elements of ninvpw to point to the "extra" plane wave
 !     (the mxddim+1 one) for which the wavefunction has been set to zero
@@ -427,30 +348,19 @@
 !     with those elements that point to plane-waves that are inside the cutoff
 !     note that ninvpw has also a zero element, that also points to the
 !     "extra" plane wave, corresponding to those plane waves that are not
-!     inside the cutoff radius (i.e. that go between nplwkp(nkp)+1 and
+!     inside the cutoff radius (i.e. that go between npwk(nkp)+1 and
 !     mxddim) and thus for which there is no nindpw (i.e. its value has been
 !     set to zero) and thus for which nindv(nindpw) points to the mxddim1+1
 !     coefficient, that also has been set to zero
 
       nplwv = nr1*nr2*nr3
       mplwv = nr1*nr2*(nr3+1)
+
+      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nindpw ', mxddim*nkpts )
+
       ALLOCATE( ninvpw(0:nplwv,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ninvpw ', (nplwv+1)*nkpts )
-
-      DO nkp = 1, nkpts
-        DO np = 0, nplwv
-          ninvpw(np,nkp) = mxddim + 1
-        END DO
-        DO np = 1, nplwkp(nkp)
-          npoint = nindpw(np,nkp)
-          ninvpw(npoint,nkp) = np
-        END DO
-        IF ( verbosity == 'high' ) THEN
-          DO np = 1, mxddim
-            WRITE(*,*) np, nindpw( np, nkp ), ninvpw( nindpw(np,nkp), nkp )
-          END DO
-        END IF
-      END DO
 
 ! ... Read the energy eigenfunctions within the energy window at each K-point,
 !     the subspace basis vectors, from file "intf.out"
@@ -459,20 +369,22 @@
          IF( ierr /=0 ) &
          CALL errore(' wannier ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
 
-      ALLOCATE( lvec( mxddim, dimwann ), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating lvec ', mxddim * dimwann )
+      cptwfp = 0.0d0
 
       OPEN( UNIT=20, FILE='onfly.dat', STATUS='OLD' , FORM='UNFORMATTED' )
 
 !     Starting k-loop
 
+      nindpw = 0             !  new index
+      ninvpw = mxddim + 1    !  new index
+
       K_POINTS:  DO nkp = 1, nkpts
 
         READ(20) nsiz1_, nsiz2_ 
 
-        IF( nplwkp(nkp) > nsiz1_ ) THEN
+        IF( npwk(nkp) > nsiz1_ ) THEN
           WRITE( stdout, * ) '*** READING onfly.dat WRONG ngk ***'
-          WRITE( stdout, * ) nplwkp(nkp), nsiz1_
+          WRITE( stdout, * ) npwk(nkp), nsiz1_
           STOP
         END IF
 
@@ -482,10 +394,9 @@
           STOP
         END IF
 
-        READ(20) ( igsort( np, nkp ), np=1, nplwkp(nkp) )
-        READ(20) ( ( lvec( np, iib ), np=1, nplwkp(nkp) ), iib=1, dimwann )
+        READ(20) ( igsort( np, nkp ), np=1, npwk(nkp) )
 
-        DO np = 1, nplwkp(nkp)
+        DO np = 1, npwk(nkp)
 
            igk = igsort( np, nkp )
            IF ( igv(1,igk) >= 0 ) nx = igv(1,igk) + 1
@@ -497,25 +408,25 @@
       
            npoint = nx + (ny-1)*nr1 + (nz-1)*nr1*nr2
 
-           BANDS: DO i = 1, dimwann
-
-             IF ( ninvpw( npoint, nkp ) > nplwkp( nkp ) .OR. ninvpw(npoint,nkp) <= 0 ) THEN
-               WRITE(*,*) ninvpw(npoint,nkp)
-               WRITE(*,*) 'NINVPW OUT OF BOUNDS'
-               STOP
-             END IF
-
-             ! ...      Conjg is due to the opposite bloch convention in CASTEP
-
-             cptwfp( ninvpw( npoint, nkp ), i, nkp ) = conjg( lvec( np, i ) )
-
-           END DO BANDS
-
+           nindpw(np,nkp) = npoint  ! index
+           ninvpw(npoint,nkp) = np  ! index
 
         END DO
 
+        READ(20) ( ( cptwfp( np, iib, nkp ), np=1, npwk(nkp) ), iib=1, dimwann )
+
+        ! ...      Conjg is due to the opposite bloch convention in CASTEP
+
+        cptwfp( :, :, nkp ) = CONJG( cptwfp( :, :, nkp ) )
+
+        IF ( verbosity == 'high' ) THEN
+          DO np = 1, mxddim
+            WRITE(*,*) np, nindpw( np, nkp ), ninvpw( nindpw(np,nkp), nkp )
+          END DO
+        END IF
+
         DO iib = 1, dimwann
-          DO np = nplwkp(nkp) + 1, mxddim + 1
+          DO np = npwk(nkp) + 1, mxddim + 1
             cptwfp(np, iib, nkp) = ( 0.d0, 0.d0 )
           END DO
         END DO
@@ -523,8 +434,6 @@
       END DO K_POINTS
 
       CLOSE(20)
-
-      DEALLOCATE( lvec )
 
       CALL timing('init',OPR='stop')
       CALL timing('trasf',OPR='start')
@@ -537,8 +446,6 @@
 !
 !...  Wannier Functions localization procedure
 
-      ALLOCATE( vkpr(3,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating vkpr ', 3*nkpts )
       ALLOCATE ( nnshell(nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nnshell ', nkpts*nnmx )
       ALLOCATE ( nnlist(nkpts,nnmx), nntot(nkpts), STAT=ierr ) 
@@ -730,8 +637,8 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', dimwann*nkpts*nnmx)
 
       DO nkp = 1, nkpts
-        DO nb = 1, dimwann
-          DO nn = 1, nntot(nkp)
+        DO nn = 1, nntot(nkp)
+          DO nb = 1, dimwann
             sheet(nb,nkp,nn)  = 0.d0 
             csheet(nb,nkp,nn) = exp(ci*sheet(nb,nkp,nn))
           END DO
@@ -785,7 +692,7 @@
         DO nb = 1, dimwann
 
           cptwr(:) = czero
-          DO m = 1, nplwkp(nkp)
+          DO m = 1, npwk(nkp)
             cptwr(nindpw(m,nkp)) = cptwfp(m,nb,nkp)
           END DO
 
@@ -932,12 +839,9 @@
 
       END DO  !END k loop
 
-!     write(*,*) ' '
-!     write(*,8000)
 
       DEALLOCATE( cptwr, STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwr ', ABS(ierr))
-
 
 
 ! ... Now I calculate the transformation matrix CU = CS^(-1/2).CA,
@@ -973,14 +877,18 @@
 
       DO nkp = 1, nkpts
 
-        DO na = 1, dimwann
-          DO nb = 1, dimwann
-            cs(na,nb,nkp) = ( 0.d0, 0.d0 )
-            DO ni = 1, dimwann
-              cs(na,nb,nkp) = cs(na,nb,nkp) + ca(na,ni,nkp) * CONJG( ca(nb,ni,nkp) )
-            END DO
-           END DO
-        END DO
+        !DO na = 1, dimwann
+        !  DO nb = 1, dimwann
+        !    cs(na,nb,nkp) = ( 0.d0, 0.d0 )
+        !    DO ni = 1, dimwann
+        !      cs(na,nb,nkp) = cs(na,nb,nkp) + ca(na,ni,nkp) * CONJG( ca(nb,ni,nkp) )
+        !    END DO
+        !   END DO
+        !END DO
+
+        CALL ZGEMM( 'N', 'C', dimwann, dimwann, dimwann, cone, ca(1,1,nkp), &
+              SIZE(ca,1), ca(1,1,nkp), SIZE(ca,1), czero, cs(1,1,nkp), SIZE(cs,1) )
+
 
         IF ( verbosity == 'high' ) THEN
           IF (nkp == 1) THEN
@@ -998,11 +906,15 @@
         CALL zgees( 'V', 'N', lselect, dimwann, cs(1,1,nkp), dimwann, nsdim,            &
              cwschur1, cz, dimwann, cwschur2, nwork, cwschur3, cwschur4, info )
 
-        DO i=1,dimwann
+
+        cs(:,:,nkp)=(0.0,0.0)
+
+        DO m=1,dimwann
+          cfact = 1.d0/SQRT( REAL( cwschur1(m) ) )
           DO j=1,dimwann
-            cs(i,j,nkp)=(0.0,0.0)
-            DO m=1,dimwann
-              cs(i,j,nkp) = cs(i,j,nkp) + cz(i,m) * ( 1.d0/SQRT( REAL( cwschur1(m) ) ) ) * CONJG( cz(j,m) )
+            DO i=1,dimwann
+              !cs(i,j,nkp) = cs(i,j,nkp) + cz(i,m) * ( 1.d0/SQRT( REAL( cwschur1(m) ) ) ) * CONJG( cz(j,m) )
+              cs(i,j,nkp) = cs(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
             END DO
           END DO
         END DO
@@ -1120,8 +1032,8 @@
               END DO
             END DO
           END DO
-          DO i = 1, dimwann
-            DO j = 1, dimwann
+          DO j = 1, dimwann
+            DO i = 1, dimwann
               cm(i,j,nn,nkp) = cmtmp(i,j)
             END DO
           END DO
@@ -1152,8 +1064,8 @@
       DO nkp = 1, nkpts
         omiloc = 0.d0
         DO nn = 1, nntot(nkp)
-          DO na = 1, dimwann
-            DO nb = 1, dimwann
+          DO nb = 1, dimwann
+            DO na = 1, dimwann
               cmtmp(na,nb) = cm(na,nb,nn,nkp)
             END DO
           END DO
@@ -1220,8 +1132,8 @@
 
       DO nkp = 1, nkpts
         DO nn = 1, nntot(nkp)
-          DO na = 1, dimwann
-            DO nb = 1, dimwann
+          DO nb = 1, dimwann
+            DO na = 1, dimwann
               cmtmp(na,nb) = cm(na,nb,nn,nkp)
             END DO
           END DO
@@ -1347,8 +1259,8 @@
 
         IF ( MOD( (ncount-1), ncg ) == 0 ) THEN
           DO nkp = 1, nkpts
-            DO m = 1, dimwann
-              DO n = 1, dimwann
+            DO n = 1, dimwann
+              DO m = 1, dimwann
                 cdq(m,n,nkp) = cdodq(m,n,nkp)
               END DO
             END DO
@@ -1356,8 +1268,8 @@
         ELSE
           gcfac = gcnorm1/gcnorm0
           DO nkp = 1, nkpts
-            DO m = 1, dimwann
-              DO n = 1, dimwann
+            DO n = 1, dimwann
+              DO m = 1, dimwann
                 cdq(m,n,nkp) = cdodq(m,n,nkp) + gcfac * cdqkeep(m,n,nkp)
               END DO
             END DO
@@ -1366,8 +1278,8 @@
 
         gcnorm0 = gcnorm1
         DO nkp = 1, nkpts
-          DO m = 1, dimwann
-            DO n= 1, dimwann
+          DO n= 1, dimwann
+            DO m = 1, dimwann
               cdqkeep(m,n,nkp) = cdq(m,n,nkp)
             END DO
           END DO
@@ -1386,8 +1298,8 @@
 ! ...   The cg step is calculated
 
         DO nkp = 1, nkpts
-          DO m = 1, dimwann
-            DO n = 1, dimwann
+          DO n = 1, dimwann
+            DO m = 1, dimwann
               cdq(m,n,nkp) = alpha / wbtot / 4.d0 * ( cdq(m,n,nkp) )
             END DO
           END DO
@@ -1469,8 +1381,8 @@
               END DO
             END DO
           END DO
-          DO i = 1, dimwann
-            DO j = 1, dimwann
+          DO j = 1, dimwann
+            DO i = 1, dimwann
               cu(i,j,nkp) = cmtmp(i,j)
             END DO
           END DO
@@ -1492,8 +1404,8 @@
                 END DO
               END DO
             END DO
-            DO i = 1, dimwann
-              DO j = 1, dimwann
+            DO j = 1, dimwann
+              DO i = 1, dimwann
                 cm(i,j,nn,nkp) = cmtmp(i,j)
               END DO
             END DO
@@ -1568,8 +1480,8 @@
 ! ...     Take now optimal parabolic step
 
           DO nkp = 1, nkpts
-            DO m = 1, dimwann
-              DO n = 1, dimwann
+            DO n = 1, dimwann
+              DO m = 1, dimwann
                 cdq(m,n,nkp) = alphamin / wbtot / 4.d0 * cdqkeep(m,n,nkp)
               END DO
             END DO
@@ -1662,8 +1574,8 @@
                 END DO
               END DO
             END DO
-            DO i = 1, dimwann
-              DO j = 1, dimwann
+            DO j = 1, dimwann
+              DO i = 1, dimwann
                 cu(i,j,nkp) = cmtmp(i,j)
               END DO
             END DO
@@ -1684,8 +1596,8 @@
                   END DO
                 END DO
               END DO
-              DO i = 1, dimwann
-                DO j = 1, dimwann
+              DO j = 1, dimwann
+                DO i = 1, dimwann
                   cm(i,j,nn,nkp) = cmtmp(i,j)
                 END DO
               END DO
@@ -1853,8 +1765,8 @@
       DO nkp = 1, nkpts
         DO nn = 1, nntot(nkp)
 
-          DO na = 1, dimwann
-            DO nb = 1, dimwann
+          DO nb = 1, dimwann
+            DO na = 1, dimwann
               cmtmp(na,nb) = cm(na,nb,nn,nkp)
             END DO
           END DO
@@ -1912,7 +1824,7 @@
       END DO
 
       DO nkp = 1, nkpts
-        WRITE (21) nplwkp(nkp)
+        WRITE (21) npwk(nkp)
       ENDDO
 
       DO nkp = 1, nkpts
@@ -1923,7 +1835,7 @@
 
       DO nkp = 1, nkpts
         DO nb= 1, dimwann
-          DO m = 1, nplwkp(nkp)
+          DO m = 1, npwk(nkp)
             WRITE(21) cptwfp(m,nb,nkp)
           END DO
         END DO
@@ -1942,32 +1854,18 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur3 ', ABS(ierr) )
       DEALLOCATE( cwschur4, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur4 ', ABS(ierr) )
-
-      DEALLOCATE( lpctx, lpcty, lpctz, STAT=ierr)
-           IF( ierr /=0 )  &
-           CALL errore(' wannier ', ' deallocating lpctx lpcty lpctz ', ABS(ierr) )
-      DEALLOCATE( nplwkp, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
+      DEALLOCATE( npwk, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating npwk ', ABS(ierr) )
       DEALLOCATE( cw1, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw1 ', ABS(ierr) )
       DEALLOCATE( cw2, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw2 ', ABS(ierr) )
-      DEALLOCATE( vkpt, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating vkpt ', ABS(ierr) )
       DEALLOCATE( igv, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating igv ', ABS(ierr) )
-      DEALLOCATE( wtkpt, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating wtkpt ', ABS(ierr) )
-      DEALLOCATE( nfile, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nfile ', ABS(ierr) )
-!     DEALLOCATE( nplwkp, STAT=ierr )
-!          IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nplwkp ', ABS(ierr) )
       DEALLOCATE( ninvpw, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ninvpw ', ABS(ierr) )
       DEALLOCATE( cptwfp, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwfp ', ABS(ierr) )
-      DEALLOCATE( vkpr, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating vkpr ', ABS(ierr) )
       DEALLOCATE( dnn, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnn ', ABS(ierr) )
       DEALLOCATE( nnshell, STAT=ierr )
