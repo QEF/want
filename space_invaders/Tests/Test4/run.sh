@@ -1,6 +1,6 @@
 #!/bin/sh 
 #
-# Test2
+# Test4
 # 
 #================================================================
 #
@@ -30,7 +30,6 @@ MANUAL=" Usage
  hamiltonian     writes the hamiltonian matrix elements on the Wannier basis
  want            perform WINDOW, DISENTANGLE, WANNIER and HAMILTONIAN all together 
  bulk            evaluate the transmittance, for the bulk case
- conductor       as for BULK but using the general conductor geometry code
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -45,8 +44,8 @@ MANUAL=" Usage
 TEST_HOME=`pwd`
 WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
-TEST_NAME=Test2
-PSEUDO_NAME=Au11pw91.mt.UPF
+TEST_NAME=Test4
+PSEUDO_NAME=Al.pz-vbc.UPF
 
 #
 # evaluate the starting choice about what is to run 
@@ -59,7 +58,6 @@ DISENTANGLE=
 WANNIER=
 HAMILTONIAN=
 BULK=
-CONDUCTOR=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -77,10 +75,9 @@ case $INPUT in
    (want)           WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
                     HAMILTONIAN=".TRUE." ;;
    (bulk)           BULK=".TRUE." ;;
-   (conductor)      CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PW2WAN=".TRUE." ; 
                     WINDOW=".TRUE." ; DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ; CONDUCTOR=".TRUE." ;;
+                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -201,8 +198,8 @@ if [ "$BULK" = ".TRUE." ] ; then
    #
    # hopefully will be improoved very soon...
    #
-   ln -sf fort.103 H00.dat
-   ln -sf fort.104 H01.dat
+   ln -sf fort.111 H00.dat
+   ln -sf fort.112 H01.dat
    #
    $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
    if [ ! -e CRASH ] ; then 
@@ -214,34 +211,6 @@ if [ "$BULK" = ".TRUE." ] ; then
       mv cond.out $TEST_HOME/cond_bulk.out
    else
       echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
-   fi
-fi
-
-
-#
-# running CONDUCTOR
-#
-if [ "$CONDUCTOR" = ".TRUE." ] ; then  
-   #
-   # hopefully will be improoved very soon...
-   #
-   ln -sf fort.103 H00_A
-   ln -sf fort.103 H00_B
-   ln -sf fort.103 H00_C
-   ln -sf fort.104 H01_B
-   ln -sf fort.104 H01_A
-   ln -sf fort.104 HCI_AC
-   ln -sf fort.104 HCI_CB
-   #
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
-   if [ ! -e CRASH ] ; then 
-      echo "CONDUCTOR calculation done" 
-      #
-      # also this needs to be improoved
-      #
-      mv dos.out cond.out $TEST_HOME
-   else
-      echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 

@@ -1,0 +1,11 @@
+
+&INPUT
+   nspts  = 2
+   npts   = 100
+   nbands = 4
+   efermi = -3.0895
+/
+G
+0.0 0.0 0.0
+Z
+0.0 0.0 0.5
