@@ -86,6 +86,7 @@
       dnn1 = eta
       ndnntot = 0
 
+
 ! ... AC & MBN (April 2002) generic k grid allowed
 !     everything in bohr^-1
  

@@ -268,86 +268,92 @@
          omega_i_est = ZERO
 
          DO ik = 1, nkpts
- 
-! ...    Diagonalize z matrix mtrx_in at all relevant K-points
- 
-           IF ( dimwann > dimfroz(ik) )  THEN
+            ! 
+            ! Diagonalize z matrix mtrx_in at all relevant K-points
+            ! 
+            IF ( dimwann > dimfroz(ik) )  THEN
                  dim = dimwin(ik)-dimfroz(ik)
                  CALL zmat_hdiag( z(:,:), w(:), mtrx_in(:,:,ik), dim)
-           ENDIF
+            ENDIF
+
+            ! 
+            !  Calculate K-point contribution to omega_i_est
+            komega_i_est(ik) = DBLE(dimwann)*wbtot
  
-! ...      Calculate K-point contribution to omega_i_est
+
+            ! Contribution from frozen states (if any)
+            ! 
+            IF ( dimfroz(ik) > 0 )  THEN
+                DO m = 1, dimfroz(ik)
  
-           komega_i_est(ik) = DBLE(dimwann)*wbtot
+                ! Note that at this point lamp for the non-frozen states pertains to the 
+                ! previous iteration step, which is exactly what we need as an input for 
+                ! the subroutine lambda_avg
+                ! 
+                klambda = lambda_avg( m, ik, lamp, cm(1,1,1,ik), nnlist, nshells, &
+                          nwhich, nnshell, wb, dimwann, dimwin, dimwinx, nkpts, nnx )
+                komega_i_est(ik) = komega_i_est(ik) - klambda
+                ENDDO
+            ENDIF
  
-! ...      Contribution from frozen states (if any)
+            ! Contribution from non-frozen states (if any). 
+            ! pick the dimwann-dimfroz(ik) leading eigenvectors of the z-matrix to build the
+            ! optimal subspace for the next iteration
  
-           IF ( dimfroz(ik) > 0 )  THEN
-             DO m = 1, dimfroz(ik)
- 
-! ...          Note that at this point lamp for the non-frozen states pertains to the 
-!              previous iteration step, which is exactly what we need as an input for 
-!              the subroutine lambda_avg
- 
-               klambda = lambda_avg( m, ik, lamp, cm(1,1,1,ik), nnlist, nshells, &
-                         nwhich, nnshell, wb, dimwann, dimwin, dimwinx, nkpts, nnx )
-               komega_i_est(ik) = komega_i_est(ik) - klambda
-             END DO
-           END IF
- 
-! ...      Contribution from non-frozen states (if any). 
-!          pick the dimwann-dimfroz(ik) leading eigenvectors of the z-matrix to build the
-!          optimal subspace for the next iteration
- 
-           IF ( dimwann > dimfroz(ik) )  THEN
-             m = dimfroz(ik)
-             DO j = dimwin(ik)-dimwann+1, dimwin(ik)-dimfroz(ik)
-               m = m+1
-               komega_i_est(ik) = komega_i_est(ik) - w(j)
-               DO i = 1, dimwin(ik)
-                 lamp(i,m,ik) = czero
-               END DO
-               DO i = 1, dimwin(ik)-dimfroz(ik)
-                 lamp(indxnfroz(i,ik),m,ik) = z(i,j)     ! *** CHECK!!! ***
-               END DO
-             END DO
-             IF ( verbosity == 'high' ) THEN
-                WRITE(stdout, fmt="(/,2x, 'All eigenvalues:' )")
-                DO j = 1, dimwin(ik)-dimfroz(ik)
-                  WRITE(stdout,fmt="(4x,'j=',i2,', lambda(j)=', f10.5)") j, w(j)
-                END DO
-                WRITE(stdout,fmt="(4x,'Wbtot = ')")wbtot
-             END IF
+            IF ( dimwann > dimfroz(ik) )  THEN
+                m = dimfroz(ik)
+                DO j = dimwin(ik)-dimwann+1, dimwin(ik)-dimfroz(ik)
+                     m = m+1
+                     komega_i_est(ik) = komega_i_est(ik) - w(j)
+                     DO i = 1, dimwin(ik)
+                         lamp(i,m,ik) = czero
+                     ENDDO
+                     DO i = 1, dimwin(ik)-dimfroz(ik)
+                         lamp(indxnfroz(i,ik),m,ik) = z(i,j)     ! *** CHECK!!! ***
+                     ENDDO
+                ENDDO
+                !
+                !
+                IF ( verbosity == 'high' ) THEN
+                    WRITE(stdout, fmt="(/,2x, 'All eigenvalues:' )")
+                    DO j = 1, dimwin(ik)-dimfroz(ik)
+                       WRITE(stdout,fmt="(4x,'j=',i2,', lambda(j)=', f10.5)") j, w(j)
+                    ENDDO
+                    WRITE(stdout,fmt="(4x,'Wbtot = ')")wbtot
+                ENDIF
            ENDIF
  
            omega_i_est=omega_i_est+komega_i_est(ik)
  
 
-! ...      At the last iteration find a basis for the (dimwin(ik)-dimwann)-dimensional
-!          complement space
- 
+           ! At the last iteration find a basis for the (dimwin(ik)-dimwann)-dimensional
+           ! complement space
+           ! 
+           camp(:,:,ik) = CZERO
+
            IF ( iter == maxiter_dis )  THEN
-             IF ( dimwin(ik) > dimwann )  THEN
-                DO j = 1, dimwin(ik)-dimwann
-                   IF ( dimwann > dimfroz(ik) )  THEN
- 
-! ...              Use the non-leading eigenvectors of the z-matrix
- 
-                      DO i = 1, dimwin(ik)
-                        camp(i,j,ik) = z(i,j)
-                      ENDDO
-                   ELSE        ! dimwann=dimfroz(ik)
- 
-! ...              Use the original non-frozen bloch eigenstates
- 
-                      DO i = 1, dimwin(ik)
-                         camp(i,j,ik) = czero
-                         IF ( i == indxnfroz(j,ik) )  camp(i,j,ik) = CONE
-                      END DO
-                   END IF
-                END DO
+                IF ( dimwin(ik) > dimwann )  THEN
+                    DO j = 1, dimwin(ik)-dimwann
+                        IF ( dimwann > dimfroz(ik) )  THEN
+                           ! 
+                           !  Use the non-leading eigenvectors of the z-matrix
+                           ! 
+                           DO i = 1, dimwin(ik)
+                              camp(i,j,ik) = z(i,j)
+                           ENDDO
+                        ELSE   
+                        !
+                        ! dimwann=dimfroz(ik) 
+                        ! Use the original non-frozen bloch eigenstates
+                        ! 
+                           DO i = 1, dimwin(ik)
+                              camp(i,j,ik) = CZERO
+                              IF ( i == indxnfroz(j,ik) )  camp(i,j,ik) = CONE
+                           ENDDO
+                        ENDIF
+                    ENDDO
                
-             ELSE
+                ELSE
                 lcompspace = .FALSE.
                 WRITE( stdout, fmt="(/,2x, 'Warning!' )")
                 WRITE( stdout, fmt="(4x, 'at k-point ',i4,' the complement subspace '// &
