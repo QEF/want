@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !---------------------------------------------------------------------
-      SUBROUTINE SreadH( nmaxa, nmaxb, nmaxc, h00_a, h01_a, s00_a, s01_a,  &
+      SUBROUTINE readH( nmaxa, nmaxb, nmaxc, h00_a, h01_a, s00_a, s01_a,  &
                          h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac, &
                          sci_ac, hci_cb, sci_cb , l_overlap )
 !---------------------------------------------------------------------

@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------
-      PROGRAM sconductor
+      PROGRAM conductor
 !----------------------------------------------------------------------
    
       USE kinds
@@ -173,7 +173,7 @@
 !...  Set up the layer hamiltonians
 !     different layers in different files - read only version
 
-      CALL SreadH( nmaxa, nmaxb, nmaxc, h00_a, h01_a, s00_a, s01_a,   &
+      CALL readH( nmaxa, nmaxb, nmaxc, h00_a, h01_a, s00_a, s01_a,   &
                    h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac,  &
                    sci_ac, hci_cb, sci_cb , l_overlap )
 
@@ -251,16 +251,16 @@
             END DO
          END DO
 
-         CALL stransferb( nmaxb, nterx, totB, tottB, c00_b, c01_b, ene+bias )
-         CALL Sgreenb( nmaxb, totB, tottB, c00_b, c01_b, ene+bias, gBm1, gB, 1, 1 )
+         CALL transferb( nmaxb, nterx, totB, tottB, c00_b, c01_b, ene+bias )
+         CALL greenb( nmaxb, totB, tottB, c00_b, c01_b, ene+bias, gBm1, gB, 1, 1 )
 
          CALL setv0( nmaxc*nmaxb, c2 )
          CALL zgemm( 'N', 'N', nmaxc, nmaxb, nmaxb, alpha, cci_cb, nmaxc, gB, nmaxb, beta, c2, nmaxc )
          CALL setv0( nmaxc*nmaxc, sRr )
          CALL zgemm( 'N', 'N', nmaxc, nmaxc, nmaxb, alpha, c2, nmaxc, cci_bc, nmaxb, beta, sRr, nmaxc )
 
-         CALL stransfera( nmaxa, nterx, totA, tottA, c00_a, c01_a, ene )
-         CALL sgreena( nmaxa, totA, tottA, c00_a, c01_a, ene, gAm1, gA, -1, 1 )
+         CALL transfera( nmaxa, nterx, totA, tottA, c00_a, c01_a, ene )
+         CALL greena( nmaxa, totA, tottA, c00_a, c01_a, ene, gAm1, gA, -1, 1 )
 
          CALL setv0( nmaxc*nmaxa, c1 )
          CALL zgemm( 'N', 'N', nmaxc, nmaxa, nmaxa, alpha, cci_ca, nmaxc, gA, nmaxa, beta, c1, nmaxc )

@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------
-      SUBROUTINE Stransfera( nmaxa, nterx, tot, tott, c00_a, c01_a, ene )
+      SUBROUTINE transfera( nmaxa, nterx, tot, tott, c00_a, c01_a, ene )
 !----------------------------------------------------------------------
 
       USE kinds

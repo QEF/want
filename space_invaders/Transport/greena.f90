@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------
-      SUBROUTINE Sgreena( nmaxa, tot, tott, c00_a, c01_a, ene, gm1, g, igreen, invert)
+      SUBROUTINE greena( nmaxa, tot, tott, c00_a, c01_a, ene, gm1, g, igreen, invert)
 !----------------------------------------------------------------------
 
 !...  Construct green's functions
