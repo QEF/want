@@ -1,0 +1,41 @@
+# make.sys.  Generated from make.sys.in by configure.
+CC             = mpcc_r
+CC             = cc_r
+CCFLAGS        = -q64 -O2 -Wp,$(DFLAGS) $(IFLAGS)
+# See include/machine.h.README for a list of precompilation options
+# (possible arguments to -D or -U) and their meaning
+DFLAGS         = -D__AIX,-D__MPI,-D__PARA,-DHAS_ZHEGVX,-D__MASS
+DFLAGS         = -D__AIX,-DHAS_ZHEGVX,-D__MASS
+IFLAGS         = -I. -I../include -I../Modules 
+CPP            = mpcc_r -E
+CPP            = cc_r -E
+CPPFLAGS       =  -Wp,$(DFLAGS) $(IFLAGS)
+F77            = mpxlf_r
+F77            = xlf_r
+F90            = mpxlf90_r
+F90            = xlf90_r
+FFLAGS         = -q64 -qalias=noaryovrlp -O3 -qstrict -qarch=auto -qtune=auto -qsuffix=cpp=f90 -qdpc -Q -qal
+ias=nointptr
+F77FLAGS       = $(FFLAGS) $(IFLAGS)
+F90FLAGS       = $(FFLAGS) -qfree=f90 -WF,$(DFLAGS) $(IFLAGS)
+F77FLAGS_NOOPT = -q64 -O0
+LD             = mpxlf90_r
+LD             = xlf90_r
+LDFLAGS        = -q64 $(LIBOBJS) $(LIBS)
+#LIBOBJS        = ../flib/ptools.a ../flib/flib.a ../clib/clib.a
+# LIBS must contain the location of all needed external libraries
+LIBS           = -lessl -L/cineca/lib -llapack -lessl -L/cineca/lib/mass -lmassvp4 -lmass
+# MYLIB can be one of the following (depending on LIBS):
+# blas       : compile the local copy of blas routines
+# lapack     : compile the local copy of lapack routines
+# blas_and_lapack : all of the above - use this for a quick test
+#              or if you don't have an optimized blas/lapack library
+# lapack_ibm : compile only lapack routines not present in IBM ESSL
+#              use this together with IBM ESSL
+# lapack_t3e : compile only lapack routines not present in T3E scilib
+#              use this together with T3E scilib
+# lapack_mkl : compile only lapack routines not present in Intel MKL
+#              use this together with Intel MKL
+MYLIB          =
+AR             = ar
+ARFLAGS        = -X64 ruv

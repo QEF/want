@@ -1,12 +1,18 @@
 MAKE=make
 
 # this is the main makefile
-all:
-	cd modules; $(MAKE);
-	cd lib; $(MAKE);
-	cd main; $(MAKE);
+all: main
+
+mod:
+	cd Modules; $(MAKE);
+
+lib: mod
+	cd Libs; $(MAKE);
+
+main: lib mod
+	cd Main; $(MAKE);
 
 clean:
-	cd modules; $(MAKE) clean;
-	cd lib; $(MAKE) clean;
-	cd main; $(MAKE) clean;
+	cd Modules; $(MAKE) clean;
+	cd Libs; $(MAKE) clean;
+	cd Main; $(MAKE) clean;
