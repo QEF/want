@@ -1,4 +1,4 @@
-AC_INIT(PWscf, 2.0, , pwscf)
+AC_INIT(WanT, 2.0, , want)
 AC_REVISION(0.01)
 AC_PREREQ(2.53)
 
