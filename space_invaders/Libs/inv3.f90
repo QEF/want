@@ -21,7 +21,7 @@
       REAL(dbl) ::  z(6,6)
 
 ! ... Quick routine to invert 3x3 matrix
-!     inverse is of a(i,j) is b(i,j)/det
+!     inverse of a(i,j) is b(i,j)/det
 
       DO  i = 1, 2
         DO  j = 1, 2

@@ -113,9 +113,8 @@ CONTAINS
        IF ( iphase /= 1 ) THEN
          CALL errore( ' read_input ', ' iphase must be 1 (ONE) ', 1 )
        END IF
-! XXX
        IF ( niter0 < 0 ) THEN
-         CALL errore( ' read_input ', ' niter0 must be positive ', 1 )
+         CALL errore( ' read_input ', ' niter0 must be non negative ', 1 )
        END IF
        IF ( niter <= 0 ) THEN
          CALL errore( ' read_input ', ' niter must be positive ', 1 )

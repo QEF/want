@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------
-      REAL*8 FUNCTION smooth( x )
+      FUNCTION smooth( x )
 !----------------------------------------------------------------------
 
 !...  Cut-off function to smoothly remove the long range interactions
@@ -20,6 +20,7 @@
 
 
       REAL(dbl) :: x, xx
+      REAL(dbl) :: smooth
 
       REAL(dbl), PARAMETER ::  rctb = 2.18d0 
       REAL(dbl), PARAMETER ::  ro = 1.536329d0 
