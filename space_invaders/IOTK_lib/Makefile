@@ -7,6 +7,9 @@
 include ../make.sys
 include ../make.rules
 
+# specific redefinition
+FFLAGS=$(FFLAGS_NOOPT)
+
 OBJS = iotk_base.o  iotk_external.o  iotk_module.o
 
 #----------------------------------------------------
@@ -17,7 +20,7 @@ lib_iotk.a : $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 
 clean:
-	rm -rf *.o *.a *core  *.mod work.pc work.pcl
+	rm -rf *.o *.a *core *.F90 *.mod work.pc work.pcl
 
 # dependencies
 include .dependencies

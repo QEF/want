@@ -23,19 +23,27 @@
 #endif
 
 #ifdef __LINUX
-#   define __IOTK_BINARY_FORMAT "PC-LINUX/IFC"
-#   define __IOTK_LOGICAL1 1
-#   define __IOTK_LOGICAL2 2
-#   define __IOTK_LOGICAL3 4
-#   define __IOTK_LOGICAL4 8
-#   define __IOTK_INTEGER1 4
-#   define __IOTK_INTEGER2 2
-#   define __IOTK_INTEGER3 1
-#   define __IOTK_INTEGER4 8
-#   define __IOTK_REAL1    8
-#   define __IOTK_REAL2    4
-#   define __IOTK_REAL3    16
-#   define __IOTK_AVOID_EMPTY_FILES
+#   ifdef __INTEL
+#         define __IOTK_BINARY_FORMAT "PC-LINUX/IFC"
+#         define __IOTK_LOGICAL1 1
+#         define __IOTK_LOGICAL2 2
+#         define __IOTK_LOGICAL3 4
+#         define __IOTK_LOGICAL4 8
+#         define __IOTK_INTEGER1 4
+#         define __IOTK_INTEGER2 2
+#         define __IOTK_INTEGER3 1
+#         define __IOTK_INTEGER4 8
+#         define __IOTK_REAL1    8
+#         define __IOTK_REAL2    4
+#         define __IOTK_REAL3    16
+#         define __IOTK_AVOID_EMPTY_FILES
+#   endif
+#   ifdef __G95
+#         define __IOTK_BINARY_FORMAT "PC-LINUX/G95"
+#         define __IOTK_REAL1    8
+#         define __IOTK_REAL2    4
+#         define __IOTK_AVOID_EMPTY_FILES
+#   endif
 #endif
 
 #ifdef __SGI

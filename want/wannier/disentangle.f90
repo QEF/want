@@ -48,7 +48,7 @@
        INTEGER, ALLOCATABLE :: npwk(:)
        COMPLEX(dbl), ALLOCATABLE :: evec(:,:,:)
        REAL(dbl), ALLOCATABLE :: eiw(:,:)
-       REAL(dbl) :: emax, enmax
+       REAL(dbl) :: emax
  
        EXTERNAL komegai
 
@@ -439,9 +439,9 @@
                    
            ENDIF ! there are frozen states
 
-           WRITE( stdout, "(/,x,70('='))" ) 
-           WRITE( stdout, "(x,'=',19x,'Starting Iteration loop',26x,'=')" ) 
-           WRITE( stdout, "(x,70('='),/)" ) 
+           WRITE( stdout, "(/,1x,70('='))" ) 
+           WRITE( stdout, "(1x,'=',19x,'Starting Iteration loop',26x,'=')" ) 
+           WRITE( stdout, "(1x,70('='),/)" ) 
 
 ! ...      Compute the initial z matrix mtrx_in at all relevant K-points
 

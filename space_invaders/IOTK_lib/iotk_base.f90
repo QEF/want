@@ -39,7 +39,7 @@
 ! The default values are set here
 ! Maximum rank of an array
 #ifndef __IOTK_MAXRANK
-#  define __IOTK_MAXRANK 7
+#  define __IOTK_MAXRANK 4
 #endif
 ! Minimum value used in iotk_free_unit
 #ifndef __IOTK_UNITMIN

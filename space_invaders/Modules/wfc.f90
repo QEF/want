@@ -31,7 +31,18 @@
 ! declarations of common variables
 !   
 
-   COMPLEX(dbl), POINTER       :: evc(:,:,:)       ! wfc, dim: npwkx, mxdbnd, nkpts
+   INTEGER                   :: mxdgve           ! max number og G vects for the density
+   
+   !
+   ! ... G grids
+   INTEGER,      ALLOCATABLE :: igv(:,:)         ! G vect components, DIM: 3*mxdgve
+   INTEGER,      ALLOCATABLE :: igsort(:,:)
+   INTEGER,      ALLOCATABLE :: npwk(:)
+
+   !
+   ! ... Bloch EIGWAL and EIGVEC
+   REAL(dbl),    ALLOCATABLE :: eiw(:,:)         ! Eigenvalues, dim: mxdbnd, nkpts
+   COMPLEX(dbl), ALLOCATABLE :: evc(:,:,:)       ! wfc, dim: npwkx, mxdbnd, nkpts
    
 
 !
