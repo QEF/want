@@ -26,17 +26,10 @@
       REAL(dbl) :: ranf
 
       INTEGER :: ngx, ngy, ngz
-      INTEGER :: nionst, ng
-      INTEGER :: nions
+      INTEGER :: ng
       INTEGER :: nkpts
     
       INTEGER :: nplwv, mplwv
-      INTEGER :: ngt
-      INTEGER :: ngs
-      INTEGER :: ngrid !   ngt=1,ngs=ngt-1,ngrid=16,
-      INTEGER :: iplwv !   iplwv=(ngt*ngx)*(ngt*ngy)*(ngt*ngz+1),
-      INTEGER :: jplwv !   jplwv=(ngt*ngx)*(ngt*ngy)*(ngt*ngz))
-      INTEGER :: nionbig ! parameter(nionbig=nions*ngt*ngt*ngt)
 
       INTEGER :: niter
       INTEGER :: iprint, nsp, idummy
@@ -44,7 +37,7 @@
       INTEGER :: ni, m, nkp
       INTEGER :: nkp2, nx, ny, nz
       INTEGER :: maxgpx, maxgpy, maxgpz, np, npoint
-      INTEGER :: nunit, inpout, iib, iseed
+      INTEGER :: iib, iseed
       INTEGER :: ndnntot, nlist, l, n, ndnn, nshells
       INTEGER :: nnx, ndnc, ind, nnsh, info, nn, nnh, na
       INTEGER :: ifound, nap, ifpos, ifneg
@@ -55,7 +48,6 @@
       INTEGER :: nrguide, niter0, ncgfix, ncount
       LOGICAL :: lrguide, lcg
       REAL(dbl)  :: enmax
-      REAL(dbl)  :: dummy
       REAL(dbl)  :: volc, voli, wtktot
       REAL(dbl)  :: epsilon, eta, eps, dnn0, dnn1, dist
       REAL(dbl)  :: bb1, bbn, factor, wbtot
@@ -72,7 +64,6 @@
       REAL(dbl)  :: alphafix0, alphafix, alpha
       REAL(dbl)  :: gcnorm1, gcfac, gcnorm0, doda0
       REAL(dbl)  :: funca, func_del, eqc, eqb, eqa, alphamin, falphamin
-      REAL(dbl)  :: deltao
       COMPLEX(dbl) :: catmp, cphi, calpha, cbeta
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
@@ -113,14 +104,14 @@
       INTEGER, ALLOCATABLE :: nwhich(:) ! nwhich(nnmx)
       INTEGER, ALLOCATABLE :: nnshell(:,:) ! nnshell(nkpts,nnmx)
       INTEGER, ALLOCATABLE ::  neigh(:,:) ! neigh(nkpts,nnmxh)
-      REAL(dbl), ALLOCATABLE ::  dimsingvd(:),dimbk(:,:)
+      REAL(dbl), ALLOCATABLE ::  dimsingvd(:), dimbk(:,:)
       REAL(dbl), ALLOCATABLE ::  wb(:,:), dnn(:) ! wb(nkpts,nnmx),dnn(nnmx)
       REAL(dbl), ALLOCATABLE ::  bk(:,:,:), rave(:,:), r2ave(:) !  bk(3,nkpts,nnmx), rave(3,dimwann), r2ave(dimwann)
       REAL(dbl), ALLOCATABLE ::  bka(:,:) !  bka(3,nnmxh)
 
       REAL(dbl), ALLOCATABLE :: rguide(:,:) ! rguide(3,dimwann)
 
-      REAL(dbl) :: RPOS1(3), RPOS2(3)
+      REAL(dbl) :: rpos1(3), rpos2(3)
 
       INTEGER, ALLOCATABLE :: nphimx1(:,:) ! nphimx1(3,dimwann)
       INTEGER, ALLOCATABLE :: nphimx2(:,:) ! nphimx2(3,dimwann)
@@ -131,21 +122,6 @@
       REAL(dbl), ALLOCATABLE ::  rphiimx2(:,:) ! rphiimx2(3,dimwann)
       REAL(dbl), ALLOCATABLE ::  rphicmx1(:,:) ! rphicmx1(3,dimwann)
       REAL(dbl), ALLOCATABLE ::  rphicmx2(:,:) ! rphicmx2(3,dimwann)
-
-      COMPLEX(dbl), ALLOCATABLE :: cwfft1(:), cwfft2(:) !  cwfft1(iplwv),cwfft2(iplwv)
-
-      INTEGER :: ngptwann(3)
-
-      COMPLEX(dbl), ALLOCATABLE :: cpwann(:,:,:) ! cpwann(ngrid+1,ngrid+1,dimwann)
-      REAL(dbl), ALLOCATABLE :: poscar(:,:,:) ! poscar(3,ngrid+1,ngrid+1)
-      REAL(dbl), ALLOCATABLE :: posrel(:,:,:) !  posrel(3,ngrid+1,ngrid+1)
-      REAL(dbl), ALLOCATABLE ::  dwx(:) ! dwx(ngt*ngz)
-      REAL(dbl), ALLOCATABLE ::  dwyr(:,:) ! dwyr(ngt*ngz,dimwann)
-      REAL(dbl), ALLOCATABLE ::  dwyi(:,:) ! dwyi(ngt*ngz,dimwann)
-      REAL(dbl), ALLOCATABLE ::  yr(:) ! yr(dimwann)
-      REAL(dbl), ALLOCATABLE ::  yi(:) ! yi(dimwann)
-      REAL(dbl), ALLOCATABLE ::  dwy2r(:,:) ! dwy2r(ngt*ngz,dimwann)
-      REAL(dbl), ALLOCATABLE ::  dwy2i(:,:) ! dwy2i(ngt*ngz,dimwann)
 
       INTEGER, ALLOCATABLE :: nnlist(:,:), nntot(:) ! nnlist(nkpts,nnmx), nntot(nkpts)
       INTEGER, ALLOCATABLE :: nncell(:,:,:) ! nncell(3,nkpts,nnmx)
@@ -160,14 +136,10 @@
 
       COMPLEX(dbl), ALLOCATABLE ::  cptwr(:) ! cptwr(mplwv)
 
-      REAL(dbl), ALLOCATABLE :: poscartbig(:,:,:) ! poscartbig(3,nionbig,ntype)
-      REAL(dbl), ALLOCATABLE :: denr(:) ! denr(nplwv)
       REAL(dbl), ALLOCATABLE :: vkpt(:,:), wtkpt(:) ! vkpt(3,nkpts), wtkpt(nkpts)
       INTEGER, ALLOCATABLE :: nfile(:)         !  nfile(nkpts)
-      COMPLEX(dbl), ALLOCATABLE :: chdenr(:), chdeng(:) ! chdenr(nplwv), chdeng(nplwv)
-      COMPLEX(dbl), ALLOCATABLE :: CPTWFP(:,:,:) !  CPTWFP(mxddim+1,dimwann,nkpts)
+      COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:) !  cptwfp(mxddim+1,dimwann,nkpts)
 
-      INTEGER :: ngptar(3)
       INTEGER, ALLOCATABLE :: nindpw(:,:) !  nindpw(mxddim,nkpts)
       INTEGER, ALLOCATABLE :: ninvpw(:,:) !  ninvpw(0:nplwv,nkpts)
       INTEGER, ALLOCATABLE :: nplwkp(:)   !  nplwkp(nkpts)
@@ -189,18 +161,11 @@
       INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
       INTEGER, ALLOCATABLE :: gauss_typ(:) ! gauss_typ(dimwann)
 
-      CHARACTER( LEN = 11 ) :: frdat
-      CHARACTER( LEN = 11 ) :: fidat
-      CHARACTER( LEN = 11 ) :: frfft
-      CHARACTER( LEN = 11 ) :: fifft
-
       CHARACTER( LEN = 2 ) :: nameat(mxdtyp)
       INTEGER :: ntype, natom(mxdtyp)
       REAL(dbl) :: rat(3,mxdatm,mxdtyp)
       REAL(dbl) :: posion(3,mxdatm,mxdtyp) ! posion(3,nions,ntype)
-      REAL(dbl) :: posiol(3,mxdatm,mxdtyp) ! posiol(3,nions,ntype)
       REAL(dbl) :: poscart(3,mxdatm,mxdtyp) ! poscart(3,nions,ntype)
-      REAL(dbl) :: rmove(mxdatm,mxdtyp) ! rmove(nions,ntype)
 
       REAL(dbl) :: alatt
       REAL(dbl) :: s(3)
@@ -220,8 +185,6 @@
       INTEGER :: nwork
 
       COMPLEX(dbl) :: ctmp1, ctmp2
-
-      REAL(dbl) :: debug
 
       REAL(dbl) :: cclock
       EXTERNAL :: cclock
@@ -346,12 +309,8 @@
       DO nsp = 1 , ntype
         DO ni = 1 , natom(nsp)
           posion(:,ni,nsp) = rat(:,ni,nsp)/twopi
-          rmove(ni,nsp) = 0.0d0
           WRITE (*,7004) ni, nsp, ( posion(i,ni,nsp), i=1,3 )
           ng = ng + 1
-        END DO
-        DO ni = 1 , natom(nsp)
-          posiol(:,ni,nsp) = rat(:,ni,nsp)/twopi
         END DO
       END DO
  7004 FORMAT( 2x, 'ION ', i3, ' TYPE ', i1, ' AT (',3f12.7,') (A_i UNITS)' )
@@ -449,12 +408,6 @@
        END IF
  3811  FORMAT (/,' NOT ENOUGH ROOM FOR EWALD ROUTINE - DECREASE MAXGP'/ ' X:', 2i4/' Y:', 2i4/' Z:', 2i4)
 
-
-! ... Initialize the data used for the fast fourier transforms
-
-      ngptar(1) = ngx
-      ngptar(2) = ngy
-      ngptar(3) = ngz
 
 ! ... Subroutine genbtr calculate the g-vectors for each K_point
 !     within the kinetic energy cutoff
@@ -662,7 +615,7 @@
           WRITE(*,*) ' Too many neighbours !'
           STOP
         END IF
-        NNTOT(NKP) = NNX
+        nntot(nkp) = nnx
       END DO
 
 ! ... Check that the moduli of the b-vectors inside a shell are all identical
@@ -1144,10 +1097,10 @@
           END DO
 
           ! write(6,*) 'DEBUG: ', SUM(cptwr(1:mplwv))
-          CALL cfft3d( cptwr, ngptar(1), ngptar(2), ngptar(3), ngptar(1), ngptar(2), ngptar(3), -1 )
+          CALL cfft3d( cptwr, ngx, ngy, ngz, ngx, ngy, ngz, -1 )
 
           DO m = 1, mplwv
-            cptwr(m) = conjg(cptwr(m)) * ngptar(1) * ngptar(2) * ngptar(3)
+            cptwr(m) = conjg(cptwr(m)) * ngx * ngy * ngz
           END DO
 
 ! ...     ca: the phase <u_nk(r) exp(ikr) | phi_nwann(r)>, given a real space
@@ -2278,7 +2231,6 @@
         func_old2 = func_om2
         func_old3 = func_om3
 
-        deltao = func0 - funca
         func0 = funca
      
         WRITE (*,*) ' '
