@@ -37,7 +37,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 
    
    INTEGER                            :: Nk,              &
-                                         Nbands,             &
+                                         Nbands,          &
                                          Nisp,            &
                                          Nomega,          &
                                          ios,             &
@@ -61,8 +61,9 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 
    COMPLEX(dbl), ALLOCATABLE          :: expo(:,:)
    COMPLEX(dbl), POINTER              :: Sgm_in(:,:,:,:,:)
-   COMPLEX(dbl), ALLOCATABLE          :: Sgmk(:,:,:,:,:)
+   COMPLEX(dbl), ALLOCATABLE          :: Sgmk(:,:,:)
    COMPLEX(dbl), ALLOCATABLE          :: Sgm_out(:,:,:,:,:)
+   COMPLEX                            :: ctmp
    
    INTEGER                            :: isp,ie,iws
    INTEGER                            :: i,j,k, l,l1,l2, m,m1,m2
@@ -85,15 +86,16 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
       dimwin(:) = imax(:) -imin(:) +1
       mxdimwin = MAXVAL( dimwin(:) )
       ALLOCATE( eamp(mxdimwin,dimwann,nkpts) )
+      eamp(:,:,:) = 0.0
 
       DO k=1,nkpts
           READ(8,IOSTAT=ios) idum, ( (eamp(j,i,k), j=1,dimwin(k) ), i=1,idum )
-          IF ( ios /= 0 ) CALL errore('do_self_energy','Unable to read form SUBSPACE.DAT',ios)
+          IF ( ios /= 0 )  &
+             CALL errore('do_self_energy','Unable to read from SUBSPACE.DAT',ABS(ios))
+          IF ( idum /= dimwann)  &
+             CALL errore('do_self_energy','Wrong DIMWANN from SUBSPACE.DAT',1)
       END DO
    CLOSE(8)
-
-   IF ( idum /= dimwann )        &
-        CALL errore('do_self_energy','Wrong DIMWANN from SUBSPACE.DAT',1)
 
    WRITE(*,*)
    WRITE(*,*) 'File SUBSPACE.DAT successfully read'
@@ -103,6 +105,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
    CALL read_dyn_op(Nk,Vct,Nbands,Nisp,Nomega,E,Sgm_in,namein,   &
                      analit,form,basis)
+
 
 
 !
@@ -131,15 +134,22 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
 ! BAS_ROT = EAMP * CU
 !
-   ALLOCATE( bas_rot(dimwann,dimwann,nkpts) )
+   ALLOCATE( bas_rot(mxdimwin,dimwann,nkpts) )
+   bas_rot(:,:,:) = 0.0
 
    DO k=1,nkpts
-      bas_rot(:,:,k) = 0.0
-      CALL ZGEMM('N','N', dimwann, dimwann, dimwann, CMPLX(1.0,0.0) , eamp(:,:,k), &
-                  dimwann, cu(:,:,k), dimwann, CMPLX(0.0,0.0) , bas_rot(:,:,k), dimwann )
-   ENDDO    
-      
+      DO j=1,dimwann
+      DO i=1,dimwin(k)
 
+         DO l=1,dimwann
+            bas_rot(i,j,k) = bas_rot(i,j,k) + eamp(i,l,k) * cu(l,j,k) 
+         ENDDO
+
+      ENDDO
+      ENDDO
+   ENDDO    
+
+      
 !
 ! Fourier transform staff
 !
@@ -153,6 +163,7 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
                               vkpt(3,k) * REAL( indxws(3,iws) )   )   )
        ENDDO
    ENDDO
+
 
 
 !
@@ -170,77 +181,75 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 !
 !
 
-   ALLOCATE( Sgmk(dimwann,dimwann,nkpts,Nisp,Nomega))
+   ALLOCATE( Sgmk(dimwann,dimwann,nkpts))
    ALLOCATE( Sgm_out(dimwann,dimwann,nws,Nisp,Nomega) )
 
-   omega: DO ie=1,Nomega
 
+   omega: DO ie=1,Nomega
+   spin:  DO isp=ispin,ispin
 
 !
 ! band mixing
 !
           IF ( TRIM(form) == 'diagonal' ) THEN
 
-                  DO isp=ispin,ispin
-                     DO k=1,nkpts
-    
-                        DO j=1,dimwann
-                        DO i=1,dimwann
-                           Sgmk(i,j,k,isp,ie) = 0.0
+                 DO k=1,nkpts
+
+                    DO j=1,dimwann
+                    DO i=1,dimwann
+                       Sgmk(i,j,k) = 0.0
+                   
+                       DO l=1,dimwin(k)
+                          !
+                          ! band index of Sgm_in is consistent
+                          ! with PWSCF and NOT with SPACE_INVADERS
+                          ! index "m" makes the conversion
+                          !
+                          m=l+imin(k)-1
+                          Sgmk(i,j,k) = Sgmk(i,j,k) +             &
+                              CONJG( bas_rot(l,i,k) ) * Sgm_in(m,m,k,isp,ie) *  &
+                              bas_rot(l,j,k)
                        
-                           DO l=1,dimwin(k)
-                              !
-                              ! band index of Sgm_in is consistent
-                              ! with PWSCF and NOT with SPACE_INVADERS
-                              ! index "m" makes the conversion
-                              !
-                              m=l+imin(k)-1
-                              Sgmk(i,j,k,isp,ie) = Sgmk(i,j,k,isp,ie) +             &
-                                  CONJG( bas_rot(l,i,k) ) * Sgm_in(m,m,k,isp,ie) *  &
-                                  bas_rot(l,j,k)
-                       
-                           ENDDO
-                        ENDDO
-                     ENDDO
-                     ENDDO
-                  ENDDO
+                       ENDDO
+                    ENDDO
+                    ENDDO
+                 ENDDO
 
           ELSE
 
-                  DO isp=ispin,ispin
-                     DO k=1,nkpts
+                 DO k=1,nkpts
     
-                        DO j=1,dimwann
-                        DO i=1,dimwann
-                           Sgmk(i,j,k,isp,ie) = 0.0
+                    DO j=1,dimwann
+                    DO i=1,dimwann
+                       Sgmk(i,j,k) = 0.0
                        
-                           DO l1=1,dimwin(k)
-                           DO l2=1,dimwin(k)
-                              !
-                              ! band index of Sgm_in is consistent
-                              ! with PWSCF and NOT with SPACE_INVADERS
-                              ! indeces "m_i" make the conversion
-                              !
-                              m1=l1+imin(k)-1
-                              m2=l2+imin(k)-1
-                              Sgmk(i,j,k,isp,ie) = Sgmk(i,j,k,isp,ie) +                  &
-                                      CONJG( bas_rot(l1,i,k) ) * Sgm_in(m1,m2,k,isp,ie) *   &
-                                      bas_rot(l2,j,k)
-                       
-                           ENDDO
-                           ENDDO
-                        ENDDO
-                     ENDDO
-                     ENDDO
-                  ENDDO
+                       DO l1=1,dimwin(k)
+                       DO l2=1,dimwin(k)
+                          !
+                          ! band index of Sgm_in is consistent
+                          ! with PWSCF and NOT with SPACE_INVADERS
+                          ! indeces "m_i" make the conversion
+                          !
+                          m1=l1+imin(k)-1
+                          m2=l2+imin(k)-1
+                          Sgmk(i,j,k) = Sgmk(i,j,k) +                                   &
+                                  CONJG( bas_rot(l1,i,k) ) * Sgm_in(m1,m2,k,isp,ie) *   &
+                                  bas_rot(l2,j,k)
+                   
+                       ENDDO
+                       ENDDO
+                    ENDDO
+                    ENDDO
+                 ENDDO
 
           ENDIF
+
+
 
 !
 ! Fourier transforming
 !
 
-          DO isp=ispin,ispin
           DO iws=1,nws
                DO j=1,dimwann
                DO i=1,dimwann
@@ -248,18 +257,16 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
 
                     DO k=1,nkpts
                         Sgm_out(i,j,iws,isp,ie) = Sgm_out(i,j,iws,isp,ie)       + &
-                                   expo(k,iws)*Sgmk(i,j,k,isp,ie)
+                                   expo(k,iws)*Sgmk(i,j,k)
                     ENDDO
                     Sgm_out(i,j,iws,isp,ie) = Sgm_out(i,j,iws,isp,ie) / REAL(nkpts)
                ENDDO
                ENDDO
           ENDDO
-          ENDDO
 
 
+   ENDDO spin
    ENDDO omega
-
-
 
 
 !
@@ -270,30 +277,32 @@ SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
                      'time_ord','full_matrix','wannier')
    WRITE(*,*) 'SELF-ENERGY converted and written on file '//TRIM(nameout)
 
+
+
+
 !
 !  writing a second file with the elements
 !  related to R=0 only to be used for transport
 !  calculation
 !
-
    DO iws=1,nws
       IF( indxws(1,iws)==0 .AND. indxws(2,iws)==0 .AND. indxws(3,iws)==0  )  THEN
 
-          WRITE(*,*)'IWS OUTPUT', iws
+          WRITE(*,"('IWS OUTPUT',i4)") iws
           OPEN(unit=80,FILE='sigma00.dat',STATUS='unknown',FORM='unformatted')
               WRITE(80) dimwann, Nisp, Nomega
-          CLOSE(80)
 
           DO isp=1,Nisp
           DO ie=1,Nomega
-              CALL write_op(dimwann,E(ie),Sgm_out(:,:,iws,isp,ie),TRIM(string),  &
-                            'sigma00.dat', "unformatted")
+              CALL write_op(80,dimwann,E(ie),Sgm_out(:,:,iws,isp,ie)," ")
           ENDDO
           ENDDO
+
+          CLOSE(80)
+
       ENDIF
    ENDDO
 
-   
 !
 ! cleaning
 !

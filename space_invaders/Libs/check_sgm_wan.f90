@@ -214,7 +214,6 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
       OPEN(UNIT=10,FILE='sigmaNN.dat',POSITION='rewind',STATUS='unknown')
          WRITE(10,"('SIGMA components on Wannnier basis')") 
          WRITE(10,*)
-      CLOSE(10)
 
       isp = ispin 
       DO iws=1,nkpts
@@ -226,10 +225,12 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
              DO ie=ie1,ie2
                   WRITE(string,"(a4,3i3,a13,f15.9)") 'R= (', (indxws_ind(i,iws),i=1,3), & 
                                                   ')     omega= ', E(ie) 
-                  CALL write_op(dimwann,E(ie),Sgm(:,:,iws,isp,ie),string,'sigmaNN.dat','formatted')
+                  CALL write_op(10,dimwann,E(ie),Sgm(:,:,iws,isp,ie),TRIM(string))
              ENDDO
          ENDIF
       ENDDO
+
+      CLOSE(10)
 
    ENDIF
          

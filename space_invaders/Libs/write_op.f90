@@ -1,52 +1,54 @@
 
 !*********************************************************
-SUBROUTINE write_op(dim,energy,op,string,filout,format)
+SUBROUTINE write_op(unit,dim,energy,op,string)
    !*********************************************************
    USE kinds, ONLY : dbl
    IMPLICIT NONE
 
 ! <INFO>
 ! Writes the matrics elements of a generic operator
-! to file; data are APPENDED to the file.
+! to file; if file it is not opened, the write will be
+! formatted on std unit file (fort.X).   
 ! 
 ! </INFO>
 
-   INTEGER, PARAMETER                  :: out=10
-
+   INTEGER, INTENT(in)                 :: unit
    INTEGER, INTENT(in)                 :: dim
    COMPLEX(dbl), INTENT(in)            :: op(dim,dim) 
    CHARACTER(*), INTENT(in)            :: string
-   CHARACTER(*), INTENT(in)            :: filout
-   CHARACTER(*), INTENT(in)            :: format
    REAL(dbl),    INTENT(in)            :: energy
 
+   LOGICAL                             :: open
+   LOGICAL                             :: formatted
+   CHARACTER(3)                        :: fmt
    INTEGER                             :: i,j
 
 
 !------------------------------------------------
-
-   IF ( TRIM(format) /= "formatted" .AND. TRIM(format) /= "unformatted" .AND. &
-        TRIM(format) /= "FORMATTED" .AND. TRIM(format) /= "UNFORMATTED"   )   &
-        CALL errore('write_op','Invalid formta '//TRIM(format),1)
-
-   IF ( TRIM(format) == 'formatted' .OR. TRIM(format) == 'FORMATTED' ) THEN
-      OPEN(UNIT=out, FILE=filout, POSITION='append', STATUS='unknown', FORM=TRIM(format) )
-         WRITE(out,*) string
-         WRITE(out,*) energy
-         WRITE(out,*) 
-         DO j=1,dim
-            WRITE(out,"(4(2f15.8,3x))") ( op(i,j), i=1,dim ) 
-         ENDDO
-         WRITE(out,*) 
-      CLOSE(out)
+   
+   INQUIRE(unit, OPENED=open, FORMATTED=fmt )
+   IF ( .NOT. open ) THEN
+      formatted = .TRUE.
+   ELSEIF ( TRIM(fmt) == "YES" .OR. TRIM(fmt) == "yes") THEN
+      formatted = .TRUE.
    ELSE
-      OPEN(UNIT=out, FILE=filout, POSITION='append', STATUS='unknown', FORM=TRIM(format) )
-         WRITE(out) string
-         WRITE(out) energy
-         DO j=1,dim
-            WRITE(out) ( op(i,j), i=1,dim ) 
-         ENDDO
-      CLOSE(out)
+      formatted = .FALSE.
+   ENDIF
+       
+   IF ( formatted ) THEN
+      WRITE(unit,*) TRIM(string)
+      WRITE(unit,*) energy
+      WRITE(unit,*) 
+      DO j=1,dim
+         WRITE(unit,"(4(2f15.8,3x))") ( op(i,j), i=1,dim ) 
+      ENDDO
+      WRITE(unit,*) 
+   ELSE
+      WRITE(unit) TRIM(string)
+      WRITE(unit) energy
+      DO j=1,dim
+         WRITE(unit) ( op(i,j), i=1,dim ) 
+      ENDDO
    ENDIF
 
 
