@@ -456,7 +456,7 @@
              cptwfp(ninvpw(npoint,nkp),i,nkp) = conjg(lvec(j,i))
 
              !  WRITE(50,1122) CPTWFP(NINVPW(NPOINT,NKP),I,NKP), NINVPW(NPOINT,NKP),I,NKP
-1122         FORMAT(2D23.15,3I6) 
+             !  1122         FORMAT(2D23.15,3I6) 
 
              IF ( ninvpw( npoint, nkp ) > nplwkp( nkp ) .OR. ninvpw(npoint,nkp) <= 0 ) THEN
                WRITE(*,*) ninvpw(npoint,nkp)
