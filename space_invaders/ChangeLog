@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+18 Mar 2005      Fixed a bug in ions.f90: different atomic species were not properly
+                 treated. (AF)
+
 15 Mar 2005      Fixed a bug in trial_center_setup routine. Added the input flag
                  unitary_thr both in want input and hamiltonian input in order to control
                  the checks on unitariery. (AF)
