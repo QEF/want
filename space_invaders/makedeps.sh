@@ -9,8 +9,8 @@ for DIR in Modules Libs Main
 do
     # set inter-directory dependencies
     case $DIR in
-        Modules )                         DEPENDS=""                       ;;
-        Libs | Main )                      DEPENDS="../Modules"             ;;
+        Modules )     DEPENDS=""           ;;
+        Libs | Main ) DEPENDS="../Modules" ;;
     esac
 
     # generate dependencies file

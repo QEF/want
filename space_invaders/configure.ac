@@ -22,6 +22,17 @@ arflags=$ARFLAGS
 mylib=$MYLIB
 includefftw=$INCLUDEFFTW
 
+# command-line arguments
+for arg in $*
+do
+	if   test "$arg" = "--disable-parallel" ; then no_parallel=1
+	elif test "$arg" = "--disable-shared"   ; then no_shared=1
+	fi
+done
+
+# disable parallel compilation by default
+no_parallel=1
+
 # configure for current directory by default
 if test "$topdir" = "" ; then topdir="`pwd`" ; fi
 
@@ -30,16 +41,26 @@ AC_CANONICAL_BUILD
 
 # check compiling environment
 case $build in
-*-pc-linux-* )
+ia64-*-linux-gnu )
+	is_linux64=1
+	try_f90_parallel="mpif90"
+	try_f90="ifort ifc f90 f77 g77"
+	try_ar="ar"
+	try_arflags="ruv"
+	try_dflags="-D__LINUX64"
+	;;
+*-pc-linux-gnu )
 	is_linux=1
-	try_f90="mpif90 ifort ifc pgf90 f90 mpif77 pgf77 f77 g77"
+	try_f90_parallel="mpif90"
+	try_f90="ifort ifc pgf90 f90 pgf77 f77 g77"
 	try_ar="ar"
 	try_arflags="ruv"
 	try_dflags="-D__LINUX"
 	;;
 *-ibm-aix* )
 	is_aix=1
-	try_f90="mpxlf90_r mpxlf90 xlf90 f90 xlf f77 g77"
+	try_f90_parallel="mpxlf90_r mpxlf90"
+	try_f90="xlf90 f90 xlf f77 g77"
 	try_ar="ar"
 	try_arflags="-X64 ruv"
 	try_dflags="-D__AIX"
@@ -58,7 +79,8 @@ alphaev*-dec-osf* )
 	;;
 sparc-sun-* )
 	is_sparc=1
-	try_f90="mpf90 f90 mpf77 f77 g77"
+	try_f90_parallel="mpf90"
+	try_f90="f90 f77 g77"
 	try_ar="ar"
 	try_arflags="ruv"
 	;;
@@ -72,6 +94,7 @@ sparc-sun-* )
 	try_arflags="ruv"
 	;;
 esac
+if ! test $no_parallel ; then try_f90="$try_f90_parallel $try_f90" ; fi
 
 # check Fortran 90 compiler
 if test "$f90" = "" ; then f90="$try_f90" ; fi
@@ -80,53 +103,72 @@ AC_PROG_F77($f90)
 f90=$F77
 
 case "$build:$f90" in
-*-pc-linux-gnu:pgf* )
-	is_pgi=1
-	try_cc="pgcc gcc cc icc"
-	try_f77="pgf77 $f90"
+ia64-*-linux-gnu:ifort )
+	# extract compiler version
+	echo $ECHO_N "checking version of $f90... $ECHO_C"
+	intel_version=`$f90 -V 2>&1 | grep "Intel(R)"`
+	version=`echo $intel_version | awk '{print $8}'`
+	echo "${ECHO_T}$version"
+
+	is_intel=1
+	try_cc="icc gcc cc"
+	try_f77="$f90"
 	;;
 *-pc-linux-gnu:ifort | *-pc-linux-*:ifc )
 	# extract compiler version
 	echo $ECHO_N "checking version of $f90... $ECHO_C"
-	ifc_version=`$f90 -V 2>&1 | grep "Intel(R)"`
-	version=`echo $ifc_version | awk '{print $8}'`
+	intel_version=`$f90 -V 2>&1 | grep "Intel(R)"`
+	version=`echo $intel_version | awk '{print $8}'`
 	echo "${ECHO_T}$version"
 
-	is_ifc=1
-	try_cc="icc gcc cc mpicc pgcc"
+	is_intel=1
+	try_cc="icc gcc cc"
 	try_f77="$f90"
+	;;
+*-pc-linux-gnu:pgf* )
+	is_pgi=1
+	try_cc="pgcc gcc cc"
+	try_f77="pgf77 $f90"
 	;;
 *-pc-linux-gnu:mpif* )
 	# which compiler is actually under the hood?
 	echo $ECHO_N "checking version of $f90... $ECHO_C"
-	pgi_version=`$f90 -V 2>&1 | grep -e pgf`
-	ifc_version=`$f90 -V 2>&1 | grep "Intel(R)"`
-	if test "$pgi_version" != ""
+	intel_version=`$f90 -V 2>&1 | grep "Intel(R)"`
+	pgi_version=`$f90 -V 2>&1 | grep "pgf"`
+	if test "$intel_version" != ""
+	then
+		version=`echo $intel_version | awk '{print $8}'`
+		echo "${ECHO_T}ifc $version"
+
+		is_intel=1
+		try_cc_parallel="mpicc"
+		try_cc="icc gcc cc"
+		try_f77_parallel="mpif77"
+		try_f77="ifort ifc $f90"
+	elif test "$pgi_version" != ""
 	then
 		name=`echo $pgi_version | awk '{print $1}'`
 		version=`echo $pgi_version | awk '{print $2}'`
 		echo "${ECHO_T}$name $version"
 
 		is_pgi=1
-		try_cc="mpicc pgcc gcc cc icc"
-		try_f77="mpif77 pgf77 $f90"
-	elif test "$ifc_version" != ""
-	then
-		version=`echo $ifc_version | awk '{print $8}'`
-		echo "${ECHO_T}ifc $version"
-
-		is_ifc=1
-		try_cc="mpicc icc gcc cc pgcc"
-		try_f77="mpif77 ifort ifc $f90"
+		try_cc_parallel="mpicc"
+		try_cc="pgcc gcc cc"
+		try_f77_parallel="mpif77"
+		try_f77="pgf77 $f90"
 	else
 		echo "${ECHO_T}unknown"
-		try_cc="mpicc gcc cc pgcc icc"
-		try_f77="mpif77 $f90"
+		try_cc_parallel="mpicc"
+		try_cc="gcc cc"
+		try_f77_parallel="mpif77"
+		try_f77="f77 $f90"
 	fi
 	;;
 *-ibm-aix*:* )
-	try_cc="mpcc_r mpcc xlc cc gcc"
-	try_f77="mpxlf_r mpxlf xlf f77 $f90"
+	try_cc_parallel="mpcc_r mpcc"
+	try_cc="xlc cc gcc"
+	try_f77_parallel="mpxlf_r mpxlf"
+	try_f77="xlf f77 $f90"
 	;;
 mips-sgi-*:* )
 	try_cc="cc gcc"
@@ -137,8 +179,10 @@ alphaev*-dec-osf* )
 	try_f77="f77 $f90"
 	;;
 sparc-sun-*:* )
-	try_cc="mpcc cc gcc"
-	try_f77="mpf77 f77 $f90"
+	try_cc_parallel="mpcc"
+	try_cc="cc gcc"
+	try_f77_parallel="mpf77"
+	try_f77="f77 $f90"
 	;;
 * )
 	# unknown
@@ -146,6 +190,11 @@ sparc-sun-*:* )
 	try_f77="f77 $f90"
 	;;
 esac
+if ! test $no_parallel
+then
+	try_f77="$try_f77_parallel $try_f77"
+	try_cc="$try_cc_parallel $try_cc"
+fi
 
 # clear cached values
 unset F77 ac_cv_prog_ac_ct_F77 ac_cv_f77_compiler_gnu ac_cv_prog_f77_g
@@ -163,15 +212,17 @@ cc=$CC
 # check whether the C and Fortran compilers are compatible
 case "$build:$cc:$f90" in
 	# list supported combinations here
-*-ibm-aix*:mpcc_r:mpxlf*_r | *-ibm-aix*:mpcc:mpxlf* | \
-*-ibm-aix*:xlc:*xlf* | *-ibm-aix*:cc:*xlf* )            ;;
-*-pc-linux-*:*cc:mpif90 )                               ;;
-*-pc-linux-*:pgcc:pgf90 )                               ;;
-*-pc-linux-*:icc:ifc | *-pc-linux-*:gcc:ifc | \
-*-pc-linux-*:icc:ifort | *-pc-linux-*:gcc:ifort )       ;;
-mips-sgi-*:cc:f90 )                                     ;;
-alphaev*-dec-osf*:cc:f90 )				;;
-# sparc-sun-*:mpcc:mpf90 | sparc-sun-*:cc:f90 )           ;;
+ia64-*-linux-gnu:icc:ifort )                          ;;
+ia64-*-linux-gnu:gcc:ifort )                          ;;
+*-pc-linux-gnu:icc:ifort | *-pc-linux-*:icc:ifc )     ;;
+*-pc-linux-gnu:gcc:ifort | *-pc-linux-*:gcc:ifc )     ;;
+*-pc-linux-gnu:*cc:mpif90 )                           ;;
+*-pc-linux-gnu:pgcc:pgf90 )                           ;;
+*-ibm-aix*:mpcc_r:mpxlf*_r | *-ibm-aix*:mpcc:mpxlf* ) ;;
+*-ibm-aix*:xlc:*xlf* | *-ibm-aix*:cc:*xlf* )          ;;
+mips-sgi-*:cc:f90 )                                   ;;
+alphaev*-dec-osf*:cc:f90 )                            ;;
+# sparc-sun-*:mpcc:mpf90 | sparc-sun-*:cc:f90 )         ;;
 
 * )
 	AC_MSG_WARN(unsupported C/Fortran compilers combination)
@@ -183,26 +234,33 @@ esac
 
 # check compilers flags
 case "$build:$f90" in
+ia64-*-linux-gnu:ifort )
+	try_fflags="-Vaxlib -O2 -assume byterecl"
+	try_fflags_noopt="-O0"
+	try_ldflags="-Vaxlib"
+	try_ldflags_static="-static"
+	try_dflags="$try_dflags -D__INTEL"
+	pre_f_dflags="-fpp "
+	have_cpp=1
+	;;
 *-pc-linux-gnu:* )
-	if test $is_pgi
-	then
-		try_fflags="-fast -r8"
-		try_f90flags="\$(FFLAGS)"
-		try_fflags_noopt="-O0"
-		try_cpp="cpp"
-		try_ldflags=""
-		try_dflags="$try_dflags -D__PGI"
-	elif test $is_ifc
+	if test $is_intel
 	then
 		# extract integer part of version
+		if test `echo $version | sed 's/\..*//'` -gt 7
+		then
+		        try_fflags="-Vaxlib -O2 -tpp6 -assume byterecl"
+		else
+		        try_fflags="-Vaxlib -O2 -tpp6"
+		fi
 		if test `echo $version | sed 's/\..*//'` -lt 7
 		then
 			# old versions of ifc require this stuff
 			echo $ECHO_N "setting up ifc environment... $ECHO_C"
 			pcl_ph="D3"
 			pcl_pw="PH PP Gamma PWNC PWCOND pwtools $pcl_ph"
-			pcl_modules="PW FPMD CPV flib $pcl_pw"
-			pcl_dot=". Modules upftools $pcl_modules"
+			pcl_modules="PW FPMD CPV flib upftools $pcl_pw"
+			pcl_dot=". Modules $pcl_modules"
 			for dir in $pcl_dot
 			do
 				echo work.pc > $topdir/$dir/intel.pcl
@@ -226,12 +284,21 @@ case "$build:$f90" in
 		else
 			try_f90flags="\$(FFLAGS) -nomodule"
 		fi
-		try_fflags="-Vaxlib -O2 -tpp6"
 		try_fflags_noopt="-O0"
 		try_ldflags="-Vaxlib"
+		try_ldflags_static="-static"
 		try_dflags="$try_dflags -D__INTEL"
 		pre_f_dflags="-fpp "
 		have_cpp=1
+	elif test $is_pgi
+	then
+		try_fflags="-fast -r8"
+		try_f90flags="\$(FFLAGS)"
+		try_fflags_noopt="-O0"
+		try_cpp="cpp"
+		try_ldflags=""
+		try_ldflags_static="-Bstatic"
+		try_dflags="$try_dflags -D__PGI"
 	fi
 	;;
 *-ibm-aix*:mpxlf* | *-ibm-aix*:xlf* )
@@ -240,6 +307,7 @@ case "$build:$f90" in
 	try_f90flags="\$(FFLAGS) -qfree=f90"
 	try_fflags_noopt="-q64 -O0"
 	try_ldflags="-q64"
+	# try_ldflags_static="-bstatic"
 	pre_f_dflags="-WF,"
 	aix_flags=1
 	have_cpp=1
@@ -283,6 +351,8 @@ sparc-sun-*:mpf90 | sparc-sun-*:f90 )
 	try_ldflags=""
 	;;
 esac
+if test $no_shared ; then try_ldflags="$try_ldflags $try_ldflags_static" ; fi
+
 if test "$fflags" = ""       ; then fflags=$try_fflags             ; fi
 if test "$f90flags" = ""     ; then f90flags=$try_f90flags         ; fi
 if test "$fflags_noopt" = "" ; then fflags_noopt=$try_fflags_noopt ; fi
@@ -290,24 +360,28 @@ echo setting FFLAGS... $fflags
 echo setting F90FLAGS... $f90flags
 
 case "$build:$cc" in
-*-pc-linux-*:mpicc )
-	if test $is_pgi
-	then
-		try_cflags="-fast"
-		c_ldflags=""
-	elif test $is_ifc
+ia64-*-linux-gnu:icc )
+	try_cflags="-O3"
+	c_ldflags="-Vaxlib"
+	;;
+*-pc-linux-gnu:mpicc )
+	if test $is_intel
 	then
 		try_cflags="-O3"
 		c_ldflags="-Vaxlib"
+	elif test $is_pgi
+	then
+		try_cflags="-fast"
+		c_ldflags=""
 	fi
 	;;
-*-pc-linux-*:pgcc )
-	try_cflags="-fast"
-	c_ldflags=""
-	;;
-*-pc-linux-*:icc )
+*-pc-linux-gnu:icc )
 	try_cflags="-O3"
 	c_ldflags="-Vaxlib"
+	;;
+*-pc-linux-gnu:pgcc )
+	try_cflags="-fast"
+	c_ldflags=""
 	;;
 *-ibm-aix*:mpcc_r | *-ibm-aix*:mpcc | *-ibm-aix*:xlc | *-ibm-aix*:cc )
 	try_cflags="-q64 -O2"
@@ -391,12 +465,16 @@ F77=$f90 # use Fortran 90 actually (autoconf only knows Fortran 77!)
 if test "$libs" = ""
 then
 	# build list of directories to search
-	if test $is_aix
-	then
-		try_libdirs="/usr/local/lib /cineca/lib /cineca/lib/mass"
-	elif test $is_linux && test $is_ifc
+	if test $is_linux64 && test $is_intel
 	then
 		try_libdirs="/usr/local/lib
+			     /opt/intel/mkl70/lib/64
+			     /opt/intel/mkl/mkl61/lib/64 /opt/intel/mkl/lib/64
+			     /opt/intel/mkl61/lib/64"
+	elif test $is_linux && test $is_intel
+	then
+		try_libdirs="/usr/local/lib
+			     /opt/intel/mkl70/lib/32
 			     /opt/intel/mkl/mkl61/lib/32 /opt/intel/mkl/lib/32
 			     /opt/intel/mkl61/lib/32
 			     /cineca/lib /cineca/prod/intel/lib"
@@ -406,6 +484,9 @@ then
 			     /usr/local/pgi/linux86/lib
 			     /opt/pgi/linux86/5.1/lib
 			     /cineca/lib /cineca/prod/pgi/lib"
+	elif test $is_aix
+	then
+		try_libdirs="/usr/local/lib /cineca/lib /cineca/lib/mass"
 	elif test $is_mips
 	then
 		try_libdirs="/usr/local/lib /cineca/lib"
@@ -428,7 +509,53 @@ then
 	fi
 
 	# use vendor libraries if available
-	if test $is_aix
+	if test $is_linux64 && test $is_intel
+	then
+		# check for mkl (in several directories)
+		for dir in none $try_libdirs
+		do
+			unset ac_cv_search_zggev # clear cached value
+			if test "$dir" = "none"
+			then
+				try_loption=
+			else
+				echo $ECHO_N "in $dir: " $ECHO_C
+				try_loption="-L$dir"
+			fi
+			FFLAGS="$test_fflags"
+			LDFLAGS="$test_ldflags $try_loption"
+			LIBS="$libs"
+			AC_SEARCH_LIBS(zggev, mkl_lapack,
+				       have_blas=1 have_lapack=1
+				       libs="$try_loption \
+$ac_cv_search_zggev -lmkl_ipf -lguide $libs", , -lmkl_ipf -lguide)
+			if test "$ac_cv_search_zggev" != "no"
+			then break ; fi
+		done
+	elif test $is_linux && test $is_intel
+	then
+		# check for mkl (in several directories)
+		for dir in none $try_libdirs
+		do
+			unset ac_cv_search_zggev # clear cached value
+			if test "$dir" = "none"
+			then
+				try_loption=
+			else
+				echo $ECHO_N "in $dir: " $ECHO_C
+				try_loption="-L$dir"
+			fi
+			FFLAGS="$test_fflags"
+			LDFLAGS="$test_ldflags $try_loption"
+			LIBS="$libs"
+			AC_SEARCH_LIBS(zggev, mkl_lapack,
+				       have_blas=1 have_lapack=1
+				       libs="$try_loption \
+$ac_cv_search_zggev -lmkl_ia32 -lguide $libs", , -lmkl_ia32 -lguide)
+			if test "$ac_cv_search_zggev" != "no"
+			then break ; fi
+		done
+	elif test $is_aix
 	then
 		# check for mass (in several directories)
 		for dir in none $try_libdirs
@@ -457,29 +584,6 @@ then
 		LIBS="$libs"
 		AC_SEARCH_LIBS(dcft, essl, have_fft=1 have_essl=1 have_blas=1
 			       libs="$LIBS")
-	elif test $is_linux && test $is_ifc
-	then
-		# check for mkl (in several directories)
-		for dir in none $try_libdirs
-		do
-			unset ac_cv_search_zggev # clear cached value
-			if test "$dir" = "none"
-			then
-				try_loption=
-			else
-				echo $ECHO_N "in $dir: " $ECHO_C
-				try_loption="-L$dir"
-			fi
-			FFLAGS="$test_fflags"
-			LDFLAGS="$test_ldflags $try_loption"
-			LIBS="$libs"
-			AC_SEARCH_LIBS(zggev, mkl_lapack,
-				       have_blas=1 have_lapack=1
-				       libs="$try_loption \
-$ac_cv_search_zggev -lmkl_ia32 -lguide $libs", , -lmkl_ia32 -lguide)
-			if test "$ac_cv_search_zggev" != "no"
-			then break ; fi
-		done
 	elif test $is_mips
 	then
 		# check for complib.sgimath
@@ -710,18 +814,6 @@ then
 	( cd $topdir ; ./makedeps.sh )
 	echo "${ECHO_T}done"
 fi
-
-# check sizes of types (not really needed, but Carlo wanted it)
-CFLAGS="$test_cflags"
-CPPFLAGS="$test_cppflags"
-LDFLAGS="$c_ldflags"
-LIBS=""
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(float)
-AC_CHECK_SIZEOF(double)
-AC_CHECK_SIZEOF(char)
-AC_CHECK_SIZEOF(void *)
 
 # export settings to generated files
 AC_SUBST(cc)
