@@ -1,0 +1,27 @@
+
+&INPUT_WAN
+    prefix = 'silicon'
+    postfix = '_WanT'
+    work_dir = './'
+    win_min =  -13.0
+    win_max =  14.8                    ! win_min, win_max
+    dimwann = 8                        ! dimwann  
+    alpha = 0.5                        ! alpha0 --> space
+    maxiter = 200
+    niter0 = 100, alphafix0 = 0.5      ! niter0, alphafix0 --> wannier
+    niter  = 800, alphafix  = 0.5 
+    ncg = 5                            ! niter, alphafix, ncg --> wannier
+    nshells = 1                        ! nshells
+    nwhich(1) = 1                      ! nwhich(nshells)
+    itrial = 3                         ! itrial --> space
+/
+WANNIER_CENTER {crystal}
+1  0.1250  0.1250  0.1250    -1  1  3   1.0       ! (centers for valence)
+1  0.1250 -0.1250 -0.1250    -1  2  3   1.0
+1 -0.1250  0.1250 -0.1250    -1  3  3   1.0
+1 -0.1250 -0.1250  0.1250    -1  4  3   1.0
+2  0.0625  0.0625  0.0625       0.1875  0.1875  0.1875  1.5    ! (centers for conduction)
+2 -0.1875  0.0625  0.0625      -0.5625  0.1875  0.1875  1.5
+2  0.0625 -0.1875  0.0625       0.1875 -0.5625  0.1875  1.5
+2  0.0625  0.0625 -0.1875       0.1875  0.1875 -0.5625  1.5
+

@@ -9,7 +9,7 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE zmatrix( kpt, nnlist, nshells, nwhich, nnshell, wb, lamp, kcm, mtrx,   &
-                  dimwann, dimwin, dimfroz, indxnfroz, nbnd, mxdnrk, mxdnn )
+                  dimwann, dimwin, dimwinx, dimfroz, indxnfroz, nbnd, mxdnrk, mxdnn )
 !=----------------------------------------------------------------------------------=
        USE kinds
        USE constants, ONLY : CZERO
@@ -23,13 +23,13 @@
        INTEGER :: nnlist(mxdnrk,mxdnn)
        INTEGER :: nshells, nwhich(nshells)
        INTEGER :: nnshell(mxdnrk,mxdnn)
-       INTEGER :: dimwann, dimwin(mxdnrk)
+       INTEGER :: dimwann, dimwin(mxdnrk), dimwinx
        INTEGER :: dimfroz(mxdnrk), indxnfroz(nbnd,mxdnrk)
        REAL(dbl) :: wb(mxdnrk,mxdnn)
-       COMPLEX(dbl) :: lamp(nbnd,nbnd,mxdnrk)
-       COMPLEX(dbl) :: kcm(nbnd,nbnd,mxdnn)
+       COMPLEX(dbl) :: lamp(dimwinx,dimwinx,mxdnrk)
+       COMPLEX(dbl) :: kcm(dimwinx,dimwinx,mxdnn)
 
-       COMPLEX(dbl) :: mtrx(nbnd,nbnd)
+       COMPLEX(dbl) :: mtrx(dimwinx,dimwinx)
  
        INTEGER :: m, n, l, j
        INTEGER :: nnx, ndnc, ndnn, nnsh, k_pls_b
@@ -39,7 +39,7 @@
  
        DO m = 1, dimwin(kpt) - dimfroz(kpt)
          DO n = 1, m
-           mtrx(m,n) = czero
+           mtrx(m,n) = CZERO
            DO l = 1, dimwann
  
 ! ...        LOOP OVER B-VECTORS

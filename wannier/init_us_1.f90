@@ -47,7 +47,7 @@ SUBROUTINE init_us_1
   USE spin_orb_module, ONLY : lspinorb, rot_ylm, fcoef
   !
   ! added for WFs
-  USE kpoints_module,  ONLY : dnn, ndnntot 
+  USE kpoints_module,  ONLY : bk, nkpts, nntot, mxdnn
   USE timing_module
   !
   IMPLICIT NONE
@@ -58,22 +58,24 @@ SUBROUTINE init_us_1
   INTEGER :: nt, ih, jh, nb, mb, nmb, l, m, ir, iq, is, startq, &
        lastq, ilast, ndm
   ! various counters
-  REAL(kind=dbl), ALLOCATABLE :: aux (:), aux1 (:), aux2(:), besr (:), qtot (:,:,:)
+  REAL(kind=dbl), ALLOCATABLE :: aux (:), aux1 (:), besr (:), qtot (:,:,:)
+  REAL(kind=dbl), ALLOCATABLE :: bkvect(:,:), bkmod(:)
   ! various work space
   REAL(kind=dbl) :: prefr, pref, q, qi
   ! the prefactor of the q functions
   ! the prefactor of the beta functions
   ! the modulus of g for each shell
   ! q-point grid for interpolation
-  REAL(kind=dbl), ALLOCATABLE :: ylmk0 (:)
+  REAL(kind=dbl), ALLOCATABLE :: ylmk0 (:,:)
   ! the spherical harmonics
   REAL(kind=dbl) ::  vll (0:lmaxx), vqint, sqrt2, j
   ! the denominator in KB case
   ! interpolated value
   INTEGER :: n1, m0, m1, n, li, mi, vi, vj, ijs, is1, is2, &
              lk, mk, vk, kh, lh, sph_ind, ierr
-  ! WFs  ndnntot <- 1
-  COMPLEX(kind=dbl) :: coeff, qgm(ndnntot)
+  INTEGER :: nbkvect, nn, ik
+  ! WFs  mxdnn <- 1
+  COMPLEX(kind=dbl) :: coeff, qgm(mxdnn)
   REAL(kind=dbl) :: spinor, ji, jk
 
   CALL timing('init_us_1',OPR='start')
@@ -85,14 +87,15 @@ SUBROUTINE init_us_1
     IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
   ALLOCATE (aux1( ndm), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating aux1',ABS(ierr))
-  ALLOCATE (aux2( ndnntot), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating aux2',ABS(ierr))
+    !
+  ALLOCATE (bkvect( 3, mxdnn ), STAT=ierr)    
+    IF ( ierr/=0) CALL errore('init_us_1','allocating bkvect',ABS(ierr))
+  ALLOCATE (bkmod( mxdnn ), STAT=ierr)    
+    IF ( ierr/=0) CALL errore('init_us_1','allocating bkmod',ABS(ierr))
   ALLOCATE (besr( ndm), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating besr',ABS(ierr))
   ALLOCATE (qtot( ndm , nbrx , nbrx), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating qtot',ABS(ierr))
-  ALLOCATE (ylmk0( lmaxq * lmaxq), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
 
   ap (:,:,:)   = ZERO
   if (lmaxq > 0) qrad(:,:,:,:)= ZERO
@@ -307,6 +310,9 @@ SUBROUTINE init_us_1
 #ifdef __PARA
   if (gg (1) > EPS_m8 ) goto 100
 #endif
+  ALLOCATE (ylmk0( 1, lmaxq * lmaxq), STAT=ierr)    
+    IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
+  !
   call ylmr2 (lmaxq * lmaxq, 1, g, gg, ylmk0)
   do nt = 1, ntyp
     if (tvanp (nt) ) then
@@ -342,35 +348,38 @@ SUBROUTINE init_us_1
       endif
     endif
   enddo
+  DEALLOCATE (ylmk0, STAT=ierr)    
+    IF ( ierr/=0) CALL errore('init_us_1','deallocating aux',ABS(ierr))
   !
   ! ... qb computation, added for WFs
-  !     this function is radial in b and therefore need to be computed only for
-  !     each b shell.  ( conversion from ang-1 to tpiba units is also performed)
+  !     Conversion from ang-1 to tpiba units is performed for the bk vecotrs.
   !     Before gg is used instead of SQRT(gg) because there we are interested
   !     only in the first element which is gg = 0
   !
-  DO is=1,ndnntot
-      aux2(is) = dnn(is) * bohr / tpiba 
+  DO ik=1,nkpts
+      nbkvect = nntot(ik)
+      DO nn=1,nbkvect
+         bkvect(1:3,nn) = bk(1:3,ik,nn) * bohr / tpiba
+         bkmod(nn) = SQRT( bkvect(1,nn)**2 + bkvect(2,nn)**2 + bkvect(3,nn)**2 )
+      ENDDO
+
+      ALLOCATE (ylmk0( nbkvect, lmaxq * lmaxq), STAT=ierr)    
+         IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
+
+      CALL ylmr2 (lmaxq * lmaxq, nbkvect, bkvect, bkmod, ylmk0)
+      DO nt = 1, ntyp
+         IF (tvanp (nt) ) THEN
+            DO ih = 1, nh (nt)
+            DO jh = 1, nh (nt)
+               CALL qvan2 (nbkvect, ih, jh, nt, bkmod, qgm, ylmk0)
+               qb (ih, jh, nt, 1:nbkvect, ik) = omega * qgm (1:nbkvect) 
+            ENDDO
+            ENDDO
+         ENDIF
+      ENDDO
+      DEALLOCATE (ylmk0, STAT=ierr)    
+         IF ( ierr/=0) CALL errore('init_us_1','deallocating aux',ABS(ierr))
   ENDDO
-
-  !
-  !
-  do nt = 1, ntyp
-    if (tvanp (nt) ) then
-      do ih = 1, nh (nt)
-        do jh = 1, nh (nt)
-           call qvan2 (ndnntot, ih, jh, nt, aux2, qgm, ylmk0)
-           qb (ih, jh, nt, 1:ndnntot) = omega * qgm (1:ndnntot) 
-        enddo
-      enddo
-    endif
-  enddo
-
-!! XXXX
-!DO is = 1,ndnntot
-!   WRITE(8,"('shell = ',i3)") is
-!   WRITE(8,"(2f15.9)") qb(:,:,:,is)
-!ENDDO
 
 
 #ifdef __PARA
@@ -413,12 +422,12 @@ SUBROUTINE init_us_1
 #ifdef __PARA
   call reduce (nqx * nbrx * ntyp, tab)
 #endif
-  deallocate (ylmk0)
   deallocate (qtot)
   deallocate (besr)
-  deallocate (aux2)
   deallocate (aux1)
   deallocate (aux)
+  deallocate (bkvect)
+  deallocate (bkmod)
 
   CALL timing('init_us_1',OPR='stop')
   RETURN

@@ -54,6 +54,7 @@ CONTAINS
       coord_tmp(:,1) = coord(:) 
       CALL cart2cry_rnk2(coord_tmp,basis,unit_str)
       coord(:) = coord_tmp(:,1)
+      RETURN
    END SUBROUTINE cart2cry_rnk1
 
 
@@ -92,6 +93,7 @@ CONTAINS
       ENDDO
 
       IF ( PRESENT(unit_str) ) unit_str='crystal'
+      RETURN
    END SUBROUTINE cart2cry_rnk2
 
 
@@ -107,6 +109,7 @@ CONTAINS
       coord_tmp(:,1) = coord(:) 
       CALL cry2cart_rnk2(coord_tmp,basis,unit_str)
       coord(:) = coord_tmp(:,1)
+      RETURN
    END SUBROUTINE cry2cart_rnk1
 
 
@@ -139,6 +142,7 @@ CONTAINS
       ENDDO
 
       IF ( PRESENT(unit_str) ) unit_str='cartesian'
+      RETURN
    END SUBROUTINE cry2cart_rnk2
 
 END MODULE converters_module

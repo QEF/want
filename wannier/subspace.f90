@@ -11,7 +11,7 @@
    MODULE subspace_module
 !*********************************************
    USE kinds, ONLY : dbl
-   USE windows_module, ONLY : dimwin, nbnd, lcompspace, windows_alloc => alloc, &
+   USE windows_module, ONLY : dimwin, dimwinx, lcompspace, windows_alloc => alloc, &
                               efermi, windows_allocate
    USE kpoints_module, ONLY : nkpts, kpoints_alloc
    USE input_module, ONLY : dimwann, input_alloc => alloc
@@ -40,12 +40,12 @@
    REAL(dbl),    ALLOCATABLE   :: wan_eig(:,:)       ! the eigenvalues in the new subspace
    !
    ! ... rotations defining the chosen subspace
-   COMPLEX(dbl), ALLOCATABLE   :: lamp(:,:,:)        ! nbnd, nbnd, nkpts
+   COMPLEX(dbl), ALLOCATABLE   :: lamp(:,:,:)        ! dimwinx, dimwinx, nkpts
    COMPLEX(dbl), ALLOCATABLE   :: camp(:,:,:)        ! equal
    COMPLEX(dbl), ALLOCATABLE   :: eamp(:,:,:)        ! equal
    COMPLEX(dbl), ALLOCATABLE   :: comp_eamp(:,:,:)   ! equal
    !
-   ! NOTE: the second dimension should be DIMWANN instead of NBND but, 
+   ! NOTE: the second dimension should be DIMWANN instead of DIMWINX but, 
    !       for coherence with the old notation about frozen states 
    !       (the total number of states is DIMWANN + DIMFROZ_max) matrixes are
    !       overallocated.
@@ -59,7 +59,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, nbnd     
+   PUBLIC :: nkpts, dimwinx
    PUBLIC :: dimwann
    PUBLIC :: wan_eig, efermi
    PUBLIC :: lamp, camp, eamp, comp_eamp
@@ -84,26 +84,26 @@ CONTAINS
        CHARACTER(17)      :: subname="subspace_allocate"
        INTEGER            :: ierr 
       
-       IF ( nbnd <= 0 .OR. nkpts <= 0 ) &
-           CALL errore(subname,' Invalid NBND or NKPTS ',1)
+       IF ( dimwinx <= 0 .OR. nkpts <= 0 ) &
+           CALL errore(subname,' Invalid DIMWINX or NKPTS ',1)
        IF ( dimwann <= 0 ) CALL errore(subname,' Invalid DIMWANN ',ABS(dimwann)+1)
 
        ALLOCATE( wan_eig(dimwann,nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating wan_eig ',dimwann*nkpts)
 
-       ALLOCATE( lamp(nbnd,nbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating lamp ', nbnd*nbnd*nkpts )
-       ALLOCATE( camp(nbnd,nbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating camp ', nbnd*nbnd*nkpts )
-       ALLOCATE( eamp(nbnd,nbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating eamp ', nbnd*nbnd*nkpts )
-       ALLOCATE( comp_eamp(nbnd,nbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating comp_eamp', nbnd*nbnd*nkpts)
+       ALLOCATE( lamp(dimwinx,dimwinx,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating lamp ', dimwinx**2 *nkpts )
+       ALLOCATE( camp(dimwinx,dimwinx,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating camp ', dimwinx**2 *nkpts )
+       ALLOCATE( eamp(dimwinx,dimwinx,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating eamp ', dimwinx**2 *nkpts )
+       ALLOCATE( comp_eamp(dimwinx,dimwinx,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating comp_eamp', dimwinx**2 *nkpts)
 
-       ALLOCATE( mtrx_in(nbnd,nbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_in ',nbnd*nbnd*nkpts )
-       ALLOCATE( mtrx_out(nbnd,nbnd,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_out ',nbnd*nbnd*nkpts )
+       ALLOCATE( mtrx_in(dimwinx,dimwinx,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_in ',dimwinx**2 *nkpts )
+       ALLOCATE( mtrx_out(dimwinx,dimwinx,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_out ',dimwinx**2 *nkpts )
        alloc = .TRUE.
 
    END SUBROUTINE subspace_allocate
@@ -161,7 +161,7 @@ CONTAINS
        IF ( .NOT. windows_alloc ) CALL errore(subname,'windows module not alloc',1)
 
        CALL iotk_write_begin(unit,TRIM(name))
-       CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.) 
+       CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.) 
        CALL iotk_write_attr(attr,"nkpts",nkpts) 
        CALL iotk_write_attr(attr,"dimwann",dimwann) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
@@ -185,7 +185,7 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="subspace_read"
-       INTEGER            :: nkpts_, nbnd_, dimwann_
+       INTEGER            :: nkpts_, dimwinx_, dimwann_
        INTEGER            :: ierr
 
        IF ( alloc ) CALL subspace_deallocate()
@@ -197,8 +197,8 @@ CONTAINS
 
        CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nbnd',nbnd_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NBND',ABS(ierr))
+       CALL iotk_scan_attr(attr,'dimwinx',dimwinx_,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
        CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
@@ -210,10 +210,10 @@ CONTAINS
            nkpts = nkpts_
        ENDIF
        IF ( windows_alloc ) THEN
-           IF ( nbnd_ /=nbnd) CALL errore(subname,'Invalid NBND',ABS(nbnd-nbnd_))
+          IF (dimwinx_/=dimwinx) CALL errore(subname,'Invalid DIMWINX',ABS(dimwinx-dimwinx_))
        ELSE
-           nbnd = nbnd_
-           CALL windows_allocate()
+          dimwinx = dimwinx_
+          CALL windows_allocate()
        ENDIF
        IF ( input_alloc ) THEN
            IF ( dimwann_ /= dimwann) CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_)+1)

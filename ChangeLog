@@ -3,8 +3,12 @@
             WanT code:  Log of Changes 
 =======================================================
 
+10 Feb 2005      Bug fixed in init_us_1 subroutine, USPP implementation is working. 
+                 Test6 added (silicon USPP). Perl script added in utilities for CVS log
+                 managing. (AF)
+
 07 Feb 2005      Converters module updated with rank1 operations. Bugs fixed in
-                 the USPP implementation.
+                 the USPP implementation. (AF)
 
 06 Feb 2005      Undo of the below unification of augmentation routines.
                  We keep on using s_psi but a different augmentation routine for

@@ -14,7 +14,7 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY : ZERO, CZERO, ONE, BOHR => bohr_radius_angs, EPS_m10
+      USE constants, ONLY : ZERO, CZERO, ONE, BOHR => bohr_radius_angs, EPS_m10, EPS_m6
       USE timing_module, ONLY : timing
 
       USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, &
@@ -35,7 +35,7 @@
  
       REAL(dbl) :: eta, eps
       PARAMETER( eta = 99999999.0d0 )
-      PARAMETER( eps = 1d-6 )
+      PARAMETER( eps = EPS_m6 )
  
  
       REAL(dbl) :: ddelta
@@ -383,7 +383,7 @@
 !      WRITE(0,"(4x,'nn =',i3,3x,'b ='3f7.4)") nn,bk(:,i,nn)
 !   ENDDO
 !ENDDO
-!
+
       CALL timing('bshells',OPR='stop')
 
       RETURN

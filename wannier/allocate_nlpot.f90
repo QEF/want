@@ -42,9 +42,9 @@ subroutine allocate_nlpot
   USE spin_orb_module, ONLY : lspinorb, fcoef
   !
   ! added for WFs
-  USE kpoints_module,  ONLY : ndnntot, nkpts
+  USE kpoints_module,  ONLY : mxdnn, nkpts
   !
-  implicit none
+  IMPLICIT NONE
   !
   !    a few local variables
   !
@@ -87,23 +87,23 @@ subroutine allocate_nlpot
      if (tvanp(nt)) nkbus = nkbus + nh (nt)
   enddo
   !
-  allocate (indv( nhm, ntyp))    
-  allocate (nhtol(nhm, ntyp))    
-  allocate (nhtolm(nhm, ntyp))    
-  allocate (nhtoj(nhm, ntyp))    
-  allocate (deeq( nhm, nhm, nat, nspin))    
+  ALLOCATE (indv( nhm, ntyp))    
+  ALLOCATE (nhtol(nhm, ntyp))    
+  ALLOCATE (nhtolm(nhm, ntyp))    
+  ALLOCATE (nhtoj(nhm, ntyp))    
+  ALLOCATE (deeq( nhm, nhm, nat, nspin))    
   if (lspinorb) then
     ! spin orbit is not implemented
     CALL errore('allocate_nlpot','spinorb not implemented',1)
-    allocate (qq_so(nhm, nhm, 4, ntyp))    
-    allocate (dvan_so( nhm, nhm, nspin, ntyp))    
-    allocate (fcoef(nhm,nhm,2,2,ntyp))
+    !allocate (qq_so(nhm, nhm, 4, ntyp))    
+    !allocate (dvan_so( nhm, nhm, nspin, ntyp))    
+    !allocate (fcoef(nhm,nhm,2,2,ntyp))
   else
     allocate (qq(   nhm, nhm, ntyp))    
     allocate (dvan( nhm, nhm, ntyp))    
     !
     ! added for Wannier calc. (ANDREA)
-    ALLOCATE (qb(   nhm, nhm, ntyp, ndnntot ), STAT=ierr)
+    ALLOCATE (qb(   nhm, nhm, ntyp, mxdnn, nkpts ), STAT=ierr)
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
   endif
   !
@@ -111,7 +111,7 @@ subroutine allocate_nlpot
           / dq + 4) * cell_factor
   lmaxq = 2*lmaxkb+1
   !
-  if (lmaxq > 0) allocate (qrad( nqxq, nbrx*(nbrx+1)/2, lmaxq, ntyp))    
+  if (lmaxq > 0) ALLOCATE (qrad( nqxq, nbrx*(nbrx+1)/2, lmaxq, ntyp))    
   !
   ! WFs: here we want to manage all projections at the same time
   !      an extra kpt index is added

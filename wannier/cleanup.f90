@@ -47,6 +47,8 @@ CONTAINS
       USE timing_module,       ONLY : timing_deallocate, timing_alloc => alloc 
       USE struct_fact_data_module,  &
                                ONLY : struct_fact_data_deallocate, strf_alloc => alloc 
+      USE us_module,           ONLY : us_deallocate
+      USE uspp,                ONLY : uspp_deallocate
       IMPLICIT NONE
       
       IF ( input_alloc )    CALL input_deallocate()
@@ -60,6 +62,8 @@ CONTAINS
       IF ( loc_alloc )      CALL localization_deallocate()
       IF ( timing_alloc )   CALL timing_deallocate()
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
+                            CALL us_deallocate()
+                            CALL uspp_deallocate()
 
    END SUBROUTINE cleanup
 

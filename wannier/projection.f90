@@ -11,9 +11,9 @@
 !=----------------------------------------------------------------------------------=
        SUBROUTINE projection( avec, lamp, ca, evc, vkpt,                   & 
                   kgv, isort, npwk, dimwin, dimwann, dimfroz,              &
-                  npwkx, nbnd, npw, ngx, ngy, ngz, nkpts,                  &
+                  npwkx, npw, ngx, ngy, ngz, nkpts,                        &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
-                  m_wann, ndir_wann, rloc, ndwinx)
+                  m_wann, ndir_wann, rloc, dimwinx)
 !=----------------------------------------------------------------------------------=
 
        USE kinds
@@ -24,14 +24,14 @@
        USE input_module,  ONLY : verbosity
        USE sph_har,       ONLY : gauss1
        USE util_module,   ONLY : gv_indexes, zmat_mul, zmat_unitary
-       USE uspp,          ONLY : qq
+       USE becmod,        ONLY : becp
 
        IMPLICIT NONE
 
        ! ... arguments
 
-       INTEGER :: npwkx, nbnd
-       INTEGER :: npw, ndwinx
+       INTEGER :: npwkx
+       INTEGER :: npw, dimwinx
        INTEGER :: ngx, ngy, ngz, nkpts
        INTEGER :: npwk(nkpts)
        INTEGER :: kgv(3,npw)
@@ -40,10 +40,10 @@
        INTEGER :: dimwin(nkpts)
        INTEGER :: dimfroz(nkpts)
        REAL(dbl) :: avec(3,3)
-       COMPLEX(dbl) :: evc( npwkx, ndwinx, nkpts )
+       COMPLEX(dbl) :: evc( npwkx, dimwinx, nkpts )
        REAL(dbl) :: vkpt(3,nkpts)
-       COMPLEX(dbl) :: lamp(nbnd,nbnd,nkpts)
-       COMPLEX(dbl) :: ca(nbnd,dimwann,nkpts)
+       COMPLEX(dbl) :: lamp(dimwinx,dimwinx,nkpts)
+       COMPLEX(dbl) :: ca(dimwinx,dimwann,nkpts)
 
        INTEGER :: gauss_typ(dimwann)
        REAL(dbl) :: rphiimx1(3,dimwann)
@@ -98,18 +98,18 @@
 
        CALL timing('projection',OPR='start')
 
-       ALLOCATE( tmp(nbnd,dimwann), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating tmp ', nbnd*dimwann )
+       ALLOCATE( tmp(dimwinx,dimwann), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating tmp ', dimwinx*dimwann )
        ALLOCATE( cptwr(ngx*ngy*(ngz+1)), STAT = ierr )
          IF( ierr /= 0 ) CALL errore( 'projection', 'allocating cptwr ', ngx*ngy*(ngz+1) )
-       ALLOCATE( cu(nbnd,dimwann), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating cu ', nbnd*dimwann )
-       ALLOCATE( u(nbnd,nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating u ', nbnd*nbnd )
+       ALLOCATE( cu(dimwinx,dimwann), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating cu ', dimwinx*dimwann )
+       ALLOCATE( u(dimwinx,dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating u ', dimwinx*dimwinx )
        ALLOCATE( vt(dimwann,dimwann), STAT = ierr )
          IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vt ', dimwann*dimwann )
-       ALLOCATE( work(4*nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating work ', 4*nbnd )
+       ALLOCATE( work(4*dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection', 'allocating work ', 4*dimwinx )
        ALLOCATE( aux(npwkx), STAT = ierr )
          IF( ierr /= 0 ) CALL errore( 'projection', 'allocating aux ', npwkx )
        ALLOCATE( s(dimwann), STAT = ierr )
@@ -174,6 +174,7 @@
        ca(:,:,:) = CZERO
        DO ik = 1, nkpts
          IF  ( dimwann >  dimfroz(ik) ) THEN  !IF  not, don't need to waste CPU time!
+
            DO ib = 1, dimwin(ik)
              !
              ! ... Go through all the g-vectors inside the cutoff radius 
@@ -183,13 +184,11 @@
              ! ... apply the US augmentation, supposing the input
              !     localized functions behave as US orbitals
              !
-             CALL s_psi( npwkx, npwk(ik), 1, ik, evc(1,ib,ik), aux )
-!
-! DEBUG sostituisco con questo
-!             aux(1:npwk(ik)) = evc(1:npwk(ik),ib,ik)
+             IF ( .NOT. ALLOCATED(becp) ) ALLOCATE( becp(1,dimwinx,nkpts))
 
+             CALL s_psi( npwkx, npwk(ik), 1, ik, becp(1,ib,ik), evc(1,ib,ik), aux )
              aux(npwk(ik)+1:npwkx) = CZERO
-
+ 
              cptwr = CZERO
              DO j=1,npwk(ik)           
                  npoint = nindpw(j)
@@ -341,7 +340,7 @@
            tmp(:,:) = ca(:,:,ik)
  
            CALL zgesvd( 'a', 'a', dimwin(ik), dimwann, tmp(1,1),              &
-                nbnd, s, u, nbnd, vt, dimwann, work, 4*nbnd, rwork2, info )
+                dimwinx, s, u, dimwinx, vt, dimwann, work, 4*dimwinx, rwork2, info )
 
            IF ( info /= 0 )  &
              CALL errore( ' projection ', ' zgesvd: info has illegal value ', info )

@@ -15,8 +15,6 @@
    nshells = 2                         ! nshells
    nwhich(1) = 1                       ! nwhich(nshells)
    nwhich(2) = 2                       ! nwhich(nshells)
-!   itrial = 1                          ! itrial --> disentangle
-!   itrial = 2                          ! itrial --> disentangle
    itrial = 3                          ! itrial --> disentangle
    ordering_type = 'complete'
 /

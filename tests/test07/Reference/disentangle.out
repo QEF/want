@@ -1,0 +1,267 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =       Norm Conserv. Pseudopot. Impl.       =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 1.1.1  starts ...
+  Date 10Feb2005 at 17:26:35 
+
+
+  PW-DFT data read from file: gold1.dft
+
+  ======================================================================
+  =                                Main                                =
+  ======================================================================
+
+            Calculation Title :     WanT Calculation
+                       Prefix :     gold1
+            Working directory :     ./
+
+<WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =    6
+    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Max iteration number =   100
+    SD minim: Mixing parameter (alphafix) =  0.500
+    SD minim: Max iteration number =  1500
+    Every   5 iteration perform a CG minimization (ncg)
+    Number of k-point shells =   2
+    Chosen shells (indexes) =   1  2
+    Print each  10 iterations
+    Ordering type = COMPLETE
+    Verbosity = MEDIUM
+</WANNIER_FUNCTIONS>
+
+<DISENTANGLE>
+  Input parameters for disentangling subspaces
+    Mixing parameter (alpha)=  0.500
+    Max iter =  1000
+    Starting guess orbitals (itrial) =  3
+    Disentangle convergence threshold =     0.000000010
+</DISENTANGLE>
+
+<WANNIER_CENTERS>
+  Gaussian centers: (cart. coord. in Bohr)
+    Center =   1 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 )
+    Center =   2 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 )
+    Center =   3 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 )
+    Center =   4 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 )
+    Center =   5 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 )
+    Center =   6 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 )
+</WANNIER_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =   20.0000000 (Bohr)
+  Alat  =   10.5835400 (Ang )
+  Omega = 1889.7280000 (Bohr^3)
+  Omega =  280.0284636 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.5835  0.0000  0.0000 )
+    a(2) = (  0.0000 10.5835  0.0000 )
+    a(3) = (  0.0000  0.0000  2.5000 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+</LATTICE>
+
+<IONS>
+  Number of chemical species =  1
+  Calculation is done within US pseudopot.
+
+     Pseudo( 1) = Au.pw91-d-van.UPF
+
+     Pseudo( 1) is Au (US)    zval = 11.0   lmax= 2   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   939 points
+     The pseudopotential has  6 beta functions with: 
+                l(1) =   0
+                l(2) =   0
+                l(3) =   1
+                l(4) =   1
+                l(5) =   2
+                l(6) =   2
+     Q(r) pseudized with  3 coefficients,  rinner =    1.600   1.800   1.600
+                                                       1.600   1.800
+
+  Atomic positions: (cart. coord. in units of alat)
+     Au  tau(   1 ) = (   0.0000000   0.0000000   0.0472432 )
+</IONS>
+
+<K-POINTS>
+  nkpts =    4
+  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Ang^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
+    k point   2:   (   0.00000  0.00000  0.62832 ),   weight =   0.2500
+    k point   3:   (   0.00000  0.00000  1.25664 ),   weight =   0.2500
+    k point   4:   (   0.00000  0.00000  1.88495 ),   weight =   0.2500
+</K-POINTS>
+
+<B-SHELL>
+  Nearest-neighbour shells for k-point 1: (in Ang^-1)
+    shell (  1 )    radius =   0.59368
+    shell (  2 )    radius =   0.62832
+    shell (  3 )    radius =   0.83958
+    shell (  4 )    radius =   0.86443
+    shell (  5 )    radius =   1.04866
+    shell (  6 )    radius =   1.18735
+    shell (  7 )    radius =   1.25664
+    shell (  8 )    radius =   1.32750
+    shell (  9 )    radius =   1.34335
+    shell ( 10 )    radius =   1.38981
+    shell ( 11 )    radius =   1.46868
+    shell ( 12 )    radius =   1.51130
+
+  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
+    shell (  1 )    neighbours  =    4
+    shell (  2 )    neighbours  =    2
+
+  List of the  6 vectors b_k: (Ang^-1) 
+    b_k   1:   (  -0.59368  0.00000  0.00000 ),   weight =   1.4186
+    b_k   2:   (   0.00000 -0.59368  0.00000 ),   weight =   1.4186
+    b_k   3:   (   0.00000  0.59368  0.00000 ),   weight =   1.4186
+    b_k   4:   (   0.59368  0.00000  0.00000 ),   weight =   1.4186
+    b_k   5:   (   0.00000  0.00000  0.62832 ),   weight =   1.2665
+    b_k   6:   (   0.00000  0.00000 -0.62832 ),   weight =   1.2665
+
+  The  3  bk directions are:
+    dir 1:   (  -0.59368  0.00000  0.00000 ) 
+    dir 2:   (   0.00000 -0.59368  0.00000 ) 
+    dir 3:   (   0.00000  0.00000  0.62832 ) 
+</B-SHELL>
+
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = ( -12.0000 ,   0.0000 )
+    Max number of bands within the energy window =     8
+
+  Electronic Structure from DFT calculation:
+    nkpts =   4,     nbnd =  10,
+    nspin =   1
+    Fermi energy =   -4.863929466 eV
+
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
+                                         imin =    1  imax =    8
+   Eigenvalues:
+   -10.5128  -6.6080  -6.6077  -6.3894  -4.8644  -4.8644  -1.1606  -1.1606
+     1.0138   1.9703
+
+    kpt =  2 (  0.000 0.000 0.250 )    dimwin =    6
+                                         imin =    1  imax =    6
+   Eigenvalues:
+    -7.4826  -6.8882  -6.8882  -6.2744  -6.2742  -5.4536   1.0410   1.0410
+     2.4835   3.4418
+
+    kpt =  3 (  0.000 0.000 0.500 )    dimwin =    6
+                                         imin =    1  imax =    6
+   Eigenvalues:
+    -8.2290  -8.2290  -5.9187  -5.9184  -5.1208  -0.1652   2.2850   4.7428
+     4.7428   6.8803
+
+    kpt =  4 (  0.000 0.000 0.750 )    dimwin =    6
+                                         imin =    1  imax =    6
+   Eigenvalues:
+    -7.4826  -6.8882  -6.8882  -6.2744  -6.2742  -5.4536   1.0410   1.0410
+     2.4835   3.4418
+
+    inner window: NOT used --> NO FROZEN STATES
+</WINDOWS>
+
+
+  Reading density G-grid from file: gold1.dft
+  Reading Wfcs from file: gold1.dft
+
+  Initizlizing US pseudopot. data
+
+
+  ======================================================================
+  =                       Overlap and Projections                       =
+  ======================================================================
+
+  Kinetic energy cut-off for wfcs =    20.00 (Ry)
+                         for rho  =   200.00 (Ry)
+  Total number of PW for rho  =      90341
+    Max number of PW for wfcs =       2912
+    FFT grid components (rho) =  (    96   96   24 )
+
+
+  Overlap and projections written on file: gold1_WanT.ovp
+
+  Initial trial subspace: projected localized orbitals
+
+
+  ======================================================================
+  =                   Starting Iteration loop                          =
+  ======================================================================
+
+  Iteration =     1   Omega_I =      5.95845306    Error =      0.00029211
+  Iteration =     2   Omega_I =      5.95750933    Error =      0.00022317
+  Iteration =     3   Omega_I =      5.95679665    Error =      0.00016184
+  Iteration =     4   Omega_I =      5.95628340    Error =      0.00011367
+  Iteration =     5   Omega_I =      5.95592451    Error =      0.00007817
+  Iteration =     6   Omega_I =      5.95567843    Error =      0.00005299
+  Iteration =     7   Omega_I =      5.95551197    Error =      0.00003556
+  Iteration =     8   Omega_I =      5.95540043    Error =      0.00002369
+  Iteration =     9   Omega_I =      5.95532622    Error =      0.00001569
+  Iteration =    10   Omega_I =      5.95527709    Error =      0.00001036
+  Iteration =    11   Omega_I =      5.95524469    Error =      0.00000681
+  Iteration =    12   Omega_I =      5.95522338    Error =      0.00000447
+  Iteration =    13   Omega_I =      5.95520939    Error =      0.00000293
+  Iteration =    14   Omega_I =      5.95520023    Error =      0.00000192
+  Iteration =    15   Omega_I =      5.95519424    Error =      0.00000125
+  Iteration =    16   Omega_I =      5.95519032    Error =      0.00000082
+  Iteration =    17   Omega_I =      5.95518776    Error =      0.00000054
+  Iteration =    18   Omega_I =      5.95518608    Error =      0.00000035
+  Iteration =    19   Omega_I =      5.95518499    Error =      0.00000023
+  Iteration =    20   Omega_I =      5.95518428    Error =      0.00000015
+  Iteration =    21   Omega_I =      5.95518382    Error =      0.00000010
+  Iteration =    22   Omega_I =      5.95518351    Error =      0.00000006
+  Iteration =    23   Omega_I =      5.95518332    Error =      0.00000004
+  Iteration =    24   Omega_I =      5.95518319    Error =      0.00000003
+  Iteration =    25   Omega_I =      5.95518310    Error =      0.00000002
+  Iteration =    26   Omega_I =      5.95518305    Error =      0.00000001
+  Iteration =    27   Omega_I =      5.95518301    Error =      0.00000001
+
+  Convergence achieved!!
+
+  Final Omega_I (Bohr^2, Angstrom^2)      5.95518297        1.66761975
+ ======================================================================
+
+  Subspace data written on file: gold1_WanT.spaces
+
+   <global routines>
+             clock number :    12
+
+              disentangle :     6.95s CPU 
+ 
+                want_init :     0.10s CPU
+                  bshells :     0.01s CPU
+                 wfc_data :     6.80s CPU
+                init_us_1 :     2.96s CPU
+                init_us_2 :     0.03s CPU (       4 calls,   0.008 s avg)
+                  ccalbec :     0.02s CPU (       4 calls,   0.005 s avg)
+                  overlap :     1.77s CPU
+             overlap_base :     1.76s CPU
+           add_us_overlap :     0.01s CPU (      24 calls,   0.000 s avg)
+               projection :     1.88s CPU
+                    s_psi :     0.03s CPU (      26 calls,   0.001 s avg)
+
+
