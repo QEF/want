@@ -11,8 +11,14 @@ MODULE input_wannier
 !=----------------------------------------------------------------------------=!
 
   USE kinds
+  USE io_module, ONLY : prefix, postfix, work_dir, title
   IMPLICIT NONE
   SAVE
+
+!
+! for the moment 
+!
+  PRIVATE :: prefix, postfix, work_dir, title
 
   INTEGER, PARAMETER :: nshx = 100  ! maximum value for nshells
 
@@ -34,7 +40,8 @@ MODULE input_wannier
 
   namelist / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
     alpha, maxiter, disentangle_thr, itrial, iphase, alphafix0, alphafix, niter, &
-    niter0, ncg, nshells, nwhich, ordering_type
+    niter0, ncg, nshells, nwhich, ordering_type,  &
+    prefix, postfix, work_dir, title
   
   CHARACTER(15)          :: wannier_center_units
   REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
@@ -69,6 +76,11 @@ CONTAINS
        CHARACTER(LEN=80)  :: card
        LOGICAL            :: tend
        !
+
+       prefix = "WanT"
+       postfix = " "
+       work_dir = "./"
+       title = "WanT Calculation"
 
        win_min = 0.0d0
        win_max = 0.0d0
