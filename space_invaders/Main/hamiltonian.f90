@@ -251,12 +251,6 @@
   
 ! ... Read energy eigenvalues in electron-volt
 
-      IF ( ( dimwann > 200 ) .or. ( nkpts > 99999 ) ) THEN
-        WRITE (*,*) '*** error ***'
-        WRITE (*,*) 'modify format in line number 102'
-        STOP '*** error ***'
-      ENDIF
-
       OPEN ( 7, FILE='energies.dat', STATUS='OLD', FORM='FORMATTED' )
 
       ALLOCATE( ei( dimwann, mxdnrk ), STAT=ierr )
@@ -657,8 +651,6 @@
 
  701  FORMAT('set data style dots',/,'set nokey',/,'set xrange [0:',F8.5,']', &
              & /,'set yrange [',F9.5,' :',F9.5,']')
- 702  FORMAT('set xtics (',:20('"',A2,'" ',F8.5,','),')')
- 703  FORMAT( A2,'" ',F8.5,')' )
  704  FORMAT('plot "band.dat"',/,'pause -1',/,'set output "band.ps"',/, & 
              & 'set terminal postscript color',/,'replot')
  705  FORMAT('set arrow from ',F8.5,',',F10.5,' to ',F8.5,',',F10.5, ' nohead')

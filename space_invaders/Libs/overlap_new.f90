@@ -105,7 +105,7 @@
 ! ... END declarations
 
       CALL timing('overlap',OPR='start')
-      WRITE( stdout , fmt= "( /, ' Starting Overlap ',/)")
+      !WRITE( stdout , fmt= "( /,2x,'Starting OVERLAP ',/)")
 
 
       nplwv = ngx * ngy * ngz
@@ -117,8 +117,8 @@
         CALL errore(' overlap ', ' inconsistent window ', ndwinx )
       END IF
 
-      WRITE( stdout, fmt= " (2x,'Number of bands in PW calculation =', i5 ) " ) mxdbnd
-      WRITE( stdout, fmt= " (2x,'Max number of bands within the energy window = ', i5 )" ) ndwinx
+!     WRITE( stdout, fmt= " (2x,'Number of bands in PW calculation =', i5 ) " ) mxdbnd
+!     WRITE( stdout, fmt= " (2x,'Max number of bands within the energy window = ', i5 )" ) ndwinx
 
       ALLOCATE( cptwfp( nrplwv+1 , ndwinx, nkpts ), STAT=ierr )
       IF( ierr /= 0 ) THEN
@@ -380,7 +380,7 @@
          IF (ierr/=0) CALL errore(' overlap ',' deallocating nplwkp',ABS(ierr))
 
  
-      WRITE( stdout , fmt= "( /, ' Overlap done. ',/)")
+      !WRITE( stdout , fmt= "(2x, 'OVERLAP done. ',/)")
       CALL timing('overlap',OPR='stop')
 
       RETURN

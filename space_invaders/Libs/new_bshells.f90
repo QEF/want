@@ -143,6 +143,8 @@
 !     nearest-neighbour of the k-point nkp. Construct the nnx b-vectors that go from k-point
 !     nkp to each neighbour bk(1:3,nkp,1...nnx).
 
+      WRITE(stdout, fmt=" (2x,'Number of nearest-neighbours for K-point 1 (representetive for the BZ):')")
+
       DO nkp = 1, nkpts
         nnx = 0
         DO ndnc = 1, nshells
@@ -172,7 +174,9 @@
               END DO
             END DO
           END DO
-          WRITE(*,8003) nkp, nnshell(nkp,ndnn), ndnn
+          IF ( nkp == 1) THEN
+            WRITE( stdout, fmt= " (4x, 'shell (', i3, ' )    neighbours  = ', i3 )")  ndnn, nnshell(nkp,ndnn)
+          END IF
 
           IF ( nnshell(nkp,ndnn) <= 0 ) &
             CALL errore(' new_bshell ', ' Shell is empty! ', nnshell(nkp,ndnn) )
@@ -186,8 +190,6 @@
         nntot(nkp) = nnx
       END DO
 
-8003  FORMAT ( 2x, 'K-point', i5, ' has',i3, ' neighbours in the', i3, ' shell' )
-      
 ! ... Check that the moduli of the b-vectors inside a shell are all identical
 
       DO nkp = 1, nkpts2
@@ -240,27 +242,26 @@
         END DO
 
         factor = DBLE( ndim(ndnn) ) / nnshell(1,ndnn)
-        WRITE(*,*) ndnn, ' shell '
-        WRITE(*,*) ' '
-        WRITE(*,*) ' dimensionality is        ', ndim(ndnn)
-        WRITE(*,*) ' w_b weight is 1/b^2 times', factor
-        WRITE(*,*) ' '
+        WRITE( stdout, *) ' '
+        WRITE( stdout, fmt= " (2x,'Check shell dimensionality and weights:')")
+        WRITE( stdout, fmt= " (4x, 'shell (', i3, ' )    dimensionality  = ', i3 )")  ndnn, ndim(ndnn)
+        WRITE( stdout, fmt= " (4x, 'w_b weight is 1/b^2 times', f8.4 )")  factor
+        WRITE( stdout, *) ' '
 
 !...    Arrigo 17/06/2004
         IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
           IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
                ( nnshell(1,ndnn) /= 12 ) ) THEN
-            WRITE(*,*) ' '
-            WRITE(*,*) ' WARNING: WEIGHTS MUST BE AS IN (B1) PRB 56 12847 (1997)'
-            WRITE(*,*)  ' (the code will stop if they are not...)'
+            WRITE( stdout, *) ' '
+            WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
+            WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
             END IF
         END IF
         IF ( ( nshells /= 1 ) .OR. ( ndim(1) /= 3 ) ) THEN
-          WRITE(*,*) ' '
-          WRITE(*,*) ' WARNING: WEIGHTS MUST BE AS IN (B1) PRB 56 12847 (1997)'
-          WRITE(*,*)  ' (the code will stop if they are not...)'
+          WRITE( stdout, *) ' '
+          WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
+          WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
         END IF
-        WRITE(*,*) ' '
 !...    Fine Arrigo
 
       END DO
@@ -312,8 +313,7 @@
 
       END DO
 
-      WRITE(*,*) ' Completeness relation is fully satisfied'
-      WRITE(*,*) ' [(B1) in Appendix B, PRB 56 12847 (1997)]'
+      WRITE( stdout, fmt=" (2x, 'Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)' )")
       WRITE(*,*) ' '
 !...  Fine Arrigo
 
@@ -373,27 +373,25 @@
 
       IF ( na /= nnh ) CALL errore(' new_bshell ', ' Did not find right number of bk directions', na )
 
-      WRITE (*,*) ' The vectors b_k are ',nntot(1)
-      WRITE (*,*) ' '
+      WRITE (stdout , fmt="(2x, 'List of the ' , i2, ' vectors b_k: (Bohr ^-1) ') ") nntot(1)
 
       DO i = 1, nntot(1)
-        WRITE (*,'(4f10.5)') ( bk(j,1,i), j=1,3 ), wb(1,i)
+        WRITE( stdout, fmt= " (4x, 'b_k', i4, ':   ( ',3f9.5, ' ),   weight = ', f8.4 ) " ) &
+        i, ( bk(j,1,i), j=1,3 ), wb(1,i)
       END DO
 
-      WRITE (*,*) ' '
-      WRITE (*,*) ' The bk directions are ', nnh
-      WRITE (*,*) ' '
+      WRITE (stdout, *) ' '
+      WRITE (stdout , fmt="(2x, 'The ',i2, '  bk directions are:' )") nnh
 
       DO i=1,nnh
-        WRITE (*,'(3f10.5)') ( bka(j,i), j=1,3 )
+        WRITE( stdout, fmt= " (4x, 'dir', i2, ':   ( ',3f9.5, ' ) ' )" ) i, ( bka(j,i), j=1,3 )
       END DO
-      WRITE (*,*) ' '
-
+      WRITE (stdout, *) ' '
 
 ! ... Find index array
 
-      WRITE(*,*) ' K-point, neighbor directions'
-      WRITE(*,*) ' '
+!     WRITE(*,*) ' K-point, neighbor directions'
+!     WRITE(*,*) ' '
 
       DO nkp = 1, nkpts2
 
@@ -412,12 +410,12 @@
           IF ( neigh(nkp,na) == 0 ) CALL errore(' new_bshell ', ' Check failed ', na )
 
         END DO
-        WRITE (*,'(i6,6x,6i6)') nkp, ( neigh(nkp,na), na=1,nnh )
+!       WRITE (*,'(i6,6x,6i6)') nkp, ( neigh(nkp,na), na=1,nnh )
 
       END DO
-      WRITE(*,*) ' '
+!     WRITE(*,*) ' '
 
-      WRITE(*,"(/, ' BSHELL, done. ',/)" )
+!     WRITE( stdout, fmt="(2x, 'BSHELL, done. ')" )
 
       CALL timing('bshells',OPR='stop')
 
