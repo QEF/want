@@ -2,16 +2,16 @@
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
               =        (www.wannier-transport.org)         =
-              =       Norm Conserv. Pseudopot. Impl.       =
+              =      Ultra Soft Pseudopotential Implem.    =
               =                                            =
   ======================================================================
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 25Dec2004 at 20:10:55 
+  Date 23Mar2005 at 16:37:18 
 
 
-  PW-DFT data read from file: al.dft
+  PW-DFT data read from file: al.export/index.xml
 
   ======================================================================
   =                                Main                                =
@@ -26,14 +26,16 @@
     Number of Wannier functions required =    4
     CG minim: Mixing parameter (alphafix0)=  0.500
     CG minim: Max iteration number =   200
-    XX minim: Mixing parameter (alphafix) =  0.500
-    XX minim: Max iteration number =  1500
-    Every   5 XX iteration perform a CG minimi (ncg)
+    Minimization convergence threshold =     0.000001000
+    SD minim: Mixing parameter (alphafix) =  0.500
+    SD minim: Max iteration number =  1500
+    Every   5 iteration perform a CG minimization (ncg)
     Number of k-point shells =   2
     Chosen shells (indexes) =   1  6
     Print each  10 iterations
     Ordering type = NONE
     Verbosity = MEDIUM
+    Unitariery check threshold =     0.000000010
 </WANNIER_FUNCTIONS>
 
 <DISENTANGLE>
@@ -44,13 +46,13 @@
     Disentangle convergence threshold =     0.000000010
 </DISENTANGLE>
 
-<WANNIER_CENTERS>
-  Gaussian centers: (cart. coord. in Bohr)
-    Center =   1 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
-    Center =   2 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
-    Center =   3 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
-    Center =   4 Type = 1 Gaussian  = (  0.000000  0.000000  0.000000 ) 
-</WANNIER_CENTERS>
+<TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+    Center =   1 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.000000000 )
+    Center =   2 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.000000000 )
+    Center =   3 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.000000000 )
+    Center =   4 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.000000000 )
+</TRIAL_CENTERS>
 
 
   ======================================================================
@@ -58,8 +60,10 @@
   ======================================================================
 
 <LATTICE>
-  Alat =  20.0000 (Bohr)
-  Alat =  10.5835 (Ang )
+  Alat  =   20.0000000 (Bohr)
+  Alat  =   10.5835400 (Ang )
+  Omega = 2267.6800000 (Bohr^3)
+  Omega =  336.0351047 (Ang^3 )
 
   Crystal axes:
                 in units of Bohr                 in Alat units
@@ -80,68 +84,72 @@
 
 <IONS>
   Number of chemical species =  1
-    Pseudo(  1) = Al.pz-vbc.UPF
+     Pseudo( 1) = Al.pz-vbc.UPF
+
+     Pseudo( 1) is Al         zval =  3.0   lmax= 1   lloc= 0
+     (in numerical form:   171 grid points, xmin =  0.00, dx = 0.0000)
 
   Atomic positions: (cart. coord. in units of alat)
-    Al  tau(   1 ) = (  0.0000  0.0000  0.0000 )
+     Al   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
 </IONS>
 
 <K-POINTS>
   nkpts =   20
-  K-point calculation: (cart. coord. in Ang^-1)
+  Monkhorst-Pack grid:      nk = (  1  1 20 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.0500
-    k point   2:   (   0.00000  0.00000  0.10472 ),   weight =   0.0500
-    k point   3:   (   0.00000  0.00000  0.20944 ),   weight =   0.0500
-    k point   4:   (   0.00000  0.00000  0.31416 ),   weight =   0.0500
-    k point   5:   (   0.00000  0.00000  0.41888 ),   weight =   0.0500
-    k point   6:   (   0.00000  0.00000  0.52360 ),   weight =   0.0500
-    k point   7:   (   0.00000  0.00000  0.62832 ),   weight =   0.0500
-    k point   8:   (   0.00000  0.00000  0.73304 ),   weight =   0.0500
-    k point   9:   (   0.00000  0.00000  0.83776 ),   weight =   0.0500
-    k point  10:   (   0.00000  0.00000  0.94247 ),   weight =   0.0500
-    k point  11:   (   0.00000  0.00000  1.04719 ),   weight =   0.0500
-    k point  12:   (   0.00000  0.00000  1.15191 ),   weight =   0.0500
-    k point  13:   (   0.00000  0.00000  1.25663 ),   weight =   0.0500
-    k point  14:   (   0.00000  0.00000  1.36135 ),   weight =   0.0500
-    k point  15:   (   0.00000  0.00000  1.46607 ),   weight =   0.0500
-    k point  16:   (   0.00000  0.00000  1.57079 ),   weight =   0.0500
-    k point  17:   (   0.00000  0.00000  1.67551 ),   weight =   0.0500
-    k point  18:   (   0.00000  0.00000  1.78023 ),   weight =   0.0500
-    k point  19:   (   0.00000  0.00000  1.88495 ),   weight =   0.0500
-    k point  20:   (   0.00000  0.00000  1.98967 ),   weight =   0.0500
+    k point   2:   (   0.00000  0.00000  0.05542 ),   weight =   0.0500
+    k point   3:   (   0.00000  0.00000  0.11083 ),   weight =   0.0500
+    k point   4:   (   0.00000  0.00000  0.16625 ),   weight =   0.0500
+    k point   5:   (   0.00000  0.00000  0.22166 ),   weight =   0.0500
+    k point   6:   (   0.00000  0.00000  0.27708 ),   weight =   0.0500
+    k point   7:   (   0.00000  0.00000  0.33249 ),   weight =   0.0500
+    k point   8:   (   0.00000  0.00000  0.38791 ),   weight =   0.0500
+    k point   9:   (   0.00000  0.00000  0.44332 ),   weight =   0.0500
+    k point  10:   (   0.00000  0.00000  0.49874 ),   weight =   0.0500
+    k point  11:   (   0.00000  0.00000  0.55415 ),   weight =   0.0500
+    k point  12:   (   0.00000  0.00000  0.60957 ),   weight =   0.0500
+    k point  13:   (   0.00000  0.00000  0.66498 ),   weight =   0.0500
+    k point  14:   (   0.00000  0.00000  0.72040 ),   weight =   0.0500
+    k point  15:   (   0.00000  0.00000  0.77581 ),   weight =   0.0500
+    k point  16:   (   0.00000  0.00000  0.83123 ),   weight =   0.0500
+    k point  17:   (   0.00000  0.00000  0.88664 ),   weight =   0.0500
+    k point  18:   (   0.00000  0.00000  0.94206 ),   weight =   0.0500
+    k point  19:   (   0.00000  0.00000  0.99747 ),   weight =   0.0500
+    k point  20:   (   0.00000  0.00000  1.05289 ),   weight =   0.0500
 </K-POINTS>
 
 <B-SHELL>
-  Nearest-neighbour shells for k-point 1: (in Ang^-1)
-    shell (  1 )    radius =   0.10472
-    shell (  2 )    radius =   0.20944
-    shell (  3 )    radius =   0.31416
-    shell (  4 )    radius =   0.41888
-    shell (  5 )    radius =   0.52360
-    shell (  6 )    radius =   0.59368
-    shell (  7 )    radius =   0.60284
-    shell (  8 )    radius =   0.62832
-    shell (  9 )    radius =   0.62954
-    shell ( 10 )    radius =   0.67167
-    shell ( 11 )    radius =   0.72657
-    shell ( 12 )    radius =   0.73304
+  Nearest-neighbour shells for k-point 1: (in Bohr^-1)
+    shell (  1 )    radius =   0.05542
+    shell (  2 )    radius =   0.11083
+    shell (  3 )    radius =   0.16625
+    shell (  4 )    radius =   0.22166
+    shell (  5 )    radius =   0.27708
+    shell (  6 )    radius =   0.31416
+    shell (  7 )    radius =   0.31901
+    shell (  8 )    radius =   0.33249
+    shell (  9 )    radius =   0.33314
+    shell ( 10 )    radius =   0.35543
+    shell ( 11 )    radius =   0.38449
+    shell ( 12 )    radius =   0.38791
 
   Number of nearest-neighbours for K-point 1 (representetive for the BZ):
     shell (  1 )    neighbours  =    2
     shell (  6 )    neighbours  =    4
 
-  List of the  6 vectors b_k: (Ang^-1) 
-    b_k   1:   (   0.00000  0.00000  0.10472 ),   weight =  45.5948
-    b_k   2:   (   0.00000  0.00000 -0.10472 ),   weight =  45.5948
-    b_k   3:   (  -0.59368  0.00000  0.00000 ),   weight =   1.4186
-    b_k   4:   (   0.00000 -0.59368  0.00000 ),   weight =   1.4186
-    b_k   5:   (   0.00000  0.59368  0.00000 ),   weight =   1.4186
-    b_k   6:   (   0.59368  0.00000  0.00000 ),   weight =   1.4186
+  List of the  6 vectors b_k: (Bohr^-1) 
+    b_k   1:   (   0.00000  0.00000  0.05542 ),   weight = 162.8223
+    b_k   2:   (   0.00000  0.00000 -0.05542 ),   weight = 162.8222
+    b_k   3:   (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b_k   4:   (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
+    b_k   5:   (   0.00000  0.31416  0.00000 ),   weight =   5.0661
+    b_k   6:   (   0.31416  0.00000  0.00000 ),   weight =   5.0661
 
-  The  3  bk directions are:
-    dir 1:   (   0.00000  0.00000  0.10472 ) 
-    dir 2:   (  -0.59368  0.00000  0.00000 ) 
-    dir 3:   (   0.00000 -0.59368  0.00000 ) 
+  The  3  bk directions are (Bohr^-1):
+    dir 1:   (   0.00000  0.00000  0.05542 ) 
+    dir 2:   (  -0.31416  0.00000  0.00000 ) 
+    dir 3:   (   0.00000 -0.31416  0.00000 ) 
 </B-SHELL>
 
 <WINDOWS>
@@ -150,165 +158,228 @@
     Max number of bands within the energy window =    20
 
   Electronic Structure from DFT calculation:
-    nkpts =  20,     nbnd =  20
-    Fermi energy =   -3.069717026 eV
+    nkpts =  20,     nbnd =  20,
+    nspin =   1
+    Fermi energy =   -3.070049741 eV
 
     kpt =  1 (  0.000 0.000 0.000 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -8.6465  -3.2032  -3.2032  -0.2538   0.6313   1.1039   1.4981   1.4981
-     1.7094   2.8836   2.8836   3.0165   3.2498   4.3412   5.1573   5.1573
-     5.5699   5.6030   6.1178   6.2506
+    -8.6470  -3.2035  -3.2035  -0.2541   0.6309   1.1037   1.4979   1.4979
+     1.7093   2.8833   2.8833   3.0162   3.2493   4.3410   5.1573   5.1573
+     5.5695   5.6024   6.1175   6.2503
 
     kpt =  2 (  0.000 0.000 0.050 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -8.6055  -3.1650  -3.1650  -0.2129   0.6729   1.1453   1.5389   1.5389
-     1.7473   2.9242   2.9242   3.0575   3.2712   4.3819   4.8687   5.1985
-     5.1985   5.7068   6.1596   6.2921
+    -8.6060  -3.1653  -3.1653  -0.2132   0.6725   1.1451   1.5388   1.5388
+     1.7472   2.9239   2.9239   3.0571   3.2706   4.3817   4.8682   5.1984
+     5.1984   5.7064   6.1593   6.2919
 
     kpt =  3 (  0.000 0.000 0.100 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -8.4827  -3.0507  -3.0507  -0.0907   0.7977   1.2695   1.6613   1.6613
-     1.8542   3.0458   3.0458   3.1803   3.2205   3.9377   4.5040   5.3217
-     5.3217   5.8360   6.2849   6.4166
+    -8.4832  -3.0510  -3.0510  -0.0910   0.7973   1.2693   1.6611   1.6611
+     1.8541   3.0456   3.0456   3.1799   3.2199   3.9372   4.5038   5.3217
+     5.3217   5.8357   6.2846   6.4164
 
     kpt =  4 (  0.000 0.000 0.150 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -8.2786  -2.8608  -2.8608   0.1095   1.0055   1.4763   1.8647   1.8647
-     1.9331   2.5416   3.2478   3.2478   3.3847   3.7876   4.7069   5.5259
-     5.5259   6.0454   6.4938   6.6231
+    -8.2790  -2.8612  -2.8612   0.1092   1.0052   1.4762   1.8646   1.8646
+     1.9329   2.5413   3.2475   3.2475   3.3843   3.7870   4.7067   5.5258
+     5.5258   6.0451   6.4935   6.6229
 
     kpt =  5 (  0.000 0.000 0.200 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -7.9939  -2.5966  -2.5966   0.3623   1.2256   1.2964   1.7656   2.1483
-     2.1483   2.4710   3.5279   3.5279   3.6699   4.0315   4.9896   5.8045
-     5.8045   6.3375   6.7863   6.8909
+    -7.9944  -2.5970  -2.5970   0.3620   1.2252   1.2961   1.7654   2.1481
+     2.1481   2.4709   3.5277   3.5277   3.6695   4.0310   4.9894   5.8045
+     5.8045   6.3372   6.7860   6.8907
 
     kpt =  6 (  0.000 0.000 0.250 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -7.6301  -2.2599  -2.2599   0.0289   0.8672   1.6701   2.1369   2.5088
-     2.5088   2.8112   3.8779   3.8779   4.0349   4.3910   5.3501   5.9009
-     5.9009   6.3016   6.3017   6.7123
+    -7.6305  -2.2603  -2.2603   0.0284   0.8669   1.6698   2.1367   2.5086
+     2.5086   2.8111   3.8777   3.8777   4.0345   4.3905   5.3499   5.9006
+     5.9006   6.3015   6.3015   6.7120
 
     kpt =  7 (  0.000 0.000 0.300 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -7.1886  -1.8555  -1.8555  -0.9756   1.2817   2.1263   2.5895   2.9334
-     2.9334   3.2584   4.2256   4.2256   4.4768   4.8407   5.0201   5.0201
-     5.7827   6.6744   6.6745   7.1677
+    -7.1891  -1.8558  -1.8558  -0.9761   1.2815   2.1259   2.5893   2.9332
+     2.9332   3.2583   4.2254   4.2254   4.4764   4.8401   5.0198   5.0198
+     5.7824   6.6744   6.6744   7.1673
 
     kpt =  8 (  0.000 0.000 0.350 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -6.6717  -1.9628  -1.3915  -1.3915   1.8131   2.6642   3.1216   3.2830
-     3.2830   3.7936   3.9585   3.9585   4.9885   5.0044   5.0044   5.3736
-     6.2677   6.7747   7.2025   7.2026
+    -6.6722  -1.9633  -1.3918  -1.3918   1.8129   2.6638   3.1215   3.2828
+     3.2828   3.7935   3.9583   3.9583   4.9882   5.0041   5.0041   5.3730
+     6.2674   6.7744   7.2025   7.2025
 
     kpt =  9 (  0.000 0.000 0.400 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -6.0856  -2.8911  -0.8910  -0.8910   2.4321   2.7892   2.7892   3.2818
-     3.7289   4.2281   4.2281   4.4117   5.5349   5.5650   5.5650   5.7224
-     6.0180   6.6333   6.7244   7.4661
+    -6.0861  -2.8916  -0.8913  -0.8913   2.4318   2.7889   2.7889   3.2815
+     3.7287   4.2279   4.2279   4.4117   5.5345   5.5648   5.5648   5.7221
+     6.0175   6.6331   6.7240   7.4527
 
     kpt = 10 (  0.000 0.000 0.450 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -5.4502  -3.7336  -0.4230  -0.4230   2.1362   2.1362   3.1342   3.9716
-     4.3929   4.7792   4.8808   4.8808   5.1283   5.5771   6.1230   6.2048
-     6.2048   6.3690   6.5867   6.5868
+    -5.4507  -3.7341  -0.4234  -0.4234   2.1359   2.1359   3.1339   3.9712
+     4.3927   4.7789   4.8807   4.8807   5.1282   5.5768   6.1228   6.2046
+     6.2046   6.3686   6.5865   6.5865
 
     kpt = 11 (  0.000 0.000 0.500 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -4.9851  -4.2677  -0.1954  -0.1954   1.8404   1.8404   3.8661   3.9753
-     4.5740   4.8903   4.9639   5.5170   5.5170   5.5804   5.7955   5.7955
-     5.8391   5.9708   6.6974   6.9115
+    -4.9855  -4.2682  -0.1958  -0.1958   1.8401   1.8401   3.8659   3.9750
+     4.5736   4.8901   4.9635   5.5168   5.5168   5.5803   5.7953   5.7953
+     5.8390   5.9708   6.6969   6.9113
 
     kpt = 12 (  0.000 0.000 0.550 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -5.4502  -3.7336  -0.4230  -0.4230   2.1362   2.1362   3.1342   3.9716
-     4.3929   4.7792   4.8808   4.8808   5.1283   5.5771   6.1230   6.2048
-     6.2048   6.3690   6.5867   6.5870
+    -5.4507  -3.7341  -0.4234  -0.4234   2.1359   2.1359   3.1339   3.9712
+     4.3927   4.7789   4.8807   4.8807   5.1282   5.5768   6.1228   6.2046
+     6.2046   6.3686   6.5865   6.5865
 
     kpt = 13 (  0.000 0.000 0.600 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -6.0856  -2.8911  -0.8910  -0.8910   2.4321   2.7892   2.7892   3.2818
-     3.7289   4.2281   4.2281   4.4117   5.5349   5.5650   5.5650   5.7224
-     6.0180   6.6333   6.7244   7.4607
+    -6.0861  -2.8916  -0.8913  -0.8913   2.4318   2.7889   2.7889   3.2815
+     3.7287   4.2279   4.2279   4.4117   5.5345   5.5648   5.5648   5.7221
+     6.0175   6.6331   6.7240   7.4527
 
     kpt = 14 (  0.000 0.000 0.650 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -6.6717  -1.9628  -1.3915  -1.3915   1.8131   2.6642   3.1217   3.2830
-     3.2830   3.7936   3.9585   3.9585   4.9885   5.0044   5.0044   5.3736
-     6.2676   6.7747   7.2025   7.2026
+    -6.6722  -1.9633  -1.3918  -1.3918   1.8129   2.6638   3.1215   3.2828
+     3.2828   3.7935   3.9583   3.9583   4.9882   5.0041   5.0041   5.3730
+     6.2674   6.7744   7.2025   7.2025
 
     kpt = 15 (  0.000 0.000 0.700 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -7.1886  -1.8555  -1.8555  -0.9756   1.2817   2.1263   2.5895   2.9334
-     2.9334   3.2584   4.2256   4.2256   4.4768   4.8407   5.0201   5.0201
-     5.7827   6.6744   6.6745   7.1677
+    -7.1891  -1.8558  -1.8558  -0.9761   1.2815   2.1259   2.5893   2.9332
+     2.9332   3.2583   4.2254   4.2254   4.4764   4.8401   5.0198   5.0198
+     5.7824   6.6744   6.6744   7.1673
 
     kpt = 16 (  0.000 0.000 0.750 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -7.6301  -2.2599  -2.2599   0.0289   0.8672   1.6701   2.1369   2.5088
-     2.5088   2.8112   3.8779   3.8779   4.0349   4.3910   5.3501   5.9009
-     5.9009   6.3016   6.3016   6.7123
+    -7.6305  -2.2603  -2.2603   0.0284   0.8669   1.6698   2.1367   2.5086
+     2.5086   2.8111   3.8777   3.8777   4.0345   4.3905   5.3499   5.9006
+     5.9006   6.3015   6.3015   6.7120
 
     kpt = 17 (  0.000 0.000 0.800 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -7.9939  -2.5966  -2.5966   0.3623   1.2256   1.2964   1.7656   2.1483
-     2.1483   2.4710   3.5279   3.5279   3.6699   4.0315   4.9896   5.8045
-     5.8045   6.3375   6.7863   6.8909
+    -7.9944  -2.5970  -2.5970   0.3620   1.2252   1.2961   1.7654   2.1481
+     2.1481   2.4709   3.5277   3.5277   3.6695   4.0310   4.9894   5.8045
+     5.8045   6.3372   6.7860   6.8907
 
     kpt = 18 (  0.000 0.000 0.850 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -8.2786  -2.8608  -2.8608   0.1095   1.0055   1.4763   1.8647   1.8647
-     1.9331   2.5416   3.2478   3.2478   3.3847   3.7876   4.7069   5.5259
-     5.5259   6.0454   6.4938   6.6231
+    -8.2790  -2.8612  -2.8612   0.1092   1.0052   1.4762   1.8646   1.8646
+     1.9329   2.5413   3.2475   3.2475   3.3843   3.7870   4.7067   5.5258
+     5.5258   6.0451   6.4935   6.6229
 
     kpt = 19 (  0.000 0.000 0.900 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -8.4827  -3.0507  -3.0507  -0.0907   0.7977   1.2695   1.6613   1.6613
-     1.8542   3.0458   3.0458   3.1803   3.2205   3.9377   4.5040   5.3217
-     5.3217   5.8360   6.2849   6.4166
+    -8.4832  -3.0510  -3.0510  -0.0910   0.7973   1.2693   1.6611   1.6611
+     1.8541   3.0456   3.0456   3.1799   3.2199   3.9372   4.5038   5.3217
+     5.3217   5.8357   6.2846   6.4164
 
     kpt = 20 (  0.000 0.000 0.950 )    dimwin =   20
-                                      imin =    1  imax =   20
+                                         imin =    1  imax =   20
    Eigenvalues:
-    -8.6055  -3.1650  -3.1650  -0.2129   0.6729   1.1453   1.5389   1.5389
-     1.7473   2.9242   2.9242   3.0575   3.2712   4.3819   4.8687   5.1985
-     5.1985   5.7068   6.1596   6.2921
+    -8.6060  -3.1653  -3.1653  -0.2132   0.6725   1.1451   1.5388   1.5388
+     1.7472   2.9239   2.9239   3.0571   3.2706   4.3817   4.8682   5.1984
+     5.1984   5.7064   6.1593   6.2919
 
     inner window: NOT used --> NO FROZEN STATES
 </WINDOWS>
 
 
-  WFC and GRIDS data read from file: al.dft
+  Reading density G-grid from file: al.export/index.xml
+  Reading Wfcs from file: al.export/index.xml
 
 
   ======================================================================
-  =                       Overlap and Projections                       =
+  =                       Overlap and Projections                      =
   ======================================================================
 
-  Kinetic energy cut-off for wfcs =    15.00 (Ry)
-                         for rho  =    60.00 (Ry)
-  Total number of PW for rho =      17737
-  Max number of PW for wfcs =       2247
-  FFT grid components (rho) =  (    50   50   15 )
+  Kinetic energy cut-off for wfcs =         15.00 (Ry)
+                         for rho  =         60.00 (Ry)
+      Total number of PW for rho  =      17737
+        Max number of PW for wfc  =       2248
+      Total number of PW for wfcs =       4323
+        FFT grid components (rho) =  (    50   50   15 )
+
+    Overlap calculation for k-point   1
+                              Total time spent up to now :     2.73 secs
+
+    Overlap calculation for k-point   2
+                              Total time spent up to now :     3.51 secs
+
+    Overlap calculation for k-point   3
+                              Total time spent up to now :     4.24 secs
+
+    Overlap calculation for k-point   4
+                              Total time spent up to now :     5.03 secs
+
+    Overlap calculation for k-point   5
+                              Total time spent up to now :     5.76 secs
+
+    Overlap calculation for k-point   6
+                              Total time spent up to now :     6.57 secs
+
+    Overlap calculation for k-point   7
+                              Total time spent up to now :     7.35 secs
+
+    Overlap calculation for k-point   8
+                              Total time spent up to now :     8.07 secs
+
+    Overlap calculation for k-point   9
+                              Total time spent up to now :     8.87 secs
+
+    Overlap calculation for k-point  10
+                              Total time spent up to now :     9.56 secs
+
+    Overlap calculation for k-point  11
+                              Total time spent up to now :    10.16 secs
+
+    Overlap calculation for k-point  12
+                              Total time spent up to now :    10.76 secs
+
+    Overlap calculation for k-point  13
+                              Total time spent up to now :    11.35 secs
+
+    Overlap calculation for k-point  14
+                              Total time spent up to now :    11.91 secs
+
+    Overlap calculation for k-point  15
+                              Total time spent up to now :    12.58 secs
+
+    Overlap calculation for k-point  16
+                              Total time spent up to now :    13.27 secs
+
+    Overlap calculation for k-point  17
+                              Total time spent up to now :    13.90 secs
+
+    Overlap calculation for k-point  18
+                              Total time spent up to now :    14.51 secs
+
+    Overlap calculation for k-point  19
+                              Total time spent up to now :    15.16 secs
+
+    Overlap calculation for k-point  20
+                              Total time spent up to now :    15.77 secs
 
 
   Overlap and projections written on file: al_WanT.ovp
@@ -320,524 +391,529 @@
   =                   Starting Iteration loop                          =
   ======================================================================
 
-  Iteration =     1   Omega_I Error =      0.27725268
-  Iteration =     2   Omega_I Error =      0.23987518
-  Iteration =     3   Omega_I Error =      0.17737057
-  Iteration =     4   Omega_I Error =      0.13227263
-  Iteration =     5   Omega_I Error =      0.10120279
-  Iteration =     6   Omega_I Error =      0.07982501
-  Iteration =     7   Omega_I Error =      0.06492901
-  Iteration =     8   Omega_I Error =      0.05433489
-  Iteration =     9   Omega_I Error =      0.04660765
-  Iteration =    10   Omega_I Error =      0.04081358
-  Iteration =    11   Omega_I Error =      0.03634572
-  Iteration =    12   Omega_I Error =      0.03280700
-  Iteration =    13   Omega_I Error =      0.02993466
-  Iteration =    14   Omega_I Error =      0.02755210
-  Iteration =    15   Omega_I Error =      0.02553838
-  Iteration =    16   Omega_I Error =      0.02380898
-  Iteration =    17   Omega_I Error =      0.02230354
-  Iteration =    18   Omega_I Error =      0.02097798
-  Iteration =    19   Omega_I Error =      0.01979943
-  Iteration =    20   Omega_I Error =      0.01874286
-  Iteration =    21   Omega_I Error =      0.01778885
-  Iteration =    22   Omega_I Error =      0.01692206
-  Iteration =    23   Omega_I Error =      0.01613019
-  Iteration =    24   Omega_I Error =      0.01540325
-  Iteration =    25   Omega_I Error =      0.01473300
-  Iteration =    26   Omega_I Error =      0.01411258
-  Iteration =    27   Omega_I Error =      0.01353625
-  Iteration =    28   Omega_I Error =      0.01299910
-  Iteration =    29   Omega_I Error =      0.01249699
-  Iteration =    30   Omega_I Error =      0.01202631
-  Iteration =    31   Omega_I Error =      0.01158398
-  Iteration =    32   Omega_I Error =      0.01116729
-  Iteration =    33   Omega_I Error =      0.01077389
-  Iteration =    34   Omega_I Error =      0.01040171
-  Iteration =    35   Omega_I Error =      0.01004892
-  Iteration =    36   Omega_I Error =      0.00971391
-  Iteration =    37   Omega_I Error =      0.00939524
-  Iteration =    38   Omega_I Error =      0.00909163
-  Iteration =    39   Omega_I Error =      0.00880195
-  Iteration =    40   Omega_I Error =      0.00852516
-  Iteration =    41   Omega_I Error =      0.00826034
-  Iteration =    42   Omega_I Error =      0.00800668
-  Iteration =    43   Omega_I Error =      0.00776341
-  Iteration =    44   Omega_I Error =      0.00752985
-  Iteration =    45   Omega_I Error =      0.00730540
-  Iteration =    46   Omega_I Error =      0.00708950
-  Iteration =    47   Omega_I Error =      0.00688162
-  Iteration =    48   Omega_I Error =      0.00668132
-  Iteration =    49   Omega_I Error =      0.00648815
-  Iteration =    50   Omega_I Error =      0.00630174
-  Iteration =    51   Omega_I Error =      0.00612172
-  Iteration =    52   Omega_I Error =      0.00594777
-  Iteration =    53   Omega_I Error =      0.00577958
-  Iteration =    54   Omega_I Error =      0.00561687
-  Iteration =    55   Omega_I Error =      0.00545938
-  Iteration =    56   Omega_I Error =      0.00530688
-  Iteration =    57   Omega_I Error =      0.00515914
-  Iteration =    58   Omega_I Error =      0.00501595
-  Iteration =    59   Omega_I Error =      0.00487713
-  Iteration =    60   Omega_I Error =      0.00474248
-  Iteration =    61   Omega_I Error =      0.00461186
-  Iteration =    62   Omega_I Error =      0.00448509
-  Iteration =    63   Omega_I Error =      0.00436203
-  Iteration =    64   Omega_I Error =      0.00424255
-  Iteration =    65   Omega_I Error =      0.00412651
-  Iteration =    66   Omega_I Error =      0.00401379
-  Iteration =    67   Omega_I Error =      0.00390428
-  Iteration =    68   Omega_I Error =      0.00379786
-  Iteration =    69   Omega_I Error =      0.00369443
-  Iteration =    70   Omega_I Error =      0.00359390
-  Iteration =    71   Omega_I Error =      0.00349616
-  Iteration =    72   Omega_I Error =      0.00340114
-  Iteration =    73   Omega_I Error =      0.00330875
-  Iteration =    74   Omega_I Error =      0.00321889
-  Iteration =    75   Omega_I Error =      0.00313151
-  Iteration =    76   Omega_I Error =      0.00304652
-  Iteration =    77   Omega_I Error =      0.00296386
-  Iteration =    78   Omega_I Error =      0.00288344
-  Iteration =    79   Omega_I Error =      0.00280522
-  Iteration =    80   Omega_I Error =      0.00272913
-  Iteration =    81   Omega_I Error =      0.00265510
-  Iteration =    82   Omega_I Error =      0.00258307
-  Iteration =    83   Omega_I Error =      0.00251300
-  Iteration =    84   Omega_I Error =      0.00244482
-  Iteration =    85   Omega_I Error =      0.00237849
-  Iteration =    86   Omega_I Error =      0.00231395
-  Iteration =    87   Omega_I Error =      0.00225116
-  Iteration =    88   Omega_I Error =      0.00219006
-  Iteration =    89   Omega_I Error =      0.00213061
-  Iteration =    90   Omega_I Error =      0.00207277
-  Iteration =    91   Omega_I Error =      0.00201649
-  Iteration =    92   Omega_I Error =      0.00196173
-  Iteration =    93   Omega_I Error =      0.00190844
-  Iteration =    94   Omega_I Error =      0.00185660
-  Iteration =    95   Omega_I Error =      0.00180616
-  Iteration =    96   Omega_I Error =      0.00175708
-  Iteration =    97   Omega_I Error =      0.00170932
-  Iteration =    98   Omega_I Error =      0.00166286
-  Iteration =    99   Omega_I Error =      0.00161766
-  Iteration =   100   Omega_I Error =      0.00157367
-  Iteration =   101   Omega_I Error =      0.00153088
-  Iteration =   102   Omega_I Error =      0.00148925
-  Iteration =   103   Omega_I Error =      0.00144874
-  Iteration =   104   Omega_I Error =      0.00140934
-  Iteration =   105   Omega_I Error =      0.00137100
-  Iteration =   106   Omega_I Error =      0.00133370
-  Iteration =   107   Omega_I Error =      0.00129741
-  Iteration =   108   Omega_I Error =      0.00126211
-  Iteration =   109   Omega_I Error =      0.00122776
-  Iteration =   110   Omega_I Error =      0.00119435
-  Iteration =   111   Omega_I Error =      0.00116185
-  Iteration =   112   Omega_I Error =      0.00113023
-  Iteration =   113   Omega_I Error =      0.00109947
-  Iteration =   114   Omega_I Error =      0.00106955
-  Iteration =   115   Omega_I Error =      0.00104044
-  Iteration =   116   Omega_I Error =      0.00101212
-  Iteration =   117   Omega_I Error =      0.00098458
-  Iteration =   118   Omega_I Error =      0.00095778
-  Iteration =   119   Omega_I Error =      0.00093172
-  Iteration =   120   Omega_I Error =      0.00090637
-  Iteration =   121   Omega_I Error =      0.00088170
-  Iteration =   122   Omega_I Error =      0.00085771
-  Iteration =   123   Omega_I Error =      0.00083438
-  Iteration =   124   Omega_I Error =      0.00081168
-  Iteration =   125   Omega_I Error =      0.00078960
-  Iteration =   126   Omega_I Error =      0.00076813
-  Iteration =   127   Omega_I Error =      0.00074724
-  Iteration =   128   Omega_I Error =      0.00072692
-  Iteration =   129   Omega_I Error =      0.00070715
-  Iteration =   130   Omega_I Error =      0.00068793
-  Iteration =   131   Omega_I Error =      0.00066923
-  Iteration =   132   Omega_I Error =      0.00065104
-  Iteration =   133   Omega_I Error =      0.00063335
-  Iteration =   134   Omega_I Error =      0.00061614
-  Iteration =   135   Omega_I Error =      0.00059940
-  Iteration =   136   Omega_I Error =      0.00058312
-  Iteration =   137   Omega_I Error =      0.00056728
-  Iteration =   138   Omega_I Error =      0.00055188
-  Iteration =   139   Omega_I Error =      0.00053690
-  Iteration =   140   Omega_I Error =      0.00052233
-  Iteration =   141   Omega_I Error =      0.00050815
-  Iteration =   142   Omega_I Error =      0.00049437
-  Iteration =   143   Omega_I Error =      0.00048096
-  Iteration =   144   Omega_I Error =      0.00046791
-  Iteration =   145   Omega_I Error =      0.00045523
-  Iteration =   146   Omega_I Error =      0.00044289
-  Iteration =   147   Omega_I Error =      0.00043088
-  Iteration =   148   Omega_I Error =      0.00041921
-  Iteration =   149   Omega_I Error =      0.00040785
-  Iteration =   150   Omega_I Error =      0.00039680
-  Iteration =   151   Omega_I Error =      0.00038606
-  Iteration =   152   Omega_I Error =      0.00037561
-  Iteration =   153   Omega_I Error =      0.00036544
-  Iteration =   154   Omega_I Error =      0.00035555
-  Iteration =   155   Omega_I Error =      0.00034593
-  Iteration =   156   Omega_I Error =      0.00033658
-  Iteration =   157   Omega_I Error =      0.00032748
-  Iteration =   158   Omega_I Error =      0.00031863
-  Iteration =   159   Omega_I Error =      0.00031001
-  Iteration =   160   Omega_I Error =      0.00030164
-  Iteration =   161   Omega_I Error =      0.00029349
-  Iteration =   162   Omega_I Error =      0.00028557
-  Iteration =   163   Omega_I Error =      0.00027786
-  Iteration =   164   Omega_I Error =      0.00027036
-  Iteration =   165   Omega_I Error =      0.00026306
-  Iteration =   166   Omega_I Error =      0.00025596
-  Iteration =   167   Omega_I Error =      0.00024906
-  Iteration =   168   Omega_I Error =      0.00024235
-  Iteration =   169   Omega_I Error =      0.00023581
-  Iteration =   170   Omega_I Error =      0.00022946
-  Iteration =   171   Omega_I Error =      0.00022328
-  Iteration =   172   Omega_I Error =      0.00021726
-  Iteration =   173   Omega_I Error =      0.00021141
-  Iteration =   174   Omega_I Error =      0.00020572
-  Iteration =   175   Omega_I Error =      0.00020018
-  Iteration =   176   Omega_I Error =      0.00019480
-  Iteration =   177   Omega_I Error =      0.00018956
-  Iteration =   178   Omega_I Error =      0.00018446
-  Iteration =   179   Omega_I Error =      0.00017950
-  Iteration =   180   Omega_I Error =      0.00017468
-  Iteration =   181   Omega_I Error =      0.00016998
-  Iteration =   182   Omega_I Error =      0.00016542
-  Iteration =   183   Omega_I Error =      0.00016097
-  Iteration =   184   Omega_I Error =      0.00015665
-  Iteration =   185   Omega_I Error =      0.00015245
-  Iteration =   186   Omega_I Error =      0.00014835
-  Iteration =   187   Omega_I Error =      0.00014437
-  Iteration =   188   Omega_I Error =      0.00014050
-  Iteration =   189   Omega_I Error =      0.00013673
-  Iteration =   190   Omega_I Error =      0.00013307
-  Iteration =   191   Omega_I Error =      0.00012950
-  Iteration =   192   Omega_I Error =      0.00012603
-  Iteration =   193   Omega_I Error =      0.00012266
-  Iteration =   194   Omega_I Error =      0.00011937
-  Iteration =   195   Omega_I Error =      0.00011618
-  Iteration =   196   Omega_I Error =      0.00011307
-  Iteration =   197   Omega_I Error =      0.00011004
-  Iteration =   198   Omega_I Error =      0.00010710
-  Iteration =   199   Omega_I Error =      0.00010423
-  Iteration =   200   Omega_I Error =      0.00010144
-  Iteration =   201   Omega_I Error =      0.00009873
-  Iteration =   202   Omega_I Error =      0.00009609
-  Iteration =   203   Omega_I Error =      0.00009352
-  Iteration =   204   Omega_I Error =      0.00009103
-  Iteration =   205   Omega_I Error =      0.00008859
-  Iteration =   206   Omega_I Error =      0.00008623
-  Iteration =   207   Omega_I Error =      0.00008393
-  Iteration =   208   Omega_I Error =      0.00008169
-  Iteration =   209   Omega_I Error =      0.00007951
-  Iteration =   210   Omega_I Error =      0.00007739
-  Iteration =   211   Omega_I Error =      0.00007532
-  Iteration =   212   Omega_I Error =      0.00007331
-  Iteration =   213   Omega_I Error =      0.00007136
-  Iteration =   214   Omega_I Error =      0.00006946
-  Iteration =   215   Omega_I Error =      0.00006761
-  Iteration =   216   Omega_I Error =      0.00006580
-  Iteration =   217   Omega_I Error =      0.00006405
-  Iteration =   218   Omega_I Error =      0.00006235
-  Iteration =   219   Omega_I Error =      0.00006069
-  Iteration =   220   Omega_I Error =      0.00005907
-  Iteration =   221   Omega_I Error =      0.00005750
-  Iteration =   222   Omega_I Error =      0.00005597
-  Iteration =   223   Omega_I Error =      0.00005448
-  Iteration =   224   Omega_I Error =      0.00005303
-  Iteration =   225   Omega_I Error =      0.00005162
-  Iteration =   226   Omega_I Error =      0.00005025
-  Iteration =   227   Omega_I Error =      0.00004891
-  Iteration =   228   Omega_I Error =      0.00004761
-  Iteration =   229   Omega_I Error =      0.00004635
-  Iteration =   230   Omega_I Error =      0.00004512
-  Iteration =   231   Omega_I Error =      0.00004392
-  Iteration =   232   Omega_I Error =      0.00004275
-  Iteration =   233   Omega_I Error =      0.00004162
-  Iteration =   234   Omega_I Error =      0.00004051
-  Iteration =   235   Omega_I Error =      0.00003944
-  Iteration =   236   Omega_I Error =      0.00003839
-  Iteration =   237   Omega_I Error =      0.00003737
-  Iteration =   238   Omega_I Error =      0.00003638
-  Iteration =   239   Omega_I Error =      0.00003542
-  Iteration =   240   Omega_I Error =      0.00003448
-  Iteration =   241   Omega_I Error =      0.00003356
-  Iteration =   242   Omega_I Error =      0.00003267
-  Iteration =   243   Omega_I Error =      0.00003181
-  Iteration =   244   Omega_I Error =      0.00003097
-  Iteration =   245   Omega_I Error =      0.00003015
-  Iteration =   246   Omega_I Error =      0.00002935
-  Iteration =   247   Omega_I Error =      0.00002857
-  Iteration =   248   Omega_I Error =      0.00002781
-  Iteration =   249   Omega_I Error =      0.00002708
-  Iteration =   250   Omega_I Error =      0.00002636
-  Iteration =   251   Omega_I Error =      0.00002566
-  Iteration =   252   Omega_I Error =      0.00002499
-  Iteration =   253   Omega_I Error =      0.00002432
-  Iteration =   254   Omega_I Error =      0.00002368
-  Iteration =   255   Omega_I Error =      0.00002305
-  Iteration =   256   Omega_I Error =      0.00002245
-  Iteration =   257   Omega_I Error =      0.00002185
-  Iteration =   258   Omega_I Error =      0.00002127
-  Iteration =   259   Omega_I Error =      0.00002071
-  Iteration =   260   Omega_I Error =      0.00002017
-  Iteration =   261   Omega_I Error =      0.00001963
-  Iteration =   262   Omega_I Error =      0.00001911
-  Iteration =   263   Omega_I Error =      0.00001861
-  Iteration =   264   Omega_I Error =      0.00001812
-  Iteration =   265   Omega_I Error =      0.00001764
-  Iteration =   266   Omega_I Error =      0.00001717
-  Iteration =   267   Omega_I Error =      0.00001672
-  Iteration =   268   Omega_I Error =      0.00001628
-  Iteration =   269   Omega_I Error =      0.00001585
-  Iteration =   270   Omega_I Error =      0.00001543
-  Iteration =   271   Omega_I Error =      0.00001503
-  Iteration =   272   Omega_I Error =      0.00001463
-  Iteration =   273   Omega_I Error =      0.00001424
-  Iteration =   274   Omega_I Error =      0.00001387
-  Iteration =   275   Omega_I Error =      0.00001350
-  Iteration =   276   Omega_I Error =      0.00001315
-  Iteration =   277   Omega_I Error =      0.00001280
-  Iteration =   278   Omega_I Error =      0.00001246
-  Iteration =   279   Omega_I Error =      0.00001213
-  Iteration =   280   Omega_I Error =      0.00001182
-  Iteration =   281   Omega_I Error =      0.00001150
-  Iteration =   282   Omega_I Error =      0.00001120
-  Iteration =   283   Omega_I Error =      0.00001091
-  Iteration =   284   Omega_I Error =      0.00001062
-  Iteration =   285   Omega_I Error =      0.00001034
-  Iteration =   286   Omega_I Error =      0.00001007
-  Iteration =   287   Omega_I Error =      0.00000980
-  Iteration =   288   Omega_I Error =      0.00000955
-  Iteration =   289   Omega_I Error =      0.00000929
-  Iteration =   290   Omega_I Error =      0.00000905
-  Iteration =   291   Omega_I Error =      0.00000881
-  Iteration =   292   Omega_I Error =      0.00000858
-  Iteration =   293   Omega_I Error =      0.00000836
-  Iteration =   294   Omega_I Error =      0.00000814
-  Iteration =   295   Omega_I Error =      0.00000792
-  Iteration =   296   Omega_I Error =      0.00000771
-  Iteration =   297   Omega_I Error =      0.00000751
-  Iteration =   298   Omega_I Error =      0.00000731
-  Iteration =   299   Omega_I Error =      0.00000712
-  Iteration =   300   Omega_I Error =      0.00000694
-  Iteration =   301   Omega_I Error =      0.00000675
-  Iteration =   302   Omega_I Error =      0.00000658
-  Iteration =   303   Omega_I Error =      0.00000640
-  Iteration =   304   Omega_I Error =      0.00000624
-  Iteration =   305   Omega_I Error =      0.00000607
-  Iteration =   306   Omega_I Error =      0.00000591
-  Iteration =   307   Omega_I Error =      0.00000576
-  Iteration =   308   Omega_I Error =      0.00000561
-  Iteration =   309   Omega_I Error =      0.00000546
-  Iteration =   310   Omega_I Error =      0.00000532
-  Iteration =   311   Omega_I Error =      0.00000518
-  Iteration =   312   Omega_I Error =      0.00000504
-  Iteration =   313   Omega_I Error =      0.00000491
-  Iteration =   314   Omega_I Error =      0.00000478
-  Iteration =   315   Omega_I Error =      0.00000466
-  Iteration =   316   Omega_I Error =      0.00000453
-  Iteration =   317   Omega_I Error =      0.00000442
-  Iteration =   318   Omega_I Error =      0.00000430
-  Iteration =   319   Omega_I Error =      0.00000419
-  Iteration =   320   Omega_I Error =      0.00000408
-  Iteration =   321   Omega_I Error =      0.00000397
-  Iteration =   322   Omega_I Error =      0.00000387
-  Iteration =   323   Omega_I Error =      0.00000377
-  Iteration =   324   Omega_I Error =      0.00000367
-  Iteration =   325   Omega_I Error =      0.00000357
-  Iteration =   326   Omega_I Error =      0.00000348
-  Iteration =   327   Omega_I Error =      0.00000339
-  Iteration =   328   Omega_I Error =      0.00000330
-  Iteration =   329   Omega_I Error =      0.00000321
-  Iteration =   330   Omega_I Error =      0.00000313
-  Iteration =   331   Omega_I Error =      0.00000305
-  Iteration =   332   Omega_I Error =      0.00000297
-  Iteration =   333   Omega_I Error =      0.00000289
-  Iteration =   334   Omega_I Error =      0.00000282
-  Iteration =   335   Omega_I Error =      0.00000274
-  Iteration =   336   Omega_I Error =      0.00000267
-  Iteration =   337   Omega_I Error =      0.00000260
-  Iteration =   338   Omega_I Error =      0.00000254
-  Iteration =   339   Omega_I Error =      0.00000247
-  Iteration =   340   Omega_I Error =      0.00000241
-  Iteration =   341   Omega_I Error =      0.00000234
-  Iteration =   342   Omega_I Error =      0.00000228
-  Iteration =   343   Omega_I Error =      0.00000222
-  Iteration =   344   Omega_I Error =      0.00000217
-  Iteration =   345   Omega_I Error =      0.00000211
-  Iteration =   346   Omega_I Error =      0.00000205
-  Iteration =   347   Omega_I Error =      0.00000200
-  Iteration =   348   Omega_I Error =      0.00000195
-  Iteration =   349   Omega_I Error =      0.00000190
-  Iteration =   350   Omega_I Error =      0.00000185
-  Iteration =   351   Omega_I Error =      0.00000180
-  Iteration =   352   Omega_I Error =      0.00000176
-  Iteration =   353   Omega_I Error =      0.00000171
-  Iteration =   354   Omega_I Error =      0.00000167
-  Iteration =   355   Omega_I Error =      0.00000162
-  Iteration =   356   Omega_I Error =      0.00000158
-  Iteration =   357   Omega_I Error =      0.00000154
-  Iteration =   358   Omega_I Error =      0.00000150
-  Iteration =   359   Omega_I Error =      0.00000146
-  Iteration =   360   Omega_I Error =      0.00000143
-  Iteration =   361   Omega_I Error =      0.00000139
-  Iteration =   362   Omega_I Error =      0.00000135
-  Iteration =   363   Omega_I Error =      0.00000132
-  Iteration =   364   Omega_I Error =      0.00000129
-  Iteration =   365   Omega_I Error =      0.00000125
-  Iteration =   366   Omega_I Error =      0.00000122
-  Iteration =   367   Omega_I Error =      0.00000119
-  Iteration =   368   Omega_I Error =      0.00000116
-  Iteration =   369   Omega_I Error =      0.00000113
-  Iteration =   370   Omega_I Error =      0.00000110
-  Iteration =   371   Omega_I Error =      0.00000107
-  Iteration =   372   Omega_I Error =      0.00000105
-  Iteration =   373   Omega_I Error =      0.00000102
-  Iteration =   374   Omega_I Error =      0.00000099
-  Iteration =   375   Omega_I Error =      0.00000097
-  Iteration =   376   Omega_I Error =      0.00000094
-  Iteration =   377   Omega_I Error =      0.00000092
-  Iteration =   378   Omega_I Error =      0.00000090
-  Iteration =   379   Omega_I Error =      0.00000087
-  Iteration =   380   Omega_I Error =      0.00000085
-  Iteration =   381   Omega_I Error =      0.00000083
-  Iteration =   382   Omega_I Error =      0.00000081
-  Iteration =   383   Omega_I Error =      0.00000079
-  Iteration =   384   Omega_I Error =      0.00000077
-  Iteration =   385   Omega_I Error =      0.00000075
-  Iteration =   386   Omega_I Error =      0.00000073
-  Iteration =   387   Omega_I Error =      0.00000071
-  Iteration =   388   Omega_I Error =      0.00000070
-  Iteration =   389   Omega_I Error =      0.00000068
-  Iteration =   390   Omega_I Error =      0.00000066
-  Iteration =   391   Omega_I Error =      0.00000065
-  Iteration =   392   Omega_I Error =      0.00000063
-  Iteration =   393   Omega_I Error =      0.00000062
-  Iteration =   394   Omega_I Error =      0.00000060
-  Iteration =   395   Omega_I Error =      0.00000059
-  Iteration =   396   Omega_I Error =      0.00000057
-  Iteration =   397   Omega_I Error =      0.00000056
-  Iteration =   398   Omega_I Error =      0.00000054
-  Iteration =   399   Omega_I Error =      0.00000053
-  Iteration =   400   Omega_I Error =      0.00000052
-  Iteration =   401   Omega_I Error =      0.00000051
-  Iteration =   402   Omega_I Error =      0.00000049
-  Iteration =   403   Omega_I Error =      0.00000048
-  Iteration =   404   Omega_I Error =      0.00000047
-  Iteration =   405   Omega_I Error =      0.00000046
-  Iteration =   406   Omega_I Error =      0.00000045
-  Iteration =   407   Omega_I Error =      0.00000044
-  Iteration =   408   Omega_I Error =      0.00000043
-  Iteration =   409   Omega_I Error =      0.00000042
-  Iteration =   410   Omega_I Error =      0.00000041
-  Iteration =   411   Omega_I Error =      0.00000040
-  Iteration =   412   Omega_I Error =      0.00000039
-  Iteration =   413   Omega_I Error =      0.00000038
-  Iteration =   414   Omega_I Error =      0.00000037
-  Iteration =   415   Omega_I Error =      0.00000036
-  Iteration =   416   Omega_I Error =      0.00000036
-  Iteration =   417   Omega_I Error =      0.00000035
-  Iteration =   418   Omega_I Error =      0.00000034
-  Iteration =   419   Omega_I Error =      0.00000033
-  Iteration =   420   Omega_I Error =      0.00000033
-  Iteration =   421   Omega_I Error =      0.00000032
-  Iteration =   422   Omega_I Error =      0.00000031
-  Iteration =   423   Omega_I Error =      0.00000030
-  Iteration =   424   Omega_I Error =      0.00000030
-  Iteration =   425   Omega_I Error =      0.00000029
-  Iteration =   426   Omega_I Error =      0.00000029
-  Iteration =   427   Omega_I Error =      0.00000028
-  Iteration =   428   Omega_I Error =      0.00000027
-  Iteration =   429   Omega_I Error =      0.00000027
-  Iteration =   430   Omega_I Error =      0.00000026
-  Iteration =   431   Omega_I Error =      0.00000026
-  Iteration =   432   Omega_I Error =      0.00000025
-  Iteration =   433   Omega_I Error =      0.00000025
-  Iteration =   434   Omega_I Error =      0.00000024
-  Iteration =   435   Omega_I Error =      0.00000024
-  Iteration =   436   Omega_I Error =      0.00000023
-  Iteration =   437   Omega_I Error =      0.00000023
-  Iteration =   438   Omega_I Error =      0.00000022
-  Iteration =   439   Omega_I Error =      0.00000022
-  Iteration =   440   Omega_I Error =      0.00000022
-  Iteration =   441   Omega_I Error =      0.00000021
-  Iteration =   442   Omega_I Error =      0.00000021
-  Iteration =   443   Omega_I Error =      0.00000020
-  Iteration =   444   Omega_I Error =      0.00000020
-  Iteration =   445   Omega_I Error =      0.00000020
-  Iteration =   446   Omega_I Error =      0.00000019
-  Iteration =   447   Omega_I Error =      0.00000019
-  Iteration =   448   Omega_I Error =      0.00000019
-  Iteration =   449   Omega_I Error =      0.00000018
-  Iteration =   450   Omega_I Error =      0.00000018
-  Iteration =   451   Omega_I Error =      0.00000018
-  Iteration =   452   Omega_I Error =      0.00000018
-  Iteration =   453   Omega_I Error =      0.00000017
-  Iteration =   454   Omega_I Error =      0.00000017
-  Iteration =   455   Omega_I Error =      0.00000017
-  Iteration =   456   Omega_I Error =      0.00000017
-  Iteration =   457   Omega_I Error =      0.00000016
-  Iteration =   458   Omega_I Error =      0.00000016
-  Iteration =   459   Omega_I Error =      0.00000016
-  Iteration =   460   Omega_I Error =      0.00000016
-  Iteration =   461   Omega_I Error =      0.00000015
-  Iteration =   462   Omega_I Error =      0.00000015
-  Iteration =   463   Omega_I Error =      0.00000015
-  Iteration =   464   Omega_I Error =      0.00000015
-  Iteration =   465   Omega_I Error =      0.00000015
-  Iteration =   466   Omega_I Error =      0.00000014
-  Iteration =   467   Omega_I Error =      0.00000014
-  Iteration =   468   Omega_I Error =      0.00000014
-  Iteration =   469   Omega_I Error =      0.00000014
-  Iteration =   470   Omega_I Error =      0.00000014
-  Iteration =   471   Omega_I Error =      0.00000014
-  Iteration =   472   Omega_I Error =      0.00000014
-  Iteration =   473   Omega_I Error =      0.00000013
-  Iteration =   474   Omega_I Error =      0.00000013
-  Iteration =   475   Omega_I Error =      0.00000013
-  Iteration =   476   Omega_I Error =      0.00000013
-  Iteration =   477   Omega_I Error =      0.00000013
-  Iteration =   478   Omega_I Error =      0.00000013
-  Iteration =   479   Omega_I Error =      0.00000013
-  Iteration =   480   Omega_I Error =      0.00000013
-  Iteration =   481   Omega_I Error =      0.00000013
-  Iteration =   482   Omega_I Error =      0.00000013
-  Iteration =   483   Omega_I Error =      0.00000012
-  Iteration =   484   Omega_I Error =      0.00000012
-  Iteration =   485   Omega_I Error =      0.00000012
-  Iteration =   486   Omega_I Error =      0.00000012
-  Iteration =   487   Omega_I Error =      0.00000012
-  Iteration =   488   Omega_I Error =      0.00000012
-  Iteration =   489   Omega_I Error =      0.00000012
-  Iteration =   490   Omega_I Error =      0.00000012
-  Iteration =   491   Omega_I Error =      0.00000012
-  Iteration =   492   Omega_I Error =      0.00000012
-  Iteration =   493   Omega_I Error =      0.00000012
-  Iteration =   494   Omega_I Error =      0.00000012
-  Iteration =   495   Omega_I Error =      0.00000012
-  Iteration =   496   Omega_I Error =      0.00000012
-  Iteration =   497   Omega_I Error =      0.00000012
-  Iteration =   498   Omega_I Error =      0.00000012
-  Iteration =   499   Omega_I Error =      0.00000012
-  Iteration =   500   Omega_I Error =      0.00000012
+  Iteration =     1   Omega_I =     63.11899964    Error =      0.27364379
+  Iteration =     2   Omega_I =     55.66284363    Error =      0.22982678
+  Iteration =     3   Omega_I =     50.15298772    Error =      0.16671383
+  Iteration =     4   Omega_I =     46.34545729    Error =      0.12216974
+  Iteration =     5   Omega_I =     43.64751630    Error =      0.09199491
+  Iteration =     6   Omega_I =     41.66703548    Error =      0.07153003
+  Iteration =     7   Omega_I =     40.15799541    Error =      0.05744758
+  Iteration =     8   Omega_I =     38.96634917    Error =      0.04754021
+  Iteration =     9   Omega_I =     37.99465501    Error =      0.04038085
+  Iteration =    10   Omega_I =     37.18024812    Error =      0.03505468
+  Iteration =    11   Omega_I =     36.48196906    Error =      0.03097457
+  Iteration =    12   Omega_I =     35.87211417    Error =      0.02776070
+  Iteration =    13   Omega_I =     35.33153288    Error =      0.02516417
+  Iteration =    14   Omega_I =     34.84661590    Error =      0.02301909
+  Iteration =    15   Omega_I =     34.40742235    Error =      0.02121273
+  Iteration =    16   Omega_I =     34.00649732    Error =      0.01966674
+  Iteration =    17   Omega_I =     33.63811212    Error =      0.01832545
+  Iteration =    18   Omega_I =     33.29776647    Error =      0.01714838
+  Iteration =    19   Omega_I =     32.98185543    Error =      0.01610539
+  Iteration =    20   Omega_I =     32.68744162    Error =      0.01517359
+  Iteration =    21   Omega_I =     32.41209596    Error =      0.01433524
+  Iteration =    22   Omega_I =     32.15378386    Error =      0.01357633
+  Iteration =    23   Omega_I =     31.91078226    Error =      0.01288563
+  Iteration =    24   Omega_I =     31.68161778    Error =      0.01225401
+  Iteration =    25   Omega_I =     31.46502000    Error =      0.01167395
+  Iteration =    26   Omega_I =     31.25988529    Error =      0.01113919
+  Iteration =    27   Omega_I =     31.06524868    Error =      0.01064446
+  Iteration =    28   Omega_I =     30.88026140    Error =      0.01018530
+  Iteration =    29   Omega_I =     30.70417300    Error =      0.00975788
+  Iteration =    30   Omega_I =     30.53631670    Error =      0.00935893
+  Iteration =    31   Omega_I =     30.37609748    Error =      0.00898561
+  Iteration =    32   Omega_I =     30.22298224    Error =      0.00863543
+  Iteration =    33   Omega_I =     30.07649151    Error =      0.00830625
+  Iteration =    34   Omega_I =     29.93619257    Error =      0.00799615
+  Iteration =    35   Omega_I =     29.80169364    Error =      0.00770346
+  Iteration =    36   Omega_I =     29.67263891    Error =      0.00742671
+  Iteration =    37   Omega_I =     29.54870431    Error =      0.00716456
+  Iteration =    38   Omega_I =     29.42959384    Error =      0.00691584
+  Iteration =    39   Omega_I =     29.31503649    Error =      0.00667950
+  Iteration =    40   Omega_I =     29.20478350    Error =      0.00645461
+  Iteration =    41   Omega_I =     29.09860597    Error =      0.00624030
+  Iteration =    42   Omega_I =     28.99629283    Error =      0.00603582
+  Iteration =    43   Omega_I =     28.89764902    Error =      0.00584048
+  Iteration =    44   Omega_I =     28.80249388    Error =      0.00565366
+  Iteration =    45   Omega_I =     28.71065978    Error =      0.00547478
+  Iteration =    46   Omega_I =     28.62199087    Error =      0.00530333
+  Iteration =    47   Omega_I =     28.53634198    Error =      0.00513885
+  Iteration =    48   Omega_I =     28.45357762    Error =      0.00498091
+  Iteration =    49   Omega_I =     28.37357114    Error =      0.00482910
+  Iteration =    50   Omega_I =     28.29620396    Error =      0.00468309
+  Iteration =    51   Omega_I =     28.22136485    Error =      0.00454253
+  Iteration =    52   Omega_I =     28.14894930    Error =      0.00440714
+  Iteration =    53   Omega_I =     28.07885900    Error =      0.00427662
+  Iteration =    54   Omega_I =     28.01100131    Error =      0.00415072
+  Iteration =    55   Omega_I =     27.94528879    Error =      0.00402922
+  Iteration =    56   Omega_I =     27.88163884    Error =      0.00391188
+  Iteration =    57   Omega_I =     27.81997327    Error =      0.00379851
+  Iteration =    58   Omega_I =     27.76021804    Error =      0.00368892
+  Iteration =    59   Omega_I =     27.70230288    Error =      0.00358293
+  Iteration =    60   Omega_I =     27.64616105    Error =      0.00348039
+  Iteration =    61   Omega_I =     27.59172909    Error =      0.00338113
+  Iteration =    62   Omega_I =     27.53894661    Error =      0.00328503
+  Iteration =    63   Omega_I =     27.48775602    Error =      0.00319195
+  Iteration =    64   Omega_I =     27.43810242    Error =      0.00310175
+  Iteration =    65   Omega_I =     27.38993338    Error =      0.00301434
+  Iteration =    66   Omega_I =     27.34319876    Error =      0.00292960
+  Iteration =    67   Omega_I =     27.29785062    Error =      0.00284742
+  Iteration =    68   Omega_I =     27.25384306    Error =      0.00276771
+  Iteration =    69   Omega_I =     27.21113210    Error =      0.00269038
+  Iteration =    70   Omega_I =     27.16967555    Error =      0.00261534
+  Iteration =    71   Omega_I =     27.12943292    Error =      0.00254251
+  Iteration =    72   Omega_I =     27.09036535    Error =      0.00247182
+  Iteration =    73   Omega_I =     27.05243546    Error =      0.00240318
+  Iteration =    74   Omega_I =     27.01560735    Error =      0.00233653
+  Iteration =    75   Omega_I =     26.97984643    Error =      0.00227181
+  Iteration =    76   Omega_I =     26.94511944    Error =      0.00220894
+  Iteration =    77   Omega_I =     26.91139433    Error =      0.00214787
+  Iteration =    78   Omega_I =     26.87864019    Error =      0.00208855
+  Iteration =    79   Omega_I =     26.84682725    Error =      0.00203091
+  Iteration =    80   Omega_I =     26.81592678    Error =      0.00197490
+  Iteration =    81   Omega_I =     26.78591106    Error =      0.00192048
+  Iteration =    82   Omega_I =     26.75675332    Error =      0.00186759
+  Iteration =    83   Omega_I =     26.72842771    Error =      0.00181618
+  Iteration =    84   Omega_I =     26.70090926    Error =      0.00176622
+  Iteration =    85   Omega_I =     26.67417383    Error =      0.00171765
+  Iteration =    86   Omega_I =     26.64819810    Error =      0.00167044
+  Iteration =    87   Omega_I =     26.62295949    Error =      0.00162455
+  Iteration =    88   Omega_I =     26.59843619    Error =      0.00157994
+  Iteration =    89   Omega_I =     26.57460708    Error =      0.00153657
+  Iteration =    90   Omega_I =     26.55145172    Error =      0.00149440
+  Iteration =    91   Omega_I =     26.52895033    Error =      0.00145340
+  Iteration =    92   Omega_I =     26.50708375    Error =      0.00141354
+  Iteration =    93   Omega_I =     26.48583344    Error =      0.00137478
+  Iteration =    94   Omega_I =     26.46518142    Error =      0.00133710
+  Iteration =    95   Omega_I =     26.44511030    Error =      0.00130046
+  Iteration =    96   Omega_I =     26.42560320    Error =      0.00126483
+  Iteration =    97   Omega_I =     26.40664378    Error =      0.00123018
+  Iteration =    98   Omega_I =     26.38821620    Error =      0.00119649
+  Iteration =    99   Omega_I =     26.37030510    Error =      0.00116373
+  Iteration =   100   Omega_I =     26.35289558    Error =      0.00113187
+  Iteration =   101   Omega_I =     26.33597322    Error =      0.00110089
+  Iteration =   102   Omega_I =     26.31952401    Error =      0.00107077
+  Iteration =   103   Omega_I =     26.30353437    Error =      0.00104147
+  Iteration =   104   Omega_I =     26.28799114    Error =      0.00101298
+  Iteration =   105   Omega_I =     26.27288153    Error =      0.00098528
+  Iteration =   106   Omega_I =     26.25819315    Error =      0.00095833
+  Iteration =   107   Omega_I =     26.24391397    Error =      0.00093213
+  Iteration =   108   Omega_I =     26.23003233    Error =      0.00090665
+  Iteration =   109   Omega_I =     26.21653690    Error =      0.00088187
+  Iteration =   110   Omega_I =     26.20341669    Error =      0.00085778
+  Iteration =   111   Omega_I =     26.19066103    Error =      0.00083434
+  Iteration =   112   Omega_I =     26.17825958    Error =      0.00081155
+  Iteration =   113   Omega_I =     26.16620229    Error =      0.00078938
+  Iteration =   114   Omega_I =     26.15447940    Error =      0.00076783
+  Iteration =   115   Omega_I =     26.14308144    Error =      0.00074687
+  Iteration =   116   Omega_I =     26.13199922    Error =      0.00072648
+  Iteration =   117   Omega_I =     26.12122382    Error =      0.00070665
+  Iteration =   118   Omega_I =     26.11074658    Error =      0.00068737
+  Iteration =   119   Omega_I =     26.10055907    Error =      0.00066862
+  Iteration =   120   Omega_I =     26.09065313    Error =      0.00065038
+  Iteration =   121   Omega_I =     26.08102083    Error =      0.00063265
+  Iteration =   122   Omega_I =     26.07165446    Error =      0.00061540
+  Iteration =   123   Omega_I =     26.06254655    Error =      0.00059862
+  Iteration =   124   Omega_I =     26.05368982    Error =      0.00058231
+  Iteration =   125   Omega_I =     26.04507723    Error =      0.00056644
+  Iteration =   126   Omega_I =     26.03670191    Error =      0.00055101
+  Iteration =   127   Omega_I =     26.02855722    Error =      0.00053601
+  Iteration =   128   Omega_I =     26.02063669    Error =      0.00052141
+  Iteration =   129   Omega_I =     26.01293403    Error =      0.00050722
+  Iteration =   130   Omega_I =     26.00544316    Error =      0.00049341
+  Iteration =   131   Omega_I =     25.99815814    Error =      0.00047999
+  Iteration =   132   Omega_I =     25.99107322    Error =      0.00046693
+  Iteration =   133   Omega_I =     25.98418281    Error =      0.00045423
+  Iteration =   134   Omega_I =     25.97748148    Error =      0.00044188
+  Iteration =   135   Omega_I =     25.97096395    Error =      0.00042987
+  Iteration =   136   Omega_I =     25.96462510    Error =      0.00041818
+  Iteration =   137   Omega_I =     25.95845994    Error =      0.00040682
+  Iteration =   138   Omega_I =     25.95246364    Error =      0.00039577
+  Iteration =   139   Omega_I =     25.94663150    Error =      0.00038502
+  Iteration =   140   Omega_I =     25.94095894    Error =      0.00037457
+  Iteration =   141   Omega_I =     25.93544154    Error =      0.00036440
+  Iteration =   142   Omega_I =     25.93007498    Error =      0.00035451
+  Iteration =   143   Omega_I =     25.92485507    Error =      0.00034489
+  Iteration =   144   Omega_I =     25.91977774    Error =      0.00033554
+  Iteration =   145   Omega_I =     25.91483903    Error =      0.00032644
+  Iteration =   146   Omega_I =     25.91003510    Error =      0.00031759
+  Iteration =   147   Omega_I =     25.90536222    Error =      0.00030898
+  Iteration =   148   Omega_I =     25.90081675    Error =      0.00030061
+  Iteration =   149   Omega_I =     25.89639517    Error =      0.00029247
+  Iteration =   150   Omega_I =     25.89209405    Error =      0.00028455
+  Iteration =   151   Omega_I =     25.88791006    Error =      0.00027684
+  Iteration =   152   Omega_I =     25.88383996    Error =      0.00026935
+  Iteration =   153   Omega_I =     25.87988061    Error =      0.00026206
+  Iteration =   154   Omega_I =     25.87602894    Error =      0.00025497
+  Iteration =   155   Omega_I =     25.87228200    Error =      0.00024808
+  Iteration =   156   Omega_I =     25.86863687    Error =      0.00024137
+  Iteration =   157   Omega_I =     25.86509077    Error =      0.00023485
+  Iteration =   158   Omega_I =     25.86164097    Error =      0.00022850
+  Iteration =   159   Omega_I =     25.85828480    Error =      0.00022233
+  Iteration =   160   Omega_I =     25.85501969    Error =      0.00021632
+  Iteration =   161   Omega_I =     25.85184314    Error =      0.00021048
+  Iteration =   162   Omega_I =     25.84875272    Error =      0.00020480
+  Iteration =   163   Omega_I =     25.84574605    Error =      0.00019928
+  Iteration =   164   Omega_I =     25.84282083    Error =      0.00019390
+  Iteration =   165   Omega_I =     25.83997484    Error =      0.00018867
+  Iteration =   166   Omega_I =     25.83720588    Error =      0.00018358
+  Iteration =   167   Omega_I =     25.83451186    Error =      0.00017863
+  Iteration =   168   Omega_I =     25.83189071    Error =      0.00017382
+  Iteration =   169   Omega_I =     25.82934044    Error =      0.00016914
+  Iteration =   170   Omega_I =     25.82685910    Error =      0.00016458
+  Iteration =   171   Omega_I =     25.82444482    Error =      0.00016015
+  Iteration =   172   Omega_I =     25.82209574    Error =      0.00015584
+  Iteration =   173   Omega_I =     25.81981010    Error =      0.00015165
+  Iteration =   174   Omega_I =     25.81758616    Error =      0.00014757
+  Iteration =   175   Omega_I =     25.81542222    Error =      0.00014360
+  Iteration =   176   Omega_I =     25.81331665    Error =      0.00013973
+  Iteration =   177   Omega_I =     25.81126786    Error =      0.00013598
+  Iteration =   178   Omega_I =     25.80927430    Error =      0.00013232
+  Iteration =   179   Omega_I =     25.80733445    Error =      0.00012877
+  Iteration =   180   Omega_I =     25.80544686    Error =      0.00012531
+  Iteration =   181   Omega_I =     25.80361010    Error =      0.00012194
+  Iteration =   182   Omega_I =     25.80182279    Error =      0.00011867
+  Iteration =   183   Omega_I =     25.80008357    Error =      0.00011548
+  Iteration =   184   Omega_I =     25.79839115    Error =      0.00011239
+  Iteration =   185   Omega_I =     25.79674423    Error =      0.00010937
+  Iteration =   186   Omega_I =     25.79514160    Error =      0.00010644
+  Iteration =   187   Omega_I =     25.79358204    Error =      0.00010358
+  Iteration =   188   Omega_I =     25.79206439    Error =      0.00010081
+  Iteration =   189   Omega_I =     25.79058750    Error =      0.00009810
+  Iteration =   190   Omega_I =     25.78915026    Error =      0.00009548
+  Iteration =   191   Omega_I =     25.78775161    Error =      0.00009292
+  Iteration =   192   Omega_I =     25.78639049    Error =      0.00009043
+  Iteration =   193   Omega_I =     25.78506589    Error =      0.00008801
+  Iteration =   194   Omega_I =     25.78377682    Error =      0.00008565
+  Iteration =   195   Omega_I =     25.78252230    Error =      0.00008336
+  Iteration =   196   Omega_I =     25.78130142    Error =      0.00008113
+  Iteration =   197   Omega_I =     25.78011325    Error =      0.00007896
+  Iteration =   198   Omega_I =     25.77895691    Error =      0.00007685
+  Iteration =   199   Omega_I =     25.77783154    Error =      0.00007479
+  Iteration =   200   Omega_I =     25.77673630    Error =      0.00007280
+  Iteration =   201   Omega_I =     25.77567038    Error =      0.00007085
+  Iteration =   202   Omega_I =     25.77463298    Error =      0.00006896
+  Iteration =   203   Omega_I =     25.77362334    Error =      0.00006712
+  Iteration =   204   Omega_I =     25.77264070    Error =      0.00006532
+  Iteration =   205   Omega_I =     25.77168433    Error =      0.00006358
+  Iteration =   206   Omega_I =     25.77075353    Error =      0.00006188
+  Iteration =   207   Omega_I =     25.76984760    Error =      0.00006023
+  Iteration =   208   Omega_I =     25.76896588    Error =      0.00005862
+  Iteration =   209   Omega_I =     25.76810771    Error =      0.00005706
+  Iteration =   210   Omega_I =     25.76727245    Error =      0.00005554
+  Iteration =   211   Omega_I =     25.76645950    Error =      0.00005406
+  Iteration =   212   Omega_I =     25.76566824    Error =      0.00005262
+  Iteration =   213   Omega_I =     25.76489810    Error =      0.00005121
+  Iteration =   214   Omega_I =     25.76414850    Error =      0.00004985
+  Iteration =   215   Omega_I =     25.76341890    Error =      0.00004852
+  Iteration =   216   Omega_I =     25.76270875    Error =      0.00004723
+  Iteration =   217   Omega_I =     25.76201753    Error =      0.00004597
+  Iteration =   218   Omega_I =     25.76134474    Error =      0.00004475
+  Iteration =   219   Omega_I =     25.76068987    Error =      0.00004356
+  Iteration =   220   Omega_I =     25.76005245    Error =      0.00004240
+  Iteration =   221   Omega_I =     25.75943201    Error =      0.00004127
+  Iteration =   222   Omega_I =     25.75882809    Error =      0.00004017
+  Iteration =   223   Omega_I =     25.75824025    Error =      0.00003910
+  Iteration =   224   Omega_I =     25.75766805    Error =      0.00003806
+  Iteration =   225   Omega_I =     25.75711108    Error =      0.00003705
+  Iteration =   226   Omega_I =     25.75656893    Error =      0.00003607
+  Iteration =   227   Omega_I =     25.75604120    Error =      0.00003511
+  Iteration =   228   Omega_I =     25.75552750    Error =      0.00003418
+  Iteration =   229   Omega_I =     25.75502746    Error =      0.00003327
+  Iteration =   230   Omega_I =     25.75454072    Error =      0.00003238
+  Iteration =   231   Omega_I =     25.75406691    Error =      0.00003152
+  Iteration =   232   Omega_I =     25.75360569    Error =      0.00003069
+  Iteration =   233   Omega_I =     25.75315673    Error =      0.00002987
+  Iteration =   234   Omega_I =     25.75271969    Error =      0.00002908
+  Iteration =   235   Omega_I =     25.75229426    Error =      0.00002831
+  Iteration =   236   Omega_I =     25.75188012    Error =      0.00002756
+  Iteration =   237   Omega_I =     25.75147698    Error =      0.00002683
+  Iteration =   238   Omega_I =     25.75108453    Error =      0.00002611
+  Iteration =   239   Omega_I =     25.75070250    Error =      0.00002542
+  Iteration =   240   Omega_I =     25.75033061    Error =      0.00002475
+  Iteration =   241   Omega_I =     25.74996858    Error =      0.00002409
+  Iteration =   242   Omega_I =     25.74961616    Error =      0.00002345
+  Iteration =   243   Omega_I =     25.74927307    Error =      0.00002283
+  Iteration =   244   Omega_I =     25.74893909    Error =      0.00002223
+  Iteration =   245   Omega_I =     25.74861396    Error =      0.00002164
+  Iteration =   246   Omega_I =     25.74829744    Error =      0.00002107
+  Iteration =   247   Omega_I =     25.74798931    Error =      0.00002051
+  Iteration =   248   Omega_I =     25.74768935    Error =      0.00001996
+  Iteration =   249   Omega_I =     25.74739733    Error =      0.00001944
+  Iteration =   250   Omega_I =     25.74711304    Error =      0.00001892
+  Iteration =   251   Omega_I =     25.74683629    Error =      0.00001842
+  Iteration =   252   Omega_I =     25.74656686    Error =      0.00001793
+  Iteration =   253   Omega_I =     25.74630456    Error =      0.00001746
+  Iteration =   254   Omega_I =     25.74604920    Error =      0.00001700
+  Iteration =   255   Omega_I =     25.74580061    Error =      0.00001655
+  Iteration =   256   Omega_I =     25.74555859    Error =      0.00001611
+  Iteration =   257   Omega_I =     25.74532297    Error =      0.00001568
+  Iteration =   258   Omega_I =     25.74509358    Error =      0.00001527
+  Iteration =   259   Omega_I =     25.74487026    Error =      0.00001487
+  Iteration =   260   Omega_I =     25.74465285    Error =      0.00001447
+  Iteration =   261   Omega_I =     25.74444119    Error =      0.00001409
+  Iteration =   262   Omega_I =     25.74423512    Error =      0.00001372
+  Iteration =   263   Omega_I =     25.74403449    Error =      0.00001336
+  Iteration =   264   Omega_I =     25.74383917    Error =      0.00001300
+  Iteration =   265   Omega_I =     25.74364901    Error =      0.00001266
+  Iteration =   266   Omega_I =     25.74346387    Error =      0.00001232
+  Iteration =   267   Omega_I =     25.74328362    Error =      0.00001200
+  Iteration =   268   Omega_I =     25.74310814    Error =      0.00001168
+  Iteration =   269   Omega_I =     25.74293729    Error =      0.00001137
+  Iteration =   270   Omega_I =     25.74277095    Error =      0.00001107
+  Iteration =   271   Omega_I =     25.74260900    Error =      0.00001078
+  Iteration =   272   Omega_I =     25.74245132    Error =      0.00001050
+  Iteration =   273   Omega_I =     25.74229781    Error =      0.00001022
+  Iteration =   274   Omega_I =     25.74214835    Error =      0.00000995
+  Iteration =   275   Omega_I =     25.74200283    Error =      0.00000969
+  Iteration =   276   Omega_I =     25.74186115    Error =      0.00000943
+  Iteration =   277   Omega_I =     25.74172321    Error =      0.00000918
+  Iteration =   278   Omega_I =     25.74158891    Error =      0.00000894
+  Iteration =   279   Omega_I =     25.74145814    Error =      0.00000871
+  Iteration =   280   Omega_I =     25.74133083    Error =      0.00000848
+  Iteration =   281   Omega_I =     25.74120687    Error =      0.00000825
+  Iteration =   282   Omega_I =     25.74108618    Error =      0.00000804
+  Iteration =   283   Omega_I =     25.74096868    Error =      0.00000782
+  Iteration =   284   Omega_I =     25.74085427    Error =      0.00000762
+  Iteration =   285   Omega_I =     25.74074287    Error =      0.00000742
+  Iteration =   286   Omega_I =     25.74063441    Error =      0.00000722
+  Iteration =   287   Omega_I =     25.74052880    Error =      0.00000703
+  Iteration =   288   Omega_I =     25.74042598    Error =      0.00000685
+  Iteration =   289   Omega_I =     25.74032587    Error =      0.00000667
+  Iteration =   290   Omega_I =     25.74022839    Error =      0.00000649
+  Iteration =   291   Omega_I =     25.74013348    Error =      0.00000632
+  Iteration =   292   Omega_I =     25.74004107    Error =      0.00000615
+  Iteration =   293   Omega_I =     25.73995109    Error =      0.00000599
+  Iteration =   294   Omega_I =     25.73986348    Error =      0.00000583
+  Iteration =   295   Omega_I =     25.73977818    Error =      0.00000568
+  Iteration =   296   Omega_I =     25.73969512    Error =      0.00000553
+  Iteration =   297   Omega_I =     25.73961425    Error =      0.00000539
+  Iteration =   298   Omega_I =     25.73953550    Error =      0.00000524
+  Iteration =   299   Omega_I =     25.73945882    Error =      0.00000511
+  Iteration =   300   Omega_I =     25.73938417    Error =      0.00000497
+  Iteration =   301   Omega_I =     25.73931147    Error =      0.00000484
+  Iteration =   302   Omega_I =     25.73924069    Error =      0.00000471
+  Iteration =   303   Omega_I =     25.73917177    Error =      0.00000459
+  Iteration =   304   Omega_I =     25.73910466    Error =      0.00000447
+  Iteration =   305   Omega_I =     25.73903932    Error =      0.00000435
+  Iteration =   306   Omega_I =     25.73897569    Error =      0.00000424
+  Iteration =   307   Omega_I =     25.73891373    Error =      0.00000413
+  Iteration =   308   Omega_I =     25.73885341    Error =      0.00000402
+  Iteration =   309   Omega_I =     25.73879467    Error =      0.00000391
+  Iteration =   310   Omega_I =     25.73873747    Error =      0.00000381
+  Iteration =   311   Omega_I =     25.73868177    Error =      0.00000371
+  Iteration =   312   Omega_I =     25.73862754    Error =      0.00000361
+  Iteration =   313   Omega_I =     25.73857473    Error =      0.00000352
+  Iteration =   314   Omega_I =     25.73852331    Error =      0.00000342
+  Iteration =   315   Omega_I =     25.73847324    Error =      0.00000333
+  Iteration =   316   Omega_I =     25.73842448    Error =      0.00000325
+  Iteration =   317   Omega_I =     25.73837700    Error =      0.00000316
+  Iteration =   318   Omega_I =     25.73833077    Error =      0.00000308
+  Iteration =   319   Omega_I =     25.73828575    Error =      0.00000300
+  Iteration =   320   Omega_I =     25.73824192    Error =      0.00000292
+  Iteration =   321   Omega_I =     25.73819923    Error =      0.00000284
+  Iteration =   322   Omega_I =     25.73815767    Error =      0.00000277
+  Iteration =   323   Omega_I =     25.73811719    Error =      0.00000270
+  Iteration =   324   Omega_I =     25.73807778    Error =      0.00000263
+  Iteration =   325   Omega_I =     25.73803940    Error =      0.00000256
+  Iteration =   326   Omega_I =     25.73800202    Error =      0.00000249
+  Iteration =   327   Omega_I =     25.73796563    Error =      0.00000242
+  Iteration =   328   Omega_I =     25.73793019    Error =      0.00000236
+  Iteration =   329   Omega_I =     25.73789568    Error =      0.00000230
+  Iteration =   330   Omega_I =     25.73786207    Error =      0.00000224
+  Iteration =   331   Omega_I =     25.73782934    Error =      0.00000218
+  Iteration =   332   Omega_I =     25.73779747    Error =      0.00000212
+  Iteration =   333   Omega_I =     25.73776644    Error =      0.00000207
+  Iteration =   334   Omega_I =     25.73773622    Error =      0.00000201
+  Iteration =   335   Omega_I =     25.73770679    Error =      0.00000196
+  Iteration =   336   Omega_I =     25.73767813    Error =      0.00000191
+  Iteration =   337   Omega_I =     25.73765022    Error =      0.00000186
+  Iteration =   338   Omega_I =     25.73762304    Error =      0.00000181
+  Iteration =   339   Omega_I =     25.73759658    Error =      0.00000176
+  Iteration =   340   Omega_I =     25.73757080    Error =      0.00000172
+  Iteration =   341   Omega_I =     25.73754570    Error =      0.00000167
+  Iteration =   342   Omega_I =     25.73752126    Error =      0.00000163
+  Iteration =   343   Omega_I =     25.73749746    Error =      0.00000159
+  Iteration =   344   Omega_I =     25.73747427    Error =      0.00000154
+  Iteration =   345   Omega_I =     25.73745170    Error =      0.00000150
+  Iteration =   346   Omega_I =     25.73742971    Error =      0.00000146
+  Iteration =   347   Omega_I =     25.73740830    Error =      0.00000143
+  Iteration =   348   Omega_I =     25.73738745    Error =      0.00000139
+  Iteration =   349   Omega_I =     25.73736715    Error =      0.00000135
+  Iteration =   350   Omega_I =     25.73734737    Error =      0.00000132
+  Iteration =   351   Omega_I =     25.73732811    Error =      0.00000128
+  Iteration =   352   Omega_I =     25.73730936    Error =      0.00000125
+  Iteration =   353   Omega_I =     25.73729109    Error =      0.00000122
+  Iteration =   354   Omega_I =     25.73727330    Error =      0.00000119
+  Iteration =   355   Omega_I =     25.73725598    Error =      0.00000115
+  Iteration =   356   Omega_I =     25.73723910    Error =      0.00000112
+  Iteration =   357   Omega_I =     25.73722267    Error =      0.00000109
+  Iteration =   358   Omega_I =     25.73720666    Error =      0.00000107
+  Iteration =   359   Omega_I =     25.73719108    Error =      0.00000104
+  Iteration =   360   Omega_I =     25.73717590    Error =      0.00000101
+  Iteration =   361   Omega_I =     25.73716111    Error =      0.00000099
+  Iteration =   362   Omega_I =     25.73714671    Error =      0.00000096
+  Iteration =   363   Omega_I =     25.73713269    Error =      0.00000093
+  Iteration =   364   Omega_I =     25.73711903    Error =      0.00000091
+  Iteration =   365   Omega_I =     25.73710572    Error =      0.00000089
+  Iteration =   366   Omega_I =     25.73709277    Error =      0.00000086
+  Iteration =   367   Omega_I =     25.73708015    Error =      0.00000084
+  Iteration =   368   Omega_I =     25.73706785    Error =      0.00000082
+  Iteration =   369   Omega_I =     25.73705588    Error =      0.00000080
+  Iteration =   370   Omega_I =     25.73704422    Error =      0.00000078
+  Iteration =   371   Omega_I =     25.73703286    Error =      0.00000076
+  Iteration =   372   Omega_I =     25.73702180    Error =      0.00000074
+  Iteration =   373   Omega_I =     25.73701102    Error =      0.00000072
+  Iteration =   374   Omega_I =     25.73700053    Error =      0.00000070
+  Iteration =   375   Omega_I =     25.73699030    Error =      0.00000068
+  Iteration =   376   Omega_I =     25.73698035    Error =      0.00000066
+  Iteration =   377   Omega_I =     25.73697065    Error =      0.00000065
+  Iteration =   378   Omega_I =     25.73696120    Error =      0.00000063
+  Iteration =   379   Omega_I =     25.73695199    Error =      0.00000061
+  Iteration =   380   Omega_I =     25.73694303    Error =      0.00000060
+  Iteration =   381   Omega_I =     25.73693429    Error =      0.00000058
+  Iteration =   382   Omega_I =     25.73692579    Error =      0.00000057
+  Iteration =   383   Omega_I =     25.73691750    Error =      0.00000055
+  Iteration =   384   Omega_I =     25.73690943    Error =      0.00000054
+  Iteration =   385   Omega_I =     25.73690156    Error =      0.00000052
+  Iteration =   386   Omega_I =     25.73689390    Error =      0.00000051
+  Iteration =   387   Omega_I =     25.73688644    Error =      0.00000050
+  Iteration =   388   Omega_I =     25.73687917    Error =      0.00000048
+  Iteration =   389   Omega_I =     25.73687209    Error =      0.00000047
+  Iteration =   390   Omega_I =     25.73686519    Error =      0.00000046
+  Iteration =   391   Omega_I =     25.73685846    Error =      0.00000045
+  Iteration =   392   Omega_I =     25.73685191    Error =      0.00000044
+  Iteration =   393   Omega_I =     25.73684553    Error =      0.00000043
+  Iteration =   394   Omega_I =     25.73683931    Error =      0.00000041
+  Iteration =   395   Omega_I =     25.73683326    Error =      0.00000040
+  Iteration =   396   Omega_I =     25.73682736    Error =      0.00000039
+  Iteration =   397   Omega_I =     25.73682161    Error =      0.00000038
+  Iteration =   398   Omega_I =     25.73681600    Error =      0.00000037
+  Iteration =   399   Omega_I =     25.73681054    Error =      0.00000036
+  Iteration =   400   Omega_I =     25.73680522    Error =      0.00000035
+  Iteration =   401   Omega_I =     25.73680004    Error =      0.00000035
+  Iteration =   402   Omega_I =     25.73679499    Error =      0.00000034
+  Iteration =   403   Omega_I =     25.73679007    Error =      0.00000033
+  Iteration =   404   Omega_I =     25.73678527    Error =      0.00000032
+  Iteration =   405   Omega_I =     25.73678060    Error =      0.00000031
+  Iteration =   406   Omega_I =     25.73677604    Error =      0.00000030
+  Iteration =   407   Omega_I =     25.73677161    Error =      0.00000030
+  Iteration =   408   Omega_I =     25.73676728    Error =      0.00000029
+  Iteration =   409   Omega_I =     25.73676306    Error =      0.00000028
+  Iteration =   410   Omega_I =     25.73675895    Error =      0.00000027
+  Iteration =   411   Omega_I =     25.73675495    Error =      0.00000027
+  Iteration =   412   Omega_I =     25.73675105    Error =      0.00000026
+  Iteration =   413   Omega_I =     25.73674724    Error =      0.00000025
+  Iteration =   414   Omega_I =     25.73674353    Error =      0.00000025
+  Iteration =   415   Omega_I =     25.73673992    Error =      0.00000024
+  Iteration =   416   Omega_I =     25.73673639    Error =      0.00000024
+  Iteration =   417   Omega_I =     25.73673296    Error =      0.00000023
+  Iteration =   418   Omega_I =     25.73672961    Error =      0.00000022
+  Iteration =   419   Omega_I =     25.73672634    Error =      0.00000022
+  Iteration =   420   Omega_I =     25.73672316    Error =      0.00000021
+  Iteration =   421   Omega_I =     25.73672006    Error =      0.00000021
+  Iteration =   422   Omega_I =     25.73671703    Error =      0.00000020
+  Iteration =   423   Omega_I =     25.73671408    Error =      0.00000020
+  Iteration =   424   Omega_I =     25.73671120    Error =      0.00000019
+  Iteration =   425   Omega_I =     25.73670839    Error =      0.00000019
+  Iteration =   426   Omega_I =     25.73670566    Error =      0.00000018
+  Iteration =   427   Omega_I =     25.73670299    Error =      0.00000018
+  Iteration =   428   Omega_I =     25.73670039    Error =      0.00000017
+  Iteration =   429   Omega_I =     25.73669785    Error =      0.00000017
+  Iteration =   430   Omega_I =     25.73669537    Error =      0.00000017
+  Iteration =   431   Omega_I =     25.73669296    Error =      0.00000016
+  Iteration =   432   Omega_I =     25.73669060    Error =      0.00000016
+  Iteration =   433   Omega_I =     25.73668830    Error =      0.00000015
+  Iteration =   434   Omega_I =     25.73668606    Error =      0.00000015
+  Iteration =   435   Omega_I =     25.73668387    Error =      0.00000015
+  Iteration =   436   Omega_I =     25.73668174    Error =      0.00000014
+  Iteration =   437   Omega_I =     25.73667965    Error =      0.00000014
+  Iteration =   438   Omega_I =     25.73667762    Error =      0.00000014
+  Iteration =   439   Omega_I =     25.73667564    Error =      0.00000013
+  Iteration =   440   Omega_I =     25.73667370    Error =      0.00000013
+  Iteration =   441   Omega_I =     25.73667181    Error =      0.00000013
+  Iteration =   442   Omega_I =     25.73666997    Error =      0.00000012
+  Iteration =   443   Omega_I =     25.73666816    Error =      0.00000012
+  Iteration =   444   Omega_I =     25.73666641    Error =      0.00000012
+  Iteration =   445   Omega_I =     25.73666469    Error =      0.00000011
+  Iteration =   446   Omega_I =     25.73666301    Error =      0.00000011
+  Iteration =   447   Omega_I =     25.73666138    Error =      0.00000011
+  Iteration =   448   Omega_I =     25.73665978    Error =      0.00000011
+  Iteration =   449   Omega_I =     25.73665822    Error =      0.00000010
+  Iteration =   450   Omega_I =     25.73665669    Error =      0.00000010
+  Iteration =   451   Omega_I =     25.73665520    Error =      0.00000010
+  Iteration =   452   Omega_I =     25.73665374    Error =      0.00000010
+  Iteration =   453   Omega_I =     25.73665232    Error =      0.00000010
+  Iteration =   454   Omega_I =     25.73665093    Error =      0.00000009
+  Iteration =   455   Omega_I =     25.73664957    Error =      0.00000009
+  Iteration =   456   Omega_I =     25.73664824    Error =      0.00000009
+  Iteration =   457   Omega_I =     25.73664695    Error =      0.00000009
+  Iteration =   458   Omega_I =     25.73664568    Error =      0.00000008
+  Iteration =   459   Omega_I =     25.73664444    Error =      0.00000008
+  Iteration =   460   Omega_I =     25.73664322    Error =      0.00000008
+  Iteration =   461   Omega_I =     25.73664203    Error =      0.00000008
+  Iteration =   462   Omega_I =     25.73664087    Error =      0.00000008
+  Iteration =   463   Omega_I =     25.73663974    Error =      0.00000008
+  Iteration =   464   Omega_I =     25.73663863    Error =      0.00000007
+  Iteration =   465   Omega_I =     25.73663754    Error =      0.00000007
+  Iteration =   466   Omega_I =     25.73663647    Error =      0.00000007
+  Iteration =   467   Omega_I =     25.73663543    Error =      0.00000007
+  Iteration =   468   Omega_I =     25.73663441    Error =      0.00000007
+  Iteration =   469   Omega_I =     25.73663341    Error =      0.00000007
+  Iteration =   470   Omega_I =     25.73663244    Error =      0.00000007
+  Iteration =   471   Omega_I =     25.73663148    Error =      0.00000006
+  Iteration =   472   Omega_I =     25.73663054    Error =      0.00000006
+  Iteration =   473   Omega_I =     25.73662962    Error =      0.00000006
+  Iteration =   474   Omega_I =     25.73662872    Error =      0.00000006
+  Iteration =   475   Omega_I =     25.73662783    Error =      0.00000006
+  Iteration =   476   Omega_I =     25.73662697    Error =      0.00000006
+  Iteration =   477   Omega_I =     25.73662612    Error =      0.00000006
+  Iteration =   478   Omega_I =     25.73662529    Error =      0.00000006
+  Iteration =   479   Omega_I =     25.73662447    Error =      0.00000005
+  Iteration =   480   Omega_I =     25.73662367    Error =      0.00000005
+  Iteration =   481   Omega_I =     25.73662288    Error =      0.00000005
+  Iteration =   482   Omega_I =     25.73662211    Error =      0.00000005
+  Iteration =   483   Omega_I =     25.73662135    Error =      0.00000005
+  Iteration =   484   Omega_I =     25.73662061    Error =      0.00000005
+  Iteration =   485   Omega_I =     25.73661987    Error =      0.00000005
+  Iteration =   486   Omega_I =     25.73661916    Error =      0.00000005
+  Iteration =   487   Omega_I =     25.73661845    Error =      0.00000005
+  Iteration =   488   Omega_I =     25.73661776    Error =      0.00000005
+  Iteration =   489   Omega_I =     25.73661707    Error =      0.00000005
+  Iteration =   490   Omega_I =     25.73661640    Error =      0.00000005
+  Iteration =   491   Omega_I =     25.73661574    Error =      0.00000004
+  Iteration =   492   Omega_I =     25.73661509    Error =      0.00000004
+  Iteration =   493   Omega_I =     25.73661446    Error =      0.00000004
+  Iteration =   494   Omega_I =     25.73661383    Error =      0.00000004
+  Iteration =   495   Omega_I =     25.73661321    Error =      0.00000004
+  Iteration =   496   Omega_I =     25.73661260    Error =      0.00000004
+  Iteration =   497   Omega_I =     25.73661200    Error =      0.00000004
+  Iteration =   498   Omega_I =     25.73661141    Error =      0.00000004
+  Iteration =   499   Omega_I =     25.73661082    Error =      0.00000004
+  Iteration =   500   Omega_I =     25.73661025    Error =      0.00000004
 
   Convergence achieved!!
 
-  Final Omega_I (Bohr^2, Angstrom^2)      7.19167072        2.01387131
+  Final Omega_I (Bohr^2, Angstrom^2)     25.73660925        7.20697887
  ======================================================================
 
   Subspace data written on file: al_WanT.spaces
 
    <global routines>
-             clock number :     7
+             clock number :    12
 
-              disentangle :  1m13.34s CPU 
- 
-                want_init :     0.51s CPU
-                  bshells :     0.11s CPU
-                  wfc_dat :    34.36s CPU
-                  overlap :    18.73s CPU
-             overlap_base :    18.72s CPU
-               projection :     6.07s CPU
+              disentangle :  2m 2.15s CPU 
+
+                want_init :     0.28s CPU
+                  bshells :     0.20s CPU
+              wfc_manager :    21.50s CPU
+          ggrids_read_ext :     0.08s CPU
+             wfc_read_ext :     1.52s CPU
+                  overlap :    13.84s CPU
+          set_overlap_map :     0.17s CPU (     120 calls,   0.001 s avg)
+               projection :     0.61s CPU
+       trial_center_setup :     0.27s CPU (      80 calls,   0.003 s avg)
+                    s_psi :     0.19s CPU (    1600 calls,   0.000 s avg)
+               iterations :    99.35s CPU
 
 

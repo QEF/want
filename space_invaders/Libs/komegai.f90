@@ -9,7 +9,7 @@
 !
 !=----------------------------------------------------------------------------------=
        FUNCTION komegai( kpt, lamp, kcm, wb, wbtot, nnlist, nshells, nwhich,    &
-                         nnshell, dimwann, dimwin, dimwinx, mxdnrk, mxdnn )
+                         nnshell, dimwann, dimwin, dimwinx, mxdnrk, nnx )
 !=----------------------------------------------------------------------------------=
 !
 !...   Calculates the contribution of a given k-point to Omega_I
@@ -20,18 +20,18 @@
 
        IMPLICIT NONE
  
-       INTEGER :: dimwinx, mxdnrk, mxdnn
-       INTEGER :: kpt, nnlist(mxdnrk,mxdnn)
+       INTEGER :: dimwinx, mxdnrk, nnx
+       INTEGER :: kpt, nnlist(mxdnrk,nnx)
        INTEGER :: nshells, nwhich(nshells)
-       INTEGER :: nnshell(mxdnrk,mxdnn)
+       INTEGER :: nnshell(mxdnrk,nnx)
        INTEGER :: dimwann, dimwin(mxdnrk)
        REAL(dbl) :: komegai
-       REAL(dbl) ::  wb(mxdnrk,mxdnn), wbtot
+       REAL(dbl) ::  wb(mxdnrk,nnx), wbtot
        COMPLEX(dbl) :: lamp(dimwinx,dimwinx,mxdnrk)
-       COMPLEX(dbl) :: kcm(dimwinx,dimwinx,mxdnn)
+       COMPLEX(dbl) :: kcm(dimwinx,dimwinx,nnx)
  
        INTEGER :: j, l, m, n 
-       INTEGER :: ndnn, ndnc, nnsh, nnx, k_pls_b
+       INTEGER :: ndnn, ndnc, nnsh, inn, k_pls_b
        COMPLEX(dbl) :: dot_bloch1
  
 
@@ -42,12 +42,12 @@
  
 ! ...    LOOP OVER B-VECTORS
  
-           nnx=0
+           inn=0
            DO ndnc=1,nshells
                ndnn = nwhich(ndnc)
                DO nnsh=1,nnshell(kpt,ndnn)
-                   nnx=nnx+1
-                   k_pls_b=nnlist(kpt,nnx)
+                   inn=inn+1
+                   k_pls_b=nnlist(kpt,inn)
  
 ! ...              CALCULATE THE DOTPRODUCT
  
@@ -55,13 +55,13 @@
                    DO j = 1, dimwin(kpt)
                    DO l = 1, dimwin(k_pls_b)
                          dot_bloch1 = dot_bloch1 + CONJG( lamp(j,m,kpt) ) * &
-                                                   lamp(l,n,k_pls_b) * kcm(j,l,nnx)
+                                                   lamp(l,n,k_pls_b) * kcm(j,l,inn)
                    ENDDO
                    ENDDO
 
 ! ...              Add to total
 
-                   komegai = komegai - wb(kpt,nnx) * REAL( CONJG( dot_bloch1 ) * dot_bloch1 )
+                   komegai = komegai - wb(kpt,inn) * REAL( CONJG( dot_bloch1 ) * dot_bloch1 )
  
                ENDDO ! NNSH
            ENDDO ! NDNN

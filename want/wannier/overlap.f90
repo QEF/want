@@ -10,7 +10,7 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE overlap( evc, igsort, npwk, dimwin, nntot, nnlist,       &
-                           nncell, cm, npw, npwkx, nkpts, mxdnn, ngx,      &
+                           nncell, cm, npw, npwkx, nkpts, nnx, ngx,      &
                            ngy, ngz, dimwinx )
 !=----------------------------------------------------------------------------------=
  
@@ -28,16 +28,16 @@
       !
       ! ... Input Variables
       !
-      INTEGER :: npw, npwkx, nkpts, mxdnn
+      INTEGER :: npw, npwkx, nkpts, nnx
       INTEGER :: ngx, ngy, ngz, dimwinx
       INTEGER :: igsort( npwkx, nkpts )
       INTEGER :: npwk( nkpts )
-      INTEGER :: nnlist( nkpts, mxdnn )
+      INTEGER :: nnlist( nkpts, nnx )
       INTEGER :: nntot( nkpts )
-      INTEGER :: nncell( 3, nkpts, mxdnn )
+      INTEGER :: nncell( 3, nkpts, nnx )
       INTEGER :: dimwin( nkpts )
       COMPLEX(dbl) :: evc( npwkx, dimwinx, nkpts )
-      COMPLEX(dbl) :: cm( dimwinx, dimwinx, mxdnn, nkpts )
+      COMPLEX(dbl) :: cm( dimwinx, dimwinx, nnx, nkpts )
       !
       ! ... Local Variables
       !

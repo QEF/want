@@ -24,7 +24,7 @@
 
       USE kinds
       USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m6
-      USE input_module, ONLY : verbosity
+      USE control_module, ONLY : verbosity
       USE parameters, ONLY : nstrx, nkpts_inx
       USE io_module, ONLY : stdout, stdin, ioname, ham_unit, space_unit, wan_unit
       USE io_module, ONLY : work_dir, prefix, postfix
@@ -169,7 +169,7 @@
 !
 ! ... printing data to output
 !
-      CALL summary( stdout )
+      !CALL summary( stdout, INPUT=.FALSE. )
 
 !
 ! ... Read unitary matrices U(k) that rotate the bloch states

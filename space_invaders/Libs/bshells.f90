@@ -19,8 +19,7 @@
 
       USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, &
                                  bk, dnn, ndnntot, wb, wbtot, nnlist, nncell, &
-                                 nntot, bka, neigh, &
-                                 nnmx => mxdnn, nnmxh => mxdnnh , &
+                                 nntot, bka, neigh, nnx, &
                                  kpoints_alloc 
  
 ! ... Computes the shells of b-vectors connecting every k-point to its
@@ -41,19 +40,19 @@
       REAL(dbl) :: ddelta
  
       INTEGER :: ndnc
-      INTEGER :: i, j, l, m, n, nn, nnx, na, nap, ierr
+      INTEGER :: i, j, l, m, n, nn, inx, na, nap, ierr
       INTEGER :: nkp, nkp2, nkpts2
       INTEGER :: nlist, ndnn, nddn
       INTEGER :: nnsh, nnh
       INTEGER :: ifpos, ifneg, ifound, info, ind
-      INTEGER :: ndim(nnmx)
+      INTEGER :: ndim(nnx)
 
       REAL(dbl), ALLOCATABLE :: vkpr(:,:)
       REAL(dbl) :: vkpp(3)
-      REAL(dbl) :: dimsingvd(nnmx)
-      REAL(dbl) :: dimbk(3,nnmx)
-      REAL(dbl) :: v1(nnmx,nnmx), v2(nnmx,nnmx)
-      REAL(dbl) :: w1(10*nnmx)
+      REAL(dbl) :: dimsingvd(nnx)
+      REAL(dbl) :: dimbk(3,nnx)
+      REAL(dbl) :: v1(nnx,nnx), v2(nnx,nnx)
+      REAL(dbl) :: w1(10*nnx)
       REAL(dbl) :: dnn0, dnn1, dist, bb1, bbn, factor
 
 !
@@ -90,7 +89,7 @@
 ! ... AC & MBN (April 2002) generic k grid allowed
 !     everything in bohr^-1
  
-      DO nlist = 1, nnmx
+      DO nlist = 1, nnx
         DO nkp = 1, nkpts
           DO l = -5, 5
             DO m = -5, 5
@@ -121,7 +120,7 @@
 !     kvect in bohr^-1
 
       DO nkp = 1, nkpts
-        nnx = 0
+        inx = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
           nnshell(nkp,ndnn) = 0
@@ -137,15 +136,15 @@
                                ( vkpr(3,nkp) - vkpp(3) )**2 ) 
                   IF ( ( dist >=  dnn(ndnn) * 0.9999d0 )  .AND. &
                        ( dist <= dnn(ndnn) * 1.0001d0 ) )  THEN
-                    nnx = nnx + 1   
+                    inx = inx + 1   
                     nnshell(nkp,ndnn) = nnshell(nkp,ndnn) + 1
-                    nnlist(nkp,nnx) = nkp2
-                    nncell(1,nkp,nnx) = l
-                    nncell(2,nkp,nnx) = m
-                    nncell(3,nkp,nnx) = n
+                    nnlist(nkp,inx) = nkp2
+                    nncell(1,nkp,inx) = l
+                    nncell(2,nkp,inx) = m
+                    nncell(3,nkp,inx) = n
                     !
                     ! units are in bohr-1
-                    bk(:,nkp,nnx) = ( vkpp(:) - vkpr(:,nkp) )
+                    bk(:,nkp,inx) = ( vkpp(:) - vkpr(:,nkp) )
                   ENDIF
                 ENDDO
               ENDDO
@@ -160,24 +159,24 @@
 
         ENDDO  ! kpoints
 
-        IF ( nnx > nnmx ) CALL errore(' bshell ', ' Too many neighbours !', nnx )
+        IF ( inx > nnx ) CALL errore(' bshell ', ' Too many neighbours !', inx )
 
-        nntot(nkp) = nnx
+        nntot(nkp) = inx
       END DO
 
 ! ... Check that the moduli of the b-vectors inside a shell are all identical
 
       DO nkp = 1, nkpts2
-        nnx = 0
+        inx = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
           DO nnsh = 1, nnshell(nkp,ndnn)
             bb1 = 0.0d0
             bbn = 0.0d0
-            nnx = nnx + 1
+            inx = inx + 1
             DO i = 1, 3
-              bb1 = bb1 + bk(i,1,nnx) * bk(i,1,nnx)
-              bbn = bbn + bk(i,nkp,nnx) * bk(i,nkp,nnx)
+              bb1 = bb1 + bk(i,1,inx) * bk(i,1,inx)
+              bbn = bbn + bk(i,nkp,inx) * bk(i,nkp,inx)
             END DO
 
             IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
@@ -189,21 +188,21 @@
 
 ! ... Now find the dimensionality of each shell of neighbours
 
-      nnx = 0
+      inx = 0
       DO ndnc = 1, nshells
         ndnn = nwhich(ndnc)
         ndim(ndnn) = 0
 
         DO nnsh = 1, nnshell(1,ndnn)
-          nnx = nnx + 1
+          inx = inx + 1
           DO i = 1, 3
-            dimbk(i,nnsh) = bk(i,1,nnx)
+            dimbk(i,nnsh) = bk(i,1,inx)
           END DO
         END DO
 
         nnsh = nnshell(1,ndnn)
 
-        IF( nnsh > nnmx ) &
+        IF( nnsh > nnx ) &
           CALL errore(' wannier ',' nnsh too big ', nnsh )
 
         dimsingvd(:) = ZERO
@@ -238,18 +237,18 @@
       ENDDO
 
       DO nkp = 1, nkpts2
-        nnx = 0
+        inx = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
           DO nnsh = 1, nnshell(nkp,ndnn)
             bb1 = ZERO
             bbn = ZERO
-            nnx = nnx + 1
+            inx = inx + 1
             DO i = 1, 3
-              bb1 = bb1 + bk(i,1,nnx) * bk(i,1,nnx)
-              bbn = bbn + bk(i,nkp,nnx) * bk(i,nkp,nnx)
+              bb1 = bb1 + bk(i,1,inx) * bk(i,1,inx)
+              bbn = bbn + bk(i,nkp,inx) * bk(i,nkp,inx)
             END DO
-            wb(nkp,nnx) = DBLE( ndim(ndnn) ) / bbn / nnshell(nkp,ndnn)
+            wb(nkp,inx) = DBLE( ndim(ndnn) ) / bbn / nnshell(nkp,ndnn)
           END DO
         END DO
       END DO
@@ -263,13 +262,13 @@
         DO i = 1, 3
           DO j = 1, 3
             ddelta = ZERO
-            nnx = 0
+            inx = 0
 
             DO ndnc = 1, nshells
               ndnn = nwhich(ndnc)
               DO nnsh =1, nnshell(1,ndnn)
-                nnx = nnx + 1
-                ddelta = ddelta + wb(nkp,nnx) * bk(i,nkp,nnx) * bk(j,nkp,nnx)
+                inx = inx + 1
+                ddelta = ddelta + wb(nkp,inx) * bk(i,nkp,inx) * bk(j,nkp,inx)
               END DO
             END DO
 
@@ -291,12 +290,12 @@
 !...  
 
       wbtot = ZERO
-      nnx = 0
+      inx = 0
       DO ndnc = 1, nshells
         ndnn = nwhich(ndnc)
         DO nnsh = 1, nnshell(1,ndnn)
-          nnx = nnx + 1
-          wbtot = wbtot + wb(1,nnx)
+          inx = inx + 1
+          wbtot = wbtot + wb(1,inx)
         END DO
       END DO
 

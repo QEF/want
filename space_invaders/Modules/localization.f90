@@ -39,6 +39,14 @@
    !     INTEGER :: dimwann
    !     INTEGER :: nkpts
    !
+   ! ... iterative localization procedure parameters
+   INTEGER                     :: maxiter0_wan  ! maximun num of iterations (part1)
+   INTEGER                     :: maxiter1_wan  ! maximun num of iterations (part2)
+   INTEGER                     :: ncg           ! a CG step every ncg is performed in part2
+   REAL(dbl)                   :: alpha0_wan    ! mixing factor in part1
+   REAL(dbl)                   :: alpha1_wan    ! mixing factor in part2
+   REAL(dbl)                   :: wannier_thr   ! convergence threshold
+
    ! ... unitary rotation matrices
    COMPLEX(dbl), ALLOCATABLE   :: cu(:,:,:)     ! dimwann, dimwann, nkpts
    
@@ -62,6 +70,7 @@
 !
 
    PUBLIC :: nkpts, dimwann
+   PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg
    PUBLIC :: cu
    PUBLIC :: rave, r2ave, rave2
    PUBLIC :: omega_I, omega_OD, omega_D, omega_V, omega_tot

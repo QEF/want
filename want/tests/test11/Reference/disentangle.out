@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 10Feb2005 at 17:40:52 
+  Date 14Feb2005 at 12:25:47 
 
 
   PW-DFT data read from file: silicon.dft
@@ -628,100 +628,7 @@
   Kinetic energy cut-off for wfcs =    15.00 (Ry)
                          for rho  =   150.00 (Ry)
   Total number of PW for rho  =       9257
-    Max number of PW for wfcs =        304
+    Max number of PW for wfc  =        304
+  Total number of PW for wfcs =        537
     FFT grid components (rho) =  (    30   30   30 )
-
-
-  Overlap and projections written on file: silicon_WanT.ovp
-
-  Initial trial subspace: projected localized orbitals
-
-
-  ======================================================================
-  =                   Starting Iteration loop                          =
-  ======================================================================
-
-  Iteration =     1   Omega_I =     16.42936573    Error =      0.15512608
-  Iteration =     2   Omega_I =     15.25808267    Error =      0.10699558
-  Iteration =     3   Omega_I =     14.49372220    Error =      0.06600458
-  Iteration =     4   Omega_I =     14.03096926    Error =      0.03957688
-  Iteration =     5   Omega_I =     13.75571342    Error =      0.02363711
-  Iteration =     6   Omega_I =     13.59177752    Error =      0.01424023
-  Iteration =     7   Omega_I =     13.49299370    Error =      0.00872149
-  Iteration =     8   Omega_I =     13.43236758    Error =      0.00545686
-  Iteration =     9   Omega_I =     13.39431311    Error =      0.00349719
-  Iteration =    10   Omega_I =     13.36983190    Error =      0.00229734
-  Iteration =    11   Omega_I =     13.35368595    Error =      0.00154555
-  Iteration =    12   Omega_I =     13.34278192    Error =      0.00106277
-  Iteration =    13   Omega_I =     13.33525769    Error =      0.00074502
-  Iteration =    14   Omega_I =     13.32996680    Error =      0.00053098
-  Iteration =    15   Omega_I =     13.32618601    Error =      0.00038373
-  Iteration =    16   Omega_I =     13.32344760    Error =      0.00028055
-  Iteration =    17   Omega_I =     13.32144178    Error =      0.00020710
-  Iteration =    18   Omega_I =     13.31995876    Error =      0.00015412
-  Iteration =    19   Omega_I =     13.31885367    Error =      0.00011547
-  Iteration =    20   Omega_I =     13.31802473    Error =      0.00008702
-  Iteration =    21   Omega_I =     13.31739940    Error =      0.00006592
-  Iteration =    22   Omega_I =     13.31692534    Error =      0.00005015
-  Iteration =    23   Omega_I =     13.31656440    Error =      0.00003830
-  Iteration =    24   Omega_I =     13.31628851    Error =      0.00002936
-  Iteration =    25   Omega_I =     13.31607690    Error =      0.00002258
-  Iteration =    26   Omega_I =     13.31591407    Error =      0.00001742
-  Iteration =    27   Omega_I =     13.31578841    Error =      0.00001347
-  Iteration =    28   Omega_I =     13.31569117    Error =      0.00001044
-  Iteration =    29   Omega_I =     13.31561574    Error =      0.00000812
-  Iteration =    30   Omega_I =     13.31555707    Error =      0.00000632
-  Iteration =    31   Omega_I =     13.31551136    Error =      0.00000494
-  Iteration =    32   Omega_I =     13.31547565    Error =      0.00000386
-  Iteration =    33   Omega_I =     13.31544771    Error =      0.00000303
-  Iteration =    34   Omega_I =     13.31542581    Error =      0.00000238
-  Iteration =    35   Omega_I =     13.31540861    Error =      0.00000187
-  Iteration =    36   Omega_I =     13.31539508    Error =      0.00000147
-  Iteration =    37   Omega_I =     13.31538443    Error =      0.00000116
-  Iteration =    38   Omega_I =     13.31537602    Error =      0.00000092
-  Iteration =    39   Omega_I =     13.31536937    Error =      0.00000072
-  Iteration =    40   Omega_I =     13.31536412    Error =      0.00000057
-  Iteration =    41   Omega_I =     13.31535996    Error =      0.00000045
-  Iteration =    42   Omega_I =     13.31535666    Error =      0.00000036
-  Iteration =    43   Omega_I =     13.31535404    Error =      0.00000029
-  Iteration =    44   Omega_I =     13.31535196    Error =      0.00000023
-  Iteration =    45   Omega_I =     13.31535031    Error =      0.00000018
-  Iteration =    46   Omega_I =     13.31534899    Error =      0.00000014
-  Iteration =    47   Omega_I =     13.31534794    Error =      0.00000012
-  Iteration =    48   Omega_I =     13.31534711    Error =      0.00000009
-  Iteration =    49   Omega_I =     13.31534644    Error =      0.00000007
-  Iteration =    50   Omega_I =     13.31534591    Error =      0.00000006
-  Iteration =    51   Omega_I =     13.31534548    Error =      0.00000005
-  Iteration =    52   Omega_I =     13.31534514    Error =      0.00000004
-  Iteration =    53   Omega_I =     13.31534487    Error =      0.00000003
-  Iteration =    54   Omega_I =     13.31534465    Error =      0.00000002
-  Iteration =    55   Omega_I =     13.31534448    Error =      0.00000002
-  Iteration =    56   Omega_I =     13.31534434    Error =      0.00000002
-  Iteration =    57   Omega_I =     13.31534423    Error =      0.00000001
-  Iteration =    58   Omega_I =     13.31534414    Error =      0.00000001
-
-  Convergence achieved!!
-
-  Final Omega_I (Bohr^2, Angstrom^2)     13.31534401        3.72867311
- ======================================================================
-
-  Subspace data written on file: silicon_WanT.spaces
-
-   <global routines>
-             clock number :    12
-
-              disentangle :    50.42s CPU 
- 
-                want_init :     0.40s CPU
-                  bshells :     0.28s CPU
-                 wfc_data :    45.46s CPU
-                init_us_1 :     1.24s CPU
-                init_us_2 :     0.06s CPU (      64 calls,   0.001 s avg)
-                  ccalbec :     0.05s CPU (      64 calls,   0.001 s avg)
-                  overlap :     8.22s CPU
-             overlap_base :     8.20s CPU
-           add_us_overlap :     0.50s CPU (     512 calls,   0.001 s avg)
-               projection :    33.51s CPU
-                    s_psi :     0.10s CPU (     575 calls,   0.000 s avg)
-
 

@@ -15,7 +15,7 @@
 !*********************************************
    USE kinds, ONLY: dbl
    USE constants, ONLY : ONE, TWO, TPI, EPS_m6
-   USE parameters, ONLY : npkx, nstrx 
+   USE parameters, ONLY : npkx, nstrx, nnx, nnhx 
    USE converters_module, ONLY : cart2cry
    USE lattice_module, ONLY : alat, avec, bvec, lattice_alloc => alloc
    USE iotk_module
@@ -50,21 +50,19 @@
 
   !
   ! ... Nearest neighbor data (b vectors)
-  INTEGER, PARAMETER             :: mxdnn  = 12   ! maximum number of NN
-  INTEGER, PARAMETER             :: mxdnnh = mxdnn/2 
 
   INTEGER                        :: nshells       ! input number of shells to be used
-  INTEGER                        :: nwhich(mxdnn) ! the chosen shells
+  INTEGER                        :: nwhich(nnx)   ! the chosen shells
   INTEGER                        :: ndnntot       ! number of dnn shells
   INTEGER, ALLOCATABLE           :: nntot(:)      ! DIM: nkpts
-  INTEGER, ALLOCATABLE           :: nnshell(:,:)  ! DIM: nkpts*mxdnn
-  INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*mxdnn
-  INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nkpts*mxdnn
-  INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*mxdnnh
-  REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*mxdnn (bohr^-1)
-  REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*mxdnn
-  REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*mxdnnh (bohr^-1)
-  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: mxdnn (bohr^-1)
+  INTEGER, ALLOCATABLE           :: nnshell(:,:)  ! DIM: nkpts*nnx
+  INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*nnx
+  INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nkpts*nnx
+  INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*nnhx
+  REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*nnx (bohr^-1)
+  REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*nnx
+  REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*nnhx (bohr^-1)
+  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: nnx (bohr^-1)
   REAL(dbl)                      :: wbtot         ! sum of the b-weights
 
   LOGICAL :: kpoints_alloc = .FALSE.
@@ -78,7 +76,7 @@
   PUBLIC :: vkpt
   PUBLIC :: wk, wksum
 
-  PUBLIC :: mxdnn, mxdnnh
+  PUBLIC :: nnx, nnhx
   PUBLIC :: nshells
   PUBLIC :: nwhich
   PUBLIC :: nntot
@@ -131,27 +129,27 @@ CONTAINS
       CHARACTER(16)     :: subname="bshells_allocate"
 
       IF ( nkpts <= 0)  CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
-      IF ( mxdnn <= 0 ) CALL errore(subname,'Invalid MXDNN',ABS(mxdnn)+1)
-      IF ( mxdnnh <= 0) CALL errore(subname,'Invalid MXDNNH ',ABS(mxdnnh)+1)
+      IF ( nnx <= 0 ) CALL errore(subname,'Invalid MXDNN',ABS(nnx)+1)
+      IF ( nnhx <= 0) CALL errore(subname,'Invalid MXDNNH ',ABS(nnhx)+1)
 
       ALLOCATE( nntot(nkpts), STAT=ierr )
          IF (ierr /=0 ) CALL errore(subname,'allocating nntot',nkpts)
-      ALLOCATE( nnshell(nkpts,mxdnn), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nnshell ', nkpts*mxdnn )
-      ALLOCATE( nnlist(nkpts,mxdnn), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', nkpts*mxdnn )
-      ALLOCATE( nncell(3,nkpts,mxdnn), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nkpts*mxdnn )
-      ALLOCATE( neigh(nkpts,mxdnnh), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating neigh ', nkpts*mxdnnh )
-      ALLOCATE( bk(3,nkpts,mxdnn), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating bk ', 3*nkpts*mxdnn )
-      ALLOCATE( wb(nkpts,mxdnn), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating wb ', nkpts*mxdnn )
-      ALLOCATE( dnn(mxdnn), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating dnn ', mxdnn )
-      ALLOCATE( bka(3,mxdnnh), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating bka ', 3*mxdnnh )
+      ALLOCATE( nnshell(nkpts,nnx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nnshell ', nkpts*nnx )
+      ALLOCATE( nnlist(nkpts,nnx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', nkpts*nnx )
+      ALLOCATE( nncell(3,nkpts,nnx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nkpts*nnx )
+      ALLOCATE( neigh(nkpts,nnhx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating neigh ', nkpts*nnhx )
+      ALLOCATE( bk(3,nkpts,nnx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating bk ', 3*nkpts*nnx )
+      ALLOCATE( wb(nkpts,nnx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating wb ', nkpts*nnx )
+      ALLOCATE( dnn(nnx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating dnn ', nnx )
+      ALLOCATE( bka(3,nnhx), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating bka ', 3*nnhx )
 
       bshells_alloc = .TRUE.
    END SUBROUTINE bshells_allocate
@@ -179,6 +177,7 @@ CONTAINS
        INTEGER,           INTENT(in) :: unit
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
+       REAL(dbl)          :: tmp(3,3)
        CHARACTER(nstrx)   :: attr, string
        CHARACTER(16)      :: subname='kpoints_read_ext'
        INTEGER            :: ik, ierr
@@ -215,7 +214,8 @@ CONTAINS
        !
        ! ... convert them to crystal units as required throughout the code
        !
-       CALL cart2cry(vkpt, alat/TPI * bvec )
+       tmp(:,:) = alat/TPI * bvec
+       CALL cart2cry(vkpt, tmp )
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr)) 

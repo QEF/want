@@ -13,7 +13,7 @@
    USE kinds, ONLY : dbl
    USE constants, ONLY : CZERO
    USE windows_module, ONLY : dimwinx, dimwin, windows_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, mxdnn, nntot, nnlist, kpoints_alloc
+   USE kpoints_module, ONLY : nkpts, nnx, nntot, nnlist, kpoints_alloc
    USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
@@ -36,7 +36,7 @@
 !   
 
    COMPLEX(dbl), ALLOCATABLE   :: cm(:,:,:,:)    ! <u_nk|u_mk+b> overlap
-                                                 ! DIM: dimwinx,dimwinx,mxdnn,nkpts
+                                                 ! DIM: dimwinx,dimwinx,nnx,nkpts
    COMPLEX(dbl), ALLOCATABLE   :: ca(:,:,:)      ! <u_nk|phi_lk> projection
                                                  ! DIM: dimwinx,dimwann,nkpts
    LOGICAL :: alloc = .FALSE.
@@ -47,7 +47,7 @@
 !
 
    PUBLIC :: cm, ca 
-   PUBLIC :: dimwinx, dimwin, nkpts, mxdnn, dimwann
+   PUBLIC :: dimwinx, dimwin, nkpts, nnx, dimwann
    PUBLIC :: overlap_allocate
    PUBLIC :: overlap_deallocate
    PUBLIC :: overlap_write
@@ -70,8 +70,8 @@ CONTAINS
        IF ( dimwinx <= 0 .OR. nkpts <= 0 .OR. dimwann <= 0) &
            CALL errore(subname,' Invalid DIMWINX, NKPTS, DIMWANN ',1)
 
-       ALLOCATE( cm(dimwinx,dimwinx,mxdnn,nkpts), STAT=ierr )       
-           IF ( ierr/=0 ) CALL errore(subname,' allocating cm ',dimwinx**2*mxdnn*nkpts)
+       ALLOCATE( cm(dimwinx,dimwinx,nnx,nkpts), STAT=ierr )       
+           IF ( ierr/=0 ) CALL errore(subname,' allocating cm ',dimwinx**2*nnx*nkpts)
 
        ALLOCATE( ca(dimwinx,dimwann,nkpts), STAT=ierr )       
            IF ( ierr/=0 ) CALL errore(subname,' allocating ca ',dimwinx*dimwann*nkpts)
@@ -115,7 +115,7 @@ CONTAINS
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.)
        CALL iotk_write_attr(attr,"dimwann",dimwann)
-       CALL iotk_write_attr(attr,"mxdnn",mxdnn)
+       CALL iotk_write_attr(attr,"nnx",nnx)
        CALL iotk_write_attr(attr,"nkpts",nkpts)
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
@@ -173,7 +173,7 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="overlap_read"
-       INTEGER            :: dimwinx_, dimwann_, mxdnn_, nkpts_
+       INTEGER            :: dimwinx_, dimwann_, nnx_, nkpts_
        INTEGER            :: ik, iwann, dimwin_, dimwin_k, dimwin_kb, ib, nneigh_
        INTEGER            :: ierr
 
@@ -191,7 +191,7 @@ CONTAINS
           IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
        CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
-       CALL iotk_scan_attr(attr,'mxdnn',mxdnn_,IERR=ierr)
+       CALL iotk_scan_attr(attr,'nnx',nnx_,IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'Unable to find attr MXDNN',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
@@ -206,7 +206,7 @@ CONTAINS
        !
        IF ( kpoints_alloc ) THEN
           IF ( nkpts_ /= nkpts) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_-nkpts))
-          IF ( mxdnn_ /= mxdnn) CALL errore(subname,'Invalid MXDNN',ABS(mxdnn_-mxdnn))
+          IF ( nnx_ /= nnx) CALL errore(subname,'Invalid MXDNN',ABS(nnx_-nnx))
        ELSE
           nkpts = nkpts_
        ENDIF
@@ -236,7 +236,7 @@ CONTAINS
            IF ( dimwin_k > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_k)
            CALL iotk_scan_attr(attr,'nneigh',nneigh_,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'scanning for nneigh_',ik)
-           IF ( nneigh_ > mxdnn ) CALL errore(subname,'nniegh too large',nneigh_)
+           IF ( nneigh_ > nnx ) CALL errore(subname,'nniegh too large',nneigh_)
 
            DO ib=1,nneigh_
                  CALL iotk_scan_empty(unit, 'data', ATTR=attr, IERR=ierr)

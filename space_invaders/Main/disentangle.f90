@@ -22,23 +22,23 @@
                                  ioname, ovp_unit, space_unit, dft_unit
        USE files_module,   ONLY : file_open, file_close
        USE timing_module,  ONLY : timing, timing_deallocate, timing_overview, global_list
-       USE input_module,   ONLY : input_read
-       USE input_module,   ONLY : maxiter, itrial, disentangle_thr, alpha, verbosity 
+       USE input_module,   ONLY : input_manager
+       USE control_module, ONLY : trial_mode, verbosity, unitary_thr
        USE want_init_module,  ONLY : want_init
-       USE converters_module, ONLY : cart2cry
        USE util_module,    ONLY : zmat_unitary, zmat_hdiag
        USE wfc_manager_module, ONLY : wfc_manager
        USE iotk_module
     
        USE kpoints_module, ONLY: nkpts, vkpt
-       USE kpoints_module, ONLY: mxdnn, nnshell, nnlist, wb, wbtot, nshells, nwhich
+       USE kpoints_module, ONLY: nnx, nnshell, nnlist, wb, wbtot, nshells, nwhich
        USE lattice_module, ONLY: avec
        USE windows_module,  ONLY : nbnd, dimwin, dimwinx, eig, imin, imax, lcompspace, &
                                    dimfroz, indxfroz, indxnfroz, lfrozen, frozen
        USE windows_module,  ONLY : windows_allocate, windows_write
        USE subspace_module, ONLY : dimwann, wan_eig, lamp, camp, eamp, comp_eamp, &
                                    mtrx_in, mtrx_out
-       USE subspace_module, ONLY : subspace_allocate, subspace_write
+       USE subspace_module, ONLY : disentangle_thr, maxiter_dis, alpha_dis, &
+                                   subspace_allocate, subspace_write
        USE overlap_module,  ONLY : cm, overlap_allocate
        USE summary_module, ONLY : summary
 
@@ -89,7 +89,7 @@
 !      
 ! ...  Read input parameters from DFT_DATA file
 !
-       CALL input_read()
+       CALL input_manager()
 
 !
 ! ...  Global data init
@@ -134,7 +134,7 @@
 ! ...  Start iteration loop
        CALL timing('iterations',OPR='START')
 
-       DO iter = 1, maxiter
+       DO iter = 1, maxiter_dis
          IF ( iter == 1 ) THEN
 
 ! ...    Choose an initial trial subspace at each K
@@ -142,7 +142,7 @@
 ! ...      No frozen states
            IF ( .NOT. lfrozen ) THEN
 
-             IF ( ITRIAL == 1 ) THEN
+             IF ( TRIM(trial_mode) == 'lower_states' ) THEN
                WRITE( stdout,"(/,'  Initial trial subspace: lowest energy eigenvectors',/)")
                DO ik=1, nkpts
                  DO l=1, dimwann
@@ -152,7 +152,7 @@
                    END DO
                  END DO
                END DO
-             ELSE IF ( itrial == 2 ) THEN
+             ELSE IF ( TRIM(trial_mode) == 'upper_states' ) THEN
                WRITE( stdout,"(/,'  Initial trial subspace: highest energy eigenvectors',/)")
                DO ik=1, nkpts
                  DO l=1, dimwann
@@ -162,12 +162,11 @@
                    END DO
                  END DO
                END DO
-             ELSE IF ( ITRIAL == 3 ) THEN
+             ELSE IF ( TRIM(trial_mode) == 'center_projections' ) THEN
                WRITE(stdout,"(/,'  Initial trial subspace: projected localized orbitals',/)")
                lamp(:,:,:) = lamp_tmp(:,:,:)
              ELSE
-               WRITE( stdout, fmt= "(/,2x, 'Invalid choice of itrial' )")
-               CALL errore(' disentangle ', ' Invalid choice of itrial (I)', (itrial) )
+               CALL errore(' disentangle ', ' Invalid trial (I) = '//TRIM(trial_mode), 1 )
 
              END IF     !   No frozen states
 
@@ -183,12 +182,11 @@
 ! ...        First find the dimwmann-dimensional subspace s with maximal overlap onto the
 !            dimwann gaussians
 
-             IF ( ITRIAL == 3 ) THEN 
+             IF ( TRIM(trial_mode) == 'center_projections' ) THEN 
                  lamp(:,:,:) = lamp_tmp(:,:,:)
              ELSE
-                  WRITE( stdout, fmt= "(/,2x, 'Invalid choice of itrial' )")
-                  CALL errore(' disentangle ', ' Invalid choice of itrial (II)', (itrial) )
-             END IF
+                  CALL errore(' disentangle ', 'Invalid trial = '//TRIM(trial_mode), 2)
+             ENDIF
 
 ! ...        Next find the (dimwann-dimfroz(ik))-dimensional space of non-frozen states
 !            with largest overlap with s, and include it in the trial subspace 
@@ -230,7 +228,7 @@
 
            DO ik = 1, nkpts
                IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),1:dimwann,ik), &
-                                  SIDE='left', TOLL=EPS_m8 ) ) &
+                                  SIDE='left', TOLL=unitary_thr ) ) &
                    CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',ik)
            ENDDO
 
@@ -247,7 +245,7 @@
              IF ( dimwann > dimfroz(ik) )  THEN
                CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
                     cm(1,1,1,ik), mtrx_in(1,1,ik), dimwann, dimwin, dimwinx,     &
-                    dimfroz, indxnfroz, nbnd, nkpts, mxdnn )
+                    dimfroz, indxnfroz, nbnd, nkpts, nnx )
              END IF
            END DO
 
@@ -259,7 +257,8 @@
              IF ( dimwann > dimfroz(ik) )  THEN
                DO i = 1, dimwin(ik)-dimfroz(ik)
                  DO j = 1, i
-                   mtrx_in(j,i,ik) = alpha*mtrx_out(j,i,ik) + (ONE-alpha)*mtrx_in(j,i,ik)
+                   mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
+                                     (ONE-alpha_dis) * mtrx_in(j,i,ik)
                    mtrx_in(i,j,ik) = conjg(mtrx_in(j,i,ik))         ! hermiticity
                  END DO
                END DO
@@ -291,7 +290,7 @@
 !              the subroutine lambda_avg
  
                klambda = lambda_avg( m, ik, lamp, cm(1,1,1,ik), nnlist, nshells, &
-                         nwhich, nnshell, wb, dimwann, dimwin, dimwinx, nkpts, mxdnn )
+                         nwhich, nnshell, wb, dimwann, dimwin, dimwinx, nkpts, nnx )
                komega_i_est(ik) = komega_i_est(ik) - klambda
              END DO
            END IF
@@ -327,7 +326,7 @@
 ! ...      At the last iteration find a basis for the (dimwin(ik)-dimwann)-dimensional
 !          complement space
  
-           IF ( iter == maxiter )  THEN
+           IF ( iter == maxiter_dis )  THEN
              IF ( dimwin(ik) > dimwann )  THEN
                 DO j = 1, dimwin(ik)-dimwann
                    IF ( dimwann > dimfroz(ik) )  THEN
@@ -367,7 +366,7 @@
          o_error = ZERO
          DO ik = 1, nkpts
            aux = komegai( ik, lamp, cm(1,1,1,ik), wb, wbtot, nnlist, nshells, &
-                          nwhich, nnshell, dimwann, dimwin, dimwinx, nkpts, mxdnn )
+                          nwhich, nnshell, dimwann, dimwin, dimwinx, nkpts, nnx )
            omega_i = omega_i + aux
          END DO
          omega_i = omega_i/DBLE(nkpts)
@@ -384,7 +383,7 @@
            IF ( dimwann > dimfroz(ik) )  THEN
              CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,   &
                   cm(1,1,1,ik), mtrx_out(1,1,ik), dimwann, dimwin, dimwinx,  &
-                  dimfroz, indxnfroz, nbnd, nkpts, mxdnn )
+                  dimfroz, indxnfroz, nbnd, nkpts, nnx )
            END IF
          END DO
 

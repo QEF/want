@@ -1,24 +1,32 @@
 
-&INPUT_WAN
+&CONTROL
    prefix = 'chain8'
    postfix = '_WanT'
    work_dir = './COND/'
-   win_min = -22.0
-   win_max =  -4.5
-   dimwann = 16   
-   alpha = 0.5                         ! alpha0 -->  disentangle
-   maxiter = 300                       ! disentangle
-   niter0 = 10, alphafix0 =  0.5       ! niter0, alphafix0 --> wannier
-   niter = 1000,   alphafix = 0.5
-   ncg = 9                             ! niter, alphafix, ncg --> wannier
-   nshells = 2                         ! nshells
-   nwhich(1) = 1                       ! nwhich(nshells)
-   nwhich(2) = 4                       ! nwhich(nshells)
-   itrial = 3                          ! itrial --> disentangle
-   ordering_type = 'none'
 /
 
-WANNIER_CENTER {crystal}
+&SUBSPACE
+   dimwann = 16   
+   win_min = -22.0
+   win_max =  -4.5
+   alpha_dis = 0.5     
+   maxiter_dis = 300   
+   trial_mode = 'center_projections'
+/
+
+&LOCALIZATION
+   maxiter0_wan = 10
+   alpha0_wan = 0.5
+   maxiter1_wan = 1000
+   alpha1_wan = 0.5
+   ncg = 9          
+   nshells = 2       
+   nwhich(1) = 1      
+   nwhich(2) = 4      
+   ordering_mode = 'none'
+/
+
+WANNIER_CENTERS {crystal}
 1gauss    0.0556569  0.0000000  0.0000000     0  0  3    0.2
 1gauss    0.0556569  0.0000000  0.0000000     1  0  3    0.2
 1gauss    0.0556569  0.0000000  0.0000000     1  1  3    0.2

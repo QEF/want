@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
+SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    !*********************************************************
    USE kinds
    IMPLICIT NONE
@@ -20,9 +20,9 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
 ! ordering based first on the distance of the wannier center from a
 ! fixed point (like the origin) and then equally distant WF
 ! will be ordered for increasing spread.
-! Different ordering options are given by ORDERING_TYPE 
+! Different ordering options are given by ORDERING_MODE 
 !
-! ORDERING_TYPE : 
+! ORDERING_MODE : 
 !    * none           no ordering 
 !    * spatial        ordering based on WF center positions only
 !    * spread         ordering based on WF spreads only
@@ -36,7 +36,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
    INTEGER, INTENT(in)         :: dimwann, nkpts
    REAL(dbl), INTENT(inout)    :: rave(3,dimwann), rave2(dimwann), r2ave(dimwann)
    COMPLEX(dbl), INTENT(inout) :: cu(dimwann,dimwann,nkpts)
-   CHARACTER(*), INTENT(in)    :: ordering_type
+   CHARACTER(*), INTENT(in)    :: ordering_mode
 
    REAL(dbl), ALLOCATABLE      :: rtmp(:), rtmp2(:), rswap(:)
    COMPLEX(dbl), ALLOCATABLE   :: cswap(:,:,:)
@@ -47,17 +47,17 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_type)
 
 !------------------------------------------------
 
-   IF ( TRIM(ordering_type) == 'NONE' ) THEN
+   IF ( TRIM(ordering_mode) == 'none' ) THEN
       RETURN
-   ELSEIF ( TRIM(ordering_type) == 'SPATIAL' ) THEN
+   ELSEIF ( TRIM(ordering_mode) == 'spatial' ) THEN
       lspatial = .TRUE.
-   ELSEIF ( TRIM(ordering_type) == 'SPREAD' ) THEN
+   ELSEIF ( TRIM(ordering_mode) == 'spread' ) THEN
       lspread = .TRUE.
-   ELSEIF ( TRIM(ordering_type) == 'COMPLETE' ) THEN
+   ELSEIF ( TRIM(ordering_mode) == 'complete' ) THEN
       lspatial = .TRUE.
       lspread = .TRUE.
    ELSE 
-      CALL errore( 'ordering', 'invalid ORDERING_TYPE = '//TRIM(ordering_type), 1 )
+      CALL errore( 'ordering', 'invalid ORDERING_MODE = '//TRIM(ordering_mode), 1 )
    ENDIF
 
    ALLOCATE(index(dimwann), STAT=ierr)

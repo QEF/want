@@ -115,6 +115,7 @@ CONTAINS
    !*********************************************************
    IMPLICIT NONE
        INTEGER,           INTENT(in) :: unit
+       REAL(dbl)          :: tmp(3,3)
        CHARACTER(nstrx)   :: attr
        CHARACTER(nstrx)   :: str
        CHARACTER(15)      :: subname="ggrids_read_ext"
@@ -174,7 +175,8 @@ CONTAINS
        !
        IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice quantities not allocated',4)
        g(:,:) = REAL( igv(:,:) )
-       CALL cry2cart(g, bvec / tpiba )
+       tmp(:,:) =  bvec(:,:) / tpiba
+       CALL cry2cart(g, tmp )
        DO i=1,SIZE(igv,2)
            gg(i) = g(1,i)**2 + g(2,i)**2 + g(3,i)**2
        ENDDO

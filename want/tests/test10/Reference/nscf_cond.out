@@ -1,12 +1,13 @@
 
-     Program PWSCF     v.2.0.4  starts ...
-     Today is 23Nov2004 at 14:41:55 
+     Program PWSCF     v.2.1cvs starts ...
+     Today is 18Mar2005 at 10:53:18 
 
      Ultrasoft (Vanderbilt) Pseudopotentials
 
      Current dimensions of program pwscf are:
-     ntypx =10   npk =40000  lmax = 3
-     nchix = 6  ndim = 2000  nbrx = 8 nqfm = 8
+
+     ntypx = 10   npk = 40000  lmax =  3
+     nchix =  6  ndmx =  2000  nbrx = 14  nqfx =  8
      Found additional translation:    0.2500    0.0000    0.0000
      Found additional translation:   -0.5000    0.0000    0.0000
      Found additional translation:   -0.2500    0.0000    0.0000
@@ -23,8 +24,6 @@
      beta                      =       0.3000
      number of iterations used =            8  plain     mixing
      Exchange-correlation      =  SLA  LYP  B88  BLYP (1313)
-     iswitch = -1
-
      celldm(1)=  20.711406  celldm(2)=   1.125000  celldm(3)=   1.125000
      celldm(4)=   0.000000  celldm(5)=   0.000000  celldm(6)=   0.000000
 
@@ -51,98 +50,104 @@
    Cartesian axes
 
      site n.     atom                  positions (a_0 units)
-         1           C   tau(  1) = (  0.0000000  0.0000000  0.0000000  )
-         2           C   tau(  2) = (  0.1113139  0.0000000  0.0000000  )
-         3           C   tau(  3) = (  0.2500000  0.0000000  0.0000000  )
-         4           C   tau(  4) = (  0.3613138  0.0000000  0.0000000  )
-         5           C   tau(  5) = (  0.5000000  0.0000000  0.0000000  )
-         6           C   tau(  6) = (  0.6113139  0.0000000  0.0000000  )
-         7           C   tau(  7) = (  0.7500000  0.0000000  0.0000000  )
-         8           C   tau(  8) = (  0.8613139  0.0000000  0.0000000  )
+         1           C   tau(  1) = (   0.0000000   0.0000000   0.0000000  )
+         2           C   tau(  2) = (   0.1113138   0.0000000   0.0000000  )
+         3           C   tau(  3) = (   0.2500000   0.0000000   0.0000000  )
+         4           C   tau(  4) = (   0.3613138   0.0000000   0.0000000  )
+         5           C   tau(  5) = (   0.5000000   0.0000000   0.0000000  )
+         6           C   tau(  6) = (   0.6113139   0.0000000   0.0000000  )
+         7           C   tau(  7) = (   0.7500000   0.0000000   0.0000000  )
+         8           C   tau(  8) = (   0.8613139   0.0000000   0.0000000  )
 
      number of k points=    4  gaussian broad. (ryd)=  0.0200     ngauss =   0
                        cart. coord. in units 2pi/a_0
-        k(   1) = (   0.0000000   0.0000000   0.0000000), wk =   0.5000000
-        k(   2) = (   0.2500000   0.0000000   0.0000000), wk =   0.5000000
-        k(   3) = (   0.5000000   0.0000000   0.0000000), wk =   0.5000000
-        k(   4) = (   0.7500000   0.0000000   0.0000000), wk =   0.5000000
+        k(    1) = (   0.0000000   0.0000000   0.0000000), wk =   0.5000000
+        k(    2) = (   0.2500000   0.0000000   0.0000000), wk =   0.5000000
+        k(    3) = (   0.5000000   0.0000000   0.0000000), wk =   0.5000000
+        k(    4) = (   0.7500000   0.0000000   0.0000000), wk =   0.5000000
 
      G cutoff =  869.2594  ( 135939 G-vectors)     FFT grid: ( 60, 72, 72)
 
      nbndx  =    80  nbnd   =    20  natomwfc =    32  npwx   =   17017
      nelec  =   32.00 nkb   =     8  ngl    =    5816
 
-     The initial potential is read from file     chain8.pot
+     The initial potential is read from file           chain8.pot
      Starting wfc are atomic
 
-     total cpu time spent up to now is     40.28 secs
+     total cpu time spent up to now is     16.04 secs
 
      Band Structure Calculation
      Davidson diagonalization (with overlap)
    WARNING:     1 eigenvalues not converged
    WARNING:     1 eigenvalues not converged
    WARNING:     1 eigenvalues not converged
-     ethr =  3.12E-11,  avg # of iterations = 21.5
+     ethr =  3.13E-11,  avg # of iterations = 21.5
+
+     total cpu time spent up to now is    139.00 secs
+
+     End of band structure calculation
 
           k = 0.0000 0.0000 0.0000     band energies (ev):
 
-   -21.1966 -20.4385 -20.4385 -19.0875 -16.7411 -14.4767 -14.4767 -12.5640
-    -9.1044  -9.1044  -7.9668  -7.9668  -7.9668  -7.9668  -5.5448  -5.5448
-    -2.9740  -2.9740  -0.2232  -0.0719
+   -21.1965 -20.4385 -20.4385 -19.0874 -16.7410 -14.4766 -14.4766 -12.5639
+    -9.1043  -9.1043  -7.9668  -7.9668  -7.9668  -7.9668  -5.5447  -5.5447
+    -2.9740  -2.9740  -0.2232  -0.0718
 
           k = 0.2500 0.0000 0.0000     band energies (ev):
 
-   -21.1464 -20.7696 -20.0292 -19.2489 -16.5010 -15.2312 -13.7633 -12.7350
-    -9.0317  -9.0317  -8.4702  -8.4702  -7.3398  -7.3398  -5.9104  -5.9104
-    -2.4547  -2.4547  -0.1649  -0.0107
+   -21.1463 -20.7696 -20.0291 -19.2488 -16.5010 -15.2312 -13.7632 -12.7349
+    -9.0316  -9.0316  -8.4701  -8.4701  -7.3398  -7.3398  -5.9103  -5.9103
+    -2.4547  -2.4547  -0.1649  -0.0106
 
           k = 0.5000 0.0000 0.0000     band energies (ev):
 
-   -21.0033 -21.0033 -19.6177 -19.6177 -15.9402 -15.9402 -13.1349 -13.1349
-    -8.8187  -8.8187  -8.8187  -8.8187  -6.6366  -6.6366  -6.6366  -6.6366
-    -1.3531  -1.3531  -1.3531  -1.3531
+   -21.0033 -21.0033 -19.6176 -19.6176 -15.9401 -15.9401 -13.1348 -13.1348
+    -8.8186  -8.8186  -8.8186  -8.8186  -6.6366  -6.6366  -6.6366  -6.6366
+    -1.3530  -1.3530  -1.3530  -1.3530
 
           k = 0.7500 0.0000 0.0000     band energies (ev):
 
-   -21.1464 -20.7696 -20.0292 -19.2489 -16.5010 -15.2312 -13.7633 -12.7350
-    -9.0317  -9.0317  -8.4702  -8.4702  -7.3398  -7.3398  -5.9104  -5.9104
-    -2.4547  -2.4547  -0.1649  -0.0107
+   -21.1463 -20.7696 -20.0291 -19.2488 -16.5010 -15.2312 -13.7632 -12.7349
+    -9.0316  -9.0316  -8.4701  -8.4701  -7.3398  -7.3398  -5.9103  -5.9103
+    -2.4547  -2.4547  -0.1649  -0.0106
 
-     Writing file chain8.pun    for program phonon
- 
-     PWSCF        :  5m43.27s CPU time
+     the Fermi energy is    -4.2519 ev
 
-     init_run     :    40.26s CPU
-     electrons    :   295.63s CPU
+     Writing file    chain8.save for program phonon
  
-     electrons    :   295.63s CPU
-     c_bands      :   295.60s CPU
-     sum_band     :     7.21s CPU
+     PWSCF        :  2m22.66s CPU time
+
+     init_run     :    16.03s CPU
+     electrons    :   122.96s CPU
  
-     c_bands      :   295.60s CPU
-     init_us_2    :     0.41s CPU (      12 calls,   0.034 s avg)
-     cegterg      :   295.18s CPU (       7 calls,  42.169 s avg)
+     electrons    :   122.96s CPU
+     c_bands      :   122.95s CPU
+     sum_band     :     3.63s CPU
  
-     sum_band     :     7.21s CPU
+     c_bands      :   122.95s CPU
+     init_us_2    :     0.15s CPU (      12 calls,   0.012 s avg)
+     cegterg      :   122.74s CPU (       7 calls,  17.534 s avg)
  
-     wfcrot       :    37.93s CPU (       4 calls,   9.483 s avg)
-     cegterg      :   295.18s CPU (       7 calls,  42.169 s avg)
-     h_psi        :   208.81s CPU (      97 calls,   2.153 s avg)
-     g_psi        :     1.38s CPU (      86 calls,   0.016 s avg)
-     overlap      :    43.61s CPU (      86 calls,   0.507 s avg)
-     cdiaghg      :     0.83s CPU (      90 calls,   0.009 s avg)
-     update       :    37.31s CPU (      86 calls,   0.434 s avg)
-     last         :    30.95s CPU (      19 calls,   1.629 s avg)
+     sum_band     :     3.63s CPU
  
-     h_psi        :   208.81s CPU (      97 calls,   2.153 s avg)
-     init         :     1.34s CPU (      97 calls,   0.014 s avg)
-     firstfft     :    90.21s CPU (    1123 calls,   0.080 s avg)
-     secondfft    :    88.57s CPU (    1123 calls,   0.079 s avg)
-     add_vuspsi   :     6.80s CPU (      97 calls,   0.070 s avg)
+     wfcrot       :    14.72s CPU (       4 calls,   3.680 s avg)
+     cegterg      :   122.74s CPU (       7 calls,  17.534 s avg)
+     h_psi        :   118.81s CPU (      97 calls,   1.225 s avg)
+     g_psi        :     0.95s CPU (      86 calls,   0.011 s avg)
+     overlap      :     5.78s CPU (      86 calls,   0.067 s avg)
+     cdiaghg      :     0.37s CPU (      90 calls,   0.004 s avg)
+     update       :     6.09s CPU (      86 calls,   0.071 s avg)
+     last         :     2.94s CPU (      19 calls,   0.155 s avg)
  
-      General routines
-     ccalbec      :     4.41s CPU (      97 calls,   0.045 s avg)
-     cft3         :     0.20s CPU
-     cft3s        :   164.22s CPU (    2326 calls,   0.071 s avg)
-     davcio       :     0.49s CPU (      19 calls,   0.026 s avg)
+     h_psi        :   118.81s CPU (      97 calls,   1.225 s avg)
+     init         :     0.76s CPU (      97 calls,   0.008 s avg)
+     firstfft     :    52.66s CPU (    1123 calls,   0.047 s avg)
+     secondfft    :    52.61s CPU (    1123 calls,   0.047 s avg)
+     add_vuspsi   :     1.46s CPU (      97 calls,   0.015 s avg)
+ 
+     General routines
+     ccalbec      :     0.75s CPU (      97 calls,   0.008 s avg)
+     cft3         :     0.11s CPU
+     cft3s        :    96.05s CPU (    2326 calls,   0.041 s avg)
+     davcio       :     0.31s CPU (      19 calls,   0.016 s avg)
  

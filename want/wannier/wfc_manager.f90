@@ -25,7 +25,7 @@
    USE subspace_module,ONLY : dimwann
    USE trial_center_data_module,   ONLY : trial
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz
-   USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, mxdnn, &
+   USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, nnx, &
                               nntot, nnlist, nncell
    USE overlap_module, ONLY : cm, ca, overlap_alloc => alloc, overlap_write
    USE ggrids_module,  ONLY : npw, nr, ecutwfc, ecutrho, igv, &
@@ -67,7 +67,7 @@ CONTAINS
       CHARACTER(11)             :: subname="wfc_manager"
       CHARACTER(nstrx)          :: filename
       REAL(dbl), ALLOCATABLE    :: xk(:,:)
-      REAL(dbl)                 :: tmp
+      REAL(dbl)                 :: tmp(3,3)
       INTEGER                   :: ierr, ik, idum
       INTEGER                   :: i, j, ig 
 
@@ -132,7 +132,8 @@ CONTAINS
           ALLOCATE( xk(3,nkpts), STAT=ierr)
               IF (ierr/=0) CALL errore(subname,'allocating xk',ABS(ierr))
           xk(:,:) = vkpt(:,:)
-          CALL cry2cart( xk, bvec / tpiba )
+          tmp(:,:) = bvec / tpiba
+          CALL cry2cart( xk, tmp )
 
           DO ik=1,nkpts 
               CALL init_us_2( npwk(ik), igsort(1,ik), xk(1,ik), vkb(1,1,ik) )
@@ -169,7 +170,7 @@ CONTAINS
 
       CALL overlap( evc, igsort, npwk, dimwin,                          &
                     nntot, nnlist, nncell, cm, npw, npwkx, nkpts,       &
-                    mxdnn, nr(1), nr(2), nr(3), dimwinx )
+                    nnx, nr(1), nr(2), nr(3), dimwinx )
 
       CALL projection( lamp, ca, evc, npwk, dimwin, dimwann, dimfroz,   &
                        npwkx, nkpts, dimwinx, trial)

@@ -187,7 +187,7 @@ MODULE parser_module
   !
   !
   !--------------------------------------------------------------------------
-  SUBROUTINE read_line( line, nfield, field, end_of_file )
+  SUBROUTINE read_line( unit, line, nfield, field, end_of_file )
     !--------------------------------------------------------------------------
     !
     USE mp,        ONLY : mp_bcast
@@ -196,6 +196,7 @@ MODULE parser_module
     !
     IMPLICIT NONE
     !
+    INTEGER,                    INTENT(in)  :: unit
     CHARACTER(LEN=*),           INTENT(OUT) :: line
     CHARACTER(LEN=*), OPTIONAL, INTENT(IN)  :: field
     INTEGER,          OPTIONAL, INTENT(IN)  :: nfield
@@ -208,7 +209,7 @@ MODULE parser_module
     END IF
     !
     IF ( ionode ) THEN
-       READ (5, fmt='(A256)', END=10) line
+       READ (unit, fmt='(A256)', END=10) line
        tend = .FALSE.
        GO TO 20
 10     tend = .TRUE.

@@ -24,7 +24,8 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE files_module, ONLY : file_open, file_close
    USE iotk_module
    USE parser_base_module, ONLY : change_case
-   USE input_module,    ONLY : input_alloc => alloc, assume_ncpp
+
+   USE control_module, ONLY : do_pseudo
    USE trial_center_module, ONLY : trial_center_convert
    USE trial_center_data_module, ONLY : trial, dimwann
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
@@ -126,8 +127,6 @@ SUBROUTINE want_init(want_input, windows, bshells)
     IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
     !
     ! ...  allocations and initializations
-    IF ( bshells_ .AND. .NOT. input_alloc ) &
-          CALL errore(subname,'Input NOT read while doing bshells',3)
     IF ( bshells_ ) CALL bshells_init( )
 
 !
@@ -154,7 +153,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
 ! ... read pseudopotentials (according to Espresso fmts)
 !     use ASSUME_NCPP = .TRUE. to skip this section (meaningful only if all PPs are NCPP)
 !
-   IF ( .NOT. assume_ncpp ) THEN
+   IF ( do_pseudo ) THEN
       CALL readpp()
       okvan = ANY( tvanp(:) )
       uspp_calculation = okvan

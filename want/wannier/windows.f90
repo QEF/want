@@ -40,6 +40,7 @@
    INTEGER                     :: nbnd               ! number of DFT bands
    INTEGER                     :: nspin              ! number of spin channels
    INTEGER                     :: dimwinx            ! MAX (dimwin(:)) over kpts
+   CHARACTER(10)               :: spin_component     ! 'up', 'down', 'none'
    !
    ! ... starting states within the energy window
    REAL(dbl)                   :: win_min, win_max   ! outer energy window
@@ -65,7 +66,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, nbnd, nspin, dimwinx
+   PUBLIC :: nkpts, nbnd, nspin, spin_component, dimwinx
    PUBLIC :: win_min, win_max, froz_min, froz_max
    PUBLIC :: dimwin, imin, imax, eig, efermi, lcompspace
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen

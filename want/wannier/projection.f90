@@ -23,7 +23,7 @@
    USE kinds
    USE constants, ONLY : CZERO, EPS_m8
    USE timing_module, ONLY : timing
-   USE input_module,  ONLY : verbosity
+   USE control_module,ONLY : verbosity
    USE util_module,   ONLY : zmat_mul, zmat_unitary
    USE becmod,        ONLY : becp
    USE trial_center_module, ONLY : trial_center, trial_center_setup
