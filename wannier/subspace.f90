@@ -13,7 +13,7 @@
    USE kinds, ONLY : dbl
    USE windows_module, ONLY : dimwin, mxdbnd, lcompspace, windows_alloc => alloc, &
                               windows_allocate
-   USE kpoints_module, ONLY : nkpts, kpoints_alloc => alloc
+   USE kpoints_module, ONLY : nkpts, kpoints_alloc
    USE input_module, ONLY : dimwann, input_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx

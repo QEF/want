@@ -7,7 +7,7 @@ Carbon dimer chain; NC-PP
     prefix='chain8',
     tstress = .false.
     tprnfor = .true.
-    pseudo_dir = '../'
+    pseudo_dir = './'
     etot_conv_thr=1.0e-4,
     forc_conv_thr=1.0e-3
  /

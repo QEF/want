@@ -20,24 +20,22 @@ MANUAL=" Usage
  
  scf_cond             PWSCF self-consistent calculation (conductor)
  nscf_cond            PWSCF non-self-consistent calculation (conductor)
- pw2wan_cond          export PWSCF data (conductor) to WanT package
- pwscf_cond           perform SCF, NSCF, PW2WAN all together (conductor)
- window_cond          wannier energy window (conductor)
+ pwexport_cond        export PWSCF data (conductor) to WanT package
+ pwscf_cond           perform SCF, NSCF, PWEXPORT all together (conductor)
  disentangle_cond     wannier subspace definition (conductor)
  wannier_cond         wannier functions (conductor)
  hamiltonian_cond     writes the hamiltonian on the Wannier basis (conductor)
- want_cond            all the wannier function steps, WINDOW, DISENT., WANNIER (conductor)
+ want_cond            all the wannier function steps, DISENT., WANNIER (conductor)
  all_cond             PWSCF_COND and WANT_COND tigether
 
  scf_leads            PWSCF self-consistent calculation (leads)
  nscf_leads           PWSCF non-self-consistent calculation (leads)
- pw2wan_leads         export PWSCF data (leads) to WanT package
- pwscf_leads          perform SCF, NSCF, PW2WAN all together (leads)
- window_leads         wannier energy window (leads)
+ pwexport_leads       export PWSCF data (leads) to WanT package
+ pwscf_leads          perform SCF, NSCF, PWEXPORT all together (leads)
  disentangle_leads    wannier subspace definition (leads)
  wannier_leads        wannier functions (leads)
  hamiltonian_leads    writes the hamiltonian on the Wannier basis (leads)
- want_leads           all the wannier function steps, WINDOW, DISENT., WANNIER (leads)
+ want_leads           all the wannier function steps, DISENT., WANNIER (leads)
  all_leads            PWSCF_LEADS and WANT_LEADS tigether
 
  pwscf                PWSCF_COND and PWSCF_LEADS toether
@@ -67,16 +65,14 @@ PSEUDO_NAME=C.blyp-mt.UPF
 
 SCF_COND=
 NSCF_COND=
-PW2WAN_COND=
-WINDOW_COND=
+PWEXPORT_COND=
 DISENTANGLE_COND=
 WANNIER_COND=
 HAMILTONIAN_COND=
 
 SCF_LEADS=
 NSCF_LEADS=
-PW2WAN_LEADS=
-WINDOW_LEADS=
+PWEXPORT_LEADS=
 DISENTANGLE_LEADS=
 WANNIER_LEADS=
 HAMILTONIAN_LEADS=
@@ -94,45 +90,43 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in
    ( scf_cond )          SCF_COND=".TRUE." ;;
    ( nscf_cond )         NSCF_COND=".TRUE." ;;
-   ( pw2wan_cond )       PW2WAN_COND=".TRUE." ;;
-   ( pwscf_cond )        SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;;
-   ( window_cond )       WINDOW_COND=".TRUE." ;;
+   ( pwexport_cond )     PWEXPORT_COND=".TRUE." ;;
+   ( pwscf_cond )        SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;;
    ( disentangle_cond )  DISENTANGLE_COND=".TRUE." ;;
    ( wannier_cond )      WANNIER_COND=".TRUE." ;;
    ( hamiltonian_cond )  HAMILTONIAN_COND=".TRUE." ;;
-   ( want_cond )         WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ; 
+   ( want_cond )         DISENTANGLE_COND=".TRUE." ; 
                          WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;;
-   ( all_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;
-                         WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ;
+   ( all_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
+                         DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;;
 
    ( scf_leads )         SCF_LEADS=".TRUE." ;;
    ( nscf_leads )        NSCF_LEADS=".TRUE." ;;
-   ( pw2wan_leads )      PW2WAN_LEADS=".TRUE." ;;
-   ( pwscf_leads )       SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;;
-   ( window_leads )      WINDOW_LEADS=".TRUE." ;;
+   ( pwexport_leads )    PWEXPORT_LEADS=".TRUE." ;;
+   ( pwscf_leads )       SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
    ( disentangle_leads ) DISENTANGLE_LEADS=".TRUE." ;;
    ( wannier_leads )     WANNIER_LEADS=".TRUE." ;;
    ( hamiltonian_leads ) HAMILTONIAN_LEADS=".TRUE." ;;
-   ( want_leads )        WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ; 
+   ( want_leads )        DISENTANGLE_LEADS=".TRUE." ; 
                          WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
-   ( all_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;
-                         WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ;
+   ( all_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;
+                         DISENTANGLE_LEADS=".TRUE." ;
                          WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
 
-   ( pwscf )             SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;
-                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;;
-   ( want )              WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ;
+   ( pwscf )             SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
+                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
+   ( want )              DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;
-                         WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ;
+                         DISENTANGLE_LEADS=".TRUE." ;
                          WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
    ( conductor )         CONDUCTOR=".TRUE." ;;
    ( bulk )              BULK=".TRUE." ;;
-   ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ; 
-                         WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ; 
+   ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ; 
+                         DISENTANGLE_COND=".TRUE." ; 
                          WANNIER_COND=".TRUE." ;  HAMILTONIAN_COND=".TRUE." ;
-                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ; 
-                         WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ; 
+                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ; 
+                         DISENTANGLE_LEADS=".TRUE." ; 
                          WANNIER_LEADS=".TRUE." ;  HAMILTONIAN_LEADS=".TRUE." ;
                          CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
 
@@ -213,45 +207,25 @@ if [ "$NSCF_LEADS" = ".TRUE." ] ; then
 fi
    
 #
-# running PWSCF PW2WAN
+# running PWSCF PWEXPORT
 #
-if [ "$PW2WAN_COND" = ".TRUE." ] ; then  
-   $PARA_PREFIX  $PWSCF_BIN/pw2wan.x $PARA_POSTFIX \
-              <  $TEST_HOME/pw2wan_cond.in > $TEST_HOME/pw2wan_cond.out
+if [ "$PWEXPORT_COND" = ".TRUE." ] ; then  
+   $PARA_PREFIX  $PWSCF_BIN/pw_export.x $PARA_POSTFIX \
+              <  $TEST_HOME/pwexport_cond.in > $TEST_HOME/pwexport_cond.out
    if [ $? = 0 ] ; then 
-      echo "PW2WAN_COND calculation done" 
+      echo "PWEXPORT_COND calculation done" 
    else
-      echo "found some problems in PW2WAN_COND calculation, stopping" ; exit 1
+      echo "found some problems in PWEXPORT_COND calculation, stopping" ; exit 1
    fi
 fi
 #
-if [ "$PW2WAN_LEADS" = ".TRUE." ] ; then  
-   $PARA_PREFIX  $PWSCF_BIN/pw2wan.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pw2wan_leads.in > $TEST_HOME/pw2wan_leads.out
+if [ "$PWEXPORT_LEADS" = ".TRUE." ] ; then  
+   $PARA_PREFIX  $PWSCF_BIN/pw_export.x $PARA_POSTFIX  \
+              <  $TEST_HOME/pwexport_leads.in > $TEST_HOME/pwexport_leads.out
    if [ $? = 0 ] ; then 
-      echo "PW2WAN_LEADS calculation done" 
+      echo "PWEXPORT_LEADS calculation done" 
    else
-      echo "found some problems in PW2WAN_LEADS calculation, stopping" ; exit 1
-   fi
-fi
-
-#
-# running WINDOW
-#
-if [ "$WINDOW_COND" = ".TRUE." ] ; then  
-   $WANT_BIN/window.x < $TEST_HOME/want_cond.in > $TEST_HOME/window_cond.out
-   if [ ! -e CRASH ] ; then 
-      echo "WINDOW_COND calculation done" 
-   else
-      echo "found some problems in WINDOW_COND calculation, stopping" ; cat CRASH ;exit 1
-   fi
-fi
-if [ "$WINDOW_LEADS" = ".TRUE." ] ; then  
-   $WANT_BIN/window.x < $TEST_HOME/want_leads.in > $TEST_HOME/window_leads.out
-   if [ ! -e CRASH ] ; then 
-      echo "WINDOW_LEADS calculation done" 
-   else
-      echo "found some problems in WINDOW_LEADS calculation, stopping" ; cat CRASH; exit 1
+      echo "found some problems in PWEXPORT_LEADS calculation, stopping" ; exit 1
    fi
 fi
 

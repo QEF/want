@@ -13,12 +13,11 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: ryd => ry, har => au, bohr => bohr_radius_angs, &
-                           CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
+      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
       USE parameters, ONLY : nstrx
       USE input_module
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-      USE io_module, ONLY : stdout, dft_unit, wan_unit, ioname
+      USE io_module, ONLY : stdout, wan_unit, ioname
       USE files_module, ONLY : file_open, file_close
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
@@ -26,20 +25,15 @@
       USE converters_module, ONLY : cart2cry
       USE util_module, ONLY: zmat_mul, zmat_unitary
 
-      USE lattice, ONLY: avec, dirc, recc, alat, lattice_init
-      USE ions, ONLY: rat, ntype, natom, nameat, poscart, poscart_set
-      USE kpoints_module, ONLY: nk, s, nkpts, vkpt, &
+      USE want_init_module, ONLY : want_init
+      USE summary_module, ONLY : summary
+      USE kpoints_module, ONLY: nkpts, &
                           nnmx => mxdnn, nnmxh => mxdnnh, &
-                          nntot, nnlist, nncell, neigh, bk, wb, dnn, bka, wbtot, &
-                          kpoints_init, kpoints_deallocate
- 
-      USE windows_module, ONLY : dimwin, mxdbnd, &
-                          windows_allocate, windows_deallocate
-      USE subspace_module, ONLY : subspace_allocate, subspace_deallocate
-      USE overlap_module,  ONLY : ca, cm, overlap_deallocate
+                          nntot, nnlist, nncell, neigh, bk, wb, dnn, bka, wbtot
+      USE overlap_module,  ONLY : ca, cm
       USE localization_module, ONLY : cu, rave, rave2, r2ave, &
                        Omega_I, Omega_OD, Omega_D, Omega_V, Omega_tot, &
-                       localization_allocate, localization_deallocate, localization_write
+                       localization_allocate, localization_write
 
 !
 ! ... 
@@ -108,62 +102,25 @@
 
 
 !
-! ...  Startup
+! ... Startup
 !
-       CALL startup(version_number,MAIN_NAME='wannier')
-       CALL timing('overlap',OPR='start')
+      CALL startup(version_number,MAIN_NAME='wannier')
 
 !
-! ...  Read input parameters from window.out
+! ... Read input parameters from DFT_DATA file
 !
-
       CALL input_read()
 
-      CALL ioname('dft_data',filename)
-      OPEN( UNIT=dft_unit, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
-
-      READ(dft_unit) alat
-      READ(dft_unit) (avec(i,1),i=1,3)
-      READ(dft_unit) (avec(i,2),i=1,3)
-      READ(dft_unit) (avec(i,3),i=1,3)
-
-      READ(dft_unit) ntype
-      DO i = 1, ntype
-          READ(dft_unit) natom(i), nameat(i)
-          DO j=1, natom(i)
-            READ(dft_unit) (rat(k,j,i),k=1,3)
-          ENDDO
-      ENDDO
-
-      READ(dft_unit) rdum
-      READ(dft_unit) (nk(i),i=1,3), (s(i),i=1,3)
-
-      READ(dft_unit) rdum ! win_min, win_max, froz_min, froz_max, dimwann
-
-      READ(dft_unit) rdum ! alpha, maxiter 
-      READ(dft_unit) idum ! iphase
-      READ(dft_unit) idum ! niter0, alphafix0
-      READ(dft_unit) idum ! niter, alphafix, ncg
-      READ(dft_unit) idum ! itrial, nshells
-      READ(dft_unit) idum ! (nwhich(i),i=1,nshells)
-
-      READ(dft_unit) nkpts, idum, mxdbnd
-
+!
+! ... Global data init
+!
+      CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE.)
 
 !
-! ... Allocations and initializations
-      CALL wannier_center_init( alat, avec )
-      CALL lattice_init()
-      !
-      ! positions conversion
-      CALL poscart_set( avec )
+! ... Summary of the input and DFT data
+!
+      CALL summary( stdout )
 
-!
-! ... Calculate grid of K-points and allocations (including bshells)
-      CALL kpoints_init( nkpts )
-!
-! ... windows dimensions
-      CALL windows_allocate()
 !
 ! ... wannier-specific variables init
       CALL localization_allocate()
@@ -172,13 +129,11 @@
 ! ... import overlap and projections from the disentangle sotred data
       CALL overlap_extract(dimwann)
 
-      CALL timing('overlap',OPR='stop')
-      CALL timing('init',OPR='start')
 
+      CALL timing('init',OPR='start')
 !
 !...  Wannier Functions localization procedure
 ! 
-
       WRITE(stdout,"(/,2x,70('='))")
       WRITE(stdout,"(2x,'=',18x,'Starting localization procedure',19x,'=')")
       WRITE(stdout,"(2x,70('=')),/")

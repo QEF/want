@@ -3,6 +3,39 @@
             WanT code:  Log of Changes 
 =======================================================
 
+19 Dec 2004      Tests updated. Bug fixing in PWEXPORT-WANT interface.
+                 FMT changed in overlap_module IO. (AF)
+
+18 Dec 2004      SUMMARY subroutine completed with Gaussian centers data. Bugs fixed in 
+                 WFC_READ_EXT. PROJECTION subroutine updated. Bug fixed in 
+                 WANNIER_CENTERS_INIT routine. Disentangle is completely IOTK working.
+                 Tests updated and checked. (AF)
+
+17 Dec 2004      Read subroutines for DFT data renamed to *_read_ext (in order to 
+                 distinguish with the routines used in the internal IO). Some variables
+                 renamed according to PWSCF notation (mxdgve -> npw; npwx -> npwkx; 
+                 wtkpt -> wk). window.f90 code is obsolescent. Summary routine completed.
+                 Ggrids reading routine done. genbtr, spline, splint routines removed 
+                 from CVS because no longer used. ZGEMM and ZGESVD removed from CVS
+                 because the code is supposed to be linked with BLAS and LAPACK.
+                 WFC_DATA module (managing projection and overlap calculation) added. (AF)
+
+16 Dec 2004      Ions module rewritten, PW_EXPORT fmt modified. Pseudopotential files
+                 read from DFT data, want_init and summary updated. (AF)
+
+15 Dec 2004      Want_init procedure completed and checked; summary module added;
+                 some cleaning up around done in order to locate all writing on stdout
+                 at the beginning in summary routine. Routine new_bshells.f90 moved to
+                 bshells.f90. (AF) 
+
+08 Dec 2004      Want_init procedure started; lattice_module updated. (AF)
+
+07 Dec 2004      Utility module (util.f90) updated (routine zmat_hdiag
+                 added ); bug fixing in disentangle; References for tests
+                 updated. (AF)
+                 Further simplifications in Hamiltonian; IOTK fmt started to be
+                 be used in disentangle instead of the launch.dat binary file. (AF)
+
 04 Dec 2004      Hamiltonian code updated and sincronized with the
                  new IO fmt of other codes. Internal and output FMT of
                  Hamiltonian changed (not yet completed). 

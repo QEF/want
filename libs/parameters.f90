@@ -17,9 +17,9 @@ module parameters
   !
   INTEGER , PARAMETER ::   &
        nstrx  = 600,       &! max lenght for strings
-       ntypx  = 6,         &! max number of different types of atom
-       npsx   = ntypx,     &! max number of different PPs (obsolete)
+       ntypx  = 10,        &! max number of different types of atom
        npkx   = 40000,     &! max number of k-points               
+       npwx   = 100000000, &! max number of density G vectors
        nshx   = 200,       &! max number of nearest neighb. k-point shells
        lmaxx  = 3,         &! max non local angular momentum       
        nchix  = 6,         &! max number of atomic wavefunctions per atom
