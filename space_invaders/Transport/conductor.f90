@@ -28,7 +28,7 @@
       INTEGER :: nmaxa, nmaxb, nmaxc
 
       REAL(dbl) :: emin, emax, de, enep
-      REAL(dbl) :: bias
+      REAL(dbl) :: bias, gamma0
       
       REAL(dbl), ALLOCATABLE :: h00_a(:,:)                 ! h00_a(nmaxa,nmaxa)
       REAL(dbl), ALLOCATABLE :: h01_a(:,:)                 ! h01_a(nmaxa,nmaxa)
@@ -99,6 +99,15 @@
 !...  Scalar for BLAS calls and other initializations
       alpha = ( 1.d0, 0.d0 )
       beta = ( 0.d0, 0.d0 ) 
+
+!...  Read standard input
+      READ ( 5, * ) nmxa, nmxc, nmxb
+      READ ( 5, * ) norb
+      READ ( 5, * ) ne
+      READ ( 5, * ) nterx
+      READ ( 5, * ) gamma0, emin, emax
+      READ ( 5, *)  l_overlap
+      READ ( 5, * ) bias
 
 !...  Read namelist
       nmxa = 0
