@@ -58,6 +58,7 @@ MANUAL=" Usage
 TEST_HOME=`pwd`
 WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
+UTILITY_BIN=$TEST_HOME/../../utility
 TEST_NAME=Test2
 
 #
@@ -168,8 +169,7 @@ cd $TMPDIR/$TEST_NAME
 #
 if [ "$SCF_COND" = ".TRUE." ] ; then  
    cd COND
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX \ 
-                       < $TEST_HOME/scf_cond.in > $TEST_HOME/scf_cond.out
+   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_cond.in > $TEST_HOME/scf_cond.out
    if [ $? = 0 ] ; then 
       echo "SCF_COND calculation done" 
    else
@@ -180,8 +180,7 @@ fi
 #
 if [ "$SCF_LEADS" = ".TRUE." ] ; then  
    cd LEADS
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX \ 
-                       < $TEST_HOME/scf_leads.in > $TEST_HOME/scf_leads.out
+   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_leads.in > $TEST_HOME/scf_leads.out
    if [ $? = 0 ] ; then 
       echo "SCF_LEADS calculation done" 
    else
@@ -207,8 +206,7 @@ fi
 #
 if [ "$NSCF_LEADS" = ".TRUE." ] ; then  
    cd LEADS
-   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX \
-                     < $TEST_HOME/nscf_leads.in > $TEST_HOME/nscf_leads.out
+   $PARA_PREFIX  $PWSCF_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf_leads.in > $TEST_HOME/nscf_leads.out
    if [ $? = 0 ] ; then 
       echo "NSCF_LEADS calculation done" 
    else
@@ -329,9 +327,10 @@ if [ "$HAMILTONIAN_COND" = ".TRUE." ] ; then
       echo "found some problems in HAMILTONIAN_COND calculation, stopping" ; exit 1
    fi
    cd ..
-   ln -sf COND/fort.102 H00_C.dat
-   ln -sf COND/fort.103 H01_CB.dat
-   ln -sf COND/fort.103 H01_AC.dat
+   cp COND/fort.103 H00_C
+# XXXX
+   $UTILITY_BIN/matrix_extract.sh COND/fort.104  1  24   1  13  > HCI_CB
+   $UTILITY_BIN/matrix_extract.sh COND/fort.104  10 24   1  24  > HCI_AC
 fi
 if [ "$HAMILTONIAN_LEADS" = ".TRUE." ] ; then  
    cd LEADS
@@ -343,8 +342,10 @@ if [ "$HAMILTONIAN_LEADS" = ".TRUE." ] ; then
       echo "found some problems in HAMILTONIAN_LEADS calculation, stopping" ; exit 1
    fi
    cd ..
-   ln -sf LEADS/fort.103 H00_A.dat
-   ln -sf LEADS/fort.103 H00_B.dat
+   cp LEADS/fort.103 H00_A
+   cp LEADS/fort.103 H00_B
+   cp LEADS/fort.104 H01_A
+   cp LEADS/fort.104 H01_B
 fi
 
 

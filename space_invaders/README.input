@@ -102,6 +102,15 @@ nwhich(ish)   INTEGER
               DEFAULT : nwhich(1) = 1
               shell ( ISH = 1, nshells ) 
            
+ordering_type CHARACTER(10)
+              speficies whether to order the computed Wannier functions and
+              which ordering criterion adopt. Allowed values are
+              'none'      no ordering is performed
+              'spatial'   ordering based on WF center positions
+              'spread'    ordering based on WF increasing spreads
+              'complete'  SPATIAL + SPREAD for WF with the same centers
+              DEFAULT : 'none'
+              
 
 ==============================================================================
 

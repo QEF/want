@@ -18,7 +18,7 @@ MODULE input_wannier
 
   REAL(dbl) :: win_min, win_max     ! outer energy window
   REAL(dbl) :: froz_min, froz_max   ! inner energy window
-  INTEGER   :: dimwann             ! number of Wannier functions
+  INTEGER   :: dimwann              ! number of Wannier functions
  
   REAL(dbl) :: alpha
   INTEGER :: maxiter, itrial
@@ -26,13 +26,14 @@ MODULE input_wannier
   INTEGER :: iphase
   REAL(dbl)  :: alphafix0, alphafix
   INTEGER :: niter, niter0, ncg
+  CHARACTER(10) :: ordering_type    ! should be 'spatial' .OR. 'complete' .OR. 'none' 
 
   INTEGER :: nshells
   INTEGER :: nwhich( nshx )
 
   namelist / input_wan / win_min, win_max, froz_min, froz_max, dimwann, &
     alpha, maxiter, itrial, iphase, alphafix0, alphafix, niter, niter0, ncg, &
-    nshells, nwhich
+    nshells, nwhich, ordering_type
   
   CHARACTER(15)          :: wannier_center_units
   REAL(dbl), ALLOCATABLE :: rphiimx1(:,:)
@@ -84,6 +85,7 @@ CONTAINS
        nshells = 1
        nwhich = 1 
        itrial = 3
+       ordering_type = 'none'
 
        ios = 0
        IF( ionode ) THEN
@@ -134,6 +136,13 @@ CONTAINS
        IF ( itrial < 1 .OR. itrial > 3 ) THEN
          CALL errore( ' read_input ', ' itrial out of range ', 1 )
        END IF
+
+       DO i = 1, LEN_TRIM( ordering_type )
+          ordering_type( i : i ) = capital( ordering_type( i : i ) )
+       END DO
+       IF ( TRIM(ordering_type) /= 'NONE'   .AND. TRIM(ordering_type) /= 'SPATIAL' .AND. &
+            TRIM(ordering_type) /= 'SPREAD' .AND. TRIM(ordering_type) /= 'COMPLETE' ) &
+            CALL errore( ' read_input ', ' invalid ORDERING_TYPE = '//TRIM(ordering_type),1)
 
        ALLOCATE( gauss_typ(dimwann), STAT=ierr )
           IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating gauss_typ ', dimwann )

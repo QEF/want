@@ -455,7 +455,11 @@
                  dble( indxws(2,iws) ) * avec(3,2) +     &
                  dble( indxws(3,iws) ) * avec(3,3)
         rmod = SQRT( vec(1)**2 + vec(2)**2 + vec(3)**2 )
-        WRITE(2,*) rmod, ABS( rham(1,1,iws) )
+        !
+        ! summing over all the elements ABS is equivalent to compute
+        ! the infinite-norm of the matrix 
+        !
+        WRITE(2,*) rmod, SUM( ABS( rham(:,:,iws) ) )
       END DO
       CLOSE(2)
 
