@@ -44,7 +44,7 @@
 
       REAL(dbl) :: ranf
 
-      INTEGER :: ngx, ngy, ngz
+      INTEGER :: nr1, nr2, nr3
       INTEGER :: ng
       INTEGER :: nkpts
     
@@ -110,6 +110,7 @@
       COMPLEX(dbl), ALLOCATABLE ::  cpad2(:) ! cpad2(dimwann*dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cw1(:) ! cw1(10*dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cw2(:) ! cw2(10*dimwann)
+      COMPLEX(dbl), ALLOCATABLE ::  lvec(:,:) ! lvec(mxddim,dimwann)
       REAL(dbl), ALLOCATABLE ::  singvd(:) !  singvd(dimwann)
       REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnmx)
       REAL(dbl), ALLOCATABLE ::  rnkb(:,:,:) ! rnkb(dimwann,nkpts,nnmx)
@@ -158,8 +159,9 @@
       INTEGER, ALLOCATABLE :: nindpw(:,:) !  nindpw(mxddim,nkpts)
       INTEGER, ALLOCATABLE :: ninvpw(:,:) !  ninvpw(0:nplwv,nkpts)
       INTEGER, ALLOCATABLE :: nplwkp(:)   !  nplwkp(nkpts)
+      INTEGER, ALLOCATABLE :: igsort(:,:) !  igsort(mxddim,nkpts)
 
-      INTEGER, ALLOCATABLE ::  lpctx(:) !  lpctx(ngx),lpcty(ngy),lpctz(ngz)
+      INTEGER, ALLOCATABLE ::  lpctx(:) !  lpctx(nr1),lpcty(nr2),lpctz(nr3)
       INTEGER, ALLOCATABLE ::  lpcty(:) 
       INTEGER, ALLOCATABLE ::  lpctz(:) 
 
@@ -180,7 +182,7 @@
       INTEGER :: mxddim, mxdbnd
       INTEGER :: ngm
 
-      INTEGER, ALLOCATABLE :: kgv(:,:)
+      INTEGER, ALLOCATABLE :: igv(:,:)
       INTEGER :: mxdgve, nkpts1
       INTEGER :: i1, i2, i3
       INTEGER :: nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
@@ -195,7 +197,7 @@
       REAL(dbl) :: func_od
       REAL(dbl) :: func_d
 
-      INTEGER :: idum, rdum, ierr
+      INTEGER :: idum, rdum, ierr, igk
 
 
 !
@@ -243,7 +245,7 @@
       READ(19) idum ! (nwhich(i),i=1,nshells)
 
       READ(19) nkpts, mxddim, mxdbnd
-      READ(19) ngx, ngy, ngz, ngm
+      READ(19) nr1, nr2, nr3, ngm
 
       READ(19) idum ! gauss_typ(1:dimwann)
       READ(19) rdum ! rphiimx1(1:3,1:dimwann)
@@ -256,11 +258,14 @@
 ! ... Read grid information, and G-vectors
 
       READ(19) mxdgve 
-      ALLOCATE( kgv( 3, mxdgve ), STAT=ierr )
-         IF ( ierr/=0 ) CALL errore(' wannier ', ' allocating kgv ', 3*mxdgve )
-      READ(19) ( ( kgv(i,j), i=1,3 ), j=1,mxdgve )
+      ALLOCATE( igv( 3, mxdgve ), STAT=ierr )
+         IF ( ierr/=0 ) CALL errore(' wannier ', ' allocating igv ', 3*mxdgve )
+      READ(19) ( ( igv(i,j), i=1,3 ), j=1,mxdgve )
 
       CLOSE(19)
+
+      ALLOCATE( igsort( mxddim, nkpts ), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating igsort ', mxddim*nkpts )
 
 !
 ! ...  Converting WANNIER centers from INPUT to CRYSTAL units
@@ -370,36 +375,36 @@
       END DO
 
 
-      ALLOCATE( lpctx(ngx), lpcty(ngy), lpctz(ngz), STAT=ierr )
+      ALLOCATE( lpctx(nr1), lpcty(nr2), lpctz(nr3), STAT=ierr )
          IF( ierr/=0 )  &
-         CALL errore(' wannier ', ' allocating lpctx lpcty lpctz ', ngx+ngy+ngz )
+         CALL errore(' wannier ', ' allocating lpctx lpcty lpctz ', nr1+nr2+nr3 )
 
 
 
 ! ... Initialize the loop counters lpctx,lpcty,lpctz that
 !     label the number of the reciprocal lattice vectors in the x,y,z
 !     directions, respectively. For the x direction the reciprocal lattice
-!     vectors corresponding to the first,second,...,ngxth elements in all
-!     of the reciprocal lattice arrays are 0,1,..,(ngx/2),-((ngx/2-1),..,-1
+!     vectors corresponding to the first,second,...,nr1th elements in all
+!     of the reciprocal lattice arrays are 0,1,..,(nr1/2),-((nr1/2-1),..,-1
 !     times the x reciprocal lattice vector recc(1,*)
 
-      DO nx = 1 , (ngx/2)+1
+      DO nx = 1 , (nr1/2)+1
         lpctx(nx)  = nx - 1
       END DO
-      DO nx = (ngx/2)+2 , ngx
-        lpctx(nx)  = nx - 1 - ngx
+      DO nx = (nr1/2)+2 , nr1
+        lpctx(nx)  = nx - 1 - nr1
       END DO
-      DO ny = 1 , (ngy/2)+1
+      DO ny = 1 , (nr2/2)+1
         lpcty(ny)  = ny - 1
       END DO
-      DO ny = (ngy/2)+2 , ngy
-        lpcty(ny)  = ny - 1 - ngy
+      DO ny = (nr2/2)+2 , nr2
+        lpcty(ny)  = ny - 1 - nr2
       END DO
-      DO nz = 1 , (ngz/2)+1
+      DO nz = 1 , (nr3/2)+1
         lpctz(nz)  = nz - 1
       END DO
-      DO nz = (ngz/2)+2 , ngz
-        lpctz(nz)  = nz - 1 - ngz
+      DO nz = (nr3/2)+2 , nr3
+        lpctz(nz)  = nz - 1 - nr3
       END DO
 
 
@@ -416,7 +421,7 @@
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nplwkp ', nkpts )
 
 
-      CALL genbtr( mxddim, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt,   &
+      CALL genbtr( mxddim, nr1, nr2, nr3, nkpts, enmax, nindpw, nplwkp, vkpt,   &
            lpctx, lpcty, lpctz, recc, iprint )
 
 ! ... First set all elements of ninvpw to point to the "extra" plane wave
@@ -430,8 +435,8 @@
 !     set to zero) and thus for which nindv(nindpw) points to the mxddim1+1
 !     coefficient, that also has been set to zero
 
-      nplwv = NGX*NGY*NGZ
-      mplwv = NGX*NGY*(NGZ+1)
+      nplwv = nr1*nr2*nr3
+      mplwv = nr1*nr2*(nr3+1)
       ALLOCATE( ninvpw(0:nplwv,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ninvpw ', (nplwv+1)*nkpts )
 
@@ -457,8 +462,10 @@
          IF( ierr /=0 ) &
          CALL errore(' wannier ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
 
-      OPEN( UNIT=20, FILE='onfly.dat', STATUS='OLD' , FORM='UNFORMATTED' )
+      ALLOCATE( lvec( mxddim, dimwann ), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' allocating lvec ', mxddim * dimwann )
 
+      OPEN( UNIT=20, FILE='onfly.dat', STATUS='OLD' , FORM='UNFORMATTED' )
 
 !     Starting k-loop
 
@@ -472,7 +479,38 @@
           STOP
         END IF
 
-        READ(20) ( ( cptwfp( np, iib, nkp ), np=1, nplwkp(nkp) ), iib=1, dimwann )
+        READ(20) ( igsort( np, nkp ), np=1, nplwkp(nkp) )
+        READ(20) ( ( lvec( np, iib ), np=1, nplwkp(nkp) ), iib=1, dimwann )
+        ! READ(20) ( ( cptwfp( np, iib, nkp ), np=1, nplwkp(nkp) ), iib=1, dimwann )
+
+        DO np = 1, nplwkp(nkp)
+
+           igk = igsort( np, nkp )
+           IF ( igv(1,igk) >= 0 ) nx = igv(1,igk) + 1
+           IF ( igv(1,igk) <  0 ) nx = igv(1,igk) + 1 + nr1
+           IF ( igv(2,igk) >= 0 ) ny = igv(2,igk) + 1
+           IF ( igv(2,igk) <  0 ) ny = igv(2,igk) + 1 + nr2
+           IF ( igv(3,igk) >= 0 ) nz = igv(3,igk) + 1
+           IF ( igv(3,igk) <  0 ) nz = igv(3,igk) + 1 + nr3
+      
+           npoint = nx + (ny-1)*nr1 + (nz-1)*nr1*nr2
+
+           BANDS: DO i = 1, dimwann
+
+             IF ( ninvpw( npoint, nkp ) > nplwkp( nkp ) .OR. ninvpw(npoint,nkp) <= 0 ) THEN
+               WRITE(*,*) ninvpw(npoint,nkp)
+               WRITE(*,*) 'NINVPW OUT OF BOUNDS'
+               STOP
+             END IF
+
+             ! ...      Conjg is due to the opposite bloch convention in CASTEP
+
+             cptwfp( ninvpw( npoint, nkp ), i, nkp ) = conjg( lvec( np, i ) )
+
+           END DO BANDS
+
+
+        END DO
 
         DO iib = 1, dimwann
           DO np = nplwkp(nkp) + 1, mxddim + 1
@@ -483,6 +521,8 @@
       END DO K_POINTS
 
       CLOSE(20)
+
+      DEALLOCATE( lvec )
 
       CALL timing('init',OPR='stop')
       CALL timing('trasf',OPR='start')
@@ -592,9 +632,9 @@
       ALLOCATE( nphimx2(3,dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nphimx2 ', 3*dimwann )
 
-      ngdim(1) = ngx
-      ngdim(2) = ngy
-      ngdim(3) = ngz
+      ngdim(1) = nr1
+      ngdim(2) = nr2
+      ngdim(3) = nr3
       DO nwann = 1, dimwann
          DO m = 1, 3
            nphimx1(m,nwann) = INT( rphiimx1(m,nwann) * DBLE( ngdim(m) ) + 1.001 )
@@ -622,7 +662,7 @@
           aside    = SQRT( dirc(j,1)**2 + dirc(j,2)**2 + dirc(j,3)**2 )
           asidemin = MIN( aside, asidemin )
         END DO
-        nphir(nwann) = nint( 2 * ( rloc( nwann ) / asidemin ) * MIN( ngx, ngy, ngz ) )
+        nphir(nwann) = nint( 2 * ( rloc( nwann ) / asidemin ) * MIN( nr1, nr2, nr3 ) )
 
       END DO
 
@@ -671,12 +711,12 @@
  
       ALLOCATE( cm(dimwann,dimwann,nkpts,nnmx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm ', dimwann**2 * nkpts*nnmx)
-      ALLOCATE( nx2(ngx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nx2 ', ngx)
-      ALLOCATE( ny2(ngy), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ny2 ', ngy)
-      ALLOCATE( nz2(ngz), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nz2 ', ngz)
+      ALLOCATE( nx2(nr1), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nx2 ', nr1)
+      ALLOCATE( ny2(nr2), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ny2 ', nr2)
+      ALLOCATE( nz2(nr3), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nz2 ', nr3)
 
       cm(:,:,:,:) = (0.d0, 0.d0)
 
@@ -685,28 +725,28 @@
           nkp2 = nnlist(nkp,nn)
 
           ! set up indices
-          DO nx = 1, ngx
+          DO nx = 1, nr1
             nx2(nx) = nx + nncell(1,nkp,nn)
-            IF( nx2(nx) < 1 ) nx2(nx) = nx2(nx) + ngx
-            IF( nx2(nx) > ngx ) nx2(nx) = nx2(nx) - ngx
+            IF( nx2(nx) < 1 ) nx2(nx) = nx2(nx) + nr1
+            IF( nx2(nx) > nr1 ) nx2(nx) = nx2(nx) - nr1
           END DO
-          DO ny = 1, ngy
+          DO ny = 1, nr2
             ny2(ny) = ny + nncell(2,nkp,nn)
-            IF( ny2(ny) < 1 ) ny2(ny) = ny2(ny) + ngy
-            IF( ny2(ny) > ngy ) ny2(ny) = ny2(ny) - ngy
-            ny2(ny) = (ny2(ny) - 1) * ngx
+            IF( ny2(ny) < 1 ) ny2(ny) = ny2(ny) + nr2
+            IF( ny2(ny) > nr2 ) ny2(ny) = ny2(ny) - nr2
+            ny2(ny) = (ny2(ny) - 1) * nr1
           END DO
-          DO nz = 1, ngz
+          DO nz = 1, nr3
             nz2(nz) = nz + nncell(3,nkp,nn)
-            IF( nz2(nz) < 1 ) nz2(nz) = nz2(nz) + ngz
-            IF( nz2(nz) > ngz ) nz2(nz) = nz2(nz) - ngz
-            nz2(nz) = (nz2(nz) - 1) * ngx * ngy
+            IF( nz2(nz) < 1 ) nz2(nz) = nz2(nz) + nr3
+            IF( nz2(nz) > nr3 ) nz2(nz) = nz2(nz) - nr3
+            nz2(nz) = (nz2(nz) - 1) * nr1 * nr2
           END DO
 
           npoint = 0
-          DO nz = 1, ngz
-            DO ny = 1, ngy
-              DO nx = 1 , ngx
+          DO nz = 1, nr3
+            DO ny = 1, nr2
+              DO nx = 1 , nr1
                 npoint = npoint + 1
                 npoint2 = nx2(nx) + ny2(ny) + nz2(nz)
 
@@ -807,10 +847,10 @@
             cptwr(nindpw(m,nkp)) = cptwfp(m,nb,nkp)
           END DO
 
-          CALL cfft3d( cptwr, ngx, ngy, ngz, ngx, ngy, ngz, -1 )
+          CALL cfft3d( cptwr, nr1, nr2, nr3, nr1, nr2, nr3, -1 )
 
           DO m = 1, mplwv
-            cptwr(m) = conjg(cptwr(m)) * ngx * ngy * ngz
+            cptwr(m) = conjg(cptwr(m)) * nr1 * nr2 * nr3
           END DO
 
 ! ...     ca: the phase <u_nk(r) exp(ikr) | phi_nwann(r)>, given a real space
@@ -832,22 +872,22 @@
 ! ...       First gaussian
 
             DO nzz = nphimx1(3,nwann) - nphir(nwann),  nphimx1(3,nwann) + nphir(nwann)
-              nz = MOD(nzz,ngz)
-              IF ( nz < 1 ) nz = nz + ngz
+              nz = MOD(nzz,nr3)
+              IF ( nz < 1 ) nz = nz + nr3
               DO nyy = nphimx1(2,nwann) - nphir(nwann),  nphimx1(2,nwann) + nphir(nwann)
-                ny = MOD(nyy,ngy)
-                IF( ny  <  1 ) ny = ny + ngy
+                ny = MOD(nyy,nr2)
+                IF( ny  <  1 ) ny = ny + nr2
                 DO nxx = nphimx1(1,nwann) - nphir(nwann), nphimx1(1,nwann) +  nphir(nwann)
-                  nx = MOD(nxx,ngx)
-                  IF (nx < 1) nx = nx + ngx
+                  nx = MOD(nxx,nr1)
+                  IF (nx < 1) nx = nx + nr1
 
 ! ...               Here it calculates <exp(i*k.r) u_nk(r)|
 
-                  rx = DBLE(nxx-1)/DBLE(ngx)
-                  ry = DBLE(nyy-1)/DBLE(ngy)
-                  rz = DBLE(nzz-1)/DBLE(ngz)
+                  rx = DBLE(nxx-1)/DBLE(nr1)
+                  ry = DBLE(nyy-1)/DBLE(nr2)
+                  rz = DBLE(nzz-1)/DBLE(nr3)
                   scalf = vkpt(1,nkp) * rx + vkpt(2,nkp) * ry + vkpt(3,nkp) * rz
-                  npoint = nx + (ny-1) * ngx + (nz-1) * ngy * ngx
+                  npoint = nx + (ny-1) * nr1 + (nz-1) * nr2 * nr1
                   catmp = CONJG( EXP( citpi*scalf ) * cptwr(npoint) )
        
                   DO m = 1, 3
@@ -1005,22 +1045,22 @@
             IF ( gauss_typ(nwann) == 2 ) THEN
 
               DO nzz = nphimx2(3,nwann) - nphir(nwann), nphimx2(3,nwann) + nphir(nwann)
-                nz = MOD(nzz,ngz)
-                IF ( nz < 1 ) nz = nz + ngz
+                nz = MOD(nzz,nr3)
+                IF ( nz < 1 ) nz = nz + nr3
                 DO nyy = nphimx2(2,nwann) - nphir(nwann), nphimx2(2,nwann) + nphir(nwann)
-                  ny = MOD(nyy,ngy)
-                  IF ( ny < 1 ) ny = ny + ngy
+                  ny = MOD(nyy,nr2)
+                  IF ( ny < 1 ) ny = ny + nr2
                   DO nxx = nphimx2(1,nwann) - nphir(nwann), nphimx2(1,nwann) + nphir(nwann)
-                    nx = MOD(nxx,ngx)
-                    IF ( nx < 1 ) nx = nx + ngx
+                    nx = MOD(nxx,nr1)
+                    IF ( nx < 1 ) nx = nx + nr1
 
 ! ...               Here it calculates <exp(i*k.r) u_nk(r)|
 
-                    rx = DBLE(nxx-1)/DBLE(ngx)
-                    ry = DBLE(nyy-1)/DBLE(ngy)
-                    rz = DBLE(nzz-1)/DBLE(ngz)
+                    rx = DBLE(nxx-1)/DBLE(nr1)
+                    ry = DBLE(nyy-1)/DBLE(nr2)
+                    rz = DBLE(nzz-1)/DBLE(nr3)
                     scalf = vkpt(1,nkp)*rx +  vkpt(2,nkp)*ry + vkpt(3,nkp)*rz
-                    npoint = nx + (ny-1)*ngx + (nz-1)*ngy*ngx
+                    npoint = nx + (ny-1)*nr1 + (nz-1)*nr2*nr1
                     catmp = CONJG(EXP(citpi*scalf)*cptwr(npoint))
               
                     DO m = 1, 3
@@ -2039,7 +2079,7 @@
 !
       OPEN( 21, FILE='landing.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
 
-      WRITE (21) nkpts, ngx, ngy, ngz, mplwv, dimwann, mxddim, ntype
+      WRITE (21) nkpts, nr1, nr2, nr3, mplwv, dimwann, mxddim, ntype
       WRITE (21) recc(1,1), recc(2,1), recc(3,1)
       WRITE (21) recc(1,2), recc(2,2), recc(3,2)
       WRITE (21) recc(1,3), recc(2,3), recc(3,3)
@@ -2104,8 +2144,8 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cw2 ', ABS(ierr) )
       DEALLOCATE( vkpt, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating vkpt ', ABS(ierr) )
-      DEALLOCATE( kgv, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating kgv ', ABS(ierr) )
+      DEALLOCATE( igv, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating igv ', ABS(ierr) )
       DEALLOCATE( wtkpt, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating wtkpt ', ABS(ierr) )
       DEALLOCATE( nfile, STAT=ierr )
