@@ -3,7 +3,6 @@
 #
 
 include ../make.sys
-include ../make.rules
 
 all: conductor.x bulk.x
 
@@ -25,4 +24,4 @@ clean:
 	rm -rf *.o *.a *core  work.pc work.pcl *.mod *.x
 
 # dependencies
-#include .dependencies
+include make.depend

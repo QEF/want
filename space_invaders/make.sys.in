@@ -1,21 +1,46 @@
 # @configure_input@
+
+# compilation rules
+
+.SUFFIXES :
+.SUFFIXES : .o .c .f .f90
+
+.f90.o:
+	@f90rule@
+
+.f.o:
+	$(F77) $(FFLAGS) -c $<
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+@SET_MAKE@
 CC             = @cc@
-CCFLAGS        = @cflags@ $(DFLAGS) $(IFLAGS)
-# See include/defs.h.README for a list of precompilation options
-# (possible arguments to -D or -U) and their meaning
-DFLAGS         = @dflags@
-FDFLAGS        = @fdflags@
-IFLAGS         = -I. -I../Include -I../IOTK_lib -I../Modules -I../Main @ifftw@
+CFLAGS         = @cflags@ $(DFLAGS) $(IFLAGS)
 CPP            = @cpp@
 CPPFLAGS       = @cppflags@ $(DFLAGS) $(IFLAGS)
 F77            = @f77@
 F90            = @f90@
-FFLAGS         = @fflags@ $(IFLAGS)
+FFLAGS         = @fflags@
+F90FLAGS       = @f90flags@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
 FFLAGS_NOOPT   = @fflags_noopt@
-F77FLAGS       = $(FFLAGS)
-F90FLAGS       = @f90flags@ @pre_fdflags@$(FDFLAGS)
+F90FLAGS_NOOPT = @f90flags_noopt@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
 LD             = @ld@
 LDFLAGS        = @ldflags@ $(LIBOBJS) $(LIBS)
+AR             = @ar@
+ARFLAGS        = @arflags@
+RANLIB         = @ranlib@
+
+# -----------------------------
+# application-specific settings
+
+# See include/defs.h.README for a list of precompilation options
+# (possible arguments to -D or -U) and their meaning
+DFLAGS         = @dflags@
+FDFLAGS        = @fdflags@
+IFLAGS         = -I../Include @ifftw@
+MODFLAGS       = @imod@. @imod@../Modules @imod@../IOTK_lib @imod@../Main
+
 LIBOBJS        = ../IOTK_lib/lib_iotk.a ../Libs/lib_invaders.a
 # LIBS must contain the location of all needed external libraries
 LIBS           = @libs@
@@ -31,6 +56,3 @@ LIBS           = @libs@
 # lapack_mkl : compile only lapack routines not present in Intel MKL
 #              use this together with Intel MKL
 MYLIB          = @mylib@
-AR             = @ar@
-ARFLAGS        = @arflags@
-RANLIB         = @ranlib@

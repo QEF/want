@@ -1,5 +1,4 @@
 include ../make.sys
-include ../make.rules
 
 .SUFFIXES : .x
 .o.x:
@@ -14,4 +13,4 @@ clean:
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x
 
 # dependencies
-include .dependencies
+include make.depend

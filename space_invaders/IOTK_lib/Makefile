@@ -5,7 +5,6 @@
 
 #system dipendent stuff
 include ../make.sys
-include ../make.rules
 
 # specific redefinition
 # FFLAGS=$(FFLAGS_NOOPT)
@@ -55,4 +54,4 @@ clean:
 	rm -rf *.o *.a *core *.F90 *.mod work.pc work.pcl
 
 # dependencies
-include .dependencies
+include make.depend

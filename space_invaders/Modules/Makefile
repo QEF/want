@@ -1,5 +1,4 @@
 include ../make.sys
-include ../make.rules
 
 OBJS = constants.o fft_scalar.o kind.o parameters.o \
        dyn_op_read.o  dyn_op_write.o mp.o parallel_include.o \
@@ -19,5 +18,4 @@ clean:
 	rm -rf *.o *.a *core  work.pc work.pcl *.mod *.d
 
 # dependencies
-
-include .dependencies
+include make.depend
