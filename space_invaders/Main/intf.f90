@@ -53,7 +53,8 @@
        REAL(dbl) :: wtktot
  
        INTEGER :: dimwann
-       INTEGER :: kdimwin, nk(3)
+       INTEGER :: nk(3)
+       INTEGER, ALLOCATABLE :: kdimwin(:)
        COMPLEX(dbl), ALLOCATABLE :: amp(:,:,:) !  amp(mxdbnd,mxdbnd,nkpts)
  
        REAL(dbl) :: rdum
@@ -78,6 +79,7 @@
        LOGICAL, ALLOCATABLE :: frozen(:)
        INTEGER, ALLOCATABLE :: ifrozdum(:)
        INTEGER :: dimfroz
+       INTEGER :: ndwinx
 !
 ! ...  End declarations and dimensions
 !
@@ -310,10 +312,9 @@
 
       ALLOCATE( kisort(mxddim) )
       ALLOCATE( keiw(mxdbnd) )
-      ALLOCATE( evecr(mxddim,mxdbnd,nkpts) )
-      ALLOCATE( eveci(mxddim,mxdbnd,nkpts) )
       ALLOCATE( amp(mxdbnd,mxdbnd,nkpts) )
       ALLOCATE( lvec(mxddim,mxdbnd) )
+      ALLOCATE( kdimwin( nkpts ) )
 
 ! ... K-point loop
 
@@ -322,9 +323,9 @@
          ! format changes by ANDREA (28 jan 2004) in the following 2 lines 
          !
          READ(19) mtxd,( kisort(j), j=1, mtxd )
-         READ(19) idum, idum, kdimwin, ( keiw(j), j=1, kdimwin )
+         READ(19) idum, idum, kdimwin( nkp ), ( keiw(j), j=1, kdimwin( nkp ) )
 
-         WRITE(*,*) 'KPT= ', nkp, ' mtxd = ', mtxd, ' dimwin= ', kdimwin
+         WRITE(*,*) 'KPT= ', nkp, ' mtxd = ', mtxd, ' dimwin= ', kdimwin( nkp )
 
          IF ( mtxd > mxddim ) THEN
            WRITE(*,*) '*** SOMETHING WRONG ***' 
@@ -340,16 +341,21 @@
 
        END DO K_POINTS_DIM
 
+       ndwinx = MAXVAL( kdimwin )
+       
+       ALLOCATE( evecr(mxddim,ndwinx,nkpts) )
+       ALLOCATE( eveci(mxddim,ndwinx,nkpts) )
+
        K_POINTS: DO nkp = 1, nkpts
 
-         READ(19)( ( evecr(j,i,nkp), j=1,mtxd ), i=1, kdimwin )
-         READ(19)( ( eveci(j,i,nkp), j=1,mtxd ), i=1, kdimwin )
+         READ(19)( ( evecr(j,i,nkp), j=1,mtxd ), i=1, kdimwin( nkp ) )
+         READ(19)( ( eveci(j,i,nkp), j=1,mtxd ), i=1, kdimwin( nkp ) )
 
-         ALLOCATE( frozen( kdimwin ) )
-         READ(19) dimfroz, ( frozen(i), i=1, kdimwin )
-         ALLOCATE( ifrozdum( MAX( kdimwin, dimfroz ) ) )
+         ALLOCATE( frozen( kdimwin(nkp) ) )
+         READ(19) dimfroz, ( frozen(i), i=1, kdimwin(nkp) )
+         ALLOCATE( ifrozdum( MAX( kdimwin(nkp), dimfroz ) ) )
          IF ( dimfroz > 0 )        READ(19) ( ifrozdum(i), i=1, dimfroz )
-         IF ( dimfroz < kdimwin )  READ(19) ( ifrozdum(i), i=1, kdimwin-dimfroz )
+         IF ( dimfroz < kdimwin(nkp) )  READ(19) ( ifrozdum(i), i=1, kdimwin(nkp)-dimfroz )
          DEALLOCATE( frozen )
          DEALLOCATE( ifrozdum )
 
@@ -357,7 +363,7 @@
  
 ! ...    Read optimal subspace basis vectors at present K-point 
  
-         READ(8) idum, ( ( amp(j,i,nkp), j=1,kdimwin ), i=1,dimwann )
+         READ(8) idum, ( ( amp(j,i,nkp), j=1,kdimwin(nkp) ), i=1,dimwann )
 
          IF ( idum /= dimwann ) STOP '*** SOMETHING WRONG ***'
 
@@ -366,7 +372,7 @@
          DO l = 1, dimwann
            DO i = 1, mtxd
              lvec(i,l) = cmplx(0.0d0,0.0d0)
-             DO j = 1, kdimwin
+             DO j = 1, kdimwin(nkp)
                lvec(i,l) = lvec(i,l) + amp(j,l,nkp) * cmplx( evecr(i,j,nkp), eveci(i,j,nkp) )
              END DO
            END DO
@@ -450,6 +456,7 @@
        DEALLOCATE( eveci )
        DEALLOCATE( amp )
        DEALLOCATE( lvec )
+       DEALLOCATE( kdimwin )
 
 ! *****************************************************************************
 
