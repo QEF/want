@@ -45,4 +45,4 @@ awk '{print "s/@" $1 "@/" $2 "/" }' > includedep.tmp2
 # by applying the file of substitution patterns just created
 sed -f includedep.tmp2 includedep.tmp1
 
-rm -f moduledep.tmp1 moduledep.tmp2 # remove temporary files
+rm -f includedep.tmp1 includedep.tmp2 # remove temporary files
