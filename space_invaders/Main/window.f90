@@ -12,13 +12,14 @@
 !=----------------------------------------------------------------------------------=
  
        USE kinds
-       USE constants, ONLY: ryd => ry, har => au, amu => uma_au
+       USE constants, ONLY: ryd => ry, har => au, amu => uma_au, bohr => bohr_radius_angs
        USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx, dp
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE io_global, ONLY : stdout
        USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
        USE input_wannier
+       USE converters_module, ONLY : cart2cry
 
        IMPLICIT NONE
  
@@ -208,6 +209,23 @@
 ! ...  End reading
 
 !
+! ...  Converting WANNIER centers from INPUT to CRYSTAL units
+!      AVEC is in units of ALAT which is in Bohr
+!
+       SELECT CASE ( TRIM(wannier_center_units) )
+       CASE ( 'angstrom' )
+           CALL cart2cry(rphiimx1,alat*bohr*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*bohr*avec(:,:),wannier_center_units)
+       CASE ( 'bohr' )
+           CALL cart2cry(rphiimx1,alat*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*avec(:,:),wannier_center_units)
+       CASE ( 'crystal' )
+       CASE DEFAULT
+           CALL errore('window','Invalid wannier center units : '  &
+                                 //TRIM(wannier_center_units),1 )
+       END SELECT
+
+!
 ! ...  Write input parameters
 !
        WRITE( stdout, * ) ' ======================================================================'
@@ -284,7 +302,6 @@
 ! ...  Open the output file takeoff.dat (UNIT 19) 
 !      window.out will be read by all further programs of the chain
  
-
        OPEN ( UNIT=19, FILE='takeoff.dat', STATUS='UNKNOWN', FORM='UNFORMATTED' )
 
        WRITE(19) alat

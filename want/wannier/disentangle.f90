@@ -21,6 +21,7 @@
        USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
        USE input_wannier
+       USE converters_module, ONLY : cart2cry
 
 
        IMPLICIT NONE
@@ -198,6 +199,25 @@
 
        ! ... end standard input
 
+!
+! ...  Converting WANNIER centers from INPUT to CRYSTAL units
+!      AVEC is in units of ALAT which is in Bohr
+!
+       SELECT CASE ( TRIM(wannier_center_units) )
+       CASE ( 'angstrom' )
+           CALL cart2cry(rphiimx1,alat*bohr*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*bohr*avec(:,:),wannier_center_units)
+       CASE ( 'bohr' )
+           CALL cart2cry(rphiimx1,alat*avec(:,:),wannier_center_units)
+           CALL cart2cry(rphiimx2,alat*avec(:,:),wannier_center_units)
+       CASE ( 'crystal' )
+       CASE DEFAULT
+           CALL errore('disentangle','Invalid wannier center units : '  &
+                                 //TRIM(wannier_center_units),1 )
+       END SELECT
+
+
+! ...
        DO j=1,3
          DO i=1,3
            sgn = 1.0d0
