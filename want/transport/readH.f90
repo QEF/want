@@ -352,7 +352,7 @@
         s01_b(:,:) = 0.0d0
         s00_c(:,:) = 0.0d0
         sci_ac(:,:) = 0.0d0
-        sci_ac(:,:) = 0.0d0
+        sci_cb(:,:) = 0.0d0
 
         DO i = 1, nmaxa
            s00_a(i,i) = 1.d0
@@ -360,7 +360,7 @@
         DO i = 1, nmaxb
            s00_b(i,i) = 1.d0
         END DO
-        DO i = 1, nmaxb
+        DO i = 1, nmaxc
            s00_c(i,i) = 1.d0
         END DO
 
