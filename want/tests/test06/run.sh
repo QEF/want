@@ -133,7 +133,7 @@ case $INPUT in
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ; 
                          WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ; 
                          WANNIER_LEADS=".TRUE." ;  HAMILTONIAN_LEADS=".TRUE." ;
-                         CONDUCTOR=".TRUE." ;;
+                         CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
 
    (clean)               CLEAN=".TRUE." ;;
    (*)                   echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;  
