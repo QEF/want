@@ -21,9 +21,6 @@
 !----------------------------------------------------------------------!
 
 
-#if defined __HPM
-#  include "/cineca/prod/hpm/include/f_hpm.h"
-#endif
 #include "machine.h"
 
 
@@ -139,9 +136,6 @@
      INTEGER, SAVE :: icurrent = 1
      INTEGER :: isys = 0
 
-#if defined __HPM
-            CALL f_hpmstart( 30 + ABS(sgn), 'cft_1z' )
-#endif
 
      IF( nsl < 0 ) THEN
        CALL errore(" fft_scalar: cft_1 ", " nsl out of range ", nsl)
@@ -254,9 +248,6 @@
      cout( 1 : ldc * nsl ) = c( 1 : ldc * nsl )
 #endif
 
-#if defined __HPM
-            CALL f_hpmstop( 30 + ABS(sgn) )
-#endif
 
      RETURN
    END SUBROUTINE cft_1z
@@ -296,9 +287,6 @@
      INTEGER, SAVE :: dims( 4, ndims) = -1
      LOGICAL :: dofft( nfftx )
 
-#if defined __HPM
-      CALL f_hpmstart( 40 + ABS(sgn), 'cft_2xy' )
-#endif
 
      isign = - sgn
 
@@ -485,9 +473,6 @@
 
 #endif
 
-#if defined __HPM
-            CALL f_hpmstop( 40 + ABS(sgn)  )
-#endif
 
      return
    end subroutine cft_2xy
@@ -529,9 +514,6 @@
 
 #endif
 
-#if defined __HPM
-            CALL f_hpmstart( 50 + ABS(sgn), 'cfft3d' )
-#endif
 
      isign = -sgn
 
@@ -627,9 +609,6 @@
 
 #endif
 
-#if defined __HPM
-            CALL f_hpmstop( 50 + ABS(sgn) )
-#endif
       
      RETURN
    END SUBROUTINE
