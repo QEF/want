@@ -1,8 +1,8 @@
 &inputpp
-  prefix='gold1'
+  prefix='nichain'
   outdir='./'
   pseudo_dir = './'
-  psfile(1) = 'Au.pw91-d-van.UPF'
+  psfile(1) = 'Ni.pz-nd-rrkjus.UPF'
   single_file = .FALSE.
   ascii = .FALSE.
 /

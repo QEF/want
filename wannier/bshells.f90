@@ -380,14 +380,14 @@
              IF (  nreverse(nn,nkp) == 0 ) &
                     CALL errore(' bshell ', ' Check on nreverse failed ', nkp )
 
-! XXX
-WRITE(0,*) "nkp, nn ", nkp, nn
-WRITE(0,"(a10,3f15.9)") 'k',vkpt(:,nkp)
-WRITE(0,"(a10,3f15.9)") 'b',bk(:,nkp,nn)
-WRITE(0,"(a10,3f15.9)") 'k+b',vkpt(:,nkp2)
-WRITE(0,"(a10,3f15.9)") 'k+b, -b',bk(:,nkp2, nreverse(nn,nkp) )
-WRITE(0,"(a10,i5)") 'reverse', nreverse(nn,nkp)
-WRITE(0,*) 
+!! XXX
+!WRITE(0,*) "nkp, nn ", nkp, nn
+!WRITE(0,"(a10,3f15.9)") 'k',vkpr(:,nkp)
+!WRITE(0,"(a10,3f15.9)") 'b',bk(:,nkp,nn)
+!WRITE(0,"(a10,3f15.9)") 'k+b',vkpr(:,nkp2)
+!WRITE(0,"(a10,3f15.9)") 'k+b, -b',bk(:,nkp2, nreverse(nn,nkp) )
+!WRITE(0,"(a10,i5)") 'reverse', nreverse(nn,nkp)
+!WRITE(0,*) 
 
           ENDDO
       ENDDO
