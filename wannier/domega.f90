@@ -120,7 +120,8 @@
                                 sheet(m,nkp,nn) ) ) ) / ( 0.d0, 2.d0 )
 
               cdodq3(m,n,nkp) = cdodq3(m,n,nkp) - wb(nkp,nn) * ( crt(m,n,nn,nkp) *          &
-                                rnkb(n,nn,nkp) + CONJG( crt(n,m,nn,nkp) * rnkb(m,nn,nkp) ) ) / ( 0.d0, 2.d0 )
+                                rnkb(n,nn,nkp) + CONJG( crt(n,m,nn,nkp) * &
+                                rnkb(m,nn,nkp) ) ) / ( 0.d0, 2.d0 )
 
             END DO
 

@@ -21,7 +21,7 @@
    USE constants, ONLY : CZERO, CONE, EPS_m8
    USE timing_module, ONLY : timing
    USE io_module, ONLY : stdout
-   USE util_module, ONLY : zmat_unitary, zmat_mul
+   USE util_module, ONLY : zmat_unitary, zmat_mul, zmat_svd
    !
    USE windows_module, ONLY : lfrozen, dimfroz, indxfroz, frozen, nbnd
    USE control_module, ONLY : unitary_thr
@@ -38,15 +38,11 @@
    ! local variables
    !
    CHARACTER(13)                :: subname="subspace_init"
+   REAL(dbl),       ALLOCATABLE :: s(:)
    COMPLEX(dbl),    ALLOCATABLE :: cu(:,:)
    COMPLEX(dbl),    ALLOCATABLE :: vt(:,:), u(:,:)
    INTEGER                      :: i, j, l, ik, ierr, info
 
-! XXX
-      REAL(dbl), ALLOCATABLE :: s(:)
-      REAL(dbl), ALLOCATABLE :: rwork2(:)
-   COMPLEX(dbl), ALLOCATABLE :: tmp(:,:), work(:)
-   
 
 !
 !---------------------------------------------------------------------
@@ -107,12 +103,13 @@
         !
         ! Using the singular-value decomposition of the matrix ca:
         !
-        ! ca = cz * cd * cv  ,      which gives
-        ! cu = cz * cd * cd^{-1} * cv
+        ! ca = cz * cd * cv^{\dag}  ,      which gives
+        ! cu = cz * cv^{\dag}
         !
         ! where cz is dimwin(ik) x dimwin(ik) and unitary, cd is
         ! dimwin(ik) x dimwann and diagonal, cd^{-1} is dimwann x dimwann and
         ! diagonal, and cv is dimwann x dimwann and unitary.
+        ! NOTE that lapack routine returns cv^{\dag} directly
         !
         ALLOCATE( cu(dimwinx, dimwinx), STAT=ierr )
             IF(ierr/=0) CALL errore(subname,'allocating CU',ABS(ierr))
@@ -120,31 +117,17 @@
             IF(ierr/=0) CALL errore(subname,'allocating U',ABS(ierr))
         ALLOCATE( vt(dimwann, dimwann), STAT=ierr )
             IF(ierr/=0) CALL errore(subname,'allocating VT',ABS(ierr))
-        ALLOCATE( tmp(dimwinx,dimwann), STAT = ierr )
-            IF( ierr /= 0 ) CALL errore( 'projection', 'allocating tmp ', dimwinx**2 )
-
-        ALLOCATE( work(4*dimwinx), STAT = ierr )
-            IF( ierr /= 0 ) CALL errore(subname, 'allocating work ', 4*dimwinx )
         ALLOCATE( s(dimwann), STAT = ierr )
             IF( ierr /= 0 ) CALL errore(subname, 'allocating s ', dimwann )
-        ALLOCATE( rwork2(5*dimwann), STAT = ierr )
-            IF( ierr /= 0 ) CALL errore(subname, 'allocating rwork2 ', 5*dimwann )
   
         DO ik=1,nkpts
 
            lamp(:,:,ik) = CZERO
            IF ( dimwann > dimfroz(ik) ) THEN
-
-                ! ... Singular value decomposition
-                tmp(:,:) = ca(:,:,ik)
-
-                CALL ZGESVD( 'a', 'a', dimwin(ik), dimwann, tmp, &
-                      dimwinx, s, u, dimwinx, vt, dimwann, work, 4*dimwinx, rwork2, info )
-
-                IF ( info /= 0 )  &
-                   CALL errore( ' projection ', ' zgesvd: info has illegal value ', info )
-
-                CALL zmat_mul( cu, u, 'N', vt, 'C', dimwin(ik), dimwann, dimwann )
+                !
+                CALL zmat_svd( dimwin(ik), dimwann, ca(:,:,ik), s, u, vt )
+                !
+                CALL zmat_mul( cu, u, 'N', vt, 'N', dimwin(ik), dimwann, dimwann )
                 lamp(  1:dimwin(ik), 1:dimwann , ik) = cu( 1:dimwin(ik), 1:dimwann )
            ENDIF
         ENDDO
@@ -155,10 +138,10 @@
             IF(ierr/=0) CALL errore(subname,'deallocating CU',ABS(ierr))
         DEALLOCATE( u, STAT=ierr )
             IF(ierr/=0) CALL errore(subname,'deallocating U',ABS(ierr))
+        DEALLOCATE( s, STAT=ierr )
+            IF(ierr/=0) CALL errore(subname,'deallocating S',ABS(ierr))
         DEALLOCATE( vt, STAT=ierr )
             IF(ierr/=0) CALL errore(subname,'deallocating VT',ABS(ierr))
-
-        DEALLOCATE( s, tmp, work, rwork2 )
 
         !
         ! In case of frozen states
