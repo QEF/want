@@ -17,7 +17,7 @@
       IMPLICIT NONE
 
       INTEGER :: i, j, k, l, m, n, model, nw
-      INTEGER :: natmax, nmx, nmax, idum
+      INTEGER :: natmax, nmx, nmax
 
       REAL(dbl) :: r(3,natmax), tbpar(6)
       REAL(dbl) :: h0(nmax,nmax), h1(nmax,nmax)
@@ -386,7 +386,7 @@
 
       OPEN ( 30, FILE="H00.dat", STATUS='OLD' )
       REWIND 30
-      READ ( 30, * ) nw, nw, idum, idum, idum
+      READ ( 30, * ) nw, nw
       IF ( nw /= nmax  )  CALL errore(' TB_hamiltonian ', ' wrong nmax in reading (I)', nw )
 
       DO j = 1, nmax
@@ -399,7 +399,7 @@
 
       OPEN ( 40, FILE="H01.dat", STATUS='OLD' )
       REWIND 40
-      READ ( 40, * ) nw, nw, idum, idum, idum
+      READ ( 40, * ) nw, nw
       IF ( nw /= nmax ) CALL errore(' TB_hamiltonian ', ' wrong nmax in reading (II)', nw )
 
       DO j = 1, nmax

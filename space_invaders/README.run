@@ -10,8 +10,8 @@ we will refer to that code in the following description.
 (i)   Self-consistent calculation with the Pwscf code.
       For the description of the input and for further details see the Pwscf 
       manual at www.pwscf.org.
-      Caveat. Norm-conserving pseudopotentials MUST used, ultrasoft pseudopotential 
-      version NOT implemented.
+      Caveat. Norm-conserving pseudopotentials MUST used, ultrasoft 
+      pseudopotential version NOT implemented.
 
 (ii)  Bandstucture calculation. Starting from the self-consistent charge 
       calculated in point (i), we calculate the Bloch functions for a 
@@ -28,77 +28,93 @@ the end, instead, the code is scalar.
 
 2) Calculation of Maximally-localized Wannier Functions.
 
-Following README.input and the examples in directory Tests, create the input
-file, that will be used for the following 3 steps (a-c).
+Following README.input and the examples in directory Tests, create the 
+input file, that will be used for the following 3 steps (a-c).
 
-(a)   Running window.x, we select the working energy window, from which we will
-      extract the WFs. For each k-point, the energy window  MUST contains at least 
-      a number of band equal to the WFs to be calculated.
-      It is possible to use an inner window (inside the working one) to treat
-      frozen-states, for details see Phys. Rev. B 65 035109 (2002).
-      Program window.x produces the binary file takeoff.dat, that will be read
-      in the next steps.
+(a)   Running window.x, we select the working energy window, from which 
+      we will extract the WFs. For each k-point, the energy window  MUST 
+      contain at least a number of band equal to the WFs to be calculated.
+      It is possible to use an inner window (inside the working one) to 
+      treat frozen-states, for details see Phys. Rev. B 65 035109 (2002).
+      Program window.x produces the binary file takeoff.dat, that will be 
+      read in the next steps.
 
-(b)   Running disentangle.x (using the same input of point (a) ), it is possible to
-      extract, from an entangled group, selected bands along the Brillouin Zone. 
-      Particular attention must be payed in the definition of the nearest-neighbour 
-      shells for k-point: the completeness relation is fully satisfied, for details see 
-      Appendix B, PRB 56 12847 (1997).
-      Trial wannier centers are not mandatory in this step (depending on itrial flag).
-      Disentangle.x produces a standard output with the main results, and four internal
-      files: onfly.dat, compspace.dat, energies.dat, subspace.dat.
+(b)   Running disentangle.x (using the same input of point (a) ), it is 
+      possible to extract, from an entangled group, selected bands along 
+      the Brillouin Zone. 
+      Particular attention must be payed in the definition of the 
+      nearest-neighbour shells for k-point: the completeness relation must  
+      be fully satisfied, for details see Appendix B, PRB 56 12847 (1997).
+      Trial wannier centers are not mandatory in this step (depending 
+      on itrial flag).
+      Disentangle.x produces a standard output with the main results, 
+      and four internal files: onfly.dat, compspace.dat, energies.dat, 
+      subspace.dat.
 
-(c)   Running wannier.x (using the same input as before), we perform the localization
-      procedure and the optimal unitary matrix U(k), that minimizes the spread
-      operator, is obtained.
-      In this step the definition of trial centers is necessary, even thought an itrial
-      different to 3 has been used in step (b).
-      Wannier.x produces a standard output with the main results, and two internal bynary
-      files: landing.dat, unitary.dat.
+(c)   Running wannier.x (using the same input as before), we perform 
+      the localization
+      procedure and the optimal unitary matrix U(k), that minimizes the 
+      spread operator, is obtained.
+      In this step the definition of the trial centers is necessary, even 
+      in the case they have not been used in step (b).
+      Wannier.x produces a standard output with the main results, and 
+      two internal bynary files: landing.dat, unitary.dat.
 
-(d)   Running hamiltonian.x we calculate the hamiltonian matrix in the basis of the calculated WFs.
-      hamiltonian.x requires a separate input, to be generated following README.input.
-      The program produces a set of files (fort.XXX) containing the hamiltonian matrices, written
-      by columns. The first two integers in the first line give the dimension of the matrix, the last
-      three integers describe the lattice vector, the WFs are belonging to (e.g. 0 0 0 is the
-      refernce cell, 1 0 0 is the first neighbour cell along the first axis direction, etc).
+(d)   Running hamiltonian.x we calculate the hamiltonian matrix in the 
+      basis of the calculated WFs.  hamiltonian.x requires a separate 
+      input, to be generated following README.input.
+      The program produces a set of files (fort.XXX), containing the 
+      hamiltonian matrices, written by columns. The first two integers 
+      in the first line give the dimension of the matrix, the last
+      three integers describe the lattice vector, the WFs are belonging 
+      to (e.g. 0 0 0 is the refernce cell, 1 0 0 is the first neighbour 
+      cell along the first axis direction, etc).
       These files will be the input for the transport calculation.
-      The code calculates also the intepolated bandstructure (band.dat) for the system. band.gp
-      may be used for a direct gnuplot visualization.
-      The comparison with the original band structure calculated using the pwscf code constitutes a 
-      good test to check the accuracy of the results. 
+      The code calculates also the intepolated bandstructure (band.dat) 
+      for the system. band.gp may be used for a direct gnuplot visualization.
+      The comparison with the original band structure calculated 
+      using the pwscf code constitutes a good test to check the accuracy 
+      of the results. 
 
-(e)   plot.x is a post-processing. It is not necessary for the transport calculation, but it is useful
-      for the 3D visulaization of the WFs. The code requires a separate input, to be generated 
-      following README.input. You can use free visualization softweare (e.g. gOpenMol) to plot Wfs. 
+(e)   plot.x is a post-processing. It is not necessary for the 
+      transport calculation, but it is useful for the 3D visualization 
+      of the WFs. The code requires a separate input, to be generated 
+      following README.input. You can use free visualization softweare 
+      (e.g. gOpenMol) to plot Wfs. 
 
-Note. Steps (b) and (c) are the most expensive ones of the overall procedure, both in term of memory
-and in term of CPU time. Calculations for big systems may take over several hours! On the contrary
-other steps of the chais are quite inexpensive.
+Note. Steps (b) and (c) are the most expensive ones of the overall procedure, 
+both in term of memory and in term of CPU time. Calculations for big systems 
+may take over several hours! On the contrary other steps of the chais are 
+quite inexpensive.
 
 3) Calculation of electronic transport.
 
-Using the hamiltonian matrices calculated in step (d) we can calculate both the "bulk" and the 
-"two terminal" transmittance. The files fort.XXX must be renamed in a different way, depending
-on the case.
+Using the hamiltonian matrices calculated in step (d) we can calculate both 
+the "bulk" and the "two terminal" transmittance. 
+The files fort.XXX, containing hamiltonian matrices,  must be renamed 
+in a different way, depending on the case.
 
-(+)   bulk.x calculates the bulk transmittance for the systems. The results (cond.out) is expressed
-      in unit of the quantum of conductance (2e^2/h). Input file may be generated following
-      README.input. In this case only two hamiltonian matrices are needed: that belonging to the 
-      reference cell ( 0 0 0 three last number in the first line, see step (d) ) must be moved in
-      H00.dat; that  belonging to the first cell in the direction along which we calculate
-      the transport ( e.g. 1 0 0 in the first line, in order to calculate the transport along 
+(+)   bulk.x calculates the bulk transmittance for the systems. The results 
+      (cond.out) is expressed in unit of the quantum of conductance (2e^2/h). 
+      Input file may be generated following README.input. In this case 
+      only two hamiltonian matrices are needed: that belonging to the 
+      reference cell ( 0 0 0 three last number in the first line, see 
+      step (d) ) must be moved in H00.dat; that  belonging to the first 
+      cell in the direction along which we calculate the transport ( e.g. 
+      1 0 0 in the first line, in order to calculate the transport along 
       x-dirction) must be moved in H01.dat.
 
-(++)  conductorx calculates the two terminal transmittance for the systems. The results (cond.out) 
-      is expressed in unit of the quantum of conductance (2e^2/h). Input file may be generated 
-      following README.input. In this case we need, in principle, three sets of calculations 
-      (two only if the leads are of the same material): bulk calculations for the two infinite
-      leads and a supercell calculation for the conductor and the contacts (see PRB 69, 035108 (2004)).
-      The hamiltonian matrices of the different calculations, must be renamed as follows: 
+(++)  conductor.x calculates the two terminal transmittance for the systems. 
+      The results (cond.out) is expressed in unit of the quantum of 
+      conductance (2e^2/h). Input file may be generated following 
+      README.input. In this case we need, in principle, three sets of 
+      calculations (two only if the leads are of the same material): bulk 
+      calculations for the two infinite leads and a supercell calculation 
+      for the conductor and the contacts (see PRB 69, 035108 (2004)).
+      The hamiltonian matrices of the different calculations, must be 
+      renamed as follows: 
 
  ...  Matrix definition
- 
       Given a conductor (C) bonded to a right lead (A) and a left lead (B)
  
         H01_A    H00_A   HCI_AC    H00_C     HCI_CB   H00_B   H01_B
@@ -108,26 +124,29 @@ on the case.
           |                |                   |                |
     ...--------------------------------------------------------------...
  
-      H00_A, H00_B    = on site hamiltonian of the leads (H00 from bulk calculation)
-      H01_A, H01_B    = hopping hamiltonian of the leads (H01 from bulk calculation)
-      H00_C           = on site hamiltonian of the conductor (H00 from supercell calculation)
-      HCI_AC, HCI_CB  = coupling matrix between leads and conductor;
-                        these matrices have to be adapted (from H01 of supercell calculation )
-                        in order to allow the matching between the leads and the conductur.
-                        The definition of the coupling matrices HCI_ MUST BE DONE CAREFULLY
-                        case by case, depending on the particular system definition.
-                        An utulity (Tools/matrix_extract.sh) is provided to manipulate
-                        matrices written in the current format. 
+      H00_A, H00_B = on site hamiltonian of the leads (H00 from bulk calculation)
+      H01_A, H01_B = hopping hamiltonian of the leads (H01 from bulk calculation)
+      H00_C        = on site hamiltonian of the conductor (H00 from supercell 
+                     calculation)
+      HCI_AC, HCI_CB = coupling matrix between leads and conductor; these matrices
+                       have to be adapted (from H01 of supercell calculation )
+                       in order to allow the matching between the leads and the 
+                       conductur.  The definition of the coupling matrices HCI_ 
+                       MUST BE DONE CAREFULLY case by case, depending on the 
+                       particular system definition.
+                       An utulity (Tools/matrix_extract.sh) is provided to 
+                       manipulate matrices written in the current format.
 
-NOTE. In order to match the hamiltonian matrices at the boundary, it is necessary to check
-that the diagonal elements of the H00 matrices were aligned. If not a rigid shift must be done.
+NOTE. In order to match the hamiltonian matrices at the boundary, it is necessary 
+to check that the diagonal elements of the H00 matrices were aligned. If not 
+a rigid shift must be done.
 
-----------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+GENERAL NOTES: The mathematical description, the ground phylosophy and further 
+               details are extensively discussed in the orinal papers:
 
-GENERAL NOTES: The mathematical description, the ground phylosophy and further details 
-are extensively discussed in the orinal papers:
-
-[1] A. Calzolari, N. Marzari, I. Souza and M. Buongiorno Nardelli, Phys. Rev. B 69, 035108 (2004).
+[1] A. Calzolari, N. Marzari, I. Souza and M. Buongiorno Nardelli, 
+    Phys. Rev. B 69, 035108 (2004).
 [2] N. Marzari and D. Vanderbilt, Phys. Rev. B 56, 12847 (1997).
 [3] I. Souza, N. Marzari and D. Vanderbilt, Phys. Rev. B 65 035109 (2002).
 [4] M. Buongiorno Nardelli, Phys. Rev. B 60, 7828 (1999).
