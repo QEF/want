@@ -50,6 +50,7 @@
    PUBLIC :: overlap_deallocate
    PUBLIC :: overlap_write
    PUBLIC :: overlap_read
+   PUBLIC :: alloc
 
 CONTAINS
 

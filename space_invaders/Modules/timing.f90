@@ -56,6 +56,7 @@
 
    TYPE(clock_list), SAVE         :: internal_list     ! internal use clock
    TYPE(clock_list), SAVE         :: global_list       ! internal use clock
+   LOGICAL                        :: alloc = .FALSE.   ! global alloc flag
      
    REAL(dbl)  :: cclock 
    EXTERNAL   :: cclock
@@ -75,6 +76,7 @@
    PUBLIC ::  timing_deallocate
    PUBLIC ::  timing_overview
    PUBLIC ::  timing_upto_now
+   PUBLIC ::  alloc
 
 
 CONTAINS
@@ -160,6 +162,7 @@ CONTAINS
       CALL clock_list_allocate(internal_list,1,'internal')
       CALL clock_allocate('internal',internal_list%nclock,internal_list%clock(1))
       CALL clock_start(internal_list%clock(1))
+      alloc = .TRUE.
 
    END SUBROUTINE timing_allocate
 
@@ -172,6 +175,7 @@ CONTAINS
 
       CALL clock_stop(internal_list%clock(1))
       CALL clock_list_deallocate(internal_list)
+      alloc = .FALSE.
    END SUBROUTINE timing_deallocate
    
 

@@ -10,13 +10,16 @@
 !*********************************************
    MODULE startup_module
 !*********************************************
-   USE io_module, ONLY : stdout
+   USE io_module, ONLY : stdout, ionode, ionode_id, io_global_start, io_global_getionode
    USE timing_module, ONLY : nclockx, timing, timing_allocate
+   USE mp, ONLY: mp_start, mp_end, mp_env
+   USE mp_global, ONLY: mpime, nproc, root, group, mp_global_start
    IMPLICIT NONE
    PRIVATE
 
 ! This module contains the routine STARTUP
-! that initilizes the code
+! that initilizes the code. MPI initializationa are also
+! (temporary?) handled by this routines
 !
 ! routines in this module:
 ! SUBROUTINE startup(version,main_name)
@@ -40,6 +43,24 @@ CONTAINS
       CHARACTER(*), INTENT(in) :: main_name
       CHARACTER(9)             :: cdate, ctime
       
+      !
+      ! MPI initializations
+      !
+      root = 0
+      CALL mp_start()
+      CALL mp_env(nproc,mpime,group)
+      CALL mp_global_start( root, mpime, group, nproc)
+      !  mpime = procesor number, starting from 0
+      !  nproc = number of processors
+      !  group = group index
+      !  root  = index of the root processor
+
+      !
+      ! IO initializations
+      !
+      CALL io_global_start( mpime, root )
+      CALL io_global_getionode( ionode, ionode_id )
+
       !
       ! initilize clocks and timing
       !

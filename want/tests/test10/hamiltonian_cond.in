@@ -1,5 +1,8 @@
 
  &INPUT
+   prefix = 'chain8'
+   postfix = '_WanT'
+   work_dir = './COND/'
    nspts  = 2
    npts   = 100
    nbands = 16

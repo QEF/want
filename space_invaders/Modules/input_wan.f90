@@ -49,15 +49,16 @@ MODULE input_module
   INTEGER, ALLOCATABLE :: m_wann(:)
   INTEGER, ALLOCATABLE :: ndir_wann(:)
 
+  LOGICAL              :: alloc = .FALSE.
 
 !=----------------------------------------------------------------------------=!
 CONTAINS
 !=----------------------------------------------------------------------------=!
 
 
-  SUBROUTINE read_input
+  SUBROUTINE input_read
 
-       USE io_module, ONLY: ionode, ionode_id
+       USE io_module, ONLY: stdout, ionode, ionode_id
        USE mp, ONLY: mp_bcast
        USE parser_module, ONLY: read_line, capital
 
@@ -105,62 +106,62 @@ CONTAINS
        END IF
        CALL mp_bcast( ios, ionode_id )
        IF( ios /= 0 ) THEN
-          CALL errore( ' read_input ', &
+          CALL errore( ' input_read ', &
                      & ' reading namelist input_wan ', ABS(ios) )
        END IF
 
        IF ( win_max <= win_min ) &
-         CALL errore( ' read_input ', ' win_max is not larger than win_min ', 1 )
+         CALL errore( ' input_read ', ' win_max is not larger than win_min ', 1 )
        IF ( froz_max <= froz_min ) &
-         CALL errore( ' read_input ', ' froz_max is not larger than froz_min ', 1 )
+         CALL errore( ' input_read ', ' froz_max is not larger than froz_min ', 1 )
        IF ( dimwann <= 0 ) &
-         CALL errore( ' read_input ', ' dimwann too small ', 1 )
+         CALL errore( ' input_read ', ' dimwann too small ', 1 )
        IF ( alpha <= 0.0d0 ) &
-         CALL errore( ' read_input ', ' alpha must be positive ', 1 )
+         CALL errore( ' input_read ', ' alpha must be positive ', 1 )
        IF ( maxiter <= 0 ) &
-         CALL errore( ' read_input ', ' maxiter must be positive ', 1 )
+         CALL errore( ' input_read ', ' maxiter must be positive ', 1 )
        IF ( disentangle_thr <= 0 ) &
-         CALL errore( ' read_input ', ' disentangle_thr must be positive ', 1 )
+         CALL errore( ' input_read ', ' disentangle_thr must be positive ', 1 )
        IF ( wannier_thr <= 0 ) &
-         CALL errore( ' read_input ', ' wannier_thr must be positive ', 1 )
+         CALL errore( ' input_read ', ' wannier_thr must be positive ', 1 )
        IF ( iphase /= 1 ) &
-         CALL errore( ' read_input ', ' iphase must be 1 (ONE) ', 1 )
+         CALL errore( ' input_read ', ' iphase must be 1 (ONE) ', 1 )
        IF ( niter0 < 0 ) &
-         CALL errore( ' read_input ', ' niter0 must be non negative ', 1 )
+         CALL errore( ' input_read ', ' niter0 must be non negative ', 1 )
        IF ( niter <= 0 ) &
-         CALL errore( ' read_input ', ' niter must be positive ', 1 )
+         CALL errore( ' input_read ', ' niter must be positive ', 1 )
        IF ( alphafix0 <= 0.0d0 ) &
-         CALL errore( ' read_input ', ' alphafix0 must be positive ', 1 )
+         CALL errore( ' input_read ', ' alphafix0 must be positive ', 1 )
        IF ( alphafix <= 0.0d0 ) &
-         CALL errore( ' read_input ', ' alphafix must be positive ', 1 )
+         CALL errore( ' input_read ', ' alphafix must be positive ', 1 )
        IF ( nshells <= 0 ) &
-         CALL errore( ' read_input ', ' nshells must be greater than 0 ', 1 )
+         CALL errore( ' input_read ', ' nshells must be greater than 0 ', 1 )
        IF ( ANY( nwhich( 1:nshells ) <= 0 ) ) &
-         CALL errore( ' read_input ', ' values for nwhich must be greater than 0 ', 1 )
+         CALL errore( ' input_read ', ' values for nwhich must be greater than 0 ', 1 )
        IF ( itrial < 1 .OR. itrial > 3 ) &
-         CALL errore( ' read_input ', ' itrial out of range ', 1 )
+         CALL errore( ' input_read ', ' itrial out of range ', 1 )
 
        DO i = 1, LEN_TRIM( ordering_type )
           ordering_type( i : i ) = capital( ordering_type( i : i ) )
        END DO
        IF ( TRIM(ordering_type) /= 'NONE'   .AND. TRIM(ordering_type) /= 'SPATIAL' .AND. &
             TRIM(ordering_type) /= 'SPREAD' .AND. TRIM(ordering_type) /= 'COMPLETE' ) &
-            CALL errore( ' read_input ', ' invalid ORDERING_TYPE = '//TRIM(ordering_type),1)
+            CALL errore( ' input_read ', ' invalid ORDERING_TYPE = '//TRIM(ordering_type),1)
 
        ALLOCATE( gauss_typ(dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating gauss_typ ', dimwann )
+          IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating gauss_typ ', dimwann )
        ALLOCATE( rphiimx1(3,dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating rphiimx1 ', 3*dimwann )
+          IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating rphiimx1 ', 3*dimwann )
        ALLOCATE( rphiimx2(3,dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating rphiimx2 ', 3*dimwann )
+          IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating rphiimx2 ', 3*dimwann )
        ALLOCATE( l_wann(dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating l_wann ', dimwann )
+          IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating l_wann ', dimwann )
        ALLOCATE( m_wann(dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating m_wann ', dimwann )
+          IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating m_wann ', dimwann )
        ALLOCATE( ndir_wann(dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating ndir_wann ', dimwann )
+          IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating ndir_wann ', dimwann )
        ALLOCATE( rloc(dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore( ' read_input ', ' allocating rloc ', dimwann )
+          IF ( ierr/=0 ) CALL errore( ' input_read ', ' allocating rloc ', dimwann )
        !
        !
  100   CALL read_line( input_line, end_of_file=tend )
@@ -182,7 +183,7 @@ CONTAINS
        ELSE
           !
           IF ( ionode ) &
-             WRITE( 6,'(A)') 'Warning: card '//TRIM(input_line)//' ignored'
+             WRITE( stdout,'(A)') 'Warning: card '//TRIM(input_line)//' ignored'
           !
        END IF
        !
@@ -193,6 +194,7 @@ CONTAINS
 120    CONTINUE
        !
 
+     alloc = .TRUE.
      RETURN
   END SUBROUTINE
 
@@ -301,7 +303,7 @@ CONTAINS
 
 !=----------------------------------------------------------------------------=!
 
-  SUBROUTINE deallocate_input
+  SUBROUTINE input_deallocate
     IMPLICIT NONE
     INTEGER :: ierr
 
@@ -321,8 +323,9 @@ CONTAINS
     IF( ALLOCATED( rloc ) )   DEALLOCATE( rloc, STAT=ierr )
         IF (ierr/=0) CALL errore('deallocate_input','deallocating rloc', ABS(ierr))
 
+    alloc = .FALSE.
     RETURN
-  END SUBROUTINE deallocate_input
+  END SUBROUTINE input_deallocate
 
 !=----------------------------------------------------------------------------=!
 END MODULE input_module

@@ -7,7 +7,8 @@ OBJS = constants.o fft_scalar.o kind.o parameters.o \
        startup.o  timing.o  version.o  parser.o  converters.o \
        sph_har.o  kpoints.o  ions.o  util.o  lattice.o \
        subspace.o  windows_module.o  overlap_module.o  wfc.o \
-       ggrids.o  files.o  parser_base.o  localization.o 
+       ggrids.o  files.o  parser_base.o  localization.o  \
+       cleanup.o 
 
 all: $(OBJS)
 

@@ -18,6 +18,7 @@
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE io_module, ONLY : stdout, ioname, work_dir
        USE startup_module, ONLY : startup
+       USE cleanup_module, ONLY : cleanup
        USE version_module, ONLY : version_number
        USE input_module
        USE converters_module, ONLY : cart2cry
@@ -87,7 +88,7 @@
 !
 ! ...  Read input parameters
 !
-       CALL read_input()
+       CALL input_read()
 
 !
 ! ...  Read first principles calculation DATA (UNIT= 54)
@@ -472,7 +473,14 @@
        WRITE( stdout, * ) ' ' 
 
        CLOSE(19)
+
 !
+! ... Finalize timing
+       CALL timing('window',OPR='stop')
+       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='window')
+
+!
+! ... Cleanup memory
        DEALLOCATE( isort_k, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' deallocating isort_k ', ABS(ierr) )
        DEALLOCATE( zvec_k, STAT=ierr )
@@ -498,12 +506,8 @@
        DEALLOCATE( ig3, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' deallocating ig3 ', ABS(ierr) )
 
-       CALL deallocate_input()
+       CALL cleanup()
 
-       CALL timing('window',OPR='stop')
-       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='window')
-       CALL timing_deallocate()
-!
        STOP '*** THE END *** (window.x)'
        END
 

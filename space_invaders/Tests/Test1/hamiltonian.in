@@ -1,5 +1,8 @@
 
  &INPUT
+   prefix = 'silicon'
+   postfix = '_WanT'
+   work_dir = './'
    nspts  = 6
    npts   = 500
    nbands = 8

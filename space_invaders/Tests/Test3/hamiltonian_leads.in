@@ -1,5 +1,8 @@
 
  &INPUT
+   prefix = 'chain4'
+   postfix = '_WanT'
+   work_dir = './LEADS/'
    nspts  = 2
    npts   = 100
    nbands = 8 

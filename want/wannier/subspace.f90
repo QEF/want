@@ -208,8 +208,8 @@ CONTAINS
        IF ( windows_alloc ) THEN
            IF ( mxdbnd_ /=mxdbnd) CALL errore(subname,'Invalid MXDBND',ABS(mxdbnd-mxdbnd_))
        ELSE
-           CALL windows_allocate()
            mxdbnd = mxdbnd_
+           CALL windows_allocate()
        ENDIF
 
        CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)

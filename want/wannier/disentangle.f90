@@ -15,13 +15,12 @@
        USE constants, ONLY: pi, ryd => ry, har => au, bohr => bohr_radius_angs, &
                             ZERO, ONE, CZERO, CONE
        USE parameters, ONLY : nstrx
-       USE mp, ONLY: mp_start, mp_end, mp_env
-       USE mp_global, ONLY: mp_global_start
-       USE io_module, ONLY: io_global_start, io_global_getionode, stdout, work_dir, &
+       USE io_module, ONLY: stdout, work_dir, &
                             ioname, ovp_unit, space_unit, dft_unit
        USE files_module, ONLY : file_open, file_close
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE startup_module, ONLY : startup
+       USE cleanup_module, ONLY : cleanup
        USE version_module, ONLY : version_number
        USE input_module
        USE converters_module, ONLY : cart2cry
@@ -81,9 +80,6 @@
        INTEGER :: ngm
        INTEGER :: nwann
 
-       INTEGER :: root, mpime, gid, nproc
-       LOGICAL :: ionode
-       INTEGER :: ionode_id
        INTEGER :: ierr
        INTEGER   :: idum
        REAL(dbl) :: rdum
@@ -91,22 +87,6 @@
 !      
 ! ...  End declarations and dimensions
 !      
-
-       root = 0
-       CALL mp_start()
-       CALL mp_env( nproc, mpime, gid )
-       CALL mp_global_start( root, mpime, gid, nproc )
-
-! ... mpime = processor number, starting from 0
-! ... nproc = number of processors
-! ... gid   = group index
-! ... root  = index of the root processor
-
-! ... initialize input output
-
-       CALL io_global_start( mpime, root )
-       CALL io_global_getionode( ionode, ionode_id )
-
 !=----------------------------------------------------------------------------=!
 
 !
@@ -117,7 +97,7 @@
 !      
 ! ...  Read input parameters from DFT_DATA file
 !
-       CALL read_input()
+       CALL input_read()
 
        CALL ioname('dft_data',filename)
        OPEN( UNIT=dft_unit, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
@@ -306,7 +286,6 @@
 !
 ! ...  Compute the overlap matrix cm between each K-point and its shell of neighbors
 
-
        CALL overlap( igv, evc, igsort, npwk, dimwin,               &
             nntot, nnlist, nncell, cm, mxdgve, npwx, nkpts,        &
             mxdnn, mxdbnd, ngx, ngy, ngz, dimwinx )                
@@ -316,6 +295,10 @@
                         npwx, mxdbnd, nkpts, mxdgve, ngx, ngy, ngz, nkpts,       &
                         gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                         m_wann, ndir_wann, rloc, dimwinx)
+       !
+       ! ... clean a large amount of memory
+       CALL ggrids_deallocate()
+       CALL wfc_deallocate()
 
 !
 ! ...  writing projections and overlap on file
@@ -747,6 +730,12 @@
        WRITE( stdout,"(/,'  Subspace data written on file: ',a)") TRIM(filename)
 
 !
+! ...  Finalize timing
+
+       CALL timing('disentangle',OPR='stop')
+       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='disentangle')
+
+!
 ! ...  Deallocate local arrays
 
        DEALLOCATE( komega_i_est, STAT=ierr )
@@ -770,20 +759,10 @@
        DEALLOCATE( iwork, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating iwork ', ABS(ierr) )
 
-       CALL deallocate_input()
-       CALL kpoints_deallocate()
-       CALL windows_deallocate()
-       CALL subspace_deallocate()
-       CALL overlap_deallocate()
-       CALL ggrids_deallocate()
-       CALL wfc_deallocate()
+       CALL cleanup()
 
-
-       CALL timing('disentangle',OPR='stop')
-       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='disentangle')
-       CALL timing_deallocate()
-
-      CALL mp_end()
+! XXX sistemare MPI environment
+!      CALL mp_end()
 
 !=---------------------------------------------------------------=
 
