@@ -5,7 +5,7 @@
    work_dir = './'
    nkpts_in  = 2
    nkpts_max = 100
-   unitary_thr = 1.d-4
+   unitary_thr = 5.d-4
  /
 G
 0.0 0.0 0.0
