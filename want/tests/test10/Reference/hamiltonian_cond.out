@@ -8,108 +8,11 @@
 
 
   Program <hamiltonian>  v. 1.1.1  starts ...
-  Date 23Mar2005 at 16:38:24 
+  Date 24Mar2005 at 17: 7:16 
 
 
   PW-DFT data read from file: chain8.export/index.xml
   Subspace data read from file: chain8_WanT.spaces
-
-  ======================================================================
-  =                              DFT data                              =
-  ======================================================================
-
-<LATTICE>
-  Alat  =   20.7114060 (Bohr)
-  Alat  =   10.9599997 (Ang )
-  Omega = ************ (Bohr^3)
-  Omega = 1666.2366039 (Ang^3 )
-
-  Crystal axes:
-                in units of Bohr                 in Alat units
-    a(1) = ( 20.7114  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    a(2) = (  0.0000 23.3003  0.0000 )     (   0.0000  1.1250  0.0000 )
-    a(3) = (  0.0000  0.0000 23.3003 )     (   0.0000  0.0000  1.1250 )
-  Crystal axes: (Ang)
-    a(1) = ( 10.9600  0.0000  0.0000 )
-    a(2) = (  0.0000 12.3300  0.0000 )
-    a(3) = (  0.0000  0.0000 12.3300 )
-
-   Reciprocal lattice vectors:
-                in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.3034  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    b(2) = (  0.0000  0.2697  0.0000 )     (   0.0000  0.8889  0.0000 )
-    b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.8889 )
-</LATTICE>
-
-<IONS>
-  Number of chemical species =  1
-     Pseudo( 1) = C.blyp-mt.UPF
-
-     Pseudo( 1) is C          zval =  4.0   lmax= 0   lloc= 0
-     (in numerical form:   279 grid points, xmin =  0.00, dx = 0.0000)
-
-  Atomic positions: (cart. coord. in units of alat)
-     C    tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
-     C    tau(   2 ) = (   0.1113139   0.0000000   0.0000000 )
-     C    tau(   3 ) = (   0.2500000   0.0000000   0.0000000 )
-     C    tau(   4 ) = (   0.3613139   0.0000000   0.0000000 )
-     C    tau(   5 ) = (   0.5000000   0.0000000   0.0000000 )
-     C    tau(   6 ) = (   0.6113139   0.0000000   0.0000000 )
-     C    tau(   7 ) = (   0.7500000   0.0000000   0.0000000 )
-     C    tau(   8 ) = (   0.8613139   0.0000000   0.0000000 )
-</IONS>
-
-<K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  4  1  1 ),      shift = (  0  0  0 )
-  K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
-    k point   2:   (   0.07584  0.00000  0.00000 ),   weight =   0.2500
-    k point   3:   (   0.15168  0.00000  0.00000 ),   weight =   0.2500
-    k point   4:   (   0.22753  0.00000  0.00000 ),   weight =   0.2500
-</K-POINTS>
-
-<WINDOWS>
-  Definition of energy windows: (energies in eV)
-    outer window: E  = (   0.0000 ,   0.0000 )
-    Max number of bands within the energy window =    16
-
-  Electronic Structure from DFT calculation:
-    nkpts =   4,     nbnd =  20,
-    nspin =   1
-    Fermi energy =   -4.251922874 eV
-
-    kpt =  1 (  0.000 0.000 0.000 )    dimwin =   16
-                                         imin =    1  imax =   16
-   Eigenvalues:
-   -16.9446 -16.1866 -16.1866 -14.8356 -12.4891 -10.2247 -10.2247  -8.3120
-    -4.8524  -4.8524  -3.7149  -3.7149  -3.7149  -3.7149  -1.2928  -1.2928
-     1.2780   1.2780   4.0287   4.1801
-
-    kpt =  2 (  0.250 0.000 0.000 )    dimwin =   16
-                                         imin =    1  imax =   16
-   Eigenvalues:
-   -16.8944 -16.5177 -15.7773 -14.9969 -12.2491 -10.9793  -9.5114  -8.4830
-    -4.7797  -4.7797  -4.2182  -4.2182  -3.0879  -3.0879  -1.6584  -1.6584
-     1.7972   1.7972   4.0870   4.2413
-
-    kpt =  3 (  0.500 0.000 0.000 )    dimwin =   16
-                                         imin =    1  imax =   16
-   Eigenvalues:
-   -16.7514 -16.7514 -15.3657 -15.3657 -11.6883 -11.6883  -8.8829  -8.8829
-    -4.5667  -4.5667  -4.5667  -4.5667  -2.3846  -2.3846  -2.3846  -2.3846
-     2.8989   2.8989   2.8989   2.8989
-
-    kpt =  4 (  0.750 0.000 0.000 )    dimwin =   16
-                                         imin =    1  imax =   16
-   Eigenvalues:
-   -16.8944 -16.5177 -15.7773 -14.9969 -12.2491 -10.9793  -9.5114  -8.4830
-    -4.7797  -4.7797  -4.2182  -4.2182  -3.0879  -3.0879  -1.6584  -1.6584
-     1.7972   1.7972   4.0870   4.2413
-
-    inner window: NOT used --> NO FROZEN STATES
-</WINDOWS>
-
   Wannier data read from file: chain8_WanT.wan
 
 
@@ -305,8 +208,8 @@
    <global routines>
              clock number :     2
 
-              hamiltonian :     0.64s CPU 
+              hamiltonian :     0.30s CPU 
 
-                want_init :     0.05s CPU
+                want_init :     0.01s CPU
 
 

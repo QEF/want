@@ -8,109 +8,11 @@
 
 
   Program <hamiltonian>  v. 1.1.1  starts ...
-  Date 23Mar2005 at 16:40:51 
+  Date 24Mar2005 at 17: 6: 8 
 
 
   PW-DFT data read from file: gold1.export/index.xml
   Subspace data read from file: gold1_WanT.spaces
-
-  ======================================================================
-  =                              DFT data                              =
-  ======================================================================
-
-<LATTICE>
-  Alat  =   20.0000000 (Bohr)
-  Alat  =   10.5835400 (Ang )
-  Omega = 1889.7280000 (Bohr^3)
-  Omega =  280.0284636 (Ang^3 )
-
-  Crystal axes:
-                in units of Bohr                 in Alat units
-    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
-    a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
-  Crystal axes: (Ang)
-    a(1) = ( 10.5835  0.0000  0.0000 )
-    a(2) = (  0.0000 10.5835  0.0000 )
-    a(3) = (  0.0000  0.0000  2.5000 )
-
-   Reciprocal lattice vectors:
-                in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
-    b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
-</LATTICE>
-
-<IONS>
-  Number of chemical species =  1
-  Calculation is done within US pseudopot.
-
-     Pseudo( 1) = Au.pw91-d-van.UPF
-
-     Pseudo( 1) is Au (US)    zval = 11.0   lmax= 2   lloc= 0
-     Version   0  0  0 of US pseudo code
-     Using log mesh of   939 points
-     The pseudopotential has  6 beta functions with: 
-                l(1) =   0
-                l(2) =   0
-                l(3) =   1
-                l(4) =   1
-                l(5) =   2
-                l(6) =   2
-     Q(r) pseudized with  3 coefficients,  rinner =    1.600   1.800   1.600
-                                                       1.600   1.800
-
-  Atomic positions: (cart. coord. in units of alat)
-     Au   tau(   1 ) = (   0.0000000   0.0000000   0.0472432 )
-</IONS>
-
-<K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
-  K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
-    k point   2:   (   0.00000  0.00000  0.33249 ),   weight =   0.2500
-    k point   3:   (   0.00000  0.00000  0.66498 ),   weight =   0.2500
-    k point   4:   (   0.00000  0.00000  0.99747 ),   weight =   0.2500
-</K-POINTS>
-
-<WINDOWS>
-  Definition of energy windows: (energies in eV)
-    outer window: E  = (   0.0000 ,   0.0000 )
-    Max number of bands within the energy window =     8
-
-  Electronic Structure from DFT calculation:
-    nkpts =   4,     nbnd =  10,
-    nspin =   1
-    Fermi energy =   -4.863873911 eV
-
-    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-    -5.6487  -1.7442  -1.7439  -1.5256  -0.0005  -0.0005   3.7035   3.7035
-     5.8782   6.8348
-
-    kpt =  2 (  0.000 0.000 0.250 )    dimwin =    6
-                                         imin =    1  imax =    6
-   Eigenvalues:
-    -2.6185  -2.0242  -2.0242  -1.4106  -1.4104  -0.5897   5.9051   5.9051
-     7.3480   8.3064
-
-    kpt =  3 (  0.000 0.000 0.500 )    dimwin =    6
-                                         imin =    1  imax =    6
-   Eigenvalues:
-    -3.3650  -3.3650  -1.0549  -1.0546  -0.2568   4.6988   7.1490   9.6067
-     9.6067  11.7449
-
-    kpt =  4 (  0.000 0.000 0.750 )    dimwin =    6
-                                         imin =    1  imax =    6
-   Eigenvalues:
-    -2.6185  -2.0242  -2.0242  -1.4106  -1.4104  -0.5897   5.9051   5.9051
-     7.3480   8.3064
-
-    inner window: NOT used --> NO FROZEN STATES
-</WINDOWS>
-
   Wannier data read from file: gold1_WanT.wan
 
 
@@ -276,8 +178,8 @@
    <global routines>
              clock number :     2
 
-              hamiltonian :     0.63s CPU 
+              hamiltonian :     0.10s CPU 
 
-                want_init :     0.49s CPU
+                want_init :     0.01s CPU
 
 

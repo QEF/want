@@ -8,128 +8,11 @@
 
 
   Program <hamiltonian>  v. 1.1.1  starts ...
-  Date 23Mar2005 at 16:38:25 
+  Date 24Mar2005 at 17: 7:16 
 
 
   PW-DFT data read from file: chain4.export/index.xml
   Subspace data read from file: chain4_WanT.spaces
-
-  ======================================================================
-  =                              DFT data                              =
-  ======================================================================
-
-<LATTICE>
-  Alat  =   10.3557030 (Bohr)
-  Alat  =    5.4799998 (Ang )
-  Omega = 5622.1676973 (Bohr^3)
-  Omega =  833.1183020 (Ang^3 )
-
-  Crystal axes:
-                in units of Bohr                 in Alat units
-    a(1) = ( 10.3557  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    a(2) = (  0.0000 23.3003  0.0000 )     (   0.0000  2.2500  0.0000 )
-    a(3) = (  0.0000  0.0000 23.3003 )     (   0.0000  0.0000  2.2500 )
-  Crystal axes: (Ang)
-    a(1) = (  5.4800  0.0000  0.0000 )
-    a(2) = (  0.0000 12.3300  0.0000 )
-    a(3) = (  0.0000  0.0000 12.3300 )
-
-   Reciprocal lattice vectors:
-                in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.6067  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    b(2) = (  0.0000  0.2697  0.0000 )     (   0.0000  0.4444  0.0000 )
-    b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.4444 )
-</LATTICE>
-
-<IONS>
-  Number of chemical species =  1
-     Pseudo( 1) = C.blyp-mt.UPF
-
-     Pseudo( 1) is C          zval =  4.0   lmax= 0   lloc= 0
-     (in numerical form:   279 grid points, xmin =  0.00, dx = 0.0000)
-
-  Atomic positions: (cart. coord. in units of alat)
-     C    tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
-     C    tau(   2 ) = (   0.2226277   0.0000000   0.0000000 )
-     C    tau(   3 ) = (   0.5000000   0.0000000   0.0000000 )
-     C    tau(   4 ) = (   0.7226277   0.0000000   0.0000000 )
-</IONS>
-
-<K-POINTS>
-  nkpts =    8
-  Monkhorst-Pack grid:      nk = (  8  1  1 ),      shift = (  0  0  0 )
-  K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250
-    k point   2:   (   0.07584  0.00000  0.00000 ),   weight =   0.1250
-    k point   3:   (   0.15168  0.00000  0.00000 ),   weight =   0.1250
-    k point   4:   (   0.22753  0.00000  0.00000 ),   weight =   0.1250
-    k point   5:   (   0.30337  0.00000  0.00000 ),   weight =   0.1250
-    k point   6:   (   0.37921  0.00000  0.00000 ),   weight =   0.1250
-    k point   7:   (   0.45505  0.00000  0.00000 ),   weight =   0.1250
-    k point   8:   (   0.53089  0.00000  0.00000 ),   weight =   0.1250
-</K-POINTS>
-
-<WINDOWS>
-  Definition of energy windows: (energies in eV)
-    outer window: E  = (   0.0000 ,   0.0000 )
-    Max number of bands within the energy window =     8
-
-  Electronic Structure from DFT calculation:
-    nkpts =   8,     nbnd =  12,
-    nspin =   1
-    Fermi energy =   -4.264098339 eV
-
-    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.9328 -14.8238 -12.4771  -8.3001  -4.8404  -4.8404  -1.2809  -1.2809
-     1.2900   1.2900   4.0409   4.1921
-
-    kpt =  2 (  0.125 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.8826 -14.9852 -12.2370  -8.4712  -4.7678  -4.7678  -1.6465  -1.6465
-     1.8092   1.8092   4.0991   4.4210
-
-    kpt =  3 (  0.250 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.7395 -15.3539 -11.6763  -8.8710  -4.5548  -4.5548  -2.3727  -2.3727
-     2.9109   2.9109   4.3134   5.0380
-
-    kpt =  4 (  0.375 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.5058 -15.7654 -10.9673  -9.4994  -4.2063  -4.2063  -3.0759  -3.0759
-     4.2533   4.2533   4.6816   5.7772
-
-    kpt =  5 (  0.500 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.1747 -16.1747 -10.2128 -10.2128  -3.7029  -3.7029  -3.7029  -3.7029
-     5.6969   5.6969   5.6969   5.6969
-
-    kpt =  6 (  0.625 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.5058 -15.7654 -10.9673  -9.4994  -4.2063  -4.2063  -3.0759  -3.0759
-     4.2533   4.2533   4.6816   5.7772
-
-    kpt =  7 (  0.750 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.7395 -15.3539 -11.6763  -8.8710  -4.5548  -4.5548  -2.3727  -2.3727
-     2.9109   2.9109   4.3134   5.0380
-
-    kpt =  8 (  0.875 0.000 0.000 )    dimwin =    8
-                                         imin =    1  imax =    8
-   Eigenvalues:
-   -16.8826 -14.9852 -12.2370  -8.4712  -4.7678  -4.7678  -1.6465  -1.6465
-     1.8092   1.8092   4.0991   4.4210
-
-    inner window: NOT used --> NO FROZEN STATES
-</WINDOWS>
-
   Wannier data read from file: chain4_WanT.wan
 
 
@@ -305,8 +188,8 @@
    <global routines>
              clock number :     2
 
-              hamiltonian :     0.37s CPU 
+              hamiltonian :     0.15s CPU 
 
-                want_init :     0.07s CPU
+                want_init :     0.01s CPU
 
 

@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 23Mar2005 at 16:40:35 
+  Date 24Mar2005 at 17: 5:58 
 
 
   PW-DFT data read from file: gold1.export/index.xml
@@ -17,32 +17,33 @@
   =                                Main                                =
   ======================================================================
 
-            Calculation Title :     WanT Calculation
+            Calculation Title :     Wannier Transport Calculation
                        Prefix :     gold1
+                      Postfix :     _WanT
             Working directory :     ./
 
 <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    6
-    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
     CG minim: Max iteration number =   100
     Minimization convergence threshold =     0.000001000
-    SD minim: Mixing parameter (alphafix) =  0.500
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
     SD minim: Max iteration number =  1500
     Every   5 iteration perform a CG minimization (ncg)
     Number of k-point shells =   2
     Chosen shells (indexes) =   1  2
     Print each  10 iterations
-    Ordering type = COMPLETE
-    Verbosity = MEDIUM
+    Ordering mode = complete
+    Verbosity = medium
     Unitariery check threshold =     0.000005000
 </WANNIER_FUNCTIONS>
 
 <DISENTANGLE>
   Input parameters for disentangling subspaces
-    Mixing parameter (alpha)=  0.500
-    Max iter =  1000
-    Starting guess orbitals (itrial) =  3
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =  1000
+    Starting guess orbitals (trial_mode) = center_projections
     Disentangle convergence threshold =     0.000000010
 </DISENTANGLE>
 
@@ -62,10 +63,10 @@
   ======================================================================
 
 <LATTICE>
-  Alat  =   20.0000000 (Bohr)
-  Alat  =   10.5835400 (Ang )
-  Omega = 1889.7280000 (Bohr^3)
-  Omega =  280.0284636 (Ang^3 )
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    1889.7280000 (Bohr^3)
+  Omega =     280.0284636 (Ang^3 )
 
   Crystal axes:
                 in units of Bohr                 in Alat units
@@ -206,16 +207,16 @@
         FFT grid components (rho) =  (    96   96   24 )
 
     Overlap calculation for k-point   1
-                              Total time spent up to now :    12.89 secs
+                              Total time spent up to now :     8.29 secs
 
     Overlap calculation for k-point   2
-                              Total time spent up to now :    13.01 secs
+                              Total time spent up to now :     8.37 secs
 
     Overlap calculation for k-point   3
-                              Total time spent up to now :    13.16 secs
+                              Total time spent up to now :     8.44 secs
 
     Overlap calculation for k-point   4
-                              Total time spent up to now :    13.28 secs
+                              Total time spent up to now :     8.54 secs
 
 
   Overlap and projections written on file: gold1_WanT.ovp
@@ -265,23 +266,23 @@
    <global routines>
              clock number :    17
 
-              disentangle :    14.13s CPU 
+              disentangle :     8.99s CPU 
 
-                want_init :     0.34s CPU
+                want_init :     0.26s CPU
                   bshells :     0.01s CPU
-              wfc_manager :    13.57s CPU
-          ggrids_read_ext :     0.21s CPU
-             wfc_read_ext :     0.24s CPU
-                init_us_1 :    11.79s CPU
-              struct_fact :     0.07s CPU
+              wfc_manager :     8.60s CPU
+          ggrids_read_ext :     0.10s CPU
+             wfc_read_ext :     0.07s CPU
+                init_us_1 :     7.68s CPU
+              struct_fact :     0.03s CPU
                 init_us_2 :     0.05s CPU (       4 calls,   0.012 s avg)
-                  ccalbec :     0.05s CPU (       4 calls,   0.013 s avg)
-                  overlap :     0.52s CPU
-          set_overlap_map :     0.11s CPU (      24 calls,   0.004 s avg)
+                  ccalbec :     0.01s CPU (       4 calls,   0.002 s avg)
+                  overlap :     0.34s CPU
+          set_overlap_map :     0.11s CPU (      24 calls,   0.005 s avg)
            add_us_overlap :     0.01s CPU (      24 calls,   0.000 s avg)
-               projection :     0.35s CPU
-       trial_center_setup :     0.09s CPU (      24 calls,   0.004 s avg)
-                    s_psi :     0.25s CPU (     156 calls,   0.002 s avg)
-               iterations :     0.12s CPU
+               projection :     0.20s CPU
+       trial_center_setup :     0.08s CPU (      24 calls,   0.003 s avg)
+                    s_psi :     0.11s CPU (     156 calls,   0.001 s avg)
+               iterations :     0.08s CPU
 
 

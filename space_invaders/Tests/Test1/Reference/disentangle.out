@@ -2,61 +2,64 @@
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
               =        (www.wannier-transport.org)         =
-              =       Norm Conserv. Pseudopot. Impl.       =
+              =      Ultra Soft Pseudopotential Implem.    =
               =                                            =
   ======================================================================
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  7Mar2005 at 17:28:41 
+  Date 24Mar2005 at 14:32:19 
 
 
-  PW-DFT data read from file: silicon.dft
+  PW-DFT data read from file: silicon.export/index.xml
 
   ======================================================================
   =                                Main                                =
   ======================================================================
 
-            Calculation Title :     WanT Calculation
+            Calculation Title :     Wannier Transport Calculation
                        Prefix :     silicon
+                      Postfix :     _WanT
             Working directory :     ./
 
 <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    8
-    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
     CG minim: Max iteration number =   100
-    SD minim: Mixing parameter (alphafix) =  0.500
+    Minimization convergence threshold =     0.000001000
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
     SD minim: Max iteration number =   800
     Every   5 iteration perform a CG minimization (ncg)
     Number of k-point shells =   1
     Chosen shells (indexes) =   1
     Print each  10 iterations
-    Ordering type = NONE
-    Verbosity = MEDIUM
+    Ordering mode = none
+    Verbosity = medium
+    Unitariery check threshold =     0.000000010
 </WANNIER_FUNCTIONS>
 
 <DISENTANGLE>
   Input parameters for disentangling subspaces
-    Mixing parameter (alpha)=  0.500
-    Max iter =   200
-    Starting guess orbitals (itrial) =  3
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =   200
+    Starting guess orbitals (trial_mode) = center_projections
     Disentangle convergence threshold =     0.000000010
 </DISENTANGLE>
 
 <TRIAL_CENTERS>
   Trial centers: (cart. coord. in Bohr)
-    Center =   1 Type =1gauss  Center  = ( -1.324935  1.324935  1.324935 )
-    Center =   2 Type =1gauss  Center  = (  0.000000 -1.324935  0.000000 )
-    Center =   3 Type =1gauss  Center  = (  1.324935  0.000000  0.000000 )
-    Center =   4 Type =1gauss  Center  = (  0.000000  0.000000 -1.324935 )
-    Center =   5 Type =2gauss  Center  = ( -0.662467  0.662467  0.662467 )
+    Center =   1 Type = 1gauss  Center  = (   -1.324934750    1.324934750    1.324934750 )
+    Center =   2 Type = 1gauss  Center  = (    0.000000000   -1.324934750    0.000000000 )
+    Center =   3 Type = 1gauss  Center  = (    1.324934750    0.000000000    0.000000000 )
+    Center =   4 Type = 1gauss  Center  = (    0.000000000    0.000000000   -1.324934750 )
+    Center =   5 Type = 2gauss  Center  = (   -0.662467375    0.662467375    0.662467375 )
                            Center2 = ( -1.987402  1.987402  1.987402 ) 
-    Center =   6 Type =2gauss  Center  = (  0.662467  0.662467 -0.662467 )
+    Center =   6 Type = 2gauss  Center  = (    0.662467375    0.662467375   -0.662467375 )
                            Center2 = (  1.987402  1.987402 -1.987402 ) 
-    Center =   7 Type =2gauss  Center  = ( -0.662467 -0.662467 -0.662467 )
+    Center =   7 Type = 2gauss  Center  = (   -0.662467375   -0.662467375   -0.662467375 )
                            Center2 = ( -1.987402 -1.987402 -1.987402 ) 
-    Center =   8 Type =2gauss  Center  = (  0.662467 -0.662467  0.662467 )
+    Center =   8 Type = 2gauss  Center  = (    0.662467375   -0.662467375    0.662467375 )
                            Center2 = (  1.987402 -1.987402  1.987402 ) 
 </TRIAL_CENTERS>
 
@@ -96,113 +99,113 @@
      (in numerical form:   431 grid points, xmin =  0.00, dx = 0.0000)
 
   Atomic positions: (cart. coord. in units of alat)
-     Si  tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
-     Si  tau(   2 ) = (  -0.2500000   0.2500000   0.2500000 )
+     Si   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     Si   tau(   2 ) = (  -0.2500000   0.2500000   0.2500000 )
 </IONS>
 
 <K-POINTS>
   nkpts =   64
   Monkhorst-Pack grid:      nk = (  4  4  4 ),      shift = (  0  0  0 )
-  K-point calculation: (cart. coord. in Ang^-1)
+  K-point calculation: (cart. coord. in Bohr^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.0156
-    k point   2:   (  -0.28005  0.28005 -0.28005 ),   weight =   0.0156
-    k point   3:   (  -0.56010  0.56010 -0.56010 ),   weight =   0.0156
-    k point   4:   (  -0.84015  0.84015 -0.84015 ),   weight =   0.0156
-    k point   5:   (   0.28005  0.28005  0.28005 ),   weight =   0.0156
-    k point   6:   (   0.00000  0.56010  0.00000 ),   weight =   0.0156
-    k point   7:   (  -0.28005  0.84015 -0.28005 ),   weight =   0.0156
-    k point   8:   (  -0.56010  1.12020 -0.56010 ),   weight =   0.0156
-    k point   9:   (   0.56010  0.56010  0.56010 ),   weight =   0.0156
-    k point  10:   (   0.28005  0.84015  0.28005 ),   weight =   0.0156
-    k point  11:   (   0.00000  1.12020  0.00000 ),   weight =   0.0156
-    k point  12:   (  -0.28005  1.40025 -0.28005 ),   weight =   0.0156
-    k point  13:   (   0.84015  0.84015  0.84015 ),   weight =   0.0156
-    k point  14:   (   0.56010  1.12020  0.56010 ),   weight =   0.0156
-    k point  15:   (   0.28005  1.40025  0.28005 ),   weight =   0.0156
-    k point  16:   (   0.00000  1.68030  0.00000 ),   weight =   0.0156
-    k point  17:   (  -0.28005 -0.28005  0.28005 ),   weight =   0.0156
-    k point  18:   (  -0.56010  0.00000  0.00000 ),   weight =   0.0156
-    k point  19:   (  -0.84015  0.28005 -0.28005 ),   weight =   0.0156
-    k point  20:   (  -1.12020  0.56010 -0.56010 ),   weight =   0.0156
-    k point  21:   (   0.00000  0.00000  0.56010 ),   weight =   0.0156
-    k point  22:   (  -0.28005  0.28005  0.28005 ),   weight =   0.0156
-    k point  23:   (  -0.56010  0.56010  0.00000 ),   weight =   0.0156
-    k point  24:   (  -0.84015  0.84015 -0.28005 ),   weight =   0.0156
-    k point  25:   (   0.28005  0.28005  0.84015 ),   weight =   0.0156
-    k point  26:   (   0.00000  0.56010  0.56010 ),   weight =   0.0156
-    k point  27:   (  -0.28005  0.84015  0.28005 ),   weight =   0.0156
-    k point  28:   (  -0.56010  1.12020  0.00000 ),   weight =   0.0156
-    k point  29:   (   0.56010  0.56010  1.12020 ),   weight =   0.0156
-    k point  30:   (   0.28005  0.84015  0.84015 ),   weight =   0.0156
-    k point  31:   (   0.00000  1.12020  0.56010 ),   weight =   0.0156
-    k point  32:   (  -0.28005  1.40025  0.28005 ),   weight =   0.0156
-    k point  33:   (  -0.56010 -0.56010  0.56010 ),   weight =   0.0156
-    k point  34:   (  -0.84015 -0.28005  0.28005 ),   weight =   0.0156
-    k point  35:   (  -1.12020  0.00000  0.00000 ),   weight =   0.0156
-    k point  36:   (  -1.40025  0.28005 -0.28005 ),   weight =   0.0156
-    k point  37:   (  -0.28005 -0.28005  0.84015 ),   weight =   0.0156
-    k point  38:   (  -0.56010  0.00000  0.56010 ),   weight =   0.0156
-    k point  39:   (  -0.84015  0.28005  0.28005 ),   weight =   0.0156
-    k point  40:   (  -1.12020  0.56010  0.00000 ),   weight =   0.0156
-    k point  41:   (   0.00000  0.00000  1.12020 ),   weight =   0.0156
-    k point  42:   (  -0.28005  0.28005  0.84015 ),   weight =   0.0156
-    k point  43:   (  -0.56010  0.56010  0.56010 ),   weight =   0.0156
-    k point  44:   (  -0.84015  0.84015  0.28005 ),   weight =   0.0156
-    k point  45:   (   0.28005  0.28005  1.40025 ),   weight =   0.0156
-    k point  46:   (   0.00000  0.56010  1.12020 ),   weight =   0.0156
-    k point  47:   (  -0.28005  0.84015  0.84015 ),   weight =   0.0156
-    k point  48:   (  -0.56010  1.12020  0.56010 ),   weight =   0.0156
-    k point  49:   (  -0.84015 -0.84015  0.84015 ),   weight =   0.0156
-    k point  50:   (  -1.12020 -0.56010  0.56010 ),   weight =   0.0156
-    k point  51:   (  -1.40025 -0.28005  0.28005 ),   weight =   0.0156
-    k point  52:   (  -1.68030  0.00000  0.00000 ),   weight =   0.0156
-    k point  53:   (  -0.56010 -0.56010  1.12020 ),   weight =   0.0156
-    k point  54:   (  -0.84015 -0.28005  0.84015 ),   weight =   0.0156
-    k point  55:   (  -1.12020  0.00000  0.56010 ),   weight =   0.0156
-    k point  56:   (  -1.40025  0.28005  0.28005 ),   weight =   0.0156
-    k point  57:   (  -0.28005 -0.28005  1.40025 ),   weight =   0.0156
-    k point  58:   (  -0.56010  0.00000  1.12020 ),   weight =   0.0156
-    k point  59:   (  -0.84015  0.28005  0.84015 ),   weight =   0.0156
-    k point  60:   (  -1.12020  0.56010  0.56010 ),   weight =   0.0156
-    k point  61:   (   0.00000  0.00000  1.68030 ),   weight =   0.0156
-    k point  62:   (  -0.28005  0.28005  1.40025 ),   weight =   0.0156
-    k point  63:   (  -0.56010  0.56010  1.12020 ),   weight =   0.0156
-    k point  64:   (  -0.84015  0.84015  0.84015 ),   weight =   0.0156
+    k point   2:   (  -0.14820  0.14820 -0.14820 ),   weight =   0.0156
+    k point   3:   (  -0.29639  0.29639 -0.29639 ),   weight =   0.0156
+    k point   4:   (  -0.44459  0.44459 -0.44459 ),   weight =   0.0156
+    k point   5:   (   0.14820  0.14820  0.14820 ),   weight =   0.0156
+    k point   6:   (   0.00000  0.29639  0.00000 ),   weight =   0.0156
+    k point   7:   (  -0.14820  0.44459 -0.14820 ),   weight =   0.0156
+    k point   8:   (  -0.29639  0.59278 -0.29639 ),   weight =   0.0156
+    k point   9:   (   0.29639  0.29639  0.29639 ),   weight =   0.0156
+    k point  10:   (   0.14820  0.44459  0.14820 ),   weight =   0.0156
+    k point  11:   (   0.00000  0.59278  0.00000 ),   weight =   0.0156
+    k point  12:   (  -0.14820  0.74098 -0.14820 ),   weight =   0.0156
+    k point  13:   (   0.44459  0.44459  0.44459 ),   weight =   0.0156
+    k point  14:   (   0.29639  0.59278  0.29639 ),   weight =   0.0156
+    k point  15:   (   0.14820  0.74098  0.14820 ),   weight =   0.0156
+    k point  16:   (   0.00000  0.88917  0.00000 ),   weight =   0.0156
+    k point  17:   (  -0.14820 -0.14820  0.14820 ),   weight =   0.0156
+    k point  18:   (  -0.29639  0.00000  0.00000 ),   weight =   0.0156
+    k point  19:   (  -0.44459  0.14820 -0.14820 ),   weight =   0.0156
+    k point  20:   (  -0.59278  0.29639 -0.29639 ),   weight =   0.0156
+    k point  21:   (   0.00000  0.00000  0.29639 ),   weight =   0.0156
+    k point  22:   (  -0.14820  0.14820  0.14820 ),   weight =   0.0156
+    k point  23:   (  -0.29639  0.29639  0.00000 ),   weight =   0.0156
+    k point  24:   (  -0.44459  0.44459 -0.14820 ),   weight =   0.0156
+    k point  25:   (   0.14820  0.14820  0.44459 ),   weight =   0.0156
+    k point  26:   (   0.00000  0.29639  0.29639 ),   weight =   0.0156
+    k point  27:   (  -0.14820  0.44459  0.14820 ),   weight =   0.0156
+    k point  28:   (  -0.29639  0.59278  0.00000 ),   weight =   0.0156
+    k point  29:   (   0.29639  0.29639  0.59278 ),   weight =   0.0156
+    k point  30:   (   0.14820  0.44459  0.44459 ),   weight =   0.0156
+    k point  31:   (   0.00000  0.59278  0.29639 ),   weight =   0.0156
+    k point  32:   (  -0.14820  0.74098  0.14820 ),   weight =   0.0156
+    k point  33:   (  -0.29639 -0.29639  0.29639 ),   weight =   0.0156
+    k point  34:   (  -0.44459 -0.14820  0.14820 ),   weight =   0.0156
+    k point  35:   (  -0.59278  0.00000  0.00000 ),   weight =   0.0156
+    k point  36:   (  -0.74098  0.14820 -0.14820 ),   weight =   0.0156
+    k point  37:   (  -0.14820 -0.14820  0.44459 ),   weight =   0.0156
+    k point  38:   (  -0.29639  0.00000  0.29639 ),   weight =   0.0156
+    k point  39:   (  -0.44459  0.14820  0.14820 ),   weight =   0.0156
+    k point  40:   (  -0.59278  0.29639  0.00000 ),   weight =   0.0156
+    k point  41:   (   0.00000  0.00000  0.59278 ),   weight =   0.0156
+    k point  42:   (  -0.14820  0.14820  0.44459 ),   weight =   0.0156
+    k point  43:   (  -0.29639  0.29639  0.29639 ),   weight =   0.0156
+    k point  44:   (  -0.44459  0.44459  0.14820 ),   weight =   0.0156
+    k point  45:   (   0.14820  0.14820  0.74098 ),   weight =   0.0156
+    k point  46:   (   0.00000  0.29639  0.59278 ),   weight =   0.0156
+    k point  47:   (  -0.14820  0.44459  0.44459 ),   weight =   0.0156
+    k point  48:   (  -0.29639  0.59278  0.29639 ),   weight =   0.0156
+    k point  49:   (  -0.44459 -0.44459  0.44459 ),   weight =   0.0156
+    k point  50:   (  -0.59278 -0.29639  0.29639 ),   weight =   0.0156
+    k point  51:   (  -0.74098 -0.14820  0.14820 ),   weight =   0.0156
+    k point  52:   (  -0.88917  0.00000  0.00000 ),   weight =   0.0156
+    k point  53:   (  -0.29639 -0.29639  0.59278 ),   weight =   0.0156
+    k point  54:   (  -0.44459 -0.14820  0.44459 ),   weight =   0.0156
+    k point  55:   (  -0.59278  0.00000  0.29639 ),   weight =   0.0156
+    k point  56:   (  -0.74098  0.14820  0.14820 ),   weight =   0.0156
+    k point  57:   (  -0.14820 -0.14820  0.74098 ),   weight =   0.0156
+    k point  58:   (  -0.29639  0.00000  0.59278 ),   weight =   0.0156
+    k point  59:   (  -0.44459  0.14820  0.44459 ),   weight =   0.0156
+    k point  60:   (  -0.59278  0.29639  0.29639 ),   weight =   0.0156
+    k point  61:   (   0.00000  0.00000  0.88917 ),   weight =   0.0156
+    k point  62:   (  -0.14820  0.14820  0.74098 ),   weight =   0.0156
+    k point  63:   (  -0.29639  0.29639  0.59278 ),   weight =   0.0156
+    k point  64:   (  -0.44459  0.44459  0.44459 ),   weight =   0.0156
 </K-POINTS>
 
 <B-SHELL>
-  Nearest-neighbour shells for k-point 1: (in Ang^-1)
-    shell (  1 )    radius =   0.48506
-    shell (  2 )    radius =   0.56010
-    shell (  3 )    radius =   0.79210
-    shell (  4 )    radius =   0.92882
-    shell (  5 )    radius =   0.97012
-    shell (  6 )    radius =   1.12020
-    shell (  7 )    radius =   1.22071
-    shell (  8 )    radius =   1.25242
-    shell (  9 )    radius =   1.37196
-    shell ( 10 )    radius =   1.45518
-    shell ( 11 )    radius =   1.58420
-    shell ( 12 )    radius =   1.65679
+  Nearest-neighbour shells for k-point 1: (in Bohr^-1)
+    shell (  1 )    radius =   0.25668
+    shell (  2 )    radius =   0.29639
+    shell (  3 )    radius =   0.41916
+    shell (  4 )    radius =   0.49151
+    shell (  5 )    radius =   0.51336
+    shell (  6 )    radius =   0.59278
+    shell (  7 )    radius =   0.64597
+    shell (  8 )    radius =   0.66275
+    shell (  9 )    radius =   0.72601
+    shell ( 10 )    radius =   0.77005
+    shell ( 11 )    radius =   0.83832
+    shell ( 12 )    radius =   0.87674
 
   Number of nearest-neighbours for K-point 1 (representetive for the BZ):
     shell (  1 )    neighbours  =    8
 
-  List of the  8 vectors b_k: (Ang^-1) 
-    b_k   1:   (  -0.28005  0.28005 -0.28005 ),   weight =   1.5938
-    b_k   2:   (   0.28005 -0.28005  0.28005 ),   weight =   1.5938
-    b_k   3:   (   0.28005  0.28005  0.28005 ),   weight =   1.5938
-    b_k   4:   (  -0.28005 -0.28005 -0.28005 ),   weight =   1.5938
-    b_k   5:   (  -0.28005 -0.28005  0.28005 ),   weight =   1.5938
-    b_k   6:   (  -0.28005  0.28005  0.28005 ),   weight =   1.5938
-    b_k   7:   (   0.28005  0.28005 -0.28005 ),   weight =   1.5938
-    b_k   8:   (   0.28005 -0.28005 -0.28005 ),   weight =   1.5938
+  List of the  8 vectors b_k: (Bohr^-1) 
+    b_k   1:   (  -0.14820  0.14820 -0.14820 ),   weight =   5.6917
+    b_k   2:   (   0.14820 -0.14820  0.14820 ),   weight =   5.6917
+    b_k   3:   (   0.14820  0.14820  0.14820 ),   weight =   5.6917
+    b_k   4:   (  -0.14820 -0.14820 -0.14820 ),   weight =   5.6917
+    b_k   5:   (  -0.14820 -0.14820  0.14820 ),   weight =   5.6917
+    b_k   6:   (  -0.14820  0.14820  0.14820 ),   weight =   5.6917
+    b_k   7:   (   0.14820  0.14820 -0.14820 ),   weight =   5.6917
+    b_k   8:   (   0.14820 -0.14820 -0.14820 ),   weight =   5.6917
 
-  The  4  bk directions are:
-    dir 1:   (  -0.28005  0.28005 -0.28005 ) 
-    dir 2:   (   0.28005  0.28005  0.28005 ) 
-    dir 3:   (  -0.28005 -0.28005  0.28005 ) 
-    dir 4:   (  -0.28005  0.28005  0.28005 ) 
+  The  4  bk directions are (Bohr^-1):
+    dir 1:   (  -0.14820  0.14820 -0.14820 ) 
+    dir 2:   (   0.14820  0.14820  0.14820 ) 
+    dir 3:   (  -0.14820 -0.14820  0.14820 ) 
+    dir 4:   (  -0.14820  0.14820  0.14820 ) 
 </B-SHELL>
 
 <WINDOWS>
@@ -603,8 +606,8 @@
 </WINDOWS>
 
 
-  Reading density G-grid from file: silicon.dft
-  Reading Wfcs from file: silicon.dft
+  Reading density G-grid from file: silicon.export/index.xml
+  Reading Wfcs from file: silicon.export/index.xml
 
 
   ======================================================================
@@ -619,196 +622,196 @@
         FFT grid components (rho) =  (    27   27   27 )
 
     Overlap calculation for k-point   1
-                              Total time spent up to now :     1.08 secs
+                              Total time spent up to now :     3.41 secs
 
     Overlap calculation for k-point   2
-                              Total time spent up to now :     1.10 secs
+                              Total time spent up to now :     3.51 secs
 
     Overlap calculation for k-point   3
-                              Total time spent up to now :     1.11 secs
+                              Total time spent up to now :     3.60 secs
 
     Overlap calculation for k-point   4
-                              Total time spent up to now :     1.13 secs
+                              Total time spent up to now :     3.72 secs
 
     Overlap calculation for k-point   5
-                              Total time spent up to now :     1.15 secs
+                              Total time spent up to now :     3.83 secs
 
     Overlap calculation for k-point   6
-                              Total time spent up to now :     1.16 secs
+                              Total time spent up to now :     3.94 secs
 
     Overlap calculation for k-point   7
-                              Total time spent up to now :     1.18 secs
+                              Total time spent up to now :     4.04 secs
 
     Overlap calculation for k-point   8
-                              Total time spent up to now :     1.19 secs
+                              Total time spent up to now :     4.15 secs
 
     Overlap calculation for k-point   9
-                              Total time spent up to now :     1.21 secs
+                              Total time spent up to now :     4.24 secs
 
     Overlap calculation for k-point  10
-                              Total time spent up to now :     1.22 secs
+                              Total time spent up to now :     4.35 secs
 
     Overlap calculation for k-point  11
-                              Total time spent up to now :     1.23 secs
+                              Total time spent up to now :     4.45 secs
 
     Overlap calculation for k-point  12
-                              Total time spent up to now :     1.25 secs
+                              Total time spent up to now :     4.54 secs
 
     Overlap calculation for k-point  13
-                              Total time spent up to now :     1.26 secs
+                              Total time spent up to now :     4.66 secs
 
     Overlap calculation for k-point  14
-                              Total time spent up to now :     1.28 secs
+                              Total time spent up to now :     4.76 secs
 
     Overlap calculation for k-point  15
-                              Total time spent up to now :     1.29 secs
+                              Total time spent up to now :     4.86 secs
 
     Overlap calculation for k-point  16
-                              Total time spent up to now :     1.31 secs
+                              Total time spent up to now :     4.97 secs
 
     Overlap calculation for k-point  17
-                              Total time spent up to now :     1.33 secs
+                              Total time spent up to now :     5.08 secs
 
     Overlap calculation for k-point  18
-                              Total time spent up to now :     1.34 secs
+                              Total time spent up to now :     5.19 secs
 
     Overlap calculation for k-point  19
-                              Total time spent up to now :     1.35 secs
+                              Total time spent up to now :     5.31 secs
 
     Overlap calculation for k-point  20
-                              Total time spent up to now :     1.37 secs
+                              Total time spent up to now :     5.39 secs
 
     Overlap calculation for k-point  21
-                              Total time spent up to now :     1.38 secs
+                              Total time spent up to now :     5.45 secs
 
     Overlap calculation for k-point  22
-                              Total time spent up to now :     1.40 secs
+                              Total time spent up to now :     5.60 secs
 
     Overlap calculation for k-point  23
-                              Total time spent up to now :     1.42 secs
+                              Total time spent up to now :     5.70 secs
 
     Overlap calculation for k-point  24
-                              Total time spent up to now :     1.43 secs
+                              Total time spent up to now :     5.79 secs
 
     Overlap calculation for k-point  25
-                              Total time spent up to now :     1.44 secs
+                              Total time spent up to now :     5.88 secs
 
     Overlap calculation for k-point  26
-                              Total time spent up to now :     1.46 secs
+                              Total time spent up to now :     5.98 secs
 
     Overlap calculation for k-point  27
-                              Total time spent up to now :     1.47 secs
+                              Total time spent up to now :     6.07 secs
 
     Overlap calculation for k-point  28
-                              Total time spent up to now :     1.48 secs
+                              Total time spent up to now :     6.11 secs
 
     Overlap calculation for k-point  29
-                              Total time spent up to now :     1.50 secs
+                              Total time spent up to now :     6.21 secs
 
     Overlap calculation for k-point  30
-                              Total time spent up to now :     1.51 secs
+                              Total time spent up to now :     6.30 secs
 
     Overlap calculation for k-point  31
-                              Total time spent up to now :     1.52 secs
+                              Total time spent up to now :     6.39 secs
 
     Overlap calculation for k-point  32
-                              Total time spent up to now :     1.54 secs
+                              Total time spent up to now :     6.43 secs
 
     Overlap calculation for k-point  33
-                              Total time spent up to now :     1.55 secs
+                              Total time spent up to now :     6.52 secs
 
     Overlap calculation for k-point  34
-                              Total time spent up to now :     1.56 secs
+                              Total time spent up to now :     6.61 secs
 
     Overlap calculation for k-point  35
-                              Total time spent up to now :     1.57 secs
+                              Total time spent up to now :     6.72 secs
 
     Overlap calculation for k-point  36
-                              Total time spent up to now :     1.59 secs
+                              Total time spent up to now :     6.78 secs
 
     Overlap calculation for k-point  37
-                              Total time spent up to now :     1.60 secs
+                              Total time spent up to now :     6.82 secs
 
     Overlap calculation for k-point  38
-                              Total time spent up to now :     1.61 secs
+                              Total time spent up to now :     6.90 secs
 
     Overlap calculation for k-point  39
-                              Total time spent up to now :     1.63 secs
+                              Total time spent up to now :     7.00 secs
 
     Overlap calculation for k-point  40
-                              Total time spent up to now :     1.64 secs
+                              Total time spent up to now :     7.08 secs
 
     Overlap calculation for k-point  41
-                              Total time spent up to now :     1.65 secs
+                              Total time spent up to now :     7.17 secs
 
     Overlap calculation for k-point  42
-                              Total time spent up to now :     1.66 secs
+                              Total time spent up to now :     7.21 secs
 
     Overlap calculation for k-point  43
-                              Total time spent up to now :     1.68 secs
+                              Total time spent up to now :     7.30 secs
 
     Overlap calculation for k-point  44
-                              Total time spent up to now :     1.69 secs
+                              Total time spent up to now :     7.39 secs
 
     Overlap calculation for k-point  45
-                              Total time spent up to now :     1.71 secs
+                              Total time spent up to now :     7.49 secs
 
     Overlap calculation for k-point  46
-                              Total time spent up to now :     1.72 secs
+                              Total time spent up to now :     7.57 secs
 
     Overlap calculation for k-point  47
-                              Total time spent up to now :     1.73 secs
+                              Total time spent up to now :     7.61 secs
 
     Overlap calculation for k-point  48
-                              Total time spent up to now :     1.74 secs
+                              Total time spent up to now :     7.71 secs
 
     Overlap calculation for k-point  49
-                              Total time spent up to now :     1.76 secs
+                              Total time spent up to now :     7.82 secs
 
     Overlap calculation for k-point  50
-                              Total time spent up to now :     1.78 secs
+                              Total time spent up to now :     7.92 secs
 
     Overlap calculation for k-point  51
-                              Total time spent up to now :     1.79 secs
+                              Total time spent up to now :     8.01 secs
 
     Overlap calculation for k-point  52
-                              Total time spent up to now :     1.81 secs
+                              Total time spent up to now :     8.11 secs
 
     Overlap calculation for k-point  53
-                              Total time spent up to now :     1.82 secs
+                              Total time spent up to now :     8.21 secs
 
     Overlap calculation for k-point  54
-                              Total time spent up to now :     1.83 secs
+                              Total time spent up to now :     8.30 secs
 
     Overlap calculation for k-point  55
-                              Total time spent up to now :     1.85 secs
+                              Total time spent up to now :     8.39 secs
 
     Overlap calculation for k-point  56
-                              Total time spent up to now :     1.86 secs
+                              Total time spent up to now :     8.43 secs
 
     Overlap calculation for k-point  57
-                              Total time spent up to now :     1.87 secs
+                              Total time spent up to now :     8.52 secs
 
     Overlap calculation for k-point  58
-                              Total time spent up to now :     1.88 secs
+                              Total time spent up to now :     8.61 secs
 
     Overlap calculation for k-point  59
-                              Total time spent up to now :     1.90 secs
+                              Total time spent up to now :     8.71 secs
 
     Overlap calculation for k-point  60
-                              Total time spent up to now :     1.91 secs
+                              Total time spent up to now :     8.81 secs
 
     Overlap calculation for k-point  61
-                              Total time spent up to now :     1.93 secs
+                              Total time spent up to now :     8.86 secs
 
     Overlap calculation for k-point  62
-                              Total time spent up to now :     1.94 secs
+                              Total time spent up to now :     8.96 secs
 
     Overlap calculation for k-point  63
-                              Total time spent up to now :     1.95 secs
+                              Total time spent up to now :     9.05 secs
 
     Overlap calculation for k-point  64
-                              Total time spent up to now :     1.97 secs
+                              Total time spent up to now :     9.14 secs
 
 
  *** from PE    :     0

@@ -8,7 +8,7 @@
 
 
   Program <wannier>  v. 1.1.1  starts ...
-  Date 23Mar2005 at 16:40:49 
+  Date 24Mar2005 at 17: 6: 7 
 
 
   PW-DFT data read from file: gold1.export/index.xml
@@ -17,32 +17,33 @@
   =                                Main                                =
   ======================================================================
 
-            Calculation Title :     WanT Calculation
+            Calculation Title :     Wannier Transport Calculation
                        Prefix :     gold1
+                      Postfix :     _WanT
             Working directory :     ./
 
 <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    6
-    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
     CG minim: Max iteration number =   100
     Minimization convergence threshold =     0.000001000
-    SD minim: Mixing parameter (alphafix) =  0.500
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
     SD minim: Max iteration number =  1500
     Every   5 iteration perform a CG minimization (ncg)
     Number of k-point shells =   2
     Chosen shells (indexes) =   1  2
     Print each  10 iterations
-    Ordering type = COMPLETE
-    Verbosity = MEDIUM
+    Ordering mode = complete
+    Verbosity = medium
     Unitariery check threshold =     0.000005000
 </WANNIER_FUNCTIONS>
 
 <DISENTANGLE>
   Input parameters for disentangling subspaces
-    Mixing parameter (alpha)=  0.500
-    Max iter =  1000
-    Starting guess orbitals (itrial) =  3
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =  1000
+    Starting guess orbitals (trial_mode) = center_projections
     Disentangle convergence threshold =     0.000000010
 </DISENTANGLE>
 
@@ -62,10 +63,10 @@
   ======================================================================
 
 <LATTICE>
-  Alat  =   20.0000000 (Bohr)
-  Alat  =   10.5835400 (Ang )
-  Omega = 1889.7280000 (Bohr^3)
-  Omega =  280.0284636 (Ang^3 )
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    1889.7280000 (Bohr^3)
+  Omega =     280.0284636 (Ang^3 )
 
   Crystal axes:
                 in units of Bohr                 in Alat units
@@ -424,7 +425,7 @@
   ======================================================================
 
 
-  Wannier function ordering : COMPLETE
+  Wannier function ordering : complete
 
   Final Wannier centers (Bohr) and Spreads Omega (Bohr^2)
     Center   1 = (   -0.000000,    0.000000,    0.656166 )  Omega =      3.081365
@@ -454,13 +455,13 @@
    <global routines>
              clock number :     7
 
-                  wannier :     2.33s CPU 
+                  wannier :     1.09s CPU 
 
-                want_init :     0.50s CPU
-                  bshells :     0.06s CPU
-          overlap_extract :     0.17s CPU
+                want_init :     0.26s CPU
+                  bshells :     0.01s CPU
+          overlap_extract :     0.07s CPU
                      init :     0.01s CPU
-               iterations :     1.63s CPU
+               iterations :     0.74s CPU
                     write :     0.01s CPU
 
 

@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 23Mar2005 at 16:37:10 
+  Date 24Mar2005 at 17: 6:41 
 
 
   PW-DFT data read from file: chain8.export/index.xml
@@ -17,32 +17,33 @@
   =                                Main                                =
   ======================================================================
 
-            Calculation Title :     WanT Calculation
+            Calculation Title :     Wannier Transport Calculation
                        Prefix :     chain8
+                      Postfix :     _WanT
             Working directory :     ./COND/
 
 <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =   16
-    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
     CG minim: Max iteration number =    10
     Minimization convergence threshold =     0.000001000
-    SD minim: Mixing parameter (alphafix) =  0.500
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
     SD minim: Max iteration number =  1000
     Every   9 iteration perform a CG minimization (ncg)
     Number of k-point shells =   2
     Chosen shells (indexes) =   1  4
     Print each  10 iterations
-    Ordering type = NONE
-    Verbosity = MEDIUM
+    Ordering mode = none
+    Verbosity = medium
     Unitariery check threshold =     0.000000010
 </WANNIER_FUNCTIONS>
 
 <DISENTANGLE>
   Input parameters for disentangling subspaces
-    Mixing parameter (alpha)=  0.500
-    Max iter =   300
-    Starting guess orbitals (itrial) =  3
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =   300
+    Starting guess orbitals (trial_mode) = center_projections
     Disentangle convergence threshold =     0.000000010
 </DISENTANGLE>
 
@@ -72,10 +73,10 @@
   ======================================================================
 
 <LATTICE>
-  Alat  =   20.7114060 (Bohr)
-  Alat  =   10.9599997 (Ang )
-  Omega = ************ (Bohr^3)
-  Omega = 1666.2366039 (Ang^3 )
+  Alat  =      20.7114060 (Bohr)
+  Alat  =      10.9599997 (Ang )
+  Omega =   11244.3353946 (Bohr^3)
+  Omega =    1666.2366039 (Ang^3 )
 
   Crystal axes:
                 in units of Bohr                 in Alat units
@@ -213,16 +214,16 @@
         FFT grid components (rho) =  (    60   72   72 )
 
     Overlap calculation for k-point   1
-                              Total time spent up to now :     4.47 secs
+                              Total time spent up to now :     3.04 secs
 
     Overlap calculation for k-point   2
-                              Total time spent up to now :     6.54 secs
+                              Total time spent up to now :     5.05 secs
 
     Overlap calculation for k-point   3
-                              Total time spent up to now :     9.20 secs
+                              Total time spent up to now :     7.08 secs
 
     Overlap calculation for k-point   4
-                              Total time spent up to now :    12.99 secs
+                              Total time spent up to now :     9.11 secs
 
 
   Overlap and projections written on file: chain8_WanT.ovp
@@ -246,18 +247,18 @@
    <global routines>
              clock number :    12
 
-              disentangle :    18.95s CPU 
+              disentangle :    11.94s CPU 
 
-                want_init :     0.09s CPU
+                want_init :     0.03s CPU
                   bshells :     0.01s CPU
-              wfc_manager :    18.18s CPU
-          ggrids_read_ext :     0.23s CPU
-             wfc_read_ext :     1.93s CPU
-                  overlap :    10.73s CPU
-          set_overlap_map :     0.36s CPU (      24 calls,   0.015 s avg)
-               projection :     4.34s CPU
-       trial_center_setup :     2.98s CPU (      64 calls,   0.047 s avg)
-                    s_psi :     0.81s CPU (    1024 calls,   0.001 s avg)
-               iterations :     0.37s CPU
+              wfc_manager :    11.62s CPU
+          ggrids_read_ext :     0.16s CPU
+             wfc_read_ext :     0.74s CPU
+                  overlap :     8.16s CPU
+          set_overlap_map :     0.23s CPU (      24 calls,   0.010 s avg)
+               projection :     2.12s CPU
+       trial_center_setup :     1.37s CPU (      64 calls,   0.021 s avg)
+                    s_psi :     0.39s CPU (    1024 calls,   0.000 s avg)
+               iterations :     0.14s CPU
 
 

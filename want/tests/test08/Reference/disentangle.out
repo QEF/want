@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 23Mar2005 at 16:37:18 
+  Date 24Mar2005 at 17: 3:19 
 
 
   PW-DFT data read from file: al.export/index.xml
@@ -17,32 +17,33 @@
   =                                Main                                =
   ======================================================================
 
-            Calculation Title :     WanT Calculation
+            Calculation Title :     Wannier Transport Calculation
                        Prefix :     al
+                      Postfix :     _WanT
             Working directory :     ./
 
 <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    4
-    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
     CG minim: Max iteration number =   200
     Minimization convergence threshold =     0.000001000
-    SD minim: Mixing parameter (alphafix) =  0.500
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
     SD minim: Max iteration number =  1500
     Every   5 iteration perform a CG minimization (ncg)
     Number of k-point shells =   2
     Chosen shells (indexes) =   1  6
     Print each  10 iterations
-    Ordering type = NONE
-    Verbosity = MEDIUM
+    Ordering mode = none
+    Verbosity = medium
     Unitariery check threshold =     0.000000010
 </WANNIER_FUNCTIONS>
 
 <DISENTANGLE>
   Input parameters for disentangling subspaces
-    Mixing parameter (alpha)=  0.500
-    Max iter =   500
-    Starting guess orbitals (itrial) =  3
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =   500
+    Starting guess orbitals (trial_mode) = center_projections
     Disentangle convergence threshold =     0.000000010
 </DISENTANGLE>
 
@@ -60,10 +61,10 @@
   ======================================================================
 
 <LATTICE>
-  Alat  =   20.0000000 (Bohr)
-  Alat  =   10.5835400 (Ang )
-  Omega = 2267.6800000 (Bohr^3)
-  Omega =  336.0351047 (Ang^3 )
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    2267.6800000 (Bohr^3)
+  Omega =     336.0351047 (Ang^3 )
 
   Crystal axes:
                 in units of Bohr                 in Alat units
@@ -322,64 +323,64 @@
         FFT grid components (rho) =  (    50   50   15 )
 
     Overlap calculation for k-point   1
-                              Total time spent up to now :     2.73 secs
+                              Total time spent up to now :     1.33 secs
 
     Overlap calculation for k-point   2
-                              Total time spent up to now :     3.51 secs
+                              Total time spent up to now :     1.67 secs
 
     Overlap calculation for k-point   3
-                              Total time spent up to now :     4.24 secs
+                              Total time spent up to now :     2.01 secs
 
     Overlap calculation for k-point   4
-                              Total time spent up to now :     5.03 secs
+                              Total time spent up to now :     2.34 secs
 
     Overlap calculation for k-point   5
-                              Total time spent up to now :     5.76 secs
+                              Total time spent up to now :     2.70 secs
 
     Overlap calculation for k-point   6
-                              Total time spent up to now :     6.57 secs
+                              Total time spent up to now :     3.06 secs
 
     Overlap calculation for k-point   7
-                              Total time spent up to now :     7.35 secs
+                              Total time spent up to now :     3.42 secs
 
     Overlap calculation for k-point   8
-                              Total time spent up to now :     8.07 secs
+                              Total time spent up to now :     3.82 secs
 
     Overlap calculation for k-point   9
-                              Total time spent up to now :     8.87 secs
+                              Total time spent up to now :     4.19 secs
 
     Overlap calculation for k-point  10
-                              Total time spent up to now :     9.56 secs
+                              Total time spent up to now :     4.53 secs
 
     Overlap calculation for k-point  11
-                              Total time spent up to now :    10.16 secs
+                              Total time spent up to now :     4.87 secs
 
     Overlap calculation for k-point  12
-                              Total time spent up to now :    10.76 secs
+                              Total time spent up to now :     5.22 secs
 
     Overlap calculation for k-point  13
-                              Total time spent up to now :    11.35 secs
+                              Total time spent up to now :     5.57 secs
 
     Overlap calculation for k-point  14
-                              Total time spent up to now :    11.91 secs
+                              Total time spent up to now :     5.91 secs
 
     Overlap calculation for k-point  15
-                              Total time spent up to now :    12.58 secs
+                              Total time spent up to now :     6.26 secs
 
     Overlap calculation for k-point  16
-                              Total time spent up to now :    13.27 secs
+                              Total time spent up to now :     6.60 secs
 
     Overlap calculation for k-point  17
-                              Total time spent up to now :    13.90 secs
+                              Total time spent up to now :     6.94 secs
 
     Overlap calculation for k-point  18
-                              Total time spent up to now :    14.51 secs
+                              Total time spent up to now :     7.27 secs
 
     Overlap calculation for k-point  19
-                              Total time spent up to now :    15.16 secs
+                              Total time spent up to now :     7.62 secs
 
     Overlap calculation for k-point  20
-                              Total time spent up to now :    15.77 secs
+                              Total time spent up to now :     7.96 secs
 
 
   Overlap and projections written on file: al_WanT.ovp
@@ -902,18 +903,18 @@
    <global routines>
              clock number :    12
 
-              disentangle :  2m 2.15s CPU 
+              disentangle :  1m31.25s CPU 
 
-                want_init :     0.28s CPU
-                  bshells :     0.20s CPU
-              wfc_manager :    21.50s CPU
-          ggrids_read_ext :     0.08s CPU
-             wfc_read_ext :     1.52s CPU
-                  overlap :    13.84s CPU
-          set_overlap_map :     0.17s CPU (     120 calls,   0.001 s avg)
-               projection :     0.61s CPU
-       trial_center_setup :     0.27s CPU (      80 calls,   0.003 s avg)
-                    s_psi :     0.19s CPU (    1600 calls,   0.000 s avg)
-               iterations :    99.35s CPU
+                want_init :     0.14s CPU
+                  bshells :     0.10s CPU
+              wfc_manager :    10.92s CPU
+          ggrids_read_ext :     0.07s CPU
+             wfc_read_ext :     0.76s CPU
+                  overlap :     6.98s CPU
+          set_overlap_map :     0.11s CPU (     120 calls,   0.001 s avg)
+               projection :     0.32s CPU
+       trial_center_setup :     0.16s CPU (      80 calls,   0.002 s avg)
+                    s_psi :     0.10s CPU (    1600 calls,   0.000 s avg)
+               iterations :    79.22s CPU
 
 
