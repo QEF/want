@@ -404,11 +404,11 @@
 ! ...    Write in the output  file window.out the eigenvectors, energy eigenvalues, and related 
 !        information for the bands (for each k-point), that fall within the outer energy window
 !
-!        Last change (28 jan 2004) in the format of the first 2 lines by ANDREA because IMAX and IMIN
-!        are needed for an eventual self-energy conversion to wannier basis.
+!        IMAX and IMIN are needed for an eventual self-energy conversion to wannier basis.
 !
-         WRITE(19) mtxd, ( isort_k(j,nkp), j=1,mtxd )
-         WRITE(19) imin, imax,   imax-imin+1 , ( ei_k(j,nkp), j=imin,imax )
+!        Last change by carlo, first all dimensions, then all k-dependent vectors
+!
+         WRITE(19) mtxd, imin, imax, imax-imin+1 
 
        END DO loop_z
        END DO loop_y
@@ -438,6 +438,8 @@
 
          kdimwin = imax - imin + 1
 
+         WRITE(19) ( isort_k(j,nkp), j=1,mtxd )
+         WRITE(19) ( ei_k(j,nkp), j=imin,imax )
          WRITE(19) ( ( REAL(zvec_k(j,i,nkp)), j=1,mtxd ), i=imin,imax )
          WRITE(19) ( ( 1.0d0*AIMAG(zvec_k(j,i,nkp)), j=1,mtxd ), i=imin,imax )
 

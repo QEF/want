@@ -404,14 +404,11 @@
 
        DO nkp = 1, nkpts
 !
-! ...  Next 2 lines changed by ANDREA (28 jan 2004) i
-!      to account for FORMAT modification on unit 19
-!      needed to treat self-energies conversion to Wannier basis
+!        Read all dimensions first, then k-dependent arrais
 !
-         READ(19) mtxd(nkp), (isort(j,nkp), j=1, mtxd(nkp) ) 
-         READ(19) imin(nkp), imax(nkp), dimwin(nkp), ( eiw(j,nkp), j=1, dimwin(nkp) )
+         READ(19) mtxd(nkp), imin(nkp), imax(nkp), dimwin(nkp)
 
-         WRITE(6,125) nkp,dimwin(nkp),mtxd(nkp)
+         WRITE(6,125) nkp, dimwin(nkp), mtxd(nkp)
  125     FORMAT('k-point',i5,2x,'dimwin ',i2,' ngwk ',i5)
 
          IF ( dimwin(nkp) < dimwann ) THEN
@@ -442,6 +439,8 @@
 
        DO nkp = 1, nkpts
 
+         READ(19) ( isort(j,nkp), j=1, mtxd(nkp) ) 
+         READ(19) ( eiw(j,nkp), j=1, dimwin(nkp) )
          READ(19) ( ( evecr(j,i,nkp), j=1, mtxd(nkp) ), i=1, dimwin(nkp) )
          READ(19) ( ( eveci(j,i,nkp), j=1, mtxd(nkp) ), i=1, dimwin(nkp) )
          READ(19) dimfroz(nkp), ( frozen(i,nkp), i=1, dimwin(nkp) )

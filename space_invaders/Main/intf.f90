@@ -17,9 +17,9 @@
        CHARACTER( LEN=4 ) :: vdriv
        INTEGER :: ntype, natom(mxdtyp)
        REAL(dbl) :: rat(3,mxdatm,mxdtyp)
-       REAL(dbl), ALLOCATABLE :: evecr(:,:,:), eveci(:,:,:)
+       REAL(dbl), ALLOCATABLE :: evecr(:,:), eveci(:,:)
+       INTEGER, ALLOCATABLE :: mtxd( : ) 
  
-       INTEGER :: mtxd
        INTEGER :: neig,n_paral(3), n_perpend(3)
        INTEGER :: i1, i2, i3, i, j, ind(3)
        INTEGER, ALLOCATABLE :: kgv(:,:), kisort(:) ! kgv(3,mxdgve), kisort(mxddim)
@@ -315,26 +315,26 @@
       ALLOCATE( amp(mxdbnd,mxdbnd,nkpts) )
       ALLOCATE( lvec(mxddim,mxdbnd) )
       ALLOCATE( kdimwin( nkpts ) )
+      ALLOCATE( mtxd( nkpts ) )
 
 ! ... K-point loop
 
        K_POINTS_DIM: DO nkp = 1, nkpts
          !
-         ! format changes by ANDREA (28 jan 2004) in the following 2 lines 
+         !  Read dimensions first, then all k-dependent arrais
          !
-         READ(19) mtxd,( kisort(j), j=1, mtxd )
-         READ(19) idum, idum, kdimwin( nkp ), ( keiw(j), j=1, kdimwin( nkp ) )
+         READ(19) mtxd( nkp ), idum, idum, kdimwin( nkp )
 
-         WRITE(*,*) 'KPT= ', nkp, ' mtxd = ', mtxd, ' dimwin= ', kdimwin( nkp )
+         WRITE(*,*) 'KPT= ', nkp, ' mtxd = ', mtxd(nkp), ' dimwin= ', kdimwin( nkp )
 
-         IF ( mtxd > mxddim ) THEN
+         IF ( mtxd(nkp) > mxddim ) THEN
            WRITE(*,*) '*** SOMETHING WRONG ***' 
-           WRITE(*,*) 'THE NUMBER OF G-VECTORS MTXD (', mtxd,'MTXD) AT K-POINT=', nkp
+           WRITE(*,*) 'THE NUMBER OF G-VECTORS MTXD (', mtxd(nkp),'MTXD) AT K-POINT=', nkp
            WRITE(*,*) 'IS GREATER THAN THE MAXIMUN NUMBER OF AVAILABLE G-VECTORS!!'
            STOP
          END IF
-         IF ( mtxd /= nplwkp(nkp) ) THEN
-           WRITE(*,*) 'FOR K-POINT ', nkp, ' MTXD = ', mtxd, ', NPLWKP = ', nplwkp(nkp)
+         IF ( mtxd(nkp) /= nplwkp(nkp) ) THEN
+           WRITE(*,*) 'FOR K-POINT ', nkp, ' MTXD = ', mtxd(nkp), ', NPLWKP = ', nplwkp(nkp)
            WRITE(*,*) 'POSSIBLE PROBLEM: NGX,NGY,NGZ TOO SMALL'
            STOP
          END IF
@@ -343,13 +343,15 @@
 
        ndwinx = MAXVAL( kdimwin )
        
-       ALLOCATE( evecr(mxddim,ndwinx,nkpts) )
-       ALLOCATE( eveci(mxddim,ndwinx,nkpts) )
+       ALLOCATE( evecr(mxddim,ndwinx) )
+       ALLOCATE( eveci(mxddim,ndwinx) )
 
        K_POINTS: DO nkp = 1, nkpts
 
-         READ(19)( ( evecr(j,i,nkp), j=1,mtxd ), i=1, kdimwin( nkp ) )
-         READ(19)( ( eveci(j,i,nkp), j=1,mtxd ), i=1, kdimwin( nkp ) )
+         READ(19)( kisort(j), j=1, mtxd( nkp ) )
+         READ(19)( keiw(j), j=1, kdimwin( nkp ) )
+         READ(19)( ( evecr(j,i), j=1,mtxd(nkp) ), i=1, kdimwin( nkp ) )
+         READ(19)( ( eveci(j,i), j=1,mtxd(nkp) ), i=1, kdimwin( nkp ) )
 
          ALLOCATE( frozen( kdimwin(nkp) ) )
          READ(19) dimfroz, ( frozen(i), i=1, kdimwin(nkp) )
@@ -370,10 +372,10 @@
 ! ...    Compute fourier coefficients of basis vectors at present K-point 
  
          DO l = 1, dimwann
-           DO i = 1, mtxd
+           DO i = 1, mtxd(nkp)
              lvec(i,l) = cmplx(0.0d0,0.0d0)
              DO j = 1, kdimwin(nkp)
-               lvec(i,l) = lvec(i,l) + amp(j,l,nkp) * cmplx( evecr(i,j,nkp), eveci(i,j,nkp) )
+               lvec(i,l) = lvec(i,l) + amp(j,l,nkp) * cmplx( evecr(i,j), eveci(i,j) )
              END DO
            END DO
          END DO
@@ -457,6 +459,7 @@
        DEALLOCATE( amp )
        DEALLOCATE( lvec )
        DEALLOCATE( kdimwin )
+       DEALLOCATE( mtxd )
 
 ! *****************************************************************************
 
