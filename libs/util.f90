@@ -20,7 +20,7 @@
 ! routines in this module:
 ! SUBROUTINE  zmat_pack( zp, z, n)
 ! SUBROUTINE  zmat_unpack( z, zp, n)
-! SUBROUTINE  zmat_mul( c, a, opa, b, opb, n )
+! SUBROUTINE  zmat_mul( c, a, opa, b, opb, m, n, k )
 ! SUBROUTINE  zmat_hdiag( z, w, a, n)
 ! LOGICAL FUNCTION  zmat_unitary( z [,side] [,toll] )
 ! SUBROUTINE  gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, ninvpw, nindpw )
@@ -85,61 +85,86 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE zmat_mul( c, a, opa, b, opb, n )
+   SUBROUTINE zmat_mul( c, a, opa, b, opb, m, n, k )
    !**********************************************************
     IMPLICIT NONE
     COMPLEX(dbl), INTENT(IN)  :: a(:,:)
     COMPLEX(dbl), INTENT(IN)  :: b(:,:)
     COMPLEX(dbl), INTENT(OUT) :: c(:,:)
     CHARACTER, INTENT(IN) :: opa, opb
-    INTEGER, INTENT(IN) :: n
-    INTEGER :: i, j, k
-
-    IF( opb /= 'N' .AND. opb /= 'C' ) THEN
+    INTEGER, INTENT(IN) :: m, n, k
+    INTEGER :: i, j, l
+    !
+    ! According to BLAS convention:
+    ! C = opa(A) * opb(B)      op* = 'N' normal, 'C' complx conjg (i.e. herm conjg)
+    !                          C is m*n,   opa(A) is m*k, opb(B) = k*n
+    !
+    IF ( m <= 0 .OR. n<=0 .OR. k<=0) CALL errore('zmat_mul','Invalid DIM',1)
+    IF( opb /= 'N' .AND. opb /= 'C' ) &
       CALL errore( ' zmat_mul ', ' argument value not allowed ', 5 )
-    END IF
-    IF( n < 20 ) THEN
-      IF( ( opb == 'N' ) .AND. ( opa == 'N' ) ) THEN
-        DO j = 1, n
-          DO i = 1, n
-            c(i,j) = CZERO
-              DO k = 1, n
-                c(i,j) = c(i,j) + a(i,k) * b(k,j)
-              END DO
-          END DO
-        END DO
-      ELSE IF( ( opb == 'C' ) .AND. ( opa == 'N' ) ) THEN
-        DO j = 1, n
-          DO i = 1, n
-            c(i,j) = CZERO
-              DO k = 1, n
-                c(i,j) = c(i,j) + a(i,k) * CONJG( b(j,k) )
-              END DO
-          END DO
-        END DO
-      ELSE IF( ( opb == 'N' ) .AND. ( opa == 'C' ) ) THEN
-        DO j = 1, n
-          DO i = 1, n
-            c(i,j) = CZERO
-              DO k = 1, n
-                c(i,j) = c(i,j) + CONJG( a(k,i) )* b(k,j) 
-              END DO
-          END DO
-        END DO
-      ELSE IF( ( opb == 'C' ) .AND. ( opa == 'C' ) ) THEN
-        DO j = 1, n
-          DO i = 1, n
-            c(i,j) = CZERO
-              DO k = 1, n
-                c(i,j) = c(i,j) + CONJG( a(k,i) )* CONJG( b(j,k) )
-              END DO
-          END DO
-        END DO
-      END IF
+
+    IF( k < 20 ) THEN
+        IF( ( opb == 'N' ) .AND. ( opa == 'N' ) ) THEN
+            !
+            IF ( m > SIZE(c,1) .OR. m > SIZE(a,1) ) CALL  errore('zmat_mul','Invalid C,A',m)
+            IF ( n > SIZE(c,2) .OR. n > SIZE(b,2) ) CALL  errore('zmat_mul','Invalid C,B',n)
+            IF ( k > SIZE(a,2) .OR. k > SIZE(b,1) ) CALL  errore('zmat_mul','Invalid A,B',k)
+            !
+            DO j = 1, n
+            DO i = 1, m
+                c(i,j) = CZERO
+                DO l = 1, k
+                    c(i,j) = c(i,j) + a(i,l) * b(l,j)
+                ENDDO
+            ENDDO
+            ENDDO
+        ELSE IF( ( opa == 'N' ) .AND. ( opb == 'C' ) ) THEN
+            !
+            IF ( m > SIZE(c,1) .OR. m > SIZE(a,1) ) CALL  errore('zmat_mul','Invalid C,A',m)
+            IF ( n > SIZE(c,2) .OR. n > SIZE(b,1) ) CALL  errore('zmat_mul','Invalid C,B',n)
+            IF ( k > SIZE(a,2) .OR. k > SIZE(b,2) ) CALL  errore('zmat_mul','Invalid A,B',k)
+            !
+            DO j = 1, n
+            DO i = 1, m
+                c(i,j) = CZERO
+                DO l = 1, k
+                    c(i,j) = c(i,j) + a(i,l) * CONJG( b(j,l) )
+                ENDDO
+            ENDDO
+            ENDDO
+        ELSE IF( ( opa == 'C' ) .AND. ( opb == 'N' ) ) THEN
+            !
+            IF ( m > SIZE(c,1) .OR. m > SIZE(a,2) ) CALL  errore('zmat_mul','Invalid C,A',m)
+            IF ( n > SIZE(c,2) .OR. n > SIZE(b,2) ) CALL  errore('zmat_mul','Invalid C,B',n)
+            IF ( k > SIZE(a,1) .OR. k > SIZE(b,1) ) CALL  errore('zmat_mul','Invalid A,B',k)
+            !
+            DO j = 1, n
+            DO i = 1, m
+                c(i,j) = CZERO
+                DO l = 1, k
+                    c(i,j) = c(i,j) + CONJG( a(l,i) )* b(l,j) 
+                ENDDO
+            ENDDO
+            ENDDO
+        ELSE IF( ( opb == 'C' ) .AND. ( opa == 'C' ) ) THEN
+            !
+            IF ( m > SIZE(c,1) .OR. m > SIZE(a,2) ) CALL  errore('zmat_mul','Invalid C,A',m)
+            IF ( n > SIZE(c,2) .OR. n > SIZE(b,1) ) CALL  errore('zmat_mul','Invalid C,B',n)
+            IF ( k > SIZE(a,1) .OR. k > SIZE(b,2) ) CALL  errore('zmat_mul','Invalid A,B',k)
+            !
+            DO j = 1, n
+            DO i = 1, m
+                c(i,j) = CZERO
+                DO l = 1, k
+                    c(i,j) = c(i,j) + CONJG( a(l,i) )* CONJG( b(j,l) )
+                ENDDO
+            ENDDO
+            ENDDO
+        ENDIF
     ELSE
-      CALL ZGEMM( opa, opb, n, n, n, CONE, a(1,1), &
-      SIZE(a,1), b(1,1), SIZE(b,1), CZERO, c(1,1), SIZE(c,1) )
-    END IF
+        CALL ZGEMM( opa, opb, m, n, k, CONE, a(1,1), &
+        SIZE(a,1), b(1,1), SIZE(b,1), CZERO, c(1,1), SIZE(c,1) )
+    ENDIF
     RETURN
   END SUBROUTINE
 

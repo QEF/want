@@ -24,7 +24,7 @@
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
    USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, &
                               bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
-   USE windows_module, ONLY : windows_alloc => alloc, dimwin, eiw, mxdbnd, imin, imax, &
+   USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax, &
                               dimfroz, lfrozen, dimwinx
    
    IMPLICIT NONE
@@ -245,13 +245,14 @@
                               win_min, win_max
           WRITE( unit,"(4x,'Max number of bands within the energy window = ',i5)") dimwinx
           WRITE( unit,"(/,2x,'Electronic Structure from DFT calculation:')")
-          WRITE( unit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4)") nkpts, mxdbnd
+          WRITE( unit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4)") nkpts, nbnd
+          WRITE( unit,"(  4x,'Fermi energy =',f15.9,' eV')") efermi
           DO ik=1,nkpts
               WRITE(unit, " (/,4x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                               ik, vkpt(:,ik), dimwin(ik)
               WRITE(unit, " (36x,'  imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
               WRITE(unit, "(3x,'Eigenvalues:')"  )
-              WRITE(unit,'(2x, 8f9.4)') ( eiw(i,ik), i=1,mxdbnd )
+              WRITE(unit,'(2x, 8f9.4)') ( eig(i,ik), i=1,nbnd )
           ENDDO
 
           IF ( .NOT. lfrozen ) THEN

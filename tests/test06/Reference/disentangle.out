@@ -8,17 +8,63 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  7Dec2004 at 15:59:18 
+  Date 25Dec2004 at 20: 9:55 
+
+
+  PW-DFT data read from file: gold1.dft
 
   ======================================================================
-  =                         Lattice parameters                         =
+  =                                Main                                =
   ======================================================================
 
+            Calculation Title :     WanT Calculation
+                       Prefix :     gold1
+            Working directory :     ./
+
+<WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =    6
+    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Max iteration number =   100
+    XX minim: Mixing parameter (alphafix) =  0.500
+    XX minim: Max iteration number =  1500
+    Every   5 XX iteration perform a CG minimi (ncg)
+    Number of k-point shells =   2
+    Chosen shells (indexes) =   1  2
+    Print each  10 iterations
+    Ordering type = COMPLETE
+    Verbosity = MEDIUM
+</WANNIER_FUNCTIONS>
+
+<DISENTANGLE>
+  Input parameters for disentangling subspaces
+    Mixing parameter (alpha)=  0.500
+    Max iter =  1000
+    Starting guess orbitals (itrial) =  3
+    Disentangle convergence threshold =     0.000000010
+</DISENTANGLE>
+
+<WANNIER_CENTERS>
+  Gaussian centers: (cart. coord. in Bohr)
+    Center =   1 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
+    Center =   2 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
+    Center =   3 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
+    Center =   4 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
+    Center =   5 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
+    Center =   6 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
+</WANNIER_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
   Alat =  20.0000 (Bohr)
   Alat =  10.5835 (Ang )
 
   Crystal axes:
-                in units of Bohr                 in lattice units
+                in units of Bohr                 in Alat units
     a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
     a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
@@ -28,22 +74,30 @@
     a(3) = (  0.0000  0.0000  2.5000 )
 
    Reciprocal lattice vectors:
-                in units of Bohr^-1              in lattice units
+                in units of Bohr^-1              in 2Pi/Alat units
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+</LATTICE>
 
+<IONS>
+  Number of chemical species =  1
+    Pseudo(  1) = Au11pw91.mt.UPF
 
-  ======================================================================
-  =                      B-shell calculations                          =
-  ======================================================================
+  Atomic positions: (cart. coord. in units of alat)
+    Au  tau(   1 ) = (  0.0000  0.0000  0.0472 )
+</IONS>
 
-  K-point calculation: (cartesian coordinates in Ang^-1)
+<K-POINTS>
+  nkpts =    4
+  K-point calculation: (cart. coord. in Ang^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
     k point   2:   (   0.00000  0.00000  0.62832 ),   weight =   0.2500
     k point   3:   (   0.00000  0.00000  1.25664 ),   weight =   0.2500
     k point   4:   (   0.00000  0.00000  1.88495 ),   weight =   0.2500
+</K-POINTS>
 
+<B-SHELL>
   Nearest-neighbour shells for k-point 1: (in Ang^-1)
     shell (  1 )    radius =   0.59368
     shell (  2 )    radius =   0.62832
@@ -57,27 +111,10 @@
     shell ( 10 )    radius =   1.38981
     shell ( 11 )    radius =   1.46868
     shell ( 12 )    radius =   1.51130
- 
+
   Number of nearest-neighbours for K-point 1 (representetive for the BZ):
-    shell (  1 )    neighbours  =   4
-    shell (  2 )    neighbours  =   2
-
-  Check shell dimensionality and weights:
-    shell (  1 )    dimensionality  =   2
-    w_b weight is 1/b^2 times  0.5000
-
-
-  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
-  otherwise code will stop! 
-
-  Check shell dimensionality and weights:
-    shell (  2 )    dimensionality  =   1
-    w_b weight is 1/b^2 times  0.5000
-
-
-  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
-  otherwise code will stop! 
-  Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)
+    shell (  1 )    neighbours  =    4
+    shell (  2 )    neighbours  =    2
 
   List of the  6 vectors b_k: (Ang^-1) 
     b_k   1:   (  -0.59368  0.00000  0.00000 ),   weight =   1.4186
@@ -91,36 +128,58 @@
     dir 1:   (  -0.59368  0.00000  0.00000 ) 
     dir 2:   (   0.00000 -0.59368  0.00000 ) 
     dir 3:   (   0.00000  0.00000  0.62832 ) 
-  
-  Kinetic energy cut-off =    25.00 (Ry)
+</B-SHELL>
 
-  Uniform grid used in wannier calculations:
-    nk = (  1  1  4 )      s = (  0.00  0.00  0.00 )
-    total number of k points =    4
-
-   Energy windows (in eV) and band-space minimization parameters:
-    outer window: E  = (-12.0000 ,   0.0000 )
-    inner window: NOT used --> NO FROZEN STATES
-
-    Number of bands in PW calculation =   10
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = ( -12.0000 ,   0.0000 )
     Max number of bands within the energy window =     8
-    Number of Wannier functions required =     6
 
-  K-point shells: 
-    Number of shells =   2
-    Selected shells  =   1  2
+  Electronic Structure from DFT calculation:
+    nkpts =   4,     nbnd =  10
+    Fermi energy =   -5.000881634 eV
 
-  Minimization data: 
-    Mixing parameter (alpha)=  0.500
-    Max iter =  1000
-    Starting guess orbitals (itrial) =     3
-  Gaussian centers: (cart. coord. in Bohr)
-    Center =   1 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
-    Center =   2 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
-    Center =   3 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
-    Center =   4 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
-    Center =   5 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
-    Center =   6 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+   -10.8565  -6.6342  -6.6327  -6.5817  -5.0049  -5.0049  -1.3324  -1.3324
+     0.7398   1.6528
+
+    kpt =  2 (  0.000 0.000 0.250 )    dimwin =    6
+                                      imin =    1  imax =    6
+   Eigenvalues:
+    -7.6678  -6.9655  -6.9655  -6.2634  -6.2213  -5.6387   0.9222   0.9223
+     2.2193   3.1348
+
+    kpt =  3 (  0.000 0.000 0.500 )    dimwin =    6
+                                      imin =    1  imax =    6
+   Eigenvalues:
+    -8.2705  -8.2705  -5.8838  -5.8557  -5.1772  -0.5052   2.0126   4.5839
+     4.5839   6.6724
+
+    kpt =  4 (  0.000 0.000 0.750 )    dimwin =    6
+                                      imin =    1  imax =    6
+   Eigenvalues:
+    -7.6678  -6.9655  -6.9655  -6.2634  -6.2213  -5.6387   0.9222   0.9223
+     2.2193   3.1347
+
+    inner window: NOT used --> NO FROZEN STATES
+</WINDOWS>
+
+
+  WFC and GRIDS data read from file: gold1.dft
+
+
+  ======================================================================
+  =                       Overlap and Projections                       =
+  ======================================================================
+
+  Kinetic energy cut-off for wfcs =    25.00 (Ry)
+                         for rho  =   100.00 (Ry)
+  Total number of PW for rho =      32027
+  Max number of PW for wfcs =       4031
+  FFT grid components (rho) =  (    64   64   16 )
+
 
   Overlap and projections written on file: gold1_WanT.ovp
 
@@ -132,8 +191,8 @@
   ======================================================================
 
   Iteration =     1   Omega_I Error =      0.00000015
-  Iteration =     2   Omega_I Error =      0.00000011
-  Iteration =     3   Omega_I Error =      0.00000008
+  Iteration =     2   Omega_I Error =      0.00000012
+  Iteration =     3   Omega_I Error =      0.00000009
   Iteration =     4   Omega_I Error =      0.00000006
   Iteration =     5   Omega_I Error =      0.00000004
   Iteration =     6   Omega_I Error =      0.00000003
@@ -143,19 +202,21 @@
 
   Convergence achieved!!
 
-  Final Omega_I (Bohr^2, Angstrom^2)      5.68394889        1.59166653
+  Final Omega_I (Bohr^2, Angstrom^2)      5.68404257        1.59169276
  ======================================================================
 
   Subspace data written on file: gold1_WanT.spaces
 
    <global routines>
-             clock number :     5
+             clock number :     7
 
-              disentangle :     1.17s CPU 
+              disentangle :     3.48s CPU 
  
-                  bshells :     0.01s CPU
-                  overlap :     0.51s CPU
-             overlap_base :     0.51s CPU
-               projection :     0.49s CPU
+                want_init :     0.38s CPU
+                  bshells :     0.08s CPU
+                  wfc_dat :     2.87s CPU
+                  overlap :     0.90s CPU
+             overlap_base :     0.90s CPU
+               projection :     0.87s CPU
 
 

@@ -3,6 +3,15 @@
             WanT code:  Log of Changes 
 =======================================================
 
+24 Dec 2004      windows_module.f90 moved to windows.f90. Routine 
+                 widows_read_ext added, want_init updated. Fermi energy
+                 data added to windows module (and added to pw_export).
+                 MXDBND moved to NBND according to PWSCF. Plot.x not
+                 yet completely symcronized but compiling. New implementation
+                 of wfc started in module wfc.f90. Test references updated. (AF)
+
+23 Dec 2004      Syncronizing HAMILTONIAN. Small bugs fixed. (AF)
+
 19 Dec 2004      Tests updated. Bug fixing in PWEXPORT-WANT interface.
                  FMT changed in overlap_module IO. (AF)
 

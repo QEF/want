@@ -11,7 +11,7 @@
    MODULE overlap_module
 !*********************************************
    USE kinds, ONLY : dbl
-   USE windows_module, ONLY : mxdbnd, windows_alloc => alloc
+   USE windows_module, ONLY : nbnd, windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, mxdnn, kpoints_alloc
    USE input_module,  ONLY : dimwann, input_alloc => alloc
    USE iotk_module
@@ -35,9 +35,9 @@
 !   
 
    COMPLEX(dbl), ALLOCATABLE   :: cm(:,:,:,:)    ! <u_nk|u_mk+b> overlap
-                                                 ! DIM: mxdbnd,mxdbnd,mxdnn,nkpts
+                                                 ! DIM: nbnd,nbnd,mxdnn,nkpts
    COMPLEX(dbl), ALLOCATABLE   :: ca(:,:,:)      ! <u_nk|phi_lk> projection
-                                                 ! DIM: mxdbnd,dimwann,nkpts
+                                                 ! DIM: nbnd,dimwann,nkpts
    LOGICAL :: alloc = .FALSE.
    
 
@@ -46,7 +46,7 @@
 !
 
    PUBLIC :: cm, ca 
-   PUBLIC :: mxdbnd, nkpts, mxdnn, dimwann
+   PUBLIC :: nbnd, nkpts, mxdnn, dimwann
    PUBLIC :: overlap_allocate
    PUBLIC :: overlap_deallocate
    PUBLIC :: overlap_write
@@ -66,14 +66,14 @@ CONTAINS
        CHARACTER(16)      :: subname="overlap_allocate"
        INTEGER            :: ierr 
 
-       IF ( mxdbnd <= 0 .OR. nkpts <= 0 .OR. dimwann <= 0) &
-           CALL errore(subname,' Invalid MXDBND, NKPTS, DIMWANN ',1)
+       IF ( nbnd <= 0 .OR. nkpts <= 0 .OR. dimwann <= 0) &
+           CALL errore(subname,' Invalid NBND, NKPTS, DIMWANN ',1)
 
-       ALLOCATE( cm(mxdbnd,mxdbnd,mxdnn,nkpts), STAT=ierr )       
-           IF ( ierr/=0 ) CALL errore(subname,' allocating cm ',mxdbnd**2*mxdnn*nkpts)
+       ALLOCATE( cm(nbnd,nbnd,mxdnn,nkpts), STAT=ierr )       
+           IF ( ierr/=0 ) CALL errore(subname,' allocating cm ',nbnd**2*mxdnn*nkpts)
 
-       ALLOCATE( ca(mxdbnd,dimwann,nkpts), STAT=ierr )       
-           IF ( ierr/=0 ) CALL errore(subname,' allocating ca ',mxdbnd*dimwann*nkpts)
+       ALLOCATE( ca(nbnd,dimwann,nkpts), STAT=ierr )       
+           IF ( ierr/=0 ) CALL errore(subname,' allocating ca ',nbnd*dimwann*nkpts)
 
        alloc = .TRUE. 
       
@@ -111,7 +111,7 @@ CONTAINS
 
        IF ( .NOT. alloc ) RETURN
        CALL iotk_write_begin(unit,TRIM(name))
-       CALL iotk_write_attr(attr,"mxdbnd",mxdbnd,FIRST=.TRUE.)
+       CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr(attr,"dimwann",dimwann)
        CALL iotk_write_attr(attr,"mxdnn",mxdnn)
        CALL iotk_write_attr(attr,"nkpts",nkpts)
@@ -133,7 +133,7 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="overlap_read"
-       INTEGER            :: mxdbnd_, dimwann_, mxdnn_, nkpts_
+       INTEGER            :: nbnd_, dimwann_, mxdnn_, nkpts_
        INTEGER            :: ierr
 
        IF ( alloc ) CALL overlap_deallocate()
@@ -146,8 +146,8 @@ CONTAINS
        CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
 
-       CALL iotk_scan_attr(attr,'mxdbnd',mxdbnd_,IERR=ierr)
-          IF (ierr/=0) CALL errore(subname,'Unable to find attr MXDBND',ABS(ierr))
+       CALL iotk_scan_attr(attr,'nbnd',nbnd_,IERR=ierr)
+          IF (ierr/=0) CALL errore(subname,'Unable to find attr NBND',ABS(ierr))
        CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
        CALL iotk_scan_attr(attr,'mxdnn',mxdnn_,IERR=ierr)
@@ -158,9 +158,9 @@ CONTAINS
        !
        ! ... various checks
        IF ( windows_alloc ) THEN
-          IF ( mxdbnd_ /= mxdbnd) CALL errore(subname,'Invalid MXDBND',ABS(mxdbnd_-mxdbnd))
+          IF ( nbnd_ /= nbnd) CALL errore(subname,'Invalid NBND',ABS(nbnd_-nbnd))
        ELSE
-          mxdbnd = mxdbnd_
+          nbnd = nbnd_
        ENDIF
        !
        IF ( kpoints_alloc ) THEN

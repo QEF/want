@@ -16,7 +16,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE io_module,  ONLY : stdout, ovp_unit, space_unit, ioname
    USE files_module, ONLY : file_open, file_close
    USE subspace_module, ONLY : eamp, subspace_read
-   USE windows_module,  ONLY : mxdbnd, dimwin, windows_read
+   USE windows_module,  ONLY : nbnd, dimwin, windows_read
    USE kpoints_module,  ONLY : mxdnn, nkpts, nntot, nnlist 
    USE overlap_module,  ONLY : cm, ca, overlap_allocate, overlap_deallocate, overlap_read 
    IMPLICIT NONE
@@ -148,7 +148,7 @@ SUBROUTINE overlap_extract(dimwann)
 ! ... finally redefine the CM variable 
 !
    CALL overlap_deallocate()
-   mxdbnd = dimwann
+   nbnd = dimwann
    CALL overlap_allocate()
 
    cm(:,:,:,:) = cm_tmp(:,:,:,:)

@@ -14,14 +14,26 @@
 
       USE kinds
       USE constants, ONLY: PI, TPI, bohr => bohr_radius_angs, &
-                           ZERO, CZERO, ONE, CONE, CI
-      USE parameters, ONLY: npsx, natx
+                           ZERO, CZERO, ONE, CONE, CI, EPS_m8
+      USE parameters, ONLY: ntypx, natx, nstrx
       USE fft_scalar, ONLY: cfft3d
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-      USE io_module, ONLY : stdout
+      USE io_module, ONLY : stdout, stdin, space_unit, dft_unit, wan_unit, ioname
+      USE files_module, ONLY : file_open, file_close
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
+      USE want_init_module, ONLY : want_init
       USE version_module, ONLY : version_number
+      USE util_module, ONLY : zmat_unitary
+
+      USE lattice_module, ONLY : avec, bvec
+      USE kpoints_module, ONLY : nkpts, vkpt
+      USE windows_module
+      USE subspace_module, ONLY : wan_eig, efermi, subspace_read
+      USE localization_module, ONLY : dimwann, cu, localization_read
+      USE ggrids_module
+      USE wfc_module 
+      
 
       IMPLICIT NONE
 
@@ -30,41 +42,40 @@
       COMPLEX(dbl), PARAMETER :: citpi = TPI * CI
 
       INTEGER :: ngx, ngy, ngz
-      INTEGER :: nionst, nions, nspec, nkpts
+      INTEGER :: nionst, nions, nspec
       INTEGER :: mplwv
       INTEGER :: npoint
       INTEGER :: nwann, nzz, nyy, nxx
       INTEGER :: nx, ny, nz
-      INTEGER :: nkp, nb, m, nsp
+      INTEGER :: nkp, nb, m, nsp, ik
       INTEGER :: n, j, ni
       INTEGER :: i, nmod, nt, nlim
       INTEGER, ALLOCATABLE :: nplwkp(:)           ! nplwkp(nkpts)
       INTEGER, ALLOCATABLE :: nindpw(:,:)         ! nindpw(mxddim,nkpts)
-      INTEGER :: nionsp(npsx)           ! nionsp(nspec)
+      INTEGER :: nionsp(ntypx)           ! nionsp(nspec)
 
       COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)  ! cptwfp(mxddim+1,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:)   ! cwann(-ngx:ngs*ngx-1,-ngy:ngs*ngy-1,-ngz:ngs*ngz-1)
       COMPLEX(dbl), ALLOCATABLE :: cptwr(:)       ! cptwr(mplwv)
-      COMPLEX(dbl), ALLOCATABLE :: cu(:,:,:)      ! cu(dimwann,dimwann,nkpts)
       COMPLEX(dbl) :: catmp
       COMPLEX(dbl) :: cmod
-
-      REAL(dbl), ALLOCATABLE :: vkpt(:,:)         ! vkpt(3,nkpts)
 
       REAL(dbl) :: scalf, tmaxx, tmax
       REAL(dbl) :: dirc( 3, 3 ), recc( 3, 3 ), dirl( 3, 3 )
       REAL(dbl) :: pos( 3 )
       REAL(dbl) :: x_0ang, y_0ang, z_0ang 
       REAL(dbl), ALLOCATABLE :: poscarwin( :, :, : )
-      REAL(dbl) :: posion( 3, natx, npsx )
-      CHARACTER( LEN=2 ) :: nameat( npsx )
-      INTEGER :: indat( npsx )
-      INTEGER :: natwin( npsx )
+      REAL(dbl) :: posion( 3, natx, ntypx )
+      CHARACTER( LEN=2 ) :: nameat( ntypx )
+      INTEGER :: indat( ntypx )
+      INTEGER :: natwin( ntypx )
 
       CHARACTER( LEN=11 ) :: frfft
       CHARACTER( LEN=11 ) :: fifft
+      CHARACTER( nstrx )  :: filename
+      LOGICAL             :: lfound
 
-      INTEGER :: dimwann, mxddim
+      INTEGER :: mxddim
       INTEGER :: nrxl, nryl, nrzl
       INTEGER :: nrxh, nryh, nrzh
       INTEGER :: nrxd, nryd, nrzd
@@ -80,71 +91,80 @@
 !
        CALL startup( version_number, MAIN_NAME = 'plot' )
 
+! XXXX
+
+!!
+!! ...  Reading from file
+!!
+!      ALLOCATE( nplwkp( nkpts ), STAT=ierr )
+!         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nplwkp ', nkpts )
+!      DO nkp = 1, nkpts
+!        READ(21) nplwkp(nkp)
+!      END DO
 !
-! ...  Reading from file
+!      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
+!         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nindpw ', mxddim*nkpts )
+!      DO nkp = 1, nkpts
+!        DO n = 1, mxddim
+!          READ(21) nindpw(n,nkp)
+!        END DO
+!      END DO
 !
-      OPEN ( 21, FILE = 'landing.dat', STATUS='old', FORM='UNFORMATTED' )
+!      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ), STAT=ierr )
+!         IF( ierr /=0 ) &
+!         CALL errore(' plot ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
+!      DO nkp = 1, nkpts
+!        DO nb = 1, dimwann
+!          DO m = 1, nplwkp(nkp)
+!            READ(21) cptwfp(m,nb,nkp)
+!          END DO
+!        END DO
+!      END DO
+!
+!      CLOSE(21)
 
-      READ (21) nkpts, ngx, ngy, ngz, mplwv, dimwann, mxddim, nspec
-      READ (21) recc(1,1), recc(2,1), recc(3,1)
-      READ (21) recc(1,2), recc(2,2), recc(3,2)
-      READ (21) recc(1,3), recc(2,3), recc(3,3)
-      READ (21) dirc(1,1), dirc(2,1), dirc(3,1)
-      READ (21) dirc(1,2), dirc(2,2), dirc(3,2)
-      READ (21) dirc(1,3), dirc(2,3), dirc(3,3)
+!
+! ... DFT data
+!
+      CALL want_init( WANT_INPUT = .FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
+
+!
+! ... Read energy eigenvalues in electron-volt
+!
+      CALL ioname('subspace',filename)
+      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+          CALL windows_read(space_unit,"WINDOWS",lfound)
+          IF ( .NOT. lfound ) CALL errore('plot',"unable to find WINDOWS",1)
+          CALL subspace_read(space_unit,"SUBSPACE",lfound)
+          IF ( .NOT. lfound ) CALL errore('plot',"unable to find SUBSPACE",1)
+      CALL file_close(space_unit,PATH="/",ACTION="read")
+
+      CALL ioname('subspace',filename,LPATH=.FALSE.)
+      WRITE( stdout,"(2x,'Subspace data read from file: ',a)") TRIM(filename)
+      !
+      wan_eig(:,:) = wan_eig(:,:) - Efermi
+
+!
+! ... Read unitary matrices U(k) that rotate the bloch states
+      CALL ioname('wannier',filename)
+      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+          CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
+          IF ( .NOT. lfound ) &
+             CALL errore('hamiltonian',"unable to find WANNIER_LOCALIZATION",1)
+      CALL file_close(wan_unit,PATH="/",ACTION="read")
+
+      CALL ioname('wannier',filename,LPATH=.FALSE.)
+      WRITE( stdout,"('  Wannier data read from file: ',a,/)") TRIM(filename)
+
+      DO ik = 1,nkpts
+         IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8)  ) &
+             CALL errore('hamiltonian',"U matrices not orthogonal",ik)
+      ENDDO
+!
+! ... End of input reading
+!
 
 
-      ALLOCATE( vkpt( 3, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating vkpt ', 3*nkpts )
-
-      DO  nkp = 1 , nkpts
-        READ (21) vkpt(1,nkp), vkpt(2,nkp), vkpt(3,nkp)
-      END DO
-
-      DO nsp = 1, nspec
-        READ(21) nionsp(nsp), nameat(nsp)
-      END DO
-
-      DO nsp = 1, nspec
-        DO ni  = 1, nionsp(nsp)
-          READ(21) ( posion( i, ni, nsp ), i=1,3 )
-        END DO
-      END DO
-
-      ALLOCATE( nplwkp( nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nplwkp ', nkpts )
-      DO nkp = 1, nkpts
-        READ(21) nplwkp(nkp)
-      END DO
-
-      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nindpw ', mxddim*nkpts )
-      DO nkp = 1, nkpts
-        DO n = 1, mxddim
-          READ(21) nindpw(n,nkp)
-        END DO
-      END DO
-
-      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) &
-         CALL errore(' plot ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
-      DO nkp = 1, nkpts
-        DO nb = 1, dimwann
-          DO m = 1, nplwkp(nkp)
-            READ(21) cptwfp(m,nb,nkp)
-          END DO
-        END DO
-      END DO
-
-      CLOSE(21)
-
-      OPEN( 29, FILE='unitary.dat', STATUS='OLD', FORM='UNFORMATTED' )
-
-      ALLOCATE( cu( dimwann, dimwann, nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating cu ', dimwann**2 *nkpts )
-      READ(29) ( ( ( cu(j,i,n), j=1,dimwann ), i=1,dimwann ), n=1,nkpts )
-
-      CLOSE(29)
 
 ! ... Initialize the data used for the fast fourier transforms
 
@@ -400,9 +420,9 @@
 ! =----------------------------------------------------------------------------------=
 
       SUBROUTINE convert_label( nameat, indat, ntyp )
-        USE parameters, ONLY: npsx, natx
-        CHARACTER( LEN=2 ) :: nameat( npsx )
-        INTEGER :: indat( npsx )
+        USE parameters, ONLY: ntypx, natx
+        CHARACTER( LEN=2 ) :: nameat( ntypx )
+        INTEGER :: indat( ntypx )
         INTEGER :: ntyp
 
 !       The case loop is implemented only for a few

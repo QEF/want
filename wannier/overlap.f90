@@ -10,7 +10,7 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE overlap( igv, evec, igsort, npwk, dimwin, nntot, nnlist,  &
-                           nncell, cm, npw, npwkx, nkpts, mxdnn, mxdbnd, ngx,     &
+                           nncell, cm, npw, npwkx, nkpts, mxdnn, nbnd, ngx,     &
                            ngy, ngz, ndwinx )
 !=----------------------------------------------------------------------------------=
  
@@ -24,7 +24,7 @@
 
       ! ... Input Variables
 
-      INTEGER :: npw, npwkx, nkpts, mxdnn, mxdbnd 
+      INTEGER :: npw, npwkx, nkpts, mxdnn, nbnd 
       INTEGER :: ngx, ngy, ngz, ndwinx
       INTEGER :: igv( 3, npw ), igsort( npwkx, nkpts )
       INTEGER :: npwk( nkpts )
@@ -33,7 +33,7 @@
       INTEGER :: nncell( 3, nkpts, mxdnn )
       INTEGER :: dimwin( nkpts )
       COMPLEX(dbl) :: evec( npwkx + 1, ndwinx, nkpts )
-      COMPLEX(dbl) :: cm( mxdbnd, mxdbnd, mxdnn, nkpts )
+      COMPLEX(dbl) :: cm( nbnd, nbnd, mxdnn, nkpts )
 
       ! ... Local Variables
  
@@ -74,7 +74,7 @@
       END DO     ! nkp loop
 
       CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, evec,    &
-          ninvpw, npwkx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
+          ninvpw, npwkx, nkpts, mxdnn, nbnd, ngx, ngy, ngz, ndwinx )
 
       DEALLOCATE( ninvpw, STAT=ierr )
          IF (ierr/=0) CALL errore(' overlap ',' deallocating ninvpw',ABS(ierr))
@@ -87,7 +87,7 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
-          ninvpw, npwkx, nkpts, mxdnn, mxdbnd, ngx, ngy, ngz, ndwinx )
+          ninvpw, npwkx, nkpts, mxdnn, nbnd, ngx, ngy, ngz, ndwinx )
 !=----------------------------------------------------------------------------------=
  
       USE kinds
@@ -99,13 +99,13 @@
 
       ! ... Input Variables
 
-      INTEGER :: npwkx, nkpts, mxdnn, mxdbnd 
+      INTEGER :: npwkx, nkpts, mxdnn, nbnd 
       INTEGER :: ngx, ngy, ngz, ndwinx
       INTEGER :: nnlist( nkpts, mxdnn )
       INTEGER :: nntot( nkpts )
       INTEGER :: nncell( 3, nkpts, mxdnn )
       INTEGER :: dimwin( nkpts )
-      COMPLEX(dbl) :: cm( mxdbnd, mxdbnd, mxdnn, nkpts )
+      COMPLEX(dbl) :: cm( nbnd, nbnd, mxdnn, nkpts )
       COMPLEX(dbl) :: cptwfp( npwkx+1 , ndwinx, nkpts )
       INTEGER :: ninvpw( 0:(ngx*ngy*ngz), nkpts )
 
