@@ -10,6 +10,7 @@
 !*********************************************
    MODULE trial_center_data_module
 !*********************************************
+   USE kinds,           ONLY : dbl
    USE trial_center_module
    USE subspace_module, ONLY : dimwann
    IMPLICIT NONE

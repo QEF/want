@@ -1,3 +1,4 @@
+# 1 "iotk_error.spp"
 ! Input/Output Tool Kit (IOTK)
 ! Copyright (C) 2004,2005 Giovanni Bussi
 !
@@ -38,6 +39,10 @@
 #ifndef __IOTK_UNITMAX
 #  define __IOTK_UNITMAX 99999
 #endif
+! Unit for errors
+#ifndef __IOTK_ERROR_UNIT
+#  define __IOTK_ERROR_UNIT 0
+#endif
 ! Kind for header in binary files
 #ifndef __IOTK_HEADER_KIND
 #  define __IOTK_HEADER_KIND selected_int_kind(8)
@@ -61,102 +66,172 @@
 ! For logical, integer and real types, the c precompiler
 ! looks for defined kinds. If no kind is found, the default
 ! is used as __IOTK_type1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL2
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL3
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL4
-# 48 "../include/iotk_auxmacros.spp"
+# 52 "../include/iotk_auxmacros.spp"
 #define __IOTK_LOGICAL1 iotk_defkind_LOGICAL
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER2
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER3
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER4
-# 48 "../include/iotk_auxmacros.spp"
+# 52 "../include/iotk_auxmacros.spp"
 #define __IOTK_INTEGER1 iotk_defkind_INTEGER
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL2
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL3
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL4
-# 48 "../include/iotk_auxmacros.spp"
+# 52 "../include/iotk_auxmacros.spp"
 #define __IOTK_REAL1 iotk_defkind_REAL
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 54 "../include/iotk_auxmacros.spp"
-! Complex are treated indentically to reals
-! These lines map the definitions.
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL1
-#define __IOTK_COMPLEX1 __IOTK_REAL1
-#else
-#undef __IOTK_COMPLEX1
-#endif
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL2
-#define __IOTK_COMPLEX2 __IOTK_REAL2
-#else
-#undef __IOTK_COMPLEX2
-#endif
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL3
-#define __IOTK_COMPLEX3 __IOTK_REAL3
-#else
-#undef __IOTK_COMPLEX3
-#endif
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL4
-#define __IOTK_COMPLEX4 __IOTK_REAL4
-#else
-#undef __IOTK_COMPLEX4
-#endif
-# 63 "../include/iotk_auxmacros.spp"
-! If the binary format is not defined, use *
-#ifndef __IOTK_BINARY_FORMAT
-#define __IOTK_BINARY_FORMAT "*"
-#endif
+# 58 "../include/iotk_auxmacros.spp"
 
-! Some check 
+! Some useful check follow
 #if __IOTK_MAXRANK > 7
 #  error
 #endif
 #if __IOTK_MAXRANK < 1
 #  error
 #endif
-
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL5
+#  error
 #endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL6
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL7
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL8
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL9
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL10
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER5
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER6
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER7
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER8
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER9
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER10
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL5
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL6
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL7
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL8
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL9
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL10
+#  error
+#endif
+# 73 "../include/iotk_auxmacros.spp"
+#endif
+
+! Complex are treated indentically to reals
+! These lines map the definitions.
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL1
+#  define __IOTK_COMPLEX1 __IOTK_REAL1
+#else
+#  undef __IOTK_COMPLEX1
+#endif
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL2
+#  define __IOTK_COMPLEX2 __IOTK_REAL2
+#else
+#  undef __IOTK_COMPLEX2
+#endif
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL3
+#  define __IOTK_COMPLEX3 __IOTK_REAL3
+#else
+#  undef __IOTK_COMPLEX3
+#endif
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL4
+#  define __IOTK_COMPLEX4 __IOTK_REAL4
+#else
+#  undef __IOTK_COMPLEX4
+#endif
+# 84 "../include/iotk_auxmacros.spp"
+
 
 # 30 "iotk_error.spp"
 
@@ -216,8 +291,8 @@ function iotk_error_add_x()
       iotk_error_pool_order(ii(1)) = order
     end do
     if(iotk_error_warn_overflow) then
-      write(0,*) "Warning: ERROR OVERFLOW"
-      call iotk_error_print(iotk_error_pool(iotk_error_pool_size),0)
+      write(iotk_error_unit,*) "Warning: ERROR OVERFLOW"
+      call iotk_error_print(iotk_error_pool(iotk_error_pool_size),iotk_error_unit)
     end if
     ii = minloc(iotk_error_pool_order)
     i = ii(1)
@@ -605,25 +680,25 @@ subroutine iotk_error_handler_x(ierr)
 #endif
   if(ierr==0) return
   do i = 1 , iotk_error_linelength
-    write(0,"(a)",advance='no') "#"
+    write(iotk_error_unit,"(a)",advance='no') "#"
   end do
-  write(0,*)
+  write(iotk_error_unit,*)
   pending = iotk_error_pool_pending()
   if(pending>1) then
-    write(0,"(a)") "# WARNING: there are pending errors"
+    write(iotk_error_unit,"(a)") "# WARNING: there are pending errors"
     do i = 1 , iotk_error_pool_size
       if(iotk_error_pool_used(i) .and. i/=abs(ierr)) then
-        write(0,"(a)") "# PENDING ERROR (ierr="//trim(iotk_itoa(i))//")"
-        call iotk_error_print(i,0)
+        write(iotk_error_unit,"(a)") "# PENDING ERROR (ierr="//trim(iotk_itoa(i))//")"
+        call iotk_error_print(i,iotk_error_unit)
       end if
     end do
   end if
-  write(0,"(a)") "# UNRECOVERABLE ERROR (ierr="//trim(iotk_itoa(ierr))//")"
+  write(iotk_error_unit,"(a)") "# UNRECOVERABLE ERROR (ierr="//trim(iotk_itoa(ierr))//")"
   call iotk_error_print(ierr,0)
   do i = 1 , iotk_error_linelength
-    write(0,"(a)",advance='no') "#"
+    write(iotk_error_unit,"(a)",advance='no') "#"
   end do
-  write(0,*)
+  write(iotk_error_unit,*)
 #ifdef __IOTK_MPI_ABORT
   call MPI_Abort(MPI_COMM_WORLD,1,ierrx)
 #else

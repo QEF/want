@@ -109,13 +109,14 @@ CONTAINS
    ! center in input (obj) according to the chosen kpt
    ! Implemented formulas are reported below
    !
-   USE constants,         ONLY : TPI, PI
+   USE constants,         ONLY : TPI, PI, TWO
    USE kinds,             ONLY : dbl
    USE lattice_module,    ONLY : alat, tpiba, avec, bvec, omega 
    USE kpoints_module,    ONLY : vkpt     
-   USE ggrids_module,     ONLY : g
+   USE ggrids_module,     ONLY : g, igv
    USE wfc_module,        ONLY : igsort
    USE timing_module,     ONLY : timing
+   USE sph_har_module,    ONLY : sph_har_setup
    USE converters_module, ONLY : cry2cart
 
    IMPLICIT NONE
@@ -124,10 +125,12 @@ CONTAINS
       COMPLEX(dbl),       INTENT(out):: vect(npwk)
 
       INTEGER                    :: i,j, ig, ierr, l, ilm, lmax2
+      INTEGER                    :: igvect(3)
       REAL(dbl)                  :: decay, x1(3), x2(3), vk(3)
       REAL(dbl)                  :: arg, prefactor 
-      REAL(dbl),    ALLOCATABLE  :: vkg(:,:), vkg2(:)
+      REAL(dbl),    ALLOCATABLE  :: vkg(:,:), vkgg(:)
       REAL(dbl),    ALLOCATABLE  :: ylm(:,:)
+      COMPLEX(dbl)               :: bphase(3), kphase
       COMPLEX(dbl), ALLOCATABLE  :: phase(:)
 
    !-------------------------------------------------------
@@ -142,16 +145,16 @@ CONTAINS
       ! TO BE eliminated XXX
       IF ( obj%l < 0 ) CALL errore('trial_center_setup','Invalid Y_l value',-obj%l)
 
-      decay = obj%decay
-      lmax2 = (obj%l+1)**2
+      decay   = obj%decay 
+      lmax2   = (obj%l+1)**2
       ! 
-      ! go from crystal to cart (units of alat, tpiba respectively)
+      ! go from crystal to cart (units of bohr and bohr^-1 respectively)
       x1(:) = obj%x1
       x2(:) = obj%x2
       vk(:) = vkpt(:,ik)
-      CALL cry2cart(x1, avec / alat  )
-      CALL cry2cart(x2, avec / alat  )
-      CALL cry2cart(vk, bvec / tpiba )
+      CALL cry2cart(x1, avec )
+      CALL cry2cart(x2, avec )
+      CALL cry2cart(vk, bvec )
 
 
       SELECT CASE ( TRIM(obj%type) )
@@ -168,97 +171,166 @@ CONTAINS
               IF (ierr/=0) CALL errore('trial_center_setup','Allocating phase' ,ABS(ierr))
            ALLOCATE( vkg(3,npwk), STAT=ierr )
               IF (ierr/=0) CALL errore('trial_center_setup','Allocating vkg' ,ABS(ierr))
-           ALLOCATE( vkg2(npwk), STAT=ierr )
+           ALLOCATE( vkgg(npwk), STAT=ierr )
               IF (ierr/=0) CALL errore('trial_center_setup','Allocating vkg2' ,ABS(ierr))
            ALLOCATE( ylm(npwk,lmax2), STAT=ierr )
               IF (ierr/=0) CALL errore('trial_center_setup','Allocating ylm' ,ABS(ierr))
 
-           DO ig = 1, npwk
-                 vkg(:,ig) = vk(:) + g(:,igsort(ig,ik) )
-                 vkg2(ig)  = DOT_PRODUCT( vkg(:,ig) , vkg(:,ig) )
-                 arg =  DOT_PRODUCT( vkg(:,ig) , x1(:) ) 
-                 phase = CMPLX( COS(arg), -SIN(arg) )
+CALL timing('__phases')
+
+           !
+           ! ... bphase = e^-i b*x1
+           DO i=1,3
+               arg = TPI * DOT_PRODUCT( bvec(:,i) , x1(:) )
+               bphase(i) = CMPLX( COS(arg), -SIN(arg) )
            ENDDO
+           !
+           ! ... kphase = e^-i vk*x1
+           arg = TPI * DOT_PRODUCT( vk(:) , x1(:) )
+           kphase = CMPLX( COS(arg), -SIN(arg) )
+
+           !
+           ! ... construct the pahses as follows:
+           !     G = n1*b1 + n2*b2 + n3*b3
+           !     e^{-i (k+G)*x1 ) = e^{-i k*x1} *  &
+           !                  (e^{-i b1*x1})^n1 * (e^{-i b2*x1})^n2 * (e^{-i b3*x1})^n3
+           DO ig = 1, npwk
+                vkg(:,ig) = vk(:) + g(:,igsort(ig,ik) ) * tpiba
+                vkgg(ig)  = SQRT ( DOT_PRODUCT( vkg(:,ig) , vkg(:,ig) ) )
+                !
+                !  arg =  TPI * DOT_PRODUCT( vkg(:,ig) , x1(:) ) 
+                !  phase(ig) = CMPLX( COS(arg), -SIN(arg) )
+                !
+                igvect(:) = igv(:,igsort(ig,ik))
+                phase(ig) = kphase * ( bphase(1) )**igvect(1) * &
+                                     ( bphase(2) )**igvect(2) * &
+                                     ( bphase(3) )**igvect(3) 
+           ENDDO
+
  
            !
-           ! if we have two gaussians
+           ! Second Gaussian
+           !
            IF ( TRIM(obj%type) == "2gauss" ) THEN
+               !
+               ! ... bphase = e^-i b*x2
+               DO i=1,3
+                   arg = TPI * DOT_PRODUCT( bvec(:,i) , x2(:) )
+                   bphase(i) = CMPLX( COS(arg), -SIN(arg) )
+               ENDDO
+               !
+               ! ... kphase = e^-i vk*x2
+               arg = TPI * DOT_PRODUCT( vk(:) , x2(:) )
+               kphase = CMPLX( COS(arg), -SIN(arg) )
+
                DO ig = 1, npwk
-                    arg =  DOT_PRODUCT( vkg(:,ig) , x2(:) ) 
-                    phase = phase - CMPLX( COS(arg), -SIN(arg) )
+                   igvect(:) = igv(:,igsort(ig,ik))
+                   phase(ig) = phase(ig) - kphase * ( bphase(1) )**igvect(1) * &
+                                                    ( bphase(2) )**igvect(2) * &
+                                                    ( bphase(3) )**igvect(3) 
                ENDDO
            ENDIF
 
-           !
-           ! ... set the spherical harmonics
-           !     we should add here the possibility of changing the sph_har polar axis
-           !
-           CALL ylmr2( lmax2, npwk, vkg, vkg2, ylm)
-           !
-           ! ge the right index in this 'delirio' of ordering
-           ! which is:
-           ! l=0m=0,  l=1m=0 l=1m=1 l=1m=-1  ... l=il,m=0 ... l=il,m=im l=ilm=-im ...
-           !
-           ilm = 0
-           IF ( obj%l == 0 ) THEN 
-              ilm = 1
-           ELSE
-              DO l=0,obj%l -1
-                 ilm = ilm + 2*l+1 
-              ENDDO
-              IF ( obj%m == 0 ) THEN
-                 ilm = ilm + 1
-              ELSE
-                 ! 
-                 ! we are now pointing to the negative m comp
-                 ilm = ilm + 2* ABS( obj%m )
-                 ! 
-                 ! here we come back to the positive one
-                 IF ( obj%m > 0 ) ilm = ilm -1 
-              ENDIF
-           ENDIF
+CALL timing('__phases')
+CALL timing('__sphharm')
 
+!           !
+!           ! ... set the spherical harmonics
+!           !     we should add here the possibility of changing the sph_har polar axis
+!           !
+!           CALL ylmr2( lmax2, npwk, vkg, vkgg**2, ylm)
+!           !
+!           ! ge the right index in this 'delirio' of ordering
+!           ! which is:
+!           ! l=0m=0,  l=1m=0 l=1m=1 l=1m=-1  ... l=il,m=0 ... l=il,m=im l=ilm=-im ...
+!           !
+!           ilm = 0
+!           IF ( obj%l == 0 ) THEN 
+!              ilm = 1
+!           ELSE
+!              DO l=0,obj%l -1
+!                 ilm = ilm + 2*l+1 
+!              ENDDO
+!              IF ( obj%m == 0 ) THEN
+!                 ilm = ilm + 1
+!              ELSE
+!                 ! 
+!                 ! we are now pointing to the negative m comp
+!                 ilm = ilm + 2* ABS( obj%m )
+!                 ! 
+!                 ! here we come back to the positive one
+!                 IF ( obj%m > 0 ) ilm = ilm -1 
+!              ENDIF
+!           ENDIF
+!
+!! XXX
+!IF( obj%l == 2 .AND. obj%m == 1 ) THEN
+!   DO ig=1,npwk
+!      WRITE(0,"(3f15.9,3x,f15.9)") vkg(:,ig), ylm(ig,ilm)
+!   ENDDO
+!STOP
+!ENDIF
+
+            CALL sph_har_setup( npwk, -vkg, vkgg, obj%ndir, obj%l, obj%m, ylm(:,1) )
+            ilm = 1
+
+
+CALL timing('__sphharm')
+CALL timing('__radial')
 
            !
            ! ... construct the vector
-           !
+           !     Single gaussians are normalized to 1.0, the units a are as follows
+           !     decay -> bohr
+           !     omega -> bohr^3
+           !     vkgg  -> bohr^-1
+           ! 
+           prefactor = ( TWO * PI**5 )**(0.25_dbl) * SQRT( 8.0_dbl * decay**3/ omega )
+           arg = decay**2/ 4.0_dbl
+
            SELECT CASE ( obj%l ) 
            !
-           ! mod = |k+G|
-           ! g_rad_l( mod ) = prefactor * e^{ -(mod*dec)^2/4} * ( mod * dec)^{l}
+           ! mod = |k+G| = vkgg(ig)
+           ! g_rad_l( mod ) = prefactor * e^{ -(mod*dec)^2/4.0} * ( mod * dec)^{l}
            !
            CASE ( 0 )
-               prefactor = SQRT ( PI**3 / omega) * decay **3
                DO ig = 1, npwk
-                    vect(ig) =   prefactor * EXP( - vkg2(ig)*decay**2/4.0_dbl )
-                    vect(ig) = vect(ig) * ylm(ig, ilm ) * phase(ig)
+                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg )
+                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
                ENDDO
            CASE ( 1 )
-               prefactor = SQRT ( PI**3 / omega) * decay **3 / 2.0_dbl
+               prefactor = prefactor / SQRT( 3.0_dbl)
                DO ig = 1, npwk
-                    vect(ig) =   prefactor * EXP( - vkg2(ig)*decay**2/4.0_dbl ) * &
-                                 decay *SQRT( vkg2(ig) )
-                    vect(ig) = vect(ig) * ylm(ig, ilm ) * phase(ig)
+                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * decay * vkgg(ig)
+                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
                ENDDO
            CASE ( 2 )
-               prefactor = SQRT ( PI**3 / omega) * decay **3 / 4.0_dbl
+               prefactor = prefactor / SQRT( 15.0_dbl)
                DO ig = 1, npwk
-                    vect(ig) =   prefactor * EXP( - vkg2(ig)*decay**2/4.0_dbl ) * &
-                                 decay**2 * vkg2(ig) 
-                    vect(ig) = vect(ig) * ylm(ig, ilm ) * phase(ig)
+                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * (decay*vkgg(ig))**2
+                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
                ENDDO
            CASE ( 3 )
-               prefactor = SQRT ( PI**3 / omega) * decay **3 / 8.0_dbl
+               prefactor = prefactor / SQRT( 105.0_dbl)
                DO ig = 1, npwk
-                    vect(ig) =   prefactor * EXP( - vkg2(ig)*decay**2/4.0_dbl ) * &
-                                 decay**3 * SQRT( vkg2(ig) )**3
-                    vect(ig) = vect(ig) * ylm(ig, ilm ) * phase(ig)
+                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * (decay*vkgg(ig))**3
+                    vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
                ENDDO
            CASE DEFAULT
                CALL errore('trial_center_setup','Invalid l channel' ,ABS(obj%l) +1)
            END SELECT 
+
+CALL timing('__radial')
+
+!! XXXX
+!arg = 0.0
+!DO ig=1,npwk
+!   arg = arg + REAL( vect(ig) * CONJG(vect(ig)) )
+!ENDDO
+!WRITE(0,"(a,i3,2x,2i3,2x,f15.9)") 'ik, l, norm ', ik, obj%l, obj%m, arg
                
       END SELECT
+
 
       !
       ! ... cleaning
@@ -267,7 +339,7 @@ CONTAINS
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating phase' ,ABS(ierr))
       DEALLOCATE( vkg, STAT=ierr )
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating vkg' ,ABS(ierr))
-      DEALLOCATE( vkg2, STAT=ierr )
+      DEALLOCATE( vkgg, STAT=ierr )
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating vkg2' ,ABS(ierr))
       DEALLOCATE( ylm, STAT=ierr )
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating ylm' ,ABS(ierr))

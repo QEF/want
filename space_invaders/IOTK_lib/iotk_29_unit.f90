@@ -1,3 +1,4 @@
+# 1 "iotk_unit.spp"
 ! Input/Output Tool Kit (IOTK)
 ! Copyright (C) 2004,2005 Giovanni Bussi
 !
@@ -38,6 +39,10 @@
 #ifndef __IOTK_UNITMAX
 #  define __IOTK_UNITMAX 99999
 #endif
+! Unit for errors
+#ifndef __IOTK_ERROR_UNIT
+#  define __IOTK_ERROR_UNIT 0
+#endif
 ! Kind for header in binary files
 #ifndef __IOTK_HEADER_KIND
 #  define __IOTK_HEADER_KIND selected_int_kind(8)
@@ -61,102 +66,172 @@
 ! For logical, integer and real types, the c precompiler
 ! looks for defined kinds. If no kind is found, the default
 ! is used as __IOTK_type1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL2
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL3
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL4
-# 48 "../include/iotk_auxmacros.spp"
+# 52 "../include/iotk_auxmacros.spp"
 #define __IOTK_LOGICAL1 iotk_defkind_LOGICAL
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER2
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER3
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER4
-# 48 "../include/iotk_auxmacros.spp"
+# 52 "../include/iotk_auxmacros.spp"
 #define __IOTK_INTEGER1 iotk_defkind_INTEGER
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL1
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL2
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL3
-# 46 "../include/iotk_auxmacros.spp"
+# 50 "../include/iotk_auxmacros.spp"
 #ifndef __IOTK_REAL4
-# 48 "../include/iotk_auxmacros.spp"
+# 52 "../include/iotk_auxmacros.spp"
 #define __IOTK_REAL1 iotk_defkind_REAL
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 51 "../include/iotk_auxmacros.spp"
+# 55 "../include/iotk_auxmacros.spp"
 #endif
-# 54 "../include/iotk_auxmacros.spp"
-! Complex are treated indentically to reals
-! These lines map the definitions.
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL1
-#define __IOTK_COMPLEX1 __IOTK_REAL1
-#else
-#undef __IOTK_COMPLEX1
-#endif
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL2
-#define __IOTK_COMPLEX2 __IOTK_REAL2
-#else
-#undef __IOTK_COMPLEX2
-#endif
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL3
-#define __IOTK_COMPLEX3 __IOTK_REAL3
-#else
-#undef __IOTK_COMPLEX3
-#endif
-# 57 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL4
-#define __IOTK_COMPLEX4 __IOTK_REAL4
-#else
-#undef __IOTK_COMPLEX4
-#endif
-# 63 "../include/iotk_auxmacros.spp"
-! If the binary format is not defined, use *
-#ifndef __IOTK_BINARY_FORMAT
-#define __IOTK_BINARY_FORMAT "*"
-#endif
+# 58 "../include/iotk_auxmacros.spp"
 
-! Some check 
+! Some useful check follow
 #if __IOTK_MAXRANK > 7
 #  error
 #endif
 #if __IOTK_MAXRANK < 1
 #  error
 #endif
-
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL5
+#  error
 #endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL6
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL7
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL8
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL9
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_LOGICAL10
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER5
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER6
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER7
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER8
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER9
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_INTEGER10
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL5
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL6
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL7
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL8
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL9
+#  error
+#endif
+# 68 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL10
+#  error
+#endif
+# 73 "../include/iotk_auxmacros.spp"
+#endif
+
+! Complex are treated indentically to reals
+! These lines map the definitions.
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL1
+#  define __IOTK_COMPLEX1 __IOTK_REAL1
+#else
+#  undef __IOTK_COMPLEX1
+#endif
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL2
+#  define __IOTK_COMPLEX2 __IOTK_REAL2
+#else
+#  undef __IOTK_COMPLEX2
+#endif
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL3
+#  define __IOTK_COMPLEX3 __IOTK_REAL3
+#else
+#  undef __IOTK_COMPLEX3
+#endif
+# 78 "../include/iotk_auxmacros.spp"
+#ifdef __IOTK_REAL4
+#  define __IOTK_COMPLEX4 __IOTK_REAL4
+#else
+#  undef __IOTK_COMPLEX4
+#endif
+# 84 "../include/iotk_auxmacros.spp"
+
 
 # 30 "iotk_unit.spp"
 
@@ -193,7 +268,7 @@ subroutine iotk_free_unit_x(unit,ierr)
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_free_unit",__FILE__,__LINE__)
 # 63 "iotk_unit.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.7 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 63 "iotk_unit.spp"
 call iotk_error_msg(ierrl,'Error inquiring')
 # 63 "iotk_unit.spp"
@@ -205,7 +280,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
   if(isearch>=nsearch) then
     call iotk_error_issue(ierrl,"iotk_free_unit",__FILE__,__LINE__)
 # 67 "iotk_unit.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.7 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 67 "iotk_unit.spp"
 call iotk_error_msg(ierrl,'There are no units left')
     goto 1
@@ -256,6 +331,7 @@ subroutine iotk_unit_print_x(unit)
     if(.not. associated(this)) exit
     write(unit,"(a,i8)") "Unit :",this%unit
     write(unit,"(a,a,a,i8)") "Root :",this%root(1:iotk_strlen_trim(this%root)),"Level:",this%level
+    write(unit,"(a,l8)") "Raw  :",this%raw
     if(associated(this%son)) then
       write(unit,"(a,i8)") "Son :",this%son%unit
     end if
@@ -267,7 +343,7 @@ subroutine iotk_unit_print_x(unit)
   write(unit,"(a)") "end IOTK units"
 end subroutine iotk_unit_print_x
 
-# 128 "iotk_unit.spp"
+# 129 "iotk_unit.spp"
 subroutine iotk_unit_add_x(unit,this,ierr)
   use iotk_base
   use iotk_error_interf
@@ -285,9 +361,9 @@ subroutine iotk_unit_add_x(unit,this,ierr)
     if(.not.associated(this)) exit
     if(this%unit == unit) then
       call iotk_error_issue(ierr,"iotk_unit_add",__FILE__,__LINE__)
-# 144 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
-# 144 "iotk_unit.spp"
+# 145 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+# 145 "iotk_unit.spp"
 call iotk_error_msg(ierr,'unit')
       return
     end if
@@ -306,7 +382,7 @@ call iotk_error_msg(ierr,'unit')
   iotk_units => this
 end subroutine iotk_unit_add_x
 
-# 163 "iotk_unit.spp"
+# 164 "iotk_unit.spp"
 subroutine iotk_inquire_x(unit,binary,ierr)
   use iotk_base
   use iotk_error_interf
@@ -324,9 +400,9 @@ subroutine iotk_inquire_x(unit,binary,ierr)
   inquire(unit=unit,form=form,iostat=iostat,access=access,pad=pad,blank=blank,opened=opened)
   if(iostat/=0) then
     call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 179 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
-# 179 "iotk_unit.spp"
+# 180 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+# 180 "iotk_unit.spp"
 call iotk_error_msg(ierr,'Error inquiring')
     return
   end if
@@ -337,27 +413,27 @@ call iotk_error_msg(ierr,'Error inquiring')
   end if
   if(opened .and. iotk_toupper(access)/="SEQUENTIAL") then
     call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 188 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 189 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     return
   end if
   if(.not. binary) then
     if(opened .and. iotk_toupper(blank)/="NULL") then
       call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 193 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 194 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
       return
     end if
     if(opened .and. iotk_toupper(pad)  /="YES") then
       call iotk_error_issue(ierr,"iotk_inquire",__FILE__,__LINE__)
-# 197 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 198 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
       return
     end if
   end if
 end subroutine iotk_inquire_x
 
-# 204 "iotk_unit.spp"
+# 205 "iotk_unit.spp"
 subroutine iotk_unit_del_x(unit,ierr)
   use iotk_base
   use iotk_error_interf
@@ -376,8 +452,8 @@ subroutine iotk_unit_del_x(unit,ierr)
   do
     if(.not.associated(this)) then
       call iotk_error_issue(ierr,"iotk_unit_del",__FILE__,__LINE__)
-# 221 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 222 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
       return
     end if
     if(this%unit == unit) exit
@@ -386,8 +462,8 @@ call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
   end do
   if(associated(this%son)) then
     call iotk_error_issue(ierr,"iotk_unit_del",__FILE__,__LINE__)
-# 229 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 230 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     return
   end if
   if(associated(this%parent)) then
@@ -401,7 +477,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
   deallocate(this)
 end subroutine iotk_unit_del_x
 
-# 244 "iotk_unit.spp"
+# 245 "iotk_unit.spp"
 subroutine iotk_unit_parent_x(parent,son,ierr)
   use iotk_base
   use iotk_error_interf
@@ -415,34 +491,34 @@ subroutine iotk_unit_parent_x(parent,son,ierr)
   call iotk_unit_get(parent,pointer=this_parent)
   if(.not.associated(this_parent)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 256 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 257 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     return
   end if
   call iotk_unit_get(son,pointer=this_son)
   if(.not.associated(this_son)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 261 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 262 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     return
   end if
   if(associated(this_parent%son)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 265 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 266 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     return
   end if
   if(associated(this_son%parent)) then
     call iotk_error_issue(ierr,"iotk_unit_parent",__FILE__,__LINE__)
-# 269 "iotk_unit.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 270 "iotk_unit.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     return
   end if
   this_parent%son => this_son
   this_son%parent => this_parent
 end subroutine iotk_unit_parent_x
 
-# 277 "iotk_unit.spp"
+# 278 "iotk_unit.spp"
 subroutine iotk_unit_get_x(unit,pointer)
   use iotk_base
   use iotk_misc_interf

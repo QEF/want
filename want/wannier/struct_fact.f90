@@ -16,6 +16,7 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
   !
   USE kinds,     ONLY : dbl
   USE constants, ONLY : PI, TPI, ZERO, CZERO
+  USE timing_module, ONLY : timing
   IMPLICIT NONE
   !
   !   Here the dummy variables
@@ -59,6 +60,8 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
   ! the argument of the exponent
   ! scalar product of bg and tau
 
+  CALL timing('struct_fact',OPR='start')
+
   strf(:,:) = CZERO
   do nt = 1, ntyp
      do na = 1, nat
@@ -92,6 +95,7 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
      enddo
   enddo
 
+  CALL timing('struct_fact',OPR='stop')
   RETURN
 END SUBROUTINE struct_fact
 

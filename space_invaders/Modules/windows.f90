@@ -273,6 +273,7 @@ CONTAINS
        CHARACTER(*),    INTENT(in) :: name
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="windows_write"
+       INTEGER            :: ierr
 
        IF ( .NOT. alloc ) RETURN
        
@@ -284,7 +285,8 @@ CONTAINS
        CALL iotk_write_attr(attr,"dimwinx",dimwinx)
        CALL iotk_write_attr(attr,"lcompspace",lcompspace)
        CALL iotk_write_attr(attr,"lfrozen",lfrozen)
-       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+       CALL iotk_write_empty(unit,"DATA",ATTR=attr, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'writing DATA',ABS(ierr))
 
        CALL iotk_write_dat(unit,"DIMWIN",dimwin)
        CALL iotk_write_dat(unit,"IMIN",imin)

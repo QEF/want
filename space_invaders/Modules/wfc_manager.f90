@@ -103,8 +103,8 @@ CONTAINS
 
       ! 
       ! ... if USPP are used, initialize the related quantities
-      WRITE( stdout,"(/,2x,'Initizlizing US pseudopot. data')")
       IF ( uspp_calculation ) THEN
+          WRITE( stdout,"(/,2x,'Initizlizing US pseudopot. data')")
           !
           ! ... data required by USPP
           CALL allocate_nlpot()
