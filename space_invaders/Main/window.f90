@@ -139,6 +139,7 @@
        READ(54) emax, nbandi
 
        READ(54) (nk(i), i = 1, 3 ), ( s(i), i = 1, 3), ngm0
+
        ALLOCATE( ig1( ngm0 ), ig2( ngm0 ), ig3( ngm0 ), STAT=ierr )
            IF( ierr /=0 ) CALL errore(' window ', ' allocating ig1 ig2 ig3 ', ngm0 )
        READ(54) ( ig1(ig), ig2(ig), ig3(ig), ig = 1, ngm0 )

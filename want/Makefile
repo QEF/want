@@ -1,7 +1,7 @@
 MAKE=make
 
 # this is the main makefile
-all: main
+all: main tran
 
 mod:
 	cd Modules; $(MAKE);
@@ -25,4 +25,4 @@ veryclean : clean
 	- /bin/rm -rf make.rules make.sys */.dependencies \
 		config.log config.status */dum1 */dum2 bin/*.x \
 		intel.pcl */intel.pcl
-	- if test -d GUI ; then ( cd GUI; make veryclean ) ; fi
+

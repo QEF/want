@@ -124,7 +124,7 @@
  
       DO n = 1, ne
 
-         enep = ( DBLE(n) - DBLE(ne+1) / 2.d0 ) * de
+         enep = emin + DBLE(n -1) * de
  
 !...     Compute conductance according to Fisher and Lee
 
