@@ -92,6 +92,8 @@
        CALL startup( version_number, MAIN_NAME = 'plot' )
 
 ! XXXX
+ CALL errore('plot','program NOT yet properly working',1)
+! XXXX
 
 !!
 !! ...  Reading from file

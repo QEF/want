@@ -10,7 +10,8 @@ include ../make.rules
 # specific redefinition
 FFLAGS=$(FFLAGS_NOOPT)
 
-OBJS = iotk_base.o  iotk_external.o  iotk_module.o
+OBJS = iotk_base.o  iotk_external.o  iotk_module.o iotk_interface.o \
+       iotk_multitype.o
 
 #----------------------------------------------------
 

@@ -16,7 +16,7 @@
 ! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 !
 !------------------------------------------------------------------------------!
-! CONFIGURATION FILE FOR IOTK 0.3.1
+! CONFIGURATION FILE FOR IOTK 0.3.5
 !------------------------------------------------------------------------------!
 ! The following lines map some commonly defined system macro to the internal
 ! iotk macros.
@@ -54,6 +54,7 @@
 #         define __IOTK_REAL2    8
 #         define __IOTK_REAL3    16
 #         define __IOTK_AVOID_EMPTY_FILES
+#         define __IOTK_WORKAROUND1
 #   endif
 #   ifdef __G95
 #         define __IOTK_BINARY_FORMAT "PC-LINUX/G95"
@@ -67,6 +68,21 @@
 #         define __IOTK_INTEGER4 8
 #         define __IOTK_REAL1    4
 #         define __IOTK_REAL2    8
+#         define __IOTK_AVOID_EMPTY_FILES
+#   endif
+#   ifdef __PGI
+#         define __IOTK_BINARY_FORMAT "PC-LINUX/PGI"
+#         define __IOTK_LOGICAL1 1
+#         define __IOTK_LOGICAL2 2
+#         define __IOTK_LOGICAL3 4
+#         define __IOTK_LOGICAL4 8
+#         define __IOTK_INTEGER1 1
+#         define __IOTK_INTEGER2 2
+#         define __IOTK_INTEGER3 4
+#         define __IOTK_INTEGER4 8
+#         define __IOTK_REAL1    4
+#         define __IOTK_REAL2    8
+#         define __IOTK_WORKAROUND2
 #         define __IOTK_AVOID_EMPTY_FILES
 #   endif
 #endif

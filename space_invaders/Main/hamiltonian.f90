@@ -23,7 +23,7 @@
 !
 
       USE kinds
-      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m8
+      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, TWO, EPS_m6
       USE input_module, ONLY : verbosity
       USE parameters, ONLY : nstrx, nkpts_inx
       USE io_module, ONLY : stdout, stdin, ioname, ham_unit, space_unit, wan_unit
@@ -36,6 +36,7 @@
       USE summary_module, ONLY : summary
       USE version_module, ONLY : version_number
       USE util_module, ONLY : zmat_unitary, zmat_hdiag
+      USE parser_module, ONLY : int2char
 
       USE lattice_module, ONLY : avec, bvec
       USE kpoints_module,       ONLY : nkpts, nk, vkpt
@@ -72,7 +73,7 @@
       CHARACTER(LEN=nstrx)          :: filename
  
       INTEGER   :: nt
-      INTEGER   :: ierr
+      INTEGER   :: ierr, unit_tmp
       LOGICAL   :: lfound
 !
 ! ... Next lines added by ANDREA (28 jan 2004) 
@@ -189,7 +190,7 @@
       WRITE( stdout,"('  Wannier data read from file: ',a,/)") TRIM(filename)
  
       DO ik = 1,nkpts
-         IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8)  ) &
+         IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m6)  ) &
              CALL errore('hamiltonian',"U matrices not orthogonal",ik)
       ENDDO
 
@@ -284,8 +285,8 @@
 
       WRITE (stringa,"(a,i2,a)") "(",dimwann,"f7.3)"
 
-      OPEN( 82, file='matrix.dat', status='unknown', form='formatted' )
-      OPEN( 83, file='diagonal.dat', status='unknown', form='formatted' )
+      OPEN( 82, FILE=TRIM(work_dir)//'/matrix.dat', STATUS='unknown', FORM='formatted' )
+      OPEN( 83, FILE=TRIM(work_dir)//'/diagonal.dat', STATUS='unknown', FORM='formatted' )
 
       DO iws = 1, nws
         IF ( ( (indxws(1,iws) ==  0) .AND. &
@@ -310,7 +311,11 @@
                (indxws(2,iws) ==  0) .AND. & 
                (indxws(3,iws) ==  1) )              ) THEN
 
-          WRITE (100+iws,*) dimwann, dimwann, ( indxws(i,iws), i=1,3 )
+          unit_tmp = 100+iws
+          OPEN(UNIT=unit_tmp,FILE=TRIM(work_dir)//'/fort.'//TRIM(int2char(unit_tmp)), &
+               STATUS='unknown')
+  
+          WRITE (unit_tmp,*) dimwann, dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (82,*)' '
           WRITE (82,*) dimwann, ( indxws(i,iws), i=1,3 )
           WRITE (82,*)' '
@@ -319,11 +324,13 @@
           WRITE (83,*)' '
 
           DO j = 1, dimwann
-            WRITE (100+iws,*)' '
+            WRITE (unit_tmp,*)' '
             DO i = 1, dimwann
-              WRITE( 100+iws, * ) REAL( rham(i,j,iws) )
+              WRITE( unit_tmp, * ) REAL( rham(i,j,iws) )
             END DO
           END DO
+          CLOSE( unit_tmp )
+
           DO i = 1, dimwann
             WRITE(82,stringa)( REAL( rham(i,j,iws) ), j=1,dimwann )
             WRITE(83,*)REAL( rham(i,i,iws) )

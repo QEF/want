@@ -10,6 +10,7 @@
 SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
    !*********************************************************
    USE kinds, ONLY : dbl
+   USE io_module, ONLY : stdout, work_dir, prefix, postfix, ioname
    USE constants, ONLY : PI
    USE dyn_op_read, ONLY :  read_dyn_op
    USE timing_module, ONLY : timing
@@ -85,7 +86,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 !------------------------------------------------
 
    CALL timing('check_sgm_wan',OPR='start')
-   WRITE(*,"(/,'Subroutine CHECK_SGM_WAN',/)") 
+   WRITE(stdout,"(/,'Subroutine CHECK_SGM_WAN',/)") 
 
 !
 !  reading self_energy from input file
@@ -96,7 +97,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 !
 ! some checks
 !
-   WRITE(*,"(a,4i5)") 'nws dimwann ispin Nomega: ', nws,dimwann,ispin,Nomega
+   WRITE(stdout,"(a,4i5)") 'nws dimwann ispin Nomega: ', nws,dimwann,ispin,Nomega
 
    IF ( Nv /= nws .OR. ispin > Nisp .OR. dim /= dimwann)    &
         CALL errore('check_sgm_wan','Input self energy dimensions wrong',1)
@@ -150,20 +151,17 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
    ENDDO
            
 
-   WRITE(*,*) 'SELF-ENERGY from file '//TRIM(name) ,' successfully read'
-   WRITE(*,*) 
-   WRITE(*,*) 'Kpt grid: ', nk(:)
-   WRITE(*,*) 
-   WRITE(*,*) 'R grid: total # available (crystal basis)'
+   WRITE(stdout,"('SELF-ENERGY from file ',a,' successfully read',/)") TRIM(name) 
+   WRITE(stdout,"('Kpt grid: ',3i4)") nk(:)
+   WRITE(stdout,"(/,'R grid: total # available (crystal basis)')") 
    DO iws = 1,nws
-      WRITE(*,"(a,i3,5x,3i3)") 'iws = ',iws, ( indxws(i,iws) , i=1,3) 
+      WRITE(stdout,"(a,i3,5x,3i3)") 'iws = ',iws, ( indxws(i,iws) , i=1,3) 
    ENDDO
-   WRITE(*,*) 
-   WRITE(*,*) 'R grid: inequivalent vectors (crystal basis)'
+   WRITE(stdout,"(/,'R grid: inequivalent vectors (crystal basis)')")
    DO iws = 1,nkpts
-      WRITE(*,"(a,i3,5x,3i3)") 'iws = ',iws, ( indxws_ind(i,iws) , i=1,3) 
+      WRITE(stdout,"(a,i3,5x,3i3)") 'iws = ',iws, ( indxws_ind(i,iws) , i=1,3) 
    ENDDO
-   WRITE(*,*) 
+   WRITE(stdout,"()") 
 
 
 !
@@ -198,7 +196,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 
 
 
-   OPEN(80,FILE='dec.dat',STATUS='unknown')
+   OPEN(80,FILE=TRIM(work_dir)//'/dec.dat',STATUS='unknown')
       DO ie=1,Nomega
           WRITE(80,*) E(ie), ((dec(iws,isp,ie), iws=1,nws), isp=ispin,ispin) 
       END DO
@@ -218,21 +216,29 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
 
    IF ( ie1 > 0 .AND. ie2 <= Nomega )  THEN
 
-      WRITE(*,"('Writing SIGMA NN between energy indeces:')") 
-      WRITE(*,"(i5,'  -> ',f15.9)") ie1, E(ie1)
-      WRITE(*,"(i5,'  -> ',f15.9)") ie2, E(ie2)
-      WRITE(*,*)
+      WRITE(stdout,"('Writing SIGMA NN between energy indeces:')") 
+      WRITE(stdout,"(i5,'  -> ',f15.9)") ie1, E(ie1)
+      WRITE(stdout,"(i5,'  -> ',f15.9)") ie2, E(ie2)
+      WRITE(stdout,"()")
 
-      OPEN(UNIT=10,FILE='sigmaNN.dat',POSITION='rewind',STATUS='unknown')
+      OPEN(UNIT=10,FILE=TRIM(work_dir)//'/sigmaNN.dat',POSITION='rewind',STATUS='unknown')
          WRITE(10,"('SIGMA components on Wannnier basis')") 
-         WRITE(10,*)
+         WRITE(10,"()")
 
       isp = ispin 
       DO iws=1,nkpts
-         IF( ( indxws_ind(1,iws)==0 .AND. indxws_ind(2,iws)==0 .AND. indxws_ind(3,iws)==0 ) .OR.  &
-             ( indxws_ind(1,iws)==1 .AND. indxws_ind(2,iws)==0 .AND. indxws_ind(3,iws)==0 ) .OR.  &
-             ( indxws_ind(1,iws)==0 .AND. indxws_ind(2,iws)==1 .AND. indxws_ind(3,iws)==0 ) .OR.  &
-             ( indxws_ind(1,iws)==0 .AND. indxws_ind(2,iws)==0 .AND. indxws_ind(3,iws)==1 )   )   &
+         IF( ( indxws_ind(1,iws)==0 .AND.   &
+               indxws_ind(2,iws)==0 .AND.   &
+               indxws_ind(3,iws)==0 ) .OR.  &
+             ( indxws_ind(1,iws)==1 .AND.   &
+               indxws_ind(2,iws)==0 .AND.   &
+               indxws_ind(3,iws)==0 ) .OR.  &
+             ( indxws_ind(1,iws)==0 .AND.   &
+               indxws_ind(2,iws)==1 .AND.   &
+               indxws_ind(3,iws)==0 ) .OR.  &
+             ( indxws_ind(1,iws)==0 .AND.   &
+               indxws_ind(2,iws)==0 .AND.   &
+               indxws_ind(3,iws)==1 )   )   &
          THEN
              DO ie=ie1,ie2
                   WRITE(string,"(a4,3i3,a13,f15.9)") 'R= (', (indxws_ind(i,iws),i=1,3), & 
@@ -316,7 +322,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
                    !
                    iws = 0
                    DO i=1,nkpts
-                      IF ( indxws_ind(1,i)==rvect(1) .AND. indxws_ind(2,i)==rvect(2) .AND.        &
+                      IF ( indxws_ind(1,i)==rvect(1) .AND. indxws_ind(2,i)==rvect(2) .AND. &
                            indxws_ind(3,i)==rvect(3) )   iws = imap(i)
                    ENDDO
                    IF ( iws == 0) CALL errore('check_sgm_wan','Unable to find INDXWS_IND',1)
@@ -356,7 +362,7 @@ SUBROUTINE check_sgm_wan(dimwann,nws,nk,ispin,rham,ie1,ie2,spectral_flag)
        !
        ! writing on file 
        !
-       OPEN(80,FILE='spectral.dat',STATUS='unknown')
+       OPEN(80,FILE=TRIM(work_dir)//'/spectral.dat',STATUS='unknown')
        DO ie=1,Nomega
            WRITE(80,"(3f15.9)") E(ie), (As(isp,ie), isp=ispin,ispin)
        ENDDO

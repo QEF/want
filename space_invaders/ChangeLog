@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+29 Dec 2004      Hamiltonian output files now are all written in work_dir from input.
+                 Iotk updated to 0.3.5 and test checked. Small bugs fixed. (AF) 
+
 24 Dec 2004      windows_module.f90 moved to windows.f90. Routine 
                  widows_read_ext added, want_init updated. Fermi energy
                  data added to windows module (and added to pw_export).
