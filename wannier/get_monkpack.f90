@@ -46,7 +46,7 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
 ! ... end of allocations
 !-------------------------------------------------------------
 !
-   
+
    ! 
    ! set IERR to zero
    ierr = 0
@@ -96,9 +96,12 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
        kpt_gen(i,:) = kpt_loc(i,:)
 
        IF ( s(i) == 1 )  kpt_gen(i,:) = kpt_gen(i,:) - MINVAL(kpt_gen(i,:))
+
+
        DO ik=1,nkpts
             kpt_gen(i,ik) = ONE / kpt_gen(i,ik)
        ENDDO
+
        nk(i) = MAXVAL( NINT(kpt_gen(i,:) ) )
    ENDDO
 
