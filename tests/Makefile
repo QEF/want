@@ -8,6 +8,7 @@ info:
 	@echo " "
 	@echo " Possible targets are: "
 	@echo "     all           perform all tests"
+	@echo "     want          perform WanT calculations for all tests"
 	@echo "     clean         clean up" 
 	@echo "     <test>        perform selected test"
 	@echo " "
@@ -31,9 +32,15 @@ test4:
 	cd Test4 ; $(MAKE) run
 
 
+want:
+	cd Test1 ; $(MAKE) want
+	cd Test2 ; $(MAKE) want
+	cd Test3 ; $(MAKE) want
+	cd Test4 ; $(MAKE) want
+
 clean:
-	cd Test1; $(MAKE) clean
-	cd Test2; $(MAKE) clean
-	cd Test3; $(MAKE) clean
-	cd Test4; $(MAKE) clean
+	cd Test1 ; $(MAKE) clean
+	cd Test2 ; $(MAKE) clean
+	cd Test3 ; $(MAKE) clean
+	cd Test4 ; $(MAKE) clean
 

@@ -31,15 +31,14 @@ CONTAINS
     dirc = TRANSPOSE( avec ) * bohr
     recc = TRANSPOSE( bvec ) / bohr
 
-    WRITE( stdout, * ) ' ======================================================================'
-    WRITE( stdout, * ) ' =                         Lattice parameters                         ='
-    WRITE( stdout, * ) ' ======================================================================'
-    WRITE( stdout, * ) '  '
-    WRITE( stdout, fmt= " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
-    WRITE( stdout, fmt= " (2x,'Alat = ', F8.4, ' (Ang )' )" ) alat * bohr
-    WRITE( stdout, * ) '  '
-    WRITE( stdout, fmt= " (2x, 'Crystal axes:' ) ")
-    WRITE( stdout, fmt="(16x,'in units of Bohr',17x,'in lattice units' )")
+    WRITE( stdout, " (2x,70('='))" ) 
+    WRITE( stdout, " (2x,'=',25x,'Lattice parameters',25x,'=')" ) 
+    WRITE( stdout, " (2x,70('='),/)" ) 
+
+    WRITE( stdout, " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
+    WRITE( stdout, " (2x,'Alat = ', F8.4, ' (Ang )',/ )" ) alat * bohr
+    WRITE( stdout, " (2x, 'Crystal axes:' ) ")
+    WRITE( stdout, " (16x,'in units of Bohr',17x,'in lattice units' )")
     DO j=1,3
        WRITE ( stdout, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
                 j, ( avec(i,j), i=1,3 ), ( avec(i,j)/alat, i=1,3 )
@@ -49,15 +48,14 @@ CONTAINS
        WRITE ( stdout, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )'  )" ) &
                j, ( dirc(j,i), i=1,3 )
     END DO
-!
-    WRITE( stdout,*) ' '
-    WRITE( stdout, fmt= " (2x, ' Reciprocal lattice vectors:' ) " )
-    WRITE( stdout, fmt="(16x,'in units of Bohr^-1',14x,'in lattice units' )")
+
+    WRITE( stdout, " (/,2x, ' Reciprocal lattice vectors:' ) " )
+    WRITE( stdout, " (16x,'in units of Bohr^-1',14x,'in lattice units' )")
     DO j=1,3
        WRITE ( stdout, fmt="(4x,'b(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
                 j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / (2* pi), i=1,3 )
     END DO
-    WRITE( stdout, * ) ' '
+    WRITE( stdout, "()" ) 
 
 
     RETURN

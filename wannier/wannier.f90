@@ -13,7 +13,9 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: pi, twopi => tpi, ryd => ry, har => au, bohr => bohr_radius_angs
+      USE constants, ONLY: pi, twopi => tpi, ryd => ry, har => au, &
+                           bohr => bohr_radius_angs, &
+                           CZERO, CONE, ZERO, ONE, CI
       USE fft_scalar, ONLY: cfft3d
       USE input_wannier
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
@@ -22,56 +24,51 @@
       USE version_module, ONLY : version_number
       USE converters_module, ONLY : cart2cry
       USE sph_har, ONLY: gauss1
-      USE kpoints_module, ONLY: nk, s, vkpt, wtkpt, kpoints_init
-      USE ions, ONLY: rat, ntype, natom, nameat, poscart, poscart_set
       USE util, ONLY: zmat_mul, gv_indexes
-      USE lattice, ONLY: avec, dirc, recc, alat, lattice_init
 
+      USE lattice, ONLY: avec, dirc, recc, alat, lattice_init
+      USE ions, ONLY: rat, ntype, natom, nameat, poscart, poscart_set
+      USE kpoints_module, ONLY: nk, s, nkpts, vkpt, &
+                          nnmx => mxdnn, nnmxh => mxdnnh, &
+                          nntot, nnlist, nncell, neigh, bk, wb, dnn, bka, wbtot, &
+                          kpoints_init, kpoints_deallocate
+ 
+      USE windows_module, ONLY : dimwin, dimwinx, mxdbnd, &
+                          windows_allocate, windows_deallocate
+      USE subspace_module, ONLY : subspace_allocate, subspace_deallocate
+!      USE overlap_module, ONLY : ca, cm, overlap_allocate, overlap_deallocate
+
+!
+! ... 
+!
       IMPLICIT NONE
 
-      ! 12 is the maximum number of nearest neighbours
-
-      INTEGER, PARAMETER :: nnmx  = 12 
-      INTEGER, PARAMETER :: nnmxh = nnmx/2 
-      INTEGER, PARAMETER :: nprint = 10
-
-      COMPLEX(dbl) :: czero, cone
-      COMPLEX(dbl) :: ci, citpi
-      PARAMETER ( czero = ( 0.0d0, 0.0d0 ) )
-      PARAMETER ( cone  = ( 1.0d0, 0.0d0 ) )
-      PARAMETER ( ci = ( 0.0, 1.0 ) )
-      PARAMETER ( citpi = ( 0.0, 6.283185307179 ) )
-
-      CHARACTER( LEN=6 ) :: verbosity = 'none'    ! none, low, medium, high
+      INTEGER,      PARAMETER :: nprint = 10
+      COMPLEX(dbl), PARAMETER :: citpi = CI * twopi
+      CHARACTER( LEN=6 )      :: verbosity = 'none'    ! none, low, medium, high
 
       ! external functions
-
       REAL(dbl) :: ranf
+      EXTERNAL  :: ranf
 
       INTEGER :: nr1, nr2, nr3
-      INTEGER :: nkpts, nkp, nkp2
-    
+      INTEGER :: nkp, nkp2
       INTEGER :: nplwv, mplwv
 
-      INTEGER :: nsp, idummy
+      INTEGER :: nsp
       INTEGER :: i, j, k
       INTEGER :: ni, m
       INTEGER :: nx, ny, nz
       INTEGER :: np, npoint
       INTEGER :: iib, iseed
-      INTEGER :: ndnntot, nlist, l, n, ndnn
-      INTEGER :: nnx, ndnc, ind, nnsh, info, nn, nnh, na
-      INTEGER :: ifound, nap, ifpos, ifneg
+      INTEGER :: l, n
+      INTEGER :: info, nn, nnh
       INTEGER :: nwann, nb
-      INTEGER :: npoint2
       INTEGER :: nzz, nyy, nxx
       INTEGER :: nsdim, irguide
       INTEGER :: nrguide, ncgfix, ncount
       LOGICAL :: lrguide, lcg
-      REAL(dbl) :: enmax
-      REAL(dbl) :: ddelta
-      REAL(dbl) :: epsilon, eta, eps, dnn0, dnn1, dist
-      REAL(dbl) :: bb1, bbn, factor, wbtot
+      REAL(dbl) :: epsilon
       REAL(dbl) :: asidemin, aside
       REAL(dbl) :: func_om1, func_om2, func_om3, func_o
       REAL(dbl) :: func_old1, func_old2, func_old3
@@ -79,10 +76,10 @@
       REAL(dbl) :: dist1
       REAL(dbl) :: dist2, select
       REAL(dbl) :: rre, rri, omt1, omt2, omt3, omiloc
-      REAL(dbl) :: func_del1, func_del2, func_del3, func0
+      REAL(dbl) :: func_del, func_del1, func_del2, func_del3, func0
       REAL(dbl) :: gcnorm1, gcfac, gcnorm0, doda0
-      REAL(dbl) :: funca, func_del, eqc, eqb, eqa, alphamin, falphamin
-      COMPLEX(dbl) :: catmp, cphi, calpha, cbeta
+      REAL(dbl) :: funca, eqc, eqb, eqa, alphamin, falphamin
+      COMPLEX(dbl) :: catmp, cphi
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
       COMPLEX(dbl), ALLOCATABLE ::  ca(:,:,:) ! ca(dimwann,dimwann,nkpts)
@@ -107,19 +104,9 @@
       COMPLEX(dbl), ALLOCATABLE ::  cw2(:) ! cw2(10*dimwann)
       REAL(dbl), ALLOCATABLE ::  singvd(:) !  singvd(dimwann)
       REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnmx)
-      REAL(dbl), ALLOCATABLE ::  v1(:,:) ! v1(nnmx,nnmx)
-      REAL(dbl), ALLOCATABLE ::  v2(:,:) ! v2(nnmx,nnmx)
-      REAL(dbl), ALLOCATABLE ::  w1(:) !  w1(10*nnmx)
 
-      INTEGER, ALLOCATABLE :: ndim(:) !  dimsingvd(nnmx),dimbk(3,nnmx),ndim(nnmx)
-      INTEGER, ALLOCATABLE :: nkp_inv(:) ! l_wann(dimwann),m_wann(dimwann),nkp_inv(nkpts)
-      INTEGER, ALLOCATABLE :: nnshell(:,:) ! nnshell(nkpts,nnmx)
-      INTEGER, ALLOCATABLE ::  neigh(:,:) ! neigh(nkpts,nnmxh)
-      REAL(dbl), ALLOCATABLE ::  dimsingvd(:), dimbk(:,:)
-      REAL(dbl), ALLOCATABLE ::  wb(:,:), dnn(:) ! wb(nkpts,nnmx),dnn(nnmx)
-      REAL(dbl), ALLOCATABLE ::  bk(:,:,:)   !  bk(3,nkpts,nnmx)
-      REAL(dbl), ALLOCATABLE ::  rave(:,:), r2ave(:) ,rave2(:) ! rave(3,dimwann), r2ave(dimwann), rave2(dimwann)
-      REAL(dbl), ALLOCATABLE ::  bka(:,:) !  bka(3,nnmxh)
+      REAL(dbl), ALLOCATABLE ::  rave(:,:) ! rave(3,dimwann)
+      REAL(dbl), ALLOCATABLE ::  r2ave(:) ,rave2(:) !  r2ave(dimwann), rave2(dimwann)
       REAL(dbl), ALLOCATABLE :: rguide(:,:) ! rguide(3,dimwann)
       REAL(dbl) :: rpos1(3), rpos2(3)
 
@@ -129,9 +116,6 @@
 
       REAL(dbl), ALLOCATABLE ::  rphicmx1(:,:) ! rphicmx1(3,dimwann)
       REAL(dbl), ALLOCATABLE ::  rphicmx2(:,:) ! rphicmx2(3,dimwann)
-
-      INTEGER, ALLOCATABLE :: nnlist(:,:), nntot(:) ! nnlist(nkpts,nnmx), nntot(nkpts)
-      INTEGER, ALLOCATABLE :: nncell(:,:,:) ! nncell(3,nkpts,nnmx)
 
       COMPLEX(dbl), ALLOCATABLE :: cwschur1(:), cwschur2(:) 
                                    !  cwschur1(dimwann),cwschur2(10*dimwann)
@@ -151,11 +135,10 @@
       INTEGER, ALLOCATABLE :: nphir(:) ! nphir(dimwann)
 
       INTEGER :: nt, ja, nbandi
-      INTEGER :: mxddim, mxdbnd
+      INTEGER :: mxddim
       INTEGER :: ngm
 
       INTEGER, ALLOCATABLE :: igv(:,:)
-      INTEGER, ALLOCATABLE :: dimwin(:)
       INTEGER :: mxdgve
       INTEGER :: nsiz1_, nsiz2_, nsiz3_, ngk_, nbnd_ 
 
@@ -206,7 +189,7 @@
         END DO
       END DO
 
-      READ(19) enmax, nbandi
+      READ(19) rdum, nbandi
       READ(19) (nk(i),i=1,3), (s(i),i=1,3)
 
       READ(19) rdum ! win_min, win_max, froz_min, froz_max, dimwann
@@ -229,6 +212,22 @@
       READ(19) idum ! ndir_wann(1:dimwann)
       READ(19) rdum ! rloc(1:dimwann)
 
+
+!
+! ... Allocations and initializations
+      CALL wannier_center_init( alat, avec )
+      CALL lattice_init()
+
+!
+! ... Calculate grid of K-points and allocations (including bshells)
+      CALL kpoints_init( nkpts )
+
+!
+! ... positions conversion
+      CALL poscart_set( avec )
+
+
+!
 ! ... Read grid information, and G-vectors
 
       READ(19) mxdgve 
@@ -238,38 +237,29 @@
 
       ALLOCATE( igsort( mxddim, nkpts ), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' allocating igsort ', mxddim*nkpts )
-
       ALLOCATE( npwk( nkpts ), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating npwk ', nkpts )
 
 
+!
+! ...  Reading the dimensions of the "window space"
+
       DO nkp = 1, nkpts
          !
-         !  Read all dimensions first, then k-dependent arrais
+         !  ... Read all dimensions first, then k-dependent arrays
          !
          READ(19) npwk(nkp), idum, idum, idum ! imin(nkp), imax(nkp), dimwin(nkp)
          !
       END DO
-
+      dimwinx = dimwann
 
       CLOSE(19)
 
 
-      CALL wannier_center_init( alat, avec )
+!
+! ... wfc are no more read from TAKEOFF>dat but from ONFLY.dat 
 
-      CALL lattice_init()
-
-      !
-      ! compute atomic positions in Angstrom
-
-      CALL poscart_set( avec )
-
-      !
-      ! initialize kpoints module
-      !
-
-      CALL kpoints_init( nkpts )
-
+     
 ! ... First set all elements of ninvpw to point to the "extra" plane wave
 !     (the mxddim+1 one) for which the wavefunction has been set to zero
 !     by hand (see next loop, read wavefunctions), and then fill up ninvpw 
@@ -297,7 +287,7 @@
          IF( ierr /=0 ) &
          CALL errore(' wannier ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
 
-      cptwfp = 0.0d0
+      cptwfp = CZERO
 
       OPEN( UNIT=20, FILE='onfly.dat', STATUS='OLD' , FORM='UNFORMATTED' )
 
@@ -310,17 +300,13 @@
 
         READ(20) nsiz1_, nsiz2_ 
 
-        IF( npwk(nkp) > nsiz1_ ) THEN
-          WRITE( stdout, * ) '*** READING onfly.dat WRONG ngk ***'
-          WRITE( stdout, * ) npwk(nkp), nsiz1_
-          STOP
-        END IF
+        !
+        ! checks
+        IF( npwk(nkp) > nsiz1_ ) &
+          CALL errore('wannier','Reading onfly.dat WRONG ngk', ABS( npwk(nkp)-nsiz1_) )
+        IF( dimwann > nsiz2_ ) &
+          CALL errore('wannier','Reading onfly.dat WRONG dimwann', ABS( dimwann- nsiz2_))
 
-        IF( dimwann > nsiz2_ ) THEN
-          WRITE( stdout, * ) '*** READING onfly.dat WRONG dimwann ***'
-          WRITE( stdout, * ) dimwann, nsiz2_
-          STOP
-        END IF
 
         READ(20) ( igsort( np, nkp ), np=1, npwk(nkp) )
 
@@ -332,82 +318,28 @@
         IF ( verbosity == 'high' ) THEN
           DO np = 1, mxddim
             WRITE(*,*) np, nindpw( np, nkp ), ninvpw( nindpw(np,nkp), nkp )
-          END DO
-        END IF
+          ENDDO
+        ENDIF
 
         DO iib = 1, dimwann
           DO np = npwk(nkp) + 1, mxddim + 1
-            cptwfp(np, iib, nkp) = ( 0.d0, 0.d0 )
-          END DO
-        END DO
+            cptwfp(np, iib, nkp) = CZERO
+          ENDDO
+        ENDDO
 
-      END DO K_POINTS
+      ENDDO K_POINTS
 
       CLOSE(20)
 
       CALL timing('init',OPR='stop')
       CALL timing('trasf',OPR='start')
 
-!     WRITE(*,*) ' '
-
       iseed   = -1
-      epsilon = 1.d0
+      epsilon = ONE
+
 !
 !
 !...  Wannier Functions localization procedure
-
-      ALLOCATE ( nnshell(nkpts,nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nnshell ', nkpts*nnmx )
-      ALLOCATE ( nnlist(nkpts,nnmx), nntot(nkpts), STAT=ierr ) 
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nnlist nntot ',nkpts*(nnmx+1))
-      ALLOCATE ( nncell(3,nkpts,nnmx), STAT=ierr ) 
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating nncell ',3*nkpts*nnmx )
-      ALLOCATE ( bk(3,nkpts,nnmx), STAT=ierr ) 
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bk ', 3*nkpts*nnmx )
-      ALLOCATE( dimsingvd(MAX(nnmx,3)), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dimsingvd ', MAX(nnmx,3) )
-      ALLOCATE( dimbk(3,nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dimbk ', 3*nnmx )
-      ALLOCATE( ndim(nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating ndim ', nnmx )
-      ALLOCATE( v1(nnmx,nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating v1 ', nnmx**2 )
-      ALLOCATE( v2(nnmx,nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating v2 ', nnmx**2 )
-      ALLOCATE( w1(10*nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating w1 ', 10*nnmx )
-      ALLOCATE( bka(3,nnmxh), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating bka ', 3*nnmxh )
-      ALLOCATE( neigh(nkpts,nnmxh), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating neigh ', nkpts*nnmxh )
-      ALLOCATE( dnn(nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dnn', nnmx )
-      ALLOCATE( wb(nkpts,nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating wb', nnmx )
-
-!
-!...  Call b-shell
-      CALL bshells( vkpt, nkpts, recc, nshells, nwhich, nnshell, bk,       &
-            dnn, wb, wbtot, nnlist, nncell, nntot, bka, neigh, nkpts )
-
-      DEALLOCATE( v1, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating v1 ', ABS(ierr) )
-      DEALLOCATE( v2, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating v2 ', ABS(ierr) )
-      DEALLOCATE( w1, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating w1 ', ABS(ierr) )
-
-!     check we got it right -- should just see bka vectors
-      IF ( verbosity == 'high' ) THEN
-        WRITE(stdout, fmt="( 'Check we got it right -- should just see bka vectors')")
-        DO nkp = 1, nkpts
-          WRITE (*,*)
-          DO na = 1, nnh
-            nn = neigh(nkp,na)
-            WRITE (stdout, fmt="(3f10.5)") ( bk(j,nkp,nn), j=1,3 )
-          END DO
-        END DO
-      END IF
  
 ! ... now it defines the centers of the localized functions (e.g. gaussians)
 !     that are used to pick up the phases. this is system dependent 
@@ -531,15 +463,15 @@
       ALLOCATE( cm(dimwann,dimwann,nnmx,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm ', dimwann**2 * nkpts*nnmx)
 
-      ALLOCATE( dimwin( nkpts ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating dimwin ', nkpts )
-
-      dimwin = dimwann
+      !
+      ! overlap
+      CALL windows_allocate()
+      dimwin(:) = dimwann
 
       CALL overlap_base( dimwin, nntot, nnlist, nncell, cm, cptwfp,    &
           ninvpw, mxddim, nkpts, nnmx, dimwann, nr1, nr2, nr3, dimwann )
 
-      DEALLOCATE( dimwin )
+      CALL windows_deallocate()
 
       ! ... Conjg is due to the opposite bloch convention in CASTEP
 
@@ -573,7 +505,7 @@
 !...  Write centers and spread
       DO nwann = 1, dimwann
         WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
-           &' )  Omega = ', f13.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ),  &
+           &' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ),  &
                                         r2ave(nwann) - rave2(nwann)
       END DO  
       WRITE( stdout, * ) '  ' 
@@ -923,7 +855,7 @@
           nkp2 = nnlist(nkp,nn)
           DO i = 1, dimwann
             DO j = 1 ,dimwann
-              cmtmp(i,j) = ( 0.d0, 0.d0 )
+              cmtmp(i,j) = CZERO
               DO m = 1, dimwann
                 DO n = 1, dimwann
                   cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,nkp)) * cu(n,j,nkp2) * cm(m,n,nn,nkp)
@@ -1078,12 +1010,12 @@
       ALLOCATE( cdq(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdq ', dimwann*2 * nkpts )
 
-      cdqkeep = ( 0.0d0, 0.0d0 )
-      cdodq1  = ( 0.0d0, 0.0d0 )
-      cdodq2  = ( 0.0d0, 0.0d0 )
-      cdodq3  = ( 0.0d0, 0.0d0 )
-      cdq     = ( 0.0d0, 0.0d0 )
-      cdodq   = ( 0.0d0, 0.0d0 )
+      cdqkeep = CZERO
+      cdodq1  = CZERO
+      cdodq2  = CZERO
+      cdodq3  = CZERO
+      cdq     = CZERO
+      cdodq   = CZERO
 
       CALL timing('trasf',OPR='stop')
       CALL timing('iterations',OPR='start')
@@ -1124,7 +1056,7 @@
         CALL domega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb,              &
              cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
 
-        gcnorm1 = 0.0d0
+        gcnorm1 = ZERO
         DO nkp = 1, nkpts
           DO n = 1, dimwann
             DO m= 1, dimwann
@@ -1251,7 +1183,7 @@
             DO nwann = 1, dimwann
                WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',&
                     &  f12.6, ' )  Omega = ', f13.6 )" )  &
-                    nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+                    nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
             END DO
             WRITE( stdout, * ) '  '
             WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
@@ -1398,7 +1330,7 @@
             DO nwann = 1, dimwann
                WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
                  &  f12.6, ' )  Omega = ', f13.6 )" )  &
-                 nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+                 nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
             END DO
             WRITE( stdout, * ) '  '
             WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
@@ -1439,7 +1371,7 @@
           DO nwann = 1, dimwann
             WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
                & f12.6,' )  Omega = ', f13.6 )" )  &
-               nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
+               nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
           END DO
           WRITE( stdout, * ) '  '
           WRITE( stdout, fmt= " ( 2x, '! Center Sum',    &
@@ -1484,7 +1416,7 @@
       WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
       DO nwann = 1, dimwann
         WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
-           & ' )  Omega = ', f13.6 )" )  nwann,( rave(ind,nwann), ind=1,3 ), &
+           & ' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ), &
                                          r2ave(nwann) - rave2(nwann)
       END DO
       WRITE( stdout, * ) '  '
@@ -1643,24 +1575,6 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating ninvpw ', ABS(ierr) )
       DEALLOCATE( cptwfp, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cptwfp ', ABS(ierr) )
-      DEALLOCATE( dnn, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dnn ', ABS(ierr) )
-      DEALLOCATE( nnshell, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nnshell ', ABS(ierr) )
-      DEALLOCATE( nnlist, nntot, STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nnlist ', ABS(ierr) )
-      DEALLOCATE( nncell, STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nncell ', ABS(ierr) )
-      DEALLOCATE( bk, STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating bk ', ABS(ierr) )
-      DEALLOCATE( dimsingvd, dimbk, ndim, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating dimsingvd ', ABS(ierr) )
-      DEALLOCATE( wb, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating wb ', ABS(ierr) )
-      DEALLOCATE( bka, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating bka ', ABS(ierr) )
-      DEALLOCATE( neigh, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating neigh ', ABS(ierr) )
 
       DEALLOCATE( rphicmx1, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating rphicmx1 ', ABS(ierr) )
@@ -1714,6 +1628,9 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating nindpw ', ABS(ierr) )
 
       CALL deallocate_input()
+      CALL kpoints_deallocate()
+!      CALL subspace_deallocate()
+!      CALL overlap_deallocate()
 
       CALL timing('write',OPR='stop')
       CALL timing('wannier',OPR='stop')

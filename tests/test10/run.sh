@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 #
 # Test3
 # 
@@ -91,44 +91,44 @@ CLEAN=
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
-case $INPUT in 
-   (scf_cond)            SCF_COND=".TRUE." ;;
-   (nscf_cond)           NSCF_COND=".TRUE." ;;
-   (pw2wan_cond)         PW2WAN_COND=".TRUE." ;;
-   (pwscf_cond)          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;;
-   (window_cond)         WINDOW_COND=".TRUE." ;;
-   (disentangle_cond)    DISENTANGLE_COND=".TRUE." ;;
-   (wannier_cond)        WANNIER_COND=".TRUE." ;;
-   (hamiltonian_cond)    HAMILTONIAN_COND=".TRUE." ;;
-   (want_cond)           WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ; 
+case $INPUT in
+   ( scf_cond )          SCF_COND=".TRUE." ;;
+   ( nscf_cond )         NSCF_COND=".TRUE." ;;
+   ( pw2wan_cond )       PW2WAN_COND=".TRUE." ;;
+   ( pwscf_cond )        SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;;
+   ( window_cond )       WINDOW_COND=".TRUE." ;;
+   ( disentangle_cond )  DISENTANGLE_COND=".TRUE." ;;
+   ( wannier_cond )      WANNIER_COND=".TRUE." ;;
+   ( hamiltonian_cond )  HAMILTONIAN_COND=".TRUE." ;;
+   ( want_cond )         WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ; 
                          WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;;
-   (all_cond)            SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;
+   ( all_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;
                          WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;;
 
-   (scf_leads)           SCF_LEADS=".TRUE." ;;
-   (nscf_leads)          NSCF_LEADS=".TRUE." ;;
-   (pw2wan_leads)        PW2WAN_LEADS=".TRUE." ;;
-   (pwscf_leads)         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;;
-   (window_leads)        WINDOW_LEADS=".TRUE." ;;
-   (disentangle_leads)   DISENTANGLE_LEADS=".TRUE." ;;
-   (wannier_leads)       WANNIER_LEADS=".TRUE." ;;
-   (hamiltonian_leads)   HAMILTONIAN_LEADS=".TRUE." ;;
-   (want_leads)          WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ; 
+   ( scf_leads )         SCF_LEADS=".TRUE." ;;
+   ( nscf_leads )        NSCF_LEADS=".TRUE." ;;
+   ( pw2wan_leads )      PW2WAN_LEADS=".TRUE." ;;
+   ( pwscf_leads )       SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;;
+   ( window_leads )      WINDOW_LEADS=".TRUE." ;;
+   ( disentangle_leads ) DISENTANGLE_LEADS=".TRUE." ;;
+   ( wannier_leads )     WANNIER_LEADS=".TRUE." ;;
+   ( hamiltonian_leads ) HAMILTONIAN_LEADS=".TRUE." ;;
+   ( want_leads )        WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ; 
                          WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
-   (all_leads)           SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;
+   ( all_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;
                          WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ;
                          WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
 
-   (pwscf)               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;
+   ( pwscf )             SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ;;
-   (want)                WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ;
+   ( want )              WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;
                          WINDOW_LEADS=".TRUE." ; DISENTANGLE_LEADS=".TRUE." ;
                          WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
-   (conductor)           CONDUCTOR=".TRUE." ;;
-   (bulk)                BULK=".TRUE." ;;
-   (all)                 SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ; 
+   ( conductor )         CONDUCTOR=".TRUE." ;;
+   ( bulk )              BULK=".TRUE." ;;
+   ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PW2WAN_COND=".TRUE." ; 
                          WINDOW_COND=".TRUE." ; DISENTANGLE_COND=".TRUE." ; 
                          WANNIER_COND=".TRUE." ;  HAMILTONIAN_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PW2WAN_LEADS=".TRUE." ; 
@@ -136,7 +136,7 @@ case $INPUT in
                          WANNIER_LEADS=".TRUE." ;  HAMILTONIAN_LEADS=".TRUE." ;
                          CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
 
-   (clean)               CLEAN=".TRUE." ;;
+   ( clean )             CLEAN=".TRUE." ;;
    (*)                   echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;  
 esac
 

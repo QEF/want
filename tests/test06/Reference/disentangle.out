@@ -5,18 +5,18 @@
               =       Norm Conserv. Pseudopot. Impl.       =
               =                                            =
   ======================================================================
-  
-  
-  Program <disentangle>  v. 1.1.0  starts ...
-  Date 15Nov2004 at 11:24:53 
+
+
+  Program <disentangle>  v. 1.1.1  starts ...
+  Date 23Nov2004 at 18:16: 3 
 
   ======================================================================
   =                         Lattice parameters                         =
   ======================================================================
-   
+
   Alat =  20.0000 (Bohr)
   Alat =  10.5835 (Ang )
-   
+
   Crystal axes:
                 in units of Bohr                 in lattice units
     a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
@@ -26,12 +26,71 @@
     a(1) = ( 10.5835  0.0000  0.0000 )
     a(2) = (  0.0000 10.5835  0.0000 )
     a(3) = (  0.0000  0.0000  2.5000 )
-  
+
    Reciprocal lattice vectors:
                 in units of Bohr^-1              in lattice units
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+
+
+  ======================================================================
+  =                      B-shell calculations                          =
+  ======================================================================
+
+  K-point calculation: (cartesian coordinates in Ang^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
+    k point   2:   (   0.00000  0.00000  0.62832 ),   weight =   0.2500
+    k point   3:   (   0.00000  0.00000  1.25664 ),   weight =   0.2500
+    k point   4:   (   0.00000  0.00000  1.88495 ),   weight =   0.2500
+
+  Nearest-neighbour shells for k-point 1: (in Ang^-1)
+    shell (  1 )    radius =   0.59368
+    shell (  2 )    radius =   0.62832
+    shell (  3 )    radius =   0.83958
+    shell (  4 )    radius =   0.86443
+    shell (  5 )    radius =   1.04866
+    shell (  6 )    radius =   1.18735
+    shell (  7 )    radius =   1.25664
+    shell (  8 )    radius =   1.32750
+    shell (  9 )    radius =   1.34335
+    shell ( 10 )    radius =   1.38981
+    shell ( 11 )    radius =   1.46868
+    shell ( 12 )    radius =   1.51130
+ 
+  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
+    shell (  1 )    neighbours  =   4
+    shell (  2 )    neighbours  =   2
+
+  Check shell dimensionality and weights:
+    shell (  1 )    dimensionality  =   2
+    w_b weight is 1/b^2 times  0.5000
+
+
+  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
+  otherwise code will stop! 
+
+  Check shell dimensionality and weights:
+    shell (  2 )    dimensionality  =   1
+    w_b weight is 1/b^2 times  0.5000
+
+
+  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
+  otherwise code will stop! 
+  Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)
+
+  List of the  6 vectors b_k: (Ang^-1) 
+    b_k   1:   (  -0.59368  0.00000  0.00000 ),   weight =   1.4186
+    b_k   2:   (   0.00000 -0.59368  0.00000 ),   weight =   1.4186
+    b_k   3:   (   0.00000  0.59368  0.00000 ),   weight =   1.4186
+    b_k   4:   (   0.59368  0.00000  0.00000 ),   weight =   1.4186
+    b_k   5:   (   0.00000  0.00000  0.62832 ),   weight =   1.2665
+    b_k   6:   (   0.00000  0.00000 -0.62832 ),   weight =   1.2665
+
+  The  3  bk directions are:
+    dir 1:   (  -0.59368  0.00000  0.00000 ) 
+    dir 2:   (   0.00000 -0.59368  0.00000 ) 
+    dir 3:   (   0.00000  0.00000  0.62832 ) 
   
   Kinetic energy cut-off =    25.00 (Ry)
 
@@ -55,65 +114,6 @@
     Mixing parameter (alpha)=  0.500
     Max iter =  1000
     Starting guess orbitals (itrial) =     3
-  
-  ======================================================================
-  =                      B-shell calculations                          =
-  ======================================================================
-  
-  K-point calculation: (cartesian coordinates in Ang^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
-    k point   2:   (   0.00000  0.00000  0.62832 ),   weight =   0.2500
-    k point   3:   (   0.00000  0.00000  1.25664 ),   weight =   0.2500
-    k point   4:   (   0.00000  0.00000  1.88495 ),   weight =   0.2500
-  
-  Nearest-neighbour shells for k-point 1: (in Ang^-1)
-    shell (  1 )    radius =   0.59368
-    shell (  2 )    radius =   0.62832
-    shell (  3 )    radius =   0.83958
-    shell (  4 )    radius =   0.86443
-    shell (  5 )    radius =   1.04866
-    shell (  6 )    radius =   1.18735
-    shell (  7 )    radius =   1.25664
-    shell (  8 )    radius =   1.32750
-    shell (  9 )    radius =   1.34335
-    shell ( 10 )    radius =   1.38981
-    shell ( 11 )    radius =   1.46868
-    shell ( 12 )    radius =   1.51130
-  
-  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
-    shell (  1 )    neighbours  =   4
-    shell (  2 )    neighbours  =   2
-  
-  Check shell dimensionality and weights:
-    shell (  1 )    dimensionality  =   2
-    w_b weight is 1/b^2 times  0.5000
-  
-  
-  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
-  otherwise code will stop! 
-  
-  Check shell dimensionality and weights:
-    shell (  2 )    dimensionality  =   1
-    w_b weight is 1/b^2 times  0.5000
-  
-  
-  Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
-  otherwise code will stop! 
-  Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)
-  
-  List of the  6 vectors b_k: (Ang^-1) 
-    b_k   1:   (  -0.59368  0.00000  0.00000 ),   weight =   1.4186
-    b_k   2:   (   0.00000 -0.59368  0.00000 ),   weight =   1.4186
-    b_k   3:   (   0.00000  0.59368  0.00000 ),   weight =   1.4186
-    b_k   4:   (   0.59368  0.00000  0.00000 ),   weight =   1.4186
-    b_k   5:   (   0.00000  0.00000  0.62832 ),   weight =   1.2665
-    b_k   6:   (   0.00000  0.00000 -0.62832 ),   weight =   1.2665
-  
-  The  3  bk directions are:
-    dir 1:   (  -0.59368  0.00000  0.00000 ) 
-    dir 2:   (   0.00000 -0.59368  0.00000 ) 
-    dir 3:   (   0.00000  0.00000  0.62832 ) 
-  
 
   Initial trial subspace: projected localized orbitals
 
@@ -125,9 +125,9 @@
     Center =   5 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
     Center =   6 Type = 1 Gaussian  = (  0.000000  0.000000  0.944863 ) 
 
- ======================================================================
- =                   Starting Iteration loop                          =
- ======================================================================
+  ======================================================================
+  =                   Starting Iteration loop                          =
+  ======================================================================
 
   Iteration =     1   Omega_I Error =      0.00012868
   Iteration =     2   Omega_I Error =      0.00010082
@@ -165,11 +165,11 @@
    <global routines>
              clock number :     5
 
-              disentangle :     1.69s CPU 
+              disentangle :     3.11s CPU 
  
-                  bshells :     0.04s CPU
-                  overlap :     0.84s CPU
-             overlap_base :     0.84s CPU
-               projection :     0.66s CPU
+                  bshells :     0.01s CPU
+                  overlap :     1.54s CPU
+             overlap_base :     1.54s CPU
+               projection :     1.24s CPU
 
 

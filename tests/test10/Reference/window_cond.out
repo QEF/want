@@ -5,24 +5,24 @@
               =       Norm Conserv. Pseudopot. Impl.       =
               =                                            =
   ======================================================================
-  
-  
-  Program <window>  v. 1.1.0  starts ...
-  Date  5Nov2004 at 17:57:19 
+
+
+  Program <window>  v. 1.1.1  starts ...
+  Date 23Nov2004 at 18:16:11 
 
   ======================================================================
   =                   Input data from PW calculation                   =
   ======================================================================
-   
+
   Alat =  20.7114 (Bohr)
-   
+
   Crystal axes: (cart. coord. in units of a_0)
           a(1) = (  1.0000  0.0000  0.0000 )
           a(2) = (  0.0000  1.1250  0.0000 )
           a(3) = (  0.0000  0.0000  1.1250 )
-  
+
   Number of chemical species =  1
-  
+
   Atomic positions: (cart. coord. in units of crystal)
     C   tau(   1 ) = (  0.0000  0.0000  0.0000 )
     C   tau(   2 ) = (  0.1113  0.0000  0.0000 )
@@ -32,71 +32,72 @@
     C   tau(   6 ) = (  0.6113  0.0000  0.0000 )
     C   tau(   7 ) = (  0.7500  0.0000  0.0000 )
     C   tau(   8 ) = (  0.8613  0.0000  0.0000 )
-  
+
   Kinetic energy cut-off =   20.00 (Ry)
-  
+
   Uniform grid used in wannier calculations:
     nk = (  4  1  1 )      s = (  0.00  0.00  0.00 )
     total number of k points =    4
-  
+
   Number of energy bands =   20
-  
+
   Grids and array dimensions:
     FFT grid (  60 72 72 )
     max dimension of hamiltonian rows =   17017
     max number of G-vectors =  135939
-   
-   
+
+
   ======================================================================
-  =          Input parameters for Wannier function calculation         =
+  =          Input parameters for Wannier func. calculation         =
   ======================================================================
-   
+
   Definition of energy windows: (energies in eV)
     outer window: E  = (-22.0000 ,  -4.5000 )
     inner window: NOT used --> NO FROZEN STATES
-  
+
   Number of Wannier functions required =   16
   Number of k-point shells =   2
-  
-  
+
+
   ======================================================================
   =                         Band structure                             =
   ======================================================================
-  
+
   kpt =  1 (  0.000 0.000 0.000 )    dimwin =   16   npw =   17017
                                        imin =    1   imax =   16
-  Eigenvalues:
+ Eigenvalues:
  -21.1967 -20.4386 -20.4386 -19.0876 -16.7411 -14.4767 -14.4767 -12.5640
   -9.1044  -9.1044  -7.9668  -7.9668  -7.9668  -7.9668  -5.5448  -5.5448
   -2.9740  -2.9740  -0.2232  -0.0719
-  
+
   kpt =  2 (  0.250 0.000 0.000 )    dimwin =   16   npw =   17017
                                        imin =    1   imax =   16
-  Eigenvalues:
+ Eigenvalues:
  -21.1464 -20.7697 -20.0293 -19.2490 -16.5011 -15.2313 -13.7634 -12.7351
   -9.0317  -9.0317  -8.4702  -8.4702  -7.3399  -7.3399  -5.9104  -5.9104
   -2.4547  -2.4547  -0.1649  -0.0107
-  
+
   kpt =  3 (  0.500 0.000 0.000 )    dimwin =   16   npw =   16982
                                        imin =    1   imax =   16
-  Eigenvalues:
+ Eigenvalues:
  -21.0034 -21.0034 -19.6177 -19.6177 -15.9403 -15.9403 -13.1350 -13.1350
   -8.8187  -8.8187  -8.8187  -8.8187  -6.6366  -6.6366  -6.6366  -6.6366
   -1.3531  -1.3531  -1.3531  -1.3531
-  
+
   kpt =  4 (  0.750 0.000 0.000 )    dimwin =   16   npw =   17017
                                        imin =    1   imax =   16
-  Eigenvalues:
+ Eigenvalues:
  -21.1464 -20.7697 -20.0293 -19.2490 -16.5011 -15.2313 -13.7634 -12.7351
   -9.0317  -9.0317  -8.4702  -8.4702  -7.3399  -7.3399  -5.9104  -5.9104
   -2.4547  -2.4547  -0.1649  -0.0107
-  
-  
+
+
   ======================================================================
-  =                     FROZEN STATES ANALYSIS                         =
+ =                       FROZEN states analysis                       =
   ======================================================================
-  
+
   No frozen states 
+
   
   
   ======================================================================
@@ -107,7 +108,7 @@
    <global routines>
              clock number :     1
 
-                   window :     1.22s CPU 
+                   window :     2.77s CPU 
  
 
 
