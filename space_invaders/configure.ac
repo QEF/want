@@ -21,6 +21,7 @@ arflags=$ARFLAGS
 mylib=$MYLIB
 includefftw=$INCLUDEFFTW
 
+no_parallel=1
 # command-line arguments
 for arg in $*
 do
