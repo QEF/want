@@ -348,14 +348,14 @@ CONTAINS
 
       INQUIRE(UNIT=unit,UNFORMATTED=form)
       IF ( TRIM(form) ==  "YES" ) &
-           CALL errore('timing_overview','UNIT unformatted',1)
-      WRITE(unit,"(5x,a)") "TIMING Overview"
+           CALL errore('Timing_overview','UNIT unformatted',1)
+      WRITE(unit,"(2x,a)") "Timing overview"
       IF ( nclock == 0 ) THEN
          WRITE(unit,"(7x,'No clock to display',/)") 
          RETURN
       ENDIF
 
-      WRITE(unit,"(13x,'Clock number : ',i5,/)") nclock
+      WRITE(unit,"(13x,'clock number : ',i5,/)") nclock
       DO i=1,nclock 
          IF ( TRIM(clocks(i)%name) == TRIM(main_name) ) THEN 
             CALL clock_write(unit,clocks(i),FORM="hms")
