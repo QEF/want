@@ -1919,14 +1919,14 @@
           !
           ! ... ordering wannier centers
           !
-          IF (center_ordering) CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu)
+          CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_type)
 
           WRITE( stdout, * ) '  '
           WRITE( stdout, * ) ' ======================================================================'
           WRITE( stdout, * ) ' =                     Convergence Achieved                           ='
           WRITE( stdout, * ) ' ======================================================================'
-          WRITE( stdout, * ) '  '
-          WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
+          WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
+          WRITE( stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
           DO nwann = 1, dimwann
             WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
                & f12.6,' )  Omega = ', f13.6 )" )  &
@@ -1965,13 +1965,13 @@
       !
       ! ... ordering wannier centers
       !
-      IF ( center_ordering ) CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu)
+      CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_type)
 
       WRITE( stdout, * ) '  '
       WRITE( stdout, * ) ' ======================================================================'
       WRITE( stdout, * ) ' =                 Max Number of iteration reached                    ='
       WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) '  '
+      WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
       WRITE(stdout, fmt=" (2x, 'Final Wannier centers and Spreads (Omega)')")
       DO nwann = 1, dimwann
         WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
