@@ -1,5 +1,17 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
       SUBROUTINE genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
                  lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
+!=----------------------------------------------------------------------------------=
 
       USE kinds
       USE timing_module, ONLY : timing

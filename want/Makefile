@@ -12,7 +12,7 @@ lib: mod
 main: lib mod
 	cd Main; $(MAKE);
 
-transport: lib mod
+tran: lib mod
 	cd Transport; $(MAKE);
 
 clean:

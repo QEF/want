@@ -1,11 +1,20 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
       PROGRAM hamiltonian
+!=----------------------------------------------------------------------------------=
   
 ! ... Calculates the band structure and  the
 !     matrix elements H(R) in a Wigner-Seitz supercell
  
-! ... Originally written by IVO SOUZA 9 nov 2000
-!     New Version by A. Calzolari & C. Cavazzoni 2003
-
 ! ... Input files: takeoff.dat, energies.dat, unitary.dat
 !     Output files: band.gp, band.dat, matrix.dat, diagonal.dat
 
@@ -103,9 +112,9 @@
                        calculate_spectral_func, print_sgm_start, print_sgm_end,  &
                        spin_component, efermi     
 
-       INTEGER :: root, mpime, gid, nproc
-       LOGICAL :: ionode
-       INTEGER :: ionode_id
+      INTEGER :: root, mpime, gid, nproc
+      LOGICAL :: ionode
+      INTEGER :: ionode_id
 
 !
 ! ... End declarations and dimensions
@@ -167,13 +176,6 @@
            avec(i,j) = sgn * alatt * avec(i,j)
          END DO
        END DO
-       WRITE(6,201)
- 201   FORMAT(/, '  PRIMITIVE TRANSLATION VECTORS',/,25x,'IN A.U.', 22x,'IN LATTICE UNITS' )
-
-       DO j=1,3
-         WRITE(6,213) j,( avec(i,j), i=1,3 ), ( avec(i,j)/alatt, i=1,3 )
-       END DO
- 213   FORMAT( '  A',i1,'=',3(2x,E11.5), 5x, 3(2x,F7.3) )
 
 !
 ! ...  Get crystal data
@@ -181,17 +183,14 @@
        CALL latti( avec, bvec, vcell, bdot, aminv, adot )
 
       IF ( ( s(1) /= zero ) .OR. ( s(2) /= zero ) .OR. ( s(3) /= zero ) ) THEN
-        WRITE(6,*) 'S(I) IS NOT ZERO ==> H(R) NOT PERIODIC'
-        STOP
+        CALL errore ('hamiltonian', 'S(I) IS NOT ZERO ==> H(R) NOT PERIODIC', s(1))
       END IF
 
-      WRITE (6,121) dimwann
- 121  FORMAT(/,'DIMENSION OF SUBSPACE: DIMWANN=',I2,/)
  
 
 
-! ...  Read (from stdin) information for plotting band structure
-!      and for eventually converting a self energy to wannier basis             
+!...  Read (from stdin) information for plotting band structure
+!     and for eventually converting a self energy to wannier basis             
 !
 !     Next lines (namelist reading) added by ANDREA (28 jan 2004)
       
@@ -208,10 +207,8 @@
 
 
 ! ... Usually nbands equals dimwann 
-      IF ( nbands > dimwann ) STOP 'DECREASE NBANDS IN PW.DAT'
-      WRITE(6,*) nspts, ' SPECIAL K-POINTS:'
-      IF ( nspts > maxspts ) STOP 'INCREASE MAXSPTS'
-      IF ( nbands > 100 ) STOP 'CHANGE FORMAT IN LINE 650'
+      IF ( nbands > dimwann ) CALL errore('hamiltonian', 'wrong number of bands', nbands)
+      IF ( nspts > maxspts ) CALL errore('hamiltonian', 'wrong number of k-points',  nspts)
 
       ALLOCATE( point( nspts ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nspts )
@@ -219,16 +216,10 @@
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating skpt ', 3*nspts )
 
       DO j = 1, nspts
-        READ (5,202) point(j)
- 202    FORMAT (A2)
-       READ (5,*) ( skpt(i,j), i=1,3 )
-        WRITE (6,203) point(j), ( skpt(i,j), i=1,3 )
- 203    FORMAT(a1,2x,3(f10.8,1x))
+        READ (5, fmt="(a2)") point(j)
+        READ (5,*) ( skpt(i,j), i=1,3 )
       END DO
 
-      WRITE (6,*) npts, ' K-POINTS IN EACH SEGMENT'
-      WRITE (6,*) nbands, ' BANDS'
- 
       CLOSE (5)
  
 ! ... Calculate grid of k-points
@@ -280,42 +271,19 @@
 
       CLOSE(29)
 
- 
-! ... Set unitary matrices to identity
-!     This corresponds to using the non-rotated WFs for the interpolation. Should
-!     give worse results (more wiggly bands) except in the single band case, where
-!     it should give exactly the same results, since the band is then 
-!     gauge-invariant.
-!
-!     DO nkp = 1, nkpts
-!       DO j = 1, dimwann
-!         DO i = 1, dimwann
-!           IF ( i ==  j ) THEN
-!             cu(j,i,nkp) = CMPLX( 1.0d0, 0.0d0 )
-!           ELSE
-!             cu(j,i,nkp) = czero
-!           END IF
-!          END DO
-!       END DO
-!      END DO
- 
 ! ... Check unitarity
-      IF ( verbosity == 'high' ) THEN
-        WRITE(6,*) ' '
-        WRITE(6,*) 'checking unitarity of operators CU(k)' 
-        DO nkp = 1, nkpts
-          DO i = 1, dimwann
-            DO j = 1, dimwann
-              ctmp = czero
-              DO m = 1, dimwann
-                ctmp = ctmp + cu(i,m,nkp) * CONJG( cu(j,m,nkp) )
-              END DO
-              WRITE (6,'(2i4,2f15.10)') i, j, ctmp
-            END DO
-          END DO
-          WRITE (6,*)
-        END DO
-      END IF
+!     IF ( verbosity == 'high' ) THEN
+!       DO nkp = 1, nkpts
+!         DO i = 1, dimwann
+!           DO j = 1, dimwann
+!             ctmp = czero
+!             DO m = 1, dimwann
+!               ctmp = ctmp + cu(i,m,nkp) * CONJG( cu(j,m,nkp) )
+!             END DO
+!           END DO
+!         END DO
+!       END DO
+!     END IF
 
  
 ! ... Calculate H(k)=U^{dagger}(k).H_0(k).U(k)
@@ -340,8 +308,6 @@
 
 ! ... Check that eigenvalues of H(k) are the same as those of H_0(k)
       IF ( verbosity == 'high' ) THEN
-        WRITE (6,*)
-        WRITE (6,*) 'CHECKING EIGENVALUES...'
 
         ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
             IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating ap ', dimwann*(dimwann+1)/2 )
@@ -362,20 +328,10 @@
           CALL zhpevx( 'n', 'a', 'u', dimwann, ap(1), zero, zero, 0, 0, -um,            &
                m, w(1), z(1,1), dimwann, work(1), rwork(1), iwork(1), ifail(1), info )
 
-          IF( info < 0 ) THEN
-            WRITE(6,*) '*** ERROR *** zhpevx while diagonalizing hamiltonian'
-            WRITE(6,*) 'the ', -info, ' argument of zhpevx had an illegal value'
-            STOP
-          END IF
+          IF( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (I)', info)
 
-          IF( info > 0 ) THEN
-            WRITE(6,*) '*** ERROR *** zhpevx while diagonalizing hamiltonian'
-            WRITE(6,*) info,'eigenvectors failed to converge'
-            STOP
-          END IF
+          IF( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (I)', info)
 
-          WRITE (6,743) nkp, ( w(m), m=1,dimwann ), ( ei(m,nkp), m=1,dimwann )
- 743      FORMAT(i4,2x,10(f10.5,1x))
         END DO
         DEALLOCATE( ap, w, z, work, rwork, iwork, ifail, STAT=ierr )
             IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ap ... ifail', ABS(ierr) )
@@ -438,7 +394,6 @@
 !     standard output for conduction calculations
 
       WRITE (stringa,"(a,i2,a)") "(",dimwann,"f7.3)"
-      WRITE (6,"(a)") stringa
 
       OPEN( 82, file='matrix.dat', status='unknown', form='formatted' )
       OPEN( 83, file='diagonal.dat', status='unknown', form='formatted' )
@@ -531,17 +486,6 @@
           ENDDO
         ENDDO
  
-! ...   Check that it's hermitian
-!       DO j= 1, dimwann
-!         DO i = 1, j
-!           IF ( ABS(ham_tmp(i,j) - CONJG(ham_tmp(j,i) ) ) > 1.0e-8 ) THEN
-!             WRITE(6,*) '*** ERROR *** not hermitian!'
-!             WRITE(6,*) irk, i, j, ham_tmp(i,j) - CONJG( ham_tmp(j,i) )
-!             STOP
-!           END IF
-!         END DO
-!       END DO
-
 ! ...   Diagonalize the hamiltonian at the present k-point
 
         ALLOCATE( ap( dimwann * ( dimwann + 1 ) / 2 ), STAT=ierr )
@@ -562,16 +506,9 @@
         END DO
         CALL zhpevx( 'n', 'i', 'u', dimwann, ap(1), zero, zero, 1, nbands, -um,     &
              m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
-        IF ( info < 0 ) THEN
-          WRITE(6,*) '*** ERROR *** zhpevx while diagonalizing hamiltonian'
-          WRITE(6,*) 'THE ', -info, ' ARGUMENT OF ZHPEVX HAD AN ILLEGAL VALUE'
-          STOP
-        END IF
-        IF( info > 0 ) THEN
-          WRITE(6,*) '*** ERROR *** zhpevx while diagonalizing hamiltonian'
-          WRITE(6,*) info, 'EIGENVECTORS FAILED TO CONVERGE'
-          STOP
-        END IF
+        IF ( info < 0 ) CALL errore('hamiltonian', 'zhpevx had an illegal value (II)', info)
+        IF ( info > 0 ) CALL errore('hamiltonian', 'zhpevx diagonalization failed (II)', info)
+
         DO i = 1, nbands
           en_band(i,irk) = w(i)
           IF( w(i) < e_min ) e_min = w(i)
@@ -588,10 +525,9 @@
 
       DO i = 1, nbands
         DO irk = 1, tnkpts
-          WRITE (27,650) xval(irk), en_band(i,irk)
+          WRITE (27, fmt="(2e16.8)") xval(irk), en_band(i,irk)
         END DO
       END DO
- 650  FORMAT(2e16.8)
 
       CLOSE( 27 )
  
@@ -605,7 +541,6 @@
         WRITE(28,705) sxval(i), e_min,sxval(i), e_maX
       END DO
       WRITE (stringa2,706) nspts-1
-      WRITE (*,*) stringa2
       WRITE (28,stringa2) ( point(i), sxval(i), i=1,nspts )
       WRITE (28,704)
 
@@ -657,7 +592,7 @@
  706  FORMAT('(''set xtics ('',', I4,'( ''"'',A2,''"'',F8.5,'',''), ''"'',A2,''"'', &
              & F8.5,'')'')')
 
-      STOP '*** THE END *** (hamiltonian.f90)'
+      STOP '*** THE END *** (hamiltonian.x)'
       END
 
 

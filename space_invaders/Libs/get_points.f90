@@ -1,35 +1,18 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=------------------------------------------------------------------------------------------------=
        SUBROUTINE get_points( maxspts, maxpts, nspts, npts, bdot, skpt, kpt, xval, sxval, tnkpts )
-
-!..................................................................................................
+!=------------------------------------------------------------------------------------------------=
 !
-!      DETERMINES THE K-POINTS FOR CALCULATING THE BAND STRUCTURE
+!      Determines the k-points for calculating the band structure
 !
-!      WRITTEN DECEMBER 15, 1997 BY IVO SOUZA
-!
-!      INPUT:
-!
-!      MAXSPTS     MAXIMUM NUMBER OF SPECIAL K-POINTS
-!      MAXPTS      MAXIMUM NUMBER OF K-POINTS BETWEEN TWO CONSECUTIVE
-!                  SPECIAL K-POINTS
-!      NSPTS       NUMBER OF SPECIAL K-POINTS
-!      NPTS        NUMBER OF (EVENLY SPACED) K-POINTS BETWEEN THE FIRST TWO
-!                  SPECIAL K-POINTS (THIS FIXES THE DENSITY OF K-POINTS FOR
-!                  THE WHOLE PLOT) 
-!      BDOT(I,J)   METRIC IN RECIPROCAL SPACE
-!      SKPT(I,J)   I-TH COMPONENT (RECIPROCAL LATTICE COORDINATES) OF THE
-!                  J-TH SPECIAL K-POINT
-!
-!      OUTPUT:
-!
-!      KPT(I,J)    I-TH COMPONENT (RECIPROCAL LATTICE COORDINATES) OF THE
-!                  J-TH K-POINT USED TO PLOT THE BAND STRUCTURE
-!      XVAL(K)     ABCISSA VALUE ON THE BAND STRUCTURE PLOT FOR THE K-TH
-!                  K-POINT
-!      SXVAL(J)    ABCISSA VALUE ON THE BAND STRUCTURE PLOT FOR THE J-TH
-!                  SPECIAL K-POINT
-!      TNKPTS      NUMBER OF K-POINTS USED TO PLOT THE BAND STRUCTURE
-!
-!..................................................................................................
        USE kinds
 
        IMPLICIT NONE

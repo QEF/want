@@ -1,39 +1,16 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
        SUBROUTINE projection_frozen( lamp, dimwann, dimwin,  &
                   dimfroz, frozen, nkpts, mxdbnd, mxdnrk)
-
-! projector operator onto the subspace s of the projected gaussians, p_FROZ iS
-! the projector onto the frozen states, and q_FROZ = 1 - p_FROZ, all expressed
-! in the basis of the bloch eigenstates inside the outer energy window
-! written by ivo souza 30 jan 2001
-! INPUT:
-!
-! LAMP              OUTPUT FROM THE SUBROUTINE PROJECTION (GAUSSIANS PROJECTED
-!                   ONTO THE STATES INSIDE THE OUTER WINDOW)
-! DIMWANN           dimensionality of the subspace at each k-point 
-!                   (number of Wannier functions per unit cell that we want)
-! DIMWIN(NKP)       number of bands at the nkp-th k-point that fall 
-!                   within the outer energy window               
-! DIMFROZ(NKP)      number of bands at the nkp-th k-point that fall 
-!                   within the inner energy window               
-! FROZEN(I,NKP)     TRUE IF THE I-TH BAND (W.R.T. THE LOWEST BAND INSIDE 
-!                   OUTER WINDOW) AT THE NKP-TH K-POINT IS FROZEN, FALSE
-!                   OTHERWISE
-! NKPTS             total number of k-points in the mesh
-! MXDBND            ARRAY DIMENSION FOR BANDS
-! MXDNRK            ARRAY DIMENSION FOR K-POINTS
-!
-!
-! OUTPUT:
-!
-! LAMP(J,L,NKP)     AT THOSE K-POINTS WHERE DIMWANN>DIMFROZ(NKP):
-!                   AMPLITUDE OF THE J-TH ENERGY EIGENVECTOR INSIDE THE OUTER
-!                   ENERGY WINDOW AT THE NKP-TH K-POINT IN THE EXPANSION OF 
-!                   THE L-TH TRIAL LAMBDA EIGENVECTOR AT THE SAME K-POINT
-!                   (ONLY THE TRIAL EIGENVECTORS OUTSIDE THE SPACE OF FROZEN
-!                   STATES  ARE COMPUTED HERE, I.E., FROM L=DIMFROZ(NKP)+1 TO
-!                   DIMWANN)
-!
-!.............................................................................
+!=----------------------------------------------------------------------------------=
 
        USE kinds
        USE timing_module, ONLY : timing

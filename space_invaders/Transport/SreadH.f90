@@ -1,3 +1,12 @@
+!
+!      Copyright (C) 2004 Arrigo Calzolari, Marco Buongiorno Nardelli
+!      Copyright (C) 1999 Marco Buongiorno Nardelli
+!
+!      This file is distributed under the terms of the
+!      GNU General Public License. See the file `License'
+!      in the root directory of the present distribution,
+!      or http://www.gnu.org/copyleft/gpl.txt .
+!
 !---------------------------------------------------------------------
       SUBROUTINE SreadH( nmaxa, nmaxb, nmaxc, h00_a, h01_a, s00_a, s01_a,  &
                          h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac, &

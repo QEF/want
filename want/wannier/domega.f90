@@ -1,6 +1,19 @@
+! 
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli 
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt 
+! Copyright (C) 1997 Nicola Marzari, David Vanderbilt 
+! 
+! This file is distributed under the terms of the 
+! GNU General Public License. See the file `License' 
+! in the root directory of the present distribution, 
+! or http://www.gnu.org/copyleft/gpl.txt . 
+! 
+!
+!=------------------------------------------------------------------------------------------=
       SUBROUTINE domega( nbands, nkpts, nkpts2, nntot, nnmx, nnlist, bk, wb,               &
                  cm, csheet, sheet, cr, crt, rave, r2ave, rnkb, cdodq1, cdodq2, cdodq3,    &
                  cdodq )
+!=------------------------------------------------------------------------------------------=
       
       USE kinds
 
@@ -44,7 +57,6 @@
             END DO
           END DO
           rave(ind,nwann) = - rave(ind,nwann) / DBLE(nkpts2)
-          ! write(6,*) 'rave ', ind, nwann, nkpts2, rave(ind,nwann)
         END DO
       END DO
 
@@ -61,7 +73,6 @@
 ! ...         New minimization 
               cr(m,n,nkp,nn) = cm(m,n,nkp,nn) * CONJG( cm(n,n,nkp,nn) )
 
-              ! write(6,*) 'cm ', m,n,nkp,nn,cm(m,n,nkp,nn)
 
             END DO
             rnkb(m,nkp,nn) = 0.d0

@@ -1,49 +1,20 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
        SUBROUTINE overlap( kgv, vkpt, avec, evecr, eveci, isort, mtxd, &
                            dimwin, nntot, nnlist, nncell, cm, enmax, &
                            mxdgve, mxddim, mxdnrk, mxdnn, mxdbnd, &
                            ngx, ngy, ngz, nrplwv, nkpts, ndwinx )
+!=----------------------------------------------------------------------------------=
  
-!.....................................................................
-! april 2002: rewritten for improved performance based on the original
-! version by Ivo Souza, using the wannier.f convention (MBN)
-!
-! input:
-!
-! nkpts             # of k-points where the overlap matrix is being calculated
-! kgv(i,n)          i-th component (reciprocal lattice coordinates) of
-!                   the n-th g-vector ordered by stars of increasing length
-! vkpt(i,nkp)       special k-points in reciprocal lattice coordinates
-! evecr(i,j,nkp)    real part of the plane wave component of the g-vector
-!                   kgv(1:3,isort(i,nkp)) for the j-th energy eigenvector 
-!                   inside the energy window at the nkp-th k-point 
-! eveci(i,j,nkp)    imaginary part of the plane wave component
-! isort(i,nkp)      g-vector associated with row/column i of hamiltonian at
-!                   the nkp-th k-point is kgv(1:3,isort(i,nkp))
-! mtxd(nkp)         dimension of the hamiltonian at the nkp-th k-point
-! nntot(nkp)        total number of b-vectors in all shells around the
-!                   nkp-th k-point
-! nnlist(nkp,nnx)   vkpt(1:3,nnlist(nkp,nnx)) is the nnx-th neighboring
-!                   k-point of the nkp-th k-point vkpt(1:3,nkp) (or its
-!                   periodic image in the "home brillouin zone")
-! nncell(i,nkp,nnx) the nnx-th nearest neighbor of the nkp-th k-point
-!                   is located in the reciprocal space primitive cell 
-!                   labelled by the three integers nncell(1:3,nkp,nnx)
-! dimwin(nkp)       # of bands that fall in the " sharp" energy window
-! mxddim            array dimension of hamiltonian rows
-! mxdbnd            array dimension for bands
-! mxdnrk            array dimension for k-points
-! mxdnn             maximum possible number of nearest-neighbor k-points (12); 
-!                   turns out to equal the maximum possible number of b-vectors
-!                   that may be needed in the finite-difference formulas
-!                   for the k-derivatives
-! output:
-!
-! cm(n,m,nnx,nkp)   overlap matrix <u_nk|u_{m,k+b}> where vkpt(1:3,kpt) is k 
-!                   and vkpt(1:3,nnlist(kpt,nnx) is k+b (or its periodic image
-!                   in the "home brillouin zone")
-!
-!.....................................................................
-
       USE kinds
       USE timing_module, ONLY : timing 
       USE io_global, ONLY : stdout
@@ -117,8 +88,6 @@
         CALL errore(' overlap ', ' inconsistent window ', ndwinx )
       END IF
 
-!     WRITE( stdout, fmt= " (2x,'Number of bands in PW calculation =', i5 ) " ) mxdbnd
-!     WRITE( stdout, fmt= " (2x,'Max number of bands within the energy window = ', i5 )" ) ndwinx
 
       ALLOCATE( cptwfp( nrplwv+1 , ndwinx, nkpts ), STAT=ierr )
       IF( ierr /= 0 ) THEN
@@ -208,15 +177,6 @@
       END DO
 
       IPRINT=1
-
-!     WRITE(stdout,*) ' DEBUG intf RECC ', recc
-!     WRITE(stdout,*) ' DEBUG intf RECI ', reci
-!     WRITE(stdout,*) ' DEBUG intf VKPT ', vkpt
-!     WRITE(stdout,*) ' DEBUG intf LPCTX ', lpctx
-!     WRITE(stdout,*) ' DEBUG intf LPCTY ', lpcty
-!     WRITE(stdout,*) ' DEBUG intf LPCTZ ', lpctz
-!     WRITE(stdout,*) ' DEBUG intf ENMAX ', enmax
-!     WRITE(stdout,*) ' DEBUG intf NRPLWV ', nrplwv
 
       CALL genbtr( nrplwv, ngx, ngy, ngz, nkpts, enmax, nindpw, nplwkp, vkpt, &
            lpctx, lpcty, lpctz, datake, recc, reci, iprint, dnlg, dnlkg )
@@ -380,7 +340,6 @@
          IF (ierr/=0) CALL errore(' overlap ',' deallocating nplwkp',ABS(ierr))
 
  
-      !WRITE( stdout , fmt= "(2x, 'OVERLAP done. ',/)")
       CALL timing('overlap',OPR='stop')
 
       RETURN

@@ -1,4 +1,11 @@
-
+! 
+! Copyright (C) 2004 Andrea Ferretti
+! 
+! This file is distributed under the terms of the 
+! GNU General Public License. See the file `License' 
+! in the root directory of the present distribution, 
+! or http://www.gnu.org/copyleft/gpl.txt . 
+! 
 !*********************************************************
 SUBROUTINE do_self_energy(dimwann,nkpts,nws,ispin,cu,vkpt,indxws, &
                           bvec, namein, nameout)

@@ -1,4 +1,16 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
       PROGRAM plot
+!=----------------------------------------------------------------------------------=
 
       USE kinds
       USE constants, ONLY: pi, twopi => tpi, bohr => bohr_radius_angs
@@ -137,9 +149,7 @@
 ! ... Initialize the data used for the fast fourier transforms
 
       READ(5,*) nwann, nrxl, nrxh, nryl, nryh, nrzl, nrzh
-      WRITE(*,*) 'plotting WF n. ', nwann
-      WRITE(*,*) 'plot grid      ', nrxl, nrxh, nryl, nryh, nrzl, nrzh
-      WRITE(*,*) 'total grid     ', 1, ngx, 1, ngy, 1, ngz
+      WRITE(stdout,*) 'plotting WF n. ', nwann
 
       nrxd = ( nrxh - nrxl + 1 )
       nryd = ( nryh - nryl + 1 ) 
@@ -150,17 +160,17 @@
       nnrz = ABS( nrzl / ngz ) + 2
 
       IF( nrxd < 1 ) THEN
-        WRITE( *, * ) ' nrxl, nrxh = ', nrxl, nrxh
+        WRITE( stdout, * ) ' nrxl, nrxh = ', nrxl, nrxh
         CALL errore( ' plot ', ' wrong nrxl and nrxh ', 1 )
       END IF
 
       IF( nryd < 1 ) THEN
-        WRITE( *, * ) ' nryl, nryh = ', nryl, nryh
+        WRITE( stdout, * ) ' nryl, nryh = ', nryl, nryh
         CALL errore( ' plot ', ' wrong nryl and nryh ', 1 )
       END IF
 
       IF( nrzd < 1 ) THEN
-        WRITE( *, * ) ' nrzl, nrzh = ', nrzl, nrzh
+        WRITE( stdout, * ) ' nrzl, nrzh = ', nrzl, nrzh
         CALL errore( ' plot ', ' wrong nrzl and nrzh ', 1 )
       END IF
       
@@ -320,7 +330,7 @@
         WRITE( frfft, ' ( ''WFR'', i3, ''.gau'' ) ' ) nwann
         WRITE( fifft, ' ( ''WFI'', i3, ''.gau'' ) ' ) nwann
       ELSE
-        WRITE(*,*) ' ERROR - nwann .gt. 999'
+        WRITE(stdout,*) ' ERROR - nwann .gt. 999'
       END IF
 
 
@@ -379,7 +389,7 @@
       CALL timing_overview(stdout,MAIN_NAME='plot')
       CALL timing_deallocate()
 
-      STOP '*** THE END *** (plot.f90)'
+      STOP '*** THE END *** (plot.x)'
       END
 
 

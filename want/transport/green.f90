@@ -1,6 +1,15 @@
-!=---------------------------------------------------------------------=
+!
+!      Copyright (C) 2004 Arrigo Calzolari, Marco Buongiorno Nardelli
+!      Copyright (C) 1999 Marco Buongiorno Nardelli
+!
+!      This file is distributed under the terms of the
+!      GNU General Public License. See the file `License'
+!      in the root directory of the present distribution,
+!      or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------=
       SUBROUTINE green( nmax, tot, tott, h0, h1, ene, gm1, g, igreen, invert )
-!=---------------------------------------------------------------------=
+!=----------------------------------------------------------------------------=
       USE kinds
 
       IMPLICIT NONE

@@ -1,36 +1,20 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
        SUBROUTINE projection( avec, lamp, evecr, eveci, vkpt,              & 
                   kgv, isort, mtxd, dimwin, dimwann, dimfroz,              &
                   mxddim, mxdbnd, mxdnrk, mxdgve, ngx, ngy, ngz, nkpts,    &
                   gauss_typ, rphiimx1, rphiimx2, l_wann,                   &
                   m_wann, ndir_wann, rloc, ndwinx)
-
-!...............................................................................
-! ******
-! INPUT:
-! ******
-!
-! AVEC(I,J)         I-TH COMPONENT OF J-TH DIRECT LATTICE VECTOR
-! EVECR(I,J,NKP)    REAL PART OF THE AMPLITUDE OF THE G-VECTOR 
-!                   KGV(1:3,ISORT(I,NKP)) IN THE EXPANSION OF THE J-TH ENERGY 
-!                   EIGENVECTOR INSIDE THE ENERGY WINDOW AT THE NKP-TH K-POINT 
-! EVECI(I,J,NKP)    IMAGINARY PART OF THE AMPLITUDE
-! VKPT(I,NKP)       i-th component in reciprocal lattice coordinates
-!                   of the nkp-th k-point
-! KGV(I,N)          I-TH COMPONENT (RECIPROCAL LATTICE COORDINATES) OF
-!                   THE N-TH G-VECTOR ORDERED BY STARS OF INCREASING LENGTH
-! ISORT(I,NKP)      G-VECTOR ASSOCIATED WITH ROW/COLUMN I OF HAMILTONIAN AT
-! MTXD(NKP)         DIMENSION OF THE HAMILTONIAN AT THE NKP-TH K-POINT
-!                   THE NKP-TH K-POINT IS KGV(1:3,ISORT(I,NKP))
-! DIMWIN(NKP)       number of bands at the nkp-th k-point that fall 
-!                   within the outer energy window               
-! DIMWANN           dimensionality of the subspace at each k-point 
-!                   (number of Wannier functions per unit cell that we want)
-! DIMFROZ(NKP)      number of frozen bands at the nkp-th k-point 
-! MXDDIM            ARRAY DIMENSION OF HAMILTONIAN ROWS
-! MXDBND            ARRAY DIMENSION FOR BANDS
-! MXDNRK            ARRAY DIMENSION FOR K-POINTS
-! MXDGVE            ARRAY DIMENSION FOR G-SPACE VECTORS
-!...............................................................................
+!=----------------------------------------------------------------------------------=
 
        USE kinds
        USE fft_scalar
@@ -238,19 +222,10 @@
            asidemin = MIN( aside, asidemin )
          END DO
          nphir(nwann) = nint( 2 * ( rloc(nwann) / asidemin ) * MIN( ngx,ngy,ngz ) )
-!        WRITE(stdout,*) ' '
-!        WRITE(stdout,'(a14,i3)') 'Trial orbital ', nwann
-!        WRITE(stdout,*) ' Gaussian width, in atomic units  ', rloc(nwann)
-!        WRITE(stdout,*) ' Half-width of integration region ', nphir(nwann)
-!        WRITE(stdout,*) ' '
-!        WRITE(stdout,8000)
-!8000     FORMAT (1x,'-------------------------------------------------------------------------------')
        END DO
 
 ! ...  Calculate the projection of the gaussians on the bloch eigenstates inside 
 !      energy window: store it in dimwin(nkp) X dimwann overlap matrix ca
-
-! ...  Mostly copied from turkey.f, w/ some modIF ications and the replacements 
 
 ! ...  nbands --> dimwann or dimwin(nkp), and dirc(i,j) --> avec(j,i), 
 
@@ -550,21 +525,11 @@
 
            END DO    ! nb
       
-!          WRITE(stdout,*) '  '
-!          IF  (dimwin(nkp) <= 8) THEN
-!            WRITE(stdout,*) '  '
-!            DO i = 1, dimwin(nkp)
-!              WRITE(stdout,'(14(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
-!            END DO
-
-!          END IF 
 
          END IF  
 
        END DO ! NKP
 
-!      WRITE(stdout,*) ' '
-!      WRITE(stdout,8000)
  
 ! ...  Compute the dimwin(k) x dimwann matrix cu that yields, from the dimwin(k) 
 !      original bloch states, the dimwann bloch-like states with maximal projection
@@ -582,7 +547,7 @@
        DO nkp=1,nkpts
          IF ( dimwann > dimfroz(nkp) ) THEN
  
-! ...      SINGULAR VALUE DECOMPOSITION
+! ...      Singular value decomposition
  
            CALL zgesvd( 'a', 'a', dimwin(nkp), dimwann, ca(1,1,nkp),              &
                 mxdbnd, s, u, mxdbnd, vt, dimwann, work, 4*mxdbnd, rwork2, info )

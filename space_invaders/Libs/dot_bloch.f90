@@ -1,43 +1,16 @@
+! 
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli 
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt 
+! Copyright (C) 1997 Nicola Marzari, David Vanderbilt 
+! 
+! This file is distributed under the terms of the 
+! GNU General Public License. See the file `License' 
+! in the root directory of the present distribution, 
+! or http://www.gnu.org/copyleft/gpl.txt . 
+! 
+!=-----------------------------------------------------------------------------------
        FUNCTION dot_bloch( vec1, vec2, isort1, isort2, mtxd1, mtxd2, mxddim, mxdgve )
-
-!....................................................................................
-!
-! CALCULATES THE DOTPRODUCT <u_{n1,k1}|u_{n2,k2}> BETWEEN THE CELL-PERIODIC
-! PARTS OF THE BLOCH STATES
-!
-! WRITTEN BY IVO SOUZA 4 OCT 2000 (BASED ON PREVIOUS VERSION OF phase.f)
-!
-!      INPUT:
-!
-!      MXDDIM      ARRAY DIMENSION OF HAMILTONIAN ROWS
-!      MXDGVE      ARRAY DIMENSION FOR G-SPACE VECTORS
-!      MTXD1,2     DIMENSION OF THE HAMILTONIAN AT k1,2  
-!      ISORT1,2(I) G-VECTOR ASSOCIATED WITH ROW/COLUMN I OF HAMILTONIAN AT k1
-!                  IS KGV(*,ISORT1(I))  
-!      VEC1,2(I)   FOURIER COMPONENT OF BLOCH STATE AT K1 ASSOCIATED WITH 
-!                  ROW/COLUMN I OF HAMILTONIAN, I.E., WITH G-VECTOR 
-!                  KGV(*,ISORT1(I)). FOR I=MXDDIM+1 BOTH VEC1(I) AND VEC2(I)
-!                  SHOULD BE SET TO ZERO AT INPUT
-!               
-!   
-!      OUTPUT:
-!
-!      DOT_BLOCH   DOTPRODUCT <u_{n1,k1}|u_{n2,k2}>
-!
-!
-!      INTERNAL:
-!
-!      GMAX        UPPER BOUND FOR THE G-VECTOR INDEX (THE INDEX N IN KGV(*,N))
-!                  USED IN THE DOTPRODUCT 
-!      INDX1,2(N)  ROW/COLUMN OF HAMILTONIAN AT k1 TO WHICH CORRESPONDS THE
-!                  N-TH G-VECTOR (I.E., KGV(*,N)). IF THAT G-VECTOR IS NOT
-!                  USED IN THE EXPANSION OF THE WAVE FUNCTION AT k1, THEN
-!                  INDX1(N)=MXDDIM+1, WHICH IS LIKE "POINTING TO NOWHERE",
-!                  SINCE VEC1(MXDDIM+1)=0. IN OTHER WORDS, INDX1 IS SORT OF 
-!                  THE INVERSE OF ISORT1, OBEYING THE RELATION 
-!                  INDX1(ISORT1(I))=I AT THE POINTS I OF INTEREST
-!
-!....................................................................................
+!=-----------------------------------------------------------------------------------
 
        USE kinds   
 

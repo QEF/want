@@ -1,20 +1,16 @@
+!
+! Copyright (C) 2004 Arrigo Calzolari, Carlo Cavazzoni, Marco Buongiorno Nardelli
+! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
+! Copyright (C) 1993 Sverre Froyen
+!
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+!=----------------------------------------------------------------------------------=
        SUBROUTINE LATTI(AVEC,BVEC,VCELL,BDOT,AMINV,ADOT)
-
-!.....................................................................
-!      COMPUTES VARIOUS LATTICE PARAMETERS.
-!      ADAPTED FROM SVERRE FROYEN PLANE WAVE PROGRAM
-!      VERSION 4.0. 21 OCTOBER 93. JLM
-!
-!      INPUT:
-!      AVEC(I,J)   I-TH COMPONENT OF J-TH DIRECT LATTICE VECTOR
-!
-!      OUTPUT:
-!      AMINV(I)    2*PI/ MODULE OF LATTICE VECTOR I
-!      BVEC(I,J)   I-TH COMPONENT OF J-TH RECIPROCAL LATTICE VECTOR
-!      VCELL       CELL VOLUME
-!      BDOT(I,J)   METRIC IN RECIPROCAL SPACE
-!      ADOT(I,J)   METRIC IN DIRECT SPACE
-!.....................................................................
+!=----------------------------------------------------------------------------------=
 
        USE kinds
        USE constants, ONLY: pi, twopi => tpi
