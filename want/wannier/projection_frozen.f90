@@ -184,12 +184,8 @@
              CALL errore(' projection_frozen ', ' eigenvectors failed to converge ', info )
            END IF
 
-           IF( m /= dimwin(nkp) ) THEN
-             WRITE(stdout ,*) '*** ERROR *** in projection_frozen.f'
-             WRITE(stdout ,*) 'number of eigenvalues/vectors obtained is',     &
-                        m,' not equal to the number asked,', dimwin(nkp)
+           IF( m /= dimwin(nkp) ) &
              CALL errore(' projection_frozen ', ' number of eigenstates different from required ', m )
-           END IF
          
 ! ...      Pick the dimwann-dimfroz(nkp) leading eigenvectors to be trial states; 
 !          put them right after the frozen states in lamp
@@ -209,19 +205,13 @@
                DO j = 1, dimwin(nkp)
                  ctmp = ctmp + CONJG( lamp(j,m,nkp) ) * lamp(j,l,nkp)
                END DO
-               WRITE(stdout ,'(i2,2x,i2,f16.12,1x,f16.12)') l, m, ctmp
+!              WRITE(stdout ,'(i2,2x,i2,f16.12,1x,f16.12)') l, m, ctmp
                IF ( l == m ) THEN
-                 IF ( ABS( ctmp - CMPLX( 1.0d0, 0.0d0 ) ) > 1.0e-8 ) THEN
-                   WRITE(stdout ,*) 'projected gaussians in lamp not orthonormal'
-                   WRITE(stdout ,'(a11,i4)') 'at k-point ', nkp
+                 IF ( ABS( ctmp - CMPLX( 1.0d0, 0.0d0 ) ) > 1.0e-8 ) &
                    CALL errore(' projection_frozen ', ' projected gaussians in lamp not orthonormal (I)', ABS( ctmp - CMPLX( 1.0d0, 0.0d0 ) ) )
-                 END IF
                ELSE
-                 IF ( ABS(ctmp) > 1.0e-8 ) THEN
-                   WRITE(stdout ,*) 'projected gaussians in lamp not orthonormal'
-                   WRITE(stdout ,'(a11,i4)') 'at k-point ', nkp
+                 IF ( ABS(ctmp) > 1.0e-8 ) &
                    CALL errore(' projection_frozen ', ' projected gaussians in lamp not orthonormal (II)', ABS( ctmp ) )
-                 END IF
                END IF
              END DO
            END DO

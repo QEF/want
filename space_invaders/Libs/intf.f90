@@ -149,9 +149,9 @@
 ! ...  Convert emax to eV
 
        enmax = emax * har
-       WRITE(*,*) ' '
-       WRITE(*,*) 'EMAX = ', emax, ' HAR', ', ENMAX = ', enmax, ' eV'
-       WRITE(*,*) ' '
+!      WRITE(*,*) ' '
+!      WRITE(*,*) 'EMAX = ', emax, ' HAR', ', ENMAX = ', enmax, ' eV'
+!      WRITE(*,*) ' '
 
 ! ...  Read grid information, and G-vectors
 
@@ -163,13 +163,13 @@
        nkpts1 = nk(1) * nk(2) * nk(3)
 
        IF( nkpts1 /= nkpts ) THEN
-         WRITE(*,*) 'NKPTS1 = ', nkpts1, ', NKPTS =', nkpts
-         WRITE(*,*) 'Change NKPTS'
+         WRITE(stdout,*) 'NKPTS1 = ', nkpts1, ', NKPTS =', nkpts
+         WRITE(stdout,*) 'Change NKPTS'
          STOP
        END IF
 
        IF( DIMWANN > MXDBND ) THEN
-         WRITE(6,*) '*** INCREASE MXDBND ***'
+         WRITE(stdout,*) '*** INCREASE MXDBND ***'
          STOP
        END IF
 
@@ -181,23 +181,23 @@
 
       CALL bastr( dirc, recc, volc )
 
-      WRITE(*,*)' THE BASIS-SET USED WHEN PLACING ATOMS ( DIRC(I,J) ):'
-      WRITE(*,*) ' '
-      WRITE(*,101) ( ( dirc(i,j), i=1,3 ), j=1,3 )
-      WRITE(*,*) ' '
-      WRITE(*,*) ' THE RECIPROCAL SPACE BASIS ( RECC(I,J) ): '
-      WRITE(*,*) ' '
-      WRITE(*,101) ( ( recc(i,j), i=1,3 ), j=1,3 )
- 101  FORMAT(1x,3f10.6)
+!     WRITE(*,*)' THE BASIS-SET USED WHEN PLACING ATOMS ( DIRC(I,J) ):'
+!     WRITE(*,*) ' '
+!     WRITE(*,101) ( ( dirc(i,j), i=1,3 ), j=1,3 )
+!     WRITE(*,*) ' '
+!     WRITE(*,*) ' THE RECIPROCAL SPACE BASIS ( RECC(I,J) ): '
+!     WRITE(*,*) ' '
+!     WRITE(*,101) ( ( recc(i,j), i=1,3 ), j=1,3 )
+!101  FORMAT(1x,3f10.6)
 
-      WRITE (*,*) ' '
-      WRITE(*,*) ' NOTE: VECTORS A1 A2 A3 AND B1 B2 B3 ARE GIVEN IN *COLUMNS* '
-      WRITE (*,*) ' '
-      WRITE (*,*) ' VOLUME OF CURRENT UNIT CELL:', VOLC
+!     WRITE (*,*) ' '
+!     WRITE(*,*) ' NOTE: VECTORS A1 A2 A3 AND B1 B2 B3 ARE GIVEN IN *COLUMNS* '
+!     WRITE (*,*) ' '
+!     WRITE (*,*) ' VOLUME OF CURRENT UNIT CELL:', VOLC
 
 ! ... Read in atomic positions (same as payne's original one)
 
-      WRITE (*,*) ' '
+!     WRITE (*,*) ' '
 
       ALLOCATE( vkpt( 3, nkpts ), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' inft ', ' allocating vkpt ', (3*nkpts) )
@@ -218,10 +218,10 @@
 
       wtkpt(1:nkpts) = 1.0d0/DBLE(nkpts)
 
-      DO nkp = 1 , nkptS
-         WRITE (*,7014) nkp, vkpt(1,nkp), vkpt(2,nkp), vkpt(3,nkp), wtkpt(nkp)
-      END DO
- 7014 FORMAT('  SPECIAL K-POINT', i6, ':', 3f10.5, '   WEIGHT =', f10.5)
+!     DO nkp = 1 , nkptS
+!        WRITE (*,7014) nkp, vkpt(1,nkp), vkpt(2,nkp), vkpt(3,nkp), wtkpt(nkp)
+!     END DO
+!7014 FORMAT('  SPECIAL K-POINT', i6, ':', 3f10.5, '   WEIGHT =', f10.5)
 
       wtktot = sum( wtkpt( 1:nkpts ) ) 
 
@@ -231,7 +231,7 @@
         STOP
       END IF
 
-      WRITE (*,*) ' '
+!     WRITE (*,*) ' '
  
  
 ! ... Generate the array ninvpw
@@ -303,7 +303,7 @@
 
 
       nplwv = ngx * ngy * ngz
-      WRITE(6,*) 'DEBUG nplwv = ', nplwv
+!     WRITE(6,*) 'DEBUG nplwv = ', nplwv
 
       ALLOCATE( ninvpw(0:nplwv,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' intf ', ' allocating ninvpw ', (nplwv+1)*nkpts )
@@ -357,7 +357,7 @@
          !
          READ(19) mtxd( nkp ), idum, idum, kdimwin( nkp )
 
-         WRITE(*,*) 'KPT= ', nkp, ' mtxd = ', mtxd(nkp), ' dimwin= ', kdimwin( nkp )
+!        WRITE(*,*) 'KPT= ', nkp, ' mtxd = ', mtxd(nkp), ' dimwin= ', kdimwin( nkp )
 
          IF ( mtxd(nkp) > mxddim ) THEN
            WRITE(*,*) '*** SOMETHING WRONG ***' 

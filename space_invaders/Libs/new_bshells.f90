@@ -133,7 +133,6 @@
 
       DO ndnn = 1, ndnntot
       WRITE( stdout, fmt= " (4x, 'shell (',i3,' )    radius = ', f9.5 )")  ndnn, dnn(ndnn)
-      !  WRITE(*,*) ndnn, dnn(ndnn)
       END DO
       WRITE( stdout,*) ' '
 
@@ -228,9 +227,10 @@
 
         nnsh = nnshell(1,ndnn)
 
-        DO i = 1, nnmx
-          dimsingvd(i) = 0.d0
-        END DO
+        IF( nnsh > nnmx ) &
+          CALL errore(' wannier ',' nnsh too big ', nnsh )
+
+        dimsingvd(:) = 0.d0
 
         CALL dgesvd( 'A', 'A', 3, nnsh, dimbk, 3, dimsingvd, v1, 3, v2, nnsh, w1, 10*nnsh, info )
 
@@ -248,7 +248,7 @@
         WRITE( stdout, fmt= " (4x, 'w_b weight is 1/b^2 times', f8.4 )")  factor
         WRITE( stdout, *) ' '
 
-!...    Arrigo 17/06/2004
+!...    17/06/2004
         IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
           IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
                ( nnshell(1,ndnn) /= 12 ) ) THEN
@@ -262,7 +262,7 @@
           WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
           WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
         END IF
-!...    Fine Arrigo
+!...
 
       END DO
 
@@ -283,7 +283,7 @@
         END DO
       END DO
 
-!...  Arrigo 17/06/2004
+!...  17/06/2004
 !     now check that the completeness relation is satisfied
 !     Eq. B1 in Appendix  B PRB 56 12847 (1997)
 
@@ -315,7 +315,7 @@
 
       WRITE( stdout, fmt=" (2x, 'Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)' )")
       WRITE(*,*) ' '
-!...  Fine Arrigo
+!...  
 
       wbtot = 0.0d0
       nnx = 0
@@ -390,9 +390,6 @@
 
 ! ... Find index array
 
-!     WRITE(*,*) ' K-point, neighbor directions'
-!     WRITE(*,*) ' '
-
       DO nkp = 1, nkpts2
 
         DO na = 1, nnh
@@ -410,12 +407,8 @@
           IF ( neigh(nkp,na) == 0 ) CALL errore(' new_bshell ', ' Check failed ', na )
 
         END DO
-!       WRITE (*,'(i6,6x,6i6)') nkp, ( neigh(nkp,na), na=1,nnh )
 
       END DO
-!     WRITE(*,*) ' '
-
-!     WRITE( stdout, fmt="(2x, 'BSHELL, done. ')" )
 
       CALL timing('bshells',OPR='stop')
 

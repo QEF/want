@@ -198,7 +198,7 @@
 
 !...   Start writing output
        WRITE( stdout, * ) ' ======================================================================'
-       WRITE( stdout, * ) ' =                   Starting input parameters                        ='
+       WRITE( stdout, * ) ' =                         Input parameters                           ='
        WRITE( stdout, * ) ' ======================================================================'
        WRITE( stdout, * ) '  ' 
        WRITE( stdout, fmt= " (2x,'Alat = ', F8.4, ' (Bohr)' )" ) alat
@@ -493,14 +493,14 @@
              WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected gaussians+frozen states' )")
              WRITE( stdout,*) ' ' 
 
-             DO nkp = 1, nkpts
-               IF ( dimfroz(nkp) == 0 ) THEN
-                 WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = none'  )") nkp
-               ELSE
-                 WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = ',i4,':'  )") nkp,dimfroz(nkp)
-                 WRITE( stdout, fmt= "(20(i2,1x)   )") ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
-               END IF
-             END DO
+!            DO nkp = 1, nkpts
+!              IF ( dimfroz(nkp) == 0 ) THEN
+!                WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = none'  )") nkp
+!              ELSE
+!                WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = ',i4,':'  )") nkp,dimfroz(nkp)
+!                WRITE( stdout, fmt= "(20(i2,1x)   )") ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
+!              END IF
+!            END DO
 
 ! ...        First find the dimwmann-dimensional subspace s with maximal overlap onto the
 !            dimwann gaussians
@@ -549,15 +549,15 @@
 !            the trial subspace.
 
              DO nkp = 1, nkpts
-               WRITE( stdout,*) ' ' 
-               WRITE( stdout, fmt=" (2x, 'k-point', i4)") nkp
+!              WRITE( stdout,*) ' ' 
+!              WRITE( stdout, fmt=" (2x, 'k-point', i4)") nkp
                DO l = 1, dimwann
                  DO m = 1, l
                    ctmp = czero
                    DO j = 1, dimwin(nkp)
                      ctmp = ctmp + CONJG(lamp(j,m,nkp)) * lamp(j,l,nkp)
                    END DO
-                   WRITE( stdout, fmt="(4x,i2, 2x, i2, f16.12, 1x, f16.12)") l, m, ctmp
+!                  WRITE( stdout, fmt="(4x,i2, 2x, i2, f16.12, 1x, f16.12)") l, m, ctmp
                    IF ( l == m ) THEN
                      IF ( ABS(ctmp-cmplx(1.0d0,0.0d0)) > 1.0e-8 ) &
                        CALL errore(' disentangle ', ' Vectors in lamp not orthonormal (I)', ABS(ctmp-cmplx(1.0d0,0.0d0)) )
@@ -760,6 +760,7 @@
 ! ...  Write the final omega_i. This should equal the one given by wannier
  
        WRITE( stdout, fmt=" (2x, 'Final Omega_I (Bohr^2, Angstrom^2)', f16.8,2x,f16.8)")omega_i,omega_i*bohr**2
+       WRITE( stdout, * ) ' ======================================================================'
 
  
 ! ...  Diagonalize the hamiltonian within the optimized subspace at each K

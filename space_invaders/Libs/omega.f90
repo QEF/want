@@ -1,5 +1,6 @@
       SUBROUTINE omega( nbands, nkpts, nkpts2, nntot, nnmx, nnlist, bk, wb, cm,       &
-                 csheet, sheet, rave, r2ave, func_om1, func_om2, func_om3, func_o)
+                 csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
+                 rtot, r2tot, func_i, func_d, func_od )
       
       USE kinds
       USE io_global, ONLY : stdout
@@ -15,6 +16,7 @@
       INTEGER :: nkp
       INTEGER :: nn
       INTEGER :: i, m, n 
+
 
       INTEGER :: nnlist(nkpts,nnmx)
       INTEGER :: nntot(nkpts)
@@ -52,15 +54,11 @@
               rave(ind,nwann) = rave(ind,nwann) + wb(nkp,nn) * bk(ind,nkp,nn) *      &
                   ( AIMAG(LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nkp,nn) ) )     &
                    - sheet(nwann,nkp,nn) )
-              ! WRITE(6, FMT="( ' DEBUG 1 omega: ', 10D18.10)" ) rave(ind,nwann),      &
-              !       wb(nkp,nn), bk(ind,nkp,nn), csheet(nwann,nkp,nn), cm(nwann,nwann,nkp,nn)
             END DO
           END DO
           rave(ind,nwann) = -rave(ind,nwann) / DBLE(nkpts2)
         END DO
       END DO
-
-      ! WRITE (6, fmt="( ' DEBUG 2 omega: ', 3D18.10)" ) rave
 
       DO nwann = 1, nbands
         rave2(nwann) = 0.d0
@@ -86,20 +84,12 @@
           END DO
         END DO
         r2ave(nwann) = r2ave(nwann) / DBLE(nkpts2)
-        WRITE( stdout, fmt= " ( 1x, 'Wannier center and spread',                &
-               i3, 2x, '(',f10.6,',',f10.6,',',f10.6,')', f15.8 )" )            &
-               nwann,( rave(ind,nwann), ind=1,3 ), r2ave(nwann) - rave2(nwann)
       END DO
 
       r2tot = 0.d0
       DO nwann=1,nbands
         r2tot = r2tot + r2ave(nwann) - rave2(nwann)
       END DO
-      WRITE( stdout, * ) ' '
-      WRITE( stdout, fmt= " ( 1x, 'Sum of centers and spreads',    &
-             4x, '(',f10.6,',',f10.6,',',f10.6,')', f15.8 )" )     &
-            (rtot(ind),ind=1,3), r2tot
-      WRITE( stdout, * ) ' '
 
       DO nwann = 1, nbands
         DO ind = 1, 3
@@ -194,7 +184,6 @@
         END DO
       END DO
       func_n = func_n / DBLE(nkpts2)
-      WRITE( stdout, fmt="(2x,'------ func_n', f8.4 )") func_n
 
       func_n = 0.d0
       DO m = 1, nbands
@@ -215,7 +204,6 @@
         END DO
       END DO
       func_n = func_n / DBLE(nkpts2)
-      WRITE( stdout, fmt="(2x,'------ func_n', f8.4 )") func_n
       
 
       func_n = 0.d0
@@ -247,14 +235,6 @@
         func_i = func_i + r2ave(n)
       END DO
       func_i = func_i - func_n
-      WRITE( stdout, fmt="(2x,'Omega_nI is   ', f15.9 ) " ) func_i
-      WRITE( stdout, fmt="(2x,'Omega_n~ is   ', f15.9 ) " ) func_n
-
-      WRITE( stdout, fmt="(2x,'Omega1   is   ', f15.9 ) " ) func_om1
-      WRITE( stdout, fmt="(2x,'Omega2   is   ', f15.9 ) " ) func_om2
-      WRITE( stdout, fmt="(2x,'Omega3   is   ', f15.9 ) " ) func_om3
-      WRITE( stdout, fmt="(2x,'Omega2+3 is   ', f15.9 ) " ) func_om2+func_om3
-      WRITE( stdout, *) ' '
 
       func_i = 0.d0
       DO nkp = 1, nkpts2
@@ -302,15 +282,7 @@
       END DO
       func_d = func_d / DBLE(nkpts2)
 
-      WRITE( stdout, fmt="(2x,'OmegaI   is   ', f15.9 ) " ) func_i
-      WRITE( stdout, fmt="(2x,'OmegaD   is   ', f15.9 ) " ) func_d
-      WRITE( stdout, fmt="(2x,'OmegaOD  is   ', f15.9 ) " ) func_od
-      WRITE( stdout, fmt="(2x,'Omegatld  is   ', f15.9 ) " ) func_od  + func_d
-      WRITE( stdout,*) ' '
-
       func_o = func_i + func_d + func_od
-      WRITE( stdout, fmt="(2x,'Omega    is   ', f15.9 ) " ) func_o
-      WRITE( stdout,*) ' '
 
       RETURN
       END SUBROUTINE

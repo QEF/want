@@ -221,26 +221,15 @@
         END DO
        END DO
        
-       WRITE( stdout, fmt= " (2x, 'Gaussian centers:' ) " )
-       WRITE( stdout, fmt="(25x,'cartesian',24x,'relative coordinates' )")
-       DO nwann = 1, dimwann
-         WRITE( stdout, fmt="(4x,'Gaussian 1)',I4,' = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
-                nwann, ( rphicmx1(m,nwann), m=1,3 ), ( rphiimx1(m,nwann), m=1,3 )
-         IF  ( gauss_typ(nwann) == 2 ) THEN
-           WRITE( stdout, fmt="(4x,'Gaussian 2)',I4,' = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
-                  nwann, ( rphicmx2(m,nwann), m=1,3 ), ( rphiimx2(m,nwann), m=1,3 )
-         END IF
-       END DO
-
-!      WRITE(stdout, *) ' '
-!      WRITE(stdout, *) ' Gaussian centers, nearest grid coordinates'
-!      WRITE(stdout, *) ' '
-
-!      DO nwann = 1, dimwann
-!        WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 1: ', nwann,( nphimx1(m,nwann), m=1,3 )
-!        IF  ( gauss_typ(nwann) ==  2 )    &
-!        WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 2: ', nwann,( nphimx2(m,nwann), m=1,3 )
-!      END DO
+      WRITE( stdout, fmt= " (2x, 'Gaussian centers: (cart. coord. in Bohr)' ) " )
+      DO nwann = 1, dimwann
+        WRITE( stdout, fmt="(4x,'Center = ', i3, ' Type =',i2,' Gaussian  = (', 3F10.6, ' ) '  )" ) &
+               nwann, gauss_typ(nwann), ( rphicmx1(m,nwann), m=1,3 )
+        IF  ( gauss_typ(nwann) == 2 ) THEN
+          WRITE( stdout, fmt="(26x,'Gaussian2 = (', 3F10.6, ' ) '  )" ) &
+                  ( rphicmx2(m,nwann), m=1,3 )
+        END IF
+      END DO
 
        DO nwann = 1, dimwann
          asidemin = 100000.0d0 * rloc(nwann)
