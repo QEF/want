@@ -8,7 +8,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       FUNCTION komegai( kpt, lamp, kcm, wb, wbtot, nnlist, nshells,       &
+       FUNCTION komegai( kpt, lamp, kcm, wb, wbtot, nnlist, nshells, nwhich,  &
                          nnshell, dimwann, dimwin, mxdbnd, mxdnrk, mxdnn )
 !=----------------------------------------------------------------------------------=
 !
@@ -21,7 +21,7 @@
  
        INTEGER :: mxdbnd, mxdnrk, mxdnn
        INTEGER :: kpt, nnlist(mxdnrk,mxdnn)
-       INTEGER :: nshells, nnshell(mxdnrk,mxdnn)
+       INTEGER :: nshells, nwhich(nshells), nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)
        REAL(dbl) :: komegai
        REAL(dbl) ::  wb(mxdnrk,mxdnn), wbtot
@@ -29,7 +29,7 @@
        COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
  
        INTEGER :: j, l, m, n 
-       INTEGER :: ndnn, nnsh, nnx, k_pls_b
+       INTEGER :: ndnn, ndnc, nnsh, nnx, k_pls_b
        COMPLEX(dbl) :: dot_bloch1
        COMPLEX(dbl) :: czero
        PARAMETER( CZERO = ( 0.0d0, 0.0d0 ) )
@@ -43,7 +43,8 @@
 ! ...    LOOP OVER B-VECTORS
  
            nnx=0
-           DO ndnn=1,nshells
+           DO ndnc=1,nshells
+             ndnn = nwhich(ndnc)
              DO nnsh=1,nnshell(kpt,ndnn)
                nnx=nnx+1
                k_pls_b=nnlist(kpt,nnx)

@@ -8,11 +8,10 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE zmatrix( kpt, nnlist, nshells, nnshell, wb, lamp, kcm, mtrx,   &
+       SUBROUTINE zmatrix( kpt, nnlist, nshells, nwhich, nnshell, wb, lamp, kcm, mtrx,   &
                   dimwann, dimwin, dimfroz, indxnfroz, mxdbnd, mxdnrk, mxdnn )
+!=----------------------------------------------------------------------------------=
 
-
-!...........................................................................
 
        USE kinds
  
@@ -23,7 +22,8 @@
        INTEGER :: mxdnn
        INTEGER :: kpt
        INTEGER :: nnlist(mxdnrk,mxdnn)
-       INTEGER :: nshells, nnshell(mxdnrk,mxdnn)
+       INTEGER :: nnshell(mxdnrk,mxdnn)
+       INTEGER :: nshells, nwhich(nshells)
        INTEGER :: dimwann, dimwin(mxdnrk)
        INTEGER :: dimfroz(mxdnrk), indxnfroz(mxdbnd,mxdnrk)
        REAL(dbl) :: wb(mxdnrk,mxdnn)
@@ -33,7 +33,7 @@
        COMPLEX(dbl) :: mtrx(mxdbnd,mxdbnd)
  
        INTEGER :: m, n, l, j
-       INTEGER :: nnx, ndnn, nnsh, k_pls_b
+       INTEGER :: nnx, ndnn, ndnc, nnsh, k_pls_b
        COMPLEX(dbl) :: dot_bloch1, dot_bloch2
        COMPLEX(dbl) :: czero 
        PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
@@ -48,7 +48,8 @@
 ! ...        LOOP OVER B-VECTORS
  
              nnx = 0
-             DO ndnn = 1, nshells
+             DO ndnc = 1, nshells
+               ndnn = nwhich(ndnc)
                DO nnsh = 1, nnshell(kpt,ndnn)
                  nnx = nnx + 1
                  k_pls_b = nnlist(kpt,nnx)

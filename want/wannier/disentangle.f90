@@ -614,7 +614,7 @@
 
            DO nkp = 1, nkpts
              IF ( dimwann > dimfroz(nkp) )  THEN
-               CALL zmatrix( nkp, nnlist, nshells, nnshell, wb, lamp,     &
+               CALL zmatrix( nkp, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
                     cm(1,1,1,nkp), mtrx_in(1,1,nkp), dimwann, dimwin,     &
                     dimfroz, indxnfroz, mxdbnd, nkpts, mxdnn )
              END IF
@@ -674,8 +674,8 @@
 !              previous iteration step, which is exactly what we need as an input for 
 !              the subroutine lambda_avg
  
-               klambda = lambda_avg( m, nkp, lamp, cm(1,1,1,nkp), nnlist,               &
-                         nshells, nnshell, wb, dimwann, dimwin, mxdbnd, nkpts, mxdnn )
+               klambda = lambda_avg( m, nkp, lamp, cm(1,1,1,nkp), nnlist, nshells, &
+                        nwhich, nnshell, wb, dimwann, dimwin, mxdbnd, nkpts, mxdnn )
                komega_i_est(nkp) = komega_i_est(nkp) - klambda
              END DO
            END IF
@@ -750,8 +750,8 @@
          omega_i = zero
          o_error = zero
          DO nkp = 1, nkpts
-           aux = komegai( nkp, lamp, cm(1,1,1,nkp),                     &
-                 wb, wbtot, nnlist, nshells, nnshell, dimwann, dimwin,  &
+           aux = komegai( nkp, lamp, cm(1,1,1,nkp),                             &
+                 wb, wbtot, nnlist, nshells, nwhich, nnshell, dimwann, dimwin,  &
                  mxdbnd, nkpts, mxdnn )
            omega_i = omega_i + aux
 !          IF ( ( iter - INT (iter / DBLE(10) ) ) == 1 ) THEN
@@ -768,7 +768,7 @@
    
          DO nkp = 1, nkptS
            IF ( dimwann > dimfroz(nkp) )  THEN
-             CALL zmatrix( nkp, nnlist, nshells, nnshell, wb, lamp,   &
+             CALL zmatrix( nkp, nnlist, nshells, nwhich, nnshell, wb, lamp,   &
                   cm(1,1,1,nkp), mtrx_out(1,1,nkp), dimwann, dimwin,  &
                   dimfroz, indxnfroz, mxdbnd, nkpts, mxdnn )
            END IF
