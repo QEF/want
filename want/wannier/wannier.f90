@@ -660,11 +660,11 @@
 
       END DO
 
-      WRITE( stdout, * ) '  '
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) ' =                  Starting localization procedure                   ='
-      WRITE( stdout, * ) ' ======================================================================'
-      WRITE( stdout, * ) '  '
+      WRITE(stdout,*)
+      WRITE(stdout,*)' ====================================================================='
+      WRITE(stdout,*)' =                  Starting localization procedure                  ='
+      WRITE(stdout,*)' ====================================================================='
+      WRITE(stdout,*)
 
 
 ! --- Transform the wavefunctions (u_nk) into real space:
@@ -1916,6 +1916,11 @@
 ! ...   Check convergence
 
         IF ( ABS( func_del ) < 1.e-6 ) THEN
+          !
+          ! ... ordering wannier centers
+          !
+          IF (center_ordering) CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu)
+
           WRITE( stdout, * ) '  '
           WRITE( stdout, * ) ' ======================================================================'
           WRITE( stdout, * ) ' =                     Convergence Achieved                           ='
@@ -1955,6 +1960,12 @@
         ! EXIT
 
       END DO !end loop ncount
+
+
+      !
+      ! ... ordering wannier centers
+      !
+      IF ( center_ordering ) CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu)
 
       WRITE( stdout, * ) '  '
       WRITE( stdout, * ) ' ======================================================================'
