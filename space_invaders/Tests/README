@@ -5,7 +5,7 @@ Before run any test, please configure the ENVIRONMENT.CONF file as described
 in the header of the same file
 
 After cd-ing in the desidered directory, type ./run.sh  without any flag
-in order to obtain a manual for the avaliable options
+in order to obtain a manual for the available options
 
 ==============================================================================
 
