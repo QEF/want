@@ -15,26 +15,24 @@
       USE kinds
       USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
       USE parameters, ONLY : nstrx
-      USE input_module, ONLY : iphase, verbosity, ncg, niter, niter0, alphafix, &
-                               alpha, alphafix0, wannier_thr, ordering_type , nprint, &
-                               unitary_thr
-      USE input_module, ONLY : input_read
+      USE input_module, ONLY : input_manager
+      USE control_module, ONLY : ordering_mode, nprint, unitary_thr, verbosity, iphase
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ioname
       USE files_module, ONLY : file_open, file_close
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
-      USE converters_module, ONLY : cart2cry
       USE util_module, ONLY: zmat_mul, zmat_unitary
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
-      USE kpoints_module, ONLY: nkpts, &
-                          nnmx => mxdnn, nnmxh => mxdnnh, &
+      USE kpoints_module, ONLY: nkpts, nnx, nnhx, &
                           nntot, nnlist, nncell, neigh, bk, wb, bka, wbtot
       USE overlap_module,  ONLY : dimwann, ca, cm
-      USE localization_module, ONLY : cu, rave, rave2, r2ave, &
+      USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
+                       ncg, wannier_thr,  &
+                       cu, rave, rave2, r2ave, &
                        Omega_I, Omega_OD, Omega_D, Omega_V, Omega_tot, &
                        localization_allocate, localization_write
 
@@ -55,7 +53,7 @@
       INTEGER :: nsdim, irguide
       INTEGER :: nrguide, ncgfix, ncount
       LOGICAL :: lrguide, lcg
-      REAL(dbl) :: epsilon
+      REAL(dbl) :: epsilon, alpha
       REAL(dbl) :: func_om1, func_om2, func_om3
       REAL(dbl) :: func_old1, func_old2, func_old3
       REAL(dbl) :: rre, rri, omt1, omt2, omt3, omiloc
@@ -66,8 +64,8 @@
 
       COMPLEX(dbl), ALLOCATABLE ::  cs(:,:,:) ! cs(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) ! cu0(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:) ! csheet(dimwann,nkpts,nnmx)
-      COMPLEX(dbl), ALLOCATABLE ::  cm0(:,:,:,:) ! cm0(dimwann,dimwann,nkpts,nnmx)
+      COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:) ! csheet(dimwann,nkpts,nnx)
+      COMPLEX(dbl), ALLOCATABLE ::  cm0(:,:,:,:) ! cm0(dimwann,dimwann,nkpts,nnx)
       COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:) ! cmtmp(dimwann,dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) ! cdodq(dimwann,dimwann,nkpts)
       COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:) ! cdqkeep(dimwann,dimwann,nkpts)
@@ -82,7 +80,7 @@
       COMPLEX(dbl), ALLOCATABLE ::  cw1(:) ! cw1(10*dimwann)
       COMPLEX(dbl), ALLOCATABLE ::  cw2(:) ! cw2(10*dimwann)
       REAL(dbl), ALLOCATABLE ::  singvd(:) !  singvd(dimwann)
-      REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnmx)
+      REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) ! sheet(dimwann,nkpts,nnx)
 
       REAL(dbl), ALLOCATABLE :: rguide(:,:)!  rguide(3,dimwann)
       COMPLEX(dbl), ALLOCATABLE :: cwschur1(:) !  cwschur1(dimwann)
@@ -110,7 +108,7 @@
 !
 ! ... Read input parameters from DFT_DATA file
 !
-      CALL input_read()
+      CALL input_manager()
 
 !
 ! ... Global data init
@@ -142,15 +140,15 @@
       !
       ! ... Now calculate the average positions of the Wanns.
 
-      ALLOCATE( csheet(dimwann,nkpts,nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnmx)
-      ALLOCATE( sheet(dimwann,nkpts,nnmx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', dimwann*nkpts*nnmx)
+      ALLOCATE( csheet(dimwann,nkpts,nnx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnx)
+      ALLOCATE( sheet(dimwann,nkpts,nnx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', dimwann*nkpts*nnx)
 
       sheet(:,:,:) = ZERO
       csheet(:,:,:) = CONE
 
-      CALL omega( dimwann, nkpts, nkpts, nntot(:), nnmx, nnlist(:,:), bk(:,:,:), wb(:,:), &
+      CALL omega( dimwann, nkpts, nkpts, nntot(:), nnx, nnlist(:,:), bk(:,:,:), wb(:,:), &
                   cm(:,:,:,:), csheet(:,:,:), sheet(:,:,:), rave(:,:), r2ave(:), rave2(:), &
                   func_om1, func_om2, func_om3, Omega_tot, rtot, r2tot, Omega_I, Omega_D, & 
                   Omega_OD, Omega_V )
@@ -367,7 +365,7 @@
 
 ! ... Recalculate the average positions of the Wanns.
 
-      CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,  &
+      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,  &
            csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot , &
            rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
 
@@ -383,13 +381,13 @@
 !!     the complex logarithms
 !
 !      irguide = 0
-!!     CALL phases( dimwann, nkpts, nkpts, nnmx, nnmxh, nntot, nnh, neigh,        &
+!!     CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,        &
 !!          bk, bka, cm, csheet, sheet, rguide, irguide )
 !      irguide = 1
 !
 !! ... Recalculate the average positions of the Wanns.
 
-      CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,        &
+      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,        &
            csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot,     &
            rtot, r2tot , Omega_I, Omega_D, Omega_OD, Omega_V)
 
@@ -450,8 +448,8 @@
 
       ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu0 ', dimwann*2 * nkpts )
-      ALLOCATE( cm0(dimwann,dimwann,nnmx,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm0 ', dimwann**2*nkpts*nnmx )
+      ALLOCATE( cm0(dimwann,dimwann,nnx,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm0 ', dimwann**2*nkpts*nnx )
       ALLOCATE( cdodq(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq ', dimwann*2 * nkpts )
       ALLOCATE( cdqkeep(dimwann,dimwann,nkpts), STAT=ierr )
@@ -488,15 +486,15 @@
 !
 ! ... Main ITERATION loop
 !
-      iteration_loop : DO ncount = 1, niter + niter0     
+      iteration_loop : DO ncount = 1, maxiter0_wan + maxiter1_wan
 
-        IF ( ncount <= niter0 ) THEN
+        IF ( ncount <= maxiter0_wan ) THEN
             ncg   = 1
-            alpha = alphafix0
+            alpha = alpha0_wan
         ELSE
             ncg   = ncgfix
-            alpha = alphafix
-        END IF
+            alpha = alpha1_wan
+        ENDIF
 
 
 ! ...   Store cu and cm
@@ -507,11 +505,11 @@
         IF ( lrguide ) THEN
 ! XXXX  nnh = nntot(1)/2, vedi Marzari... to be fixed here
           IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )       &
-            CALL phases( dimwann, nkpts, nkpts, nnmx, nnmxh, nntot, nnh, neigh,       &
+            CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,       &
                  bk, bka, cm, csheet, sheet, rguide, irguide )
         ENDIF
 
-        CALL domega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb,              &
+        CALL domega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb,              &
              cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
 
         gcnorm1 = ZERO
@@ -631,11 +629,11 @@
 
 ! ...   And the functional is recalculated
 
-        CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
+        CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,       &
              csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
              rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
 
-        IF ( ncount <= niter0 ) THEN
+        IF ( ncount <= maxiter0_wan ) THEN
             IF ( ( (ncount/nprint) * nprint +1) == ncount )  THEN
                 WRITE( stdout," (/,2x,'Iteration = ',i5) ") ncount
                 WRITE(stdout, " (2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
@@ -656,10 +654,10 @@
         func_del3 = func_om3 - func_old3
         func_del = func_del1 + func_del2 + func_del3
 
-! ...   If lcg is false, or still in the first niter0 iterations, 
+! ...   If lcg is false, or still in the first maxiter0_wan iterations, 
 !       it skips the optimal alpha paraphernalia 
 
-        IF ( ( lcg ) .and. ( ncount > niter0 ) ) THEN
+        IF ( ( lcg ) .and. ( ncount > maxiter0_wan ) ) THEN
 
           eqc = func0
           eqb = doda0
@@ -769,7 +767,7 @@
 
 ! ...     And the functional is recalculated
            
-          CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,       &
+          CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,       &
                csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
                rtot, r2tot, Omega_I , Omega_D, Omega_OD, Omega_V)
 
@@ -808,13 +806,13 @@
           !
           ! ... ordering wannier centers
           !
-          CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_type)
+          CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu, ordering_mode)
 
           WRITE( stdout, "(/,2x,70('='))" ) 
           WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
           WRITE( stdout, "(2x,70('='),/)" ) 
 
-          WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
+          WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
           WRITE( stdout, " (2x, 'Final Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
           DO nwann = 1, dimwann
             WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
@@ -853,13 +851,13 @@
       !
       ! ... ordering wannier centers
       !
-      CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_type)
+      CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_mode)
 
       WRITE (stdout, "(/,2x,70('='))")
       WRITE( stdout, "(2x,'=',18x,'Max Number of iteration reached',19x,'=')" ) 
       WRITE (stdout, "(2x,70('='),/)")
 
-      WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
+      WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
       WRITE(stdout,  " (2x, 'Final Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
       DO nwann = 1, dimwann
         WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &

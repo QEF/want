@@ -16,11 +16,9 @@
    USE constants, ONLY : PI, TPI, BOHR => bohr_radius_angs
    USE parser_module, ONLY: log2char
    USE converters_module, ONLY: cry2cart
-   USE io_module, ONLY : title, prefix, work_dir
-   USE input_module, ONLY : input_alloc => alloc, alphafix0, niter0, alphafix, &
-                            niter, ncg, nprint, ordering_type, verbosity, alpha, &
-                            maxiter, itrial, disentangle_thr, assume_ncpp, unitary_thr, &
-                            wannier_thr
+   USE io_module, ONLY : title, prefix, postfix, work_dir
+   USE control_module, ONLY : ordering_mode, verbosity, do_pseudo, &
+                              unitary_thr, trial_mode, nprint
    USE trial_center_data_module, ONLY : trial
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
@@ -29,7 +27,9 @@
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
                               dimfroz, lfrozen, dimwinx, nspin, &
                               win_min, win_max, froz_min, froz_max
-   USE subspace_module,ONLY : dimwann
+   USE subspace_module,ONLY : dimwann, disentangle_thr, alpha_dis, maxiter_dis
+   USE localization_module, ONLY : alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg, &
+                             wannier_thr
    !
    ! pseudopotential modules
    USE ions_module,     ONLY : uspp_calculation
@@ -76,10 +76,12 @@
 !
 
 !**********************************************************
-   SUBROUTINE summary(unit)
+   SUBROUTINE summary(unit,input)
    !**********************************************************
       IMPLICIT NONE
-      INTEGER,   INTENT(in)  :: unit
+      INTEGER,   INTENT(in)         :: unit
+      LOGICAL, OPTIONAL, INTENT(in) :: input     ! if true summarize the WanT input
+      LOGICAL                :: linput
       INTEGER                :: ik, ia, ib, idnn 
       INTEGER                :: i, j, m, is, nt, l
       REAL(dbl), ALLOCATABLE :: kpt_cart(:,:)
@@ -87,45 +89,51 @@
       INTEGER                :: ierr
       CHARACTER(5)           :: ps
 
+!#define __DEBUG
+
    !
    ! <MAIN & INPUT> section
    !
-      IF ( input_alloc ) THEN
+      linput = .TRUE.
+      IF ( PRESENT(input) ) linput = input
+      IF ( linput ) THEN
           WRITE(unit,"()")      
           WRITE( unit, " (2x,70('='))" )
           WRITE( unit, " (2x,'=',32x,'Main',32x,'=')" )
           WRITE( unit, " (2x,70('='),/)" )
           WRITE(unit,"(  7x,'     Calculation Title :',5x,a)") TRIM(title)
           WRITE(unit,"(  7x,'                Prefix :',5x,a)") TRIM(prefix)
+          WRITE(unit,"(  7x,'               Postfix :',5x,a)") TRIM(postfix)
           IF ( LEN_TRIM(work_dir) <= 65 ) THEN
              WRITE(unit,"(  7x,'     Working directory :',5x,a)") TRIM(work_dir)
           ELSE
              WRITE(unit,"(  7x,'     Working directory :',5x,/,10x,a)") TRIM(work_dir)
           ENDIF
 
+
           WRITE( unit, " ( /, '<WANNIER_FUNCTIONS>')" )
           WRITE(unit, " (2x,'Input parameters for Wannier func. calculation')")
           WRITE(unit, " (4x,'Number of Wannier functions required = ', i4 )" ) dimwann
-          WRITE( unit,"(4x,'CG minim: Mixing parameter (alphafix0)= ', f6.3 )" ) alphafix0
-          WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) niter0
+          WRITE( unit,"(4x,'CG minim: Mixing parameter (alpha0_wan)= ', f6.3 )" ) alpha0_wan
+          WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) maxiter0_wan
           WRITE( unit,"(4x,'Minimization convergence threshold = ', f15.9 )") wannier_thr
 ! XXX check whether it is true
-          WRITE( unit,"(4x,'SD minim: Mixing parameter (alphafix) = ', f6.3 )" ) alphafix
-          WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) niter
+          WRITE( unit,"(4x,'SD minim: Mixing parameter (alpha1_wan) = ', f6.3 )" ) alpha1_wan
+          WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) maxiter1_wan
           WRITE( unit,"(4x,'Every ',i3,' iteration perform a CG minimization (ncg)')" ) ncg
           WRITE(unit, " (4x,'Number of k-point shells = ', i3 )" ) nshells
           WRITE(unit, " (4x,'Chosen shells (indexes) = ', 100i3 )" ) nwhich(1:nshells)
           WRITE(unit, " (4x,'Print each ', i3,' iterations' )" ) nprint
-          WRITE(unit, " (4x,'Ordering type = ', a )" ) TRIM(ordering_type)
+          WRITE(unit, " (4x,'Ordering mode = ', a )" ) TRIM(ordering_mode)
           WRITE( unit," (4x,'Verbosity = ', a )" ) TRIM(verbosity)
           WRITE( unit," (4x,'Unitariery check threshold = ', f15.9 )") unitary_thr
           WRITE( unit, " ( '</WANNIER_FUNCTIONS>',/)" )
 
           WRITE( unit, " ( '<DISENTANGLE>')" )
           WRITE(unit, " (2x,'Input parameters for disentangling subspaces')")
-          WRITE( unit,"(4x,'Mixing parameter (alpha)= ', f6.3 )" ) alpha
-          WRITE( unit,"(4x,'Max iter = ', i5 )" ) maxiter
-          WRITE( unit,"(4x,'Starting guess orbitals (itrial) = ', i2 )" ) itrial
+          WRITE( unit,"(4x,'Mixing parameter (alpha_dis)= ', f6.3 )" ) alpha_dis
+          WRITE( unit,"(4x,'Max iteration number = ', i5 )" ) maxiter_dis
+          WRITE( unit,"(4x,'Starting guess orbitals (trial_mode) = ', a )" ) TRIM(trial_mode)
           WRITE( unit,"(4x,'Disentangle convergence threshold = ', f15.9 )") disentangle_thr
           WRITE( unit, " ( '</DISENTANGLE>',/)" )
 
@@ -168,10 +176,10 @@
       ! ... Lattice
       IF ( lattice_alloc ) THEN
           WRITE( unit, " (  '<LATTICE>')" )
-          WRITE( unit, " (2x,'Alat  = ', F12.7, ' (Bohr)' )" ) alat
-          WRITE( unit, " (2x,'Alat  = ', F12.7, ' (Ang )' )" ) alat * bohr
-          WRITE( unit, " (2x,'Omega = ', F12.7, ' (Bohr^3)' )" ) omega
-          WRITE( unit, " (2x,'Omega = ', F12.7, ' (Ang^3 )',/ )" ) omega * bohr**3
+          WRITE( unit, " (2x,'Alat  = ', F15.7, ' (Bohr)' )" ) alat
+          WRITE( unit, " (2x,'Alat  = ', F15.7, ' (Ang )' )" ) alat * BOHR
+          WRITE( unit, " (2x,'Omega = ', F15.7, ' (Bohr^3)' )" ) omega
+          WRITE( unit, " (2x,'Omega = ', F15.7, ' (Ang^3 )',/ )" ) omega * BOHR**3
           WRITE( unit, " (2x, 'Crystal axes:' ) ")
           WRITE( unit, " (16x,'in units of Bohr',17x,'in Alat units' )")
           DO j=1,3
@@ -199,7 +207,7 @@
       IF ( ions_alloc ) THEN 
           WRITE( unit, " (  '<IONS>')" )
           WRITE( unit, " (2x,'Number of chemical species =', i3 ) " ) nsp
-          IF ( assume_ncpp )  THEN
+          IF ( .NOT. do_pseudo )  THEN
              WRITE( unit, " (2x,'WARNING: Pseudopots not read, assumed to be norm cons.')") 
           ELSEIF ( uspp_calculation ) THEN
              WRITE( unit, " (2x,'Calculation is done within US pseudopot.',/)") 
@@ -211,7 +219,7 @@
           !
           ! ... pseudo summary from Espresso
           !
-          IF ( .NOT. assume_ncpp ) THEN 
+          IF ( do_pseudo ) THEN 
              DO nt = 1, nsp
                 IF (tvanp (nt) ) THEN
                    ps = '(US)'
@@ -366,8 +374,6 @@
 
           WRITE( unit, " (  '</WINDOWS>',/)" )
       ENDIF
-
-
 
 
   END SUBROUTINE summary

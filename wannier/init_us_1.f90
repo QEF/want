@@ -46,7 +46,7 @@ SUBROUTINE init_us_1
   USE spin_orb_module, ONLY : lspinorb, rot_ylm, fcoef
   !
   ! added for WFs
-  USE kpoints_module,  ONLY : bk, nkpts, nntot, mxdnn
+  USE kpoints_module,  ONLY : bk, nkpts, nntot, nnx
   USE timing_module
   !
   IMPLICIT NONE
@@ -73,8 +73,8 @@ SUBROUTINE init_us_1
   INTEGER :: n1, m0, m1, n, li, mi, vi, vj, ijs, is1, is2, &
              lk, mk, vk, kh, lh, sph_ind, ierr
   INTEGER :: nbkvect, nn, ik
-  ! WFs  mxdnn <- 1
-  COMPLEX(kind=dbl) :: coeff, qgm(mxdnn)
+  ! WFs  nnx <- 1
+  COMPLEX(kind=dbl) :: coeff, qgm(nnx)
   REAL(kind=dbl) :: spinor, ji, jk
 
   CALL timing('init_us_1',OPR='start')
@@ -87,9 +87,9 @@ SUBROUTINE init_us_1
   ALLOCATE (aux1( ndm), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating aux1',ABS(ierr))
     !
-  ALLOCATE (bkvect( 3, mxdnn ), STAT=ierr)    
+  ALLOCATE (bkvect( 3, nnx ), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating bkvect',ABS(ierr))
-  ALLOCATE (bkmod( mxdnn ), STAT=ierr)    
+  ALLOCATE (bkmod( nnx ), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating bkmod',ABS(ierr))
   ALLOCATE (besr( ndm), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating besr',ABS(ierr))

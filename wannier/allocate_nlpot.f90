@@ -42,7 +42,7 @@ subroutine allocate_nlpot
   USE spin_orb_module, ONLY : lspinorb, fcoef
   !
   ! added for WFs
-  USE kpoints_module,  ONLY : mxdnn, nkpts
+  USE kpoints_module,  ONLY : nnx, nkpts
   !
   IMPLICIT NONE
   !
@@ -111,7 +111,7 @@ subroutine allocate_nlpot
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
     !
     ! added for Wannier calc. (ANDREA)
-    ALLOCATE (qb(   nhm, nhm, ntyp, mxdnn, nkpts ), STAT=ierr)
+    ALLOCATE (qb(   nhm, nhm, ntyp, nnx, nkpts ), STAT=ierr)
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
   endif
   !

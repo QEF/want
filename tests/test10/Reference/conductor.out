@@ -1,13 +1,13 @@
   ======================================================================
-             =                                            =
-             =     *** WanT *** Wannier Transport Code    =
-             =        (www.wannier-transport.org)         =
-             =       Norm Conserv. Pseudopot. Impl.       =
-             =                                            =
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
   ======================================================================
 
 
   Program <conductor>  v. 1.1.1  starts ...
-  Date 23Nov2004 at 18:21:39 
+  Date 23Mar2005 at 16:40: 1 
 
   ....reading from external file....

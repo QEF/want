@@ -17,7 +17,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE files_module, ONLY : file_open, file_close
    USE subspace_module, ONLY : eamp, subspace_read
    USE windows_module,  ONLY : dimwinx, dimwin, windows_read
-   USE kpoints_module,  ONLY : mxdnn, nkpts, nntot, nnlist 
+   USE kpoints_module,  ONLY : nnx, nkpts, nntot, nnlist 
    USE overlap_module,  ONLY : cm, ca, overlap_allocate, overlap_deallocate, overlap_read 
    IMPLICIT NONE
 
@@ -83,7 +83,7 @@ SUBROUTINE overlap_extract(dimwann)
 !
 ! ... here allocate the temporary variables for the extracted CM and CA 
 !
-   ALLOCATE( cm_tmp(dimwann,dimwann,mxdnn,nkpts), STAT=ierr ) 
+   ALLOCATE( cm_tmp(dimwann,dimwann,nnx,nkpts), STAT=ierr ) 
       IF (ierr/=0) CALL errore(subname,"allocating cm_tmp",ABS(ierr))
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
       IF (ierr/=0) CALL errore(subname,"allocating cm_tmp",ABS(ierr))

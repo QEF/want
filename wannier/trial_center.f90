@@ -75,6 +75,7 @@ CONTAINS
    IMPLICIT NONE
    REAL(dbl),            INTENT(in)    :: avec(3,3)
    TYPE( trial_center ), INTENT(inout) :: obj
+   REAL(dbl)        :: tmp(3,3)
    CHARACTER(10)    :: units
    !
    ! ... Converting WANNIER centers to CRYSTAL units
@@ -86,12 +87,14 @@ CONTAINS
       CALL change_case(units,'UPPER')
       SELECT CASE ( TRIM(units) )
       CASE ( 'ANGSTROM' )
-           CALL cart2cry(obj%x1, bohr*avec, obj%units)
-           CALL cart2cry(obj%x2, bohr*avec, obj%units)
+           tmp(:,:) = bohr*avec(:,:)
+           CALL cart2cry(obj%x1, tmp, obj%units)
+           CALL cart2cry(obj%x2, tmp, obj%units)
            obj%decay = obj%decay / bohr
       CASE ( 'BOHR' )
-           CALL cart2cry(obj%x1, avec, obj%units)
-           CALL cart2cry(obj%x2, avec, obj%units)
+           tmp(:,:) = bohr*avec(:,:)
+           CALL cart2cry(obj%x1, tmp, obj%units)
+           CALL cart2cry(obj%x2, tmp, obj%units)
       CASE ( 'CRYSTAL' )
       CASE DEFAULT
           CALL errore('trial_center_convert','Invalid units : '  &
@@ -229,8 +232,8 @@ CONTAINS
                ENDDO
            ENDIF
 
-
-           CALL sph_har_setup( npwk, -vkg, vkgg, obj%ndir, obj%l, obj%m, ylm(:,1) )
+           vkg = -vkg
+           CALL sph_har_setup( npwk, vkg, vkgg, obj%ndir, obj%l, obj%m, ylm(:,1) )
            ilm = 1
 
 

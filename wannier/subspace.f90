@@ -38,6 +38,11 @@
    ! ... the number of Wannier functions
    INTEGER                     :: dimwann
    !
+   ! ... iterative disentangle procedure parameters
+   INTEGER                     :: maxiter_dis        ! maximun number of iterations
+   REAL(dbl)                   :: alpha_dis          ! mixing factor in the iterative proc
+   REAL(dbl)                   :: disentangle_thr    ! convergence threshold
+   !
    ! ... the hamiltonian eigs in the final subspace
    REAL(dbl),    ALLOCATABLE   :: wan_eig(:,:)       ! the eigenvalues in the new subspace
    !
@@ -63,6 +68,7 @@
 
    PUBLIC :: nkpts, dimwinx
    PUBLIC :: dimwann
+   PUBLIC :: maxiter_dis, alpha_dis, disentangle_thr
    PUBLIC :: wan_eig, efermi
    PUBLIC :: lamp, camp, eamp, comp_eamp
    PUBLIC :: mtrx_in, mtrx_out

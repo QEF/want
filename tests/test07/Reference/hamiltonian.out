@@ -2,16 +2,16 @@
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
               =        (www.wannier-transport.org)         =
-              =       Norm Conserv. Pseudopot. Impl.       =
+              =      Ultra Soft Pseudopotential Implem.    =
               =                                            =
   ======================================================================
 
 
   Program <hamiltonian>  v. 1.1.1  starts ...
-  Date 10Feb2005 at 17:26:43 
+  Date 23Mar2005 at 16:40:51 
 
 
-  PW-DFT data read from file: gold1.dft
+  PW-DFT data read from file: gold1.export/index.xml
   Subspace data read from file: gold1_WanT.spaces
 
   ======================================================================
@@ -61,17 +61,17 @@
                                                        1.600   1.800
 
   Atomic positions: (cart. coord. in units of alat)
-     Au  tau(   1 ) = (   0.0000000   0.0000000   0.0472432 )
+     Au   tau(   1 ) = (   0.0000000   0.0000000   0.0472432 )
 </IONS>
 
 <K-POINTS>
   nkpts =    4
   Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
-  K-point calculation: (cart. coord. in Ang^-1)
+  K-point calculation: (cart. coord. in Bohr^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
-    k point   2:   (   0.00000  0.00000  0.62832 ),   weight =   0.2500
-    k point   3:   (   0.00000  0.00000  1.25664 ),   weight =   0.2500
-    k point   4:   (   0.00000  0.00000  1.88495 ),   weight =   0.2500
+    k point   2:   (   0.00000  0.00000  0.33249 ),   weight =   0.2500
+    k point   3:   (   0.00000  0.00000  0.66498 ),   weight =   0.2500
+    k point   4:   (   0.00000  0.00000  0.99747 ),   weight =   0.2500
 </K-POINTS>
 
 <WINDOWS>
@@ -82,31 +82,31 @@
   Electronic Structure from DFT calculation:
     nkpts =   4,     nbnd =  10,
     nspin =   1
-    Fermi energy =   -4.863929466 eV
+    Fermi energy =   -4.863873911 eV
 
     kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
                                          imin =    1  imax =    8
    Eigenvalues:
-    -5.6489  -1.7441  -1.7438  -1.5255  -0.0005  -0.0005   3.7034   3.7034
-     5.8777   6.8342
+    -5.6487  -1.7442  -1.7439  -1.5256  -0.0005  -0.0005   3.7035   3.7035
+     5.8782   6.8348
 
     kpt =  2 (  0.000 0.000 0.250 )    dimwin =    6
                                          imin =    1  imax =    6
    Eigenvalues:
-    -2.6187  -2.0243  -2.0243  -1.4105  -1.4103  -0.5896   5.9049   5.9049
-     7.3475   8.3058
+    -2.6185  -2.0242  -2.0242  -1.4106  -1.4104  -0.5897   5.9051   5.9051
+     7.3480   8.3064
 
     kpt =  3 (  0.000 0.000 0.500 )    dimwin =    6
                                          imin =    1  imax =    6
    Eigenvalues:
-    -3.3650  -3.3650  -1.0548  -1.0545  -0.2568   4.6987   7.1489   9.6067
-     9.6067  11.7443
+    -3.3650  -3.3650  -1.0549  -1.0546  -0.2568   4.6988   7.1490   9.6067
+     9.6067  11.7449
 
     kpt =  4 (  0.000 0.000 0.750 )    dimwin =    6
                                          imin =    1  imax =    6
    Eigenvalues:
-    -2.6187  -2.0243  -2.0243  -1.4105  -1.4103  -0.5896   5.9049   5.9049
-     7.3475   8.3058
+    -2.6185  -2.0242  -2.0242  -1.4106  -1.4104  -0.5897   5.9051   5.9051
+     7.3480   8.3064
 
     inner window: NOT used --> NO FROZEN STATES
 </WINDOWS>
@@ -120,14 +120,44 @@
 
   K-points generation in Wigner-size: SUCCESS
 
+
+  Diagonal matrix elements of H on Wannier basis
+  dimwann =     6
+
+    R = (   0   0  -1 )
+   -0.172332528    0.000000008
+   -0.172320303    0.000000020
+    0.842733838    0.000000023
+    0.842733777    0.000000008
+   -0.593091250    0.000006710
+   -2.311031252   -0.000006729
+
+    R = (   0   0   0 )
+   -1.405103019    0.000000000
+   -1.404832134   -0.000000000
+   -1.851902452    0.000000000
+   -1.851902312   -0.000000000
+   -1.470950487   -0.000000000
+   -0.816161916   -0.000000000
+
+    R = (   0   0   1 )
+   -0.172332528   -0.000000008
+   -0.172320303   -0.000000020
+    0.842733838   -0.000000023
+    0.842733777   -0.000000008
+   -0.593091250   -0.000006710
+   -2.311031252    0.000006729
+
+
   Decay of the real space Hamiltonian:
+
      R [cry]     |R| [Bohr]      Norm of H(R) [eV]
-    0   0  -2     9.4486400        0.942073929
-    0   0  -1     4.7243200        2.780195494
-    0   0   0     0.0000000        3.895722312
-    0   0   1     4.7243200        2.780195494
-    0   0   2     9.4486400        0.942073929
- 
+    0   0  -2     9.4486400        0.941923858
+    0   0  -1     4.7243200        2.780691284
+    0   0   0     0.0000000        3.895135991
+    0   0   1     4.7243200        2.780691284
+    0   0   2     9.4486400        0.941923858
+
 
   Generating kpts:   2      Segments:   1
   Total kpts number: 100    Max kpt number: 100
@@ -246,8 +276,8 @@
    <global routines>
              clock number :     2
 
-              hamiltonian :     0.14s CPU 
- 
-                want_init :     0.09s CPU
+              hamiltonian :     0.63s CPU 
+
+                want_init :     0.49s CPU
 
 
