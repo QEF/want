@@ -15,6 +15,7 @@
    USE windows_module, ONLY : nkpts
    USE lattice_module, ONLY : lattice_alloc => alloc, bvec, tpiba 
    USE iotk_module
+   USE timing_module, ONLY : timing
    USE parser_module, ONLY : change_case
    USE converters_module, ONLY : cry2cart
    IMPLICIT NONE
@@ -119,6 +120,7 @@ CONTAINS
        CHARACTER(15)      :: subname="ggrids_read_ext"
        INTEGER            :: i, ierr
 
+       CALL timing(subname,OPR='start')
        !
        ! ... Various parameters
        !
@@ -157,10 +159,12 @@ CONTAINS
        !
        CALL iotk_scan_attr(attr,"npw",npw,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'unable to find npw',ABS(ierr))
+
        CALL ggrids_allocate() 
 
        CALL iotk_scan_dat(unit,"g",igv(:,:),IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'unable to find igv',ABS(ierr))
+
        !
        CALL iotk_scan_end(unit,'Main_grid',IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag Main_grid',ABS(ierr))
@@ -175,6 +179,8 @@ CONTAINS
            gg(i) = g(1,i)**2 + g(2,i)**2 + g(3,i)**2
        ENDDO
 
+       CALL timing(subname,OPR='stop')
+       RETURN
    END SUBROUTINE ggrids_read_ext
 
 
