@@ -116,6 +116,8 @@ on the case.
                         in order to allow the matching between the leads and the conductur.
                         The definition of the coupling matrices HCI_ MUST BE DONE CAREFULLY
                         case by case, depending on the particular system definition.
+                        An utulity (Tools/matrix_extract.sh) is provided to manipulate
+                        matrices written in the current format. 
 
 NOTE. In order to match the hamiltonian matrices at the boundary, it is necessary to check
 that the diagonal elements of the H00 matrices were aligned. If not a rigid shift must be done.
