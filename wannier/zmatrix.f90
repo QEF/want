@@ -46,6 +46,8 @@
 !                   HERMITIAN MATRIX AT THE KPT-TH K-POINT
 !
 !...........................................................................
+
+       USE kinds
  
        IMPLICIT NONE
 
@@ -57,16 +59,16 @@
        INTEGER :: nshells, nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)
        INTEGER :: dimfroz(mxdnrk), indxnfroz(mxdbnd,mxdnrk)
-       REAL*8 :: wb(mxdnrk,mxdnn)
-       COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
-       COMPLEX*16 :: kcm(mxdbnd,mxdbnd,mxdnn)
+       REAL(dbl) :: wb(mxdnrk,mxdnn)
+       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
+       COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
 
-       COMPLEX*16 :: mtrx(mxdbnd,mxdbnd)
+       COMPLEX(dbl) :: mtrx(mxdbnd,mxdbnd)
  
        INTEGER :: m, n, l, j
        INTEGER :: nnx, ndnn, nnsh, k_pls_b
-       COMPLEX*16 :: dot_bloch1, dot_bloch2
-       COMPLEX*16 :: czero 
+       COMPLEX(dbl) :: dot_bloch1, dot_bloch2
+       COMPLEX(dbl) :: czero 
        PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
 
 ! ...  Loop over independent matrix entries

@@ -19,10 +19,13 @@
 ! Modified April 18,2002 by MBN and AC (space invaders!)
 !..............................................................................
 
+     
+       USE kinds
+       USE io_global, ONLY : stdout
+
        IMPLICIT NONE
 
-
-       REAL*8 :: adot(3,3)
+       REAL(dbl) :: adot(3,3)
        INTEGER :: nk(3)
        INTEGER :: mxdnrk
 
@@ -33,8 +36,8 @@
        INTEGER :: icnt, i, j, i1, i2, i3
        INTEGER :: ndiff(3), indx(27), ifnd
        INTEGER :: nn, ndeg
-       REAL*8 :: dist(27), dist_min
-       REAL*8 :: tot
+       REAL(dbl) :: dist(27), dist_min
+       REAL(dbl) :: tot
 
 ! ...  Loop over grid points r on a unit cell that is 8 times larger than a 
 !      primitive supercell. In the end nws contains the total number of grids 
@@ -45,8 +48,8 @@
          DO n2 = 0, 2 * nk(2)
            DO n3 = 0, 2 * nk(3)
 
-             WRITE(*,*) ' '
-             WRITE(*,321) 'r point: ', n1, n2, n3
+             WRITE(stdout, *)  ' '
+             WRITE(stdout, 321) 'r point: ', n1, n2, n3
  321         FORMAT( a9, 3(i2,1x) )
 
 ! ...        Loop over the 27 points R. R=0 corresponds to i1=i2=i3=1, or icnt=14
@@ -70,7 +73,7 @@
                      END DO
                    END DO
            
-                   WRITE(*,123) 'icnt=', icnt, ' dist=', dist(icnt)
+                   WRITE(stdout, 123) 'icnt=', icnt, ' dist=', dist(icnt)
  123               FORMAT(a5, i3, a6, f14.7)
 
                  END DO
@@ -91,10 +94,7 @@
              IF ( ABS( dist(14) - dist_min ) < 1.e-8 ) THEN
                nws = nws + 1
 
-               IF ( nws > 3*mxdnrk ) THEN
-                 PRINT*, 'Wrong dimensions in Wigner-Seitz', nws, mxdnrk
-                 STOP
-               END IF
+               IF ( nws > 3*mxdnrk ) CALL errore(' wigner_size ', ' wrong dimension ', nws )
 
                ndeg = 0
                DO nn = 1,27
@@ -105,8 +105,8 @@
                indxws(1,nws) = n1 - nk(1)
                indxws(2,nws) = n2 - nk(2)
                indxws(3,nws) = n3 - nk(3)
-               WRITE(*,*) 'This point is in!'
-               WRITE(*,*) 'degeneracy:',nws,degen(nws)
+               WRITE( stdout,*)  'This point is in!'
+               WRITE( stdout,*) 'degeneracy:',nws,degen(nws)
              END IF
 
            END DO !n3
@@ -118,18 +118,18 @@
        tot = 0.0d0
        DO i = 1, nws
          tot = tot + 1.0d0 / DBLE(degen(i))
-         WRITE(*,*) 'i=', i, ' degen(i)=', degen(i)
+         WRITE( stdout,*) 'i=', i, ' degen(i)=', degen(i)
        END DO
 
        IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > 1.0e-8 ) THEN
-         WRITE(*,*) '*** ERROR *** in finding Wigner-Seitz points'
-         WRITE(*,*) 'TOT=', tot
-         WRITE(*,*) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
-         STOP
+         WRITE( stdout, *) '*** ERROR *** in finding Wigner-Seitz points'
+         WRITE( stdout, *) 'TOT=', tot
+         WRITE( stdout, *) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
+         CALL errore(' wigner_size ', ' wrong total number of points ', tot )
        ELSE
-         WRITE(*,*) '*** SUCCESS!!! ***'
-         WRITE(*,*) 'TOT=', tot
-         WRITE(*,*) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
+         WRITE( stdout, *) '*** SUCCESS!!! ***'
+         WRITE( stdout, *) 'TOT=', tot
+         WRITE( stdout, *) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
        END IF
 
        RETURN

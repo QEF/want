@@ -32,7 +32,9 @@
 ! MXDGVE            ARRAY DIMENSION FOR G-SPACE VECTORS
 !...............................................................................
 
+       USE kinds
        USE fft_scalar
+       USE io_global, ONLY : stdout
        USE timing_module, ONLY : timing
 
        IMPLICIT NONE
@@ -48,19 +50,19 @@
        INTEGER :: dimwann
        INTEGER :: dimwin(mxdnrk)
        INTEGER :: dimfroz(mxdnrk)
-       REAL*8 :: avec(3,3)
-       REAL*8 :: evecr(mxddim,ndwinx,mxdnrk)
-       REAL*8 :: eveci(mxddim,ndwinx,mxdnrk)
-       REAL*8 :: vkpt(3,mxdnrk)
-       COMPLEX*16 :: lamp(mxdbnd,mxdbnd,mxdnrk)
+       REAL(dbl) :: avec(3,3)
+       REAL(dbl) :: evecr(mxddim,ndwinx,mxdnrk)
+       REAL(dbl) :: eveci(mxddim,ndwinx,mxdnrk)
+       REAL(dbl) :: vkpt(3,mxdnrk)
+       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
 
        INTEGER :: gauss_typ(dimwann)
-       REAL*8 :: rphiimx1(3,dimwann)
-       REAL*8 :: rphiimx2(3,dimwann)
+       REAL(dbl) :: rphiimx1(3,dimwann)
+       REAL(dbl) :: rphiimx2(3,dimwann)
        INTEGER :: l_wann(dimwann)
        INTEGER :: m_wann(dimwann)
        INTEGER :: ndir_wann(dimwann)
-       REAL*8 :: rloc(dimwann)
+       REAL(dbl) :: rloc(dimwann)
 
  
        ! ... local variables
@@ -69,11 +71,11 @@
        INTEGER :: nb, i, j, l, m 
        INTEGER :: nkp, npoint
        INTEGER :: ngdim(3)
-       REAL*8 :: aside, asidemin
-       COMPLEX*16 :: catmp
+       REAL(dbl) :: aside, asidemin
+       COMPLEX(dbl) :: catmp
 
-       REAL*8 :: bohr, ryd, pi, twopi, zero
-       COMPLEX*16 :: czero, ci, citpi
+       REAL(dbl) :: bohr, ryd, pi, twopi, zero
+       COMPLEX(dbl) :: czero, ci, citpi
        PARAMETER ( pi = 3.14159265358979323846d0 )
        PARAMETER ( twopi = 2.0d0 * pi )
        PARAMETER ( zero = 0.0d0 )
@@ -83,39 +85,39 @@
        PARAMETER( ci = ( 0.0d0, 1.0d0 ) )
        PARAMETER( citpi = ( zero, twopi ) )
 
-       COMPLEX*16 :: ctmp, cphi
+       COMPLEX(dbl) :: ctmp, cphi
        INTEGER :: nwann 
        INTEGER :: nxx, nyy, nzz 
        INTEGER :: nx, ny, nz
-       REAL*8 :: rx, ry, rz
-       REAL*8 :: rpos1(3), rpos2(3)
-       REAL*8 :: dist1, dist2
-       REAL*8 :: dist_pl, dist_cos 
-       REAL*8 :: th_cos, th_sin 
-       REAL*8 :: ph_cos, ph_sin
-       REAL*8 :: scalf
-       REAL*8 :: sph00, sph1m1, sph10
-       REAL*8 :: sph11, sph2m2, sph2m1
-       REAL*8 :: sph20, sph21, sph22        
+       REAL(dbl) :: rx, ry, rz
+       REAL(dbl) :: rpos1(3), rpos2(3)
+       REAL(dbl) :: dist1, dist2
+       REAL(dbl) :: dist_pl, dist_cos 
+       REAL(dbl) :: th_cos, th_sin 
+       REAL(dbl) :: ph_cos, ph_sin
+       REAL(dbl) :: scalf
+       REAL(dbl) :: sph00, sph1m1, sph10
+       REAL(dbl) :: sph11, sph2m2, sph2m1
+       REAL(dbl) :: sph20, sph21, sph22        
  
        INTEGER :: info
 
-       COMPLEX*16, ALLOCATABLE :: u(:,:)
-       COMPLEX*16, ALLOCATABLE :: vt(:,:)
-       COMPLEX*16, ALLOCATABLE :: work(:)
-       REAL*8, ALLOCATABLE :: s(:)
-       REAL*8, ALLOCATABLE :: rwork1(:)
-       REAL*8, ALLOCATABLE :: rwork2(:)
-       REAL*8, ALLOCATABLE :: rphicmx1(:,:)
-       REAL*8, ALLOCATABLE :: rphicmx2(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: u(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: vt(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: work(:)
+       REAL(dbl), ALLOCATABLE :: s(:)
+       REAL(dbl), ALLOCATABLE :: rwork1(:)
+       REAL(dbl), ALLOCATABLE :: rwork2(:)
+       REAL(dbl), ALLOCATABLE :: rphicmx1(:,:)
+       REAL(dbl), ALLOCATABLE :: rphicmx2(:,:)
        INTEGER, ALLOCATABLE :: nphimx1(:,:)
        INTEGER, ALLOCATABLE :: nphimx2(:,:)
        INTEGER, ALLOCATABLE :: nphir(:)
 
-       COMPLEX*16, ALLOCATABLE :: cptwr(:)
-       COMPLEX*16, ALLOCATABLE :: cwork2(:)
-       COMPLEX*16, ALLOCATABLE :: ca(:,:,:)
-       COMPLEX*16, ALLOCATABLE :: cu(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: cptwr(:)
+       COMPLEX(dbl), ALLOCATABLE :: cwork2(:)
+       COMPLEX(dbl), ALLOCATABLE :: ca(:,:,:)
+       COMPLEX(dbl), ALLOCATABLE :: cu(:,:)
 
        CHARACTER( LEN=6 ) :: verbosity = 'none'    ! none, low, medium, high
        INTEGER :: ierr
@@ -219,32 +221,32 @@
         END DO
        END DO
        
-       WRITE(*,*) ' Gaussian centers, in cartesian coordinates'
-       WRITE(*,*) ' '
+       WRITE(stdout,*) ' Gaussian centers, in cartesian coordinates'
+       WRITE(stdout,*) ' '
        DO nwann = 1, dimwann
-         WRITE( *,'(a12,i4,3f10.5)' ) 'Gaussian 1: ', nwann, ( rphicmx1(m,nwann), m=1,3 )
+         WRITE( stdout,'(a12,i4,3f10.5)' ) 'Gaussian 1: ', nwann, ( rphicmx1(m,nwann), m=1,3 )
          IF  ( gauss_typ(nwann) == 2 ) &
-         WRITE( *,'(a12,i4,3f10.5)' ) 'Gaussian 2: ', nwann, ( rphicmx2(m,nwann), m=1,3 )
+         WRITE( stdout,'(a12,i4,3f10.5)' ) 'Gaussian 2: ', nwann, ( rphicmx2(m,nwann), m=1,3 )
        END DO
 
-       WRITE(*,*) ' '
-       WRITE(*,*) ' Gaussian centers, in relative coordinates'
-       WRITE(*,*) ' '
+       WRITE( stdout, *) ' '
+       WRITE( stdout, *) ' Gaussian centers, in relative coordinates'
+       WRITE( stdout, *) ' '
 
        DO nwann = 1, dimwann
-        WRITE( *,'(a12,i4,3f10.5)' )  'Gaussian 1: ', nwann,( rphiimx1(m,nwann), m=1,3 )
+        WRITE( stdout, '(a12,i4,3f10.5)' )  'Gaussian 1: ', nwann,( rphiimx1(m,nwann), m=1,3 )
         IF  ( gauss_typ(nwann) == 2 )  &
-        WRITE( *,'(a12,i4,3f10.5)' )  'Gaussian 2: ', nwann,( rphiimx2(m,nwann), m=1,3 )
+        WRITE( stdout ,'(a12,i4,3f10.5)' )  'Gaussian 2: ', nwann,( rphiimx2(m,nwann), m=1,3 )
        END DO
 
-       WRITE(*,*) ' '
-       WRITE(*,*) ' Gaussian centers, nearest grid coordinates'
-       WRITE(*,*) ' '
+       WRITE(stdout, *) ' '
+       WRITE(stdout, *) ' Gaussian centers, nearest grid coordinates'
+       WRITE(stdout, *) ' '
 
        DO nwann = 1, dimwann
-         WRITE(*,'(a12,i6,3i4)')    'Gaussian 1: ', nwann,( nphimx1(m,nwann), m=1,3 )
+         WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 1: ', nwann,( nphimx1(m,nwann), m=1,3 )
          IF  ( gauss_typ(nwann) ==  2 )    &
-         WRITE(*,'(a12,i6,3i4)')    'Gaussian 2: ', nwann,( nphimx2(m,nwann), m=1,3 )
+         WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 2: ', nwann,( nphimx2(m,nwann), m=1,3 )
        END DO
 
        DO nwann = 1, dimwann
@@ -254,12 +256,12 @@
            asidemin = MIN( aside, asidemin )
          END DO
          nphir(nwann) = nint( 2 * ( rloc(nwann) / asidemin ) * MIN( ngx,ngy,ngz ) )
-         WRITE(*,*) ' '
-         WRITE(*,'(a14,i3)') 'Trial orbital ', nwann
-         WRITE(*,*) ' Gaussian width, in atomic units  ', rloc(nwann)
-         WRITE(*,*) ' Half-width of integration region ', nphir(nwann)
-         WRITE(*,*) ' '
-         WRITE(*,8000)
+         WRITE(stdout,*) ' '
+         WRITE(stdout,'(a14,i3)') 'Trial orbital ', nwann
+         WRITE(stdout,*) ' Gaussian width, in atomic units  ', rloc(nwann)
+         WRITE(stdout,*) ' Half-width of integration region ', nphir(nwann)
+         WRITE(stdout,*) ' '
+         WRITE(stdout,8000)
 8000     FORMAT (1x,'-------------------------------------------------------------------------------')
        END DO
 
@@ -393,8 +395,8 @@
                          dist_pl  = SQRT( rpos1(2)**2 + rpos1(3)**2 )
                          dist_cos = rpos1(1)
                        ELSE
-                         WRITE(*,*) 'ERROR: Wrong z-direction'
-                        STOP
+                         WRITE(stdout,*) 'ERROR: Wrong z-direction'
+                         CALL errore(' projection ', ' wrong z- direction ', ndir_wann(nwann) )
                        END IF 
 
 ! ...                  IF  rpos is on the origin, or on the z axis, I give arbitrary
@@ -437,8 +439,8 @@
                          ELSE IF ( m_wann(nwann) == 2 ) THEN
                            cphi = sph22 * cphi * ( th_sin**2 ) * 2.0d0 * ph_sin * ph_cos
                          ELSE 
-                           WRITE(*,*) 'ERROR: check the spherical harmonics'
-                           STOP
+                           WRITE(stdout,*) 'ERROR: check the spherical harmonics (I)'
+                           CALL errore(' projection ', ' check the spherical harmonics (I)', m_wann(nwann) )
                          END IF 
   
                        ELSE IF ( l_wann(nwann) == 1 ) THEN
@@ -450,8 +452,8 @@
                          ELSE IF ( m_wann(nwann) == 1 ) THEN
                            cphi = sph11 * cphi * th_sin * ph_sin
                          ELSE 
-                           WRITE(*,*) 'ERROR: check the spherical harmonics'
-                           STOP
+                           WRITE(stdout,*) 'ERROR: check the spherical harmonics (II)'
+                           CALL errore(' projection ', ' check the spherical harmonics (II)', m_wann(nwann) )
                          END IF 
   
                        ELSE IF ( l_wann(nwann) == 0 ) THEN
@@ -501,12 +503,13 @@
                                   sph11 * th_sin * ph_sin - sph10 * th_cos ) / 2.0d0
 
                          ELSE
-                           STOP '*** ERROR *** in sp^3 hybrid gaussian: check m_wann'
+                           WRITE (stdout, *)  '*** ERROR *** in sp^3 hybrid gaussian: check m_wann'
+                           CALL errore(' projection ', ' sp^3 hybrid gaussian ', m_wann(nwann) )
                          END IF 
 
                        ELSE 
-                         WRITE(*,*) '*** ERROR *** : check the spherical harmonics'
-                         STOP
+                         WRITE(stdout,*) '*** ERROR *** : check the spherical harmonics (III)'
+                         CALL errore(' projection ', ' check the spherical harmonics (III)', m_wann(nwann) )
                        END IF 
 
                      END IF  ! orbital is of type 1
@@ -532,9 +535,9 @@
 
 ! ...                  here it calculates <exp(i*k.r) u_nk(r)|
 
-                       rx = dfloat(nxx-1) / dfloat(ngx)
-                       ry = dfloat(nyy-1) / dfloat(ngy)
-                       rz = dfloat(nzz-1) / dfloat(ngz)
+                       rx = DBLE(nxx-1) / DBLE(ngx)
+                       ry = DBLE(nyy-1) / DBLE(ngy)
+                       rz = DBLE(nzz-1) / DBLE(ngz)
                        scalf = vkpt(1,nkp)*rx + vkpt(2,nkp)*ry + vkpt(3,nkp)*rz
                        npoint = nx + (ny-1)*ngx + (nz-1)*ngy*ngx
                        catmp=CONJG( EXP( citpi * scalf ) * cptwr(npoint) )
@@ -565,12 +568,12 @@
 
            END DO    ! nb
       
-           WRITE(*,*) '  '
-           WRITE(*,'(a18,i4)') ' Matrix A, k-point', nkp
+           WRITE(stdout,*) '  '
+           WRITE(stdout,'(a18,i4)') ' Matrix A, k-point', nkp
            IF  (dimwin(nkp) <= 8) THEN
-             WRITE(*,*) '  '
+             WRITE(stdout,*) '  '
              DO i = 1, dimwin(nkp)
-               WRITE(*,'(14(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
+               WRITE(stdout,'(14(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
              END DO
 
            END IF 
@@ -579,8 +582,8 @@
 
        END DO ! NKP
 
-       WRITE(*,*) ' '
-       WRITE(*,8000)
+       WRITE(stdout,*) ' '
+       WRITE(stdout,8000)
  
 ! ...  Compute the dimwin(k) x dimwann matrix cu that yields, from the dimwin(k) 
 !      original bloch states, the dimwann bloch-like states with maximal projection
@@ -604,12 +607,9 @@
                 mxdbnd, s, u, mxdbnd, vt, dimwann, work, 4*mxdbnd, rwork2, info )
 
            IF ( info /= 0 ) THEN
-             WRITE(*,*) '*** ERROR *** IN ZGESVD IN projection.f'
-             WRITE(*,*) 'K-POINT NKP=', nkp, ' INFO=', info
-             IF ( info < 0 ) THEN
-               WRITE(*,*) 'THE ', -info, '-TH ARGUMENT HAD ILLEGAL VALUE'
-             END IF 
-             STOP
+             WRITE(stdout,*) '*** ERROR *** IN ZGESVD IN projection.f'
+             WRITE(stdout,*) 'K-POINT NKP=', nkp, ' INFO=', info
+             IF ( info < 0 ) CALL errore(' projection ', ' zgesvd: info has illegal value ', info )
            END IF 
  
            DO j=1,dimwann
@@ -623,9 +623,9 @@
  
            IF ( verbosity == 'high' ) THEN
 ! ...        Check unitariety
-             WRITE(*,*) ' '
-             WRITE(*,*) ' '
-             WRITE(*,*) 'k-point',nkp
+             WRITE(stdout,*) ' '
+             WRITE(stdout,*) ' '
+             WRITE(stdout,*) 'k-point',nkp
  
 ! ...        Note that cu.transpose(cu) is *NOT* an identity dimwin(nkp) by dimwin(nkp) 
 !            matrix, but transpose(cu).cu is a dimwann by dimwann identity matrix. 
@@ -633,15 +633,15 @@
 !            for the latter (what this means is that the columns of cu are orthonormal
 !            vectors).
  
-             WRITE(*,*) ' '
-             WRITE(*,*) 'transpose(cu).cu:'
+             WRITE(stdout,*) ' '
+             WRITE(stdout,*) 'transpose(cu).cu:'
              DO i = 1, dimwann
                DO j = 1, dimwann
                  ctmp = czero
                  DO m = 1, dimwin(nkp)
                    ctmp = ctmp + CONJG( cu(m,i) ) * cu(m,j)
                  END DO
-                 WRITE(*,'(2i4,2f10.7)') i, j, ctmp
+                 WRITE(stdout,'(2i4,2f10.7)') i, j, ctmp
                END DO
              END DO
            END IF
