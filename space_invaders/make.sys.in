@@ -1,0 +1,34 @@
+# @configure_input@
+CC             = @cc@
+CCFLAGS        = @cflags@ @pre_dflags@$(DFLAGS) $(IFLAGS)
+# See include/machine.h.README for a list of precompilation options
+# (possible arguments to -D or -U) and their meaning
+DFLAGS         = @dflags@
+IFLAGS         = -I. -I../include -I../Modules -I../Main @ifftw@
+CPP            = @cpp@
+CPPFLAGS       = @cppflags@ @pre_dflags@$(DFLAGS) $(IFLAGS)
+F77            = @f77@
+F90            = @f90@
+FFLAGS         = @fflags@ $(IFLAGS)
+F77FLAGS       = $(FFLAGS)
+F90FLAGS       = @f90flags@ @pre_f_dflags@$(DFLAGS)
+F77FLAGS_NOOPT = @fflags_noopt@
+LD             = @ld@
+LDFLAGS        = @ldflags@ $(LIBOBJS) $(LIBS)
+LIBOBJS        = ../Libs/lib_invaders.a
+# LIBS must contain the location of all needed external libraries
+LIBS           = @libs@
+# MYLIB can be one of the following (depending on LIBS):
+# blas       : compile the local copy of blas routines
+# lapack     : compile the local copy of lapack routines
+# blas_and_lapack : all of the above - use this for a quick test
+#              or if you don't have an optimized blas/lapack library
+# lapack_ibm : compile only lapack routines not present in IBM ESSL
+#              use this together with IBM ESSL
+# lapack_t3e : compile only lapack routines not present in T3E scilib
+#              use this together with T3E scilib
+# lapack_mkl : compile only lapack routines not present in Intel MKL
+#              use this together with Intel MKL
+MYLIB          = @mylib@
+AR             = @ar@
+ARFLAGS        = @arflags@

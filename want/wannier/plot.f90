@@ -153,7 +153,6 @@
             cptwr( nindpw(m,nkp) ) = cptwfp( m, nb, nkp )
           END DO
  
-!          CALL fft3d( cptwr(1,nb), cwork2, ngptar, 1 )
           CALL cfft3d( cptwr, ngptar(1), ngptar(2), ngptar(3), ngptar(1), ngptar(2), ngptar(3), -1 )
 
           DO m = 1, mplwv
@@ -283,7 +282,6 @@
         END DO
       END DO
 
-!      CALL fft3d( cwfft1, cwfft2, ngptwann, -1 )
       CALL cfft3d( cwfft1, ngptwann(1), ngptwann(2), ngptwann(3), ngptwann(1), ngptwann(2), ngptwann(3), 1)
 
       WRITE(*,*) ' '
@@ -390,6 +388,8 @@
       END DO
 
       CLOSE(39)
+
+      call gcube2plt( nwann )
 
       STOP '*** THE END *** (plot.f90)'
       END

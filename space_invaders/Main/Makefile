@@ -3,7 +3,7 @@ include ../make.rules
 
 .SUFFIXES : .x
 .o.x:
-	$(LD) $(LDFLAGS) -o $@ $< ../Modules/*.o $(MODULES) -L../Libs -l_invaders $(LIBS)
+	$(LD) -o $@ $< ../Modules/*.o $(MODULES) $(LDFLAGS)
 
 EXE = bands.x intf.x plot.x space.x wannier.x window.x
 all: $(EXE)

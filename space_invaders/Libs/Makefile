@@ -7,7 +7,8 @@ OBJS= atomset.o bastr.o compar.o domega.o dot_bloch.o error.o        \
       lambda_avg.o latti.o new_bshells.o omega.o overlap_new.o       \
       phases.o projection.o projection_frozen.o ranf.o readat.o      \
       spline.o splint.o wigner_seitz.o zmatrix.o fft_stick.o         \
-      write_op.o check_sgm_kpt.o check_sgm_wan.o do_self_energy.o diag_gemat.o
+      write_op.o check_sgm_kpt.o check_sgm_wan.o do_self_energy.o    \
+      diag_gemat.o gcube2plt.o
 
 all : lib_invaders.a
 
