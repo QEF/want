@@ -167,12 +167,11 @@ CONTAINS
       IF ( .NOT. overlap_alloc) CALL errore(subname,'overlap NOT alloc',5) 
 
 
-      CALL overlap( evc, igsort, npwk, dimwin,                     &
-                    nntot, nnlist, nncell, cm, npw, npwkx, nkpts,  &
+      CALL overlap( evc, igsort, npwk, dimwin,                          &
+                    nntot, nnlist, nncell, cm, npw, npwkx, nkpts,       &
                     mxdnn, nr(1), nr(2), nr(3), dimwinx )
 
-      CALL projection( avec, lamp, ca, evc, vkpt,                  &
-                       npwk, dimwin, dimwann, dimfroz,             &
+      CALL projection( lamp, ca, evc, npwk, dimwin, dimwann, dimfroz,   &
                        npwkx, nkpts, dimwinx, trial)
 
       !

@@ -143,7 +143,7 @@
 
           WRITE( unit, "(2x, 'Trial centers: (cart. coord. in Bohr)' ) " )
           DO i = 1, dimwann
-              WRITE( unit, "(4x,'Center = ',i3,' Type = ',a,'  Center  = (',3F10.6,' )')")&
+              WRITE( unit, "(4x,'Center = ',i3,' Type = ',a,'  Center  = (',3F15.9,' )')")&
                      i, TRIM(trial(i)%type), center_cart1(:,i)
               IF  ( TRIM(trial(i)%type) == "2gauss" ) THEN
                   WRITE( unit, fmt="(26x,' Center2 = (', 3F10.6, ' ) ' )" ) &
@@ -290,12 +290,12 @@
           WRITE( unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i3,' ),', &
                         & 6x,'shift = (',3i3,' )' ) " ) & 
                           nk(:), NINT( s(:) )
-          WRITE( unit, "(2x, 'K-point calculation: (cart. coord. in Ang^-1)' ) " )
+          WRITE( unit, "(2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
           
           ALLOCATE( kpt_cart(3,nkpts), STAT=ierr)
              IF ( ierr/=0 ) CALL errore('summary','allocating kpt_cart',ABS(ierr))
           kpt_cart(:,:) = vkpt(:,:)
-          CALL cry2cart( kpt_cart, bvec / BOHR)
+          CALL cry2cart( kpt_cart, bvec )
 
           DO ik=1,nkpts
              WRITE( unit, " (4x, 'k point', i4, ':   ( ',3f9.5,' ),   weight = ', f8.4 )") &
@@ -308,7 +308,7 @@
 
       IF ( bshells_alloc ) THEN
           WRITE( unit, " (  '<B-SHELL>')" )
-          WRITE( unit,"(2x, 'Nearest-neighbour shells for k-point 1: (in Ang^-1)' ) " )
+          WRITE( unit,"(2x, 'Nearest-neighbour shells for k-point 1: (in Bohr^-1)' ) " )
           DO i = 1, ndnntot
              WRITE( unit, "(4x, 'shell (',i3,' )    radius = ', f9.5 )")  i, dnn(i)
           ENDDO
@@ -320,15 +320,15 @@
                    nwhich(i), nnshell(1,nwhich(i))
           ENDDO
           !
-          WRITE (unit, "(/,2x, 'List of the ' , i2, ' vectors b_k: (Ang^-1) ') ") nntot(1)
+          WRITE (unit, "(/,2x, 'List of the ' , i2, ' vectors b_k: (Bohr^-1) ') ") nntot(1)
           DO i = 1, nntot(1)
               WRITE(unit, " (4x, 'b_k', i4, ':   ( ',3f9.5, ' ),   weight = ',f8.4 )")&
                              i, ( bk(j,1,i), j=1,3 ), wb(1,i)
           ENDDO
           !
-          WRITE (unit, "(/,2x, 'The ',i2, '  bk directions are:' )") nntot(1)/2
+          WRITE (unit, "(/,2x, 'The ',i2, '  bk directions are (Bohr^-1):' )") nntot(1)/2
           DO i=1,nntot(1)/2
-              WRITE(unit, "(4x,'dir',i2,':   ( ',3f9.5, ' ) ' )" ) i, ( bka(j,i), j=1,3 )
+              WRITE(unit, "(4x,'dir',i2,':   ( ',3f9.5, ' ) ')" ) i, ( bka(j,i), j=1,3 )
           ENDDO
           WRITE( unit, " (  '</B-SHELL>',/)" )
       ENDIF

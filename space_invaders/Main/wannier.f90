@@ -32,7 +32,7 @@
       USE summary_module, ONLY : summary
       USE kpoints_module, ONLY: nkpts, &
                           nnmx => mxdnn, nnmxh => mxdnnh, &
-                          nntot, nnlist, nncell, neigh, bk, wb, dnn, bka, wbtot
+                          nntot, nnlist, nncell, neigh, bk, wb, bka, wbtot
       USE overlap_module,  ONLY : dimwann, ca, cm
       USE localization_module, ONLY : cu, rave, rave2, r2ave, &
                        Omega_I, Omega_OD, Omega_D, Omega_V, Omega_tot, &
@@ -135,7 +135,7 @@
 !
 !...  Wannier Functions localization procedure
 ! 
-      WRITE(stdout,"(/,2x,70('='))")
+      WRITE(stdout,"(2/,2x,70('='))")
       WRITE(stdout,"(2x,'=',18x,'Starting localization procedure',19x,'=')")
       WRITE(stdout,"(2x,70('=')),/")
 
@@ -158,20 +158,22 @@
       !
       !...  Write centers and spread
 
+      WRITE( stdout, "(/,2x, 'Center coord in Bohr, Spreads (Omega) in Bohr^2 ')")
       DO nwann = 1, dimwann
-        WRITE( stdout, fmt= " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
+        WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
            &' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ),  &
                                         r2ave(nwann) - rave2(nwann)
       END DO  
-      WRITE( stdout, fmt= " ( /,2x, '! Center Sum', &
+      WRITE( stdout," ( /,2x, '! Center Sum', &
            &  1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
            (rtot(i),i=1,3), r2tot
               
-      WRITE( stdout, fmt="(/,2x, 'Spread Operator decomposition: ')")
-      WRITE( stdout, fmt="(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
-      WRITE( stdout, fmt="(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
-      WRITE( stdout, fmt="(  4x,'OmegaOD   =   ', f15.9 ) " ) Omega_OD
-      WRITE( stdout, fmt="(/,4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
+
+      WRITE( stdout, fmt="(/,2x, 'Spread Operator decomposition (Bohr^2) : ')")
+      WRITE( stdout, fmt="(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
+      WRITE( stdout, fmt="(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
+      WRITE( stdout, fmt="(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
+      WRITE( stdout, fmt="(/,4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
 
       func_old1 = func_om1
       func_old2 = func_om2
@@ -281,7 +283,7 @@
 
           ENDIF
 
-        ENDIF
+        ENDIF   ! phases
 
         IF ( verbosity == 'high' ) THEN
             WRITE (stdout, fmt=" (/,2x,' Matrix U after zgees, k-point',i3,/)") ik
@@ -377,15 +379,15 @@
       func_old3 = func_om3
 
 
-! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
-!     the complex logarithms
-
-      irguide = 0
-!     CALL phases( dimwann, nkpts, nkpts, nnmx, nnmxh, nntot, nnh, neigh,        &
-!          bk, bka, cm, csheet, sheet, rguide, irguide )
-      irguide = 1
-
-! ... Recalculate the average positions of the Wanns.
+!! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
+!!     the complex logarithms
+!
+!      irguide = 0
+!!     CALL phases( dimwann, nkpts, nkpts, nnmx, nnmxh, nntot, nnh, neigh,        &
+!!          bk, bka, cm, csheet, sheet, rguide, irguide )
+!      irguide = 1
+!
+!! ... Recalculate the average positions of the Wanns.
 
       CALL omega( dimwann, nkpts, nkpts, nntot, nnmx, nnlist, bk, wb, cm,        &
            csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot,     &
@@ -478,7 +480,7 @@
 !  ... Here start the iterative loop
 !
 !
-      WRITE( stdout, "(/,2x,70('='))" ) 
+      WRITE( stdout, "(2/,2x,70('='))" ) 
       WRITE( stdout, "(2x,'=',21x,'Starting iteration loop',24x,'=')" )
       WRITE( stdout, "(2x,70('='),/)" ) 
 
@@ -504,7 +506,7 @@
 
         IF ( lrguide ) THEN
 ! XXXX  nnh = nntot(1)/2, vedi Marzari... to be fixed here
-          IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )            &
+          IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )       &
             CALL phases( dimwann, nkpts, nkpts, nnmx, nnmxh, nntot, nnh, neigh,       &
                  bk, bka, cm, csheet, sheet, rguide, irguide )
         ENDIF
@@ -636,7 +638,7 @@
         IF ( ncount <= niter0 ) THEN
             IF ( ( (ncount/nprint) * nprint +1) == ncount )  THEN
                 WRITE( stdout," (/,2x,'Iteration = ',i5) ") ncount
-                WRITE(stdout, " (2x, 'Wannier centers and Spreads (Omega)')")
+                WRITE(stdout, " (2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
                 DO nwann = 1, dimwann
                     WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',&
                                &  f12.6, ' )  Omega = ', f13.6 )" )  &
@@ -773,7 +775,7 @@
 
           IF ( ( (ncount/nprint) * nprint +1) == ncount ) THEN
               WRITE( stdout, " (/,2x,'Iteration = ',i5) ") ncount
-              WRITE(stdout,  " (  2x, 'Wannier centers and Spreads (Omega)')")
+              WRITE(stdout,  " (  2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
               DO nwann = 1, dimwann
                   WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
                          &  f12.6, ' )  Omega = ', f13.6 )" )  &
@@ -813,7 +815,7 @@
           WRITE( stdout, "(2x,70('='),/)" ) 
 
           WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
-          WRITE( stdout, " (2x, 'Final Wannier centers and Spreads (Omega)')")
+          WRITE( stdout, " (2x, 'Final Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
           DO nwann = 1, dimwann
             WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
                & f12.6,' )  Omega = ', f13.6 )" )  &
@@ -823,19 +825,21 @@
                & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
               (rtot(i),i=1,3), r2tot
 
-          WRITE( stdout, "(/,2x, 'Spread Operator decomposition: ')")
-          WRITE( stdout, "(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
-          WRITE( stdout, "(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
-          WRITE( stdout, "(  4x,'OmegaOD   =   ', f15.9 ) " ) Omega_OD
-          WRITE( stdout, "(/,4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
+          WRITE( stdout, "(/,2x, 'Spread Operator decomposition (Bohr^2): ')")
+          WRITE( stdout, "(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
+          WRITE( stdout, "(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
+          WRITE( stdout, "(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
+          WRITE( stdout, "(  4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
 
-          WRITE (stdout, "(  2x,'Omega variation:')")
-          WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
-          WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
-          WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
-          WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
-          WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
-          WRITE( stdout, "(2x,70('='))" ) 
+          WRITE (stdout, "(/, 2x,'Omega variation (Bohr^2):')")
+!          WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
+!          WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
+!          WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
+!          WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
+!          WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
+
+          WRITE (stdout, "(  4x,'Delta Omega Tot = ',f15.9)") func_del
+          WRITE( stdout, "(/,2x,70('='))" ) 
 
           GO TO 8100
         END IF  
@@ -856,7 +860,7 @@
       WRITE (stdout, "(2x,70('='),/)")
 
       WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_type)
-      WRITE(stdout,  " (2x, 'Final Wannier centers and Spreads (Omega)')")
+      WRITE(stdout,  " (2x, 'Final Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
       DO nwann = 1, dimwann
         WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
            & ' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ), &
@@ -866,18 +870,20 @@
            & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
              (rtot(i),i=1,3), r2tot
 
-      WRITE( stdout, "(/,2x, 'Spread Operator decomposition: ')")
-      WRITE( stdout, "(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
-      WRITE( stdout, "(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
-      WRITE( stdout, "(  4x,'OmegaOD   =   ', f15.9 ) " ) Omega_OD
-      WRITE( stdout, "(/,4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
+      WRITE( stdout, "(/,2x, 'Spread Operator decomposition (Bohr^2): ')")
+      WRITE( stdout, "(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
+      WRITE( stdout, "(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
+      WRITE( stdout, "(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
+      WRITE( stdout, "(  4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
 
-      WRITE (stdout, "(/,2x,'Omega variation:')")
-      WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
-      WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
-      WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
-      WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
-      WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
+      WRITE (stdout, "(/,2x,'Omega variation (Bohr^2):')")
+!      WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
+!      WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
+!      WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
+!      WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
+!      WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
+
+      WRITE (stdout, "(  4x,'Delta Omega Tot = ',f15.9)") func_del
       WRITE (stdout, "(/,2x,70('='))")
 
 

@@ -79,7 +79,7 @@
 
         smat(:,:) = ZERO
         svec(:) = ZERO
-        WRITE( stdout,*)
+        WRITE( stdout,"()")
 
         DO nn = 1, nnh
 

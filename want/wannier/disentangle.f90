@@ -31,8 +31,7 @@
        USE iotk_module
     
        USE kpoints_module, ONLY: nkpts, vkpt
-       USE kpoints_module, ONLY: mxdnn, mxdnnh, nntot, nnshell, nnlist, nncell, &
-                                 neigh, bk, wb, dnn, bka, wbtot, nshells, nwhich
+       USE kpoints_module, ONLY: mxdnn, nnshell, nnlist, wb, wbtot, nshells, nwhich
        USE lattice_module, ONLY: avec
        USE windows_module,  ONLY : nbnd, dimwin, dimwinx, eig, imin, imax, lcompspace, &
                                    dimfroz, indxfroz, indxnfroz, lfrozen, frozen

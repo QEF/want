@@ -14,7 +14,7 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY : ZERO, CZERO, ONE, BOHR => bohr_radius_angs, EPS_m10, EPS_m6
+      USE constants, ONLY : ZERO, CZERO, ONE, EPS_m10, EPS_m6
       USE timing_module, ONLY : timing
 
       USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, &
@@ -88,6 +88,7 @@
       ndnntot = 0
 
 ! ... AC & MBN (April 2002) generic k grid allowed
+!     everything in bohr^-1
  
       DO nlist = 1, nnmx
         DO nkp = 1, nkpts
@@ -99,7 +100,7 @@
                 vkpp(3) = vkpr(3,nkp) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
                 dist=SQRT( (vkpr(1,1)-vkpp(1))**2 + &
                            (vkpr(2,1)-vkpp(2))**2 + &
-                           (vkpr(3,1)-vkpp(3))**2 ) / bohr
+                           (vkpr(3,1)-vkpp(3))**2 ) 
                 IF ( (dist > eps) .AND. (dist > dnn0+eps) ) dnn1 = MIN( dnn1, dist )
               END DO
             END DO
@@ -116,6 +117,8 @@
 !     of the k-point nkp. nncell(i,nkp,nnth) tells us in which BZ is the nnth 
 !     nearest-neighbour of the k-point nkp. Construct the nnx b-vectors that go from k-point
 !     nkp to each neighbour bk(1:3,nkp,1...nnx).
+!
+!     kvect in bohr^-1
 
       DO nkp = 1, nkpts
         nnx = 0
@@ -131,7 +134,7 @@
                   vkpp(3) = vkpr(3,nkp2) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
                   dist = SQRT( ( vkpr(1,nkp) - vkpp(1) )**2 + &
                                ( vkpr(2,nkp) - vkpp(2) )**2 + &
-                               ( vkpr(3,nkp) - vkpp(3) )**2 ) / bohr
+                               ( vkpr(3,nkp) - vkpp(3) )**2 ) 
                   IF ( ( dist >=  dnn(ndnn) * 0.9999d0 )  .AND. &
                        ( dist <= dnn(ndnn) * 1.0001d0 ) )  THEN
                     nnx = nnx + 1   
@@ -141,8 +144,8 @@
                     nncell(2,nkp,nnx) = m
                     nncell(3,nkp,nnx) = n
                     !
-                    ! units are in bohr-1, here converted for bk to ang-1
-                    bk(:,nkp,nnx) = ( vkpp(:) - vkpr(:,nkp) ) / bohr  
+                    ! units are in bohr-1
+                    bk(:,nkp,nnx) = ( vkpp(:) - vkpr(:,nkp) )
                   ENDIF
                 ENDDO
               ENDDO
@@ -215,12 +218,6 @@
           IF ( ABS( dimsingvd(nn) ) > 1e-5 ) ndim(ndnn) = ndim(ndnn) + 1
         END DO
 
-        ! <DEBUG>
-        ! factor = DBLE( ndim(ndnn) ) / nnshell(1,ndnn)
-        ! WRITE( stdout, " (4x, 'shell (', i3, ' )    dimensionality  = ', i3 )")  &
-        !                ndnn, ndim(ndnn)
-        ! WRITE( stdout, " (4x, 'w_b weight is 1/b^2 times', f8.4,/ )")  factor
-        ! </DEBUG>
 
 !
 !...    Some checks on the NNs

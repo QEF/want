@@ -43,9 +43,9 @@
    COMPLEX(dbl), ALLOCATABLE   :: cu(:,:,:)     ! dimwann, dimwann, nkpts
    
    ! ... <r>, <r>^2, <r^2> and spreads of the single WFs
-   REAL(dbl), ALLOCATABLE      :: rave(:,:)     ! 3 * dimwann,   <r>
-   REAL(dbl), ALLOCATABLE      :: r2ave(:)      ! dimwann,     <r^2>
-   REAL(dbl), ALLOCATABLE      :: rave2(:)      ! dimwann,     <r>^2
+   REAL(dbl), ALLOCATABLE      :: rave(:,:)     ! 3 * dimwann,   <r>  (Bohr)
+   REAL(dbl), ALLOCATABLE      :: r2ave(:)      ! dimwann,     <r^2>  (Bohr^2)
+   REAL(dbl), ALLOCATABLE      :: rave2(:)      ! dimwann,     <r>^2  (Bohr^2)
 
    !
    ! ... decomposition of the spread functional
