@@ -12,7 +12,7 @@
 ! that initilizes the code
 !
 ! routines in this module:
-! SUBROUTINE startup(version)
+! SUBROUTINE startup(version,main_name)
 ! </INFO>
 
 
