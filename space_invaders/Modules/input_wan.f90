@@ -60,7 +60,7 @@ CONTAINS
 
   SUBROUTINE input_read
 
-       USE io_module, ONLY: stdout, ionode, ionode_id
+       USE io_module, ONLY: stdin, stdout, ionode, ionode_id
        USE mp, ONLY: mp_bcast
        USE parser_module, ONLY: read_line, capital
 
@@ -106,7 +106,7 @@ CONTAINS
 
        ios = 0
        IF( ionode ) THEN
-          READ( 5, input_wan, iostat = ios )
+          READ( stdin, input_wan, iostat = ios )
        END IF
        CALL mp_bcast( ios, ionode_id )
        IF( ios /= 0 ) THEN

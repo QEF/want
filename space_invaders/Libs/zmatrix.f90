@@ -9,14 +9,14 @@
 !
 !=----------------------------------------------------------------------------------=
        SUBROUTINE zmatrix( kpt, nnlist, nshells, nwhich, nnshell, wb, lamp, kcm, mtrx,   &
-                  dimwann, dimwin, dimfroz, indxnfroz, mxdbnd, mxdnrk, mxdnn )
+                  dimwann, dimwin, dimfroz, indxnfroz, nbnd, mxdnrk, mxdnn )
 !=----------------------------------------------------------------------------------=
        USE kinds
        USE constants, ONLY : CZERO
  
        IMPLICIT NONE
 
-       INTEGER :: mxdbnd
+       INTEGER :: nbnd
        INTEGER :: mxdnrk
        INTEGER :: mxdnn
        INTEGER :: kpt
@@ -24,12 +24,12 @@
        INTEGER :: nshells, nwhich(nshells)
        INTEGER :: nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)
-       INTEGER :: dimfroz(mxdnrk), indxnfroz(mxdbnd,mxdnrk)
+       INTEGER :: dimfroz(mxdnrk), indxnfroz(nbnd,mxdnrk)
        REAL(dbl) :: wb(mxdnrk,mxdnn)
-       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
-       COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
+       COMPLEX(dbl) :: lamp(nbnd,nbnd,mxdnrk)
+       COMPLEX(dbl) :: kcm(nbnd,nbnd,mxdnn)
 
-       COMPLEX(dbl) :: mtrx(mxdbnd,mxdbnd)
+       COMPLEX(dbl) :: mtrx(nbnd,nbnd)
  
        INTEGER :: m, n, l, j
        INTEGER :: nnx, ndnc, ndnn, nnsh, k_pls_b

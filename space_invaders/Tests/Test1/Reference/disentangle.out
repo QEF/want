@@ -8,17 +8,69 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  5Dec2004 at 12:29:36 
+  Date 25Dec2004 at 19:59:48 
+
+
+  PW-DFT data read from file: silicon.dft
 
   ======================================================================
-  =                         Lattice parameters                         =
+  =                                Main                                =
   ======================================================================
 
+            Calculation Title :     WanT Calculation
+                       Prefix :     silicon
+            Working directory :     ./
+
+<WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =    8
+    CG minim: Mixing parameter (alphafix0)=  0.500
+    CG minim: Max iteration number =   100
+    XX minim: Mixing parameter (alphafix) =  0.500
+    XX minim: Max iteration number =   800
+    Every   5 XX iteration perform a CG minimi (ncg)
+    Number of k-point shells =   1
+    Chosen shells (indexes) =   1
+    Print each  10 iterations
+    Ordering type = NONE
+    Verbosity = MEDIUM
+</WANNIER_FUNCTIONS>
+
+<DISENTANGLE>
+  Input parameters for disentangling subspaces
+    Mixing parameter (alpha)=  0.500
+    Max iter =   200
+    Starting guess orbitals (itrial) =  3
+    Disentangle convergence threshold =     0.000000010
+</DISENTANGLE>
+
+<WANNIER_CENTERS>
+  Gaussian centers: (cart. coord. in Bohr)
+    Center =   1 Type = 1 Gaussian  = ( -1.324935  1.324935  1.324935 ) 
+    Center =   2 Type = 1 Gaussian  = (  0.000000 -1.324935  0.000000 ) 
+    Center =   3 Type = 1 Gaussian  = (  1.324935  0.000000  0.000000 ) 
+    Center =   4 Type = 1 Gaussian  = (  0.000000  0.000000 -1.324935 ) 
+    Center =   5 Type = 2 Gaussian  = ( -0.662467  0.662467  0.662467 ) 
+                          Gaussian2 = ( -1.987402  1.987402  1.987402 ) 
+    Center =   6 Type = 2 Gaussian  = (  0.662467  0.662467 -0.662467 ) 
+                          Gaussian2 = (  1.987402  1.987402 -1.987402 ) 
+    Center =   7 Type = 2 Gaussian  = ( -0.662467 -0.662467 -0.662467 ) 
+                          Gaussian2 = ( -1.987402 -1.987402 -1.987402 ) 
+    Center =   8 Type = 2 Gaussian  = (  0.662467 -0.662467  0.662467 ) 
+                          Gaussian2 = (  1.987402 -1.987402  1.987402 ) 
+</WANNIER_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
   Alat =  10.5995 (Bohr)
   Alat =   5.6090 (Ang )
 
   Crystal axes:
-                in units of Bohr                 in lattice units
+                in units of Bohr                 in Alat units
     a(1) = ( -5.2997  0.0000  5.2997 )     (  -0.5000  0.0000  0.5000 )
     a(2) = (  0.0000  5.2997  5.2997 )     (   0.0000  0.5000  0.5000 )
     a(3) = ( -5.2997  5.2997  0.0000 )     (  -0.5000  0.5000  0.0000 )
@@ -28,17 +80,24 @@
     a(3) = ( -2.8045  2.8045  0.0000 )
 
    Reciprocal lattice vectors:
-                in units of Bohr^-1              in lattice units
+                in units of Bohr^-1              in 2Pi/Alat units
     b(1) = ( -0.5928 -0.5928  0.5928 )     (  -1.0000 -1.0000  1.0000 )
     b(2) = (  0.5928  0.5928  0.5928 )     (   1.0000  1.0000  1.0000 )
     b(3) = ( -0.5928  0.5928 -0.5928 )     (  -1.0000  1.0000 -1.0000 )
+</LATTICE>
 
+<IONS>
+  Number of chemical species =  1
+    Pseudo(  1) = Si.vbc.UPF
 
-  ======================================================================
-  =                      B-shell calculations                          =
-  ======================================================================
+  Atomic positions: (cart. coord. in units of alat)
+    Si  tau(   1 ) = (  0.0000  0.0000  0.0000 )
+    Si  tau(   2 ) = ( -0.2500  0.2500  0.2500 )
+</IONS>
 
-  K-point calculation: (cartesian coordinates in Ang^-1)
+<K-POINTS>
+  nkpts =   64
+  K-point calculation: (cart. coord. in Ang^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.0156
     k point   2:   (  -0.28005  0.28005 -0.28005 ),   weight =   0.0156
     k point   3:   (  -0.56010  0.56010 -0.56010 ),   weight =   0.0156
@@ -103,7 +162,9 @@
     k point  62:   (  -0.28005  0.28005  1.40025 ),   weight =   0.0156
     k point  63:   (  -0.56010  0.56010  1.12020 ),   weight =   0.0156
     k point  64:   (  -0.84015  0.84015  0.84015 ),   weight =   0.0156
+</K-POINTS>
 
+<B-SHELL>
   Nearest-neighbour shells for k-point 1: (in Ang^-1)
     shell (  1 )    radius =   0.48506
     shell (  2 )    radius =   0.56010
@@ -117,15 +178,9 @@
     shell ( 10 )    radius =   1.45518
     shell ( 11 )    radius =   1.58420
     shell ( 12 )    radius =   1.65679
- 
+
   Number of nearest-neighbours for K-point 1 (representetive for the BZ):
-    shell (  1 )    neighbours  =   8
-
-  Check shell dimensionality and weights:
-    shell (  1 )    dimensionality  =   3
-    w_b weight is 1/b^2 times  0.3750
-
-  Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)
+    shell (  1 )    neighbours  =    8
 
   List of the  8 vectors b_k: (Ang^-1) 
     b_k   1:   (  -0.28005  0.28005 -0.28005 ),   weight =   1.5938
@@ -142,42 +197,418 @@
     dir 2:   (   0.28005  0.28005  0.28005 ) 
     dir 3:   (  -0.28005 -0.28005  0.28005 ) 
     dir 4:   (  -0.28005  0.28005  0.28005 ) 
-  
-  Kinetic energy cut-off =    30.00 (Ry)
+</B-SHELL>
 
-  Uniform grid used in wannier calculations:
-    nk = (  4  4  4 )      s = (  0.00  0.00  0.00 )
-    total number of k points =   64
-
-   Energy windows (in eV) and band-space minimization parameters:
-    outer window: E  = (-13.0000 ,  14.8000 )
-    inner window: NOT used --> NO FROZEN STATES
-
-    Number of bands in PW calculation =   16
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = ( -13.0000 ,  14.8000 )
     Max number of bands within the energy window =    11
-    Number of Wannier functions required =     8
 
-  K-point shells: 
-    Number of shells =   1
-    Selected shells  =   1
+  Electronic Structure from DFT calculation:
+    nkpts =  64,     nbnd =  16
+    Fermi energy =    5.079001224 eV
 
-  Minimization data: 
-    Mixing parameter (alpha)=  0.500
-    Max iter =   200
-    Starting guess orbitals (itrial) =     3
-  Gaussian centers: (cart. coord. in Bohr)
-    Center =   1 Type = 1 Gaussian  = ( -1.324935  1.324935  1.324935 ) 
-    Center =   2 Type = 1 Gaussian  = (  0.000000 -1.324935  0.000000 ) 
-    Center =   3 Type = 1 Gaussian  = (  1.324935  0.000000  0.000000 ) 
-    Center =   4 Type = 1 Gaussian  = (  0.000000  0.000000 -1.324935 ) 
-    Center =   5 Type = 2 Gaussian  = ( -0.662467  0.662467  0.662467 ) 
-                          Gaussian2 = ( -1.987402  1.987402  1.987402 ) 
-    Center =   6 Type = 2 Gaussian  = (  0.662467  0.662467 -0.662467 ) 
-                          Gaussian2 = (  1.987402  1.987402 -1.987402 ) 
-    Center =   7 Type = 2 Gaussian  = ( -0.662467 -0.662467 -0.662467 ) 
-                          Gaussian2 = ( -1.987402 -1.987402 -1.987402 ) 
-    Center =   8 Type = 2 Gaussian  = (  0.662467 -0.662467  0.662467 ) 
-                          Gaussian2 = (  1.987402 -1.987402  1.987402 ) 
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -6.2144   5.0790   5.0790   5.0790   7.2949   7.5836   7.5836   7.5836
+    12.3834  12.7702  12.7702  15.8870  15.8870  15.8870  19.5180  26.6711
+
+    kpt =  2 (  0.000 0.000 0.250 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6520  21.9738
+
+    kpt =  3 (  0.000 0.000 0.500 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
+    15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7482
+
+    kpt =  4 (  0.000 0.000 0.750 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
+
+    kpt =  5 (  0.000 0.250 0.000 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6517  21.9738
+
+    kpt =  6 (  0.000 0.250 0.250 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
+    12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
+
+    kpt =  7 (  0.000 0.250 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt =  8 (  0.000 0.250 0.750 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt =  9 (  0.000 0.500 0.000 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
+    15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7482
+
+    kpt = 10 (  0.000 0.500 0.250 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2920  20.8142  21.8758  22.2647
+
+    kpt = 11 (  0.000 0.500 0.500 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.4084  -2.4084   2.4666   2.4666   5.8918   5.8918  14.2699  14.2699
+    15.6861  15.6861  16.7336  16.7336  17.2328  17.2328  22.8325  22.8325
+
+    kpt = 12 (  0.000 0.500 0.750 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
+
+    kpt = 13 (  0.000 0.750 0.000 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6517  21.9738
+
+    kpt = 14 (  0.000 0.750 0.250 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 15 (  0.000 0.750 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 16 (  0.000 0.750 0.750 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
+    12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3830
+
+    kpt = 17 (  0.250 0.000 0.000 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
+
+    kpt = 18 (  0.250 0.000 0.250 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
+    12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3830
+
+    kpt = 19 (  0.250 0.000 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
+
+    kpt = 20 (  0.250 0.000 0.750 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 21 (  0.250 0.250 0.000 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
+    12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
+
+    kpt = 22 (  0.250 0.250 0.250 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
+
+    kpt = 23 (  0.250 0.250 0.500 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 24 (  0.250 0.250 0.750 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
+
+    kpt = 25 (  0.250 0.500 0.000 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
+
+    kpt = 26 (  0.250 0.500 0.250 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 27 (  0.250 0.500 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 28 (  0.250 0.500 0.750 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
+    14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
+
+    kpt = 29 (  0.250 0.750 0.000 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 30 (  0.250 0.750 0.250 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 31 (  0.250 0.750 0.500 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
+    14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
+
+    kpt = 32 (  0.250 0.750 0.750 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
+
+    kpt = 33 (  0.500 0.000 0.000 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
+    15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7483
+
+    kpt = 34 (  0.500 0.000 0.250 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 35 (  0.500 0.000 0.500 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.4084  -2.4084   2.4666   2.4666   5.8918   5.8918  14.2699  14.2699
+    15.6861  15.6861  16.7336  16.7336  17.2328  17.2328  22.8325  22.8325
+
+    kpt = 36 (  0.500 0.000 0.750 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 37 (  0.500 0.250 0.000 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 38 (  0.500 0.250 0.250 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1222  21.2191
+
+    kpt = 39 (  0.500 0.250 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2920  20.8142  21.8757  22.2648
+
+    kpt = 40 (  0.500 0.250 0.750 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
+    14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
+
+    kpt = 41 (  0.500 0.500 0.000 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.4084  -2.4084   2.4666   2.4666   5.8918   5.8918  14.2699  14.2699
+    15.6861  15.6861  16.7336  16.7336  17.2328  17.2328  22.8325  22.8325
+
+    kpt = 42 (  0.500 0.500 0.250 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 43 (  0.500 0.500 0.500 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
+    15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7482
+
+    kpt = 44 (  0.500 0.500 0.750 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 45 (  0.500 0.750 0.000 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 46 (  0.500 0.750 0.250 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
+    14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
+
+    kpt = 47 (  0.500 0.750 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2920  20.8142  21.8757  22.2647
+
+    kpt = 48 (  0.500 0.750 0.750 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 49 (  0.750 0.000 0.000 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
+
+    kpt = 50 (  0.750 0.000 0.250 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 51 (  0.750 0.000 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8758  22.2648
+
+    kpt = 52 (  0.750 0.000 0.750 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
+    12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
+
+    kpt = 53 (  0.750 0.250 0.000 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 54 (  0.750 0.250 0.250 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 55 (  0.750 0.250 0.500 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
+    14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
+
+    kpt = 56 (  0.750 0.250 0.750 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
+
+    kpt = 57 (  0.750 0.500 0.000 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2920  20.8142  21.8757  22.2647
+
+    kpt = 58 (  0.750 0.500 0.250 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
+    14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
+
+    kpt = 59 (  0.750 0.500 0.500 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
+
+    kpt = 60 (  0.750 0.500 0.750 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 61 (  0.750 0.750 0.000 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
+    12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
+
+    kpt = 62 (  0.750 0.750 0.250 )    dimwin =    9
+                                      imin =    1  imax =    9
+   Eigenvalues:
+    -3.7312  -1.0421   1.8334   3.0611   6.6164   9.3612  10.3147  10.7622
+    14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
+
+    kpt = 63 (  0.750 0.750 0.500 )    dimwin =   10
+                                      imin =    1  imax =   10
+   Eigenvalues:
+    -4.3439  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
+    11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
+
+    kpt = 64 (  0.750 0.750 0.750 )    dimwin =   11
+                                      imin =    1  imax =   11
+   Eigenvalues:
+    -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
+    12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
+
+    inner window: NOT used --> NO FROZEN STATES
+</WINDOWS>
+
+
+  WFC and GRIDS data read from file: silicon.dft
+
+
+  ======================================================================
+  =                       Overlap and Projections                       =
+  ======================================================================
+
+  Kinetic energy cut-off for wfcs =    30.00 (Ry)
+                         for rho  =   120.00 (Ry)
+  Total number of PW for rho =       6615
+  Max number of PW for wfcs =        869
+  FFT grid components (rho) =  (    27   27   27 )
+
 
   Overlap and projections written on file: silicon_WanT.ovp
 
@@ -188,29 +619,29 @@
   =                   Starting Iteration loop                          =
   ======================================================================
 
-  Iteration =     1   Omega_I Error =      0.18504140
-  Iteration =     2   Omega_I Error =      0.16081192
-  Iteration =     3   Omega_I Error =      0.11315554
-  Iteration =     4   Omega_I Error =      0.07426438
-  Iteration =     5   Omega_I Error =      0.04707638
-  Iteration =     6   Omega_I Error =      0.02937804
-  Iteration =     7   Omega_I Error =      0.01826003
-  Iteration =     8   Omega_I Error =      0.01139084
-  Iteration =     9   Omega_I Error =      0.00716920
-  Iteration =    10   Omega_I Error =      0.00456919
-  Iteration =    11   Omega_I Error =      0.00295612
-  Iteration =    12   Omega_I Error =      0.00194414
-  Iteration =    13   Omega_I Error =      0.00130038
-  Iteration =    14   Omega_I Error =      0.00088437
-  Iteration =    15   Omega_I Error =      0.00061102
-  Iteration =    16   Omega_I Error =      0.00042832
-  Iteration =    17   Omega_I Error =      0.00030419
-  Iteration =    18   Omega_I Error =      0.00021853
-  Iteration =    19   Omega_I Error =      0.00015857
-  Iteration =    20   Omega_I Error =      0.00011605
-  Iteration =    21   Omega_I Error =      0.00008556
+  Iteration =     1   Omega_I Error =      0.18504393
+  Iteration =     2   Omega_I Error =      0.16081318
+  Iteration =     3   Omega_I Error =      0.11315685
+  Iteration =     4   Omega_I Error =      0.07426547
+  Iteration =     5   Omega_I Error =      0.04707720
+  Iteration =     6   Omega_I Error =      0.02937861
+  Iteration =     7   Omega_I Error =      0.01826043
+  Iteration =     8   Omega_I Error =      0.01139112
+  Iteration =     9   Omega_I Error =      0.00716939
+  Iteration =    10   Omega_I Error =      0.00456932
+  Iteration =    11   Omega_I Error =      0.00295621
+  Iteration =    12   Omega_I Error =      0.00194420
+  Iteration =    13   Omega_I Error =      0.00130043
+  Iteration =    14   Omega_I Error =      0.00088441
+  Iteration =    15   Omega_I Error =      0.00061104
+  Iteration =    16   Omega_I Error =      0.00042834
+  Iteration =    17   Omega_I Error =      0.00030421
+  Iteration =    18   Omega_I Error =      0.00021854
+  Iteration =    19   Omega_I Error =      0.00015858
+  Iteration =    20   Omega_I Error =      0.00011606
+  Iteration =    21   Omega_I Error =      0.00008557
   Iteration =    22   Omega_I Error =      0.00006348
-  Iteration =    23   Omega_I Error =      0.00004735
+  Iteration =    23   Omega_I Error =      0.00004736
   Iteration =    24   Omega_I Error =      0.00003549
   Iteration =    25   Omega_I Error =      0.00002670
   Iteration =    26   Omega_I Error =      0.00002016
@@ -247,19 +678,21 @@
 
   Convergence achieved!!
 
-  Final Omega_I (Bohr^2, Angstrom^2)     12.89225979        3.61019756
+  Final Omega_I (Bohr^2, Angstrom^2)     12.89225789        3.61019702
  ======================================================================
 
   Subspace data written on file: silicon_WanT.spaces
 
    <global routines>
-             clock number :     5
+             clock number :     7
 
-              disentangle :  1m29.48s CPU 
+              disentangle :  3m12.87s CPU 
  
-                  bshells :     0.19s CPU
-                  overlap :     5.85s CPU
-             overlap_base :     5.83s CPU
-               projection :    29.72s CPU
+                want_init :    60.07s CPU
+                  bshells :     0.34s CPU
+                  wfc_dat :   121.78s CPU
+                  overlap :    12.76s CPU
+             overlap_base :    12.64s CPU
+               projection :    53.55s CPU
 
 

@@ -36,6 +36,7 @@
 ! </INFO>
 !
    INTEGER, PARAMETER         ::   &
+          stdin = 5,               &! std input unit
          stdout = 6,               &! std output unit
        dft_unit = 10,              &! input file (DFT data) unit
        ovp_unit = 11,              &! overlap and projections unit
@@ -73,7 +74,8 @@
    PUBLIC ::  io_global_start, io_global_getionode
    PUBLIC ::  ionode, ionode_id
 
-   PUBLIC ::  stdout, dft_unit, ovp_unit, space_unit, wan_unit, &
+   PUBLIC ::  stdin, stdout 
+   PUBLIC ::  dft_unit, ovp_unit, space_unit, wan_unit, &
               sgm_unit, ham_unit, save_unit
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
    PUBLIC ::  ioname

@@ -34,7 +34,7 @@
        USE kpoints_module, ONLY: mxdnn, mxdnnh, nntot, nnshell, nnlist, nncell, &
                                  neigh, bk, wb, dnn, bka, wbtot
        USE lattice_module, ONLY: avec
-       USE windows_module,  ONLY : mxdbnd, dimwin, dimwinx, eiw, imin, imax, lcompspace, &
+       USE windows_module,  ONLY : nbnd, dimwin, dimwinx, eig, imin, imax, lcompspace, &
                                    dimfroz, indxfroz, indxnfroz, lfrozen, frozen
        USE windows_module,  ONLY : windows_allocate, windows_write
        USE subspace_module, ONLY : wan_eig, lamp, camp, eamp, comp_eamp, &
@@ -67,7 +67,7 @@
 
        INTEGER :: info, m, dim
        INTEGER :: i, j, l, i1, i2, i3 
-       INTEGER :: nkp, iter
+       INTEGER :: ik, iter
        INTEGER :: nt, ja
        INTEGER :: ngx, ngy, ngz
        INTEGER :: ngm
@@ -110,15 +110,15 @@
 !
 ! ...  Local allocations
 
-       ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ham ',(mxdbnd**2*nkpts))
-       ALLOCATE( lamp_tmp(mxdbnd,mxdbnd,nkpts), STAT=ierr )
+       ALLOCATE( ham(nbnd,nbnd,nkpts), STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating ham ',(nbnd**2*nkpts))
+       ALLOCATE( lamp_tmp(nbnd,nbnd,nkpts), STAT=ierr )
            IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating lamp_tmp ',(mxdbnd**2*nkpts))
-       ALLOCATE( z(mxdbnd,mxdbnd), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating z ', (mxdbnd*mxdbnd) )
-       ALLOCATE( w(mxdbnd), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating w ', mxdbnd )
+           CALL errore(' disentangle ', ' allocating lamp_tmp ',(nbnd**2*nkpts))
+       ALLOCATE( z(nbnd,nbnd), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating z ', (nbnd*nbnd) )
+       ALLOCATE( w(nbnd), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating w ', nbnd )
        ALLOCATE( komega_i_est(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating komega_i_est ', nkpts )
 
@@ -142,21 +142,21 @@
 
              IF ( ITRIAL == 1 ) THEN
                WRITE( stdout,"(/,'  Initial trial subspace: lowest energy eigenvectors',/)")
-               DO nkp=1, nkpts
+               DO ik=1, nkpts
                  DO l=1, dimwann
-                   DO j=1,dimwin(nkp)
-                     lamp(j,l,nkp) = CZERO
-                     IF ( j == l ) lamp(j,l,nkp) = CONE
+                   DO j=1,dimwin(ik)
+                     lamp(j,l,ik) = CZERO
+                     IF ( j == l ) lamp(j,l,ik) = CONE
                    END DO
                  END DO
                END DO
              ELSE IF ( itrial == 2 ) THEN
                WRITE( stdout,"(/,'  Initial trial subspace: highest energy eigenvectors',/)")
-               DO nkp=1, nkpts
+               DO ik=1, nkpts
                  DO l=1, dimwann
-                   DO j=1, dimwin(nkp)  
-                     lamp(j,l,nkp) = CZERO
-                     IF ( j == l+dimwin(nkp)-dimwann ) lamp(j,l,nkp) = CONE
+                   DO j=1, dimwin(ik)  
+                     lamp(j,l,ik) = CZERO
+                     IF ( j == l+dimwin(ik)-dimwann ) lamp(j,l,ik) = CONE
                    END DO
                  END DO
                END DO
@@ -188,25 +188,27 @@
                   CALL errore(' disentangle ', ' Invalid choice of itrial (II)', (itrial) )
              END IF
 
-! ...        Next find the (dimwann-dimfroz(nkp))-dimensional space of non-frozen states
+! ...        Next find the (dimwann-dimfroz(ik))-dimensional space of non-frozen states
 !            with largest overlap with s, and include it in the trial subspace 
-!            (put them above the frozen states in lamp)
+!            (put them above the frozen states in lamp).
+!           NOTA BENE: instead of what happens in projections here no use od wfcs is done
+!                      moreover, wfcs have already been deallocated and wasted away
 
              CALL projection_frozen( lamp, dimwann, dimwin,     &
-                  dimfroz, frozen, nkpts, mxdbnd, nkpts)
+                  dimfroz, frozen, nkpts, nbnd)
 
 ! ...        Finally include the frozen states (if any) in the trial 
 !            subspace at each k-point (put them at the bottom of lamp)
 !            NOTE that this must come last, because calling the subroutine projection.f
 !            would override it
 !
-             DO nkp = 1, nkpts
-               IF ( dimfroz(nkp) > 0 ) THEN
-                 DO l = 1, dimfroz(nkp)
-                   DO j = 1, dimwin(nkp)
-                     lamp(j,l,nkp)= CZERO
+             DO ik = 1, nkpts
+               IF ( dimfroz(ik) > 0 ) THEN
+                 DO l = 1, dimfroz(ik)
+                   DO j = 1, dimwin(ik)
+                     lamp(j,l,ik)= CZERO
                    END DO
-                   lamp(indxfroz(l,nkp),l,nkp) = CONE
+                   lamp(indxfroz(l,ik),l,ik) = CONE
                  END DO
                END IF
              END DO
@@ -224,10 +226,10 @@
 !            while it should be SIDE = 'right' to perform A.A^{\dag}
 !
 
-           DO nkp = 1, nkpts
-               IF ( .NOT. zmat_unitary( lamp(1:dimwin(nkp),1:dimwann,nkp), &
+           DO ik = 1, nkpts
+               IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),1:dimwann,ik), &
                                   SIDE='left', TOLL=EPS_m8 ) ) &
-                   CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',nkp)
+                   CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',ik)
            ENDDO
 
 !
@@ -239,11 +241,11 @@
 
 ! ...      Compute the initial z matrix mtrx_in at all relevant K-points
 
-           DO nkp = 1, nkpts
-             IF ( dimwann > dimfroz(nkp) )  THEN
-               CALL zmatrix( nkp, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
-                    cm(1,1,1,nkp), mtrx_in(1,1,nkp), dimwann, dimwin,     &
-                    dimfroz, indxnfroz, mxdbnd, nkpts, mxdnn )
+           DO ik = 1, nkpts
+             IF ( dimwann > dimfroz(ik) )  THEN
+               CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
+                    cm(1,1,1,ik), mtrx_in(1,1,ik), dimwann, dimwin,     &
+                    dimfroz, indxnfroz, nbnd, nkpts, mxdnn )
              END IF
            END DO
 
@@ -251,12 +253,12 @@
 
 ! ...    Compute the current z-matrix at each relevant K-point using the mixing scheme
  
-           DO nkp = 1, nkpts
-             IF ( dimwann > dimfroz(nkp) )  THEN
-               DO i = 1, dimwin(nkp)-dimfroz(nkp)
+           DO ik = 1, nkpts
+             IF ( dimwann > dimfroz(ik) )  THEN
+               DO i = 1, dimwin(ik)-dimfroz(ik)
                  DO j = 1, i
-                   mtrx_in(j,i,nkp) = alpha*mtrx_out(j,i,nkp) + (ONE-alpha)*mtrx_in(j,i,nkp)
-                   mtrx_in(i,j,nkp) = conjg(mtrx_in(j,i,nkp))         ! hermiticity
+                   mtrx_in(j,i,ik) = alpha*mtrx_out(j,i,ik) + (ONE-alpha)*mtrx_in(j,i,ik)
+                   mtrx_in(i,j,ik) = conjg(mtrx_in(j,i,ik))         ! hermiticity
                  END DO
                END DO
              END IF
@@ -264,82 +266,82 @@
          ENDIF    !   iter = 1
          omega_i_est = ZERO
 
-         DO nkp = 1, nkpts
+         DO ik = 1, nkpts
  
 ! ...    Diagonalize z matrix mtrx_in at all relevant K-points
  
-           IF ( dimwann > dimfroz(nkp) )  THEN
-                 dim = dimwin(nkp)-dimfroz(nkp)
-                 CALL zmat_hdiag( z(:,:), w(:), mtrx_in(:,:,nkp), dim)
+           IF ( dimwann > dimfroz(ik) )  THEN
+                 dim = dimwin(ik)-dimfroz(ik)
+                 CALL zmat_hdiag( z(:,:), w(:), mtrx_in(:,:,ik), dim)
            ENDIF
  
 ! ...      Calculate K-point contribution to omega_i_est
  
-           komega_i_est(nkp) = DBLE(dimwann)*wbtot
+           komega_i_est(ik) = DBLE(dimwann)*wbtot
  
 ! ...      Contribution from frozen states (if any)
  
-           IF ( dimfroz(nkp) > 0 )  THEN
-             DO m = 1, dimfroz(nkp)
+           IF ( dimfroz(ik) > 0 )  THEN
+             DO m = 1, dimfroz(ik)
  
 ! ...          Note that at this point lamp for the non-frozen states pertains to the 
 !              previous iteration step, which is exactly what we need as an input for 
 !              the subroutine lambda_avg
  
-               klambda = lambda_avg( m, nkp, lamp, cm(1,1,1,nkp), nnlist, nshells, &
-                         nwhich, nnshell, wb, dimwann, dimwin, mxdbnd, nkpts, mxdnn )
-               komega_i_est(nkp) = komega_i_est(nkp) - klambda
+               klambda = lambda_avg( m, ik, lamp, cm(1,1,1,ik), nnlist, nshells, &
+                         nwhich, nnshell, wb, dimwann, dimwin, nbnd, nkpts, mxdnn )
+               komega_i_est(ik) = komega_i_est(ik) - klambda
              END DO
            END IF
  
 ! ...      Contribution from non-frozen states (if any). 
-!          pick the dimwann-dimfroz(nkp) leading eigenvectors of the z-matrix to build the
+!          pick the dimwann-dimfroz(ik) leading eigenvectors of the z-matrix to build the
 !          optimal subspace for the next iteration
  
-           IF ( dimwann > dimfroz(nkp) )  THEN
-             m = dimfroz(nkp)
-             DO j = dimwin(nkp)-dimwann+1, dimwin(nkp)-dimfroz(nkp)
+           IF ( dimwann > dimfroz(ik) )  THEN
+             m = dimfroz(ik)
+             DO j = dimwin(ik)-dimwann+1, dimwin(ik)-dimfroz(ik)
                m = m+1
-               komega_i_est(nkp) = komega_i_est(nkp) - w(j)
-               DO i = 1, dimwin(nkp)
-                 lamp(i,m,nkp) = czero
+               komega_i_est(ik) = komega_i_est(ik) - w(j)
+               DO i = 1, dimwin(ik)
+                 lamp(i,m,ik) = czero
                END DO
-               DO i = 1, dimwin(nkp)-dimfroz(nkp)
-                 lamp(indxnfroz(i,nkp),m,nkp) = z(i,j)     ! *** CHECK!!! ***
+               DO i = 1, dimwin(ik)-dimfroz(ik)
+                 lamp(indxnfroz(i,ik),m,ik) = z(i,j)     ! *** CHECK!!! ***
                END DO
              END DO
              IF ( verbosity == 'high' ) THEN
                 WRITE(stdout, fmt="(/,2x, 'All eigenvalues:' )")
-                DO j = 1, dimwin(nkp)-dimfroz(nkp)
+                DO j = 1, dimwin(ik)-dimfroz(ik)
                   WRITE(stdout,fmt="(4x,'j=',i2,', lambda(j)=', f10.5)") j, w(j)
                 END DO
                 WRITE(stdout,fmt="(4x,'Wbtot = ')")wbtot
              END IF
            ENDIF
  
-           OMEGA_I_EST=OMEGA_I_EST+KOMEGA_I_EST(NKP)
+           omega_i_est=omega_i_est+komega_i_est(ik)
  
 
-! ...      At the last iteration find a basis for the (dimwin(nkp)-dimwann)-dimensional
+! ...      At the last iteration find a basis for the (dimwin(ik)-dimwann)-dimensional
 !          complement space
  
            IF ( iter == maxiter )  THEN
-             IF ( dimwin(nkp) > dimwann )  THEN
-                DO j = 1, dimwin(nkp)-dimwann
-                   IF ( dimwann > dimfroz(nkp) )  THEN
+             IF ( dimwin(ik) > dimwann )  THEN
+                DO j = 1, dimwin(ik)-dimwann
+                   IF ( dimwann > dimfroz(ik) )  THEN
  
 ! ...              Use the non-leading eigenvectors of the z-matrix
  
-                      DO i = 1, dimwin(nkp)
-                        camp(i,j,nkp) = z(i,j)
-                      END DO
-                   ELSE        ! dimwann=dimfroz(nkp)
+                      DO i = 1, dimwin(ik)
+                        camp(i,j,ik) = z(i,j)
+                      ENDDO
+                   ELSE        ! dimwann=dimfroz(ik)
  
 ! ...              Use the original non-frozen bloch eigenstates
  
-                      DO i = 1, dimwin(nkp)
-                         camp(i,j,nkp) = czero
-                         IF ( i == indxnfroz(j,nkp) )  camp(i,j,nkp) = CONE
+                      DO i = 1, dimwin(ik)
+                         camp(i,j,ik) = czero
+                         IF ( i == indxnfroz(j,ik) )  camp(i,j,ik) = CONE
                       END DO
                    END IF
                 END DO
@@ -348,11 +350,11 @@
                 lcompspace = .FALSE.
                 WRITE( stdout, fmt="(/,2x, 'Warning!' )")
                 WRITE( stdout, fmt="(4x, 'at k-point ',i4,' the complement subspace '// &
-                       & 'has zero dimensions' )") nkp
+                       & 'has zero dimensions' )") ik
              END IF
            END IF
  
-         END DO ! nkp
+         END DO ! ik
 
 
          omega_i_est = omega_i_est/DBLE(nkpts)
@@ -361,13 +363,13 @@
  
          omega_i = ZERO
          o_error = ZERO
-         DO nkp = 1, nkpts
-           aux = komegai( nkp, lamp, cm(1,1,1,nkp), wb, wbtot, nnlist, nshells, &
-                          nwhich, nnshell, dimwann, dimwin, mxdbnd, nkpts, mxdnn )
+         DO ik = 1, nkpts
+           aux = komegai( ik, lamp, cm(1,1,1,ik), wb, wbtot, nnlist, nshells, &
+                          nwhich, nnshell, dimwann, dimwin, nbnd, nkpts, mxdnn )
            omega_i = omega_i + aux
 !          IF ( ( iter - INT (iter / DBLE(10) ) ) == 1 ) THEN
 !            WRITE( stdout, fmt=" (4x, 'K-point',i3, ' )     Komega_I Error =',f16.8 )") &
-!                   nkp, (komega_i_est(nkp)-aux)/aux
+!                   ik, (komega_i_est(ik)-aux)/aux
 !          END IF
          END DO
          omega_i = omega_i/DBLE(nkpts)
@@ -379,11 +381,11 @@
  
 ! ...    Construct the new z-matrix mtrx_out at the relevant K-points
    
-         DO nkp = 1, nkptS
-           IF ( dimwann > dimfroz(nkp) )  THEN
-             CALL zmatrix( nkp, nnlist, nshells, nwhich, nnshell, wb, lamp,   &
-                  cm(1,1,1,nkp), mtrx_out(1,1,nkp), dimwann, dimwin,  &
-                  dimfroz, indxnfroz, mxdbnd, nkpts, mxdnn )
+         DO ik = 1, nkptS
+           IF ( dimwann > dimfroz(ik) )  THEN
+             CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,   &
+                  cm(1,1,1,ik), mtrx_out(1,1,ik), dimwann, dimwin,  &
+                  dimfroz, indxnfroz, nbnd, nkpts, mxdnn )
            END IF
          END DO
 
@@ -412,38 +414,32 @@
 ! ...  Diagonalize the hamiltonian within the optimized subspace at each kpoint
 !      in order to re-define eigenvalues and eigenvectors
 
-       DO nkp = 1, nkpts
+       DO ik = 1, nkpts
            DO j = 1, dimwann
            DO i = 1, dimwann
-               ham(i,j,nkp) = czero
-               DO l = 1, dimwin(nkp)
-                  ham(i,j,nkp) = ham(i,j,nkp) + conjg(lamp(l,i,nkp))*lamp(l,j,nkp)*eiw(l,nkp)
+               ham(i,j,ik) = CZERO
+               DO l = 1, dimwin(ik)
+                  ham(i,j,ik) = ham(i,j,ik) + conjg(lamp(l,i,ik))*lamp(l,j,ik)*eig(l,ik)
                ENDDO
            ENDDO
            ENDDO
-           CALL zmat_hdiag(z(:,:), w(:), ham(:,:,nkp), dimwann)
+           CALL zmat_hdiag(z(:,:), wan_eig(:,ik), ham(:,:,ik), dimwann)
  
            !
            ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
            !      the original ("window space") energy eigenvectors
            !
  
-           eamp(:,:,nkp) = CZERO
+           eamp(:,:,ik) = CZERO
            DO j = 1, dimwann
-           DO i = 1, dimwin(nkp)
+           DO i = 1, dimwin(ik)
                DO l = 1, dimwann
-                    eamp(i,j,nkp) = eamp(i,j,nkp) + z(l,j)*lamp(i,l,nkp)
+                    eamp(i,j,ik) = eamp(i,j,ik) + z(l,j)*lamp(i,l,ik)
                END DO
            ENDDO
            ENDDO
  
-       ENDDO ! end of nkp loop
-       !
-       ! ...  Convert the optimal subspace energy eigenvalues in eV 
-       !      to be used later on for reconstructing the hamiltonian on the 
-       !      Wannier basis
-! XXXXXXX
-       wan_eig(:,:) = har * wan_eig(:,:)
+       ENDDO ! end of ik loop
 
 ! ...  Note: for the purpose of minimizing Omegatld in wannier.f we could have simply
 !      have used the lambda eigenvectors as the basis set for the optimal subspace,
@@ -463,40 +459,40 @@
 ! ...  Diagonalize the hamiltonian in the complement subspace, write the
 !      corresponding eigenfunctions and energy eigenvalues
  
-!        nkp loop
-         DO nkp = 1, nkpts
+!        ik loop
+         DO ik = 1, nkpts
 
-            IF ( dimwin(nkp)-dimwann > 0 ) THEN
-               DO j = 1, dimwin(nkp)-dimwann
-               DO i = 1, dimwin(nkp)-dimwann
-                   ham(i,j,nkp) = czero
-                   DO l = 1, dimwin(nkp)
-                      ham(i,j,nkp) = ham(i,j,nkp) + CONJG(camp(l,i,nkp)) * &
-                                                    camp(l,j,nkp) * eiw(l,nkp)
+            IF ( dimwin(ik)-dimwann > 0 ) THEN
+               DO j = 1, dimwin(ik)-dimwann
+               DO i = 1, dimwin(ik)-dimwann
+                   ham(i,j,ik) = czero
+                   DO l = 1, dimwin(ik)
+                      ham(i,j,ik) = ham(i,j,ik) + CONJG(camp(l,i,ik)) * &
+                                                    camp(l,j,ik) * eig(l,ik)
                    ENDDO
                ENDDO
                ENDDO
 
-               dim = dimwin(nkp)-dimwann
-               CALL zmat_hdiag( z(:,:), w(:), ham(:,:,nkp), dim )
+               dim = dimwin(ik)-dimwann
+               CALL zmat_hdiag( z(:,:), w(:), ham(:,:,ik), dim )
  
                ! ... Calculate amplitudes of the energy eigenvectors in the complement 
                !     subspace in terms of the original energy eigenvectors
                !  
-               DO j = 1, dimwin(nkp)-dimwann
-               DO i = 1, dimwin(nkp)
-                  comp_eamp(i,j,nkp) = CZERO
-                  DO l = 1, dimwin(nkp)-dimwann
-                     comp_eamp(i,j,nkp) = comp_eamp(i,j,nkp)+z(l,j)*camp(i,l,nkp)
+               DO j = 1, dimwin(ik)-dimwann
+               DO i = 1, dimwin(ik)
+                  comp_eamp(i,j,ik) = CZERO
+                  DO l = 1, dimwin(ik)-dimwann
+                     comp_eamp(i,j,ik) = comp_eamp(i,j,ik)+z(l,j)*camp(i,l,ik)
                   ENDDO
                ENDDO
                ENDDO
 
             ELSE
-               comp_eamp(:,:,nkp) = CZERO
+               comp_eamp(:,:,ik) = CZERO
             ENDIF
 
-         ENDDO ! end ok nkp loop
+         ENDDO ! end ok ik loop
 
        ENDIF    ! lcompspace
 

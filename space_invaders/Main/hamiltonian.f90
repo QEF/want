@@ -15,25 +15,31 @@
 ! ... Calculates the band structure and  the
 !     matrix elements H(R) in a Wigner-Seitz supercell
  
-! ... Input files: DFT_DATA, subspace data, wannier data
-!     Output files: band.gp, band.dat, matrix.dat, diagonal.dat
+! ...  Input: dft data, space data, wannier data
+!     Output: bands data,  matrix.dat, diagonal.dat
+!
+!     NOTA: the output fmts should be improved in a small number of files within
+!           different structure very soon.
+!
 
       USE kinds
-      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE
+      USE constants, ONLY: PI, TPI, ZERO, CZERO, CI, ONE, EPS_m8
       USE input_module, ONLY : verbosity
-      USE parameters, ONLY : nstrx, nsptsx
-      USE io_module, ONLY : stdout, ioname, dft_unit, space_unit, wan_unit
+      USE parameters, ONLY : nstrx, nkpts_inx
+      USE io_module, ONLY : stdout, stdin, ioname, ham_unit, space_unit, wan_unit
       USE io_module, ONLY : work_dir, prefix, postfix
       USE files_module, ONLY : file_open, file_close
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
+      USE want_init_module, ONLY : want_init
+      USE summary_module, ONLY : summary
       USE version_module, ONLY : version_number
       USE util_module, ONLY : zmat_unitary, zmat_hdiag
 
-      USE lattice_module, ONLY : alat, avec, bvec, lattice_init
-      USE kpoints_module,       ONLY : nkpts, nk, s, vkpt
-      USE windows_module,       ONLY : windows_read
+      USE lattice_module, ONLY : avec, bvec
+      USE kpoints_module,       ONLY : nkpts, nk, vkpt
+      USE windows_module,       ONLY : imin, imax, eig, efermi, windows_read
       USE subspace_module,      ONLY : wan_eig, subspace_read
       USE localization_module,  ONLY : dimwann, cu, & 
                                        localization_read
@@ -47,15 +53,17 @@
       COMPLEX(dbl), ALLOCATABLE :: ham_tmp(:,:)   ! ham_tmp(dimwann,dimwann)
       COMPLEX(dbl), ALLOCATABLE :: z(:,:)         ! z(dimwann,dimwann) 
 
-      INTEGER :: ntype
-      INTEGER :: nspts, npts, tnkpts
+      INTEGER :: nkpts_in     ! Number of k-points generating the line (edges)
+      INTEGER :: nkpts_max    ! maximum number of interpolated points
+      INTEGER :: nkpts_tot    ! actual number of point in the line
+      !
       INTEGER :: nws
-      REAL(dbl), ALLOCATABLE :: skpt(:,:) , xval(:) 
-      REAL(dbl), ALLOCATABLE :: sxval(:), kpt(:,:)  
-      REAL(dbl), ALLOCATABLE :: en_band(:,:)      
+      REAL(dbl), ALLOCATABLE :: kpt_in(:,:), xval_in(:) 
+      REAL(dbl), ALLOCATABLE :: kpt(:,:),    xval(:) 
+      REAL(dbl), ALLOCATABLE :: eig_int(:,:)  ! interpolated band structure   
       INTEGER, ALLOCATABLE :: indxws(:,:)       
       INTEGER, ALLOCATABLE :: degen(:)          
-      INTEGER :: i, j, m, n, nkp, irk, idum
+      INTEGER :: i, j, m, n, ik, idum
       INTEGER :: i1, i2, i3
       INTEGER :: iws
       REAL(dbl) :: rmod, rdum, vec(3)
@@ -63,7 +71,7 @@
       CHARACTER(LEN=2), ALLOCATABLE :: point(:)    
       CHARACTER(LEN=nstrx)          :: filename
  
-      INTEGER :: nt
+      INTEGER   :: nt
       INTEGER   :: ierr
       LOGICAL   :: lfound
 !
@@ -77,12 +85,14 @@
       INTEGER   :: print_sgm_start
       INTEGER   :: print_sgm_end
       INTEGER   :: spin_component
-      REAL(dbl) :: Efermi
 
       NAMELIST /INPUT/ prefix, postfix, work_dir, verbosity, &
-                       nspts, npts, convert_self_energy, check_self_energy, & 
+                       nkpts_in, nkpts_max, convert_self_energy, check_self_energy, & 
                        calculate_spectral_func, print_sgm_start, print_sgm_end,  &
-                       spin_component, efermi     
+                       spin_component, nk
+!
+! nk are temporary read from STDIN waiting for a better implementation of BSHELLS
+!    
 
 !
 ! ... End declarations and dimensions
@@ -93,7 +103,6 @@
 ! ...  Startup
 !
       CALL startup(version_number,MAIN_NAME='hamiltonian')
-      WRITE(stdout,*)
 
 
 !...  Read (from stdin) information for plotting band structure
@@ -103,66 +112,47 @@
       postfix                     = ' ' 
       work_dir                    = './' 
       verbosity                   = 'medium' 
-      nspts                       = 0
-      npts                        = 100
+      nk(1)                       = 0
+      nk(2)                       = 0
+      nk(3)                       = 0
+      nkpts_in                    = 0
+      nkpts_max                   = 100
       convert_self_energy         = .FALSE.
       check_self_energy           = .FALSE.
       calculate_spectral_func     = .FALSE.
       print_sgm_start             = 0
       print_sgm_end               = 0
       spin_component              = 1
-      Efermi                      = 0.0d0
       
-      READ(5, INPUT, IOSTAT=i)
-      IF ( i /= 0 )  CALL errore('hamiltonian','Unable to read namelist INPUT',ABS(i))
+      READ(stdin, INPUT, IOSTAT=ierr)
+      IF ( ierr /= 0 )  CALL errore('hamiltonian','Unable to read namelist INPUT',ABS(i))
 
 
 ! ... Some checks (but many more should be included)
-      IF ( nspts > nsptsx ) CALL errore('hamiltonian', 'nspts too large',  nspts)
-      IF ( nspts <= 0 ) CALL errore('hamiltonian', 'Invalid nspts', ABS(nspts)+1)
+      IF ( nkpts_in > nkpts_inx ) CALL errore('hamiltonian', 'nkpts_in too large',  nkpts_in)
+      IF ( nkpts_in <= 0 ) CALL errore('hamiltonian', 'Invalid nkpts_in', ABS(nkpts_in)+1)
  
-      ALLOCATE( point( nspts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nspts )
-      ALLOCATE( skpt( 3, nspts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating skpt ', 3*nspts )
+      ALLOCATE( point( nkpts_in ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nkpts_in )
+      ALLOCATE( kpt_in( 3, nkpts_in ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt_in ', 3*nkpts_in )
 
-      DO j = 1, nspts
-        READ (5, fmt="(a2)") point(j)
-        READ (5,*) ( skpt(i,j), i=1,3 )
-      END DO
-
-!
-! ... Read from file
-!
-      CALL ioname('dft_data',filename)
-      OPEN( UNIT=dft_unit, FILE=TRIM(filename), STATUS='OLD', FORM='UNFORMATTED' )
-
-      READ(dft_unit) alat
-      READ(dft_unit) ( avec(i,1), i=1,3 )
-      READ(dft_unit) ( avec(i,2), i=1,3 )
-      READ(dft_unit) ( avec(i,3), i=1,3 )
-      READ(dft_unit) ntype
-      DO nt = 1, ntype
-          READ(dft_unit) idum
-          DO j = 1, idum
-             READ(dft_unit) rdum
-          ENDDO
+      DO j = 1, nkpts_in
+        READ (stdin, fmt="(a2)") point(j)
+        READ (stdin,*) ( kpt_in(i,j), i=1,3 )
       ENDDO
-      READ(dft_unit) rdum
-      READ(dft_unit) ( nk(i), i=1,3 ), ( s(i), i=1,3 )
 
-      CLOSE(dft_unit)
+!
+! ... DFT data
+!
+      CALL want_init( WANT_INPUT = .FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
 
+      IF ( PRODUCT(nk(:)) /= nkpts ) CALL errore('hamiltonian','Invalid kpt number', &
+                                     ABS( PRODUCT(nk(:)) - nkpts) )
 
-! ... Get crystal data
-      CALL lattice_init()
- 
-! ... Get K-point mesh and data
-      nkpts = PRODUCT(nk(:))
-! XXXX
-!      CALL bshells_init( LBSHELLS=.FALSE. )
-
+!
 ! ... Read energy eigenvalues in electron-volt
+!
       CALL ioname('subspace',filename)
       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
           CALL windows_read(space_unit,"WINDOWS",lfound)
@@ -172,13 +162,19 @@
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
       CALL ioname('subspace',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(/,'  Subspace data read from file: ',a)") TRIM(filename)
+      WRITE( stdout,"(2x,'Subspace data read from file: ',a)") TRIM(filename)
       !
       ! ... Energy zero settings, added by ANDREA (28 jan 2004)
       !     For coherence with self-energy translate Fermi energy
       !     to zero (i.e. Efermi is the energy reference)
       !
       wan_eig(:,:) = wan_eig(:,:) - Efermi
+          eig(:,:) =     eig(:,:) - Efermi
+
+!
+! ... printing data to output
+!
+      CALL summary( stdout )
 
 !
 ! ... Read unitary matrices U(k) that rotate the bloch states
@@ -190,15 +186,21 @@
       CALL file_close(wan_unit,PATH="/",ACTION="read")
 
       CALL ioname('wannier',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(/,'  Wannier data read from file: ',a)") TRIM(filename)
+      WRITE( stdout,"('  Wannier data read from file: ',a,/)") TRIM(filename)
  
-      DO nkp = 1,nkpts
-         IF ( .NOT. zmat_unitary( cu(:,:,nkp), SIDE='both', TOLL=1.0d-8)  ) &
-             CALL errore('hamiltonian',"U matrices not orthogonal",nkp)
+      DO ik = 1,nkpts
+         IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8)  ) &
+             CALL errore('hamiltonian',"U matrices not orthogonal",ik)
       ENDDO
 
 !
-! ... ENd of input reading      
+! ... End of input reading      
+!-----------------------------------------------------------------------------------
+!
+
+      WRITE( stdout, "(/,2x,70('='))" )
+      WRITE( stdout, "(2x,'=',17x,'Hamiltonian and Band interpolation',17x,'=')" )
+      WRITE( stdout, "(2x,70('='),/)" )
 
 
 !
@@ -208,16 +210,16 @@
       ALLOCATE( kham( dimwann, dimwann, nkpts ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating khan ',dimwann**2 *nkpts)
  
-      DO nkp = 1, nkpts
+      DO ik = 1, nkpts
          DO j = 1, dimwann
          DO i = 1, j
-            kham(i,j,nkp) = CZERO
+            kham(i,j,ik) = CZERO
             DO m = 1, dimwann
-              kham(i,j,nkp) = kham(i,j,nkp) + wan_eig(m,nkp) * &
-                                              CONJG( cu(m,i,nkp) ) * cu(m,j,nkp)
+                kham(i,j,ik) = kham(i,j,ik) + wan_eig(m,ik) * &
+                                              CONJG( cu(m,i,ik) ) * cu(m,j,ik)
             ENDDO
 ! ...       use hermiticity
-            kham(j,i,nkp) = CONJG( kham(i,j,nkp) )
+            kham(j,i,ik) = CONJG( kham(i,j,ik) )
          ENDDO
          ENDDO
       ENDDO
@@ -231,26 +233,29 @@
       ALLOCATE( degen( 3*nkpts ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating degen', 3*nkpts )
 
+
       CALL wigner_seitz( avec, nk, indxws, nws, degen, nkpts  )        
 
       ALLOCATE( rham( dimwann, dimwann, nws ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating rham', dimwann**2 *nws )
 
+
+
       DO iws = 1, nws
          DO j = 1, dimwann
          DO i = 1, dimwann
             rham(i,j,iws) = CZERO
-            DO nkp = 1, nkpts
-              expo = EXP( -CI * TPI * (vkpt(1,nkp) * DBLE( indxws(1,iws) ) +   &
-              vkpt(2,nkp) * DBLE( indxws(2,iws) ) +                              &
-              vkpt(3,nkp) * DBLE( indxws(3,iws) ) ) )
-              rham(i,j,iws)=rham(i,j,iws)+expo*kham(i,j,nkp)
+            DO ik = 1, nkpts
+              expo = EXP( -CI * TPI * (vkpt(1,ik) * DBLE( indxws(1,iws) ) +   &
+              vkpt(2,ik) * DBLE( indxws(2,iws) ) +                            &
+              vkpt(3,ik) * DBLE( indxws(3,iws) ) ) )
+              rham(i,j,iws)=rham(i,j,iws)+expo*kham(i,j,ik)
             ENDDO
             rham(i,j,iws) = rham(i,j,iws) / DBLE(nkpts)
          ENDDO
          ENDDO
       ENDDO
- 
+
 
 !
 !     self energy conversion ( added by ANDREA 28 jan 2004)
@@ -363,34 +368,33 @@
  
 ! ... Determine the k-points used in the band structure plot
 
-! XXX
-      ALLOCATE( xval( npts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating xval', npts )
-      ALLOCATE( sxval( nspts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating sxval', nspts )
-      ALLOCATE( kpt(3, npts), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt', 3* npts )
+      ALLOCATE( xval( nkpts_max ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating xval', nkpts_max )
+      ALLOCATE( xval_in( nkpts_in ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating xval_in', nkpts_in )
+      ALLOCATE( kpt(3, nkpts_max), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt', 3* nkpts_max )
  
-      CALL get_points( nspts, npts, bvec, skpt, kpt, xval, sxval, tnkpts )
+      CALL get_points(nkpts_in, nkpts_max, bvec, kpt_in, xval_in, point, kpt, xval, nkpts_tot )
  
 ! ... Estimate H_ij(k') at those k-points by fourier interpolation
 !     H_ij(k') ~ sum_R e^{ik'R} H_ij(R)/degen(R), where the sum over R is over a 
 !     finite grid (truncation)
  
       ALLOCATE( ham_tmp( dimwann, dimwann ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ',' allocating ham_tmp',dimwann**2 )
-      ALLOCATE( en_band( dimwann, tnkpts ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ',' allocating en_band',dimwann*tnkpts )
+          IF( ierr /=0 ) CALL errore('hamiltonian','allocating ham_tmp',dimwann**2 )
+      ALLOCATE( eig_int( dimwann, nkpts_tot ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore('hamiltonian','allocating eig_int',dimwann*nkpts_tot )
  
-      DO irk = 1, tnkpts
+      DO ik = 1, nkpts_tot
 
          DO j = 1, dimwann
          DO i = 1, dimwann
-            ham_tmp(i,j) = czero
+            ham_tmp(i,j) = CZERO
             DO iws = 1, nws
-               expo = EXP( CI * TPI * ( kpt(1,irk) * DBLE( indxws(1,iws) ) +  &     
-               kpt(2,irk) * DBLE( indxws(2,iws) ) +                             &
-               kpt(3,irk) * DBLE( indxws(3,iws) ) ) ) 
+               expo = EXP( CI * TPI * ( kpt(1,ik) * DBLE( indxws(1,iws) ) +  &     
+               kpt(2,ik) * DBLE( indxws(2,iws) ) +                             &
+               kpt(3,ik) * DBLE( indxws(3,iws) ) ) ) 
                ham_tmp(i,j) = ham_tmp(i,j) + expo * rham(i,j,iws) / degen(iws)
             ENDDO
          ENDDO
@@ -401,7 +405,7 @@
          ALLOCATE( z( dimwann, dimwann ), STAT=ierr )
              IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating z', dimwann**2 )
  
-         CALL zmat_hdiag( z, en_band(:,irk), ham_tmp(:,:), dimwann)
+         CALL zmat_hdiag( z, eig_int(:,ik), ham_tmp(:,:), dimwann)
 
          DEALLOCATE( z, STAT=ierr )
              IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating z', ABS(ierr))
@@ -411,15 +415,40 @@
 ! 
 ! ... to be updated soon or later (?)
 ! 
-      OPEN( 27, FILE='band.dat', STATUS='UNKNOWN', FORM='FORMATTED' )
+      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_iband.dat'
+      OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted' )
       DO i = 1, dimwann
-        DO irk = 1, tnkpts
-          WRITE (27, fmt="(2e16.8)") xval(irk), en_band(i,irk)
-        END DO
-        WRITE( 27, *) 
-      END DO
-      CLOSE( 27 )
- 
+          DO ik = 1, nkpts_tot
+            WRITE (ham_unit, "(2e16.8)") xval(ik), eig_int(i,ik)
+          ENDDO
+          WRITE( ham_unit, "()") 
+      ENDDO
+      CLOSE( ham_unit )
+
+      !
+      ! as a check
+      !
+      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
+      OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted' )
+      DO i = 1, dimwann
+          DO ik = 1, nkpts
+            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik), wan_eig(i,ik)
+          ENDDO
+          WRITE( ham_unit, "()") 
+      ENDDO
+      CLOSE( ham_unit )
+
+      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
+      OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted' )
+      DO i = 1, dimwann
+          DO ik = 1, nkpts
+            j= imin(ik)-1 +i
+            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik), eig(j,ik)
+          ENDDO
+          WRITE( ham_unit, "()") 
+      ENDDO
+      CLOSE( ham_unit )
+
 !
 ! ... Finalize timing
       CALL timing('hamiltonian',OPR='stop')
@@ -429,8 +458,8 @@
 ! ... Clean memory
       DEALLOCATE( point, STAT=ierr)
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating point', ABS(ierr) )
-      DEALLOCATE( skpt, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating skpt', ABS(ierr) )
+      DEALLOCATE( kpt_in, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating kpt_in', ABS(ierr) )
       DEALLOCATE( kham, STAT=ierr)
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating kham', ABS(ierr) )
       DEALLOCATE( indxws, STAT=ierr)
@@ -441,14 +470,14 @@
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating rham', ABS(ierr) )
       DEALLOCATE( xval, STAT=ierr)
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating xval', ABS(ierr) )
-      DEALLOCATE( sxval, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating sxval', ABS(ierr) )
+      DEALLOCATE( xval_in, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating xval_in', ABS(ierr) )
       DEALLOCATE( kpt, STAT=ierr)
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating kpt', ABS(ierr) )
       DEALLOCATE( ham_tmp, STAT=ierr)
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating ham_tmp', ABS(ierr) )
-      DEALLOCATE( en_band, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating en_band', ABS(ierr) )
+      DEALLOCATE( eig_int, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating eig_int', ABS(ierr) )
 
       CALL cleanup()
 

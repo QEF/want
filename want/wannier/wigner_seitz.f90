@@ -13,17 +13,19 @@
      
        USE kinds
        USE io_module, ONLY : stdout
+       USE constants, ONLY : ONE, ZERO, EPS_m8
 
        IMPLICIT NONE
 
-       REAL(dbl) :: avec(3,3)
-       INTEGER :: nk(3)
-       INTEGER :: mxdnrk
+       REAL(dbl), INTENT(in) :: avec(3,3)
+       INTEGER,   INTENT(in) :: nk(3)
+       INTEGER,   INTENT(in) :: mxdnrk
 
-       INTEGER :: indxws(3,3*mxdnrk)
-       INTEGER :: degen(3*mxdnrk)
+       INTEGER,   INTENT(out):: nws
+       INTEGER,   INTENT(out):: indxws(3,3*mxdnrk)
+       INTEGER,   INTENT(out):: degen(3*mxdnrk)
 
-       INTEGER :: nws, n1, n2, n3
+       INTEGER :: n1, n2, n3
        INTEGER :: icnt, i, j, i1, i2, i3
        INTEGER :: ndiff(3), indx(27), ifnd
        INTEGER :: nn, ndeg
@@ -35,8 +37,12 @@
 !      primitive supercell. In the end nws contains the total number of grids 
 !      points that have been found in the Wigner-Seitz cell
 
-! ...  Compute metric in real space
+! ...  init
+       nws = 0
+       indxws = 0
+       degen = 0
 
+! ...  Compute metric in real space
        adot(1,1) = avec(1,1) * avec(1,1) + avec(2,1) * avec(2,1) + avec(3,1) * avec(3,1)
        adot(2,2) = avec(1,2) * avec(1,2) + avec(2,2) * avec(2,2) + avec(3,2) * avec(3,2)
        adot(3,3) = avec(1,3) * avec(1,3) + avec(2,3) * avec(2,3) + avec(3,3) * avec(3,3)
@@ -48,15 +54,15 @@
        adot(3,2) = adot(2,3)
 
 
+
        nws = 0
        DO n1 = 0, 2 * nk(1)
          DO n2 = 0, 2 * nk(2)
            DO n3 = 0, 2 * nk(3)
 
-
 ! ...        Loop over the 27 points R. R=0 corresponds to i1=i2=i3=1, or icnt=14
 
-             ICNT = 0
+             icnt = 0
              DO i1 = 0, 2
                DO i2 = 0, 2
                  DO i3 = 0, 2
@@ -67,22 +73,22 @@
                    ndiff(1) = n1 - i1 * nk(1)
                    ndiff(2) = n2 - i2 * nk(2)
                    ndiff(3) = n3 - i3 * nk(3)
-                   dist(icnt) = 0.0d0
+                   dist(icnt) = ZERO
 
                    DO i = 1, 3
                      DO j = 1, 3
                        dist(icnt) = dist(icnt) + ndiff(i) * adot(i,j) * ndiff(j)
-                     END DO
-                   END DO
+                     ENDDO
+                   ENDDO
            
 
-                 END DO
-               END DO
-             END DO
+                 ENDDO
+               ENDDO
+             ENDDO
 
 ! ...        Sort the 27 vectors R by increasing value of |r-R| (from Numerical Recipes)
 
-             CALL indexx(27,DIST,INDX)
+             CALL indexx(27,dist,indx)
 
 ! ...        Find all the vectors R with the (same) smallest |r-R|;
 !            if R=0 is one of them, then the current point r belongs to 
@@ -91,14 +97,14 @@
 ! ...        Jeremia's axe (MBN-AC)
 
              dist_min = dist(indx(1))
-             IF ( ABS( dist(14) - dist_min ) < 1.e-8 ) THEN
+             IF ( ABS( dist(14) - dist_min ) < EPS_m8 ) THEN
                nws = nws + 1
 
                IF ( nws > 3*mxdnrk ) CALL errore(' wigner_size ', ' wrong dimension ', nws )
 
                ndeg = 0
                DO nn = 1,27
-                 IF( ABS( dist(nn) - dist_min) < 1.e-8 ) ndeg = ndeg + 1
+                 IF( ABS( dist(nn) - dist_min) < EPS_m8 ) ndeg = ndeg + 1
                END DO
                degen(nws) = ndeg
 
@@ -113,18 +119,18 @@
 
 !      Check the "sum rule"
 
-       tot = 0.0d0
+       tot = ZERO
        DO i = 1, nws
-         tot = tot + 1.0d0 / DBLE(degen(i))
+         tot = tot + ONE / DBLE(degen(i))
        END DO
 
-       IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > 1.0e-8 ) THEN
+       IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > EPS_m8 ) THEN
          WRITE( stdout, *) '*** ERROR *** in finding Wigner-Seitz points'
          WRITE( stdout, *) 'TOT=', tot
          WRITE( stdout, *) 'NK(1)*NK(2)*NK(3)=', nk(1)*nk(2)*nk(3)
-         CALL errore(' wigner_size ', ' wrong total number of points ', tot )
+         CALL errore(' wigner_size ', ' wrong total number of points ', NINT(tot) )
        ELSE
-         WRITE( stdout, fmt="(2x,'K-points generation in Wigner-size: SUCCESS')")
+         WRITE( stdout, "(2x,'K-points generation in Wigner-size: SUCCESS')")
        END IF
 
        RETURN

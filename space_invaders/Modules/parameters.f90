@@ -31,7 +31,7 @@ module parameters
        nqfm = 8             ! max number of coefficients in Q smoothing
 
   INTEGER , PARAMETER  ::  &
-       nsptsx = 1000       ! max number of interpolated kpoints 
+       nkpts_inx = 100      ! max number of interpolated kpoints 
 
   INTEGER, PARAMETER :: natx  = 600     ! maximum number of atoms
   INTEGER, PARAMETER :: nbndxx = 1000   ! maximum number of electronic states

@@ -3,9 +3,11 @@
    prefix = 'silicon'
    postfix = '_WanT'
    work_dir = './'
-   nspts  = 6
-   npts   = 500
-   efermi = 0.0   
+   nkpts_in   = 6
+   nkpts_max  = 500
+   nk(1) = 4
+   nk(2) = 4
+   nk(3) = 4
  /
 L
 0.0 0.5 0.0

@@ -9,7 +9,7 @@
 !
 !=----------------------------------------------------------------------------------=
        FUNCTION komegai( kpt, lamp, kcm, wb, wbtot, nnlist, nshells, nwhich,    &
-                         nnshell, dimwann, dimwin, mxdbnd, mxdnrk, mxdnn )
+                         nnshell, dimwann, dimwin, nbnd, mxdnrk, mxdnn )
 !=----------------------------------------------------------------------------------=
 !
 !...   Calculates the contribution of a given k-point to Omega_I
@@ -20,15 +20,15 @@
 
        IMPLICIT NONE
  
-       INTEGER :: mxdbnd, mxdnrk, mxdnn
+       INTEGER :: nbnd, mxdnrk, mxdnn
        INTEGER :: kpt, nnlist(mxdnrk,mxdnn)
        INTEGER :: nshells, nwhich(nshells)
        INTEGER :: nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)
        REAL(dbl) :: komegai
        REAL(dbl) ::  wb(mxdnrk,mxdnn), wbtot
-       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
-       COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
+       COMPLEX(dbl) :: lamp(nbnd,nbnd,mxdnrk)
+       COMPLEX(dbl) :: kcm(nbnd,nbnd,mxdnn)
  
        INTEGER :: j, l, m, n 
        INTEGER :: ndnn, ndnc, nnsh, nnx, k_pls_b

@@ -8,18 +8,22 @@
 
 
   Program <hamiltonian>  v. 1.1.1  starts ...
-  Date  7Dec2004 at 15:59:20 
+  Date 25Dec2004 at 20:10: 0 
 
- 
+
+  PW-DFT data read from file: gold1.dft
+  Subspace data read from file: gold1_WanT.spaces
+
   ======================================================================
-  =                         Lattice parameters                         =
+  =                              DFT data                              =
   ======================================================================
 
+<LATTICE>
   Alat =  20.0000 (Bohr)
   Alat =  10.5835 (Ang )
 
   Crystal axes:
-                in units of Bohr                 in lattice units
+                in units of Bohr                 in Alat units
     a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
     a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
@@ -29,24 +33,81 @@
     a(3) = (  0.0000  0.0000  2.5000 )
 
    Reciprocal lattice vectors:
-                in units of Bohr^-1              in lattice units
+                in units of Bohr^-1              in 2Pi/Alat units
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+</LATTICE>
 
+<IONS>
+  Number of chemical species =  1
+    Pseudo(  1) = Au11pw91.mt.UPF
 
-  Subspace data read from file: gold1_WanT.spaces
+  Atomic positions: (cart. coord. in units of alat)
+    Au  tau(   1 ) = (  0.0000  0.0000  0.0472 )
+</IONS>
+
+<K-POINTS>
+  nkpts =    4
+  K-point calculation: (cart. coord. in Ang^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
+    k point   2:   (   0.00000  0.00000  0.62832 ),   weight =   0.2500
+    k point   3:   (   0.00000  0.00000  1.25664 ),   weight =   0.2500
+    k point   4:   (   0.00000  0.00000  1.88495 ),   weight =   0.2500
+</K-POINTS>
+
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = (   0.0000 ,   0.0000 )
+    Max number of bands within the energy window =     8
+
+  Electronic Structure from DFT calculation:
+    nkpts =   4,     nbnd =  10
+    Fermi energy =   -5.000881634 eV
+
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
+                                      imin =    1  imax =    8
+   Eigenvalues:
+    -5.8556  -1.6333  -1.6319  -1.5808  -0.0040  -0.0040   3.6685   3.6685
+     5.7407   6.6537
+
+    kpt =  2 (  0.000 0.000 0.250 )    dimwin =    6
+                                      imin =    1  imax =    6
+   Eigenvalues:
+    -2.6670  -1.9647  -1.9647  -1.2625  -1.2204  -0.6379   5.9231   5.9231
+     7.2202   8.1357
+
+    kpt =  3 (  0.000 0.000 0.500 )    dimwin =    6
+                                      imin =    1  imax =    6
+   Eigenvalues:
+    -3.2696  -3.2696  -0.8830  -0.8548  -0.1764   4.4956   7.0134   9.5848
+     9.5848  11.6733
+
+    kpt =  4 (  0.000 0.000 0.750 )    dimwin =    6
+                                      imin =    1  imax =    6
+   Eigenvalues:
+    -2.6670  -1.9647  -1.9647  -1.2625  -1.2204  -0.6379   5.9231   5.9231
+     7.2202   8.1356
+
+    inner window: NOT used --> NO FROZEN STATES
+</WINDOWS>
 
   Wannier data read from file: gold1_WanT.wan
+
+
+  ======================================================================
+  =                 Hamiltonian and Band interpolation                 =
+  ======================================================================
+
   K-points generation in Wigner-size: SUCCESS
 
   Decay of the real space Hamiltonian:
      R [cry]     |R| [Bohr]      Norm of H(R) [eV]
-    0   0  -2     9.4486400        0.000000003
-    0   0  -1     4.7243200        0.000000003
-    0   0   0     0.0000000       12.413769066
-    0   0   1     4.7243200        0.000000003
-    0   0   2     9.4486400        0.000000003
+    0   0  -2     9.4486400        0.920976553
+    0   0  -1     4.7243200        2.816058516
+    0   0   0     0.0000000        3.710167473
+    0   0   1     4.7243200        2.816058516
+    0   0   2     9.4486400        0.920976553
  
 
   Generating kpts:   2      Segments:   1
@@ -54,8 +115,8 @@
 
 
   Generating kpts [crystal coord.]
-      k point   1:   (   0.00000  0.00000  0.00000 ) 
-      k point   2:   (   0.00000  0.00000  0.50000 ) 
+      k point   1:   (   0.00000  0.00000  0.00000 )    G 
+      k point   2:   (   0.00000  0.00000  0.50000 )    Z 
 
   Number of kpts in each segment
       line   1:     100
@@ -164,9 +225,10 @@
       k point 100:   (   0.00000  0.00000  0.50000 ) 
 
    <global routines>
-             clock number :     1
+             clock number :     2
 
-              hamiltonian :     0.24s CPU 
+              hamiltonian :     0.58s CPU 
  
+                want_init :     0.19s CPU
 
 

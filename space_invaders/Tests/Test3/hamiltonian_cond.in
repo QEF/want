@@ -3,9 +3,11 @@
    prefix = 'chain8'
    postfix = '_WanT'
    work_dir = './COND/'
-   nspts  = 2
-   npts   = 100
-   efermi = -3.8798    ! from PWSCF scf_cond.out 20 Ry
+   nkpts_in  = 2
+   nkpts_max = 100
+   nk(1) = 4
+   nk(2) = 1
+   nk(3) = 1
  /
 G
 0.0 0.0 0.0

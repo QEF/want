@@ -9,7 +9,7 @@
 !
 !=----------------------------------------------------------------------------------=
        FUNCTION lambda_avg( m, kpt, lamp, kcm, nnlist, nshells, nwhich, &
-                nnshell, wb, dimwann, dimwin, mxdbnd, mxdnrk, mxdnn )
+                nnshell, wb, dimwann, dimwin, nbnd, mxdnrk, mxdnn )
 !=----------------------------------------------------------------------------------=
 
        USE kinds   
@@ -18,14 +18,14 @@
 
        REAL(dbl) :: lambda_avg
 
-       INTEGER :: mxdbnd, mxdnrk, mxdnn
+       INTEGER :: nbnd, mxdnrk, mxdnn
        INTEGER :: m, kpt, nnlist(mxdnrk,mxdnn)
        INTEGER :: nshells, nwhich(nshells)
        INTEGER :: nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)      
        REAL(dbl) :: wb(mxdnrk,mxdnn)
-       COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
-       COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
+       COMPLEX(dbl) :: lamp(nbnd,nbnd,mxdnrk)
+       COMPLEX(dbl) :: kcm(nbnd,nbnd,mxdnn)
  
        INTEGER :: n, l, j
        INTEGER :: nnx, ndnc, ndnn, nnsh, k_pls_b

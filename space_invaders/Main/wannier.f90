@@ -13,7 +13,7 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
+      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR, EPS_m8
       USE parameters, ONLY : nstrx
       USE input_module
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
@@ -45,7 +45,7 @@
       EXTERNAL  :: ranf
       LOGICAL   :: lselect  ! external function non defined
 
-      INTEGER :: nkp, nkp2
+      INTEGER :: ik, ik2
       INTEGER :: i, j, k
       INTEGER :: l, m, n
       INTEGER :: iseed
@@ -209,28 +209,30 @@
       !
       ! .. loop over kpts
       !
-      DO nkp = 1, nkpts
-        CALL zmat_mul( cs(:,:,nkp), ca(:,:,nkp), 'N', ca(:,:,nkp), 'C', dimwann )
+      DO ik = 1, nkpts
+        CALL zmat_mul( cs(:,:,ik), ca(:,:,ik), 'N', ca(:,:,ik), 'C', & 
+                       dimwann, dimwann, dimwann )
 
-        CALL zgees( 'V', 'N', lselect, dimwann, cs(1,1,nkp), dimwann, nsdim,            &
+        CALL zgees( 'V', 'N', lselect, dimwann, cs(1,1,ik), dimwann, nsdim,            &
              cwschur1, cz(1,1), dimwann, cwschur2, nwork, cwschur3, cwschur4, info )
 
-        cs(:,:,nkp)=CZERO
+        cs(:,:,ik)=CZERO
 
         DO m=1,dimwann
            cfact = ONE/SQRT( REAL( cwschur1(m) ) )
            DO j=1,dimwann
            DO i=1,dimwann
-              cs(i,j,nkp) = cs(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
+              cs(i,j,ik) = cs(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
            ENDDO
            ENDDO
         ENDDO
 
-        CALL zmat_mul( cu(:,:,nkp), cs(:,:,nkp), 'N', ca(:,:,nkp), 'N', dimwann )
+        CALL zmat_mul( cu(:,:,ik), cs(:,:,ik), 'N', ca(:,:,ik), 'N', & 
+                       dimwann, dimwann, dimwann )
 
 ! ...  Unitariety is checked
-        IF ( .NOT. zmat_unitary( cu(:,:,nkp), SIDE='both', TOLL=1.0d-8 )  ) &
-             WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)") nkp
+        IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8 )  ) &
+             WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)") ik
 
 !
 ! ... Phases
@@ -243,8 +245,8 @@
               WRITE (stdout,*) 'NB: phase is taken away'
               DO j = 1, dimwann
               DO i = 1, dimwann
-                 cu(i,j,nkp) = CZERO
-                 IF ( i == j ) cu(i,j,nkp) = CONE
+                 cu(i,j,ik) = CZERO
+                 IF ( i == j ) cu(i,j,ik) = CONE
               ENDDO
               ENDDO
           ELSE
@@ -256,24 +258,24 @@
               WRITE(stdout, fmt=" (2x, 'NB: RANDOM phase is given' )")
               DO m = 1, dimwann
               DO n = m, dimwann
-                  rre = ranf(iseed) * 10.d0 - 5.d0
-                  rri = ranf(iseed) * 10.d0 - 5.d0
-                  cu(m,n,nkp) = epsilon * CMPLX(rre,rri)
-                  cu(n,m,nkp) = -CONJG( cu(m,n,nkp) )
-                  IF ( m == n ) cu(n,m,nkp) = CMPLX( ZERO , AIMAG( cu(m,n,nkp) ) )
+                  rre = ranf(iseed) * 10*ONE - 5*ONE
+                  rri = ranf(iseed) * 10*ONE - 5*ONE
+                  cu(m,n,ik) = epsilon * CMPLX(rre,rri)
+                  cu(n,m,ik) = -CONJG( cu(m,n,ik) )
+                  IF ( m == n ) cu(n,m,ik) = CMPLX( ZERO , AIMAG( cu(m,n,ik) ) )
               ENDDO
               ENDDO
 
-              CALL zgees( 'V', 'N', lselect, dimwann, cu(1,1,nkp), dimwann, nsdim,   &
+              CALL zgees( 'V', 'N', lselect, dimwann, cu(1,1,ik), dimwann, nsdim,   &
                  cwschur1, cz(1,1), dimwann, cwschur2, SIZE(cwschur2), cwschur3,    &
                  cwschur4, info )
 
-              cu( :, :, nkp ) = CZERO
+              cu( :, :, ik ) = CZERO
               DO m = 1, dimwann
                  cfact = EXP( cwschur1(m) )
                  DO j = 1, dimwann
                  DO i = 1, dimwann
-                     cu(i,j,nkp) = cu(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
+                     cu(i,j,ik) = cu(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
                  ENDDO
                  ENDDO
               ENDDO
@@ -283,10 +285,10 @@
         ENDIF
 
         IF ( verbosity == 'high' ) THEN
-            WRITE (stdout, fmt=" (/,2x,' Matrix U after zgees, k-point',i3,/)") nkp
+            WRITE (stdout, fmt=" (/,2x,' Matrix U after zgees, k-point',i3,/)") ik
             DO i = 1, dimwann
                 WRITE(stdout, fmt="(4x,2f9.5,2x,2f9.5,2x,2f9.5,2x,2f9.5) ")  &
-                                   ( cu(i,j,nkp), j=1,dimwann )
+                                   ( cu(i,j,ik), j=1,dimwann )
             ENDDO
         ENDIF
 
@@ -298,22 +300,22 @@
 ! ... So now we have the U's that rotate the wavefunctions at each k-point.
 !     the matrix elements M_ij have also to be updated 
 
-      DO nkp = 1, nkpts
+      DO ik = 1, nkpts
 
-        DO nn = 1, nntot(nkp)
-          nkp2 = nnlist(nkp,nn)
+        DO nn = 1, nntot(ik)
+          ik2 = nnlist(ik,nn)
           DO i = 1, dimwann
           DO j = 1 ,dimwann
               cmtmp(i,j) = CZERO
               DO m = 1, dimwann
               DO n = 1, dimwann
-                 cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,nkp)) * &
-                                                 cu(n,j,nkp2) * cm(m,n,nn,nkp)
+                 cmtmp(i,j) = cmtmp(i,j) + CONJG(cu(m,i,ik)) * &
+                                                 cu(n,j,ik2) * cm(m,n,nn,ik)
               ENDDO
               ENDDO
           ENDDO
           ENDDO
-          cm(:,:,nn,nkp) = cmtmp(:,:)
+          cm(:,:,nn,ik) = cmtmp(:,:)
         ENDDO
 
       ENDDO
@@ -338,22 +340,22 @@
       omt2 = ZERO
       omt3 = ZERO
 
-      DO nkp = 1, nkpts
+      DO ik = 1, nkpts
         omiloc = ZERO
-        DO nn = 1, nntot(nkp)
-          cmtmp(:,:) = cm(:,:,nn,nkp)
+        DO nn = 1, nntot(ik)
+          cmtmp(:,:) = cm(:,:,nn,ik)
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
                singvd, cv1, dimwann, cv2, dimwann, cw1, nwork, cw2, info )
           IF ( info /= 0 ) &
               CALL errore(' wannier ', ' Singular value decomposition failed 2 ', info )
 
           DO nb = 1, dimwann
-              omiloc = omiloc + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
+              omiloc = omiloc + wb(ik,nn) * ( ONE - singvd(nb)**2 )
           ENDDO
           DO nb = 1, dimwann
-              omt1 = omt1 + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
-              omt2 = omt2 - wb(nkp,nn) * ( TWO * LOG( singvd(nb) ) )
-              omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
+              omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
+              omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
+              omt3 = omt3 + wb(ik,nn) * ( ACOS( singvd(nb) )**2 )
           ENDDO
         ENDDO
       ENDDO
@@ -404,26 +406,26 @@
       omt2 = ZERO
       omt3 = ZERO
 
-      DO nkp = 1, nkpts
-        DO nn = 1, nntot(nkp)
+      DO ik = 1, nkpts
+        DO nn = 1, nntot(ik)
 
-          cmtmp(:,:) = cm(:,:,nn,nkp)
+          cmtmp(:,:) = cm(:,:,nn,ik)
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
                singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
 
           IF ( info /= 0 ) &
           CALL errore(' wannier ', ' Singular value decomposition failed 3 ', info )
 
-          CALL zmat_mul( cv3, cv1, 'N', cv2, 'N', dimwann )
+          CALL zmat_mul( cv3, cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
 
           DO nb = 1, dimwann
-              omt1 = omt1 + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
-              omt2 = omt2 - wb(nkp,nn) * ( TWO * LOG( singvd(nb) ) )
-              omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2)
+              omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
+              omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
+              omt3 = omt3 + wb(ik,nn) * ( ACOS( singvd(nb) )**2)
           ENDDO
 
         ENDDO     ! loop nn
-      ENDDO       ! loop nkp
+      ENDDO       ! loop ik
 
 
       omt1 = omt1/DBLE(nkpts)
@@ -512,10 +514,10 @@
              cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
 
         gcnorm1 = ZERO
-        DO nkp = 1, nkpts
+        DO ik = 1, nkpts
             DO n = 1, dimwann
             DO m= 1, dimwann
-                gcnorm1 = gcnorm1 + REAL( cdodq(m,n,nkp) * CONJG( cdodq(m,n,nkp) ) )
+                gcnorm1 = gcnorm1 + REAL( cdodq(m,n,ik) * CONJG( cdodq(m,n,ik) ) )
             ENDDO
             ENDDO
         ENDDO
@@ -531,10 +533,10 @@
         cdqkeep = cdq
 
         doda0 = ZERO
-        DO nkp = 1, nkpts
+        DO ik = 1, nkpts
             DO m = 1, dimwann
             DO n = 1, dimwann
-                doda0 = doda0 + REAL( cdq(m,n,nkp) * cdodq(n,m,nkp) )
+                doda0 = doda0 + REAL( cdq(m,n,ik) * cdodq(n,m,ik) )
             ENDDO
             ENDDO
         ENDDO
@@ -547,30 +549,30 @@
         cfunc_exp1 = CZERO
         cfunc_exp2 = CZERO
         cfunc_exp3 = CZERO
-        DO nkp = 1, nkpts
+        DO ik = 1, nkpts
             DO i = 1, dimwann
             DO j = 1, dimwann
-              cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
-              cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
-              cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
+              cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
+              cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
+              cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
             ENDDO
             ENDDO
         ENDDO
 
-        DO nkp = 1, nkpts
+        DO ik = 1, nkpts
 
-            CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,nkp), dimwann, nsdim,     &
+            CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,ik), dimwann, nsdim,     &
                  cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,    &
                  cwschur4, info )
 
             IF ( info /= 0 ) CALL errore ('wannier', 'wrong schur procedure', info)
 
-            cdq( :, :, nkp ) = CZERO
+            cdq( :, :, ik ) = CZERO
             DO m = 1, dimwann
                 cfact = EXP( cwschur1(m) )
                 DO j = 1, dimwann
                 DO i = 1, dimwann
-                     cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
+                     cdq(i,j,ik) = cdq(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
                 ENDDO
                 ENDDO
             ENDDO
@@ -584,12 +586,12 @@
         cfunc_exp2 = CZERO
         cfunc_exp3 = CZERO
 
-        DO nkp = 1, nkpts
+        DO ik = 1, nkpts
             DO i = 1, dimwann
             DO j = 1, dimwann
-                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
-                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
-                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
+                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
+                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
+                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
             ENDDO
             ENDDO
         ENDDO
@@ -598,29 +600,30 @@
 
 ! ...   The orbitals are rotated 
 
-        DO nkp = 1, nkpts
-            CALL zmat_mul( cmtmp(:,:), cu(:,:,nkp), 'N', cdq(:,:,nkp), 'N', dimwann )
-            cu(:,:,nkp) = cmtmp(:,:)
+        DO ik = 1, nkpts
+            CALL zmat_mul( cmtmp(:,:), cu(:,:,ik), 'N', cdq(:,:,ik), 'N', &
+                           dimwann, dimwann, dimwann )
+            cu(:,:,ik) = cmtmp(:,:)
         ENDDO
 
 
 ! ...   And the M_ij are updated
 
-        DO nkp = 1, nkpts
-            DO nn = 1, nntot(nkp)
-                nkp2 = nnlist(nkp,nn)
+        DO ik = 1, nkpts
+            DO nn = 1, nntot(ik)
+                ik2 = nnlist(ik,nn)
                 DO i = 1, dimwann
                 DO j = 1, dimwann
                     cmtmp(i,j) = CZERO
                     DO m = 1, dimwann
                     DO n = 1, dimwann
-                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * &
-                                                          cdq(n,j,nkp2) * cm(m,n,nn,nkp)
+                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,ik) ) * &
+                                                          cdq(n,j,ik2) * cm(m,n,nn,ik)
                     ENDDO
                     ENDDO
                 ENDDO
                 ENDDO
-                cm(:,:,nn,nkp) = cmtmp(:,:)
+                cm(:,:,nn,ik) = cmtmp(:,:)
             ENDDO
         ENDDO
 
@@ -686,31 +689,31 @@
           cfunc_exp1 = CZERO
           cfunc_exp2 = CZERO
           cfunc_exp3 = CZERO
-          DO nkp = 1, nkpts
+          DO ik = 1, nkpts
               DO i = 1, dimwann
               DO j = 1, dimwann
-                  cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
-                  cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
-                  cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
+                  cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
+                  cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
+                  cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
               ENDDO
               ENDDO
           ENDDO
 
 
-          DO nkp = 1, nkpts
+          DO ik = 1, nkpts
 
-              CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,nkp), dimwann, nsdim,       &
+              CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,ik), dimwann, nsdim,       &
                    cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,      &
                    cwschur4, info )
 
               IF ( info /= 0 ) CALL errore('wannier', 'wrong Schur procedure (II)', info)
 
-              cdq(:,:,nkp) = CZERO
+              cdq(:,:,ik) = CZERO
               DO m = 1, dimwann
                   cfact =  EXP( cwschur1(m) ) 
                   DO j = 1, dimwann
                   DO i = 1, dimwann
-                      cdq(i,j,nkp) = cdq(i,j,nkp) + cz(i,m) * cfact * CONJG( cz(j,m) )
+                      cdq(i,j,ik) = cdq(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
                   ENDDO
                   ENDDO
               ENDDO
@@ -723,12 +726,12 @@
           cfunc_exp1 = CZERO
           cfunc_exp2 = CZERO
           cfunc_exp3 = CZERO
-          DO nkp = 1, nkpts
+          DO ik = 1, nkpts
             DO i = 1, dimwann
               DO j = 1, dimwann
-                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,nkp) * cdq(j,i,nkp)
-                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,nkp) * cdq(j,i,nkp)
-                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,nkp) * cdq(j,i,nkp)
+                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
+                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
+                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
               END DO
             END DO
           END DO
@@ -737,28 +740,29 @@
 
 ! ...     The orbitals are rotated 
 
-          DO nkp = 1, nkpts
-              CALL zmat_mul( cmtmp(:,:), cu(:,:,nkp), 'N', cdq(:,:,nkp), 'N', dimwann )
-              cu(:,:,nkp) = cmtmp(:,:)
+          DO ik = 1, nkpts
+              CALL zmat_mul( cmtmp(:,:), cu(:,:,ik), 'N', cdq(:,:,ik), 'N', &
+                             dimwann, dimwann, dimwann )
+              cu(:,:,ik) = cmtmp(:,:)
           END DO
 
 ! ...     And the M_ij are updated
 
-          DO nkp = 1, nkpts
-             DO nn = 1, nntot(nkp)
-                nkp2 = nnlist(nkp,nn)
+          DO ik = 1, nkpts
+             DO nn = 1, nntot(ik)
+                ik2 = nnlist(ik,nn)
                 DO i = 1, dimwann
                 DO j = 1, dimwann
                     cmtmp(i,j) = CZERO
                     DO m = 1, dimwann
                     DO n = 1, dimwann
-                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,nkp) ) * &
-                                                         cdq(n,j,nkp2) * cm(m,n,nn,nkp)
+                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,ik) ) * &
+                                                         cdq(n,j,ik2) * cm(m,n,nn,ik)
                     ENDDO
                     ENDDO
                 ENDDO
                 ENDDO
-                cm(:,:,nn,nkp) = cmtmp(:,:)
+                cm(:,:,nn,ik) = cmtmp(:,:)
              ENDDO
           ENDDO
 
@@ -887,9 +891,9 @@
 
 !
 ! ... Unitariery of U matrix is checked
-      DO nkp = 1, nkpts
-          IF (  .NOT. zmat_unitary( cu(:,:,nkp), SIDE='both', TOLL=1.0d-8 )  )  &
-               WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")nkp
+      DO ik = 1, nkpts
+          IF (  .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8 )  )  &
+               WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")ik
       ENDDO
 
 ! ... Singular value decomposition
@@ -898,19 +902,19 @@
       omt2 = ZERO
       omt3 = ZERO
 
-      DO nkp = 1, nkpts
-        DO nn = 1, nntot(nkp)
+      DO ik = 1, nkpts
+        DO nn = 1, nntot(ik)
 
-          cmtmp(:,:) = cm(:,:,nn,nkp)
+          cmtmp(:,:) = cm(:,:,nn,ik)
           CALL zgesvd( 'A', 'A', dimwann, dimwann, cmtmp, dimwann,      &
                        singvd, cv1, dimwann, cv2, dimwann, cw1, 10*dimwann, cw2, info )
           IF ( info /= 0 ) &
                CALL errore('wannier', 'Singular value decomposition failed 4', info)
 
           DO nb = 1, dimwann
-               omt1 = omt1 + wb(nkp,nn) * ( ONE - singvd(nb)**2 )
-               omt2 = omt2 - wb(nkp,nn) * ( TWO * LOG( singvd(nb) ) )
-               omt3 = omt3 + wb(nkp,nn) * ( ACOS( singvd(nb) )**2 )
+               omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
+               omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
+               omt3 = omt3 + wb(ik,nn) * ( ACOS( singvd(nb) )**2 )
           END DO
 
         END DO

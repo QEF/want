@@ -27,8 +27,8 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE input_module,    ONLY : wannier_center_init, input_alloc => alloc
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec
    USE ions_module,  ONLY : ions_read_ext, ions_init
-   USE windows_module,  ONLY : windows_allocate, windows_init, mxdbnd, eiw
-   USE kpoints_module,  ONLY : nkpts, kpoints_read_ext, bshells_init
+   USE windows_module,  ONLY : windows_read_ext, windows_init, eig
+   USE kpoints_module,  ONLY : kpoints_read_ext, bshells_init
    IMPLICIT NONE
 
    LOGICAL, OPTIONAL, INTENT(in) :: want_input
@@ -115,44 +115,18 @@ SUBROUTINE want_init(want_input, windows, bshells)
     ! ...  allocations and initializations
     IF ( bshells_ .AND. .NOT. input_alloc ) &
           CALL errore(subname,'Input NOT read while doing bshells',3)
-    CALL bshells_init( )
+    IF ( bshells_ ) CALL bshells_init( )
 
 !
 ! ... eigenvalues data read
 !
-    CALL iotk_scan_begin(dft_unit,'Eigenvalues',ATTR=attr,FOUND=lfound,IERR=ierr)
-    IF (.NOT. lfound) CALL errore(subname,'Unable to find EIGENVALUES tag',3)
-    IF (ierr>0)  CALL errore(subname,'Wrong format in tag Eigenvalues',ierr)
-
-    CALL iotk_scan_attr(attr,'nk',idum,IERR=ierr)
-    IF (ierr/=0)  CALL errore(subname,'Unable to find NK',ABS(ierr))
-    IF ( nkpts /= idum ) CALL errore(subname,'nkpts /= nk',ABS(idum)+1)
-    CALL iotk_scan_attr(attr,'nbnd',mxdbnd,IERR=ierr)
-    IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',ABS(ierr))
-    CALL iotk_scan_attr(attr,'units',string,IERR=ierr)
-    IF (ierr>0)  CALL errore(subname,'Wrong fmt in units',ABS(ierr))
-    IF ( ierr == 0 ) THEN
-       CALL change_case(string,'UPPER')
-       IF (TRIM(string) /= 'RYDBERG' .AND. TRIM(string) /= 'RY' .AND. TRIM(string) /= 'RYD')&
-          CALL errore(subname,'Wrong units in Energies',5)
+    IF ( windows_ ) THEN
+        CALL windows_read_ext(dft_unit,'Eigenvalues',lfound)
+           IF ( .NOT. lfound ) CALL errore('want_init','Unable to find Eigenvalues',6)
+        !
+        ! ... init windows
+        CALL windows_init( eig(:,:) )
     ENDIF
- 
-    !
-    ! ... allocating windows
-    CALL windows_allocate()
-   
-    DO ik=1,nkpts
-       CALL iotk_scan_dat(dft_unit,'e'//TRIM(iotk_index(ik)),eiw(:,ik),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find EIGVAL',ik)
-   ENDDO
-   ! conversion to eV
-   eiw(:,:) = RYD * eiw(:,:)
-
-   CALL iotk_scan_end(dft_unit,'Eigenvalues',IERR=ierr)
-   IF (ierr/=0)  CALL errore(subname,'Unable to end tag Eigenvalues',ABS(ierr))
-   !
-   ! ... init windows
-   CALL windows_init( eiw(:,:) )
 
 
 

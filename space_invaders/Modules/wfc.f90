@@ -12,7 +12,7 @@
 !*********************************************
    USE kinds, ONLY : dbl
    USE constants, ONLY : CZERO
-   USE windows_module, ONLY : mxdbnd, nkpts, dimwinx, imin, imax
+   USE windows_module, ONLY : nbnd, nkpts, dimwinx, imin, imax
    USE iotk_module
    USE parameters, ONLY : nstrx
    IMPLICIT NONE
@@ -37,11 +37,24 @@
    INTEGER,      ALLOCATABLE :: igsort(:,:)      ! G map between the global IGV array and
                                                  ! the local ordering for each kpt
                                                  ! DIM: npwkx, nkpts
+
    !
    ! ... Bloch  EIGVEC
    COMPLEX(dbl), ALLOCATABLE :: evc(:,:,:)       ! wfc, DIM: npwkx+1, dimwinx, nkpts
 
    LOGICAL :: alloc = .FALSE.
+
+
+   !
+   ! ... Bloch EIGENVECTORS
+   TYPE wfc
+        COMPLEX(dbl), POINTER   :: evc(:)      
+        INTEGER                 :: npwk
+        LOGICAL                 :: alloc
+   END TYPE wfc
+
+   TYPE (wfc), ALLOCATABLE      :: evcs(:,:)     ! DIM: nbnd, nkpts
+
    
 
 !
@@ -72,14 +85,14 @@ CONTAINS
        IF ( npwkx <= 0 )  CALL errore(subname,'npwkx <= 0',ABS(npwkx)+1)
        IF ( dimwinx <= 0 )CALL errore(subname,'dimwinx <= 0',ABS(dimwinx)+1)
        IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
-       IF ( mxdbnd <= 0 ) CALL errore(subname,'mxdbnd <= 0',ABS(mxdbnd)+1)
+       IF ( nbnd <= 0 ) CALL errore(subname,'nbnd <= 0',ABS(nbnd)+1)
 
        ALLOCATE( npwk(nkpts), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating npwk',nkpts)
        ALLOCATE( igsort(npwkx,nkpts), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating igsort',npwkx*nkpts)
        ALLOCATE( evc(npwkx+1,dimwinx,nkpts), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating eiw',(npwkx+1)*dimwinx*nkpts)
+          IF (ierr/=0) CALL errore(subname,'allocating evc',(npwkx+1)*dimwinx*nkpts)
  
        alloc = .TRUE.
       
@@ -162,7 +175,7 @@ CONTAINS
            IF (ierr/=0)  CALL errore(subname,'Unable to find Info',ik)
            CALL iotk_scan_attr(attr,'nbnd',idum,IERR=ierr)
            IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',ik)
-           IF ( idum /= mxdbnd ) CALL errore(subname,'Invalid nbnd',6)
+           IF ( idum /= nbnd ) CALL errore(subname,'Invalid nbnd',6)
            
            DO ib=imin(ik),imax(ik)
                index = ib - imin(ik) +1
