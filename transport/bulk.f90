@@ -18,6 +18,7 @@
 
       IMPLICIT NONE
 
+      INTEGER :: ierr
       INTEGER :: nmx, natmax, norb, nterx
       INTEGER :: ne, model, nmax
       INTEGER :: i, j, k, l, m, n
@@ -50,6 +51,9 @@
      
 
       EXTERNAL TB_hamiltonian, transfer, green, setv0
+
+      NAMELIST /INPUT_BULK/ nmx, norb, ne, nterx, emin, emax, &
+                            gamma0, efieldx, efieldy, efieldz, model
       
 !
 ! ... Startup
@@ -60,19 +64,32 @@
       alpha = (1.d0,0.d0)
       beta = (0.d0,0.d0)
 
-      READ ( 5, * ) nmx
-      READ ( 5, * ) norb
+!...  Read namelist
+      nmx = 0
+      norb = 1
+      ne = 1000
+      nterx = 200
+      emin = -10.0
+      emax =  10.0
+      efieldx = 0.0
+      efieldy = 0.0
+      efieldy = 0.0
+      gamma0 = 0.0
+      model = 4
+
+      READ( 5, input_bulk, IOSTAT=ierr)
+      IF ( ierr/= 0) CALL errore('bulk','reading input namelist',ABS(ierr))
+
+      IF ( nmx <= 0) CALL errore('bulk','Invalid NMX',1)
+      IF ( emax <= emin ) CALL errore('bulk','Invalid EMIN EMAX',1)
+      IF ( ne <= 0 ) CALL errore('bulk','Invalid NE',1)
+      IF ( nterx <= 0 ) CALL errore('bulk','Invalid NTERX',1)
+      IF ( model < 1 .OR. model > 4 ) CALL  errore('bulk','Invalid MODEL',1)
+
 
 !...  Hamiltonian dimension
       nmax = norb * nmx
       natmax = 2 * nmx
-
-      READ ( 5, * ) ne
-      READ ( 5, * ) nterx
-      READ ( 5, * ) gamma0, emin, emax
-      READ ( 5, * ) efieldx, efieldy, efieldz
-      READ ( 5, * ) model
-
       ALLOCATE ( r( 3, natmax ) )
       rcut = 0.0d00
       r(:,:) = 0.0d0
