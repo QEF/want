@@ -187,12 +187,6 @@
 
        ! ... end standard input
 
-       IF ( dimwann > 80 .OR. nkpts > 99999) THEN
-         WRITE(*,*) '*** ERROR ***'
-         WRITE(*,*) 'MODIFY FORMAT 102 WRITING FILE energy.dat (to be used in bands.f)'
-         STOP '*** ERROR ***'
-       END IF
-
        DO j=1,3
          DO i=1,3
            sgn = 1.0d0
@@ -228,11 +222,11 @@
                 j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / (2* pi), i=1,3 )
        END DO
        WRITE( stdout, * ) ' '
-       WRITE( stdout, fmt="(2x, 'Cell volume = ', F8.4, ' (Bohr)^3' )" ) vcell
+       WRITE( stdout, fmt="(2x, 'Cell volume = ', F12.6, ' (Bohr)^3' )" ) vcell
        WRITE( stdout,*) ' '
        ! ****ATTENTION
        ! emax is reported in output in Rydberg, but it used in Hartree in the code
-       WRITE( stdout, fmt= " (2x,'Kinetic energy cut-off =  ', F5.2, ' (Ry)' ) " ) emax * 2.0
+       WRITE( stdout, fmt= " (2x,'Kinetic energy cut-off =  ', F7.2, ' (Ry)' ) " ) emax * 2.0
        WRITE( stdout, * ) ' '
        WRITE( stdout, fmt= " (2x, 'Uniform grid used in wannier calculations:' )")
        WRITE( stdout, fmt= " (4x, 'nk = (', 3i3, ' )      s = (', 3f6.2, ' )' )" ) &
@@ -355,15 +349,9 @@
 !        WRITE( stdout,125) nkp, dimwin(nkp), mtxd(nkp)
 !125     FORMAT('k-point',i5,2x,'dimwin ',i2,' ngwk ',i5)
 
-         IF ( dimwin(nkp) < dimwann ) THEN
-           WRITE( stdout,*) '*** ERROR *** AT K-POINT ',nkp,' DIMWIN= ', dimwin(nkp), '< DIMWANN=', dimwann
-           STOP
-         END IF
+         IF ( dimwin(nkp) < dimwann ) CALL errore(' disentangle ', ' dimwin < dimwan ', dimwin )
 
-         IF ( dimwin(nkp) > mxdbnd ) THEN
-           WRITE( stdout,*) '*** ERROR *** INCREASE MXDBND TO AT LEAST ', dimwin(nkp)
-           STOP
-         END IF
+         IF ( dimwin(nkp) > mxdbnd ) CALL errore(' disentangle ', ' increase max number of band ', dimwin )
 
        END DO
 
@@ -446,11 +434,6 @@
 
        cflag = 0
        DO iter = 1, maxiter
-         WRITE(*,*) ' '
-         WRITE(*,*) '***************'
-         WRITE(*,'(a10,i5)') ' Iteration ', iter
-         WRITE(*,*) '***************'
-         WRITE(*,*) ' '
          IF ( iter == 1 ) THEN
 
 ! ...    Choose an initial trial subspace at each K
@@ -461,7 +444,7 @@
 
              IF ( ITRIAL == 1 ) THEN
                WRITE( stdout,*) ' '
-               WRITE( stdout,*) 'INITIAL TRIAL SUBSPACE: LOWEST ENERGY EIGENVECTORS'
+               WRITE( stdout, fmt= "(2x, 'Initial trial subspace: lowest energy eigenvectors' )")
                WRITE( stdout,*) ' '
                DO nkp=1, nkpts
                  DO l=1, dimwann
@@ -473,7 +456,7 @@
                END DO
              ELSE IF ( itrial == 2 ) THEN
                WRITE( stdout,*) ' '
-               WRITE( stdout,*) 'INITIAL TRIAL SUBSPACE: HIGHEST ENERGY EIGENVECTORS'
+               WRITE( stdout, fmt= "(2x, 'Initial trial subspace: highest energy eigenvectors' )")
                WRITE( stdout,*) ' '
                DO nkp=1, nkpts
                  DO l=1, dimwann
@@ -485,7 +468,7 @@
                END DO
              ELSE IF ( ITRIAL == 3 ) THEN
                WRITE( stdout,*) ' ' 
-               WRITE( stdout,*) 'INITIAL TRIAL SUBSPACE: PROJECTED LOCALIZED ORBITALS'
+               WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected localized orbitals' )")
                WRITE( stdout,*) ' '
                CALL projection( avec, lamp, evecr, eveci, vkpt,             &
                     kgv, isort, mtxd, dimwin, dimwann, dimfroz,             &
@@ -494,8 +477,9 @@
                     m_wann, ndir_wann, rloc, ndwinx)
              ELSE
                WRITE( stdout,*) ' ' 
-               WRITE( stdout,*) 'INVALID CHOICE OF ITRIAL:',ITRIAL
-               STOP
+               WRITE( stdout, fmt= "(2x, 'Invalid choice of itrial' )")
+               CALL errore(' disentangle ', ' Invalid choice of itrial (I)', (itrial) )
+
              END IF     !   No frozen states
 
            ELSE
@@ -503,19 +487,18 @@
 ! ...      There are frozen states. 
 !          Choose the non-frozen trial states using the modified projection technique
 
-             WRITE(*,*) ' '
-             WRITE(*,*) 'THERE ARE FROZEN STATES'
-             WRITE(*,*) ' '
-             WRITE(*,*) 'INITIAL TRIAL SUBSPACE: PROJECTED GAUSSIANS+FROZEN STATES'
-             WRITE(*,*) ' '
+             WRITE( stdout,*) ' ' 
+             WRITE( stdout, fmt= "(2x, 'There are frozen states' )")
+             WRITE( stdout,*) ' ' 
+             WRITE( stdout, fmt= "(2x, 'Initial trial subspace: projected gaussians+frozen states' )")
+             WRITE( stdout,*) ' ' 
 
              DO nkp = 1, nkpts
                IF ( dimfroz(nkp) == 0 ) THEN
-                 WRITE(*,'( a7, 1x, i4, a23 )') 'k-point',nkp, ' frozen bands:     none'
+                 WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = none'  )") nkp
                ELSE
-                 WRITE(*,'( a7, 1x, i4, a1, i2, a15, 1x, 20(i2,1x) )')          &
-                      'k-point', nkp,':', dimfroz(nkp), ' frozen bands: ',      &
-                      ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
+                 WRITE( stdout, fmt= "(4x, 'Frozen bands for k-point (',i3,' ) = ',i4,':'  )") nkp,dimfroz(nkp)
+                 WRITE( stdout, fmt= "(20(i2,1x)   )") ( indxfroz(i,nkp), i=1, dimfroz(nkp) )
                END IF
              END DO
 
@@ -530,8 +513,8 @@
                     m_wann, ndir_wann, rloc, ndwinx )
              ELSE
                WRITE( stdout,*) ' ' 
-               WRITE( stdout,*) 'INVALID CHOICE OF ITRIAL WITH FROZEN STATES:', itrial
-               STOP
+               WRITE( stdout, fmt= "(2x, 'Invalid choice of itrial' )")
+               CALL errore(' disentangle ', ' Invalid choice of itrial (II)', (itrial) )
              END IF
 
 ! ...        Next find the (dimwann-dimfroz(nkp))-dimensional space of non-frozen states
@@ -557,6 +540,7 @@
                END IF
              END DO
 
+
 ! ...        Check that the states in the columns of the final matrix lamp are orthonormal
 !            at every k-point (i.e., that the matrix is unitary in the sense that
 !            conjg(lamp) . lamp = 1 - but not lamp . conjg(lamp) = 1 - )
@@ -565,35 +549,33 @@
 !            the trial subspace.
 
              DO nkp = 1, nkpts
-               WRITE(*,*) ' '
-               WRITE(*,'(a8,i4)') 'k-point ', nkp
+               WRITE( stdout,*) ' ' 
+               WRITE( stdout, fmt=" (2x, 'k-point', i4)") nkp
                DO l = 1, dimwann
                  DO m = 1, l
                    ctmp = czero
                    DO j = 1, dimwin(nkp)
                      ctmp = ctmp + CONJG(lamp(j,m,nkp)) * lamp(j,l,nkp)
                    END DO
-                   WRITE(*,'(i2, 2x, i2, f16.12, 1x, f16.12)') l, m, ctmp
+                   WRITE( stdout, fmt="(4x,i2, 2x, i2, f16.12, 1x, f16.12)") l, m, ctmp
                    IF ( l == m ) THEN
-                     IF ( ABS(ctmp-cmplx(1.0d0,0.0d0)) > 1.0e-8 ) THEN
-                       WRITE(*,*) '*** ERROR *** WITH TRIAL SUBSPACE'
-                       WRITE(*,*) 'VECTORS IN LAMP NOT ORTHONORMAL'
-                       WRITE(*,'(a11,i4)') 'AT K-POINT ', nkp
-                       STOP
-                     END IF
+                     IF ( ABS(ctmp-cmplx(1.0d0,0.0d0)) > 1.0e-8 ) &
+                       CALL errore(' disentangle ', ' Vectors in lamp not orthonormal (I)', ABS(ctmp-cmplx(1.0d0,0.0d0)) )
                    ELSE
-                     IF ( ABS(ctmp) > 1.0e-8 ) THEN
-                       WRITE(*,*) '*** ERROR *** WITH TRIAL SUBSPACE'
-                       WRITE(*,*) 'VECTORS IN LAMP NOT ORTHONORMAL'
-                       WRITE(*,'(A11,I4)') 'AT K-POINT ', nkp
-                       STOP
-                     END IF
+                     IF ( ABS(ctmp) > 1.0e-8 ) &
+                       CALL errore(' disentangle ', ' Vectors in lamp not orthonormal (II)', ABS(ctmp-cmplx(1.0d0,0.0d0)) )
                    END IF
                  END DO
                END DO
              END DO
                    
            ENDIF ! there are frozen states
+
+           WRITE( stdout, * ) '  '
+           WRITE( stdout, * ) ' ======================================================================'
+           WRITE( stdout, * ) ' =                   Starting Iteration loop                          ='
+           WRITE( stdout, * ) ' ======================================================================'
+           WRITE( stdout, * ) '  '
 
 ! ...      Compute the initial z matrix mtrx_in at all relevant K-points
 
@@ -621,6 +603,8 @@
            END DO
          ENDIF    !   iter = 1
 !
+!        WRITE( stdout, * ) '  '
+!        WRITE( stdout, fmt=" (2x,'Iteration = ',i5) ") iter
          omega_i_est = zero
 
          DO nkp = 1, nkpts
@@ -638,16 +622,10 @@
                   zero, zero, 0, 0, -um, m, w(1), z(1,1), mxdbnd, work(1), rwork(1),  &
                   iwork(1), ifail(1), info )
 
-             IF ( info < 0 ) THEN
-               WRITE( stdout,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING Z MATRIX'
-               WRITE( stdout,*) 'THE ', -info, ' ARGUMENT OF ZHPEVX HAD AN ILLEGAL VALUE'
-               STOP
-             END IF
-             IF ( info > 0 ) THEN
-               WRITE( stdout,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING Z MATRIX'
-               WRITE( stdout,*) 'INFO= ', info, 'EIGENVECTORS FAILED TO CONVERGE'
-               STOP
-             END IF
+             IF ( info < 0 ) &
+               CALL errore(' disentangle ', ' zhpevx: info illegal value (I)', info )
+             IF ( info > 0 ) &
+               CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (I)', info )
            END IF
  
 ! ...      Calculate K-point contribution to omega_i_est
@@ -686,13 +664,12 @@
                END DO
              END DO
              IF ( verbosity == 'high' ) THEN
-                WRITE(*,*)
-                WRITE(*,*) 'All eigenvalues:'
+                WRITE(stdout,*)
+                WRITE(stdout, fmt="(2x, 'All eigenvalues:' )")
                 DO j = 1, dimwin(nkp)-dimfroz(nkp)
-                  WRITE(*,747) j, w(j)
- 747              FORMAT('j=',i2,', lambda(j)=', f10.5)
+                  WRITE(*,fmt="(4x,'j=',i2,', lambda(j)=', f10.5)") j, w(j)
                 END DO
-                WRITE(*,'(a6,f10.5)') 'WBTOT= ', wbtot
+                WRITE(stdout,fmt="(4x,'Wbtot = ')")wbtot
              END IF
            ENDIF
  
@@ -724,9 +701,9 @@
                
              ELSE
                 cflag = 1
-                WRITE(*,*)
-                WRITE(*,*) '*** WARNING ***:'
-                WRITE(*,*) 'AT K-POINT ',NKP,' THE COMPLEMENT SUBSPACE HAS ZERO DIMENSIONS'
+                WRITE( stdout,*)
+                WRITE( stdout, fmt="(2x, 'Warning!' )")
+                WRITE( stdout, fmt="(4x, 'at k-point ',i4,' the complement subspace has zero dimensions' )") nkp
              END IF
            END IF
  
@@ -744,14 +721,14 @@
                  wb, wbtot, nnlist, nshells, nnshell, dimwann, dimwin,  &
                  mxdbnd, nkpts, mxdnn )
            omega_i = omega_i + aux
-           WRITE( stdout,123) nkp, aux, komega_i_est(nkp), (komega_i_est(nkp)-aux)/aux
- 123       FORMAT('K-POINT ',i4,' KOMEGA_I ',f16.8,' KOMEGA_I_EST ',f16.8,' ERROR ',f16.8)
+!          IF ( ( iter - INT (iter / DBLE(10) ) ) == 1 ) THEN
+!            WRITE( stdout, fmt=" (4x, 'K-point',i3, ' )     Komega_I Error =',f16.8 )") nkp, (komega_i_est(nkp)-aux)/aux
+!          END IF
          END DO
          omega_i = omega_i/DBLE(nkpts)
  
-         WRITE( stdout,124) iter, omega_i, omega_i_est, (omega_i_est - omega_i)/omega_i
+         WRITE( stdout, fmt=" (2x, 'Iteration = ',i3,'   Omega_I Error =',f16.8 )") iter, (omega_i_est - omega_i)/omega_i
          o_error = ABS( (OMEGA_I_EST-OMEGA_I)/OMEGA_I )
- 124     FORMAT(//,'ITERATION ',i4,' OMEGA_I=',f16.8,'  OMEGA_I_EST=',f16.8,'  ERROR=',f16.8,//)
 
  
 ! ...    Construct the new z-matrix mtrx_out at the relevant K-points
@@ -774,15 +751,15 @@
 ! ...  Convergence achieved
 
  9999  continue
-       WRITE(*,*) 'CONVERGENCE ACHIEVED'
+       WRITE( stdout, *) ' '
+       WRITE( stdout, fmt="(2x, 'Convergence achieved!!')")
+       WRITE( stdout, *) ' '
 
 
 
 ! ...  Write the final omega_i. This should equal the one given by wannier
  
-       WRITE( stdout,100) omega_i,omega_i*bohr**2
- 100   FORMAT(/,'FINAL OMEGA_I (BOHR^2, ANGSTROM^2)', f16.8, 2x, f16.8)
-
+       WRITE( stdout, fmt=" (2x, 'Final Omega_I (Bohr^2, Angstrom^2)', f16.8,2x,f16.8)")omega_i,omega_i*bohr**2
 
  
 ! ...  Diagonalize the hamiltonian within the optimized subspace at each K
@@ -808,21 +785,14 @@
 
          CALL zhpevx( 'v', 'a', 'u', dimwann, ap(1), zero, zero, 0, 0, -um,           &
               m, w(1), z(1,1), mxdbnd, work(1), rwork(1), iwork(1), ifail(1), info )
-         IF ( info < 0 )  THEN
-           WRITE( stdout,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING HAMILTONIAN'
-           WRITE( stdout,*) 'THE ',-INFO,' ARGUMENT OF ZHPEVX HAD AN ILLEGAL VALUE'
-           STOP
-         END IF
-         IF ( INFO > 0 )  THEN
-           WRITE( stdout,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING HAMILTONIAN'
-           WRITE( stdout,*) 'INFO= ', info, 'EIGENVECTORS FAILED TO CONVERGE'
-           STOP
-         END IF
+         IF ( info < 0 ) &
+           CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', info )
+         IF ( info > 0 ) &
+           CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (II)', info )
  
 ! ...    Write the optimal subspace energy eigenvalues in eV (to be used in bands.f)
  
-         WRITE(7,102) nkp,( har*w(i), i=1, dimwann )
- 102     FORMAT(i5,4x,80f16.8)
+         WRITE(7, fmt="(i5,4x,80f16.8)") nkp,( har*w(i), i=1, dimwann )
  
 ! ...    Calculate amplitudes of the corresponding energy eigenvectors in terms of 
 !        the original ("window space") energy eigenvectors
@@ -871,10 +841,10 @@
        CLOSE(8)
 
        IF ( cflag == 1 )  THEN
-         WRITE(*,*)
-         WRITE(*,*) '*** WARNING ***'
-         WRITE(*,*) 'AT SOME K-POINT(S) COMPLEMENT SUBSPACE HAS ZERO DIMENSIONALITY'
-         WRITE(*,*) '=> DID NOT CREATE FILE compspace.dat'         
+         WRITE(stdout,*) ' '
+         WRITE(stdout, fmt="(2x,'Warning')")
+         WRITE(stdout, fmt="(2x,'at some k-point(s) complement subspace has zero dimensionality')")
+         WRITE(stdout, fmt="(2x,'=> did not create file compspace.dat')")
        ELSE
  
 ! ...  Diagonalize the hamiltonian in the complement subspace, write the
@@ -900,16 +870,10 @@
            CALL zhpevx( 'v', 'a', 'u', dimwin(nkp)-dimwann, ap(1),             &
                 zero, zero, 0, 0, -um, m, w(1), z(1,1), mxdbnd, work(1),       &
                 rwork(1), iwork(1), ifail(1), info )
-           IF ( info < 0 )  THEN
-             WRITE( stdout,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING HAMILTONIAN'
-             WRITE( stdout,*) 'THE ',-INFO,' ARGUMENT OF ZHPEVX HAD AN ILLEGAL VALUE'
-             STOP
-           END IF
-           IF ( info > 0 )  THEN
-             WRITE( stdout,*) '*** ERROR *** ZHPEVX WHILE DIAGONALIZING HAMILTONIAN'
-             WRITE( stdout,*) 'INFO= ', info, 'EIGENVECTORS FAILED TO CONVERGE'
-             STOP
-           END IF
+           IF ( info < 0 ) &
+             CALL errore(' disentangle ', ' zhpevx: info illegal value (II)', info )
+           IF ( info > 0 ) &
+             CALL errore(' disentangle ', ' zhpevx: eigenvectors failed to converge (II)', info )
  
 ! ...      Calculate amplitudes of the energy eigenvectors in the complement subspace in
 !          terms of the original energy eigenvectors
@@ -1033,6 +997,6 @@
 
 !=---------------------------------------------------------------=
 
-       STOP '*** THE END *** (disentangle.f90)'
+       STOP '*** THE END *** (disentangle.x)'
        END
 

@@ -221,33 +221,26 @@
         END DO
        END DO
        
-       WRITE(stdout,*) ' Gaussian centers, in cartesian coordinates'
-       WRITE(stdout,*) ' '
+       WRITE( stdout, fmt= " (2x, 'Gaussian centers:' ) " )
+       WRITE( stdout, fmt="(25x,'cartesian',24x,'relative coordinates' )")
        DO nwann = 1, dimwann
-         WRITE( stdout,'(a12,i4,3f10.5)' ) 'Gaussian 1: ', nwann, ( rphicmx1(m,nwann), m=1,3 )
-         IF  ( gauss_typ(nwann) == 2 ) &
-         WRITE( stdout,'(a12,i4,3f10.5)' ) 'Gaussian 2: ', nwann, ( rphicmx2(m,nwann), m=1,3 )
+         WRITE( stdout, fmt="(4x,'Gaussian 1)',I4,' = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
+                nwann, ( rphicmx1(m,nwann), m=1,3 ), ( rphiimx1(m,nwann), m=1,3 )
+         IF  ( gauss_typ(nwann) == 2 ) THEN
+           WRITE( stdout, fmt="(4x,'Gaussian 2)',I4,' = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
+                  nwann, ( rphicmx2(m,nwann), m=1,3 ), ( rphiimx2(m,nwann), m=1,3 )
+         END IF
        END DO
 
-       WRITE( stdout, *) ' '
-       WRITE( stdout, *) ' Gaussian centers, in relative coordinates'
-       WRITE( stdout, *) ' '
+!      WRITE(stdout, *) ' '
+!      WRITE(stdout, *) ' Gaussian centers, nearest grid coordinates'
+!      WRITE(stdout, *) ' '
 
-       DO nwann = 1, dimwann
-        WRITE( stdout, '(a12,i4,3f10.5)' )  'Gaussian 1: ', nwann,( rphiimx1(m,nwann), m=1,3 )
-        IF  ( gauss_typ(nwann) == 2 )  &
-        WRITE( stdout ,'(a12,i4,3f10.5)' )  'Gaussian 2: ', nwann,( rphiimx2(m,nwann), m=1,3 )
-       END DO
-
-       WRITE(stdout, *) ' '
-       WRITE(stdout, *) ' Gaussian centers, nearest grid coordinates'
-       WRITE(stdout, *) ' '
-
-       DO nwann = 1, dimwann
-         WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 1: ', nwann,( nphimx1(m,nwann), m=1,3 )
-         IF  ( gauss_typ(nwann) ==  2 )    &
-         WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 2: ', nwann,( nphimx2(m,nwann), m=1,3 )
-       END DO
+!      DO nwann = 1, dimwann
+!        WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 1: ', nwann,( nphimx1(m,nwann), m=1,3 )
+!        IF  ( gauss_typ(nwann) ==  2 )    &
+!        WRITE(stdout,'(a12,i6,3i4)')    'Gaussian 2: ', nwann,( nphimx2(m,nwann), m=1,3 )
+!      END DO
 
        DO nwann = 1, dimwann
          asidemin = 100000.0d0 * rloc(nwann)
@@ -256,13 +249,13 @@
            asidemin = MIN( aside, asidemin )
          END DO
          nphir(nwann) = nint( 2 * ( rloc(nwann) / asidemin ) * MIN( ngx,ngy,ngz ) )
-         WRITE(stdout,*) ' '
-         WRITE(stdout,'(a14,i3)') 'Trial orbital ', nwann
-         WRITE(stdout,*) ' Gaussian width, in atomic units  ', rloc(nwann)
-         WRITE(stdout,*) ' Half-width of integration region ', nphir(nwann)
-         WRITE(stdout,*) ' '
-         WRITE(stdout,8000)
-8000     FORMAT (1x,'-------------------------------------------------------------------------------')
+!        WRITE(stdout,*) ' '
+!        WRITE(stdout,'(a14,i3)') 'Trial orbital ', nwann
+!        WRITE(stdout,*) ' Gaussian width, in atomic units  ', rloc(nwann)
+!        WRITE(stdout,*) ' Half-width of integration region ', nphir(nwann)
+!        WRITE(stdout,*) ' '
+!        WRITE(stdout,8000)
+!8000     FORMAT (1x,'-------------------------------------------------------------------------------')
        END DO
 
 ! ...  Calculate the projection of the gaussians on the bloch eigenstates inside 
@@ -568,22 +561,21 @@
 
            END DO    ! nb
       
-           WRITE(stdout,*) '  '
-           WRITE(stdout,'(a18,i4)') ' Matrix A, k-point', nkp
-           IF  (dimwin(nkp) <= 8) THEN
-             WRITE(stdout,*) '  '
-             DO i = 1, dimwin(nkp)
-               WRITE(stdout,'(14(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
-             END DO
+!          WRITE(stdout,*) '  '
+!          IF  (dimwin(nkp) <= 8) THEN
+!            WRITE(stdout,*) '  '
+!            DO i = 1, dimwin(nkp)
+!              WRITE(stdout,'(14(0pe10.2))') ( ca(i,j,nkp), j=1,dimwann )
+!            END DO
 
-           END IF 
+!          END IF 
 
          END IF  
 
        END DO ! NKP
 
-       WRITE(stdout,*) ' '
-       WRITE(stdout,8000)
+!      WRITE(stdout,*) ' '
+!      WRITE(stdout,8000)
  
 ! ...  Compute the dimwin(k) x dimwann matrix cu that yields, from the dimwin(k) 
 !      original bloch states, the dimwann bloch-like states with maximal projection
@@ -605,12 +597,8 @@
  
            CALL zgesvd( 'a', 'a', dimwin(nkp), dimwann, ca(1,1,nkp),              &
                 mxdbnd, s, u, mxdbnd, vt, dimwann, work, 4*mxdbnd, rwork2, info )
-
-           IF ( info /= 0 ) THEN
-             WRITE(stdout,*) '*** ERROR *** IN ZGESVD IN projection.f'
-             WRITE(stdout,*) 'K-POINT NKP=', nkp, ' INFO=', info
-             IF ( info < 0 ) CALL errore(' projection ', ' zgesvd: info has illegal value ', info )
-           END IF 
+           IF ( info /= 0 )  &
+             CALL errore( ' projection ', ' zgesvd: info has illegal value ', info )
  
            DO j=1,dimwann
              DO i=1,dimwin(nkp)
