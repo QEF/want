@@ -8,14 +8,14 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=--------------------------------------------------------------------------------------------=
-      SUBROUTINE omega( nbands, nkpts, nkpts2, nntot, nnmx, nnlist, bk, wb, cm,              &
-                 csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o,    &
+!=-------------------------------------------------------------------------------------=
+      SUBROUTINE omega( nbands, nkpts, nkpts2, nntot, nnmx, nnlist, bk, wb, cm,           &
+                 csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, func_o, &
                  rtot, r2tot, func_i, func_d, func_od )
-!=--------------------------------------------------------------------------------------------=
+!=--------------------------------------------------------------------------------------=
       
       USE kinds
-      USE io_global, ONLY : stdout
+      USE io_module, ONLY : stdout
 
       IMPLICIT NONE
 

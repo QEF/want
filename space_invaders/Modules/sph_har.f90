@@ -42,7 +42,7 @@ CONTAINS
   
   SUBROUTINE gauss1( cphi, ndir, l_wann, m_wann, rpos1, dist1 )
 
-    USE io_global, ONLY : stdout
+    USE io_module, ONLY : stdout
 
     INTEGER :: ndir, l_wann, m_wann
     REAL(dbl) :: rpos1(3), dist1

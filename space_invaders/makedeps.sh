@@ -5,12 +5,13 @@
 cd `echo $0 | sed 's/\(.*\)\/.*/\1/'` # extract pathname
 TOPDIR=`pwd`
 
-for DIR in Modules Libs Main
+for DIR in IOTK_lib Modules Libs Main 
 do
     # set inter-directory dependencies
     case $DIR in
-        Modules )     DEPENDS=""           ;;
-        Libs | Main ) DEPENDS="../Modules" ;;
+        IOTK_lib )    DEPENDS=""                        ;;
+        Modules )     DEPENDS="../IOTK_lib"             ;;
+        Libs | Main ) DEPENDS="../Modules ../IOTK_lib"  ;;
     esac
 
     # generate dependencies file

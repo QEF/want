@@ -15,7 +15,7 @@
        USE constants, ONLY: pi, ryd => ry, har => au, bohr => bohr_radius_angs
        USE mp, ONLY: mp_start, mp_end, mp_env
        USE mp_global, ONLY: mp_global_start
-       USE io_global, ONLY: io_global_start, io_global_getionode, stdout
+       USE io_module, ONLY: io_global_start, io_global_getionode, stdout
        USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
        USE startup_module, ONLY : startup
        USE version_module, ONLY : version_number
@@ -24,6 +24,7 @@
        USE kpoints, ONLY: nk, s, vkpt, kpoints_init
        USE ions, ONLY: rat, atmass, ntype, natom, nameat
        USE lattice, ONLY: avec, recc, alat, lattice_init
+       USE iotk_module
 
 
        IMPLICIT NONE

@@ -34,7 +34,7 @@ CONTAINS
 
   SUBROUTINE poscart_set( avec )
     !
-    USE io_global, ONLY: stdout
+    USE io_module, ONLY: stdout
     USE constants, ONLY: bohr => bohr_radius_angs
     !
     IMPLICIT NONE

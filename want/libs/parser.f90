@@ -28,7 +28,7 @@
 MODULE parser
   !----------------------------------------------------------------------------
   !
-  USE io_global, ONLY : stdout
+  USE io_module, ONLY : stdout
   USE kinds
   !
   CONTAINS
@@ -191,7 +191,7 @@ MODULE parser
     !
     USE mp,        ONLY : mp_bcast
     USE mp_global, ONLY : group
-    USE io_global, ONLY : ionode, ionode_id
+    USE io_module, ONLY : ionode, ionode_id
     !
     IMPLICIT NONE
     !

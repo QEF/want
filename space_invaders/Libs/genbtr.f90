@@ -16,7 +16,7 @@
       USE kinds
       USE constants, ONLY: har => au, bohr => bohr_radius_angs
       USE timing_module, ONLY : timing
-      USE io_global, ONLY : stdout
+      USE io_module, ONLY : stdout
 
       IMPLICIT none
 

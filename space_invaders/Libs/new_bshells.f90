@@ -15,7 +15,7 @@
 
       USE kinds
       USE timing_module, ONLY : timing
-      USE io_global, ONLY: stdout
+      USE io_module, ONLY: stdout
  
 ! ... Computes the shells of b-vectors connecting every k-point to its
 !     neighbors, as well as their weights for the finite-difference formulas

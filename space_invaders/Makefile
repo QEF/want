@@ -1,17 +1,33 @@
+#
+#===============================
+# WanT package
+#===============================
+#
 MAKE=make
 
-# this is the main makefile
+#
+# MAIN target
+#
 all: main tran
 
-mod:
+# 
+# LIBS and MODULES
+#
+iotk:
+	cd IOTK_lib; $(MAKE);
+
+mod: iotk
 	cd Modules; $(MAKE);
 
-lib: mod
+lib: iotk mod
 	cd Libs; $(MAKE);
 
-main: lib mod
+main: iotk mod lib 
 	cd Main; $(MAKE);
 
+#
+# EXPLICIT reference to EXECUTABLES
+#
 window: lib mod
 	cd Main; $(MAKE) window.x;
 disentangle: lib mod
@@ -31,7 +47,11 @@ bulk: lib mod
 conductor: lib mod
 	cd Transport; $(MAKE) conductor.x;
 
+#
+# CLEAN UP
+#
 clean:
+	cd IOTK_lib; $(MAKE) clean;
 	cd Modules; $(MAKE) clean;
 	cd Libs; $(MAKE) clean;
 	cd Main; $(MAKE) clean;

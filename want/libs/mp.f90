@@ -13,7 +13,7 @@
     MODULE mp
 !------------------------------------------------------------------------------!
       USE kinds,     ONLY : dbl, i4b
-      USE io_global, ONLY : stdout
+      USE io_module, ONLY : stdout
       USE parallel_include
       IMPLICIT NONE
 

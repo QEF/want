@@ -53,7 +53,7 @@ CONTAINS
 
   SUBROUTINE read_input
 
-       USE io_global, ONLY: ionode, ionode_id
+       USE io_module, ONLY: ionode, ionode_id
        USE mp, ONLY: mp_bcast
        USE parser, ONLY: read_line, capital
 

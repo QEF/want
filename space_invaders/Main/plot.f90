@@ -17,7 +17,7 @@
       USE parameters, ONLY: npsx, natx
       USE fft_scalar, ONLY: cfft3d
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-      USE io_global, ONLY : stdout
+      USE io_module, ONLY : stdout
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
 

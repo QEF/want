@@ -12,7 +12,7 @@
 !=----------------------------------------------------------------------------------=
      
        USE kinds
-       USE io_global, ONLY : stdout
+       USE io_module, ONLY : stdout
 
        IMPLICIT NONE
 

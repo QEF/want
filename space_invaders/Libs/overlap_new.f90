@@ -16,7 +16,7 @@
  
       USE kinds
       USE timing_module, ONLY : timing 
-      USE io_global, ONLY : stdout
+      USE io_module, ONLY : stdout
       USE util, ONLY: gv_indexes
 
       IMPLICIT NONE
@@ -94,7 +94,7 @@
  
       USE kinds
       USE timing_module, ONLY : timing 
-      USE io_global, ONLY : stdout
+      USE io_module, ONLY : stdout
 
       IMPLICIT NONE
 

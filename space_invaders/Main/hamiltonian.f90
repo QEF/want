@@ -21,10 +21,10 @@
       USE kinds
       USE mp, ONLY: mp_start, mp_end, mp_env
       USE mp_global, ONLY: mp_global_start
-      USE io_global, ONLY: io_global_start, io_global_getionode
+      USE io_module, ONLY: io_global_start, io_global_getionode
+      USE io_module, ONLY : stdout
       USE parameters, ONLY: mxdtyp => npsx, mxdatm => natx
       USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-      USE io_global, ONLY : stdout
       USE startup_module, ONLY : startup
       USE version_module, ONLY : version_number
       USE constants, ONLY: pi
