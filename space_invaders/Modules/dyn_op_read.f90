@@ -84,8 +84,8 @@ CONTAINS
    INTEGER,INTENT(out)              :: Nv, dim,        &
                                        index_band,     &
                                        Nisp, Nomega 
-   REAL(dbl),POINTER, INTENT(out)   :: E(:), Vct(:,:)
-   COMPLEX(dbl),POINTER, INTENT(out):: Opr(:,:,:,:,:)
+   REAL(dbl),POINTER    :: E(:), Vct(:,:)
+   COMPLEX(dbl),POINTER :: Opr(:,:,:,:,:)
 
    INTEGER                          :: Nv_fmt, dim_fmt,      &
                                        Nisp_fmt, Nomega_fmt, &
