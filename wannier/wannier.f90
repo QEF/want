@@ -329,6 +329,7 @@
           DO m = 1, 3
             poscart(m,ni,nsp) = 0.d0
             DO j=1,3
+              !poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * dirc(j,m)
               poscart(m,ni,nsp) = poscart(m,ni,nsp) + rat(j,ni,nsp) * avec(m,j) * bohr
             END DO
           END DO
