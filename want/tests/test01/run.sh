@@ -84,12 +84,17 @@ esac
 #
 # preliminaries
 #
-cd $TMPDIR
-test -e $TEST_NAME || mkdir $TEST_NAME 
-cd $TEST_NAME
+test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
+cd $TMPDIR/$TEST_NAME
 ln -sf $TEST_HOME/../Pseudo/*.UPF .
-ln -sf $TMPDIR/$TEST_NAME $TEST_HOME/SCRATCH
-ln -sf $TEST_HOME $TMPDIR/$TEST_NAME/HOME
+cd $TEST_HOME
+ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
+cd $TMPDIR/$TEST_NAME
+ln -sf $TEST_HOME ./HOME
+
+
+#-----------------------------------------------------------------------------
+cd $TMPDIR/$TEST_NAME
 
 #
 # running PWSCF SCF
