@@ -27,7 +27,7 @@ CONTAINS
 
 !**********************************************************
    SUBROUTINE startup(version,main_name)
-   !**********************************************************
+!**********************************************************
       IMPLICIT NONE
       CHARACTER(*), INTENT(in) :: version
       CHARACTER(*), INTENT(in) :: main_name
@@ -43,11 +43,18 @@ CONTAINS
       ! description
       ! 
       CALL date_and_tim(cdate,ctime)
-      WRITE(stdout, FMT='(/,5x,"Program <",a,">  v. ",A5,"  starts ..." )') &
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) '             =                                            ='            
+      WRITE( stdout, * ) '             =     *** WanT *** Wannier Transport Code    ='   
+      WRITE( stdout, * ) '             =        (www.wannier_transport.org)         ='
+      WRITE( stdout, * ) '             =       Norm Conserv. Pseudopot. Impl.       ='
+      WRITE( stdout, * ) '             =                                            ='            
+      WRITE( stdout, * ) ' ======================================================================'
+      WRITE( stdout, * ) ' '
+      WRITE( stdout, * ) ' '
+      WRITE(stdout, FMT='(2x,"Program <",a,">  v. ",A5,"  starts ..." )') &
                    TRIM(main_name),version(5:9) 
-      WRITE(stdout, FMT='(5x,"< WanT *** Wannier Transport Code >")')
-!      WRITE(stdout, FMT='(5x,"< Norn Conserv. Pseudopot. impl. >")')
-      WRITE(stdout, FMT='(/5x,"Today is ",A9," at ",A9,2/ )') cdate, ctime
+      WRITE(stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
 
 
    END SUBROUTINE startup
