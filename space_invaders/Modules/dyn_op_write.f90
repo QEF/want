@@ -93,9 +93,6 @@ CONTAINS
    REAL(dbl),INTENT(in)             :: E(Nomega), Vct(3,Nv)
    COMPLEX(dbl),INTENT(in)          :: Opr(dim,dim,Nv,Nisp,Nomega)
 
-   INTEGER                          :: Nv_fmt, dim_fmt,&
-                                       Nisp_fmt, Nomega_fmt 
-
    INTEGER                          :: ianalit, iform, ibasis 
 
    REAL(sgl), ALLOCATABLE           :: E_fmt(:), Vct_fmt(:,:)
@@ -162,10 +159,6 @@ CONTAINS
    E_fmt(:)            = E(:)
    Vct_fmt(:,:)        = Vct(:,:)
    Opr_fmt(:,:,:,:,:)  = Opr(:,:,:,:,:)
-   Nv_fmt              = Nv       
-   dim_fmt             = dim       
-   Nisp_fmt            = Nisp
-   Nomega_fmt          = Nomega
 
 
 !
@@ -174,21 +167,21 @@ CONTAINS
    OPEN(unit=out,file=name,form='unformatted',status='unknown',IOSTAT=ios)
       IF (ios /= 0) CALL errore('write_dyn_op','Unexpected error opening '//name,ios)
 
-      WRITE(out) Nv_fmt,dim_fmt,Nisp_fmt,Nomega_fmt
+      WRITE(out) Nv,dim,Nisp,Nomega
       WRITE(out) index_band
       WRITE(out) ianalit
       WRITE(out) iform
       WRITE(out) ibasis
 
-      WRITE(out) Nomega_fmt
+      WRITE(out) Nomega
       WRITE(out) (E_fmt(i),i=1,Nomega)
 
-      WRITE(out) Nv_fmt
+      WRITE(out) Nv
       DO k=1,Nv
           WRITE(out) (Vct_fmt(i,k) , i=1,3)
       END DO
    
-      WRITE(out) Nv_fmt,dim_fmt,Nisp_fmt,Nomega_fmt
+      WRITE(out) Nv,dim,Nisp,Nomega
 
       IF ( TRIM(form) == 'diagonal' ) THEN
 
