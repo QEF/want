@@ -16,6 +16,8 @@
 
 ! This module contains the definition of CLOCK type and CLOCK_LIST type;
 ! handles the timing all over the code
+!
+! The low-level timing routine is from ESPRESSO package (cptimer.c)
 ! 
 ! routines in this module:
 ! SUBROUTINE  timing(name[,opr])
@@ -30,7 +32,7 @@
 ! </INFO>
 !
 
-   INTEGER, PARAMETER             :: i4b = SELECTED_INT_KIND( 9 )  ! dbl integer 
+   INTEGER, PARAMETER             :: dbl = SELECTED_REAL_KIND(14,300)  ! dbl real
  
    INTEGER, PARAMETER             :: nclockx = 500
    INTEGER, PARAMETER             :: str_len = 200
@@ -38,10 +40,9 @@
    TYPE clock
       CHARACTER(str_len)          :: name              ! clock name
       INTEGER                     :: call_number       ! number of runs for this clock
-      INTEGER(i4b)                :: start             ! last start
-      INTEGER(i4b)                :: stop              ! last stop 
-      INTEGER(i4b)                :: rate              ! rate
-      REAL                        :: total_time        ! total time up to now
+      REAL(dbl)                   :: start             ! last start
+      REAL(dbl)                   :: stop              ! last stop 
+      REAL(dbl)                   :: total_time        ! total time up to now
       LOGICAL                     :: running           ! true if clock is counting
       LOGICAL                     :: alloc = .FALSE.
    END TYPE clock
@@ -57,6 +58,8 @@
    TYPE(clock_list), SAVE         :: internal_list     ! internal use clock
    TYPE(clock_list), SAVE         :: global_list       ! internal use clock
      
+   REAL(dbl)  :: cclock 
+   EXTERNAL   :: cclock
 
 !
 ! end of declarations
@@ -228,9 +231,8 @@ CONTAINS
       nclock = nclock + 1
       obj%name=TRIM(name)
       obj%call_number=0
-      obj%start=0
-      obj%stop=0
-      obj%rate=0
+      obj%start=0.0
+      obj%stop=0.0
       obj%total_time=0.0
       obj%running=.FALSE.
       obj%alloc=.TRUE.
@@ -250,7 +252,6 @@ CONTAINS
       obj1%call_number = obj2%call_number
       obj1%start = obj2%start
       obj1%stop = obj2%stop
-      obj1%rate = obj2%rate
       obj1%total_time = obj2%total_time
       obj1%running = obj2%running
       obj1%alloc = .TRUE.
@@ -299,7 +300,7 @@ CONTAINS
 
       IF ( .NOT. obj%alloc  ) CALL errore('clock_start','clock not yet allocated',1)
       
-      CALL SYSTEM_CLOCK( COUNT=obj%start, COUNT_RATE=obj%rate )
+      obj%start = cclock()
       obj%running = .TRUE.
       obj%call_number = obj%call_number + 1
       
@@ -311,14 +312,12 @@ CONTAINS
    !**********************************************************
       IMPLICIT NONE
       TYPE(clock),           INTENT(inout) :: obj    
-      INTEGER                              :: rate
 
       IF ( .NOT. obj%alloc  )   CALL errore('clock_stop','Clock NOT allocated',1)
       IF ( .NOT. obj%running  ) CALL errore('clock_stop','Clock NOT running',1)
       
-      CALL SYSTEM_CLOCK( COUNT=obj%stop, COUNT_RATE=rate )
-      IF ( rate /= obj%rate )  CALL errore('clock_stop','Invalid rate',1)
-      obj%total_time = obj%total_time + REAL( obj%stop - obj%start ) / REAL( obj%rate )
+      obj%stop = cclock()
+      obj%total_time = obj%total_time + obj%stop - obj%start
       obj%running = .FALSE.
       
    END SUBROUTINE clock_stop
