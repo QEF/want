@@ -202,7 +202,7 @@ fi
 #
 if [ "$CLEAN" = ".TRUE." ] ; then  
    cd $TEST_HOME
-      test -e *.out && rm *.out
+      rm -rf *.out
       test -e SCRATCH && rm SCRATCH
    cd $TMPDIR
       test -e $TEST_NAME/HOME && rm $TEST_NAME/HOME
