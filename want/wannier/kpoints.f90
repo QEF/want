@@ -14,6 +14,7 @@
    MODULE kpoints_module
 !*********************************************
    USE kinds, ONLY: dbl
+   USE constants, ONLY : ONE
    USE parameters, ONLY : npkx => npk
 
    IMPLICIT NONE
@@ -95,7 +96,7 @@ CONTAINS
       !
       ! kpt data
       !
-      IF ( nkpts <= 0) CALL errore(subname,'Invalid NKPTS',1)
+      IF ( nkpts <= 0) CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
       ALLOCATE( vkpt(3,nkpts),STAT=ierr )
          IF (ierr/=0) CALL errore(subname,'allocating vkpt',3*nkpts)
       ALLOCATE( wtkpt(nkpts),STAT=ierr )
@@ -104,7 +105,8 @@ CONTAINS
       !
       ! b vectors
       !
-      IF ( mxdnn <= 0 .OR. mxdnnh <= 0) CALL errore(subname,'Invalid MXDNN or MXDNNH',1)
+      IF ( mxdnn <= 0 ) CALL errore(subname,'Invalid MXDNN',ABS(mxdnn)+1)
+      IF ( mxdnnh <= 0) CALL errore(subname,'Invalid MXDNNH ',ABS(mxdnnh)+1)
 
       ALLOCATE( nntot(nkpts), STAT=ierr )
          IF (ierr /=0 ) CALL errore(subname,'allocating nntot',nkpts)
@@ -124,13 +126,15 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname, ' allocating dnn ', mxdnn )
       ALLOCATE( bka(3,mxdnnh), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating bka ', 3*mxdnnh )
-   
+
    END SUBROUTINE kpoints_allocate
 
 
 !**********************************************************
    SUBROUTINE kpoints_init( nkpts_ )
    !**********************************************************
+   USE lattice, ONLY : recc
+   USE input_wannier,  ONLY : nshells, nwhich
     IMPLICIT NONE
     INTEGER :: nkpts_
     INTEGER :: i1, i2, i3, nkp
@@ -153,8 +157,12 @@ CONTAINS
 
       IF( nkp /= nkpts ) &
         CALL errore( ' kpoints_init ', ' nkp and nkpts differs ', nkpts )
-      wtkpt( 1 : nkpts ) = 1.0d0/DBLE( nkpts )
+      wtkpt( 1 : nkpts ) = ONE/DBLE( nkpts )
       wtktot = SUM( wtkpt( 1 : nkpts ) )
+
+      ! ... Setup the shells of b-vectors around each K-point
+      ! 
+      CALL bshells(recc, nshells, nwhich)
 
     RETURN
    END SUBROUTINE

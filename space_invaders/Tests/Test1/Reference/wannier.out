@@ -5,18 +5,18 @@
               =       Norm Conserv. Pseudopot. Impl.       =
               =                                            =
   ======================================================================
-  
-  
-  Program <wannier>  v. 1.1.0  starts ...
-  Date 11Nov2004 at 19:45:36 
+
+
+  Program <wannier>  v. 1.1.1  starts ...
+  Date 23Nov2004 at 18:20:34 
 
   ======================================================================
   =                         Lattice parameters                         =
   ======================================================================
-   
+
   Alat =  10.5995 (Bohr)
   Alat =   5.6090 (Ang )
-   
+
   Crystal axes:
                 in units of Bohr                 in lattice units
     a(1) = ( -5.2997  0.0000  5.2997 )     (  -0.5000  0.0000  0.5000 )
@@ -26,21 +26,18 @@
     a(1) = ( -2.8045  0.0000  2.8045 )
     a(2) = (  0.0000  2.8045  2.8045 )
     a(3) = ( -2.8045  2.8045  0.0000 )
-  
+
    Reciprocal lattice vectors:
                 in units of Bohr^-1              in lattice units
     b(1) = ( -0.5928 -0.5928  0.5928 )     (  -1.0000 -1.0000  1.0000 )
     b(2) = (  0.5928  0.5928  0.5928 )     (   1.0000  1.0000  1.0000 )
     b(3) = ( -0.5928  0.5928 -0.5928 )     (  -1.0000  1.0000 -1.0000 )
-  
-  Atomic positions: (cart. coord.)
-    Si  tau(   1 ) = (  0.0000  0.0000  0.0000 )
-    Si  tau(   2 ) = ( -1.4022  1.4022  1.4022 )
-  
+
+
   ======================================================================
   =                      B-shell calculations                          =
   ======================================================================
-  
+
   K-point calculation: (cartesian coordinates in Ang^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.0156
     k point   2:   (  -0.28005  0.28005 -0.28005 ),   weight =   0.0156
@@ -106,7 +103,7 @@
     k point  62:   (  -0.28005  0.28005  1.40025 ),   weight =   0.0156
     k point  63:   (  -0.56010  0.56010  1.12020 ),   weight =   0.0156
     k point  64:   (  -0.84015  0.84015  0.84015 ),   weight =   0.0156
-  
+
   Nearest-neighbour shells for k-point 1: (in Ang^-1)
     shell (  1 )    radius =   0.48506
     shell (  2 )    radius =   0.56010
@@ -120,16 +117,16 @@
     shell ( 10 )    radius =   1.45518
     shell ( 11 )    radius =   1.58420
     shell ( 12 )    radius =   1.65679
-  
+ 
   Number of nearest-neighbours for K-point 1 (representetive for the BZ):
     shell (  1 )    neighbours  =   8
-  
+
   Check shell dimensionality and weights:
     shell (  1 )    dimensionality  =   3
     w_b weight is 1/b^2 times  0.3750
-  
+
   Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)
-  
+
   List of the  8 vectors b_k: (Ang^-1) 
     b_k   1:   (  -0.28005  0.28005 -0.28005 ),   weight =   1.5938
     b_k   2:   (   0.28005 -0.28005  0.28005 ),   weight =   1.5938
@@ -139,13 +136,16 @@
     b_k   6:   (  -0.28005  0.28005  0.28005 ),   weight =   1.5938
     b_k   7:   (   0.28005  0.28005 -0.28005 ),   weight =   1.5938
     b_k   8:   (   0.28005 -0.28005 -0.28005 ),   weight =   1.5938
-  
+
   The  4  bk directions are:
     dir 1:   (  -0.28005  0.28005 -0.28005 ) 
     dir 2:   (   0.28005  0.28005  0.28005 ) 
     dir 3:   (  -0.28005 -0.28005  0.28005 ) 
     dir 4:   (  -0.28005  0.28005  0.28005 ) 
   
+  Atomic positions: (cart. coord.)
+    Si  tau(   1 ) = (  0.0000  0.0000  0.0000 )
+    Si  tau(   2 ) = ( -1.4022  1.4022  1.4022 )
   Gaussian centers: (cart. coord. in Ang)
     Center =   1 Type = 1 Gaussian  = ( -0.701125  0.701125  0.701125 ) 
     Center =   2 Type = 1 Gaussian  = (  0.000000 -0.701125  0.000000 ) 
@@ -1396,13 +1396,13 @@
    <global routines>
              clock number :     7
 
-                  wannier :  3m56.13s CPU 
+                  wannier :  5m37.97s CPU 
  
-                     init :     0.12s CPU
-                    trasf :    40.21s CPU
-                  bshells :     0.28s CPU
-             overlap_base :     7.22s CPU
-               iterations :   189.38s CPU
-                    write :     6.42s CPU
+                     init :     1.10s CPU
+                  bshells :     0.77s CPU
+                    trasf :    91.92s CPU
+             overlap_base :    19.48s CPU
+               iterations :   236.80s CPU
+                    write :     8.14s CPU
 
 

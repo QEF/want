@@ -19,7 +19,10 @@
         
         REAL(dbl), PARAMETER ::    ZERO = 0.0_dbl
         REAL(dbl), PARAMETER ::     ONE = 1.0_dbl
+        REAL(dbl), PARAMETER ::     TWO = 2.0_dbl
+        REAL(dbl), PARAMETER ::   THREE = 3.0_dbl
         COMPLEX(dbl), PARAMETER:: CZERO = (0.0_dbl, 0.0_dbl)
+        COMPLEX(dbl), PARAMETER::  CONE = (1.0_dbl, 0.0_dbl)
         COMPLEX(dbl), PARAMETER::    CI = (0.0_dbl, 1.0_dbl)
 
         REAL(dbl), PARAMETER ::      PI = 3.14159265358979323846_dbl

@@ -5,7 +5,7 @@
    froz_min = -30.0
    froz_max = -20.0
    dimwann = 4                         ! dimwann
-   maxiter = 730                       ! niter --> disentangle
+   maxiter = 500                       ! niter --> disentangle
    alpha = 0.5                         ! alpha0 -->  disentangle
    niter0 = 200, alphafix0 =  0.5      ! niter0, alphafix0 --> wannier
    niter = 1500,   alphafix = 0.5

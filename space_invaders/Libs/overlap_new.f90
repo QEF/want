@@ -15,6 +15,7 @@
 !=----------------------------------------------------------------------------------=
  
       USE kinds
+      USE constants, ONLY : CZERO
       USE timing_module, ONLY : timing 
       USE io_module, ONLY : stdout
       USE util, ONLY: gv_indexes
@@ -36,9 +37,6 @@
 
       ! ... Local Variables
  
-      COMPLEX(dbl) :: czero
-      PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
-
       INTEGER :: nnx, ndnn, nnsh
       INTEGER :: l, m, n, i, j ,nx, ny, nz, igk, ipw1, ipw2
       INTEGER :: nkp, npoint

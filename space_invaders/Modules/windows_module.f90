@@ -28,13 +28,14 @@
 ! declarations of common variables
 !   
 
-   INTEGER                     :: mxdbnd             ! = MAX(dimwin (:)) over kpts
+   INTEGER                     :: mxdbnd             ! number of DFT bands
+   INTEGER                     :: dimwinx            ! MAX (dimwin(:)) over kpts
    !
    ! ... starting states within the energy window
    INTEGER,      ALLOCATABLE   :: dimwin(:)          ! define which eigenv are in the
    INTEGER,      ALLOCATABLE   :: imin(:)            ! chosen energy window
    INTEGER,      ALLOCATABLE   :: imax(:)            ! dim: nkpts
-   REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: mxdbnd, nkpts
+   REAL(dbl),    ALLOCATABLE   :: eiw(:,:)           ! DFT eigenv; dim: mxdbnd, nkpts
    LOGICAL                     :: lcompspace=.TRUE.  ! whether COMPLEMENT space is NOT null
 
    !
@@ -49,8 +50,8 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, mxdbnd
-   PUBLIC :: dimwin, imin, imax, eig, lcompspace
+   PUBLIC :: nkpts, mxdbnd, dimwinx
+   PUBLIC :: dimwin, imin, imax, eiw, lcompspace
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
 
    PUBLIC :: windows_allocate
@@ -78,15 +79,15 @@ CONTAINS
            IF ( ierr/=0 ) CALL errore(subname,' allocating imin ',nkpts)      
        ALLOCATE( imax(nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating imax ',nkpts)      
-       ALLOCATE( eig(mxdbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating eig ',mxdbnd*nkpts)      
+       ALLOCATE( eiw(mxdbnd,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating eiw ',mxdbnd*nkpts)
 
        ALLOCATE( dimfroz(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',nkpts)      
+           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',nkpts) 
        ALLOCATE( indxfroz(mxdbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',nkpts)      
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',nkpts)
        ALLOCATE( indxnfroz(mxdbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',nkpts)      
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',nkpts)
        ALLOCATE( frozen(mxdbnd,nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',mxdbnd*nkpts)      
 
@@ -112,9 +113,9 @@ CONTAINS
             DEALLOCATE(imax, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating imax ',ABS(ierr))
        ENDIF
-       IF ( ALLOCATED(eig) ) THEN
-            DEALLOCATE(eig, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating eig ',ABS(ierr))
+       IF ( ALLOCATED(eiw) ) THEN
+            DEALLOCATE(eiw, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating eiw ',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(dimfroz) ) THEN
             DEALLOCATE(dimfroz, STAT=ierr)

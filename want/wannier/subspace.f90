@@ -34,7 +34,7 @@
 
    !
    ! ... the hamiltonian in the final subspace
-   REAL(dbl),    ALLOCATABLE   :: s_eig(:,:)         ! the eigenvalues in the new subspace
+   REAL(dbl),    ALLOCATABLE   :: wan_eig(:,:)       ! the eigenvalues in the new subspace
    COMPLEX(dbl), ALLOCATABLE   :: ham(:,:,:)         ! the hamiltonian in the subspace
                                                      ! mxdbnd, mxdbnd, nkpts
    !
@@ -58,7 +58,7 @@
 !
 
    PUBLIC :: nkpts, mxdbnd     
-   PUBLIC :: ham, s_eig
+   PUBLIC :: ham, wan_eig
    PUBLIC :: lamp, camp, eamp, eamp_save 
    PUBLIC :: mtrx_in, mtrx_out
 
@@ -83,8 +83,8 @@ CONTAINS
        IF ( mxdbnd <= 0 .OR. nkpts <= 0 ) &
            CALL errore(subname,' Invalid MXDBND or NKPTS ',1)
 
-       ALLOCATE( s_eig(mxdbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating s_eig ',mxdbnd*nkpts)
+       ALLOCATE( wan_eig(mxdbnd,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating wan_eig ',mxdbnd*nkpts)
        ALLOCATE( ham(mxdbnd,mxdbnd,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(subname, ' allocating ham ', mxdbnd*mxdbnd*nkpts )
 
@@ -112,9 +112,9 @@ CONTAINS
        CHARACTER(19)      :: subname="subspace_deallocate"
        INTEGER            :: ierr 
       
-       IF ( ALLOCATED(s_eig) ) THEN 
-            DEALLOCATE(s_eig, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating s_eig ',ABS(ierr))
+       IF ( ALLOCATED(wan_eig) ) THEN 
+            DEALLOCATE(wan_eig, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating wan_eig ',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(ham) ) THEN 
             DEALLOCATE(ham, STAT=ierr)
@@ -161,7 +161,7 @@ CONTAINS
        CALL iotk_write_attr(attr,"nkpts",nkpts) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
-       CALL iotk_write_dat(unit,"EIGENVALUES",s_eig)
+       CALL iotk_write_dat(unit,"EIGENVALUES",wan_eig)
        CALL iotk_write_dat(unit,"HAMILTONIAN",ham)
        CALL iotk_write_dat(unit,"LAMP",lamp)
        CALL iotk_write_dat(unit,"CAMP",camp)
@@ -193,7 +193,7 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
 
        CALL subspace_allocate()
-       CALL iotk_scan_dat(unit,'EIGENVALUES',s_eig,IERR=ierr)
+       CALL iotk_scan_dat(unit,'EIGENVALUES',wan_eig,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find EIGENVALUES',ABS(ierr))
        CALL iotk_scan_dat(unit,'HAMILTONIAN',ham,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find HAMILTONIAN',ABS(ierr))

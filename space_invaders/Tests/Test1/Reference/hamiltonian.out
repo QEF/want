@@ -5,11 +5,12 @@
               =       Norm Conserv. Pseudopot. Impl.       =
               =                                            =
   ======================================================================
-  
-  
-  Program <hamiltonian>  v. 1.1.0  starts ...
-  Date 12Nov2004 at 17:21:22 
 
+
+  Program <hamiltonian>  v. 1.1.1  starts ...
+  Date 23Nov2004 at 18:26:12 
+
+ 
   K-points generation in Wigner-size: SUCCESS
 
   Generating kpts:   6      Segments:   5
@@ -531,7 +532,7 @@
    <global routines>
              clock number :     1
 
-              hamiltonian :     1.55s CPU 
+              hamiltonian :     1.44s CPU 
  
 
 

@@ -5,18 +5,18 @@
               =       Norm Conserv. Pseudopot. Impl.       =
               =                                            =
   ======================================================================
-  
-  
-  Program <wannier>  v. 1.1.0  starts ...
-  Date 15Nov2004 at 11:24:55 
+
+
+  Program <wannier>  v. 1.1.1  starts ...
+  Date 23Nov2004 at 18:16: 6 
 
   ======================================================================
   =                         Lattice parameters                         =
   ======================================================================
-   
+
   Alat =  20.0000 (Bohr)
   Alat =  10.5835 (Ang )
-   
+
   Crystal axes:
                 in units of Bohr                 in lattice units
     a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
@@ -26,26 +26,24 @@
     a(1) = ( 10.5835  0.0000  0.0000 )
     a(2) = (  0.0000 10.5835  0.0000 )
     a(3) = (  0.0000  0.0000  2.5000 )
-  
+
    Reciprocal lattice vectors:
                 in units of Bohr^-1              in lattice units
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
-  
-  Atomic positions: (cart. coord.)
-    Au  tau(   1 ) = (  0.0000  0.0000  0.5000 )
-  
+
+
   ======================================================================
   =                      B-shell calculations                          =
   ======================================================================
-  
+
   K-point calculation: (cartesian coordinates in Ang^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
     k point   2:   (   0.00000  0.00000  0.62832 ),   weight =   0.2500
     k point   3:   (   0.00000  0.00000  1.25664 ),   weight =   0.2500
     k point   4:   (   0.00000  0.00000  1.88495 ),   weight =   0.2500
-  
+
   Nearest-neighbour shells for k-point 1: (in Ang^-1)
     shell (  1 )    radius =   0.59368
     shell (  2 )    radius =   0.62832
@@ -59,28 +57,28 @@
     shell ( 10 )    radius =   1.38981
     shell ( 11 )    radius =   1.46868
     shell ( 12 )    radius =   1.51130
-  
+ 
   Number of nearest-neighbours for K-point 1 (representetive for the BZ):
     shell (  1 )    neighbours  =   4
     shell (  2 )    neighbours  =   2
-  
+
   Check shell dimensionality and weights:
     shell (  1 )    dimensionality  =   2
     w_b weight is 1/b^2 times  0.5000
-  
-  
+
+
   Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
   otherwise code will stop! 
-  
+
   Check shell dimensionality and weights:
     shell (  2 )    dimensionality  =   1
     w_b weight is 1/b^2 times  0.5000
-  
-  
+
+
   Warning: weights must be as defined in Ref: PRB 56 12847 (1997)
   otherwise code will stop! 
   Completeness relation is fully satisfied! (see Appendix B, PRB 56 12847 (1997)
-  
+
   List of the  6 vectors b_k: (Ang^-1) 
     b_k   1:   (  -0.59368  0.00000  0.00000 ),   weight =   1.4186
     b_k   2:   (   0.00000 -0.59368  0.00000 ),   weight =   1.4186
@@ -88,12 +86,14 @@
     b_k   4:   (   0.59368  0.00000  0.00000 ),   weight =   1.4186
     b_k   5:   (   0.00000  0.00000  0.62832 ),   weight =   1.2665
     b_k   6:   (   0.00000  0.00000 -0.62832 ),   weight =   1.2665
-  
+
   The  3  bk directions are:
     dir 1:   (  -0.59368  0.00000  0.00000 ) 
     dir 2:   (   0.00000 -0.59368  0.00000 ) 
     dir 3:   (   0.00000  0.00000  0.62832 ) 
   
+  Atomic positions: (cart. coord.)
+    Au  tau(   1 ) = (  0.0000  0.0000  0.5000 )
   Gaussian centers: (cart. coord. in Ang)
     Center =   1 Type = 1 Gaussian  = (  0.000000  0.000000  0.500000 ) 
     Center =   2 Type = 1 Gaussian  = (  0.000000  0.000000  0.500000 ) 
@@ -383,10 +383,10 @@
     Omega Tot =       6.135238869
    
   Omega variation:
-    Delta Omega 1   =  -0.84870411E-06
+    Delta Omega 1   =  -0.84870410E-06
     Delta Omega 2   =   0.30933917E-06
     Delta Omega 3   =  -0.30933991E-06
-    Delta Omega Tot =  -0.84870485E-06
+    Delta Omega Tot =  -0.84870484E-06
    
   Derivative =   0.0000E+00 -0.8521E-06
    
@@ -395,13 +395,13 @@
    <global routines>
              clock number :     7
 
-                  wannier :     3.71s CPU 
+                  wannier :     8.90s CPU 
  
-                     init :     0.03s CPU
-                    trasf :     1.53s CPU
-                  bshells :     0.04s CPU
-             overlap_base :     0.74s CPU
-               iterations :     0.71s CPU
-                    write :     1.45s CPU
+                     init :     0.08s CPU
+                  bshells :     0.01s CPU
+                    trasf :     2.72s CPU
+             overlap_base :     1.27s CPU
+               iterations :     1.53s CPU
+                    write :     4.58s CPU
 
 

@@ -8,10 +8,11 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       SUBROUTINE zmatrix( kpt, nnlist, nshells, nnshell, wb, lamp, kcm, mtrx,   &
+       SUBROUTINE zmatrix( kpt, nnlist, nshells, nwhich, nnshell, wb, lamp, kcm, mtrx,   &
                   dimwann, dimwin, dimfroz, indxnfroz, mxdbnd, mxdnrk, mxdnn )
 !=----------------------------------------------------------------------------------=
        USE kinds
+       USE constants, ONLY : CZERO
  
        IMPLICIT NONE
 
@@ -20,7 +21,8 @@
        INTEGER :: mxdnn
        INTEGER :: kpt
        INTEGER :: nnlist(mxdnrk,mxdnn)
-       INTEGER :: nshells, nnshell(mxdnrk,mxdnn)
+       INTEGER :: nshells, nwhich(nshells)
+       INTEGER :: nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)
        INTEGER :: dimfroz(mxdnrk), indxnfroz(mxdbnd,mxdnrk)
        REAL(dbl) :: wb(mxdnrk,mxdnn)
@@ -30,45 +32,47 @@
        COMPLEX(dbl) :: mtrx(mxdbnd,mxdbnd)
  
        INTEGER :: m, n, l, j
-       INTEGER :: nnx, ndnn, nnsh, k_pls_b
+       INTEGER :: nnx, ndnc, ndnn, nnsh, k_pls_b
        COMPLEX(dbl) :: dot_bloch1, dot_bloch2
-       COMPLEX(dbl) :: czero 
-       PARAMETER( czero = ( 0.0d0, 0.0d0 ) )
 
 ! ...  Loop over independent matrix entries
  
        DO m = 1, dimwin(kpt) - dimfroz(kpt)
          DO n = 1, m
            mtrx(m,n) = czero
-           do l = 1, dimwann
+           DO l = 1, dimwann
  
 ! ...        LOOP OVER B-VECTORS
  
              nnx = 0
-             DO ndnn = 1, nshells
-               DO nnsh = 1, nnshell(kpt,ndnn)
-                 nnx = nnx + 1
-                 k_pls_b = nnlist(kpt,nnx)
+             DO ndnc = 1, nshells
+                 ndnn = nwhich(ndnc)
+                 DO nnsh = 1, nnshell(kpt,ndnn)
+                     nnx = nnx + 1
+                     k_pls_b = nnlist(kpt,nnx)
 
-! ...            CALCULATE THE DOTPRODUCTS
+! ...                CALCULATE THE DOTPRODUCTS
  
-                 dot_bloch1 = czero
-                 dot_bloch2 = czero
-                 DO j = 1, dimwin(k_pls_b)
-                   dot_bloch1 = dot_bloch1 + lamp(j,l,k_pls_b) * kcm( indxnfroz(m,kpt), j, nnx )
-                   dot_bloch2 = dot_bloch2 + CONJG( lamp( j, l, k_pls_b ) * kcm( indxnfroz(n,kpt), j, nnx ) )
-                 END DO
+                     dot_bloch1 = czero
+                     dot_bloch2 = czero
+                     DO j = 1, dimwin(k_pls_b)
+                        dot_bloch1 = dot_bloch1 + lamp(j,l,k_pls_b) * &
+                                                  kcm( indxnfroz(m,kpt), j, nnx )
+                        dot_bloch2 = dot_bloch2 + CONJG( lamp( j, l, k_pls_b ) * &
+                                                  kcm( indxnfroz(n,kpt), j, nnx ) )
+                      ENDDO
  
-! ...            Add contribution to mtrx(m,n)            
+! ...                 Add contribution to mtrx(m,n)            
  
-                 mtrx(m,n) = mtrx(m,n) + wb(kpt,nnx) * dot_bloch1 * dot_bloch2
+                      mtrx(m,n) = mtrx(m,n) + wb(kpt,nnx) * dot_bloch1 * dot_bloch2
  
-               END DO ! NNSH
-             END DO ! NDNN
-           END DO ! L
+                 ENDDO ! NNSH
+             ENDDO ! NDNN
+
+           ENDDO ! L
            mtrx(n,m) = CONJG( mtrx(m,n) )   ! hermiticity
-         END DO ! N
-       END DO ! M
+         ENDDO ! N
+       ENDDO ! M
  
        RETURN
        END

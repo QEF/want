@@ -1,6 +1,6 @@
 
      Program PWSCF     v.2.0.4  starts ...
-     Today is  5Nov2004 at 17:46:15 
+     Today is 23Nov2004 at 14:32:36 
 
      Ultrasoft (Vanderbilt) Pseudopotentials
 
@@ -72,7 +72,7 @@
      Initial potential from superposition of free atoms
      Starting wfc are atomic
 
-     total cpu time spent up to now is     11.45 secs
+     total cpu time spent up to now is     23.48 secs
 
      iteration #  1     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -81,7 +81,7 @@
      total energy              =   -87.18274236 ryd
      estimated scf accuracy    <     0.63090687 ryd
 
-     total cpu time spent up to now is     29.96 secs
+     total cpu time spent up to now is     62.01 secs
 
      iteration #  2     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -90,7 +90,7 @@
      total energy              =   -87.28246587 ryd
      estimated scf accuracy    <     0.21387154 ryd
 
-     total cpu time spent up to now is     44.81 secs
+     total cpu time spent up to now is     92.86 secs
 
      iteration #  3     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -99,7 +99,7 @@
      total energy              =   -87.32787755 ryd
      estimated scf accuracy    <     0.01628961 ryd
 
-     total cpu time spent up to now is     63.81 secs
+     total cpu time spent up to now is    134.73 secs
 
      iteration #  4     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -108,7 +108,7 @@
      total energy              =   -87.32059927 ryd
      estimated scf accuracy    <     0.03048587 ryd
 
-     total cpu time spent up to now is     83.92 secs
+     total cpu time spent up to now is    176.92 secs
 
      iteration #  5     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -117,7 +117,7 @@
      total energy              =   -87.33076247 ryd
      estimated scf accuracy    <     0.00044199 ryd
 
-     total cpu time spent up to now is    102.59 secs
+     total cpu time spent up to now is    215.64 secs
 
      iteration #  6     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -126,7 +126,7 @@
      total energy              =   -87.33096073 ryd
      estimated scf accuracy    <     0.00000452 ryd
 
-     total cpu time spent up to now is    120.66 secs
+     total cpu time spent up to now is    253.07 secs
 
      iteration #  7     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -135,7 +135,7 @@
      total energy              =   -87.33095946 ryd
      estimated scf accuracy    <     0.00001107 ryd
 
-     total cpu time spent up to now is    142.19 secs
+     total cpu time spent up to now is    298.67 secs
 
      iteration #  8     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -144,7 +144,7 @@
      total energy              =   -87.33096321 ryd
      estimated scf accuracy    <     0.00000008 ryd
 
-     total cpu time spent up to now is    160.41 secs
+     total cpu time spent up to now is    338.62 secs
 
      iteration #  9     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -153,7 +153,7 @@
      total energy              =   -87.33096324 ryd
      estimated scf accuracy    <     0.00000003 ryd
 
-     total cpu time spent up to now is    179.95 secs
+     total cpu time spent up to now is    382.17 secs
 
      iteration # 10     ecut=    20.00 ryd     beta=0.30
      Davidson diagonalization (with overlap)
@@ -194,42 +194,42 @@
 
      Writing file chain8.pun    for program phonon
  
-     PWSCF        :  3m18.74s CPU time
+     PWSCF        :  7m 4.54s CPU time
 
-     init_run     :    11.13s CPU
-     electrons    :   185.72s CPU
-     forces       :     1.44s CPU
+     init_run     :    23.28s CPU
+     electrons    :   397.82s CPU
+     forces       :     3.00s CPU
  
-     electrons    :   185.72s CPU
-     c_bands      :   121.78s CPU (      10 calls,  12.178 s avg)
-     sum_band     :    18.47s CPU (      10 calls,   1.847 s avg)
-     v_of_rho     :    37.98s CPU (      21 calls,   1.809 s avg)
-     mix_rho      :     8.39s CPU (      10 calls,   0.839 s avg)
+     electrons    :   397.82s CPU
+     c_bands      :   262.74s CPU (      10 calls,  26.274 s avg)
+     sum_band     :    40.60s CPU (      10 calls,   4.060 s avg)
+     v_of_rho     :    80.43s CPU (      21 calls,   3.830 s avg)
+     mix_rho      :    16.45s CPU (      10 calls,   1.645 s avg)
  
-     c_bands      :   121.78s CPU (      10 calls,  12.178 s avg)
-     init_us_2    :     0.43s CPU (      21 calls,   0.020 s avg)
-     cegterg      :   121.50s CPU (      10 calls,  12.150 s avg)
+     c_bands      :   262.74s CPU (      10 calls,  26.274 s avg)
+     init_us_2    :     1.43s CPU (      21 calls,   0.068 s avg)
+     cegterg      :   261.70s CPU (      10 calls,  26.170 s avg)
  
-     sum_band     :    18.47s CPU (      10 calls,   1.847 s avg)
+     sum_band     :    40.60s CPU (      10 calls,   4.060 s avg)
  
-     wfcrot       :     7.43s CPU
-     cegterg      :   121.50s CPU (      10 calls,  12.150 s avg)
-     h_psi        :    88.57s CPU (      57 calls,   1.554 s avg)
-     g_psi        :     0.36s CPU (      46 calls,   0.008 s avg)
-     overlap      :    14.86s CPU (      46 calls,   0.323 s avg)
-     cdiaghg      :     0.43s CPU (      47 calls,   0.009 s avg)
-     update       :    12.10s CPU (      46 calls,   0.263 s avg)
-     last         :     6.87s CPU (      10 calls,   0.687 s avg)
+     wfcrot       :    15.28s CPU
+     cegterg      :   261.70s CPU (      10 calls,  26.170 s avg)
+     h_psi        :   190.63s CPU (      57 calls,   3.344 s avg)
+     g_psi        :     0.60s CPU (      46 calls,   0.013 s avg)
+     overlap      :    31.74s CPU (      46 calls,   0.690 s avg)
+     cdiaghg      :     0.90s CPU (      47 calls,   0.019 s avg)
+     update       :    26.48s CPU (      46 calls,   0.576 s avg)
+     last         :    14.56s CPU (      10 calls,   1.456 s avg)
  
-     h_psi        :    88.57s CPU (      57 calls,   1.554 s avg)
-     init         :     0.61s CPU (      57 calls,   0.011 s avg)
-     firstfft     :    37.65s CPU (     665 calls,   0.057 s avg)
-     secondfft    :    37.61s CPU (     665 calls,   0.057 s avg)
-     add_vuspsi   :     2.94s CPU (      57 calls,   0.052 s avg)
+     h_psi        :   190.63s CPU (      57 calls,   3.344 s avg)
+     init         :     1.44s CPU (      57 calls,   0.025 s avg)
+     firstfft     :    83.12s CPU (     665 calls,   0.125 s avg)
+     secondfft    :    77.81s CPU (     665 calls,   0.117 s avg)
+     add_vuspsi   :     6.04s CPU (      57 calls,   0.106 s avg)
  
       General routines
-     ccalbec      :     1.94s CPU (      58 calls,   0.034 s avg)
-     cft3         :    24.62s CPU (     252 calls,   0.098 s avg)
-     cft3s        :    80.03s CPU (    1530 calls,   0.052 s avg)
-     davcio       :     0.33s CPU (      11 calls,   0.030 s avg)
+     ccalbec      :     4.01s CPU (      58 calls,   0.069 s avg)
+     cft3         :    49.21s CPU (     252 calls,   0.195 s avg)
+     cft3s        :   170.00s CPU (    1530 calls,   0.111 s avg)
+     davcio       :     0.55s CPU (      11 calls,   0.050 s avg)
  

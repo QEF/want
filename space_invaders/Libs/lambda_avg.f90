@@ -8,7 +8,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=----------------------------------------------------------------------------------=
-       FUNCTION lambda_avg( m, kpt, lamp, kcm, nnlist, nshells,  &
+       FUNCTION lambda_avg( m, kpt, lamp, kcm, nnlist, nshells, nwhich, &
                 nnshell, wb, dimwann, dimwin, mxdbnd, mxdnrk, mxdnn )
 !=----------------------------------------------------------------------------------=
 
@@ -20,14 +20,15 @@
 
        INTEGER :: mxdbnd, mxdnrk, mxdnn
        INTEGER :: m, kpt, nnlist(mxdnrk,mxdnn)
-       INTEGER :: nshells, nnshell(mxdnrk,mxdnn)
+       INTEGER :: nshells, nwhich(nshells)
+       INTEGER :: nnshell(mxdnrk,mxdnn)
        INTEGER :: dimwann, dimwin(mxdnrk)      
        REAL(dbl) :: wb(mxdnrk,mxdnn)
        COMPLEX(dbl) :: lamp(mxdbnd,mxdbnd,mxdnrk)
        COMPLEX(dbl) :: kcm(mxdbnd,mxdbnd,mxdnn)
  
        INTEGER :: n, l, j
-       INTEGER :: nnx, ndnn, nnsh, k_pls_b
+       INTEGER :: nnx, ndnc, ndnn, nnsh, k_pls_b
        COMPLEX(dbl) :: dot_bloch
 
 
@@ -38,26 +39,28 @@
 ! ...    Loop over b-vectors
  
          nnx = 0
-         DO ndnn = 1, nshells
-           DO nnsh = 1, nnshell(kpt,ndnn)
-             nnx = nnx + 1
-             k_pls_b = nnlist(kpt,nnx)
+         DO ndnc = 1, nshells
+             ndnn = nwhich(ndnc)
+             DO nnsh = 1, nnshell(kpt,ndnn)
+                 nnx = nnx + 1
+                 k_pls_b = nnlist(kpt,nnx)
  
-! ...        Calculate the dotproduct
+! ...            Calculate the dotproduct
  
-             dot_bloch = CMPLX( 0.0d0, 0.0d0 )
-
-             DO l = 1, dimwin(kpt)
-               DO j = 1, dimwin(k_pls_b)
-                 dot_bloch = dot_bloch + CONJG( lamp(l,m,kpt) ) * lamp(j,n,k_pls_b) * kcm(l,j,nnx)
-               END DO
-             END DO
+                 dot_bloch = CMPLX( 0.0d0, 0.0d0 )
+  
+                 DO l = 1, dimwin(kpt)
+                     DO j = 1, dimwin(k_pls_b)
+                     dot_bloch = dot_bloch + CONJG( lamp(l,m,kpt) ) * &
+                                             lamp(j,n,k_pls_b) * kcm(l,j,nnx)
+                 ENDDO
+             ENDDO
   
              lambda_avg = lambda_avg + wb(kpt,nnx) * ABS(dot_bloch)**2
-           END DO
-         END DO
+             ENDDO
+         ENDDO
 
-       END DO
+       ENDDO
  
        RETURN
        END FUNCTION
