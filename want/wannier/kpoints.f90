@@ -10,27 +10,53 @@
 !
 !
 
-MODULE kpoints_module
-  !
+!*********************************************
+   MODULE kpoints_module
+!*********************************************
+   USE kinds, ONLY: dbl
+   USE parameters, ONLY : npkx => npk
 
-  USE kinds, ONLY: dbl
-  USE parameters, ONLY : npkx => npk
+   IMPLICIT NONE
+   PRIVATE
+   SAVE
 
-  IMPLICIT NONE
-  PRIVATE
-  SAVE
+! This module handles kpoint data (including the treatment
+! of their nearest neighbors b).
+!
+! routines in this module:
+! SUBROUTINE kpoints_allocate()
+! SUBROUTINE kpoints_deallocate()
+! SUBROUTINE kpoints_init( nkpts )
 
 !
 ! declarations
 !
   LOGICAL :: first = .TRUE.
 
-  INTEGER                :: nk(3)
-  INTEGER                :: nkpts
-  REAL(dbl)              :: s(3)
-  REAL(dbl), ALLOCATABLE :: vkpt(:,:)
-  REAL(dbl), ALLOCATABLE :: wtkpt(:)
-  REAL(dbl)              :: wtktot
+  !
+  ! ... usual kpt data (k vectors)
+  INTEGER                        :: nkpts         ! total kpt number
+  INTEGER                        :: nk(3)         ! component of the MP kgrid
+  REAL(dbl)                      :: s(3)          ! fractional shifts of the MP grid
+  REAL(dbl), ALLOCATABLE         :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts
+  REAL(dbl), ALLOCATABLE         :: wtkpt(:)      ! weight of each kpt for BZ sums 
+  REAL(dbl)                      :: wtktot        ! sum of the weights
+
+  !
+  ! ... Nearest neighbor data (b vectors)
+  INTEGER, PARAMETER             :: mxdnn  = 12    ! maximum number of NN
+  INTEGER, PARAMETER             :: mxdnnh = mxdnn/2 
+
+  INTEGER, ALLOCATABLE           :: nntot(:)      ! DIM: nkpts
+  INTEGER, ALLOCATABLE           :: nnshell(:,:)  ! DIM: nkpts*mxdnn
+  INTEGER, ALLOCATABLE           :: nnlist(:,:)   ! DIM: nkpts*mxdnn
+  INTEGER, ALLOCATABLE           :: nncell(:,:,:) ! DIM: 3*nkpts*mxdnn
+  INTEGER, ALLOCATABLE           :: neigh(:,:)    ! DIM: nkpts*mxdnnh
+  REAL(dbl), ALLOCATABLE         :: bk(:,:,:)     ! DIM: 3*nkpts*mxdnn
+  REAL(dbl), ALLOCATABLE         :: wb(:,:)       ! b-weights, DIM: nkpts*mxdnn
+  REAL(dbl), ALLOCATABLE         :: dnn(:)        ! DIM: mxdnn
+  REAL(dbl), ALLOCATABLE         :: bka(:,:)      ! DIM: 3*mxdnnh
+  REAL(dbl)                      :: wbtot         ! sum of the b-weights
 
 !
 ! end of declaration scope 
@@ -40,7 +66,20 @@ MODULE kpoints_module
   PUBLIC :: vkpt
   PUBLIC :: wtkpt, wtktot
 
+  PUBLIC :: mxdnn, mxdnnh
+  PUBLIC :: nntot
+  PUBLIC :: nnshell
+  PUBLIC :: nnlist
+  PUBLIC :: nncell
+  PUBLIC :: neigh
+  PUBLIC :: bk
+  PUBLIC :: wb
+  PUBLIC :: dnn
+  PUBLIC :: bka
+  PUBLIC :: wbtot
+
   PUBLIC :: kpoints_init
+  PUBLIC :: kpoints_allocate
   PUBLIC :: kpoints_deallocate
 
 
@@ -50,14 +89,42 @@ CONTAINS
    SUBROUTINE kpoints_allocate()
    !**********************************************************
    IMPLICIT NONE
-    INTEGER   :: ierr
+      INTEGER   :: ierr
+      CHARACTER(16)     :: subname="kpoints_allocate"
 
-    IF ( nkpts <= 0) CALL errore('kpoints_allocate','Invalid NKPTS',1)
-    ALLOCATE( vkpt(3,nkpts),STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_allocate','allocating VKPT',ABS(ierr))
-    ALLOCATE( wtkpt(nkpts),STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_allocate','allocating WTKPT',ABS(ierr))
+      !
+      ! kpt data
+      !
+      IF ( nkpts <= 0) CALL errore(subname,'Invalid NKPTS',1)
+      ALLOCATE( vkpt(3,nkpts),STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'allocating vkpt',3*nkpts)
+      ALLOCATE( wtkpt(nkpts),STAT=ierr )
+         IF (ierr/=0) CALL errore(subname,'allocating wtkpt',nkpts)
 
+      !
+      ! b vectors
+      !
+      IF ( mxdnn <= 0 .OR. mxdnnh <= 0) CALL errore(subname,'Invalid MXDNN or MXDNNH',1)
+
+      ALLOCATE( nntot(nkpts), STAT=ierr )
+         IF (ierr /=0 ) CALL errore(subname,'allocating nntot',nkpts)
+      ALLOCATE( nnshell(nkpts,mxdnn), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nnshell ', nkpts*mxdnn )
+      ALLOCATE( nnlist(nkpts,mxdnn), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', nkpts*mxdnn )
+      ALLOCATE( nncell(3,nkpts,mxdnn), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nkpts*mxdnn )
+      ALLOCATE( neigh(nkpts,mxdnnh), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating neigh ', nkpts*mxdnnh )
+      ALLOCATE( bk(3,nkpts,mxdnn), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating bk ', 3*nkpts*mxdnn )
+      ALLOCATE( wb(nkpts,mxdnn), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating wb ', nkpts*mxdnn )
+      ALLOCATE( dnn(mxdnn), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating dnn ', mxdnn )
+      ALLOCATE( bka(3,mxdnnh), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating bka ', 3*mxdnnh )
+   
    END SUBROUTINE kpoints_allocate
 
 
@@ -101,11 +168,48 @@ CONTAINS
 
     IF ( ALLOCATED( vkpt ) ) THEN
        DEALLOCATE( vkpt, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating VKPT',ABS(ierr))
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating vkpt',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( wtkpt ) ) THEN
        DEALLOCATE( wtkpt, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_allocate','deallocating WTKPT',ABS(ierr))
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wtkpt',ABS(ierr))
+    ENDIF
+
+    IF ( ALLOCATED( nntot ) ) THEN
+       DEALLOCATE( nntot, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nntot',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( nnshell ) ) THEN
+       DEALLOCATE( nnshell, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nnshell',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( nnlist ) ) THEN
+       DEALLOCATE( nnlist, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nnlist',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( nncell ) ) THEN
+       DEALLOCATE( nncell, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating nncell',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( neigh ) ) THEN
+       DEALLOCATE( neigh, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating neigh',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( bk ) ) THEN
+       DEALLOCATE( bk, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating bk',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( wb ) ) THEN
+       DEALLOCATE( wb, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wb',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( dnn ) ) THEN
+       DEALLOCATE( dnn, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating dnn',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( bka ) ) THEN
+       DEALLOCATE( bka, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating bka',ABS(ierr))
     ENDIF
 
    END SUBROUTINE kpoints_deallocate

@@ -70,17 +70,11 @@
       CALL timing('bshells',OPR='start')
 
       IF ( nkpts_loc < nkpts ) THEN
-        WRITE( stdout, * ) '  '
-        WRITE( stdout, * ) '  '
-        WRITE( stdout, * ) ' ******************* ERROR MESSAGE ******************'
-        WRITE( stdout, * ) '  '
+        WRITE( stdout, "(2/,a,/)" ) ' ******************* ERROR MESSAGE ******************'
         WRITE( stdout, fmt= " (16x, ' NKPTS_LOC TOO SMALL ' )")
         WRITE( stdout, fmt= " (18x, 'nkpts_loc = ', i3 )" ) nkpts_loc
         WRITE( stdout, fmt= " (18x, 'nkpts = ', i3 )" ) nkpts
-        WRITE( stdout, * ) '  '
-        WRITE( stdout, * ) ' ****************************************************'
-        WRITE( stdout, * ) '  '
-        WRITE( stdout, * ) '  '
+        WRITE( stdout, "(/,a,2/)" ) ' ****************************************************'
         CALL errore(' new_bshell ', ' nkpts_loc too small ', nkpts_loc )
       END IF
 

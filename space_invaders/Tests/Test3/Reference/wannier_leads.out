@@ -8,7 +8,7 @@
   
   
   Program <wannier>  v. -1.1.  starts ...
-  Date  5Nov2004 at 17:58:32 
+  Date 15Nov2004 at 11:45:24 
 
   ======================================================================
   =                         Lattice parameters                         =
@@ -116,23 +116,23 @@
   =                  Starting localization procedure                  =
   =====================================================================
  
-    Center   1 = (   -8.188188,    0.000000,    0.000000 )  Omega =    140.501119
-    Center   2 = (    1.187833,    0.000000,    0.000000 )  Omega =    116.140558
-    Center   3 = (   -3.633274,    0.000000,    0.000000 )  Omega =    151.288383
-    Center   4 = (   -0.626930,    0.000000,    0.000000 )  Omega =    160.828968
-    Center   5 = (    4.140410,    0.000000,    0.000000 )  Omega =     49.825841
-    Center   6 = (    2.603911,    0.000000,    0.000000 )  Omega =    188.984523
-    Center   7 = (   -4.718646,    0.000000,    0.000000 )  Omega =    163.796614
-    Center   8 = (   -9.044562,    0.000000,    0.000000 )  Omega =    141.830621
+    Center   1 = (   -0.214282,    0.000000,    0.000000 )  Omega =    187.391848
+    Center   2 = (    4.173927,    0.000000,    0.000000 )  Omega =    168.093284
+    Center   3 = (   -9.196639,    0.000000,    0.000000 )  Omega =     63.710782
+    Center   4 = (   -0.543564,    0.000000,    0.000000 )  Omega =    194.619968
+    Center   5 = (   -3.993141,    0.000000,    0.000000 )  Omega =    197.946460
+    Center   6 = (   -0.209763,    0.000000,    0.000000 )  Omega =    144.893631
+    Center   7 = (    2.505973,    0.000000,    0.000000 )  Omega =    200.969832
+    Center   8 = (   -2.882988,    0.000000,    0.000000 )  Omega =    199.887430
    
-  ! Center Sum = (  -18.279445,    0.000000,    0.000000 )  Omega =   1113.196625
+  ! Center Sum = (  -10.360477,    0.000000,    0.000000 )  Omega =   1357.513235
    
   Spread Operator decomposition: 
     OmegaI    =       8.108036182
-    OmegaD    =     974.680486815
-    OmegaOD   =     130.408102036
+    OmegaD    =    1210.031498165
+    OmegaOD   =     139.373700480
    
-    Omega Tot =    1113.196625033
+    Omega Tot =    1357.513234827
    
   ======================================================================
   =                     Starting iteration loop                        =
@@ -243,10 +243,10 @@
     Omega Tot =       9.686853945
    
   Omega variation:
-    Delta Omega 1   =  -0.89518632E-06
-    Delta Omega 2   =   0.17842524E-07
-    Delta Omega 3   =  -0.17862433E-07
-    Delta Omega Tot =  -0.89520623E-06
+    Delta Omega 1   =  -0.89518619E-06
+    Delta Omega 2   =   0.17844407E-07
+    Delta Omega 3   =  -0.17864338E-07
+    Delta Omega Tot =  -0.89520612E-06
    
   Derivative =   0.0000E+00 -0.8959E-06
    
@@ -255,13 +255,13 @@
    <global routines>
              clock number :     7
 
-                  wannier :    10.99s CPU 
+                  wannier :    21.13s CPU 
  
-                     init :     0.24s CPU
-                    trasf :     9.08s CPU
-                  bshells :     0.02s CPU
-             overlap_base :     5.30s CPU
-               iterations :     1.12s CPU
-                    write :     0.56s CPU
+                     init :     0.32s CPU
+                    trasf :    11.52s CPU
+                  bshells :     0.04s CPU
+             overlap_base :     6.00s CPU
+               iterations :     0.97s CPU
+                    write :     8.33s CPU
 
 

@@ -24,7 +24,9 @@
        USE converters_module, ONLY : cart2cry
        USE iotk_module
 
-       USE kpoints_module, ONLY: nk, nkpts, s, vkpt, kpoints_init
+       USE kpoints_module, ONLY: nk, nkpts, s, vkpt, kpoints_init, kpoints_deallocate
+       USE kpoints_module, ONLY: mxdnn, mxdnnh, nntot, nnshell, nnlist, nncell, &
+                                 neigh, bk, wb, dnn, bka, wbtot
        USE ions, ONLY: rat, atmass, ntype, natom, nameat
        USE lattice, ONLY: avec, recc, alat, lattice_init
        USE windows_module, ONLY : mxdbnd, dimwin, imin, imax, eig, lcompspace, &
@@ -32,6 +34,8 @@
        USE windows_module, ONLY : windows_allocate, windows_deallocate
        USE subspace_module, ONLY : s_eig, ham, lamp, camp, eamp, eamp_save, mtrx_in, mtrx_out
        USE subspace_module, ONLY : subspace_allocate, subspace_deallocate
+       USE overlap_module, ONLY : cm, ca, overlap_allocate, overlap_deallocate, &
+                                  overlap_read, overlap_write
 
 
        IMPLICIT NONE
@@ -39,27 +43,12 @@
        INTEGER :: npwx
        INTEGER :: mxdgve
 
-       INTEGER, PARAMETER :: mxdnn = 12
-       INTEGER, PARAMETER :: mxdnnh = mxdnn/2
-
        INTEGER, ALLOCATABLE :: igv(:,:)
        INTEGER, ALLOCATABLE :: igsort(:,:)
        INTEGER, ALLOCATABLE :: npwk(:)
        COMPLEX(dbl), ALLOCATABLE :: evec(:,:,:)
        REAL(dbl), ALLOCATABLE :: eiw(:,:)
        REAL(dbl) :: emax, enmax
- 
-       INTEGER, ALLOCATABLE :: nnshell(:,:)
-       INTEGER, ALLOCATABLE :: nnlist(:,:)
-       INTEGER, ALLOCATABLE :: nncell(:,:,:)
-       INTEGER, ALLOCATABLE :: nntot(:)
-       INTEGER, ALLOCATABLE :: neigh(:,:)
-       REAL(dbl), ALLOCATABLE :: bk(:,:,:)
-       REAL(dbl), ALLOCATABLE :: wb(:,:)
-       REAL(dbl), ALLOCATABLE :: dnn(:)
-       REAL(dbl), ALLOCATABLE :: bka(:,:)
-       REAL(dbl) :: wbtot
-       COMPLEX(dbl), ALLOCATABLE :: cm(:,:,:,:)
  
        EXTERNAL komegai
 
@@ -199,11 +188,13 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating igv ', (3*mxdgve) )
        READ( 19 ) ( ( igv(i,j), i=1,3 ), j=1, mxdgve )
 !
-! ...  Calculate grid of K-pointS
- 
+! ...  Calculate grid of K-points and allocations
        CALL kpoints_init( nkpts )
+! 
+! ...  other allocations
        CALL windows_allocate()
        CALL subspace_allocate()
+       CALL overlap_allocate()
 
 
        ALLOCATE( ap((mxdbnd*(mxdbnd+1))/2), STAT = ierr )
@@ -225,31 +216,9 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating igsort ', npwx*nkpts )
        ALLOCATE( npwk(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating npwk ', nkpts )
-
        ALLOCATE( eiw(mxdbnd,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating eiw ', mxdbnd*nkpts )
 
-       ALLOCATE( nnshell(nkpts,mxdnn), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating nnshell ', nkpts*mxdnn )
-       ALLOCATE( nnlist(nkpts,mxdnn), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating nnlist ', nkpts*mxdnn )
-       ALLOCATE( nncell(3,nkpts,mxdnn), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating nncell ', 3*nkpts*mxdnn )
-       ALLOCATE( nntot(nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating nntot ', nkpts )
-       ALLOCATE( neigh(nkpts,mxdnnh), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating neigh ', nkpts*mxdnnh )
-       ALLOCATE( bk(3,nkpts,mxdnn), STAT = ierr ) 
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating bk ', 3*nkpts*mxdnn )
-       ALLOCATE( dnn(mxdnn), STAT = ierr ) 
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating dnn ', mxdnn )
-       ALLOCATE( wb(nkpts,mxdnn), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating wb ', nkpts*mxdnn )
-       ALLOCATE( bka(3,mxdnnh), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating bka ', 3*mxdnnh )
-       ALLOCATE( cm(mxdbnd,mxdbnd,mxdnn,nkpts), STAT = ierr )
-           IF( ierr /=0 ) &
-           CALL errore(' disentangle ', ' allocating cm ', mxdbnd*mxdbnd*mxdnn*nkpts )
        ALLOCATE( komega_i_est(nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' allocating komega_i_est ', nkpts )
 !
@@ -826,7 +795,6 @@
        DEALLOCATE( lvec, STAT=ierr )
           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating lvec ', ABS(ierr) )
 
-
        DEALLOCATE( igv, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating igv ', ABS(ierr) )
        DEALLOCATE( igsort, STAT=ierr )
@@ -837,27 +805,6 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating evec ', ABS(ierr) )
        DEALLOCATE( eiw, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating eiw ', ABS(ierr) )
-
-       DEALLOCATE( nnshell, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating nnshell ', ABS(ierr) )
-       DEALLOCATE( nnlist, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating nnlist ', ABS(ierr) )
-       DEALLOCATE( nncell, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating nncell ', ABS(ierr) )
-       DEALLOCATE( nntot, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating nntot ', ABS(ierr) )
-       DEALLOCATE( neigh, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating neigh ', ABS(ierr) )
-       DEALLOCATE( bk, STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating bk ', ABS(ierr) )
-       DEALLOCATE( dnn, STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating dnn ', ABS(ierr) )
-       DEALLOCATE( wb, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating wb ', ABS(ierr) )
-       DEALLOCATE( bka, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating bka ', ABS(ierr) )
-       DEALLOCATE( cm, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating cm ', ABS(ierr) )
        DEALLOCATE( komega_i_est, STAT=ierr )
            IF( ierr /=0 ) &
            CALL errore(' disentangle ', ' deallocating k_omega_i_est ', ABS(ierr) )
@@ -878,8 +825,10 @@
            IF( ierr /=0 ) CALL errore(' disentangle ', ' deallocating iwork ', ABS(ierr) )
 
        CALL deallocate_input()
+       CALL kpoints_deallocate()
        CALL windows_deallocate()
        CALL subspace_deallocate()
+       CALL overlap_deallocate()
 
 
        CALL timing('disentangle',OPR='stop')
