@@ -184,7 +184,7 @@
       DO nkp = 1, nkpts
         IF ( nplwkp(nkp) > mxddim ) THEN
           WRITE( stdout, fmt= " ('For nkp = ', i4, ', nplwkp = ', i5, 'and mxddim = ', &
-                  i5, '. Increase mxddim' ) " )nkp, nplwkp(nkp), mxddim
+                  & i5, '. Increase mxddim' ) " )nkp, nplwkp(nkp), mxddim
           CALL errore(' overlap ', ' Increase mxddim ', mxddim )
         END IF
       END DO

@@ -266,14 +266,14 @@
           IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
                ( nnshell(1,ndnn) /= 12 ) ) THEN
             WRITE( stdout, *) ' '
-            WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
-            WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
+            WRITE(*, fmt=" (2x, 'Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
+            WRITE(*, fmt=" (2x, 'otherwise code will stop! ')")
             END IF
         END IF
         IF ( ( nshells /= 1 ) .OR. ( ndim(1) /= 3 ) ) THEN
           WRITE( stdout, *) ' '
-          WRITE(*, fmt=" (2x ' Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
-          WRITE(*, fmt=" (2x ' otherwise code will stop! ')")
+          WRITE(*, fmt=" (2x, 'Warning: weights must be as defined in Ref: PRB 56 12847 (1997)' )")
+          WRITE(*, fmt=" (2x, 'otherwise code will stop! ')")
         END IF
 !...
 
@@ -350,8 +350,8 @@
         IF ( nnh*2 /= nnshell(1,ndnn) ) THEN
            WRITE( stdout, * ) ' ******************* ERROR MESSAGE ******************'
            WRITE( stdout, * ) '  '
-           WRITE( stdout, fmt= " (6x, 'The number of neighbours in each shell must be even ' &
-                                  2i5 )")  ndnn, nnshell(1,ndnn)
+           WRITE( stdout, fmt= " (6x, 'The number of neighbours in each shell must be even '&
+                                  &, 2i5 )")  ndnn, nnshell(1,ndnn)
            WRITE( stdout, * ) '  '
            WRITE( stdout, * ) ' ****************************************************'
           CALL errore(' new_bshell ', ' Number of neighbours in each shell is too small !', nnh*2 )
