@@ -3,6 +3,12 @@
             WanT code:  Log of Changes 
 =======================================================
 
+15 Apr 2005      zmatrix routine found to be the most time consuming part in the
+                 iteration loop of disentangle. Completely rewritten, time down of a factor
+                 10 in test4 (but expected to be also better for large systems).
+                 CM renamed as Mkb everywhere; disentangle loop changed in order to be
+                 more readable. (AF)
+
 01 Apr 2005      Mkb symmetrization performed. Some updates in bshells and util module.
                  README.input syncronized to the current input format.
                  Collinear spin polarization allowed in WanT calculation. Test7 added

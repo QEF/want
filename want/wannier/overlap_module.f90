@@ -35,7 +35,7 @@
 ! declarations of common variables
 !   
 
-   COMPLEX(dbl), ALLOCATABLE   :: cm(:,:,:,:)    ! <u_nk|u_mk+b> overlap
+   COMPLEX(dbl), ALLOCATABLE   :: Mkb(:,:,:,:)   ! <u_nk|u_mk+b> overlap
                                                  ! DIM: dimwinx,dimwinx,nnx,nkpts
    COMPLEX(dbl), ALLOCATABLE   :: ca(:,:,:)      ! <u_nk|phi_lk> projection
                                                  ! DIM: dimwinx,dimwann,nkpts
@@ -46,7 +46,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: cm, ca 
+   PUBLIC :: Mkb, ca 
    PUBLIC :: dimwinx, dimwin, nkpts, nnx, dimwann
    PUBLIC :: overlap_allocate
    PUBLIC :: overlap_deallocate
@@ -70,8 +70,8 @@ CONTAINS
        IF ( dimwinx <= 0 .OR. nkpts <= 0 .OR. dimwann <= 0) &
            CALL errore(subname,' Invalid DIMWINX, NKPTS, DIMWANN ',1)
 
-       ALLOCATE( cm(dimwinx,dimwinx,nnx,nkpts), STAT=ierr )       
-           IF ( ierr/=0 ) CALL errore(subname,' allocating cm ',dimwinx**2*nnx*nkpts)
+       ALLOCATE( Mkb(dimwinx,dimwinx,nnx,nkpts), STAT=ierr )       
+           IF ( ierr/=0 ) CALL errore(subname,' allocating Mkb',dimwinx**2*nnx*nkpts)
 
        ALLOCATE( ca(dimwinx,dimwann,nkpts), STAT=ierr )       
            IF ( ierr/=0 ) CALL errore(subname,' allocating ca ',dimwinx*dimwann*nkpts)
@@ -88,9 +88,9 @@ CONTAINS
        CHARACTER(18)      :: subname="overlap_deallocate"
        INTEGER            :: ierr 
 
-       IF ( ALLOCATED(cm) ) THEN
-            DEALLOCATE(cm, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating cm ',ABS(ierr))
+       IF ( ALLOCATED(Mkb) ) THEN
+            DEALLOCATE(Mkb, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating Mkb ',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(ca) ) THEN
             DEALLOCATE(ca, STAT=ierr)
@@ -135,9 +135,9 @@ CONTAINS
              CALL iotk_write_empty(unit, 'data', ATTR=attr)
 
              CALL iotk_write_dat(unit,'nn'//TRIM(iotk_index(ib)), &
-                                       cm(1:dimwin(ik),1:dimwin(ikb),ib,ik) )
+                                       Mkb(1:dimwin(ik),1:dimwin(ikb),ib,ik) )
              CALL iotk_write_dat(unit,'nn_abs'//TRIM(iotk_index(ib)), &
-                                       ABS(cm(1:dimwin(ik),1:dimwin(ikb),ib,ik)) )
+                                       ABS(Mkb(1:dimwin(ik),1:dimwin(ikb),ib,ik)) )
           ENDDO
           CALL iotk_write_end(unit,'kpoint'//TRIM(iotk_index(ik)))
        ENDDO
@@ -220,7 +220,7 @@ CONTAINS
        !
        CALL overlap_allocate()       
        ca(:,:,:) = CZERO
-       cm(:,:,:,:) = CZERO
+       Mkb(:,:,:,:) = CZERO
 
        !
        ! read overlap
@@ -246,7 +246,7 @@ CONTAINS
                  IF ( dimwin_kb > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_kb)
                  
                  CALL iotk_scan_dat(unit,'nn'//TRIM(iotk_index(ib)), &
-                          cm(1:dimwin_k,1:dimwin_kb,ib,ik),IERR=ierr )
+                          Mkb(1:dimwin_k,1:dimwin_kb,ib,ik),IERR=ierr )
                  IF (ierr/=0) CALL errore(subname,'scanning for nn',ib)
            ENDDO
            CALL iotk_scan_end(unit,'kpoint'//TRIM(iotk_index(ik)), IERR=ierr)

@@ -29,7 +29,7 @@
       USE summary_module, ONLY : summary
       USE kpoints_module, ONLY: nkpts, nnx, nnhx, &
                           nntot, nnlist, neigh, bk, wb, bka, wbtot
-      USE overlap_module,  ONLY : dimwann, ca, cm
+      USE overlap_module,  ONLY : dimwann, ca, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr,  &
                        cu, rave, rave2, r2ave, &
@@ -64,7 +64,7 @@
 
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  cm0(:,:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:)
@@ -146,7 +146,7 @@
       csheet(:,:,:) = CONE
 
       CALL omega( dimwann, nkpts, nkpts, nntot(:), nnx, nnlist(:,:), bk(:,:,:), wb(:,:), &
-                  cm(:,:,:,:), csheet(:,:,:), sheet(:,:,:), rave(:,:), r2ave(:), rave2(:), &
+                  Mkb(:,:,:,:), csheet(:,:,:), sheet(:,:,:), rave(:,:), r2ave(:), rave2(:), &
                   func_om1, func_om2, func_om3, Omega_tot, rtot, r2tot, Omega_I, Omega_D, & 
                   Omega_OD, Omega_V )
 
@@ -235,12 +235,12 @@
               DO m = 1, dimwann
               DO n = 1, dimwann
                 cmtmp(i,j)  =  cmtmp(i,j) + CONJG(cu(m,i,ik)) * &
-                                                 cu(n,j,ik2) * cm(m,n,nn,ik)
+                                                 cu(n,j,ik2) * Mkb(m,n,nn,ik)
               ENDDO
               ENDDO
           ENDDO
           ENDDO
-          cm(:,:,nn,ik) = cmtmp(:,:)
+          Mkb(:,:,nn,ik) = cmtmp(:,:)
         ENDDO
 
       ENDDO
@@ -255,7 +255,7 @@
         omiloc = ZERO
         DO nn = 1, nntot(ik)
 
-          CALL mat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
+          CALL mat_svd( dimwann, dimwann, Mkb(:,:,nn,ik), singvd, cv1, cv2 )
 
           DO nb = 1, dimwann
               omiloc = omiloc + wb(ik,nn) * ( ONE - singvd(nb)**2 )
@@ -274,7 +274,7 @@
 
 ! ... Recalculate the average positions of the Wanns.
 
-      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,  &
+      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,  &
            csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot , &
            rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
 
@@ -291,12 +291,12 @@
 !
 !      irguide = 0
 !!     CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,        &
-!!          bk, bka, cm, csheet, sheet, rguide, irguide )
+!!          bk, bka, Mkb, csheet, sheet, rguide, irguide )
 !      irguide = 1
 !
 !! ... Recalculate the average positions of the Wanns.
 
-      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,        &
+      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,        &
            csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot,     &
            rtot, r2tot , Omega_I, Omega_D, Omega_OD, Omega_V)
 
@@ -317,7 +317,7 @@
       DO ik = 1, nkpts
         DO nn = 1, nntot(ik)
 
-          CALL mat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
+          CALL mat_svd( dimwann, dimwann, Mkb(:,:,nn,ik), singvd, cv1, cv2 )
           CALL zmat_mul( cv3, cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
 
           DO nb = 1, dimwann
@@ -351,8 +351,8 @@
 
       ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu0 ', dimwann*2 * nkpts )
-      ALLOCATE( cm0(dimwann,dimwann,nnx,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cm0 ', dimwann**2*nkpts*nnx )
+      ALLOCATE( Mkb0(dimwann,dimwann,nnx,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating Mkb0 ', dimwann**2*nkpts*nnx )
       ALLOCATE( cdodq(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq ', dimwann*2 * nkpts )
       ALLOCATE( cdqkeep(dimwann,dimwann,nkpts), STAT=ierr )
@@ -401,18 +401,18 @@
         ENDIF
 
 
-! ...   Store cu and cm
+! ...   Store cu and Mkb
         cu0 = cu
-        cm0 = cm
+        Mkb0 = Mkb
 
         IF ( lrguide ) THEN
             IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )   &
             CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,       &
-                 bk, bka, cm, csheet, sheet, rguide, irguide )
+                 bk, bka, Mkb, csheet, sheet, rguide, irguide )
         ENDIF
 
         CALL domega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb,              &
-             cm, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
+             Mkb, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
 
         gcnorm1 = ZERO
         DO ik = 1, nkpts
@@ -519,19 +519,19 @@
                     DO m = 1, dimwann
                     DO n = 1, dimwann
                         cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,ik) ) * &
-                                                          cdq(n,j,ik2) * cm(m,n,nn,ik)
+                                                          cdq(n,j,ik2) * Mkb(m,n,nn,ik)
                     ENDDO
                     ENDDO
                 ENDDO
                 ENDDO
-                cm(:,:,nn,ik) = cmtmp(:,:)
+                Mkb(:,:,nn,ik) = cmtmp(:,:)
             ENDDO
         ENDDO
 
 
 ! ...   And the functional is recalculated
 
-        CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,       &
+        CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,       &
              csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
              rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
 
@@ -575,10 +575,10 @@
           falphamin = eqa * alphamin**2 + eqb * alphamin + eqc
 
 
-! ...     Restore cu and cm
+! ...     Restore cu and Mkb
 
           cu = cu0
-          cm = cm0
+          Mkb = Mkb0
 
 ! ...     Take now optimal parabolic step
 
@@ -658,18 +658,18 @@
                     DO m = 1, dimwann
                     DO n = 1, dimwann
                         cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,ik) ) * &
-                                                         cdq(n,j,ik2) * cm(m,n,nn,ik)
+                                                         cdq(n,j,ik2) * Mkb(m,n,nn,ik)
                     ENDDO
                     ENDDO
                 ENDDO
                 ENDDO
-                cm(:,:,nn,ik) = cmtmp(:,:)
+                Mkb(:,:,nn,ik) = cmtmp(:,:)
              ENDDO
           ENDDO
 
 ! ...     And the functional is recalculated
            
-          CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, cm,       &
+          CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,       &
                csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
                rtot, r2tot, Omega_I , Omega_D, Omega_OD, Omega_V)
 
@@ -810,7 +810,7 @@
       DO ik = 1, nkpts
         DO nn = 1, nntot(ik)
 
-          CALL mat_svd( dimwann, dimwann, cm(:,:,nn,ik), singvd, cv1, cv2 )
+          CALL mat_svd( dimwann, dimwann, Mkb(:,:,nn,ik), singvd, cv1, cv2 )
           DO nb = 1, dimwann
                omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
                omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
@@ -871,8 +871,8 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cv3 ', ABS(ierr) )
       DEALLOCATE( cu0, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cu0 ', ABS(ierr) )
-      DEALLOCATE( cm0, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cm0 ', ABS(ierr) )
+      DEALLOCATE( Mkb0, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating Mkb0 ', ABS(ierr) )
       DEALLOCATE( cdodq, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdodq ', ABS(ierr) )
       DEALLOCATE( cdqkeep, STAT=ierr )

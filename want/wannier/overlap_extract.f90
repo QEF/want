@@ -18,7 +18,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE subspace_module, ONLY : eamp, subspace_read
    USE windows_module,  ONLY : dimwinx, dimwin, windows_read
    USE kpoints_module,  ONLY : nnx, nkpts, nntot, nnlist 
-   USE overlap_module,  ONLY : cm, ca, overlap_allocate, overlap_deallocate, overlap_read 
+   USE overlap_module,  ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
    IMPLICIT NONE
 
 ! <INFO>
@@ -40,7 +40,7 @@ SUBROUTINE overlap_extract(dimwann)
    INTEGER,  INTENT(in)      :: dimwann
    CHARACTER(15)             :: subname="overlap_extract"
 
-   COMPLEX(dbl), ALLOCATABLE :: cm_tmp(:,:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: Mkb_tmp(:,:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: ca_tmp(:,:,:)
 
    LOGICAL                   :: lfound
@@ -83,10 +83,10 @@ SUBROUTINE overlap_extract(dimwann)
 !
 ! ... here allocate the temporary variables for the extracted CM and CA 
 !
-   ALLOCATE( cm_tmp(dimwann,dimwann,nnx,nkpts), STAT=ierr ) 
-      IF (ierr/=0) CALL errore(subname,"allocating cm_tmp",ABS(ierr))
+   ALLOCATE( Mkb_tmp(dimwann,dimwann,nnx,nkpts), STAT=ierr ) 
+      IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
-      IF (ierr/=0) CALL errore(subname,"allocating cm_tmp",ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,"allocating ca_tmp",ABS(ierr))
 
 
 !
@@ -116,11 +116,11 @@ SUBROUTINE overlap_extract(dimwann)
          DO n=1,dimwann  
          DO m=1,dimwann  
              
-              cm_tmp(m,n,nn,ik1) = CZERO
+              Mkb_tmp(m,n,nn,ik1) = CZERO
               DO j=1,dimwin(ik2)
               DO i=1,dimwin(ik1)
-                  cm_tmp( m,n,nn,ik1 ) = cm_tmp( m,n,nn,ik1 )  +                 &
-                          CONJG( eamp(i,m,ik1)) * cm(i,j,nn,ik1) * eamp(j,n,ik2)
+                  Mkb_tmp( m,n,nn,ik1 ) = Mkb_tmp( m,n,nn,ik1 )  +                 &
+                          CONJG( eamp(i,m,ik1)) * Mkb(i,j,nn,ik1) * eamp(j,n,ik2)
               ENDDO
               ENDDO
          ENDDO    
@@ -151,13 +151,13 @@ SUBROUTINE overlap_extract(dimwann)
    dimwinx = dimwann
    CALL overlap_allocate()
 
-   cm(:,:,:,:) = cm_tmp(:,:,:,:)
+   Mkb(:,:,:,:) = Mkb_tmp(:,:,:,:)
    ca(:,:,:) =   ca_tmp(:,:,:)
 
 !
 ! ... cleaning
-   DEALLOCATE( cm_tmp, ca_tmp, STAT=ierr) 
-      IF (ierr/=0) CALL errore(subname,"deallocating cm_tmp or ca_tmp",ABS(ierr))
+   DEALLOCATE( Mkb_tmp, ca_tmp, STAT=ierr) 
+      IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp or ca_tmp",ABS(ierr))
 
    CALL timing('overlap_extract',OPR='stop')
 

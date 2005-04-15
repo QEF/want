@@ -38,7 +38,7 @@
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz, imin, imax
    USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, nnx, &
                               nntot, nnlist, nncell, neigh, nreverse
-   USE overlap_module, ONLY : cm, ca, overlap_alloc => alloc, overlap_write
+   USE overlap_module, ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write
    USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
                               ggrids_read_ext, ggrids_deallocate
    USE wfc_data_module,ONLY : npwkx, npwk, igsort, evc, evc_info, &
@@ -166,7 +166,7 @@
       !
       ! initializing CA and CM 
       ca(:,:,:) = CZERO
-      cm(:,:,:,:) = CZERO
+      Mkb(:,:,:,:) = CZERO
       
       !
       ! kpts should be in the same unit as g, gg (i.e. tpiba) while they currently
@@ -236,7 +236,7 @@
 
                     CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), imin(ik), imin(ikb),  &
                                   dimwinx, evc, evc_info,  &
-                                  igsort, nncell(1,inn,ik), cm(1,1,inn,ik) )
+                                  igsort, nncell(1,inn,ik), Mkb(1,1,inn,ik) )
 
                     !
                     ! ... add the augmentation term fo USPP
@@ -244,8 +244,8 @@
                     IF ( uspp_calculation ) THEN
                         CALL add_us_overlap(dimwinx, dimwin(ik), dimwin(ikb), &
                                             ik, ikb, inn, aux)
-                        cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
-                                     cm(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
+                        Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
+                                     Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
                                      aux(1:dimwin(ik),1:dimwin(ikb))
                     ENDIF
               
@@ -258,7 +258,7 @@
                     ! apply the symmetrization
                     ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
                     !
-                    cm(:,:, nreverse(inn,ik), ikb ) = CONJG( TRANSPOSE( cm(:,:,inn,ik) ) )
+                    Mkb(:,:, nreverse(inn,ik), ikb ) = CONJG( TRANSPOSE( Mkb(:,:,inn,ik) ) )
               ENDIF
          ENDDO neighbours
 

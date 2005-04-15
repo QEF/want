@@ -1,78 +1,88 @@
 !
 ! Copyright (C) 2004 WanT Group
-! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-       SUBROUTINE zmatrix( kpt, nnlist, nshells, nwhich, nnshell, wb, lamp, kcm, mtrx,   &
-                  dimwann, dimwin, dimwinx, dimfroz, indxnfroz, nbnd, mxdnrk, nnx )
-!=----------------------------------------------------------------------------------=
-       USE kinds
-       USE constants, ONLY : CZERO
+!************************************************
+SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indxnfroz)
+  !************************************************
+  USE kinds
+  USE constants, ONLY : CZERO
+  USE timing_module
+  USE kpoints_module, ONLY : nnlist, nntot, wb
  
-       IMPLICIT NONE
+  IMPLICIT NONE
 
-       INTEGER :: nbnd
-       INTEGER :: mxdnrk
-       INTEGER :: nnx
-       INTEGER :: kpt
-       INTEGER :: nnlist(mxdnrk,nnx)
-       INTEGER :: nshells, nwhich(nshells)
-       INTEGER :: nnshell(mxdnrk,nnx)
-       INTEGER :: dimwann, dimwin(mxdnrk), dimwinx
-       INTEGER :: dimfroz(mxdnrk), indxnfroz(nbnd,mxdnrk)
-       REAL(dbl) :: wb(mxdnrk,nnx)
-       COMPLEX(dbl) :: lamp(dimwinx,dimwinx,mxdnrk)
-       COMPLEX(dbl) :: kcm(dimwinx,dimwinx,nnx)
+  INTEGER,      INTENT(in) :: ik
+  INTEGER,      INTENT(in) :: dimwann, dimwin(*), dimwinx
+  INTEGER,      INTENT(in) :: dimfroz, indxnfroz(*)
+  COMPLEX(dbl), INTENT(in) :: lamp(dimwinx,dimwinx,*)
+  COMPLEX(dbl), INTENT(in) :: Mkb(dimwinx,dimwinx,*)
+  COMPLEX(dbl), INTENT(inout) :: mtrx(dimwinx,dimwinx)
 
-       COMPLEX(dbl) :: mtrx(dimwinx,dimwinx)
- 
-       INTEGER :: m, n, l, j
-       INTEGER :: inn, ndnc, ndnn, nnsh, k_pls_b
-       COMPLEX(dbl) :: dot_bloch1, dot_bloch2
+  !
+  ! few local variables
+  !
+  INTEGER :: inn, ikb
+  INTEGER :: m, n, l, j, ierr
+  COMPLEX(dbl), ALLOCATABLE :: a(:)
 
-! ...  Loop over independent matrix entries
- 
-       DO m = 1, dimwin(kpt) - dimfroz(kpt)
-         DO n = 1, m
-           mtrx(m,n) = CZERO
-           DO l = 1, dimwann
- 
-! ...        LOOP OVER B-VECTORS
- 
-             inn = 0
-             DO ndnc = 1, nshells
-                 ndnn = nwhich(ndnc)
-                 DO nnsh = 1, nnshell(kpt,ndnn)
-                     inn = inn + 1
-                     k_pls_b = nnlist(kpt,inn)
+!
+!--------------------------------------------------------------------
+!
+   CALL timing('zmatrix',OPR='start')
 
-! ...                CALCULATE THE DOTPRODUCTS
- 
-                     dot_bloch1 = CZERO
-                     dot_bloch2 = CZERO
-                     DO j = 1, dimwin(k_pls_b)
-                        dot_bloch1 = dot_bloch1 + lamp(j,l,k_pls_b) * &
-                                                  kcm( indxnfroz(m,kpt), j, inn )
-                        dot_bloch2 = dot_bloch2 + CONJG( lamp( j, l, k_pls_b ) * &
-                                                  kcm( indxnfroz(n,kpt), j, inn ) )
-                      ENDDO
- 
-! ...                 Add contribution to mtrx(m,n)            
- 
-                      mtrx(m,n) = mtrx(m,n) + wb(kpt,inn) * dot_bloch1 * dot_bloch2
- 
-                 ENDDO ! NNSH
-             ENDDO ! NDNN
+   mtrx(:,:) = CZERO
+   ALLOCATE( a(dimwinx), STAT=ierr )
+       IF (ierr/=0) CALL errore('zmatrix','allocating a',ABS(ierr))
 
-           ENDDO ! L
-           mtrx(n,m) = CONJG( mtrx(m,n) )   ! hermiticity
-         ENDDO ! N
-       ENDDO ! M
+   !
+   ! ...  Loop over independent matrix entries
+   ! 
+   DO inn = 1, nntot(ik)
+       ikb = nnlist(ik, inn)
+
+       !
+       ! loop over the generators of the subspace
+       !
+       DO l = 1, dimwann
+
+            !
+            ! Calculate the quantities  a_{m,l}^{k,b} = \Sum_j lamp(j,l,ikb) * Mkb_{m,j}
+            !
+            DO m = 1, dimwin(ik) - dimfroz
+                a(m) = CZERO
+                DO j = 1, dimwin(ikb)
+                     a(m) = a(m) + lamp(j,l,ikb) * Mkb( indxnfroz(m), j, inn )
+                ENDDO
+            ENDDO
+
+            !
+            ! update mtrx
+            !
+            DO n = 1, dimwin(ik) - dimfroz
+            DO m = 1, n
+                 mtrx(m,n) = mtrx(m,n) + wb(ik,inn) * a(m) * CONJG( a(n) )
+            ENDDO
+            ENDDO
+       ENDDO 
+   ENDDO 
+
+   !
+   ! use hermiticity
+   !
+   DO n = 1, dimwin(ik) - dimfroz
+   DO m = 1, n
+        mtrx(n,m) = CONJG( mtrx(m,n) )
+   ENDDO
+   ENDDO
  
-       RETURN
-       END
+   DEALLOCATE( a, STAT=ierr )
+       IF (ierr/=0) CALL errore('zmatrix','deallocating a',ABS(ierr))
+   CALL timing('zmatrix',OPR='stop')
+ 
+END SUBROUTINE zmatrix
+

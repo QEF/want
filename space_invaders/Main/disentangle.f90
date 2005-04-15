@@ -1,4 +1,4 @@
-!
+! actual loo
 ! Copyright (C) 2004 WanT Group
 ! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 !
@@ -38,7 +38,7 @@
                                    mtrx_in, mtrx_out
        USE subspace_module, ONLY : disentangle_thr, maxiter_dis, alpha_dis, &
                                    subspace_allocate, subspace_write
-       USE overlap_module,  ONLY : cm, ca, overlap_allocate
+       USE overlap_module,  ONLY : Mkb, ca, overlap_allocate
        USE summary_module, ONLY : summary
 
 
@@ -148,40 +148,41 @@
        iteration_loop : &
        DO iter = 1, maxiter_dis
 
+
+           ! 
+           ! ... Construct the new z-matrix mtrx_out at the relevant K-points
+           ! 
+           DO ik = 1, nkpts
+                IF ( dimwann > dimfroz(ik) )  THEN
+                    CALL zmatrix( ik, lamp, Mkb(1,1,1,ik), mtrx_out(1,1,ik), dimwann, &
+                                  dimwin, dimwinx, dimfroz(ik), indxnfroz(1,ik), nbnd )
+                ENDIF
+           ENDDO
+
+
+
+           !
+           ! Compute the current z-matrix at each relevant K-point 
+           ! using the mixing scheme
+           ! 
            IF ( iter == 1 ) THEN
-                !
-                !  Compute the initial z matrix mtrx_in at all relevant K-points
-                !
-                DO ik = 1, nkpts
-                    IF ( dimwann > dimfroz(ik) )  THEN
-                       CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,     &
-                            cm(1,1,1,ik), mtrx_in(1,1,ik), dimwann, dimwin, dimwinx,     &
-                            dimfroz, indxnfroz, nbnd, nkpts, nnx )
-                    ENDIF
-                ENDDO
-           !
-           ! further iterations (/= 1) 
-           !
-           ELSE
-                !
-                ! Compute the current z-matrix at each relevant K-point 
-                ! using the mixing scheme
-                ! 
-                DO ik = 1, nkpts
-                     IF ( dimwann > dimfroz(ik) )  THEN
-                         DO i = 1, dimwin(ik)-dimfroz(ik)
-                         DO j = 1, i
-                            mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
-                                              (ONE-alpha_dis) * mtrx_in(j,i,ik)
-                            !
-                            ! use hermiticity
-                            !
-                            mtrx_in(i,j,ik) = conjg(mtrx_in(j,i,ik))     
-                         ENDDO
-                         ENDDO
-                     ENDIF
-                ENDDO
+                mtrx_in(:,:,:) = mtrx_out(:,:,:)
            ENDIF
+           !
+           DO ik = 1, nkpts
+                IF ( dimwann > dimfroz(ik) )  THEN
+                    DO i = 1, dimwin(ik)-dimfroz(ik)
+                    DO j = 1, i
+                         mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
+                                           (ONE-alpha_dis) * mtrx_in(j,i,ik)
+                         !
+                         ! use hermiticity
+                         !
+                         mtrx_in(i,j,ik) = CONJG(mtrx_in(j,i,ik))     
+                    ENDDO
+                    ENDDO
+                ENDIF
+           ENDDO
            omega_i_est = ZERO
 
 
@@ -189,10 +190,12 @@
                ! 
                ! Diagonalize z matrix mtrx_in at all relevant K-points
                ! 
+CALL timing('zmat_hdiag')
                IF ( dimwann > dimfroz(ik) )  THEN
                     dim = dimwin(ik)-dimfroz(ik)
                     CALL zmat_hdiag( z(:,:), w(:), mtrx_in(:,:,ik), dim)
                ENDIF
+CALL timing('zmat_hdiag')
 
                ! 
                !  Calculate K-point contribution to omega_i_est
@@ -201,6 +204,7 @@
 
                ! Contribution from frozen states (if any)
                ! 
+CALL timing('lambda_avg')
                IF ( dimfroz(ik) > 0 )  THEN
                    DO m = 1, dimfroz(ik)
                        ! 
@@ -208,11 +212,12 @@
                        ! to the previous iteration step, which is exactly what we need 
                        ! as an input for the subroutine lambda_avg
                        ! 
-                       klambda = lambda_avg( m, ik, lamp, cm(1,1,1,ik), nnlist, nshells, &
+                       klambda = lambda_avg( m, ik, lamp, Mkb(1,1,1,ik), nnlist, nshells, &
                                  nwhich, nnshell, wb, dimwann, dimwin, dimwinx, nkpts, nnx )
                        komega_i_est(ik) = komega_i_est(ik) - klambda
                    ENDDO
                ENDIF
+CALL timing('lambda_avg')
                ! 
                ! Contribution from non-frozen states (if any). 
                ! pick the dimwann-dimfroz(ik) leading eigenvectors of the z-matrix 
@@ -224,7 +229,7 @@
                         m = m+1
                         komega_i_est(ik) = komega_i_est(ik) - w(j)
                         DO i = 1, dimwin(ik)
-                            lamp(i,m,ik) = czero
+                            lamp(i,m,ik) = CZERO
                         ENDDO
                         DO i = 1, dimwin(ik)-dimfroz(ik)
                             lamp(indxnfroz(i,ik),m,ik) = z(i,j)     ! *** CHECK!!! ***
@@ -239,18 +244,18 @@
                        ENDDO
                        WRITE(stdout,fmt="(4x,'Wbtot = ')")wbtot
                    ENDIF
-              ENDIF
-              omega_i_est=omega_i_est+komega_i_est(ik)
+               ENDIF
+               omega_i_est=omega_i_est+komega_i_est(ik)
  
-              !
-              ! At the last iteration find a basis for the (dimwin(ik)-dimwann)-dimensional
-              ! complement space
-              ! 
-              camp(:,:,ik) = CZERO
-   
-              IF ( iter == maxiter_dis )  THEN
+! XXX
+               !
+               ! At the last iteration find a basis for the (dimwin(ik)-dimwann)-dimensional
+               ! complement space
+               ! 
+               camp(:,:,ik) = CZERO
+               IF ( iter == maxiter_dis )  THEN
                    IF ( dimwin(ik) > dimwann )  THEN
-                       DO j = 1, dimwin(ik)-dimwann
+                        DO j = 1, dimwin(ik)-dimwann
                            IF ( dimwann > dimfroz(ik) )  THEN
                               ! 
                               !  Use the non-leading eigenvectors of the z-matrix
@@ -286,29 +291,25 @@
             ! 
             omega_i = ZERO
             o_error = ZERO
+CALL timing('komegai')
             DO ik = 1, nkpts
-                aux = komegai( ik, lamp, cm(1,1,1,ik), wb, wbtot, nnlist, nshells, &
+                aux = komegai( ik, lamp, Mkb(1,1,1,ik), wb, wbtot, nnlist, nshells, &
                              nwhich, nnshell, dimwann, dimwin, dimwinx, nkpts, nnx )
                 omega_i = omega_i + aux
             ENDDO
+CALL timing('komegai')
             omega_i = omega_i/DBLE(nkpts)
     
             WRITE( stdout, fmt=" (2x, 'Iteration = ',i5,'   Omega_I =',f16.8, &
                                  & 4x, 'Error =',f16.8 )") iter, omega_i_est, &
                                  (omega_i_est - omega_i)/omega_i
-            o_error = ABS( (OMEGA_I_EST-OMEGA_I)/OMEGA_I )
 
-            ! 
-            ! ... Construct the new z-matrix mtrx_out at the relevant K-points
-            ! 
-            DO ik = 1, nkpts
-                IF ( dimwann > dimfroz(ik) )  THEN
-                    CALL zmatrix( ik, nnlist, nshells, nwhich, nnshell, wb, lamp,   &
-                         cm(1,1,1,ik), mtrx_out(1,1,ik), dimwann, dimwin, dimwinx,  &
-                         dimfroz, indxnfroz, nbnd, nkpts, nnx )
-                ENDIF
-            ENDDO
-            IF ( o_error < disentangle_thr ) GO TO 9999
+            !
+            ! convergence condition
+            !
+            o_error = ABS( ( omega_i_est -omega_i ) / omega_i )
+            IF ( o_error < disentangle_thr ) EXIT iteration_loop
+
 
        ENDDO iteration_loop
 
@@ -316,10 +317,14 @@
 ! ... End of iter loop
 !=----------------------------------------------------------------------------------------=
 
-! ...  Convergence achieved
-
- 9999  continue
-       WRITE( stdout, fmt="(/,2x, 'Convergence achieved!!',/)")
+!
+! ...  Status of the convergence
+!
+       IF ( iter == maxiter_dis ) THEN 
+           WRITE( stdout, fmt="(/,2x, 'Max number of iteration reached',/)")
+       ELSE
+           WRITE( stdout, fmt="(/,2x, 'Convergence achieved!',/)")
+       ENDIF
        CALL timing('iterations',OPR='STOP')
 
 
