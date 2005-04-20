@@ -27,6 +27,7 @@
 ! routines in this module:
 ! SUBROUTINE localization_allocate()
 ! SUBROUTINE localization_deallocate()
+! SUBROUTINE localization_print(unit[,fmt])
 ! SUBROUTINE localization_write(unit,name)
 ! SUBROUTINE localization_read(unit,name,found)
 
@@ -78,6 +79,7 @@
 
    PUBLIC :: localization_allocate
    PUBLIC :: localization_deallocate
+   PUBLIC :: localization_print
    PUBLIC :: localization_write
    PUBLIC :: localization_read
 
@@ -142,6 +144,58 @@ CONTAINS
        alloc = .FALSE.
    END SUBROUTINE localization_deallocate
 
+
+!**********************************************************
+   SUBROUTINE localization_print(unit,fmt)
+   !**********************************************************
+   !
+   ! FMT can accept values "standard" (DEFAULT) and "extended"
+   ! the second one prints also the spread operator decomposition
+   !
+   IMPLICIT NONE
+       INTEGER,                 INTENT(in) :: unit
+       CHARACTER(*), OPTIONAL,  INTENT(in) :: fmt
+    
+       CHARACTER(18)      :: subname="localization_print"
+       CHARACTER(nstrx)   :: fmt_
+       LOGICAL            :: lxprint
+       INTEGER            :: i, iwann
+
+       IF ( .NOT. alloc ) CALL errore(subname,'localization NOT alloc',1)
+       fmt_ = "standard"
+       IF ( PRESENT(fmt) ) fmt_ = fmt
+
+       SELECT CASE ( TRIM(fmt_) )
+       CASE ( "standard", "STANDARD" )
+            lxprint = .FALSE.
+       CASE ( "extended", "EXTENDED" )
+            lxprint = .TRUE.
+       CASE DEFAULT
+            CALL errore(subname,"Invalid FMT = "//TRIM(fmt_),1)
+       END SELECT
+
+       !
+       WRITE( unit, " (2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2):')")
+       DO iwann = 1, dimwann
+           WRITE( unit, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
+              & f12.6,' )  Omega = ', f13.6 )" )  &
+              iwann,( rave(i,iwann), i=1,3 ), r2ave(iwann) - rave2(iwann)
+      ENDDO
+      WRITE( unit, " (2x, '! Center Sum',    &
+              & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6,/ )" )     &
+             ( SUM(rave(i,1:dimwann)) ,i=1,3), SUM(r2ave(1:dimwann))
+
+      IF ( lxprint ) THEN
+           WRITE( unit, "(  2x, 'Spread Operator decomposition (Bohr^2): ')")
+           WRITE( unit, "(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
+           WRITE( unit, "(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
+           WRITE( unit, "(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
+           WRITE( unit, "(  4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
+           WRITE( unit, "()")
+      ENDIF
+
+   END SUBROUTINE localization_print
+ 
 
 !**********************************************************
    SUBROUTINE localization_write(unit,name)

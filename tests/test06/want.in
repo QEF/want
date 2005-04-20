@@ -3,6 +3,7 @@
    prefix = 'gold1'
    postfix = '_WanT'
    work_dir = './'
+   restart_mode = 'from_scratch'
    unitary_thr = 1.0d-7
 /
 
@@ -12,7 +13,8 @@
    win_max =  0.0        
    froz_min = -30.0
    froz_max = -25.0
-   trial_mode = 'center_projections'
+   maxiter_dis = 100
+   start_mode_dis = 'center_projections'
 /   
 
 &LOCALIZATION

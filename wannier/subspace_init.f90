@@ -7,11 +7,11 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE subspace_init( trial_mode, dimwann, dimwin, dimwinx, nkpts, ca, lamp)
+   SUBROUTINE subspace_init( mode, dimwann, dimwin, dimwinx, nkpts, ca, lamp)
    !*******************************************************************
    !
    ! ...  Initialize the starting subspace for disentangle minimization
-   !      according to the input choice of trial_mode (and frozen windows):
+   !      according to the input choice of mode (and frozen windows):
    !
    !      * 'lower_states'   select the dimwann lower bands
    !      * 'upper_states'   select the dimwann upper bands
@@ -19,15 +19,18 @@
    !
    USE kinds, ONLY : dbl
    USE constants, ONLY : CZERO, CONE, EPS_m8
+   USE parameters, ONLY : nstrx
    USE timing_module, ONLY : timing
-   USE io_module, ONLY : stdout
+   USE io_module, ONLY : stdout, ioname, space_unit
+   USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
    !
    USE windows_module, ONLY : lfrozen, dimfroz, indxfroz, frozen, nbnd
    USE control_module, ONLY : unitary_thr
+   USE subspace_module, ONLY : subspace_read
    IMPLICIT NONE
 
-   CHARACTER(*),    INTENT(in)  :: trial_mode      
+   CHARACTER(*),    INTENT(in)  :: mode      
    INTEGER,         INTENT(in)  :: dimwann, dimwinx, nkpts
    INTEGER,         INTENT(in)  :: dimwin(nkpts)
    COMPLEX(dbl),    INTENT(in)  :: ca(dimwinx,dimwann,nkpts)
@@ -38,9 +41,11 @@
    ! local variables
    !
    CHARACTER(13)                :: subname="subspace_init"
+   CHARACTER(nstrx)             :: filename
    REAL(dbl),       ALLOCATABLE :: s(:)
    COMPLEX(dbl),    ALLOCATABLE :: cu(:,:)
    COMPLEX(dbl),    ALLOCATABLE :: vt(:,:), u(:,:)
+   LOGICAL                      :: lfound
    INTEGER                      :: i, j, l, ik, ierr, info
 
 
@@ -56,17 +61,31 @@
    IF ( dimwinx /= MAXVAL(dimwin) ) CALL errore(subname,'invalid dimwinx',ABS(dimwinx)+1)
    !
    ! this may be generalized
-   IF ( lfrozen .AND. TRIM( trial_mode ) == 'center_projections' ) &
+   IF ( lfrozen .AND. ( TRIM( mode ) /= 'center_projections' .OR.  &
+                        TRIM( mode ) /= 'from_file'  )        ) &
         CALL errore(subname,'center proj. are required if frozen states are present',2)
 
 
    !
    ! here set LAMP
    !
-   SELECT CASE ( TRIM( trial_mode ) )
+   SELECT CASE ( TRIM( mode ) )
    CASE DEFAULT
-      CALL errore(subname,'Invalid TRIAL_MODE = "'//TRIM(trial_mode)//'"',1)
+      CALL errore(subname,'Invalid MODE = "'//TRIM(mode)//'"',1)
 
+   CASE ( 'from_file' )
+
+        WRITE( stdout,"(/,'  Initial trial subspace: from_file')")
+            CALL ioname('subspace',filename)
+            CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", &
+                           FORM="formatted")
+            CALL subspace_read(space_unit,"SUBSPACE", lfound)
+            IF ( .NOT. lfound ) CALL errore(subname,'searching tag "SUBSPACE"',1)
+        CALL file_close(space_unit,PATH="/",ACTION="read")
+        !
+        CALL ioname('subspace',filename,LPATH=.FALSE.)
+        WRITE( stdout,"(2x,'Subspace data read from file: ',a,/)") TRIM(filename)
+        
    CASE ( 'lower_states' )
 
         WRITE( stdout,"(/,'  Initial trial subspace: lowest energy eigenvectors',/)")

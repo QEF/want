@@ -9,6 +9,14 @@
 !************************************************
 SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indxnfroz)
   !************************************************
+  !
+  ! Compute the Z matrix according to the formula:
+  ! Z_mn = \Sum_b wb  \Sum_l  a_{m,l}^{k,b} * CONJG ( a_{n,l}^{k,b} )
+  ! where
+  ! a_{m,l}^{k,b} = \Sum_j lamp(j,l,ikb) * Mkb_{m,j}
+  ! (l is the index over the generators of the wannier subspace, while j is on 
+  !  the bloch states) 
+  !
   USE kinds
   USE constants, ONLY : CZERO
   USE timing_module
@@ -40,7 +48,7 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
        IF (ierr/=0) CALL errore('zmatrix','allocating a',ABS(ierr))
 
    !
-   ! ...  Loop over independent matrix entries
+   ! ...  Loop over b-vectors
    ! 
    DO inn = 1, nntot(ik)
        ikb = nnlist(ik, inn)

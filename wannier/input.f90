@@ -78,27 +78,91 @@ CONTAINS
    SUBROUTINE setup_control()
    !**********************************************************
       USE control_module,           ONLY : verbosity,         &
-                                           nprint,            &
                                            unitary_thr,       &
+                                           restart_mode,      &
                                            do_pseudo,         &
+                                           do_overlaps,       &
+                                           do_projections,    &
+                                           read_overlaps,     &
+                                           read_projections,  &
+                                           read_subspace,     &
+                                           read_unitary,      &
                                            ordering_mode,     &
-                                           iphase,            &
-                                           trial_mode
+                                           nprint_dis,        &
+                                           nprint_wan,        &
+                                           nsave_dis,         &
+                                           nsave_wan,         &
+                                           start_mode_dis,    &
+                                           start_mode_wan,    &
+                                           iphase
       USE input_parameters_module,  ONLY : verbosity_       => verbosity, &
-                                           nprint_          => nprint,    &
+                                           restart_mode_    => restart_mode, &
+                                           start_mode_dis_  => start_mode_dis, &
+                                           start_mode_wan_  => start_mode_wan, &
+                                           nprint_dis_      => nprint_dis, &
+                                           nprint_wan_      => nprint_wan, &
+                                           nsave_dis_       => nsave_dis, &
+                                           nsave_wan_       => nsave_wan, &
+                                           overlaps_        => overlaps,  &
+                                           projections_     => projections, &
                                            unitary_thr_     => unitary_thr, &
-                                           trial_mode_      => trial_mode, &
                                            ordering_mode_   => ordering_mode, &
                                            iphase_          => iphase, &
                                            assume_ncpp_     => assume_ncpp
       IMPLICIT NONE
       verbosity = verbosity_
-      nprint = nprint_
       unitary_thr = unitary_thr_
-      trial_mode = trial_mode_
       ordering_mode = ordering_mode_
       iphase = iphase_
       do_pseudo = .NOT. assume_ncpp_
+      nprint_dis = nprint_dis_
+      nsave_dis = nsave_dis_
+      nprint_wan = nprint_wan_
+      nsave_wan = nsave_wan_
+
+      start_mode_dis = start_mode_dis_
+      start_mode_wan = start_mode_wan_
+
+      restart_mode = restart_mode_
+      SELECT CASE ( TRIM(restart_mode_) )
+      CASE ( "from_scratch" )
+      CASE ( "restart" )
+           overlaps_ = "from_file"
+           projections_ = "from_file"
+           start_mode_dis = "from_file"
+           start_mode_wan = "from_file"
+      CASE DEFAULT
+           CALL errore('setup_control', &
+                       'Invalid value for restart_mode = '//TRIM(restart_mode_),1)
+      END SELECT
+
+      IF ( TRIM( start_mode_dis_ ) == "from_file" ) read_subspace = .TRUE.
+      IF ( TRIM( start_mode_wan_ ) == "from_file" ) read_unitary = .TRUE.
+
+      !
+      SELECT CASE( TRIM(overlaps_) )
+      CASE ( "from_scratch"  )
+           read_overlaps = .FALSE.
+           do_overlaps = .TRUE.
+      CASE ( "from_file"  )
+           read_overlaps = .TRUE.
+           do_overlaps = .FALSE.
+      CASE DEFAULT
+           CALL errore('setup_control', &
+                       'Invalid value for overlaps = '//TRIM(overlaps_),1)
+      END SELECT
+      !
+      SELECT CASE( TRIM(projections_) )
+      CASE ( "from_scratch"  )
+           read_projections = .FALSE.
+           do_projections = .TRUE.
+      CASE ( "from_file"  )
+           read_projections = .TRUE.
+           do_projections = .FALSE.
+      CASE DEFAULT
+           CALL errore('setup_control', &
+                       'Invalid value for projections = '//TRIM(projections_),2)
+      END SELECT
 
    END SUBROUTINE setup_control
       

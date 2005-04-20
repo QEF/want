@@ -52,6 +52,16 @@
    CHARACTER(nstrx) :: work_dir = "./"
        ! the directory in which produced data files are written 
 
+   CHARACTER(nstrx) :: restart_mode = 'from_scratch'
+       ! ( 'from_scratch' | 'restart' )
+       ! define whether to restart a previous calculation; at the moment it implies
+       ! OVERLAPS="from_file", PROJECTIONS="from_file", SUBSPACE="from_file", and 
+       ! UNITARY="from_file"
+
+   CHARACTER(nstrx) :: restart_mode_allowed(2)
+   DATA restart_mode_allowed / 'from_scratch',  'restart' /
+       ! the allowed values for restart_mode
+
    CHARACTER(nstrx) :: verbosity = 'medium'
        ! ( 'low' | 'medium' | 'high' )
        ! the level of details of the code output
@@ -59,6 +69,22 @@
    CHARACTER(nstrx) :: verbosity_allowed(3)
    DATA verbosity_allowed / 'low',  'medium', 'high' /
        ! the allowed values for verbosity
+
+   CHARACTER(nstrx) :: overlaps = 'from_scratch'
+       ! ( 'from_scratch' | 'from_file' )
+       ! wheter overlaps are calculated or read from an existing file
+
+   CHARACTER(nstrx) :: overlaps_allowed(2)
+   DATA overlaps_allowed / 'from_scratch',  'from_file' /
+       ! the allowed values for overlaps
+
+   CHARACTER(nstrx) :: projections = 'from_scratch'
+       ! ( 'from_scratch' | 'from_file' )
+       ! wheter projections are calculated or read from an existing file
+
+   CHARACTER(nstrx) :: projections_allowed(2)
+   DATA projections_allowed / 'from_scratch',  'from_file' /
+       ! the allowed values for projections
 
    LOGICAL :: assume_ncpp = .FALSE.
        ! if .TRUE. this variable avoids the reading of pseudopotential files
@@ -68,16 +94,13 @@
    REAL(dbl) :: unitary_thr = 1.0d-8  
        ! threshold for the check of matrix unitariery
 
-   INTEGER :: nprint = 10  
-       ! each nprint iterations in wannier minimizations write to stdout
-
-
-   NAMELIST / CONTROL /  title, prefix, postfix, work_dir, verbosity, &
-                         assume_ncpp, unitary_thr, nprint
+   NAMELIST / CONTROL /  title, prefix, postfix, restart_mode, work_dir, verbosity, &
+                         overlaps, projections, assume_ncpp, unitary_thr
 
 
    PUBLIC :: title, prefix, postfix, work_dir
-   PUBLIC :: verbosity, assume_ncpp, unitary_thr, nprint
+   PUBLIC :: overlaps, projections, restart_mode
+   PUBLIC :: verbosity, assume_ncpp, unitary_thr
    PUBLIC :: CONTROL
 
 
@@ -88,18 +111,18 @@
    INTEGER :: dimwann = 0
        ! the number of wannier functions, i.e. the dimension of the wannier subspace
 
-   REAL(dbl) :: win_min = 0.0_dbl
+   REAL(dbl) :: win_min =  -20000000.0_dbl
        ! the lower bound of the energy window for the determination of the 
        ! Wannier subspace
      
-   REAL(dbl) :: win_max = 0.0_dbl
+   REAL(dbl) :: win_max =   20000000.0_dbl
        ! the upper bound of the above defined energy window
 
-   REAL(dbl) :: froz_min = -20000000.0_dbl
+   REAL(dbl) :: froz_min = -60000000.0_dbl
        ! the lower bound of a second energy window which "frozes" the
        ! inner states to be part of the subspace.
 
-   REAL(dbl) :: froz_max = -10000000.0_dbl
+   REAL(dbl) :: froz_max = -50000000.0_dbl
        ! the upper bound of the frozen energy window
 
    REAL(dbl) :: alpha_dis = 0.5_dbl
@@ -108,11 +131,17 @@
    INTEGER :: maxiter_dis = 1000
        ! maximum number of iterations during the disentangle procedure
 
+   INTEGER :: nprint_dis = 10  
+       ! every nprint iterations in disentangle minimizations write to stdout
+
+   INTEGER :: nsave_dis = 10  
+       ! every nsave iterations in disentangle minimizations write subspace to disk
+
    REAL(dbl) :: disentangle_thr = 1.0d-8  
        ! threshold for convergence of the iterative disentangle procedure
 
-   CHARACTER(nstrx) :: trial_mode = "center_projections"
-       ! ( 'lower_states' | 'upper_states' | 'center_projections' )
+   CHARACTER(nstrx) :: start_mode_dis = "center_projections"
+       ! ( 'lower_states' | 'upper_states' | 'center_projections' | 'from_file' )
        ! Determine how the trial subspace is chosen
        ! 'lower_states' : the lower DIMWANN bands from DFT calculation are
        !                  used to define the subspace
@@ -121,8 +150,11 @@
        ! 'center_projections' : a subspace is extracted from the DFT bands
        !                  by means of a projections on the given WANNIER_TRIAL_CENTERS
        !                  (see the section TRIAL_CENTERS)
-   CHARACTER(nstrx) :: trial_mode_allowed(3)
-   DATA trial_mode_allowed / 'lower_states', 'upper_states', 'center_projections' /
+       ! 'from_file'    : read from an existing file (default for restart)
+
+   CHARACTER(nstrx) :: start_mode_dis_allowed(4)
+   DATA start_mode_dis_allowed / 'lower_states', 'upper_states', &
+                                 'center_projections', 'from_file' /
 
    CHARACTER(10)    :: spin_component = 'none'
        ! ( 'up' | 'down' | 'none' )
@@ -135,11 +167,12 @@
 
 
    NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, spin_component, &
-                         alpha_dis, maxiter_dis, disentangle_thr, trial_mode
+                         alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &
+                         start_mode_dis
 
 
    PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component
-   PUBLIC :: alpha_dis, maxiter_dis, disentangle_thr, trial_mode
+   PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, start_mode_dis
    PUBLIC :: SUBSPACE
    
 
@@ -164,6 +197,23 @@
 
    INTEGER :: ncg = 3
        ! each ncg iterations in the second iteration part, do a CG minimization
+
+   INTEGER :: nprint_wan = 10  
+       ! each nprint_wan iterations in wannier minimizations write to stdout
+
+   INTEGER :: nsave_wan = 10  
+       ! each nsave_wan iterations in wannier minimizations save data to disk
+
+   CHARACTER(nstrx) :: start_mode_wan = "center_projections"
+       ! ( 'center_projections' | 'from_file' )
+       ! Determine how the wannier localization is started
+       ! 'center_projections' : a subspace is extracted from the DFT bands
+       !                  by means of a projections on the given WANNIER_TRIAL_CENTERS
+       !                  (see the section TRIAL_CENTERS)
+       ! 'from_file'    : read from an existing file (default for restart)
+
+   CHARACTER(nstrx) :: start_mode_wan_allowed(2)
+   DATA start_mode_wan_allowed / 'center_projections', 'from_file' /
 
    INTEGER :: iphase = 1
        ! obsolete variable
@@ -190,11 +240,13 @@
 
 
    NAMELIST / LOCALIZATION / wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, &
-     maxiter1_wan, ncg, iphase, nshells, nwhich, ordering_mode, nshells, nwhich
+     maxiter1_wan, nprint_wan, nsave_wan, ncg, start_mode_wan, iphase, nshells, nwhich, &
+     ordering_mode, nshells, nwhich
 
 
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan
-   PUBLIC :: ncg, iphase, nshells, nwhich, ordering_mode
+   PUBLIC :: nprint_wan, nsave_wan, ncg, start_mode_wan 
+   PUBLIC :: iphase, nshells, nwhich, ordering_mode
    PUBLIC :: LOCALIZATION
 
 
@@ -228,7 +280,14 @@ CONTAINS
       ! ... checking parameters
       !
       IF ( unitary_thr <= 0 ) CALL errore(subname, ' unitary_thr must be positive ', 1 )
-      IF ( nprint <= 0 ) CALL errore(subname, ' nprint must be non-negative ', -nprint+1 )
+
+      CALL change_case(restart_mode,'lower')
+      allowed=.FALSE.
+      DO i=1,SIZE(restart_mode_allowed)
+          IF ( TRIM(restart_mode) == restart_mode_allowed(i) ) allowed=.TRUE. 
+      ENDDO
+      IF (.NOT. allowed) &
+          CALL errore(subname,'Invalid restart_mode "'//TRIM(restart_mode)//'"',10)
 
       CALL change_case(verbosity,'lower')
       allowed=.FALSE.
@@ -236,6 +295,21 @@ CONTAINS
           IF ( TRIM(verbosity) == verbosity_allowed(i) ) allowed=.TRUE. 
       ENDDO
       IF (.NOT. allowed) CALL errore(subname,'Invalid verbosity "'//TRIM(verbosity)//'"',10)
+
+      CALL change_case(overlaps,'lower')
+      allowed=.FALSE.
+      DO i=1,SIZE(overlaps_allowed)
+          IF ( TRIM(overlaps) == overlaps_allowed(i) ) allowed=.TRUE. 
+      ENDDO
+      IF (.NOT. allowed) CALL errore(subname,'Invalid overlaps "'//TRIM(overlaps)//'"',11)
+
+      CALL change_case(projections,'lower')
+      allowed=.FALSE.
+      DO i=1,SIZE(projections_allowed)
+          IF ( TRIM(projections) == projections_allowed(i) ) allowed=.TRUE. 
+      ENDDO
+      IF (.NOT. allowed) &
+          CALL errore(subname,'Invalid projections "'//TRIM(projections)//'"',12)
 
    END SUBROUTINE read_namelist_control
 
@@ -266,13 +340,16 @@ CONTAINS
       IF ( alpha_dis > 1.0 ) CALL errore(subname, 'alpha_dis should <=1.0 ', 1 ) 
       IF ( maxiter_dis <= 0 ) CALL errore(subname, 'maxiter_dis should be >0',-maxiter_dis+1)
       IF ( disentangle_thr <= 0.0 ) CALL errore(subname, 'disentangle_thr should be > 0',1)
+      IF ( nprint_dis <= 0 ) CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
+      IF ( nsave_dis <= 0 ) CALL errore(subname, ' nsave_dis must be > 0 ', -nsave_dis+1 )
 
-      CALL change_case(trial_mode,'lower')
+      CALL change_case(start_mode_dis,'lower')
       allowed=.FALSE.
-      DO i=1,SIZE(trial_mode_allowed)
-          IF ( TRIM(trial_mode) == trial_mode_allowed(i) ) allowed=.TRUE. 
+      DO i=1,SIZE(start_mode_dis_allowed)
+          IF ( TRIM(start_mode_dis) == start_mode_dis_allowed(i) ) allowed=.TRUE. 
       ENDDO
-      IF (.NOT. allowed) CALL errore(subname,'Invalid trial_mode "'//TRIM(trial_mode)//'"',2)
+      IF (.NOT. allowed) &
+         CALL errore(subname,'Invalid start_mode_dis "'//TRIM(start_mode_dis)//'"',2)
 
       CALL change_case(spin_component,'lower')
       allowed=.FALSE.
@@ -311,11 +388,21 @@ CONTAINS
       IF ( alpha1_wan > 1.0 ) CALL errore(subname, 'alpha1_wan should <=1.0 ', 1 ) 
       IF ( maxiter0_wan <= 0 ) CALL errore(subname, 'maxiter0_wan should be >0',1)
       IF ( maxiter1_wan <= 0 ) CALL errore(subname, 'maxiter1_wan should be >0',1)
+      IF ( nprint_wan <= 0 ) CALL errore(subname, ' nprint_wan must be > 0 ', -nprint_wan+1 )
+      IF ( nsave_wan <= 0 ) CALL errore(subname, ' nsave_wan must be > 0 ', -nsave_wan+1 )
       IF ( ncg <= 0 ) CALL errore(subname, 'ncg should be >0',1)
       IF ( iphase /=1 ) CALL errore(subname, 'iphase MUST be 1',ABS(iphase-1))
       IF ( nshells <= 0 ) CALL errore(subname, 'nshells should be > 0',1)
       IF ( nshells > nnx ) CALL errore(subname, 'nshells should be < nnx',nnx)
       IF ( ANY( nwhich(1:nshells) <= 0 ) ) CALL errore(subname, 'nwhich should be >= 1',2)
+
+      CALL change_case(start_mode_wan,'lower')
+      allowed=.FALSE.
+      DO i=1,SIZE(start_mode_wan_allowed)
+          IF ( TRIM(start_mode_wan) == start_mode_wan_allowed(i) ) allowed=.TRUE. 
+      ENDDO
+      IF (.NOT. allowed) &
+         CALL errore(subname,'Invalid start_mode_wan "'//TRIM(start_mode_wan)//'"',2)
 
       CALL change_case(ordering_mode,'lower')
       allowed=.FALSE.
