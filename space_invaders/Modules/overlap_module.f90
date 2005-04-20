@@ -165,19 +165,34 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE overlap_read(unit,name,found)
+   SUBROUTINE overlap_read(unit,name,found, loverlap, lprojection )
    !**********************************************************
+   !
+   ! allocate (if necessary) and read projections and overlaps integrals
+   ! LOVERLAP and LPROJECTION make the routine read or not the specified
+   ! quantities (default is .TRUE. for both)
+   !
    IMPLICIT NONE
        INTEGER,           INTENT(in) :: unit
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
+       LOGICAL, OPTIONAL, INTENT(in) :: loverlap, lprojection
+
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="overlap_read"
+       LOGICAL            :: loverlap_, lprojection_
        INTEGER            :: dimwinx_, dimwann_, nnx_, nkpts_
        INTEGER            :: ik, iwann, dimwin_, dimwin_k, dimwin_kb, ib, nneigh_
        INTEGER            :: ierr
 
-       IF ( alloc ) CALL overlap_deallocate()
+       !
+       ! define the default
+       !
+       loverlap_ = .TRUE.
+       lprojection_ = .TRUE.
+       IF ( PRESENT(loverlap) ) loverlap_ = loverlap
+       IF ( PRESENT(lprojection) ) lprojection_ = lprojection
+ 
        
        CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
        IF (.NOT. found) RETURN
@@ -218,69 +233,72 @@ CONTAINS
        ENDIF
 
        !
-       CALL overlap_allocate()       
-       ca(:,:,:) = CZERO
-       Mkb(:,:,:,:) = CZERO
+       IF ( .NOT. alloc ) CALL overlap_allocate()       
 
        !
        ! read overlap
        !
-       CALL iotk_scan_begin(unit,'OVERLAP',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'scanning for OVERLAP',ABS(ierr))
+       IF ( loverlap_ ) THEN
+           Mkb(:,:,:,:) = CZERO
+           CALL iotk_scan_begin(unit,'OVERLAP',IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'scanning for OVERLAP',ABS(ierr))
           
-       DO ik=1,nkpts
-           CALL iotk_scan_begin(unit,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr, IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik)
-           CALL iotk_scan_attr(attr,'dimwin_k',dimwin_k,IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik)
-           IF ( dimwin_k > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_k)
-           CALL iotk_scan_attr(attr,'nneigh',nneigh_,IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'scanning for nneigh_',ik)
-           IF ( nneigh_ > nnx ) CALL errore(subname,'nniegh too large',nneigh_)
+           DO ik=1,nkpts
+               CALL iotk_scan_begin(unit,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr, IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik)
+               CALL iotk_scan_attr(attr,'dimwin_k',dimwin_k,IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik)
+               IF ( dimwin_k > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_k)
+               CALL iotk_scan_attr(attr,'nneigh',nneigh_,IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for nneigh_',ik)
+               IF ( nneigh_ > nnx ) CALL errore(subname,'nniegh too large',nneigh_)
 
-           DO ib=1,nneigh_
-                 CALL iotk_scan_empty(unit, 'data', ATTR=attr, IERR=ierr)
-                 IF (ierr/=0) CALL errore(subname,'scanning for data',ib)
-                 CALL iotk_scan_attr(attr,'dimwin_kb',dimwin_kb,IERR=ierr)
-                 IF (ierr/=0) CALL errore(subname,'scanning for dimwin_kb',ib)
-                 IF ( dimwin_kb > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_kb)
+               DO ib=1,nneigh_
+                   CALL iotk_scan_empty(unit, 'data', ATTR=attr, IERR=ierr)
+                   IF (ierr/=0) CALL errore(subname,'scanning for data',ib)
+                   CALL iotk_scan_attr(attr,'dimwin_kb',dimwin_kb,IERR=ierr)
+                   IF (ierr/=0) CALL errore(subname,'scanning for dimwin_kb',ib)
+                   IF ( dimwin_kb > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_kb)
                  
-                 CALL iotk_scan_dat(unit,'nn'//TRIM(iotk_index(ib)), &
-                          Mkb(1:dimwin_k,1:dimwin_kb,ib,ik),IERR=ierr )
-                 IF (ierr/=0) CALL errore(subname,'scanning for nn',ib)
+                   CALL iotk_scan_dat(unit,'nn'//TRIM(iotk_index(ib)), &
+                            Mkb(1:dimwin_k,1:dimwin_kb,ib,ik),IERR=ierr )
+                   IF (ierr/=0) CALL errore(subname,'scanning for nn',ib)
+               ENDDO
+               CALL iotk_scan_end(unit,'kpoint'//TRIM(iotk_index(ik)), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik)
            ENDDO
-           CALL iotk_scan_end(unit,'kpoint'//TRIM(iotk_index(ik)), IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik)
-       ENDDO
            
-       CALL iotk_scan_end(unit,'OVERLAP',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'scanning for ending OVERLAP',ABS(ierr))
+           CALL iotk_scan_end(unit,'OVERLAP',IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'scanning for ending OVERLAP',ABS(ierr))
+       ENDIF
 
        !
        ! read projections
        !
-       CALL iotk_scan_begin(unit,'PROJECTIONS',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'scanning for PROJECTIONS',ABS(ierr))
+       IF ( lprojection_ ) THEN
+           ca(:,:,:) = CZERO
+           CALL iotk_scan_begin(unit,'PROJECTIONS',IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'scanning for PROJECTIONS',ABS(ierr))
           
-       DO ik=1,nkpts
-           CALL iotk_scan_begin(unit,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr, IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik)
-           CALL iotk_scan_attr(attr,'dimwin',dimwin_,IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik)
-           IF ( dimwin_ > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_)
+           DO ik=1,nkpts
+               CALL iotk_scan_begin(unit,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr, IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik)
+               CALL iotk_scan_attr(attr,'dimwin',dimwin_,IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik)
+               IF ( dimwin_ > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_)
 
-           DO iwann=1,dimwann
-                 CALL iotk_scan_dat(unit,'wannier'//TRIM(iotk_index(iwann)), &
-                                         ca(1:dimwin_,iwann,ik),IERR=ierr )
-                 IF (ierr/=0) CALL errore(subname,'scanning for wannier',iwann)
+               DO iwann=1,dimwann
+                     CALL iotk_scan_dat(unit,'wannier'//TRIM(iotk_index(iwann)), &
+                                             ca(1:dimwin_,iwann,ik),IERR=ierr )
+                     IF (ierr/=0) CALL errore(subname,'scanning for wannier',iwann)
+               ENDDO
+               CALL iotk_scan_end(unit,'kpoint'//TRIM(iotk_index(ik)), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik)
            ENDDO
-           CALL iotk_scan_end(unit,'kpoint'//TRIM(iotk_index(ik)), IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik)
-       ENDDO
            
-       CALL iotk_scan_end(unit,'PROJECTIONS',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'scanning for ending PROJECTIONS',ABS(ierr))
-          
+           CALL iotk_scan_end(unit,'PROJECTIONS',IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'scanning for ending PROJECTIONS',ABS(ierr))
+       ENDIF
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))

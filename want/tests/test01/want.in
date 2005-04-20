@@ -12,7 +12,7 @@
     win_max =  14.8            
     alpha_dis = 0.5               
     maxiter_dis = 200
-    trial_mode = "center_projections"
+    start_mode_dis = "center_projections"
 /
 
 &LOCALIZATION

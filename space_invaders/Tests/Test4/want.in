@@ -2,6 +2,7 @@
 &CONTROL
    prefix = 'al'
    postfix = '_WanT'
+   restart_mode = 'restart'
    work_dir = './'
 /
 
@@ -9,9 +10,9 @@
    dimwann = 4     
    win_min = -20.0
    win_max = 10.0  
-   maxiter_dis = 500     
+   maxiter_dis = 50     
    alpha_dis = 0.5      
-   trial_mode = 'center_projections'
+   start_mode_dis = 'center_projections'
 /
 
 &LOCALIZATION

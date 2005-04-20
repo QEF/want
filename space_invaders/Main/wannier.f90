@@ -16,8 +16,9 @@
       USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
-      USE control_module, ONLY : ordering_mode, nprint, unitary_thr, verbosity, iphase
-      USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
+      USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
+                                 unitary_thr, verbosity, iphase
+      USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ioname
       USE files_module, ONLY : file_open, file_close
       USE startup_module, ONLY : startup
@@ -34,7 +35,7 @@
                        ncg, wannier_thr,  &
                        cu, rave, rave2, r2ave, &
                        Omega_I, Omega_OD, Omega_D, Omega_V, Omega_tot, &
-                       localization_allocate, localization_write
+                       localization_allocate, localization_write, localization_print
 
 !
 ! ... 
@@ -132,7 +133,8 @@
 ! 
       WRITE(stdout,"(2/,2x,70('='))")
       WRITE(stdout,"(2x,'=',18x,'Starting localization procedure',19x,'=')")
-      WRITE(stdout,"(2x,70('=')),/")
+      WRITE(stdout,"(2x,70('='))")
+      WRITE(stdout,"(/)")
 
       !
       ! ... Now calculate the average positions of the Wanns.
@@ -152,23 +154,7 @@
 
       !
       !...  Write centers and spread
-
-      WRITE( stdout, "(/,2x, 'Center coord in Bohr, Spreads (Omega) in Bohr^2 ')")
-      DO nwann = 1, dimwann
-        WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
-           &' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ),  &
-                                        r2ave(nwann) - rave2(nwann)
-      END DO  
-      WRITE( stdout," ( /,2x, '! Center Sum', &
-           &  1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
-           (rtot(i),i=1,3), r2tot
-              
-
-      WRITE( stdout, fmt="(/,2x, 'Spread Operator decomposition (Bohr^2) : ')")
-      WRITE( stdout, fmt="(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
-      WRITE( stdout, fmt="(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
-      WRITE( stdout, fmt="(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
-      WRITE( stdout, fmt="(/,4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
+      CALL localization_print(stdout,FMT="extended")
 
       func_old1 = func_om1
       func_old2 = func_om2
@@ -374,21 +360,19 @@
       cdodq   = CZERO
 
       CALL timing('init',OPR='stop')
+
+
+!
+!----------------------------------------------
+!  ... Main iterative loop
+!----------------------------------------------
+!
       CALL timing('iterations',OPR='start')
 
-!
-!
-!  ... Here start the iterative loop
-!
-!
-      WRITE( stdout, "(2/,2x,70('='))" ) 
-      WRITE( stdout, "(2x,'=',21x,'Starting iteration loop',24x,'=')" )
+      WRITE( stdout, "(/,2x,70('='))" ) 
+      WRITE( stdout, "(2x,'=',22x,'Starting iteration loop',23x,'=')" )
       WRITE( stdout, "(2x,70('='),/)" ) 
 
-
-!
-! ... Main ITERATION loop
-!
       iteration_loop : &
       DO ncount = 1, maxiter0_wan + maxiter1_wan
 
@@ -529,26 +513,12 @@
         ENDDO
 
 
-! ...   And the functional is recalculated
-
+        !
+        ! The functional is recalculated
+        !
         CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,       &
              csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
              rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
-
-        IF ( ncount <= maxiter0_wan ) THEN
-            IF ( ( (ncount/nprint) * nprint +1) == ncount )  THEN
-                WRITE( stdout," (/,2x,'Iteration = ',i5) ") ncount
-                WRITE(stdout, " (2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
-                DO nwann = 1, dimwann
-                    WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',&
-                               &  f12.6, ' )  Omega = ', f13.6 )" )  &
-                               nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
-                ENDDO
-                WRITE( stdout, " (/, 2x, '! Center Sum', 1x, '= (',  & 
-                               &  f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )  &
-                               (rtot(i),i=1,3), r2tot
-             ENDIF
-        ENDIF
 
         funca = func_om1 + func_om2 + func_om3
         func_del1 = func_om1 - func_old1
@@ -556,6 +526,8 @@
         func_del3 = func_om3 - func_old3
         func_del = func_del1 + func_del2 + func_del3
 
+
+!
 ! ...   If lcg is false, or still in the first maxiter0_wan iterations, 
 !       it skips the optimal alpha paraphernalia 
 
@@ -575,18 +547,19 @@
           falphamin = eqa * alphamin**2 + eqb * alphamin + eqc
 
 
-! ...     Restore cu and Mkb
-
+          !
+          ! Restore cu and Mkb
+          !
           cu = cu0
           Mkb = Mkb0
 
-! ...     Take now optimal parabolic step
-
+          !
+          ! Take now optimal parabolic step
           cdq = alphamin / wbtot / FOUR * cdqkeep
 
-
-! ...     The expected change in the functional is calculated
-
+          !
+          ! The expected change in the functional is calculated
+          !
           cfunc_exp1 = CZERO
           cfunc_exp2 = CZERO
           cfunc_exp3 = CZERO
@@ -621,9 +594,9 @@
 
           ENDDO
 
-
-! ...     The expected change in the functional is calculated
-
+          !
+          ! The expected change in the functional is calculated
+          !
           cfunc_exp1 = CZERO
           cfunc_exp2 = CZERO
           cfunc_exp3 = CZERO
@@ -638,17 +611,18 @@
           END DO
           cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
 
-
-! ...     The orbitals are rotated 
-
+          !
+          ! The orbitals are rotated 
+          !
           DO ik = 1, nkpts
               CALL zmat_mul( cmtmp(:,:), cu(:,:,ik), 'N', cdq(:,:,ik), 'N', &
                              dimwann, dimwann, dimwann )
               cu(:,:,ik) = cmtmp(:,:)
           END DO
 
-! ...     And the M_ij are updated
-
+          !
+          ! M_ij are updated
+          !
           DO ik = 1, nkpts
              DO nn = 1, nntot(ik)
                 ik2 = nnlist(ik,nn)
@@ -667,24 +641,13 @@
              ENDDO
           ENDDO
 
-! ...     And the functional is recalculated
-           
+
+          !
+          ! The functional is recalculated
+          !  
           CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,       &
                csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
                rtot, r2tot, Omega_I , Omega_D, Omega_OD, Omega_V)
-
-          IF ( ( (ncount/nprint) * nprint +1) == ncount ) THEN
-              WRITE( stdout, " (/,2x,'Iteration = ',i5) ") ncount
-              WRITE(stdout,  " (  2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
-              DO nwann = 1, dimwann
-                  WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
-                         &  f12.6, ' )  Omega = ', f13.6 )" )  &
-                         nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
-              ENDDO
-              WRITE( stdout, " ( /,2x, '! Center Sum',    &
-                         & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" ) &
-                         (rtot(i),i=1,3), r2tot
-          ENDIF
 
           funca = func_om1 + func_om2 + func_om3
           func_del1 = func_om1 - func_old1
@@ -692,117 +655,92 @@
           func_del3 = func_om3 - func_old3
           func_del = func_del1 + func_del2 + func_del3
 
-! ...   end of the lcg skip of the optimal alpha paraphernalia 
-        END IF
+
+        ! ...   end of the lcg skip of the optimal alpha paraphernalia 
+        ENDIF
 
 
         func_old1 = func_om1
         func_old2 = func_om2
         func_old3 = func_om3
-
         func0 = funca
+
+
+        !
+        ! write info to stdout
+        !
+        IF ( MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1 ) THEN
+             WRITE( stdout, " (/,2x,'Iteration = ',i5) ") ncount
+             CALL localization_print(stdout, FMT="standard" )
+             WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f9.6) ") func_del
+             
+             CALL timing_upto_now(stdout)
+        ENDIF
+
+
+        !
+        ! write data to disk
+        !
+        IF ( MOD( ncount, nsave_wan ) == 0 ) THEN
+             CALL ioname('wannier',filename)
+             CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+                  CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
+             CALL file_close(wan_unit,PATH="/",ACTION="write")
+        ENDIF
+             
      
-! ...   Check convergence
-
-        IF ( ABS( func_del ) < wannier_thr ) THEN
-          !
-          ! ... ordering wannier centers
-          !
-          CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu, ordering_mode)
-
-          WRITE( stdout, "(/,2x,70('='))" ) 
-          WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
-          WRITE( stdout, "(2x,70('='),/)" ) 
-
-          WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
-          WRITE( stdout, " (2x, 'Final Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
-          DO nwann = 1, dimwann
-            WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',', &
-               & f12.6,' )  Omega = ', f13.6 )" )  &
-               nwann,( rave(i,nwann), i=1,3 ), r2ave(nwann) - rave2(nwann)
-          END DO
-          WRITE( stdout, " ( /, 2x, '! Center Sum',    &
-               & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
-              (rtot(i),i=1,3), r2tot
-
-          WRITE( stdout, "(/,2x, 'Spread Operator decomposition (Bohr^2): ')")
-          WRITE( stdout, "(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
-          WRITE( stdout, "(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
-          WRITE( stdout, "(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
-          WRITE( stdout, "(  4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
-
-          WRITE (stdout, "(/, 2x,'Omega variation (Bohr^2):')")
-!          WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
-!          WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
-!          WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
-!          WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
-!          WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
-
-          WRITE (stdout, "(  4x,'Delta Omega Tot = ',f15.9)") func_del
-          WRITE( stdout, "(/,2x,70('='))" ) 
-
-          GO TO 8100
-        END IF  
-
-!
-! ...  End of the ITERATION loop
-!
+        !
+        ! convergence condition
+        !
+        IF ( ABS( func_del ) < wannier_thr ) EXIT iteration_loop
       ENDDO iteration_loop
+      !
+      ! ... End of iter loop
+      !
+
+!
+!--------------------------------------
+! ...  Final processing
+!--------------------------------------
+!
+
+      !
+      ! ...  Status of the convergence
+      !
+      WRITE(stdout, "()")
+      CALL timing('iterations',OPR='stop')
+
+      WRITE( stdout, "(/,2x,70('='))" )
+      IF ( ncount == maxiter0_wan + maxiter1_wan ) THEN
+          WRITE( stdout, "(2x,'=',18x,'Max number of iteration reached',18x,'=')")
+      ELSE
+          WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
+      ENDIF
+      WRITE( stdout, "(2x,70('='),/)" )
 
 
       !
       ! ... ordering wannier centers
       !
-      CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu,ordering_mode)
+      CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu, ordering_mode)
+      WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
 
-      WRITE (stdout, "(/,2x,70('='))")
-      WRITE( stdout, "(2x,'=',18x,'Max Number of iteration reached',19x,'=')" ) 
-      WRITE (stdout, "(2x,70('='),/)")
-
-      WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
-      WRITE(stdout,  " (2x, 'Final Wannier centers (Bohr) and Spreads Omega (Bohr^2)')")
-      DO nwann = 1, dimwann
-        WRITE( stdout, " ( 4x, 'Center ', i3, 1x, '= (',f12.6,',',f12.6,',',f12.6,  &
-           & ' )  Omega = ', f13.6 )" )  nwann,( rave(i,nwann), i=1,3 ), &
-                                         r2ave(nwann) - rave2(nwann)
-      END DO
-      WRITE( stdout, " (/,2x, '! Center Sum',    &
-           & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6 )" )     &
-             (rtot(i),i=1,3), r2tot
-
-      WRITE( stdout, "(/,2x, 'Spread Operator decomposition (Bohr^2): ')")
-      WRITE( stdout, "(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
-      WRITE( stdout, "(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
-      WRITE( stdout, "(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
-      WRITE( stdout, "(  4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
-
-      WRITE (stdout, "(/,2x,'Omega variation (Bohr^2):')")
-!      WRITE (stdout, "(  4x,'Delta Omega 1   = ',0pe16.8)") func_del1
-!      WRITE (stdout, "(  4x,'Delta Omega 2   = ',0pe16.8)") func_del2
-!      WRITE (stdout, "(  4x,'Delta Omega 3   = ',0pe16.8)") func_del3
-!      WRITE (stdout, "(  4x,'Delta Omega Tot = ',0pe16.8)") func_del
-!      WRITE (stdout, "(/,2x,'Derivative = ', 2e12.4) ") funca-func0,doda0*alpha
-
-      WRITE (stdout, "(  4x,'Delta Omega Tot = ',f15.9)") func_del
-      WRITE (stdout, "(/,2x,70('='))")
+      CALL localization_print(stdout, FMT="extended")
+      CALL timing_upto_now(stdout)
 
 
-! ... End of the minimization loop
-
-8100  CONTINUE
-
-      CALL timing('iterations',OPR='stop')
-      CALL timing('write',OPR='start')
-
-!
-! ... Unitariery of U matrix is checked
+      !
+      ! ... Unitariery of U matrix is checked
+      !
       DO ik = 1, nkpts
           IF (  .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  )  &
                WRITE (stdout, " (/,2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")ik
       ENDDO
 
-! ... Singular value decomposition
 
+      !
+      ! ... Singular value decomposition
+      !
       omt1 = ZERO
       omt2 = ZERO
       omt3 = ZERO
@@ -824,27 +762,35 @@
       omt2 = omt2/DBLE(nkpts)
       omt3 = omt3/DBLE(nkpts)
 
- 
-! ... Write the final unitary transformations and all other data referring
-!     to the Wannier localization procedure to a file
- 
+      ! 
+      ! ... Write the final unitary transformations and all other data referring
+      !     to the Wannier localization procedure to a file
+      !
       CALL ioname('wannier',filename)
       CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
            CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
       CALL file_close(wan_unit,PATH="/",ACTION="write")
 
       CALL ioname('wannier',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(/,'  Wannier transformation data written on file: ',a)") TRIM(filename)
+      WRITE( stdout,"(/,2x,'Unitary transf. matrixes written on file: ',a)") &
+                    TRIM(filename)
 
 !
-! ... Finalize timing
-      CALL timing('write',OPR='stop')
+!--------------------------------------
+! ...  Shut down
+!--------------------------------------
+!
+      WRITE(stdout,"(2x,70('='))")
+
+      !
+      ! ... Finalize timing
+      !
       CALL timing('wannier',OPR='stop')
       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='wannier')
      
-!
-! ... Deallocate local arrays
-
+      !
+      ! ... Deallocate local arrays
+      !
       DEALLOCATE( cwschur1, cwschur2, STAT=ierr )
            IF( ierr /=0 )&
            CALL errore(' wannier ', ' deallocating cwschur1 cwschur1 ', ABS(ierr) )
@@ -890,3 +836,4 @@
 
       STOP '*** THE END *** (wannier.f90)'
       END PROGRAM wannier
+

@@ -49,10 +49,32 @@ title         STRING
               the title of the calculation
               DEFAULT: "Wannier Transport Calculation"
 
+restart_mode  STRING
+              ( "from_scratch" | "restart" )
+              define whether to restart a previous calculation; at the moment the "restart"
+              choice implies to overwrite the input variables OVERLAPS, PROJECTIONS, 
+              START_MODE_DIS and START_MODE_WAN , withthe value "from_file" (see below 
+              for thier meanings). 
+              DEFAULT: "from_scratch"
+
 verbosity     STRING
               ( "low" | "medium" | "high" )
               the level of detail of the code output
               DEFAULT: "medium"
+
+overlaps      STRING
+              ( "from_scratch" | "from_file" )
+              determine how to get overlap integrals:
+              "from_scratch":  overlaps are calculated from wfcs.
+              "from_file":     overlaps are read from a previous data file.
+              In this second case dimensions should be consistent.
+              DEFAULT: "from_scratch"
+
+projections   STRING
+              ( "from_scratch" | "from_file" )
+              determine how to get projection integrals.
+              Meanings as before.
+              DEFAULT: "from_scratch"
 
 assume_ncpp   LOGICAL
               if .TRUE. avoids the reading of pseudopotential files
@@ -64,9 +86,6 @@ unitary_thr   REAL
               threshold for the check of matrix unitariery
               DEFAULT: 1.0d-8
 
-nprint        INTEGER
-              each nprint iterations in wannier minimizations write to stdout
-              DEFAULT: 10
 
 
 ==============================================================================
@@ -103,12 +122,20 @@ maxiter_dis   INTEGER
               maximum number of iterations during the disentangle procedure
               DEFAULT : 1000
 
+nprint_dis    INTEGER
+              every nprint_dis iterations in disentangle minimization write to stdout
+              DEFAULT: 10
+
+nsave_dis     INTEGER
+              every nsave_dis iterations save subspace data to disk
+              DEFAULT: 10
+
 disentangle_thr    REAL
               threshold for convergence of the iterative disentangle procedure
               DEFAULT: 1.0d-8
 
-trial_mode    STRING
-              ( "lower_states", "upper_states", "center_projections" )
+start_mode_dis     STRING
+              ( "lower_states", "upper_states", "center_projections", "from_file" )
               Determine how the trial subspace is chosen
               "lower_states" : the lower DIMWANN bands from DFT calculation are
                  used to define the subspace
@@ -117,6 +144,8 @@ trial_mode    STRING
               "center_projections" : a subspace is extracted from the DFT bands
                  by means of a projections on the given WANNIER_TRIAL_CENTERS
                  (see the section WANNIER_CENTERS)
+              "from_file" : subspace initialization is read from an existing data file;
+                 this is the choice used during restart.
               DEFAULT : "center_projections"
 
 spin_component    STRING
@@ -150,6 +179,14 @@ maxiter1_wan  INTEGER
               maximum number of iterations for the second minim part
               DEFAULT: 500
 
+nprint_wan    INTEGER
+              every nprint_dis iterations in wannier minimization write to stdout
+              DEFAULT: 10
+
+nsave_wan     INTEGER
+              every nsave_dis iterations save subspace data to disk
+              DEFAULT: 10
+
 ncg           INTEGER
               each ncg iterations in the second minimization part, do a CG minimization
               DEFAULT : 3
@@ -161,6 +198,16 @@ nshells       INTEGER
 nwhich(ish)   INTEGER
               the indexes of the chosen shells
               DEFAULT: mandatory (ish =1, nshells)
+
+start_mode_wan     STRING
+              ( "center_projections", "from_file" )
+              Determine how the wannier localization is started
+              "center_projections" : a subspace is extracted from the DFT bands
+                 by means of a projections on the given WANNIER_TRIAL_CENTERS
+                 (see the section WANNIER_CENTERS)
+              "from_file" : subspace initialization is read from an existing data file;
+                 this is the choice used during restart.
+              DEFAULT : "center_projections"
            
 ordering_mode STRING
               ( "none" | "spatial" | "spread" | "complete" ) 

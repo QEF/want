@@ -17,8 +17,11 @@
    USE parser_module, ONLY: log2char
    USE converters_module, ONLY: cry2cart
    USE io_module, ONLY : title, prefix, postfix, work_dir
-   USE control_module, ONLY : ordering_mode, verbosity, do_pseudo, &
-                              unitary_thr, trial_mode, nprint
+   USE control_module, ONLY : ordering_mode, verbosity, restart_mode, & 
+                              do_pseudo, do_overlaps, do_projections, &
+                              read_subspace, read_unitary, &
+                              unitary_thr, start_mode_dis, start_mode_wan, &
+                              nprint_dis, nprint_wan, nsave_dis, nsave_wan
    USE trial_center_data_module, ONLY : trial
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
@@ -108,11 +111,17 @@
           ELSE
              WRITE(unit,"(  7x,'     Working directory :',5x,/,10x,a)") TRIM(work_dir)
           ENDIF
+          WRITE(unit,"()")
+          WRITE(unit,"(  7x,'          Restart Mode :',5x,a)") TRIM(restart_mode)
+          WRITE(unit,"(  7x,'         Overlap Calc. :',5x,a)") log2char(do_overlaps)
+          WRITE(unit,"(  7x,'      Projection Calc. :',5x,a)") log2char(do_projections)
+          WRITE(unit,"(  7x,'   Read Start Subspace :',5x,a)") log2char(read_subspace)
+          WRITE(unit,"(  7x,'Read Start Unitary mat :',5x,a)") log2char(read_unitary)
 
 
-          WRITE( unit, " ( /, '<WANNIER_FUNCTIONS>')" )
-          WRITE(unit, " (2x,'Input parameters for Wannier func. calculation')")
-          WRITE(unit, " (4x,'Number of Wannier functions required = ', i4 )" ) dimwann
+          WRITE( unit,"( /, '<WANNIER_FUNCTIONS>')" )
+          WRITE( unit,"(2x,'Input parameters for Wannier func. calculation')")
+          WRITE( unit,"(4x,'Number of Wannier functions required = ', i4 )" ) dimwann
           WRITE( unit,"(4x,'CG minim: Mixing parameter (alpha0_wan)= ', f6.3 )" ) alpha0_wan
           WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) maxiter0_wan
           WRITE( unit,"(4x,'Minimization convergence threshold = ', f15.9 )") wannier_thr
@@ -120,21 +129,25 @@
           WRITE( unit,"(4x,'SD minim: Mixing parameter (alpha1_wan) = ', f6.3 )" ) alpha1_wan
           WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) maxiter1_wan
           WRITE( unit,"(4x,'Every ',i3,' iteration perform a CG minimization (ncg)')" ) ncg
-          WRITE(unit, " (4x,'Number of k-point shells = ', i3 )" ) nshells
-          WRITE(unit, " (4x,'Chosen shells (indexes) = ', 100i3 )" ) nwhich(1:nshells)
-          WRITE(unit, " (4x,'Print each ', i3,' iterations' )" ) nprint
-          WRITE(unit, " (4x,'Ordering mode = ', a )" ) TRIM(ordering_mode)
-          WRITE( unit," (4x,'Verbosity = ', a )" ) TRIM(verbosity)
-          WRITE( unit," (4x,'Unitariery check threshold = ', f15.9 )") unitary_thr
-          WRITE( unit, " ( '</WANNIER_FUNCTIONS>',/)" )
+          WRITE( unit,"(4x,'Number of k-point shells = ', i3 )" ) nshells
+          WRITE( unit,"(4x,'Chosen shells (indexes) = ', 100i3 )" ) nwhich(1:nshells)
+          WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_wan
+          WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_wan
+          WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(start_mode_wan)
+          WRITE( unit,"(4x,'Ordering mode = ', a )" ) TRIM(ordering_mode)
+          WRITE( unit,"(4x,'Verbosity = ', a )" ) TRIM(verbosity)
+          WRITE( unit,"(4x,'Unitariery check threshold = ', f15.9 )") unitary_thr
+          WRITE( unit,"( '</WANNIER_FUNCTIONS>',/)" )
 
           WRITE( unit, " ( '<DISENTANGLE>')" )
           WRITE(unit, " (2x,'Input parameters for subspace definition')")
           WRITE( unit,"(4x,'Spin component = ', a )" ) TRIM(spin_component)
           WRITE( unit,"(4x,'Mixing parameter (alpha_dis)= ', f6.3 )" ) alpha_dis
           WRITE( unit,"(4x,'Max iteration number = ', i5 )" ) maxiter_dis
-          WRITE( unit,"(4x,'Starting guess orbitals (trial_mode) = ', a )" ) TRIM(trial_mode)
+          WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(start_mode_dis)
           WRITE( unit,"(4x,'Disentangle convergence threshold = ', f15.9 )") disentangle_thr
+          WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_dis
+          WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_dis
           WRITE( unit, " ( '</DISENTANGLE>',/)" )
 
           WRITE( unit, " ( '<TRIAL_CENTERS>')" )

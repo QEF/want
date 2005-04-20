@@ -3,7 +3,7 @@ include ../make.sys
 
 OBJS= compar.o domega.o error.o \
       get_points.o indexx.o komegai.o \
-      lambda_avg.o bshells.o omega.o overlap.o \
+      bshells.o omega.o overlap.o \
       phases.o projection.o projection_frozen.o \
       wigner_seitz.o zmatrix.o fft_stick.o \
       write_op.o check_sgm_kpt.o check_sgm_wan.o do_self_energy.o \

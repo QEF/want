@@ -21,28 +21,51 @@
 ! 
    
    CHARACTER(nstrx)          :: verbosity
-   CHARACTER(nstrx)          :: trial_mode
+   CHARACTER(nstrx)          :: restart_mode
+   CHARACTER(nstrx)          :: start_mode_dis
+   CHARACTER(nstrx)          :: start_mode_wan
    CHARACTER(nstrx)          :: ordering_mode
 
-   INTEGER                   :: nprint
+   INTEGER                   :: nprint_dis
+   INTEGER                   :: nsave_dis
+   INTEGER                   :: nprint_wan
+   INTEGER                   :: nsave_wan
    INTEGER                   :: iphase
    REAL(dbl)                 :: unitary_thr
 
    LOGICAL                   :: do_pseudo
+   LOGICAL                   :: do_overlaps
+   LOGICAL                   :: do_projections
 
+   LOGICAL                   :: read_overlaps
+   LOGICAL                   :: read_projections
+   LOGICAL                   :: read_subspace
+   LOGICAL                   :: read_unitary
  
 !
 ! end delcarations
 !
 
    PUBLIC :: verbosity
-   PUBLIC :: trial_mode
+   PUBLIC :: restart_mode
    PUBLIC :: ordering_mode
-   PUBLIC :: nprint
+   PUBLIC :: start_mode_dis
+   PUBLIC :: start_mode_wan
+   PUBLIC :: nprint_dis
+   PUBLIC :: nsave_dis
+   PUBLIC :: nprint_wan
+   PUBLIC :: nsave_wan
    PUBLIC :: iphase
    PUBLIC :: unitary_thr
 
    PUBLIC :: do_pseudo
+   PUBLIC :: do_overlaps
+   PUBLIC :: do_projections
+
+   PUBLIC :: read_overlaps
+   PUBLIC :: read_projections
+   PUBLIC :: read_subspace
+   PUBLIC :: read_unitary
 
 
 END MODULE control_module

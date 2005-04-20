@@ -1,74 +1,85 @@
 !
 ! Copyright (C) 2004 WanT Group
-! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-       FUNCTION komegai( kpt, lamp, kcm, wb, wbtot, nnlist, nshells, nwhich,    &
-                         nnshell, dimwann, dimwin, dimwinx, mxdnrk, nnx )
-!=----------------------------------------------------------------------------------=
-!
-!...   Calculates the contribution of a given k-point to Omega_I
-!
+!***************************************************
+    FUNCTION komegai( ik, mdim, dimwann, dimwin, dimwinx, lamp, Mkb )
+   !***************************************************
+   !
+   ! Calculates the contribution of a given k-point to Omega_I
+   ! Omega_I(ik) = - \Sum_b wb * \Sum_m,n  | AUX_m,n |^2  
+   ! where
+   ! AUX = Lamp(ik)^dag * Mkb * Lamp(ikb)
+   !
+   ! NOTA: m = 1, mdim
+   !       n = 1, dimwann     and other matrix dimensions accordingly
+   ! 
+   !
+   USE kinds
+   USE constants, ONLY : ZERO
+   USE timing_module
+   USE kpoints_module, ONLY : nnlist, nntot, wb, wbtot
+   USE util_module, ONLY : zmat_mul
 
-       USE kinds
-       USE constants, ONLY : CZERO
+   IMPLICIT NONE
+ 
+   REAL(dbl) :: komegai
+   INTEGER   :: ik
+   INTEGER   :: mdim
+   INTEGER   :: dimwann, dimwin(*), dimwinx
+   COMPLEX(dbl) :: lamp(dimwinx,dimwinx,*)
+   COMPLEX(dbl) :: Mkb(dimwinx,dimwinx,*)
+ 
+   !
+   ! local variables
+   !
+   INTEGER :: m, n 
+   INTEGER :: inn, ikb, ierr
+   COMPLEX(dbl), ALLOCATABLE :: aux(:,:), aux1(:,:)
 
-       IMPLICIT NONE
- 
-       INTEGER :: dimwinx, mxdnrk, nnx
-       INTEGER :: kpt, nnlist(mxdnrk,nnx)
-       INTEGER :: nshells, nwhich(nshells)
-       INTEGER :: nnshell(mxdnrk,nnx)
-       INTEGER :: dimwann, dimwin(mxdnrk)
-       REAL(dbl) :: komegai
-       REAL(dbl) ::  wb(mxdnrk,nnx), wbtot
-       COMPLEX(dbl) :: lamp(dimwinx,dimwinx,mxdnrk)
-       COMPLEX(dbl) :: kcm(dimwinx,dimwinx,nnx)
- 
-       INTEGER :: j, l, m, n 
-       INTEGER :: ndnn, ndnc, nnsh, inn, k_pls_b
-       COMPLEX(dbl) :: dot_bloch1
- 
+!----------------------------------------------------------------
 
-       komegai = DBLE(dimwann) * wbtot
- 
-       DO m = 1, dimwann      ! index of lambda eigenvector at k
-       DO n = 1, dimwann      ! index of lambda eigenvector at k+b
- 
-! ...    LOOP OVER B-VECTORS
- 
-           inn=0
-           DO ndnc=1,nshells
-               ndnn = nwhich(ndnc)
-               DO nnsh=1,nnshell(kpt,ndnn)
-                   inn=inn+1
-                   k_pls_b=nnlist(kpt,inn)
- 
-! ...              CALCULATE THE DOTPRODUCT
- 
-                   dot_bloch1 = czero
-                   DO j = 1, dimwin(kpt)
-                   DO l = 1, dimwin(k_pls_b)
-                         dot_bloch1 = dot_bloch1 + CONJG( lamp(j,m,kpt) ) * &
-                                                   lamp(l,n,k_pls_b) * kcm(j,l,inn)
-                   ENDDO
-                   ENDDO
+   CALL timing('komegai',OPR='start') 
+   komegai = ZERO
+  
+   IF ( mdim < 0 .OR. mdim > dimwann ) CALL errore('komegai','invalid mdim',ABS(mdim)+1)
+   
+   ALLOCATE( aux(dimwinx, dimwann), aux1(mdim,dimwann), STAT=ierr )
+      IF (ierr/=0) CALL errore('komegai','allocating aux, aux1',ABS(ierr))
 
-! ...              Add to total
+   !
+   ! ...  Loop over b-vectors
+   !
+   DO inn = 1, nntot(ik)
+       ikb = nnlist(ik, inn)
 
-                   komegai = komegai - wb(kpt,inn) * REAL( CONJG( dot_bloch1 ) * dot_bloch1 )
- 
-               ENDDO ! NNSH
-           ENDDO ! NDNN
+       !     
+       ! compute aux1 = Lamp(ik)^{\dag} * Mkb * Lamp(ikb)
+       ! aux = Mkb * Lamp(ikb)
+       ! aux1 = Lamp(ik)^{\dag} * aux
+       !     
+       CALL zmat_mul(aux,  Mkb(:,:,inn), 'N', lamp(:,:,ikb), 'N', dimwin(ik), dimwann, dimwin(ikb) )
+       CALL zmat_mul(aux1, lamp(:,:,ik), 'C', aux, 'N',  mdim, dimwann, dimwin(ik) )
 
-       ENDDO ! N 
-       ENDDO ! M
- 
-       RETURN
-       END FUNCTION
+       DO n = 1, dimwann     
+       DO m = 1, mdim   
+            komegai = komegai - wb(ik,inn) * REAL( CONJG( aux1(m,n) ) * aux1(m,n) )
+       ENDDO 
+       ENDDO 
+
+   ENDDO 
+
+   !
+   ! cleaning
+   !
+   DEALLOCATE( aux, aux1, STAT=ierr )
+      IF (ierr/=0) CALL errore('komegai','deallocating aux',ABS(ierr))
+
+   CALL timing('komegai',OPR='stop') 
+    
+END FUNCTION komegai
 

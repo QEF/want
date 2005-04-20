@@ -10,7 +10,7 @@
    dimwann = 6   
    win_min = -12.0
    win_max =  0.0
-   trial_mode = 'center_projections'
+   start_mode_dis = 'center_projections'
 /
 
 &LOCALIZATION
