@@ -124,6 +124,8 @@
       ! ... import overlap and projections from the disentangle sotred data
       !
       CALL overlap_extract(dimwann)
+      WRITE(stdout,"(/,2x,'Overlaps and projections setup completed')")
+      CALL timing_upto_now(stdout)
 
 
 !
@@ -133,7 +135,7 @@
 ! 
       CALL timing('init',OPR='start')
 
-      WRITE(stdout,"(2/,2x,70('='))")
+      WRITE(stdout,"(/,2x,70('='))")
       WRITE(stdout,"(2x,'=',18x,'Starting localization procedure',19x,'=')")
       WRITE(stdout,"(2x,70('='))")
       WRITE(stdout,"(/)")
