@@ -15,6 +15,7 @@
 !=------------------------------------------------------------------------------------------=
       
       USE kinds
+      USE timing_module
 
       IMPLICIT NONE 
 
@@ -45,7 +46,17 @@
       REAL(dbl), ALLOCATABLE :: rnkb(:,:,:) ! rnkb(nbands,nkpts,nnmx)
       COMPLEX(dbl), ALLOCATABLE :: cr(:,:,:,:) ! (nbands,nbands,nkpts,nnmx)
       COMPLEX(dbl), ALLOCATABLE :: crt(:,:,:,:) ! (nbands,nbands,nkpts,nnmx)
+      !
+      ! end of declarations 
+      !
 
+!
+!----------------------------------------
+! Routine Main body
+!----------------------------------------
+!
+      CALL timing('domega',OPR='start')
+      
       ALLOCATE( cr(nbands,nbands,nnmx,nkpts), STAT=ierr )
            IF( ierr /=0 ) CALL errore(' domega ', ' allocating cr ', nbands**2*nkpts*nnmx )
       ALLOCATE( crt(nbands,nbands,nnmx,nkpts), STAT=ierr )
@@ -141,6 +152,7 @@
       DEALLOCATE( rnkb, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' domega ', ' deallocating rnkb ', ABS(ierr) )
 
+      CALL timing('domega',OPR='stop')
 
       RETURN
       END SUBROUTINE

@@ -32,9 +32,7 @@
                           nntot, nnlist, neigh, bk, wb, bka, wbtot
       USE overlap_module,  ONLY : dimwann, ca, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
-                       ncg, wannier_thr,  &
-                       cu, rave, rave2, r2ave, &
-                       Omega_I, Omega_OD, Omega_D, Omega_V, Omega_tot, &
+                       ncg, wannier_thr, cu, rave, rave2, r2ave, &
                        localization_allocate, localization_write, localization_print
 
 !
@@ -52,7 +50,7 @@
       INTEGER :: info, nn, nnh
       INTEGER :: nwann, nb
       INTEGER :: nsdim, irguide
-      INTEGER :: nrguide, ncgfix, ncount
+      INTEGER :: nrguide, ncgfix, ncount, iter
       LOGICAL :: lrguide, lcg
       REAL(dbl) :: epsilon, alpha
       REAL(dbl) :: func_om1, func_om2, func_om3
@@ -87,50 +85,54 @@
       LOGICAL,      ALLOCATABLE :: cwschur4(:) !  cwschur4(dimwann)
 
       INTEGER      :: nwork
-      REAL(dbl)    :: rtot(3), r2tot
       COMPLEX(dbl) :: cfact
       CHARACTER( LEN=nstrx )  :: filename
       INTEGER :: idum, rdum, ierr
 
 !
-! ... End declarations and dimensions
+! ... end of declarations
 !
-!=----------------------------------------------------------------------------=!
-
 
 !
+!--------------------------------------------
 ! ... Startup
+!--------------------------------------------
 !
       CALL startup(version_number,MAIN_NAME='wannier')
 
-!
-! ... Read input parameters from DFT_DATA file
-!
+      !
+      ! ... Read input parameters from DFT_DATA file
+      !
       CALL input_manager()
 
-!
-! ... Global data init
-!
+      !
+      ! ... Global data init
+      !
       CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE.)
 
-!
-! ... Summary of the input and DFT data
-!
+      !
+      ! ... Summary of the input and DFT data
+      !
       CALL summary( stdout )
 
-!
-! ... wannier-specific variables init
+      !
+      ! ... wannier-specific variables init
+      !
       CALL localization_allocate()
 
-!
-! ... import overlap and projections from the disentangle sotred data
+      !
+      ! ... import overlap and projections from the disentangle sotred data
+      !
       CALL overlap_extract(dimwann)
 
 
-      CALL timing('init',OPR='start')
 !
+!--------------------------------------------
 !...  Wannier Functions localization procedure
+!--------------------------------------------
 ! 
+      CALL timing('init',OPR='start')
+
       WRITE(stdout,"(2/,2x,70('='))")
       WRITE(stdout,"(2x,'=',18x,'Starting localization procedure',19x,'=')")
       WRITE(stdout,"(2x,70('='))")
@@ -138,7 +140,7 @@
 
       !
       ! ... Now calculate the average positions of the Wanns.
-
+      !
       ALLOCATE( csheet(dimwann,nkpts,nnx), STAT=ierr )
          IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnx)
       ALLOCATE( sheet(dimwann,nkpts,nnx), STAT=ierr )
@@ -147,18 +149,18 @@
       sheet(:,:,:) = ZERO
       csheet(:,:,:) = CONE
 
-      CALL omega( dimwann, nkpts, nkpts, nntot(:), nnx, nnlist(:,:), bk(:,:,:), wb(:,:), &
-                  Mkb(:,:,:,:), csheet(:,:,:), sheet(:,:,:), rave(:,:), r2ave(:), rave2(:), &
-                  func_om1, func_om2, func_om3, Omega_tot, rtot, r2tot, Omega_I, Omega_D, & 
-                  Omega_OD, Omega_V )
-
-      !
-      !...  Write centers and spread
-      CALL localization_print(stdout,FMT="extended")
+      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
+                  func_om1, func_om2, func_om3 )
 
       func_old1 = func_om1
       func_old2 = func_om2
       func_old3 = func_om3
+
+
+      !
+      !...  Write centers and spread
+      !
+      CALL localization_print(stdout,FMT="extended")
 
 
       nwork = dimwann * 10
@@ -207,10 +209,11 @@
                CALL errore('wannier','SVD yields non unitary matrices', ik)
       ENDDO 
 
-
-! ... So now we have the U's that rotate the wavefunctions at each k-point.
-!     the matrix elements M_ij have also to be updated 
-
+      !
+      ! ... So now we have the U's that rotate the wavefunctions at each k-point.
+      !     the matrix elements M_ij have also to be updated 
+      !
+      CALL timing('Mkb_update', OPR='start')
       DO ik = 1, nkpts
 
         DO nn = 1, nntot(ik)
@@ -230,9 +233,14 @@
         ENDDO
 
       ENDDO
+      CALL timing('Mkb_update', OPR='stop')
 
-! ... Singular value decomposition
+! XXXXX
+! vedere ripetizione li sotto
 
+      !
+      ! Singular value decomposition
+      !
       omt1 = ZERO
       omt2 = ZERO
       omt3 = ZERO
@@ -258,33 +266,32 @@
       omt2 = omt2/DBLE(nkpts)
       omt3 = omt3/DBLE(nkpts)
 
-! ... Recalculate the average positions of the Wanns.
+      !!
+      !! Recalculate the average positions of the Wanns.
+      !!
+      !CALL omega( dimwann, nkpts, Mkb,  &
+      !     csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3 )
+      !
+      !func_del1 = func_om1 - func_old1
+      !func_del2 = func_om2 - func_old2
+      !func_del3 = func_om3 - func_old3
+      !func_old1 = func_om1
+      !func_old2 = func_om2
+      !func_old3 = func_om3
+      ! 
+      !
+      !! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
+      !!     the complex logarithms
+      !
+      !      irguide = 0
+      !!     CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,        &
+      !!          bk, bka, Mkb, csheet, sheet, rguide, irguide )
+      !      irguide = 1
+      !
+      !! ... Recalculate the average positions of the Wanns.
 
-      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,  &
-           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot , &
-           rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
-
-      func_del1 = func_om1 - func_old1
-      func_del2 = func_om2 - func_old2
-      func_del3 = func_om3 - func_old3
-      func_old1 = func_om1
-      func_old2 = func_om2
-      func_old3 = func_om3
-
-
-!! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
-!!     the complex logarithms
-!
-!      irguide = 0
-!!     CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,        &
-!!          bk, bka, Mkb, csheet, sheet, rguide, irguide )
-!      irguide = 1
-!
-!! ... Recalculate the average positions of the Wanns.
-
-      CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,        &
-           csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot,     &
-           rtot, r2tot , Omega_I, Omega_D, Omega_OD, Omega_V)
+      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2,  &
+                  func_om1, func_om2, func_om3 )
 
       func0 = func_om1 + func_om2 + func_om3
       func_del1 = func_om1 - func_old1
@@ -294,8 +301,9 @@
       func_old2 = func_om2
       func_old3 = func_om3
 
-! ... Singular value decomposition
-
+      !
+      ! Singular value decomposition
+      !
       omt1 = ZERO
       omt2 = ZERO
       omt3 = ZERO
@@ -320,18 +328,19 @@
       omt2 = omt2/DBLE(nkpts)
       omt3 = omt3/DBLE(nkpts)
 
-! ... Now that the consistent phase factors have been chosen
-!     the wannier functions (for the R=0 cell) are calculated
-
-
+      !
+      ! Now that the consistent phase factors have been chosen
+      ! the wannier functions (for the R=0 cell) are calculated
+      !
       lrguide = .FALSE.
       nrguide = 10
 
       lcg = .true.
       if ( ncg < 1 ) lcg = .FALSE.
 
-! ... But first it starts the iterative cycle to solve "Poisson" phase
-    
+      !
+      ! But first it starts the iterative cycle to solve "Poisson" phase
+      !
       IF ( ncg == 0 ) ncg = ncg + 1
       ncgfix = ncg
 
@@ -374,7 +383,8 @@
       WRITE( stdout, "(2x,70('='),/)" ) 
 
       iteration_loop : &
-      DO ncount = 1, maxiter0_wan + maxiter1_wan
+      DO iter = 1, maxiter0_wan + maxiter1_wan
+        ncount = iter
 
         IF ( ncount <= maxiter0_wan ) THEN
             ncg   = 1
@@ -384,8 +394,9 @@
             alpha = alpha1_wan
         ENDIF
 
-
-! ...   Store cu and Mkb
+        !
+        ! Store cu and Mkb
+        !
         cu0 = cu
         Mkb0 = Mkb
 
@@ -427,10 +438,10 @@
         ENDDO
         doda0 = doda0 / wbtot / FOUR
 
-
-! ...   The cg step is calculated
+        !
+        ! The cg step is calculated
         cdq = alpha / wbtot / FOUR * cdq
-
+        !
         cfunc_exp1 = CZERO
         cfunc_exp2 = CZERO
         cfunc_exp3 = CZERO
@@ -464,9 +475,9 @@
 
         ENDDO
 
-
-! ...   The expected change in the functional is calculated
-
+        !
+        ! The expected change in the functional is calculated
+        !
         cfunc_exp1 = CZERO
         cfunc_exp2 = CZERO
         cfunc_exp3 = CZERO
@@ -482,18 +493,19 @@
         ENDDO
         cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
 
-
-! ...   The orbitals are rotated 
-
+        !
+        ! The orbitals are rotated 
+        !
         DO ik = 1, nkpts
             CALL zmat_mul( cmtmp(:,:), cu(:,:,ik), 'N', cdq(:,:,ik), 'N', &
                            dimwann, dimwann, dimwann )
             cu(:,:,ik) = cmtmp(:,:)
         ENDDO
 
-
-! ...   And the M_ij are updated
-
+        !
+        ! And the M_ij are updated
+        !
+        CALL timing('Mkb_update', OPR='start')
         DO ik = 1, nkpts
             DO nn = 1, nntot(ik)
                 ik2 = nnlist(ik,nn)
@@ -511,14 +523,14 @@
                 Mkb(:,:,nn,ik) = cmtmp(:,:)
             ENDDO
         ENDDO
+        CALL timing('Mkb_update', OPR='stop')
 
 
         !
         ! The functional is recalculated
         !
-        CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,       &
-             csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
-             rtot, r2tot, Omega_I, Omega_D, Omega_OD, Omega_V)
+        CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
+                    func_om1, func_om2, func_om3 )
 
         funca = func_om1 + func_om2 + func_om3
         func_del1 = func_om1 - func_old1
@@ -527,11 +539,11 @@
         func_del = func_del1 + func_del2 + func_del3
 
 
-!
-! ...   If lcg is false, or still in the first maxiter0_wan iterations, 
-!       it skips the optimal alpha paraphernalia 
-
-        IF ( ( lcg ) .and. ( ncount > maxiter0_wan ) ) THEN
+        !
+        ! If LCG is false, or still in the first maxiter0_wan iterations, 
+        ! it skips the optimal alpha paraphernalia 
+        ! 
+        IF ( lcg .AND. ( ncount > maxiter0_wan ) ) THEN
 
           eqc = func0
           eqb = doda0
@@ -623,6 +635,7 @@
           !
           ! M_ij are updated
           !
+          CALL timing('Mkb_update', OPR='start')
           DO ik = 1, nkpts
              DO nn = 1, nntot(ik)
                 ik2 = nnlist(ik,nn)
@@ -640,14 +653,14 @@
                 Mkb(:,:,nn,ik) = cmtmp(:,:)
              ENDDO
           ENDDO
+          CALL timing('Mkb_update', OPR='stop')
 
 
           !
           ! The functional is recalculated
           !  
-          CALL omega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb, Mkb,       &
-               csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3, Omega_tot, &
-               rtot, r2tot, Omega_I , Omega_D, Omega_OD, Omega_V)
+          CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
+                      func_om1, func_om2, func_om3 )
 
           funca = func_om1 + func_om2 + func_om3
           func_del1 = func_om1 - func_old1
