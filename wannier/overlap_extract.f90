@@ -15,6 +15,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE timing_module, ONLY : timing
    USE io_module,  ONLY : stdout, ovp_unit, space_unit, ioname
    USE files_module, ONLY : file_open, file_close
+   USE util_module,  ONLY : zmat_mul
    USE subspace_module, ONLY : eamp, subspace_read
    USE windows_module,  ONLY : dimwinx, dimwin, windows_read
    USE kpoints_module,  ONLY : nnx, nkpts, nntot, nnlist 
@@ -42,15 +43,21 @@ SUBROUTINE overlap_extract(dimwann)
 
    COMPLEX(dbl), ALLOCATABLE :: Mkb_tmp(:,:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: ca_tmp(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
 
    LOGICAL                   :: lfound
    CHARACTER(nstrx)          :: filename 
-   INTEGER                   :: ik1,ik2,nn
-   INTEGER                   :: m,n,i,j,l
+   INTEGER                   :: ik, ikb, inn
    INTEGER                   :: ierr
-   
+   ! 
+   ! ... end of declarations
+   ! 
 
-! ... end of declarations
+!
+!-----------------------------
+! routine Main body
+!-----------------------------
+!
 
    CALL timing('overlap_extract',OPR='start')
 
@@ -87,6 +94,8 @@ SUBROUTINE overlap_extract(dimwann)
       IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
       IF (ierr/=0) CALL errore(subname,"allocating ca_tmp",ABS(ierr))
+   ALLOCATE( aux(dimwinx,dimwinx), STAT=ierr ) 
+      IF (ierr/=0) CALL errore(subname,"allocating aux",ABS(ierr))
 
 
 !
@@ -109,38 +118,25 @@ SUBROUTINE overlap_extract(dimwann)
    !
    ! CM
    !
-   DO ik1 = 1, nkpts
-      DO nn= 1, nntot( ik1 )
-         ik2 = nnlist( ik1, nn )
+   DO ik = 1, nkpts
+      DO inn= 1, nntot( ik )
+         ikb = nnlist( ik, inn )
 
-         DO n=1,dimwann  
-         DO m=1,dimwann  
-             
-              Mkb_tmp(m,n,nn,ik1) = CZERO
-              DO j=1,dimwin(ik2)
-              DO i=1,dimwin(ik1)
-                  Mkb_tmp( m,n,nn,ik1 ) = Mkb_tmp( m,n,nn,ik1 )  +                 &
-                          CONJG( eamp(i,m,ik1)) * Mkb(i,j,nn,ik1) * eamp(j,n,ik2)
-              ENDDO
-              ENDDO
-         ENDDO    
-         ENDDO    
+         CALL zmat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
+                       dimwann, dimwin(ikb), dimwin(ik) )
+         CALL zmat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
+                       dimwann, dimwann, dimwin(ikb) )
+
       ENDDO
    ENDDO
 
    !
    ! CA 
    !
-   DO ik1 = 1, nkpts
-      DO i=1,dimwann    ! | phi_i >     localized orb
-      DO m=1,dimwann    ! < u_mk |      bloch eigenstate
+   DO ik = 1, nkpts
 
-         ca_tmp(m,i,ik1) = CZERO
-         DO l=1,dimwin(ik1)
-              ca_tmp( m,i,ik1 ) = ca_tmp( m,i,ik1 ) + CONJG( eamp(l,m,ik1) ) * ca(l,i,ik1) 
-         ENDDO    
-      ENDDO
-      ENDDO
+      CALL zmat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
+                     dimwann, dimwann, dimwin(ik) )
    ENDDO
 
 
@@ -157,7 +153,9 @@ SUBROUTINE overlap_extract(dimwann)
 !
 ! ... cleaning
    DEALLOCATE( Mkb_tmp, ca_tmp, STAT=ierr) 
-      IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp or ca_tmp",ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp, ca_tmp",ABS(ierr))
+   DEALLOCATE( aux, STAT=ierr ) 
+      IF (ierr/=0) CALL errore(subname,"deallocating aux",ABS(ierr))
 
    CALL timing('overlap_extract',OPR='stop')
 
