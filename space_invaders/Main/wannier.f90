@@ -631,7 +631,7 @@
         IF ( MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1 ) THEN
              WRITE( stdout, " (/,2x,'Iteration = ',i5) ") ncount
              CALL localization_print(stdout, FMT="standard" )
-             WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f9.6) ") func_del
+             WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f12.6) ") func_del
              
              CALL timing_upto_now(stdout)
         ENDIF
