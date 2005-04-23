@@ -8,185 +8,188 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-      SUBROUTINE phases( nbands, nkpts, nkpts2, nnmx, nnmxh, nntot, nnh, neigh, &
-                 bk, bka, cm, csheet, sheet, rguide, irguide )
-!=----------------------------------------------------------------------------------=
+!********************************************************
+   SUBROUTINE phases( dimwann, nkpts, Mkb, lrguide, rguide, csheet, sheet )
+   !********************************************************
+   !
+   ! here  the problem is to find a real-space 3-vector rguide such that
+   ! the avarage phase of Mkb, i.e. the phase of csum(nn) = \Sum_m,ik ( Mkb(m,m,nn,ik) )
+   ! is around the phase of exp[ -i bka(nn) dot rguide_m ]
+   ! or letting
+   !    xx(nn) = - Im ln csum(nn)  (modulo 2*pi)
+   ! then
+   !    bka(nn) dot rguide ~= xx(nn)
+   !
+   ! The requested rguide is obtained by minimizing
+   !   \Sum_nn [ bka(nn) dot rguide - xx(nn) ] ^2
+   ! or, setting the derivative with respect to rcenter to zero, by solving
+   !   \Sum_i smat(j,i) * rguide(i,nwann) = svec(j)
+   ! where
+   !    smat(j,i) = sum_nn bka(j,nn) * bka(i,nn)
+   !    svec(j)   = sum_nn bka(j,nn) * xx(nn)
+   !
+   USE kinds
+   USE timing_module, ONLY : timing 
+   USE constants, ONLY: PI, CI, CZERO, ZERO, TWO, EPS_m6
+   USE io_module, ONLY : stdout
+   USE kpoints_module, ONLY : nnx, nnhx, nntot, neigh, bk, bka
 
-      USE kinds
-      USE timing_module, ONLY : timing 
-      USE constants, ONLY: PI, CI, CZERO, ZERO, EPS_m6
-      USE io_module, ONLY : stdout
+   IMPLICIT NONE
 
-      IMPLICIT NONE
+      !
+      ! input variables
+      !
+      INTEGER, INTENT(in) :: dimwann
+      INTEGER, INTENT(in) :: nkpts
+      LOGICAL, INTENT(in) :: lrguide
+      COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nnx,nkpts)
+      REAL(dbl),    INTENT(inout) :: rguide(3,dimwann)
+      COMPLEX(dbl), INTENT(inout) :: csheet(dimwann,nkpts,nnx)
+      REAL(dbl),    INTENT(inout) :: sheet(dimwann,nkpts,nnx)
 
-      INTEGER :: nbands
-      INTEGER :: nkpts
-      INTEGER :: nkpts2
-      INTEGER :: nnmx
-      INTEGER :: nnmxh
+      !
+      ! local variables
+      !
       INTEGER :: nnh
-      INTEGER :: irguide
-      INTEGER :: nwann
-      INTEGER :: na
-      INTEGER :: nkp
-      INTEGER :: nn
-      INTEGER :: j
-      INTEGER :: i
-      INTEGER :: m
-      INTEGER :: ind
-      INTEGER :: n
+      INTEGER :: ik, inn, ina
+      INTEGER :: i, j, m, ierr
 
-      INTEGER :: nntot(nkpts)
-      INTEGER :: neigh(nkpts,nnmxh)
-      COMPLEX(dbl) :: cm(nbands,nbands,nnmx,nkpts)
-      COMPLEX(dbl) :: csum(nnmxh)
-      COMPLEX(dbl) :: csheet(nbands,nkpts,nnmx)
-      REAL(dbl) ::  bk(3,nkpts,nnmx)
-      REAL(dbl) ::  bka(3,nnmxh)
-      REAL(dbl) :: rguide(3,nbands)
-      REAL(dbl) :: xx(nnmx)
-      REAL(dbl) :: smat(3,3), svec(3), sinv(3,3)
-      REAL(dbl) :: sheet(nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: csum(nnhx), csumt
+      REAL(dbl)    :: xx(nnhx), xx0
+      REAL(dbl)    :: smat(3,3), svec(3), sinv(3,3), det
+      REAL(dbl)    :: pherr
+      !
+      ! end of declarations
+      !
 
-      REAL(dbl) rave(3,nbands), rnkb(nbands,nkpts,nnmx)
-
-      COMPLEX(dbl) :: csumt
-      REAL(dbl) :: xx0
-      REAL(dbl) :: det
-      REAL(dbl) :: brn
-      REAL(dbl) :: pherr
-
-    
+!
+!------------------------------
+! main body
+!------------------------------
+!
       CALL timing('phases',OPR='start')
 
-! ... Report problem to solve for each band, csum is determined and then its appropriate
-!     guiding center rguide(3,nwann)
+      nnh = NINT( nntot(1) / TWO )
 
-      do nwann=1,nbands
+!
+! ... csum is determined and then its appropriate
+!     guiding center rguide(3,iwann)
 
-!       get average phase for each unique bk direction
+      DO m =1,dimwann
 
-        do na=1,nnh
-          csum(na)=CZERO
-          do nkp=1,nkpts2
-            nn=neigh(nkp,na)
-            csum(na)=csum(na)+cm(nwann,nwann,nn,nkp)
-          end do
-        end do
+           !
+           ! get average phase for each unique bk direction (given by bka)
+           ! here m and ina are kept fixed, out of the sum, while we
+           ! sum over kpt. Compare with the definition of Omega_D
+           !
+           ! Omega_D = 1/Nk \Sum_{ik, nn} wb(ik,nn) * 
+           !                \Sum_m ( Im Log Mkb(m,m) + b * <r>_m )**2
+           !
+           ! thus here we are avaraging over ik and considering each m and nn term
+           ! separately
+           !
+           DO inn=1,nnh
+               csum(inn)=CZERO
+               DO ik=1,nkpts
+                  ina=neigh(ik,inn)
+                  csum(inn)=csum(inn)+Mkb(m,m,ina,ik)
+               ENDDO
+           ENDDO
 
-! ...   Initialize smat and svec
+           ! Initialize smat and svec
+           !
+           smat(:,:) = ZERO
+           svec(:) = ZERO
 
-        smat(:,:) = ZERO
-        svec(:) = ZERO
-        WRITE( stdout,"()")
+           DO inn = 1, nnh
+               IF ( inn <= 3 ) THEN
+                   !
+                   ! Obtain xx with arbitrary branch cut choice
+                   !
+                   xx(inn) = -AIMAG( LOG( csum(inn) ) )
+               ELSE
+                   !
+                   ! Obtain xx with branch cut choice guided by rguide
+                   !
+                   xx0 = DOT_PRODUCT( bka(:,inn), rguide(:,m) )
+                   !
+                   ! xx0 is the expected value for xx
+                   csumt = EXP( CI * xx0 )
+                   !
+                   ! csumt has opposite of expected phase of csum(inn)
+                   xx(inn) = xx0 - AIMAG( LOG( csum(inn) * csumt ) )
+               ENDIF
 
-        DO nn = 1, nnh
+               !
+               ! Update smat and svec
+               !
+               DO j = 1, 3
+                   DO i = 1, 3
+                       smat(i,j) = smat(i,j) + bka(i,inn) * bka(j,inn)
+                   ENDDO
+                   svec(j) = svec(j) + bka(j,inn) * xx(inn)
+               ENDDO
 
-          IF ( nn <= 3 ) THEN
 
-! ...       Obtain xx with arbitrary branch cut choice
-            xx(nn) = -AIMAG( LOG( csum(nn) ) )
+               IF ( inn >= 3 ) THEN
+                   !
+                   ! Determine rguide
+                   !
+                   !
+                   ! if first three bka vectors are linearly dependent this is not allowed
+                   ! check
+                   CALL invmat( 3, smat, sinv, det )
 
-          ELSE
+                   IF ( ABS(det) < EPS_m6 ) &
+                        CALL errore('phases', 'linear dependent vectors found', 3 )
 
-! ...       Obtain xx with branch cut choice guided by rguide
-            xx0 = 0.d0
-            DO j = 1, 3
-              xx0 = xx0 + bka(j,nn) * rguide(j,nwann)
-            END DO
+                   IF ( lrguide ) THEN
+                       DO j = 1, 3
+                          rguide(j,m) = ZERO
+                          DO i = 1, 3
+                             rguide(j,m) = rguide(j,m) + sinv(j,i) * svec(i)
+                          ENDDO
+                       ENDDO
+                   ENDIF
+               ENDIF
 
-! ...       xx0 is expected value for xx
-            csumt = EXP( ci * xx0 )
-
-! ...       csumt has opposite of expected phase of csum(nn)
-            xx(nn) = xx0 - AIMAG( LOG( csum(nn) * csumt ) )
-
-          END IF
-
-          WRITE (stdout ,  fmt= " (2x, 'nn = ', i4, 2x, 'bka = ', 3f7.3, 2x, &
-                                  & 'xx = ', f9.5, 2x, 'mag = ', f9.5 ) " )  &
-               nn, (bka(j,nn), j=1,3 ), xx(nn), ABS( csum(nn) ) / DBLE(nkpts2)
-
-! ...     Update smat and svec
-
-          DO j = 1, 3
-            DO i = 1, 3
-              smat(j,i) = smat(j,i) + bka(j,nn) * bka(i,nn)
-            END DO
-            svec(j) = svec(j) + bka(j,nn) * xx(nn)
-          END DO
-
-          IF ( nn >= 3 ) THEN
-
-! ...       Determine rguide
-!           instead inv3, here sinv is directly the inverse of smat 
-            CALL invmat( 3, smat, sinv, det )
-
-! ...       Evidently first three bka vectors are linearly dependent this is not allowed
-            IF ( ABS(det) < EPS_m6 ) &
-                   CALL errore(' phase ', ' wrong dependency in findr', ABS(det) )
-
-            IF ( irguide /= 0 ) THEN
-              DO j = 1, 3
-                rguide(j,nwann) = ZERO
-                DO i = 1, 3
-                  rguide(j,nwann) = rguide(j,nwann) + sinv(j,i) * svec(i)
-                END DO
-              END DO
-            END IF
-            WRITE (stdout, fmt= " (2x, 'rguide = ', 3f9.4) " )( rguide(i,nwann), i=1,3 )
-          ENDIF
-
-        END DO
-
-      END DO
-
-! ... Obtain branch cut choice guided by rguid
-  
-      DO nkp = 1, nkpts2
-        DO nwann = 1, nbands
-          DO nn = 1, nntot(nkp)
-            sheet(nwann,nkp,nn) = ZERO
-            DO j = 1, 3
-              sheet(nwann,nkp,nn) = sheet(nwann,nkp,nn) + bk(j,nkp,nn) * rguide(j,nwann)
-            END DO
-            csheet(nwann,nkp,nn) = EXP( ci * sheet(nwann,nkp,nn) )
-          END DO
-        END DO
-      END DO
-
-! ... Now check that we picked the proper sheet for the log
-!     of cm. criterion: q_n^{k,b}=Im(ln(M_nn^{k,b})) + b \cdot r_n are
-!     circa 0 for a good solution, circa multiples of 2 pi  for a bad one.
-!     I use the guiding center, instead of r_n, to understand which could be
-!     right sheet
-
-      DO nkp = 1, nkpts2
-        DO m = 1, nbands
-          DO nn = 1, nntot(nkp)
-            rnkb(m,nkp,nn) = ZERO
-            brn = ZERO
-            DO ind = 1, 3
-              brn = brn + bk(ind,nkp,nn) * rguide(ind,m)
-            END DO
-            rnkb(m,nkp,nn) = rnkb(m,nkp,nn) + brn
-          END DO
-        END DO
-      END DO
-
-      DO nkp = 1, nkpts2
-        DO n = 1, nbands
-          DO nn = 1, nntot(nkp)
-            pherr = AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nn,nkp) ) )           &
-            -sheet(n,nkp,nn) + rnkb(n,nkp,nn) - AIMAG( LOG( cm(n,n,nn,nkp) ) )
-            IF ( ABS(pherr) > PI ) &
-                 WRITE( stdout, " ( 2x, 3i4,f18.9,3f10.5 ) ")  &
-                                    nkp, n, nn, pherr, ( bk(i,nkp,nn), i=1,3 )
-          ENDDO
-        ENDDO
+           ENDDO
       ENDDO
 
+!
+! ... Obtain branch cut choice guided by rguide
+!  
+      DO ik = 1, nkpts
+      DO inn = 1, nntot(ik)
+           DO m = 1, dimwann
+                sheet(m,inn,ik) = DOT_PRODUCT( bk(:,ik,inn), rguide(:,m) )
+                csheet(m,inn,ik) = EXP( CI * sheet(m,inn,ik) )
+           ENDDO
+      ENDDO
+      ENDDO
+
+!
+! ... Now check that we picked the proper sheet for the log
+!     of Mkb. The criterion is: 
+!         q_n^{k,b}=Im(ln(M_nn^{k,b})) + b \cdot r_n are
+!         circa 0 for a good solution, circa multiples of 2 pi  for a bad one.
+!     I use the guiding center, instead of r_n, to understand which could be
+!     the right sheet
+!
+
+      DO ik = 1, nkpts
+      DO inn = 1, nntot(ik)
+          DO m = 1, dimwann
+               pherr =  AIMAG( LOG( csheet(m,inn,ik) * Mkb(m,m,inn,ik) ) ) &
+                       -AIMAG( LOG( Mkb(m,m,inn,ik) ) ) 
+               IF ( ABS(pherr) > PI ) &
+                    WRITE(stdout,"(2x,'WARNING: phases problem at: ',3i4,f18.9,3f10.5)")  &
+                                       ik, m, inn, pherr, ( bk(i,ik,inn), i=1,3 )
+         ENDDO
+      ENDDO
+      ENDDO
+
+
       CALL timing('phases',OPR='stop')
-      RETURN
-      END SUBROUTINE
+   END SUBROUTINE phases
+

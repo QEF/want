@@ -50,7 +50,7 @@
       INTEGER :: l, m, n
       INTEGER :: info, nn, nnh
       INTEGER :: nwann, nb
-      INTEGER :: nsdim, irguide
+      INTEGER :: nsdim
       INTEGER :: nrguide, ncgfix, ncount, iter
       LOGICAL :: lrguide, lcg
       REAL(dbl) :: epsilon, alpha
@@ -142,10 +142,10 @@
       !
       ! ... Now calculate the average positions of the Wanns.
       !
-      ALLOCATE( csheet(dimwann,nkpts,nnx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', dimwann*nkpts*nnx)
-      ALLOCATE( sheet(dimwann,nkpts,nnx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', dimwann*nkpts*nnx)
+      ALLOCATE( csheet(dimwann,nnx,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', ABS(ierr))
+      ALLOCATE( sheet(dimwann,nnx,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', ABS(ierr))
 
       sheet(:,:,:) = ZERO
       csheet(:,:,:) = CONE
@@ -215,8 +215,6 @@
       CALL overlap_update(dimwann, nkpts, cu, Mkb)
 
 
-! XXXXX
-! vedere ripetizione li sotto
 
       !
       ! Singular value decomposition
@@ -246,26 +244,27 @@
       omt2 = omt2/DBLE(nkpts)
       omt3 = omt3/DBLE(nkpts)
 
-      !!
-      !! Recalculate the average positions of the Wanns.
-      !!
-      !CALL omega( dimwann, nkpts, Mkb,  &
-      !     csheet, sheet, rave, r2ave, rave2, Omega_I, Omega_D, Omega_OD, Omega_tot )
       !
-      ! Omega_var = Omega_tot = Omega_old
-      ! Omega_old = Omega_tot
+      ! Recalculate the average positions of the Wanns.
+      !
+      CALL omega( dimwann, nkpts, Mkb,  &
+           csheet, sheet, rave, r2ave, rave2, Omega_I, Omega_D, Omega_OD, Omega_tot )
+      
+      Omega_var = Omega_tot - Omega_old
+      Omega_old = Omega_tot
+       
       ! 
+      ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
+      !     the complex logarithms
       !
-      !! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
-      !!     the complex logarithms
+      nrguide = 10
+      lrguide = .FALSE.
+      CALL phases( dimwann, nkpts, bk, Mkb, lrguide, rguide, csheet, sheet)
+      lrguide = .TRUE.
+     
       !
-      !      irguide = 0
-      !!     CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,        &
-      !!          bk, bka, Mkb, csheet, sheet, rguide, irguide )
-      !      irguide = 1
+      ! ... Recalculate the average positions of the WFs
       !
-      !! ... Recalculate the average positions of the Wanns.
-
       CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2,  &
                   Omega_I, Omega_D, Omega_OD, Omega_tot )
 
@@ -304,8 +303,6 @@
       ! Now that the consistent phase factors have been chosen
       ! the wannier functions (for the R=0 cell) are calculated
       !
-      lrguide = .FALSE.
-      nrguide = 10
 
       lcg = .true.
       if ( ncg < 1 ) lcg = .FALSE.
@@ -372,11 +369,8 @@
         cu0 = cu
         Mkb0 = Mkb
 
-        IF ( lrguide ) THEN
-            IF ( ( ( ncount / 10 ) * 10 == ncount ) .and. ( ncount >= nrguide ) )   &
-            CALL phases( dimwann, nkpts, nkpts, nnx, nnhx, nntot, nnh, neigh,       &
-                 bk, bka, Mkb, csheet, sheet, rguide, irguide )
-        ENDIF
+        IF ( MOD( ncount, 10 ) == 0 .AND. ( ncount >= nrguide ) )   &
+            CALL phases( dimwann, nkpts, Mkb, lrguide, rguide, csheet, sheet )
 
         CALL domega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb,              &
              Mkb, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
