@@ -61,7 +61,6 @@
    REAL(dbl)                   :: Omega_I       ! Invariant part of the spread
    REAL(dbl)                   :: Omega_OD      ! Off diagonal part
    REAL(dbl)                   :: Omega_D       ! Diagonal part
-   REAL(dbl)                   :: Omega_V       ! Variant (tilde) part = Omega_D + Omega_OD
    REAL(dbl)                   :: Omega_tot     ! = Omega_I + Omega_D + Omega_OD
    
    LOGICAL :: alloc = .FALSE.
@@ -74,7 +73,7 @@
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg
    PUBLIC :: cu
    PUBLIC :: rave, r2ave, rave2
-   PUBLIC :: omega_I, omega_OD, omega_D, omega_V, omega_tot
+   PUBLIC :: omega_I, omega_OD, omega_D, omega_tot
    PUBLIC :: alloc
 
    PUBLIC :: localization_allocate
@@ -111,7 +110,6 @@ CONTAINS
        Omega_I   = ZERO
        Omega_OD  = ZERO
        Omega_D   = ZERO  
-       Omega_V   = ZERO 
        Omega_tot = ZERO
        alloc = .TRUE.
 
@@ -217,7 +215,6 @@ CONTAINS
        CALL iotk_write_attr(attr,"Omega_I",Omega_I,FIRST=.TRUE.) 
        CALL iotk_write_attr(attr,"Omega_D",Omega_D) 
        CALL iotk_write_attr(attr,"Omega_OD",Omega_OD) 
-       CALL iotk_write_attr(attr,"Omega_V",Omega_V) 
        CALL iotk_write_attr(attr,"Omega_tot",Omega_tot) 
        CALL iotk_write_empty(unit,"SPREADS",ATTR=attr)
 
@@ -281,8 +278,6 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_D',ABS(ierr))
        CALL iotk_scan_attr(attr,'Omega_OD',Omega_OD,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_OD',ABS(ierr))
-       CALL iotk_scan_attr(attr,'Omega_V',Omega_V,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_V',ABS(ierr))
        CALL iotk_scan_attr(attr,'Omega_tot',Omega_tot,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_tot',ABS(ierr))
 
