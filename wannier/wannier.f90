@@ -60,7 +60,6 @@
       REAL(dbl) :: eqc, eqb, eqa, alphamin, falphamin
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
-      REAL(dbl),    ALLOCATABLE ::  rguide(:,:)
       REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
@@ -133,10 +132,6 @@
       sheet(:,:,:) = ZERO
       csheet(:,:,:) = CONE
 
-      ALLOCATE( rguide(3,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating rguide ', ABS(ierr))
-      rguide(:,:) = ZERO
-
       ALLOCATE( cwschur1(dimwann), cwschur2( 10*dimwann ), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating cwschur1 cwschur2 ', ABS(ierr))
       ALLOCATE( cz(dimwann, dimwann), STAT=ierr )
@@ -201,8 +196,8 @@
       ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
       !     the complex logarithms
       !
-      CALL phases( dimwann, nkpts, Mkb, .FALSE. , rguide, csheet, sheet)
-     
+      CALL phases( dimwann, nkpts, Mkb, csheet, sheet)
+
 
       !
       ! ... Calculate the average positions of the WFs
@@ -259,7 +254,7 @@
         Mkb0 = Mkb
 
         IF ( MOD( ncount, 10 ) == 0 .AND. ( ncount >= nrguide ) )   &
-            CALL phases( dimwann, nkpts, Mkb, .TRUE. , rguide, csheet, sheet )
+            CALL phases( dimwann, nkpts, Mkb, csheet, sheet )
 
         CALL domega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb,              &
              Mkb, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
@@ -599,8 +594,6 @@
       DEALLOCATE( cwschur4, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur4 ', ABS(ierr) )
 
-      DEALLOCATE( rguide, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating rguide ', ABS(ierr))
       DEALLOCATE( csheet, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating csheet ', ABS(ierr) )
       DEALLOCATE( sheet, STAT=ierr )
