@@ -9,7 +9,8 @@ OBJS= compar.o domega.o error.o \
       write_op.o check_sgm_kpt.o check_sgm_wan.o do_self_energy.o \
       gcube2plt.o cptimer.o date_and_tim.o \
       ordering.o sort.o recips.o overlap_extract.o \
-      overlap_update.o get_monkpack.o subspace_init.o\
+      overlap_update.o get_monkpack.o \
+      subspace_init.o localization_init.o \
       readin.o read_pseudo.o read_ncpp.o readnewvan.o readvan.o \
       bachel.o simpsn.o ylmr2.o invmat.o rranf.o erf.o \
       init_us_1.o init_us_2.o qvan2.o sph_bes.o setqf.o \
