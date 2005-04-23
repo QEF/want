@@ -77,7 +77,7 @@
       REAL(dbl), ALLOCATABLE ::  singvd(:) 
       REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) 
 
-      REAL(dbl), ALLOCATABLE :: rguide(:,:)!  rguide(3,dimwann)
+      REAL(dbl), ALLOCATABLE :: rguide(:,:)
       COMPLEX(dbl), ALLOCATABLE :: cwschur1(:) !  cwschur1(dimwann)
       COMPLEX(dbl), ALLOCATABLE :: cwschur2(:) !  cwschur2(10*dimwann)
       REAL(dbl),    ALLOCATABLE :: cwschur3(:) !  cwschur3(dimwann)
@@ -139,14 +139,15 @@
       WRITE(stdout,"(2x,70('='))")
       WRITE(stdout,"(/)")
 
+
       !
       ! ... Now calculate the average positions of the Wanns.
       !
       ALLOCATE( csheet(dimwann,nnx,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating csheet ', ABS(ierr))
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet ', ABS(ierr))
       ALLOCATE( sheet(dimwann,nnx,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating sheet ', ABS(ierr))
-
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet ', ABS(ierr))
+      !
       sheet(:,:,:) = ZERO
       csheet(:,:,:) = CONE
 
@@ -257,9 +258,14 @@
       ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
       !     the complex logarithms
       !
+      ALLOCATE( rguide(3,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating rguide ', ABS(ierr))
+
+      rguide(:,:) = ZERO
+
       nrguide = 10
       lrguide = .FALSE.
-      CALL phases( dimwann, nkpts, bk, Mkb, lrguide, rguide, csheet, sheet)
+      CALL phases( dimwann, nkpts, Mkb, lrguide, rguide, csheet, sheet)
       lrguide = .TRUE.
      
       !
@@ -734,6 +740,8 @@
       DEALLOCATE( cwschur4, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur4 ', ABS(ierr) )
 
+      DEALLOCATE( rguide, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating rguide ', ABS(ierr))
       DEALLOCATE( csheet, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating csheet ', ABS(ierr) )
       DEALLOCATE( sheet, STAT=ierr )

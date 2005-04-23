@@ -44,8 +44,8 @@
       LOGICAL, INTENT(in) :: lrguide
       COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nnx,nkpts)
       REAL(dbl),    INTENT(inout) :: rguide(3,dimwann)
-      COMPLEX(dbl), INTENT(inout) :: csheet(dimwann,nkpts,nnx)
-      REAL(dbl),    INTENT(inout) :: sheet(dimwann,nkpts,nnx)
+      COMPLEX(dbl), INTENT(out) :: csheet(dimwann,nnx,nkpts)
+      REAL(dbl),    INTENT(out) :: sheet(dimwann,nnx,nkpts)
 
       !
       ! local variables
