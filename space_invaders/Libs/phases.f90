@@ -9,7 +9,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !********************************************************
-   SUBROUTINE phases( dimwann, nkpts, Mkb, lrguide, rguide, csheet, sheet )
+   SUBROUTINE phases( dimwann, nkpts, Mkb, csheet, sheet )
    !********************************************************
    !
    ! here  the problem is to find a real-space 3-vector rguide such that
@@ -41,9 +41,7 @@
       !
       INTEGER, INTENT(in) :: dimwann
       INTEGER, INTENT(in) :: nkpts
-      LOGICAL, INTENT(in) :: lrguide
       COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nnx,nkpts)
-      REAL(dbl),    INTENT(inout) :: rguide(3,dimwann)
       COMPLEX(dbl), INTENT(out) :: csheet(dimwann,nnx,nkpts)
       REAL(dbl),    INTENT(out) :: sheet(dimwann,nnx,nkpts)
 
@@ -54,6 +52,7 @@
       INTEGER :: ik, inn, ina
       INTEGER :: i, j, m, ierr
 
+      REAL(dbl), ALLOCATABLE :: rguide(:,:)
       COMPLEX(dbl) :: csum(nnhx), csumt
       REAL(dbl)    :: xx(nnhx), xx0
       REAL(dbl)    :: smat(3,3), svec(3), sinv(3,3), det
@@ -70,6 +69,9 @@
       CALL timing('phases',OPR='start')
 
       nnh = NINT( nntot(1) / TWO )
+
+      ALLOCATE( rguide(3,dimwann), STAT=ierr )
+         IF(ierr/=0) CALL errore('phases','allocating rguide',ABS(ierr))
 
 !
 ! ... csum is determined and then its appropriate
@@ -143,14 +145,9 @@
                    IF ( ABS(det) < EPS_m6 ) &
                         CALL errore('phases', 'linear dependent vectors found', 3 )
 
-                   IF ( lrguide ) THEN
-                       DO j = 1, 3
-                          rguide(j,m) = ZERO
-                          DO i = 1, 3
-                             rguide(j,m) = rguide(j,m) + sinv(j,i) * svec(i)
-                          ENDDO
-                       ENDDO
-                   ENDIF
+                   DO j = 1, 3
+                       rguide(j,m) = DOT_PRODUCT( sinv(j,:), svec(:) )
+                   ENDDO
                ENDIF
 
            ENDDO
@@ -189,6 +186,8 @@
       ENDDO
       ENDDO
 
+      DEALLOCATE( rguide, STAT=ierr )
+         IF(ierr/=0) CALL errore('phases','deallocating rguide',ABS(ierr))
 
       CALL timing('phases',OPR='stop')
    END SUBROUTINE phases
