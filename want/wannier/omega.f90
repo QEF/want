@@ -23,9 +23,9 @@
    ! input variables
    !
    INTEGER,      INTENT(in) :: dimwann, nkpts
-   REAL(dbl),    INTENT(in) :: sheet(dimwann,nkpts,*)
+   REAL(dbl),    INTENT(in) :: sheet(dimwann,nnx,nkpts)
+   COMPLEX(dbl), INTENT(in) :: csheet(dimwann,nnx,nkpts)
    COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nnx,nkpts)
-   COMPLEX(dbl), INTENT(in) :: csheet(dimwann,nkpts,*)
 
    REAL(dbl), INTENT(out) :: r2ave(dimwann), rave2(dimwann), rave(3,dimwann)
    REAL(dbl), INTENT(out) :: Omega_I, Omega_D, Omega_OD, Omega_tot
@@ -61,8 +61,8 @@
            DO ik = 1, nkpts
            DO inn = 1, nntot(ik)
                  rave(i,m) = rave(i,m) + wb(ik,inn) * bk(i,ik,inn) *     &
-                     ( AIMAG(LOG( csheet(m,ik,inn) * Mkb(m,m,inn,ik) ) ) &
-                     - sheet(m,ik,inn) )
+                     ( AIMAG(LOG( csheet(m,inn,ik) * Mkb(m,m,inn,ik) ) ) &
+                     - sheet(m,inn,ik) )
            ENDDO
            ENDDO
            rave(i,m) = - rave(i,m) / DBLE(nkpts)
@@ -90,8 +90,8 @@
            DO inn = 1, nntot(ik)
                r2ave(m) = r2ave(m) + wb(ik,inn) *  &
                     ( ONE - DBLE( Mkb(m,m,inn,ik) * CONJG( Mkb(m,m,inn,ik)) ) + &
-                    ( AIMAG( LOG( csheet(m,ik,inn) * Mkb(m,m,inn,ik)) ) &
-                    - sheet(m,ik,inn) )**2 )
+                    ( AIMAG( LOG( csheet(m,inn,ik) * Mkb(m,m,inn,ik)) ) &
+                    - sheet(m,inn,ik) )**2 )
            ENDDO
            ENDDO
            r2ave(m) = r2ave(m) / DBLE(nkpts)
@@ -152,8 +152,8 @@
            rtmp = ZERO
            DO m = 1, dimwann
                  rtmp1 = DOT_PRODUCT( bk(:, ik, inn), rave(:, m) )
-                 rtmp = rtmp + ( AIMAG( LOG( csheet(m,ik,inn) * Mkb(m,m,inn,ik) ) ) &
-                               - sheet(m,ik,inn) + rtmp1 )**2
+                 rtmp = rtmp + ( AIMAG( LOG( csheet(m,inn,ik) * Mkb(m,m,inn,ik) ) ) &
+                               - sheet(m,inn,ik) + rtmp1 )**2
            ENDDO
            Omega_D = Omega_D + wb(ik,inn) * rtmp
       ENDDO

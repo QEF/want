@@ -167,7 +167,7 @@
               WRITE( unit, "(4x,'Center = ',i3,' Type = ',a,'  Center  = (',3F15.9,' )')")&
                      i, TRIM(trial(i)%type), center_cart1(:,i)
               IF  ( TRIM(trial(i)%type) == "2gauss" ) THEN
-                  WRITE( unit, fmt="(26x,' Center2 = (', 3F10.6, ' ) ' )" ) &
+                  WRITE( unit, fmt="(31x,' Center2 = (', 3F15.9, ' ) ' )" ) &
                      center_cart2(:,i)
               ENDIF
           ENDDO
