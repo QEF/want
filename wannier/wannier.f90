@@ -13,7 +13,7 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR
+      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR, EPS_m8
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
@@ -33,6 +33,7 @@
       USE overlap_module,  ONLY : dimwann, ca, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr, cu, rave, rave2, r2ave, &
+                       Omega_I, Omega_D, Omega_OD, Omega_tot, &
                        localization_allocate, localization_write, localization_print
 
 !
@@ -53,12 +54,10 @@
       INTEGER :: nrguide, ncgfix, ncount, iter
       LOGICAL :: lrguide, lcg
       REAL(dbl) :: epsilon, alpha
-      REAL(dbl) :: func_om1, func_om2, func_om3
-      REAL(dbl) :: func_old1, func_old2, func_old3
+      REAL(dbl) :: Omega_old, Omega_var, Omega0, OmegaA
       REAL(dbl) :: rre, rri, omt1, omt2, omt3, omiloc
-      REAL(dbl) :: func_del, func_del1, func_del2, func_del3, func0
       REAL(dbl) :: gcnorm1, gcfac, gcnorm0, doda0
-      REAL(dbl) :: funca, eqc, eqb, eqa, alphamin, falphamin
+      REAL(dbl) :: eqc, eqb, eqa, alphamin, falphamin
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
@@ -152,12 +151,10 @@
       csheet(:,:,:) = CONE
 
       CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
-                  func_om1, func_om2, func_om3 )
+                  Omega_I, Omega_D, Omega_OD, Omega_tot )
 
-      func_old1 = func_om1
-      func_old2 = func_om2
-      func_old3 = func_om3
-
+      Omega_old = Omega_tot
+      
 
       !
       !...  Write centers and spread
@@ -253,14 +250,10 @@
       !! Recalculate the average positions of the Wanns.
       !!
       !CALL omega( dimwann, nkpts, Mkb,  &
-      !     csheet, sheet, rave, r2ave, rave2, func_om1, func_om2, func_om3 )
+      !     csheet, sheet, rave, r2ave, rave2, Omega_I, Omega_D, Omega_OD, Omega_tot )
       !
-      !func_del1 = func_om1 - func_old1
-      !func_del2 = func_om2 - func_old2
-      !func_del3 = func_om3 - func_old3
-      !func_old1 = func_om1
-      !func_old2 = func_om2
-      !func_old3 = func_om3
+      ! Omega_var = Omega_tot = Omega_old
+      ! Omega_old = Omega_tot
       ! 
       !
       !! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
@@ -274,15 +267,11 @@
       !! ... Recalculate the average positions of the Wanns.
 
       CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2,  &
-                  func_om1, func_om2, func_om3 )
+                  Omega_I, Omega_D, Omega_OD, Omega_tot )
 
-      func0 = func_om1 + func_om2 + func_om3
-      func_del1 = func_om1 - func_old1
-      func_del2 = func_om2 - func_old2
-      func_del3 = func_om3 - func_old3
-      func_old1 = func_om1
-      func_old2 = func_om2
-      func_old3 = func_om3
+      Omega0 = Omega_tot
+      Omega_var = Omega_tot - Omega_old
+      Omega_old = Omega_tot
 
       !
       ! Singular value decomposition
@@ -495,13 +484,10 @@
         ! The functional is recalculated
         !
         CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
-                    func_om1, func_om2, func_om3 )
+                    Omega_I, Omega_D, Omega_OD, Omega_tot )
 
-        funca = func_om1 + func_om2 + func_om3
-        func_del1 = func_om1 - func_old1
-        func_del2 = func_om2 - func_old2
-        func_del3 = func_om3 - func_old3
-        func_del = func_del1 + func_del2 + func_del3
+        OmegaA = Omega_tot
+        Omega_var = Omega_tot - Omega_old
 
 
         !
@@ -510,11 +496,11 @@
         ! 
         IF ( lcg .AND. ( ncount > maxiter0_wan ) ) THEN
 
-          eqc = func0
+          eqc = Omega0
           eqb = doda0
-          eqa = ( funca - func0 - eqb * alpha ) / alpha
+          eqa = ( OmegaA - Omega0 - eqb * alpha ) / alpha
 
-          IF ( ABS(eqa) > 1.0e-8 ) THEN
+          IF ( ABS(eqa) > EPS_m8 ) THEN
             alphamin = -eqb / TWO / eqa
           ELSE
             alphamin = alpha
@@ -606,23 +592,17 @@
           ! The functional is recalculated
           !  
           CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
-                      func_om1, func_om2, func_om3 )
-
-          funca = func_om1 + func_om2 + func_om3
-          func_del1 = func_om1 - func_old1
-          func_del2 = func_om2 - func_old2
-          func_del3 = func_om3 - func_old3
-          func_del = func_del1 + func_del2 + func_del3
+                      Omega_I, Omega_D, Omega_OD, Omega_tot )
+        
+          OmegaA = Omega_tot
+          Omega_var = Omega_tot - Omega_old
 
 
         ! ...   end of the lcg skip of the optimal alpha paraphernalia 
         ENDIF
 
-
-        func_old1 = func_om1
-        func_old2 = func_om2
-        func_old3 = func_om3
-        func0 = funca
+        Omega_old = Omega_tot
+        Omega0 = OmegaA
 
 
         !
@@ -631,7 +611,7 @@
         IF ( MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1 ) THEN
              WRITE( stdout, " (/,2x,'Iteration = ',i5) ") ncount
              CALL localization_print(stdout, FMT="standard" )
-             WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f12.6) ") func_del
+             WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f12.6) ") Omega_var
              
              CALL timing_upto_now(stdout)
         ENDIF
@@ -651,7 +631,7 @@
         !
         ! convergence condition
         !
-        IF ( ABS( func_del ) < wannier_thr ) EXIT iteration_loop
+        IF ( ABS( Omega_var ) < wannier_thr ) EXIT iteration_loop
       ENDDO iteration_loop
       !
       ! ... End of iter loop
