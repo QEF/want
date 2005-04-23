@@ -17,7 +17,7 @@
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
-                                 unitary_thr, verbosity, iphase
+                                 unitary_thr, verbosity, start_mode_wan
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ioname
       USE files_module, ONLY : file_open, file_close
@@ -28,7 +28,7 @@
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
-      USE kpoints_module, ONLY: nkpts, nnx, nnhx, &
+      USE kpoints_module, ONLY: nkpts, nnx, &
                           nntot, nnlist, neigh, bk, wb, bka, wbtot
       USE overlap_module,  ONLY : dimwann, ca, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
@@ -48,20 +48,22 @@
       INTEGER :: ik, ik2
       INTEGER :: i, j, k
       INTEGER :: l, m, n
-      INTEGER :: info, nn, nnh
-      INTEGER :: nwann, nb
+      INTEGER :: info, nn
+      INTEGER :: nb
       INTEGER :: nsdim
       INTEGER :: nrguide, ncgfix, ncount, iter
-      LOGICAL :: lrguide, lcg
+      LOGICAL :: lcg
       REAL(dbl) :: epsilon, alpha
       REAL(dbl) :: Omega_old, Omega_var, Omega0, OmegaA
-      REAL(dbl) :: rre, rri, omt1, omt2, omt3, omiloc
+      REAL(dbl) :: rre, rri
       REAL(dbl) :: gcnorm1, gcfac, gcnorm0, doda0
       REAL(dbl) :: eqc, eqb, eqa, alphamin, falphamin
       COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
-      COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
+      REAL(dbl),    ALLOCATABLE ::  rguide(:,:)
+      REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) 
@@ -71,19 +73,13 @@
       COMPLEX(dbl), ALLOCATABLE ::  cdodq3(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  cdq(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  cz(:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  cv1(:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  cv2(:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  cv3(:,:) 
-      REAL(dbl), ALLOCATABLE ::  singvd(:) 
-      REAL(dbl), ALLOCATABLE ::  sheet(:,:,:) 
 
-      REAL(dbl), ALLOCATABLE :: rguide(:,:)
       COMPLEX(dbl), ALLOCATABLE :: cwschur1(:) !  cwschur1(dimwann)
       COMPLEX(dbl), ALLOCATABLE :: cwschur2(:) !  cwschur2(10*dimwann)
       REAL(dbl),    ALLOCATABLE :: cwschur3(:) !  cwschur3(dimwann)
       LOGICAL,      ALLOCATABLE :: cwschur4(:) !  cwschur4(dimwann)
 
-      INTEGER      :: nwork
       COMPLEX(dbl) :: cfact
       CHARACTER( LEN=nstrx )  :: filename
       INTEGER :: idum, rdum, ierr
@@ -127,214 +123,48 @@
       CALL timing_upto_now(stdout)
 
 
-!
-!--------------------------------------------
-!...  Wannier Functions localization procedure
-!--------------------------------------------
-! 
-      CALL timing('init',OPR='start')
-
-      WRITE(stdout,"(/,2x,70('='))")
-      WRITE(stdout,"(2x,'=',18x,'Starting localization procedure',19x,'=')")
-      WRITE(stdout,"(2x,70('='))")
-      WRITE(stdout,"(/)")
-
-
       !
-      ! ... Now calculate the average positions of the Wanns.
+      ! ... allocate local variables
       !
       ALLOCATE( csheet(dimwann,nnx,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet ', ABS(ierr))
       ALLOCATE( sheet(dimwann,nnx,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet ', ABS(ierr))
-      !
       sheet(:,:,:) = ZERO
       csheet(:,:,:) = CONE
 
-      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
-                  Omega_I, Omega_D, Omega_OD, Omega_tot )
+      ALLOCATE( rguide(3,dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating rguide ', ABS(ierr))
+      rguide(:,:) = ZERO
 
-      Omega_old = Omega_tot
-      
-
-      !
-      !...  Write centers and spread
-      !
-      CALL localization_print(stdout,FMT="extended")
-
-
-      nwork = dimwann * 10
-      ALLOCATE( cwschur1(dimwann), cwschur2( nwork ), STAT=ierr )
-         IF( ierr /=0 ) &
-         CALL errore(' wannier ', ' allocating cwschur1 cwschur2 ', dimwann+nwork)
+      ALLOCATE( cwschur1(dimwann), cwschur2( 10*dimwann ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cwschur1 cwschur2 ', ABS(ierr))
       ALLOCATE( cz(dimwann, dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cz ', dimwann**2)
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cz ', ABS(ierr))
       ALLOCATE( cwschur3(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cwschur3 ', dimwann)
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cwschur3 ', ABS(ierr))
       ALLOCATE( cwschur4(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cwschur4 ', dimwann)
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cwschur4 ', ABS(ierr))
 
       ALLOCATE( cmtmp(dimwann,dimwann), STAT=ierr )
          IF (ierr/=0) CALL errore('wannier','allocating CMTMP',ABS(ierr))
-      ALLOCATE( singvd(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating singvd ', dimwann )
-      ALLOCATE( cv1(dimwann,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv1 ', dimwann**2 )
-      ALLOCATE( cv2(dimwann,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv2 ', dimwann**2 )
-      ALLOCATE( cv3(dimwann,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cv3 ', dimwann**2 )
- 
-      !
-      ! Here we calculate the transformation matrix 
-      !
-      !    cu = cs^{-1/2} * ca,       where  cs = ca*ca^{\dag}. 
-      !
-      ! Using the SVD factorization fo the CA matrix we have
-      ! 
-      ! ca = cz * cd * cv^{\dag},      which gives
-      ! cu = cz * cv^{dag}
-      !
-      ! NOTE that lapack routine returns cv^{\dag} directly
-      !
-      DO ik = 1, nkpts
-          !
-          !
-          CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
-          CALL zmat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
-          !
-          ! Unitariery is checked
-          !
-          IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  ) &
-               CALL errore('wannier','SVD yields non unitary matrices', ik)
-      ENDDO 
-
-      !
-      ! ... So now we have the U's that rotate the wavefunctions at each k-point.
-      !     the matrix elements M_ij have also to be updated 
-      !
-      CALL overlap_update(dimwann, nkpts, cu, Mkb)
-
-
-
-      !
-      ! Singular value decomposition
-      !
-      omt1 = ZERO
-      omt2 = ZERO
-      omt3 = ZERO
-
-      DO ik = 1, nkpts
-        omiloc = ZERO
-        DO nn = 1, nntot(ik)
-
-          CALL mat_svd( dimwann, dimwann, Mkb(:,:,nn,ik), singvd, cv1, cv2 )
-
-          DO nb = 1, dimwann
-              omiloc = omiloc + wb(ik,nn) * ( ONE - singvd(nb)**2 )
-          ENDDO
-          DO nb = 1, dimwann
-              omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
-              omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
-              omt3 = omt3 + wb(ik,nn) * ( ACOS( singvd(nb) )**2 )
-          ENDDO
-        ENDDO
-      ENDDO
-
-      omt1 = omt1/DBLE(nkpts)
-      omt2 = omt2/DBLE(nkpts)
-      omt3 = omt3/DBLE(nkpts)
-
-      !
-      ! Recalculate the average positions of the Wanns.
-      !
-      CALL omega( dimwann, nkpts, Mkb,  &
-           csheet, sheet, rave, r2ave, rave2, Omega_I, Omega_D, Omega_OD, Omega_tot )
-      
-      Omega_var = Omega_tot - Omega_old
-      Omega_old = Omega_tot
-       
-      ! 
-      ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
-      !     the complex logarithms
-      !
-      ALLOCATE( rguide(3,dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating rguide ', ABS(ierr))
-
-      rguide(:,:) = ZERO
-
-      nrguide = 10
-      lrguide = .FALSE.
-      CALL phases( dimwann, nkpts, Mkb, lrguide, rguide, csheet, sheet)
-      lrguide = .TRUE.
-     
-      !
-      ! ... Recalculate the average positions of the WFs
-      !
-      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2,  &
-                  Omega_I, Omega_D, Omega_OD, Omega_tot )
-
-      Omega0 = Omega_tot
-      Omega_var = Omega_tot - Omega_old
-      Omega_old = Omega_tot
-
-      !
-      ! Singular value decomposition
-      !
-      omt1 = ZERO
-      omt2 = ZERO
-      omt3 = ZERO
-
-      DO ik = 1, nkpts
-        DO nn = 1, nntot(ik)
-
-          CALL mat_svd( dimwann, dimwann, Mkb(:,:,nn,ik), singvd, cv1, cv2 )
-          CALL zmat_mul( cv3, cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
-
-          DO nb = 1, dimwann
-              omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
-              omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
-              omt3 = omt3 + wb(ik,nn) * ( ACOS( singvd(nb) )**2)
-          ENDDO
-
-        ENDDO     ! loop nn
-      ENDDO       ! loop ik
-
-
-      omt1 = omt1/DBLE(nkpts)
-      omt2 = omt2/DBLE(nkpts)
-      omt3 = omt3/DBLE(nkpts)
-
-      !
-      ! Now that the consistent phase factors have been chosen
-      ! the wannier functions (for the R=0 cell) are calculated
-      !
-
-      lcg = .true.
-      if ( ncg < 1 ) lcg = .FALSE.
-
-      !
-      ! But first it starts the iterative cycle to solve "Poisson" phase
-      !
-      IF ( ncg == 0 ) ncg = ncg + 1
-      ncgfix = ncg
 
       ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cu0 ', dimwann*2 * nkpts )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0 ', ABS(ierr) )
       ALLOCATE( Mkb0(dimwann,dimwann,nnx,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating Mkb0 ', dimwann**2*nkpts*nnx )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0 ', ABS(ierr) )
       ALLOCATE( cdodq(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq ', dimwann*2 * nkpts )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdodq ', ABS(ierr) )
       ALLOCATE( cdqkeep(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdqkeep ', dimwann*2 * nkpts )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdqkeep ', ABS(ierr) )
       ALLOCATE( cdodq1(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq1 ', dimwann*2 * nkpts )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdodq1 ', ABS(ierr) )
       ALLOCATE( cdodq2(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq2 ', dimwann*2 * nkpts )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdodq2 ', ABS(ierr) )
       ALLOCATE( cdodq3(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdodq3 ', dimwann*2 * nkpts )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdodq3 ', ABS(ierr) )
       ALLOCATE( cdq(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' wannier ', ' allocating cdq ', dimwann*2 * nkpts )
+         IF( ierr /=0 ) CALL errore('wannier ', ' allocating cdq ', ABS(ierr) )
 
       cdqkeep = CZERO
       cdodq1  = CZERO
@@ -342,8 +172,59 @@
       cdodq3  = CZERO
       cdq     = CZERO
       cdodq   = CZERO
+ 
 
-      CALL timing('init',OPR='stop')
+!
+!--------------------------------------------
+!...  Init Wannier Functions localization procedure
+!--------------------------------------------
+! 
+
+      !
+      !
+      WRITE( stdout, "(/,2x,70('='))" )
+      WRITE( stdout, "(2x,'=',21x,'Init localization procedure',20x,'=')" )
+      WRITE( stdout, "(2x,70('='),/)" )
+
+      CALL localization_init(start_mode_wan, dimwann, nkpts, ca, cu, Mkb)
+
+
+      !
+      ! ... if we like to have an idea of how things go before the use of phases
+      !
+      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
+                  Omega_I, Omega_D, Omega_OD, Omega_tot )
+      CALL localization_print(stdout,FMT="extended")
+
+
+      ! 
+      ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
+      !     the complex logarithms
+      !
+      CALL phases( dimwann, nkpts, Mkb, .FALSE. , rguide, csheet, sheet)
+     
+
+      !
+      ! ... Calculate the average positions of the WFs
+      !
+      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2,  &
+                  Omega_I, Omega_D, Omega_OD, Omega_tot )
+      CALL localization_print(stdout,FMT="extended")
+
+      Omega0 = Omega_tot
+      Omega_var = Omega_tot - Omega_old
+      Omega_old = Omega_tot
+
+
+      !
+      ! few details
+      !
+      lcg = .TRUE.
+      IF ( ncg < 1 ) lcg = .FALSE.
+      IF ( ncg == 0 ) ncg = ncg + 1
+      ncgfix = ncg
+
+      nrguide = 10
 
 
 !
@@ -351,11 +232,13 @@
 !  ... Main iterative loop
 !----------------------------------------------
 !
-      CALL timing('iterations',OPR='start')
-
-      WRITE( stdout, "(/,2x,70('='))" ) 
+      !
+      !
+      WRITE( stdout, "(/,2x,70('='))" )
       WRITE( stdout, "(2x,'=',22x,'Starting iteration loop',23x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" ) 
+      WRITE( stdout, "(2x,70('='),/)" )
+
+      CALL timing('iterations',OPR='start')
 
       iteration_loop : &
       DO iter = 1, maxiter0_wan + maxiter1_wan
@@ -376,7 +259,7 @@
         Mkb0 = Mkb
 
         IF ( MOD( ncount, 10 ) == 0 .AND. ( ncount >= nrguide ) )   &
-            CALL phases( dimwann, nkpts, Mkb, lrguide, rguide, csheet, sheet )
+            CALL phases( dimwann, nkpts, Mkb, .TRUE. , rguide, csheet, sheet )
 
         CALL domega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb,              &
              Mkb, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
@@ -677,30 +560,6 @@
       ENDDO
 
 
-      !
-      ! ... Singular value decomposition
-      !
-      omt1 = ZERO
-      omt2 = ZERO
-      omt3 = ZERO
-
-      DO ik = 1, nkpts
-        DO nn = 1, nntot(ik)
-
-          CALL mat_svd( dimwann, dimwann, Mkb(:,:,nn,ik), singvd, cv1, cv2 )
-          DO nb = 1, dimwann
-               omt1 = omt1 + wb(ik,nn) * ( ONE - singvd(nb)**2 )
-               omt2 = omt2 - wb(ik,nn) * ( TWO * LOG( singvd(nb) ) )
-               omt3 = omt3 + wb(ik,nn) * ( ACOS( singvd(nb) )**2 )
-          END DO
-
-        END DO
-      END DO
-
-      omt1 = omt1/DBLE(nkpts)
-      omt2 = omt2/DBLE(nkpts)
-      omt3 = omt3/DBLE(nkpts)
-
       ! 
       ! ... Write the final unitary transformations and all other data referring
       !     to the Wannier localization procedure to a file
@@ -748,14 +607,6 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating sheet ', ABS(ierr) )
       DEALLOCATE( cmtmp, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cmtmp ', ABS(ierr) )
-      DEALLOCATE( singvd, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating singvd ', ABS(ierr) )
-      DEALLOCATE( cv1, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cv1 ', ABS(ierr) )
-      DEALLOCATE( cv2, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cv2 ', ABS(ierr) )
-      DEALLOCATE( cv3, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cv3 ', ABS(ierr) )
       DEALLOCATE( cu0, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cu0 ', ABS(ierr) )
       DEALLOCATE( Mkb0, STAT=ierr )

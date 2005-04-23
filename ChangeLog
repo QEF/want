@@ -5,6 +5,8 @@
 
 22 Apr 2005      Overlap_extract updated with the use of blas in matrix 
                  multiplications. Overlap_update routine added (blas used). (AF)
+                 Localization init added; phases routine re-introduced in the 
+                 wannier localization. Restart in wannier implemented but not yet checked.
 
 20 Apr 2005      "Habemus restartem" in disentangle (read/write) and the write procedure
                  is also implemented in wannier. Some cleaning in wannier and some
