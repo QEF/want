@@ -32,9 +32,9 @@
       REAL(dbl) :: wb(nkpts,nnmx)
       REAL(dbl) :: bk(3,nkpts,nnmx), rave(3,nbands)
       REAL(dbl) :: r2ave(nbands)
-      REAL(dbl) :: sheet(nbands,nkpts,nnmx)
+      REAL(dbl) :: sheet(nbands,nnmx,nkpts)
       REAL(dbl) :: brn 
-      COMPLEX(dbl) :: csheet(nbands,nkpts,nnmx)
+      COMPLEX(dbl) :: csheet(nbands,nnmx,nkpts)
       COMPLEX(dbl) :: cm(nbands,nbands,nnmx,nkpts)
       COMPLEX(dbl) :: cdodq(nbands,nbands,nkpts)
       COMPLEX(dbl) :: cdodq1(nbands,nbands,nkpts)
@@ -73,8 +73,8 @@
           DO nkp = 1, nkpts2
             DO nn = 1, nntot(nkp)
               rave(ind,nwann) = rave(ind,nwann) + wb(nkp,nn) * bk(ind,nkp,nn) *    &
-              ( AIMAG( LOG( csheet(nwann,nkp,nn) * cm(nwann,nwann,nn,nkp) ) )      &
-               - sheet(nwann,nkp,nn) )
+              ( AIMAG( LOG( csheet(nwann,nn,nkp) * cm(nwann,nwann,nn,nkp) ) )      &
+               - sheet(nwann,nn,nkp) )
             END DO
           END DO
           rave(ind,nwann) = - rave(ind,nwann) / DBLE(nkpts2)
@@ -125,10 +125,10 @@
 ! ...         -S[T^{k,b}]=-(T+Tdag)/2i ; T_mn = Rt_mn q_n
 
               cdodq2(m,n,nkp) = cdodq2(m,n,nkp) - wb(nkp,nn) * ( crt(m,n,nn,nkp) *          &
-                              ( AIMAG( LOG( csheet(n,nkp,nn) * cm(n,n,nn,nkp) ) ) -         &
-                                sheet(n,nkp,nn) ) + CONJG( crt(n,m,nn,nkp) *                &
-                              ( AIMAG( LOG( csheet(m,nkp,nn) * cm(m,m,nn,nkp) ) ) -         &
-                                sheet(m,nkp,nn) ) ) ) / ( 0.d0, 2.d0 )
+                              ( AIMAG( LOG( csheet(n,nn,nkp) * cm(n,n,nn,nkp) ) ) -         &
+                                sheet(n,nn,nkp) ) + CONJG( crt(n,m,nn,nkp) *                &
+                              ( AIMAG( LOG( csheet(m,nn,nkp) * cm(m,m,nn,nkp) ) ) -         &
+                                sheet(m,nn,nkp) ) ) ) / ( 0.d0, 2.d0 )
 
               cdodq3(m,n,nkp) = cdodq3(m,n,nkp) - wb(nkp,nn) * ( crt(m,n,nn,nkp) *          &
                                 rnkb(n,nn,nkp) + CONJG( crt(n,m,nn,nkp) * &
