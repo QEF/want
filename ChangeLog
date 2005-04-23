@@ -3,8 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
-22 Apr 2005      overlap_extract.f90 updated with the use of blas in matrix 
-                 multiplications. 
+22 Apr 2005      Overlap_extract updated with the use of blas in matrix 
+                 multiplications. Overlap_update routine added (blas used). (AF)
 
 20 Apr 2005      "Habemus restartem" in disentangle (read/write) and the write procedure
                  is also implemented in wannier. Some cleaning in wannier and some

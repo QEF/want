@@ -215,27 +215,8 @@
       ! ... So now we have the U's that rotate the wavefunctions at each k-point.
       !     the matrix elements M_ij have also to be updated 
       !
-      CALL timing('Mkb_update', OPR='start')
-      DO ik = 1, nkpts
+      CALL overlap_update(dimwann, nkpts, cu, Mkb)
 
-        DO nn = 1, nntot(ik)
-          ik2 = nnlist(ik,nn)
-          DO i = 1, dimwann
-          DO j = 1 ,dimwann
-              cmtmp(i,j) = CZERO
-              DO m = 1, dimwann
-              DO n = 1, dimwann
-                cmtmp(i,j)  =  cmtmp(i,j) + CONJG(cu(m,i,ik)) * &
-                                                 cu(n,j,ik2) * Mkb(m,n,nn,ik)
-              ENDDO
-              ENDDO
-          ENDDO
-          ENDDO
-          Mkb(:,:,nn,ik) = cmtmp(:,:)
-        ENDDO
-
-      ENDDO
-      CALL timing('Mkb_update', OPR='stop')
 
 ! XXXXX
 ! vedere ripetizione li sotto
@@ -507,25 +488,7 @@
         !
         ! And the M_ij are updated
         !
-        CALL timing('Mkb_update', OPR='start')
-        DO ik = 1, nkpts
-            DO nn = 1, nntot(ik)
-                ik2 = nnlist(ik,nn)
-                DO i = 1, dimwann
-                DO j = 1, dimwann
-                    cmtmp(i,j) = CZERO
-                    DO m = 1, dimwann
-                    DO n = 1, dimwann
-                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,ik) ) * &
-                                                          cdq(n,j,ik2) * Mkb(m,n,nn,ik)
-                    ENDDO
-                    ENDDO
-                ENDDO
-                ENDDO
-                Mkb(:,:,nn,ik) = cmtmp(:,:)
-            ENDDO
-        ENDDO
-        CALL timing('Mkb_update', OPR='stop')
+        CALL overlap_update(dimwann, nkpts, cdq, Mkb)
 
 
         !
@@ -637,26 +600,7 @@
           !
           ! M_ij are updated
           !
-          CALL timing('Mkb_update', OPR='start')
-          DO ik = 1, nkpts
-             DO nn = 1, nntot(ik)
-                ik2 = nnlist(ik,nn)
-                DO i = 1, dimwann
-                DO j = 1, dimwann
-                    cmtmp(i,j) = CZERO
-                    DO m = 1, dimwann
-                    DO n = 1, dimwann
-                        cmtmp(i,j) = cmtmp(i,j) + CONJG( cdq(m,i,ik) ) * &
-                                                         cdq(n,j,ik2) * Mkb(m,n,nn,ik)
-                    ENDDO
-                    ENDDO
-                ENDDO
-                ENDDO
-                Mkb(:,:,nn,ik) = cmtmp(:,:)
-             ENDDO
-          ENDDO
-          CALL timing('Mkb_update', OPR='stop')
-
+          CALL overlap_update( dimwann, nkpts, cdq, Mkb)
 
           !
           ! The functional is recalculated

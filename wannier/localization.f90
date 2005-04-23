@@ -183,14 +183,15 @@ CONTAINS
       ENDDO
       WRITE( unit, " (2x, '! Center Sum',    &
               & 1x, '= (',f12.6,',',f12.6,',',f12.6,' )  Omega = ', f13.6,/ )" )     &
-             ( SUM(rave(i,1:dimwann)) ,i=1,3), SUM(r2ave(1:dimwann))
+                      ( SUM(rave(i,1:dimwann)) ,i=1,3),  &
+                        SUM(r2ave(1:dimwann)) - SUM(rave2(1:dimwann))
 
       IF ( lxprint ) THEN
            WRITE( unit, "(  2x, 'Spread Operator decomposition (Bohr^2): ')")
-           WRITE( unit, "(  4x,'OmegaI    =   ', f12.6 ) " ) Omega_I
-           WRITE( unit, "(  4x,'OmegaD    =   ', f12.6 ) " ) Omega_D
-           WRITE( unit, "(  4x,'OmegaOD   =   ', f12.6 ) " ) Omega_OD
-           WRITE( unit, "(  4x,'Omega Tot =   ', f12.6 ) " ) Omega_tot
+           WRITE( unit, "(  4x,'OmegaI    =   ', f15.9 ) " ) Omega_I
+           WRITE( unit, "(  4x,'OmegaD    =   ', f15.9 ) " ) Omega_D
+           WRITE( unit, "(  4x,'OmegaOD   =   ', f15.9 ) " ) Omega_OD
+           WRITE( unit, "(  4x,'Omega Tot =   ', f15.9 ) " ) Omega_tot
            WRITE( unit, "()")
       ENDIF
 
