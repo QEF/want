@@ -17,7 +17,7 @@ Infinite Gold Chain USPP
       celldm(3)=0.236216,
       nat=1, 
       ntyp=1,
-      ecutwfc=20.0,
+      ecutwfc=25.0,
       ecutrho=200.0,
       occupations='smearing',
       smearing='gaussian',

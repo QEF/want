@@ -26,7 +26,7 @@
        USE want_init_module, ONLY : want_init
        USE control_module, ONLY : start_mode_dis, verbosity, unitary_thr, &
                                   nprint_dis, nsave_dis
-       USE util_module,    ONLY : zmat_unitary, zmat_hdiag
+       USE util_module,    ONLY : zmat_unitary, zmat_hdiag, zmat_mul
        USE iotk_module
     
        USE kpoints_module, ONLY: nkpts, vkpt
@@ -56,7 +56,6 @@
        REAL(dbl) :: omega_err
        REAL(dbl) :: aux
 
-       REAL(dbl), ALLOCATABLE :: komega_i_est(:)
        REAL(dbl), ALLOCATABLE :: w(:)
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
@@ -108,8 +107,6 @@
            IF( ierr /=0 ) CALL errore('disentangle', 'allocating z', ABS(ierr) )
        ALLOCATE( w(nbnd), STAT = ierr )
            IF( ierr /=0 ) CALL errore('disentangle', 'allocating w', ABS(ierr) )
-       ALLOCATE( komega_i_est(nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating komega_i_est', ABS(ierr) )
 
 
 
@@ -189,6 +186,7 @@
            !
            ! body of the loop
            !
+           omega_i_est = DBLE(nkpts * dimwann) * wbtot
            DO ik = 1, nkpts
                ! 
                ! Diagonalize z matrix mtrx_in at all relevant k-points
@@ -203,10 +201,6 @@
                     CALL timing('zmat_hdiag', OPR='stop')
                ENDIF
 
-               ! 
-               !  Calculate k-point contribution to omega_i_est
-               komega_i_est(ik) = DBLE(dimwann)*wbtot
- 
 
                ! Contribution from frozen states (if any)
                ! 
@@ -218,7 +212,7 @@
                    ! 
                    aux = komegai( ik, dimfroz(ik), dimwann, dimwin, dimwinx,  &
                                   lamp, Mkb(1,1,1,ik))
-                   komega_i_est(ik) = komega_i_est(ik) + aux
+                   omega_i_est = omega_i_est + aux
                ENDIF
                ! 
                ! Contribution from non-frozen states (if any). 
@@ -229,18 +223,14 @@
                    m = dimfroz(ik)
                    DO j = dimwin(ik)-dimwann+1, dimwin(ik)-dimfroz(ik)
                         m = m+1
-                        komega_i_est(ik) = komega_i_est(ik) - w(j)
-                        DO i = 1, dimwin(ik)
-                            lamp(i,m,ik) = CZERO
-                        ENDDO
+                        omega_i_est = omega_i_est - w(j)
+                        lamp( 1:dimwin(ik), m, ik) = CZERO
                         DO i = 1, dimwin(ik)-dimfroz(ik)
-                            lamp(indxnfroz(i,ik),m,ik) = z(i,j)     ! *** CHECK!!! ***
+                            lamp( indxnfroz(i,ik), m, ik) = z(i,j)     ! *** CHECK!!! ***
                         ENDDO
                    ENDDO
                ENDIF
- 
             ENDDO
-            omega_i_est = SUM( komega_i_est(1:nkpts) ) /DBLE(nkpts)
 
 
            
@@ -252,7 +242,6 @@
                 aux = komegai( ik, dimwann, dimwann, dimwin, dimwinx, lamp, Mkb(1,1,1,ik) )
                 omega_i = omega_i + aux
             ENDDO
-            omega_i = omega_i/DBLE(nkpts)
             omega_err = ( omega_i_est -omega_i ) / omega_i 
     
 
@@ -312,13 +301,72 @@
 
 
        !
-       ! ...  Write the final omega_i. This should equal the one given by wannier
+       ! ... Write the final omega_i. This should equal the one given by wannier
        !
-       WRITE( stdout,"(2x,'Final Omega_I (Bohr^2, Angstrom^2)', f16.8,2x,f16.8)") &
+       WRITE( stdout,"(2x,'Final Omega_I (Bohr^2, Angstrom^2):', f16.8,2x,f16.8)") &
                       omega_i, omega_i*bohr**2
+       WRITE( stdout,"(2x,' Avrg Omega_I                     :', f16.8,2x,f16.8)") &
+                      omega_i/DBLE(dimwann), omega_i*bohr**2/DBLE(dimwann)
        WRITE( stdout,"()" ) 
        CALL timing_upto_now(stdout) 
 
+     
+       !
+       ! ... As a description of the found subspace write the norm of each bloch
+       !     state projected on the subspace 
+       !     in practice we write the dimwann diagonal elements of lamp^{dag}*lamp
+       !
+       IF ( TRIM(verbosity) == "high" ) THEN
+            WRITE( stdout,"(/,2x,'Subspace decomposition:')" ) 
+            WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" ) 
+            DO ik=1,nkpts
+                  WRITE(stdout,"(6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4,/)" ) &
+                        ik, vkpt(:,ik), dimwin(ik)
+                  CALL zmat_mul(z, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+                                dimwin(ik), dimwin(ik), dimwann )
+                  WRITE(stdout,"(2x, 8f9.5)") ( REAL(z(i,i)), i=1,dimwin(ik) )
+            ENDDO
+            WRITE( stdout,"()" ) 
+       ENDIF
+
+
+       ! ...  Diagonalize the hamiltonian within the optimized subspace at each kpoint
+       !      in order to re-define eigenvalues and eigenvectors
+       !
+       DO ik = 1, nkpts
+           ! 
+           ! check the unitariry of lamp
+           !
+           IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),1:dimwann,ik), &
+                                    SIDE='left', TOLL=unitary_thr) )&
+                 CALL errore('disentangle',"Lamp matrices not orthogonal",ik)
+
+           DO j = 1, dimwann
+           DO i = 1, dimwann
+               ham(i,j,ik) = CZERO
+               DO l = 1, dimwin(ik)
+                  ham(i,j,ik) = ham(i,j,ik) + CONJG(lamp(l,i,ik))*lamp(l,j,ik)*eig(l,ik)
+               ENDDO
+           ENDDO
+           ENDDO
+           CALL zmat_hdiag(z(:,:), wan_eig(:,ik), ham(:,:,ik), dimwann)
+ 
+           !
+           ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
+           !      the original ("window space") energy eigenvectors
+           !
+ 
+           eamp(:,:,ik) = CZERO
+           DO j = 1, dimwann
+           DO i = 1, dimwin(ik)
+               DO l = 1, dimwann
+                    eamp(i,j,ik) = eamp(i,j,ik) + z(l,j)*lamp(i,l,ik)
+               END DO
+           ENDDO
+           ENDDO
+ 
+       ENDDO 
+                  
 
 !
 !--------------------------------------
@@ -359,35 +407,6 @@
             ENDIF
        ENDDO
 
-       ! ...  Diagonalize the hamiltonian within the optimized subspace at each kpoint
-       !      in order to re-define eigenvalues and eigenvectors
-       !
-       DO ik = 1, nkpts
-           DO j = 1, dimwann
-           DO i = 1, dimwann
-               ham(i,j,ik) = CZERO
-               DO l = 1, dimwin(ik)
-                  ham(i,j,ik) = ham(i,j,ik) + conjg(lamp(l,i,ik))*lamp(l,j,ik)*eig(l,ik)
-               ENDDO
-           ENDDO
-           ENDDO
-           CALL zmat_hdiag(z(:,:), wan_eig(:,ik), ham(:,:,ik), dimwann)
- 
-           !
-           ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
-           !      the original ("window space") energy eigenvectors
-           !
- 
-           eamp(:,:,ik) = CZERO
-           DO j = 1, dimwann
-           DO i = 1, dimwin(ik)
-               DO l = 1, dimwann
-                    eamp(i,j,ik) = eamp(i,j,ik) + z(l,j)*lamp(i,l,ik)
-               END DO
-           ENDDO
-           ENDDO
- 
-       ENDDO ! end of ik loop
 
        !
        ! Note: for the purpose of minimizing Omegatld in wannier.f we could have simply
@@ -468,9 +487,6 @@
        !
        ! ...  Deallocate local arrays
        !
-       DEALLOCATE( komega_i_est, STAT=ierr )
-           IF( ierr/=0 ) CALL errore('disentangle', 'deallocating k_omega_i_est',ABS(ierr) )
-
        DEALLOCATE( z, STAT=ierr )
            IF( ierr /=0 ) CALL errore('disentangle', 'deallocating z', ABS(ierr) )
        DEALLOCATE( w, STAT=ierr )

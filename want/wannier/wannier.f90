@@ -58,7 +58,6 @@
       REAL(dbl) :: rre, rri
       REAL(dbl) :: gcnorm1, gcfac, gcnorm0, doda0
       REAL(dbl) :: eqc, eqb, eqa, alphamin, falphamin
-      COMPLEX(dbl) :: cfunc_exp1, cfunc_exp2, cfunc_exp3, cfunc_exp
 
       REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
@@ -107,7 +106,7 @@
       !
       ! ... Summary of the input and DFT data
       !
-      CALL summary( stdout )
+      CALL summary( stdout, LEIG=.FALSE. )
 
       !
       ! ... wannier-specific variables init
@@ -184,19 +183,20 @@
       CALL localization_init(start_mode_wan, dimwann, nkpts, ca, cu, Mkb)
 
 
-      !
-      ! ... if we like to have an idea of how things go before the use of phases
-      !
-      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
-                  Omega_I, Omega_D, Omega_OD, Omega_tot )
-      CALL localization_print(stdout,FMT="extended")
+      !!
+      !! ... if we like to have an idea of how things go before the use of phases
+      !!
+      !CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
+      !            Omega_I, Omega_D, Omega_OD, Omega_tot )
+      !CALL localization_print(stdout,FMT="extended")
 
 
-      ! 
-      ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
-      !     the complex logarithms
-      !
-      CALL phases( dimwann, nkpts, Mkb, csheet, sheet)
+      !! 
+      !! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
+      !!     the complex logarithms. This is used to move all wannier centers in the
+      !!     R = 0 cell.
+      !!
+      !CALL phases( dimwann, nkpts, Mkb, csheet, sheet)
 
 
       !
@@ -253,8 +253,12 @@
         cu0 = cu
         Mkb0 = Mkb
 
-        IF ( MOD( ncount, 10 ) == 0 .AND. ( ncount >= nrguide ) )   &
-            CALL phases( dimwann, nkpts, Mkb, csheet, sheet )
+        !! XXXX
+        !! this is used to move wannier centers to the R = 0 cell.
+        !! at the moment it is disabled
+        !!
+        !IF ( MOD( ncount, 10 ) == 0 .AND. ( ncount >= nrguide ) )   &
+        !    CALL phases( dimwann, nkpts, Mkb, csheet, sheet )
 
         CALL domega( dimwann, nkpts, nkpts, nntot, nnx, nnlist, bk, wb,              &
              Mkb, csheet, sheet, rave, r2ave, cdodq1, cdodq2, cdodq3, cdodq)
@@ -291,20 +295,9 @@
         !
         ! The cg step is calculated
         cdq = alpha / wbtot / FOUR * cdq
-        !
-        cfunc_exp1 = CZERO
-        cfunc_exp2 = CZERO
-        cfunc_exp3 = CZERO
-        DO ik = 1, nkpts
-            DO i = 1, dimwann
-            DO j = 1, dimwann
-              cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
-              cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
-              cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
-            ENDDO
-            ENDDO
-        ENDDO
 
+
+        !
         DO ik = 1, nkpts
 
             CALL zgees( 'V', 'N', lselect, dimwann, cdq(1,1,ik), dimwann, nsdim,     &
@@ -325,23 +318,6 @@
 
         ENDDO
 
-        !
-        ! The expected change in the functional is calculated
-        !
-        cfunc_exp1 = CZERO
-        cfunc_exp2 = CZERO
-        cfunc_exp3 = CZERO
-
-        DO ik = 1, nkpts
-            DO i = 1, dimwann
-            DO j = 1, dimwann
-                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
-                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
-                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
-            ENDDO
-            ENDDO
-        ENDDO
-        cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
 
         !
         ! The orbitals are rotated 
@@ -398,22 +374,6 @@
           ! Take now optimal parabolic step
           cdq = alphamin / wbtot / FOUR * cdqkeep
 
-          !
-          ! The expected change in the functional is calculated
-          !
-          cfunc_exp1 = CZERO
-          cfunc_exp2 = CZERO
-          cfunc_exp3 = CZERO
-          DO ik = 1, nkpts
-              DO i = 1, dimwann
-              DO j = 1, dimwann
-                  cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
-                  cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
-                  cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
-              ENDDO
-              ENDDO
-          ENDDO
-
 
           DO ik = 1, nkpts
 
@@ -435,22 +395,6 @@
 
           ENDDO
 
-          !
-          ! The expected change in the functional is calculated
-          !
-          cfunc_exp1 = CZERO
-          cfunc_exp2 = CZERO
-          cfunc_exp3 = CZERO
-          DO ik = 1, nkpts
-            DO i = 1, dimwann
-              DO j = 1, dimwann
-                cfunc_exp1 = cfunc_exp1 + cdodq1(i,j,ik) * cdq(j,i,ik)
-                cfunc_exp2 = cfunc_exp2 + cdodq2(i,j,ik) * cdq(j,i,ik)
-                cfunc_exp3 = cfunc_exp3 + cdodq3(i,j,ik) * cdq(j,i,ik)
-              END DO
-            END DO
-          END DO
-          cfunc_exp = cfunc_exp1 + cfunc_exp2 + cfunc_exp3
 
           !
           ! The orbitals are rotated 

@@ -29,7 +29,8 @@
 ! SUBROUTINE ggrids_allocate()
 ! SUBROUTINE ggrids_deallocate()
 ! SUBROUTINE ggrids_read_ext(unit)
-! SUBROUTINE ggrids_gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, ninvpw, nindpw )
+! SUBROUTINE ggrids_gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, gk2fft, fft2gk )
+! SUBROUTINE ggrids_gv_indexes( igv, ngm, nr1, nr2, nr3, gv2fft, fft2gv )
 
 !
 ! declarations of common variables
@@ -57,7 +58,7 @@
 
    PUBLIC :: ggrids_allocate, ggrids_deallocate
    PUBLIC :: ggrids_read_ext
-   PUBLIC :: ggrids_gv_indexes
+   PUBLIC :: ggrids_gk_indexes, ggrids_gv_indexes
 
 CONTAINS
 
@@ -187,20 +188,24 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE ggrids_gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, gk2fft, fft2gk )
+   SUBROUTINE ggrids_gk_indexes( igv, igsort, npwk, nr1, nr2, nr3, gk2fft, fft2gk )
    !**********************************************************
-    IMPLICIT NONE
-    INTEGER, INTENT(IN) :: igv(:,:)
-    INTEGER, INTENT(IN) :: igsort(:)
-    INTEGER, INTENT(IN) :: npwk, nr1, nr2, nr3
-    INTEGER, OPTIONAL, INTENT(OUT) :: fft2gk(0:)
-    INTEGER, OPTIONAL, INTENT(OUT) :: gk2fft(:)
-    INTEGER :: igk, np, nx, ny, nz, npoint
+   !
+   ! Set the direct and inverse map between IGSORT and FFT grid, i.e. between
+   ! wfc (at a given kpt) and FFT.
+   !
+   IMPLICIT NONE
+   INTEGER, INTENT(IN) :: igv(:,:)
+   INTEGER, INTENT(IN) :: igsort(:)
+   INTEGER, INTENT(IN) :: npwk, nr1, nr2, nr3
+   INTEGER, OPTIONAL, INTENT(OUT) :: fft2gk(0:)
+   INTEGER, OPTIONAL, INTENT(OUT) :: gk2fft(:)
+   INTEGER :: igk, np, nx, ny, nz, npoint
 
-    IF ( PRESENT(gk2fft) ) gk2fft = 0
-    IF ( PRESENT(fft2gk) ) fft2gk = 0
-    DO np = 1, npwk
+   IF ( PRESENT(gk2fft) ) gk2fft = 0
+   IF ( PRESENT(fft2gk) ) fft2gk = 0
 
+   DO np = 1, npwk
       igk = igsort( np )
 
       IF ( igv(1,igk) >= 0 ) nx = igv(1,igk) + 1
@@ -210,29 +215,44 @@ CONTAINS
       IF ( igv(3,igk) >= 0 ) nz = igv(3,igk) + 1
       IF ( igv(3,igk) <  0 ) nz = igv(3,igk) + 1 + nr3       
    
-! The following indexes are incoherent with FFT
-!      nx = igv(1,igk)
-!      IF ( nx < 1   ) nx = nx + nr1
-!      IF ( nx > nr1 ) nx = nx - nr1
-!      !
-!      ny = igv(2,igk)
-!      IF ( ny < 1   ) ny = ny + nr2
-!      IF ( ny > nr2 ) ny = ny - nr2
-!      !
-!      nz = igv(3,igk)
-!      IF ( nz < 1   ) nz = nz + nr3
-!      IF ( nz > nr3 ) nz = nz - nr3
-!      !
-
       npoint = nx + (ny-1)*nr1 + (nz-1)*nr1*nr2
 
       IF( PRESENT( gk2fft ) ) gk2fft(np) = npoint  ! index
       IF( PRESENT( fft2gk ) ) fft2gk(npoint) = np  ! index
 
-    ENDDO
+   ENDDO
+END SUBROUTINE ggrids_gk_indexes
 
-    RETURN
-  END SUBROUTINE ggrids_gv_indexes
+
+!**********************************************************
+   SUBROUTINE ggrids_gv_indexes( igv, ngm, nr1, nr2, nr3, gv2fft, fft2gv )
+   !**********************************************************
+   IMPLICIT NONE
+   INTEGER, INTENT(IN) :: igv(:,:)
+   INTEGER, INTENT(IN) :: ngm, nr1, nr2, nr3
+   INTEGER, OPTIONAL, INTENT(OUT) :: fft2gv(0:)
+   INTEGER, OPTIONAL, INTENT(OUT) :: gv2fft(:)
+   INTEGER :: ig, nx, ny, nz, npoint
+
+   IF ( PRESENT(gv2fft) ) gv2fft = 0
+   IF ( PRESENT(fft2gv) ) fft2gv = 0
+
+   DO ig = 1, ngm
+
+      IF ( igv(1,ig) >= 0 ) nx = igv(1,ig) + 1
+      IF ( igv(1,ig) <  0 ) nx = igv(1,ig) + 1 + nr1
+      IF ( igv(2,ig) >= 0 ) ny = igv(2,ig) + 1
+      IF ( igv(2,ig) <  0 ) ny = igv(2,ig) + 1 + nr2
+      IF ( igv(3,ig) >= 0 ) nz = igv(3,ig) + 1
+      IF ( igv(3,ig) <  0 ) nz = igv(3,ig) + 1 + nr3       
+   
+      npoint = nx + (ny-1)*nr1 + (nz-1)*nr1*nr2
+
+      IF( PRESENT( gv2fft ) ) gv2fft(ig) = npoint  ! index
+      IF( PRESENT( fft2gv ) ) fft2gv(npoint) = ig  ! index
+
+    ENDDO
+END SUBROUTINE ggrids_gv_indexes
 
 END MODULE ggrids_module
 

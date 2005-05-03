@@ -200,7 +200,7 @@ CONTAINS
        IF ( kpoints_alloc ) CALL kpoints_deallocate()
        IF ( nkpts <=0 .OR. nkpts_tot <=0 ) CALL errore(subname,'nkpts should be set',2) 
        IF ( iks <=0 .OR. ike <=0 ) CALL errore(subname,'iks or ike not set',3) 
-       IF ( iks >= ike ) CALL errore(subname,'iks >= ike',4) 
+       IF ( iks > ike ) CALL errore(subname,'iks > ike',4) 
        IF ( ike - iks + 1 /= nkpts ) CALL errore(subname,'Invalid ike or iks',5)
 
        CALL iotk_scan_begin(unit,TRIM(name),ATTR=attr,FOUND=found,IERR=ierr)

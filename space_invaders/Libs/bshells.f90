@@ -9,27 +9,31 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 
-!=----------------------------------------------------------------------------------=
-      SUBROUTINE bshells( bvec, nshells, nwhich )
-!=----------------------------------------------------------------------------------=
+!******************************************************
+   SUBROUTINE bshells( bvec, nshells, nwhich )
+   !******************************************************
+   !
+   !  Computes the shells of b-vectors connecting every k-point to its
+   !  neighbors, as well as their weights for the finite-difference formulas
+   !  for the k-derivatives
+   ! 
+   USE kinds
+   USE constants, ONLY : ZERO, CZERO, ONE, EPS_m10, EPS_m6
+   USE util_module, ONLY : mat_svd
+   USE converters_module, ONLY : cry2cart
+   USE timing_module, ONLY : timing
+   USE summary_module, ONLY: summary 
+   USE io_module, ONLY: stdout
 
-      USE kinds
-      USE constants, ONLY : ZERO, CZERO, ONE, EPS_m10, EPS_m6
-      USE util_module, ONLY : mat_svd
-      USE converters_module, ONLY : cry2cart
-      USE timing_module, ONLY : timing
+   USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, nreverse, &
+                              bk, dnn, ndnntot, wb, wbtot, nnlist, nncell, &
+                              nntot, bka, neigh, nnx, &
+                              kpoints_alloc 
+   IMPLICIT NONE
 
-      USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, nreverse, &
-                                 bk, dnn, ndnntot, wb, wbtot, nnlist, nncell, &
-                                 nntot, bka, neigh, nnx, &
-                                 kpoints_alloc 
- 
-! ... Computes the shells of b-vectors connecting every k-point to its
-!     neighbors, as well as their weights for the finite-difference formulas
-!     for the k-derivatives
- 
-      IMPLICIT NONE
-
+   !
+   ! input and local variables
+   !
       INTEGER, INTENT(in)   :: nshells
       INTEGER, INTENT(in)   :: nwhich(nshells)
       REAL(dbl), INTENT(in) :: bvec(3,3)
@@ -260,25 +264,28 @@
               DO nnsh =1, nnshell(1,ndnn)
                 inx = inx + 1
                 ddelta = ddelta + wb(nkp,inx) * bk(i,nkp,inx) * bk(j,nkp,inx)
-              END DO
-            END DO
+              ENDDO
+            ENDDO
 
-            IF ( ( i == j ) .AND. ( ABS( ddelta - 1.0d0 ) > eps ) ) &
-              CALL errore('bshell', 'B1 not satisfied (I)', 1 )
+            IF ( ( i == j ) .AND. ( ABS( ddelta - ONE ) > eps ) ) THEN
+                CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
+                CALL errore('bshell', 'B1 not satisfied (I)', 1 )
+            ENDIF
          
-            IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) &
-              CALL errore('bshell', 'B1 not satisfied (II)', 1 )
+            IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) THEN
+                CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
+                CALL errore('bshell', 'B1 not satisfied (II)', 1 )
+            ENDIF
         
-          END DO
-        END DO
+          ENDDO
+        ENDDO
 
-      END DO
+      ENDDO
       !
       ! Completeness relation is fully satisfied!
       ! ( see Appendix B, PRB 56 12847 (1997) for more details )
       !
 
-!...  
 
       wbtot = ZERO
       inx = 0

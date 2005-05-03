@@ -62,7 +62,8 @@
        ! aux = Mkb * Lamp(ikb)
        ! aux1 = Lamp(ik)^{\dag} * aux
        !     
-       CALL zmat_mul(aux,  Mkb(:,:,inn), 'N', lamp(:,:,ikb), 'N', dimwin(ik), dimwann, dimwin(ikb) )
+       CALL zmat_mul(aux,  Mkb(:,:,inn), 'N', lamp(:,:,ikb), 'N', &
+                     dimwin(ik), dimwann, dimwin(ikb) )
        CALL zmat_mul(aux1, lamp(:,:,ik), 'C', aux, 'N',  mdim, dimwann, dimwin(ik) )
 
        DO n = 1, dimwann     

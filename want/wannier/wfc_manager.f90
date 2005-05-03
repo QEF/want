@@ -38,7 +38,7 @@
    USE subspace_module,ONLY : dimwann
    USE trial_center_data_module,   ONLY : trial
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz, imin, imax
-   USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, nnx, &
+   USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, bk, &
                               nntot, nnlist, nncell, neigh, nreverse
    USE overlap_module, ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
    USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
@@ -125,6 +125,7 @@
           !
           IF ( uspp_calculation ) THEN
               WRITE( stdout,"(/,2x,'Initializing US pseudopot. data')")
+              
               !
               ! ... data required by USPP
               CALL allocate_nlpot()
@@ -133,6 +134,7 @@
               !     here we compute (among other quantities) \int dr Q_ij(r)
               !                                              \int dr e^ibr Q_ij(r)
               CALL init_us_1()
+              WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5,2/ ) ') nkb
               !
               ! ... structure factors 
               CALL struct_fact_data_init()
@@ -141,7 +143,7 @@
               ! ... beta functions in reciproc space within struct_facts
               !     and their projections <beta|psi>
               ! 
-              IF ( nkb <= 0 ) CALL errore(subname,'no beta functions while using USPP',-nkb+1)
+              IF ( nkb <= 0 ) CALL errore(subname,'no beta functions within USPP',-nkb+1)
               ALLOCATE( becp(nkb, dimwinx, nkpts), STAT=ierr )
                   IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
 
@@ -205,7 +207,8 @@
                  !
                  CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
                  vkb_ik = ik
-                 CALL ccalbec( nkb, npwkx, npwk(ik), dimwin(ik), becp(1,1,ik), vkb, evc(1,index))
+                 CALL ccalbec( nkb, npwkx, npwk(ik), dimwin(ik), becp(1,1,ik), vkb, &
+                               evc(1,index))
              ENDIF
 
              IF ( do_overlaps ) THEN
@@ -240,12 +243,12 @@
                             !
                             CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
                             vkb_ik = ikb
-                            CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb), &
+                            CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb),&
                                           vkb, evc(1,index))
                         ENDIF
 
-                        CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), imin(ik), imin(ikb),  &
-                                      dimwinx, evc, evc_info,  &
+                        CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), &
+                                      imin(ik), imin(ikb), dimwinx, evc, evc_info,  &
                                       igsort, nncell(1,inn,ik), Mkb(1,1,inn,ik) )
 
                         !
@@ -268,7 +271,7 @@
                         ! apply the symmetrization
                         ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
                         !
-                        Mkb(:,:, nreverse(inn,ik), ikb ) = CONJG( TRANSPOSE( Mkb(:,:,inn,ik) ) )
+                       Mkb(:,:, nreverse(inn,ik), ikb) = CONJG( TRANSPOSE( Mkb(:,:,inn,ik)))
                     ENDIF
                 ENDDO neighbours
              ENDIF

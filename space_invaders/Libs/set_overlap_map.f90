@@ -10,7 +10,7 @@
 SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
    !*********************************************************
    USE kinds
-   USE ggrids_module, ONLY : igv, ggrids_gv_indexes
+   USE ggrids_module, ONLY : igv, ggrids_gk_indexes, ggrids_gv_indexes
    USE timing_module
    
    IMPLICIT NONE
@@ -47,7 +47,7 @@ SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
    INTEGER          :: ngm
    INTEGER          :: itmp, ipoint, ipoint_new
    INTEGER          :: ig, ierr
-   INTEGER, ALLOCATABLE :: fft2gk(:), gk2fft(:)
+   INTEGER, ALLOCATABLE :: fft2gv(:), gk2fft(:)
 
 !
 ! ... end of declarations
@@ -56,10 +56,11 @@ SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
 
    ALLOCATE( gk2fft(npwk), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating gk2fft', ABS(ierr) )
-   ALLOCATE( fft2gk(0:ngx*ngy*ngz), STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating fft2gk', ABS(ierr) )
+   ALLOCATE( fft2gv(0:ngx*ngy*ngz), STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'allocating fft2gv', ABS(ierr) )
 
-   CALL ggrids_gv_indexes(igv, igsort, npwk, ngx, ngy, ngz, gk2fft, fft2gk )
+   CALL ggrids_gk_indexes(igv, igsort, npwk, ngx, ngy, ngz, GK2FFT=gk2fft )
+   CALL ggrids_gv_indexes(igv, SIZE(igv,2), ngx, ngy, ngz, FFT2GV=fft2gv )
    ngm = ngx*ngy*ngz+1
 
    DO ig=1, npwk
@@ -102,22 +103,22 @@ SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
       ipoint_new = ix2 + (iy2-1)*ngx + (iz2-1)*ngx*ngy
       !
       IF ( ipoint_new > ngm ) CALL errore(subname,'invalid indexes',ipoint_new)
-      itmp = fft2gk(ipoint_new)
+      !
+      ! go to the density grid
+      !
+      itmp = fft2gv(ipoint_new)
+      IF ( itmp <= 0 ) CALL errore(subname,'unexpected index',-itmp+1)
       !
       ! if the translation of the G go over a point out of the 
       ! initial G group, we set the related inxed to a dummy position
       !
-      IF ( itmp > 0 ) THEN
-         map(ig) = igsort( itmp )
-      ELSE
-         map(ig) = npwx_g
-      ENDIF
+      map(ig) = MIN( itmp, npwx_g)
    ENDDO
 
    DEALLOCATE( gk2fft, STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'deallocating gk2fft', ABS(ierr) )
-   DEALLOCATE( fft2gk, STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'deallocating fft2gk', ABS(ierr) )
+   DEALLOCATE( fft2gv, STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'deallocating fft2gv', ABS(ierr) )
 
    CALL timing('set_overlap_map',OPR='stop')
 

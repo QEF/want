@@ -175,7 +175,7 @@
 !
 ! ... printing data to output
 !
-      !CALL summary( stdout, INPUT=.FALSE. )
+      CALL summary( stdout, LINPUT=.FALSE., LATOMS=.FALSE., LEIG=.FALSE. )
 
 !
 ! ... Read unitary matrices U(k) that rotate the bloch states
