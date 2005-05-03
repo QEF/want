@@ -6,19 +6,18 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-      SUBROUTINE overlap( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, evc, evc_info, &
-                          igsort, lnncell, Mkb )
-!=----------------------------------------------------------------------------------=
- 
-      USE kinds
-      USE constants,      ONLY : CZERO
-      USE parameters,     ONLY : nnx
-      USE timing_module,  ONLY : timing
-      USE wfc_info_module 
-      USE ggrids_module,  ONLY : nfft
+!************************************************************
+   SUBROUTINE overlap( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, evc, evc_info, &
+                       igsort, lnncell, Mkb )
+   !************************************************************
+   USE kinds
+   USE constants,      ONLY : CZERO
+   USE parameters,     ONLY : nnx
+   USE timing_module,  ONLY : timing
+   USE wfc_info_module 
+   USE ggrids_module,  ONLY : nfft, igv 
 
-      IMPLICIT NONE
+   IMPLICIT NONE
       !
       ! ... Input Variables
       !
@@ -43,9 +42,14 @@
 
       INTEGER, ALLOCATABLE      :: map(:)
       COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)
+      !
+      ! ... end declarations
+      !
 
 !
-! ... END declarations
+!------------------------------
+! main body
+!------------------------------
 !
       CALL timing('overlap',OPR='start')
 
@@ -98,7 +102,7 @@
 
       !
       ! creates the map from the PW of ik2 to those of ik1 
-      ! the PWs not found are set to npwkx hwich has zero coefficients by def.
+      ! the PWs not found are set to the index npwx_g which is not summed
       !
       ! this mapping takes into account the e^{iGr} factor when k1 and k2 are 
       ! in different Brillouin zones.
@@ -106,6 +110,7 @@
       CALL set_overlap_map( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(1,ik2), &
                             lnncell(1), map)
       map( npwk2+1: npwkx ) = 0
+
 
       !
       ! loops over bands

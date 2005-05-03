@@ -62,7 +62,7 @@
 !    - eigenvalues
 !
 ! contains:
-! SUBROUTINE  summary(unit)
+! SUBROUTINE  summary(unit[,linput][,llattice][,latoms][,lpseudo][,lkpoints][,leig])
 ! </INFO>
 !
 
@@ -79,12 +79,34 @@
 !
 
 !**********************************************************
-   SUBROUTINE summary(unit,input)
+   SUBROUTINE summary(unit, linput, llattice, latoms, lpseudo, lkpoints, leig)
    !**********************************************************
-      IMPLICIT NONE
+   !
+   ! manage init data summary
+   !
+   IMPLICIT NONE
+      !
+      ! input variables
+      !
       INTEGER,   INTENT(in)         :: unit
-      LOGICAL, OPTIONAL, INTENT(in) :: input     ! if true summarize the WanT input
-      LOGICAL                :: linput
+      LOGICAL, OPTIONAL, INTENT(in) :: linput     ! if TRUE summ input
+      LOGICAL, OPTIONAL, INTENT(in) :: llattice   ! if TRUE summ lattice
+      LOGICAL, OPTIONAL, INTENT(in) :: latoms     ! if TRUE summ atoms
+      LOGICAL, OPTIONAL, INTENT(in) :: lpseudo    ! if TRUE summ pseudos
+      LOGICAL, OPTIONAL, INTENT(in) :: lkpoints   ! if TRUE summ kpoints
+      LOGICAL, OPTIONAL, INTENT(in) :: leig       ! if TRUE summ eigenvalues
+
+      !
+      ! local variables
+      !
+      LOGICAL                :: linput_
+      LOGICAL                :: llattice_
+      LOGICAL                :: latoms_
+      LOGICAL                :: lpseudo_
+      LOGICAL                :: lkpoints_
+      LOGICAL                :: leig_
+      LOGICAL                :: ldft_
+
       INTEGER                :: ik, ia, ib, idnn 
       INTEGER                :: i, j, m, is, nt, l
       REAL(dbl), ALLOCATABLE :: kpt_cart(:,:)
@@ -94,15 +116,30 @@
 
 
    !
+   ! set defaults and switches
+   !
+      linput_   = .TRUE.
+      llattice_ = .TRUE. 
+      latoms_   = .TRUE. 
+      lpseudo_  = .TRUE. 
+      lkpoints_ = .TRUE. 
+      leig_     = .TRUE. 
+      IF ( PRESENT(linput) )   linput_   = linput
+      IF ( PRESENT(llattice) ) llattice_ = llattice
+      IF ( PRESENT(latoms) )   latoms_   = latoms
+      IF ( PRESENT(lpseudo) )  lpseudo_  = lpseudo
+      IF ( PRESENT(lkpoints) ) lkpoints_ = lkpoints
+      IF ( PRESENT(leig) )     leig_     = leig
+      ldft_ = llattice_ .OR. latoms_ .OR. lpseudo_ .OR. lkpoints_ .OR. leig_
+
+   !
    ! <MAIN & INPUT> section
    !
-      linput = .TRUE.
-      IF ( PRESENT(input) ) linput = input
-      IF ( linput ) THEN
+      IF ( linput_ ) THEN
           WRITE(unit,"()")      
-          WRITE( unit, " (2x,70('='))" )
-          WRITE( unit, " (2x,'=',32x,'Main',32x,'=')" )
-          WRITE( unit, " (2x,70('='),/)" )
+          WRITE(unit,"(2x,70('='))" )
+          WRITE(unit,"(2x,'=',32x,'Main',32x,'=')" )
+          WRITE(unit,"(2x,70('='),/)" )
           WRITE(unit,"(  7x,'     Calculation Title :',5x,a)") TRIM(title)
           WRITE(unit,"(  7x,'                Prefix :',5x,a)") TRIM(prefix)
           WRITE(unit,"(  7x,'               Postfix :',5x,a)") TRIM(postfix)
@@ -125,7 +162,6 @@
           WRITE( unit,"(4x,'CG minim: Mixing parameter (alpha0_wan)= ', f6.3 )" ) alpha0_wan
           WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) maxiter0_wan
           WRITE( unit,"(4x,'Minimization convergence threshold = ', f15.9 )") wannier_thr
-! XXX check whether it is true
           WRITE( unit,"(4x,'SD minim: Mixing parameter (alpha1_wan) = ', f6.3 )" ) alpha1_wan
           WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) maxiter1_wan
           WRITE( unit,"(4x,'Every ',i3,' iteration perform a CG minimization (ncg)')" ) ncg
@@ -154,7 +190,6 @@
           ALLOCATE( center_cart1(3,dimwann), center_cart2(3,dimwann), STAT=ierr )
              IF (ierr/=0) CALL errore('summary','allocating center_cart*',ABS(ierr))
           ! ... initialize with crystal coordinates and then convert
-! XXX atomic case
           DO i = 1, dimwann
              center_cart1(:,i) = trial(i)%x1
              center_cart2(:,i) = trial(i)%x2
@@ -181,13 +216,15 @@
    !
    ! <DFT> section
    !
-      WRITE( unit, " (2x,70('='))" )
-      WRITE( unit, " (2x,'=',30x,'DFT data',30x,'=')" )
-      WRITE( unit, " (2x,70('='),/)" )
+      IF ( ldft_ ) THEN 
+          WRITE( unit, " (2x,70('='))" )
+          WRITE( unit, " (2x,'=',30x,'DFT data',30x,'=')" )
+          WRITE( unit, " (2x,70('='),/)" )
+      ENDIF
 
       !
       ! ... Lattice
-      IF ( lattice_alloc ) THEN
+      IF ( lattice_alloc .AND. llattice_ ) THEN
           WRITE( unit, " (  '<LATTICE>')" )
           WRITE( unit, " (2x,'Alat  = ', F15.7, ' (Bohr)' )" ) alat
           WRITE( unit, " (2x,'Alat  = ', F15.7, ' (Ang )' )" ) alat * BOHR
@@ -217,7 +254,7 @@
 
       !
       ! ... ions
-      IF ( ions_alloc ) THEN 
+      IF ( ions_alloc .AND. latoms_ ) THEN 
           WRITE( unit, " (  '<IONS>')" )
           WRITE( unit, " (2x,'Number of chemical species =', i3 ) " ) nsp
           IF ( .NOT. do_pseudo )  THEN
@@ -232,7 +269,7 @@
           !
           ! ... pseudo summary from Espresso
           !
-          IF ( do_pseudo ) THEN 
+          IF ( do_pseudo .AND. lpseudo_ ) THEN 
              DO nt = 1, nsp
                 IF (tvanp (nt) ) THEN
                    ps = '(US)'
@@ -305,7 +342,7 @@
           
       !
       ! ... kpoints
-      IF ( kpoints_alloc ) THEN 
+      IF ( kpoints_alloc .AND. lkpoints_ ) THEN 
           WRITE( unit, " (  '<K-POINTS>')" )
           WRITE( unit, "(2x, 'nkpts = ',i4 ) " ) nkpts
           WRITE( unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i3,' ),', &
@@ -327,7 +364,7 @@
           WRITE( unit, " (  '</K-POINTS>',/)" )
       ENDIF
 
-      IF ( bshells_alloc ) THEN
+      IF ( bshells_alloc .AND. lkpoints_ ) THEN
           WRITE( unit, " (  '<B-SHELL>')" )
           WRITE( unit,"(2x, 'Nearest-neighbour shells for k-point 1: (in Bohr^-1)' ) " )
           DO i = 1, ndnntot
@@ -355,12 +392,23 @@
       ENDIF
       !
       ! ... eigs and windows
-      IF ( windows_alloc ) THEN 
+      IF ( windows_alloc .AND. leig_ ) THEN 
           IF ( .NOT. kpoints_alloc ) CALL errore('summary','Unexpectedly kpts NOT alloc',1)
           WRITE( unit, " (  '<WINDOWS>')" )
           WRITE( unit," (2x, 'Definition of energy windows: (energies in eV)' ) " )
-          WRITE( unit, " (4x, 'outer window: E  = ( ', f8.4, ' , ',f8.4, ' )' )" ) &
-                              win_min, win_max
+          IF ( win_min < 10000.0 .AND. win_max > 10000.0 ) THEN
+              WRITE( unit, " (4x, 'outer window: E  = (  -\inf ,  \inf  )' )" ) 
+          ELSEIF ( win_min < 10000.0 ) THEN
+              WRITE( unit, " (4x, 'outer window: E  = (  -\inf , ',f9.4, ' )' )" ) &
+                                   win_max
+          ELSEIF ( win_max > 10000.0 ) THEN
+              WRITE( unit, " (4x, 'outer window: E  = ( ', f9.4, ' ,  \inf  )' )" ) &
+                                   win_min
+          ELSE  
+             ! std case
+             WRITE( unit, " (4x, 'outer window: E  = ( ', f9.4, ' , ',f9.4, ' )' )" ) &
+                                  win_min, win_max
+          ENDIF
           WRITE( unit,"(4x,'Max number of bands within the energy window = ',i5)") dimwinx
           WRITE( unit,"(/,2x,'Electronic Structure from DFT calculation:')")
           WRITE( unit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4,',')") nkpts, nbnd

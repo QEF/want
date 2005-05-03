@@ -3,6 +3,15 @@
             WanT code:  Log of Changes 
 =======================================================
 
+02 May 2005      Fixed a long living bug in set_overlap_map; symmetrization of 
+                 overlap is now numerically verified. (AF)
+
+28 Apr 2005      Test8 (isolated benzene molecule) added. Summary routine updated
+                 in order to manage wrong bshell choises.
+
+27 Apr 2005      Further simplifications and code elimination in wannier.f90
+                 (cfunc_exp* variables deleted). (AF)
+
 22 Apr 2005      Overlap_extract updated with the use of blas in matrix 
                  multiplications. Overlap_update routine added (blas used). (AF)
                  Localization init added; phases routine re-introduced in the 
@@ -161,7 +170,7 @@
                  input accordingly modified. SOme other minor changes done. (AF)
 
 14 Jan 2005      IOTK updated to v1.0.0beta4, including the workarounds for ifort and
-                 pgi compilaers. (AF) 
+                 pgi compilers. (AF) 
 
 11 Jan 2005      Incompatibility of IOTK v.0.3.5 with MKL 7.0 libs detected. (AF)
 

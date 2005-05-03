@@ -26,7 +26,8 @@
    USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
    !
    USE windows_module, ONLY : lfrozen, dimfroz, indxfroz, frozen, nbnd
-   USE control_module, ONLY : unitary_thr
+   USE kpoints_module, ONLY : vkpt
+   USE control_module, ONLY : unitary_thr, verbosity
    USE subspace_module, ONLY : subspace_read
    IMPLICIT NONE
 
@@ -218,6 +219,25 @@
                                 SIDE='left', TOLL=unitary_thr ) ) &
        CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',ik)
    ENDDO
+
+   IF ( TRIM(verbosity) == "high" ) THEN
+       ALLOCATE(cu(dimwinx,dimwinx), STAT=ierr)
+            IF(ierr/=0) CALL errore(subname,'allocating cu (II)',ABS(ierr))
+          
+       WRITE( stdout,"(/,2x,'Subspace decomposition:')" )
+       WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" )
+       DO ik=1,nkpts
+             WRITE(stdout,"(6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4,/)" ) &
+                   ik, vkpt(:,ik), dimwin(ik)
+             CALL zmat_mul(cu, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+                           dimwin(ik), dimwin(ik), dimwann )
+            WRITE(stdout,"(2x, 8f9.5)") ( REAL(cu(i,i)), i=1,dimwin(ik) )
+       ENDDO
+       WRITE( stdout,"(2/)" )
+
+       DEALLOCATE( cu, STAT=ierr)
+            IF(ierr/=0) CALL errore(subname,'deallocating cu (II)',ABS(ierr))
+   ENDIF
 
 
    CALL timing('subapce_init', OPR='stop')
