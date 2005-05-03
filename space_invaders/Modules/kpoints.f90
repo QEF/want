@@ -150,7 +150,7 @@ CONTAINS
       ALLOCATE( nnlist(nkpts,nnx), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', nkpts*nnx )
       ALLOCATE( nncell(3,nnx,nkpts), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nnx,nkpts )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nnx*nkpts )
       ALLOCATE( neigh(nkpts,nnhx), STAT = ierr )
          IF( ierr /=0 ) CALL errore(subname, ' allocating neigh ', nkpts*nnhx )
       ALLOCATE( nreverse(nnx,nkpts), STAT = ierr )
