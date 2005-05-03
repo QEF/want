@@ -1,0 +1,12 @@
+
+ &INPUT
+   prefix = 'benzene'
+   postfix = '_WanT'
+   work_dir = './'
+   nkpts_in  = 1
+   nkpts_max = 100
+   unitary_thr = 1.d-6
+   
+ /
+G
+0.0 0.0 0.0
