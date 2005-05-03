@@ -1,0 +1,47 @@
+
+&CONTROL
+   prefix = 'benzene'
+   postfix = '_WanT'
+   work_dir = './'
+!   verbosity = 'high'
+!   overlaps = 'from_file'
+!   projections = 'from_file'
+/
+
+&SUBSPACE
+   win_max = 0.0
+   dimwann = 17
+!   start_mode_dis = 'lower_states'
+!   maxiter_dis = 0
+/
+
+&LOCALIZATION
+   maxiter0_wan = 100
+   maxiter1_wan = 1500
+   ncg = 5    
+   nshells = 2  
+   nwhich(1) = 1  
+   nwhich(2) = 3  
+   ordering_mode = 'none'
+/
+
+WANNIER_CENTERS {angstrom}
+1gauss      -3.362   1.313   1.658    0   0 3  0.2     ! *** wf on H
+1gauss      -2.121   3.460   1.653    0   0 3  0.2
+1gauss       0.359   3.459   1.631    0   0 3  0.2
+1gauss       1.598   1.311   1.612    0   0 3  0.2
+1gauss       0.357  -0.836   1.616    0   0 3  0.2
+1gauss      -2.123  -0.835   1.639    0   0 3  0.2
+1gauss      -0.881   2.525   1.645    0   0 3  0.5     ! *** wf on the C-C bond (sigma)
+1gauss       0.169   1.918   1.633    0   0 3  0.5
+1gauss       0.169   0.705   1.622    0   0 3  0.5
+1gauss      -0.881   0.100   1.625    0   0 3  0.5
+1gauss      -1.932   0.707   1.637    0   0 3  0.5
+1gauss      -1.932   1.919   1.648    0   0 3  0.5
+1gauss      -1.581   2.525   1.645    1   0 3  0.5     ! *** wf on C (p_z)
+1gauss      -0.181   2.524   1.633    1   0 3  0.5
+1gauss       0.518   1.311   1.622    1   0 3  0.5
+1gauss      -0.182   0.099   1.625    1   0 3  0.5
+1gauss      -1.582   0.100   1.637    1   0 3  0.5
+1gauss      -2.282   1.313   1.648    1   0 3  0.5
+

@@ -1,0 +1,9 @@
+&inputpp
+  prefix='benzene_US'
+  outdir='./'
+  pseudo_dir = './'
+  psfile(1) = 'C.pbe-van_bm.UPF'
+  psfile(2) = 'H.pbe-van_bm.UPF'
+  single_file = .FALSE.
+  ascii = .FALSE.
+/

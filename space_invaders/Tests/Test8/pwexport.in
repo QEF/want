@@ -1,0 +1,9 @@
+&inputpp
+  prefix='benzene'
+  outdir='./'
+  pseudo_dir = './'
+  psfile(1) = 'C.blyp-mt.UPF'
+  psfile(2) = 'H.blyp-vbc.UPF'
+  single_file = .FALSE.
+  ascii = .FALSE.
+/
