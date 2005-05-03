@@ -131,7 +131,7 @@ CONTAINS
    SUBROUTINE wfc_data_deallocate()
    !**********************************************************
    IMPLICIT NONE
-       CHARACTER(18)      :: subname="wfc_data_deallocate"
+       CHARACTER(19)      :: subname="wfc_data_deallocate"
        INTEGER            :: ierr
 
        IF ( ALLOCATED(npwk) ) THEN
