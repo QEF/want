@@ -1,11 +1,12 @@
 
  &INPUT
-   prefix = 'benzene'
+   prefix = 'gold_US'
    postfix = '_WanT'
    work_dir = './'
-   nkpts_in  = 1
+   nkpts_in  = 2
    nkpts_max = 100
-   
  /
 G
 0.0 0.0 0.0
+Z
+0.0 0.0 0.5

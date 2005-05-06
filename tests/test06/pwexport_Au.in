@@ -1,5 +1,5 @@
 &inputpp
-  prefix='gold1'
+  prefix='gold'
   outdir='./'
   ascii = .FALSE.
   pseudo_dir = './'

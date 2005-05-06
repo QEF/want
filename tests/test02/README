@@ -1,0 +1,16 @@
+
+==============================================================================
+TEST9  FCC Transition Metals  (Co and Cu, NC and USPP)
+==============================================================================
+
+This test performs the calculation of the wannier functions for some
+typical transition metal FCC bulk crystals, such as Cu and Co.
+Calculations are performed both with NC and US pseudopots.
+Particular interest is connected with the cutoff convergence (both wfc and rho)
+in the Co case where the augmentation charge is supposed to be quite hard.
+
+RESULT discussion
+
+
+
+

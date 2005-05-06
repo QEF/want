@@ -4,12 +4,6 @@
 # 
 #================================================================
 #
-# This script runs all the codes in order to perform 
-# the calculation of the Wannier functions for 
-# bulk Silicon. The disentangle procedure is not used
-# and only the valence band subspace is described.
-# No transport calculation is performed.
-#
 # Input flags for this script (./run.sh FLAG): 
 #
 MANUAL=" Usage

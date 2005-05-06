@@ -1,10 +1,10 @@
 Infinite Gold Chain
 1 atom/cell, Lattice Parameter = 2.5 Ang
    &CONTROL
-      calculation = 'nscf',
+      calculation = 'scf',
       restart_mode='from_scratch',
       verbosity='default',
-      prefix='gold1',
+      prefix='gold',
       nstep=100,
       tstress = .false.,
       tprnfor = .true.,
@@ -34,10 +34,6 @@ ATOMIC_SPECIES
   Au   196.9665   Au11pw91.mt.UPF
 ATOMIC_POSITIONS {angstrom}
 Au        0.00000     0.00000    0.50000
-K_POINTS {crystal}
-   4
-0.0000  0.0000   0.0000   0.250
-0.0000  0.0000   0.2500   0.250
-0.0000  0.0000   0.5000   0.250
-0.0000  0.0000   0.7500   0.250
+K_POINTS {automatic}
+  1 1 8  0 0 1
 

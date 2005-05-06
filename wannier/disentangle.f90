@@ -186,7 +186,7 @@
            !
            ! body of the loop
            !
-           omega_i_est = DBLE(nkpts * dimwann) * wbtot
+           omega_i_est = ZERO
            DO ik = 1, nkpts
                ! 
                ! Diagonalize z matrix mtrx_in at all relevant k-points
@@ -231,17 +231,19 @@
                    ENDDO
                ENDIF
             ENDDO
+            omega_i_est = omega_i_est / DBLE( nkpts ) + DBLE(dimwann) * wbtot
 
 
            
             !
             ! ... Compute omega_i using the updated subspaces at all k
             ! 
-            omega_i = DBLE(nkpts * dimwann) * wbtot
+            omega_i = ZERO
             DO ik = 1, nkpts
                 aux = komegai( ik, dimwann, dimwann, dimwin, dimwinx, lamp, Mkb(1,1,1,ik) )
                 omega_i = omega_i + aux
             ENDDO
+            omega_i = omega_i / DBLE(nkpts) + DBLE(dimwann) * wbtot
             omega_err = ( omega_i_est -omega_i ) / omega_i 
     
 
@@ -320,11 +322,12 @@
             WRITE( stdout,"(/,2x,'Subspace decomposition:')" ) 
             WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" ) 
             DO ik=1,nkpts
-                  WRITE(stdout,"(6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4,/)" ) &
+                  WRITE(stdout,"(6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                         ik, vkpt(:,ik), dimwin(ik)
                   CALL zmat_mul(z, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
                                 dimwin(ik), dimwin(ik), dimwann )
                   WRITE(stdout,"(2x, 8f9.5)") ( REAL(z(i,i)), i=1,dimwin(ik) )
+                  WRITE( stdout,"()" ) 
             ENDDO
             WRITE( stdout,"()" ) 
        ENDIF

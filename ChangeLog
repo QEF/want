@@ -3,8 +3,11 @@
             WanT code:  Log of Changes 
 =======================================================
 
+04 May 2005      Restart is finally checked also in wannier. (AF)
+
 02 May 2005      Fixed a long living bug in set_overlap_map; symmetrization of 
-                 overlap is now numerically verified. (AF)
+                 overlap is now numerically verified. domega.f90 routine completely
+                 updated: time consume and memory usage largely reduced. (AF)
 
 28 Apr 2005      Test8 (isolated benzene molecule) added. Summary routine updated
                  in order to manage wrong bshell choises.

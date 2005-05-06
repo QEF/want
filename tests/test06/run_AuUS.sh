@@ -4,12 +4,6 @@
 # 
 #================================================================
 #
-# This script runs all the codes in order to perform 
-# a simple transport calculation, starting from DFT
-# results, calculating Wannier functions and finally 
-# using them to evaluate Landauer transmittance
-# according to Fisher & Lee.
-#
 # Input flags for this script (./run.sh FLAG): 
 #
 MANUAL=" Usage
@@ -44,7 +38,7 @@ TEST_HOME=`pwd`
 WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
 TEST_NAME=Test2
-PSEUDO_NAME=Au11pw91.mt.UPF
+PSEUDO_NAME=Au.pw91-d-van.UPF
 
 #
 # evaluate the starting choice about what is to run 
@@ -109,7 +103,8 @@ fi
 #
 if [ "$SCF" = ".TRUE." ] ; then  
    echo "running SCF calculation" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
+                 < $TEST_HOME/scf_AuUS.in > $TEST_HOME/scf_AuUS.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -122,7 +117,8 @@ fi
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
    echo "running NSCF calculation" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
+                 < $TEST_HOME/nscf_AuUS.in > $TEST_HOME/nscf_AuUS.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -136,7 +132,7 @@ fi
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
    echo "running PWEXPORT calculation" 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
+              <  $TEST_HOME/pwexport_AuUS.in > $TEST_HOME/pwexport_AuUS.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -149,7 +145,7 @@ fi
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
    echo "running DISENTANGLE calculation" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want.in > $TEST_HOME/disentangle.out
+   $WANT_BIN/disentangle.x < $TEST_HOME/want_AuUS.in > $TEST_HOME/disentangle_AuUS.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -162,7 +158,7 @@ fi
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
    echo "running WANNIER calculation" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want.in > $TEST_HOME/wannier.out
+   $WANT_BIN/wannier.x < $TEST_HOME/want_AuUS.in > $TEST_HOME/wannier_AuUS.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -175,7 +171,7 @@ fi
 #
 if [ "$HAMILTONIAN" = ".TRUE." ] ; then  
    echo "running HAMILTONIAN calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian.in > $TEST_HOME/hamiltonian.out
+   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_AuUS.in > $TEST_HOME/hamiltonian_AuUS.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -189,20 +185,16 @@ fi
 #
 if [ "$BULK" = ".TRUE." ] ; then  
    #
-   # hopefully will be improoved very soon...
-   #
    ln -sf RHAM.103 H00.dat
    ln -sf RHAM.104 H01.dat
    #
    echo "running BULK calculation" 
-   $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
+   $TRANS_BIN/bulk.x < $TEST_HOME/bulk_AuUS.in > $TEST_HOME/bulk_AuUS.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      # also this needs to be improoved
-      #
-      mv dos.out $TEST_HOME/dos_bulk.out
-      mv cond.out $TEST_HOME/cond_bulk.out
+      mv dos.out $TEST_HOME/dos_bulk_AuUS.out
+      mv cond.out $TEST_HOME/cond_bulk_AuUS.out
    else
       echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
    fi
@@ -214,8 +206,6 @@ fi
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
-   # hopefully will be improoved very soon...
-   #
    ln -sf RHAM.103 H00_A
    ln -sf RHAM.103 H00_B
    ln -sf RHAM.103 H00_C
@@ -225,13 +215,12 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    ln -sf RHAM.104 HCI_CB
    #
    echo "running CONDUCTOR calculation" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
+   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_AuUS.in > $TEST_HOME/conductor_AuUS.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      # also this needs to be improoved
-      #
-      mv dos.out cond.out $TEST_HOME
+      mv dos.out $TEST_HOME/dos_AuUS.out
+      mv cond.out $TEST_HOME/cond_AuUS.out
    else
       echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi

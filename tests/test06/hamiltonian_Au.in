@@ -1,6 +1,6 @@
 
  &INPUT
-   prefix = 'gold1'
+   prefix = 'gold'
    postfix = '_WanT'
    work_dir = './'
    nkpts_in  = 2
