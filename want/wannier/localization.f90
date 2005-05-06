@@ -267,6 +267,10 @@ CONTAINS
        ENDIF
 
        !
+       ! 
+       CALL localization_allocate()
+
+       !
        ! ... spreads
        CALL iotk_scan_empty(unit,'SPREADS',ATTR=attr,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag SPREADS',ABS(ierr))
@@ -282,7 +286,6 @@ CONTAINS
 
        !
        ! ... major data
-       CALL localization_allocate()
        CALL iotk_scan_dat(unit,'CU',cu,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find CU',ABS(ierr))
        CALL iotk_scan_dat(unit,'RAVE',rave,IERR=ierr)

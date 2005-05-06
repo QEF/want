@@ -15,14 +15,16 @@
    !
    !      * 'center_projections'  uses the Ca matrix to find Cu and update Mkb
    !      * 'from_file'  read info from file (used in restart)
+   !      * 'no_transformation'  Cu's are set equal to the identity
    !
    USE kinds, ONLY : dbl
    USE parameters, ONLY : nstrx
+   USE constants, ONLY : CZERO, CONE
    USE timing_module, ONLY : timing
    USE io_module, ONLY : stdout, ioname, wan_unit
    USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
-   USE localization_module, ONLY : localization_read
+   USE localization_module, ONLY : localization_read, cu_module => cu
    USE control_module, ONLY : unitary_thr
    USE kpoints_module, ONLY : nnx
    IMPLICIT NONE
@@ -30,7 +32,7 @@
    CHARACTER(*),    INTENT(in)  :: mode      
    INTEGER,         INTENT(in)  :: dimwann, nkpts
    COMPLEX(dbl),    INTENT(in)  :: ca(dimwann,dimwann,nkpts)
-   COMPLEX(dbl),    INTENT(out) :: cu(dimwann,dimwann,nkpts)
+   COMPLEX(dbl),    INTENT(inout) :: cu(dimwann,dimwann,nkpts)
    COMPLEX(dbl),    INTENT(inout) :: Mkb(dimwann,dimwann,nnx,nkpts)
 
 
@@ -76,6 +78,7 @@
         CALL ioname('wannier',filename,LPATH=.FALSE.)
         WRITE( stdout,"(2x,'Unitary matrices read from file: ',a,/)") TRIM(filename)
         
+        cu(:,:,:) = cu_module(:,:,:)
 
    CASE ( 'center_projections' )
         WRITE( stdout,"(/,'  Initial unitary rotations : projected localized orbitals',/)")
@@ -100,20 +103,35 @@
 
         DO ik = 1, nkpts
              !
-             !
              CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
              CALL zmat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
-             !
-             ! Unitariery is checked
-             !
-             IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  ) &
-                  CALL errore('wannier','SVD yields non unitary matrices', ik)
         ENDDO
 
         DEALLOCATE( singvd, cv1, cv2, STAT=ierr )
            IF( ierr /=0 ) CALL errore(subname,'deallocating SVD aux', ABS(ierr))
 
+   CASE( 'no_transformation' )
+        WRITE( stdout,"(/,'  Initial unitary rotations : identities',/)")
+        !
+        ! The Cu(k) matrices are set equal to the identity, therefore the
+        ! starting (random) wfc from dsentangle are used as they are
+        !
+        DO ik = 1, nkpts
+             cu(:,:,ik) = CZERO
+             DO i = 1, dimwann
+                  cu(i,i,ik) = CONE
+             ENDDO
+        ENDDO
+
    END SELECT
+
+   !
+   ! ... check unitariery of Cu
+   !
+   DO ik=1,nkpts
+      IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  ) &
+                CALL errore(subname,'U matrix not unitary', ik)
+   ENDDO
 
 
    !

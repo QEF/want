@@ -109,7 +109,7 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    ! generates the kpoints according to the parameters found
    ! anche check the consistency.
    !
-   IF ( PRODUCT(nk) /= nkpts ) ierr = 1
+   IF ( PRODUCT(nk) /= nkpts ) ierr = ABS(PRODUCT(nk))+1
         
 
    !

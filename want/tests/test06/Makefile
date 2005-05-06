@@ -9,10 +9,14 @@ info:
 	@echo " "
 
 all: 
-	./run.sh all
+	./run_Au.sh all
+	./run_AuUS.sh all
 
 want: 
-	./run.sh want
+	./run_Au.sh want
+	./run_AuUS.sh want
 
 clean:
-	./run.sh clean
+	./run_Au.sh clean
+	./run_AuUS.sh clean
+

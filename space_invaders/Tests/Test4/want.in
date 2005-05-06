@@ -10,12 +10,13 @@
    dimwann = 4     
    win_min = -20.0
    win_max = 10.0  
-   maxiter_dis = 50     
+   maxiter_dis = 500
    alpha_dis = 0.5      
    start_mode_dis = 'center_projections'
 /
 
 &LOCALIZATION
+!   start_mode_wan = 'from_file'
    maxiter0_wan = 200, 
    alpha0_wan = 0.5
    maxiter1_wan = 1500, 

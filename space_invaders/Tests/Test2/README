@@ -1,18 +1,27 @@
 
 ==============================================================================
-TEST2  Gold chain bulk
+TEST2  Gold chain bulk (NCPP and USPP)
 ==============================================================================
 
 This test performs the calculation for the bulk conductance of a Gold chain.
 The calculation is done setting one atom in the unit cell, using a (1 1 4, 0 0 1) 
 (according to PWSCF notation) Monkrost-Pack grid in the SCF run and a (1 1 4, 0 0 0) 
-grid in the NSCF run. The wave-function and charge-density cutoff has been chosen 
+grid in the NSCF run. 
+The wave-function and charge-density cutoff in the NCPP case has been chosen 
 to be 20 Ry in order to make the test running fast, but results are of course 
 not converged. A cutoff of 40 Ry of more will lead to more physical results.
+In the USPP case instead cutoff of 20 and 200 Ry are used for wfc and rho respectively.
+Note the larger ration wfc/rho cutoffs which is due to the hardness of augmentation
+charges needed within USPP.
 Wannier functions for the s-d manifold (6-dim) of Gold are computed using also
 the disentanglement procedure, and transmittance is calculated through the bulk.x code.
 
-The main outputs of the transport calculation are written in the dos.out and cond.out
-files in the Test2 dir.
+The main outputs of the transport calculation are written in the dos*.out and cond*.out
+files
+
+RESULTS
+  Note that the final transmittance are slightly different probably due to the 
+  different convergence level between NC and USPP (the second case is nore close to
+  convergence, which is around 25 Ry for wfc and 200 Ry for rho cutoff energies)
 
 

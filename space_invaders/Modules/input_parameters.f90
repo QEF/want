@@ -205,15 +205,16 @@
        ! each nsave_wan iterations in wannier minimizations save data to disk
 
    CHARACTER(nstrx) :: start_mode_wan = "center_projections"
-       ! ( 'center_projections' | 'from_file' )
+       ! ( 'center_projections' | 'from_file' | 'no_transformation' )
        ! Determine how the wannier localization is started
        ! 'center_projections' : a subspace is extracted from the DFT bands
        !                  by means of a projections on the given WANNIER_TRIAL_CENTERS
        !                  (see the section TRIAL_CENTERS)
        ! 'from_file'    : read from an existing file (default for restart)
+       ! 'no_transformation'    : Cu's are set equal to the identity
 
-   CHARACTER(nstrx) :: start_mode_wan_allowed(2)
-   DATA start_mode_wan_allowed / 'center_projections', 'from_file' /
+   CHARACTER(nstrx) :: start_mode_wan_allowed(3)
+   DATA start_mode_wan_allowed / 'center_projections', 'from_file', 'no_transformation' /
 
    INTEGER :: iphase = 1
        ! obsolete variable

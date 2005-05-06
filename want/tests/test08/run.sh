@@ -4,12 +4,6 @@
 # 
 #================================================================
 #
-# This script runs all the codes in order to perform 
-# a simple transport calculation, starting from DFT
-# results, calculating Wannier functions and finally 
-# using them to evaluate Landauer transmittance
-# according to Fisher & Lee.
-#
 # Input flags for this script (./run.sh FLAG): 
 #
 MANUAL=" Usage

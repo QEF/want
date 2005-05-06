@@ -5,7 +5,6 @@
    work_dir = './'
    nkpts_in  = 2
    nkpts_max = 100
-   unitary_thr = 1.d-6
    spin_component="UP"
    
  /
