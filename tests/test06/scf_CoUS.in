@@ -1,0 +1,39 @@
+Infinite Cobalt Chain USPP
+1 atom/cell, Lattice Parameter = 2.5 Ang
+   &CONTROL
+      calculation = 'scf',
+      restart_mode='from_scratch',
+      verbosity='default',
+      prefix='cobalt_US',
+      nstep=100,
+      tstress = .FALSE.,
+      tprnfor = .TRUE.,
+      pseudo_dir = './',
+   /
+   &SYSTEM
+      ibrav=8, 
+      celldm(1)=30.0, 
+      celldm(2)=1.0,
+      celldm(3)=0.157477333,
+      nat=1, 
+      ntyp=1,
+      ecutwfc=20.0,
+      ecutrho=200.0,
+      occupations='smearing',
+      smearing='gaussian',
+      degauss=0.01,
+      nbnd=10
+   /
+   &ELECTRONS
+      electron_maxstep = 100,
+      mixing_mode = 'plain',
+      mixing_beta = 0.3,
+      conv_thr =  1.0d-8,
+   /
+ATOMIC_SPECIES
+ Co  58.9332  Co.pbe-nd-rrkjus.UPF
+ATOMIC_POSITIONS {angstrom}
+Co        0.00000     0.00000    0.50000
+K_POINTS {automatic}
+  1 1 8  0 0 1
+

@@ -1,7 +1,7 @@
 #!/bin/bash 
 #
-# Test2
-# 
+# Test2     Au Chain NCPP
+#
 #================================================================
 #
 # Input flags for this script (./run.sh FLAG): 
