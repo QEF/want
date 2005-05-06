@@ -1,0 +1,288 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 1.1.1  starts ...
+  Date 24Mar2005 at 17: 5:58 
+
+
+  PW-DFT data read from file: gold1.export/index.xml
+
+  ======================================================================
+  =                                Main                                =
+  ======================================================================
+
+            Calculation Title :     Wannier Transport Calculation
+                       Prefix :     gold1
+                      Postfix :     _WanT
+            Working directory :     ./
+
+<WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =    6
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
+    CG minim: Max iteration number =   100
+    Minimization convergence threshold =     0.000001000
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
+    SD minim: Max iteration number =  1500
+    Every   5 iteration perform a CG minimization (ncg)
+    Number of k-point shells =   2
+    Chosen shells (indexes) =   1  2
+    Print each  10 iterations
+    Ordering mode = complete
+    Verbosity = medium
+    Unitariery check threshold =     0.000005000
+</WANNIER_FUNCTIONS>
+
+<DISENTANGLE>
+  Input parameters for disentangling subspaces
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =  1000
+    Starting guess orbitals (trial_mode) = center_projections
+    Disentangle convergence threshold =     0.000000010
+</DISENTANGLE>
+
+<TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+    Center =   1 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.944863439 )
+    Center =   2 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.944863439 )
+    Center =   3 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.944863439 )
+    Center =   4 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.944863439 )
+    Center =   5 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.944863439 )
+    Center =   6 Type = 1gauss  Center  = (    0.000000000    0.000000000    0.944863439 )
+</TRIAL_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    1889.7280000 (Bohr^3)
+  Omega =     280.0284636 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.5835  0.0000  0.0000 )
+    a(2) = (  0.0000 10.5835  0.0000 )
+    a(3) = (  0.0000  0.0000  2.5000 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+</LATTICE>
+
+<IONS>
+  Number of chemical species =  1
+  Calculation is done within US pseudopot.
+
+     Pseudo( 1) = Au.pw91-d-van.UPF
+
+     Pseudo( 1) is Au (US)    zval = 11.0   lmax= 2   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   939 points
+     The pseudopotential has  6 beta functions with: 
+                l(1) =   0
+                l(2) =   0
+                l(3) =   1
+                l(4) =   1
+                l(5) =   2
+                l(6) =   2
+     Q(r) pseudized with  3 coefficients,  rinner =    1.600   1.800   1.600
+                                                       1.600   1.800
+
+  Atomic positions: (cart. coord. in units of alat)
+     Au   tau(   1 ) = (   0.0000000   0.0000000   0.0472432 )
+</IONS>
+
+<K-POINTS>
+  nkpts =    4
+  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
+    k point   2:   (   0.00000  0.00000  0.33249 ),   weight =   0.2500
+    k point   3:   (   0.00000  0.00000  0.66498 ),   weight =   0.2500
+    k point   4:   (   0.00000  0.00000  0.99747 ),   weight =   0.2500
+</K-POINTS>
+
+<B-SHELL>
+  Nearest-neighbour shells for k-point 1: (in Bohr^-1)
+    shell (  1 )    radius =   0.31416
+    shell (  2 )    radius =   0.33249
+    shell (  3 )    radius =   0.44429
+    shell (  4 )    radius =   0.45743
+    shell (  5 )    radius =   0.55493
+    shell (  6 )    radius =   0.62832
+    shell (  7 )    radius =   0.66498
+    shell (  8 )    radius =   0.70248
+    shell (  9 )    radius =   0.71087
+    shell ( 10 )    radius =   0.73546
+    shell ( 11 )    radius =   0.77719
+    shell ( 12 )    radius =   0.79975
+
+  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
+    shell (  1 )    neighbours  =    4
+    shell (  2 )    neighbours  =    2
+
+  List of the  6 vectors b_k: (Bohr^-1) 
+    b_k   1:   (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b_k   2:   (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
+    b_k   3:   (   0.00000  0.31416  0.00000 ),   weight =   5.0661
+    b_k   4:   (   0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b_k   5:   (   0.00000  0.00000  0.33249 ),   weight =   4.5228
+    b_k   6:   (   0.00000  0.00000 -0.33249 ),   weight =   4.5228
+
+  The  3  bk directions are (Bohr^-1):
+    dir 1:   (  -0.31416  0.00000  0.00000 ) 
+    dir 2:   (   0.00000 -0.31416  0.00000 ) 
+    dir 3:   (   0.00000  0.00000  0.33249 ) 
+</B-SHELL>
+
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = ( -12.0000 ,   0.0000 )
+    Max number of bands within the energy window =     8
+
+  Electronic Structure from DFT calculation:
+    nkpts =   4,     nbnd =  10,
+    nspin =   1
+    Fermi energy =   -4.863873911 eV
+
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
+                                         imin =    1  imax =    8
+   Eigenvalues:
+   -10.5126  -6.6081  -6.6078  -6.3894  -4.8643  -4.8643  -1.1604  -1.1604
+     1.0144   1.9710
+
+    kpt =  2 (  0.000 0.000 0.250 )    dimwin =    6
+                                         imin =    1  imax =    6
+   Eigenvalues:
+    -7.4824  -6.8881  -6.8881  -6.2745  -6.2743  -5.4536   1.0412   1.0412
+     2.4841   3.4425
+
+    kpt =  3 (  0.000 0.000 0.500 )    dimwin =    6
+                                         imin =    1  imax =    6
+   Eigenvalues:
+    -8.2289  -8.2289  -5.9188  -5.9185  -5.1207  -0.1651   2.2851   4.7428
+     4.7428   6.8810
+
+    kpt =  4 (  0.000 0.000 0.750 )    dimwin =    6
+                                         imin =    1  imax =    6
+   Eigenvalues:
+    -7.4824  -6.8881  -6.8881  -6.2745  -6.2743  -5.4536   1.0412   1.0412
+     2.4841   3.4425
+
+    inner window: NOT used --> NO FROZEN STATES
+</WINDOWS>
+
+
+  Reading density G-grid from file: gold1.export/index.xml
+  Reading Wfcs from file: gold1.export/index.xml
+
+  Initializing US pseudopot. data
+
+
+  ======================================================================
+  =                       Overlap and Projections                      =
+  ======================================================================
+
+  Kinetic energy cut-off for wfcs =         20.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =      90341
+        Max number of PW for wfc  =       2912
+      Total number of PW for wfcs =       5118
+        FFT grid components (rho) =  (    96   96   24 )
+
+    Overlap calculation for k-point   1
+                              Total time spent up to now :     8.29 secs
+
+    Overlap calculation for k-point   2
+                              Total time spent up to now :     8.37 secs
+
+    Overlap calculation for k-point   3
+                              Total time spent up to now :     8.44 secs
+
+    Overlap calculation for k-point   4
+                              Total time spent up to now :     8.54 secs
+
+
+  Overlap and projections written on file: gold1_WanT.ovp
+
+  Initial trial subspace: projected localized orbitals
+
+
+  ======================================================================
+  =                   Starting Iteration loop                          =
+  ======================================================================
+
+  Iteration =     1   Omega_I =     21.29619305    Error =      0.00029496
+  Iteration =     2   Omega_I =     21.29278689    Error =      0.00022543
+  Iteration =     3   Omega_I =     21.29021383    Error =      0.00016353
+  Iteration =     4   Omega_I =     21.28836014    Error =      0.00011490
+  Iteration =     5   Omega_I =     21.28706353    Error =      0.00007905
+  Iteration =     6   Omega_I =     21.28617414    Error =      0.00005361
+  Iteration =     7   Omega_I =     21.28557224    Error =      0.00003599
+  Iteration =     8   Omega_I =     21.28516879    Error =      0.00002398
+  Iteration =     9   Omega_I =     21.28490021    Error =      0.00001590
+  Iteration =    10   Omega_I =     21.28472232    Error =      0.00001050
+  Iteration =    11   Omega_I =     21.28460494    Error =      0.00000691
+  Iteration =    12   Omega_I =     21.28452769    Error =      0.00000454
+  Iteration =    13   Omega_I =     21.28447697    Error =      0.00000298
+  Iteration =    14   Omega_I =     21.28444371    Error =      0.00000195
+  Iteration =    15   Omega_I =     21.28442193    Error =      0.00000128
+  Iteration =    16   Omega_I =     21.28440767    Error =      0.00000084
+  Iteration =    17   Omega_I =     21.28439835    Error =      0.00000055
+  Iteration =    18   Omega_I =     21.28439225    Error =      0.00000036
+  Iteration =    19   Omega_I =     21.28438827    Error =      0.00000023
+  Iteration =    20   Omega_I =     21.28438566    Error =      0.00000015
+  Iteration =    21   Omega_I =     21.28438396    Error =      0.00000010
+  Iteration =    22   Omega_I =     21.28438285    Error =      0.00000007
+  Iteration =    23   Omega_I =     21.28438212    Error =      0.00000004
+  Iteration =    24   Omega_I =     21.28438164    Error =      0.00000003
+  Iteration =    25   Omega_I =     21.28438133    Error =      0.00000002
+  Iteration =    26   Omega_I =     21.28438112    Error =      0.00000001
+  Iteration =    27   Omega_I =     21.28438099    Error =      0.00000001
+
+  Convergence achieved!!
+
+  Final Omega_I (Bohr^2, Angstrom^2)     21.28438082        5.96022892
+ ======================================================================
+
+  Subspace data written on file: gold1_WanT.spaces
+
+   <global routines>
+             clock number :    17
+
+              disentangle :     8.99s CPU 
+
+                want_init :     0.26s CPU
+                  bshells :     0.01s CPU
+              wfc_manager :     8.60s CPU
+          ggrids_read_ext :     0.10s CPU
+             wfc_read_ext :     0.07s CPU
+                init_us_1 :     7.68s CPU
+              struct_fact :     0.03s CPU
+                init_us_2 :     0.05s CPU (       4 calls,   0.012 s avg)
+                  ccalbec :     0.01s CPU (       4 calls,   0.002 s avg)
+                  overlap :     0.34s CPU
+          set_overlap_map :     0.11s CPU (      24 calls,   0.005 s avg)
+           add_us_overlap :     0.01s CPU (      24 calls,   0.000 s avg)
+               projection :     0.20s CPU
+       trial_center_setup :     0.08s CPU (      24 calls,   0.003 s avg)
+                    s_psi :     0.11s CPU (     156 calls,   0.001 s avg)
+               iterations :     0.08s CPU
+
+
