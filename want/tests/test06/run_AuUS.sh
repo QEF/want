@@ -1,7 +1,7 @@
 #!/bin/bash 
 #
-# Test2
-# 
+# Test2    Au Chain USPP
+#
 #================================================================
 #
 # Input flags for this script (./run.sh FLAG): 
