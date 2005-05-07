@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+06 May 2005      Test5 joint to Test2; other input changed; particularly, the 
+                 unitary_thr parameters is no longer needed in any test (due to the bug
+                 fix in Mkb calculation). (AF)
+
 04 May 2005      Restart is finally checked also in wannier. (AF)
 
 02 May 2005      Fixed a long living bug in set_overlap_map; symmetrization of 
