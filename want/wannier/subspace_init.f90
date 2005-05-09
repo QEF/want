@@ -87,6 +87,14 @@
         CALL ioname('subspace',filename,LPATH=.FALSE.)
         WRITE( stdout,"(2x,'Subspace data read from file: ',a,/)") TRIM(filename)
         
+   CASE ( 'randomized' )
+
+        WRITE( stdout,"(/,'  Initial trial subspace: random Unit transform',/)")
+        DO ik=1, nkpts
+            lamp(:,:,ik) = CZERO
+            CALL random_orthovect(dimwann, dimwin(ik), dimwinx, lamp(1,1,ik) )
+        ENDDO           
+           
    CASE ( 'lower_states' )
 
         WRITE( stdout,"(/,'  Initial trial subspace: lowest energy eigenvectors',/)")
@@ -199,7 +207,6 @@
 
    END SELECT
         
-   
    !
    ! Finally check that the states in the columns of the final matrix lamp are orthonormal
    ! at every k-point (i.e., that the matrix is unitary in the sense that
@@ -217,7 +224,7 @@
    DO ik = 1, nkpts
        IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),1:dimwann,ik), &
                                 SIDE='left', TOLL=unitary_thr ) ) &
-       CALL errore(' disentangle ', 'Vectors in lamp not orthonormal',ik)
+       CALL errore(subname, 'Vectors in lamp not orthonormal',ik)
    ENDDO
 
    IF ( TRIM(verbosity) == "high" ) THEN

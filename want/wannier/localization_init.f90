@@ -14,8 +14,9 @@
    !      according to the input choice of mode:
    !
    !      * 'center_projections'  uses the Ca matrix to find Cu and update Mkb
+   !      * 'no_guess'  Cu's are set equal to the identity
+   !      * 'randomized' Cu's are random unitary matrixes
    !      * 'from_file'  read info from file (used in restart)
-   !      * 'no_transformation'  Cu's are set equal to the identity
    !
    USE kinds, ONLY : dbl
    USE parameters, ONLY : nstrx
@@ -110,17 +111,27 @@
         DEALLOCATE( singvd, cv1, cv2, STAT=ierr )
            IF( ierr /=0 ) CALL errore(subname,'deallocating SVD aux', ABS(ierr))
 
-   CASE( 'no_transformation' )
+   CASE( 'no_guess' )
         WRITE( stdout,"(/,'  Initial unitary rotations : identities',/)")
         !
         ! The Cu(k) matrices are set equal to the identity, therefore the
-        ! starting (random) wfc from dsentangle are used as they are
+        ! starting wfc from dsentangle are used as they are
         !
         DO ik = 1, nkpts
              cu(:,:,ik) = CZERO
              DO i = 1, dimwann
                   cu(i,i,ik) = CONE
              ENDDO
+        ENDDO
+
+   CASE( 'randomized' )
+        WRITE( stdout,"(/,'  Initial unitary rotations : random',/)")
+        !
+        ! The Cu(k) matrices unitary random matrixes
+        !
+        DO ik = 1, nkpts
+             cu(:,:,ik) = CZERO
+             CALL random_orthovect(dimwann,dimwann,dimwann,cu(1,1,ik))
         ENDDO
 
    END SELECT

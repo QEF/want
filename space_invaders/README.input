@@ -135,8 +135,10 @@ disentangle_thr    REAL
               DEFAULT: 1.0d-8
 
 start_mode_dis     STRING
-              ( "lower_states", "upper_states", "center_projections", "from_file" )
+              ( "randomized", "lower_states", "upper_states",  &
+                "center_projections", "from_file" )
               Determine how the trial subspace is chosen
+              "randomized"   : random starting point is chosen
               "lower_states" : the lower DIMWANN bands from DFT calculation are
                  used to define the subspace
               "upper_states" : the upper DIMWANN bands from DFT calculation are
@@ -200,11 +202,15 @@ nwhich(ish)   INTEGER
               DEFAULT: mandatory (ish =1, nshells)
 
 start_mode_wan     STRING
-              ( "center_projections", "from_file" )
+              ( "no_guess", "randomized", "center_projections", "from_file" )
               Determine how the wannier localization is started
+              "no_guess" : disentangle states are used as starting point
+                 without any further localization guess.
+              "randomized" : a random rotation is applied to the states found by
+                 the disentangle procedure.
               "center_projections" : a subspace is extracted from the DFT bands
                  by means of a projections on the given WANNIER_TRIAL_CENTERS
-                 (see the section WANNIER_CENTERS)
+                 (see the section WANNIER_CENTERS).
               "from_file" : subspace initialization is read from an existing data file;
                  this is the choice used during restart.
               DEFAULT : "center_projections"

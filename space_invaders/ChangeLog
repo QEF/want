@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+09 May 2005      Possibility to use random unitary matrixes added both in disentangle
+                 and wannier. (AF)
+
 06 May 2005      Test5 joint to Test2; other input changed; particularly, the 
                  unitary_thr parameters is no longer needed in any test (due to the bug
                  fix in Mkb calculation). (AF)

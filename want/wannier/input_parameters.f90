@@ -141,8 +141,11 @@
        ! threshold for convergence of the iterative disentangle procedure
 
    CHARACTER(nstrx) :: start_mode_dis = "center_projections"
-       ! ( 'lower_states' | 'upper_states' | 'center_projections' | 'from_file' )
+       ! ( 'randomized' | 'lower_states' | 'upper_states' | 
+       !   'center_projections' | 'from_file' )
+       !
        ! Determine how the trial subspace is chosen
+       ! 'randomized'   : random lamp matrix
        ! 'lower_states' : the lower DIMWANN bands from DFT calculation are
        !                  used to define the subspace
        ! 'upper_states' : the upper DIMWANN bands from DFT calculation are
@@ -152,8 +155,8 @@
        !                  (see the section TRIAL_CENTERS)
        ! 'from_file'    : read from an existing file (default for restart)
 
-   CHARACTER(nstrx) :: start_mode_dis_allowed(4)
-   DATA start_mode_dis_allowed / 'lower_states', 'upper_states', &
+   CHARACTER(nstrx) :: start_mode_dis_allowed(5)
+   DATA start_mode_dis_allowed / 'randomized', 'lower_states', 'upper_states', &
                                  'center_projections', 'from_file' /
 
    CHARACTER(10)    :: spin_component = 'none'
@@ -205,16 +208,19 @@
        ! each nsave_wan iterations in wannier minimizations save data to disk
 
    CHARACTER(nstrx) :: start_mode_wan = "center_projections"
-       ! ( 'center_projections' | 'from_file' | 'no_transformation' )
+       ! ( 'randomized' | 'no_guess' | 'center_projections' | 'from_file' )
+       !
        ! Determine how the wannier localization is started
-       ! 'center_projections' : a subspace is extracted from the DFT bands
+       ! 'no_guess'            : Cu's are set equal to the identity
+       ! 'randomized'          : Cu's are unitary random matrixes
+       ! 'center_projections'  : a subspace is extracted from the DFT bands
        !                  by means of a projections on the given WANNIER_TRIAL_CENTERS
        !                  (see the section TRIAL_CENTERS)
-       ! 'from_file'    : read from an existing file (default for restart)
-       ! 'no_transformation'    : Cu's are set equal to the identity
+       ! 'from_file'           : read from an existing file (default for restart)
 
-   CHARACTER(nstrx) :: start_mode_wan_allowed(3)
-   DATA start_mode_wan_allowed / 'center_projections', 'from_file', 'no_transformation' /
+   CHARACTER(nstrx) :: start_mode_wan_allowed(4)
+   DATA start_mode_wan_allowed / 'no_guess', 'randomized', 'center_projections', &
+                                 'from_file' /
 
    INTEGER :: iphase = 1
        ! obsolete variable

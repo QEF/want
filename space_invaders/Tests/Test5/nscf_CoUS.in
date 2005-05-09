@@ -18,7 +18,7 @@ Infinite Cobalt Chain USPP
       nat=4, 
       ntyp=1,
       ecutwfc=20.0,
-      ecutrho=300.0,
+      ecutrho=160.0,
       occupations='smearing',
       smearing='gaussian',
       degauss=0.01,
