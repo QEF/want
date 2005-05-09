@@ -4,7 +4,8 @@
 =======================================================
 
 09 May 2005      Possibility to use random unitary matrixes added both in disentangle
-                 and wannier. (AF)
+                 and wannier. init_at_1.f90 and atomic_wfc.f90 added (from Espresso) 
+                 in order to deal with atomic starting centers. (AF)
 
 06 May 2005      Test5 joint to Test2; other input changed; particularly, the 
                  unitary_thr parameters is no longer needed in any test (due to the bug
