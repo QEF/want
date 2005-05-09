@@ -4,9 +4,11 @@
    postfix = '_WanT'
    work_dir = './'
    restart_mode = 'from_scratch'
+   verbosity = 'high'
 /
 
 &SUBSPACE
+!   start_mode_dis = "randomized"
    dimwann = 6    
    win_min = -12.0
    win_max =  0.0        
@@ -16,6 +18,7 @@
 /   
 
 &LOCALIZATION
+   start_mode_wan = "randomized"
    maxiter0_wan = 100
    alpha0_wan = 0.5
    maxiter1_wan = 1500
