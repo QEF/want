@@ -61,7 +61,7 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
      !
      IF (g(1,ig) > eps) THEN
         phi (ig) = ATAN( g(2,ig)/g(1,ig) )
-     ELSE if (g(1,ig) < -EPS_m9 ) THEN
+     ELSE IF (g(1,ig) < -EPS_m9 ) THEN
         phi (ig) = ATAN( g(2,ig)/g(1,ig) ) + PI
      ELSE
         phi (ig) = SIGN( PI/2.0_dbl,g(2,ig) )
