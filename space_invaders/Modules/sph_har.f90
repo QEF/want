@@ -21,7 +21,8 @@
 ! real spherical harmonics needed for the trial center projections
 !
 ! routines in this module:
-! SUBROUTINE sph_har_setup()
+! SUBROUTINE sph_har_setup(ndim, g, gg, ndir, l, m, ylm)
+! SUBROUTINE sph_har_index(lmax, index)
 !
 
    !
@@ -43,8 +44,59 @@
 ! end of declarations
 !
    PUBLIC :: sph_har_setup
+   PUBLIC :: sph_har_index
 
 CONTAINS
+
+!****************************************************
+   SUBROUTINE sph_har_index( lmax, index)
+   !****************************************************
+   IMPLICIT NONE
+     !
+     ! this routine computes the map between the 
+     ! usual (l,m) notation used for spherical harmonics
+     ! and the internal ordering used in the ylmr2 routine
+     ! (from espresso package, based on the Numerical Recipies
+     ! recursive algorithm)
+     !
+     ! i = index(m,l)    ! note the reversal of the indexes
+     !
+     ! where i is the index in the array of Y_lm produced by
+     ! ylmr2 where the order is [ Y_lm is described as (l,m) ]
+     !
+     ! (0,0)  /
+     ! (1,0)  (1,1)  (1,-1)  /
+     ! (2,0)  (2,1)  (2,-1)  (2,2)  (2,-2) /
+     ! ...
+     !
+     INTEGER, INTENT(in)   :: lmax  ! the number of angular mom
+                                    ! channel (0 -> l = lmax)
+     INTEGER, INTENT(out)  :: index(-lmax:lmax, 0:lmax)
+     !
+     ! local variables
+     !
+     INTEGER :: il, im, count
+     !
+     index = 0
+
+     count=1
+     index(0,0)= count
+     !
+     DO il=1,lmax
+        count = count + 1
+        index(0,il) = count
+
+        DO im = 1, il
+            count = count +1
+            index(im,il) = count
+            count = count +1
+            index(-im,il) = count
+        ENDDO
+     ENDDO
+
+     RETURN
+  END SUBROUTINE sph_har_index
+
 
 !****************************************************
    SUBROUTINE sph_har_setup( ndim, g, gg, ndir, l, m, ylm)
@@ -55,7 +107,10 @@ CONTAINS
      ! vectors and store them in ylm. l, m self-explaining, ndir
      ! is the direction of the polar axis.
      !
-     ! l == -1 gives the sp^3 hybroid sph_arm.
+     ! the m parameter is defined as the opposite of the one
+     ! used in ylmr2
+     !
+     ! l == -1 gives the sp^3 hybrid sph_arm.
      !
 
      INTEGER,        INTENT(in) :: ndim
@@ -106,7 +161,7 @@ CONTAINS
          !
          IF ( ABS( gg(ig) ) <= EPS_m9 ) THEN
             th_cos = ZERO
-            th_sin = ZERO
+            th_sin = ZERO        ! this should be ONE for coherence with ylmr2
          ELSE
             th_cos = dist_cos / gg(ig)
             th_sin = dist_pl / gg(ig)
@@ -136,11 +191,11 @@ CONTAINS
             IF ( m == -2 ) THEN
               ylm(ig) = sph2m2 * ( th_sin**2 ) * ( ph_cos**2 - ph_sin**2 )
             ELSE IF ( m == -1 ) THEN
-              ylm(ig) = sph2m1 * th_sin * th_cos * ph_cos
+              ylm(ig) = -sph2m1 * th_sin * th_cos * ph_cos
             ELSE IF ( m == 0 ) THEN
               ylm(ig) = sph20 * ( 3.0_dbl * th_cos**2 - 1.0_dbl )
             ELSE IF ( m == 1 ) THEN
-              ylm(ig) = sph21 * th_sin * th_cos * ph_sin
+              ylm(ig) = -sph21 * th_sin * th_cos * ph_sin
             ELSE IF ( m == 2 ) THEN
               ylm(ig) = sph22 * ( th_sin**2 ) * 2.0_dbl * ph_sin * ph_cos
             ELSE
@@ -150,11 +205,11 @@ CONTAINS
          ELSE IF ( l == 1 ) THEN
     
             IF ( m == -1 ) THEN
-              ylm(ig) = sph1m1 * th_sin * ph_cos
+              ylm(ig) = -sph1m1 * th_sin * ph_cos
             ELSE IF ( m == 0 ) THEN
               ylm(ig) = sph10 * th_cos
             ELSE IF ( m == 1 ) THEN
-              ylm(ig) = sph11 * th_sin * ph_sin
+              ylm(ig) = -sph11 * th_sin * ph_sin
             ELSE
               CALL errore(subname, ' invalid m for L=1 ', ABS(m) )
             END IF

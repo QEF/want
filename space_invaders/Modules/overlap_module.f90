@@ -207,7 +207,7 @@ CONTAINS
        CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
        CALL iotk_scan_attr(attr,'nnx',nnx_,IERR=ierr)
-          IF (ierr/=0) CALL errore(subname,'Unable to find attr MXDNN',ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'Unable to find attr NNX',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
 
@@ -221,7 +221,7 @@ CONTAINS
        !
        IF ( kpoints_alloc ) THEN
           IF ( nkpts_ /= nkpts) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_-nkpts))
-          IF ( nnx_ /= nnx) CALL errore(subname,'Invalid MXDNN',ABS(nnx_-nnx))
+          IF ( nnx_ /= nnx) CALL errore(subname,'Invalid NNX',ABS(nnx_-nnx))
        ELSE
           nkpts = nkpts_
        ENDIF

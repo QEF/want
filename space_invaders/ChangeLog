@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+10 May 2005      Merge between the main branch and the one with sp3 orbitals implemented
+                 (together with a new impl of spherical harmonics) completed; bugs
+                 fixed. (AF)
+
 09 May 2005      Possibility to use random unitary matrixes added both in disentangle
                  and wannier. init_at_1.f90 and atomic_wfc.f90 added (from Espresso) 
                  in order to deal with atomic starting centers. (AF)
@@ -49,6 +53,12 @@
                  10 in test4 (but expected to be also better for large systems).
                  CM renamed as Mkb everywhere; disentangle loop changed in order to be
                  more readable. (AF)
+
+04 Apr 2005      SP^3 hybrid centers added to trial_centers_setup routine; Y_lm
+                 management changed (base routine added to sph_har_module) (AF)
+
+03 Apr 2005      Internal representation of kpoint vector moved from crystal to cartesian
+                 coordinates, in units of Bohr^-1. (AF)
 
 01 Apr 2005      Mkb symmetrization performed. Some updates in bshells and util module.
                  README.input syncronized to the current input format.

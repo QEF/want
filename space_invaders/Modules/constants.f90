@@ -32,8 +32,9 @@
         REAL(dbl), PARAMETER ::     TPI = 2.0_dbl * 3.14159265358979323846_dbl
         REAL(dbl), PARAMETER ::     FPI = 4.0_dbl * 3.14159265358979323846_dbl
         REAL(dbl), PARAMETER ::   SQRT2 = 1.41421356237309504880_dbl
+        REAL(dbl), PARAMETER ::   SQRT3 = 1.73205080756887729353_dbl
         REAL(dbl), PARAMETER ::  SQRTPI = 1.77245385090551602729_dbl
-        REAL(dbl), PARAMETER :: SQRTPM1 = 1.0_dbl / SQRTPI
+        REAL(dbl), PARAMETER :: SQRTPM1 = 1.0_dbl / 1.77245385090551602729_dbl
 
         REAL(dbl), PARAMETER ::      EPS_m1  = 0.1_dbl
         REAL(dbl), PARAMETER ::      EPS_m2  = 0.01_dbl

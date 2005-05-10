@@ -15,7 +15,6 @@
    USE parameters, ONLY : nstrx
    USE constants, ONLY : PI, TPI, BOHR => bohr_radius_angs
    USE parser_module, ONLY: log2char
-   USE converters_module, ONLY: cry2cart
    USE io_module, ONLY : title, prefix, postfix, work_dir
    USE control_module, ONLY : ordering_mode, verbosity, restart_mode, & 
                               do_pseudo, do_overlaps, do_projections, &
@@ -109,7 +108,6 @@
 
       INTEGER                :: ik, ia, ib, idnn 
       INTEGER                :: i, j, m, is, nt, l
-      REAL(dbl), ALLOCATABLE :: kpt_cart(:,:)
       REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:)
       INTEGER                :: ierr
       CHARACTER(5)           :: ps
@@ -194,8 +192,6 @@
              center_cart1(:,i) = trial(i)%x1
              center_cart2(:,i) = trial(i)%x2
           ENDDO
-          CALL cry2cart(center_cart1, avec )
-          CALL cry2cart(center_cart2, avec )
 
           WRITE( unit, "(2x, 'Trial centers: (cart. coord. in Bohr)' ) " )
           DO i = 1, dimwann
@@ -350,17 +346,11 @@
                           nk(:), NINT( s(:) )
           WRITE( unit, "(2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
           
-          ALLOCATE( kpt_cart(3,nkpts), STAT=ierr)
-             IF ( ierr/=0 ) CALL errore('summary','allocating kpt_cart',ABS(ierr))
-          kpt_cart(:,:) = vkpt(:,:)
-          CALL cry2cart( kpt_cart, bvec )
 
           DO ik=1,nkpts
              WRITE( unit, " (4x, 'k point', i4, ':   ( ',3f9.5,' ),   weight = ', f8.4 )") &
-             ik, ( kpt_cart(i,ik), i=1,3 ), wk(ik)
+             ik, ( vkpt(i,ik), i=1,3 ), wk(ik)
           ENDDO
-          DEALLOCATE( kpt_cart, STAT=ierr)
-             IF ( ierr/=0 ) CALL errore('summary','deallocating kpt_cart',ABS(ierr))
           WRITE( unit, " (  '</K-POINTS>',/)" )
       ENDIF
 

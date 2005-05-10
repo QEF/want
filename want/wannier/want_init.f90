@@ -151,7 +151,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
 !
     CALL kpoints_read_ext(dft_unit, "Kmesh", lfound)
     IF ( .NOT. lfound ) CALL errore(subname,'Tag '//'Kmesh'//' not found',2)
-    CALL get_monkpack(nk,s,nkpts,vkpt,'CRYSTAL',bvec,ierr)
+    CALL get_monkpack(nk,s,nkpts,vkpt,'CARTESIAN',bvec,ierr)
     IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
     !
     ! ...  allocations and initializations

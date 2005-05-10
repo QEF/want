@@ -14,7 +14,6 @@
    USE kinds, ONLY: dbl
    USE constants, ONLY : ONE, TWO, TPI, EPS_m6
    USE parameters, ONLY : npkx, nstrx, nnx, nnhx 
-   USE converters_module, ONLY : cart2cry
    USE lattice_module, ONLY : alat, avec, bvec, lattice_alloc => alloc
    USE iotk_module
 
@@ -50,7 +49,7 @@
   !
   INTEGER                 :: nk(3)         ! component of the MP kgrid
   REAL(dbl)               :: s(3)          ! fractional shifts of the MP grid
-  REAL(dbl), ALLOCATABLE  :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts
+  REAL(dbl), ALLOCATABLE  :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts (Bohr^-1)
   REAL(dbl), ALLOCATABLE  :: wk(:)         ! weight of each kpt for BZ sums 
   REAL(dbl)               :: wksum         ! sum of the weights
 
@@ -140,8 +139,8 @@ CONTAINS
       CHARACTER(16)     :: subname="bshells_allocate"
 
       IF ( nkpts <= 0)  CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
-      IF ( nnx <= 0 ) CALL errore(subname,'Invalid MXDNN',ABS(nnx)+1)
-      IF ( nnhx <= 0) CALL errore(subname,'Invalid MXDNNH ',ABS(nnhx)+1)
+      IF ( nnx <= 0 ) CALL errore(subname,'Invalid NNX',ABS(nnx)+1)
+      IF ( nnhx <= 0) CALL errore(subname,'Invalid NNHX ',ABS(nnhx)+1)
 
       ALLOCATE( nntot(nkpts), STAT=ierr )
          IF (ierr /=0 ) CALL errore(subname,'allocating nntot',nkpts)
@@ -191,7 +190,6 @@ CONTAINS
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
        INTEGER            :: lnkpts
-       REAL(dbl)          :: tmp(3,3)
        REAL(dbl),ALLOCATABLE :: lwk(:), lvkpt(:,:)
        CHARACTER(nstrx)   :: attr, string
        CHARACTER(16)      :: subname='kpoints_read_ext'
@@ -248,9 +246,8 @@ CONTAINS
        ! passing to the internal variable 
        vkpt(:,:) = lvkpt(:,iks:ike)
        !
-       ! convert them to crystal units as required throughout the code
-       tmp(:,:) = alat/TPI * bvec
-       CALL cart2cry(vkpt, tmp )
+       ! convert them to bohr^-1 cartesian units 
+       vkpt(:,:) = vkpt(:,:) * TPI/alat
 
        !
        ! cleanup

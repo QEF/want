@@ -29,7 +29,6 @@
    USE timing_module,  ONLY : timing, timing_upto_now
    USE ions_module,    ONLY : psfile, uspp_calculation
    USE files_module,   ONLY : file_open, file_close
-   USE converters_module, ONLY : cry2cart
    USE util_module,    ONLY : zmat_mul
    
    USE control_module, ONLY : do_overlaps, do_projections, &
@@ -55,7 +54,7 @@
    IMPLICIT NONE
       CHARACTER(11)             :: subname="wfc_manager"
       CHARACTER(nstrx)          :: filename
-      REAL(dbl)                 :: xk(3), bvec_tmp(3,3)
+      REAL(dbl)                 :: xk(3)
       COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
       LOGICAL                   :: lfound
       INTEGER                   :: ig, ib, ikb, ik, inn
@@ -180,13 +179,6 @@
           Mkb(:,:,:,:) = CZERO
       
           !
-          ! kpts should be in the same unit as g, gg (i.e. tpiba) while they currently
-          ! are in crystal units
-          !
-          bvec_tmp(:,:) = bvec / tpiba
-
-
-          !
           ! main loop on kpts
           !
           kpoints : &
@@ -197,14 +189,12 @@
 
              IF ( uspp_calculation ) THEN
                  !
-                 xk(:) = vkpt(:,ik)
-                 CALL cry2cart( xk, bvec_tmp )
-                 !
                  ! determine the index related to the first wfc of the current ik
                  ! to be used in evc to get the right starting point
                  !
                  index = wfc_info_getindex(imin(ik), ik, "IK", evc_info )
                  !
+                 xk(:) = vkpt(:,ik) / tpiba
                  CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
                  vkb_ik = ik
                  CALL ccalbec( nkb, npwkx, npwk(ik), dimwin(ik), becp(1,1,ik), vkb, &
@@ -236,11 +226,9 @@
                         !
                         IF( uspp_calculation ) THEN
                             !
-                            xk(:) = vkpt(:,ikb)
-                            CALL cry2cart( xk, bvec_tmp )
-                            !
                             index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
                             !
+                            xk(:) = vkpt(:,ikb) / tpiba
                             CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
                             vkb_ik = ikb
                             CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb),&
@@ -295,8 +283,7 @@
                 indout = wfc_info_getindex(imin(ik), ik, "SPSI_IK", evc_info)
 
                 IF( uspp_calculation ) THEN
-                     xk(:) = vkpt(:,ik)
-                     CALL cry2cart( xk, bvec_tmp )
+                     xk(:) = vkpt(:,ik) / tpiba
                      CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
                      vkb_ik = ik
                 ENDIF

@@ -8,16 +8,13 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
+!*****************************************************
       PROGRAM hamiltonian
-!=----------------------------------------------------------------------------------=
-  
+!*****************************************************
+!  
 ! ... Calculates the band structure and  the
 !     matrix elements H(R) in a Wigner-Seitz supercell
- 
-! ...  Input: dft data, space data, wannier data
-!     Output: bands data,  matrix.dat, diagonal.dat
-!
+! 
 !     NOTA: the output fmts should be improved in a small number of files within
 !           different structure very soon.
 !
@@ -37,6 +34,7 @@
       USE version_module, ONLY : version_number
       USE util_module, ONLY : zmat_unitary, zmat_hdiag
       USE parser_module, ONLY : int2char, change_case
+      USE converters_module, ONLY : cart2cry
 
       USE lattice_module, ONLY : avec, bvec
       USE kpoints_module,       ONLY : nkpts, nk, vkpt
@@ -49,10 +47,10 @@
       IMPLICIT NONE 
 
       COMPLEX(dbl) :: expo
-      COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)    ! kham(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE :: rham(:,:,:)    ! rham(dimwann,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE :: ham_tmp(:,:)   ! ham_tmp(dimwann,dimwann)
-      COMPLEX(dbl), ALLOCATABLE :: z(:,:)         ! z(dimwann,dimwann) 
+      COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)   
+      COMPLEX(dbl), ALLOCATABLE :: rham(:,:,:)   
+      COMPLEX(dbl), ALLOCATABLE :: ham_tmp(:,:)  
+      COMPLEX(dbl), ALLOCATABLE :: z(:,:)        
 
       INTEGER :: nkpts_in     ! Number of k-points generating the line (edges)
       INTEGER :: nkpts_max    ! maximum number of interpolated points
@@ -60,12 +58,12 @@
       !
       INTEGER :: nws
       REAL(dbl), ALLOCATABLE :: kpt_in(:,:), xval_in(:) 
+      REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:)
       REAL(dbl), ALLOCATABLE :: kpt(:,:),    xval(:) 
       REAL(dbl), ALLOCATABLE :: eig_int(:,:)  ! interpolated band structure   
       INTEGER, ALLOCATABLE :: indxws(:,:)       
       INTEGER, ALLOCATABLE :: degen(:)          
       INTEGER :: i, j, m, n, ik, idum
-      INTEGER :: i1, i2, i3
       INTEGER :: iws
       REAL(dbl) :: rmod, rdum, vec(3)
       CHARACTER(LEN=2), ALLOCATABLE :: point(:)    
@@ -134,9 +132,9 @@
            CALL errore('hamiltonian','Invalid spin_component = '//TRIM(spin_component),1)
  
       ALLOCATE( point( nkpts_in ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating point ', nkpts_in )
+          IF( ierr /=0 ) CALL errore('hamiltonian', 'allocating point', ABS(ierr) )
       ALLOCATE( kpt_in( 3, nkpts_in ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' allocating kpt_in ', 3*nkpts_in )
+          IF( ierr /=0 ) CALL errore('hamiltonian', 'allocating kpt_in', ABS(ierr) )
 
       DO j = 1, nkpts_in
         READ (stdin, fmt="(a2)") point(j)
@@ -171,6 +169,15 @@
       !
       wan_eig(:,:) = wan_eig(:,:) - Efermi
           eig(:,:) =     eig(:,:) - Efermi
+
+      !
+      ! convert kpts to crystal units
+      !
+      ALLOCATE( vkpt_cry( 3, nkpts ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore('hamiltonian', 'allocating vkpt_cry', ABS(ierr) )
+      vkpt_cry(:,:) = vkpt(:,:)
+      CALL cart2cry(vkpt_cry, bvec)
+
 
 !
 ! ... printing data to output
@@ -247,9 +254,9 @@
          DO i = 1, dimwann
             rham(i,j,iws) = CZERO
             DO ik = 1, nkpts
-              expo = EXP( -CI * TPI * (vkpt(1,ik) * DBLE( indxws(1,iws) ) +   &
-              vkpt(2,ik) * DBLE( indxws(2,iws) ) +                            &
-              vkpt(3,ik) * DBLE( indxws(3,iws) ) ) )
+              expo = EXP( -CI * TPI * (vkpt_cry(1,ik) * DBLE( indxws(1,iws) ) +   &
+                                       vkpt_cry(2,ik) * DBLE( indxws(2,iws) ) +   &
+                                       vkpt_cry(3,ik) * DBLE( indxws(3,iws) ) )   )
               rham(i,j,iws)=rham(i,j,iws)+expo*kham(i,j,ik)
             ENDDO
             rham(i,j,iws) = rham(i,j,iws) / DBLE(nkpts)
@@ -268,7 +275,7 @@
 
 ! XXX this part should be updated
 !      IF (convert_self_energy)  THEN
-!           CALL do_self_energy(dimwann,nkpts,nws,spin_component,cu,vkpt,indxws,bvec,     &
+!           CALL do_self_energy(dimwann,nkpts,nws,spin_component,cu,vkpt_cry,indxws,bvec,     &
 !                               'sigma.blc','sigma.wan')
 !      END IF
 
@@ -349,15 +356,15 @@
       WRITE(stdout,"(/,2x,'Decay of the real space Hamiltonian:',/)") 
       WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of H(R) [eV]')") 
       DO iws = 1, nws
-        vec(1) = dble( indxws(1,iws) ) * avec(1,1) +     &
-                 dble( indxws(2,iws) ) * avec(1,2) +     &
-                 dble( indxws(3,iws) ) * avec(1,3)
-        vec(2) = dble( indxws(1,iws) ) * avec(2,1) +     &
-                 dble( indxws(2,iws) ) * avec(2,2) +     &
-                 dble( indxws(3,iws) ) * avec(2,3)
-        vec(3) = dble( indxws(1,iws) ) * avec(3,1) +     &
-                 dble( indxws(2,iws) ) * avec(3,2) +     &
-                 dble( indxws(3,iws) ) * avec(3,3)
+        vec(1) = DBLE( indxws(1,iws) ) * avec(1,1) +     &
+                 DBLE( indxws(2,iws) ) * avec(1,2) +     &
+                 DBLE( indxws(3,iws) ) * avec(1,3)
+        vec(2) = DBLE( indxws(1,iws) ) * avec(2,1) +     &
+                 DBLE( indxws(2,iws) ) * avec(2,2) +     &
+                 DBLE( indxws(3,iws) ) * avec(2,3)
+        vec(3) = DBLE( indxws(1,iws) ) * avec(3,1) +     &
+                 DBLE( indxws(2,iws) ) * avec(3,2) +     &
+                 DBLE( indxws(3,iws) ) * avec(3,3)
         rmod = SQRT( vec(1)**2 + vec(2)**2 + vec(3)**2 )
         !
         ! compute the 2-norm of H_ij(R)
@@ -470,6 +477,8 @@
 
 !
 ! ... Clean memory
+      DEALLOCATE( vkpt_cry, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating vkpt_cry', ABS(ierr) )
       DEALLOCATE( point, STAT=ierr)
           IF( ierr /=0 ) CALL errore(' hamiltonian ', ' deallocating point', ABS(ierr) )
       DEALLOCATE( kpt_in, STAT=ierr)

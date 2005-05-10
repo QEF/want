@@ -8,7 +8,6 @@
 
 &SUBSPACE
     dimwann = 8          
-    win_min =  -13.0
     win_max =  14.8            
     alpha_dis = 0.5               
     maxiter_dis = 200

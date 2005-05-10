@@ -8,7 +8,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-
 !******************************************************
    SUBROUTINE bshells( bvec, nshells, nwhich )
    !******************************************************
@@ -20,7 +19,6 @@
    USE kinds
    USE constants, ONLY : ZERO, CZERO, ONE, EPS_m10, EPS_m6
    USE util_module, ONLY : mat_svd
-   USE converters_module, ONLY : cry2cart
    USE timing_module, ONLY : timing
    USE summary_module, ONLY: summary 
    USE io_module, ONLY: stdout
@@ -53,7 +51,6 @@
       INTEGER :: ifpos, ifneg, ifound, info, ind
       INTEGER :: ndim(nnx)
 
-      REAL(dbl), ALLOCATABLE :: vkpr(:,:)
       REAL(dbl) :: vkpp(3)
       REAL(dbl) :: singvd(nnx)
       REAL(dbl) :: dimbk(3,nnx)
@@ -65,16 +62,6 @@
 
       IF ( .NOT. kpoints_alloc ) CALL errore('bshell', 'Kpoints NOT alloc', 1 )
       IF ( nkpts <= 0) CALL errore('bshell', 'Invaid nkpts', ABS(nkpts)+1 )
-
-      !
-      ! ... Pass the k-points in cartesian coordinates
-      !     units: Bohr^-1
-      !
-      ALLOCATE( vkpr(3,nkpts), STAT=ierr )
-      IF ( ierr /= 0) CALL errore('bshell', 'allocating vkpr', ABS(ierr))
-
-      vkpr(:,:) = vkpt(:,:)
-      CALL cry2cart( vkpr, bvec )
 
 
 !
@@ -94,12 +81,12 @@
           DO l = -5, 5
             DO m = -5, 5
               DO n = -5, 5
-                vkpp(1) = vkpr(1,nkp) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
-                vkpp(2) = vkpr(2,nkp) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
-                vkpp(3) = vkpr(3,nkp) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
-                dist=SQRT( (vkpr(1,1)-vkpp(1))**2 + &
-                           (vkpr(2,1)-vkpp(2))**2 + &
-                           (vkpr(3,1)-vkpp(3))**2 ) 
+                vkpp(1) = vkpt(1,nkp) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
+                vkpp(2) = vkpt(2,nkp) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
+                vkpp(3) = vkpt(3,nkp) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
+                dist=SQRT( (vkpt(1,1)-vkpp(1))**2 + &
+                           (vkpt(2,1)-vkpp(2))**2 + &
+                           (vkpt(3,1)-vkpp(3))**2 ) 
                 IF ( (dist > eps) .AND. (dist > dnn0+eps) ) dnn1 = MIN( dnn1, dist )
               END DO
             END DO
@@ -128,12 +115,12 @@
             DO l = -5, 5
               DO m = -5, 5
                 DO n = -5, 5
-                  vkpp(1) = vkpr(1,nkp2) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
-                  vkpp(2) = vkpr(2,nkp2) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
-                  vkpp(3) = vkpr(3,nkp2) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
-                  dist = SQRT( ( vkpr(1,nkp) - vkpp(1) )**2 + &
-                               ( vkpr(2,nkp) - vkpp(2) )**2 + &
-                               ( vkpr(3,nkp) - vkpp(3) )**2 ) 
+                  vkpp(1) = vkpt(1,nkp2) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
+                  vkpp(2) = vkpt(2,nkp2) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
+                  vkpp(3) = vkpt(3,nkp2) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
+                  dist = SQRT( ( vkpt(1,nkp) - vkpp(1) )**2 + &
+                               ( vkpt(2,nkp) - vkpp(2) )**2 + &
+                               ( vkpt(3,nkp) - vkpp(3) )**2 ) 
                   IF ( ( dist >=  dnn(ndnn) * 0.9999d0 )  .AND. &
                        ( dist <= dnn(ndnn) * 1.0001d0 ) )  THEN
                     inx = inx + 1   
@@ -144,7 +131,7 @@
                     nncell(3,inx,nkp) = n
                     !
                     ! units are in bohr-1
-                    bk(:,nkp,inx) = ( vkpp(:) - vkpr(:,nkp) )
+                    bk(:,nkp,inx) = ( vkpp(:) - vkpt(:,nkp) )
                   ENDIF
                 ENDDO
               ENDDO
@@ -386,23 +373,10 @@
              ! check found
              IF (  nreverse(nn,nkp) == 0 ) &
                     CALL errore(' bshell ', ' Check on nreverse failed ', nkp )
-
-!! XXX
-!WRITE(0,*) "nkp, nn ", nkp, nn
-!WRITE(0,"(a10,3f15.9)") 'k',vkpr(:,nkp)
-!WRITE(0,"(a10,3f15.9)") 'b',bk(:,nkp,nn)
-!WRITE(0,"(a10,3f15.9)") 'k+b',vkpr(:,nkp2)
-!WRITE(0,"(a10,3f15.9)") 'k+b, -b',bk(:,nkp2, nreverse(nn,nkp) )
-!WRITE(0,"(a10,i5)") 'reverse', nreverse(nn,nkp)
-!WRITE(0,*) 
-
           ENDDO
       ENDDO
 
 
-
-      DEALLOCATE( vkpr, STAT=ierr )
-      IF ( ierr /= 0) CALL errore('bshell', 'deallocating vkpr', ABS(ierr))
 
       CALL timing('bshells',OPR='stop')
 

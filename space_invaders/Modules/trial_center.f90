@@ -12,7 +12,7 @@
 !*********************************************
    USE kinds, ONLY : dbl
    USE constants, ONLY: bohr => bohr_radius_angs
-   USE converters_module, ONLY : cart2cry
+   USE converters_module, ONLY : cry2cart
    USE parser_module, ONLY : change_case
    IMPLICIT NONE
    PRIVATE
@@ -75,10 +75,9 @@ CONTAINS
    IMPLICIT NONE
    REAL(dbl),            INTENT(in)    :: avec(3,3)
    TYPE( trial_center ), INTENT(inout) :: obj
-   REAL(dbl)        :: tmp(3,3)
    CHARACTER(10)    :: units
    !
-   ! ... Converting WANNIER centers to CRYSTAL units
+   ! ... Converting WANNIER centers to cartesian coord in Bohr
    !     AVEC is in Bohr
    !     DECAY should be in Bohr and is converted here if is the case
    !     if units == crystal it is supposed to be already in Bohr
@@ -87,15 +86,14 @@ CONTAINS
       CALL change_case(units,'UPPER')
       SELECT CASE ( TRIM(units) )
       CASE ( 'ANGSTROM' )
-           tmp(:,:) = bohr*avec(:,:)
-           CALL cart2cry(obj%x1, tmp, obj%units)
-           CALL cart2cry(obj%x2, tmp, obj%units)
+           obj%x1 = obj%x1 / bohr
+           obj%x2 = obj%x2 / bohr
            obj%decay = obj%decay / bohr
+           obj%units='bohr'
       CASE ( 'BOHR' )
-           tmp(:,:) = bohr*avec(:,:)
-           CALL cart2cry(obj%x1, tmp, obj%units)
-           CALL cart2cry(obj%x2, tmp, obj%units)
       CASE ( 'CRYSTAL' )
+           CALL cry2cart(obj%x1, avec, obj%units)
+           CALL cry2cart(obj%x2, avec, obj%units)
       CASE DEFAULT
           CALL errore('trial_center_convert','Invalid units : '  &
                                  //TRIM(obj%units),1 )
@@ -105,34 +103,35 @@ CONTAINS
 
 
 !****************************************************
-   SUBROUTINE trial_center_setup(ik, obj, npwk, vect)
+   SUBROUTINE trial_center_setup(ik, npwk, vkgg2, lmax, ylm, ylm_info, obj, vect)
    !****************************************************
    !
    ! this routine set the G representation of the trial wannier
    ! center in input (obj) according to the chosen kpt
    ! Implemented formulas are reported below
    !
-   USE constants,         ONLY : TPI, PI, ZERO, ONE, TWO, CZERO, CI
    USE kinds,             ONLY : dbl
-   USE lattice_module,    ONLY : alat, tpiba, avec, bvec, omega 
+   USE constants,         ONLY : PI, ONE, TWO, CI, SQRT3
+   USE lattice_module,    ONLY : bvec, omega 
    USE kpoints_module,    ONLY : vkpt     
-   USE ggrids_module,     ONLY : g, igv
+   USE ggrids_module,     ONLY : igv
    USE wfc_data_module,   ONLY : igsort
    USE timing_module,     ONLY : timing
    USE sph_har_module,    ONLY : sph_har_setup
-   USE converters_module, ONLY : cry2cart
 
    IMPLICIT NONE
-      INTEGER,            INTENT(in) :: ik, npwk
+      INTEGER,            INTENT(in) :: ik, npwk, lmax
+      REAL(dbl),          INTENT(in) :: vkgg2(npwk)
+      REAL(dbl),          INTENT(in) :: ylm(npwk,(lmax+1)**2)
+      INTEGER,            INTENT(in) :: ylm_info(-lmax:lmax,0:lmax)
       TYPE(trial_center), INTENT(in) :: obj
       COMPLEX(dbl),       INTENT(out):: vect(npwk)
 
-      INTEGER                    :: i,j, ig, ierr, l, ilm, lmax2
+      INTEGER                    :: i,j, ig, ierr, l, ilm
       INTEGER                    :: igvect(3)
       REAL(dbl)                  :: decay, x1(3), x2(3), vk(3)
       REAL(dbl)                  :: arg, prefactor 
-      REAL(dbl),    ALLOCATABLE  :: vkg(:,:), vkgg(:)
-      REAL(dbl),    ALLOCATABLE  :: ylm(:,:)
+      REAL(dbl),    ALLOCATABLE  :: vkgg(:)
       COMPLEX(dbl)               :: bphase(3), kphase
       COMPLEX(dbl), ALLOCATABLE  :: phase(:)
 
@@ -146,20 +145,13 @@ CONTAINS
 
       CALL timing('trial_center_setup',OPR='start')
 
-      ! TO BE eliminated XXX
-      IF ( obj%l < 0 ) CALL errore('trial_center_setup','Invalid Y_l value',-obj%l)
 
-      decay   = obj%decay 
-      lmax2   = (obj%l+1)**2
       ! 
-      ! go from crystal to cart (units of bohr and bohr^-1 respectively)
+      ! all objects in units of bohr and bohr^-1 respectively
+      decay   = obj%decay 
       x1(:) = obj%x1
       x2(:) = obj%x2
       vk(:) = vkpt(:,ik)
-
-      CALL cry2cart(x1, avec )
-      CALL cry2cart(x2, avec )
-      CALL cry2cart(vk, bvec )
 
 
       SELECT CASE ( TRIM(obj%type) )
@@ -174,12 +166,9 @@ CONTAINS
            ! 
            ALLOCATE( phase(npwk), STAT=ierr )
               IF (ierr/=0) CALL errore('trial_center_setup','Allocating phase' ,ABS(ierr))
-           ALLOCATE( vkg(3,npwk), STAT=ierr )
-              IF (ierr/=0) CALL errore('trial_center_setup','Allocating vkg' ,ABS(ierr))
            ALLOCATE( vkgg(npwk), STAT=ierr )
-              IF (ierr/=0) CALL errore('trial_center_setup','Allocating vkg2' ,ABS(ierr))
-           ALLOCATE( ylm(npwk,lmax2), STAT=ierr )
-              IF (ierr/=0) CALL errore('trial_center_setup','Allocating ylm' ,ABS(ierr))
+              IF (ierr/=0) CALL errore('trial_center_setup','allocating vkgg',ABS(ierr))
+    
 
 
            !
@@ -200,8 +189,7 @@ CONTAINS
            !     e^{-i (k+G)*x1 ) = e^{-i k*x1} *  &
            !                  (e^{-i b1*x1})^n1 * (e^{-i b2*x1})^n2 * (e^{-i b3*x1})^n3
            DO ig = 1, npwk
-                vkg(:,ig) = vk(:) + g(:,igsort(ig,ik) ) * tpiba
-                vkgg(ig)  = SQRT ( DOT_PRODUCT( vkg(:,ig) , vkg(:,ig) ) )
+                vkgg(ig) = SQRT(vkgg2(ig) ) 
                 !
                 igvect(:) = igv(:,igsort(ig,ik))
                 phase(ig) = kphase * ( bphase(1) )**igvect(1) * &
@@ -233,21 +221,20 @@ CONTAINS
                ENDDO
            ENDIF
 
-           vkg = -vkg
-           CALL sph_har_setup( npwk, vkg, vkgg, obj%ndir, obj%l, obj%m, ylm(:,1) )
-           ilm = 1
 
 
 
            !
            ! ... construct the vector
-           !     Single gaussians are normalized to 1.0, the units a are as follows
+           !     Single gaussians are normalized to 1.0, the units are as follows
            !     decay -> bohr
            !     omega -> bohr^3
            !     vkgg  -> bohr^-1
            ! 
            prefactor = ( TWO * PI**5 )**(0.25_dbl) * SQRT( 8.0_dbl * decay**3/ omega )
            arg = decay**2/ 4.0_dbl
+           ilm = 0
+           IF ( obj%l >=0 ) ilm = ylm_info(obj%m,obj%l)
 
            SELECT CASE ( obj%l ) 
            !
@@ -277,8 +264,107 @@ CONTAINS
                     vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * (decay*vkgg(ig))**3
                     vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig) * (-CI)
                ENDDO
+               !
+               ! sp^3 hybrid harmonics
+               !
+           CASE( -1 )
+               prefactor = prefactor / SQRT3
+               SELECT CASE ( obj%m )
+                   !
+                   ! sp^3 along  1,1,1
+               CASE(  1 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (  ylm(ig, ylm_info(-1,1) ) &
+                                   + ylm(ig, ylm_info( 1,1) ) &
+                                   + ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+                   !
+                   ! sp^3 along  1,-1,-1
+               CASE(  2 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (  ylm(ig, ylm_info(-1,1) ) &
+                                   - ylm(ig, ylm_info( 1,1) ) &
+                                   - ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+                   !
+                   ! sp^3 along  -1,1,-1
+               CASE(  3 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (- ylm(ig, ylm_info(-1,1) ) &
+                                   + ylm(ig, ylm_info( 1,1) ) &
+                                   - ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+                   !
+                   ! sp^3 along  -1,-1,1
+               CASE(  4 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (- ylm(ig, ylm_info(-1,1) ) &
+                                   - ylm(ig, ylm_info( 1,1) ) &
+                                   + ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+                   !
+                   ! sp^3 along  -1,-1,-1
+               CASE( -1 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (- ylm(ig, ylm_info(-1,1) ) &
+                                   - ylm(ig, ylm_info( 1,1) ) &
+                                   - ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+                   !
+                   ! sp^3 along  -1,1,1
+               CASE( -2 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (- ylm(ig, ylm_info(-1,1) ) &
+                                   + ylm(ig, ylm_info( 1,1) ) &
+                                   + ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+                   !
+                   ! sp^3 along  1,-1,1
+               CASE( -3 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (  ylm(ig, ylm_info(-1,1) ) &
+                                   - ylm(ig, ylm_info( 1,1) ) &
+                                   + ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+                   !
+                   ! sp^3 along  1,1,-1
+               CASE( -4 ) 
+                   DO ig = 1, npwk
+                       vect(ig) = CI * decay * vkgg(ig) *     &
+                                  (  ylm(ig, ylm_info(-1,1) ) &
+                                   + ylm(ig, ylm_info( 1,1) ) &
+                                   - ylm(ig, ylm_info( 0,1) ) )
+                       vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
+                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                   ENDDO
+               CASE DEFAULT
+                   CALL errore('trial_center_setup','Invalid m channel' ,ABS(obj%m)+1)
+               END SELECT
+
+
            CASE DEFAULT
-               CALL errore('trial_center_setup','Invalid l channel' ,ABS(obj%l) +1)
+               CALL errore('trial_center_setup','Invalid l channel' ,ABS(obj%l)+1)
            END SELECT 
 
                
@@ -290,16 +376,13 @@ CONTAINS
       ! 
       DEALLOCATE( phase, STAT=ierr )
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating phase' ,ABS(ierr))
-      DEALLOCATE( vkg, STAT=ierr )
-          IF (ierr/=0) CALL errore('trial_center_setup','deallocating vkg' ,ABS(ierr))
       DEALLOCATE( vkgg, STAT=ierr )
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating vkg2' ,ABS(ierr))
-      DEALLOCATE( ylm, STAT=ierr )
-          IF (ierr/=0) CALL errore('trial_center_setup','deallocating ylm' ,ABS(ierr))
       
       
       CALL timing('trial_center_setup',OPR='stop')
    END SUBROUTINE trial_center_setup
+
 
 END MODULE trial_center_module
 
