@@ -18,7 +18,7 @@
 /   
 
 &LOCALIZATION
-   start_mode_wan = "randomized"
+!   start_mode_wan = "randomized"
    maxiter0_wan = 100
    alpha0_wan = 0.5
    maxiter1_wan = 1500
