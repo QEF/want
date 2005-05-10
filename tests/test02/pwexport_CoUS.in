@@ -1,0 +1,8 @@
+&INPUTPP
+  prefix='cobalt_US'
+  outdir='./'
+  pseudo_dir = './'
+  psfile(1) = 'Co.pbe-nd-rrkjus.UPF'
+  single_file = .FALSE.
+  ascii = .FALSE.
+/
