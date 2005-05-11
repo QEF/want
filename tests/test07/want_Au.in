@@ -12,7 +12,7 @@
 /
 
 &LOCALIZATION
-   start_mode_wan = 'randomized'
+!   start_mode_wan = 'randomized'
    maxiter0_wan = 100
    maxiter1_wan = 1500
    ncg = 5    

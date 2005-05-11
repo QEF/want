@@ -4,7 +4,8 @@
 =======================================================
 
 11 May 2005      Atomic projections fully implemented and tested; Test5 changed and 
-                 updated. (AF)
+                 updated. Set_overlap_map and add_us_overlap renamed to overlap_setmap 
+                 and overlap_augment respectively. FIxed a bug in overlap_augment. (AF)
 
 10 May 2005      Merge between the main branch and the one with sp3 orbitals implemented
                  (together with a new impl of spherical harmonics) completed; bugs

@@ -107,8 +107,8 @@
       ! this mapping takes into account the e^{iGr} factor when k1 and k2 are 
       ! in different Brillouin zones.
       !
-      CALL set_overlap_map( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(1,ik2), &
-                            lnncell(1), map)
+      CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(1,ik2), &
+                           lnncell(1), map)
       map( npwk2+1: npwkx ) = 0
 
 
