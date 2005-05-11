@@ -91,7 +91,7 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   ! tau is in alat units (and then converted to bohr), 
   ! xk in bohr^-1 
   !
-  arg = DOT_PRODUCT(xk(:), tau(:,iatom) )  * alat
+  arg = DOT_PRODUCT(xk(:), tau(:,iatom) ) * alat
   kphase = DCMPLX (cos (arg), - sin (arg) )
   !
   !  the factor i^l MUST BE PRESENT in order to produce

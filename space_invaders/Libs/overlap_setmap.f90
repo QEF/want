@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
+SUBROUTINE overlap_setmap(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
    !*********************************************************
    USE kinds
    USE ggrids_module, ONLY : igv, ggrids_gk_indexes, ggrids_gv_indexes
@@ -41,7 +41,7 @@ SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
    !
    ! ... local variables
    !
-   CHARACTER(15)    :: subname="set_overlap_map"
+   CHARACTER(14)    :: subname="overlap_setmap"
    INTEGER          :: ix,  iy,  iz
    INTEGER          :: ix2, iy2, iz2
    INTEGER          :: ngm
@@ -52,7 +52,7 @@ SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
 !
 ! ... end of declarations
 
-   CALL timing('set_overlap_map',OPR='start')
+   CALL timing('overlap_setmap',OPR='start')
 
    ALLOCATE( gk2fft(npwk), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating gk2fft', ABS(ierr) )
@@ -120,8 +120,8 @@ SUBROUTINE set_overlap_map(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
    DEALLOCATE( fft2gv, STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'deallocating fft2gv', ABS(ierr) )
 
-   CALL timing('set_overlap_map',OPR='stop')
+   CALL timing('overlap_setmap',OPR='stop')
 
-END SUBROUTINE set_overlap_map
+END SUBROUTINE overlap_setmap
 
 

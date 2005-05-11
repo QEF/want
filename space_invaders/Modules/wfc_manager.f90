@@ -260,8 +260,8 @@
                         ! ... add the augmentation term fo USPP
                         !
                         IF ( use_uspp ) THEN
-                            CALL add_us_overlap(dimwinx, dimwin(ik), dimwin(ikb), &
-                                                ik, ikb, inn, aux)
+                            CALL overlap_augment(dimwinx, dimwin(ik), dimwin(ikb), &
+                                                 ik, ikb, inn, aux)
                             Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
                                          Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
                                          aux(1:dimwin(ik),1:dimwin(ikb))
@@ -276,7 +276,7 @@
                         ! apply the symmetrization
                         ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
                         !
-                       Mkb(:,:, nreverse(inn,ik), ikb) = CONJG( TRANSPOSE( Mkb(:,:,inn,ik)))
+                        Mkb(:,:, nreverse(inn,ik), ikb) = CONJG( TRANSPOSE( Mkb(:,:,inn,ik)))
                     ENDIF
                 ENDDO neighbours
              ENDIF

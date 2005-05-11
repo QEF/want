@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************************
-SUBROUTINE add_us_overlap( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
+SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    !***************************************************************
    !    This routine add the augmentation part due to USPP to the
    !    overlap matrix.
@@ -24,17 +24,19 @@ SUBROUTINE add_us_overlap( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    !     Mkb        the overlap matrix
    !
    ! The task performed is:
-   !  Mkb(m,n) = Mkb(m,n) + \sum_{ijI} qb_{ij}^I   *
+   !  Mkb(m,n) = Mkb(m,n) + \sum_{ijI} qb_{ij}^I * e^i(b*tau_I)
    !                    <psi_m,k1| beta_i,k1 > < beta_j,k2 | psi_n,k2 > 
    !
    !
-   USE kinds,      ONLY : dbl
-   USE constants,  ONLY : ZERO, CZERO
-   USE us_module,  ONLY : okvan
-   USE uspp,       ONLY : nkb, qb
-   USE uspp_param, ONLY : nh, nhm, tvanp
-   USE ions_module,ONLY : nat, ntyp => nsp, ityp
-   USE becmod,     ONLY : becp
+   USE kinds,           ONLY : dbl
+   USE constants,       ONLY : ZERO, CZERO
+   USE kpoints_module,  ONLY : bk
+   USE lattice_module,  ONLY : alat
+   USE us_module,       ONLY : okvan
+   USE uspp,            ONLY : nkb, qb
+   USE uspp_param,      ONLY : nh, nhm, tvanp
+   USE ions_module,     ONLY : nat, ntyp => nsp, ityp, tau
+   USE becmod,          ONLY : becp
    USE timing_module
    IMPLICIT NONE
    !
@@ -45,17 +47,32 @@ SUBROUTINE add_us_overlap( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    !
    ! ... local variables
    !
-   INTEGER :: ikb, jkb, ih, jh, na, nt, ijkb0, ibnd1, ibnd2
+   INTEGER      :: ikb, jkb, ih, jh, na, nt, ijkb0, ibnd1, ibnd2
+   REAL(dbl)    :: arg
+   COMPLEX(dbl) :: phase
+
+!
+!--------------------------
+! routine body
+!--------------------------
+!
 
    Mkb = CZERO
    IF ( nkb == 0 .OR. .NOT. okvan ) RETURN
-   CALL timing( 'add_us_overlap', OPR='start' )  
+   CALL timing( 'overlap_augment', OPR='start' )  
    !
    !
    ijkb0 = 0
    DO nt = 1, ntyp
       IF ( tvanp(nt) ) THEN
          DO na = 1, nat
+            !
+            ! compute the phase factor e^i(b*tau)
+            ! bk in bohr^-1, tau in alat and directly converted
+            !
+            arg = DOT_PRODUCT( bk(:,ik1,inn), tau(:,na) ) * alat
+            phase = DCMPLX ( COS(arg), -SIN(arg) )
+            !
             IF ( ityp(na) == nt ) THEN
                DO jh = 1, nh(nt)
                   jkb = ijkb0 + jh
@@ -65,8 +82,8 @@ SUBROUTINE add_us_overlap( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
                      DO ibnd2 = 1, dimw2
                      DO ibnd1 = 1, dimw1
                          Mkb(ibnd1,ibnd2) = Mkb(ibnd1,ibnd2) +  &
-                                 CONJG( becp(ikb,ibnd1,ik1) ) * qb(ih,jh,nt,inn,ik1) * &
-                                        becp(jkb,ibnd2,ik2)
+                                 CONJG( becp(ikb,ibnd1,ik1) ) * becp(jkb,ibnd2,ik2) *&
+                                 phase * qb(ih,jh,nt,inn,ik1) 
                      ENDDO
                      ENDDO
                   ENDDO
@@ -81,9 +98,9 @@ SUBROUTINE add_us_overlap( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
       ENDIF
    ENDDO
    !
-   CALL timing( 'add_us_overlap',OPR='stop' )
+   CALL timing( 'overlap_augment',OPR='stop' )
    !
    RETURN
    !
-END subroutine add_us_overlap
+END subroutine overlap_augment
 
