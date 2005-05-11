@@ -104,18 +104,18 @@ subroutine allocate_nlpot
     !ALLOCATE (qq_so(nhm, nhm, 4, ntyp))    
     !ALLOCATE (dvan_so( nhm, nhm, nspin, ntyp))    
     !ALLOCATE (fcoef(nhm,nhm,2,2,ntyp))
-  else
+  ELSE
     ALLOCATE (qq(   nhm, nhm, ntyp), STAT=ierr)    
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qq',ABS(ierr))
     ALLOCATE (dvan( nhm, nhm, ntyp), STAT=ierr)    
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
     !
     ! added for Wannier calc. (ANDREA)
-    ALLOCATE (qb(   nhm, nhm, ntyp, nnx, nkpts ), STAT=ierr)
+    ALLOCATE (qb( nhm, nhm, ntyp, nnx, nkpts ), STAT=ierr)
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
-  endif
+  ENDIF
   !
-  nqxq = ( (sqrt(gcutm) + sqrt(xqq(1)**2 + xqq(2)**2 + xqq(3)**2) ) &
+  nqxq = ( (SQRT(gcutm) + SQRT(xqq(1)**2 + xqq(2)**2 + xqq(3)**2) ) &
           / dq + 4) * cell_factor
   lmaxq = 2*lmaxkb+1
   !

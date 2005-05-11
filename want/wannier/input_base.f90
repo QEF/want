@@ -12,6 +12,7 @@
    MODULE input_base_module
 !********************************************
    USE kinds, ONLY : dbl
+   USE constants, ONLY : ZERO
    USE io_module, ONLY : stdout
    IMPLICIT NONE
    PRIVATE
@@ -94,7 +95,8 @@ CONTAINS
 !**********************************************************
    SUBROUTINE card_wannier_centers(unit, input_line )
    !**********************************************************
-      USE parser_module, ONLY: read_line, matches
+      USE parser_module,  ONLY : read_line, matches, change_case
+      USE control_module, ONLY : use_atomwfc
       USE trial_center_data_module, ONLY : list => trial
       USE trial_center_module
       IMPLICIT NONE
@@ -128,6 +130,11 @@ CONTAINS
           units = 'crystal'
       ENDIF
 
+      !
+      ! global control variable
+      !
+      use_atomwfc = .FALSE. 
+
 
       !
       ! through the trial centers
@@ -141,6 +148,8 @@ CONTAINS
 
            CALL read_line(unit, tmp_line )
            READ(tmp_line,*) list(iwann)%type 
+           !
+           CALL change_case(list(iwann)%type,'lower')
 
            !
            ! ... chose the center type
@@ -157,12 +166,24 @@ CONTAINS
                list(iwann)%l = 0
                list(iwann)%m = 0
                list(iwann)%ndir = 3
+               !
                READ(tmp_line,*, IOSTAT=ierr) adum, &
                      list(iwann)%x1(1:3), list(iwann)%x2(1:3), list(iwann)%decay
                IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
-
+               !
            CASE ( "atomic" )
-               CALL errore('card_wannier_centers','ATOMIC trial type not implem',iwann)
+               !
+               use_atomwfc = .TRUE.
+               !
+               list(iwann)%ndir = 3
+               list(iwann)%decay = ZERO
+               list(iwann)%x1 = ZERO
+               list(iwann)%x2 = ZERO
+               !
+               READ(tmp_line,*, IOSTAT=ierr) adum, &
+                     list(iwann)%iatom, list(iwann)%l, list(iwann)%m
+               IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
+               !
            CASE DEFAULT
                CALL errore('card_wannier_centers','Wrong wannier center type',iwann)
            END SELECT

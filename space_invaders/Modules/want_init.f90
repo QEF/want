@@ -22,11 +22,11 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE iotk_module
    USE parser_base_module, ONLY : change_case
 
-   USE control_module, ONLY : do_pseudo
+   USE control_module, ONLY : read_pseudo, use_uspp
    USE trial_center_module, ONLY : trial_center_convert
    USE trial_center_data_module, ONLY : trial, dimwann
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
-   USE ions_module,  ONLY : ions_read_ext, ions_init
+   USE ions_module,  ONLY : ions_read_ext, ions_init, tau
    USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin, spin_component
    USE kpoints_module,  ONLY : nkpts, nkpts_tot, iks, ike, nk, s, vkpt, &
                                kpoints_read_ext, bshells_init
@@ -66,7 +66,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
    LOGICAL                   :: want_input_
    LOGICAL                   :: windows_
    LOGICAL                   :: bshells_
-   INTEGER                   :: ierr, ik, iwann, idum
+   INTEGER                   :: ierr, ia, ik, iwann, idum
    
 
 ! ... end of declarations
@@ -145,6 +145,16 @@ SUBROUTINE want_init(want_input, windows, bshells)
     CALL ions_read_ext(dft_unit, "Atoms", lfound)
     IF ( .NOT. lfound ) CALL errore(subname,'Tag Atoms not found',2)
     CALL ions_init()
+    !
+    ! set the centers in the atomic wfc if the case
+    !
+    DO iwann = 1, dimwann
+         IF ( TRIM(trial(iwann)%type) == 'atomic' ) THEN
+               ia = trial(iwann)%iatom
+               trial(iwann)%x1(:) = tau(:, ia ) * alat
+         ENDIF
+    ENDDO
+
 
 !
 ! ... read kpoints data
@@ -181,10 +191,11 @@ SUBROUTINE want_init(want_input, windows, bshells)
 ! ... read pseudopotentials (according to Espresso fmts)
 !     use ASSUME_NCPP = .TRUE. to skip this section (meaningful only if all PPs are NCPP)
 !
-   IF ( do_pseudo ) THEN
+   IF ( read_pseudo ) THEN
       CALL readpp()
       okvan = ANY( tvanp(:) )
       uspp_calculation = okvan
+      use_uspp = okvan
    ENDIF
 
 

@@ -27,11 +27,11 @@
    USE iotk_module
    USE io_module,      ONLY : stdout, dft_unit, ovp_unit, ioname, pseudo_dir
    USE timing_module,  ONLY : timing, timing_upto_now
-   USE ions_module,    ONLY : psfile, uspp_calculation
    USE files_module,   ONLY : file_open, file_close
    USE util_module,    ONLY : zmat_mul
    
    USE control_module, ONLY : do_overlaps, do_projections, &
+                              use_atomwfc, use_pseudo, use_uspp, &
                               read_overlaps, read_projections
    USE lattice_module, ONLY : avec, bvec, tpiba, alat
    USE subspace_module,ONLY : dimwann
@@ -106,37 +106,41 @@
           !
           ! ... stdout summary about grids
           !
-          WRITE(stdout,"(2/,2x,'Kinetic energy cut-off for wfcs =  ', 5x, F7.2, ' (Ry)' )") &
-                         ecutwfc
-          WRITE(stdout, "(2x,'                       for rho  =  ', 5x, F7.2, ' (Ry)' )") &
-                         ecutrho
-          WRITE(stdout, "(2x,'    Total number of PW for rho  =  ', i9 )") npw_rho
-          WRITE(stdout, "(2x,'      Max number of PW for wfc  =  ', i9 )") npwkx
-          WRITE(stdout, "(2x,'    Total number of PW for wfcs =  ', i9 )") &
-                         MAXVAL(igsort(:,:))+1
-          WRITE(stdout, "(2x,'      FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
+          WRITE(stdout,"(2/,10x,'Energy cut-off for wfcs =  ',5x,F7.2,' (Ry)' )") ecutwfc
+          WRITE(stdout, "(25x,'for rho  =  ', 5x, F7.2, ' (Ry)' )")  ecutrho
+          WRITE(stdout, "(6x,'Total number of PW for rho  =  ',i9)") npw_rho
+          WRITE(stdout, "(6x,'  Max number of PW for wfc  =  ',i9)") npwkx
+          WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))+1
+          WRITE(stdout, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
           WRITE(stdout, "()")
 
-
+    
+          !
+          ! ... if pseudo are used do the required allocations
+          !
+          IF ( use_pseudo ) THEN
+              WRITE( stdout,"(/,2x,'Initializing global dft data')")
+              !
+              ! ... data required by USPP and atomic WFC
+              CALL allocate_nlpot()
+              !
+              ! ... structure factors 
+              CALL struct_fact_data_init()
+          ENDIF
 
           ! 
           ! ... if USPP are used, initialize the related quantities
           !
-          IF ( uspp_calculation ) THEN
+          IF ( use_uspp ) THEN
+              IF ( .NOT. use_pseudo ) CALL errore(subname,'pseudo should be used',4)
               WRITE( stdout,"(/,2x,'Initializing US pseudopot. data')")
               
-              !
-              ! ... data required by USPP
-              CALL allocate_nlpot()
               !
               ! ... first initialization
               !     here we compute (among other quantities) \int dr Q_ij(r)
               !                                              \int dr e^ibr Q_ij(r)
               CALL init_us_1()
               WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5,2/ ) ') nkb
-              !
-              ! ... structure factors 
-              CALL struct_fact_data_init()
 
               !
               ! ... beta functions in reciproc space within struct_facts
@@ -147,6 +151,20 @@
                   IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
 
           ENDIF
+
+          !
+          ! ... if ATOMWFC are used
+          !
+          IF ( use_atomwfc ) THEN
+              IF ( .NOT. use_pseudo ) CALL errore(subname,'pseudo should be used',5)
+              WRITE( stdout,"(/,2x,'Initializing atomic wfc')")
+              !
+              ! ... atomic init
+              CALL init_at_1()
+          ENDIF
+
+
+
           !
           ! we need anyway to have becp allocated even if it is not used
           IF ( .NOT. ALLOCATED(becp) ) THEN
@@ -158,13 +176,11 @@
           ALLOCATE( aux(dimwinx, dimwinx), STAT=ierr )
              IF (ierr/=0) CALL errore(subname,'allocating aux',ABS(ierr))
 
-
           !
           ! ... allocating wfcs
           CALL wfc_info_allocate(npwkx, dimwinx, nkpts, 2*dimwinx, evc_info)
           ALLOCATE( evc(npwkx, 2*dimwinx ), STAT=ierr )
              IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
-
 
           !
           ! ... re-open the main data file
@@ -178,6 +194,7 @@
           ca(:,:,:) = CZERO
           Mkb(:,:,:,:) = CZERO
       
+
           !
           ! main loop on kpts
           !
@@ -187,7 +204,7 @@
 
              CALL wfc_data_kread(dft_unit, ik, "IK", evc, evc_info)
 
-             IF ( uspp_calculation ) THEN
+             IF ( use_uspp ) THEN
                  !
                  ! determine the index related to the first wfc of the current ik
                  ! to be used in evc to get the right starting point
@@ -224,7 +241,7 @@
                         !
                         CALL wfc_data_kread(dft_unit, ikb, "IKB", evc, evc_info)
                         !
-                        IF( uspp_calculation ) THEN
+                        IF( use_uspp ) THEN
                             !
                             index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
                             !
@@ -242,7 +259,7 @@
                         !
                         ! ... add the augmentation term fo USPP
                         !
-                        IF ( uspp_calculation ) THEN
+                        IF ( use_uspp ) THEN
                             CALL add_us_overlap(dimwinx, dimwin(ik), dimwin(ikb), &
                                                 ik, ikb, inn, aux)
                             Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
@@ -282,7 +299,7 @@
                 !
                 indout = wfc_info_getindex(imin(ik), ik, "SPSI_IK", evc_info)
 
-                IF( uspp_calculation ) THEN
+                IF( use_uspp ) THEN
                      xk(:) = vkpt(:,ik) / tpiba
                      CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
                      vkb_ik = ik

@@ -1,0 +1,48 @@
+Infinite iGold Chain USPP
+2 atom/cell, Lattice Parameter = 4.0 bohr
+   &CONTROL
+      calculation = 'nscf',
+      restart_mode='from_scratch',
+      verbosity='default',
+      prefix='gold_US',
+      nstep=100,
+      tstress = .FALSE.,
+      tprnfor = .TRUE.,
+      pseudo_dir = './',
+   /
+   &SYSTEM
+      ibrav=8, 
+      celldm(1)=20.0, 
+      celldm(2)=1.0,
+      celldm(3)=0.40,
+      nat=2, 
+      ntyp=1,
+      ecutwfc=25.0,
+      ecutrho=200.0,
+      occupations='smearing',
+      smearing='gaussian',
+      degauss=0.01,
+      nbnd=20
+   /
+   &ELECTRONS
+      electron_maxstep = 100,
+      mixing_mode = 'plain',
+      mixing_beta = 0.3,
+      conv_thr =  1.0d-8,
+   /
+ATOMIC_SPECIES
+   Au   196.9665   Au.pw91-d-van.UPF
+ATOMIC_POSITIONS {crystal}
+Au        0.00000     0.00000    0.00000
+Au        0.00000     0.00000    0.50000
+K_POINTS {crystal}
+   8
+0.0000  0.0000   0.0000   0.250
+0.0000  0.0000   0.1250   0.250
+0.0000  0.0000   0.2500   0.250
+0.0000  0.0000   0.3750   0.250
+0.0000  0.0000   0.5000   0.250
+0.0000  0.0000   0.6250   0.250
+0.0000  0.0000   0.7500   0.250
+0.0000  0.0000   0.8750   0.250
+

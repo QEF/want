@@ -1,6 +1,6 @@
 #!/bin/bash 
 #
-# Test5     Co Chain USPP
+# Test5     Au Chain NCPP
 #
 #================================================================
 #
@@ -22,7 +22,6 @@ MANUAL=" Usage
  hamiltonian     writes the hamiltonian matrix elements on the Wannier basis
  want            perform DISENTANGLE, WANNIER and HAMILTONIAN all together 
  bulk            evaluate the transmittance, for the bulk case
- conductor       as for BULK but using the general conductor geometry code
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -38,7 +37,7 @@ TEST_HOME=`pwd`
 WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
 TEST_NAME=Test5
-PSEUDO_NAME=Co.pbe-nd-rrkjus.UPF
+PSEUDO_NAME=Au11pw91.mt.UPF
 
 #
 # evaluate the starting choice about what is to run 
@@ -50,7 +49,6 @@ DISENTANGLE=
 WANNIER=
 HAMILTONIAN=
 BULK=
-CONDUCTOR=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -67,10 +65,9 @@ case $INPUT in
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
                     HAMILTONIAN=".TRUE." ;;
    (bulk)           BULK=".TRUE." ;;
-   (conductor)      CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ; CONDUCTOR=".TRUE." ;;
+                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -104,7 +101,7 @@ fi
 if [ "$SCF" = ".TRUE." ] ; then  
    echo "running SCF calculation" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-                 < $TEST_HOME/scf_CoUS.in > $TEST_HOME/scf_CoUS.out
+                 < $TEST_HOME/scf_Au.in > $TEST_HOME/scf_Au.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -118,7 +115,7 @@ fi
 if [ "$NSCF" = ".TRUE." ] ; then  
    echo "running NSCF calculation" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-                 < $TEST_HOME/nscf_CoUS.in > $TEST_HOME/nscf_CoUS.out
+                 < $TEST_HOME/nscf_Au.in > $TEST_HOME/nscf_Au.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -132,7 +129,7 @@ fi
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
    echo "running PWEXPORT calculation" 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport_CoUS.in > $TEST_HOME/pwexport_CoUS.out
+              <  $TEST_HOME/pwexport_Au.in > $TEST_HOME/pwexport_Au.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -145,7 +142,7 @@ fi
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
    echo "running DISENTANGLE calculation" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want_CoUS.in > $TEST_HOME/disentangle_CoUS.out
+   $WANT_BIN/disentangle.x < $TEST_HOME/want_Au.in > $TEST_HOME/disentangle_Au.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -158,7 +155,7 @@ fi
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
    echo "running WANNIER calculation" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want_CoUS.in > $TEST_HOME/wannier_CoUS.out
+   $WANT_BIN/wannier.x < $TEST_HOME/want_Au.in > $TEST_HOME/wannier_Au.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -171,7 +168,7 @@ fi
 #
 if [ "$HAMILTONIAN" = ".TRUE." ] ; then  
    echo "running HAMILTONIAN calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_CoUS.in > $TEST_HOME/hamiltonian_CoUS.out
+   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_Au.in > $TEST_HOME/hamiltonian_Au.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -189,40 +186,14 @@ if [ "$BULK" = ".TRUE." ] ; then
    ln -sf RHAM.104 H01.dat
    #
    echo "running BULK calculation" 
-   $TRANS_BIN/bulk.x < $TEST_HOME/bulk_CoUS.in > $TEST_HOME/bulk_CoUS.out
+   $TRANS_BIN/bulk.x < $TEST_HOME/bulk_Au.in > $TEST_HOME/bulk_Au.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      mv dos.out $TEST_HOME/dos_bulk_CoUS.out
-      mv cond.out $TEST_HOME/cond_bulk_CoUS.out
+      mv dos.out $TEST_HOME/dos_bulk_Au.out
+      mv cond.out $TEST_HOME/cond_bulk_Au.out
    else
       echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
-   fi
-fi
-
-
-#
-# running CONDUCTOR
-#
-if [ "$CONDUCTOR" = ".TRUE." ] ; then  
-   #
-   ln -sf RHAM.103 H00_A
-   ln -sf RHAM.103 H00_B
-   ln -sf RHAM.103 H00_C
-   ln -sf RHAM.104 H01_B
-   ln -sf RHAM.104 H01_A
-   ln -sf RHAM.104 HCI_AC
-   ln -sf RHAM.104 HCI_CB
-   #
-   echo "running CONDUCTOR calculation" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_CoUS.in > $TEST_HOME/conductor_CoUS.out
-   if [ ! -e CRASH ] ; then 
-      echo "done" 
-      #
-      mv dos.out $TEST_HOME/dos_CoUS.out
-      mv cond.out $TEST_HOME/cond_CoUS.out
-   else
-      echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 

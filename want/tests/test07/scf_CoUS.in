@@ -1,5 +1,5 @@
 Infinite Cobalt Chain USPP
-4 atom/cell, Lattice Parameter = 4.0 Bohr
+2 atom/cell, Lattice Parameter = 4.0 Bohr
    &CONTROL
       calculation = 'scf',
       restart_mode='from_scratch',
@@ -14,8 +14,8 @@ Infinite Cobalt Chain USPP
       ibrav=8, 
       celldm(1)=20.0, 
       celldm(2)=1.0,
-      celldm(3)=0.8,   ! 16.0 bohr 
-      nat=4, 
+      celldm(3)=0.4,   ! 8.0 bohr 
+      nat=2, 
       ntyp=1,
       ecutwfc=20.0,
       ecutrho=160.0,
@@ -33,9 +33,7 @@ ATOMIC_SPECIES
  Co  58.9332  Co.pbe-nd-rrkjus.UPF
 ATOMIC_POSITIONS {crystal}
 Co        0.00000     0.00000    0.00000
-Co        0.00000     0.00000    0.25000
 Co        0.00000     0.00000    0.50000
-Co        0.00000     0.00000    0.75000
 K_POINTS {automatic}
   1 1 4  0 0 1
 

@@ -344,10 +344,10 @@ CONTAINS
       IF ( froz_max <= froz_min ) CALL errore(subname, 'win_max <= win_min ', 1 )
       IF ( dimwann <= 0 ) CALL errore(subname, 'dimwann should be positive ', -dimwann+1 ) 
       IF ( alpha_dis <= 0.0 ) CALL errore(subname, 'alpha_dis should be positive ', 1 ) 
-      IF ( alpha_dis > 1.0 ) CALL errore(subname, 'alpha_dis should <=1.0 ', 1 ) 
-      IF ( maxiter_dis < 0 ) CALL errore(subname, 'maxiter_dis should be >= 0',-maxiter_dis+1)
+      IF ( alpha_dis > 1.0) CALL errore(subname, 'alpha_dis should <=1.0 ', 1 ) 
+      IF ( maxiter_dis < 0) CALL errore(subname, 'maxiter_dis should be >= 0',-maxiter_dis+1)
       IF ( disentangle_thr <= 0.0 ) CALL errore(subname, 'disentangle_thr should be > 0',1)
-      IF ( nprint_dis <= 0 ) CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
+      IF ( nprint_dis <= 0) CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
       IF ( nsave_dis <= 0 ) CALL errore(subname, ' nsave_dis must be > 0 ', -nsave_dis+1 )
 
       CALL change_case(start_mode_dis,'lower')

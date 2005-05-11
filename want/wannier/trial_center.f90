@@ -131,7 +131,7 @@ CONTAINS
       INTEGER                    :: igvect(3)
       REAL(dbl)                  :: decay, x1(3), x2(3), vk(3)
       REAL(dbl)                  :: arg, prefactor 
-      REAL(dbl),    ALLOCATABLE  :: vkgg(:)
+      REAL(dbl),    ALLOCATABLE  :: vkg(:)
       COMPLEX(dbl)               :: bphase(3), kphase
       COMPLEX(dbl), ALLOCATABLE  :: phase(:)
 
@@ -145,6 +145,10 @@ CONTAINS
 
       CALL timing('trial_center_setup',OPR='start')
 
+      !
+      ! spherical harmonics indexes
+      ilm = 0
+      IF ( obj%l >=0 ) ilm = ylm_info(obj%m,obj%l)
 
       ! 
       ! all objects in units of bohr and bohr^-1 respectively
@@ -153,24 +157,35 @@ CONTAINS
       x2(:) = obj%x2
       vk(:) = vkpt(:,ik)
 
+      !
+      ! various allocations
+      ALLOCATE( vkg(npwk), STAT=ierr )
+         IF (ierr/=0) CALL errore('trial_center_setup','allocating vkg',ABS(ierr))
+      ALLOCATE( phase(npwk), STAT=ierr )
+         IF (ierr/=0) CALL errore('trial_center_setup','Allocating phase' ,ABS(ierr))
+      !
+      ! build the |k+G| moduli
+      DO ig = 1, npwk
+           vkg(ig) = SQRT(vkgg2(ig) ) 
+      ENDDO
 
+
+      !
+      ! main selection of the center types
+      !
       SELECT CASE ( TRIM(obj%type) )
       CASE DEFAULT 
            CALL errore('trial_center_setup','invalid center TYPE'//TRIM(obj%type),1)
+
       CASE ('atomic' )
-           CALL errore('trial_center_setup','Atomic centers not yet implemented' ,2)
-      CASE ('1gauss','2gauss')
-
            !
-           ! ... Setting the phases
-           ! 
-           ALLOCATE( phase(npwk), STAT=ierr )
-              IF (ierr/=0) CALL errore('trial_center_setup','Allocating phase' ,ABS(ierr))
-           ALLOCATE( vkgg(npwk), STAT=ierr )
-              IF (ierr/=0) CALL errore('trial_center_setup','allocating vkgg',ABS(ierr))
+           ! use a routine mutuated from espresso
+           !
+           CALL atomic_wfc( ik, vk, obj%iatom, obj%l, npwk, vkg, &
+                            ylm(1, ilm), vect )
+
+      CASE ('1gauss','2gauss')
     
-
-
            !
            ! ... bphase = e^-i b*x1
            DO i=1,3
@@ -189,8 +204,6 @@ CONTAINS
            !     e^{-i (k+G)*x1 ) = e^{-i k*x1} *  &
            !                  (e^{-i b1*x1})^n1 * (e^{-i b2*x1})^n2 * (e^{-i b3*x1})^n3
            DO ig = 1, npwk
-                vkgg(ig) = SQRT(vkgg2(ig) ) 
-                !
                 igvect(:) = igv(:,igsort(ig,ik))
                 phase(ig) = kphase * ( bphase(1) )**igvect(1) * &
                                      ( bphase(2) )**igvect(2) * &
@@ -222,46 +235,43 @@ CONTAINS
            ENDIF
 
 
-
-
            !
            ! ... construct the vector
            !     Single gaussians are normalized to 1.0, the units are as follows
            !     decay -> bohr
            !     omega -> bohr^3
-           !     vkgg  -> bohr^-1
+           !     vkg   -> bohr^-1
            ! 
            prefactor = ( TWO * PI**5 )**(0.25_dbl) * SQRT( 8.0_dbl * decay**3/ omega )
            arg = decay**2/ 4.0_dbl
-           ilm = 0
-           IF ( obj%l >=0 ) ilm = ylm_info(obj%m,obj%l)
+
 
            SELECT CASE ( obj%l ) 
            !
-           ! mod = |k+G| = vkgg(ig)
+           ! mod = |k+G| = vkg(ig)
            ! g_rad_l( mod ) = prefactor * e^{ -(mod*dec)^2/4.0} * ( mod * dec)^{l} * CI^l
            !
            CASE ( 0 )
                DO ig = 1, npwk
-                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg )
+                    vect(ig) = prefactor * EXP( - vkg(ig)**2 * arg )
                     vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig)
                ENDDO
            CASE ( 1 )
                prefactor = prefactor / SQRT( 3.0_dbl)
                DO ig = 1, npwk
-                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * decay * vkgg(ig)
+                    vect(ig) = prefactor * EXP( - vkg(ig)**2 * arg ) * decay * vkg(ig)
                     vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig) * CI
                ENDDO
            CASE ( 2 )
                prefactor = prefactor / SQRT( 15.0_dbl)
                DO ig = 1, npwk
-                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * (decay*vkgg(ig))**2
+                    vect(ig) = prefactor * EXP( - vkg(ig)**2 * arg ) * (decay*vkg(ig))**2
                     vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig) * (-ONE)
                ENDDO
            CASE ( 3 )
                prefactor = prefactor / SQRT( 105.0_dbl)
                DO ig = 1, npwk
-                    vect(ig) = prefactor * EXP( - vkgg(ig)**2 * arg ) * (decay*vkgg(ig))**3
+                    vect(ig) = prefactor * EXP( - vkg(ig)**2 * arg ) * (decay*vkg(ig))**3
                     vect(ig) =  vect(ig) * ylm(ig, ilm ) * phase(ig) * (-CI)
                ENDDO
                !
@@ -274,89 +284,89 @@ CONTAINS
                    ! sp^3 along  1,1,1
                CASE(  1 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (  ylm(ig, ylm_info(-1,1) ) &
                                    + ylm(ig, ylm_info( 1,1) ) &
                                    + ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                    !
                    ! sp^3 along  1,-1,-1
                CASE(  2 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (  ylm(ig, ylm_info(-1,1) ) &
                                    - ylm(ig, ylm_info( 1,1) ) &
                                    - ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                    !
                    ! sp^3 along  -1,1,-1
                CASE(  3 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (- ylm(ig, ylm_info(-1,1) ) &
                                    + ylm(ig, ylm_info( 1,1) ) &
                                    - ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                    !
                    ! sp^3 along  -1,-1,1
                CASE(  4 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (- ylm(ig, ylm_info(-1,1) ) &
                                    - ylm(ig, ylm_info( 1,1) ) &
                                    + ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                    !
                    ! sp^3 along  -1,-1,-1
                CASE( -1 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (- ylm(ig, ylm_info(-1,1) ) &
                                    - ylm(ig, ylm_info( 1,1) ) &
                                    - ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                    !
                    ! sp^3 along  -1,1,1
                CASE( -2 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (- ylm(ig, ylm_info(-1,1) ) &
                                    + ylm(ig, ylm_info( 1,1) ) &
                                    + ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                    !
                    ! sp^3 along  1,-1,1
                CASE( -3 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (  ylm(ig, ylm_info(-1,1) ) &
                                    - ylm(ig, ylm_info( 1,1) ) &
                                    + ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                    !
                    ! sp^3 along  1,1,-1
                CASE( -4 ) 
                    DO ig = 1, npwk
-                       vect(ig) = CI * decay * vkgg(ig) *     &
+                       vect(ig) = CI * decay * vkg(ig) *      &
                                   (  ylm(ig, ylm_info(-1,1) ) &
                                    + ylm(ig, ylm_info( 1,1) ) &
                                    - ylm(ig, ylm_info( 0,1) ) )
                        vect(ig) = vect(ig)  + SQRT3 * ylm( ig, ylm_info(0,0) ) 
-                       vect(ig) = prefactor *  EXP( - vkgg(ig)**2 * arg ) * phase(ig) 
+                       vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                CASE DEFAULT
                    CALL errore('trial_center_setup','Invalid m channel' ,ABS(obj%m)+1)
@@ -376,7 +386,7 @@ CONTAINS
       ! 
       DEALLOCATE( phase, STAT=ierr )
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating phase' ,ABS(ierr))
-      DEALLOCATE( vkgg, STAT=ierr )
+      DEALLOCATE( vkg, STAT=ierr )
           IF (ierr/=0) CALL errore('trial_center_setup','deallocating vkg2' ,ABS(ierr))
       
       

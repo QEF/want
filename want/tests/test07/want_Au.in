@@ -1,0 +1,50 @@
+
+&CONTROL
+   prefix = 'gold'
+   postfix = '_WanT'
+   work_dir = './'
+   verbosity = "high"
+/
+
+&SUBSPACE
+   dimwann = 12
+!   win_max = 2.0
+/
+
+&LOCALIZATION
+   start_mode_wan = 'randomized'
+   maxiter0_wan = 100
+   maxiter1_wan = 1500
+   ncg = 5    
+   nshells = 2  
+   nwhich(1) = 1  
+   nwhich(2) = 4  
+/
+
+WANNIER_CENTERS {crystal}
+1gauss   0.000000    0.000000     0.000000  0  0  3  0.5
+1gauss   0.000000    0.000000     0.000000  2 -2  3  0.5
+1gauss   0.000000    0.000000     0.000000  2 -1  3  0.5
+1gauss   0.000000    0.000000     0.000000  2  0  3  0.5
+1gauss   0.000000    0.000000     0.000000  2  1  3  0.5
+1gauss   0.000000    0.000000     0.000000  2  2  3  0.5
+1gauss   0.000000    0.000000     0.500000  0  0  3  0.5
+1gauss   0.000000    0.000000     0.500000  2 -2  3  0.5
+1gauss   0.000000    0.000000     0.500000  2 -1  3  0.5
+1gauss   0.000000    0.000000     0.500000  2  0  3  0.5
+1gauss   0.000000    0.000000     0.500000  2  1  3  0.5
+1gauss   0.000000    0.000000     0.500000  2  2  3  0.5
+atomic   1    0  0 
+atomic   1    2 -2 
+atomic   1    2 -1 
+atomic   1    2  0 
+atomic   1    2  1 
+atomic   1    2  2 
+atomic   2    0  0 
+atomic   2    2 -2 
+atomic   2    2 -1 
+atomic   2    2  0 
+atomic   2    2  1 
+atomic   2    2  2 
+
+

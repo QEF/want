@@ -6,7 +6,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !-----------------------------------------------------------------------
-subroutine init_at_1()
+SUBROUTINE init_at_1()
   !-----------------------------------------------------------------------
   !
   ! This routine computes a table with the radial Fourier transform 
@@ -41,7 +41,11 @@ subroutine init_at_1()
   pref = FPI/SQRT(omega)
   ! needed to normalize atomic wfcs (not a bad idea in general and 
   ! necessary to compute correctly lda+U projections)
-  CALL divide (nqx, startq, lastq)
+  !
+  ! instead of the divide routine
+  startq = 1
+  lastq = nqx
+
   tab_at(:,:,:) = ZERO
   DO nt = 1, ntyp
      DO nb = 1, nchi (nt)

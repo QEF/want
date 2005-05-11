@@ -68,7 +68,7 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
         if (ityp (na) .eq.nt) then
            do ng = 1, ngm
               arg = (g (1, ng) * tau (1, na) + g (2, ng) * tau (2, na) &
-                   + g (3, ng) * tau (3, na) ) * tpi
+                   + g (3, ng) * tau (3, na) ) * TPI
               strf (ng, nt) = strf (ng, nt) + DCMPLX (cos (arg), -sin (arg))
            enddo
         endif

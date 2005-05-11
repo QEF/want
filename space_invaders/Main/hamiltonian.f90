@@ -38,7 +38,8 @@
 
       USE lattice_module, ONLY : avec, bvec
       USE kpoints_module,       ONLY : nkpts, nk, vkpt
-      USE windows_module,       ONLY : imin, imax, eig, efermi, windows_read, spin_component
+      USE windows_module,       ONLY : imin, imax, nbnd, eig, efermi, &
+                                       windows_read, spin_component
       USE subspace_module,      ONLY : wan_eig, subspace_read
       USE localization_module,  ONLY : dimwann, cu, & 
                                        localization_read
@@ -461,10 +462,13 @@
 
       filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted' )
-      DO i = 1, dimwann
+      DO i = 1, nbnd
           DO ik = 1, nkpts
-            j= imin(ik)-1 +i
-            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik-1)/REAL(nkpts), eig(j,ik)
+             IF ( i >= imin(ik) .AND. i <= imax(ik) ) THEN
+                 WRITE (ham_unit, fmt="(2e16.8)") REAL(ik-1)/REAL(nkpts), eig(i,ik)
+             ELSE
+                 WRITE (ham_unit, "()")
+             ENDIF
           ENDDO
           WRITE( ham_unit, "()") 
       ENDDO
