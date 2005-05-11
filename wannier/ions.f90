@@ -46,13 +46,12 @@ MODULE ions_module
 
       !     ityp( i ) = the type of i-th atom 
       !     atm( j )  = name of the type of the j-th atomic specie
-      !     tau( 1:3, i ) = position of the i-th atom  (units of alat)
-
+      !
       INTEGER,   ALLOCATABLE :: ityp(:)
       LOGICAL                :: uspp_calculation = .FALSE. ! whether we are using uspp
       REAL(dbl), ALLOCATABLE :: zv(:)         !  pseudo atomic charge
-      REAL(dbl), ALLOCATABLE :: tau(:,:)      !  initial positions read from stdin (in bohr)
-      REAL(dbl), ALLOCATABLE :: tau_srt(:,:)  !  tau sorted by specie in bohr
+      REAL(dbl), ALLOCATABLE :: tau(:,:)      !  atomic positions (alat units)
+      REAL(dbl), ALLOCATABLE :: tau_srt(:,:)  !  tau sorted by specie (alat)
       INTEGER,   ALLOCATABLE :: ind_srt( : )  !  index of tau sorted by specie
       CHARACTER(LEN=3), ALLOCATABLE :: atm(:) !  DIM: nsp
       CHARACTER(LEN=3), ALLOCATABLE :: symb(:)!  DIM: nat

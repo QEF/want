@@ -43,7 +43,7 @@ CONTAINS
       USE input_parameters_module,  ONLY : read_namelist_control, &
                                            read_namelist_subspace, &
                                            read_namelist_localization
-      USE trial_center_data_module, ONLY : trial, trial_center_data_allocate
+      USE trial_center_data_module, ONLY : trial_center_data_allocate
       USE input_base_module,        ONLY : read_cards, &
                                            card_wannier_centers
       IMPLICIT NONE
@@ -80,9 +80,10 @@ CONTAINS
       USE control_module,           ONLY : verbosity,         &
                                            unitary_thr,       &
                                            restart_mode,      &
-                                           do_pseudo,         &
+                                           use_pseudo,        &
                                            do_overlaps,       &
                                            do_projections,    &
+                                           read_pseudo,       &
                                            read_overlaps,     &
                                            read_projections,  &
                                            read_subspace,     &
@@ -109,16 +110,19 @@ CONTAINS
                                            ordering_mode_   => ordering_mode, &
                                            iphase_          => iphase, &
                                            assume_ncpp_     => assume_ncpp
+
       IMPLICIT NONE
+
       verbosity = verbosity_
       unitary_thr = unitary_thr_
       ordering_mode = ordering_mode_
       iphase = iphase_
-      do_pseudo = .NOT. assume_ncpp_
       nprint_dis = nprint_dis_
       nsave_dis = nsave_dis_
       nprint_wan = nprint_wan_
       nsave_wan = nsave_wan_
+      read_pseudo = .NOT. assume_ncpp_
+      use_pseudo  = .NOT. assume_ncpp_
 
       start_mode_dis = start_mode_dis_
       start_mode_wan = start_mode_wan_

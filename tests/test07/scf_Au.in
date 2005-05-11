@@ -1,10 +1,10 @@
-Infinite Cobalt Chain USPP
+Infinite Gold Chain NCPP
 2 atom/cell, Lattice Parameter = 4.0 Bohr
    &CONTROL
       calculation = 'scf',
       restart_mode='from_scratch',
       verbosity='default',
-      prefix='cobalt_US',
+      prefix='gold',
       nstep=100,
       tstress = .FALSE.,
       tprnfor = .TRUE.,
@@ -17,8 +17,8 @@ Infinite Cobalt Chain USPP
       celldm(3)=0.4,   ! 8.0 bohr 
       nat=2, 
       ntyp=1,
-      ecutwfc=20.0,
-      ecutrho=160.0,
+      ecutwfc=30.0,
+      ecutrho=120.0,
       occupations='smearing',
       smearing='gaussian',
       degauss=0.01,
@@ -30,10 +30,10 @@ Infinite Cobalt Chain USPP
       conv_thr =  1.0d-8,
    /
 ATOMIC_SPECIES
- Co  58.9332  Co.pbe-nd-rrkjus.UPF
+   Au   196.9665   Au11pw91.mt.UPF
 ATOMIC_POSITIONS {crystal}
-Co        0.00000     0.00000    0.00000
-Co        0.00000     0.00000    0.50000
+Au        0.00000     0.00000    0.00000
+Au        0.00000     0.00000    0.50000
 K_POINTS {automatic}
   1 1 4  0 0 1
 

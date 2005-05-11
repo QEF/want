@@ -33,10 +33,14 @@
    INTEGER                   :: iphase
    REAL(dbl)                 :: unitary_thr
 
-   LOGICAL                   :: do_pseudo
+   LOGICAL                   :: use_pseudo 
+   LOGICAL                   :: use_uspp
+   LOGICAL                   :: use_atomwfc 
+
    LOGICAL                   :: do_overlaps
    LOGICAL                   :: do_projections
 
+   LOGICAL                   :: read_pseudo 
    LOGICAL                   :: read_overlaps
    LOGICAL                   :: read_projections
    LOGICAL                   :: read_subspace
@@ -58,10 +62,14 @@
    PUBLIC :: iphase
    PUBLIC :: unitary_thr
 
-   PUBLIC :: do_pseudo
+   PUBLIC :: use_pseudo
+   PUBLIC :: use_atomwfc
+   PUBLIC :: use_uspp
+
    PUBLIC :: do_overlaps
    PUBLIC :: do_projections
 
+   PUBLIC :: read_pseudo
    PUBLIC :: read_overlaps
    PUBLIC :: read_projections
    PUBLIC :: read_subspace

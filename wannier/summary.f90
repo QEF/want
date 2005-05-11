@@ -17,7 +17,7 @@
    USE parser_module, ONLY: log2char
    USE io_module, ONLY : title, prefix, postfix, work_dir
    USE control_module, ONLY : ordering_mode, verbosity, restart_mode, & 
-                              do_pseudo, do_overlaps, do_projections, &
+                              use_pseudo, use_uspp, do_overlaps, do_projections, &
                               read_subspace, read_unitary, &
                               unitary_thr, start_mode_dis, start_mode_wan, &
                               nprint_dis, nprint_wan, nsave_dis, nsave_wan
@@ -34,7 +34,6 @@
                              wannier_thr
    !
    ! pseudopotential modules
-   USE ions_module,     ONLY : uspp_calculation
    USE pseud_module,    ONLY : zp, alps, alpc, cc, aps, nlc, nnl, lmax, lloc, &
                               a_nlcc, b_nlcc, alpha_nlcc
    USE atom_module,     ONLY : mesh, xmin, dx, numeric, nlcc
@@ -253,9 +252,9 @@
       IF ( ions_alloc .AND. latoms_ ) THEN 
           WRITE( unit, " (  '<IONS>')" )
           WRITE( unit, " (2x,'Number of chemical species =', i3 ) " ) nsp
-          IF ( .NOT. do_pseudo )  THEN
+          IF ( .NOT. use_pseudo )  THEN
              WRITE( unit, " (2x,'WARNING: Pseudopots not read, assumed to be norm cons.')") 
-          ELSEIF ( uspp_calculation ) THEN
+          ELSEIF ( use_uspp ) THEN
              WRITE( unit, " (2x,'Calculation is done within US pseudopot.',/)") 
           ENDIF
           DO is=1, nsp
@@ -265,7 +264,7 @@
           !
           ! ... pseudo summary from Espresso
           !
-          IF ( do_pseudo .AND. lpseudo_ ) THEN 
+          IF ( use_pseudo .AND. lpseudo_ ) THEN 
              DO nt = 1, nsp
                 IF (tvanp (nt) ) THEN
                    ps = '(US)'

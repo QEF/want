@@ -15,7 +15,7 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !   structure factor, for all atoms, in reciprocal space
   !
   USE kinds,          ONLY : dbl
-  USE constants,      ONLY : TPI, CZERO
+  USE constants,      ONLY : TPI, CZERO, CI
   USE ions_module,    ONLY : nat, ntyp => nsp, ityp, tau
   USE lattice_module, ONLY : tpiba
   USE struct_fact_data_module, ONLY : strf, eigts1, eigts2, eigts3
@@ -70,7 +70,7 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   ! set now qg=|q+G| in atomic units
   !
   do ig = 1, npw_
-     qg(ig) = sqrt(qg(ig))*tpiba
+     qg(ig) = SQRT(qg(ig))*tpiba
   enddo
 
   jkb = 0
@@ -113,7 +113,7 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
         if (ityp (na) .eq.nt) then
            arg = (q_(1) * tau (1, na) + &
                   q_(2) * tau (2, na) + &
-                  q_(3) * tau (3, na) ) * tpi
+                  q_(3) * tau (3, na) ) * TPI
            phase = DCMPLX (cos (arg), - sin (arg) )
            do ig = 1, npw_
               sk (ig) = eigts1 (igv(1, igk_(ig)), na) * &
@@ -123,7 +123,7 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
            enddo
            do ih = 1, nh (nt)
               jkb = jkb + 1
-              pref = (0.d0, -1.d0) **nhtol (ih, nt) * phase
+              pref = CI **nhtol (ih, nt) * phase
               do ig = 1, npw_
                  vkb_(ig, jkb) = vkb1 (ig,ih) * sk (ig) * pref
               enddo
