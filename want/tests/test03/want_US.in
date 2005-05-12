@@ -10,7 +10,7 @@
 
 &SUBSPACE
    win_max = 0.5
-   dimwann = 18
+   dimwann = 17
 !   start_mode_dis = 'lower_states'
 !   maxiter_dis = 0
 /
