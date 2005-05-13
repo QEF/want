@@ -48,17 +48,18 @@ CONTAINS
 
       CHARACTER(LEN=256) :: input_line
       CHARACTER(LEN=80)  :: card
-      LOGICAL            :: tend
+      LOGICAL            :: lend, lstop
       LOGICAL            :: wannier_centers_found
       INTEGER :: ios
       INTEGER :: i, ierr
       !
 
       !
+      lstop = .FALSE.
       wannier_centers_found = .FALSE.
- 100  CALL read_line(unit, input_line, END_OF_FILE=tend )
+ 100  CALL read_line(unit, input_line, END_OF_FILE=lend )
       !
-      IF( tend ) GO TO 120
+      IF( lend .OR. lstop ) GO TO 120
       IF( input_line == ' ' .OR. input_line(1:1) == '#' ) GO TO 100
       !
       READ (input_line, *) card
@@ -71,6 +72,7 @@ CONTAINS
       IF ( TRIM(card) == 'WANNIER_CENTERS' ) THEN
          !
          CALL card_wannier_centers(unit,input_line)
+         lstop = .TRUE.
          wannier_centers_found = .TRUE.
          !
       ELSE

@@ -110,6 +110,7 @@
       REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:)
       INTEGER                :: ierr
       CHARACTER(5)           :: ps
+      CHARACTER(2)           :: str
 
 
    !
@@ -192,18 +193,22 @@
              center_cart2(:,i) = trial(i)%x2
           ENDDO
 
-          WRITE( unit, "(2x, 'Trial centers: (cart. coord. in Bohr)' ) " )
+          WRITE( unit, '(2x, "Trial centers: (cart. coord. in Bohr)" ) ' )
+          WRITE( unit, '(/,6x,"#",5x,"Type",10x,"l",3x,"m",7x,"Position",31x,"Decay" )')
+          WRITE( unit, '(4x, 4("-"), 2x, 12("-"), 2x, 8("-"), 3x, 37("-"),3x,9("-"))')
           DO i = 1, dimwann
-              WRITE( unit, "(4x,'Center = ',i3,' Type = ',a,'  Center  = (',3F15.9,' )')")&
-                     i, TRIM(trial(i)%type), center_cart1(:,i)
+              str = "  "
+              IF ( TRIM(trial(i)%type) == 'atomic' ) str = symb(trial(i)%iatom)
+              WRITE( unit, "(4x,i3,4x,a6, 2x,a2, 3x, i3,1x,i3,3x,3F12.6,4x,f9.5)") &
+                        i, TRIM(trial(i)%type), str, trial(i)%l, trial(i)%m,  &
+                        center_cart1(:,i), trial(i)%decay
               IF  ( TRIM(trial(i)%type) == "2gauss" ) THEN
-                  WRITE( unit, fmt="(31x,' Center2 = (', 3F15.9, ' ) ' )" ) &
-                     center_cart2(:,i)
+                    WRITE( unit, "(34x,3F12.6)") center_cart2(:,i)
               ENDIF
           ENDDO
           DEALLOCATE( center_cart1, center_cart2, STAT=ierr )
              IF (ierr/=0) CALL errore('summary','deallocating center_cart*',ABS(ierr))
-          WRITE( unit, " ( '</TRIAL_CENTERS>',/)" )
+          WRITE( unit, " (/, '</TRIAL_CENTERS>',/)" )
 
       ENDIF
       WRITE(unit,"()")      
@@ -327,10 +332,10 @@
           ! ... end of pseudo summary from Espresso
           !
           !
-          WRITE( unit, " (/,2x,'Atomic positions: (cart. coord. in units of alat)' ) " )
+          WRITE( unit, " (/,2x,'Atomic positions: (cart. coord. in Bohr)' ) " )
           DO ia = 1, nat
              WRITE( unit, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
-                      symb(ia), ia, (tau( i, ia ), i = 1, 3)
+                      symb(ia), ia, (tau( i, ia )*alat, i = 1, 3)
           ENDDO
           WRITE( unit, " (  '</IONS>',/)" )
       ENDIF
