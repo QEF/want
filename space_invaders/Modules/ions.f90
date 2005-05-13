@@ -213,10 +213,12 @@ CONTAINS
        !
        DO is=1,nsp
            CALL iotk_scan_empty(unit,'specie'//TRIM(iotk_index(is)), ATTR=attr, IERR=ierr)
-             IF (ierr/=0) &
-             CALL errore(subname,'Unable to find specia'//TRIM(iotk_index(is)),ABS(ierr))
+               IF (ierr/=0) &
+               CALL errore(subname,'Unable to find specie'//TRIM(iotk_index(is)),ABS(ierr))
+           CALL iotk_scan_attr(attr, 'type', atm(is), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'reading attr ATM',is)
            CALL iotk_scan_attr(attr, 'pseudo_file', psfile(is), IERR=ierr)
-             IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_FILE',is)
+               IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_FILE',is)
        ENDDO
        CALL iotk_scan_end(unit,'Types',IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to end Types',ABS(ierr))
@@ -229,10 +231,15 @@ CONTAINS
 !*********************************************************
    SUBROUTINE ions_init( )
    !*********************************************************
+   !
+   ! get the internal ordering of atoms and species
+   ! ATM(1:ntyp) contains the symbols of atoms in the same order
+   ! of pseudopot files. This will be assumed as internal ordering 
+   !
    IMPLICIT NONE
        CHARACTER(9)       :: subname="ions_init"
        LOGICAL            :: equal
-       INTEGER            :: ia, i, j, ntyp
+       INTEGER            :: ia, i
        INTEGER            :: ierr
  
        IF ( .NOT. alloc ) CALL errore(subname,'IONS not allocated',1)
@@ -240,30 +247,19 @@ CONTAINS
        !
        ! setting species and atomic symbols
        !
-       atm(1) = symb(1)
-       ityp(1) = 1
-       ntyp = 1
        na(:) = 0
-       na(1) = 1
-       DO ia=2,nat
-          equal = .FALSE.
-          DO i=1,ntyp
+       DO i=1,nsp
+          na(i) = 0
+          DO ia=1,nat
              IF ( symb(ia) == atm(i) ) THEN
                   ityp(ia) = i
                   na(i) = na(i) + 1
-                  equal = .TRUE.
              ENDIF
           ENDDO
-          IF ( .NOT. equal ) THEN
-                ntyp = ntyp + 1
-                atm(ntyp) = symb(ia)
-                na(ntyp) = 1
-                ityp(ia) = ntyp
-          ENDIF
        ENDDO
-       IF ( ntyp /= nsp ) CALL errore(subname,'Invalid NSP', ABS(ntyp-nsp) )
+       IF ( SUM( na(1:nsp) ) /= nat ) CALL errore(subname,'some species are missing',1)
        nax = MAXVAL( na(:) )
-
+     
        !
        ! sorting atoms by species
        !

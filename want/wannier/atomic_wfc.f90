@@ -1,5 +1,6 @@
 !
 ! Copyright (C) 2005 WanT Group
+!
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
@@ -17,7 +18,7 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   USE kinds,           ONLY : dbl
   USE constants,       ONLY : ZERO, CI
   USE atom_module,     ONLY : nchi, lchi, oc
-  USE ions_module,     ONLY : ityp, tau
+  USE ions_module,     ONLY : ityp, tau, symb
   USE lattice_module,  ONLY : alat
   USE us_module,       ONLY : tab_at, dq
   USE wfc_data_module, ONLY : igsort
@@ -59,12 +60,14 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   ! get indexes related to the IATOM and IL requested 
   ! atomic wfc
   !
-  nt = ityp( iatom)
-  nb = 0
+  IF ( iatom <= 0 ) CALL errore('atomic_wfc','invalid iatom',-iatom+1)
+  nt = ityp( iatom )
+  !
+  nb = -1
   DO ib = 1, nchi(nt)
      IF ( lchi(ib,nt) == il .AND. oc(ib,nt) >= ZERO ) nb = ib
   ENDDO
-  IF ( nb == 0 ) CALL errore('atomic_wfc','searching for nb with the required param',2)
+  IF ( nb == -1 ) CALL errore('atomic_wfc','searching for nb with the required param', iatom)
   
 
   !

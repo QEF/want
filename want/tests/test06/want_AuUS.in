@@ -19,7 +19,6 @@
    nshells = 2  
    nwhich(1) = 1  
    nwhich(2) = 2  
-   ordering_mode = 'complete'
 /
 
 WANNIER_CENTERS {angstrom}

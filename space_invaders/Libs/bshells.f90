@@ -146,7 +146,10 @@
 
         ENDDO  ! kpoints
 
-        IF ( inx > nnx ) CALL errore(' bshell ', ' Too many neighbours !', inx )
+        IF ( inx > nnx ) THEN 
+                CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
+                CALL errore('bshell', 'Too many neighbours', inx )
+        ENDIF
 
         nntot(nkp) = inx
       END DO
@@ -157,6 +160,7 @@
         inx = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
+          IF ( ndnn > nnx ) CALL errore('bshell','invalid nwhich',ndnn)
           DO nnsh = 1, nnshell(nkp,ndnn)
             bb1 = 0.0d0
             bbn = 0.0d0
@@ -167,7 +171,7 @@
             END DO
 
             IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
-              CALL errore(' bshell ', ' Non-symmetric k-point neighbours!', bb1 )
+              CALL errore('bshell', ' Non-symmetric k-point neighbours!', bb1 )
 
           END DO
         END DO
@@ -196,7 +200,7 @@
         !
         CALL mat_svd( 3, nnsh, dimbk, singvd, v1, v2)
         DO nn = 1, nnsh
-          IF ( ABS( singvd(nn) ) > 1e-5 ) ndim(ndnn) = ndim(ndnn) + 1
+          IF ( ABS( singvd(nn) ) > eps ) ndim(ndnn) = ndim(ndnn) + 1
         ENDDO
 
 

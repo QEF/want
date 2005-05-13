@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+12 May 2005      Fixed a bug in the sign of the Q_ij(b) term; fixed a long standing
+                 bug in the internal ordering of atoms and pseudopotentials. (AF)
+
 11 May 2005      Atomic projections fully implemented and tested; Test5 changed and 
                  updated. Set_overlap_map and add_us_overlap renamed to overlap_setmap 
                  and overlap_augment respectively. FIxed a bug in overlap_augment. (AF)

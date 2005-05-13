@@ -12,9 +12,9 @@ Isolate benzene molecule
    /
    &SYSTEM
       ibrav=8,
-      celldm(1)=30.0000,
-      celldm(2)=1.000000,    ! = 30.0 Bohr
-      celldm(3)=0.666667,    ! = 20.0 Bohr
+      celldm(1)=20.0000,
+      celldm(2)=1.000000,    ! = 20.0 Bohr
+      celldm(3)=1.000000,
       nat=12,
       ntyp=2,
       ecutwfc=35.0,
