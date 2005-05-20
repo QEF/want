@@ -10,7 +10,7 @@
 ! 
 !
 !*****************************************************************
-   SUBROUTINE domega( dimwann, nkpts, Mkb, csheet, sheet, rave, cdodq )
+   SUBROUTINE domega( dimwann, nkpts, Mkb, csheet, sheet, rave, domg )
    !*****************************************************************
    USE kinds
    USE constants, ONLY : ZERO, ONE, TWO, CZERO, CI
@@ -26,7 +26,7 @@
    REAL(dbl),    INTENT(in)  :: sheet(dimwann,nnx,nkpts)
    COMPLEX(dbl), INTENT(in)  :: csheet(dimwann,nnx,nkpts)
    COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nnx,nkpts)
-   COMPLEX(dbl), INTENT(out) :: cdodq(dimwann,dimwann,nkpts)
+   COMPLEX(dbl), INTENT(out) :: domg(dimwann,dimwann,nkpts)
 
    !
    ! local variables
@@ -61,7 +61,7 @@
 
 
    !
-   ! cdodq is calculated
+   ! domg is calculated
    !
    DO ik = 1, nkpts
 
@@ -111,7 +111,7 @@
        !
        ! dOmega/dW(k) = 4 * \Sum_b wb * (  A[R] - S[T] )
        !
-       cdodq(:,:,ik) = TWO / DBLE(nkpts) * ( aux1(:,:) + aux2(:,:) )
+       domg(:,:,ik) = TWO / DBLE(nkpts) * ( aux1(:,:) + aux2(:,:) )
    ENDDO
 
    DEALLOCATE( qkb, STAT=ierr )

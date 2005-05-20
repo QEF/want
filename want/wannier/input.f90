@@ -11,6 +11,7 @@
 !********************************************
    USE kinds, ONLY : dbl
    USE io_module, ONLY : stdin, stdout
+   USE constants, ONLY : ZERO
    IMPLICIT NONE
    PRIVATE
 !
@@ -80,9 +81,10 @@ CONTAINS
       USE control_module,           ONLY : verbosity,         &
                                            unitary_thr,       &
                                            restart_mode,      &
-                                           use_pseudo,        &
+                                           do_condmin,        &
                                            do_overlaps,       &
                                            do_projections,    &
+                                           use_pseudo,        &
                                            read_pseudo,       &
                                            read_overlaps,     &
                                            read_projections,  &
@@ -94,8 +96,7 @@ CONTAINS
                                            nsave_dis,         &
                                            nsave_wan,         &
                                            start_mode_dis,    &
-                                           start_mode_wan,    &
-                                           iphase
+                                           start_mode_wan 
       USE input_parameters_module,  ONLY : verbosity_       => verbosity, &
                                            restart_mode_    => restart_mode, &
                                            start_mode_dis_  => start_mode_dis, &
@@ -107,8 +108,8 @@ CONTAINS
                                            overlaps_        => overlaps,  &
                                            projections_     => projections, &
                                            unitary_thr_     => unitary_thr, &
+                                           a_condmin_       => a_condmin, &
                                            ordering_mode_   => ordering_mode, &
-                                           iphase_          => iphase, &
                                            assume_ncpp_     => assume_ncpp
 
       IMPLICIT NONE
@@ -116,13 +117,15 @@ CONTAINS
       verbosity = verbosity_
       unitary_thr = unitary_thr_
       ordering_mode = ordering_mode_
-      iphase = iphase_
       nprint_dis = nprint_dis_
       nsave_dis = nsave_dis_
       nprint_wan = nprint_wan_
       nsave_wan = nsave_wan_
       read_pseudo = .NOT. assume_ncpp_
       use_pseudo  = .NOT. assume_ncpp_
+
+      do_condmin = .TRUE.
+      IF ( a_condmin_ <= ZERO ) do_condmin = .FALSE.
 
       start_mode_dis = start_mode_dis_
       start_mode_wan = start_mode_wan_
@@ -248,14 +251,19 @@ CONTAINS
                                            alpha1_wan,   &
                                            maxiter0_wan, &
                                            maxiter1_wan, &
+                                           a_condmin,    &
+                                           dump_condmin, &
+                                           niter_condmin,&
                                            ncg
       USE input_parameters_module,  ONLY : wannier_thr_     => wannier_thr, &
                                            alpha0_wan_      => alpha0_wan,  &
                                            alpha1_wan_      => alpha1_wan,  &
                                            maxiter0_wan_    => maxiter0_wan,  &
                                            maxiter1_wan_    => maxiter1_wan,  &
-                                           ncg_             => ncg,  &
-                                           iphase_          => iphase
+                                           niter_condmin_   => niter_condmin,  &
+                                           a_condmin_       => a_condmin,  &
+                                           dump_condmin_    => dump_condmin,  &
+                                           ncg_             => ncg
       IMPLICIT NONE
       wannier_thr    =  wannier_thr_
       alpha0_wan     =  alpha0_wan_
@@ -263,6 +271,11 @@ CONTAINS
       maxiter0_wan   =  maxiter0_wan_
       maxiter1_wan   =  maxiter1_wan_
       ncg            =  ncg_
+      niter_condmin  =  niter_condmin_
+      IF ( niter_condmin_ <= 0 ) niter_condmin = maxiter0_wan_ + maxiter1_wan_
+      dump_condmin   =  dump_condmin_
+      a_condmin      =  a_condmin_
+     
    END SUBROUTINE setup_localization
 
 

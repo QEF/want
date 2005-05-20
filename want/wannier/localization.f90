@@ -41,9 +41,12 @@
    !     INTEGER :: nkpts
    !
    ! ... iterative localization procedure parameters
+   INTEGER                     :: niter_condmin ! number of iteration with conditioned min
    INTEGER                     :: maxiter0_wan  ! maximun num of iterations (part1)
    INTEGER                     :: maxiter1_wan  ! maximun num of iterations (part2)
    INTEGER                     :: ncg           ! a CG step every ncg is performed in part2
+   REAL(dbl)                   :: a_condmin     ! amplitude of the functional for condmin
+   REAL(dbl)                   :: dump_condmin  ! dumping factor for cond minim amplitude
    REAL(dbl)                   :: alpha0_wan    ! mixing factor in part1
    REAL(dbl)                   :: alpha1_wan    ! mixing factor in part2
    REAL(dbl)                   :: wannier_thr   ! convergence threshold
@@ -71,6 +74,7 @@
 
    PUBLIC :: nkpts, dimwann
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg
+   PUBLIC :: niter_condmin, a_condmin, dump_condmin
    PUBLIC :: cu
    PUBLIC :: rave, r2ave, rave2
    PUBLIC :: omega_I, omega_OD, omega_D, omega_tot

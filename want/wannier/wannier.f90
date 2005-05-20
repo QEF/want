@@ -13,11 +13,11 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR, EPS_m8
+      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
-                                 unitary_thr, verbosity, start_mode_wan
+                                 unitary_thr, verbosity, start_mode_wan, do_condmin
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ioname
       USE files_module, ONLY : file_open, file_close
@@ -34,7 +34,9 @@
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr, cu, rave, rave2, r2ave, &
                        Omega_I, Omega_D, Omega_OD, Omega_tot, &
-                       localization_allocate, localization_write, localization_print
+                       localization_allocate, localization_write, localization_print, &
+                       a_condmin, niter_condmin, dump_condmin
+      USE trial_center_data_module, ONLY : trial
 
 !
 ! ... 
@@ -60,7 +62,8 @@
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  cdodq(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  domg(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cdq(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  cz(:,:) 
@@ -138,8 +141,10 @@
          IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0 ', ABS(ierr) )
       ALLOCATE( Mkb0(dimwann,dimwann,nnx,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0 ', ABS(ierr) )
-      ALLOCATE( cdodq(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdodq ', ABS(ierr) )
+      ALLOCATE( domg(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg ', ABS(ierr) )
+      ALLOCATE( domg_aux(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg_aux ', ABS(ierr) )
       ALLOCATE( cdqkeep(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating cdqkeep ', ABS(ierr) )
       ALLOCATE( cdq(dimwann,dimwann,nkpts), STAT=ierr )
@@ -228,6 +233,10 @@
                 ncg   = ncgfix
                 alpha = alpha1_wan
            ENDIF
+           IF ( ncount > niter_condmin ) THEN 
+                a_condmin = a_condmin * dump_condmin
+                IF ( a_condmin < EPS_m4 ) do_condmin = .FALSE.
+           ENDIF
 
            !!
            !! this is used to move wannier centers to the R = 0 cell.
@@ -238,7 +247,14 @@
            !
            ! compute the derivative of the functional
            !
-           CALL domega( dimwann, nkpts, Mkb, csheet, sheet, rave, cdodq)
+           CALL domega( dimwann, nkpts, Mkb, csheet, sheet, rave, domg)
+           !
+           ! aply conditioned minimization if required
+           !
+           IF ( do_condmin ) THEN
+                CALL domega_aux( dimwann, nkpts, Mkb, rave, trial, a_condmin, domg_aux)
+                domg(:,:,:) = domg(:,:,:) + domg_aux(:,:,:)
+           ENDIF
 
 
            !
@@ -248,12 +264,12 @@
            DO ik = 1, nkpts
                DO n = 1, dimwann
                DO m= 1, dimwann
-                   gcnorm1 = gcnorm1 + REAL( cdodq(m,n,ik) * CONJG( cdodq(m,n,ik) ) )
+                   gcnorm1 = gcnorm1 + REAL( domg(m,n,ik) * CONJG( domg(m,n,ik) ) )
                ENDDO
                ENDDO
            ENDDO
            !
-           cdq(:,:,:) = cdodq(:,:,:)
+           cdq(:,:,:) = domg(:,:,:)
            IF ( MOD( (ncount-1), ncg ) /= 0 ) &
                cdq(:,:,:) = cdq(:,:,:) + gcnorm1/gcnorm0 * cdqkeep(:,:,:)
            !
@@ -264,7 +280,7 @@
            DO ik = 1, nkpts
                DO m = 1, dimwann
                DO n = 1, dimwann
-                   doda0 = doda0 + REAL( cdq(m,n,ik) * cdodq(n,m,ik) )
+                   doda0 = doda0 + REAL( cdq(m,n,ik) * domg(n,m,ik) )
                ENDDO
                ENDDO
            ENDDO
@@ -410,7 +426,12 @@
            ! write info to stdout
            !
            IF ( MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1 ) THEN
-                WRITE( stdout, " (/,2x,'Iteration = ',i5) ") ncount
+                IF ( do_condmin ) THEN 
+                     WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
+                            & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
+                ELSE
+                     WRITE( stdout,"(/,2x,'Iteration = ',i5) ") ncount
+                ENDIF
                 CALL localization_print(stdout, FMT="standard" )
                 WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f12.6) ") Omega_var
                 
@@ -457,14 +478,15 @@
       ELSE
           WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
       ENDIF
-      WRITE( stdout, "(2x,70('='),/)" )
+      WRITE( stdout, "(2x,70('='),2/)" )
+      WRITE( stdout, "(2x,'Iteration # : ',i4)") ncount
 
 
       !
       ! ... ordering wannier centers
       !
       CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu, ordering_mode)
-      WRITE( stdout, "(/,2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
+      WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
 
       CALL localization_print(stdout, FMT="extended")
       CALL timing_upto_now(stdout)
@@ -528,8 +550,8 @@
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cu0 ', ABS(ierr) )
       DEALLOCATE( Mkb0, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating Mkb0 ', ABS(ierr) )
-      DEALLOCATE( cdodq, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdodq ', ABS(ierr) )
+      DEALLOCATE( domg, STAT=ierr )
+           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating domg ', ABS(ierr) )
       DEALLOCATE( cdqkeep, STAT=ierr )
            IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdqkeep ', ABS(ierr) )
       DEALLOCATE( cdq, STAT=ierr )

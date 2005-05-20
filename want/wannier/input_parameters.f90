@@ -192,6 +192,16 @@
    REAL(dbl) :: alpha1_wan = 0.5_dbl
        ! mixing parameter during the second part of the wannier minimization
 
+   REAL(dbl) :: a_condmin = 0.0_dbl
+       ! amplitude of the auxiliary part of the functional driving the
+       ! conditioned minimization
+
+   REAL(dbl) :: dump_condmin = 0.0_dbl
+       ! dumping factor for condmin swhitching off
+
+   INTEGER :: niter_condmin = 0
+       ! number of conditioned iterations in wannier
+
    INTEGER :: maxiter0_wan = 500
        ! maximum number of iterations for the first minim part
 
@@ -222,9 +232,6 @@
    DATA start_mode_wan_allowed / 'no_guess', 'randomized', 'center_projections', &
                                  'from_file' /
 
-   INTEGER :: iphase = 1
-       ! obsolete variable
-
    INTEGER :: nshells = 0
        ! the number of kpt nearest-neighbour shells used in the calculations
        ! Hopefully will be removed very soon
@@ -247,13 +254,13 @@
 
 
    NAMELIST / LOCALIZATION / wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, &
-     maxiter1_wan, nprint_wan, nsave_wan, ncg, start_mode_wan, iphase, nshells, nwhich, &
-     ordering_mode, nshells, nwhich
+     maxiter1_wan, nprint_wan, nsave_wan, ncg, start_mode_wan, nshells, nwhich, &
+     ordering_mode, nshells, nwhich, a_condmin, niter_condmin, dump_condmin
 
 
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan
    PUBLIC :: nprint_wan, nsave_wan, ncg, start_mode_wan 
-   PUBLIC :: iphase, nshells, nwhich, ordering_mode
+   PUBLIC :: nshells, nwhich, ordering_mode, a_condmin, niter_condmin, dump_condmin
    PUBLIC :: LOCALIZATION
 
 
@@ -395,10 +402,11 @@ CONTAINS
       IF ( alpha1_wan > 1.0 ) CALL errore(subname, 'alpha1_wan should <=1.0 ', 1 ) 
       IF ( maxiter0_wan < 0 ) CALL errore(subname, 'maxiter0_wan should be >= 0',1)
       IF ( maxiter1_wan < 0 ) CALL errore(subname, 'maxiter1_wan should be >= 0',1)
+      IF ( niter_condmin < 0 ) CALL errore(subname, 'niter_condmin should be >= 0',1)
+      IF ( dump_condmin < 0.0 ) CALL errore(subname, 'dump_condmin should be >= 0.0',1)
       IF ( nprint_wan <= 0 ) CALL errore(subname, ' nprint_wan must be > 0 ', -nprint_wan+1 )
       IF ( nsave_wan <= 0 ) CALL errore(subname, ' nsave_wan must be > 0 ', -nsave_wan+1 )
       IF ( ncg <= 0 ) CALL errore(subname, 'ncg should be >0',1)
-      IF ( iphase /=1 ) CALL errore(subname, 'iphase MUST be 1',ABS(iphase-1))
       IF ( nshells <= 0 ) CALL errore(subname, 'nshells should be > 0',1)
       IF ( nshells > nnx ) CALL errore(subname, 'nshells should be < nnx',nnx)
       IF ( ANY( nwhich(1:nshells) <= 0 ) ) CALL errore(subname, 'nwhich should be >= 1',2)

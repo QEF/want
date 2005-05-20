@@ -21,6 +21,7 @@
                               read_subspace, read_unitary, &
                               unitary_thr, start_mode_dis, start_mode_wan, &
                               nprint_dis, nprint_wan, nsave_dis, nsave_wan
+   USE control_module, ONLY : do_condmin
    USE trial_center_data_module, ONLY : trial
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
@@ -31,7 +32,7 @@
                               win_min, win_max, froz_min, froz_max
    USE subspace_module,ONLY : dimwann, disentangle_thr, alpha_dis, maxiter_dis
    USE localization_module, ONLY : alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg, &
-                             wannier_thr
+                             wannier_thr, a_condmin, niter_condmin
    !
    ! pseudopotential modules
    USE pseud_module,    ONLY : zp, alps, alpc, cc, aps, nlc, nnl, lmax, lloc, &
@@ -152,6 +153,7 @@
           WRITE(unit,"(  7x,'      Projection Calc. :',5x,a)") log2char(do_projections)
           WRITE(unit,"(  7x,'   Read Start Subspace :',5x,a)") log2char(read_subspace)
           WRITE(unit,"(  7x,'Read Start Unitary mat :',5x,a)") log2char(read_unitary)
+          WRITE(unit,"(  7x,'    Conditioned minim. :',5x,a)") log2char(do_condmin)
 
 
           WRITE( unit,"( /, '<WANNIER_FUNCTIONS>')" )
@@ -171,6 +173,8 @@
           WRITE( unit,"(4x,'Ordering mode = ', a )" ) TRIM(ordering_mode)
           WRITE( unit,"(4x,'Verbosity = ', a )" ) TRIM(verbosity)
           WRITE( unit,"(4x,'Unitariery check threshold = ', f15.9 )") unitary_thr
+          WRITE( unit,"(4x,'Conditioned minim. amplitude = ', f15.9 )") a_condmin
+          WRITE( unit,"(4x,'Conditioned minim.  iter num = ', i5 )") niter_condmin
           WRITE( unit,"( '</WANNIER_FUNCTIONS>',/)" )
 
           WRITE( unit, " ( '<DISENTANGLE>')" )
@@ -194,16 +198,16 @@
           ENDDO
 
           WRITE( unit, '(2x, "Trial centers: (cart. coord. in Bohr)" ) ' )
-          WRITE( unit, '(/,6x,"#",5x,"Type",10x,"l",3x,"m",7x,"Position",31x,"Decay" )')
-          WRITE( unit, '(4x, 4("-"), 2x, 12("-"), 2x, 8("-"), 3x, 37("-"),3x,9("-"))')
+          WRITE( unit, '(/,6x,"#",5x,"Type",10x,"l",3x,"m",7x,"Position",30x,"Decay" )')
+          WRITE( unit, '(4x, 4("-"), 2x, 12("-"), 2x, 8("-"), 3x, 36("-"),3x,9("-"))')
           DO i = 1, dimwann
               str = "  "
               IF ( TRIM(trial(i)%type) == 'atomic' ) str = symb(trial(i)%iatom)
-              WRITE( unit, "(4x,i3,4x,a6, 2x,a2, 3x, i3,1x,i3,3x,3F12.6,4x,f9.5)") &
+              WRITE( unit, "(4x,i3,4x,a6, 2x,a2, 3x, i3,1x,i3,4x,'(',3F11.6,' )',2x,f9.5)") &
                         i, TRIM(trial(i)%type), str, trial(i)%l, trial(i)%m,  &
                         center_cart1(:,i), trial(i)%decay
               IF  ( TRIM(trial(i)%type) == "2gauss" ) THEN
-                    WRITE( unit, "(34x,3F12.6)") center_cart2(:,i)
+                    WRITE( unit, "(35x,'(',3F11.6,' )')") center_cart2(:,i)
               ENDIF
           ENDDO
           DEALLOCATE( center_cart1, center_cart2, STAT=ierr )

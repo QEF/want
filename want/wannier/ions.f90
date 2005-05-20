@@ -216,7 +216,7 @@ CONTAINS
                IF (ierr/=0) &
                CALL errore(subname,'Unable to find specie'//TRIM(iotk_index(is)),ABS(ierr))
            CALL iotk_scan_attr(attr, 'type', atm(is), IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'reading attr ATM',is)
+               IF (ierr/=0) CALL errore(subname,'reading attr TYPE',is)
            CALL iotk_scan_attr(attr, 'pseudo_file', psfile(is), IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_FILE',is)
        ENDDO
