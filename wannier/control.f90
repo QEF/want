@@ -30,7 +30,6 @@
    INTEGER                   :: nsave_dis
    INTEGER                   :: nprint_wan
    INTEGER                   :: nsave_wan
-   INTEGER                   :: iphase
    REAL(dbl)                 :: unitary_thr
 
    LOGICAL                   :: use_pseudo 
@@ -39,6 +38,7 @@
 
    LOGICAL                   :: do_overlaps
    LOGICAL                   :: do_projections
+   LOGICAL                   :: do_condmin
 
    LOGICAL                   :: read_pseudo 
    LOGICAL                   :: read_overlaps
@@ -59,7 +59,6 @@
    PUBLIC :: nsave_dis
    PUBLIC :: nprint_wan
    PUBLIC :: nsave_wan
-   PUBLIC :: iphase
    PUBLIC :: unitary_thr
 
    PUBLIC :: use_pseudo
@@ -68,6 +67,7 @@
 
    PUBLIC :: do_overlaps
    PUBLIC :: do_projections
+   PUBLIC :: do_condmin
 
    PUBLIC :: read_pseudo
    PUBLIC :: read_overlaps

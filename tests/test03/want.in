@@ -9,16 +9,20 @@
 /
 
 &SUBSPACE
-   win_max = 0.5
-   dimwann = 15
-!   start_mode_dis = 'lower_states'
+   start_mode_dis = 'randomized'
+   win_max = 2.0
+   dimwann = 18
    maxiter_dis = 5000
 /
 
 &LOCALIZATION
-!   start_mode_wan = 'randomized'
-   maxiter0_wan = 50
-   maxiter1_wan = 4450
+   a_condmin = 20
+!   niter_condmin = 400
+!   dump_condmin = 0.95
+   start_mode_wan = 'randomized'
+   alpha0_wan = 0.25
+   maxiter0_wan = 200
+   maxiter1_wan = 4000
    ncg = 5    
    nshells = 1  
    nwhich(1) = 1  
@@ -43,5 +47,3 @@ atomic   6   1 0
 atomic   8   1 0 
 atomic  10   1 0 
 atomic  12   1 0 
-
-

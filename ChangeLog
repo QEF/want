@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+20 May 2005      driving functional term for conditioned minimization added in the
+                 domega_aux routine. Related changes in input routined added. (AF)
+
 12 May 2005      Fixed a bug in the sign of the Q_ij(b) term; fixed a long standing
                  bug in the internal ordering of atoms and pseudopotentials. (AF)
 
