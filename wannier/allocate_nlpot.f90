@@ -32,7 +32,7 @@ subroutine allocate_nlpot
   USE ions_module,     ONLY : nat, ntyp => nsp, ityp
   USE lattice_module,  ONLY : tpiba
   USE windows_module,  ONLY : nspin
-  USE wfc_data_module, ONLY : npwx => npwkx
+  USE wfc_data_module, ONLY : npwkx
   USE ggrids_module,   ONLY : ecutwfc, ecutrho
 
   USE us_module,       ONLY : qrad, tab, tab_at, dq, nqx, nqxq
@@ -128,7 +128,7 @@ subroutine allocate_nlpot
   !      an extra kpt index is added
   !
   IF (nkb > 0) THEN 
-       ALLOCATE (vkb( npwx,  nkb), STAT=ierr)    
+       ALLOCATE (vkb( npwkx,  nkb), STAT=ierr)    
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating vkb',ABS(ierr))
   ENDIF
   ALLOCATE (becsum( nhm * (nhm + 1)/2, nat, nspin), STAT=ierr)    

@@ -63,37 +63,37 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
   CALL timing('struct_fact',OPR='start')
 
   strf(:,:) = CZERO
-  do nt = 1, ntyp
-     do na = 1, nat
-        if (ityp (na) .eq.nt) then
-           do ng = 1, ngm
+  DO nt = 1, ntyp
+     DO na = 1, nat
+        IF (ityp (na) == nt) THEN
+           DO ng = 1, ngm
               arg = (g (1, ng) * tau (1, na) + g (2, ng) * tau (2, na) &
                    + g (3, ng) * tau (3, na) ) * TPI
-              strf (ng, nt) = strf (ng, nt) + DCMPLX (cos (arg), -sin (arg))
-           enddo
-        endif
-     enddo
-  enddo
+              strf (ng, nt) = strf (ng, nt) + DCMPLX( COS(arg), -SIN(arg) )
+           ENDDO
+        ENDIF
+     ENDDO
+  ENDDO
 
-  do na = 1, nat
-     do ipol = 1, 3
+  DO na = 1, nat
+     DO ipol = 1, 3
         bgtau (ipol) = bg (1, ipol) * tau (1, na) + &
                        bg (2, ipol) * tau (2, na) + &
                        bg (3, ipol) * tau (3, na)
-     enddo
-     do n1 = - nr1, nr1
-        arg = tpi * n1 * bgtau (1)
-        eigts1 (n1, na) = DCMPLX (cos (arg), - sin (arg) )
-     enddo
-     do n2 = - nr2, nr2
-        arg = tpi * n2 * bgtau (2)
-        eigts2 (n2, na) = DCMPLX (cos (arg), - sin (arg) )
-     enddo
-     do n3 = - nr3, nr3
-        arg = tpi * n3 * bgtau (3)
-        eigts3 (n3, na) = DCMPLX (cos (arg), - sin (arg) )
-     enddo
-  enddo
+     ENDDO
+     DO n1 = - nr1, nr1
+        arg = TPI * n1 * bgtau (1)
+        eigts1 (n1, na) = DCMPLX( COS(arg), -SIN(arg) )
+     ENDDO
+     DO n2 = - nr2, nr2
+        arg = TPI * n2 * bgtau (2)
+        eigts2 (n2, na) = DCMPLX( COS(arg), -SIN(arg) )
+     ENDDO
+     DO n3 = - nr3, nr3
+        arg = TPI * n3 * bgtau (3)
+        eigts3 (n3, na) = DCMPLX( COS(arg), -SIN(arg) )
+     ENDDO
+  ENDDO
 
   CALL timing('struct_fact',OPR='stop')
   RETURN

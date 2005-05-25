@@ -19,7 +19,8 @@
    SAVE
 
 ! This module handles data related to structure factors,
-! i.e. the quantities  eigts(G) = e^(-i G*tau_s)
+! i.e. the quantities  
+!                      eigts(G) = e^(-i G*tau_s)
 !                  strf(G,ityp) = \sum_{ia \in ityp)} e^(-i G*tau_s(ia) )
 !
 ! routines in this module:
@@ -123,7 +124,7 @@ CONTAINS
    !
    IMPLICIT NONE
        CHARACTER(21)      :: subname="struct_fact_data_init"
-       REAL(dbl)          :: tmp(3,3)
+       REAL(dbl)          :: bg_(3,3)
        INTEGER            :: i, ierr
 
        IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice not alloc',1) 
@@ -135,8 +136,8 @@ CONTAINS
        
        !
        ! use the Espresso routine
-       tmp = bvec/tpiba
-       CALL struct_fact( nat, tau, nsp, ityp, npw, g, tmp, &
+       bg_ = bvec/tpiba
+       CALL struct_fact( nat, tau, nsp, ityp, npw, g, bg_, &
                          nr(1), nr(2), nr(3), strf, eigts1, eigts2, eigts3)
 
    END SUBROUTINE struct_fact_data_init

@@ -48,6 +48,7 @@
    USE struct_fact_data_module, ONLY : struct_fact_data_init
    USE uspp,           ONLY : nkb, vkb, vkb_ik
    USE becmod,         ONLY : becp
+
    !
    ! few local variables
    !
@@ -143,8 +144,7 @@
               WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5,2/ ) ') nkb
 
               !
-              ! ... beta functions in reciproc space within struct_facts
-              !     and their projections <beta|psi>
+              ! ... space for beta functions in reciproc space within struct_facts
               ! 
               IF ( nkb <= 0 ) CALL errore(subname,'no beta functions within USPP',-nkb+1)
               ALLOCATE( becp(nkb, dimwinx, nkpts), STAT=ierr )
@@ -167,6 +167,8 @@
 
           !
           ! we need anyway to have becp allocated even if it is not used
+          ! becp(i,j,ik) = <beta_i |psi_j_ik >
+          !
           IF ( .NOT. ALLOCATED(becp) ) THEN
                ALLOCATE( becp(1,1,nkpts), STAT=ierr )
                IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
@@ -213,6 +215,7 @@
                  !
                  xk(:) = vkpt(:,ik) / tpiba
                  CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
+                 !
                  vkb_ik = ik
                  CALL ccalbec( nkb, npwkx, npwk(ik), dimwin(ik), becp(1,1,ik), vkb, &
                                evc(1,index))
@@ -309,7 +312,6 @@
    
                 CALL projection( ik, dimwin(ik), imin(ik), dimwinx, evc, evc_info, dimwann, &
                                  trial, ca(1,1,ik) )
-   
                 !
                 ! clean the ik wfc data
                 CALL wfc_info_delete(evc_info, LABEL="SPSI_IK")

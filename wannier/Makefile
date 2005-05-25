@@ -12,7 +12,7 @@ OBJS= compar.o domega.o domega_aux.o error.o \
       overlap.o overlap_setmap.o \
       overlap_extract.o overlap_update.o overlap_augment.o \
       get_monkpack.o subspace_init.o localization_init.o \
-      readin.o read_pseudo.o read_ncpp.o readnewvan.o readvan.o \
+      readpp.o read_pseudo.o read_ncpp.o readnewvan.o readvan.o \
       bachel.o simpsn.o ylmr2.o invmat.o rranf.o erf.o \
       init_us_1.o init_us_2.o qvan2.o sph_bes.o setqf.o \
       allocate_nlpot.o struct_fact.o ccalbec.o \
