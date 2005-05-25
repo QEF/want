@@ -45,7 +45,7 @@ MODULE ions_module
       INTEGER              :: nat     = 0
 
       !     ityp( i ) = the type of i-th atom 
-      !     atm( j )  = name of the type of the j-th atomic specie
+      !     atm_symb( j )  = name of the type of the j-th atomic specie
       !
       INTEGER,   ALLOCATABLE :: ityp(:)
       LOGICAL                :: uspp_calculation = .FALSE. ! whether we are using uspp
@@ -53,7 +53,7 @@ MODULE ions_module
       REAL(dbl), ALLOCATABLE :: tau(:,:)      !  atomic positions (alat units)
       REAL(dbl), ALLOCATABLE :: tau_srt(:,:)  !  tau sorted by specie (alat)
       INTEGER,   ALLOCATABLE :: ind_srt( : )  !  index of tau sorted by specie
-      CHARACTER(LEN=3), ALLOCATABLE :: atm(:) !  DIM: nsp
+      CHARACTER(LEN=3), ALLOCATABLE :: atm_symb(:) !  DIM: nsp
       CHARACTER(LEN=3), ALLOCATABLE :: symb(:)!  DIM: nat
       CHARACTER(LEN=nstrx), ALLOCATABLE :: psfile(:)!  DIM: nsp
 
@@ -66,7 +66,7 @@ MODULE ions_module
    PUBLIC :: nsp, na, nax, nat, zv
    PUBLIC :: tau
    PUBLIC :: tau_srt, ind_srt
-   PUBLIC :: ityp, atm, symb
+   PUBLIC :: ityp, atm_symb, symb
    PUBLIC :: uspp_calculation
    PUBLIC :: psfile
    PUBLIC :: alloc
@@ -106,8 +106,8 @@ CONTAINS
          IF(ierr/=0) CALL errore(subname,'allocating tau_srt',nat*nsp)
       ALLOCATE(ind_srt(nat), STAT=ierr) 
          IF(ierr/=0) CALL errore(subname,'allocating ind_srt',nat)
-      ALLOCATE(atm(nsp), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating atm',nsp)
+      ALLOCATE(atm_symb(nsp), STAT=ierr) 
+         IF(ierr/=0) CALL errore(subname,'allocating atm_symb',nsp)
       ALLOCATE(psfile(nsp), STAT=ierr) 
          IF(ierr/=0) CALL errore(subname,'allocating psfile',nsp)
 
@@ -149,9 +149,9 @@ CONTAINS
           DEALLOCATE( ind_srt, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating ind_srt',ABS(ierr))
       ENDIF
-      IF ( ALLOCATED( atm ) ) THEN
-          DEALLOCATE( atm, STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'deallocating atm',ABS(ierr))
+      IF ( ALLOCATED( atm_symb ) ) THEN
+          DEALLOCATE( atm_symb, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating atm_symb',ABS(ierr))
       ENDIF
       IF ( ALLOCATED( psfile ) ) THEN
           DEALLOCATE( psfile, STAT=ierr )
@@ -215,7 +215,7 @@ CONTAINS
            CALL iotk_scan_empty(unit,'specie'//TRIM(iotk_index(is)), ATTR=attr, IERR=ierr)
                IF (ierr/=0) &
                CALL errore(subname,'Unable to find specie'//TRIM(iotk_index(is)),ABS(ierr))
-           CALL iotk_scan_attr(attr, 'type', atm(is), IERR=ierr)
+           CALL iotk_scan_attr(attr, 'type', atm_symb(is), IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'reading attr TYPE',is)
            CALL iotk_scan_attr(attr, 'pseudo_file', psfile(is), IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_FILE',is)
@@ -251,7 +251,7 @@ CONTAINS
        DO i=1,nsp
           na(i) = 0
           DO ia=1,nat
-             IF ( symb(ia) == atm(i) ) THEN
+             IF ( symb(ia) == atm_symb(i) ) THEN
                   ityp(ia) = i
                   na(i) = na(i) + 1
              ENDIF

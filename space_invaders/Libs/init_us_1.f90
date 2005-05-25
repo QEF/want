@@ -352,7 +352,7 @@ SUBROUTINE init_us_1
   !
   ! ... qb computation, added for WFs
   !     Conversion from bohr^-1 to tpiba units is performed for the bk vecotrs.
-  !     Before gg is used instead of SQRT(gg) because there we are interested
+  !     Before gg is used instead of SQRT(gg) because there we were interested
   !     only in the first element which is gg = 0
   !
   DO ik=1,nkpts

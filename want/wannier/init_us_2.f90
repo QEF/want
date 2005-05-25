@@ -18,9 +18,9 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   USE constants,      ONLY : TPI, CZERO, CI
   USE ions_module,    ONLY : nat, ntyp => nsp, ityp, tau
   USE lattice_module, ONLY : tpiba
-  USE struct_fact_data_module, ONLY : strf, eigts1, eigts2, eigts3
+  USE struct_fact_data_module, ONLY : eigts1, eigts2, eigts3
   USE ggrids_module,  ONLY : g, igv
-  USE wfc_data_module,ONLY : npwx => npwkx
+  USE wfc_data_module,ONLY : npwkx
 
 
   USE us_module,  ONLY : dq, tab
@@ -30,54 +30,54 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !
   IMPLICIT NONE
   !
-  INTEGER :: npw_, igk_ (npw_)
-  ! input: number of PW's
-  ! input: indices of q+G
-  REAL(kind=dbl) :: q_(3)
-  ! input: q vector
-  COMPLEX(kind=dbl) :: vkb_ (npwx, nkb)
-  ! output: beta functions
+  INTEGER      :: npw_           ! input: number of PW's
+  INTEGER      :: igk_ (npw_)    ! input: indices of q+G
+  REAL(dbl)    :: q_(3)          ! input: q vector
+  COMPLEX(dbl) :: vkb_ (npwkx, nkb)    ! output: beta functions
   !
   !     Local variables
   !
   INTEGER :: i0,i1,i2,i3, ig, l, lm, na, nt, nb, ih, jkb
 
-  REAL(kind=dbl) :: px, ux, vx, wx, arg
-  REAL(kind=dbl), allocatable :: gk (:,:), qg (:), vq (:), ylm (:,:), vkb1(:,:)
+  REAL(dbl) :: px, ux, vx, wx, arg
+  REAL(dbl), allocatable :: gk (:,:), qg (:), vq (:), ylm (:,:), vkb1(:,:)
 
-  COMPLEX(kind=dbl) :: phase, pref
-  COMPLEX(kind=dbl), allocatable :: sk(:)
+  COMPLEX(dbl) :: phase, pref
+  COMPLEX(dbl), ALLOCATABLE :: sk(:)
   !
   !
-  if (lmaxkb.lt.0) return
-  call timing ('init_us_2', OPR='start')
-  allocate (vkb1( npw_,nhm))    
-  allocate (  sk( npw_))    
-  allocate (  qg( npw_))    
-  allocate (  vq( npw_))    
-  allocate ( ylm( npw_, (lmaxkb + 1) **2))    
-  allocate (  gk( 3, npw_))    
+  IF (lmaxkb < 0) RETURN
+  CALL timing ('init_us_2', OPR='start')
+
+  ALLOCATE (vkb1( npw_,nhm))    
+  ALLOCATE (  sk( npw_))    
+  ALLOCATE (  qg( npw_))    
+  ALLOCATE (  vq( npw_))    
+  ALLOCATE ( ylm( npw_, (lmaxkb + 1) **2))    
+  ALLOCATE (  gk( 3, npw_))    
   !
-  do ig = 1, npw_
+  DO ig = 1, npw_
      gk (1,ig) = q_(1) + g(1, igk_(ig) )
      gk (2,ig) = q_(2) + g(2, igk_(ig) )
      gk (3,ig) = q_(3) + g(3, igk_(ig) )
      qg (ig) = gk(1, ig)**2 +  gk(2, ig)**2 + gk(3, ig)**2
-  enddo
+  ENDDO
   !
-  call ylmr2 ((lmaxkb+1)**2, npw_, gk, qg, ylm)
+  CALL ylmr2 ((lmaxkb+1)**2, npw_, gk, qg, ylm)
   !
   ! set now qg=|q+G| in atomic units
   !
-  do ig = 1, npw_
+  DO ig = 1, npw_
      qg(ig) = SQRT(qg(ig))*tpiba
-  enddo
+  ENDDO
 
   jkb = 0
-  do nt = 1, ntyp
+  vkb_(:,:) = CZERO
+  !
+  DO nt = 1, ntyp
      ! calculate beta in G-space using an interpolation table
-     do nb = 1, nbeta (nt)
-        do ig = 1, npw_
+     DO nb = 1, nbeta (nt)
+        DO ig = 1, npw_
            px = qg (ig) / dq - int (qg (ig) / dq)
            ux = 1.d0 - px
            vx = 2.d0 - px
@@ -90,55 +90,55 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
                      tab (i1, nb, nt) * px * vx * wx / 2.d0 - &
                      tab (i2, nb, nt) * px * ux * wx / 2.d0 + &
                      tab (i3, nb, nt) * px * ux * vx / 6.d0
-        enddo
+        ENDDO
         ! add spherical harmonic part
-        do ih = 1, nh (nt)
-           if (nb.eq.indv (ih, nt) ) then
+        DO ih = 1, nh (nt)
+           IF ( nb  == indv (ih, nt) ) THEN
               l = nhtol (ih, nt)
               lm =nhtolm (ih, nt)
-              do ig = 1, npw_
+              DO ig = 1, npw_
                  vkb1 (ig,ih) = ylm (ig, lm) * vq (ig)
-              enddo
-           endif
-        enddo
-     enddo
+              ENDDO
+           ENDIF
+        ENDDO
+     ENDDO
      !
      ! vkb1 contains all betas including angular part for type nt
      ! now add the structure factor and factor (-i)^l
      !
-     vkb_(:,:) = CZERO
-     do na = 1, nat
+     DO na = 1, nat
         ! ordering: first all betas for atoms of type 1
         !           then  all betas for atoms of type 2  and so on
-        if (ityp (na) .eq.nt) then
+        !
+        IF (ityp (na) == nt) THEN
            arg = (q_(1) * tau (1, na) + &
                   q_(2) * tau (2, na) + &
                   q_(3) * tau (3, na) ) * TPI
-           phase = DCMPLX (cos (arg), - sin (arg) )
-           do ig = 1, npw_
-              sk (ig) = eigts1 (igv(1, igk_(ig)), na) * &
-                        eigts2 (igv(2, igk_(ig)), na) * &
-                        eigts3 (igv(3, igk_(ig)), na)
-! </ANDREA>
-           enddo
-           do ih = 1, nh (nt)
+           phase = DCMPLX( COS(arg), -SIN(arg) )
+           DO ig = 1, npw_
+              sk (ig) = eigts1 ( igv(1, igk_(ig)), na) * &
+                        eigts2 ( igv(2, igk_(ig)), na) * &
+                        eigts3 ( igv(3, igk_(ig)), na)
+           ENDDO
+           DO ih = 1, nh (nt)
               jkb = jkb + 1
-              pref = CI **nhtol (ih, nt) * phase
-              do ig = 1, npw_
+              pref = -CI **nhtol (ih, nt) * phase
+              DO ig = 1, npw_
                  vkb_(ig, jkb) = vkb1 (ig,ih) * sk (ig) * pref
-              enddo
-           enddo
-        endif
-     enddo
-  enddo
-  deallocate (gk)
-  deallocate (ylm)
-  deallocate (vq)
-  deallocate (qg)
-  deallocate (sk)
-  deallocate (vkb1)
+              ENDDO
+           ENDDO
+        ENDIF
+     ENDDO
+  ENDDO
 
-  call timing ('init_us_2',OPR='stop')
-  return
-end subroutine init_us_2
+  DEALLOCATE (gk)
+  DEALLOCATE (ylm)
+  DEALLOCATE (vq)
+  DEALLOCATE (qg)
+  DEALLOCATE (sk)
+  DEALLOCATE (vkb1)
+
+  CALL timing ('init_us_2',OPR='stop')
+  RETURN
+END SUBROUTINE init_us_2
 

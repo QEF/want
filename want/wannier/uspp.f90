@@ -9,14 +9,14 @@ MODULE uspp_param
   !
   ! ... Ultrasoft and Norm-Conserving pseudopotential parameters
   !  
-  USE kinds,      ONLY : DP => dbl
+  USE kinds,      ONLY : dbl
   USE parameters, ONLY : lqmax, nbrx, npsx, nqfx, ndmx
   !
   SAVE
   !
   CHARACTER(LEN=2 ) ::  psd(npsx)   ! name of the pseudopotential
 
-  REAL(KIND=DP) :: &
+  REAL(dbl) :: &
        dion(nbrx,nbrx,npsx),       &! D_{mu,nu} parameters (in the atomic case)
        betar(ndmx,nbrx,npsx),      &! radial beta_{mu} functions
        jjj(nbrx,npsx),             &! total angular momentum of the beta function
@@ -49,7 +49,7 @@ MODULE uspp
   ! - Clebsch-Gordan coefficients "ap", auxiliary variables "lpx", "lpl"
   ! - beta and q functions of the solid
   !
-  USE kinds, ONLY: DP => dbl
+  USE kinds, ONLY: dbl
   USE parameters, ONLY: lmaxx, lqmax
   IMPLICIT NONE
   PRIVATE
@@ -65,7 +65,7 @@ MODULE uspp
   INTEGER ::             &! for each pair of combined momenta lm(1),lm(2): 
        lpx(nlx,nlx),     &! maximum combined angular momentum LM
        lpl(nlx,nlx,mx)    ! list of combined angular momenta  LM
-  REAL(KIND=DP) :: &
+  REAL(dbl) :: &
        ap(lqmax*lqmax,nlx,nlx)
   ! Clebsch-Gordan coefficients for spherical harmonics
   !
@@ -78,19 +78,19 @@ MODULE uspp
        nhtolm(:,:)        ! correspondence n <-> combined lm index for (l,m)
   !
   INTEGER :: vkb_ik       ! indicate for which ik vkb has been calculated
-  COMPLEX(KIND=DP), ALLOCATABLE, TARGET :: &
+  COMPLEX(dbl), ALLOCATABLE   :: &
        vkb(:,:)                ! all beta functions in reciprocal space
                                ! indeces: plw, betaf
-  REAL(KIND=DP), ALLOCATABLE :: &
+  REAL(dbl), ALLOCATABLE :: &
        dvan(:,:,:),           &! the D functions of the solid
        deeq(:,:,:,:),         &! the integral of V_eff and Q_{nm} 
        becsum(:,:,:),         &! \sum_i f(i) <psi(i)|beta_l><beta_m|psi(i)>
        qq(:,:,:),             &! the q functions in the solid
        nhtoj(:,:)              ! correspondence n <-> total angular momentum
-  COMPLEX(KIND=DP), ALLOCATABLE :: & 
+  COMPLEX(dbl), ALLOCATABLE :: & 
        qb(:,:,:,:,:)           ! the b FT of the Q(r) for each kpt (i,j,ia,inn,ik)
   !
-  COMPLEX(KIND=DP), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:
+  COMPLEX(dbl), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:
        qq_so(:,:,:,:),           &! Q_{nm}
        dvan_so(:,:,:,:),         &! D_{nm}
        deeq_nc(:,:,:,:)           ! \int V_{eff}(r) Q_{nm}(r) dr 
@@ -126,12 +126,12 @@ CONTAINS
     ! local variables
     !
     integer :: llx, l, li, lj
-    real(kind=DP) , allocatable :: r(:,:), rr(:), ylm(:,:), mly(:,:)
+    real(dbl) , allocatable :: r(:,:), rr(:), ylm(:,:), mly(:,:)
     ! an array of random vectors: r(3,llx)
     ! the norm of r: rr(llx)
     ! the real spherical harmonics for array r: ylm(llx,llx)
     ! the inverse of ylm considered as a matrix: mly(llx,llx)
-    real(kind=DP) :: dum
+    real(dbl) :: dum
     !
     ! ANDREA: mortal error is given
     if (lli < 0) call errore('aainit','lli not allowed',-lli)
@@ -200,15 +200,15 @@ CONTAINS
     !
     integer :: llx         ! input: the dimension of r and rr
     
-    real(kind=DP) :: &
+    real(dbl) :: &
          r(3,llx),  &! output: an array of random vectors
          rr(llx)    ! output: the norm of r
     !
     ! here the local variables
     !
     integer :: ir
-    real(kind=DP) :: costheta, sintheta, phi
-    real(kind=DP), external :: rndm
+    real(dbl) :: costheta, sintheta, phi
+    real(dbl), external :: rndm
     
     do ir = 1, llx
        costheta = 2.d0 * rndm() - 1.d0
@@ -235,7 +235,7 @@ CONTAINS
          llx,         &! the dimension of ylm and mly
          l,li,lj       ! the arguments of the array ap
     
-    real(kind=DP) :: &
+    real(dbl) :: &
          compute_ap,  &! this function
          ylm(llx,llx),&! the real spherical harmonics for array r
          mly(llx,llx)  ! the inverse of ylm considered as a matrix

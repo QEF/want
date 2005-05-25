@@ -58,6 +58,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
 !
 
    Mkb = CZERO
+
    IF ( nkb == 0 .OR. .NOT. okvan ) RETURN
    CALL timing( 'overlap_augment', OPR='start' )  
    !
