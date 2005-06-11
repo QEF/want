@@ -263,7 +263,7 @@
             ! write data to disk
             !
             IF ( MOD(ncount, nsave_dis) == 0 )  THEN
-                 CALL ioname('subspace',filename)
+                 CALL ioname('space',filename)
                  CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write", &
                                 FORM="formatted")
                     CALL windows_write(space_unit,"WINDOWS")
@@ -370,6 +370,18 @@
  
        ENDDO 
                   
+       !
+       ! NOTE: for the purpose of minimizing Omega_D + Omega_OD in wannier.x 
+       ! we could have simply
+       ! used the lambda eigenvectors as the basis set for the optimal subspace,
+       ! i.e., write lamp instead of eamp. However, in order to calculate the
+       ! interpolated band structure we need to assume that the unitary rotations
+       ! obtained in wannier.f are done starting from the energy eigenvectors.
+       ! Of course, if we were only interested in the maxloc WFs, not in the 
+       ! interpolated band structure, we could have used lamp. I have check that
+       ! the resulting spread and average location of the maxloc WFs are exactly the 
+       ! same if we replace eamp by lamp in the write statement below.
+       ! 
 
 !
 !--------------------------------------
@@ -411,17 +423,6 @@
        ENDDO
 
 
-       !
-       ! Note: for the purpose of minimizing Omegatld in wannier.f we could have simply
-       ! have used the lambda eigenvectors as the basis set for the optimal subspace,
-       ! i.e., write lamp instead of eamp. However, in order to calculate the
-       ! interpolated band structure we need to assume that the unitary rotations
-       ! obtained in wannier.f are done starting from the energy eigenvectors.
-       ! Of course, if we were only interested in the maxloc WFs, not in the 
-       ! interpolated band structure, we could have used lamp. I have check that
-       ! the resulting spread and average location of the maxloc WFs are exactly the 
-       ! same if we replace eamp by lamp in the write statement below.
- 
        IF ( lcompspace )  THEN
            !
            ! Diagonalize the hamiltonian in the complement subspace, write the
@@ -464,13 +465,13 @@
        !
        ! ...  actual writing procedures
        ! 
-       CALL ioname('subspace',filename)
+       CALL ioname('space',filename)
        CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
             CALL windows_write(space_unit,"WINDOWS")
             CALL subspace_write(space_unit,"SUBSPACE")
        CALL file_close(space_unit,PATH="/",ACTION="write")
 
-       CALL ioname('subspace',filename,LPATH=.FALSE.)
+       CALL ioname('space',filename,LPATH=.FALSE.)
        WRITE( stdout,"(/,2x,'Subspace data written on file: ',a)") TRIM(filename)
 
 

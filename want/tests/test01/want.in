@@ -16,9 +16,7 @@
 
 &LOCALIZATION
     maxiter0_wan = 100, 
-    alpha0_wan = 0.5    
-    maxiter1_wan = 800, 
-    alpha1_wan = 0.5    
+    maxiter1_wan = 4000, 
     ncg = 5                         
     nshells = 1                    
     nwhich(1) = 1                 

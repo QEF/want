@@ -22,6 +22,7 @@ Carbon dimer chain; NC-PP
       occupations='smearing',
       smearing='gaussian',
       degauss=0.02,
+      nbnd = 60
  /
  &ELECTRONS
     electron_maxstep = 50,

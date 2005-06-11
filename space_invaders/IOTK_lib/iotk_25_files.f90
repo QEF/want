@@ -21,218 +21,8 @@
 #include "iotk_config.h"
 !------------------------------------------------------------------------------!
 
-# 2 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_AUXMACROS
-#define __IOTK_AUXMACROS
-
-! The macros are defined with -D option or inside iotk_config.h
-! The default values are set here
-! Maximum rank of an array
-#ifndef __IOTK_MAXRANK
-#  define __IOTK_MAXRANK 7
-#endif
-! Minimum value used in iotk_free_unit
-#ifndef __IOTK_UNITMIN
-#  define __IOTK_UNITMIN 90000
-#endif
-! Maximum value used in iotk_free_unit
-#ifndef __IOTK_UNITMAX
-#  define __IOTK_UNITMAX 99999
-#endif
-! Unit for errors
-#ifndef __IOTK_ERROR_UNIT
-#  define __IOTK_ERROR_UNIT 0
-#endif
-! Kind for header in binary files
-#ifndef __IOTK_HEADER_KIND
-#  define __IOTK_HEADER_KIND selected_int_kind(8)
-#endif
-! Character (or eventually string) for newline
-! It may be adjusted for particular systems
-! Unix    achar(10)
-! Mac-OS  achar(13)
-! Windows ? (now it should be a single byte)
-#ifndef __IOTK_NEWLINE
-#  define __IOTK_NEWLINE achar(10)
-#endif
-! Character for EOS
-#ifndef __IOTK_EOS
-#  define __IOTK_EOS achar(0)
-#endif
-! These are the default kinds, which depend on the options used
-! during the library compilation
-! Only default characters are implemented
-#define __IOTK_CHARACTER1 iotk_defkind_character
-! For logical, integer and real types, the c precompiler
-! looks for defined kinds. If no kind is found, the default
-! is used as __IOTK_type1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_LOGICAL1 iotk_defkind_LOGICAL
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_INTEGER1 iotk_defkind_INTEGER
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_REAL1 iotk_defkind_REAL
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 58 "../include/iotk_auxmacros.spp"
-
-! Some useful check follow
-#if __IOTK_MAXRANK > 7
-#  error
-#endif
-#if __IOTK_MAXRANK < 1
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL10
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER10
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL10
-#  error
-#endif
-# 73 "../include/iotk_auxmacros.spp"
-#endif
-
-! Complex are treated indentically to reals
-! These lines map the definitions.
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL1
-#  define __IOTK_COMPLEX1 __IOTK_REAL1
-#else
-#  undef __IOTK_COMPLEX1
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL2
-#  define __IOTK_COMPLEX2 __IOTK_REAL2
-#else
-#  undef __IOTK_COMPLEX2
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL3
-#  define __IOTK_COMPLEX3 __IOTK_REAL3
-#else
-#  undef __IOTK_COMPLEX3
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL4
-#  define __IOTK_COMPLEX4 __IOTK_REAL4
-#else
-#  undef __IOTK_COMPLEX4
-#endif
-# 84 "../include/iotk_auxmacros.spp"
-
-
+# 28 "iotk_files.spp"
+#include "iotk_auxmacros.h"
 # 30 "iotk_files.spp"
 
 # 33 "iotk_files.spp"
@@ -260,7 +50,7 @@ subroutine iotk_copyfile_x(dummy,source,dest,source_unit,dest_unit,ierr)
   if(present(source) .eqv. present(source_unit)) then
     call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 55 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 55 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Use exactly one between source and source_unit')
     goto 1
@@ -268,7 +58,7 @@ call iotk_error_msg(ierrl,'Use exactly one between source and source_unit')
   if(present(dest)   .eqv. present(dest_unit)) then
     call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 59 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 59 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Use exactly one between dest and dest_unit')
     goto 1
@@ -278,7 +68,7 @@ call iotk_error_msg(ierrl,'Use exactly one between dest and dest_unit')
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 65 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 65 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error searching for a free unit')
       goto 1
@@ -287,7 +77,7 @@ call iotk_error_msg(ierrl,'Error searching for a free unit')
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 70 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 70 "iotk_files.spp"
 call iotk_error_msg(ierrl,'messaggio')
 # 70 "iotk_files.spp"
@@ -306,14 +96,14 @@ call iotk_error_write(ierrl,"iostat",iostat)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 79 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
     open(unit2,file=trim(iotk_strpad(dest)),iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 84 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 84 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error opening destination file')
 # 84 "iotk_files.spp"
@@ -337,7 +127,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
       end if
       call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 98 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 98 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error reading source file')
 # 98 "iotk_files.spp"
@@ -348,7 +138,7 @@ call iotk_error_write(ierrl,"sourceunit",unit1)
     if(iostat/=0) then
        call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 103 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 103 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing destination file')
 # 103 "iotk_files.spp"
@@ -364,7 +154,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
     if(iostat/=0) then
        call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 111 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 111 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error closing source file')
 # 111 "iotk_files.spp"
@@ -381,7 +171,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
     if(iostat/=0) then
        call iotk_error_issue(ierrl,"iotk_copyfile_x",__FILE__,__LINE__)
 # 118 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 118 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error closing destination file')
 # 118 "iotk_files.spp"
@@ -439,7 +229,7 @@ subroutine iotk_link_x(unit,name,file,dummy,binary,raw,create,ierr)
   if(.not.associated(this_unit)) then
     call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 166 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 166 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Links do not apply to units which are not explicitly connected')
     goto 1
@@ -448,7 +238,7 @@ call iotk_error_msg(ierrl,'Links do not apply to units which are not explicitly 
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 171 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   if(lraw) then
@@ -457,7 +247,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 178 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
         goto 1
       end if
     end if
@@ -465,7 +255,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 184 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
   end if
@@ -473,21 +263,21 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 190 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   call iotk_write_comment(unit,"This is a link to the file indicated in the iotk_link attribute",ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 195 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   call iotk_write_end  (unit,name,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 200 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   if(lcreate) then
@@ -495,14 +285,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 206 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
     inquire(unit=lunit,name=oldfile,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 211 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 211 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error inquiring')
 # 211 "iotk_files.spp"
@@ -518,14 +308,14 @@ call iotk_error_write(ierrl,"iostat",iostat)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 217 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
     call iotk_unit_parent(parent=lunit,son=link_unit,ierr=ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_link",__FILE__,__LINE__)
 # 222 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
   end if
@@ -590,7 +380,7 @@ subroutine iotk_open_write_x(unit,file,dummy,attr,binary,new,raw,root,skip_root,
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 285 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 285 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error opening file')
 # 285 "iotk_files.spp"
@@ -610,7 +400,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 291 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
   end if
@@ -621,7 +411,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
         if(iostat/=0) then
           call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 300 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 300 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing XML tag')
 # 300 "iotk_files.spp"
@@ -635,7 +425,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 306 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 306 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing version attribute')
         goto 1
@@ -644,7 +434,7 @@ call iotk_error_msg(ierrl,'Error writing version attribute')
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 311 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 311 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing version tag')
         goto 1
@@ -653,7 +443,7 @@ call iotk_error_msg(ierrl,'Error writing version tag')
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 316 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 316 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing file_version attribute')
         goto 1
@@ -662,7 +452,7 @@ call iotk_error_msg(ierrl,'Error writing file_version attribute')
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 321 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 321 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing version tag')
         goto 1
@@ -671,7 +461,7 @@ call iotk_error_msg(ierrl,'Error writing version tag')
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 326 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 326 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing binary attribute')
         goto 1
@@ -680,7 +470,7 @@ call iotk_error_msg(ierrl,'Error writing binary attribute')
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 331 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 331 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing binary tag')
         goto 1
@@ -693,7 +483,7 @@ call iotk_error_msg(ierrl,'Error writing binary tag')
         if(ierrl/=0) then
           call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 340 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 340 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing attributes from the root tag')
           goto 1
@@ -703,7 +493,7 @@ call iotk_error_msg(ierrl,'Error writing attributes from the root tag')
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 346 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 346 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error writing the root tag')
         goto 1
@@ -714,7 +504,7 @@ call iotk_error_msg(ierrl,'Error writing the root tag')
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_open_write",__FILE__,__LINE__)
 # 353 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 353 "iotk_files.spp"
 call iotk_error_msg(ierrl,'Error adding the unit to the list')
     goto 1
@@ -754,14 +544,14 @@ recursive subroutine iotk_close_write_x(unit,dummy,ierr)
   if(.not.associated(this)) then
     call iotk_error_issue(ierrl,"iotk_close_write",__FILE__,__LINE__)
 # 389 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   call iotk_inquire(unit,binary,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_close_write",__FILE__,__LINE__)
 # 394 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   if(.not.this%raw) then
@@ -770,7 +560,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_close_write",__FILE__,__LINE__)
 # 401 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
         goto 1
       end if
     end if
@@ -781,7 +571,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_close_write",__FILE__,__LINE__)
 # 410 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 410 "iotk_files.spp"
 call iotk_error_msg(ierrl,'unit')
 # 410 "iotk_files.spp"
@@ -793,7 +583,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_close_write",__FILE__,__LINE__)
 # 416 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
 # 416 "iotk_files.spp"
 call iotk_error_msg(ierrl,'unit')
 # 416 "iotk_files.spp"
@@ -805,7 +595,7 @@ call iotk_error_write(ierrl,"iostat",iostat)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_close_write",__FILE__,__LINE__)
 # 422 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
 1 continue
@@ -833,8 +623,13 @@ subroutine iotk_open_read_x(unit,file,dummy,attr,binary,raw,root,ierr)
   type(iotk_dummytype), optional      :: dummy
   logical,      optional, intent(in)  :: binary
   logical,      optional, intent(in)  :: raw
-  character(*), optional, intent(out) :: attr
-  character(*), optional, intent(out) :: root
+#ifdef __IOTK_WORKAROUND6
+  character(len=*), optional              :: attr
+  character(len=*), optional              :: root
+#else
+  character(len=*), optional, intent(out) :: attr
+  character(len=*), optional, intent(out) :: root
+#endif
   integer,      optional, intent(out) :: ierr
   character(50)           :: status,form
   character(iotk_attlenx) :: lattr
@@ -858,15 +653,15 @@ subroutine iotk_open_read_x(unit,file,dummy,attr,binary,raw,root,ierr)
     open(unit=unit,file=trim(file(1:iotk_strlen(file))),status="old",form=form,position="rewind",iostat=iostat,action="read")
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 474 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
-# 474 "iotk_files.spp"
+# 479 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
+# 479 "iotk_files.spp"
 call iotk_error_msg(ierrl,'unit')
-# 474 "iotk_files.spp"
+# 479 "iotk_files.spp"
 call iotk_error_write(ierrl,"file",file)
-# 474 "iotk_files.spp"
+# 479 "iotk_files.spp"
 call iotk_error_write(ierrl,"binary",lbinary)
-# 474 "iotk_files.spp"
+# 479 "iotk_files.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -874,8 +669,8 @@ call iotk_error_write(ierrl,"iostat",iostat)
     call iotk_inquire(unit,binary=lbinary,ierr=ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 480 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 485 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
   end if
@@ -884,8 +679,8 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
       call iotk_scan_tag(unit,+1,control,tag,lbinary,ierrl)
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 488 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 493 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
         goto 1
       end if
       select case(control)
@@ -893,40 +688,40 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
         call iotk_tag_parse(tag,lroot,lattr,ierrl)
         if(ierrl/=0) then
           call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 495 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 500 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
           goto 1
         end if
         exit
       case(2:3)
         call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 500 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
-# 500 "iotk_files.spp"
+# 505 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
+# 505 "iotk_files.spp"
 call iotk_error_msg(ierrl,'End or empty tag at the beginning of a file')
-# 500 "iotk_files.spp"
+# 505 "iotk_files.spp"
 call iotk_error_write(ierrl,"unit",unit)
-# 500 "iotk_files.spp"
+# 505 "iotk_files.spp"
 call iotk_error_write(ierrl,"file",trim(file(1:iotk_strlen(file))))
-# 500 "iotk_files.spp"
+# 505 "iotk_files.spp"
 call iotk_error_write(ierrl,"binary",lbinary)
-# 500 "iotk_files.spp"
+# 505 "iotk_files.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
         goto 1
       case(5)
         call iotk_tag_parse(tag,lroot,lattr,ierrl)
         if(ierrl/=0) then
           call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 505 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 510 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
           goto 1
         end if
         if(iotk_strcomp(lroot,"iotk")) then
           call iotk_check_iotk_attr(unit,lattr,ierrl)
           if(ierrl/=0) then
             call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 511 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 516 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
             goto 1
           end if
         end if
@@ -937,15 +732,15 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 521 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 526 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   call iotk_unit_add(unit,this,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_open_read",__FILE__,__LINE__)
-# 526 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 531 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   this%root=lroot
@@ -960,7 +755,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
   end if
 end subroutine iotk_open_read_x
 
-# 542 "iotk_files.spp"
+# 547 "iotk_files.spp"
 subroutine iotk_close_read_x(unit,dummy,ierr) 
   use iotk_base
   use iotk_error_interf
@@ -982,8 +777,8 @@ subroutine iotk_close_read_x(unit,dummy,ierr)
   call iotk_unit_get(unit,pointer=this)
   if(.not.associated(this)) then
     call iotk_error_issue(ierrl,"iotk_close_read",__FILE__,__LINE__)
-# 562 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 567 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   root = this%root
@@ -992,16 +787,16 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
   call iotk_unit_del(unit,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_close_read",__FILE__,__LINE__)
-# 570 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 575 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
     goto 1
   end if
   if(.not.raw) then      
     call iotk_scan_end(unit,root,ierr=ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_close_read",__FILE__,__LINE__)
-# 576 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
+# 581 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
       goto 1
     end if
   end if
@@ -1009,11 +804,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
     close(unit,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_close_read",__FILE__,__LINE__)
-# 583 "iotk_files.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.13 ")
-# 583 "iotk_files.spp"
+# 588 "iotk_files.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.16 ")
+# 588 "iotk_files.spp"
 call iotk_error_msg(ierrl,'unit')
-# 583 "iotk_files.spp"
+# 588 "iotk_files.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if

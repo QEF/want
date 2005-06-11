@@ -19,8 +19,8 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
- hamiltonian     writes the hamiltonian matrix elements on the Wannier basis
- want            perform DISENTANGLE, WANNIER and HAMILTONIAN all together 
+ bands           interpolates the band structure using WFs
+ want            perform DISENTANGLE, WANNIER and BANDS all together 
  bulk            evaluate the transmittance, for the bulk case
  all             perform all the above described steps
 
@@ -47,7 +47,7 @@ NSCF=
 PWEXPORT=
 DISENTANGLE=
 WANNIER=
-HAMILTONIAN=
+BANDS=
 BULK=
 CLEAN=
 
@@ -61,13 +61,13 @@ case $INPUT in
    (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
-   (hamiltonian)    HAMILTONIAN=".TRUE." ;;
+   (bands)          BANDS=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    HAMILTONIAN=".TRUE." ;;
+                    BANDS=".TRUE." ;;
    (bulk)           BULK=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    HAMILTONIAN=".TRUE." ; BULK=".TRUE." ;;
+                    BANDS=".TRUE." ; BULK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -164,15 +164,15 @@ if [ "$WANNIER" = ".TRUE." ] ; then
 fi
 
 #
-# running HAMILTONIAN
+# running BANDS
 #
-if [ "$HAMILTONIAN" = ".TRUE." ] ; then  
-   echo "running HAMILTONIAN calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_AuUS.in > $TEST_HOME/hamiltonian_AuUS.out
+if [ "$BANDS" = ".TRUE." ] ; then  
+   echo "running BANDS calculation" 
+   $WANT_BIN/bands.x < $TEST_HOME/bands_AuUS.in > $TEST_HOME/bands_AuUS.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
-      echo "found some problems in HAMILTONIAN calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in BANDS calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 

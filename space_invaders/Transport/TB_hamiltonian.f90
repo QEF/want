@@ -1,5 +1,5 @@
 !
-!      Copyright (C) 2004 Arrigo Calzolari, Marco Buongiorno Nardelli
+!      Copyright (C) 2004 WanT Group
 !      Copyright (C) 1999 Marco Buongiorno Nardelli
 !
 !      This file is distributed under the terms of the
@@ -7,14 +7,12 @@
 !      in the root directory of the present distribution,
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=--------------------------------------------------------------------=
-      SUBROUTINE TB_hamiltonian( r, natmax, rcut, h0, h1, nmx, nmax,    &
+!**********************************************************************
+   SUBROUTINE TB_hamiltonian( r, natmax, rcut, h0, h1, nmx, nmax,    &
                              gamma0, model, efieldx, efieldy, efieldz )
-!=--------------------------------------------------------------------=
-
-      USE kinds
-
-      IMPLICIT NONE
+   !**********************************************************************
+   USE kinds
+   IMPLICIT NONE
 
       INTEGER :: i, j, k, l, m, n, model, nw
       INTEGER :: ierr

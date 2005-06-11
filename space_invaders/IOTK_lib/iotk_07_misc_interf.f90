@@ -21,218 +21,8 @@
 #include "iotk_config.h"
 !------------------------------------------------------------------------------!
 
-# 2 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_AUXMACROS
-#define __IOTK_AUXMACROS
-
-! The macros are defined with -D option or inside iotk_config.h
-! The default values are set here
-! Maximum rank of an array
-#ifndef __IOTK_MAXRANK
-#  define __IOTK_MAXRANK 7
-#endif
-! Minimum value used in iotk_free_unit
-#ifndef __IOTK_UNITMIN
-#  define __IOTK_UNITMIN 90000
-#endif
-! Maximum value used in iotk_free_unit
-#ifndef __IOTK_UNITMAX
-#  define __IOTK_UNITMAX 99999
-#endif
-! Unit for errors
-#ifndef __IOTK_ERROR_UNIT
-#  define __IOTK_ERROR_UNIT 0
-#endif
-! Kind for header in binary files
-#ifndef __IOTK_HEADER_KIND
-#  define __IOTK_HEADER_KIND selected_int_kind(8)
-#endif
-! Character (or eventually string) for newline
-! It may be adjusted for particular systems
-! Unix    achar(10)
-! Mac-OS  achar(13)
-! Windows ? (now it should be a single byte)
-#ifndef __IOTK_NEWLINE
-#  define __IOTK_NEWLINE achar(10)
-#endif
-! Character for EOS
-#ifndef __IOTK_EOS
-#  define __IOTK_EOS achar(0)
-#endif
-! These are the default kinds, which depend on the options used
-! during the library compilation
-! Only default characters are implemented
-#define __IOTK_CHARACTER1 iotk_defkind_character
-! For logical, integer and real types, the c precompiler
-! looks for defined kinds. If no kind is found, the default
-! is used as __IOTK_type1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_LOGICAL1 iotk_defkind_LOGICAL
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_INTEGER1 iotk_defkind_INTEGER
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_REAL1 iotk_defkind_REAL
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 58 "../include/iotk_auxmacros.spp"
-
-! Some useful check follow
-#if __IOTK_MAXRANK > 7
-#  error
-#endif
-#if __IOTK_MAXRANK < 1
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL10
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER10
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL10
-#  error
-#endif
-# 73 "../include/iotk_auxmacros.spp"
-#endif
-
-! Complex are treated indentically to reals
-! These lines map the definitions.
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL1
-#  define __IOTK_COMPLEX1 __IOTK_REAL1
-#else
-#  undef __IOTK_COMPLEX1
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL2
-#  define __IOTK_COMPLEX2 __IOTK_REAL2
-#else
-#  undef __IOTK_COMPLEX2
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL3
-#  define __IOTK_COMPLEX3 __IOTK_REAL3
-#else
-#  undef __IOTK_COMPLEX3
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL4
-#  define __IOTK_COMPLEX4 __IOTK_REAL4
-#else
-#  undef __IOTK_COMPLEX4
-#endif
-# 84 "../include/iotk_auxmacros.spp"
-
-
+# 28 "iotk_misc_interf.spp"
+#include "iotk_auxmacros.h"
 # 30 "iotk_misc_interf.spp"
 
 module iotk_misc_interf
@@ -251,6 +41,7 @@ public :: iotk_index
 public :: iotk_check_name
 public :: iotk_tag_parse
 public :: iotk_complete_filepath
+public :: iotk_delete_attr
 
 
 
@@ -269,15 +60,24 @@ end subroutine iotk_copy_tag_x
 end interface
 
 interface iotk_parse_dat
-subroutine iotk_parse_dat_x(attr,type,kind,isize,len,fmt,ierr)
+subroutine iotk_parse_dat_x(attr,type,kind,isize,len,fmt,columns,ierr)
   implicit none
-  character(*), intent(in)  :: attr
-  character(*), intent(out) :: type
-  integer,      intent(out) :: kind
-  integer,      intent(out) :: isize
-  integer,      intent(out) :: len
-  character(*), intent(out) :: fmt
-  integer,      intent(out) :: ierr
+  character(len=*), intent(in)  :: attr
+#ifdef __WORKAROUND6
+  character(len=*)              :: type
+#else
+  character(len=*), intent(out) :: type
+#endif
+  integer,          intent(out) :: kind
+  integer,          intent(out) :: isize
+  integer,          intent(out) :: len
+#ifdef __WORKAROUND6
+  character(len=*)              :: fmt
+#else
+  character(len=*), intent(out) :: fmt
+#endif
+  integer,          intent(out) :: columns
+  integer,          intent(out) :: ierr
 end subroutine iotk_parse_dat_x
 end interface
 
@@ -307,7 +107,8 @@ end subroutine iotk_get_options_x
 end interface
 
 interface iotk_copy_dat_aux
-subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,ikind,isize,len,fmt,ierr)
+subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,ikind,isize, &
+                               len,fmt,columns,attr,ierr)
   implicit none
   integer,      intent(in)  :: source
   integer,      intent(in)  :: dest
@@ -319,6 +120,8 @@ subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,i
   integer,      intent(in)  :: isize
   integer,      intent(in)  :: len
   character(*), intent(in)  :: fmt
+  integer,      intent(in)  :: columns
+  character(*), intent(in)  :: attr
   integer,      intent(out) :: ierr
 end subroutine iotk_copy_dat_aux_x
 end interface
@@ -349,7 +152,6 @@ subroutine iotk_check_iotk_attr_x(unit,attr,ierr)
   integer,                 intent(in)  :: unit
   character(iotk_attlenx), intent(in)  :: attr
   integer,                 intent(out) :: ierr
-  character(iotk_vallenx) :: version
 end subroutine iotk_check_iotk_attr_x
 end interface
 
@@ -384,7 +186,6 @@ function iotk_complete_filepath_x(newfile,oldfile)
   character(len=*), intent(in) :: newfile
   character(len=*), intent(in) :: oldfile
   character(len=len(newfile)+len(oldfile)) :: iotk_complete_filepath_x
-  character(len=len(oldfile)) :: prefix
 end function iotk_complete_filepath_x
 end interface
 
@@ -394,6 +195,15 @@ function iotk_check_name_x(name)
   character(len=*), intent(in) :: name
   logical                      :: iotk_check_name_x
 end function iotk_check_name_x
+end interface
+
+interface iotk_delete_attr
+subroutine iotk_delete_attr_x(attr,name,ierr)
+  implicit none
+  character(len=*), intent(inout) :: attr
+  character(len=*), intent(in)    :: name
+  integer,          intent(out)   :: ierr
+end subroutine iotk_delete_attr_x
 end interface
 
 end module iotk_misc_interf

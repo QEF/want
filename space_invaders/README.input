@@ -224,6 +224,24 @@ ordering_mode STRING
               "spread":    ordering based on WF increasing spreads
               "complete":  SPATIAL + SPREAD for WF with the same centers
               DEFAULT: "none"
+
+a_condmin     REAL
+              the amplitude of the conditioned minimization functional. If set to zero
+              ordinary minimization is performed.
+              DEFAULT: 0.0
+
+niter_condmin INTEGER
+              the number of steps for which minimization is conditioned. 
+              DEFAULT: maxiter0_wan + maxiter1_wan   (if a_condmin /= 0.0)
+                       0                             (otherwise)
+            
+dump_condmin  REAL
+              the dumping factor for a_condmin during the conditioned minimization.
+              If the dumping factor is specified, after niter_condmin iterations a_condmin
+              is dumped according to 
+                 a_condmin = a_condmin * dump_condmin     
+              at each iteration.
+              DEFAULT: 0.0
               
 
 ==============================================================================
@@ -299,7 +317,7 @@ In the case GAUSS_TYP == "2gauss",
 
 ==============================================================================
 
-                  ********* code: HAMILTONIAN.x  **********
+                  ********* code: BANDS.x  **********
 
 ==============================================================================
 
@@ -430,26 +448,15 @@ nmx         INTEGER
             have been eliminated)
             DEFAULT : 0
 
-norb        INTEGER
-            number of orbital per site. Fro the use with Wannier functions should be
-            set to 1
-            DEFAULT : 1
-
 ne          INTEGER
             dimension of the energy grid for transmittance and spectral function
             calculation
             DEFAULT : 1000
 
-nterx       INTEGER
+niterx      INTEGER
             maximum number of iterations in the calculation of transfer matrices
             DEFAULT : 200
 
-gamma0      REAL
-            used in the generation of the tight binding hamiltonian  (MODEL == 1)
-            this value has no effect on the calculation using WFs and it is left
-            for completeness.
-            DEFAULT : 0.0
-             
 emin        REAL
             lower limit [eV] of the energy grid dimensioned by NE
             DEFAULT : -10.0
@@ -469,14 +476,6 @@ efieldy     REAL
 efieldz     REAL
             z component [eV] of an external bias field
             DEFAULT : 0.0 
-
-model       INTEGER
-            can assume values from 1 to 4 and defines how to make up the tight binding
-            hamiltonian. Values 1 to 3 are related to old external parameterizations
-            for specific cases and should no longer be used. MODEL = 4 read the
-            parameters of the real space hamiltonian from file and it is the case
-            when using Wannier functions as basis set.  
-            DEFAULT : 4
 
 ==============================================================================
 
@@ -514,17 +513,12 @@ nmxc        INTEGER
             number of sites in the conductor C
             DEFAULT : 0
 
-norb        INTEGER
-            number of orbital per site. Fro the use with Wannier functions should be
-            set to 1
-            DEFAULT : 1
-
 ne          INTEGER
             dimension of the energy grid for transmittance and spectral function
             calculation
             DEFAULT : 1000
 
-nterx       INTEGER
+niterx      INTEGER
             maximum number of iterations in the calculation of transfer matrices
             DEFAULT : 200
 
@@ -536,7 +530,7 @@ emax        REAL
             upper limit [eV] of the energy grid dimensioned by NE
             DEFAULT : +10.0
 
-l_overlap   LOGICAL
+loverlap    LOGICAL
             If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
             is assumed (which is by definition the case of Wannier functions)
             DEFAULT : .FALSE.

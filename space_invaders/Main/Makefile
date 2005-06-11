@@ -4,10 +4,10 @@ include ../make.sys
 .o.x:
 	$(LD) -o $@ $< ../Modules/*.o $(MODULES) $(LDFLAGS)
 
-EXE = disentangle.x hamiltonian.x plot.x wannier.x
+EXE = disentangle.x wannier.x bands.x plot.x blc2wan.x
 all: $(EXE)
 
-$(EXE): ../Libs/lib_invaders.a ../Modules/*.o
+$(EXE): ../Libs/lib_invaders.a ../IOTK_lib/lib_iotk.a ../Modules/*.o
 
 clean: 
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x

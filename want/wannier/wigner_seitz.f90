@@ -7,42 +7,45 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-       SUBROUTINE wigner_seitz( avec, nk, indxws, nws, degen, mxdnrk )
-!=----------------------------------------------------------------------------------=
-     
-       USE kinds
-       USE io_module, ONLY : stdout
-       USE constants, ONLY : ONE, ZERO, EPS_m8
+!********************************************************************
+   SUBROUTINE wigner_seitz( avec, nk, indxws, nws, degen )
+   !********************************************************************
+   USE kinds
+   USE io_module, ONLY : stdout
+   USE constants, ONLY : ONE, ZERO, EPS_m8
 
-       IMPLICIT NONE
+   IMPLICIT NONE
+   !
+   ! input/output variables
+   !
+   REAL(dbl), INTENT(in) :: avec(3,3)
+   INTEGER,   INTENT(in) :: nk(3)
+   INTEGER,   INTENT(out):: nws
+   INTEGER,   INTENT(out):: indxws(3,*)
+   INTEGER,   INTENT(out):: degen(*)
 
-       REAL(dbl), INTENT(in) :: avec(3,3)
-       INTEGER,   INTENT(in) :: nk(3)
-       INTEGER,   INTENT(in) :: mxdnrk
+   !
+   ! local variables
+   !
+   INTEGER :: n1, n2, n3
+   INTEGER :: icnt, i, j, i1, i2, i3
+   INTEGER :: ndiff(3), indx(27), ifnd
+   INTEGER :: nn, ndeg
+   REAL(dbl) :: dist(27), dist_min
+   REAL(dbl) :: tot
+   REAL(dbl) :: adot(3,3)
 
-       INTEGER,   INTENT(out):: nws
-       INTEGER,   INTENT(out):: indxws(3,3*mxdnrk)
-       INTEGER,   INTENT(out):: degen(3*mxdnrk)
 
-       INTEGER :: n1, n2, n3
-       INTEGER :: icnt, i, j, i1, i2, i3
-       INTEGER :: ndiff(3), indx(27), ifnd
-       INTEGER :: nn, ndeg
-       REAL(dbl) :: dist(27), dist_min
-       REAL(dbl) :: tot
-       REAL(dbl) :: adot(3,3)
-
-! ...  Loop over grid points r on a unit cell that is 8 times larger than a 
-!      primitive supercell. In the end nws contains the total number of grids 
-!      points that have been found in the Wigner-Seitz cell
-
-! ...  init
+!
+!------------------------------
+! main body
+!------------------------------
+!
        nws = 0
-       indxws = 0
-       degen = 0
 
-! ...  Compute metric in real space
+       !
+       ! Compute metric in real space
+       !
        adot(1,1) = avec(1,1) * avec(1,1) + avec(2,1) * avec(2,1) + avec(3,1) * avec(3,1)
        adot(2,2) = avec(1,2) * avec(1,2) + avec(2,2) * avec(2,2) + avec(3,2) * avec(3,2)
        adot(3,3) = avec(1,3) * avec(1,3) + avec(2,3) * avec(2,3) + avec(3,3) * avec(3,3)
@@ -54,22 +57,26 @@
        adot(3,2) = adot(2,3)
 
 
-
+       !
+       ! Loop over grid points r on a unit cell that is 8 times larger than a 
+       ! primitive supercell. In the end nws contains the total number of grids 
+       ! points that have been found in the Wigner-Seitz cell
+       !
        nws = 0
        DO n1 = 0, 2 * nk(1)
          DO n2 = 0, 2 * nk(2)
            DO n3 = 0, 2 * nk(3)
-
-! ...        Loop over the 27 points R. R=0 corresponds to i1=i2=i3=1, or icnt=14
-
+             !
+             ! Loop over the 27 points R. R=0 corresponds to i1=i2=i3=1, or icnt=14
+             !
              icnt = 0
              DO i1 = 0, 2
                DO i2 = 0, 2
                  DO i3 = 0, 2
                    icnt = icnt + 1
-
-! ...              Calculate distance |r-R| 
-         
+                   !
+                   !  Calculate distance |r-R| 
+                   ! 
                    ndiff(1) = n1 - i1 * nk(1)
                    ndiff(2) = n2 - i2 * nk(2)
                    ndiff(3) = n3 - i3 * nk(3)
@@ -86,21 +93,23 @@
                ENDDO
              ENDDO
 
-! ...        Sort the 27 vectors R by increasing value of |r-R| (from Numerical Recipes)
-
+             !
+             ! Sort the 27 vectors R by increasing value of |r-R| (from Numerical Recipes)
+             !
              CALL indexx(27,dist,indx)
 
-! ...        Find all the vectors R with the (same) smallest |r-R|;
-!            if R=0 is one of them, then the current point r belongs to 
-!            Wignez-Seitz cell => set ifnd to 1
+             !
+             ! Find all the vectors R with the (same) smallest |r-R|;
+             ! if R=0 is one of them, then the current point r belongs to 
+             ! Wignez-Seitz cell => set ifnd to 1
+             !
 
-! ...        Jeremia's axe (MBN-AC)
-
+             !
+             ! Jeremia's axe (MBN-AC)
+             !
              dist_min = dist(indx(1))
              IF ( ABS( dist(14) - dist_min ) < EPS_m8 ) THEN
                nws = nws + 1
-
-               IF ( nws > 3*mxdnrk ) CALL errore(' wigner_size ', ' wrong dimension ', nws )
 
                ndeg = 0
                DO nn = 1,27
@@ -117,18 +126,17 @@
          END DO !n2
        END DO !n1
 
-!      Check the "sum rule"
-
+       !
+       ! Check the "sum rule"
+       !
        tot = ZERO
        DO i = 1, nws
          tot = tot + ONE / DBLE(degen(i))
        END DO
 
-       IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > EPS_m8 ) THEN
-           CALL errore(' wigner_size ', ' wrong total number of points ', NINT(tot) )
-       ELSE
-           WRITE( stdout, "(2x,'K-points generation in Wigner-size: SUCCESS')")
-       END IF
+       IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > EPS_m8 ) &
+           CALL errore('wigner_size', 'wrong total number of points ', NINT(tot) )
 
-       RETURN
-       END SUBROUTINE
+    RETURN
+    END SUBROUTINE wigner_seitz
+

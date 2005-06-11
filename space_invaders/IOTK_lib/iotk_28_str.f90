@@ -21,218 +21,8 @@
 #include "iotk_config.h"
 !------------------------------------------------------------------------------!
 
-# 2 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_AUXMACROS
-#define __IOTK_AUXMACROS
-
-! The macros are defined with -D option or inside iotk_config.h
-! The default values are set here
-! Maximum rank of an array
-#ifndef __IOTK_MAXRANK
-#  define __IOTK_MAXRANK 7
-#endif
-! Minimum value used in iotk_free_unit
-#ifndef __IOTK_UNITMIN
-#  define __IOTK_UNITMIN 90000
-#endif
-! Maximum value used in iotk_free_unit
-#ifndef __IOTK_UNITMAX
-#  define __IOTK_UNITMAX 99999
-#endif
-! Unit for errors
-#ifndef __IOTK_ERROR_UNIT
-#  define __IOTK_ERROR_UNIT 0
-#endif
-! Kind for header in binary files
-#ifndef __IOTK_HEADER_KIND
-#  define __IOTK_HEADER_KIND selected_int_kind(8)
-#endif
-! Character (or eventually string) for newline
-! It may be adjusted for particular systems
-! Unix    achar(10)
-! Mac-OS  achar(13)
-! Windows ? (now it should be a single byte)
-#ifndef __IOTK_NEWLINE
-#  define __IOTK_NEWLINE achar(10)
-#endif
-! Character for EOS
-#ifndef __IOTK_EOS
-#  define __IOTK_EOS achar(0)
-#endif
-! These are the default kinds, which depend on the options used
-! during the library compilation
-! Only default characters are implemented
-#define __IOTK_CHARACTER1 iotk_defkind_character
-! For logical, integer and real types, the c precompiler
-! looks for defined kinds. If no kind is found, the default
-! is used as __IOTK_type1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_LOGICAL4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_LOGICAL1 iotk_defkind_LOGICAL
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_INTEGER4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_INTEGER1 iotk_defkind_INTEGER
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL1
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL2
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL3
-# 50 "../include/iotk_auxmacros.spp"
-#ifndef __IOTK_REAL4
-# 52 "../include/iotk_auxmacros.spp"
-#define __IOTK_REAL1 iotk_defkind_REAL
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 55 "../include/iotk_auxmacros.spp"
-#endif
-# 58 "../include/iotk_auxmacros.spp"
-
-! Some useful check follow
-#if __IOTK_MAXRANK > 7
-#  error
-#endif
-#if __IOTK_MAXRANK < 1
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_LOGICAL10
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_INTEGER10
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL5
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL6
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL7
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL8
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL9
-#  error
-#endif
-# 68 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL10
-#  error
-#endif
-# 73 "../include/iotk_auxmacros.spp"
-#endif
-
-! Complex are treated indentically to reals
-! These lines map the definitions.
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL1
-#  define __IOTK_COMPLEX1 __IOTK_REAL1
-#else
-#  undef __IOTK_COMPLEX1
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL2
-#  define __IOTK_COMPLEX2 __IOTK_REAL2
-#else
-#  undef __IOTK_COMPLEX2
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL3
-#  define __IOTK_COMPLEX3 __IOTK_REAL3
-#else
-#  undef __IOTK_COMPLEX3
-#endif
-# 78 "../include/iotk_auxmacros.spp"
-#ifdef __IOTK_REAL4
-#  define __IOTK_COMPLEX4 __IOTK_REAL4
-#else
-#  undef __IOTK_COMPLEX4
-#endif
-# 84 "../include/iotk_auxmacros.spp"
-
-
+# 28 "iotk_str.spp"
+#include "iotk_auxmacros.h"
 # 30 "iotk_str.spp"
 
 # 33 "iotk_str.spp"
@@ -280,8 +70,12 @@ subroutine iotk_escape_x(to,from)
   use iotk_misc_interf
   use iotk_str_interf
   implicit none
-  character(len=*), intent(in) :: from
-  character(len=*), intent(out):: to
+  character(len=*), intent(in)  :: from
+#ifdef __IOTK_WORKAROUND6
+  character(len=*)              :: to
+#else
+  character(len=*), intent(out) :: to
+#endif
   integer :: pos,pos1,semic,fromlen
   pos = 1
   pos1 = 1
@@ -323,7 +117,11 @@ subroutine iotk_deescape_x(to,from,quot,apos)
   use iotk_str_interf
   implicit none
   character(len=*), intent(in)  :: from
+#ifdef __IOTK_WORKAROUND6
+  character(len=*)              :: to
+#else
   character(len=*), intent(out) :: to
+#endif
   logical, optional, intent(in) :: quot,apos
   logical :: lquot,lapos
   integer :: pos,pos1
@@ -433,15 +231,19 @@ function iotk_strpad_x(str)
   if(strlen<len(iotk_strpad_x)) iotk_strpad_x(strlen+1:) = " "
 end function iotk_strpad_x
 
-# 231 "iotk_str.spp"
+# 239 "iotk_str.spp"
 subroutine iotk_strcpy_x(to,from,ierr)
   use iotk_base
   use iotk_error_interf
   use iotk_misc_interf
   implicit none
-  character(len=*), intent(out):: to
-  character(len=*), intent(in) :: from
-  integer,          intent(out):: ierr
+#ifdef __IOTK_WORKAROUND6
+  character(len=*)              :: to
+#else
+  character(len=*), intent(out) :: to
+#endif
+  character(len=*), intent(in)  :: from
+  integer,          intent(out) :: ierr
   integer :: i,fromlen
   ierr = 0
   do i=1,min(len(from),len(to))
@@ -451,15 +253,15 @@ subroutine iotk_strcpy_x(to,from,ierr)
   if(i>len(to) .and. i<=len(from)) then
     if(from(i:i)/=iotk_eos) then
       call iotk_error_issue(ierr,"iotk_strcpy",__FILE__,__LINE__)
-# 247 "iotk_str.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 259 "iotk_str.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
       return
     end if
   end if
   if(i<=len(to)) to(i:i) = iotk_eos
 end subroutine iotk_strcpy_x
 
-# 255 "iotk_str.spp"
+# 267 "iotk_str.spp"
 subroutine iotk_strcat_x(to,from,ierr)
   use iotk_base
   use iotk_error_interf
@@ -475,15 +277,15 @@ subroutine iotk_strcat_x(to,from,ierr)
   fromlen = iotk_strlen(from)
   if(tolen+fromlen>len(to)) then
     call iotk_error_issue(ierr,"iotk_strcat",__FILE__,__LINE__)
-# 269 "iotk_str.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.7 ")
+# 281 "iotk_str.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
   end if
   if(ierr/=0) return
   to(tolen+1:tolen+fromlen) = from(1:fromlen)
   if(tolen+fromlen+1<=len(to)) to(tolen+fromlen+1:tolen+fromlen+1)=iotk_eos
 end subroutine iotk_strcat_x
 
-# 277 "iotk_str.spp"
+# 289 "iotk_str.spp"
 function iotk_strcomp_x(str1,str2)
   use iotk_base
   implicit none

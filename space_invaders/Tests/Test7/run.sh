@@ -21,9 +21,9 @@ MANUAL=" Usage
  disentangle_dw  the same for SPINDW states
  wannier_up      perform the above cited minimization (SPINUP)
  wannier_dw      the same for SPINDW states
- hamiltonian_up  writes the hamiltonian matrix elements on the Wannier basis (SPINUP)
- hamiltonian_dw  the same for SPINDW states
- want_up         perform DISENTANGLE, WANNIER and HAMILTONIAN for SPINUP
+ bands_up        interpolates the band structure using WFs
+ bands_dw        the same for SPINDW states
+ want_up         perform DISENTANGLE, WANNIER and BANDS for SPINUP
  want_dw         the same for SPINDW
  want            want_up and want_dw
  bulk_up         evaluate the transmittance, for the bulk case (SPINUP)
@@ -56,8 +56,8 @@ DISENTANGLE_UP=
 DISENTANGLE_DW=
 WANNIER_UP=
 WANNIER_DW=
-HAMILTONIAN_UP=
-HAMILTONIAN_DW=
+BANDS_UP=
+BANDS_DW=
 BULK_UP=
 BULK_DW=
 CLEAN=
@@ -74,24 +74,24 @@ case $INPUT in
    (disentangle_dw) DISENTANGLE_DW=".TRUE." ;;
    (wannier_up)     WANNIER_UP=".TRUE." ;;
    (wannier_dw)     WANNIER_DW=".TRUE." ;;
-   (hamiltonian_up) HAMILTONIAN_UP=".TRUE." ;;
-   (hamiltonian_dw) HAMILTONIAN_DW=".TRUE." ;;
+   (bands_up)       BANDS_UP=".TRUE." ;;
+   (bands_dw)       BANDS_DW=".TRUE." ;;
    (want_up)        DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
-                    HAMILTONIAN_UP=".TRUE." ;;
+                    BANDS_UP=".TRUE." ;;
    (want_dw)        DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
-                    HAMILTONIAN_DW=".TRUE." ;;
+                    BANDS_DW=".TRUE." ;;
    (want)           DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
-                    HAMILTONIAN_UP=".TRUE." ;
+                    BANDS_UP=".TRUE." ;
                     DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
-                    HAMILTONIAN_DW=".TRUE." ;;
+                    BANDS_DW=".TRUE." ;;
    (bulk_up)        BULK_UP=".TRUE." ;;
    (bulk_dw)        BULK_DW=".TRUE." ;;
    (bulk)           BULK_UP=".TRUE." ; BULK_DW=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ; 
-                    HAMILTONIAN_UP=".TRUE." ; BULK_UP=".TRUE." ;
+                    BANDS_UP=".TRUE." ; BULK_UP=".TRUE." ;
                     DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ; 
-                    HAMILTONIAN_DW=".TRUE." ; BULK_DW=".TRUE." ;;
+                    BANDS_DW=".TRUE." ; BULK_DW=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -212,29 +212,29 @@ if [ "$WANNIER_DW" = ".TRUE." ] ; then
 fi
 
 #
-# running HAMILTONIAN_UP
+# running BANDS_UP
 #
-if [ "$HAMILTONIAN_UP" = ".TRUE." ] ; then  
-   echo "running HAMILTONIAN_UP calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_UP.in > $TEST_HOME/hamiltonian_UP.out
+if [ "$BANDS_UP" = ".TRUE." ] ; then  
+   echo "running BANDS_UP calculation" 
+   $WANT_BIN/bands.x < $TEST_HOME/bands_UP.in > $TEST_HOME/bands_UP.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
-      echo "found some problems in HAMILTONIAN_UP calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in BANDS_UP calculation, stopping" ; cat CRASH ; exit 1
    fi
    rename RHAM. RHAM_UP. RHAM*
 fi
 
 #
-# running HAMILTONIAN_DW
+# running BANDS_DW
 #
-if [ "$HAMILTONIAN_DW" = ".TRUE." ] ; then  
-   echo "running HAMILTONIAN_DW calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_DW.in > $TEST_HOME/hamiltonian_DW.out
+if [ "$BANDS_DW" = ".TRUE." ] ; then  
+   echo "running BANDS_DW calculation" 
+   $WANT_BIN/bands.x < $TEST_HOME/bands_DW.in > $TEST_HOME/bands_DW.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
-      echo "found some problems in HAMILTONIAN_DW calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in BANDS_DW calculation, stopping" ; cat CRASH ; exit 1
    fi
    rename RHAM. RHAM_DW. RHAM*
 fi

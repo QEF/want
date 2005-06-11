@@ -1,14 +1,11 @@
 
   &INPUT_BULK
-    nmx = 16
-    norb = 1 
+    nmx = 32
     ne = 1000 
-    nterx = 200 
-    gamma0 = 0.0
+    niterx = 200 
     emin = -20.0 
     emax =  0.0
     efieldx = 0.0 
     efieldy = 0.0
     efieldz = 0.0 
-    model = 4 
   /

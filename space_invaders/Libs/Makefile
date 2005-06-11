@@ -3,10 +3,9 @@ include ../make.sys
 
 OBJS= compar.o domega.o domega_aux.o error.o \
       get_points.o indexx.o komegai.o \
-      bshells.o omega.o \
+      bshells.o omega.o hamiltonian_calc.o \
       phases.o projection.o projection_frozen.o \
       wigner_seitz.o zmatrix.o fft_stick.o \
-      write_op.o check_sgm_kpt.o check_sgm_wan.o do_self_energy.o \
       gcube2plt.o cptimer.o date_and_tim.o \
       ordering.o sort.o recips.o  \
       overlap.o overlap_setmap.o \

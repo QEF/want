@@ -1,5 +1,5 @@
 !
-!      Copyright (C) 2004 Arrigo Calzolari, Marco Buongiorno Nardelli
+!      Copyright (C) 2004 WanT Group
 !      Copyright (C) 1999 Marco Buongiorno Nardelli
 !
 !      This file is distributed under the terms of the

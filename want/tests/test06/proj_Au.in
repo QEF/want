@@ -1,0 +1,4 @@
+&inputpp
+  prefix='gold'
+  outdir='./'
+/

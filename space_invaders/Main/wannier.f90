@@ -19,7 +19,7 @@
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
                                  unitary_thr, verbosity, start_mode_wan, do_condmin
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
-      USE io_module, ONLY : stdout, wan_unit, ioname
+      USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
       USE files_module, ONLY : file_open, file_close
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
@@ -37,6 +37,7 @@
                        localization_allocate, localization_write, localization_print, &
                        a_condmin, niter_condmin, dump_condmin
       USE trial_center_data_module, ONLY : trial
+      USE hamiltonian_module, ONLY : hamiltonian_write, hamiltonian_init
 
 !
 ! ... 
@@ -97,6 +98,7 @@
       ! ... Global data init
       !
       CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE.)
+
 
       !
       ! ... Summary of the input and DFT data
@@ -513,13 +515,31 @@
       CALL ioname('wannier',filename,LPATH=.FALSE.)
       WRITE( stdout,"(/,2x,'Unitary transf. matrixes written on file: ',a)") &
                     TRIM(filename)
+      WRITE(stdout,"(2x,70('='))")
+
+
+      !
+      ! ... Convert the Hamiltonian from the bloch basis to the wannier one
+      !     and write the results to file
+      !
+      CALL hamiltonian_init()
+      CALL hamiltonian_calc(dimwann, nkpts, cu)
+
+      CALL ioname('hamiltonian',filename)
+      CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="write", &
+                              FORM='formatted')
+            CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
+      CALL file_close(ham_unit,PATH="/",ACTION="write")
+
+      CALL ioname('hamiltonian',filename,LPATH=.FALSE.)
+      WRITE( stdout,"(/,'  Hamiltonian on WF basis written on file : ',a)") TRIM(filename)
 
 !
 !--------------------------------------
 ! ...  Shut down
 !--------------------------------------
 !
-      WRITE(stdout,"(2x,70('='))")
+      WRITE(stdout,"(2/,2x,70('='))")
 
       !
       ! ... Finalize timing
@@ -559,6 +579,6 @@
 
       CALL cleanup
 
-      STOP '*** THE END *** (wannier.f90)'
-      END PROGRAM wannier
+      STOP '*** THE END *** (wannier.x)'
+   END PROGRAM wannier
 

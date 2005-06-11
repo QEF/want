@@ -164,6 +164,10 @@ CONTAINS
 
        CALL ggrids_allocate() 
 
+       !
+       ! this is the call giving problems with INTEL compiler
+       ! maybe e question in the internal management of memory
+       !
        CALL iotk_scan_dat(unit,"g",igv(:,:),IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'unable to find igv',ABS(ierr))
 

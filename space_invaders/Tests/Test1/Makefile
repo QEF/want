@@ -10,9 +10,12 @@ info:
 
 all: 
 	./run.sh all
+	./run_US.sh all
 
 want: 
 	./run.sh want
+	./run_US.sh want
 
 clean:
 	./run.sh clean
+	./run_US.sh clean
