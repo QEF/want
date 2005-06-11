@@ -3,6 +3,7 @@
    prefix = 'gold_US'
    postfix = '_WanT'
    work_dir = './'
+   verbosity = 'high'
 /
 
 &SUBSPACE

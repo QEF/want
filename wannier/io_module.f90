@@ -30,7 +30,6 @@
 ! * 'export'
 ! * 'subspace'
 ! * 'wannier'
-! * 'self_energy'
 ! * 'hamiltonian'
 ! * 'save'
 !
@@ -42,19 +41,22 @@
        dft_unit = 10,              &! input file (DFT data) unit
     pseudo_unit = 11,              &! input pseudopotential data unit
        ovp_unit = 20,              &! overlap and projections unit
-     space_unit = 21,              &! dos and pdos unit
-       wan_unit = 22,              &! G integrals unit
-       sgm_unit = 23,              &! SGM unit
-       ham_unit = 24,              &! HAM unit
+     space_unit = 21,              &! space unit
+       wan_unit = 22,              &! wannier stuff unit
+       ham_unit = 23,              &! hamiltonian unit
+       aux_unit = 30,              &! auxiliary units
+      aux1_unit = 31,              &! 
+      aux2_unit = 32,              &! 
+      aux3_unit = 33,              &! 
+      aux4_unit = 34,              &! 
       save_unit = 60                ! restart file unit
 
 
    CHARACTER(4), PARAMETER    ::  suffix_dft_data=".dft"
    CHARACTER(17),PARAMETER    ::  suffix_export=".export/index.xml"
-   CHARACTER(7), PARAMETER    ::  suffix_subspace=".spaces"
+   CHARACTER(7), PARAMETER    ::  suffix_space=".space"
    CHARACTER(4), PARAMETER    ::  suffix_ovp=".ovp"
    CHARACTER(4), PARAMETER    ::  suffix_wannier=".wan"
-   CHARACTER(4), PARAMETER    ::  suffix_self_energy=".sgm"
    CHARACTER(4), PARAMETER    ::  suffix_hamiltonian=".ham"
    CHARACTER(5), PARAMETER    ::  suffix_save=".save"
    
@@ -78,7 +80,8 @@
 
    PUBLIC ::  stdin, stdout 
    PUBLIC ::  dft_unit, pseudo_unit 
-   PUBLIC ::  ovp_unit, space_unit, wan_unit, sgm_unit, ham_unit 
+   PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit 
+   PUBLIC ::  aux_unit, aux1_unit, aux2_unit, aux3_unit, aux4_unit
    PUBLIC ::  save_unit
 
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
@@ -132,14 +135,12 @@
            suffix_ = TRIM(suffix_dft_data)
       CASE ( "export" ) 
            suffix_ = TRIM(suffix_export)
-      CASE ( "subspace" ) 
-           suffix_ = TRIM(suffix_subspace)
+      CASE ( "space" ) 
+           suffix_ = TRIM(suffix_space)
       CASE ( "overlap_projection" ) 
            suffix_ = TRIM(suffix_ovp)
       CASE ( "wannier" ) 
            suffix_ = TRIM(suffix_wannier)
-      CASE ( "self_energy" )
-           suffix_ = TRIM(suffix_self_energy)
       CASE ( "hamiltonian" )
            suffix_ = TRIM(suffix_hamiltonian)
       CASE ( "save" )

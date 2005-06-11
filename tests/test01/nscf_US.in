@@ -3,7 +3,7 @@ Silicon USPP
  &control
     calculation='nscf'
     pseudo_dir = './',
-    prefix='silicon'
+    prefix='silicon_US'
  /
  &system    
     ibrav=  2, celldm(1) =10.599478, nat=  2, ntyp= 1,
@@ -18,7 +18,7 @@ Silicon USPP
  /
 ATOMIC_SPECIES
  Si  28.086  Si.pbe-n-van.UPF
-ATOMIC_POSITIONS (crystal)
+ATOMIC_POSITIONS (alat)
  Si 0.00 0.00 0.00 
  Si 0.25 0.25 0.25 
 K_POINTS (crystal)

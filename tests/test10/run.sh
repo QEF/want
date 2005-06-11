@@ -18,7 +18,7 @@ MANUAL=" Usage
  dft_cond             perform SCF, NSCF, PWEXPORT all together (conductor)
  disentangle_cond     wannier subspace definition (conductor)
  wannier_cond         wannier functions (conductor)
- hamiltonian_cond     writes the hamiltonian on the Wannier basis (conductor)
+ bands_cond           interpolates the band structure using WFs
  want_cond            all the wannier function steps, DISENT., WANNIER (conductor)
  all_cond             DFT_COND and WANT_COND tigether
 
@@ -28,7 +28,7 @@ MANUAL=" Usage
  dft_leads            perform SCF, NSCF, PWEXPORT all together (leads)
  disentangle_leads    wannier subspace definition (leads)
  wannier_leads        wannier functions (leads)
- hamiltonian_leads    writes the hamiltonian on the Wannier basis (leads)
+ bands_leads          interpolates the band structure using WFs
  want_leads           all the wannier function steps, DISENT., WANNIER (leads)
  all_leads            DFT_LEADS and WANT_LEADS tigether
 
@@ -62,14 +62,14 @@ NSCF_COND=
 PWEXPORT_COND=
 DISENTANGLE_COND=
 WANNIER_COND=
-HAMILTONIAN_COND=
+BANDS_COND=
 
 SCF_LEADS=
 NSCF_LEADS=
 PWEXPORT_LEADS=
 DISENTANGLE_LEADS=
 WANNIER_LEADS=
-HAMILTONIAN_LEADS=
+BANDS_LEADS=
 
 CONDUCTOR=
 BULK=
@@ -88,12 +88,12 @@ case $INPUT in
    ( dft_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;;
    ( disentangle_cond )  DISENTANGLE_COND=".TRUE." ;;
    ( wannier_cond )      WANNIER_COND=".TRUE." ;;
-   ( hamiltonian_cond )  HAMILTONIAN_COND=".TRUE." ;;
+   ( bands_cond )  BANDS_COND=".TRUE." ;;
    ( want_cond )         DISENTANGLE_COND=".TRUE." ; 
-                         WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;;
+                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ;;
    ( all_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
                          DISENTANGLE_COND=".TRUE." ;
-                         WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;;
+                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ;;
 
    ( scf_leads )         SCF_LEADS=".TRUE." ;;
    ( nscf_leads )        NSCF_LEADS=".TRUE." ;;
@@ -101,27 +101,27 @@ case $INPUT in
    ( dft_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
    ( disentangle_leads ) DISENTANGLE_LEADS=".TRUE." ;;
    ( wannier_leads )     WANNIER_LEADS=".TRUE." ;;
-   ( hamiltonian_leads ) HAMILTONIAN_LEADS=".TRUE." ;;
+   ( bands_leads ) BANDS_LEADS=".TRUE." ;;
    ( want_leads )        DISENTANGLE_LEADS=".TRUE." ; 
-                         WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
+                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ;;
    ( all_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;
                          DISENTANGLE_LEADS=".TRUE." ;
-                         WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
+                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ;;
 
    ( dft )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
    ( want )              DISENTANGLE_COND=".TRUE." ;
-                         WANNIER_COND=".TRUE." ; HAMILTONIAN_COND=".TRUE." ;
+                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ;
                          DISENTANGLE_LEADS=".TRUE." ;
-                         WANNIER_LEADS=".TRUE." ; HAMILTONIAN_LEADS=".TRUE." ;;
+                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ;;
    ( conductor )         CONDUCTOR=".TRUE." ;;
    ( bulk )              BULK=".TRUE." ;;
    ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ; 
                          DISENTANGLE_COND=".TRUE." ; 
-                         WANNIER_COND=".TRUE." ;  HAMILTONIAN_COND=".TRUE." ;
+                         WANNIER_COND=".TRUE." ;  BANDS_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ; 
                          DISENTANGLE_LEADS=".TRUE." ; 
-                         WANNIER_LEADS=".TRUE." ;  HAMILTONIAN_LEADS=".TRUE." ;
+                         WANNIER_LEADS=".TRUE." ;  BANDS_LEADS=".TRUE." ;
                          CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
 
    ( clean )             CLEAN=".TRUE." ;;
@@ -276,28 +276,28 @@ if [ "$WANNIER_LEADS" = ".TRUE." ] ; then
 fi
 
 #
-# running HAMILTONIAN
+# running BANDS
 #
-if [ "$HAMILTONIAN_COND" = ".TRUE." ] ; then  
-   echo "running HAMILTONIAN_COND calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_cond.in  \
-                           > $TEST_HOME/hamiltonian_cond.out
+if [ "$BANDS_COND" = ".TRUE." ] ; then  
+   echo "running BANDS_COND calculation" 
+   $WANT_BIN/bands.x < $TEST_HOME/bands_cond.in  \
+                           > $TEST_HOME/bands_cond.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
-      echo "found some problems in HAMILTONIAN_COND calculation, stopping" ; cat CRASH 
+      echo "found some problems in BANDS_COND calculation, stopping" ; cat CRASH 
       exit 1
    fi
 fi
 
-if [ "$HAMILTONIAN_LEADS" = ".TRUE." ] ; then  
-   echo "running HAMILTONIAN_LEADS calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian_leads.in  \
-                           > $TEST_HOME/hamiltonian_leads.out
+if [ "$BANDS_LEADS" = ".TRUE." ] ; then  
+   echo "running BANDS_LEADS calculation" 
+   $WANT_BIN/bands.x < $TEST_HOME/bands_leads.in  \
+                           > $TEST_HOME/bands_leads.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
-      echo "found some problems in HAMILTONIAN_LEADS calculation, stopping" ; cat CRASH
+      echo "found some problems in BANDS_LEADS calculation, stopping" ; cat CRASH
       exit 1
    fi
 fi

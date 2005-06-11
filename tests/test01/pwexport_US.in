@@ -1,5 +1,5 @@
 &inputpp
-  prefix='silicon'
+  prefix='silicon_US'
   outdir='./'
   pseudo_dir='./'
   psfile(1)='Si.pbe-n-van.UPF'

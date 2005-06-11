@@ -11,8 +11,9 @@
    MODULE subspace_module
 !*********************************************
    USE kinds, ONLY : dbl
-   USE windows_module, ONLY : dimwin, dimwinx, lcompspace, windows_alloc => alloc, &
-                              efermi, windows_allocate
+   USE windows_module, ONLY : nbnd, dimwin, dimwinx, lcompspace, &
+                              efermi, windows_allocate, &
+                              windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, kpoints_alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
@@ -221,6 +222,7 @@ CONTAINS
           IF (dimwinx_/=dimwinx) CALL errore(subname,'Invalid DIMWINX',ABS(dimwinx-dimwinx_))
        ELSE
           dimwinx = dimwinx_
+          nbnd    = dimwinx_
           CALL windows_allocate()
        ENDIF
 

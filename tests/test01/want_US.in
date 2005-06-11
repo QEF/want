@@ -1,6 +1,6 @@
 
 &CONTROL
-    prefix = 'silicon'
+    prefix = 'silicon_US'
     postfix = '_WanT'
     work_dir = './'
 /
@@ -15,7 +15,7 @@
 
 &LOCALIZATION
     maxiter0_wan  = 100
-    maxiter1_wan  = 800
+    maxiter1_wan  = 4000
     ncg = 5      
     nshells = 1  
     nwhich(1) = 1

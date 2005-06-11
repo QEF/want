@@ -1,41 +1,40 @@
 !
-! Copyright (C) 2004 WanT Group
-! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
-! Copyright (C) 1997 Nicola Marzari, David Vanderbilt
+! Copyright (C) 2005 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-      PROGRAM plot
-!=----------------------------------------------------------------------------------=
+!******************************************
+   PROGRAM plot
+   !******************************************
+   !
+   ! real space plot of the computed Wannier functions
+   !
+   USE kinds
+   USE constants, ONLY: PI, TPI, bohr => bohr_radius_angs, &
+                        ZERO, CZERO, ONE, CONE, CI, EPS_m8
+   USE parameters, ONLY: ntypx, natx, nstrx
+   USE fft_scalar, ONLY: cfft3d
+   USE timing_module, ONLY : timing, timing_overview, global_list
+   USE io_module, ONLY : stdout, stdin, space_unit, dft_unit, wan_unit, ioname
+   USE files_module, ONLY : file_open, file_close
+   USE startup_module, ONLY : startup
+   USE cleanup_module, ONLY : cleanup
+   USE want_init_module, ONLY : want_init
+   USE version_module, ONLY : version_number
+   USE util_module, ONLY : zmat_unitary
 
-      USE kinds
-      USE constants, ONLY: PI, TPI, bohr => bohr_radius_angs, &
-                           ZERO, CZERO, ONE, CONE, CI, EPS_m8
-      USE parameters, ONLY: ntypx, natx, nstrx
-      USE fft_scalar, ONLY: cfft3d
-      USE timing_module, ONLY : timing, timing_deallocate, timing_overview, global_list
-      USE io_module, ONLY : stdout, stdin, space_unit, dft_unit, wan_unit, ioname
-      USE files_module, ONLY : file_open, file_close
-      USE startup_module, ONLY : startup
-      USE cleanup_module, ONLY : cleanup
-      USE want_init_module, ONLY : want_init
-      USE version_module, ONLY : version_number
-      USE util_module, ONLY : zmat_unitary
-
-      USE lattice_module, ONLY : avec, bvec
-      USE kpoints_module, ONLY : nkpts, vkpt
-      USE windows_module
-      USE subspace_module, ONLY : wan_eig, efermi, subspace_read
-      USE localization_module, ONLY : dimwann, cu, localization_read
-      USE ggrids_module
-      USE wfc_data_module 
+   USE lattice_module, ONLY : avec, bvec
+   USE kpoints_module, ONLY : nkpts, vkpt
+   USE windows_module
+   USE subspace_module, ONLY : wan_eig, efermi, subspace_read
+   USE localization_module, ONLY : dimwann, cu, localization_read
+   USE ggrids_module
+   USE wfc_data_module 
       
-
-      IMPLICIT NONE
+   IMPLICIT NONE
 
       INTEGER,      PARAMETER :: ngt = 2
       INTEGER,      PARAMETER :: ngs = ngt-1
@@ -133,7 +132,7 @@
 !
 ! ... Read energy eigenvalues in electron-volt
 !
-      CALL ioname('subspace',filename)
+      CALL ioname('space',filename)
       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore('plot',"unable to find WINDOWS",1)
@@ -141,7 +140,7 @@
           IF ( .NOT. lfound ) CALL errore('plot',"unable to find SUBSPACE",1)
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
-      CALL ioname('subspace',filename,LPATH=.FALSE.)
+      CALL ioname('space',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Subspace data read from file: ',a)") TRIM(filename)
       !
       wan_eig(:,:) = wan_eig(:,:) - Efermi

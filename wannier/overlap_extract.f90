@@ -64,7 +64,7 @@ SUBROUTINE overlap_extract(dimwann)
 !
 ! ... reading subspace and windows data
 !
-   CALL ioname('subspace',filename)
+   CALL ioname('space',filename)
    CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
         CALL windows_read(space_unit,"WINDOWS",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1) 
@@ -72,7 +72,7 @@ SUBROUTINE overlap_extract(dimwann)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1) 
    CALL file_close(space_unit,PATH="/",ACTION="read")
 
-   CALL ioname('subspace',filename,LPATH=.FALSE.)
+   CALL ioname('space',filename,LPATH=.FALSE.)
    WRITE( stdout,"(/,'  Subspace data read from file: ',a)") TRIM(filename)   
     
 !
@@ -114,7 +114,6 @@ SUBROUTINE overlap_extract(dimwann)
 !     ca(m,i,k) = \sum_l EAMP^{daga}_ml * ca0(l,i,k)
 !
 
-
    !
    ! CM
    !
@@ -141,7 +140,7 @@ SUBROUTINE overlap_extract(dimwann)
 
 
 !
-! ... finally redefine the CM variable 
+! ... finally redefine the CM iand CA variables 
 !
    CALL overlap_deallocate()
    dimwinx = dimwann

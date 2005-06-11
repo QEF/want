@@ -50,6 +50,7 @@ CONTAINS
                                ONLY : struct_fact_data_deallocate, strf_alloc => alloc 
       USE us_module,           ONLY : us_deallocate
       USE uspp,                ONLY : uspp_deallocate
+      USE hamiltonian_module,  ONLY : hamiltonian_deallocate, ham_alloc => alloc
       IMPLICIT NONE
       
       IF ( kpoints_alloc )  CALL kpoints_deallocate()
@@ -62,6 +63,7 @@ CONTAINS
       IF ( loc_alloc )      CALL localization_deallocate()
       IF ( trial_alloc )    CALL trial_center_data_deallocate()
       IF ( timing_alloc )   CALL timing_deallocate()
+      IF ( ham_alloc)       CALL hamiltonian_deallocate()
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
                             CALL us_deallocate()
                             CALL uspp_deallocate()

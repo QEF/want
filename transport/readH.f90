@@ -1,5 +1,5 @@
 !
-!      Copyright (C) 2004 Arrigo Calzolari, Marco Buongiorno Nardelli
+!      Copyright (C) 2004 WanT Group
 !      Copyright (C) 1999 Marco Buongiorno Nardelli
 !
 !      This file is distributed under the terms of the
@@ -7,17 +7,12 @@
 !      in the root directory of the present distribution,
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
-!---------------------------------------------------------------------
+!***************************************************************************
       SUBROUTINE readH( nmaxa, nmaxb, nmaxc, h00_a, h01_a, s00_a, s01_a,  &
-                         h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac, &
-                         sci_ac, hci_cb, sci_cb , l_overlap )
-!---------------------------------------------------------------------
- 
-!...  Energy conversion factor
-!     efac=1.0d0       ! energy in eV (default)
-!     efac=13.6058     ! energy in Ry
-!     efac=27.2116     ! energy in Ha
-
+                        h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac, &
+                        sci_ac, hci_cb, sci_cb , l_overlap )
+!***************************************************************************
+!
 !...  Matrix definition
 !
 !     Given a conductor (C) bonded to a right lead (A) and a left lead (B)
@@ -45,41 +40,42 @@
 !         S01_A, S01_B, SCI_AC, SCI_CB = Zero
 !     if  l_overlap=true => external reading
 !
+!...  Units
+!     energies are supposed to be in eV
+!
 !=-------------------------------------------------------------------------------------------
- 
-      USE KINDS
-
-      IMPLICIT NONE
+   USE KINDS
+   USE constants, ONLY : CZERO, CONE
+   IMPLICIT NONE
 
       INTEGER :: i, j, k, l, m, n
       INTEGER :: ierr
       INTEGER :: nmaxa, nmaxb, nmaxc
       INTEGER :: nwa, nwb, nwc
 
-      REAL(dbl) :: efac
-      REAL(dbl) :: h00_a(nmaxa,nmaxa)
-      REAL(dbl) :: h01_a(nmaxa,nmaxa)
-      REAL(dbl) :: h00_b(nmaxb,nmaxb)
-      REAL(dbl) :: h01_b(nmaxb,nmaxb)
-      REAL(dbl) :: h00_c(nmaxc,nmaxc)
-      REAL(dbl) :: hci_ac(nmaxa,nmaxc)
-      REAL(dbl) :: hci_cb(nmaxc,nmaxb)
+      COMPLEX(dbl) :: h00_a(nmaxa,nmaxa)
+      COMPLEX(dbl) :: h01_a(nmaxa,nmaxa)
+      COMPLEX(dbl) :: h00_b(nmaxb,nmaxb)
+      COMPLEX(dbl) :: h01_b(nmaxb,nmaxb)
+      COMPLEX(dbl) :: h00_c(nmaxc,nmaxc)
+      COMPLEX(dbl) :: hci_ac(nmaxa,nmaxc)
+      COMPLEX(dbl) :: hci_cb(nmaxc,nmaxb)
       
-      REAL(dbl) :: s00_a(nmaxa,nmaxa)
-      REAL(dbl) :: s01_a(nmaxa,nmaxa)
-      REAL(dbl) :: s00_b(nmaxb,nmaxb)
-      REAL(dbl) :: s01_b(nmaxb,nmaxb)
-      REAL(dbl) :: s00_c(nmaxc,nmaxc)
-      REAL(dbl) :: sci_ac(nmaxa,nmaxc)
-      REAL(dbl) :: sci_cb(nmaxc,nmaxb)
+      COMPLEX(dbl) :: s00_a(nmaxa,nmaxa)
+      COMPLEX(dbl) :: s01_a(nmaxa,nmaxa)
+      COMPLEX(dbl) :: s00_b(nmaxb,nmaxb)
+      COMPLEX(dbl) :: s01_b(nmaxb,nmaxb)
+      COMPLEX(dbl) :: s00_c(nmaxc,nmaxc)
+      COMPLEX(dbl) :: sci_ac(nmaxa,nmaxc)
+      COMPLEX(dbl) :: sci_cb(nmaxc,nmaxb)
 
       LOGICAL :: l_overlap
+      REAL(dbl) :: aux1, aux2
 
-      efac=1.0d0
 
 !...  Read from external file
 
-      PRINT*, ' ....reading from external file....'
+      WRITE(*,*) ' ....reading from external file....'
 
 !=--------------------------------------------------------------
 
@@ -94,10 +90,10 @@
       DO j = 1, nwa
          READ ( 30, * ) 
          DO i = 1, nwa
-            READ ( 30, * ) h00_a(i,j)
- !          h00_a(i,j) = efac * h00(i,j)
-         END DO
-      END DO
+            READ ( 30, * ) aux1, aux2 
+            h00_a(i,j) = CMPLX(aux1,aux2)
+         ENDDO
+      ENDDO
 
       CLOSE(30)
 
@@ -114,10 +110,10 @@
       DO j = 1, nwa
          READ ( 31, * ) 
          DO i = 1, nwa
-            READ ( 31, * ) h01_a(i,j)
-!           h01_a(i,j) = efac * h01_a(i,j)
-         END DO
-      END DO
+            READ ( 31, * ) aux1, aux2
+            h01_a(i,j) = CMPLX(aux1,aux2)
+         ENDDO
+      ENDDO
 
       CLOSE(31)
 
@@ -134,10 +130,10 @@
       DO j = 1, nwb
          READ ( 40, * ) 
          DO i = 1, nwb
-            READ ( 40, * ) h00_b(i,j)
-!           h00_b(i,j) = efac * h00_b(i,j)
-         END DO
-      END DO
+            READ ( 40, * ) aux1, aux2
+            h00_b(i,j) = CMPLX(aux1,aux2)
+         ENDDO
+      ENDDO
 
       CLOSE(40)
 
@@ -154,10 +150,10 @@
       DO j = 1, nwb
          READ ( 41, * ) 
          DO i = 1, nwb
-            READ ( 41, * ) h01_b(i,j)
-!           h01_b(i,j) = efac * h01_b(i,j)
-         END DO
-      END DO
+            READ ( 41, * ) aux1, aux2
+            h01_b(i,j) = CMPLX(aux1,aux2)
+         ENDDO
+      ENDDO
 
       CLOSE(41)
 
@@ -174,10 +170,10 @@
       DO j = 1, nwc
          READ ( 51, * ) 
          DO i = 1, nwc
-            READ( 51, * ) h00_c(i,j)
-!           h00_c(i,j) = efac * h00_c(i,j)
-         END DO
-      END DO
+            READ( 51, * ) aux1, aux2
+            h00_c(i,j) = CMPLX(aux1,aux2)
+         ENDDO
+      ENDDO
 
       CLOSE(51)
 
@@ -194,8 +190,8 @@
       DO j = 1, nwc
          READ ( 61, * ) 
          DO i = 1, nwa
-            READ ( 61, * ) hci_ac(i,j)
-!           hci_ac(i,j) = efac * hci_ac(i,j)
+            READ ( 61, * ) aux1, aux2
+            hci_ac(i,j) = CMPLX(aux1,aux2)
          ENDDO
       ENDDO
 
@@ -214,12 +210,13 @@
       DO j = 1, nwb
          READ ( 71, * ) 
          DO i = 1, nwc
-            READ ( 71, * ) hci_cb(i,j)
-!           hci_cb(i,j) = efac * hci_cb(i,j)
-         END DO
-      END DO
+            READ ( 71, * ) aux1, aux2
+            hci_cb(i,j) = CMPLX(aux1,aux2)
+         ENDDO
+      ENDDO
 
       CLOSE(71)
+
 
 !=--------------------------------------------------------------
 !...  Check overlap
@@ -239,9 +236,10 @@
         DO j = 1, nwa
            READ ( 32, * ) 
            DO i = 1, nwa
-              READ ( 32, *) s00_a(i,j)
-           END DO
-        END DO
+              READ ( 32, *) aux1, aux2
+              s00_a(i,j) = CMPLX(aux1,aux2)
+           ENDDO
+        ENDDO
 
         CLOSE(32)
 
@@ -258,9 +256,10 @@
         DO j = 1, nwa
            READ ( 33, * ) 
            DO i = 1, nwa
-            READ(33,*) s01_a(i,j)
-           END DO
-        END DO
+              READ(33,*) aux1, aux2
+              s01_a(i,j) = CMPLX(aux1,aux2)
+           ENDDO
+        ENDDO
 
         CLOSE(33)
 
@@ -277,9 +276,10 @@
         DO j = 1, nwb
            READ ( 42, * ) 
            DO i = 1, nwb
-              READ( 42, * ) s00_B(i,j)
-           END DO
-        END DO
+              READ( 42, * ) aux1, aux2
+              s00_b(i,j) = CMPLX(aux1,aux2)
+           ENDDO
+        ENDDO
 
         CLOSE(42)
 
@@ -296,9 +296,10 @@
         DO j = 1, nwb
            READ( 43, * ) 
            DO i = 1, nwb
-              READ( 43, * ) s01_b(i,j)
-           END DO
-        END DO
+              READ( 43, * ) aux1, aux2
+              s01_b(i,j) = CMPLX(aux1,aux2)
+           ENDDO
+        ENDDO
 
         CLOSE(33)
 
@@ -315,9 +316,10 @@
         DO j = 1, nwc
          READ ( 52, * ) 
            DO i = 1, nwc
-              READ ( 52, * ) s00_c(i,j)
-           END DO
-        END DO
+              READ ( 52, * ) aux1, aux2
+              s00_c(i,j) = CMPLX(aux1,aux2)
+           ENDDO
+        ENDDO
 
         CLOSE(52)
 
@@ -334,9 +336,10 @@
         DO j = 1, nwc
            READ ( 62, * ) 
            DO i = 1, nwa
-              READ ( 62, * ) sci_ac(i,j)
-           END DO
-        END DO
+              READ ( 62, * ) aux1, aux2
+              sci_ac(i,j) = CMPLX(aux1,aux2)
+           ENDDO
+        ENDDO
 
         CLOSE(62)
 
@@ -353,34 +356,36 @@
         DO j = 1, nwb
            READ ( 72, * ) 
            DO i = 1, nwc
-              READ ( 72, * ) sci_cb(i,j)
-           END DO
-        END DO
+              READ ( 72, * ) aux1, aux2
+              sci_cb(i,j) = CMPLX(aux1,aux2)
+           ENDDO
+        ENDDO
 
         CLOSE(72)
 
       ELSE
       
-        s00_a(:,:) = 0.0d0
-        s01_a(:,:) = 0.0d0
-        s00_b(:,:) = 0.0d0
-        s01_b(:,:) = 0.0d0
-        s00_c(:,:) = 0.0d0
-        sci_ac(:,:) = 0.0d0
-        sci_cb(:,:) = 0.0d0
+        s00_a(:,:) = CZERO
+        s01_a(:,:) = CZERO
+        s00_b(:,:) = CZERO
+        s01_b(:,:) = CZERO
+        s00_c(:,:) = CZERO
+        sci_ac(:,:) = CZERO
+        sci_cb(:,:) = CZERO
 
         DO i = 1, nmaxa
-           s00_a(i,i) = 1.d0
-        END DO
+           s00_a(i,i) = CONE
+        ENDDO
         DO i = 1, nmaxb
-           s00_b(i,i) = 1.d0
-        END DO
+           s00_b(i,i) = CONE
+        ENDDO
         DO i = 1, nmaxc
-           s00_c(i,i) = 1.d0
-        END DO
+           s00_c(i,i) = CONE
+        ENDDO
 
 
-      END IF
+      ENDIF
 
       RETURN
-      END
+   END SUBROUTINE readH
+

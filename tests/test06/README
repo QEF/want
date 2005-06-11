@@ -1,9 +1,9 @@
 
 ==============================================================================
-TEST2  Gold chain bulk (NCPP and USPP)
+TEST2  Gold and Cobalt chains (NCPP and USPP)
 ==============================================================================
 
-This test performs the calculation for the bulk conductance of a Gold chain.
+This test performs the calculations for the bulk conductance of Gold and Cobalt chains.
 The calculation is done setting one atom in the unit cell, using a (1 1 4, 0 0 1) 
 (according to PWSCF notation) Monkrost-Pack grid in the SCF run and a (1 1 4, 0 0 0) 
 grid in the NSCF run. 
@@ -21,7 +21,7 @@ files
 
 RESULTS
   Note that the final transmittance are slightly different probably due to the 
-  different convergence level between NC and USPP (the second case is nore close to
+  different convergence level between NC and USPP (the second case is more close to
   convergence, which is around 25 Ry for wfc and 200 Ry for rho cutoff energies)
 
 

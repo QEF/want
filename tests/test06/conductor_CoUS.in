@@ -3,12 +3,10 @@
    nmxa = 6
    nmxc = 6
    nmxb = 6
-   norb = 1
    ne = 1000
-   nterx = 200
+   niterx = 200
    emin = -10.0
    emax = 5.0
-   l_overlap = .FALSE.
    bias = 0.0
 /
 

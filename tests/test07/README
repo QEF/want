@@ -1,9 +1,9 @@
 
 ==============================================================================
-TEST5 Cobalt chain (4 atoms)
+TEST5 Gold and Cobalt chains (2 atomsi per cell)
 ==============================================================================
 
-This test performs the calculation for the bulk conductance of a Cobalt chain
-containing 4 atoms per cell. 
+This test performs the calculations for the bulk conductance of a Gold and Cobalt
+chains containing 2 atoms per unit cell. 
 
 

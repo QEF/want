@@ -1,6 +1,7 @@
 #!/bin/bash 
 #
-# Test6
+# Test1
+# 
 #================================================================
 #
 # Input flags for this script (./run.sh FLAG): 
@@ -19,8 +20,8 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
- hamiltonian     writes the hamiltonian matrix elements on the Wannier basis
- want            perform DISENTANGLE, WANNIER and HAMILTONIAN all together 
+ bands           interpolates the band structure using WFs
+ want            perform DISENTANGLE, WANNIER and BANDS all together 
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -35,7 +36,7 @@ MANUAL=" Usage
 TEST_HOME=`pwd`
 WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
-TEST_NAME=Test6
+TEST_NAME=Test1
 PSEUDO_NAME=Si.pbe-n-van.UPF
 
 #
@@ -47,7 +48,7 @@ PWEXPORT=
 BAND=
 DISENTANGLE=
 WANNIER=
-HAMILTONIAN=
+BANDS=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -61,12 +62,12 @@ case $INPUT in
    (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;; 
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
-   (hamiltonian)    HAMILTONIAN=".TRUE." ;;
+   (bands      )    BANDS=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    HAMILTONIAN=".TRUE." ;;
+                    BANDS=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    HAMILTONIAN=".TRUE." ;; 
+                    BANDS=".TRUE." ;; 
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -99,7 +100,7 @@ fi
 #
 if [ "$SCF" = ".TRUE." ] ; then  
    echo "running SCF calculation" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_US.in > $TEST_HOME/scf_US.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -112,7 +113,7 @@ fi
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
    echo "running NSCF calculation" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf_US.in > $TEST_HOME/nscf_US.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -126,7 +127,7 @@ fi
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
    echo "running PWEXPORT calculation" 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
+              <  $TEST_HOME/pwexport_US.in > $TEST_HOME/pwexport_US.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -140,7 +141,7 @@ fi
 if [ "$BAND" = ".TRUE." ] ; then  
    echo "running BAND calculation" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-               < $TEST_HOME/nscf_band.in > $TEST_HOME/nscf_band.out
+               < $TEST_HOME/nscf_band_US.in > $TEST_HOME/nscf_band_US.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -153,7 +154,7 @@ fi
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
    echo "running DISENTANGLE calculation" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want.in > $TEST_HOME/disentangle.out
+   $WANT_BIN/disentangle.x < $TEST_HOME/want_US.in > $TEST_HOME/disentangle_US.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -166,7 +167,7 @@ fi
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
    echo "running WANNIER calculation" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want.in > $TEST_HOME/wannier.out
+   $WANT_BIN/wannier.x < $TEST_HOME/want_US.in > $TEST_HOME/wannier_US.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
@@ -175,15 +176,15 @@ if [ "$WANNIER" = ".TRUE." ] ; then
 fi
 
 #
-# running HAMILTONIAN
+# running BANDS
 #
-if [ "$HAMILTONIAN" = ".TRUE." ] ; then  
-   echo "running HAMILTONIAN calculation" 
-   $WANT_BIN/hamiltonian.x < $TEST_HOME/hamiltonian.in > $TEST_HOME/hamiltonian.out
+if [ "$BANDS" = ".TRUE." ] ; then  
+   echo "running BANDS calculation" 
+   $WANT_BIN/bands.x < $TEST_HOME/bands_US.in > $TEST_HOME/bands_US.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
-      echo "found some problems in HAMILTONIAN calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in BANDS calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -204,12 +205,6 @@ fi
 # exiting
 echo "run.sh : everything done"
 exit 0
-
-
-
-
-
-
 
 
 
