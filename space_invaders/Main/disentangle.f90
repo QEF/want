@@ -27,7 +27,6 @@
        USE control_module, ONLY : start_mode_dis, verbosity, unitary_thr, &
                                   nprint_dis, nsave_dis
        USE util_module,    ONLY : zmat_unitary, zmat_hdiag, zmat_mul
-       USE iotk_module
     
        USE kpoints_module, ONLY: nkpts, vkpt
        USE kpoints_module, ONLY: nnx, nnshell, nnlist, wb, wbtot, nshells, nwhich
@@ -250,7 +249,7 @@
             !
             ! write info on stdout
             !
-            WRITE( stdout, fmt=" (2x, 'Iteration = ',i5,'   Omega_I =',f16.8, &
+            WRITE( stdout, " (2x, 'Iteration = ',i5,'   Omega_I =',f16.8, &
                          & 4x, 'Error =',f16.8 )") iter, omega_i_est, omega_err
 
             IF ( MOD(ncount, nprint_dis) == 0 )  THEN

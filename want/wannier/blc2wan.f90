@@ -20,7 +20,7 @@
                                     in_unit => aux1_unit, out_unit => aux2_unit, &
                                     work_dir, prefix, postfix
    USE iotk_module
-   USE files_module,         ONLY : file_open, file_close
+   USE files_module
    USE timing_module,        ONLY : timing, timing_overview, global_list
    USE startup_module,       ONLY : startup
    USE cleanup_module,       ONLY : cleanup
@@ -56,11 +56,11 @@
    !
    INTEGER :: i, j, m, ie, ik, iws, ierr
    INTEGER :: nbnd_, nkpts_, nomega
-   LOGICAL :: lfound, ldynamical, lband_diag
+   LOGICAL :: lfound, ldynamical, lband_diag, ascii
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout
+   NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, ascii
    !
    ! end of declariations
    !   
@@ -81,6 +81,7 @@
       work_dir                    = './' 
       filein                      = ' '
       fileout                     = ' '
+      ascii                       = .FALSE.
       
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('blc2wan','Unable to read namelist INPUT',ABS(ierr))
@@ -169,7 +170,8 @@
 !     filein is left opened as well as fileout
 !
       filename=TRIM(work_dir)//"/"//TRIM(filein)
-      CALL file_open(in_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+      CALL iotk_open_read(in_unit, TRIM(filename), IERR=ierr)
+         IF (ierr/=0)  CALL errore('blc2wan','opening '//TRIM(filename),ABS(ierr))
       !
       ! reading main info
       !
@@ -210,13 +212,13 @@
       ! fileout is initializated
       !
       filename=TRIM(work_dir)//"/"//TRIM(fileout)
-      CALL file_open(out_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+      CALL iotk_open_write(out_unit, TRIM(filename), BINARY=.NOT. ascii)
 
       CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.)
       CALL iotk_write_attr(attr,"nws",nws)
       CALL iotk_write_attr(attr,"nomega",nomega)
       CALL iotk_write_empty(out_unit,"DATA",ATTR=attr)
-      CALL iotk_write_dat(out_unit,"VWS",vws, FMT="(3f20.12)")
+      CALL iotk_write_dat(out_unit,"VWS",vws, COLUMNS=3)
       IF ( ldynamical ) CALL iotk_write_dat(out_unit,"GRID",grid)
 
            
@@ -363,8 +365,13 @@
       !
       ! close files
       !
-      CALL file_close(in_unit,PATH="/",ACTION="read")
-      CALL file_close(out_unit,PATH="/",ACTION="write")
+      CALL iotk_close_read(in_unit, IERR=ierr)
+           IF (ierr/=0) CALL errore('blc2wan','closing IN_UNIT',ABS(ierr))
+      CALL iotk_close_write(out_unit)
+      !
+! XXX
+!      CALL file_close(in_unit,PATH="/",ACTION="read")
+!      CALL file_close(out_unit,PATH="/",ACTION="write")
 
 
 
