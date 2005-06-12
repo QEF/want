@@ -222,7 +222,7 @@ CONTAINS
        CALL iotk_write_empty(unit,"SPREADS",ATTR=attr)
 
        CALL iotk_write_dat(unit,"CU",cu) 
-       CALL iotk_write_dat(unit,"RAVE",rave,FMT="(3f20.11,2x)")
+       CALL iotk_write_dat(unit,"RAVE",rave,COLUMNS=3)
        CALL iotk_write_dat(unit,"RAVE2",rave2)
        CALL iotk_write_dat(unit,"R2AVE",r2ave)
 
