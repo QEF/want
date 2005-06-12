@@ -3,7 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
-10 Jun 2005      bug fixed in hamiltonian_calc.f90 (RHAM writing). (AF)
+12 Jun 2005      Iotk COLUMNS flag used instead of FMT in write calls. (AF)
+
+10 Jun 2005      Bug fixed in hamiltonian_calc.f90 (RHAM writing). (AF)
 
 07 Jun 2005      Correlation corrections in transport calculations added in the
                  conductor.x program. transmittance.f90 routine added to Transport. 

@@ -174,9 +174,9 @@ CONTAINS
        CALL iotk_write_attr(attr,"nws",nws) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
-       CALL iotk_write_dat(unit,"VWS", vws, FMT="(3f20.12)", IERR=ierr) 
+       CALL iotk_write_dat(unit,"VWS", vws, COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing VWS',ABS(ierr))
-       CALL iotk_write_dat(unit,"INDXWS",indxws(:,1:nws), FMT="(3i6)", IERR=ierr) 
+       CALL iotk_write_dat(unit,"INDXWS",indxws(:,1:nws), COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing INDXWS',ABS(ierr))
        CALL iotk_write_dat(unit,"DEGEN",degen(1:nws), IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing DEGEN',ABS(ierr))
