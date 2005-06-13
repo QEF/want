@@ -191,8 +191,8 @@ if [ "$BULK" = ".TRUE." ] ; then
       #
       # also this needs to be improoved
       #
-      mv dos.out $TEST_HOME/dos_bulk.out
-      mv cond.out $TEST_HOME/cond_bulk.out
+      mv dos.dat $TEST_HOME/dos_bulk.dat
+      mv cond.dat $TEST_HOME/cond_bulk.dat
    else
       echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
    fi

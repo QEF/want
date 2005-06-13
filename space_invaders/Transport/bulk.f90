@@ -126,8 +126,8 @@
       ALLOCATE ( c1( nmax, nmax ) )
       ALLOCATE ( tran( nmax, nmax ) )
 
-      OPEN ( UNIT=24, FILE='cond.out', STATUS='UNKNOWN', FORM='FORMATTED' )
-      OPEN ( UNIT=22, FILE='dos.out', STATUS='UNKNOWN', FORM='FORMATTED' )
+      OPEN ( UNIT=24, FILE='cond.dat', STATUS='UNKNOWN', FORM='FORMATTED' )
+      OPEN ( UNIT=22, FILE='dos.dat', STATUS='UNKNOWN', FORM='FORMATTED' )
 
       de = ( emax - emin ) / DBLE(ne-1)
  

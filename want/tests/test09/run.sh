@@ -253,8 +253,8 @@ if [ "$BULK_UP" = ".TRUE." ] ; then
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      mv dos.out $TEST_HOME/dos_UP.out
-      mv cond.out $TEST_HOME/cond_UP.out
+      mv dos.dat $TEST_HOME/dos_UP.dat
+      mv cond.dat $TEST_HOME/cond_UP.dat
    else
       echo "found some problems in BULK_UP calculation, stopping" ; cat CRASH ; exit 1
    fi
@@ -274,8 +274,8 @@ if [ "$BULK_DW" = ".TRUE." ] ; then
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      mv dos.out $TEST_HOME/dos_DW.out
-      mv cond.out $TEST_HOME/cond_DW.out
+      mv dos.dat $TEST_HOME/dos_DW.dat
+      mv cond.dat $TEST_HOME/cond_DW.dat
    else
       echo "found some problems in BULK_DW calculation, stopping" ; cat CRASH ; exit 1
    fi
@@ -303,7 +303,7 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
       #
       # also this needs to be improoved
       #
-      mv dos.out cond.out $TEST_HOME
+      mv dos.dat cond.dat $TEST_HOME
    else
       echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi

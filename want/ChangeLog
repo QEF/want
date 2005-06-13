@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+13 Jun 2005      Stdandard names for data outfiles of transport calculations
+                 ('dos.out' and 'cond.out') changed to 'dos.dat' and 'cond.dat'.
+                 Test scripts updated accordingly. (AF)
+
 12 Jun 2005      Iotk COLUMNS flag used instead of FMT in write calls. (AF)
 
 10 Jun 2005      Bug fixed in hamiltonian_calc.f90 (RHAM writing). (AF)

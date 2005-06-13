@@ -191,8 +191,8 @@ if [ "$BULK" = ".TRUE." ] ; then
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      mv dos.out $TEST_HOME/dos_bulk_Au.out
-      mv cond.out $TEST_HOME/cond_bulk_Au.out
+      mv dos.dat $TEST_HOME/dos_bulk_Au.dat
+      mv cond.dat $TEST_HOME/cond_bulk_Au.dat
    else
       echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
    fi
@@ -217,8 +217,8 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      mv dos.out $TEST_HOME/dos_Au.out
-      mv cond.out $TEST_HOME/cond_Au.out
+      mv dos.dat $TEST_HOME/dos_Au.dat
+      mv cond.dat $TEST_HOME/cond_Au.dat
    else
       echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi
