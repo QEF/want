@@ -445,14 +445,14 @@
 ! ... write DOS and CONDUCT data on files
 !
 
-      filename = 'cond.out'
+      filename = 'cond.dat'
       OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
       DO ie = 1, ne
           WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,ie) )
       ENDDO
       CLOSE( cond_unit )
 
-      filename = 'dos.out'
+      filename = 'dos.dat'
       OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
       DO ie = 1, ne
           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,ie) )
