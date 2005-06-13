@@ -369,10 +369,6 @@ nkpts_max     INTEGER
               maximum number of interpolated kpoints
               DEFAULT: 100
 
-unitary_thr   REAL
-              threshold for the check of matrix unitariery
-              DEFAULT: 1.0d-6
-
 
 ==============================================================================
 

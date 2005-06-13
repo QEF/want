@@ -30,7 +30,7 @@
    USE util_module,          ONLY : zmat_hdiag
    USE converters_module,    ONLY : cry2cart
    USE lattice_module,       ONLY : bvec
-   USE windows_module,       ONLY : nbnd, imin, imax, eig, windows_read
+   USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read
    USE subspace_module,      ONLY : subspace_read
    USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, degen, indxws, vws, rham, wan_eig, &
                                     hamiltonian_read, hamiltonian_init
@@ -229,6 +229,8 @@
 
       !
       ! as a check
+      ! these eigenvalues (and also the following ones) are not aligned 
+      ! to the fermi level. We impose the alignment manually...
       !
       filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
@@ -236,7 +238,7 @@
       !
       DO i = 1, dimwann
           DO ik = 1, nkpts
-            WRITE (ham_unit, fmt="(2e16.8)") REAL(ik-1)/REAL(nkpts), wan_eig(i,ik)
+            WRITE (ham_unit, "(2e16.8)") REAL(ik-1)/REAL(nkpts), wan_eig(i,ik) -efermi
           ENDDO
           WRITE( ham_unit, "()") 
       ENDDO
@@ -249,7 +251,7 @@
       DO i = 1, nbnd
           DO ik = 1, nkpts
              IF ( i >= imin(ik) .AND. i <= imax(ik) ) THEN
-                 WRITE (ham_unit, fmt="(2e16.8)") REAL(ik-1)/REAL(nkpts), eig(i,ik)
+                 WRITE (ham_unit, "(2e16.8)") REAL(ik-1)/REAL(nkpts), eig(i,ik) -efermi
              ELSE
                  WRITE (ham_unit, "()")
              ENDIF
