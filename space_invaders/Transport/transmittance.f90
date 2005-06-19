@@ -59,7 +59,7 @@
 ! calculates the correction term (lambda)
 !
 ! lambda = (gR + gL +2*eta)^{-1} * ( g_corr + gR + gL + 2*eta )
-!         = I + (gR + gL +2*eta)^{-1} * ( g_corr + 2*eta )
+!         = I + (gR + gL +2*eta)^{-1} * ( g_corr )
 !
 ! where g_corr = i (sgm_r - sgm_r^\dag)
 ! 
