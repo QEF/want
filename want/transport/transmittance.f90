@@ -71,26 +71,26 @@
                tmp(i,j) =  gL(i,j) + gR(i,j) 
            ENDDO
            tmp(j,j) = tmp(j,j) + 2*EPS_m5
-           lambda(j,j) = lambda(j,j) + 2*EPS_m5
        ENDDO
 
        CALL ZGESV(nmaxc, nmaxc, tmp, nmaxc, ipiv, lambda, nmaxc, info)
        IF ( info > 0 ) CALL errore('transmittance','info > 0 in ZGESV',info)
        IF ( info < 0 ) CALL errore('transmittance','invalid argument in ZGESV',-info)
 
-       ! 
-       ! adding the identity matrix
-       ! 
-       DO i=1,nmaxc
-           lambda(i,i) = lambda(i,i) + CONE
-       ENDDO
 
    ELSE
+       !
+       ! ordinary formula
+       !
        lambda(:,:) = CZERO
-       DO i=1,nmaxc
-           lambda(i,i) = CONE
-       ENDDO
    ENDIF
+
+   ! 
+   ! adding the identity matrix
+   ! 
+   DO i=1,nmaxc
+       lambda(i,i) = lambda(i,i) + CONE
+   ENDDO
 
 
 !

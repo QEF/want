@@ -308,7 +308,7 @@
            !
            DO iws = 1, nws_
                 IF ( DOT_PRODUCT(vws(:,iws), vws(:,iws))  < EPS_m5 ) THEN 
-                   sgmtag = "VWS"//TRIM(iotk_index(iws))
+                   sgmtag = "WS"//TRIM(iotk_index(iws))
                    EXIT
                 ENDIF
            ENDDO
