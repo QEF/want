@@ -1,4 +1,3 @@
-
 /*
                        Copyright (c) 1995 by:
         Leif Laaksonen , Centre for Scientific Computing , ESPOO, FINLAND
@@ -424,9 +423,15 @@ long int GCUBE2PLT( const char * filename, const int * length )
     /* sprintf( OutputFile, "WFR%03d.plt", (int)(*iwann)); */
     /* sprintf( CoordinateFile, "WFR%03d.crd", (int)(*iwann)); */
 
-    memcpy( InputFile , filename , *length ) ;
-    memcpy( OutputFile , filename , *length ) ;
-    memcpy( CoordinateFile , filename , *length ) ;
+    for ( i = 0; ( i < *length ) && ( i < 248 ); i ++ ) {
+        InputFile[ i ] = filename[ i ];
+        OutputFile[ i ] = filename[ i ];
+        CoordinateFile[ i ] = filename[ i ];
+    }
+    InputFile[ i ] = '\0';
+    OutputFile[ i ] = '\0';
+    CoordinateFile[ i ] = '\0';
+
     strncat( InputFile , ".gau" , 4 ) ;
     strncat( OutputFile , ".plt" , 4 ) ;
     strncat( CoordinateFile , ".crd" , 4 ) ;
