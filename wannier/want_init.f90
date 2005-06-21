@@ -11,7 +11,7 @@ MODULE want_init_module
 CONTAINS
 
 !*********************************************************
-SUBROUTINE want_init(want_input, windows, bshells)
+SUBROUTINE want_init(want_input, windows, bshells, pseudo)
    !*********************************************************
    USE kinds
    USE constants,  ONLY : CZERO, RYD
@@ -22,7 +22,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
    USE iotk_module
    USE parser_base_module, ONLY : change_case
 
-   USE control_module, ONLY : read_pseudo, use_uspp
+   USE control_module, ONLY : use_uspp
    USE trial_center_module, ONLY : trial_center_convert
    USE trial_center_data_module, ONLY : trial, dimwann
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
@@ -39,6 +39,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
    LOGICAL, OPTIONAL, INTENT(in) :: want_input
    LOGICAL, OPTIONAL, INTENT(in) :: windows
    LOGICAL, OPTIONAL, INTENT(in) :: bshells
+   LOGICAL, OPTIONAL, INTENT(in) :: pseudo
 
 ! <INFO>
 ! This subroutine performs all the allocations and 
@@ -55,6 +56,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
 ! * init windows data    (if required by WINDOWS = .TRUE.)
 ! * init ions data    
 ! * init kpoints data    (including bshells if required)
+! * init pseudo data     (if required by PSEUDO=.TRUE.)
 !
 ! </INFO>
 
@@ -63,9 +65,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
    CHARACTER(nstrx)          :: attr
    CHARACTER(nstrx)          :: string
    LOGICAL                   :: lfound
-   LOGICAL                   :: want_input_
-   LOGICAL                   :: windows_
-   LOGICAL                   :: bshells_
+   LOGICAL                   :: want_input_, windows_, bshells_, pseudo_
    INTEGER                   :: ierr, ia, ik, iwann, idum
    
 
@@ -82,6 +82,8 @@ SUBROUTINE want_init(want_input, windows, bshells)
     IF ( PRESENT(windows) ) windows_ = windows
     bshells_ = .FALSE.
     IF ( PRESENT(bshells) ) bshells_ = bshells
+    pseudo_ = .FALSE.
+    IF ( PRESENT(pseudo) ) pseudo_ = pseudo
 
 
 !
@@ -191,7 +193,7 @@ SUBROUTINE want_init(want_input, windows, bshells)
 ! ... read pseudopotentials (according to Espresso fmts)
 !     use ASSUME_NCPP = .TRUE. to skip this section (meaningful only if all PPs are NCPP)
 !
-   IF ( read_pseudo ) THEN
+   IF ( pseudo_ ) THEN
       CALL readpp()
       okvan = ANY( tvanp(:) )
       uspp_calculation = okvan

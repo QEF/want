@@ -3,7 +3,11 @@
             WanT code:  Log of Changes 
 =======================================================
 
-13 Jun 2005      Stdandard names for data outfiles of transport calculations
+17 Jun 2005      plot.x re-syncronized to the current status of implementation
+                 of the code. Not fully tested. Routine convert_label.f90 
+                 added to libs. (AF) 
+
+13 Jun 2005      Standard names for data outfiles of transport calculations
                  ('dos.out' and 'cond.out') changed to 'dos.dat' and 'cond.dat'.
                  Test scripts updated accordingly. (AF)
 
