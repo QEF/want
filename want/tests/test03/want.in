@@ -9,7 +9,7 @@
 /
 
 &SUBSPACE
-   start_mode_dis = 'lower_states'
+!   start_mode_dis = 'lower_states'
    win_max = 2.0
    dimwann = 18
    maxiter_dis = 5000

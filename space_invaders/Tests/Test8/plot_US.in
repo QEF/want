@@ -1,0 +1,8 @@
+
+ &INPUT
+   prefix = 'benzene_US'
+   postfix = '_WanT'
+   work_dir = './'
+   datatype = 'modulus'
+   wann = '1-2,7-8,14-15'
+ /
