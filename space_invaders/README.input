@@ -394,24 +394,66 @@ kpt_label    kx  ky  kz
 
 ==============================================================================
 
-The input file is so simple an consists in a unique line with the following
-format:
+INPUT file layout
+-----------------------------------
 
-iwann    ixs  ixe     iys  iye     izs  ize
+&INPUT
+   ...
+/
 
+-----------------------------------
 
-   iwann        INTEGER
-                index of the wannier function to be plotted
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
 
-   ixs ixe      INTEGER
-                index of the starting and ending point of the x-mesh on which 
-                the psi**2 will be plotted
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
 
-   iys iye      INTEGER
-                as before but for y direction
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
 
-   izs ize      INTEGER
-                as before but for y direction
+wann          STRING       
+              specifies the indexes of the Wannier functions to be plotted.
+              It is a string of format e.g "1-3,5,7-9" (analogous to the fmt used
+              to specify pages to very common print tools)
+              DEFAULT: mandatory
+
+datatype      STRING
+              ("modulus" | "real" | "imaginary")
+              specifies the type of data plotted:
+                "modulus":    plot the real space square modulus of the WFs.
+                "real":       plot the real part (in real space) of the WFs.
+                "imaginary":  plot the imaginary part (in real space) of the WFs
+                              this choice shouldbe intended as a check because WFs
+                              are expected to be more or less "real".
+              DEFAULT: "modulus"
+
+nrxl, nrxh    INTEGER
+              the low and high indexes for the FFT grid. Using an interval of dimension
+              corresponding to the given FFT dimension (see eg disentangle output) 
+              will end in a box equal to the direct lattice unitary cell. Increasing
+              (decreasing) the values give a larger (smaller) box. 
+              DEFAULT: -fft_dim_x / 2 , +fft_dim_x / 2
+
+nryl, nryh    INTEGER
+              as before but for y direction.
+              DEFAULT: -fft_dim_y / 2 , +fft_dim_y / 2
+             
+nrzl, nrzh    INTEGER
+              as before but for z direction.
+              DEFAULT: -fft_dim_z / 2 , +fft_dim_z / 2
+              
+assume_ncpp   LOGICAL
+              if using DFT pseudoptentials not readable in WanT set this value to 
+              .TRUE. in order to avoid PP reading.
+              DEFAULT: .FALSE.
+
 
 ==============================================================================
 
