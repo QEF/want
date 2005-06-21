@@ -20,6 +20,7 @@ MANUAL=" Usage
                  the wannier minimization
  wannier         perform the above cited minimization
  bands           interpolates the band structure using WFs
+ plot            compute WFs on real space for plotting
  want            perform DISENTANGLE, WANNIER and BANDS all together 
  bulk            evaluate the transmittance, for the bulk case
  conductor       as for BULK but using the general conductor geometry code
@@ -49,6 +50,7 @@ PWEXPORT=
 DISENTANGLE=
 WANNIER=
 BANDS=
+PLOT=
 BULK=
 CONDUCTOR=
 CLEAN=
@@ -64,12 +66,13 @@ case $INPUT in
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
    (bands)          BANDS=".TRUE." ;;
+   (plot)           PLOT=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ;;
+                    BANDS=".TRUE." ; PLOT=".TRUE." ;;
    (bulk)           BULK=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
-                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
+                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; PLOT=".TRUE." ;
                     BANDS=".TRUE." ; BULK=".TRUE." ; CONDUCTOR=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -179,6 +182,18 @@ if [ "$BANDS" = ".TRUE." ] ; then
    fi
 fi
 
+#
+# running PLOT
+#
+if [ "$PLOT" = ".TRUE." ] ; then
+   echo "running PLOT calculation"
+   $WANT_BIN/plot.x < $TEST_HOME/plot_CoUS.in > $TEST_HOME/plot_CoUS.out
+   if [ ! -e CRASH ] ; then
+      echo "done"
+   else
+      echo "found some problems in PLOT calculation, stopping" ; cat CRASH ; exit 1
+   fi
+fi
 
 #
 # running BULK

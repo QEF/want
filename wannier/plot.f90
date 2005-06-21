@@ -32,7 +32,7 @@
    USE parser_module
    !
    USE lattice_module,     ONLY : avec, bvec, alat, omega
-   USE ions_module,        ONLY : nsp, atm_symb, na, tau, ityp, nat
+   USE ions_module,        ONLY : nsp, symb, na, tau, ityp, nat
    USE kpoints_module,     ONLY : nkpts, vkpt
    USE windows_module,     ONLY : imin, imax, dimwin, dimwinx, windows_read
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
@@ -354,8 +354,10 @@
           ! FFT call 
           ! 
           DO m=1,nplot
+             CALL timing('cfft3d',OPR='start')
              CALL cfft3d( kwann(:,m), nfft(1), nfft(2), nfft(3),  &
                                       nfft(1), nfft(2), nfft(3),  1 )
+             CALL timing('cfft3d',OPR='stop')
           ENDDO
 
 
@@ -463,7 +465,7 @@
                 IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
                      natot = natot+1
                      tautot(:,natot) = raux(:) / nfft(:)
-                     symbtot(natot)  = atm_symb( ia )
+                     symbtot(natot)  = symb( ia )
                 ENDIF
            ENDDO
            ENDDO
@@ -571,7 +573,10 @@
           !
           ! ... convert output to PLT fmt
           !
+          WRITE( stdout, "()" )
+          CALL timing('gcubeplt',OPR='start')
           CALL gcube2plt( filename, LEN_TRIM(filename) )
+          CALL timing('gcubeplt',OPR='stop')
 
       ENDDO
 

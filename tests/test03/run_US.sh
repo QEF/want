@@ -18,7 +18,7 @@ MANUAL=" Usage
  dft             perform SCF, NSCF and PWEXPORT all together
  disentangle     select the optimal subspace on which perform the wannier minimization 
  wannier         perform the above cited minimization 
- bands           interpolates the band structure using WFs
+ plot            compute WFs on real space for plotting
  want            perform DISENTANGLE, WANNIER and BANDS
  all             perform all the above described steps
 
@@ -45,7 +45,7 @@ NSCF=
 PWEXPORT=
 DISENTANGLE=
 WANNIER=
-BANDS=
+PLOT=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -58,12 +58,12 @@ case $INPUT in
    (dft)            SCF=".TRUE."; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
-   (bands)          BANDS=".TRUE." ;;
+   (plot)           PLOT=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ;;
+                    PLOT=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BANDS=".TRUE." ;;
+                    PLOT=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -160,17 +160,16 @@ if [ "$WANNIER" = ".TRUE." ] ; then
 fi
 
 #
-# running BANDS
+# running PLOT
 #
-if [ "$BANDS" = ".TRUE." ] ; then  
-   echo "running BANDS_US calculation" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands_US.in > $TEST_HOME/bands_US.out
+if [ "$PLOT" = ".TRUE." ] ; then  
+   echo "running PLOT_US calculation" 
+   $WANT_BIN/plot.x < $TEST_HOME/plot_US.in > $TEST_HOME/plot_US.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
    else
-      echo "found some problems in BANDS_US calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in PLOT_US calculation, stopping" ; cat CRASH ; exit 1
    fi
-   rename RHAM. RHAM_US. RHAM*
 fi
 
 #
