@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+21 Jun 2005      Plot utility finally updated and tested. USPP not implemented but
+                 for plotting purposes it seems to work anyway. Test2 and Test8 
+                 updated. (AF)
+
 17 Jun 2005      plot.x re-syncronized to the current status of implementation
                  of the code. Not fully tested. Routine convert_label.f90 
                  added to libs. (AF) 
