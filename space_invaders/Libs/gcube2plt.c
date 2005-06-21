@@ -405,7 +405,7 @@ extern char *Number2Name(int);
 
 
 /**************************************************************************/
-long int GCUBE2PLT( int * iwann )
+long int GCUBE2PLT( const char * filename, const int * length )
 /**************************************************************************/
 {
     int i;
@@ -420,9 +420,16 @@ long int GCUBE2PLT( int * iwann )
     printf("**********************************************************\n\n");
 
     /* printf( "%d %d\n", (int)(*iwann), sizeof(int) ); */
-    sprintf( InputFile, "WFR%03d.gau", (int)(*iwann));
-    sprintf( OutputFile, "WFR%03d.plt", (int)(*iwann));
-    sprintf( CoordinateFile, "WFR%03d.crd", (int)(*iwann));
+    /* sprintf( InputFile, "WFR%03d.gau", (int)(*iwann)); */
+    /* sprintf( OutputFile, "WFR%03d.plt", (int)(*iwann)); */
+    /* sprintf( CoordinateFile, "WFR%03d.crd", (int)(*iwann)); */
+
+    memcpy( InputFile , filename , *length ) ;
+    memcpy( OutputFile , filename , *length ) ;
+    memcpy( CoordinateFile , filename , *length ) ;
+    strncat( InputFile , ".gau" , 4 ) ;
+    strncat( OutputFile , ".plt" , 4 ) ;
+    strncat( CoordinateFile , ".crd" , 4 ) ;
 
     printf("File names:\n");
     printf("Input file:      '%s'\n",InputFile);
@@ -498,7 +505,7 @@ int ReadInputData()
     Xorig *= BOHR_RADIUS;
      Yorig *= BOHR_RADIUS;
       Zorig *= BOHR_RADIUS;
-    printf("Number of atoms: %d, x-, y-, z-origin (in Anstrom): %f,%f,%f\n",
+    printf("Number of atoms: %d, x-, y-, z-origin (in Angstrom): %f,%f,%f\n",
             abs(Natoms),Xorig,Yorig,Zorig);
 
    MolecularOrbitals                = 0;

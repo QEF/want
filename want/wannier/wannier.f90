@@ -97,7 +97,7 @@
       !
       ! ... Global data init
       !
-      CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE.)
+      CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE., PSEUDO=.TRUE.)
 
 
       !

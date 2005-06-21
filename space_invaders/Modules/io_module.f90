@@ -28,7 +28,7 @@
 ! 
 ! * 'dft_data'
 ! * 'export'
-! * 'subspace'
+! * 'space'
 ! * 'wannier'
 ! * 'hamiltonian'
 ! * 'save'

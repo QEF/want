@@ -16,7 +16,7 @@
    ! the direct lattice hamiltonian on Wannier function basis
    !
    USE kinds
-   USE constants,            ONLY: CZERO, TWO
+   USE constants,            ONLY : CZERO, TWO
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin, ioname, ham_unit, space_unit
    USE io_module,            ONLY : work_dir, prefix, postfix

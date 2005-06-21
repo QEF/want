@@ -13,125 +13,131 @@
    ! real space plot of the computed Wannier functions
    !
    USE kinds
-   USE constants, ONLY: PI, TPI, bohr => bohr_radius_angs, &
-                        ZERO, CZERO, ONE, CONE, CI, EPS_m8
-   USE parameters, ONLY: ntypx, natx, nstrx
-   USE fft_scalar, ONLY: cfft3d
-   USE timing_module, ONLY : timing, timing_overview, global_list
-   USE io_module, ONLY : stdout, stdin, space_unit, dft_unit, wan_unit, ioname
-   USE files_module, ONLY : file_open, file_close
-   USE startup_module, ONLY : startup
-   USE cleanup_module, ONLY : cleanup
-   USE want_init_module, ONLY : want_init
-   USE version_module, ONLY : version_number
-   USE util_module, ONLY : zmat_unitary
-
-   USE lattice_module, ONLY : avec, bvec
-   USE kpoints_module, ONLY : nkpts, vkpt
-   USE windows_module
-   USE subspace_module, ONLY : wan_eig, efermi, subspace_read
-   USE localization_module, ONLY : dimwann, cu, localization_read
-   USE ggrids_module
-   USE wfc_data_module 
+   USE constants,          ONLY : ZERO, CZERO, ONE, CONE, CI, TPI, &
+                                  bohr => bohr_radius_angs
+   USE parameters,         ONLY : ntypx, natx, nstrx
+   USE fft_scalar,         ONLY : cfft3d
+   USE timing_module,      ONLY : timing, timing_overview, global_list
+   USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
+   USE io_module,          ONLY : space_unit, wan_unit, dft_unit, aux_unit, ioname
+   USE control_module,     ONLY : read_pseudo, use_uspp
+   USE files_module,       ONLY : file_open, file_close
+   USE startup_module,     ONLY : startup
+   USE cleanup_module,     ONLY : cleanup
+   USE want_init_module,   ONLY : want_init
+   USE version_module,     ONLY : version_number
+   USE util_module,        ONLY : zmat_mul
+   USE converters_module,  ONLY : cry2cart, cart2cry
+   USE summary_module,     ONLY : summary
+   USE parser_module
+   !
+   USE lattice_module,     ONLY : avec, bvec, alat, omega
+   USE ions_module,        ONLY : nsp, atm_symb, na, tau, ityp, nat
+   USE kpoints_module,     ONLY : nkpts, vkpt
+   USE windows_module,     ONLY : imin, imax, dimwin, dimwinx, windows_read
+   USE subspace_module,    ONLY : dimwann, eamp, subspace_read
+   USE localization_module,ONLY : cu, localization_read
+   USE ggrids_module,      ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
+                                  ggrids_read_ext, ggrids_deallocate, &
+                                  ggrids_gk_indexes
+   USE wfc_info_module
+   USE wfc_data_module,    ONLY : npwkx, npwk, igsort, evc, evc_info, &
+                                  wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate
       
    IMPLICIT NONE
 
-      INTEGER,      PARAMETER :: ngt = 2
-      INTEGER,      PARAMETER :: ngs = ngt-1
-      COMPLEX(dbl), PARAMETER :: citpi = TPI * CI
+   !
+   ! local variables
+   !
+   CHARACTER(nstrx) :: wann      ! contains the list of WF indexes to plot 
+                                 ! in the fmt e.g. "1-3,4,7-9"
+   INTEGER :: nrxl, nryl, nrzl
+   INTEGER :: nrxh, nryh, nrzh
+   INTEGER :: nnrx, nnry, nnrz
+   CHARACTER( 20 )  :: datatype  ! ( "modulus" | "real" | "imaginary"  )
+   LOGICAL          :: assume_ncpp
 
-      INTEGER :: ngx, ngy, ngz
-      INTEGER :: nionst, nions, nspec
-      INTEGER :: mplwv
-      INTEGER :: npoint
-      INTEGER :: nwann, nzz, nyy, nxx
-      INTEGER :: nx, ny, nz
-      INTEGER :: nkp, nb, m, nsp, ik
-      INTEGER :: n, j, ni
-      INTEGER :: i, nmod, nt, nlim
-      INTEGER, ALLOCATABLE :: nplwkp(:)           ! nplwkp(nkpts)
-      INTEGER, ALLOCATABLE :: nindpw(:,:)         ! nindpw(mxddim,nkpts)
-      INTEGER :: nionsp(ntypx)           ! nionsp(nspec)
+   INTEGER :: nx, ny, nz, nzz, nyy, nxx
+   INTEGER :: ia, ib, ik, ig, isp, ir
+   INTEGER :: natot, nplot
+   INTEGER :: m, n, i, j, ierr
+   INTEGER :: zatom
+   INTEGER, ALLOCATABLE :: map(:), iwann(:)
 
-      COMPLEX(dbl), ALLOCATABLE :: cptwfp(:,:,:)  ! cptwfp(mxddim+1,dimwann,nkpts)
-      COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:)   ! cwann(-ngx:ngs*ngx-1,-ngy:ngs*ngy-1,-ngz:ngs*ngz-1)
-      COMPLEX(dbl), ALLOCATABLE :: cptwr(:)       ! cptwr(mplwv)
-      COMPLEX(dbl) :: catmp
-      COMPLEX(dbl) :: cmod
+   COMPLEX(dbl) :: caux, cmod
+   COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:,:)   
+   COMPLEX(dbl), ALLOCATABLE :: kwann(:,:)       
+   COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
 
-      REAL(dbl) :: scalf, tmaxx, tmax
-      REAL(dbl) :: dirc( 3, 3 ), recc( 3, 3 ), dirl( 3, 3 )
-      REAL(dbl) :: pos( 3 )
-      REAL(dbl) :: x_0ang, y_0ang, z_0ang 
-      REAL(dbl), ALLOCATABLE :: poscarwin( :, :, : )
-      REAL(dbl) :: posion( 3, natx, ntypx )
-      CHARACTER( LEN=2 ) :: nameat( ntypx )
-      INTEGER :: indat( ntypx )
-      INTEGER :: natwin( ntypx )
+   REAL(dbl)    :: arg, tmaxx, tmax
+   REAL(dbl)    :: avecl(3,3), raux(3), r0(3)
+   REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
+   REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
+   CHARACTER(3), ALLOCATABLE :: symbtot(:)
 
-      CHARACTER( LEN=11 ) :: frfft
-      CHARACTER( LEN=11 ) :: fifft
-      CHARACTER( nstrx )  :: filename
-      LOGICAL             :: lfound
-
-      INTEGER :: mxddim
-      INTEGER :: nrxl, nryl, nrzl
-      INTEGER :: nrxh, nryh, nrzh
-      INTEGER :: nrxd, nryd, nrzd
-      INTEGER :: nnrx, nnry, nnrz
-      LOGICAL :: okp( 3 )
-      REAL(dbl) :: off
-      INTEGER :: ierr
-
-! ... End declarations and dimensions
+   CHARACTER( nstrx )  :: filename
+   CHARACTER( 4 )      :: str
+   LOGICAL             :: lfound
+   LOGICAL             :: okp( 3 )
+   !
+   ! input namelist
+   !
+   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, datatype, assume_ncpp, &
+                    nrxl, nrxh, nryl, nryh, nrzl, nrzh
+   !
+   ! end of declariations
+   !
 
 !
-! ...  Startup
+!------------------------------
+! main body
+!------------------------------
 !
-       CALL startup( version_number, MAIN_NAME = 'plot' )
+      CALL startup(version_number,MAIN_NAME='plot')
 
-! XXXX
- CALL errore('plot','program NOT yet properly working',1)
-! XXXX
-
-!!
-!! ...  Reading from file
-!!
-!      ALLOCATE( nplwkp( nkpts ), STAT=ierr )
-!         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nplwkp ', nkpts )
-!      DO nkp = 1, nkpts
-!        READ(21) nplwkp(nkp)
-!      END DO
-!
-!      ALLOCATE( nindpw( mxddim, nkpts ), STAT=ierr )
-!         IF( ierr /=0 ) CALL errore(' plot ', ' allocating nindpw ', mxddim*nkpts )
-!      DO nkp = 1, nkpts
-!        DO n = 1, mxddim
-!          READ(21) nindpw(n,nkp)
-!        END DO
-!      END DO
-!
-!      ALLOCATE( cptwfp( mxddim + 1, dimwann, nkpts ), STAT=ierr )
-!         IF( ierr /=0 ) &
-!         CALL errore(' plot ', ' allocating cptwfp ', (mxddim+1)*dimwann*nkpts )
-!      DO nkp = 1, nkpts
-!        DO nb = 1, dimwann
-!          DO m = 1, nplwkp(nkp)
-!            READ(21) cptwfp(m,nb,nkp)
-!          END DO
-!        END DO
-!      END DO
-!
-!      CLOSE(21)
 
 !
-! ... DFT data
+! ... Read INPUT namelist from stdin
 !
-      CALL want_init( WANT_INPUT = .FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      prefix                      = 'WanT'
+      postfix                     = ' '
+      work_dir                    = './'
+      assume_ncpp                 = .FALSE.
+      wann                        = ' '
+      datatype                    = 'modulus'
+      nrxl                        = -50000
+      nrxh                        =  50000
+      nryl                        = -50000
+      nryh                        =  50000
+      nrzl                        = -50000
+      nrzh                        =  50000
+      
+
+      READ(stdin, INPUT, IOSTAT=ierr)
+      IF ( ierr /= 0 )  CALL errore('plot','Unable to read namelist INPUT',ABS(ierr))
+
+      !
+      ! Some checks
+      !
+      IF ( LEN_TRIM( wann) == 0 ) CALL errore('plot', 'wann not supplied ', 1)
+      CALL change_case( datatype, 'lower')
+      IF ( TRIM(datatype) /= "modulus" .AND. TRIM(datatype) /= "real" .AND. &
+           TRIM(datatype) /= "imaginary"  ) &
+           CALL errore('plot','invalid DATATYPE = '//TRIM(datatype),2)
+
+      read_pseudo = .NOT. assume_ncpp
+
+
 
 !
-! ... Read energy eigenvalues in electron-volt
+! ... Getting previous WanT data
 !
+      CALL want_init( WANT_INPUT = .FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE., &
+                      PSEUDO=read_pseudo)
+
+      !
+      ! Read Subspace data
+      !
       CALL ioname('space',filename)
       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
           CALL windows_read(space_unit,"WINDOWS",lfound)
@@ -142,381 +148,468 @@
 
       CALL ioname('space',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Subspace data read from file: ',a)") TRIM(filename)
-      !
-      wan_eig(:,:) = wan_eig(:,:) - Efermi
 
-!
-! ... Read unitary matrices U(k) that rotate the bloch states
+      !
+      ! Read unitary matrices U(k) that rotate the bloch states
+      !
       CALL ioname('wannier',filename)
       CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
           CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
-          IF ( .NOT. lfound ) &
-             CALL errore('hamiltonian',"unable to find WANNIER_LOCALIZATION",1)
+          IF ( .NOT. lfound ) CALL errore('plot','searching WANNIER_LOCALIZATION',1)
       CALL file_close(wan_unit,PATH="/",ACTION="read")
 
       CALL ioname('wannier',filename,LPATH=.FALSE.)
       WRITE( stdout,"('  Wannier data read from file: ',a,/)") TRIM(filename)
 
-      DO ik = 1,nkpts
-         IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=EPS_m8)  ) &
-             CALL errore('hamiltonian',"U matrices not orthogonal",ik)
-      ENDDO
-!
-! ... End of input reading
-!
-
-
-
-! ... Initialize the data used for the fast fourier transforms
-
-      READ(5,*) nwann, nrxl, nrxh, nryl, nryh, nrzl, nrzh
-      WRITE(stdout,*) 'plotting WF n. ', nwann
-
-      nrxd = ( nrxh - nrxl + 1 )
-      nryd = ( nryh - nryl + 1 ) 
-      nrzd = ( nrzh - nrzl + 1 )
-
-      nnrx = ABS( nrxl / ngx ) + 2
-      nnry = ABS( nryl / ngy ) + 2
-      nnrz = ABS( nrzl / ngz ) + 2
-
-      IF( nrxd < 1 ) THEN
-        WRITE( stdout, * ) ' nrxl, nrxh = ', nrxl, nrxh
-        CALL errore( ' plot ', ' wrong nrxl and nrxh ', 1 )
-      END IF
-
-      IF( nryd < 1 ) THEN
-        WRITE( stdout, * ) ' nryl, nryh = ', nryl, nryh
-        CALL errore( ' plot ', ' wrong nryl and nryh ', 1 )
-      END IF
-
-      IF( nrzd < 1 ) THEN
-        WRITE( stdout, * ) ' nrzl, nrzh = ', nrzl, nrzh
-        CALL errore( ' plot ', ' wrong nrzl and nrzh ', 1 )
-      END IF
-      
-
-      ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating cwann ', &
-                        (nrxh-nrxl+1)*(nryh-nryl+1)*(nrzh-nrzl+1)    )
-      cwann = CZERO
-!
-      ALLOCATE( cptwr(mplwv), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating cptwr ', mplwv )
      
+      !
+      ! Print data to output
+      !
+      CALL summary( stdout, LINPUT=.FALSE., LATOMS=.FALSE., LEIG=.FALSE. )
 
-      DO nkp = 1, nkpts
-        DO nb = 1, dimwann
+      !
+      ! should be eliminated ASAP
+      !
+      IF ( use_uspp ) & !  CALL errore('plot','USPP not yet implemented',1)
+             WRITE(stdout,"(/,2x,'WARNING: USPP not fully implemented',/)") 
+     
+      !
+      ! opening the file containing the PW-DFT data
+      !
+      CALL ioname('export',filename,LPOSTFIX=.FALSE.)
+      CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
+                              FORM='formatted')
+      CALL ioname('export',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
 
-          DO m = 1, mplwv
-            cptwr(m) = CZERO
+      !
+      ! ... Read grids
+      WRITE( stdout,"(/,2x,'Reading density G-grid from file: ',a)") TRIM(filename)
+      CALL ggrids_read_ext(dft_unit)
+      !
+      ! ... Read wfcs
+      WRITE( stdout,"(  2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
+      CALL wfc_data_grids_read(dft_unit)
+      !
+      ! ... closing the main data file
+      CALL file_close(dft_unit,PATH="/",ACTION="read")
+
+      !
+      ! ... stdout summary about grids
+      !
+      WRITE(stdout,"(2/,10x,'Energy cut-off for wfcs =  ',5x,F7.2,' (Ry)' )") ecutwfc
+      WRITE(stdout, "(25x,'for rho  =  ', 5x, F7.2, ' (Ry)' )")  ecutrho
+      WRITE(stdout, "(6x,'Total number of PW for rho  =  ',i9)") npw_rho
+      WRITE(stdout, "(6x,'  Max number of PW for wfc  =  ',i9)") npwkx
+      WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))+1
+      WRITE(stdout, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
+
+
+!
+! ... final settings on input
+!
+      !
+      ! get the WF indexes
+      !
+      ALLOCATE( iwann(dimwann), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore('plot','allocating iwann',ABS(ierr))
+      !
+      CALL parser_replica( wann, nplot, iwann, ierr )
+      IF ( ierr/=0 ) CALL errore('plot','wrong FMT in wann string',ABS(ierr))
+      !
+      DO m = 1, nplot
+         IF ( iwann(m) <= 0  .OR. iwann(m) > dimwann ) &
+              CALL errore('plot','iwann too large',m)
+      ENDDO
+
+      !
+      ! set the default FFT mesh
+      !
+      IF ( nrxl == -50000) nrxl = -nfft(1)/2
+      IF ( nrxh ==  50000) nrxh =  nfft(1) -1 -nfft(1)/2
+      IF ( nryl == -50000) nryl = -nfft(2)/2
+      IF ( nryh ==  50000) nryh =  nfft(2) -1 -nfft(2)/2
+      IF ( nrzl == -50000) nrzl = -nfft(3)/2
+      IF ( nrzh ==  50000) nrzh =  nfft(3) -1 -nfft(2)/2
+
+      !
+      ! summary of the input
+      !
+      WRITE( stdout, "(2/,2x,70('='))" )
+      WRITE( stdout, "(2x,'=',21x,'Wannier function plotting',22x,'=')" )
+      WRITE( stdout, "(2x,70('='),2/)" )
+
+      WRITE( stdout,"(2x,'nplot = ',i3, ' Wannier func.s to be plotted')") nplot
+      DO m=1,nplot
+          WRITE( stdout,"(5x,'wf (',i3,' ) = ',i4 )") m, iwann(m)
+      ENDDO
+      WRITE( stdout,"(/,2x,'Data type :',3x,a)") TRIM(datatype)
+      WRITE( stdout,"(/,2x,'Grid dimensions:')") 
+      WRITE( stdout,"( 6x, 'nrx', i6, ' --> ', i6 )" ) nrxl, nrxh 
+      WRITE( stdout,"( 6x, 'nry', i6, ' --> ', i6 )" ) nryl, nryh 
+      WRITE( stdout,"( 6x, 'nrz', i6, ' --> ', i6 )" ) nrzl, nrzh 
+      WRITE( stdout,"()")
+
+
+!
+! ... Initialize the data used for the fast fourier transforms
+!
+      IF( nrxh - nrxl < 0 ) CALL errore( 'plot', 'wrong nrxl and nrxh ', 1 )
+      IF( nryh - nryl < 0 ) CALL errore( 'plot', 'wrong nryl and nryh ', 1 )
+      IF( nrzh - nrzl < 0 ) CALL errore( 'plot', 'wrong nrzl and nrzh ', 1 )
+      !
+      nnrx = ABS( nrxl / nfft(1) ) + 2
+      nnry = ABS( nryl / nfft(2) ) + 2
+      nnrz = ABS( nrzl / nfft(3) ) + 2
+
+      
+      !
+      ! allocate WF and local data
+      !
+      ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
+         IF( ierr /=0 ) CALL errore('plot', 'allocating cwann ', ABS(ierr) )
+      ALLOCATE( kwann( PRODUCT(nfft), nplot ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating kwann ', ABS(ierr) )
+      ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating vkpt_cry ', ABS(ierr) )
+      ALLOCATE( cutot(dimwinx, dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating cutot ', ABS(ierr) )
+      ALLOCATE( map(npwkx), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating map ', ABS(ierr) )
+
+
+      !
+      ! convert vkpt from cart coord (bohr^-1) to cryst 
+      !
+      vkpt_cry(:,:) = vkpt(:,:)
+      CALL cart2cry( vkpt_cry, bvec )
+ 
+
+      !
+      ! ... allocating wfcs
+      CALL wfc_info_allocate(npwkx, dimwinx, nkpts, dimwinx, evc_info)
+      ALLOCATE( evc(npwkx, dimwinx ), STAT=ierr )
+         IF (ierr/=0) CALL errore('plot','allocating EVC',ABS(ierr))
+
+      !
+      ! re-opening the file containing the PW-DFT data
+      !
+      CALL ioname('export',filename,LPOSTFIX=.FALSE.)
+      CALL file_open(dft_unit,TRIM(filename),PATH="/Eigenvectors/", &
+                              ACTION="read", FORM='formatted')
+      
+     
+!
+! ... Main loop on wfcs
+!
+
+      cwann( :, :, :, : ) = CZERO
+    
+      kpoint_loop: &
+      DO ik = 1, nkpts
+
+          !
+          ! getting wfc 
+          !
+          CALL wfc_data_kread(dft_unit, ik, "IK", evc, evc_info)
+
+          !
+          ! built the right transformation to rotate the original wfcs.
+          !
+          CALL zmat_mul( cutot, eamp(:,:,ik), 'N', cu(:,:,ik), 'N' ,  &
+                         dimwin(ik), dimwann, dimwann)
+
+          !
+          ! set the FFT map
+          !
+          map(:) = 0
+          CALL ggrids_gk_indexes( igv, igsort(:,ik), npwk(ik), & 
+                                  nfft(1), nfft(2), nfft(3), GK2FFT=map ) 
+         
+          !
+          ! set the kwann function
+          !
+          DO m = 1, nplot
+
+              kwann( :, m ) = CZERO
+              DO ig = 1, npwk(ik)
+                 !
+                 DO n = 1, dimwin(ik)
+     
+                     ib =  wfc_info_getindex(imin(ik)+n-1, ik, "IK", evc_info )
+                     !
+                     kwann( map(ig), m ) = kwann( map(ig), m ) + &
+                                           cutot(n, iwann(m) ) * evc( ig, ib )
+                 ENDDO
+              ENDDO
           ENDDO
 
-          DO m = 1, nplwkp(nkp)
-            cptwr( nindpw(m,nkp) ) = cptwfp( m, nb, nkp )
-          END DO
- 
-          CALL cfft3d( cptwr, ngx, ngy, ngz, ngx, ngy, ngz, -1 )
 
-          DO m = 1, mplwv
-            cptwr(m) = conjg(cptwr(m)) * ngx * ngy * ngz
-          END DO
+          !
+          ! logically clean wfcs (but memory is NOT free)
+          !
+          CALL wfc_info_delete(evc_info, LABEL="IK")
 
+
+          ! 
+          ! FFT call 
+          ! 
+          DO m=1,nplot
+             CALL cfft3d( kwann(:,m), nfft(1), nfft(2), nfft(3),  &
+                                      nfft(1), nfft(2), nfft(3),  1 )
+          ENDDO
+
+
+          !
+          ! loop over FFT grid
+          !
+          DO m = 1, nplot 
+
+              DO nzz = nrzl, nrzh
+                  nz = MOD( nzz + nnrz * nfft(3) , nfft(3) ) + 1
+                  DO nyy = nryl, nryh
+                      ny = MOD( nyy + nnry * nfft(2) , nfft(2) ) + 1
+                      DO nxx = nrxl, nrxh
+                          nx = MOD( nxx + nnrx * nfft(1) , nfft(1) ) + 1
+
+                          ir = nx + (ny-1) * nfft(1) + (nz-1) * nfft(1) * nfft(2)
+
+                          arg   = vkpt_cry(1,ik) * DBLE(nxx) / DBLE(nfft(1)) + &
+                                  vkpt_cry(2,ik) * DBLE(nyy) / DBLE(nfft(2)) + &
+                                  vkpt_cry(3,ik) * DBLE(nzz) / DBLE(nfft(3))
+                          caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg) ) * &
+                                  kwann( ir, m ) 
+
+                         cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux
+                      ENDDO
+                  ENDDO
+              ENDDO
+          ENDDO 
+      ENDDO kpoint_loop
+
+      !
+      ! clean the large amount of memory used by wfcs and grids
+      !
+      CALL wfc_data_deallocate()
+      CALL ggrids_deallocate()
+      CALL file_close(dft_unit,PATH="/Eigenvectors/",ACTION="read")
+
+
+      ! 
+      ! Fix the global phase by setting the wannier to be real 
+      ! at the point where it has max modulus
+      ! 
+
+      arg = ONE / ( SQRT( REAL(nkpts) * SIZE(cwann(:,:,:,1) )  ) ) 
+
+      DO m = 1, nplot
+          !
+          tmaxx = ZERO
+          cmod = CONE
+          !
           DO nzz = nrzl, nrzh
-            nz = MOD( nzz + nnrz * ngz , ngz ) + 1
-            DO nyy = nryl, nryh
-              ny = MOD( nyy + nnry * ngy , ngy ) + 1
-              DO nxx = nrxl, nrxh
-                nx = MOD( nxx + nnrx * ngx , ngx ) + 1
+          DO nyy = nryl, nryh
+          DO nxx=  nrxl, nrxh
+               cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * arg
+               tmax = cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) )
+               IF ( tmax > tmaxx ) THEN
+                   tmaxx = tmax
+                   cmod = cwann( nxx, nyy, nzz, m)
+               ENDIF
+          ENDDO
+          ENDDO
+          ENDDO
 
-                npoint = nx + (ny-1) * ngx + (nz-1) * ngy * ngx
-
-                scalf = vkpt(1,nkp) * DBLE(nxx) / DBLE(ngx) + &
-                        vkpt(2,nkp) * DBLE(nyy) / DBLE(ngy) + &
-                        vkpt(3,nkp) * DBLE(nzz) / DBLE(ngz)
-
-                catmp = EXP( citpi * scalf ) * cptwr( npoint ) * cu( nb, nwann, nkp )
- 
-! ...           Here it increments the wannier funcion in nx,ny,nz with the current nb,nkp bloch orbitals 
-
-                cwann( nxx, nyy, nzz ) = cwann( nxx, nyy, nzz ) + catmp
-              END DO
-            END DO
-          END DO
-         
-        END DO  ! nband
-      END DO    ! nkp
-
-! ... Fix the global phase by setting the wannier to be real at the point where it has max modulus
-
-      tmaxx = ZERO
-      cmod = CONE
-
-      DO nzz = nrzl, nrzh
-        DO nyy = nryl, nryh
-          DO nxx= nrxl, nrxh
-            cwann( nxx, nyy, nzz ) = cwann( nxx, nyy, nzz ) / DBLE(nkpts)
-            tmax = cwann( nxx, nyy, nzz ) * CONJG( cwann( nxx, nyy, nzz ) )
-            IF ( tmax > tmaxx ) THEN
-              tmaxx = tmax
-              cmod = cwann( nxx, nyy, nzz )
-            END IF
-          END DO
-        END DO
-      END DO
-
-      cmod = cmod / SQRT( REAL( cmod )**2 + AIMAG ( cmod )**2 )
-      DO nzz = nrzl, nrzh
-        DO nyy = nryl, nryh
+          cmod = cmod / SQRT( cmod * CONJG(cmod) ) 
+          DO nzz = nrzl, nrzh
+          DO nyy = nryl, nryh
           DO nxx = nrxl, nryh
-            cwann(nxx,nyy,nzz) = cwann(nxx,nyy,nzz) / cmod
-          END DO
-        END DO
-      END DO
+              cwann(nxx,nyy,nzz,m) = cwann(nxx,nyy,nzz,m) / cmod
+          ENDDO
+          ENDDO
+          ENDDO
+      ENDDO
 
-! ... We prepare a graphic output for gopenmol or for dan, depending on the geometry of the cell; 
-!     if it is orthorombic, gopenmol is used (this includes the cubic case); otherwise, dan is used.
 
-! ... This is to create the WF...gau output, to be read by gOpenMol (coordinates + isosurfaces)
+!
+! ... We prepare a graphic output for gopenmol or for dans; 
+!     depending on the geometry of the cell, if it is orthorombic, gopenmol is used 
+!     (this includes the cubic case); otherwise, dan is used.
+!
 
-      natwin = 0
-      DO nsp = 1, nspec
-        DO ni = 1, nionsp(nsp)
-          DO nx = -2, 2
-            DO ny = -2, 2
-              DO nz = -2, 2
-                pos(1) = ( posion(1,ni,nsp) + DBLE(nx) ) * ngx
-                pos(2) = ( posion(2,ni,nsp) + DBLE(ny) ) * ngy
-                pos(3) = ( posion(3,ni,nsp) + DBLE(nz) ) * ngz
-                okp(1) = ( pos(1) >= (nrxl - 1) ) .AND. ( pos(1) < nrxh )
-                okp(2) = ( pos(2) >= (nryl - 1) ) .AND. ( pos(2) < nryh ) 
-                okp(3) = ( pos(3) >= (nrzl - 1) ) .AND. ( pos(3) < nrzh ) 
+
+      ALLOCATE( tau_cry(3, nat), STAT=ierr  )  
+         IF( ierr /=0 ) CALL errore('plot', 'allocating tau_cry', ABS(ierr) ) 
+      ALLOCATE( tautot( 3, 125*nat ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating tautot ', ABS(ierr) ) 
+      ALLOCATE( symbtot( 125*nat ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating symbtot ', ABS(ierr) ) 
+
+ 
+      tau_cry(:,:) = tau(:,:) * alat
+      CALL cart2cry( tau_cry, avec )  
+
+      natot = 0
+      DO ia = 1, nat
+           DO nx = -2, 2
+           DO ny = -2, 2
+           DO nz = -2, 2
+                raux(1) = ( tau_cry(1,ia) + DBLE(nx) ) * nfft(1)
+                raux(2) = ( tau_cry(2,ia) + DBLE(ny) ) * nfft(2)
+                raux(3) = ( tau_cry(3,ia) + DBLE(nz) ) * nfft(3)
+
+                okp(1) = ( raux(1) >= (nrxl - 1) ) .AND. ( raux(1) < nrxh )
+                okp(2) = ( raux(2) >= (nryl - 1) ) .AND. ( raux(2) < nryh ) 
+                okp(3) = ( raux(3) >= (nrzl - 1) ) .AND. ( raux(3) < nrzh ) 
                 IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
-                  natwin( nsp ) = natwin( nsp ) + 1
-                END IF
-              END DO
-            END DO
-          END DO
-        END DO
-      END DO
-
-      ALLOCATE( poscarwin( 3, MAXVAL( natwin ), nspec ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' allocating poscarwin ', &
-                        3 * MAXVAL( natwin ) * nspec ) 
-
-      natwin = 0
-      DO nsp = 1, nspec
-        DO ni = 1, nionsp(nsp)
-          DO nx = -2, 2
-            DO ny = -2, 2
-              DO nz = -2, 2
-                pos(1) = ( posion(1,ni,nsp) + DBLE(nx) ) * ngx
-                pos(2) = ( posion(2,ni,nsp) + DBLE(ny) ) * ngy
-                pos(3) = ( posion(3,ni,nsp) + DBLE(nz) ) * ngz
-                okp(1) = ( pos(1) >= (nrxl - 1) ) .AND. ( pos(1) < nrxh )
-                okp(2) = ( pos(2) >= (nryl - 1) ) .AND. ( pos(2) < nryh ) 
-                okp(3) = ( pos(3) >= (nrzl - 1) ) .AND. ( pos(3) < nrzh ) 
-                IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
-                  natwin( nsp ) = natwin( nsp ) + 1
-                  DO m = 1, 3
-                    poscarwin( m, natwin( nsp ), nsp ) = &
-                      ( pos(1) * dirc(1,m) / ngx + pos(2) * dirc(2,m) / ngy + pos(3) * dirc(3,m) / ngz ) / bohr
-                  END DO
-                END IF
-              END DO
-            END DO
-          END DO
-        END DO
-      END DO
-
-      DO i = 1, 3
-        dirl(1,i) = dirc(1,i) / ngx / bohr
-        dirl(2,i) = dirc(2,i) / ngy / bohr
-        dirl(3,i) = dirc(3,i) / ngz / bohr
-      END DO
-
-!     Offset for position and WF's allignment
-      off = 0.0
-      x_0ang = ( nrxl - off ) * dirl( 1, 1 ) + ( nryl - off ) * dirl( 2, 1 ) + ( nrzl - off ) * dirl( 3, 1 )
-      y_0ang = ( nrxl - off ) * dirl( 1, 2 ) + ( nryl - off ) * dirl( 2, 2 ) + ( nrzl - off ) * dirl( 3, 2 )
-      z_0ang = ( nrxl - off ) * dirl( 1, 3 ) + ( nryl - off ) * dirl( 2, 3 ) + ( nrzl - off ) * dirl( 3, 3 )
-
-      IF ( nwann <= 9 ) THEN
-        WRITE( frfft, ' ( ''WFR00'', i1, ''.gau'' ) ' ) nwann
-        WRITE( fifft, ' ( ''WFI00'', i1, ''.gau'' ) ' ) nwann
-      ELSE IF ( nwann <= 99 ) THEN
-        WRITE( frfft, ' ( ''WFR0'', i2, ''.gau'' ) ' ) nwann
-        WRITE( fifft, ' ( ''WFI0'', i2, ''.gau'' ) ' ) nwann
-      ELSE IF ( nwann <= 999 ) THEN
-        WRITE( frfft, ' ( ''WFR'', i3, ''.gau'' ) ' ) nwann
-        WRITE( fifft, ' ( ''WFI'', i3, ''.gau'' ) ' ) nwann
-      ELSE
-        WRITE(stdout,*) ' ERROR - nwann .gt. 999'
-      END IF
+                     natot = natot+1
+                     tautot(:,natot) = raux(:) / nfft(:)
+                     symbtot(natot)  = atm_symb( ia )
+                ENDIF
+           ENDDO
+           ENDDO
+           ENDDO
+      ENDDO
 
 
-      OPEN ( 39, file=frfft, form='formatted', status='unknown' )
+      !
+      ! convert atoms to cartesian coords (bohr)
+      !
+      CALL cry2cart( tautot, avec )
+      
+      WRITE(stdout, " (2x,'Atoms in the selected cell: (cart. coord. in Bohr)' ) " )
+      DO ia = 1, natot
+           WRITE( stdout, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
+                  symbtot(ia), ia, (tautot( i, ia ), i = 1, 3)
+      ENDDO
+      WRITE(stdout, "()" )
 
-      nionst = SUM( nionsp( 1:nspec ) )
+      
+      !
+      ! set avecl (bohr)
+      !
+      DO i=1,3
+         avecl(:,i) = avec(:,i) / nfft(i) 
+      ENDDO
 
-      WRITE(39, '(i4,3f12.6)' ) SUM( natwin ), x_0ang, y_0ang, z_0ang
-      WRITE(39, '(i4,3f12.6)' ) (nrxh-nrxl+1), ( dirl(1,i), i=1,3 )
-      WRITE(39, '(i4,3f12.6)' ) (nryh-nryl+1), ( dirl(2,i), i=1,3 )
-      WRITE(39, '(i4,3f12.6)' ) (nrzh-nrzl+1), ( dirl(3,i), i=1,3 )
+      !
+      ! Offset for position and WF's allignment
+      !
+      r0(1) = REAL( nrxl ) / REAL( nfft(1) )
+      r0(2) = REAL( nryl ) / REAL( nfft(2) )
+      r0(3) = REAL( nrzl ) / REAL( nfft(3) )
+      CALL cry2cart( r0, avec )
+      
 
-      CALL convert_label( nameat, indat, nspec )
-      DO nsp = 1 , nspec
-        DO ni = 1 , natwin( nsp )
-          WRITE(39, '(i4,4e13.5)' ) indat( nsp ), 1.d0, ( poscarwin( i, ni, nsp ), i=1,3 )
-        END DO
-      END DO
+      !
+      ! output filename
+      !
+      SELECT CASE ( TRIM(datatype) )
+      CASE( "modulus" )    
+           str = "_WFM"
+      CASE( "real" )    
+           str = "_WFR"
+      CASE( "imaginary" )    
+           str = "_WFI"
+      CASE DEFAULT
+           CALL errore('plot','invalid DATATYPE '//TRIM(datatype),3)
+      END SELECT 
 
-      nmod = MOD( ( nrzh - nrzl + 1 ), 6 )
-      nt   = ( nrzh - nrzl + 1 ) / 6
-      nlim = nrzl + ( nt * 6 ) - 1
 
-      DO nx = nrxl, nrxh
-        DO ny = nryl, nryh
-          DO nz = nrzl, nlim , 6
-            WRITE( 39, fmt = '(6e13.5)' ) ( REAL( cwann( nx, ny, nzz ) ), nzz = nz, nz + 5 )
-          END DO
-          WRITE( 39, fmt = '(5e13.5)' ) ( REAL( cwann( nx, ny, nzz) ), nzz = nlim + 1, nlim + nmod )
-        END DO
-      END DO
+      !
+      ! final loop on different wfs
+      !
+      DO m = 1, nplot
 
-      CLOSE(39)
+          filename=TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)
+          IF ( iwann(m) <= 9 ) THEN
+               filename=TRIM(filename)//TRIM(str)//"00"//TRIM(int2char(iwann(m)))
+          ELSE IF ( iwann(m) <= 99 ) THEN
+               filename=TRIM(filename)//TRIM(str)//"0"//TRIM(int2char(iwann(m)))
+          ELSE IF ( iwann(m) <= 999 ) THEN
+               filename=TRIM(filename)//TRIM(str)//TRIM(int2char(iwann(m)))
+          ELSE
+              CALL errore('plot','iwann(m) > 999', iwann(m))
+          ENDIF
+          !
+          !
+          WRITE( stdout,"(2x,'writing WF(',i3,') plot on file: ',a)") &
+                 iwann(m), TRIM(filename)//".gau"
+          OPEN ( aux_unit, FILE=TRIM(filename)//".gau", FORM='formatted', STATUS='unknown' )
+
+          WRITE(aux_unit, '(i4,3f12.6)' ) natot, r0(:) 
+          WRITE(aux_unit, '(i4,3f12.6)' ) (nrxh-nrxl+1),  avecl(:,1) 
+          WRITE(aux_unit, '(i4,3f12.6)' ) (nryh-nryl+1),  avecl(:,2) 
+          WRITE(aux_unit, '(i4,3f12.6)' ) (nrzh-nrzl+1),  avecl(:,3) 
+
+          DO ia = 1, natot
+              CALL convert_label( symbtot(ia), zatom )
+              WRITE(aux_unit, '(i4,4e13.5)' ) zatom, ONE, tautot( :, ia )
+          ENDDO
+
+          DO nx = nrxl, nrxh
+          DO ny = nryl, nryh
+              SELECT CASE ( TRIM(datatype) )
+
+              CASE( "modulus" )    
+                  WRITE( aux_unit, "(6e13.5)" ) &
+                     REAL ( cwann( nx, ny, :, m) * CONJG( cwann( nx, ny, :, m)) )  
+
+              CASE( "real" )    
+                  WRITE( aux_unit, "(6e13.5)" ) REAL ( cwann( nx, ny, :, m) )
+
+              CASE( "imaginary" )    
+                  WRITE( aux_unit, "(6e13.5)" ) AIMAG( cwann( nx, ny, :, m) )
+
+              CASE DEFAULT
+                  CALL errore('plot','invalid DATATYPE '//TRIM(datatype),4)
+              END SELECT 
+          ENDDO
+          ENDDO
+
+          CLOSE(aux_unit)
+
+          !
+          ! ... convert output to PLT fmt
+          !
+          CALL gcube2plt( filename, LEN_TRIM(filename) )
+
+      ENDDO
+
+      WRITE( stdout, "(2/,2x,70('='))" )
+
+
 
 !
 ! ... Finalize timing
+!
       CALL timing('plot',OPR='stop')
       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='plot')
+
 !
 ! ... Clean up memory
-      DEALLOCATE( vkpt, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating vkpt ', ABS(ierr) )
-      DEALLOCATE( nplwkp, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating nplwkp ', ABS(ierr) )
-      DEALLOCATE( nindpw, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating nindpw ', ABS(ierr) )
-      DEALLOCATE( cptwfp, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cptwfp ', ABS(ierr) )
-      DEALLOCATE( cu, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cu ', ABS(ierr) )
-      DEALLOCATE( cptwr, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cptwr ', ABS(ierr) )
+!
+      DEALLOCATE( iwann, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating iwann', ABS(ierr) )
+      DEALLOCATE( kwann, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating kwann', ABS(ierr) )
       DEALLOCATE( cwann, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating cwann ', ABS(ierr) )
-      DEALLOCATE( poscarwin, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(' plot ', ' deallocating poscarwin ', ABS(ierr) )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating cwann', ABS(ierr) )
+      DEALLOCATE( tautot, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating tautot', ABS(ierr) )
+      DEALLOCATE( symbtot, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating symbtot', ABS(ierr) )
+      DEALLOCATE( vkpt_cry, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating vkpt_cry', ABS(ierr) )
+      DEALLOCATE( tau_cry, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating tau_cry', ABS(ierr) )
+      DEALLOCATE( cutot, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating cutot ', ABS(ierr) )
+      DEALLOCATE( map, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating map ', ABS(ierr) )
 
       CALL cleanup 
 
-!
-! ... convert output to PLT fmt
-      call gcube2plt( nwann )
 
-      STOP '*** THE END *** (plot.x)'
-      END
+   STOP '*** THE END *** (plot.x)'
+   END PROGRAM plot
 
-! =----------------------------------------------------------------------------------=
-
-      SUBROUTINE convert_label( nameat, indat, ntyp )
-        USE parameters, ONLY: ntypx, natx
-        CHARACTER( LEN=2 ) :: nameat( ntypx )
-        INTEGER :: indat( ntypx )
-        INTEGER :: ntyp
-
-!       The case loop is implemented only for a few
-!       selected chemical species, otherwise the label
-!       is set equal to carbon by default
-        DO is = 1, ntyp
-          SELECT CASE ( TRIM( nameat( is ) ) )
-            CASE ( 'H' )
-              indat( is ) = 1
-            CASE ( 'He' )
-              indat( is ) = 2
-            CASE ( 'Li' )
-              indat( is ) = 3
-            CASE ( 'Be' )
-              indat( is ) = 4
-            CASE ( 'B' )
-              indat( is ) = 5
-            CASE ( 'C' )
-              indat( is ) = 6
-            CASE ( 'N' )
-              indat( is ) = 7
-            CASE ( 'O' )
-              indat( is ) = 8
-            CASE ( 'F' )
-              indat( is ) = 9
-            CASE ( 'Ne' )
-              indat( is ) = 10
-            CASE ( 'Na' )
-              indat( is ) = 11
-            CASE ( 'Mg' )
-              indat( is ) = 12
-            CASE ( 'Al' )
-              indat( is ) = 13
-            CASE ( 'Si' )
-              indat( is ) = 14
-            CASE ( 'P' )
-              indat( is ) = 15
-            CASE ( 'S' )
-              indat( is ) = 16
-            CASE ( 'Cl' )
-              indat( is ) = 17
-            CASE ( 'Ar' )
-              indat( is ) = 18
-            CASE ( 'K' )
-              indat( is ) = 19
-            CASE ( 'Ca' )
-              indat( is ) = 20
-!           ......
-            CASE ( 'Mn' )
-              indat( is ) = 25
-            CASE ( 'Fe' )
-              indat( is ) = 26
-            CASE ( 'Co' )
-              indat( is ) = 27
-            CASE ( 'Ni' )
-              indat( is ) = 28
-            CASE ( 'Cu' )
-              indat( is ) = 29
-            CASE ( 'Zn' )
-              indat( is ) = 30
-            CASE ( 'Ga' )
-              indat( is ) = 31
-!           ......
-            CASE ( 'As' )
-              indat( is ) = 33
-            CASE ( 'Sr' )
-              indat( is ) = 38
-            CASE ( 'Ag' )
-              indat( is ) = 47
-            CASE ( 'In' )
-              indat( is ) = 49
-            CASE ( 'Cs' )
-              indat( is ) = 55
-            CASE ( 'Pt' )
-              indat( is ) = 78
-            CASE ( 'Au' )
-              indat( is ) = 79
-!           ......
-            CASE DEFAULT
-              indat( is ) = 6
-          END SELECT
-        END DO
-
-!"H",                                                                                "He",
-!"Li","Be",                                                  "B","C","N","O","F","Ne",
-!"Na","Mg",                                                  "Al","Si","P","S","Cl","Ar",
-!"K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr",
-!"Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","St","Sb","Te","I","Xe",
-!"Cs","Ba","La","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
-!"Fr","Ra","Ac",
-!               "Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu",
-!               "Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr"
-
-
-        RETURN
-      END SUBROUTINE

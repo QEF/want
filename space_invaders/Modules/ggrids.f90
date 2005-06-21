@@ -29,7 +29,7 @@
 ! SUBROUTINE ggrids_allocate()
 ! SUBROUTINE ggrids_deallocate()
 ! SUBROUTINE ggrids_read_ext(unit)
-! SUBROUTINE ggrids_gv_indexes( igv, igsort, npwk, nr1, nr2, nr3, gk2fft, fft2gk )
+! SUBROUTINE ggrids_gk_indexes( igv, igsort, npwk, nr1, nr2, nr3, gk2fft, fft2gk )
 ! SUBROUTINE ggrids_gv_indexes( igv, ngm, nr1, nr2, nr3, gv2fft, fft2gv )
 
 !

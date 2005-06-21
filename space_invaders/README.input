@@ -375,8 +375,7 @@ nkpts_max     INTEGER
 After the INPUT namelist for each of the NSPTS kpts two lines with the following
 format must be provided:
 
- kpt_label
-   kx  ky  kz
+kpt_label    kx  ky  kz
 
    kpt_label     CHARACTER(*)
                  it is a string with the name of the kpoint

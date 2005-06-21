@@ -25,7 +25,7 @@
        USE input_module,   ONLY : input_manager
        USE want_init_module, ONLY : want_init
        USE control_module, ONLY : start_mode_dis, verbosity, unitary_thr, &
-                                  nprint_dis, nsave_dis
+                                  nprint_dis, nsave_dis, read_pseudo
        USE util_module,    ONLY : zmat_unitary, zmat_hdiag, zmat_mul
     
        USE kpoints_module, ONLY: nkpts, vkpt
@@ -83,7 +83,7 @@
        !
        ! ...  Global data init
        !
-       CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE.)
+       CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE., PSEUDO=.TRUE.)
 
        !
        ! ...  Summary of the input and DFT data
