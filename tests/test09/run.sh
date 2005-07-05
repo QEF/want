@@ -23,6 +23,8 @@ MANUAL=" Usage
  wannier_dw      the same for SPINDW states
  bands_up        interpolates the band structure using WFs
  bands_dw        the same for SPINDW states
+ plot_up         compute WFs on real space for plotting (SPINUP)
+ plot_dw         the same for SPINDW states
  want_up         perform DISENTANGLE, WANNIER and BANDS for SPINUP
  want_dw         the same for SPINDW
  want            want_up and want_dw
@@ -58,6 +60,8 @@ WANNIER_UP=
 WANNIER_DW=
 BANDS_UP=
 BANDS_DW=
+PLOT_UP=
+PLOT_DW=
 BULK_UP=
 BULK_DW=
 CLEAN=
@@ -76,14 +80,16 @@ case $INPUT in
    (wannier_dw)     WANNIER_DW=".TRUE." ;;
    (bands_up)       BANDS_UP=".TRUE." ;;
    (bands_dw)       BANDS_DW=".TRUE." ;;
+   (plot_up)        PLOT_UP=".TRUE." ;;
+   (plot_dw)        PLOT_DW=".TRUE." ;;
    (want_up)        DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
-                    BANDS_UP=".TRUE." ;;
+                    BANDS_UP=".TRUE." ; PLOT_UP=".TRUE." ;;
    (want_dw)        DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
-                    BANDS_DW=".TRUE." ;;
+                    BANDS_DW=".TRUE." ; PLOT_DW=".TRUE." ;;
    (want)           DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
                     BANDS_UP=".TRUE." ;
                     DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
-                    BANDS_DW=".TRUE." ;;
+                    BANDS_DW=".TRUE." ; PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;;
    (bulk_up)        BULK_UP=".TRUE." ;;
    (bulk_dw)        BULK_DW=".TRUE." ;;
    (bulk)           BULK_UP=".TRUE." ; BULK_DW=".TRUE." ;;
@@ -91,6 +97,7 @@ case $INPUT in
                     DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ; 
                     BANDS_UP=".TRUE." ; BULK_UP=".TRUE." ;
                     DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ; 
+                    PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;
                     BANDS_DW=".TRUE." ; BULK_DW=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -239,6 +246,31 @@ if [ "$BANDS_DW" = ".TRUE." ] ; then
    rename RHAM. RHAM_DW. RHAM*
 fi
 
+#
+# running PLOT_UP
+#
+if [ "$PLOT_UP" = ".TRUE." ] ; then
+   echo "running PLOT_UP calculation"
+   $WANT_BIN/plot.x < $TEST_HOME/plot_UP.in > $TEST_HOME/plot_UP.out
+   if [ ! -e CRASH ] ; then
+      echo "done"
+   else
+      echo "found some problems in PLOT_UP calculation, stopping" ; cat CRASH ; exit 1
+   fi
+fi
+
+#
+# running PLOT_DW
+#
+if [ "$PLOT_DW" = ".TRUE." ] ; then
+   echo "running PLOT_DW calculation"
+   $WANT_BIN/plot.x < $TEST_HOME/plot_DW.in > $TEST_HOME/plot_DW.out
+   if [ ! -e CRASH ] ; then
+      echo "done"
+   else
+      echo "found some problems in PLOT_DW calculation, stopping" ; cat CRASH ; exit 1
+   fi
+fi
 
 #
 # running BULK_UP
