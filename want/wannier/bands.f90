@@ -22,6 +22,7 @@
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE files_module,         ONLY : file_open, file_close
    USE timing_module,        ONLY : timing, timing_overview, global_list
+   USE parser_module
    USE startup_module,       ONLY : startup
    USE cleanup_module,       ONLY : cleanup
    USE want_init_module,     ONLY : want_init
@@ -30,7 +31,8 @@
    USE util_module,          ONLY : zmat_hdiag
    USE converters_module,    ONLY : cry2cart
    USE lattice_module,       ONLY : bvec
-   USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read
+   USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read, &
+                                    spin_component
    USE subspace_module,      ONLY : subspace_read
    USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, degen, indxws, vws, rham, wan_eig, &
                                     hamiltonian_read, hamiltonian_init
@@ -59,7 +61,7 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, nkpts_in, nkpts_max
+   NAMELIST /INPUT/ prefix, postfix, work_dir, nkpts_in, nkpts_max, spin_component
    !
    ! end of declariations
    !   
@@ -80,6 +82,7 @@
       work_dir                    = './' 
       nkpts_in                    = 0
       nkpts_max                   = 100
+      spin_component              = 'none'
       
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('bands','Unable to read namelist INPUT',ABS(ierr))
@@ -90,6 +93,10 @@
       IF ( nkpts_in > nkpts_inx ) CALL errore('bands', 'nkpts_in too large',  nkpts_in)
       IF ( nkpts_in <= 0 )  CALL errore('bands', 'Invalid nkpts_in', ABS(nkpts_in)+1)
       IF ( nkpts_max <= 0 ) CALL errore('bands', 'Invalid nkpts_max', ABS(nkpts_max)+1)
+      CALL change_case(spin_component,'lower')
+      IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
+           TRIM(spin_component) /= "down" ) &
+           CALL errore('bands', 'Invalid spin_component = '//TRIM(spin_component), 3)
 
 
       !

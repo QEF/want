@@ -328,11 +328,9 @@ INPUT file layout
    ...
 /
 
-kpt_label1
-  kx  ky  kz
+kpt_label1     kx  ky  kz
 ...
-kpt_labelN
-  kx  ky  kz
+kpt_labelN     kx  ky  kz
 
 -----------------------------------
 
@@ -368,6 +366,12 @@ nkpts_in      INTEGER
 nkpts_max     INTEGER
               maximum number of interpolated kpoints
               DEFAULT: 100
+
+spin_component    STRING
+              ( "up" | "down" | "none" )
+              define whether the calculation is spin polarized and if the case
+              which spin component is to be treated. 
+              DEFAULT: "none"
 
 
 ==============================================================================
@@ -453,6 +457,12 @@ assume_ncpp   LOGICAL
               if using DFT pseudoptentials not readable in WanT set this value to 
               .TRUE. in order to avoid PP reading.
               DEFAULT: .FALSE.
+
+spin_component    STRING
+              ( "up" | "down" | "none" )
+              define whether the calculation is spin polarized and if the case
+              which spin component is to be treated. 
+              DEFAULT: "none"
 
 
 ==============================================================================

@@ -22,6 +22,7 @@
    USE io_module,          ONLY : space_unit, wan_unit, dft_unit, aux_unit, ioname
    USE control_module,     ONLY : read_pseudo, use_uspp
    USE files_module,       ONLY : file_open, file_close
+   USE parser_module
    USE startup_module,     ONLY : startup
    USE cleanup_module,     ONLY : cleanup
    USE want_init_module,   ONLY : want_init
@@ -34,7 +35,8 @@
    USE lattice_module,     ONLY : avec, bvec, alat, omega
    USE ions_module,        ONLY : nsp, symb, na, tau, ityp, nat
    USE kpoints_module,     ONLY : nkpts, vkpt
-   USE windows_module,     ONLY : imin, imax, dimwin, dimwinx, windows_read
+   USE windows_module,     ONLY : imin, imax, dimwin, dimwinx, windows_read, &
+                                  spin_component
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
    USE localization_module,ONLY : cu, localization_read
    USE ggrids_module,      ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
@@ -83,7 +85,7 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, wann, datatype, assume_ncpp, &
-                    nrxl, nrxh, nryl, nryh, nrzl, nrzh
+                    nrxl, nrxh, nryl, nryh, nrzl, nrzh, spin_component
    !
    ! end of declariations
    !
@@ -105,6 +107,7 @@
       assume_ncpp                 = .FALSE.
       wann                        = ' '
       datatype                    = 'modulus'
+      spin_component              = 'none'
       nrxl                        = -50000
       nrxh                        =  50000
       nryl                        = -50000
@@ -124,6 +127,10 @@
       IF ( TRIM(datatype) /= "modulus" .AND. TRIM(datatype) /= "real" .AND. &
            TRIM(datatype) /= "imaginary"  ) &
            CALL errore('plot','invalid DATATYPE = '//TRIM(datatype),2)
+      CALL change_case(spin_component,'lower')
+      IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
+           TRIM(spin_component) /= "down" ) &
+           CALL errore('plot', 'Invalid spin_component = '//TRIM(spin_component), 3)
 
       read_pseudo = .NOT. assume_ncpp
 
@@ -229,7 +236,7 @@
       IF ( nryl == -50000) nryl = -nfft(2)/2
       IF ( nryh ==  50000) nryh =  nfft(2) -1 -nfft(2)/2
       IF ( nrzl == -50000) nrzl = -nfft(3)/2
-      IF ( nrzh ==  50000) nrzh =  nfft(3) -1 -nfft(2)/2
+      IF ( nrzh ==  50000) nrzh =  nfft(3) -1 -nfft(3)/2
 
       !
       ! summary of the input

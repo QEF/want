@@ -1,0 +1,11 @@
+
+ &INPUT
+   prefix = 'nichain'
+   postfix = '_WanT_DW'
+   work_dir = './'
+   datatype = 'modulus'
+   wann = '1-6'
+   nrzl = -24
+   nrzh =  24
+   spin_component = 'DOWN'
+ /

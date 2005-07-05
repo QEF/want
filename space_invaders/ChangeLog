@@ -3,6 +3,12 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+05 Jul 2005      Plot and bands utilities updated with a small big fix: spin_component
+                 flag in the input namelist is required. This should be only a 
+                 temporary fix, better implementation ASAP. Fixed a bug in plot.x where
+                 setting defaults for z FFT mesh. Test7 updated with plot calculation. (AF)
+
 21 Jun 2005      Plot utility finally updated and tested. USPP not implemented but
                  for plotting purposes it seems to work anyway. Test2 and Test8 
                  updated. (AF)
