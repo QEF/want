@@ -62,9 +62,9 @@
    IF ( dimwinx /= MAXVAL(dimwin) ) CALL errore(subname,'invalid dimwinx',ABS(dimwinx)+1)
    !
    ! this may be generalized
-   IF ( lfrozen .AND. ( TRIM( mode ) /= 'center_projections' .OR.  &
+   IF ( lfrozen .AND. ( TRIM( mode ) /= 'center_projections' .AND. &
                         TRIM( mode ) /= 'from_file'  )        ) &
-        CALL errore(subname,'center proj. are required if frozen states are present',2)
+        CALL errore(subname,'center projs. are required if frozen states are present',2)
 
 
    !
