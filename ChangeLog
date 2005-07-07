@@ -4,6 +4,8 @@
 =======================================================
 
 
+08 Jul 2005      Bug in subspace_init.f90 avoiding the use of frozen states fixed. (AF)
+
 07 Jul 2005      portability bug in the gcube2plt.c routine fixed on IBM; output
                  fmt choice added in plot, in order to deal with non-orthorombic
                  lattices. gcube2plt output changed and rightly flushed. (AF) 
