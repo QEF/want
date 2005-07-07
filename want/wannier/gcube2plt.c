@@ -580,7 +580,8 @@ int ReadInputData()
 /* atoms ... */
    printf("Atoms...\n");
    for(i = 0 ; i < Natoms ; i++)  {
-    fscanf(Input_p,"%d %f %f %f %f",&IA[i],&Chgn[i],&XC[i],&YC[i],&ZC[i]);
+    /* @@@ fscanf(Input_p,"%d %f %f %f %f",&IA[i],&Chgn[i],&XC[i],&YC[i],&ZC[i]); */
+    fscanf(Input_p,"%d %e %e %e %e",&IA[i],&Chgn[i],&XC[i],&YC[i],&ZC[i]); 
      XC[i] *= BOHR_RADIUS;
       YC[i] *= BOHR_RADIUS;
        ZC[i] *= BOHR_RADIUS;
@@ -624,7 +625,8 @@ int ReadInputData()
 
      ijkl = i + N1 * j + N1 * N2 * k + N1 * N2 * N3 * l;
 
-     ijk = fscanf(Input_p,"%f",&Data[ijkl]);
+     /* @@@ ijk = fscanf(Input_p,"%f",&Data[ijkl]);  */
+     ijk = fscanf(Input_p,"%e",&Data[ijkl]);
 
      if(ijk != 1) {
        printf("$ERROR - in reading the grid data\n");
@@ -647,7 +649,8 @@ int ReadInputData()
 
      ijk = i + N1 * j + N1 * N2 * k;
 
-     ijkl = fscanf(Input_p,"%f",&Data[ijk]);
+     /* @@@ ijkl = fscanf(Input_p,"%f",&Data[ijk]); */
+     ijkl = fscanf(Input_p,"%e",&Data[ijk]);
      if(ijkl != 1) {
        printf("$ERROR - in reading the grid data\n");
        printf("$ERROR - at ijk: %d %d %d\n",i,j,k);
