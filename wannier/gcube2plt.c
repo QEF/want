@@ -410,18 +410,7 @@ long int GCUBE2PLT( const char * filename, const int * length )
     int i;
 
     printf("**********************************************************\n");
-    printf("* Convert a 'cube' output from GaussianXX into the plot  *\n");
-    printf("* format known by gOpenMol (or SCARECROW).               *\n");
-    printf("*                                                        *\n");
-    printf("* Leif Laaksonen (CSC) 1995                              *\n");
-    printf("* Email: Leif.Laaksonen@csc.fi                           *\n");
-    printf("*                               Version: 17/08/95        *\n");
-    printf("**********************************************************\n\n");
-
-    /* printf( "%d %d\n", (int)(*iwann), sizeof(int) ); */
-    /* sprintf( InputFile, "WFR%03d.gau", (int)(*iwann)); */
-    /* sprintf( OutputFile, "WFR%03d.plt", (int)(*iwann)); */
-    /* sprintf( CoordinateFile, "WFR%03d.crd", (int)(*iwann)); */
+    printf("gCube2Plt conversion  ( .gau --> .plt )                 \n\n");
 
     for ( i = 0; ( i < *length ) && ( i < 248 ); i ++ ) {
         InputFile[ i ] = filename[ i ];
@@ -436,10 +425,9 @@ long int GCUBE2PLT( const char * filename, const int * length )
     strncat( OutputFile , ".plt" , 4 ) ;
     strncat( CoordinateFile , ".crd" , 4 ) ;
 
-    printf("File names:\n");
     printf("Input file:      '%s'\n",InputFile);
     printf("Output file (plot file):  '%s'\n",OutputFile);
-    printf("Coordinate file (in CHARMM 'crd' format): '%s'\n",CoordinateFile);
+    printf("Coordinate file (in CHARMM 'crd' format): '%s'\n\n",CoordinateFile);
 
 /*  Process the data ... */
 
@@ -452,6 +440,8 @@ long int GCUBE2PLT( const char * filename, const int * length )
     WriteInputData();
 
     printf("Job done ...\n");
+    printf("**********************************************************\n");
+    fflush( stdout ) ;
 
     return 0L;
 }
@@ -481,7 +471,7 @@ int ReadInputData()
       return(1);
     }
 
-   printf("\nTitle in file (job title):\n");
+   /* @@@ printf("\nTitle in file (job title):\n"); */
 /* first comes an unknow number of title lines (MAX lines is 5) */
     TitleLines = 0;
     for(i = 0 ; i < MAX_TITLE_LINES ; i++) {
@@ -522,8 +512,8 @@ int ReadInputData()
     N1X1 *= BOHR_RADIUS;
      N1Y1 *= BOHR_RADIUS;
       N1Z1 *= BOHR_RADIUS;
-    printf("Number of points: %d, in direction (x,y,z) %f %f %f\n",
-            N1,N1X1,N1Y1,N1Z1);
+    /* @@@ printf("Number of points: %d, in direction (x,y,z) %f %f %f\n",
+            N1,N1X1,N1Y1,N1Z1); */
 
 /* check that this is a 'pure' x-coordinate */
    if(Rabs(N1X1) < SMALL) {
@@ -538,8 +528,8 @@ int ReadInputData()
     N2X1 *= BOHR_RADIUS;
      N2Y1 *= BOHR_RADIUS;
       N2Z1 *= BOHR_RADIUS;
-    printf("Number of points: %d, in direction (x,y,z) %f %f %f\n",
-            N2,N2X1,N2Y1,N2Z1);
+    /* @@@ printf("Number of points: %d, in direction (x,y,z) %f %f %f\n",
+            N2,N2X1,N2Y1,N2Z1); */
 
 /* check that this is a 'pure' y-coordinate */
    if(Rabs(N2Y1) < SMALL) {
@@ -554,8 +544,8 @@ int ReadInputData()
     N3X1 *= BOHR_RADIUS;
      N3Y1 *= BOHR_RADIUS;
       N3Z1 *= BOHR_RADIUS;
-    printf("Number of points: %d, in direction (x,y,z) %f %f %f\n",
-            N3,N3X1,N3Y1,N3Z1);
+   /* @@@ printf("Number of points: %d, in direction (x,y,z) %f %f %f\n",
+            N3,N3X1,N3Y1,N3Z1); */
 
 /* check that this is a 'pure' z-coordinate */
    if(Rabs(N3Z1) < SMALL) {
@@ -578,15 +568,15 @@ int ReadInputData()
      if(ZC == NULL) exit(14);
 
 /* atoms ... */
-   printf("Atoms...\n");
+   /* @@@ printf("Atoms...\n"); */
    for(i = 0 ; i < Natoms ; i++)  {
     /* @@@ fscanf(Input_p,"%d %f %f %f %f",&IA[i],&Chgn[i],&XC[i],&YC[i],&ZC[i]); */
     fscanf(Input_p,"%d %e %e %e %e",&IA[i],&Chgn[i],&XC[i],&YC[i],&ZC[i]); 
      XC[i] *= BOHR_RADIUS;
       YC[i] *= BOHR_RADIUS;
        ZC[i] *= BOHR_RADIUS;
-    printf("Atomic number: %d, charge: %f, coord (x,y,z): %f %f %f\n",
-            IA[i],Chgn[i],XC[i],YC[i],ZC[i]);
+    /* @@@ printf("Atomic number: %d, charge: %f, coord (x,y,z): %f %f %f\n",
+            IA[i],Chgn[i],XC[i],YC[i],ZC[i]); */
 
    }
 
