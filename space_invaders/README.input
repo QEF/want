@@ -438,6 +438,12 @@ datatype      STRING
                               are expected to be more or less "real".
               DEFAULT: "modulus"
 
+output_fmt    STRING
+              ("plt" | "gau" )
+              Define the format of the output file. PLT is binary and smaller but
+              GAU also deals with non-orthorombic lattices.
+              DEFAULT: "plt"
+
 nrxl, nrxh    INTEGER
               the low and high indexes for the FFT grid. Using an interval of dimension
               corresponding to the given FFT dimension (see eg disentangle output) 

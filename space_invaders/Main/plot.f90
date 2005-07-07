@@ -14,14 +14,14 @@
    !
    USE kinds
    USE constants,          ONLY : ZERO, CZERO, ONE, CONE, CI, TPI, &
-                                  bohr => bohr_radius_angs
+                                  bohr => bohr_radius_angs, EPS_m6
    USE parameters,         ONLY : ntypx, natx, nstrx
    USE fft_scalar,         ONLY : cfft3d
    USE timing_module,      ONLY : timing, timing_overview, global_list
    USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
    USE io_module,          ONLY : space_unit, wan_unit, dft_unit, aux_unit, ioname
    USE control_module,     ONLY : read_pseudo, use_uspp
-   USE files_module,       ONLY : file_open, file_close
+   USE files_module,       ONLY : file_open, file_close, file_delete
    USE parser_module
    USE startup_module,     ONLY : startup
    USE cleanup_module,     ONLY : cleanup
@@ -56,7 +56,8 @@
    INTEGER :: nrxl, nryl, nrzl
    INTEGER :: nrxh, nryh, nrzh
    INTEGER :: nnrx, nnry, nnrz
-   CHARACTER( 20 )  :: datatype  ! ( "modulus" | "real" | "imaginary"  )
+   CHARACTER( 20 )  :: datatype   ! ( "modulus" | "real" | "imaginary"  )
+   CHARACTER( 20 )  :: output_fmt ! ( "plt" | "gau" )
    LOGICAL          :: assume_ncpp
 
    INTEGER :: nx, ny, nz, nzz, nyy, nxx
@@ -84,7 +85,8 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, datatype, assume_ncpp, &
+   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
+                    datatype, assume_ncpp, output_fmt, &
                     nrxl, nrxh, nryl, nryh, nrzl, nrzh, spin_component
    !
    ! end of declariations
@@ -107,6 +109,7 @@
       assume_ncpp                 = .FALSE.
       wann                        = ' '
       datatype                    = 'modulus'
+      output_fmt                  = 'plt'
       spin_component              = 'none'
       nrxl                        = -50000
       nrxh                        =  50000
@@ -123,15 +126,21 @@
       ! Some checks
       !
       IF ( LEN_TRIM( wann) == 0 ) CALL errore('plot', 'wann not supplied ', 1)
+      !
       CALL change_case( datatype, 'lower')
       IF ( TRIM(datatype) /= "modulus" .AND. TRIM(datatype) /= "real" .AND. &
            TRIM(datatype) /= "imaginary"  ) &
            CALL errore('plot','invalid DATATYPE = '//TRIM(datatype),2)
+           !
       CALL change_case(spin_component,'lower')
       IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
            TRIM(spin_component) /= "down" ) &
            CALL errore('plot', 'Invalid spin_component = '//TRIM(spin_component), 3)
-
+           !
+      CALL change_case(output_fmt,'lower')
+      IF ( TRIM(output_fmt) /= "plt" .AND. TRIM(output_fmt) /= "gau" ) &
+           CALL errore('plot', 'Invalid output_fmt = '//TRIM(output_fmt), 4)
+   
       read_pseudo = .NOT. assume_ncpp
 
 
@@ -227,6 +236,17 @@
          IF ( iwann(m) <= 0  .OR. iwann(m) > dimwann ) &
               CALL errore('plot','iwann too large',m)
       ENDDO
+      !
+      !
+      ! if lattice is not orthorombic, only .gau output fmt is allowed
+      !
+      IF ( ABS( DOT_PRODUCT( avec(:,1), avec(:,2) )) > EPS_m6 .OR. &
+           ABS( DOT_PRODUCT( avec(:,1), avec(:,3) )) > EPS_m6 .OR. &
+           ABS( DOT_PRODUCT( avec(:,2), avec(:,3) )) > EPS_m6   ) THEN 
+           !
+           IF ( TRIM(output_fmt) == "plt" ) &
+                CALL errore('plot','plt is allowed only in orthorombic latt',4)
+      ENDIF
 
       !
       ! set the default FFT mesh
@@ -249,7 +269,8 @@
       DO m=1,nplot
           WRITE( stdout,"(5x,'wf (',i3,' ) = ',i4 )") m, iwann(m)
       ENDDO
-      WRITE( stdout,"(/,2x,'Data type :',3x,a)") TRIM(datatype)
+      WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
+      WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
       WRITE( stdout,"(/,2x,'Grid dimensions:')") 
       WRITE( stdout,"( 6x, 'nrx', i6, ' --> ', i6 )" ) nrxl, nrxh 
       WRITE( stdout,"( 6x, 'nry', i6, ' --> ', i6 )" ) nryl, nryh 
@@ -490,7 +511,7 @@
            WRITE( stdout, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
                   symbtot(ia), ia, (tautot( i, ia ), i = 1, 3)
       ENDDO
-      WRITE(stdout, "()" )
+      WRITE(stdout, "(/)" )
 
       
       !
@@ -578,16 +599,26 @@
           CLOSE(aux_unit)
 
           !
-          ! ... convert output to PLT fmt
+          ! ... convert output to PLT fmt, if the case
           !
-          WRITE( stdout, "()" )
-          CALL timing('gcubeplt',OPR='start')
-          CALL gcube2plt( filename, LEN_TRIM(filename) )
-          CALL timing('gcubeplt',OPR='stop')
+          IF ( TRIM( output_fmt ) == "plt" ) THEN
+               CALL timing('gcubeplt',OPR='start')
+               CALL gcube2plt( filename, LEN_TRIM(filename) )
+               CALL timing('gcubeplt',OPR='stop')
+               !
+               ! removing temporary .gau file
+               WRITE(stdout,"(2x,'deleting tmp file: ',a,2/)" ) TRIM(filename)//".gau"
+               CALL file_delete( TRIM(filename)//".gau" )
+               !
+          ELSEIF ( TRIM( output_fmt ) == "gau" ) THEN
+               ! do nothing
+          ELSE
+               CALL errore('plot','Invalid output_fmt = '//TRIM(output_fmt),6)
+          ENDIF
 
       ENDDO
 
-      WRITE( stdout, "(2/,2x,70('='))" )
+      WRITE( stdout, "(/,2x,70('='))" )
 
 
 

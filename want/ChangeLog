@@ -4,6 +4,10 @@
 =======================================================
 
 
+07 Jul 2005      portability bug in the gcube2plt.c routine fixed on IBM; output
+                 fmt choice added in plot, in order to deal with non-orthorombic
+                 lattices. gcube2plt output changed and rightly flushed. (AF) 
+
 05 Jul 2005      Plot and bands utilities updated with a small big fix: spin_component
                  flag in the input namelist is required. This should be only a 
                  temporary fix, better implementation ASAP. Fixed a bug in plot.x where
