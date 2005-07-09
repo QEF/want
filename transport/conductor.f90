@@ -11,7 +11,7 @@
    PROGRAM conductor
    !***********************************************
    USE kinds
-   USE constants,        ONLY : PI, ZERO, CZERO, CONE, CI, EPS_m5
+   USE constants,        ONLY : PI, ZERO, CZERO, CONE, CI, EPS_m5, EPS_m2
    USE parameters,       ONLY : nstrx 
    USE startup_module,   ONLY : startup
    USE version_module,   ONLY : version_number
@@ -30,9 +30,10 @@
       INTEGER      :: niterx
       INTEGER      :: ne
       REAL(dbl)    :: emin, emax
-      REAL(dbl)    :: bias
+      REAL(dbl)    :: bias, delta
       LOGICAL      :: loverlap, lcorrelation
-      CHARACTER(20):: conduct_formula             !("landauer"|"generalized")
+      CHARACTER(20):: conduct_formula             !( "landauer"  | "generalized" )
+      CHARACTER(20):: calculation_type            !( "conductor" | "bulk" )
       !
       CHARACTER(nstrx) :: attr, sgmtag, sgmfile, filename
       REAL(dbl)    :: rtmp
@@ -46,36 +47,23 @@
       REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
 
       INTEGER,      ALLOCATABLE :: ipiv2(:)
-      COMPLEX(dbl), ALLOCATABLE :: h00_a(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: h01_a(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: h00_b(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: h01_b(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: h00_a(:,:), h01_a(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: h00_b(:,:), h01_b(:,:)
       COMPLEX(dbl), ALLOCATABLE :: h00_c(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: hci_ac(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: hci_cb(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: hci_ca(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: hci_bc(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: hci_ac(:,:), hci_ca(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: hci_cb(:,:), hci_bc(:,:)
       ! 
-      COMPLEX(dbl), ALLOCATABLE :: s00_a(:,:) 
-      COMPLEX(dbl), ALLOCATABLE :: s01_a(:,:) 
-      COMPLEX(dbl), ALLOCATABLE :: s00_b(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: s01_b(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: s00_a(:,:), s01_a(:,:) 
+      COMPLEX(dbl), ALLOCATABLE :: s00_b(:,:), s01_b(:,:)
       COMPLEX(dbl), ALLOCATABLE :: s00_c(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: sci_ac(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: sci_cb(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: sci_ca(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: sci_bc(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: sci_ac(:,:), sci_ca(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: sci_cb(:,:), sci_bc(:,:)
       !
-      COMPLEX(dbl), ALLOCATABLE :: c00_a(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: c01_a(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: c00_b(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: c01_b(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: c00_a(:,:), c01_a(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: c00_b(:,:), c01_b(:,:)
       COMPLEX(dbl), ALLOCATABLE :: c00_c(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: cci_ac(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: cci_cb(:,:)
-      !
-      COMPLEX(dbl), ALLOCATABLE :: cci_ca(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: cci_bc(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: cci_ac(:,:), cci_ca(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: cci_cb(:,:), cci_bc(:,:)
       !
       COMPLEX(dbl), ALLOCATABLE :: totA(:,:)
       COMPLEX(dbl), ALLOCATABLE :: totB(:,:)
@@ -99,8 +87,9 @@
       !
       ! manelist definition
       !
-      NAMELIST /INPUT_CONDUCTOR/ nmxa, nmxb, nmxc, ne, niterx, emin, emax, bias, &
-                                 loverlap, lcorrelation, conduct_formula, sgmfile
+      NAMELIST /INPUT_CONDUCTOR/ nmxa, nmxb, nmxc, ne, niterx, emin, emax, delta, bias, &
+                                 calculation_type, loverlap, &
+                                 lcorrelation, conduct_formula, sgmfile
 
 
 !
@@ -117,10 +106,12 @@
       nmxa = 0
       nmxb = 0
       nmxc = 0
+      calculation_type = "conductor"
       ne = 1000
       niterx = 200
       emin = -10.0
       emax =  10.0
+      delta = EPS_m5
       bias = 0.0
       loverlap = .FALSE.
       lcorrelation = .FALSE.
@@ -136,12 +127,21 @@
       IF ( emax <= emin ) CALL errore('conductor','Invalid EMIN EMAX',1)
       IF ( ne <= 1 ) CALL errore('conductor','Invalid NE',1)
       IF ( niterx <= 0 ) CALL errore('conductor','Invalid NITERX',1)
+      IF ( delta < 0.0 ) CALL errore('conductor','Invalid DELTA',1)
+      IF ( delta > EPS_m2 ) CALL errore('conductor','DELTA too large',1)
 
+      CALL change_case(calculation_type, 'lower')
+      IF ( TRIM(calculation_type) /= 'conductor' .AND. &
+           TRIM(calculation_type) /= 'bulk' ) &
+           CALL errore('conductor','invalid CALCULATION_TYPE = '//TRIM(calculation_type),1)
+           !
       CALL change_case(conduct_formula, 'lower')
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. TRIM(conduct_formula) /= 'generalized' ) &
            CALL errore('conductor','invalid CONDUCT_FORMULA = '//TRIM(conduct_formula),1)
+           !
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. .NOT. lcorrelation ) &
            CALL errore('conductor','invalid conduct formula',1)
+           !
       IF ( lcorrelation .AND. LEN_TRIM(sgmfile) == 0 ) &
            CALL errore('conductor','sgmfile unspecified',1)
 
@@ -265,11 +265,10 @@
 !...  Set up the layer hamiltonians
 !     different layers in different files - read only version
 
-      CALL readH( nmaxa, nmaxb, nmaxc, h00_a, h01_a, s00_a, s01_a,   &
-                  h00_b, h01_b, s00_b, s01_b, h00_c, s00_c, hci_ac,  &
-                  sci_ac, hci_cb, sci_cb , loverlap )
+      CALL readH( nmaxa, nmaxb, nmaxc, loverlap, calculation_type, &
+                  h00_a, h01_a, s00_a, s01_a, h00_b, h01_b, s00_b, &
+                  s01_b, h00_c, s00_c, hci_ac, sci_ac, hci_cb, sci_cb)
 
-      
       hci_ca(:,:) = CONJG( TRANSPOSE(hci_ac(:,:)) )
       sci_ca(:,:) = CONJG( TRANSPOSE(sci_ac(:,:)) )
       hci_bc(:,:) = CONJG( TRANSPOSE(hci_cb(:,:)) )
@@ -348,7 +347,7 @@
          !
          ! compute Retarded quantities
          !
-         ene =  egrid(ie)  + EPS_m5 * CI
+         ene =  egrid(ie)  + delta * CI
 
          !
          ! init
