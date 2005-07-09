@@ -3,20 +3,28 @@
    prefix = 'chain8'
    postfix = '_WanT'
    work_dir = './COND/'
+   verbosity = 'high'
+!   projections = "from_file"
+!   overlaps = "from_file"
 /
 
 &SUBSPACE
    dimwann = 32
+   win_max = 3.5
+   froz_min = -30.0
+   froz_max =   -1.0
    alpha_dis = 0.5     
-   maxiter_dis = 2000   
+   maxiter_dis = 1000   
    start_mode_dis = 'center_projections'
 /
 
 &LOCALIZATION
+!   start_mode_wan = "randomized"
+!   a_condmin = 10.0
    maxiter0_wan = 100
-   alpha0_wan = 0.5
+   alpha0_wan = 0.3
    maxiter1_wan = 2000
-   alpha1_wan = 0.5
+   alpha1_wan = 0.3
    ncg = 5          
    nshells = 2       
    nwhich(1) = 1      

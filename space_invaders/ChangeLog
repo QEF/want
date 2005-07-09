@@ -3,6 +3,11 @@
             WanT code:  Log of Changes 
 =======================================================
 
+09 Jul 2005      Trasnport package changed: bulk code eliminated and inserted in
+                 the conductor code. readH.f90 routine updated (deals with both
+                 conductor and bulk case). Conductor input modified. Routine 
+                 read_matrix.f90 added. All routines related to the bulk code 
+                 expunged from CVS repository. (AF)                
 
 08 Jul 2005      Bug in subspace_init.f90 avoiding the use of frozen states fixed. (AF)
 

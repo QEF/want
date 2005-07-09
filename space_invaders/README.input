@@ -478,65 +478,6 @@ spin_component    STRING
 
 ==============================================================================
 
-                  ********* code: BULK.x  **********
-
-==============================================================================
-
-INPUT file layout
------------------------------------
-
-&INPUT_BULK
-   ...
-/
-
------------------------------------
-
-==============================================================================
-
-NAMELIST &INPUT_BULK
-
-nmx         INTEGER
-            number of sites for the TB hamiltonian of the bulk. Using WFs this value
-            should be set equal to DIMWANN (or almost < DIMWANN if some basis functions
-            have been eliminated)
-            DEFAULT : 0
-
-ne          INTEGER
-            dimension of the energy grid for transmittance and spectral function
-            calculation
-            DEFAULT : 1000
-
-niterx      INTEGER
-            maximum number of iterations in the calculation of transfer matrices
-            DEFAULT : 200
-
-emin        REAL
-            lower limit [eV] of the energy grid dimensioned by NE
-            DEFAULT : -10.0
-
-emax        REAL
-            upper limit [eV] of the energy grid dimensioned by NE
-            DEFAULT :  10.0
-
-efieldx     REAL
-            x component [eV] of an external bias field
-            DEFAULT : 0.0 
-
-efieldy     REAL
-            y component [eV] of an external bias field
-            DEFAULT : 0.0 
-
-efieldz     REAL
-            z component [eV] of an external bias field
-            DEFAULT : 0.0 
-
-==============================================================================
-
-
-
-
-==============================================================================
-
                   ********* code: CONDUCTOR.x  **********
 
 ==============================================================================
@@ -566,6 +507,19 @@ nmxc        INTEGER
             number of sites in the conductor C
             DEFAULT : 0
 
+calculation_type    STRING
+            ( "conductor" | "bulk" )
+            determina which kind of calculation should be performed:
+            "conductor":  ordinary transport calculation for a leads/conductor/lead
+                          interface
+            "bulk": transport in a bulk system
+            DEFAULT: "conductor"
+
+loverlap    LOGICAL
+            If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
+            is assumed (which is by definition the case of Wannier functions)
+            DEFAULT : .FALSE.
+
 ne          INTEGER
             dimension of the energy grid for transmittance and spectral function
             calculation
@@ -583,14 +537,14 @@ emax        REAL
             upper limit [eV] of the energy grid dimensioned by NE
             DEFAULT : +10.0
 
-loverlap    LOGICAL
-            If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
-            is assumed (which is by definition the case of Wannier functions)
-            DEFAULT : .FALSE.
-
 bias        REAL
             bias voltage [eV] across the conductor region.
             DEFAULT : 0.0
+
+delta       REAL
+            small imaginary part used to get off the real axix in the calculation
+            of Green's functions.
+            DEFAULT : 1.0E-5
 
 ==============================================================================
 

@@ -280,6 +280,7 @@ which can be read by gOpenMol or SCARECROW.
 #include <ctype.h>
 #include <sys/types.h>
 #include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define BUFF_LEN        256
