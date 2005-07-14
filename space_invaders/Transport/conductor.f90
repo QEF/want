@@ -121,9 +121,7 @@
       READ( 5, input_conductor, IOSTAT=ierr)
       IF ( ierr/= 0) CALL errore('conductor','reading input namelist',ABS(ierr))
       
-      IF ( nmxa <= 0) CALL errore('conductor','Invalid NMXA',1)
-      IF ( nmxb <= 0) CALL errore('conductor','Invalid NMXB',1)
-      IF ( nmxc <= 0) CALL errore('conductor','Invalid NMXB',1)
+      IF ( nmxc <= 0) CALL errore('conductor','Invalid NMXC',1)
       IF ( emax <= emin ) CALL errore('conductor','Invalid EMIN EMAX',1)
       IF ( ne <= 1 ) CALL errore('conductor','Invalid NE',1)
       IF ( niterx <= 0 ) CALL errore('conductor','Invalid NITERX',1)
@@ -135,8 +133,21 @@
            TRIM(calculation_type) /= 'bulk' ) &
            CALL errore('conductor','invalid CALCULATION_TYPE = '//TRIM(calculation_type),1)
            !
+      IF ( TRIM(calculation_type) == 'conductor' ) THEN
+           IF ( nmxa <= 0) CALL errore('conductor','Invalid NMXA',1)
+           IF ( nmxb <= 0) CALL errore('conductor','Invalid NMXB',1)
+      ELSE
+           !
+           ! bulk case
+           !
+           IF ( nmxa /= 0) CALL errore('conductor','NMXA should not be specified',1)
+           IF ( nmxb /= 0) CALL errore('conductor','NMXB should not be specified',1)
+           nmxa = nmxc
+           nmxb = nmxc
+      ENDIF
+      !
       CALL change_case(conduct_formula, 'lower')
-      IF ( TRIM(conduct_formula) /= 'landauer' .AND. TRIM(conduct_formula) /= 'generalized' ) &
+      IF ( TRIM(conduct_formula) /='landauer' .AND. TRIM(conduct_formula) /= 'generalized')&
            CALL errore('conductor','invalid CONDUCT_FORMULA = '//TRIM(conduct_formula),1)
            !
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. .NOT. lcorrelation ) &
@@ -388,14 +399,18 @@
          CALL transferb( nmaxb, niterx, totB, tottB, c00_b, c01_b, ene+bias )
          CALL greenb( nmaxb, totB, tottB, c00_b, c01_b, ene+bias, gB, 1, 1 )
 
-         CALL zgemm('N','N', nmaxc, nmaxb, nmaxb, CONE, cci_cb, nmaxc, gB, nmaxb, CZERO, c2, nmaxc )
-         CALL zgemm('N','N', nmaxc, nmaxc, nmaxb, CONE, c2, nmaxc, cci_bc, nmaxb, CZERO, sRr, nmaxc )
+         CALL zgemm('N','N', nmaxc, nmaxb, nmaxb, CONE, cci_cb, nmaxc, gB, nmaxb, &
+                             CZERO, c2, nmaxc )
+         CALL zgemm('N','N', nmaxc, nmaxc, nmaxb, CONE, c2, nmaxc, cci_bc, nmaxb, &
+                             CZERO, sRr, nmaxc )
 
          CALL transfera( nmaxa, niterx, totA, tottA, c00_a, c01_a, ene )
          CALL greena( nmaxa, totA, tottA, c00_a, c01_a, ene, gA, -1, 1 )
 
-         CALL zgemm('N','N', nmaxc, nmaxa, nmaxa, CONE, cci_ca, nmaxc, gA, nmaxa, CZERO, c1, nmaxc )
-         CALL zgemm('N','N', nmaxc, nmaxc, nmaxa, CONE, c1, nmaxc, cci_ac, nmaxa, CZERO, sLr, nmaxc )
+         CALL zgemm('N','N', nmaxc, nmaxa, nmaxa, CONE, cci_ca, nmaxc, gA, nmaxa, &
+                             CZERO, c1, nmaxc )
+         CALL zgemm('N','N', nmaxc, nmaxc, nmaxa, CONE, c1, nmaxc, cci_ac, nmaxa, &
+                             CZERO, sLr, nmaxc )
 
          !
          ! gL and gR
