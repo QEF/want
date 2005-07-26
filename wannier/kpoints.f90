@@ -58,7 +58,6 @@
 
   INTEGER                 :: nshells       ! input number of shells to be used
   INTEGER                 :: nwhich(nnx)   ! the chosen shells
-  INTEGER                 :: ndnntot       ! number of dnn shells
   INTEGER, ALLOCATABLE    :: nntot(:)      ! DIM: nkpts
   INTEGER, ALLOCATABLE    :: nnshell(:,:)  ! DIM: nkpts*nnx
   INTEGER, ALLOCATABLE    :: nnlist(:,:)   ! DIM: nkpts*nnx
@@ -96,7 +95,7 @@
   PUBLIC :: nreverse
   PUBLIC :: bk
   PUBLIC :: wb
-  PUBLIC :: dnn, ndnntot
+  PUBLIC :: dnn
   PUBLIC :: bka
   PUBLIC :: wbtot
   PUBLIC :: kpoints_alloc, bshells_alloc

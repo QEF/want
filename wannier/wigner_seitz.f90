@@ -76,17 +76,16 @@
                  !
                  !  Calculate distance |r-R| 
                  ! 
-                 ndiff(1) = n1 - i1 * nk(1)
-                 ndiff(2) = n2 - i2 * nk(2)
-                 ndiff(3) = n3 - i3 * nk(3)
-                 dist(icnt) = ZERO
+                 ndiff(1) = n1 -i1 * nk(1)
+                 ndiff(2) = n2 -i2 * nk(2)
+                 ndiff(3) = n3 -i3 * nk(3)
 
+                 dist(icnt) = ZERO
                  DO j = 1, 3
                  DO i = 1, 3
                      dist(icnt) = dist(icnt) + ndiff(i) * adot(i,j) * ndiff(j)
                  ENDDO
                  ENDDO
-          
              ENDDO
              ENDDO
              ENDDO
@@ -124,10 +123,6 @@
        ENDDO !n2
        ENDDO !n1
 
-! XXX
-WRITE(0,*) "nws", nws
-WRITE(0,*) "DEGEN"
-WRITE(0,*) degen(1:nws)
 
        !
        ! Check the "sum rule"
