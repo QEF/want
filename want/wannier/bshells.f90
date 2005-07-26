@@ -24,7 +24,7 @@
    USE io_module, ONLY: stdout
 
    USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, nreverse, &
-                              bk, dnn, ndnntot, wb, wbtot, nnlist, nncell, &
+                              bk, dnn, wb, wbtot, nnlist, nncell, &
                               nntot, bka, neigh, nnx, &
                               kpoints_alloc 
    IMPLICIT NONE
@@ -36,26 +36,23 @@
       INTEGER, INTENT(in)   :: nwhich(nshells)
       REAL(dbl), INTENT(in) :: bvec(3,3)
  
-      REAL(dbl) :: eta, eps
-      PARAMETER( eta = 99999999.0d0 )
-      PARAMETER( eps = EPS_m6 )
- 
- 
-      REAL(dbl) :: ddelta
+
+      REAL(dbl), PARAMETER :: eps = EPS_m6
  
       INTEGER :: ndnc
-      INTEGER :: i, j, l, m, n, nn, inx, na, nap, ierr
+      INTEGER :: i, j, l, m, n, nn, in, na, nap, ierr
       INTEGER :: nkp, nkp2
       INTEGER :: nlist, ndnn, nddn
       INTEGER :: nnsh, nnh
       INTEGER :: ifpos, ifneg, ifound, info, ind
       INTEGER :: ndim(nnx)
 
+      REAL(dbl) :: ddelta
       REAL(dbl) :: vkpp(3)
       REAL(dbl) :: singvd(nnx)
       REAL(dbl) :: dimbk(3,nnx)
       REAL(dbl) :: v1(nnx,nnx), v2(nnx,nnx)
-      REAL(dbl) :: dnn0, dnn1, dist, bb1, bbn, factor
+      REAL(dbl) :: eta, dnn0, dnn1, dist, bb1, bbn, factor
 
 
       CALL timing('bshells',OPR='start')
@@ -68,34 +65,39 @@
 ! ... Find the distance between k-point 1 and its nearest-neighbour shells
 !     if we have only one k-point, the n-neighbours are its periodic images 
 
+      !
+      ! this is a sup for the shell radius
+      !
+      eta = MAXVAL( ABS(bvec) ) * 100.0 
+      !
       dnn0 = ZERO
       dnn1 = eta
-      ndnntot = 0
 
       !
       ! ... AC & MBN (April 2002) generic k grid allowed
+      !     AF (Jul 2005), updates
       !     everything in bohr^-1
       !
       DO nlist = 1, nnx
-        DO nkp = 1, nkpts
-          DO l = -5, 5
-            DO m = -5, 5
+          DO nkp = 1, nkpts
+              DO l = -5, 5
+              DO m = -5, 5
               DO n = -5, 5
-                vkpp(1) = vkpt(1,nkp) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
-                vkpp(2) = vkpt(2,nkp) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
-                vkpp(3) = vkpt(3,nkp) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
+                !
+                vkpp(:) = vkpt(:,nkp) + l*bvec(:,1) + m*bvec(:,2) + n*bvec(:,3)
+                !
                 dist=SQRT( (vkpt(1,1)-vkpp(1))**2 + &
                            (vkpt(2,1)-vkpp(2))**2 + &
                            (vkpt(3,1)-vkpp(3))**2 ) 
-                IF ( (dist > eps) .AND. (dist > dnn0+eps) ) dnn1 = MIN( dnn1, dist )
-              END DO
-            END DO
-          END DO
-        END DO
-        IF ( dnn1 < eta-eps ) ndnntot = ndnntot + 1
-        dnn(nlist) = dnn1
-        dnn0 = dnn1
-        dnn1 = eta
+                IF ( dist > dnn0+eps ) dnn1 = MIN( dnn1, dist )
+              ENDDO
+              ENDDO
+              ENDDO
+          ENDDO
+          !
+          dnn(nlist) = dnn1
+          dnn0 = dnn1
+          dnn1 = eta
       ENDDO
 
 ! ... Now build up the list of nearest-neighbour shells for each k-point.
@@ -107,67 +109,69 @@
 !     kvect in bohr^-1
 
       DO nkp = 1, nkpts
-        inx = 0
+        nntot(nkp) = 0
+
         DO ndnc = 1, nshells
-          ndnn = nwhich(ndnc)
-          nnshell(nkp,ndnn) = 0
-          DO nkp2 = 1, nkpts
-            DO l = -5, 5
-              DO m = -5, 5
+            ndnn = nwhich(ndnc)
+            nnshell(nkp,ndnn) = 0
+            DO nkp2 = 1, nkpts
+                DO l = -5, 5
+                DO m = -5, 5
                 DO n = -5, 5
-                  vkpp(1) = vkpt(1,nkp2) + l*bvec(1,1) + m*bvec(1,2) + n*bvec(1,3)
-                  vkpp(2) = vkpt(2,nkp2) + l*bvec(2,1) + m*bvec(2,2) + n*bvec(2,3)
-                  vkpp(3) = vkpt(3,nkp2) + l*bvec(3,1) + m*bvec(3,2) + n*bvec(3,3)
-                  dist = SQRT( ( vkpt(1,nkp) - vkpp(1) )**2 + &
-                               ( vkpt(2,nkp) - vkpp(2) )**2 + &
-                               ( vkpt(3,nkp) - vkpp(3) )**2 ) 
-                  IF ( ( dist >=  dnn(ndnn) * 0.9999d0 )  .AND. &
-                       ( dist <= dnn(ndnn) * 1.0001d0 ) )  THEN
-                    inx = inx + 1   
-                    nnshell(nkp,ndnn) = nnshell(nkp,ndnn) + 1
-                    nnlist(nkp,inx) = nkp2
-                    nncell(1,inx,nkp) = l
-                    nncell(2,inx,nkp) = m
-                    nncell(3,inx,nkp) = n
                     !
-                    ! units are in bohr-1
-                    bk(:,nkp,inx) = ( vkpp(:) - vkpt(:,nkp) )
-                  ENDIF
+                    vkpp(:) = vkpt(:,nkp2) + l*bvec(:,1) + m*bvec(:,2) + n*bvec(:,3)
+                    !
+                    dist = SQRT( ( vkpt(1,nkp) - vkpp(1) )**2 + &
+                                 ( vkpt(2,nkp) - vkpp(2) )**2 + &
+                                 ( vkpt(3,nkp) - vkpp(3) )**2 ) 
+                    IF ( ABS( dist - dnn(ndnn)) < eps )  THEN
+                        nntot(nkp) = nntot(nkp) + 1   
+                        !
+                        IF ( nntot(nkp) > nnx ) THEN 
+                            nntot(nkp) = 0
+                            CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
+                            CALL errore('bshell', 'Too many neighbours', nkp )
+                        ENDIF
+                        !
+                        nnshell(nkp,ndnn) = nnshell(nkp,ndnn) + 1
+ 
+                        in = nntot(nkp)
+                        nnlist(nkp, in ) = nkp2
+                        nncell(1, in, nkp) = l
+                        nncell(2, in, nkp) = m
+                        nncell(3, in, nkp) = n
+                        !
+                        ! units are in bohr-1
+                        bk(:, nkp, in) = ( vkpp(:) - vkpt(:,nkp) )
+                    ENDIF
                 ENDDO
-              ENDDO
+                ENDDO
+                ENDDO
             ENDDO
-          ENDDO
 
-          IF ( nnshell(nkp,ndnn) <= 0 ) &
-              CALL errore(' bshell ', ' Shell is empty! ', ABS(nnshell(nkp,ndnn))+1 )
-          IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( wk(nkp) > EPS_m10) ) &
-              CALL errore(' bshell ', ' Non uniform neighbours! ', &
-                       ABS(nnshell(nkp,ndnn)-nnshell(1,ndnn)) )
+            IF ( nnshell(nkp,ndnn) <= 0 ) &
+                CALL errore('bshell', 'Shell is empty!', ABS(nnshell(nkp,ndnn))+1 )
+            IF ( ( nnshell(nkp,ndnn) /= nnshell(1,ndnn) ) .AND. ( wk(nkp) > EPS_m10) ) &
+                CALL errore('bshell ', ' Non uniform neighbours! ', &
+                             ABS(nnshell(nkp,ndnn)-nnshell(1,ndnn)) )
 
-        ENDDO  ! kpoints
-
-        IF ( inx > nnx ) THEN 
-                CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
-                CALL errore('bshell', 'Too many neighbours', inx )
-        ENDIF
-
-        nntot(nkp) = inx
-      END DO
+        ENDDO 
+      ENDDO
       !
       ! ... Check that the moduli of the b-vectors inside a shell are all identical
       !
       DO nkp = 1, nkpts
-        inx = 0
+        in = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
           IF ( ndnn > nnx ) CALL errore('bshell','invalid nwhich',ndnn)
           DO nnsh = 1, nnshell(nkp,ndnn)
             bb1 = 0.0d0
             bbn = 0.0d0
-            inx = inx + 1
+            in = in + 1
             DO i = 1, 3
-              bb1 = bb1 + bk(i,1,inx) * bk(i,1,inx)
-              bbn = bbn + bk(i,nkp,inx) * bk(i,nkp,inx)
+              bb1 = bb1 + bk(i,1,in) * bk(i,1,in)
+              bbn = bbn + bk(i,nkp,in) * bk(i,nkp,in)
             END DO
 
             IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
@@ -180,15 +184,15 @@
       !
       ! ... Now find the dimensionality of each shell of neighbours
       !
-      inx = 0
+      in = 0
       DO ndnc = 1, nshells
         ndnn = nwhich(ndnc)
         ndim(ndnn) = 0
 
         DO nnsh = 1, nnshell(1,ndnn)
-          inx = inx + 1
+          in = in + 1
           DO i = 1, 3
-            dimbk(i,nnsh) = bk(i,1,inx)
+            dimbk(i,nnsh) = bk(i,1,in)
           END DO
         END DO
 
@@ -223,18 +227,18 @@
       ENDDO
 
       DO nkp = 1, nkpts
-        inx = 0
+        in = 0
         DO ndnc = 1, nshells
           ndnn = nwhich(ndnc)
           DO nnsh = 1, nnshell(nkp,ndnn)
             bb1 = ZERO
             bbn = ZERO
-            inx = inx + 1
+            in = in + 1
             DO i = 1, 3
-              bb1 = bb1 + bk(i,1,inx) * bk(i,1,inx)
-              bbn = bbn + bk(i,nkp,inx) * bk(i,nkp,inx)
+              bb1 = bb1 + bk(i,1,in) * bk(i,1,in)
+              bbn = bbn + bk(i,nkp,in) * bk(i,nkp,in)
             END DO
-            wb(nkp,inx) = DBLE( ndim(ndnn) ) / bbn / nnshell(nkp,ndnn)
+            wb(nkp,in) = DBLE( ndim(ndnn) ) / bbn / nnshell(nkp,ndnn)
           END DO
         END DO
       END DO
@@ -248,13 +252,13 @@
         DO i = 1, 3
           DO j = 1, 3
             ddelta = ZERO
-            inx = 0
+            in = 0
 
             DO ndnc = 1, nshells
               ndnn = nwhich(ndnc)
               DO nnsh =1, nnshell(1,ndnn)
-                inx = inx + 1
-                ddelta = ddelta + wb(nkp,inx) * bk(i,nkp,inx) * bk(j,nkp,inx)
+                in = in + 1
+                ddelta = ddelta + wb(nkp,in) * bk(i,nkp,in) * bk(j,nkp,in)
               ENDDO
             ENDDO
 
@@ -279,12 +283,12 @@
 
 
       wbtot = ZERO
-      inx = 0
+      in = 0
       DO ndnc = 1, nshells
         ndnn = nwhich(ndnc)
         DO nnsh = 1, nnshell(1,ndnn)
-          inx = inx + 1
-          wbtot = wbtot + wb(1,inx)
+          in = in + 1
+          wbtot = wbtot + wb(1,in)
         END DO
       END DO
 

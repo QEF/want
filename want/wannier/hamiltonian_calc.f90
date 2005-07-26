@@ -152,8 +152,9 @@
       ! Should expect it to decrease *faster* using the rotated Bloch functions
       ! (again, except in the single-band case, where it should be exactly the same)
       !
-      WRITE(stdout,"(/,2x,'Decay of the real space Hamiltonian:',/)") 
-      WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of H(R) [eV]')") 
+      WRITE(stdout,"(/,2x,'Decay of the real space Hamiltonian:')") 
+      WRITE(stdout,"(  2x,'  (number of R vectors (nws) :',i5,/)") nws
+      WRITE(stdout,"(  4x,'#       R [cry]     |R| [Bohr]      Norm of H(R) [eV]')") 
       !
       DO iws = 1, nws
           !
@@ -167,10 +168,10 @@
                norm = norm + REAL( CONJG( rham(i,j,iws)) * rham(i,j,iws) )
           ENDDO
           ENDDO
-          WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") &
-                         indxws(:,iws), rmod, SQRT( norm / REAL(dimwann) )
+          WRITE(stdout,"(1x,i4,3x,3i4,3x,f11.7,4x,f15.9)") &
+                         iws,indxws(:,iws), rmod, SQRT( norm / REAL(dimwann) )
       ENDDO
 
       CALL timing('hamiltonian_calc',OPR='stop')
-   END SUBROUTINE hamiltonian_calc
+END SUBROUTINE hamiltonian_calc
 

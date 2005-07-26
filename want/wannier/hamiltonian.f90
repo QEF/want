@@ -84,7 +84,7 @@ CONTAINS
       
        IF ( dimwann <= 0 ) CALL errore(subname,'Invalid DIMWANN',1)
        IF ( nkpts <= 0 )   CALL errore(subname,'Invalid NKPTS',1)
-       nwsx = 3 * nkpts
+       nwsx = ( INT( REAL(nkpts)**0.35 ) + 2 )**3
 
        IF ( .NOT. lattice_alloc )   CALL errore(subname,'lattice NOT alloc',1)
        IF ( .NOT. kpoints_alloc )   CALL errore(subname,'kpoints NOT alloc',1)
@@ -99,9 +99,9 @@ CONTAINS
        ! get the R vectors correspoinding to the chosen kpts
        ! in particular determin nws
        !
+       degen(:) = 0
+       indxws(:,:) = 0
        CALL wigner_seitz( avec, nk, indxws, nws, degen )
-       indxws(:,nws+1:) = 0
-       degen(nws+1:) = 0
 
        !
        ! other allocations

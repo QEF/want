@@ -26,7 +26,7 @@
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
    USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, nshells, nwhich, &
-                              bshells_alloc, dnn, ndnntot, nnshell, nntot, bk, wb, bka
+                              bshells_alloc, dnn, nnshell, nntot, bk, wb, bka, nnx
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
                               dimfroz, lfrozen, dimwinx, nspin, spin_component, &
                               win_min, win_max, froz_min, froz_max
@@ -365,7 +365,7 @@
       IF ( bshells_alloc .AND. lkpoints_ ) THEN
           WRITE( unit, " (  '<B-SHELL>')" )
           WRITE( unit,"(2x, 'Nearest-neighbour shells for k-point 1: (in Bohr^-1)' ) " )
-          DO i = 1, ndnntot
+          DO i = 1, nnx
              WRITE( unit, "(4x, 'shell (',i3,' )    radius = ', f9.5 )")  i, dnn(i)
           ENDDO
           WRITE( unit,"()")
