@@ -41,7 +41,6 @@
 ! main body
 !------------------------------
 !
-       nws = 0
 
        !
        ! Compute metric in real space
@@ -64,33 +63,32 @@
        !
        nws = 0
        DO n1 = 0, 2 * nk(1)
-         DO n2 = 0, 2 * nk(2)
-           DO n3 = 0, 2 * nk(3)
-             !
-             ! Loop over the 27 points R. R=0 corresponds to i1=i2=i3=1, or icnt=14
-             !
-             icnt = 0
-             DO i1 = 0, 2
-               DO i2 = 0, 2
-                 DO i3 = 0, 2
-                   icnt = icnt + 1
-                   !
-                   !  Calculate distance |r-R| 
-                   ! 
-                   ndiff(1) = n1 - i1 * nk(1)
-                   ndiff(2) = n2 - i2 * nk(2)
-                   ndiff(3) = n3 - i3 * nk(3)
-                   dist(icnt) = ZERO
+       DO n2 = 0, 2 * nk(2)
+       DO n3 = 0, 2 * nk(3)
+            !
+            ! Loop over the 27 points R. R=0 corresponds to i1=i2=i3=1, or icnt=14
+            !
+            icnt = 0
+            DO i1 = 0, 2
+            DO i2 = 0, 2
+            DO i3 = 0, 2
+                 icnt = icnt + 1
+                 !
+                 !  Calculate distance |r-R| 
+                 ! 
+                 ndiff(1) = n1 - i1 * nk(1)
+                 ndiff(2) = n2 - i2 * nk(2)
+                 ndiff(3) = n3 - i3 * nk(3)
+                 dist(icnt) = ZERO
 
-                   DO i = 1, 3
-                     DO j = 1, 3
-                       dist(icnt) = dist(icnt) + ndiff(i) * adot(i,j) * ndiff(j)
-                     ENDDO
-                   ENDDO
-           
-
+                 DO j = 1, 3
+                 DO i = 1, 3
+                     dist(icnt) = dist(icnt) + ndiff(i) * adot(i,j) * ndiff(j)
                  ENDDO
-               ENDDO
+                 ENDDO
+          
+             ENDDO
+             ENDDO
              ENDDO
 
              !
@@ -113,30 +111,36 @@
 
                ndeg = 0
                DO nn = 1,27
-                 IF( ABS( dist(nn) - dist_min) < EPS_m8 ) ndeg = ndeg + 1
-               END DO
+                   IF( ABS( dist(nn) - dist_min) < EPS_m8 ) ndeg = ndeg + 1
+               ENDDO
                degen(nws) = ndeg
 
                indxws(1,nws) = n1 - nk(1)
                indxws(2,nws) = n2 - nk(2)
                indxws(3,nws) = n3 - nk(3)
-             END IF
+             ENDIF
 
-           END DO !n3
-         END DO !n2
-       END DO !n1
+       ENDDO !n3
+       ENDDO !n2
+       ENDDO !n1
+
+! XXX
+WRITE(0,*) "nws", nws
+WRITE(0,*) "DEGEN"
+WRITE(0,*) degen(1:nws)
 
        !
        ! Check the "sum rule"
        !
        tot = ZERO
        DO i = 1, nws
-         tot = tot + ONE / DBLE(degen(i))
-       END DO
+           IF ( degen(i) == 0 ) CALL errore('wigner_seitz','degen == 0',i)
+           tot = tot + ONE / DBLE(degen(i))
+       ENDDO
 
-       IF( ABS( tot - DBLE( nk(1) * nk(2) * nk(3) ) ) > EPS_m8 ) &
+       IF( NINT(tot) /=  PRODUCT( nk(1:3) )  ) &
            CALL errore('wigner_size', 'wrong total number of points ', NINT(tot) )
 
     RETURN
-    END SUBROUTINE wigner_seitz
+END SUBROUTINE wigner_seitz
 
