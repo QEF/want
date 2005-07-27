@@ -21,7 +21,7 @@ MANUAL=" Usage
  wannier         perform the above cited minimization
  bands           interpolates the band structure using WFs
  want            perform DISENTANGLE, WANNIER and BANDS all together 
- bulk            evaluate the transmittance, for the bulk case
+ conductor       evaluate the transmittance, for the bulk case
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -48,7 +48,7 @@ PWEXPORT=
 DISENTANGLE=
 WANNIER=
 BANDS=
-BULK=
+CONDUCTOR=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -64,10 +64,10 @@ case $INPUT in
    (bands)          BANDS=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
                     BANDS=".TRUE." ;;
-   (bulk)           BULK=".TRUE." ;;
+   (conductor)      CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BANDS=".TRUE." ; BULK=".TRUE." ;;
+                    BANDS=".TRUE." ; CONDUCTOR=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -178,22 +178,22 @@ fi
 
 
 #
-# running BULK
+# running CONDUCTOR
 #
-if [ "$BULK" = ".TRUE." ] ; then  
+if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
-   ln -sf RHAM.103 H00.dat
-   ln -sf RHAM.104 H01.dat
+   ln -sf RHAM.105 H00_C
+   ln -sf RHAM.106 HCI_CB
    #
-   echo "running BULK calculation" 
-   $TRANS_BIN/bulk.x < $TEST_HOME/bulk_CoUS.in > $TEST_HOME/bulk_CoUS.out
+   echo "running CONDUCTOR calculation" 
+   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_CoUS.in > $TEST_HOME/conductor_CoUS.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      mv dos.dat $TEST_HOME/dos_bulk_CoUS.dat
-      mv cond.dat $TEST_HOME/cond_bulk_CoUS.dat
+      mv dos.dat $TEST_HOME/dos_CoUS.dat
+      mv cond.dat $TEST_HOME/cond_CoUS.dat
    else
-      echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -203,8 +203,7 @@ fi
 #
 if [ "$CLEAN" = ".TRUE." ] ; then  
    cd $TEST_HOME
-      rm -rf *.out 2> /dev/null
-      test -e SCRATCH && rm SCRATCH
+      rm -rf *.out *.dat 2> /dev/null
    cd $TMPDIR
       test -d $TEST_NAME && rm -rf $TEST_NAME
    exit 0

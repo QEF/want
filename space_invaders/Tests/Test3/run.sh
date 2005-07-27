@@ -109,7 +109,7 @@ case $INPUT in
                          WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ;;
 
    ( dft )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
-                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
+                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE.";;
    ( want )              DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ;
                          DISENTANGLE_LEADS=".TRUE." ;
@@ -119,7 +119,7 @@ case $INPUT in
    ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ; 
                          DISENTANGLE_COND=".TRUE." ; 
                          WANNIER_COND=".TRUE." ;  BANDS_COND=".TRUE." ;
-                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ; 
+                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE."; 
                          DISENTANGLE_LEADS=".TRUE." ; 
                          WANNIER_LEADS=".TRUE." ;  BANDS_LEADS=".TRUE." ;
                          CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
@@ -308,15 +308,15 @@ fi
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
-   $UTILITY_BIN/matrix_extract.sh COND/RHAM.103    1 16   1 16  > H00_C
+   $UTILITY_BIN/matrix_extract.sh COND/RHAM.103    1  32   1 32  > H00_C
    
-   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    1 16   1  8  > HCI_CB
-   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    9 16   1 16  > HCI_AC
+   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    1  32   1 16  > HCI_CB
+   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    17 32   1 32  > HCI_AC
    
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  8   1  8  > H00_A
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  8   1  8  > H00_B
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  8   1  8  > H01_A
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  8   1  8  > H01_B
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  16   1 16  > H00_A
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  16   1 16  > H00_B
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  16   1 16  > H01_A
+   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  16   1 16  > H01_B
 
    echo "running CODNDUCTOR calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
@@ -336,10 +336,10 @@ fi
 # running BULK  (eventually)
 #
 if [ "$BULK" = ".TRUE." ] ; then  
-   ln -sf COND/RHAM.103 H00.dat
-   ln -sf COND/RHAM.104 H01.dat
+   ln -sf COND/RHAM.103 H00_C
+   ln -sf COND/RHAM.104 HCI_CB
    echo "running BULK calculation" 
-   $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
+   $TRANS_BIN/conductor.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #

@@ -14,7 +14,7 @@ Infinite Gold Chain
       ibrav=8, 
       celldm(1)=20.0, 
       celldm(2)=1.0,
-      celldm(3)=0.236216,
+      celldm(3)=0.236216
       nat=1, 
       ntyp=1,
       ecutwfc=25.0,

@@ -22,8 +22,7 @@ MANUAL=" Usage
  bands           interpolates the band structure using WFs
  plot            compute WFs on real space for plotting
  want            perform DISENTANGLE, WANNIER and BANDS all together 
- bulk            evaluate the transmittance, for the bulk case
- conductor       as for BULK but using the general conductor geometry code
+ conductor       evaluate the transmittance, for the bulk case
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -51,7 +50,6 @@ DISENTANGLE=
 WANNIER=
 BANDS=
 PLOT=
-BULK=
 CONDUCTOR=
 CLEAN=
 
@@ -69,11 +67,10 @@ case $INPUT in
    (plot)           PLOT=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
                     BANDS=".TRUE." ; PLOT=".TRUE." ;;
-   (bulk)           BULK=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; PLOT=".TRUE." ;
-                    BANDS=".TRUE." ; BULK=".TRUE." ; CONDUCTOR=".TRUE." ;;
+                    BANDS=".TRUE." ; CONDUCTOR=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -196,38 +193,12 @@ if [ "$PLOT" = ".TRUE." ] ; then
 fi
 
 #
-# running BULK
-#
-if [ "$BULK" = ".TRUE." ] ; then  
-   #
-   ln -sf RHAM.103 H00.dat
-   ln -sf RHAM.104 H01.dat
-   #
-   echo "running BULK calculation" 
-   $TRANS_BIN/bulk.x < $TEST_HOME/bulk_CoUS.in > $TEST_HOME/bulk_CoUS.out
-   if [ ! -e CRASH ] ; then 
-      echo "done" 
-      #
-      mv dos.dat $TEST_HOME/dos_bulk_CoUS.dat
-      mv cond.dat $TEST_HOME/cond_bulk_CoUS.dat
-   else
-      echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
-   fi
-fi
-
-
-#
 # running CONDUCTOR
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
-   ln -sf RHAM.103 H00_A
-   ln -sf RHAM.103 H00_B
-   ln -sf RHAM.103 H00_C
-   ln -sf RHAM.104 H01_B
-   ln -sf RHAM.104 H01_A
-   ln -sf RHAM.104 HCI_AC
-   ln -sf RHAM.104 HCI_CB
+   ln -sf RHAM.105 H00_C
+   ln -sf RHAM.106 HCI_CB
    #
    echo "running CONDUCTOR calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor_CoUS.in > $TEST_HOME/conductor_CoUS.out
@@ -247,7 +218,7 @@ fi
 #
 if [ "$CLEAN" = ".TRUE." ] ; then  
    cd $TEST_HOME
-      rm -rf *.out 2> /dev/null
+      rm -rf *.out *.dat 2> /dev/null
       test -e SCRATCH && rm SCRATCH
    cd $TMPDIR
       test -d $TEST_NAME && rm -rf $TEST_NAME

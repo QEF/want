@@ -1,0 +1,576 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 1.1.1  starts ...
+  Date 12Jul2005 at 15:20:21 
+
+
+  PW-DFT data read from file: gold.export/index.xml
+
+  ======================================================================
+  =                                Main                                =
+  ======================================================================
+
+            Calculation Title :     Wannier Transport Calculation
+                       Prefix :     gold
+                      Postfix :     _WanT
+            Working directory :     ./
+
+                 Restart Mode :     from_scratch
+                Overlap Calc. :     TRUE 
+             Projection Calc. :     TRUE 
+          Read Start Subspace :     FALSE
+       Read Start Unitary mat :     FALSE
+           Conditioned minim. :     FALSE
+
+<WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =   12
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
+    CG minim: Max iteration number =   100
+    Minimization convergence threshold =     0.000001000
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
+    SD minim: Max iteration number =  1500
+    Every   5 iteration perform a CG minimization (ncg)
+    Number of k-point shells =   2
+    Chosen shells (indexes) =   1  4
+    Print info each  10 iterations
+    Save data each   10 iterations
+    Starting minimization guess = center_projections
+    Ordering mode = none
+    Verbosity = high
+    Unitariery check threshold =     0.000000010
+    Conditioned minim. amplitude =     0.000000000
+    Conditioned minim.  iter num =  1600
+</WANNIER_FUNCTIONS>
+
+<DISENTANGLE>
+  Input parameters for subspace definition
+    Spin component = none
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =  1000
+    Starting minimization guess = center_projections
+    Disentangle convergence threshold =     0.000000010
+    Print info each  10 iterations
+    Save data each   10 iterations
+</DISENTANGLE>
+
+<TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+
+      #     Type          l   m       Position                              Decay
+    ----  ------------  --------   ------------------------------------   ---------
+      1    1gauss         0   0    (   0.000000   0.000000   0.000000 )    0.50000
+      2    1gauss         2  -2    (   0.000000   0.000000   0.000000 )    0.50000
+      3    1gauss         2  -1    (   0.000000   0.000000   0.000000 )    0.50000
+      4    1gauss         2   0    (   0.000000   0.000000   0.000000 )    0.50000
+      5    1gauss         2   1    (   0.000000   0.000000   0.000000 )    0.50000
+      6    1gauss         2   2    (   0.000000   0.000000   0.000000 )    0.50000
+      7    1gauss         0   0    (   0.000000   0.000000   4.000000 )    0.50000
+      8    1gauss         2  -2    (   0.000000   0.000000   4.000000 )    0.50000
+      9    1gauss         2  -1    (   0.000000   0.000000   4.000000 )    0.50000
+     10    1gauss         2   0    (   0.000000   0.000000   4.000000 )    0.50000
+     11    1gauss         2   1    (   0.000000   0.000000   4.000000 )    0.50000
+     12    1gauss         2   2    (   0.000000   0.000000   4.000000 )    0.50000
+
+</TRIAL_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    3200.0000000 (Bohr^3)
+  Omega =     474.1905097 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000  8.0000 )     (   0.0000  0.0000  0.4000 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.5835  0.0000  0.0000 )
+    a(2) = (  0.0000 10.5835  0.0000 )
+    a(3) = (  0.0000  0.0000  4.2334 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  0.7854 )     (   0.0000  0.0000  2.5000 )
+</LATTICE>
+
+<IONS>
+  Number of chemical species =  1
+     Pseudo( 1) = Au11pw91.mt.UPF
+
+     Pseudo( 1) is Au         zval = 11.0   lmax= 2   lloc= 0
+     (in numerical form:   331 grid points, xmin =  0.00, dx = 0.0000)
+
+  Atomic positions: (cart. coord. in Bohr)
+     Au   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     Au   tau(   2 ) = (   0.0000000   0.0000000   4.0000000 )
+</IONS>
+
+<K-POINTS>
+  nkpts =    8
+  Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250
+    k point   2:   (   0.00000  0.00000  0.09817 ),   weight =   0.1250
+    k point   3:   (   0.00000  0.00000  0.19635 ),   weight =   0.1250
+    k point   4:   (   0.00000  0.00000  0.29452 ),   weight =   0.1250
+    k point   5:   (   0.00000  0.00000  0.39270 ),   weight =   0.1250
+    k point   6:   (   0.00000  0.00000  0.49087 ),   weight =   0.1250
+    k point   7:   (   0.00000  0.00000  0.58905 ),   weight =   0.1250
+    k point   8:   (   0.00000  0.00000  0.68722 ),   weight =   0.1250
+</K-POINTS>
+
+<B-SHELL>
+  Nearest-neighbour shells for k-point 1: (in Bohr^-1)
+    shell (  1 )    radius =   0.09817
+    shell (  2 )    radius =   0.19635
+    shell (  3 )    radius =   0.29452
+    shell (  4 )    radius =   0.31416
+    shell (  5 )    radius =   0.32914
+    shell (  6 )    radius =   0.37047
+    shell (  7 )    radius =   0.39270
+    shell (  8 )    radius =   0.43063
+    shell (  9 )    radius =   0.44429
+    shell ( 10 )    radius =   0.45501
+    shell ( 11 )    radius =   0.48574
+    shell ( 12 )    radius =   0.49087
+
+  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
+    shell (  1 )    neighbours  =    2
+    shell (  4 )    neighbours  =    4
+
+  List of the  6 vectors b_k: (Bohr^-1) 
+    b_k   1:   (   0.00000  0.00000  0.09817 ),   weight =  51.8764
+    b_k   2:   (   0.00000  0.00000 -0.09817 ),   weight =  51.8764
+    b_k   3:   (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b_k   4:   (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
+    b_k   5:   (   0.00000  0.31416  0.00000 ),   weight =   5.0661
+    b_k   6:   (   0.31416  0.00000  0.00000 ),   weight =   5.0661
+
+  The  3  bk directions are (Bohr^-1):
+    dir 1:   (   0.00000  0.00000  0.09817 ) 
+    dir 2:   (  -0.31416  0.00000  0.00000 ) 
+    dir 3:   (   0.00000 -0.31416  0.00000 ) 
+</B-SHELL>
+
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = (  -\inf ,  \inf  )
+    Max number of bands within the energy window =    20
+
+  Electronic Structure from DFT calculation:
+    nkpts =   8,     nbnd =  20,
+    nspin =   1
+    Fermi energy =   -4.163840417 eV
+
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+   -14.3960 -11.0765 -11.0765  -7.6554  -7.6519  -7.3409  -5.9897  -5.9724
+    -4.1870  -3.6741  -3.6741  -1.4783  -1.4783   1.2186   1.6262   2.1885
+     2.8827   2.8828   2.9899   3.1022
+
+    kpt =  2 (  0.000 0.000 0.098 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+   -14.0083 -10.8922 -10.8922  -7.6041  -7.5951  -7.2355  -6.0607  -6.0601
+    -4.4462  -4.3306  -4.3306  -1.0287  -1.0287   0.4827   1.3482   2.3175
+     3.0330   3.0330   3.1188   3.2284
+
+    kpt =  3 (  0.000 0.000 0.196 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+   -12.8335 -10.3529 -10.3529  -7.4285  -7.4209  -6.9126  -6.2594  -6.2490
+    -5.5862  -5.5862  -5.1475  -1.9196  -0.2112  -0.2112   1.7373   2.7049
+     3.4670   3.4670   3.5061   3.6066
+
+    kpt =  4 (  0.000 0.000 0.295 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+   -10.9890  -9.4897  -9.4897  -7.1692  -7.1636  -7.0022  -7.0022  -6.5540
+    -6.5430  -6.4776  -6.3757  -4.2405   0.7115   0.7115   2.3856   3.0124
+     3.0124   3.3500   4.1512   4.1600
+
+    kpt =  5 (  0.000 0.000 0.393 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+    -8.6817  -8.6817  -8.3316  -8.3316  -8.3316  -8.3316  -6.8603  -6.8603
+    -6.8530  -6.8530  -5.5841  -5.5841   1.7745   1.7745   1.7745   1.7745
+     3.2936   3.2936   4.2521   4.2522
+
+    kpt =  6 (  0.000 0.000 0.491 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+   -10.9890  -9.4897  -9.4897  -7.1692  -7.1636  -7.0022  -7.0022  -6.5540
+    -6.5430  -6.4776  -6.3757  -4.2405   0.7115   0.7115   2.3856   3.0124
+     3.0124   3.3500   4.1514   4.1599
+
+    kpt =  7 (  0.000 0.000 0.589 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+   -12.8335 -10.3529 -10.3529  -7.4285  -7.4209  -6.9126  -6.2594  -6.2490
+    -5.5862  -5.5862  -5.1475  -1.9196  -0.2112  -0.2112   1.7373   2.7049
+     3.4670   3.4670   3.5061   3.6067
+
+    kpt =  8 (  0.000 0.000 0.687 )    dimwin =   20
+                                         imin =    1  imax =   20
+   Eigenvalues:
+   -14.0083 -10.8922 -10.8922  -7.6041  -7.5951  -7.2355  -6.0607  -6.0601
+    -4.4462  -4.3306  -4.3306  -1.0287  -1.0287   0.4827   1.3482   2.3175
+     3.0330   3.0330   3.1188   3.2284
+
+    inner window: NOT used --> NO FROZEN STATES
+</WINDOWS>
+
+
+
+  ======================================================================
+  =                      Overlaps and Projections                      =
+  ======================================================================
+
+  Reading density G-grid from file: gold.export/index.xml
+  Reading Wfc grids from file: gold.export/index.xml
+
+
+          Energy cut-off for wfcs =         30.00 (Ry)
+                         for rho  =        120.00 (Ry)
+      Total number of PW for rho  =      70995
+        Max number of PW for wfc  =       8899
+      Total number of PW for wfcs =      12185
+        FFT grid components (rho) =  (    72   72   30 )
+
+
+  Initializing global dft data
+    Overlaps or Projections calculation for k-point   1
+                              Total time spent up to now :     2.75 secs
+
+    Overlaps or Projections calculation for k-point   2
+                              Total time spent up to now :     5.11 secs
+
+    Overlaps or Projections calculation for k-point   3
+                              Total time spent up to now :     7.50 secs
+
+    Overlaps or Projections calculation for k-point   4
+                              Total time spent up to now :    10.06 secs
+
+    Overlaps or Projections calculation for k-point   5
+                              Total time spent up to now :    12.65 secs
+
+    Overlaps or Projections calculation for k-point   6
+                              Total time spent up to now :    15.15 secs
+
+    Overlaps or Projections calculation for k-point   7
+                              Total time spent up to now :    17.79 secs
+
+    Overlaps or Projections calculation for k-point   8
+                              Total time spent up to now :    20.61 secs
+
+
+  Overlap and projections written on file: gold_WanT.ovp
+                              Total time spent up to now :    23.19 secs
+
+
+  ======================================================================
+  =                      Starting Iteration loop                      =
+  ======================================================================
+
+
+  Initial trial subspace: projected localized orbitals
+
+
+  Subspace decomposition:
+  Norms of the projected Bloch functions
+
+      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   20
+    0.99758  1.00000  1.00000  0.96158  0.98390  0.85675  1.00000  1.00000
+    1.00000  1.00000  1.00000  0.00016  0.00003  0.06242  0.00599  0.10194
+    0.78275  0.01753  0.11358  0.11579
+
+      kpt =  2 (  0.000 0.000 0.098 )    dimwin =   20
+    0.99759  1.00000  1.00000  0.98257  0.95881  0.85450  1.00000  1.00000
+    1.00000  0.90048  0.90049  0.09673  0.09673  1.00000  0.06169  0.01743
+    0.00277  0.00279  0.08622  0.04119
+
+      kpt =  3 (  0.000 0.000 0.196 )    dimwin =   20
+    0.99776  1.00000  1.00000  0.98309  0.96002  0.85382  1.00000  1.00000
+    0.85786  0.85786  1.00000  1.00000  0.13490  0.13492  0.06194  0.01691
+    0.00721  0.00724  0.08648  0.03998
+
+      kpt =  4 (  0.000 0.000 0.295 )    dimwin =   20
+    0.99845  0.91936  0.91936  0.98399  1.00000  0.86876  0.87635  1.00000
+    1.00000  1.00000  0.85191  1.00000  0.12227  0.12338  0.06249  0.08064
+    0.08064  0.01601  0.08718  0.00922
+
+      kpt =  5 (  0.000 0.000 0.393 )    dimwin =   20
+    0.99999  0.99999  0.89822  0.89822  0.89822  0.89821  0.98519  0.98518
+    1.00000  1.00000  0.93046  0.93041  0.10179  0.10178  0.10178  0.10177
+    0.06954  0.06961  0.01481  0.01482
+
+      kpt =  6 (  0.000 0.000 0.491 )    dimwin =   20
+    0.99846  0.91936  0.91936  0.98397  1.00000  0.86857  0.87643  1.00000
+    1.00000  1.00000  0.85340  1.00000  0.12226  0.12334  0.06257  0.08064
+    0.08064  0.01603  0.08575  0.00922
+
+      kpt =  7 (  0.000 0.000 0.589 )    dimwin =   20
+    0.99776  1.00000  1.00000  0.98309  0.96006  0.85377  1.00000  1.00000
+    0.85786  0.85788  1.00000  1.00000  0.13491  0.13491  0.06196  0.01691
+    0.00722  0.00723  0.08651  0.03994
+
+      kpt =  8 (  0.000 0.000 0.687 )    dimwin =   20
+    0.99759  1.00000  1.00000  0.98253  0.95881  0.85427  1.00000  1.00000
+    1.00000  0.90047  0.90047  0.09673  0.09673  1.00000  0.06170  0.01747
+    0.00279  0.00281  0.08644  0.04119
+
+
+
+
+  Iteration =     1   Omega_I =     62.67800904    Error =      0.28171746
+  Iteration =     2   Omega_I =     54.74230870    Error =      0.21565300
+  Iteration =     3   Omega_I =     49.71721636    Error =      0.13058824
+  Iteration =     4   Omega_I =     46.76026860    Error =      0.07924022
+  Iteration =     5   Omega_I =     44.97545679    Error =      0.05062095
+  Iteration =     6   Omega_I =     43.83644814    Error =      0.03424735
+  Iteration =     7   Omega_I =     43.06485357    Error =      0.02451317
+  Iteration =     8   Omega_I =     42.51148174    Error =      0.01843553
+  Iteration =     9   Omega_I =     42.09468588    Error =      0.01442231
+  Iteration =    10   Omega_I =     41.76844312    Error =      0.01161637
+
+                              Total time spent up to now :    23.43 secs
+
+  Iteration =    11   Omega_I =     41.50577319    Error =      0.00954933
+  Iteration =    12   Omega_I =     41.29007352    Error =      0.00795941
+  Iteration =    13   Omega_I =     41.11055108    Error =      0.00669552
+  Iteration =    14   Omega_I =     40.95978322    Error =      0.00566679
+  Iteration =    15   Omega_I =     40.83239179    Error =      0.00481569
+  Iteration =    16   Omega_I =     40.72430462    Error =      0.00410376
+  Iteration =    17   Omega_I =     40.63233048    Error =      0.00350384
+  Iteration =    18   Omega_I =     40.55390431    Error =      0.00299580
+  Iteration =    19   Omega_I =     40.48692688    Error =      0.00256411
+  Iteration =    20   Omega_I =     40.42965856    Error =      0.00219643
+
+                              Total time spent up to now :    24.50 secs
+
+  Iteration =    21   Omega_I =     40.38064518    Error =      0.00188272
+  Iteration =    22   Omega_I =     40.33866381    Error =      0.00161473
+  Iteration =    23   Omega_I =     40.30268154    Error =      0.00138555
+  Iteration =    24   Omega_I =     40.27182329    Error =      0.00118941
+  Iteration =    25   Omega_I =     40.24534590    Error =      0.00102143
+  Iteration =    26   Omega_I =     40.22261709    Error =      0.00087748
+  Iteration =    27   Omega_I =     40.20309818    Error =      0.00075405
+  Iteration =    28   Omega_I =     40.18632961    Error =      0.00064818
+  Iteration =    29   Omega_I =     40.17191896    Error =      0.00055732
+  Iteration =    30   Omega_I =     40.15953085    Error =      0.00047932
+
+                              Total time spent up to now :    25.53 secs
+
+  Iteration =    31   Omega_I =     40.14887837    Error =      0.00041234
+  Iteration =    32   Omega_I =     40.13971595    Error =      0.00035479
+  Iteration =    33   Omega_I =     40.13183328    Error =      0.00030533
+  Iteration =    34   Omega_I =     40.12505008    Error =      0.00026282
+  Iteration =    35   Omega_I =     40.11921179    Error =      0.00022627
+  Iteration =    36   Omega_I =     40.11418584    Error =      0.00019483
+  Iteration =    37   Omega_I =     40.10985841    Error =      0.00016779
+  Iteration =    38   Omega_I =     40.10613182    Error =      0.00014452
+  Iteration =    39   Omega_I =     40.10292214    Error =      0.00012450
+  Iteration =    40   Omega_I =     40.10015727    Error =      0.00010726
+
+                              Total time spent up to now :    26.60 secs
+
+  Iteration =    41   Omega_I =     40.09777525    Error =      0.00009242
+  Iteration =    42   Omega_I =     40.09572280    Error =      0.00007965
+  Iteration =    43   Omega_I =     40.09395412    Error =      0.00006864
+  Iteration =    44   Omega_I =     40.09242979    Error =      0.00005917
+  Iteration =    45   Omega_I =     40.09111592    Error =      0.00005100
+  Iteration =    46   Omega_I =     40.08998334    Error =      0.00004397
+  Iteration =    47   Omega_I =     40.08900693    Error =      0.00003791
+  Iteration =    48   Omega_I =     40.08816507    Error =      0.00003269
+  Iteration =    49   Omega_I =     40.08743917    Error =      0.00002819
+  Iteration =    50   Omega_I =     40.08681320    Error =      0.00002431
+
+                              Total time spent up to now :    27.61 secs
+
+  Iteration =    51   Omega_I =     40.08627334    Error =      0.00002097
+  Iteration =    52   Omega_I =     40.08580771    Error =      0.00001809
+  Iteration =    53   Omega_I =     40.08540608    Error =      0.00001560
+  Iteration =    54   Omega_I =     40.08505961    Error =      0.00001346
+  Iteration =    55   Omega_I =     40.08476071    Error =      0.00001161
+  Iteration =    56   Omega_I =     40.08450282    Error =      0.00001002
+  Iteration =    57   Omega_I =     40.08428029    Error =      0.00000865
+  Iteration =    58   Omega_I =     40.08408825    Error =      0.00000746
+  Iteration =    59   Omega_I =     40.08392252    Error =      0.00000644
+  Iteration =    60   Omega_I =     40.08377947    Error =      0.00000556
+
+                              Total time spent up to now :    28.65 secs
+
+  Iteration =    61   Omega_I =     40.08365598    Error =      0.00000480
+  Iteration =    62   Omega_I =     40.08354937    Error =      0.00000414
+  Iteration =    63   Omega_I =     40.08345732    Error =      0.00000358
+  Iteration =    64   Omega_I =     40.08337783    Error =      0.00000309
+  Iteration =    65   Omega_I =     40.08330917    Error =      0.00000267
+  Iteration =    66   Omega_I =     40.08324986    Error =      0.00000231
+  Iteration =    67   Omega_I =     40.08319862    Error =      0.00000199
+  Iteration =    68   Omega_I =     40.08315433    Error =      0.00000172
+  Iteration =    69   Omega_I =     40.08311606    Error =      0.00000149
+  Iteration =    70   Omega_I =     40.08308297    Error =      0.00000129
+
+                              Total time spent up to now :    29.68 secs
+
+  Iteration =    71   Omega_I =     40.08305435    Error =      0.00000111
+  Iteration =    72   Omega_I =     40.08302959    Error =      0.00000096
+  Iteration =    73   Omega_I =     40.08300816    Error =      0.00000083
+  Iteration =    74   Omega_I =     40.08298962    Error =      0.00000072
+  Iteration =    75   Omega_I =     40.08297355    Error =      0.00000063
+  Iteration =    76   Omega_I =     40.08295964    Error =      0.00000054
+  Iteration =    77   Omega_I =     40.08294757    Error =      0.00000047
+  Iteration =    78   Omega_I =     40.08293710    Error =      0.00000041
+  Iteration =    79   Omega_I =     40.08292802    Error =      0.00000035
+  Iteration =    80   Omega_I =     40.08292012    Error =      0.00000031
+
+                              Total time spent up to now :    30.85 secs
+
+  Iteration =    81   Omega_I =     40.08291326    Error =      0.00000027
+  Iteration =    82   Omega_I =     40.08290729    Error =      0.00000023
+  Iteration =    83   Omega_I =     40.08290209    Error =      0.00000020
+  Iteration =    84   Omega_I =     40.08289755    Error =      0.00000018
+  Iteration =    85   Omega_I =     40.08289359    Error =      0.00000016
+  Iteration =    86   Omega_I =     40.08289012    Error =      0.00000014
+  Iteration =    87   Omega_I =     40.08288708    Error =      0.00000012
+  Iteration =    88   Omega_I =     40.08288442    Error =      0.00000011
+  Iteration =    89   Omega_I =     40.08288208    Error =      0.00000009
+  Iteration =    90   Omega_I =     40.08288002    Error =      0.00000008
+
+                              Total time spent up to now :    31.88 secs
+
+  Iteration =    91   Omega_I =     40.08287819    Error =      0.00000007
+  Iteration =    92   Omega_I =     40.08287658    Error =      0.00000006
+  Iteration =    93   Omega_I =     40.08287515    Error =      0.00000006
+  Iteration =    94   Omega_I =     40.08287387    Error =      0.00000005
+  Iteration =    95   Omega_I =     40.08287273    Error =      0.00000005
+  Iteration =    96   Omega_I =     40.08287171    Error =      0.00000004
+  Iteration =    97   Omega_I =     40.08287080    Error =      0.00000004
+  Iteration =    98   Omega_I =     40.08286997    Error =      0.00000003
+  Iteration =    99   Omega_I =     40.08286922    Error =      0.00000003
+  Iteration =   100   Omega_I =     40.08286854    Error =      0.00000003
+
+                              Total time spent up to now :    32.96 secs
+
+  Iteration =   101   Omega_I =     40.08286791    Error =      0.00000003
+  Iteration =   102   Omega_I =     40.08286734    Error =      0.00000002
+  Iteration =   103   Omega_I =     40.08286681    Error =      0.00000002
+  Iteration =   104   Omega_I =     40.08286633    Error =      0.00000002
+  Iteration =   105   Omega_I =     40.08286588    Error =      0.00000002
+  Iteration =   106   Omega_I =     40.08286545    Error =      0.00000002
+  Iteration =   107   Omega_I =     40.08286506    Error =      0.00000002
+  Iteration =   108   Omega_I =     40.08286469    Error =      0.00000002
+  Iteration =   109   Omega_I =     40.08286434    Error =      0.00000001
+  Iteration =   110   Omega_I =     40.08286401    Error =      0.00000001
+
+                              Total time spent up to now :    33.99 secs
+
+  Iteration =   111   Omega_I =     40.08286369    Error =      0.00000001
+  Iteration =   112   Omega_I =     40.08286339    Error =      0.00000001
+  Iteration =   113   Omega_I =     40.08286311    Error =      0.00000001
+  Iteration =   114   Omega_I =     40.08286283    Error =      0.00000001
+  Iteration =   115   Omega_I =     40.08286257    Error =      0.00000001
+  Iteration =   116   Omega_I =     40.08286231    Error =      0.00000001
+  Iteration =   117   Omega_I =     40.08286207    Error =      0.00000001
+  Iteration =   118   Omega_I =     40.08286183    Error =      0.00000001
+  Iteration =   119   Omega_I =     40.08286160    Error =      0.00000001
+
+
+  ======================================================================
+  =                        Convergence Achieved                        =
+  ======================================================================
+
+  Final Omega_I (Bohr^2, Angstrom^2):     40.08286121       11.22433538
+   Avrg Omega_I                     :      3.34023843        0.93536128
+
+                              Total time spent up to now :    35.02 secs
+
+
+  Subspace decomposition:
+  Norms of the projected Bloch functions
+
+      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   20
+    1.00000  1.00000  1.00000  0.99805  0.99853  0.98977  1.00000  1.00000
+    1.00000  0.99998  0.99999  0.00002  0.00001  0.00646  1.00000  0.00147
+    0.00001  0.00001  0.00377  0.00195
+
+      kpt =  2 (  0.000 0.000 0.098 )    dimwin =   20
+    1.00000  1.00000  1.00000  0.99862  0.99840  0.99044  1.00000  1.00000
+    1.00000  0.94739  0.94751  0.05117  0.05321  1.00000  0.00610  0.00138
+    0.00037  0.00036  0.00346  0.00160
+
+      kpt =  3 (  0.000 0.000 0.196 )    dimwin =   20
+    0.99999  1.00000  1.00000  0.99886  0.99930  0.99245  1.00000  1.00000
+    0.95104  0.95010  1.00000  1.00000  0.04813  0.04967  0.00504  0.00114
+    0.00066  0.00040  0.00251  0.00070
+
+      kpt =  4 (  0.000 0.000 0.295 )    dimwin =   20
+    0.99997  0.99824  0.99831  0.99926  1.00000  0.97444  0.97587  1.00000
+    1.00000  1.00000  0.99571  1.00000  0.02524  0.02410  0.00328  0.00175
+    0.00169  0.00074  0.00105  0.00034
+
+      kpt =  5 (  0.000 0.000 0.393 )    dimwin =   20
+    0.99995  0.99995  0.99118  0.99113  0.99112  0.99108  0.99973  0.99973
+    1.00000  1.00000  0.99888  0.99887  0.00885  0.00884  0.00894  0.00887
+    0.00117  0.00118  0.00027  0.00027
+
+      kpt =  6 (  0.000 0.000 0.491 )    dimwin =   20
+    0.99997  0.99825  0.99831  0.99926  1.00000  0.97434  0.97593  1.00000
+    1.00000  1.00000  0.99573  1.00000  0.02534  0.02405  0.00327  0.00168
+    0.00176  0.00074  0.00103  0.00034
+
+      kpt =  7 (  0.000 0.000 0.589 )    dimwin =   20
+    0.99999  1.00000  1.00000  0.99886  0.99930  0.99248  1.00000  1.00000
+    0.95057  0.95050  1.00000  1.00000  0.04909  0.04877  0.00503  0.00114
+    0.00064  0.00044  0.00249  0.00070
+
+      kpt =  8 (  0.000 0.000 0.687 )    dimwin =   20
+    1.00000  1.00000  1.00000  0.99862  0.99840  0.99045  1.00000  1.00000
+    1.00000  0.94633  0.94848  0.05244  0.05202  1.00000  0.00610  0.00138
+    0.00041  0.00033  0.00345  0.00160
+
+
+
+  Subspace data written on file: gold_WanT.space
+  ======================================================================
+
+   <global routines>
+             clock number :    17
+
+              disentangle :    35.80s CPU 
+
+                want_init :     0.09s CPU
+                  bshells :     0.04s CPU
+              wfc_manager :    23.10s CPU
+          ggrids_read_ext :     0.18s CPU
+              struct_fact :     0.09s CPU
+           wfc_data_kread :     7.43s CPU (      32 calls,   0.232 s avg)
+                  overlap :    10.67s CPU (      24 calls,   0.444 s avg)
+           overlap_setmap :     0.43s CPU (      24 calls,   0.018 s avg)
+                    s_psi :     0.03s CPU (       8 calls,   0.004 s avg)
+               projection :     2.00s CPU (       8 calls,   0.250 s avg)
+       trial_center_setup :     0.91s CPU (      96 calls,   0.010 s avg)
+               iterations :    11.83s CPU
+             subapce_init :     0.01s CPU
+                  zmatrix :     1.20s CPU (     952 calls,   0.001 s avg)
+               zmat_hdiag :     0.95s CPU (     952 calls,   0.001 s avg)
+                  komegai :     0.87s CPU (     952 calls,   0.001 s avg)
+
+

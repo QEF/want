@@ -8,26 +8,21 @@
 /
 
 &SUBSPACE
-!   start_mode_dis = "randomized"
    dimwann = 6    
-   win_min = -12.0
-   win_max =  0.0        
-   froz_min = -30.0
-   froz_max = -25.0
+   win_max =  2.0        
+   froz_min = -20.0
+   froz_max =  -2.0
    maxiter_dis = 100
 /   
 
 &LOCALIZATION
-!   start_mode_wan = "randomized"
    maxiter0_wan = 100
-   alpha0_wan = 0.5
    maxiter1_wan = 1500
-   alpha1_wan = 0.5
    ncg = 5       
    nshells = 2   
    nwhich(1) = 1 
    nwhich(2) = 2 
-   ordering_mode = 'complete'
+!   ordering_mode = 'complete'
 /
 
 WANNIER_CENTERS {angstrom}

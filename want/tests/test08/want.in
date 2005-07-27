@@ -2,8 +2,9 @@
 &CONTROL
    prefix = 'al'
    postfix = '_WanT'
-   restart_mode = 'from_scratch'
+   restart_mode = 'restart'
    work_dir = './'
+   unitary_thr = 5.0e-7
 /
 
 &SUBSPACE
@@ -11,12 +12,9 @@
    win_min = -20.0
    win_max = 10.0  
    maxiter_dis = 500
-   alpha_dis = 0.5      
-!   start_mode_dis = 'randomized'
 /
 
 &LOCALIZATION
-!   start_mode_wan = 'randomized'
    maxiter0_wan = 200, 
    alpha0_wan = 0.5
    maxiter1_wan = 1500, 

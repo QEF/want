@@ -28,9 +28,9 @@ MANUAL=" Usage
  want_up         perform DISENTANGLE, WANNIER and BANDS for SPINUP
  want_dw         the same for SPINDW
  want            want_up and want_dw
- bulk_up         evaluate the transmittance, for the bulk case (SPINUP)
- bulk_dw         the same for SPINDW
- bulk            bulk_up and bulk_dw
+ conductor_up    evaluate the transmittance, for the bulk case (SPINUP)
+ conductor_dw    the same for SPINDW
+ conductor       conductor_up and conductor_dw
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -62,8 +62,8 @@ BANDS_UP=
 BANDS_DW=
 PLOT_UP=
 PLOT_DW=
-BULK_UP=
-BULK_DW=
+CONDUCTOR_UP=
+CONDUCTOR_DW=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -90,15 +90,15 @@ case $INPUT in
                     BANDS_UP=".TRUE." ;
                     DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
                     BANDS_DW=".TRUE." ; PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;;
-   (bulk_up)        BULK_UP=".TRUE." ;;
-   (bulk_dw)        BULK_DW=".TRUE." ;;
-   (bulk)           BULK_UP=".TRUE." ; BULK_DW=".TRUE." ;;
+   (conductor_up)   CONDUCTOR_UP=".TRUE." ;;
+   (conductor_dw)   CONDUCTOR_DW=".TRUE." ;;
+   (conductor)      CONDUCTOR_UP=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ; 
-                    BANDS_UP=".TRUE." ; BULK_UP=".TRUE." ;
+                    BANDS_UP=".TRUE." ; CONDUCTOR_UP=".TRUE." ;
                     DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ; 
                     PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;
-                    BANDS_DW=".TRUE." ; BULK_DW=".TRUE." ;;
+                    BANDS_DW=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -273,71 +273,43 @@ if [ "$PLOT_DW" = ".TRUE." ] ; then
 fi
 
 #
-# running BULK_UP
+# running CONDUCTOR_UP
 #
-if [ "$BULK_UP" = ".TRUE." ] ; then  
+if [ "$CONDUCTOR_UP" = ".TRUE." ] ; then  
    #
-   ln -sf RHAM_UP.103 H00.dat
-   ln -sf RHAM_UP.104 H01.dat
+   ln -sf RHAM_UP.103 H00_C
+   ln -sf RHAM_UP.104 HCI_CB
    #
-   echo "running BULK_UP calculation" 
-   $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk_UP.out
+   echo "running CONDUCTOR_UP calculation" 
+   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_UP.in > $TEST_HOME/conductor_UP.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
       mv dos.dat $TEST_HOME/dos_UP.dat
       mv cond.dat $TEST_HOME/cond_UP.dat
    else
-      echo "found some problems in BULK_UP calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in CONDUCTOR_UP calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
 
 #
-# running BULK_DW
+# running CONDUCTOR_DW
 #
-if [ "$BULK_DW" = ".TRUE." ] ; then  
+if [ "$CONDUCTOR_DW" = ".TRUE." ] ; then  
    #
-   ln -sf RHAM_DW.103 H00.dat
-   ln -sf RHAM_DW.104 H01.dat
+   ln -sf RHAM_DW.103 H00_C
+   ln -sf RHAM_DW.104 HCI_CB
    #
-   echo "running BULK_DW calculation" 
-   $TRANS_BIN/bulk.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk_DW.out
+   echo "running CONDUCTOR_DW calculation" 
+   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_DW.in > $TEST_HOME/conductor_DW.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
       mv dos.dat $TEST_HOME/dos_DW.dat
       mv cond.dat $TEST_HOME/cond_DW.dat
    else
-      echo "found some problems in BULK_DW calculation, stopping" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running CONDUCTOR
-#
-if [ "$CONDUCTOR" = ".TRUE." ] ; then  
-   #
-   # hopefully will be improoved very soon...
-   #
-   ln -sf RHAM.103 H00_A
-   ln -sf RHAM.103 H00_B
-   ln -sf RHAM.103 H00_C
-   ln -sf RHAM.104 H01_B
-   ln -sf RHAM.104 H01_A
-   ln -sf RHAM.104 HCI_AC
-   ln -sf RHAM.104 HCI_CB
-   #
-   echo "running CONDUCTOR calculation" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
-   if [ ! -e CRASH ] ; then 
-      echo "done" 
-      #
-      # also this needs to be improoved
-      #
-      mv dos.dat cond.dat $TEST_HOME
-   else
-      echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in CONDUCTOR_DW calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -347,7 +319,7 @@ fi
 #
 if [ "$CLEAN" = ".TRUE." ] ; then  
    cd $TEST_HOME
-      rm -rf *.out 2> /dev/null
+      rm -rf *.out *.dat 2> /dev/null
       test -e SCRATCH && rm SCRATCH
    cd $TMPDIR
       test -d $TEST_NAME && rm -rf $TEST_NAME
