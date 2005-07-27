@@ -396,16 +396,18 @@
          ! 
          ! construct leads self-energies 
          ! 
-         CALL transferb( nmaxb, niterx, totB, tottB, c00_b, c01_b, ene+bias )
-         CALL greenb( nmaxb, totB, tottB, c00_b, c01_b, ene+bias, gB, 1, 1 )
+! ene + bias
+         CALL transfer( nmaxb, niterx, totB, tottB, c00_b, c01_b )
+         CALL green( nmaxb, totB, tottB, c00_b, c01_b, ene+bias, gB, 1, 1 )
 
          CALL zgemm('N','N', nmaxc, nmaxb, nmaxb, CONE, cci_cb, nmaxc, gB, nmaxb, &
                              CZERO, c2, nmaxc )
          CALL zgemm('N','N', nmaxc, nmaxc, nmaxb, CONE, c2, nmaxc, cci_bc, nmaxb, &
                              CZERO, sRr, nmaxc )
 
-         CALL transfera( nmaxa, niterx, totA, tottA, c00_a, c01_a, ene )
-         CALL greena( nmaxa, totA, tottA, c00_a, c01_a, ene, gA, -1, 1 )
+! ene
+         CALL transfer( nmaxa, niterx, totA, tottA, c00_a, c01_a )
+         CALL green( nmaxa, totA, tottA, c00_a, c01_a, ene, gA, -1, 1 )
 
          CALL zgemm('N','N', nmaxc, nmaxa, nmaxa, CONE, cci_ca, nmaxc, gA, nmaxa, &
                              CZERO, c1, nmaxc )
@@ -473,6 +475,13 @@
       ENDDO
       CLOSE( dos_unit )
       
+
+!
+! ...  Finalize timing
+!
+      CALL timing('conductor',OPR='stop')
+      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='conductor')
+
 
 !
 !...  free memory
