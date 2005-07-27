@@ -4,7 +4,7 @@
 
 include ../make.sys
 
-OBJS=conductor.o greena.o transfera.o greenb.o transferb.o \
+OBJS=conductor.o green.o transfer.o \
      readH.o read_matrix.o transmittance.o
 
 #
