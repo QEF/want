@@ -3,6 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
+27 Jul 2005      Added two "print" lines in plot.f90 for the .gau output to ensure compatibility
+		 with the cube file format (MBN)
 
 27 Jul 2005      Transport code simplified: greena.f90, greenb.f90 merged in green.f90;
                  the same for transporta.f90, transportb.f90 merged into 
