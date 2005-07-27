@@ -566,6 +566,11 @@
                  iwann(m), TRIM(filename)//".gau"
           OPEN ( aux_unit, FILE=TRIM(filename)//".gau", FORM='formatted', STATUS='unknown' )
 
+! MBN correction to gaussian cube format
+          WRITE(aux_unit, '(a25)') 'WanT'
+          WRITE(aux_unit, '(a25)') 'plot output - cube format'
+! end correction
+
           WRITE(aux_unit, '(i4,3f12.6)' ) natot, r0(:) 
           WRITE(aux_unit, '(i4,3f12.6)' ) (nrxh-nrxl+1),  avecl(:,1) 
           WRITE(aux_unit, '(i4,3f12.6)' ) (nryh-nryl+1),  avecl(:,2) 
