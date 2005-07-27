@@ -1,61 +1,60 @@
 
-     Program PWSCF     v.2.1    starts ...
-     Today is 10Feb2005 at 18:58:45 
+     Program PWSCF     v.2.1.3  starts ...
+     Today is  3Jun2005 at 12:12:11 
 
      Ultrasoft (Vanderbilt) Pseudopotentials
 
      Current dimensions of program pwscf are:
-
-     ntypx = 10   npk = 40000  lmax =  3
-     nchix =  6  ndmx =  2000  nbrx = 14  nqfx =  8
+     ntypx =10   npk =40000  lmax = 3
+     nchix = 6  ndmx = 2000  nbrx =14 nqfx = 8
      warning: symmetry operation #  5 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation #  6 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation #  7 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation #  8 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation #  9 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 10 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 11 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 12 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 13 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 14 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 15 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 16 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 25 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 26 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 27 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 28 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 41 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 42 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 43 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 44 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 45 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 46 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 47 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
      warning: symmetry operation # 48 not allowed.   fractional translation:
-      -0.2500000 -0.2500000 -0.2500000  in crystal coordinates
+       0.2500000  0.2500000  0.2500000  in crystal coordinates
 
 
      bravais-lattice index     =            2
@@ -69,6 +68,8 @@
      beta                      =       0.7000
      number of iterations used =            8  plain     mixing
      Exchange-correlation      =  SLA  PZ   NOGX NOGC (1100)
+     iswitch =  0
+
      celldm(1)=  10.599478  celldm(2)=   0.000000  celldm(3)=   0.000000
      celldm(4)=   0.000000  celldm(5)=   0.000000  celldm(6)=   0.000000
 
@@ -96,20 +97,20 @@
 
      site n.     atom                  positions (a_0 units)
          1           Si  tau(  1) = (   0.0000000   0.0000000   0.0000000  )
-         2           Si  tau(  2) = (  -0.2500000   0.2500000   0.2500000  )
+         2           Si  tau(  2) = (   0.2500000   0.2500000   0.2500000  )
 
      number of k points=   10
                        cart. coord. in units 2pi/a_0
-        k(    1) = (  -0.1250000   0.1250000   0.1250000), wk =   0.0625000
-        k(    2) = (  -0.3750000   0.3750000  -0.1250000), wk =   0.1875000
-        k(    3) = (   0.3750000  -0.3750000   0.6250000), wk =   0.1875000
-        k(    4) = (   0.1250000  -0.1250000   0.3750000), wk =   0.1875000
-        k(    5) = (  -0.1250000   0.6250000   0.1250000), wk =   0.1875000
-        k(    6) = (   0.6250000  -0.1250000   0.8750000), wk =   0.3750000
-        k(    7) = (   0.3750000   0.1250000   0.6250000), wk =   0.3750000
-        k(    8) = (  -0.1250000  -0.8750000   0.1250000), wk =   0.1875000
-        k(    9) = (  -0.3750000   0.3750000   0.3750000), wk =   0.0625000
-        k(   10) = (   0.3750000  -0.3750000   1.1250000), wk =   0.1875000
+        k(   1) = (  -0.1250000   0.1250000   0.1250000), wk =   0.0625000
+        k(   2) = (  -0.3750000   0.3750000  -0.1250000), wk =   0.1875000
+        k(   3) = (   0.3750000  -0.3750000   0.6250000), wk =   0.1875000
+        k(   4) = (   0.1250000  -0.1250000   0.3750000), wk =   0.1875000
+        k(   5) = (  -0.1250000   0.6250000   0.1250000), wk =   0.1875000
+        k(   6) = (   0.6250000  -0.1250000   0.8750000), wk =   0.3750000
+        k(   7) = (   0.3750000   0.1250000   0.6250000), wk =   0.3750000
+        k(   8) = (  -0.1250000  -0.8750000   0.1250000), wk =   0.1875000
+        k(   9) = (  -0.3750000   0.3750000   0.3750000), wk =   0.0625000
+        k(  10) = (   0.3750000  -0.3750000   1.1250000), wk =   0.1875000
 
      G cutoff =  341.4998  (   6615 G-vectors)     FFT grid: ( 27, 27, 27)
 
@@ -121,13 +122,13 @@
      starting charge    7.99901, renormalised to    8.00000
      Starting wfc are atomic +   8 random wfc
 
-     total cpu time spent up to now is      0.85 secs
+     total cpu time spent up to now is      1.25 secs
 
      Self-consistent Calculation
 
      iteration #  1     ecut=    30.00 ryd     beta=0.70
      Davidson diagonalization (with overlap)
-     ethr =  1.00E-02,  avg # of iterations =  5.7
+     ethr =  1.00E-02,  avg # of iterations =  4.5
 
      Threshold (ethr) on eigenvalues was too large:
      Diagonalizing with lowered threshold
@@ -135,60 +136,60 @@
      Davidson diagonalization (with overlap)
      ethr =  6.49E-03,  avg # of iterations =  1.0
 
-     total cpu time spent up to now is      6.19 secs
+     total cpu time spent up to now is      8.05 secs
 
-     total energy              =   -15.83803927 ryd
-     estimated scf accuracy    <     0.05164523 ryd
+     total energy              =   -15.83802208 ryd
+     estimated scf accuracy    <     0.05165074 ryd
 
      iteration #  2     ecut=    30.00 ryd     beta=0.70
      Davidson diagonalization (with overlap)
-     ethr =  6.46E-04,  avg # of iterations =  1.4
+     ethr =  6.46E-04,  avg # of iterations =  1.2
 
-     total cpu time spent up to now is      7.96 secs
+     total cpu time spent up to now is     10.57 secs
 
-     total energy              =   -15.84217626 ryd
-     estimated scf accuracy    <     0.00174587 ryd
+     total energy              =   -15.84217304 ryd
+     estimated scf accuracy    <     0.00175036 ryd
 
      iteration #  3     ecut=    30.00 ryd     beta=0.70
      Davidson diagonalization (with overlap)
-     ethr =  2.18E-05,  avg # of iterations =  5.4
+     ethr =  2.19E-05,  avg # of iterations =  4.1
 
-     total cpu time spent up to now is     10.22 secs
+     total cpu time spent up to now is     13.45 secs
 
-     total energy              =   -15.84220527 ryd
-     estimated scf accuracy    <     0.00004911 ryd
+     total energy              =   -15.84220516 ryd
+     estimated scf accuracy    <     0.00004876 ryd
 
      iteration #  4     ecut=    30.00 ryd     beta=0.70
      Davidson diagonalization (with overlap)
-     ethr =  6.14E-07,  avg # of iterations =  2.4
+     ethr =  6.09E-07,  avg # of iterations =  2.5
 
-     total cpu time spent up to now is     12.12 secs
+     total cpu time spent up to now is     16.02 secs
 
      total energy              =   -15.84220632 ryd
      estimated scf accuracy    <     0.00000004 ryd
 
      iteration #  5     ecut=    30.00 ryd     beta=0.70
      Davidson diagonalization (with overlap)
-     ethr =  4.65E-10,  avg # of iterations =  3.0
+     ethr =  4.68E-10,  avg # of iterations =  3.0
 
-     total cpu time spent up to now is     14.24 secs
+     total cpu time spent up to now is     18.71 secs
 
      End of self-consistent calculation
 
           k =-0.1250 0.1250 0.1250 (  845 PWs)   bands (ev):
 
     -6.0266   3.4934   4.8170   4.8170   7.2019   7.9686   7.9686   8.9537
-    12.3087  12.3087  13.1374  15.3197  16.9815  16.9815  20.7014  24.8246
+    12.3087  12.3087  13.1374  15.3196  16.9815  16.9815  20.7013  24.8242
 
           k =-0.3750 0.3750-0.1250 (  831 PWs)   bands (ev):
 
-    -5.0678   0.6345   2.9453   4.3576   7.4336   8.6499   8.7868  10.8596
-    11.5471  14.2244  14.6036  16.7368  18.2914  19.7048  20.5723  21.7180
+    -5.0677   0.6345   2.9453   4.3576   7.4336   8.6499   8.7868  10.8596
+    11.5471  14.2244  14.6036  16.7368  18.2914  19.7048  20.5723  21.7181
 
           k = 0.3750-0.3750 0.6250 (  825 PWs)   bands (ev):
 
     -4.0182  -1.2928   2.9351   3.6427   7.0391   8.4425   9.1130  12.0469
-    13.6682  15.2074  15.8290  16.1627  16.4211  18.9980  22.0626  23.6791
+    13.6682  15.2074  15.8290  16.1627  16.4211  18.9980  22.0626  23.6790
 
           k = 0.1250-0.1250 0.3750 (  836 PWs)   bands (ev):
 
@@ -198,7 +199,7 @@
           k =-0.1250 0.6250 0.1250 (  829 PWs)   bands (ev):
 
     -4.5686   0.2559   2.6348   3.0628   6.4480   7.9168  10.6115  11.0176
-    14.1619  14.8029  15.9993  17.6270  18.0420  18.9893  20.2397  21.2307
+    14.1619  14.8029  15.9993  17.6271  18.0420  18.9893  20.2397  21.2308
 
           k = 0.6250-0.1250 0.8750 (  824 PWs)   bands (ev):
 
@@ -208,12 +209,12 @@
           k = 0.3750 0.1250 0.6250 (  826 PWs)   bands (ev):
 
     -4.1857  -0.5296   2.0199   3.3186   7.8111   8.4624   9.8343  10.7109
-    13.6138  14.2082  16.4515  17.0587  18.4026  19.3380  21.3839  21.9829
+    13.6138  14.2082  16.4515  17.0587  18.4026  19.3380  21.3839  21.9827
 
           k =-0.1250-0.8750 0.1250 (  819 PWs)   bands (ev):
 
     -3.1946  -1.5061   1.9544   2.6229   6.0544   7.0485  12.7563  12.8469
-    15.0393  15.4323  16.6536  16.9338  18.8415  19.3514  20.1813  22.5241
+    15.0393  15.4323  16.6536  16.9339  18.8415  19.3514  20.1813  22.5242
 
           k =-0.3750 0.3750 0.3750 (  826 PWs)   bands (ev):
 
@@ -226,12 +227,12 @@
     12.4089  12.8797  17.0182  18.8029  19.1528  20.0829  20.4787  22.3371
 
 !    total energy              =   -15.84220638 ryd
-     estimated scf accuracy    <        2.4E-09 ryd
+     estimated scf accuracy    <        2.8E-09 ryd
 
-     band energy sum           =     0.17070149 ryd
-     one-electron contribution =     3.93959525 ryd
-     hartree contribution      =     1.17641700 ryd
-     xc contribution           =    -4.69538589 ryd
+     band energy sum           =     0.17070291 ryd
+     one-electron contribution =     3.93959604 ryd
+     hartree contribution      =     1.17641568 ryd
+     xc contribution           =    -4.69538536 ryd
      ewald contribution        =   -16.26283275 ryd
 
      convergence has been achieved
@@ -244,43 +245,43 @@
      Total force =     0.000000     Total SCF correction =     0.000000
 
      Writing file   silicon.save for program phonon
- 
-     PWSCF        :    14.30s CPU time
 
-     init_run     :     0.84s CPU
-     electrons    :    13.39s CPU
-     forces       :     0.05s CPU
- 
-     electrons    :    13.39s CPU
-     c_bands      :    11.07s CPU (       6 calls,   1.845 s avg)
-     sum_band     :     2.01s CPU (       6 calls,   0.335 s avg)
-     v_of_rho     :     0.16s CPU (      12 calls,   0.013 s avg)
-     mix_rho      :     0.14s CPU (       6 calls,   0.023 s avg)
- 
-     c_bands      :    11.07s CPU (       6 calls,   1.845 s avg)
-     init_us_2    :     0.09s CPU (     140 calls,   0.001 s avg)
-     cegterg      :    10.89s CPU (      60 calls,   0.181 s avg)
- 
-     sum_band     :     2.01s CPU (       6 calls,   0.335 s avg)
- 
-     wfcrot       :     0.63s CPU (      10 calls,   0.063 s avg)
-     cegterg      :    10.89s CPU (      60 calls,   0.181 s avg)
-     h_psi        :     9.53s CPU (     259 calls,   0.037 s avg)
-     g_psi        :     0.05s CPU (     189 calls,   0.000 s avg)
-     overlap      :     0.41s CPU (     189 calls,   0.002 s avg)
-     cdiaghg      :     0.45s CPU (     199 calls,   0.002 s avg)
-     update       :     0.42s CPU (     189 calls,   0.002 s avg)
-     last         :     0.17s CPU (      70 calls,   0.002 s avg)
- 
-     h_psi        :     9.53s CPU (     259 calls,   0.037 s avg)
-     init         :     0.09s CPU (     259 calls,   0.000 s avg)
-     firstfft     :     4.35s CPU (    2627 calls,   0.002 s avg)
-     secondfft    :     4.09s CPU (    2627 calls,   0.002 s avg)
-     add_vuspsi   :     0.19s CPU (     259 calls,   0.001 s avg)
- 
+     PWSCF        :    18.84s CPU time
+
+     init_run     :     1.21s CPU
+     electrons    :    17.46s CPU
+     forces       :     0.11s CPU
+
+     electrons    :    17.46s CPU
+     c_bands      :    14.22s CPU (       6 calls,   2.370 s avg)
+     sum_band     :     2.86s CPU (       6 calls,   0.477 s avg)
+     v_of_rho     :     0.20s CPU (      12 calls,   0.017 s avg)
+     mix_rho      :     0.11s CPU (       6 calls,   0.018 s avg)
+
+     c_bands      :    14.22s CPU (       6 calls,   2.370 s avg)
+     init_us_2    :     0.08s CPU (     140 calls,   0.001 s avg)
+     cegterg      :    13.56s CPU (      60 calls,   0.226 s avg)
+
+     sum_band     :     2.86s CPU (       6 calls,   0.477 s avg)
+
+     wfcrot       :     0.80s CPU (      10 calls,   0.080 s avg)
+     cegterg      :    13.56s CPU (      60 calls,   0.226 s avg)
+     h_psi        :    12.79s CPU (     233 calls,   0.055 s avg)
+     g_psi        :     0.11s CPU (     163 calls,   0.001 s avg)
+     overlap      :     0.30s CPU (     163 calls,   0.002 s avg)
+     cdiaghg      :     0.35s CPU (     173 calls,   0.002 s avg)
+     update       :     0.32s CPU (     163 calls,   0.002 s avg)
+     last         :     0.07s CPU (      60 calls,   0.001 s avg)
+
+     h_psi        :    12.79s CPU (     233 calls,   0.055 s avg)
+     init         :     0.07s CPU (     233 calls,   0.000 s avg)
+     firstfft     :     5.87s CPU (    2524 calls,   0.002 s avg)
+     secondfft    :     5.99s CPU (    2524 calls,   0.002 s avg)
+     add_vuspsi   :     0.13s CPU (     233 calls,   0.001 s avg)
+
      General routines
-     ccalbec      :     0.13s CPU (     269 calls,   0.000 s avg)
-     cft3         :     0.27s CPU (      48 calls,   0.006 s avg)
-     cft3s        :     9.53s CPU (    6214 calls,   0.002 s avg)
-     davcio       :     0.19s CPU (     200 calls,   0.001 s avg)
- 
+     ccalbec      :     0.05s CPU (     243 calls,   0.000 s avg)
+     cft3         :     0.18s CPU (      48 calls,   0.004 s avg)
+     cft3s        :    12.87s CPU (    6008 calls,   0.002 s avg)
+     davcio       :     1.09s CPU (     200 calls,   0.005 s avg)
+

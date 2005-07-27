@@ -1,0 +1,180 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <plot>  v. 1.1.1  starts ...
+  Date 27Jul2005 at 16:36:12 
+
+
+  PW-DFT data read from file: cobalt_US.export/index.xml
+  Subspace data read from file: cobalt_US_WanT.space
+  Wannier data read from file: cobalt_US_WanT.wan
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =      30.0000000 (Bohr)
+  Alat  =      15.8753100 (Ang )
+  Omega =    4251.8879910 (Bohr^3)
+  Omega =     630.0640418 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 30.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 30.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.1575 )
+  Crystal axes: (Ang)
+    a(1) = ( 15.8753  0.0000  0.0000 )
+    a(2) = (  0.0000 15.8753  0.0000 )
+    a(3) = (  0.0000  0.0000  2.5000 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.2094  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.2094  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  6.3501 )
+</LATTICE>
+
+<K-POINTS>
+  nkpts =    8
+  Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250
+    k point   2:   (   0.00000  0.00000  0.16625 ),   weight =   0.1250
+    k point   3:   (   0.00000  0.00000  0.33249 ),   weight =   0.1250
+    k point   4:   (   0.00000  0.00000  0.49874 ),   weight =   0.1250
+    k point   5:   (   0.00000  0.00000  0.66498 ),   weight =   0.1250
+    k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250
+    k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250
+    k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250
+</K-POINTS>
+
+
+  WARNING: USPP not fully implemented
+
+
+  Reading density G-grid from file: cobalt_US.export/index.xml
+  Reading Wfc grids from file: cobalt_US.export/index.xml
+
+
+          Energy cut-off for wfcs =         20.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =     203229
+        Max number of PW for wfc  =       6496
+      Total number of PW for wfcs =      12370
+        FFT grid components (rho) =  (   144  144   24 )
+
+
+  ======================================================================
+  =                     Wannier function plotting                      =
+  ======================================================================
+
+
+  nplot =   4 Wannier func.s to be plotted
+     wf (  1 ) =    1
+     wf (  2 ) =    2
+     wf (  3 ) =    3
+     wf (  4 ) =    6
+
+  Data type  :   modulus
+  Output fmt :   plt
+
+  Grid dimensions:
+      nrx   -72 -->     71
+      nry   -72 -->     71
+      nrz   -48 -->     48
+
+  Atoms in the selected cell: (cart. coord. in Bohr)
+     Co   tau(   1 ) = (   0.0000000   0.0000000  -8.5037765 )
+     Co   tau(   2 ) = (   0.0000000   0.0000000  -3.7794566 )
+     Co   tau(   3 ) = (   0.0000000   0.0000000   0.9448634 )
+     Co   tau(   4 ) = (   0.0000000   0.0000000   5.6691834 )
+
+
+  writing WF(  1) plot on file: .//cobalt_US_WanT_WFM001.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/cobalt_US_WanT_WFM001.gau'
+Output file (plot file):  './/cobalt_US_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './/cobalt_US_WanT_WFM001.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -7.937657,-7.937657,-5.000004
+Min value: 0.000000
+Max value: 0.000814
+Job done ...
+**********************************************************
+  deleting tmp file: .//cobalt_US_WanT_WFM001.gau
+
+
+  writing WF(  2) plot on file: .//cobalt_US_WanT_WFM002.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/cobalt_US_WanT_WFM002.gau'
+Output file (plot file):  './/cobalt_US_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './/cobalt_US_WanT_WFM002.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -7.937657,-7.937657,-5.000004
+Min value: 0.000000
+Max value: 0.000817
+Job done ...
+**********************************************************
+  deleting tmp file: .//cobalt_US_WanT_WFM002.gau
+
+
+  writing WF(  3) plot on file: .//cobalt_US_WanT_WFM003.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/cobalt_US_WanT_WFM003.gau'
+Output file (plot file):  './/cobalt_US_WanT_WFM003.plt'
+Coordinate file (in CHARMM 'crd' format): './/cobalt_US_WanT_WFM003.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -7.937657,-7.937657,-5.000004
+Min value: 0.000000
+Max value: 0.000800
+Job done ...
+**********************************************************
+  deleting tmp file: .//cobalt_US_WanT_WFM003.gau
+
+
+  writing WF(  6) plot on file: .//cobalt_US_WanT_WFM006.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/cobalt_US_WanT_WFM006.gau'
+Output file (plot file):  './/cobalt_US_WanT_WFM006.plt'
+Coordinate file (in CHARMM 'crd' format): './/cobalt_US_WanT_WFM006.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -7.937657,-7.937657,-5.000004
+Min value: 0.000000
+Max value: 0.000462
+Job done ...
+**********************************************************
+  deleting tmp file: .//cobalt_US_WanT_WFM006.gau
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :     6
+
+                     plot :  2m44.57s CPU 
+
+                want_init :     0.37s CPU
+          ggrids_read_ext :     0.36s CPU
+           wfc_data_kread :     0.45s CPU (       8 calls,   0.056 s avg)
+                   cfft3d :     8.57s CPU (      32 calls,   0.268 s avg)
+                 gcubeplt :    22.27s CPU (       4 calls,   5.567 s avg)
+
+
