@@ -1,0 +1,180 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <plot>  v. 1.1.1  starts ...
+  Date 27Jul2005 at 16:25:18 
+
+
+  PW-DFT data read from file: gold_US.export/index.xml
+  Subspace data read from file: gold_US_WanT.space
+  Wannier data read from file: gold_US_WanT.wan
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    1889.7280000 (Bohr^3)
+  Omega =     280.0284636 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.5835  0.0000  0.0000 )
+    a(2) = (  0.0000 10.5835  0.0000 )
+    a(3) = (  0.0000  0.0000  2.5000 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+</LATTICE>
+
+<K-POINTS>
+  nkpts =    8
+  Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250
+    k point   2:   (   0.00000  0.00000  0.16625 ),   weight =   0.1250
+    k point   3:   (   0.00000  0.00000  0.33249 ),   weight =   0.1250
+    k point   4:   (   0.00000  0.00000  0.49874 ),   weight =   0.1250
+    k point   5:   (   0.00000  0.00000  0.66498 ),   weight =   0.1250
+    k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250
+    k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250
+    k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250
+</K-POINTS>
+
+
+  WARNING: USPP not fully implemented
+
+
+  Reading density G-grid from file: gold_US.export/index.xml
+  Reading Wfc grids from file: gold_US.export/index.xml
+
+
+          Energy cut-off for wfcs =         25.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =      90341
+        Max number of PW for wfc  =       4032
+      Total number of PW for wfcs =       6821
+        FFT grid components (rho) =  (    96   96   24 )
+
+
+  ======================================================================
+  =                     Wannier function plotting                      =
+  ======================================================================
+
+
+  nplot =   4 Wannier func.s to be plotted
+     wf (  1 ) =    1
+     wf (  2 ) =    2
+     wf (  3 ) =    3
+     wf (  4 ) =    6
+
+  Data type  :   modulus
+  Output fmt :   plt
+
+  Grid dimensions:
+      nrx   -48 -->     47
+      nry   -48 -->     47
+      nrz   -48 -->     48
+
+  Atoms in the selected cell: (cart. coord. in Bohr)
+     Au   tau(   1 ) = (   0.0000000   0.0000000  -8.5037766 )
+     Au   tau(   2 ) = (   0.0000000   0.0000000  -3.7794566 )
+     Au   tau(   3 ) = (   0.0000000   0.0000000   0.9448634 )
+     Au   tau(   4 ) = (   0.0000000   0.0000000   5.6691834 )
+
+
+  writing WF(  1) plot on file: .//gold_US_WanT_WFM001.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM001.gau'
+Output file (plot file):  './/gold_US_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM001.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.000705
+Job done ...
+**********************************************************
+  deleting tmp file: .//gold_US_WanT_WFM001.gau
+
+
+  writing WF(  2) plot on file: .//gold_US_WanT_WFM002.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM002.gau'
+Output file (plot file):  './/gold_US_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM002.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.001248
+Job done ...
+**********************************************************
+  deleting tmp file: .//gold_US_WanT_WFM002.gau
+
+
+  writing WF(  3) plot on file: .//gold_US_WanT_WFM003.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM003.gau'
+Output file (plot file):  './/gold_US_WanT_WFM003.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM003.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.001277
+Job done ...
+**********************************************************
+  deleting tmp file: .//gold_US_WanT_WFM003.gau
+
+
+  writing WF(  6) plot on file: .//gold_US_WanT_WFM006.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM006.gau'
+Output file (plot file):  './/gold_US_WanT_WFM006.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM006.crd'
+
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.001278
+Job done ...
+**********************************************************
+  deleting tmp file: .//gold_US_WanT_WFM006.gau
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :     6
+
+                     plot :    55.25s CPU 
+
+                want_init :     0.28s CPU
+          ggrids_read_ext :     0.13s CPU
+           wfc_data_kread :     0.14s CPU (       8 calls,   0.018 s avg)
+                   cfft3d :     2.16s CPU (      32 calls,   0.068 s avg)
+                 gcubeplt :     8.42s CPU (       4 calls,   2.104 s avg)
+
+

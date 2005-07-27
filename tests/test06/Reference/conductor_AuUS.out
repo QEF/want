@@ -8,6 +8,15 @@
 
 
   Program <conductor>  v. 1.1.1  starts ...
-  Date 24Mar2005 at 16:26:42 
+  Date 27Jul2005 at 16:26:14 
 
-  ....reading from external file....
+
+   <global routines>
+             clock number :     3
+
+                conductor :     3.63s CPU 
+
+                 transfer :     3.32s CPU (    2000 calls,   0.002 s avg)
+                    green :     0.06s CPU (    2000 calls,   0.000 s avg)
+
+
