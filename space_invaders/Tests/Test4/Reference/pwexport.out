@@ -1,11 +1,11 @@
 
-     Program POST-PROC v.2.1cvs starts ...
-     Today is 18Mar2005 at 11: 0:21 
+     Program POST-PROC v.2.1.3  starts ...
+     Today is 27Jul2005 at 17: 5:53 
 
-     Reading file al.save ...      only dimensions
+     Reading file al.save ... 
      read complete
 
-     Reading file al.save ...      all except wavefuctions
+     Reading file al.save ... 
      read complete
 
      nbndx  =    20  nbnd   =    20  natomwfc =     4  npwx   =    2247
