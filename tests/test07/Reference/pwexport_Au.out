@@ -1,0 +1,13 @@
+
+     Program POST-PROC v.2.1.3  starts ...
+     Today is 12Jul2005 at 15:20:17 
+
+     Reading file gold.save ... 
+     read complete
+
+     Reading file gold.save ... 
+     read complete
+
+     nbndx  =    20  nbnd   =    20  natomwfc =    18  npwx   =    8898
+     nelec  =   22.00 nkb   =    16  ngl    =    1998
+  warning: negative or imaginary core charge    -0.000033    0.000000

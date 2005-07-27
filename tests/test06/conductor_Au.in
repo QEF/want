@@ -1,11 +1,9 @@
 
-&INPUT_CONDUCTOR
-   nmxa = 6
-   nmxc = 6
-   nmxb = 6
-   ne = 1000
-   niterx = 200
-   emin = -10.0
-   emax = 5.0
-/
-
+  &INPUT_CONDUCTOR
+    nmxc = 6
+    calculation_type = 'bulk'
+    ne = 1000  
+    niterx = 200 
+    emin = -15.0
+    emax =  5.0 
+  /

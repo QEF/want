@@ -1,5 +1,5 @@
 Infinite Gold Chain NCPP
-2 atom/cell, Lattice Parameter = 4.0 Bohr
+2 atom/cell, Interatomic distance = 2.5 Ang
    &CONTROL
       calculation = 'scf',
       restart_mode='from_scratch',
@@ -14,11 +14,11 @@ Infinite Gold Chain NCPP
       ibrav=8, 
       celldm(1)=20.0, 
       celldm(2)=1.0,
-      celldm(3)=0.4,   ! 8.0 bohr 
+      celldm(3)=0.472432
       nat=2, 
       ntyp=1,
-      ecutwfc=30.0,
-      ecutrho=120.0,
+      ecutwfc=25.0,
+      ecutrho=100.0,
       occupations='smearing',
       smearing='gaussian',
       degauss=0.01,

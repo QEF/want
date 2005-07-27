@@ -3,7 +3,16 @@
             WanT code:  Log of Changes 
 =======================================================
 
-09 Jul 2005      Trasnport package changed: bulk code eliminated and inserted in
+
+26 Jul 2005      Bug fixing in hamiltonian_module: nwsx too small in some cases.
+                 Output fmt changed in hamiltonian_calc.f90, some minorities in
+                 wigner_seitz.f90 changed. (AF)
+
+12 Jul 2005      Tests updated by the elimination of bulk.x runs (but also other
+                 small changes occurred). Bshell routine updated and a bug have been 
+                 fixed there. ndnntot variable (kpoints module) deleted. (AF)
+
+09 Jul 2005      Transport package changed: bulk code eliminated and inserted in
                  the conductor code. readH.f90 routine updated (deals with both
                  conductor and bulk case). Conductor input modified. Routine 
                  read_matrix.f90 added. All routines related to the bulk code 
