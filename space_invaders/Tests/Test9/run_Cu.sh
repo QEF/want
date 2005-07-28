@@ -194,7 +194,7 @@ fi
 #
 if [ "$CLEAN" = ".TRUE." ] ; then  
    cd $TEST_HOME
-      rm -rf *.out 2> /dev/null
+      rm -rf *.dat *.out 2> /dev/null
       test -e SCRATCH && rm SCRATCH
    cd $TMPDIR
       test -d $TEST_NAME && rm -rf $TEST_NAME
