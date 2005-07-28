@@ -1,0 +1,369 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 1.1.1  starts ...
+  Date 28Jul2005 at 13: 2:36 
+
+
+  PW-DFT data read from file: gold.export/index.xml
+
+  ======================================================================
+  =                                Main                                =
+  ======================================================================
+
+            Calculation Title :     Wannier Transport Calculation
+                       Prefix :     gold
+                      Postfix :     _WanT
+            Working directory :     ./
+
+                 Restart Mode :     from_scratch
+                Overlap Calc. :     TRUE 
+             Projection Calc. :     TRUE 
+          Read Start Subspace :     FALSE
+       Read Start Unitary mat :     FALSE
+           Conditioned minim. :     FALSE
+
+<WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =   12
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
+    CG minim: Max iteration number =   100
+    Minimization convergence threshold =     0.000001000
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
+    SD minim: Max iteration number =  1500
+    Every   5 iteration perform a CG minimization (ncg)
+    Number of k-point shells =   2
+    Chosen shells (indexes) =   1  2
+    Print info each  10 iterations
+    Save data each   10 iterations
+    Starting minimization guess = center_projections
+    Ordering mode = none
+    Verbosity = high
+    Unitariery check threshold =     0.000000010
+    Conditioned minim. amplitude =     0.000000000
+    Conditioned minim.  iter num =  1600
+</WANNIER_FUNCTIONS>
+
+<DISENTANGLE>
+  Input parameters for subspace definition
+    Spin component = none
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =  1000
+    Starting minimization guess = center_projections
+    Disentangle convergence threshold =     0.000000010
+    Print info each  10 iterations
+    Save data each   10 iterations
+</DISENTANGLE>
+
+<TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+
+      #     Type          l   m       Position                              Decay
+    ----  ------------  --------   ------------------------------------   ---------
+      1    atomic  Au     0   0    (   0.000000   0.000000   0.000000 )    0.00000
+      2    atomic  Au     2  -2    (   0.000000   0.000000   0.000000 )    0.00000
+      3    atomic  Au     2  -1    (   0.000000   0.000000   0.000000 )    0.00000
+      4    atomic  Au     2   0    (   0.000000   0.000000   0.000000 )    0.00000
+      5    atomic  Au     2   1    (   0.000000   0.000000   0.000000 )    0.00000
+      6    atomic  Au     2   2    (   0.000000   0.000000   0.000000 )    0.00000
+      7    atomic  Au     0   0    (   0.000000   0.000000   4.724320 )    0.00000
+      8    atomic  Au     2  -2    (   0.000000   0.000000   4.724320 )    0.00000
+      9    atomic  Au     2  -1    (   0.000000   0.000000   4.724320 )    0.00000
+     10    atomic  Au     2   0    (   0.000000   0.000000   4.724320 )    0.00000
+     11    atomic  Au     2   1    (   0.000000   0.000000   4.724320 )    0.00000
+     12    atomic  Au     2   2    (   0.000000   0.000000   4.724320 )    0.00000
+
+</TRIAL_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    3779.4560000 (Bohr^3)
+  Omega =     560.0569273 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000  9.4486 )     (   0.0000  0.0000  0.4724 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.5835  0.0000  0.0000 )
+    a(2) = (  0.0000 10.5835  0.0000 )
+    a(3) = (  0.0000  0.0000  5.0000 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  0.6650 )     (   0.0000  0.0000  2.1167 )
+</LATTICE>
+
+<IONS>
+  Number of chemical species =  1
+     Pseudo( 1) = Au11pw91.mt.UPF
+
+     Pseudo( 1) is Au         zval = 11.0   lmax= 2   lloc= 0
+     (in numerical form:   331 grid points, xmin =  0.00, dx = 0.0000)
+
+  Atomic positions: (cart. coord. in Bohr)
+     Au   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     Au   tau(   2 ) = (   0.0000000   0.0000000   4.7243200 )
+</IONS>
+
+<K-POINTS>
+  nkpts =    4
+  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
+    k point   2:   (   0.00000  0.00000  0.16625 ),   weight =   0.2500
+    k point   3:   (   0.00000  0.00000  0.33249 ),   weight =   0.2500
+    k point   4:   (   0.00000  0.00000  0.49874 ),   weight =   0.2500
+</K-POINTS>
+
+<B-SHELL>
+  Nearest-neighbour shells for k-point 1: (in Bohr^-1)
+    shell (  1 )    radius =   0.16625
+    shell (  2 )    radius =   0.31416
+    shell (  3 )    radius =   0.33249
+    shell (  4 )    radius =   0.35543
+    shell (  5 )    radius =   0.44429
+    shell (  6 )    radius =   0.45743
+    shell (  7 )    radius =   0.47437
+    shell (  8 )    radius =   0.49874
+    shell (  9 )    radius =   0.55493
+    shell ( 10 )    radius =   0.58944
+    shell ( 11 )    radius =   0.62832
+    shell ( 12 )    radius =   0.64994
+
+  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
+    shell (  1 )    neighbours  =    2
+    shell (  2 )    neighbours  =    4
+
+  List of the  6 vectors b_k: (Bohr^-1) 
+    b_k   1:   (   0.00000  0.00000  0.16625 ),   weight =  18.0913
+    b_k   2:   (   0.00000  0.00000 -0.16625 ),   weight =  18.0913
+    b_k   3:   (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b_k   4:   (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
+    b_k   5:   (   0.00000  0.31416  0.00000 ),   weight =   5.0661
+    b_k   6:   (   0.31416  0.00000  0.00000 ),   weight =   5.0661
+
+  The  3  bk directions are (Bohr^-1):
+    dir 1:   (   0.00000  0.00000  0.16625 ) 
+    dir 2:   (  -0.31416  0.00000  0.00000 ) 
+    dir 3:   (   0.00000 -0.31416  0.00000 ) 
+</B-SHELL>
+
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = (  -\inf ,    1.5000 )
+    Max number of bands within the energy window =    16
+
+  Electronic Structure from DFT calculation:
+    nkpts =   4,     nbnd =  20,
+    nspin =   1
+    Fermi energy =   -4.990317305 eV
+
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =   15
+                                         imin =    1  imax =   15
+   Eigenvalues:
+   -10.8465  -8.2603  -8.2603  -6.6237  -6.6225  -6.5701  -5.8738  -5.8456
+    -5.1679  -4.9942  -4.9942  -1.3095  -1.3095  -0.4923   0.7585   1.6770
+     2.0234   2.4334   2.4334   2.5712
+
+    kpt =  2 (  0.000 0.000 0.166 )    dimwin =   15
+                                         imin =    1  imax =   15
+   Eigenvalues:
+    -9.9864  -7.9309  -7.9309  -6.4765  -6.4659  -6.3202  -6.0201  -5.9845
+    -5.6781  -5.6781  -5.6129  -3.5836  -0.5810  -0.5810   1.1285   2.0482
+     2.8376   2.8377   2.9241   2.9241
+
+    kpt =  3 (  0.000 0.000 0.332 )    dimwin =   16
+                                         imin =    1  imax =   16
+   Eigenvalues:
+    -7.6579  -7.6579  -6.9551  -6.9551  -6.9551  -6.9551  -6.2533  -6.2533
+    -6.2110  -6.2110  -5.6277  -5.6277   0.9468   0.9468   0.9468   0.9468
+     2.2386   2.2386   3.1594   3.1595
+
+    kpt =  4 (  0.000 0.000 0.499 )    dimwin =   15
+                                         imin =    1  imax =   15
+   Eigenvalues:
+    -9.9864  -7.9309  -7.9309  -6.4765  -6.4659  -6.3202  -6.0201  -5.9845
+    -5.6781  -5.6781  -5.6129  -3.5836  -0.5810  -0.5810   1.1285   2.0483
+     2.8376   2.8377   2.9241   2.9241
+
+    inner window: E  = (-20.0000 ,  -2.5000 ) --> FROZEN STATES
+    there are  11 frozen states at k-point =     1
+    there are  12 frozen states at k-point =     2
+    there are  12 frozen states at k-point =     3
+    there are  12 frozen states at k-point =     4
+</WINDOWS>
+
+
+
+  ======================================================================
+  =                      Overlaps and Projections                      =
+  ======================================================================
+
+  Reading density G-grid from file: gold.export/index.xml
+  Reading Wfc grids from file: gold.export/index.xml
+
+
+          Energy cut-off for wfcs =         25.00 (Ry)
+                         for rho  =        100.00 (Ry)
+      Total number of PW for rho  =      63811
+        Max number of PW for wfc  =       8008
+      Total number of PW for wfcs =      10438
+        FFT grid components (rho) =  (    64   64   32 )
+
+
+  Initializing global dft data
+
+  Initializing atomic wfc
+    Overlaps or Projections calculation for k-point   1
+                              Total time spent up to now :     1.12 secs
+
+    Overlaps or Projections calculation for k-point   2
+                              Total time spent up to now :     1.85 secs
+
+    Overlaps or Projections calculation for k-point   3
+                              Total time spent up to now :     2.65 secs
+
+    Overlaps or Projections calculation for k-point   4
+                              Total time spent up to now :     3.40 secs
+
+
+  Overlap and projections written on file: gold_WanT.ovp
+                              Total time spent up to now :     3.83 secs
+
+
+  ======================================================================
+  =                      Starting Iteration loop                      =
+  ======================================================================
+
+
+  Initial trial subspace: projected localized orbitals
+  There are frozen states
+
+
+  Subspace decomposition:
+  Norms of the projected Bloch functions
+
+      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   15
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  0.00143  0.02902  0.96388  0.00568
+
+      kpt =  2 (  0.000 0.000 0.166 )    dimwin =   15
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
+
+      kpt =  3 (  0.000 0.000 0.332 )    dimwin =   16
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  0.00000
+
+      kpt =  4 (  0.000 0.000 0.499 )    dimwin =   15
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
+
+
+
+
+  Iteration =     1   Omega_I =     45.05253475    Error =      0.00162464
+  Iteration =     2   Omega_I =     45.00589529    Error =      0.00112730
+  Iteration =     3   Omega_I =     44.97424359    Error =      0.00066938
+  Iteration =     4   Omega_I =     44.95629621    Error =      0.00038323
+  Iteration =     5   Omega_I =     44.94634292    Error =      0.00021401
+  Iteration =     6   Omega_I =     44.94091274    Error =      0.00011737
+  Iteration =     7   Omega_I =     44.93798738    Error =      0.00006349
+  Iteration =     8   Omega_I =     44.93642714    Error =      0.00003397
+  Iteration =     9   Omega_I =     44.93560174    Error =      0.00001802
+  Iteration =    10   Omega_I =     44.93516802    Error =      0.00000949
+
+                              Total time spent up to now :     3.88 secs
+
+  Iteration =    11   Omega_I =     44.93494140    Error =      0.00000497
+  Iteration =    12   Omega_I =     44.93482356    Error =      0.00000259
+  Iteration =    13   Omega_I =     44.93476254    Error =      0.00000134
+  Iteration =    14   Omega_I =     44.93473106    Error =      0.00000069
+  Iteration =    15   Omega_I =     44.93471486    Error =      0.00000036
+  Iteration =    16   Omega_I =     44.93470656    Error =      0.00000018
+  Iteration =    17   Omega_I =     44.93470231    Error =      0.00000009
+  Iteration =    18   Omega_I =     44.93470014    Error =      0.00000005
+  Iteration =    19   Omega_I =     44.93469903    Error =      0.00000002
+  Iteration =    20   Omega_I =     44.93469847    Error =      0.00000001
+
+                              Total time spent up to now :     4.08 secs
+
+  Iteration =    21   Omega_I =     44.93469818    Error =      0.00000001
+
+
+  ======================================================================
+  =                        Convergence Achieved                        =
+  ======================================================================
+
+  Final Omega_I (Bohr^2, Angstrom^2):     44.93469790       12.58298694
+   Avrg Omega_I                     :      3.74455816        1.04858225
+
+                              Total time spent up to now :     4.23 secs
+
+
+  Subspace decomposition:
+  Norms of the projected Bloch functions
+
+      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   15
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  0.00000  0.00000  1.00000  0.00000
+
+      kpt =  2 (  0.000 0.000 0.166 )    dimwin =   15
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
+
+      kpt =  3 (  0.000 0.000 0.332 )    dimwin =   16
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  0.00000
+
+      kpt =  4 (  0.000 0.000 0.499 )    dimwin =   15
+    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
+
+
+
+  Subspace data written on file: gold_WanT.space
+  ======================================================================
+
+   <global routines>
+             clock number :    20
+
+              disentangle :     4.39s CPU 
+
+                want_init :     0.07s CPU
+                  bshells :     0.02s CPU
+              wfc_manager :     3.75s CPU
+          ggrids_read_ext :     0.09s CPU
+              struct_fact :     0.04s CPU
+                init_at_1 :     0.17s CPU
+           wfc_data_kread :     1.28s CPU (      16 calls,   0.080 s avg)
+                  overlap :     1.41s CPU (      12 calls,   0.118 s avg)
+           overlap_setmap :     0.12s CPU (      12 calls,   0.010 s avg)
+                    s_psi :     0.01s CPU (       4 calls,   0.003 s avg)
+               projection :     0.28s CPU (       4 calls,   0.071 s avg)
+       trial_center_setup :     0.08s CPU (      48 calls,   0.002 s avg)
+               atomic_wfc :     0.07s CPU (      48 calls,   0.001 s avg)
+               iterations :     0.40s CPU
+             subapce_init :     0.00s CPU
+        projection_frozen :     0.00s CPU
+                  zmatrix :     0.00s CPU (      21 calls,   0.000 s avg)
+               zmat_hdiag :     0.00s CPU (      21 calls,   0.000 s avg)
+                  komegai :     0.10s CPU (     168 calls,   0.001 s avg)
+
+
