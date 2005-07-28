@@ -203,6 +203,7 @@ if [ "$WANNIER_UP" = ".TRUE." ] ; then
    else
       echo "found some problems in WANNIER_UP calculation, stopping" ; cat CRASH ; exit 1
    fi
+   rename RHAM. RHAM_UP. RHAM*
 fi
 
 #
@@ -216,6 +217,7 @@ if [ "$WANNIER_DW" = ".TRUE." ] ; then
    else
       echo "found some problems in WANNIER_DW calculation, stopping" ; cat CRASH ; exit 1
    fi
+   rename RHAM. RHAM_DW. RHAM*
 fi
 
 #
@@ -229,7 +231,6 @@ if [ "$BANDS_UP" = ".TRUE." ] ; then
    else
       echo "found some problems in BANDS_UP calculation, stopping" ; cat CRASH ; exit 1
    fi
-   rename RHAM. RHAM_UP. RHAM*
 fi
 
 #
@@ -243,7 +244,6 @@ if [ "$BANDS_DW" = ".TRUE." ] ; then
    else
       echo "found some problems in BANDS_DW calculation, stopping" ; cat CRASH ; exit 1
    fi
-   rename RHAM. RHAM_DW. RHAM*
 fi
 
 #
