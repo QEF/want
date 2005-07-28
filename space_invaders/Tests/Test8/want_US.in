@@ -9,7 +9,6 @@
 /
 
 &SUBSPACE
-!   start_mode_dis = 'lower_states'
    win_max = 2.0
    dimwann = 18
    maxiter_dis = 5000
@@ -17,9 +16,6 @@
 
 &LOCALIZATION
    a_condmin = 20.0
-!   niter_condmin = 400
-!   dump_condmin = 0.95
-!   start_mode_wan = 'randomized'
    alpha0_wan = 0.25
    alpha1_wan = 0.25
    maxiter0_wan = 200

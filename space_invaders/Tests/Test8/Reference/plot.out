@@ -1,0 +1,212 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <plot>  v. 1.1.1  starts ...
+  Date 27Jul2005 at 18:21:29 
+
+
+  PW-DFT data read from file: benzene.export/index.xml
+  Subspace data read from file: benzene_WanT.space
+  Wannier data read from file: benzene_WanT.wan
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    8000.0000000 (Bohr^3)
+  Omega =    1185.4762744 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000 20.0000 )     (   0.0000  0.0000  1.0000 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.5835  0.0000  0.0000 )
+    a(2) = (  0.0000 10.5835  0.0000 )
+    a(3) = (  0.0000  0.0000 10.5835 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  0.3142 )     (   0.0000  0.0000  1.0000 )
+</LATTICE>
+
+<K-POINTS>
+  nkpts =    1
+  Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+</K-POINTS>
+
+
+  Reading density G-grid from file: benzene.export/index.xml
+  Reading Wfc grids from file: benzene.export/index.xml
+
+
+          Energy cut-off for wfcs =         35.00 (Ry)
+                         for rho  =        140.00 (Ry)
+      Total number of PW for rho  =     223735
+        Max number of PW for wfc  =      28018
+      Total number of PW for wfcs =      28018
+        FFT grid components (rho) =  (    80   80   80 )
+
+
+  ======================================================================
+  =                     Wannier function plotting                      =
+  ======================================================================
+
+
+  nplot =   6 Wannier func.s to be plotted
+     wf (  1 ) =    1
+     wf (  2 ) =    2
+     wf (  3 ) =    7
+     wf (  4 ) =    8
+     wf (  5 ) =   14
+     wf (  6 ) =   15
+
+  Data type  :   modulus
+  Output fmt :   plt
+
+  Grid dimensions:
+      nrx   -40 -->     39
+      nry   -40 -->     39
+      nrz   -40 -->     39
+
+  Atoms in the selected cell: (cart. coord. in Bohr)
+     H    tau(   1 ) = (  -6.3532618   2.4812114   3.1331672 )
+     C    tau(   2 ) = (  -2.9876582   4.7715604   3.1086007 )
+     H    tau(   3 ) = (  -4.0081107   6.5384550   3.1237185 )
+     C    tau(   4 ) = (  -0.3420406   4.7696706   3.0859240 )
+     H    tau(   5 ) = (   0.6784119   6.5365653   3.0821445 )
+     C    tau(   6 ) = (   0.9788785   2.4774319   3.0651370 )
+     H    tau(   7 ) = (   3.0197836   2.4774319   3.0462397 )
+     C    tau(   8 ) = (  -0.3439303   0.1870830   3.0708062 )
+     H    tau(   9 ) = (   0.6746325  -1.5798117   3.0537986 )
+     C    tau(  10 ) = (  -2.9895479   0.1889727   3.0934829 )
+     H    tau(  11 ) = (  -4.0118902  -1.5779219   3.0972624 )
+     C    tau(  12 ) = (  -4.3123567   2.4812114   3.1142699 )
+
+
+  writing WF(  1) plot on file: .//benzene_WanT_WFM001.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM001.gau'
+Output file (plot file):  './/benzene_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM001.crd'
+
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002043
+Job done ...
+**********************************************************
+  deleting tmp file: .//benzene_WanT_WFM001.gau
+
+
+  writing WF(  2) plot on file: .//benzene_WanT_WFM002.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM002.gau'
+Output file (plot file):  './/benzene_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM002.crd'
+
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002174
+Job done ...
+**********************************************************
+  deleting tmp file: .//benzene_WanT_WFM002.gau
+
+
+  writing WF(  7) plot on file: .//benzene_WanT_WFM007.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM007.gau'
+Output file (plot file):  './/benzene_WanT_WFM007.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM007.crd'
+
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002193
+Job done ...
+**********************************************************
+  deleting tmp file: .//benzene_WanT_WFM007.gau
+
+
+  writing WF(  8) plot on file: .//benzene_WanT_WFM008.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM008.gau'
+Output file (plot file):  './/benzene_WanT_WFM008.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM008.crd'
+
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002622
+Job done ...
+**********************************************************
+  deleting tmp file: .//benzene_WanT_WFM008.gau
+
+
+  writing WF( 14) plot on file: .//benzene_WanT_WFM014.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM014.gau'
+Output file (plot file):  './/benzene_WanT_WFM014.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM014.crd'
+
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.001512
+Job done ...
+**********************************************************
+  deleting tmp file: .//benzene_WanT_WFM014.gau
+
+
+  writing WF( 15) plot on file: .//benzene_WanT_WFM015.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM015.gau'
+Output file (plot file):  './/benzene_WanT_WFM015.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM015.crd'
+
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.001545
+Job done ...
+**********************************************************
+  deleting tmp file: .//benzene_WanT_WFM015.gau
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :     6
+
+                     plot :  3m30.55s CPU 
+
+                want_init :     0.22s CPU
+          ggrids_read_ext :     0.55s CPU
+           wfc_data_kread :     1.13s CPU
+                   cfft3d :     2.65s CPU (       6 calls,   0.442 s avg)
+                 gcubeplt :    15.78s CPU (       6 calls,   2.630 s avg)
+
+
