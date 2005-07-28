@@ -1,0 +1,23 @@
+
+****************************************
+ List of the known bugs
+****************************************
+
+
+* INTEL ifort 8.1 (and previous v) 
+  IOTK library is not properly working on large arrays.
+  When the array dimension overcomes a given threshold IOTK
+  scan (and sometimes write) gives an error in IOSTAT.
+  This is a well known bug in the intel compiler.
+
+* sometimes, during recover (restart) procedure in wannier, 
+  unitary checks fails without any clear reason.
+  bug under study.
+
+* In transport calculations, spikes lowering the conductance 
+  of some units may appear. They are very often due to a 
+  slight numerical misalignment of the electronic structure
+  in the lead-conductor-lead system.
+
+
+

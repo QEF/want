@@ -1,0 +1,22 @@
+
+*************************************
+  List of needed changes
+*************************************
+
+* Wannier - conductor interface
+* Wannier: bshell elimination
+* disentangle:  overlap updated to be better implemented
+                (waste a little bit of memory but twice as fast)
+* tests: strange spikes (test2 and 5) to be checked 
+* test6: add a true transport calculation test
+* test3: wannier functions do not converge
+* WanT:  a true manual (as the one in docs) is missing. 
+         we need e.g. to explain better the choice of Wannier centers
+* tests: README in each test directory should be better written. They
+         should contain the description of the input (main features) 
+         and a commentof the outputs (why wannier functions can be considered
+         converged ?, which are the key parameters in order to say that ? ... )
+
+* repository restyling (too much noise in the main dir)
+
+
