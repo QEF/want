@@ -14,16 +14,17 @@ info:
 	@echo " "
 	@echo " List of available TESTs: "
 	@echo "     test1         Silicon WFs"
-	@echo "     test2         Gold chain (bulk conductance, both NC and USPP)"
+	@echo "     test2         Gold, Cobalt chains (bulk conductance, both NC and USPP)"
 	@echo "     test3         Gold chain (general geometry)"
 	@echo "     test4         Aluminum chain (within disentangle)"
-	@echo "     test6         Silicon WFs within USPP"
+	@echo "     test5         Gold, Cobalt chains, 2 atoms per cell (NC and USPP) "
+	@echo "     test6         MISSING "
 	@echo "     test7         Spin polarized Nichel chain (USPP)"
 	@echo "     test8         Isolated bezene molecule (both NC and USPP)"
 	@echo "     test9         Cu and Co FCC bulk (NC and USPP)"
 	@echo " "
 
-all: test1 test2 test3 test4 test6 test7 test8 test9
+all: test1 test2 test3 test4 test5 test6 test7 test8 test9
 
 
 test1:
@@ -34,6 +35,8 @@ test3:
 	cd Test3 ; $(MAKE) all
 test4:
 	cd Test4 ; $(MAKE) all
+test5:
+	cd Test5 ; $(MAKE) all
 test6:
 	cd Test6 ; $(MAKE) all
 test7:
@@ -41,7 +44,7 @@ test7:
 test8:
 	cd Test8 ; $(MAKE) all
 test9:
-	cd Test8 ; $(MAKE) all
+	cd Test9 ; $(MAKE) all
 
 
 want:
@@ -49,6 +52,7 @@ want:
 	cd Test2 ; $(MAKE) want
 	cd Test3 ; $(MAKE) want
 	cd Test4 ; $(MAKE) want
+	cd Test5 ; $(MAKE) want
 	cd Test6 ; $(MAKE) want
 	cd Test7 ; $(MAKE) want
 	cd Test8 ; $(MAKE) want
@@ -59,6 +63,7 @@ clean:
 	cd Test2 ; $(MAKE) clean
 	cd Test3 ; $(MAKE) clean
 	cd Test4 ; $(MAKE) clean
+	cd Test5 ; $(MAKE) clean
 	cd Test6 ; $(MAKE) clean
 	cd Test7 ; $(MAKE) clean
 	cd Test8 ; $(MAKE) clean
