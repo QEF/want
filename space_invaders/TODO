@@ -18,5 +18,7 @@
          converged ?, which are the key parameters in order to say that ? ... )
 
 * repository restyling (too much noise in the main dir)
-
+* portability issues, checks on various architectures
+* kpts in transport calculations
+* eigenchannel in transport calculation
 
