@@ -3,12 +3,16 @@
             WanT code:  Log of Changes 
 =======================================================
 
-27 Jul 2005      Added two "print" lines in plot.f90 for the .gau output to ensure compatibility
-		 with the cube file format (MBN)
+
+28 Jul 2005      Reference dirs in tests updated. Test6 still missing. General cleaning
+                 performed. (AF)
 
 27 Jul 2005      Transport code simplified: greena.f90, greenb.f90 merged in green.f90;
                  the same for transporta.f90, transportb.f90 merged into 
                  transport.f90. Tests updated. (AF) 
+
+                 Added two "print" lines in plot.f90 for the .gau output to ensure 
+                 compatibility with the cube file format (MBN)
 
 26 Jul 2005      Bug fixing in hamiltonian_module: nwsx too small in some cases.
                  Output fmt changed in hamiltonian_calc.f90, some minorities in
@@ -27,7 +31,7 @@
 08 Jul 2005      Bug in subspace_init.f90 avoiding the use of frozen states fixed. (AF)
 
 07 Jul 2005      portability bug in the gcube2plt.c routine fixed on IBM; output
-                 fmt choice added in plot, in order to deal with non-orthorombic
+                 fmt choice added in plot, in order to deal with non-orthorhombic
                  lattices. gcube2plt output changed and rightly flushed. (AF) 
 
 05 Jul 2005      Plot and bands utilities updated with a small big fix: spin_component
@@ -39,7 +43,7 @@
                  for plotting purposes it seems to work anyway. Test2 and Test8 
                  updated. (AF)
 
-17 Jun 2005      plot.x re-syncronized to the current status of implementation
+17 Jun 2005      plot.x re-synchronized to the current status of implementation
                  of the code. Not fully tested. Routine convert_label.f90 
                  added to libs. (AF) 
 
@@ -69,14 +73,14 @@
                  tests and documentation updated. (AF)
 
 20 May 2005      Driving functional term for conditioned minimization added in the
-                 domega_aux routine. Related changes in input routined added. (AF)
+                 domega_aux routine. Related changes in input routine added. (AF)
 
 12 May 2005      Fixed a bug in the sign of the Q_ij(b) term; fixed a long standing
                  bug in the internal ordering of atoms and pseudopotentials. (AF)
 
 11 May 2005      Atomic projections fully implemented and tested; Test5 changed and 
                  updated. Set_overlap_map and add_us_overlap renamed to overlap_setmap 
-                 and overlap_augment respectively. FIxed a bug in overlap_augment. (AF)
+                 and overlap_augment respectively. Fixed a bug in overlap_augment. (AF)
 
 10 May 2005      Merge between the main branch and the one with sp3 orbitals implemented
                  (together with a new impl of spherical harmonics) completed; bugs
@@ -97,7 +101,7 @@
                  updated: time consume and memory usage largely reduced. (AF)
 
 28 Apr 2005      Test8 (isolated benzene molecule) added. Summary routine updated
-                 in order to manage wrong bshell choises.
+                 in order to manage wrong bshell choices.
 
 27 Apr 2005      Further simplifications and code elimination in wannier.f90
                  (cfunc_exp* variables deleted). (AF)
@@ -136,14 +140,14 @@
                  coordinates, in units of Bohr^-1. (AF)
 
 01 Apr 2005      Mkb symmetrization performed. Some updates in bshells and util module.
-                 README.input syncronized to the current input format.
+                 README.input synchronized to the current input format.
                  Collinear spin polarization allowed in WanT calculation. Test7 added
                  in order to manage spin problems. (AF)
 
 31 Mar 2005      Routine zmat_svd added to util_module. Direct use of lapack for SVD removed
                  from subspace_init and wannier. Wannier keeps on calling ZGEES for
                  schur factorization (maybe removable if the case). S^{-1/2}*A computed
-                 by means of SVD and not directly in the beginiing of wannier. Subspace_init
+                 by means of SVD and not directly in the beginning of wannier. Subspace_init
                  routine fully checked. (AF)
 
 30 Mar 2005      PROJECTION and OVERLAP further tested, also on USPP. SUBSPACE_INIT
@@ -156,7 +160,7 @@
 28 Mar 2005      Global cleanup: GNU headers changed in source files giving copyright
                  to "WanT Group" instead of the list of all the people working to
                  the project. DOT_BLOCH routine and a non used copy of KINDS module
-                 removed from LIBS. OVERLAP syncronized woth the new implementation
+                 removed from LIBS. OVERLAP synchronized with the new implementation
                  of wfcs.
 
 27 Mar 2005      WFC_INFO module updated and further tested. (AF)
@@ -195,14 +199,14 @@
                  scaled by the number of bands). (AF)
 
 26 Feb 2005      Module sph_har_module updated (bug fixed in the normalization of 
-                 Y_22, Y2m2). ROutine gauss1 renamed to sph_har_setup; f-spherical harmonics 
+                 Y_22, Y2m2). Routine gauss1 renamed to sph_har_setup; f-spherical harmonics 
                  added to the module. IOTK updated to version 1.0.0test . A bug already 
                  present in the previous version with G95 is also present here.... (AF)
 
 25 Feb 2005      G95 compilation tested. Trial_center_setup routine completed except
                  for the case of l = -1 (tetrahedron case, used e.g. for silicon). (AF)
 
-21 Feb 2005      Some varibles moved away from INPUT_MODULE to other data modules
+21 Feb 2005      Some variables moved away from INPUT_MODULE to other data modules
                  (such as windows_module, subspace_module, kpoints_module) in order to
                  avoid circular dependencies. (AF)
 
@@ -211,7 +215,7 @@
                  subroutines for the trial_center type and TRIAL_CENTER_DATA module
                  added to Modules. File input_wan.f90 moved to input.f90. (AF)
 
-17 Feb 2005      The gaussians used as trials for WFs are now defined with the prefactor
+17 Feb 2005      The gaussians used as trials for WFs are now defined with the pre-factor
                  |r|^l, i.e.   gauss(|r|) = r^l * e^{-(r/a)^2} . This is useful for 
                  the direct analytical calculation of their Fourier transform. (AF)
 
@@ -251,7 +255,7 @@
                  Variable allocation and init checked. init_us_2.f90, s_psi.f90 and
                  ccalbec.f90 added from Espresso. (AF)
 
-31 Jan 2005      Pseudopotential routines from Espresso package inported in order 
+31 Jan 2005      Pseudopotential routines from Espresso package imported in order 
                  to deal with USPP. Summary updated in order to describe the read PPs
                  (when they are). Added Test5 managing the calculation for the Gold
                  chain within USPP. Many old routines replaced with better versions
@@ -262,8 +266,8 @@
 30 Jan 2005      Few bugs fixed. (AF)
 
 15 Jan 2005      GET_MONKPACK routine (compute the nk(:) and s(:) param of the 
-                 Monkhorst-Pack grid from theinput kpts) added and hamiltonian
-                 input accordingly modified. SOme other minor changes done. (AF)
+                 Monkhorst-Pack grid from the input kpts) added and hamiltonian
+                 input accordingly modified. Some other minor changes done. (AF)
 
 14 Jan 2005      IOTK updated to v1.0.0beta4, including the workarounds for ifort and
                  pgi compilers. (AF) 
@@ -277,10 +281,10 @@
                  widows_read_ext added, want_init updated. Fermi energy
                  data added to windows module (and added to pw_export).
                  MXDBND moved to NBND according to PWSCF. Plot.x not
-                 yet completely symcronized but compiling. New implementation
+                 yet completely synchronized but compiling. New implementation
                  of wfc started in module wfc.f90. Test references updated. (AF)
 
-23 Dec 2004      Syncronizing HAMILTONIAN. Small bugs fixed. (AF)
+23 Dec 2004      Synchronizing HAMILTONIAN. Small bugs fixed. (AF)
 
 19 Dec 2004      Tests updated. Bug fixing in PWEXPORT-WANT interface.
                  FMT changed in overlap_module IO. (AF)
@@ -315,7 +319,7 @@
                  Further simplifications in Hamiltonian; IOTK fmt started to be
                  be used in disentangle instead of the launch.dat binary file. (AF)
 
-04 Dec 2004      Hamiltonian code updated and sincronized with the
+04 Dec 2004      Hamiltonian code updated and synchronized with the
                  new IO fmt of other codes. Internal and output FMT of
                  Hamiltonian changed (not yet completed). 
                  Cleanup and startup routines updated. (AF)
@@ -333,7 +337,7 @@
                  Kpoints data collected in a module (update).
                  Overlap, Subspace, Windows modules added. (AF)
 
-25 Nov 2004      Fized some portability bugs in the scripts: bash shell instead of
+25 Nov 2004      Fixed some portability bugs in the scripts: bash shell instead of
                  sh (thanks to Abinit guys). (AF)
 
 20 Nov 2004      Severe bug in disentangle procedure fixed: nearest neighbor
