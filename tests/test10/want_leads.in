@@ -6,13 +6,12 @@
 /
 
 &SUBSPACE
-   dimwann = 16
-   alpha_dis = 0.5                   
-   maxiter_dis = 200
-   start_mode_dis = 'center_projections' 
+   dimwann = 12
+   maxiter_dis = 1000
 /
 
 &LOCALIZATION
+!   a_condmin = 10.0
    maxiter0_wan = 200 
    maxiter1_wan = 2000 
    nshells = 2   
@@ -22,29 +21,16 @@
 /
 
 WANNIER_CENTERS {crystal}
-atomic    1   0  0
-atomic    1   1 -1
 atomic    1   1  0
 atomic    1   1  1
-atomic    2   0  0
-atomic    2   1 -1
 atomic    2   1  0
 atomic    2   1  1
-atomic    3   0  0
-atomic    3   1 -1
 atomic    3   1  0
 atomic    3   1  1
-atomic    4   0  0
-atomic    4   1 -1
 atomic    4   1  0
 atomic    4   1  1
-
-1gauss    0.1113138  0.0000000  0.0000000     0  0  3    0.8
-1gauss    0.1113138  0.0000000  0.0000000     1  0  3    0.8
-1gauss    0.1113138  0.0000000  0.0000000     1  1  3    0.8
-1gauss    0.3613138  0.0000000  0.0000000     0  0  3    0.8
-1gauss    0.6113138  0.0000000  0.0000000     0  0  3    0.8
-1gauss    0.6113138  0.0000000  0.0000000     1  0  3    0.8
-1gauss    0.6113138  0.0000000  0.0000000     1  1  3    0.8
-1gauss    0.8613138  0.0000000  0.0000000     0  0  3    0.8
+1gauss    0.1113138  0.0000000  0.0000000     0  0  3    1.0
+1gauss    0.3613138  0.0000000  0.0000000     0  0  3    1.0
+1gauss    0.6113138  0.0000000  0.0000000     0  0  3    1.0
+1gauss    0.8613138  0.0000000  0.0000000     0  0  3    1.0
 

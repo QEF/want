@@ -3,6 +3,13 @@
             WanT code:  Log of Changes 
 =======================================================
 
+29 Jul 2005      Test3 updated to USPP. IOTK lib updated with a new version fixing
+                 some bugs. convert_label.f90 moved from Libs to the module atomic.f90
+                 in Modules. Bug fixed in plot.f90 in the FFT dimensioning of cwann 
+                 array. Workaround for IOTK within INTEL compiler added: this fix
+                 the bug giving runtime errors when reading/writing large integer
+                 arrays. The workaround is switched on by the macro __IOTK_WORKAROUND7
+                 in IOTK_lib/iotk_config.h .(AF)
 
 28 Jul 2005      Reference dirs in tests updated. Test6 still missing. General cleaning
                  performed. (AF)
