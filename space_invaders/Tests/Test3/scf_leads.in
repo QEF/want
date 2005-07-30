@@ -1,4 +1,4 @@
-Carbon dimer chain; NC-PP
+Carbon dimer chain; USPP
 4 atoms per cell
  &CONTROL
     calculation = 'scf'
@@ -19,9 +19,10 @@ Carbon dimer chain; NC-PP
       nat=4,
       ntyp=1,
       ecutwfc=20.0,
+      ecutrho=200.0,
       occupations='smearing',
       smearing='gaussian',
-      degauss=0.02,
+      degauss=0.01,
  /
  &ELECTRONS
     electron_maxstep = 50,
@@ -30,7 +31,7 @@ Carbon dimer chain; NC-PP
     conv_thr =  1.0d-8
  /
 ATOMIC_SPECIES
- C  12.011  C.blyp-mt.UPF
+ C  12.011  C.pbe-van_bm.UPF
 ATOMIC_POSITIONS (crystal)
 C        0.00000000      0.00000000      0.00000000   1   1   1
 C        0.22262770      0.00000000      0.00000000   1   1   1

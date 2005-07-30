@@ -38,10 +38,11 @@
 !
 
    OPEN( unit, FILE=TRIM(filename), STATUS='old', IOSTAT=ierr)
-   IF (ierr/=0) CALL  errore('read_matrix', 'opening file = '//TRIM(filename),ABS(ierr) )     
+   IF (ierr/=0) CALL  errore('read_matrix', 'opening file = '//TRIM(filename),ABS(ierr) )
 
       READ( unit, *, IOSTAT=ierr ) nw1, nw2
-      IF (ierr/=0) CALL  errore('read_matrix', 'reading nw1,nw2 in '//TRIM(filename),ABS(ierr) )     
+      IF (ierr/=0) &
+           CALL  errore('read_matrix', 'reading nw1,nw2 in '//TRIM(filename), ABS(ierr) )
       IF ( nw1 /= dim1 ) CALL errore('read_matrix', 'dim1 wrong in '//TRIM(filename), 1)
       IF ( nw2 /= dim2 ) CALL errore('read_matrix', 'dim2 wrong in '//TRIM(filename), 2)
 

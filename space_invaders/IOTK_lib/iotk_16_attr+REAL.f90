@@ -70,7 +70,7 @@ subroutine iotk_write_REAL1(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 122 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
     return
   end if
   do index=1,size(val)
@@ -79,7 +79,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 141 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 141 "iotk_attr.spp"
 call iotk_error_msg(ierr,' ')
 # 141 "iotk_attr.spp"
@@ -90,7 +90,7 @@ call iotk_error_write(ierr,"iostat",iostat)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 146 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
       return
     end if
 # 150 "iotk_attr.spp"
@@ -134,7 +134,7 @@ subroutine iotk_read_REAL1(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 196 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 196 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -144,7 +144,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 220 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 220 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Error reading from string')
 # 220 "iotk_attr.spp"
@@ -189,7 +189,7 @@ subroutine iotk_write_attr_REAL1_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -207,7 +207,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -215,7 +215,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -270,7 +270,7 @@ subroutine iotk_scan_attr_REAL1_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -283,7 +283,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -291,14 +291,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -309,7 +309,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -318,49 +318,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(1))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=1) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 415 "iotk_attr.spp"
+# 416 "iotk_attr.spp"
   val = tmpval(1)
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -368,7 +369,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_0
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -430,7 +431,7 @@ subroutine iotk_write_attr_REAL1_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -448,7 +449,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -456,7 +457,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -511,7 +512,7 @@ subroutine iotk_scan_attr_REAL1_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -524,7 +525,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -532,14 +533,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -550,7 +551,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -559,49 +560,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -609,7 +611,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_1
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -671,7 +673,7 @@ subroutine iotk_write_attr_REAL1_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -689,7 +691,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -697,7 +699,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -752,7 +754,7 @@ subroutine iotk_scan_attr_REAL1_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -765,7 +767,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -773,14 +775,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -791,7 +793,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -800,49 +802,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -850,7 +853,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_2
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -929,7 +932,7 @@ subroutine iotk_write_attr_REAL1_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -947,7 +950,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -955,7 +958,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1010,7 +1013,7 @@ subroutine iotk_scan_attr_REAL1_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -1023,7 +1026,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -1031,14 +1034,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -1049,7 +1052,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -1058,49 +1061,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -1108,7 +1112,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_3
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -1170,7 +1174,7 @@ subroutine iotk_write_attr_REAL1_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -1188,7 +1192,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -1196,7 +1200,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1251,7 +1255,7 @@ subroutine iotk_scan_attr_REAL1_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -1264,7 +1268,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -1272,14 +1276,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -1290,7 +1294,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -1299,49 +1303,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -1349,7 +1354,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_4
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -1411,7 +1416,7 @@ subroutine iotk_write_attr_REAL1_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -1429,7 +1434,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -1437,7 +1442,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1492,7 +1497,7 @@ subroutine iotk_scan_attr_REAL1_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -1505,7 +1510,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -1513,14 +1518,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -1531,7 +1536,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -1540,49 +1545,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -1590,7 +1596,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_5
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -1669,7 +1675,7 @@ subroutine iotk_write_attr_REAL1_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -1687,7 +1693,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -1695,7 +1701,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1750,7 +1756,7 @@ subroutine iotk_scan_attr_REAL1_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -1763,7 +1769,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -1771,14 +1777,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -1789,7 +1795,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -1798,49 +1804,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -1848,7 +1855,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_6
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -1910,7 +1917,7 @@ subroutine iotk_write_attr_REAL1_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -1928,7 +1935,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -1936,7 +1943,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1991,7 +1998,7 @@ subroutine iotk_scan_attr_REAL1_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -2004,7 +2011,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -2012,14 +2019,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -2030,7 +2037,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -2039,49 +2046,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -2089,7 +2097,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL1_7
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -2172,7 +2180,7 @@ subroutine iotk_write_REAL2(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 122 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
     return
   end if
   do index=1,size(val)
@@ -2181,7 +2189,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 141 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 141 "iotk_attr.spp"
 call iotk_error_msg(ierr,' ')
 # 141 "iotk_attr.spp"
@@ -2192,7 +2200,7 @@ call iotk_error_write(ierr,"iostat",iostat)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 146 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
       return
     end if
 # 150 "iotk_attr.spp"
@@ -2236,7 +2244,7 @@ subroutine iotk_read_REAL2(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 196 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 196 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -2246,7 +2254,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 220 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 220 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Error reading from string')
 # 220 "iotk_attr.spp"
@@ -2291,7 +2299,7 @@ subroutine iotk_write_attr_REAL2_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -2309,7 +2317,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -2317,7 +2325,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -2372,7 +2380,7 @@ subroutine iotk_scan_attr_REAL2_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -2385,7 +2393,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -2393,14 +2401,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -2411,7 +2419,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -2420,49 +2428,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(1))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=1) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 415 "iotk_attr.spp"
+# 416 "iotk_attr.spp"
   val = tmpval(1)
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -2470,7 +2479,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_0
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -2532,7 +2541,7 @@ subroutine iotk_write_attr_REAL2_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -2550,7 +2559,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -2558,7 +2567,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -2613,7 +2622,7 @@ subroutine iotk_scan_attr_REAL2_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -2626,7 +2635,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -2634,14 +2643,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -2652,7 +2661,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -2661,49 +2670,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -2711,7 +2721,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_1
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -2773,7 +2783,7 @@ subroutine iotk_write_attr_REAL2_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -2791,7 +2801,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -2799,7 +2809,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -2854,7 +2864,7 @@ subroutine iotk_scan_attr_REAL2_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -2867,7 +2877,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -2875,14 +2885,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -2893,7 +2903,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -2902,49 +2912,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -2952,7 +2963,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_2
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -3031,7 +3042,7 @@ subroutine iotk_write_attr_REAL2_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -3049,7 +3060,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -3057,7 +3068,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3112,7 +3123,7 @@ subroutine iotk_scan_attr_REAL2_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -3125,7 +3136,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -3133,14 +3144,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -3151,7 +3162,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -3160,49 +3171,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -3210,7 +3222,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_3
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -3272,7 +3284,7 @@ subroutine iotk_write_attr_REAL2_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -3290,7 +3302,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -3298,7 +3310,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3353,7 +3365,7 @@ subroutine iotk_scan_attr_REAL2_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -3366,7 +3378,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -3374,14 +3386,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -3392,7 +3404,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -3401,49 +3413,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -3451,7 +3464,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_4
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -3513,7 +3526,7 @@ subroutine iotk_write_attr_REAL2_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -3531,7 +3544,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -3539,7 +3552,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3594,7 +3607,7 @@ subroutine iotk_scan_attr_REAL2_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -3607,7 +3620,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -3615,14 +3628,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -3633,7 +3646,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -3642,49 +3655,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -3692,7 +3706,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_5
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -3771,7 +3785,7 @@ subroutine iotk_write_attr_REAL2_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -3789,7 +3803,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -3797,7 +3811,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3852,7 +3866,7 @@ subroutine iotk_scan_attr_REAL2_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -3865,7 +3879,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -3873,14 +3887,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -3891,7 +3905,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -3900,49 +3914,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -3950,7 +3965,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_6
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -4012,7 +4027,7 @@ subroutine iotk_write_attr_REAL2_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -4030,7 +4045,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -4038,7 +4053,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4093,7 +4108,7 @@ subroutine iotk_scan_attr_REAL2_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -4106,7 +4121,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -4114,14 +4129,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -4132,7 +4147,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -4141,49 +4156,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -4191,7 +4207,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL2_7
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -4274,7 +4290,7 @@ subroutine iotk_write_REAL3(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 122 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
     return
   end if
   do index=1,size(val)
@@ -4283,7 +4299,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 141 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 141 "iotk_attr.spp"
 call iotk_error_msg(ierr,' ')
 # 141 "iotk_attr.spp"
@@ -4294,7 +4310,7 @@ call iotk_error_write(ierr,"iostat",iostat)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 146 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
       return
     end if
 # 150 "iotk_attr.spp"
@@ -4338,7 +4354,7 @@ subroutine iotk_read_REAL3(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 196 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 196 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -4348,7 +4364,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 220 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 220 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Error reading from string')
 # 220 "iotk_attr.spp"
@@ -4393,7 +4409,7 @@ subroutine iotk_write_attr_REAL3_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -4411,7 +4427,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -4419,7 +4435,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4474,7 +4490,7 @@ subroutine iotk_scan_attr_REAL3_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -4487,7 +4503,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -4495,14 +4511,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -4513,7 +4529,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -4522,49 +4538,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(1))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=1) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 415 "iotk_attr.spp"
+# 416 "iotk_attr.spp"
   val = tmpval(1)
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -4572,7 +4589,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_0
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -4634,7 +4651,7 @@ subroutine iotk_write_attr_REAL3_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -4652,7 +4669,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -4660,7 +4677,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4715,7 +4732,7 @@ subroutine iotk_scan_attr_REAL3_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -4728,7 +4745,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -4736,14 +4753,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -4754,7 +4771,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -4763,49 +4780,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -4813,7 +4831,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_1
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -4875,7 +4893,7 @@ subroutine iotk_write_attr_REAL3_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -4893,7 +4911,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -4901,7 +4919,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4956,7 +4974,7 @@ subroutine iotk_scan_attr_REAL3_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -4969,7 +4987,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -4977,14 +4995,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -4995,7 +5013,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -5004,49 +5022,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -5054,7 +5073,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_2
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -5133,7 +5152,7 @@ subroutine iotk_write_attr_REAL3_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -5151,7 +5170,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -5159,7 +5178,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5214,7 +5233,7 @@ subroutine iotk_scan_attr_REAL3_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -5227,7 +5246,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -5235,14 +5254,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -5253,7 +5272,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -5262,49 +5281,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -5312,7 +5332,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_3
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -5374,7 +5394,7 @@ subroutine iotk_write_attr_REAL3_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -5392,7 +5412,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -5400,7 +5420,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5455,7 +5475,7 @@ subroutine iotk_scan_attr_REAL3_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -5468,7 +5488,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -5476,14 +5496,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -5494,7 +5514,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -5503,49 +5523,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -5553,7 +5574,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_4
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -5615,7 +5636,7 @@ subroutine iotk_write_attr_REAL3_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -5633,7 +5654,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -5641,7 +5662,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5696,7 +5717,7 @@ subroutine iotk_scan_attr_REAL3_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -5709,7 +5730,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -5717,14 +5738,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -5735,7 +5756,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -5744,49 +5765,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -5794,7 +5816,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_5
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -5873,7 +5895,7 @@ subroutine iotk_write_attr_REAL3_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -5891,7 +5913,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -5899,7 +5921,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5954,7 +5976,7 @@ subroutine iotk_scan_attr_REAL3_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -5967,7 +5989,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -5975,14 +5997,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -5993,7 +6015,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -6002,49 +6024,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -6052,7 +6075,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_6
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -6114,7 +6137,7 @@ subroutine iotk_write_attr_REAL3_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -6132,7 +6155,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -6140,7 +6163,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -6195,7 +6218,7 @@ subroutine iotk_scan_attr_REAL3_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -6208,7 +6231,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -6216,14 +6239,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -6234,7 +6257,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -6243,49 +6266,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -6293,7 +6317,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL3_7
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -6376,7 +6400,7 @@ subroutine iotk_write_REAL4(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 122 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
     return
   end if
   do index=1,size(val)
@@ -6385,7 +6409,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 141 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 141 "iotk_attr.spp"
 call iotk_error_msg(ierr,' ')
 # 141 "iotk_attr.spp"
@@ -6396,7 +6420,7 @@ call iotk_error_write(ierr,"iostat",iostat)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 146 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
       return
     end if
 # 150 "iotk_attr.spp"
@@ -6440,7 +6464,7 @@ subroutine iotk_read_REAL4(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 196 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 196 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -6450,7 +6474,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 220 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.10 ")
 # 220 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Error reading from string')
 # 220 "iotk_attr.spp"
@@ -6495,7 +6519,7 @@ subroutine iotk_write_attr_REAL4_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -6513,7 +6537,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -6521,7 +6545,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -6576,7 +6600,7 @@ subroutine iotk_scan_attr_REAL4_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -6589,7 +6613,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -6597,14 +6621,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -6615,7 +6639,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -6624,49 +6648,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(1))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=1) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 415 "iotk_attr.spp"
+# 416 "iotk_attr.spp"
   val = tmpval(1)
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -6674,7 +6699,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_0
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -6736,7 +6761,7 @@ subroutine iotk_write_attr_REAL4_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -6754,7 +6779,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -6762,7 +6787,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -6817,7 +6842,7 @@ subroutine iotk_scan_attr_REAL4_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -6830,7 +6855,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -6838,14 +6863,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -6856,7 +6881,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -6865,49 +6890,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -6915,7 +6941,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_1
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -6977,7 +7003,7 @@ subroutine iotk_write_attr_REAL4_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -6995,7 +7021,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -7003,7 +7029,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7058,7 +7084,7 @@ subroutine iotk_scan_attr_REAL4_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -7071,7 +7097,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -7079,14 +7105,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -7097,7 +7123,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -7106,49 +7132,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -7156,7 +7183,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_2
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -7235,7 +7262,7 @@ subroutine iotk_write_attr_REAL4_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -7253,7 +7280,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -7261,7 +7288,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7316,7 +7343,7 @@ subroutine iotk_scan_attr_REAL4_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -7329,7 +7356,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -7337,14 +7364,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -7355,7 +7382,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -7364,49 +7391,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -7414,7 +7442,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_3
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -7476,7 +7504,7 @@ subroutine iotk_write_attr_REAL4_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -7494,7 +7522,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -7502,7 +7530,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7557,7 +7585,7 @@ subroutine iotk_scan_attr_REAL4_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -7570,7 +7598,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -7578,14 +7606,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -7596,7 +7624,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -7605,49 +7633,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -7655,7 +7684,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_4
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -7717,7 +7746,7 @@ subroutine iotk_write_attr_REAL4_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -7735,7 +7764,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -7743,7 +7772,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7798,7 +7827,7 @@ subroutine iotk_scan_attr_REAL4_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -7811,7 +7840,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -7819,14 +7848,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -7837,7 +7866,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -7846,49 +7875,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -7896,7 +7926,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_5
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -7975,7 +8005,7 @@ subroutine iotk_write_attr_REAL4_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -7993,7 +8023,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -8001,7 +8031,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -8056,7 +8086,7 @@ subroutine iotk_scan_attr_REAL4_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -8069,7 +8099,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -8077,14 +8107,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -8095,7 +8125,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -8104,49 +8134,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -8154,7 +8185,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_6
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif
@@ -8216,7 +8247,7 @@ subroutine iotk_write_attr_REAL4_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 261 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 261 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 261 "iotk_attr.spp"
@@ -8234,7 +8265,7 @@ call iotk_error_write(ierrl,"name",trim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 288 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
 # 292 "iotk_attr.spp"
@@ -8242,7 +8273,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 294 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 294 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -8297,7 +8328,7 @@ subroutine iotk_scan_attr_REAL4_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 349 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
 # 349 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 349 "iotk_attr.spp"
@@ -8310,7 +8341,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 356 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     equal = equal + pos
@@ -8318,14 +8349,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 362 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 367 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
     if(foundl) exit
@@ -8336,7 +8367,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 376 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
       goto 1
     end if
   else
@@ -8345,49 +8376,50 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
 # 399 "iotk_attr.spp"
   allocate(tmpval(size(val)))
   index = 0
+  call iotk_str_clean(valc)
   call iotk_read(tmpval,valc(1:iotk_strlen(valc)),index,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 403 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
+# 404 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
     goto 1
   end if
-# 409 "iotk_attr.spp"
+# 410 "iotk_attr.spp"
   if(index/=size(val)) then
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 411 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 412 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"attr",valc)
-# 411 "iotk_attr.spp"
+# 412 "iotk_attr.spp"
 call iotk_error_write(ierrl,"size",size(tmpval))
     goto 1
   end if
-# 417 "iotk_attr.spp"
+# 418 "iotk_attr.spp"
   val = reshape (source=tmpval,shape=shape(val))
-# 419 "iotk_attr.spp"
+# 420 "iotk_attr.spp"
   deallocate(tmpval)
-# 421 "iotk_attr.spp"
+# 422 "iotk_attr.spp"
 1 continue
   if(ierrl/=0) foundl=.false.
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
-# 425 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.9 ")
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.10 ")
+# 426 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
-# 425 "iotk_attr.spp"
+# 426 "iotk_attr.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if
   if(present(default) .and. .not. foundl) then
-# 438 "iotk_attr.spp"
+# 439 "iotk_attr.spp"
     val = default
-# 440 "iotk_attr.spp"
+# 441 "iotk_attr.spp"
   end if
   if(present(ierr)) then
     ierr = ierrl
@@ -8395,7 +8427,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) call iotk_error_handler(ierrl)
   end if
 end subroutine iotk_scan_attr_REAL4_7
-# 448 "iotk_attr.spp"
+# 449 "iotk_attr.spp"
 
 #endif
 #endif

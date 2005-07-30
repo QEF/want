@@ -442,8 +442,8 @@ CONTAINS
       INTEGER                            :: i
 
       IF ( .NOT. list%alloc ) CALL errore('timing_overview','list not allocated',1)
-      INQUIRE(UNIT=unit,UNFORMATTED=form)
-      IF ( TRIM(form) ==  "YES" ) &
+      INQUIRE(UNIT=unit,FORM=form)
+      IF ( TRIM(form) ==  "unformatted" .OR. TRIM(form) == "UNFORMATTED" ) &
            CALL errore('Timing_overview','UNIT unformatted',1)
       WRITE(unit,"(/,3x,'<',a,' routines>')") TRIM(list%name)
       IF ( list%nclock == 0 ) THEN

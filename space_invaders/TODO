@@ -7,6 +7,7 @@
 * Wannier: bshell elimination
 * disentangle:  overlap updated to be better implemented
                 (waste a little bit of memory but twice as fast)
+* plot.x: USPP features not fully implemented.
 * tests: strange spikes (test2 and 5) to be checked 
 * test6: add a true transport calculation test
 * test3: wannier functions do not converge

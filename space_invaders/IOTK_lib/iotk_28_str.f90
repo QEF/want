@@ -254,7 +254,7 @@ subroutine iotk_strcpy_x(to,from,ierr)
     if(from(i:i)/=iotk_eos) then
       call iotk_error_issue(ierr,"iotk_strcpy",__FILE__,__LINE__)
 # 259 "iotk_str.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.11 ")
       return
     end if
   end if
@@ -278,7 +278,7 @@ subroutine iotk_strcat_x(to,from,ierr)
   if(tolen+fromlen>len(to)) then
     call iotk_error_issue(ierr,"iotk_strcat",__FILE__,__LINE__)
 # 281 "iotk_str.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.9 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.11 ")
   end if
   if(ierr/=0) return
   to(tolen+1:tolen+fromlen) = from(1:fromlen)
@@ -308,3 +308,16 @@ function iotk_strcomp_x(str1,str2)
   end if
   iotk_strcomp_x = .true.
 end function iotk_strcomp_x
+
+# 313 "iotk_str.spp"
+subroutine iotk_str_clean_x(str)
+! transforms all characters which are separators in blanks
+  use iotk_base
+  implicit none
+  character(len=*), intent(inout) :: str
+  integer :: i
+  do i = 1 , len(str)
+    if(str(i:i)==iotk_eos) exit
+    if(scan(not_separator,str(i:i))==0) str(i:i)=" "
+  end do
+end subroutine iotk_str_clean_x

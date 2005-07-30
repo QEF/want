@@ -39,7 +39,7 @@ interface iotk_write_dat
 #ifdef __IOTK_LOGICAL1
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -47,6 +47,7 @@ subroutine iotk_write_dat_LOGICAL1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -55,7 +56,7 @@ end subroutine iotk_write_dat_LOGICAL1_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -63,6 +64,7 @@ subroutine iotk_write_dat_LOGICAL1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -71,7 +73,7 @@ end subroutine iotk_write_dat_LOGICAL1_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -79,6 +81,7 @@ subroutine iotk_write_dat_LOGICAL1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -87,7 +90,7 @@ end subroutine iotk_write_dat_LOGICAL1_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -95,6 +98,7 @@ subroutine iotk_write_dat_LOGICAL1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -103,7 +107,7 @@ end subroutine iotk_write_dat_LOGICAL1_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -111,6 +115,7 @@ subroutine iotk_write_dat_LOGICAL1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -119,7 +124,7 @@ end subroutine iotk_write_dat_LOGICAL1_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -127,6 +132,7 @@ subroutine iotk_write_dat_LOGICAL1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -135,7 +141,7 @@ end subroutine iotk_write_dat_LOGICAL1_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -143,6 +149,7 @@ subroutine iotk_write_dat_LOGICAL1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -151,7 +158,7 @@ end subroutine iotk_write_dat_LOGICAL1_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -159,19 +166,20 @@ subroutine iotk_write_dat_LOGICAL1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_LOGICAL1_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL2
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -179,6 +187,7 @@ subroutine iotk_write_dat_LOGICAL2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -187,7 +196,7 @@ end subroutine iotk_write_dat_LOGICAL2_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -195,6 +204,7 @@ subroutine iotk_write_dat_LOGICAL2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -203,7 +213,7 @@ end subroutine iotk_write_dat_LOGICAL2_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -211,6 +221,7 @@ subroutine iotk_write_dat_LOGICAL2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -219,7 +230,7 @@ end subroutine iotk_write_dat_LOGICAL2_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -227,6 +238,7 @@ subroutine iotk_write_dat_LOGICAL2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -235,7 +247,7 @@ end subroutine iotk_write_dat_LOGICAL2_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -243,6 +255,7 @@ subroutine iotk_write_dat_LOGICAL2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -251,7 +264,7 @@ end subroutine iotk_write_dat_LOGICAL2_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -259,6 +272,7 @@ subroutine iotk_write_dat_LOGICAL2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -267,7 +281,7 @@ end subroutine iotk_write_dat_LOGICAL2_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -275,6 +289,7 @@ subroutine iotk_write_dat_LOGICAL2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -283,7 +298,7 @@ end subroutine iotk_write_dat_LOGICAL2_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -291,19 +306,20 @@ subroutine iotk_write_dat_LOGICAL2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_LOGICAL2_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL3
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -311,6 +327,7 @@ subroutine iotk_write_dat_LOGICAL3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -319,7 +336,7 @@ end subroutine iotk_write_dat_LOGICAL3_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -327,6 +344,7 @@ subroutine iotk_write_dat_LOGICAL3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -335,7 +353,7 @@ end subroutine iotk_write_dat_LOGICAL3_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -343,6 +361,7 @@ subroutine iotk_write_dat_LOGICAL3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -351,7 +370,7 @@ end subroutine iotk_write_dat_LOGICAL3_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -359,6 +378,7 @@ subroutine iotk_write_dat_LOGICAL3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -367,7 +387,7 @@ end subroutine iotk_write_dat_LOGICAL3_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -375,6 +395,7 @@ subroutine iotk_write_dat_LOGICAL3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -383,7 +404,7 @@ end subroutine iotk_write_dat_LOGICAL3_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -391,6 +412,7 @@ subroutine iotk_write_dat_LOGICAL3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -399,7 +421,7 @@ end subroutine iotk_write_dat_LOGICAL3_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -407,6 +429,7 @@ subroutine iotk_write_dat_LOGICAL3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -415,7 +438,7 @@ end subroutine iotk_write_dat_LOGICAL3_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -423,19 +446,20 @@ subroutine iotk_write_dat_LOGICAL3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_LOGICAL3_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL4
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -443,6 +467,7 @@ subroutine iotk_write_dat_LOGICAL4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -451,7 +476,7 @@ end subroutine iotk_write_dat_LOGICAL4_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -459,6 +484,7 @@ subroutine iotk_write_dat_LOGICAL4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -467,7 +493,7 @@ end subroutine iotk_write_dat_LOGICAL4_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -475,6 +501,7 @@ subroutine iotk_write_dat_LOGICAL4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -483,7 +510,7 @@ end subroutine iotk_write_dat_LOGICAL4_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -491,6 +518,7 @@ subroutine iotk_write_dat_LOGICAL4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -499,7 +527,7 @@ end subroutine iotk_write_dat_LOGICAL4_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -507,6 +535,7 @@ subroutine iotk_write_dat_LOGICAL4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -515,7 +544,7 @@ end subroutine iotk_write_dat_LOGICAL4_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -523,6 +552,7 @@ subroutine iotk_write_dat_LOGICAL4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -531,7 +561,7 @@ end subroutine iotk_write_dat_LOGICAL4_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -539,6 +569,7 @@ subroutine iotk_write_dat_LOGICAL4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -547,7 +578,7 @@ end subroutine iotk_write_dat_LOGICAL4_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_LOGICAL4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_LOGICAL4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -555,19 +586,20 @@ subroutine iotk_write_dat_LOGICAL4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_LOGICAL4_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER1
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -575,6 +607,7 @@ subroutine iotk_write_dat_INTEGER1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -583,7 +616,7 @@ end subroutine iotk_write_dat_INTEGER1_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -591,6 +624,7 @@ subroutine iotk_write_dat_INTEGER1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -599,7 +633,7 @@ end subroutine iotk_write_dat_INTEGER1_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -607,6 +641,7 @@ subroutine iotk_write_dat_INTEGER1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -615,7 +650,7 @@ end subroutine iotk_write_dat_INTEGER1_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -623,6 +658,7 @@ subroutine iotk_write_dat_INTEGER1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -631,7 +667,7 @@ end subroutine iotk_write_dat_INTEGER1_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -639,6 +675,7 @@ subroutine iotk_write_dat_INTEGER1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -647,7 +684,7 @@ end subroutine iotk_write_dat_INTEGER1_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -655,6 +692,7 @@ subroutine iotk_write_dat_INTEGER1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -663,7 +701,7 @@ end subroutine iotk_write_dat_INTEGER1_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -671,6 +709,7 @@ subroutine iotk_write_dat_INTEGER1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -679,7 +718,7 @@ end subroutine iotk_write_dat_INTEGER1_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -687,19 +726,20 @@ subroutine iotk_write_dat_INTEGER1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER1),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_INTEGER1_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER2
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -707,6 +747,7 @@ subroutine iotk_write_dat_INTEGER2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -715,7 +756,7 @@ end subroutine iotk_write_dat_INTEGER2_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -723,6 +764,7 @@ subroutine iotk_write_dat_INTEGER2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -731,7 +773,7 @@ end subroutine iotk_write_dat_INTEGER2_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -739,6 +781,7 @@ subroutine iotk_write_dat_INTEGER2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -747,7 +790,7 @@ end subroutine iotk_write_dat_INTEGER2_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -755,6 +798,7 @@ subroutine iotk_write_dat_INTEGER2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -763,7 +807,7 @@ end subroutine iotk_write_dat_INTEGER2_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -771,6 +815,7 @@ subroutine iotk_write_dat_INTEGER2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -779,7 +824,7 @@ end subroutine iotk_write_dat_INTEGER2_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -787,6 +832,7 @@ subroutine iotk_write_dat_INTEGER2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -795,7 +841,7 @@ end subroutine iotk_write_dat_INTEGER2_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -803,6 +849,7 @@ subroutine iotk_write_dat_INTEGER2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -811,7 +858,7 @@ end subroutine iotk_write_dat_INTEGER2_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -819,19 +866,20 @@ subroutine iotk_write_dat_INTEGER2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER2),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_INTEGER2_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER3
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -839,6 +887,7 @@ subroutine iotk_write_dat_INTEGER3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -847,7 +896,7 @@ end subroutine iotk_write_dat_INTEGER3_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -855,6 +904,7 @@ subroutine iotk_write_dat_INTEGER3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -863,7 +913,7 @@ end subroutine iotk_write_dat_INTEGER3_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -871,6 +921,7 @@ subroutine iotk_write_dat_INTEGER3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -879,7 +930,7 @@ end subroutine iotk_write_dat_INTEGER3_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -887,6 +938,7 @@ subroutine iotk_write_dat_INTEGER3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -895,7 +947,7 @@ end subroutine iotk_write_dat_INTEGER3_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -903,6 +955,7 @@ subroutine iotk_write_dat_INTEGER3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -911,7 +964,7 @@ end subroutine iotk_write_dat_INTEGER3_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -919,6 +972,7 @@ subroutine iotk_write_dat_INTEGER3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -927,7 +981,7 @@ end subroutine iotk_write_dat_INTEGER3_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -935,6 +989,7 @@ subroutine iotk_write_dat_INTEGER3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -943,7 +998,7 @@ end subroutine iotk_write_dat_INTEGER3_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -951,19 +1006,20 @@ subroutine iotk_write_dat_INTEGER3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER3),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_INTEGER3_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER4
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -971,6 +1027,7 @@ subroutine iotk_write_dat_INTEGER4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -979,7 +1036,7 @@ end subroutine iotk_write_dat_INTEGER4_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -987,6 +1044,7 @@ subroutine iotk_write_dat_INTEGER4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -995,7 +1053,7 @@ end subroutine iotk_write_dat_INTEGER4_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1003,6 +1061,7 @@ subroutine iotk_write_dat_INTEGER4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1011,7 +1070,7 @@ end subroutine iotk_write_dat_INTEGER4_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1019,6 +1078,7 @@ subroutine iotk_write_dat_INTEGER4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1027,7 +1087,7 @@ end subroutine iotk_write_dat_INTEGER4_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1035,6 +1095,7 @@ subroutine iotk_write_dat_INTEGER4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1043,7 +1104,7 @@ end subroutine iotk_write_dat_INTEGER4_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1051,6 +1112,7 @@ subroutine iotk_write_dat_INTEGER4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1059,7 +1121,7 @@ end subroutine iotk_write_dat_INTEGER4_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1067,6 +1129,7 @@ subroutine iotk_write_dat_INTEGER4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1075,7 +1138,7 @@ end subroutine iotk_write_dat_INTEGER4_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_INTEGER4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_INTEGER4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1083,19 +1146,20 @@ subroutine iotk_write_dat_INTEGER4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   INTEGER (kind=__IOTK_INTEGER4),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_INTEGER4_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL1
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1103,6 +1167,7 @@ subroutine iotk_write_dat_REAL1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1111,7 +1176,7 @@ end subroutine iotk_write_dat_REAL1_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1119,6 +1184,7 @@ subroutine iotk_write_dat_REAL1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1127,7 +1193,7 @@ end subroutine iotk_write_dat_REAL1_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1135,6 +1201,7 @@ subroutine iotk_write_dat_REAL1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1143,7 +1210,7 @@ end subroutine iotk_write_dat_REAL1_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1151,6 +1218,7 @@ subroutine iotk_write_dat_REAL1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1159,7 +1227,7 @@ end subroutine iotk_write_dat_REAL1_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1167,6 +1235,7 @@ subroutine iotk_write_dat_REAL1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1175,7 +1244,7 @@ end subroutine iotk_write_dat_REAL1_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1183,6 +1252,7 @@ subroutine iotk_write_dat_REAL1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1191,7 +1261,7 @@ end subroutine iotk_write_dat_REAL1_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1199,6 +1269,7 @@ subroutine iotk_write_dat_REAL1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1207,7 +1278,7 @@ end subroutine iotk_write_dat_REAL1_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1215,19 +1286,20 @@ subroutine iotk_write_dat_REAL1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL1),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_REAL1_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL2
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1235,6 +1307,7 @@ subroutine iotk_write_dat_REAL2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1243,7 +1316,7 @@ end subroutine iotk_write_dat_REAL2_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1251,6 +1324,7 @@ subroutine iotk_write_dat_REAL2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1259,7 +1333,7 @@ end subroutine iotk_write_dat_REAL2_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1267,6 +1341,7 @@ subroutine iotk_write_dat_REAL2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1275,7 +1350,7 @@ end subroutine iotk_write_dat_REAL2_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1283,6 +1358,7 @@ subroutine iotk_write_dat_REAL2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1291,7 +1367,7 @@ end subroutine iotk_write_dat_REAL2_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1299,6 +1375,7 @@ subroutine iotk_write_dat_REAL2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1307,7 +1384,7 @@ end subroutine iotk_write_dat_REAL2_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1315,6 +1392,7 @@ subroutine iotk_write_dat_REAL2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1323,7 +1401,7 @@ end subroutine iotk_write_dat_REAL2_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1331,6 +1409,7 @@ subroutine iotk_write_dat_REAL2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1339,7 +1418,7 @@ end subroutine iotk_write_dat_REAL2_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1347,19 +1426,20 @@ subroutine iotk_write_dat_REAL2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL2),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_REAL2_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL3
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1367,6 +1447,7 @@ subroutine iotk_write_dat_REAL3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1375,7 +1456,7 @@ end subroutine iotk_write_dat_REAL3_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1383,6 +1464,7 @@ subroutine iotk_write_dat_REAL3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1391,7 +1473,7 @@ end subroutine iotk_write_dat_REAL3_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1399,6 +1481,7 @@ subroutine iotk_write_dat_REAL3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1407,7 +1490,7 @@ end subroutine iotk_write_dat_REAL3_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1415,6 +1498,7 @@ subroutine iotk_write_dat_REAL3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1423,7 +1507,7 @@ end subroutine iotk_write_dat_REAL3_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1431,6 +1515,7 @@ subroutine iotk_write_dat_REAL3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1439,7 +1524,7 @@ end subroutine iotk_write_dat_REAL3_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1447,6 +1532,7 @@ subroutine iotk_write_dat_REAL3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1455,7 +1541,7 @@ end subroutine iotk_write_dat_REAL3_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1463,6 +1549,7 @@ subroutine iotk_write_dat_REAL3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1471,7 +1558,7 @@ end subroutine iotk_write_dat_REAL3_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1479,19 +1566,20 @@ subroutine iotk_write_dat_REAL3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL3),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_REAL3_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL4
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1499,6 +1587,7 @@ subroutine iotk_write_dat_REAL4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1507,7 +1596,7 @@ end subroutine iotk_write_dat_REAL4_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1515,6 +1604,7 @@ subroutine iotk_write_dat_REAL4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1523,7 +1613,7 @@ end subroutine iotk_write_dat_REAL4_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1531,6 +1621,7 @@ subroutine iotk_write_dat_REAL4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1539,7 +1630,7 @@ end subroutine iotk_write_dat_REAL4_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1547,6 +1638,7 @@ subroutine iotk_write_dat_REAL4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1555,7 +1647,7 @@ end subroutine iotk_write_dat_REAL4_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1563,6 +1655,7 @@ subroutine iotk_write_dat_REAL4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1571,7 +1664,7 @@ end subroutine iotk_write_dat_REAL4_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1579,6 +1672,7 @@ subroutine iotk_write_dat_REAL4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1587,7 +1681,7 @@ end subroutine iotk_write_dat_REAL4_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1595,6 +1689,7 @@ subroutine iotk_write_dat_REAL4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1603,7 +1698,7 @@ end subroutine iotk_write_dat_REAL4_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_REAL4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_REAL4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1611,19 +1706,20 @@ subroutine iotk_write_dat_REAL4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   REAL (kind=__IOTK_REAL4),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_REAL4_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX1
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1631,6 +1727,7 @@ subroutine iotk_write_dat_COMPLEX1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1639,7 +1736,7 @@ end subroutine iotk_write_dat_COMPLEX1_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1647,6 +1744,7 @@ subroutine iotk_write_dat_COMPLEX1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1655,7 +1753,7 @@ end subroutine iotk_write_dat_COMPLEX1_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1663,6 +1761,7 @@ subroutine iotk_write_dat_COMPLEX1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1671,7 +1770,7 @@ end subroutine iotk_write_dat_COMPLEX1_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1679,6 +1778,7 @@ subroutine iotk_write_dat_COMPLEX1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1687,7 +1787,7 @@ end subroutine iotk_write_dat_COMPLEX1_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1695,6 +1795,7 @@ subroutine iotk_write_dat_COMPLEX1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1703,7 +1804,7 @@ end subroutine iotk_write_dat_COMPLEX1_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1711,6 +1812,7 @@ subroutine iotk_write_dat_COMPLEX1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1719,7 +1821,7 @@ end subroutine iotk_write_dat_COMPLEX1_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1727,6 +1829,7 @@ subroutine iotk_write_dat_COMPLEX1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1735,7 +1838,7 @@ end subroutine iotk_write_dat_COMPLEX1_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1743,19 +1846,20 @@ subroutine iotk_write_dat_COMPLEX1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX1),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_COMPLEX1_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX2
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1763,6 +1867,7 @@ subroutine iotk_write_dat_COMPLEX2_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1771,7 +1876,7 @@ end subroutine iotk_write_dat_COMPLEX2_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1779,6 +1884,7 @@ subroutine iotk_write_dat_COMPLEX2_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1787,7 +1893,7 @@ end subroutine iotk_write_dat_COMPLEX2_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1795,6 +1901,7 @@ subroutine iotk_write_dat_COMPLEX2_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1803,7 +1910,7 @@ end subroutine iotk_write_dat_COMPLEX2_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1811,6 +1918,7 @@ subroutine iotk_write_dat_COMPLEX2_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1819,7 +1927,7 @@ end subroutine iotk_write_dat_COMPLEX2_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1827,6 +1935,7 @@ subroutine iotk_write_dat_COMPLEX2_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1835,7 +1944,7 @@ end subroutine iotk_write_dat_COMPLEX2_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1843,6 +1952,7 @@ subroutine iotk_write_dat_COMPLEX2_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1851,7 +1961,7 @@ end subroutine iotk_write_dat_COMPLEX2_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1859,6 +1969,7 @@ subroutine iotk_write_dat_COMPLEX2_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1867,7 +1978,7 @@ end subroutine iotk_write_dat_COMPLEX2_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1875,19 +1986,20 @@ subroutine iotk_write_dat_COMPLEX2_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX2),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_COMPLEX2_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX3
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1895,6 +2007,7 @@ subroutine iotk_write_dat_COMPLEX3_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1903,7 +2016,7 @@ end subroutine iotk_write_dat_COMPLEX3_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1911,6 +2024,7 @@ subroutine iotk_write_dat_COMPLEX3_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1919,7 +2033,7 @@ end subroutine iotk_write_dat_COMPLEX3_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1927,6 +2041,7 @@ subroutine iotk_write_dat_COMPLEX3_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1935,7 +2050,7 @@ end subroutine iotk_write_dat_COMPLEX3_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1943,6 +2058,7 @@ subroutine iotk_write_dat_COMPLEX3_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1951,7 +2067,7 @@ end subroutine iotk_write_dat_COMPLEX3_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1959,6 +2075,7 @@ subroutine iotk_write_dat_COMPLEX3_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1967,7 +2084,7 @@ end subroutine iotk_write_dat_COMPLEX3_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1975,6 +2092,7 @@ subroutine iotk_write_dat_COMPLEX3_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1983,7 +2101,7 @@ end subroutine iotk_write_dat_COMPLEX3_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -1991,6 +2109,7 @@ subroutine iotk_write_dat_COMPLEX3_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -1999,7 +2118,7 @@ end subroutine iotk_write_dat_COMPLEX3_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2007,19 +2126,20 @@ subroutine iotk_write_dat_COMPLEX3_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX3),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_COMPLEX3_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX4
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2027,6 +2147,7 @@ subroutine iotk_write_dat_COMPLEX4_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2035,7 +2156,7 @@ end subroutine iotk_write_dat_COMPLEX4_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2043,6 +2164,7 @@ subroutine iotk_write_dat_COMPLEX4_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2051,7 +2173,7 @@ end subroutine iotk_write_dat_COMPLEX4_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2059,6 +2181,7 @@ subroutine iotk_write_dat_COMPLEX4_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2067,7 +2190,7 @@ end subroutine iotk_write_dat_COMPLEX4_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2075,6 +2198,7 @@ subroutine iotk_write_dat_COMPLEX4_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2083,7 +2207,7 @@ end subroutine iotk_write_dat_COMPLEX4_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2091,6 +2215,7 @@ subroutine iotk_write_dat_COMPLEX4_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2099,7 +2224,7 @@ end subroutine iotk_write_dat_COMPLEX4_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2107,6 +2232,7 @@ subroutine iotk_write_dat_COMPLEX4_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2115,7 +2241,7 @@ end subroutine iotk_write_dat_COMPLEX4_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2123,6 +2249,7 @@ subroutine iotk_write_dat_COMPLEX4_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2131,7 +2258,7 @@ end subroutine iotk_write_dat_COMPLEX4_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_COMPLEX4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_COMPLEX4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2139,19 +2266,20 @@ subroutine iotk_write_dat_COMPLEX4_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
 # 53 "iotk_dat_interf.spp"
   COMPLEX (kind=__IOTK_COMPLEX4),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_COMPLEX4_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
 # 44 "iotk_dat_interf.spp"
 #ifdef __IOTK_CHARACTER1
 # 46 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_0(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2159,6 +2287,7 @@ subroutine iotk_write_dat_CHARACTER1_0(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat 
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2167,7 +2296,7 @@ end subroutine iotk_write_dat_CHARACTER1_0
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_1(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2175,6 +2304,7 @@ subroutine iotk_write_dat_CHARACTER1_1(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat (:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2183,7 +2313,7 @@ end subroutine iotk_write_dat_CHARACTER1_1
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_2(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2191,6 +2321,7 @@ subroutine iotk_write_dat_CHARACTER1_2(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat (:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2199,7 +2330,7 @@ end subroutine iotk_write_dat_CHARACTER1_2
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_3(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2207,6 +2338,7 @@ subroutine iotk_write_dat_CHARACTER1_3(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat (:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2215,7 +2347,7 @@ end subroutine iotk_write_dat_CHARACTER1_3
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_4(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2223,6 +2355,7 @@ subroutine iotk_write_dat_CHARACTER1_4(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat (:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2231,7 +2364,7 @@ end subroutine iotk_write_dat_CHARACTER1_4
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_5(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2239,6 +2372,7 @@ subroutine iotk_write_dat_CHARACTER1_5(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat (:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2247,7 +2381,7 @@ end subroutine iotk_write_dat_CHARACTER1_5
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_6(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2255,6 +2389,7 @@ subroutine iotk_write_dat_CHARACTER1_6(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat (:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
@@ -2263,7 +2398,7 @@ end subroutine iotk_write_dat_CHARACTER1_6
 #endif
 # 46 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
-subroutine iotk_write_dat_CHARACTER1_7(unit,name,dat,dummy,attr,columns,fmt,ierr)
+subroutine iotk_write_dat_CHARACTER1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
   integer,                intent(in)  :: unit
@@ -2271,28 +2406,29 @@ subroutine iotk_write_dat_CHARACTER1_7(unit,name,dat,dummy,attr,columns,fmt,ierr
 # 53 "iotk_dat_interf.spp"
   CHARACTER (kind=__IOTK_CHARACTER1,len=*),        intent(in)  :: dat (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional      :: dummy
+  character(len=*), optional, intent(in)  :: sep
   character(len=*), optional, intent(in)  :: fmt
   character(len=*), optional, intent(in)  :: attr
   integer,          optional, intent(in)  :: columns
   integer,      optional, intent(out) :: ierr
 end subroutine iotk_write_dat_CHARACTER1_7
 #endif
-# 62 "iotk_dat_interf.spp"
+# 63 "iotk_dat_interf.spp"
 #endif
-# 66 "iotk_dat_interf.spp"
+# 67 "iotk_dat_interf.spp"
 end interface
 
 interface iotk_scan_dat
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL1
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat 
 #else
@@ -2309,14 +2445,14 @@ subroutine iotk_scan_dat_LOGICAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:)
 #else
@@ -2333,14 +2469,14 @@ subroutine iotk_scan_dat_LOGICAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:,:)
 #else
@@ -2357,14 +2493,14 @@ subroutine iotk_scan_dat_LOGICAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:,:,:)
 #else
@@ -2381,14 +2517,14 @@ subroutine iotk_scan_dat_LOGICAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:,:,:,:)
 #else
@@ -2405,14 +2541,14 @@ subroutine iotk_scan_dat_LOGICAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:,:,:,:,:)
 #else
@@ -2429,14 +2565,14 @@ subroutine iotk_scan_dat_LOGICAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:,:,:,:,:,:)
 #else
@@ -2453,14 +2589,14 @@ subroutine iotk_scan_dat_LOGICAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -2477,18 +2613,18 @@ subroutine iotk_scan_dat_LOGICAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL1_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL2
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat 
 #else
@@ -2505,14 +2641,14 @@ subroutine iotk_scan_dat_LOGICAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:)
 #else
@@ -2529,14 +2665,14 @@ subroutine iotk_scan_dat_LOGICAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:,:)
 #else
@@ -2553,14 +2689,14 @@ subroutine iotk_scan_dat_LOGICAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:,:,:)
 #else
@@ -2577,14 +2713,14 @@ subroutine iotk_scan_dat_LOGICAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:,:,:,:)
 #else
@@ -2601,14 +2737,14 @@ subroutine iotk_scan_dat_LOGICAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:,:,:,:,:)
 #else
@@ -2625,14 +2761,14 @@ subroutine iotk_scan_dat_LOGICAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:,:,:,:,:,:)
 #else
@@ -2649,14 +2785,14 @@ subroutine iotk_scan_dat_LOGICAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -2673,18 +2809,18 @@ subroutine iotk_scan_dat_LOGICAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL2_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL3
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat 
 #else
@@ -2701,14 +2837,14 @@ subroutine iotk_scan_dat_LOGICAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:)
 #else
@@ -2725,14 +2861,14 @@ subroutine iotk_scan_dat_LOGICAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:,:)
 #else
@@ -2749,14 +2885,14 @@ subroutine iotk_scan_dat_LOGICAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:,:,:)
 #else
@@ -2773,14 +2909,14 @@ subroutine iotk_scan_dat_LOGICAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:,:,:,:)
 #else
@@ -2797,14 +2933,14 @@ subroutine iotk_scan_dat_LOGICAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:,:,:,:,:)
 #else
@@ -2821,14 +2957,14 @@ subroutine iotk_scan_dat_LOGICAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:,:,:,:,:,:)
 #else
@@ -2845,14 +2981,14 @@ subroutine iotk_scan_dat_LOGICAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -2869,18 +3005,18 @@ subroutine iotk_scan_dat_LOGICAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL3_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL4
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat 
 #else
@@ -2897,14 +3033,14 @@ subroutine iotk_scan_dat_LOGICAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:)
 #else
@@ -2921,14 +3057,14 @@ subroutine iotk_scan_dat_LOGICAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:,:)
 #else
@@ -2945,14 +3081,14 @@ subroutine iotk_scan_dat_LOGICAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:,:,:)
 #else
@@ -2969,14 +3105,14 @@ subroutine iotk_scan_dat_LOGICAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:,:,:,:)
 #else
@@ -2993,14 +3129,14 @@ subroutine iotk_scan_dat_LOGICAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:,:,:,:,:)
 #else
@@ -3017,14 +3153,14 @@ subroutine iotk_scan_dat_LOGICAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:,:,:,:,:,:)
 #else
@@ -3041,14 +3177,14 @@ subroutine iotk_scan_dat_LOGICAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_LOGICAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -3065,18 +3201,18 @@ subroutine iotk_scan_dat_LOGICAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_LOGICAL4_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER1
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat 
 #else
@@ -3093,14 +3229,14 @@ subroutine iotk_scan_dat_INTEGER1_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:)
 #else
@@ -3117,14 +3253,14 @@ subroutine iotk_scan_dat_INTEGER1_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:,:)
 #else
@@ -3141,14 +3277,14 @@ subroutine iotk_scan_dat_INTEGER1_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:,:,:)
 #else
@@ -3165,14 +3301,14 @@ subroutine iotk_scan_dat_INTEGER1_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:,:,:,:)
 #else
@@ -3189,14 +3325,14 @@ subroutine iotk_scan_dat_INTEGER1_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:,:,:,:,:)
 #else
@@ -3213,14 +3349,14 @@ subroutine iotk_scan_dat_INTEGER1_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:,:,:,:,:,:)
 #else
@@ -3237,14 +3373,14 @@ subroutine iotk_scan_dat_INTEGER1_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -3261,18 +3397,18 @@ subroutine iotk_scan_dat_INTEGER1_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER1_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER2
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat 
 #else
@@ -3289,14 +3425,14 @@ subroutine iotk_scan_dat_INTEGER2_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:)
 #else
@@ -3313,14 +3449,14 @@ subroutine iotk_scan_dat_INTEGER2_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:,:)
 #else
@@ -3337,14 +3473,14 @@ subroutine iotk_scan_dat_INTEGER2_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:,:,:)
 #else
@@ -3361,14 +3497,14 @@ subroutine iotk_scan_dat_INTEGER2_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:,:,:,:)
 #else
@@ -3385,14 +3521,14 @@ subroutine iotk_scan_dat_INTEGER2_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:,:,:,:,:)
 #else
@@ -3409,14 +3545,14 @@ subroutine iotk_scan_dat_INTEGER2_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:,:,:,:,:,:)
 #else
@@ -3433,14 +3569,14 @@ subroutine iotk_scan_dat_INTEGER2_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -3457,18 +3593,18 @@ subroutine iotk_scan_dat_INTEGER2_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER2_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER3
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat 
 #else
@@ -3485,14 +3621,14 @@ subroutine iotk_scan_dat_INTEGER3_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:)
 #else
@@ -3509,14 +3645,14 @@ subroutine iotk_scan_dat_INTEGER3_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:,:)
 #else
@@ -3533,14 +3669,14 @@ subroutine iotk_scan_dat_INTEGER3_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:,:,:)
 #else
@@ -3557,14 +3693,14 @@ subroutine iotk_scan_dat_INTEGER3_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:,:,:,:)
 #else
@@ -3581,14 +3717,14 @@ subroutine iotk_scan_dat_INTEGER3_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:,:,:,:,:)
 #else
@@ -3605,14 +3741,14 @@ subroutine iotk_scan_dat_INTEGER3_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:,:,:,:,:,:)
 #else
@@ -3629,14 +3765,14 @@ subroutine iotk_scan_dat_INTEGER3_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -3653,18 +3789,18 @@ subroutine iotk_scan_dat_INTEGER3_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER3_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER4
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat 
 #else
@@ -3681,14 +3817,14 @@ subroutine iotk_scan_dat_INTEGER4_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:)
 #else
@@ -3705,14 +3841,14 @@ subroutine iotk_scan_dat_INTEGER4_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:,:)
 #else
@@ -3729,14 +3865,14 @@ subroutine iotk_scan_dat_INTEGER4_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:,:,:)
 #else
@@ -3753,14 +3889,14 @@ subroutine iotk_scan_dat_INTEGER4_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:,:,:,:)
 #else
@@ -3777,14 +3913,14 @@ subroutine iotk_scan_dat_INTEGER4_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:,:,:,:,:)
 #else
@@ -3801,14 +3937,14 @@ subroutine iotk_scan_dat_INTEGER4_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:,:,:,:,:,:)
 #else
@@ -3825,14 +3961,14 @@ subroutine iotk_scan_dat_INTEGER4_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_INTEGER4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -3849,18 +3985,18 @@ subroutine iotk_scan_dat_INTEGER4_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_INTEGER4_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL1
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat 
 #else
@@ -3877,14 +4013,14 @@ subroutine iotk_scan_dat_REAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:)
 #else
@@ -3901,14 +4037,14 @@ subroutine iotk_scan_dat_REAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:,:)
 #else
@@ -3925,14 +4061,14 @@ subroutine iotk_scan_dat_REAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:,:,:)
 #else
@@ -3949,14 +4085,14 @@ subroutine iotk_scan_dat_REAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:,:,:,:)
 #else
@@ -3973,14 +4109,14 @@ subroutine iotk_scan_dat_REAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:,:,:,:,:)
 #else
@@ -3997,14 +4133,14 @@ subroutine iotk_scan_dat_REAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:,:,:,:,:,:)
 #else
@@ -4021,14 +4157,14 @@ subroutine iotk_scan_dat_REAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -4045,18 +4181,18 @@ subroutine iotk_scan_dat_REAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL1_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL2
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat 
 #else
@@ -4073,14 +4209,14 @@ subroutine iotk_scan_dat_REAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:)
 #else
@@ -4097,14 +4233,14 @@ subroutine iotk_scan_dat_REAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:,:)
 #else
@@ -4121,14 +4257,14 @@ subroutine iotk_scan_dat_REAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:,:,:)
 #else
@@ -4145,14 +4281,14 @@ subroutine iotk_scan_dat_REAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:,:,:,:)
 #else
@@ -4169,14 +4305,14 @@ subroutine iotk_scan_dat_REAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:,:,:,:,:)
 #else
@@ -4193,14 +4329,14 @@ subroutine iotk_scan_dat_REAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:,:,:,:,:,:)
 #else
@@ -4217,14 +4353,14 @@ subroutine iotk_scan_dat_REAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -4241,18 +4377,18 @@ subroutine iotk_scan_dat_REAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL2_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL3
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat 
 #else
@@ -4269,14 +4405,14 @@ subroutine iotk_scan_dat_REAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:)
 #else
@@ -4293,14 +4429,14 @@ subroutine iotk_scan_dat_REAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:,:)
 #else
@@ -4317,14 +4453,14 @@ subroutine iotk_scan_dat_REAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:,:,:)
 #else
@@ -4341,14 +4477,14 @@ subroutine iotk_scan_dat_REAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:,:,:,:)
 #else
@@ -4365,14 +4501,14 @@ subroutine iotk_scan_dat_REAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:,:,:,:,:)
 #else
@@ -4389,14 +4525,14 @@ subroutine iotk_scan_dat_REAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:,:,:,:,:,:)
 #else
@@ -4413,14 +4549,14 @@ subroutine iotk_scan_dat_REAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -4437,18 +4573,18 @@ subroutine iotk_scan_dat_REAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL3_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL4
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat 
 #else
@@ -4465,14 +4601,14 @@ subroutine iotk_scan_dat_REAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:)
 #else
@@ -4489,14 +4625,14 @@ subroutine iotk_scan_dat_REAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:,:)
 #else
@@ -4513,14 +4649,14 @@ subroutine iotk_scan_dat_REAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:,:,:)
 #else
@@ -4537,14 +4673,14 @@ subroutine iotk_scan_dat_REAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:,:,:,:)
 #else
@@ -4561,14 +4697,14 @@ subroutine iotk_scan_dat_REAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:,:,:,:,:)
 #else
@@ -4585,14 +4721,14 @@ subroutine iotk_scan_dat_REAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:,:,:,:,:,:)
 #else
@@ -4609,14 +4745,14 @@ subroutine iotk_scan_dat_REAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_REAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -4633,18 +4769,18 @@ subroutine iotk_scan_dat_REAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_REAL4_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX1
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat 
 #else
@@ -4661,14 +4797,14 @@ subroutine iotk_scan_dat_COMPLEX1_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:)
 #else
@@ -4685,14 +4821,14 @@ subroutine iotk_scan_dat_COMPLEX1_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:,:)
 #else
@@ -4709,14 +4845,14 @@ subroutine iotk_scan_dat_COMPLEX1_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:,:,:)
 #else
@@ -4733,14 +4869,14 @@ subroutine iotk_scan_dat_COMPLEX1_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:,:,:,:)
 #else
@@ -4757,14 +4893,14 @@ subroutine iotk_scan_dat_COMPLEX1_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:,:,:,:,:)
 #else
@@ -4781,14 +4917,14 @@ subroutine iotk_scan_dat_COMPLEX1_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:,:,:,:,:,:)
 #else
@@ -4805,14 +4941,14 @@ subroutine iotk_scan_dat_COMPLEX1_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -4829,18 +4965,18 @@ subroutine iotk_scan_dat_COMPLEX1_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX1_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX2
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat 
 #else
@@ -4857,14 +4993,14 @@ subroutine iotk_scan_dat_COMPLEX2_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:)
 #else
@@ -4881,14 +5017,14 @@ subroutine iotk_scan_dat_COMPLEX2_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:,:)
 #else
@@ -4905,14 +5041,14 @@ subroutine iotk_scan_dat_COMPLEX2_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:,:,:)
 #else
@@ -4929,14 +5065,14 @@ subroutine iotk_scan_dat_COMPLEX2_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:,:,:,:)
 #else
@@ -4953,14 +5089,14 @@ subroutine iotk_scan_dat_COMPLEX2_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:,:,:,:,:)
 #else
@@ -4977,14 +5113,14 @@ subroutine iotk_scan_dat_COMPLEX2_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:,:,:,:,:,:)
 #else
@@ -5001,14 +5137,14 @@ subroutine iotk_scan_dat_COMPLEX2_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -5025,18 +5161,18 @@ subroutine iotk_scan_dat_COMPLEX2_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX2_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX3
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat 
 #else
@@ -5053,14 +5189,14 @@ subroutine iotk_scan_dat_COMPLEX3_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:)
 #else
@@ -5077,14 +5213,14 @@ subroutine iotk_scan_dat_COMPLEX3_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:,:)
 #else
@@ -5101,14 +5237,14 @@ subroutine iotk_scan_dat_COMPLEX3_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:,:,:)
 #else
@@ -5125,14 +5261,14 @@ subroutine iotk_scan_dat_COMPLEX3_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:,:,:,:)
 #else
@@ -5149,14 +5285,14 @@ subroutine iotk_scan_dat_COMPLEX3_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:,:,:,:,:)
 #else
@@ -5173,14 +5309,14 @@ subroutine iotk_scan_dat_COMPLEX3_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:,:,:,:,:,:)
 #else
@@ -5197,14 +5333,14 @@ subroutine iotk_scan_dat_COMPLEX3_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -5221,18 +5357,18 @@ subroutine iotk_scan_dat_COMPLEX3_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX3_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX4
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat 
 #else
@@ -5249,14 +5385,14 @@ subroutine iotk_scan_dat_COMPLEX4_0(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:)
 #else
@@ -5273,14 +5409,14 @@ subroutine iotk_scan_dat_COMPLEX4_1(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:,:)
 #else
@@ -5297,14 +5433,14 @@ subroutine iotk_scan_dat_COMPLEX4_2(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:,:,:)
 #else
@@ -5321,14 +5457,14 @@ subroutine iotk_scan_dat_COMPLEX4_3(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:,:,:,:)
 #else
@@ -5345,14 +5481,14 @@ subroutine iotk_scan_dat_COMPLEX4_4(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:,:,:,:,:)
 #else
@@ -5369,14 +5505,14 @@ subroutine iotk_scan_dat_COMPLEX4_5(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:,:,:,:,:,:)
 #else
@@ -5393,14 +5529,14 @@ subroutine iotk_scan_dat_COMPLEX4_6(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_COMPLEX4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -5417,18 +5553,18 @@ subroutine iotk_scan_dat_COMPLEX4_7(unit,name,dat,dummy,attr,found,default,ierr)
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_COMPLEX4_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 72 "iotk_dat_interf.spp"
+# 73 "iotk_dat_interf.spp"
 #ifdef __IOTK_CHARACTER1
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 0 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat 
 #else
@@ -5445,14 +5581,14 @@ subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_0
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 1 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:)
 #else
@@ -5469,14 +5605,14 @@ subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_1
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 2 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:,:)
 #else
@@ -5493,14 +5629,14 @@ subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_2
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 3 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:,:,:)
 #else
@@ -5517,14 +5653,14 @@ subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_3
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 4 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:,:,:,:)
 #else
@@ -5541,14 +5677,14 @@ subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_4
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 5 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:,:,:,:,:)
 #else
@@ -5565,14 +5701,14 @@ subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_5
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 6 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:,:,:,:,:,:)
 #else
@@ -5589,14 +5725,14 @@ subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_6
 #endif
-# 74 "iotk_dat_interf.spp"
+# 75 "iotk_dat_interf.spp"
 #if 7 <= __IOTK_MAXRANK
 subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
   integer,                   intent(in)  :: unit
   character(*),              intent(in)  :: name
-# 81 "iotk_dat_interf.spp"
+# 82 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:,:,:,:,:,:,:)
 #else
@@ -5613,19 +5749,19 @@ subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,dummy,attr,found,default,ier
   integer,         optional, intent(out) :: ierr
 end subroutine iotk_scan_dat_CHARACTER1_7
 #endif
-# 98 "iotk_dat_interf.spp"
+# 99 "iotk_dat_interf.spp"
 #endif
-# 102 "iotk_dat_interf.spp"
+# 103 "iotk_dat_interf.spp"
 end interface
 
 interface iotk_scan_dat_aux
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL1
 subroutine iotk_scan_dat_aux_LOGICAL1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL1)                        :: dat (:)
 #else
@@ -5637,13 +5773,13 @@ subroutine iotk_scan_dat_aux_LOGICAL1(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_LOGICAL1
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL2
 subroutine iotk_scan_dat_aux_LOGICAL2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL2)                        :: dat (:)
 #else
@@ -5655,13 +5791,13 @@ subroutine iotk_scan_dat_aux_LOGICAL2(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_LOGICAL2
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL3
 subroutine iotk_scan_dat_aux_LOGICAL3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL3)                        :: dat (:)
 #else
@@ -5673,13 +5809,13 @@ subroutine iotk_scan_dat_aux_LOGICAL3(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_LOGICAL3
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_LOGICAL4
 subroutine iotk_scan_dat_aux_LOGICAL4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   LOGICAL (kind=__IOTK_LOGICAL4)                        :: dat (:)
 #else
@@ -5691,13 +5827,13 @@ subroutine iotk_scan_dat_aux_LOGICAL4(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_LOGICAL4
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER1
 subroutine iotk_scan_dat_aux_INTEGER1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER1)                        :: dat (:)
 #else
@@ -5709,13 +5845,13 @@ subroutine iotk_scan_dat_aux_INTEGER1(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_INTEGER1
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER2
 subroutine iotk_scan_dat_aux_INTEGER2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER2)                        :: dat (:)
 #else
@@ -5727,13 +5863,13 @@ subroutine iotk_scan_dat_aux_INTEGER2(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_INTEGER2
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER3
 subroutine iotk_scan_dat_aux_INTEGER3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER3)                        :: dat (:)
 #else
@@ -5745,13 +5881,13 @@ subroutine iotk_scan_dat_aux_INTEGER3(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_INTEGER3
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_INTEGER4
 subroutine iotk_scan_dat_aux_INTEGER4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   INTEGER (kind=__IOTK_INTEGER4)                        :: dat (:)
 #else
@@ -5763,13 +5899,13 @@ subroutine iotk_scan_dat_aux_INTEGER4(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_INTEGER4
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL1
 subroutine iotk_scan_dat_aux_REAL1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL1)                        :: dat (:)
 #else
@@ -5781,13 +5917,13 @@ subroutine iotk_scan_dat_aux_REAL1(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_REAL1
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL2
 subroutine iotk_scan_dat_aux_REAL2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL2)                        :: dat (:)
 #else
@@ -5799,13 +5935,13 @@ subroutine iotk_scan_dat_aux_REAL2(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_REAL2
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL3
 subroutine iotk_scan_dat_aux_REAL3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL3)                        :: dat (:)
 #else
@@ -5817,13 +5953,13 @@ subroutine iotk_scan_dat_aux_REAL3(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_REAL3
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_REAL4
 subroutine iotk_scan_dat_aux_REAL4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   REAL (kind=__IOTK_REAL4)                        :: dat (:)
 #else
@@ -5835,13 +5971,13 @@ subroutine iotk_scan_dat_aux_REAL4(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_REAL4
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX1
 subroutine iotk_scan_dat_aux_COMPLEX1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX1)                        :: dat (:)
 #else
@@ -5853,13 +5989,13 @@ subroutine iotk_scan_dat_aux_COMPLEX1(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_COMPLEX1
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX2
 subroutine iotk_scan_dat_aux_COMPLEX2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX2)                        :: dat (:)
 #else
@@ -5871,13 +6007,13 @@ subroutine iotk_scan_dat_aux_COMPLEX2(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_COMPLEX2
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX3
 subroutine iotk_scan_dat_aux_COMPLEX3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX3)                        :: dat (:)
 #else
@@ -5889,13 +6025,13 @@ subroutine iotk_scan_dat_aux_COMPLEX3(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_COMPLEX3
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_COMPLEX4
 subroutine iotk_scan_dat_aux_COMPLEX4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   COMPLEX (kind=__IOTK_COMPLEX4)                        :: dat (:)
 #else
@@ -5907,13 +6043,13 @@ subroutine iotk_scan_dat_aux_COMPLEX4(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_COMPLEX4
 #endif
-# 108 "iotk_dat_interf.spp"
+# 109 "iotk_dat_interf.spp"
 #ifdef __IOTK_CHARACTER1
 subroutine iotk_scan_dat_aux_CHARACTER1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
   integer,         intent(in)  :: unit
-# 114 "iotk_dat_interf.spp"
+# 115 "iotk_dat_interf.spp"
 #ifdef __IOTK_WORKAROUND6
   CHARACTER (kind=__IOTK_CHARACTER1,len=*)                        :: dat (:)
 #else
@@ -5925,7 +6061,7 @@ subroutine iotk_scan_dat_aux_CHARACTER1(unit,dat,rkind,rlen,fmt,ierr)
   integer,         intent(out) :: ierr
 end subroutine iotk_scan_dat_aux_CHARACTER1
 #endif
-# 128 "iotk_dat_interf.spp"
+# 129 "iotk_dat_interf.spp"
 end interface
 
 end module iotk_dat_interf

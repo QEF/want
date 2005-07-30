@@ -42,9 +42,9 @@
 ! FUNCTION upper_case(char)
 ! FUNCTION lower_case(char)
 ! SUBROUTINE change_case(str,case)
-! SUBROUTINE parser_replica(str,nitem,index[,info])
-! SUBROUTINE parser_path(str,ndir,directories[,info])
-! SUBROUTINE parser_version(str,name,major,minor,patch[,info])
+! SUBROUTINE parser_replica(str,nitem[,index][,ierr])
+! SUBROUTINE parser_path(str,ndir,directories[,ierr])
+! SUBROUTINE parser_version(str,name,major,minor,patch[,ierr])
 !
 ! </INFO>
 !
@@ -199,20 +199,20 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE parser_replica(str,nitem,index,info)
+   SUBROUTINE parser_replica(str,nitem,index,ierr)
    !**********************************************************
    IMPLICIT NONE
    CHARACTER(*),     INTENT(in)    :: str        
    INTEGER,          INTENT(out)   :: nitem
-   INTEGER,          INTENT(out)   :: index(*)
-   INTEGER, OPTIONAL,INTENT(out)   :: info
+   INTEGER, OPTIONAL,INTENT(out)   :: index(*)
+   INTEGER, OPTIONAL,INTENT(out)   :: ierr
 
    CHARACTER(15), ALLOCATABLE      :: intstr(:)
    INTEGER,       ALLOCATABLE      :: intervals(:,:)
    INTEGER                         :: length
    INTEGER                         :: istart,iend
    INTEGER                         :: indx, nint
-   INTEGER                         :: i, iint, ierr
+   INTEGER                         :: i, iint, ierr_
    !
    ! ierr < 0     void string
    ! ierr = 0     no problem
@@ -221,19 +221,19 @@ CONTAINS
 
    length=LEN_TRIM(str)
    nitem = 0
-   IF ( PRESENT(info) ) info = -1
+   IF ( PRESENT(ierr) ) ierr = -1
    IF ( length == 0 ) RETURN
 
 
-   IF ( PRESENT(info) ) info = 0
+   IF ( PRESENT(ierr) ) ierr = 0
    nint=1
    DO i=1,length
       IF ( str(i:i) == "," ) nint=nint+1
    ENDDO
-   ALLOCATE( intstr(nint), STAT=ierr )
-     IF ( ierr /= 0 ) CALL errore('parser_replica','Unable to allocate INTSTR',ABS(ierr))
-   ALLOCATE( intervals(2,nint), STAT=ierr )
-     IF ( ierr /= 0 ) CALL errore('parser_replica','Unable to allocate intervals',ABS(ierr))
+   ALLOCATE( intstr(nint), STAT=ierr_ )
+     IF ( ierr_ /= 0) CALL errore('parser_replica','Unable to allocate INTSTR',ABS(ierr_))
+   ALLOCATE( intervals(2,nint), STAT=ierr_ )
+     IF ( ierr_ /= 0) CALL errore('parser_replica','Unable to allocate intervals',ABS(ierr_))
 
 !
 ! recognize different intervals
@@ -257,17 +257,17 @@ CONTAINS
       indx=SCAN(intstr(iint),"-")
       length=LEN_TRIM(intstr(iint))
       IF ( indx == 0 )  THEN
-          intervals(:,iint) = char2int( intstr(iint),IERR=ierr )
-          IF ( ierr/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr))
+          intervals(:,iint) = char2int( intstr(iint),IERR=ierr_ )
+          IF ( ierr_/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr_))
       ELSE
-          intervals(1,iint) = char2int( intstr(iint)(1:indx-1), IERR=ierr )
-          IF ( ierr/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr))
-          intervals(2,iint) = char2int( intstr(iint)(indx+1:length), IERR=ierr )
-          IF ( ierr/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr))
+          intervals(1,iint) = char2int( intstr(iint)(1:indx-1), IERR=ierr_ )
+          IF ( ierr_/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr_))
+          intervals(2,iint) = char2int( intstr(iint)(indx+1:length), IERR=ierr_ )
+          IF ( ierr_/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr_))
       ENDIF
    ENDDO
-   DEALLOCATE( intstr, STAT = ierr)   
-     IF ( ierr /= 0 ) CALL errore('parser_replica','deallocating INTSTR',ABS(ierr))
+   DEALLOCATE( intstr, STAT = ierr_)   
+     IF ( ierr_ /= 0 ) CALL errore('parser_replica','deallocating INTSTR',ABS(ierr_))
 
 !
 ! write output quantities
@@ -276,50 +276,50 @@ CONTAINS
    DO iint=1,nint
       DO i = intervals(1,iint), intervals(2,iint)
           nitem = nitem + 1
-          index(nitem) = i
+          IF ( PRESENT(index) ) index(nitem) = i
       ENDDO
    ENDDO
 
-   DEALLOCATE( intervals, STAT = ierr)   
-     IF ( ierr /= 0 ) CALL errore('parser_replica','deallocating INTERVALS',ABS(ierr))
+   DEALLOCATE( intervals, STAT = ierr_)   
+     IF ( ierr_ /= 0 ) CALL errore('parser_replica','deallocating INTERVALS',ABS(ierr_))
 
    END SUBROUTINE parser_replica
 
 
 !**********************************************************
-   SUBROUTINE parser_path(str,ndir,directories,info)
+   SUBROUTINE parser_path(str,ndir,directories,ierr)
    !**********************************************************
    IMPLICIT NONE
    CHARACTER(*),     INTENT(in)    :: str
    INTEGER,          INTENT(out)   :: ndir
    CHARACTER(*),     POINTER       :: directories(:)
-   INTEGER, OPTIONAL,INTENT(out)   :: info
+   INTEGER, OPTIONAL,INTENT(out)   :: ierr
 
    CHARACTER(2000)                 :: str_
    INTEGER, ALLOCATABLE            :: intstr(:)
    INTEGER                         :: length
-   INTEGER                         :: i, ierr
+   INTEGER                         :: i, ierr_
    !
-   ! info < 0     void string
-   ! info = 0     no problem
-   ! info > 0     fatal error
+   ! ierr < 0     void string
+   ! ierr = 0     no problem
+   ! ierr > 0     fatal error
    !
 
    str_ = TRIM(ADJUSTL(str))
    length=LEN_TRIM(str_)
    ndir = 0
    NULLIFY( directories )
-   IF ( PRESENT(info) ) info = -1
-   IF ( length == 0 .AND. PRESENT(info) ) RETURN
+   IF ( PRESENT(ierr) ) ierr = -1
+   IF ( length == 0 .AND. PRESENT(ierr) ) RETURN
    IF ( length == 0 )  &
       CALL errore('parser_path','STR is VOID',1)
    IF ( str_(1:1) /= "/") &
       CALL errore('parser_path','First non-null character MUST be /',1)
 
 
-   IF ( PRESENT(info) ) info = 0
-   ALLOCATE( intstr(length), STAT=ierr )
-     IF ( ierr /= 0 ) CALL errore('parser_path','Unable to allocate INTSTR',ABS(ierr))
+   IF ( PRESENT(ierr) ) ierr = 0
+   ALLOCATE( intstr(length), STAT=ierr_ )
+     IF ( ierr_ /= 0 ) CALL errore('parser_path','Unable to allocate INTSTR',ABS(ierr_))
 
    !
    ! put a / at the end of string if needed
@@ -340,8 +340,8 @@ CONTAINS
       ENDIF
    ENDDO
    ndir = ndir-1
-   ALLOCATE( directories(ndir), STAT=ierr )
-     IF ( ierr /= 0 ) CALL errore('parser_path','Unable to allocate DIRECTORIES',ABS(ierr))
+   ALLOCATE( directories(ndir), STAT=ierr_ )
+     IF ( ierr_ /= 0 ) CALL errore('parser_path','Unable to allocate DIRECTORIES',ABS(ierr_))
 
    !
    ! parse directory names
@@ -349,28 +349,28 @@ CONTAINS
    DO i=1,ndir
       directories(i) = str_(intstr(i)+1:intstr(i+1)-1)
    ENDDO
-   DEALLOCATE( intstr, STAT = ierr)   
-     IF ( ierr /= 0 ) CALL errore('parser_path','Unable to deallocate INTSTR',ABS(ierr))
+   DEALLOCATE( intstr, STAT = ierr_)   
+     IF ( ierr_ /= 0 ) CALL errore('parser_path','Unable to deallocate INTSTR',ABS(ierr_))
 
    END SUBROUTINE parser_path
 
 
 !**********************************************************
-   SUBROUTINE parser_version(str,name,major,minor,patch,info)
+   SUBROUTINE parser_version(str,name,major,minor,patch,ierr)
    !**********************************************************
    IMPLICIT NONE
    CHARACTER(*),     INTENT(in)    :: str
    CHARACTER(*),     INTENT(out)   :: name
    INTEGER,          INTENT(out)   :: major,minor,patch
-   INTEGER, OPTIONAL,INTENT(out)   :: info
+   INTEGER, OPTIONAL,INTENT(out)   :: ierr
    !
-   ! info < 0     void string
-   ! info = 0     no problem
-   ! info > 0     fatal error
+   ! ierr < 0     void string
+   ! ierr = 0     no problem
+   ! ierr > 0     fatal error
    !
    CHARACTER(2000)                 :: str_
    INTEGER                         :: i1,i2,i3,length
-   INTEGER                         :: ierr, ierrtot
+   INTEGER                         :: ierr_, ierrtot
    CHARACTER(10)                   :: number(3)
     
       name = " "
@@ -379,10 +379,10 @@ CONTAINS
       patch = 0
       str_ = TRIM( str )
 
-      IF ( PRESENT(info) ) info = 0
+      IF ( PRESENT(ierr) ) ierr = 0
       length = LEN( str_ )
       IF ( length == 0 ) THEN 
-           info = -1 
+           ierr = -1 
            RETURN
       ENDIF
 
@@ -390,8 +390,8 @@ CONTAINS
       i2 = SCAN(str_,".")
       i3 = SCAN(str_,".",BACK=.TRUE.)
       IF ( i1 == 0 .OR. i2 == 0 .OR. i3 == 0 .OR. i2 == i3 ) THEN 
-         IF ( PRESENT(info) ) THEN
-            info = 1
+         IF ( PRESENT(ierr) ) THEN
+            ierr = 1
             RETURN
          ELSE
             CALL errore('parser_version','Invalid VERSION fmt',1)
@@ -404,16 +404,16 @@ CONTAINS
       number(3) = str_( i3+1 : length )
       
       ierrtot = 0
-      major = char2int( number(1), IERR=ierr )
-         IF (ierr/=0) ierrtot = ierrtot + ABS(ierr)
-      minor = char2int( number(2), IERR=ierr )
-         IF (ierr/=0) ierrtot = ierrtot + ABS(ierr)
-      patch = char2int( number(3), IERR=ierr )
-         IF (ierr/=0) ierrtot = ierrtot + ABS(ierr)
+      major = char2int( number(1), IERR=ierr_ )
+         IF (ierr_/=0) ierrtot = ierrtot + ABS(ierr_)
+      minor = char2int( number(2), IERR=ierr_ )
+         IF (ierr_/=0) ierrtot = ierrtot + ABS(ierr_)
+      patch = char2int( number(3), IERR=ierr_ )
+         IF (ierr_/=0) ierrtot = ierrtot + ABS(ierr_)
    
       IF (ierrtot /= 0) THEN
-         IF (PRESENT(info)) THEN 
-            info = +2
+         IF (PRESENT(ierr)) THEN 
+            ierr = +2
             RETURN
          ELSE
             CALL errore('parser_version','Invalid NUMBER fmt',1)

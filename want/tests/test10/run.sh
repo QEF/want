@@ -19,6 +19,7 @@ MANUAL=" Usage
  disentangle_cond     wannier subspace definition (conductor)
  wannier_cond         wannier functions (conductor)
  bands_cond           interpolates the band structure using WFs
+ plot_cond            compute WFs on real space for plotting (conductor)
  want_cond            all the wannier function steps, DISENT., WANNIER (conductor)
  all_cond             DFT_COND and WANT_COND tigether
 
@@ -28,6 +29,7 @@ MANUAL=" Usage
  dft_leads            perform SCF, NSCF, PWEXPORT all together (leads)
  disentangle_leads    wannier subspace definition (leads)
  wannier_leads        wannier functions (leads)
+ plot_leads           compute WFs on real space for plotting (leads)
  bands_leads          interpolates the band structure using WFs
  want_leads           all the wannier function steps, DISENT., WANNIER (leads)
  all_leads            DFT_LEADS and WANT_LEADS tigether
@@ -52,7 +54,7 @@ WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
 UTILITY_BIN=$TEST_HOME/../../utility
 TEST_NAME=Test3
-PSEUDO_NAME=C.blyp-mt.UPF
+PSEUDO_NAME=C.pbe-van_bm.UPF
 
 #
 # evaluate the starting choice about what is to run 
@@ -63,6 +65,7 @@ PWEXPORT_COND=
 DISENTANGLE_COND=
 WANNIER_COND=
 BANDS_COND=
+PLOT_COND=
 
 SCF_LEADS=
 NSCF_LEADS=
@@ -70,6 +73,7 @@ PWEXPORT_LEADS=
 DISENTANGLE_LEADS=
 WANNIER_LEADS=
 BANDS_LEADS=
+PLOT_LEADS=
 
 CONDUCTOR=
 BULK=
@@ -88,40 +92,44 @@ case $INPUT in
    ( dft_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;;
    ( disentangle_cond )  DISENTANGLE_COND=".TRUE." ;;
    ( wannier_cond )      WANNIER_COND=".TRUE." ;;
-   ( bands_cond )  BANDS_COND=".TRUE." ;;
+   ( bands_cond )        BANDS_COND=".TRUE." ;;
+   ( plot_cond )         PLOT_COND=".TRUE." ;;
    ( want_cond )         DISENTANGLE_COND=".TRUE." ; 
-                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ;;
+                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE.";;
    ( all_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
                          DISENTANGLE_COND=".TRUE." ;
-                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ;;
+                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE.";;
 
    ( scf_leads )         SCF_LEADS=".TRUE." ;;
    ( nscf_leads )        NSCF_LEADS=".TRUE." ;;
    ( pwexport_leads )    PWEXPORT_LEADS=".TRUE." ;;
-   ( dft_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;;
+   ( dft_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; 
+                         PWEXPORT_LEADS=".TRUE." ;;
    ( disentangle_leads ) DISENTANGLE_LEADS=".TRUE." ;;
    ( wannier_leads )     WANNIER_LEADS=".TRUE." ;;
-   ( bands_leads ) BANDS_LEADS=".TRUE." ;;
+   ( bands_leads )       BANDS_LEADS=".TRUE." ;;
+   ( plot_leads )        PLOT_LEADS=".TRUE." ;;
    ( want_leads )        DISENTANGLE_LEADS=".TRUE." ; 
-                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ;;
+                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ; 
+                         PLOT_LEADS=".TRUE.";;
    ( all_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;
-                         DISENTANGLE_LEADS=".TRUE." ;
-                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ;;
+                         DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
+                         BANDS_LEADS=".TRUE." ;  PLOT_COND=".TRUE." ;;
 
    ( dft )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE.";;
    ( want )              DISENTANGLE_COND=".TRUE." ;
-                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ;
-                         DISENTANGLE_LEADS=".TRUE." ;
-                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ;;
+                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE." ;
+                         DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
+                         BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE." ;;
    ( conductor )         CONDUCTOR=".TRUE." ;;
    ( bulk )              BULK=".TRUE." ;;
    ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ; 
-                         DISENTANGLE_COND=".TRUE." ; 
-                         WANNIER_COND=".TRUE." ;  BANDS_COND=".TRUE." ;
+                         DISENTANGLE_COND=".TRUE." ; WANNIER_COND=".TRUE." ;  
+                         BANDS_COND=".TRUE." ;  PLOT_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE."; 
-                         DISENTANGLE_LEADS=".TRUE." ; 
-                         WANNIER_LEADS=".TRUE." ;  BANDS_LEADS=".TRUE." ;
+                         DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
+                         BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE." ;
                          CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
 
    ( clean )             CLEAN=".TRUE." ;;
@@ -298,6 +306,33 @@ if [ "$BANDS_LEADS" = ".TRUE." ] ; then
       echo "done" 
    else
       echo "found some problems in BANDS_LEADS calculation, stopping" ; cat CRASH
+      exit 1
+   fi
+fi
+
+#
+# running PLOT
+#
+if [ "$PLOT_COND" = ".TRUE." ] ; then  
+   echo "running PLOT_COND calculation" 
+   $WANT_BIN/plot.x < $TEST_HOME/plot_cond.in  \
+                           > $TEST_HOME/plot_cond.out
+   if [ ! -e CRASH ] ; then 
+      echo "done" 
+   else
+      echo "found some problems in PLOT_COND calculation, stopping" ; cat CRASH 
+      exit 1
+   fi
+fi
+
+if [ "$PLOT_LEADS" = ".TRUE." ] ; then  
+   echo "running PLOT_LEADS calculation" 
+   $WANT_BIN/plot.x < $TEST_HOME/plot_leads.in  \
+                           > $TEST_HOME/plot_leads.out
+   if [ ! -e CRASH ] ; then 
+      echo "done" 
+   else
+      echo "found some problems in PLOT_LEADS calculation, stopping" ; cat CRASH
       exit 1
    fi
 fi

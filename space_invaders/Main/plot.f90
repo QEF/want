@@ -29,6 +29,7 @@
    USE version_module,     ONLY : version_number
    USE util_module,        ONLY : zmat_mul
    USE converters_module,  ONLY : cry2cart, cart2cry
+   USE atomic_module,      ONLY : atomic_name2num, atomic_num2name
    USE summary_module,     ONLY : summary
    USE parser_module
    !
@@ -224,13 +225,16 @@
 ! ... final settings on input
 !
       !
-      ! get the WF indexes
+      ! get the exact number of plot
+      CALL parser_replica( wann, nplot, IERR=ierr )
+      IF ( ierr/=0 ) CALL errore('plot','wrong FMT in wann string I',ABS(ierr))
       !
-      ALLOCATE( iwann(dimwann), STAT=ierr )
+      ALLOCATE( iwann(nplot), STAT=ierr )
       IF ( ierr/=0 ) CALL errore('plot','allocating iwann',ABS(ierr))
       !
+      ! get the WF indexes
       CALL parser_replica( wann, nplot, iwann, ierr )
-      IF ( ierr/=0 ) CALL errore('plot','wrong FMT in wann string',ABS(ierr))
+      IF ( ierr/=0 ) CALL errore('plot','wrong FMT in wann string II',ABS(ierr))
       !
       DO m = 1, nplot
          IF ( iwann(m) <= 0  .OR. iwann(m) > dimwann ) &
@@ -452,7 +456,7 @@
           cmod = cmod / SQRT( cmod * CONJG(cmod) ) 
           DO nzz = nrzl, nrzh
           DO nyy = nryl, nryh
-          DO nxx = nrxl, nryh
+          DO nxx = nrxl, nrxh
               cwann(nxx,nyy,nzz,m) = cwann(nxx,nyy,nzz,m) / cmod
           ENDDO
           ENDDO
@@ -466,7 +470,6 @@
 !     (this includes the cubic case); otherwise, dan is used.
 !
 
-
       ALLOCATE( tau_cry(3, nat), STAT=ierr  )  
          IF( ierr /=0 ) CALL errore('plot', 'allocating tau_cry', ABS(ierr) ) 
       ALLOCATE( tautot( 3, 125*nat ), STAT=ierr )
@@ -474,7 +477,7 @@
       ALLOCATE( symbtot( 125*nat ), STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'allocating symbtot ', ABS(ierr) ) 
 
- 
+
       tau_cry(:,:) = tau(:,:) * alat
       CALL cart2cry( tau_cry, avec )  
 
@@ -566,15 +569,15 @@
                  iwann(m), TRIM(filename)//".gau"
           OPEN ( aux_unit, FILE=TRIM(filename)//".gau", FORM='formatted', STATUS='unknown' )
 
-          WRITE(aux_unit, '(a25)') ' WanT'
-          WRITE(aux_unit, '(a25)') ' plot output - cube format'
+          WRITE(aux_unit, '( " WanT" )') 
+          WRITE(aux_unit, '( " plot output - cube format" )' ) 
           WRITE(aux_unit, '(i4,3f12.6)' ) natot, r0(:) 
           WRITE(aux_unit, '(i4,3f12.6)' ) (nrxh-nrxl+1),  avecl(:,1) 
           WRITE(aux_unit, '(i4,3f12.6)' ) (nryh-nryl+1),  avecl(:,2) 
           WRITE(aux_unit, '(i4,3f12.6)' ) (nrzh-nrzl+1),  avecl(:,3) 
 
           DO ia = 1, natot
-              CALL convert_label( symbtot(ia), zatom )
+              CALL atomic_name2num( symbtot(ia), zatom )
               WRITE(aux_unit, '(i4,4e13.5)' ) zatom, ONE, tautot( :, ia )
           ENDDO
 

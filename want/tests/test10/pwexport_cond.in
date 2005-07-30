@@ -3,7 +3,7 @@
   outdir='./COND/'
   ascii = .FALSE.
   pseudo_dir = './'
-  psfile(1) = 'C.blyp-mt.UPF'
+  psfile(1) = 'C.pbe-van_bm.UPF'
   single_file = .FALSE.
   ascii = .FALSE.
 /

@@ -4,11 +4,13 @@
 ****************************************
 
 
-* INTEL ifort 8.1 (and previous v) 
-  IOTK library is not properly working on large arrays.
+* INTEL ifort 8.1 (and previous versions) 
+  IOTK library is not properly working on large integer arrays.
   When the array dimension overcomes a given threshold IOTK
-  scan (and sometimes write) gives an error in IOSTAT.
-  This is a well known bug in the intel compiler.
+  scan (and sometimes write) gives an error.
+  This is a well known bug of the intel compiler.
+  Setting __IOTK_WORKAROUND7 in iotk_config.h file (IOTK_lib)
+  allows to run the code anyway.
 
 * sometimes, during recover (restart) procedure in wannier, 
   unitary checks fails without any clear reason.

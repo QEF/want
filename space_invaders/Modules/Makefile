@@ -13,7 +13,7 @@ OBJS = constants.o  fft_scalar.o  kind.o  parameters.o \
        upf_to_internal.o  uspp.o  read_pseudo_base.o  pwcom.o \
        pseudo_types.o  functionals.o  atom.o  becmod.o \
        struct_fact_data.o  trial_center.o  trial_center_data.o \
-       hamiltonian.o 
+       hamiltonian.o  atomic.o
 
 all: $(OBJS)
 

@@ -42,6 +42,7 @@ public :: iotk_strtrim
 public :: iotk_strlen_trim
 public :: iotk_toupper
 public :: iotk_tolower
+public :: iotk_str_clean
 
 interface iotk_toupper
 function iotk_toupper_x(str)
@@ -156,5 +157,13 @@ function iotk_strcomp_x(str1,str2)
   character(len=*), intent(in) :: str1,str2
 end function iotk_strcomp_x
 end interface
+
+interface iotk_str_clean
+subroutine iotk_str_clean_x(str)
+! transforms all characters which are separators in blanks
+  implicit none
+  character(len=*), intent(inout) :: str
+end subroutine iotk_str_clean_x
+end interface iotk_str_clean
 
 end module iotk_str_interf

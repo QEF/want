@@ -17,7 +17,8 @@
 ! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 module iotk_module
-! This module is a wrapper for the entities in iotk_base which need to be public
+! The end user should use this module. This is a wrapper for the entities defined
+! across the library.
   use iotk_base
   use iotk_misc_interf
   use iotk_error_interf
@@ -30,8 +31,10 @@ module iotk_module
   use iotk_xtox_interf
   use iotk_fmt_interf
   implicit none
+
 ! All names are private ...
   private
+
 ! ... except the names listed below
   public :: iotk_open_write
   public :: iotk_open_read

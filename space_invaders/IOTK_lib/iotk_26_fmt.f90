@@ -243,18 +243,19 @@ function iotk_wfmt_x(type,ikind,isize,ilen,sep)
   use iotk_xtox_interf
   use iotk_fmt_interf
   use iotk_misc_interf
+  use iotk_str_interf
   implicit none
-  integer,       intent(in)  :: ikind
-  character(*),  intent(in)  :: type
-  integer,       intent(in)  :: isize
-  integer,       intent(in)  :: ilen
-  character,     intent(in)  :: sep
+  integer,          intent(in)  :: ikind
+  character(len=*), intent(in)  :: type
+  integer,          intent(in)  :: isize
+  integer,          intent(in)  :: ilen
+  character(len=*), intent(in)  :: sep
   character(150)             :: iotk_wfmt_x
   if(isize==1) then
     iotk_wfmt_x = "("//trim(iotk_basefmt(type,ikind,ilen))//")"
   else
     iotk_wfmt_x = "("//trim(iotk_itoa(isize))//"("//trim(iotk_basefmt(type,ikind,ilen)) &
-                //",:,'"//sep//"'))"
+                //",:,'"//sep(1:iotk_strlen(sep))//"'))"
   end if
 !write(0,*) "FMT:"//trim(iotk_wfmt_x)
 end function iotk_wfmt_x

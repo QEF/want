@@ -45,11 +45,11 @@ end interface
 interface iotk_wfmt
 function iotk_wfmt_x(type,ikind,isize,ilen,sep)
   implicit none
-  integer,       intent(in)  :: ikind
-  character(*),  intent(in)  :: type
-  integer,       intent(in)  :: isize
-  integer,       intent(in)  :: ilen
-  character,     intent(in)  :: sep
+  integer,          intent(in)  :: ikind
+  character(len=*), intent(in)  :: type
+  integer,          intent(in)  :: isize
+  integer,          intent(in)  :: ilen
+  character(len=*), intent(in)  :: sep
   character(150)             :: iotk_wfmt_x
 end function iotk_wfmt_x
 end interface
