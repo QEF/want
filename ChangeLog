@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+30 Jul 2005      As suggested by Giovanni Bussi (IOTK author) __IOTK_WORKAROUND7
+                 may be join to  __IOTK_WORKAROUND3: new IOTK version imported and 
+                 portability tested on INTEL compiler. (AF)
+
 29 Jul 2005      Test3 updated to USPP. IOTK lib updated with a new version fixing
                  some bugs. convert_label.f90 moved from Libs to the module atomic.f90
                  in Modules. Bug fixed in plot.f90 in the FFT dimensioning of cwann 
