@@ -26,6 +26,8 @@
 #ifndef __IOTK_CONFIG_H
 #define __IOTK_CONFIG_H
 
+#define __IOTK_MAXRANK 4
+
 #ifdef __AIX
 #   define __IOTK_LOGICAL1 1
 #   define __IOTK_LOGICAL2 2
@@ -71,7 +73,6 @@
 #         define __IOTK_WORKAROUND1
 #         define __IOTK_WORKAROUND3
 #         define __IOTK_WORKAROUND5
-#         define __IOTK_WORKAROUND7
 #   endif
 #   ifdef __G95
 #         define __IOTK_LOGICAL1 1

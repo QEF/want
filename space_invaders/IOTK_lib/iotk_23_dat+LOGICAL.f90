@@ -304,9 +304,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL1_0
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -331,9 +331,9 @@ subroutine iotk_scan_dat_LOGICAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default 
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -352,7 +352,7 @@ subroutine iotk_scan_dat_LOGICAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -361,30 +361,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==1) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(1))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 659 "iotk_dat.spp"
+# 699 "iotk_dat.spp"
         dat = tmpdat(1)
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -398,11 +398,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -423,9 +423,6 @@ end subroutine iotk_scan_dat_LOGICAL1_0
 subroutine iotk_dat_dummy_LOGICAL1_0
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_0
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -780,42 +777,50 @@ recursive subroutine iotk_scan_dat_aux_LOGICAL1(unit,dat,rkind,rlen,fmt,ierr)
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
-# 463 "iotk_dat.spp"
+# 483 "iotk_dat.spp"
   if(binary) then
     select case(rkind)
     case(kind(dat))
       if(raw) then
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       else
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) idummy, ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) idummy, dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       end if
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL2
     case(kind(dat2))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -823,30 +828,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat2(i), i=1,ubound(dat2,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat2 .and. .true.
 #else
       dat = dat2
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat2)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL3
     case(kind(dat3))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -854,30 +859,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat3(i), i=1,ubound(dat3,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat3 .and. .true.
 #else
       dat = dat3
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat3)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL4
     case(kind(dat4))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -885,55 +890,63 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat4(i), i=1,ubound(dat4,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat4 .and. .true.
 #else
       dat = dat4
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat4)
 #endif
-# 507 "iotk_dat.spp"
+# 535 "iotk_dat.spp"
     case default
       call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,'Kind incompatibility')
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_write(ierr,"kind",rkind)
     end select
   else
     if(raw) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     else if(iotk_strcomp(fmt,"*")) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
@@ -943,7 +956,7 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_getline(lunit,line,length,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 528 "iotk_dat.spp"
+# 564 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
@@ -956,40 +969,40 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           call iotk_getline(lunit,altline,altlength,ierr)
           if(ierr/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 544 "iotk_dat.spp"
+# 580 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
             return
           end if
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           read(lunit,"(a)",advance="no",iostat=iostat) altline(1:nexttag-1 + altlength - length)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
@@ -998,45 +1011,49 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_read(dat,line(1:nexttag - 1),index,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 561 "iotk_dat.spp"
+# 597 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
-# 567 "iotk_dat.spp"
+# 603 "iotk_dat.spp"
         if(index == size(dat)) exit
-# 569 "iotk_dat.spp"
+# 605 "iotk_dat.spp"
         if(nexttag/=length + 1) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 570 "iotk_dat.spp"
+# 606 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
       end do
     else
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     end if
   end if
-# 583 "iotk_dat.spp"
+# 623 "iotk_dat.spp"
   if(idummy/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 584 "iotk_dat.spp"
+# 624 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
 end subroutine iotk_scan_dat_aux_LOGICAL1
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1061,9 +1078,9 @@ subroutine iotk_scan_dat_LOGICAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -1082,7 +1099,7 @@ subroutine iotk_scan_dat_LOGICAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -1091,30 +1108,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1128,11 +1145,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -1153,9 +1170,6 @@ end subroutine iotk_scan_dat_LOGICAL1_1
 subroutine iotk_dat_dummy_LOGICAL1_1
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_1
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -1455,9 +1469,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL1_2
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1482,9 +1496,9 @@ subroutine iotk_scan_dat_LOGICAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -1503,7 +1517,7 @@ subroutine iotk_scan_dat_LOGICAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -1512,30 +1526,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1549,11 +1563,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -1574,9 +1588,6 @@ end subroutine iotk_scan_dat_LOGICAL1_2
 subroutine iotk_dat_dummy_LOGICAL1_2
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_2
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -1893,9 +1904,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL1_3
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1920,9 +1931,9 @@ subroutine iotk_scan_dat_LOGICAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -1941,7 +1952,7 @@ subroutine iotk_scan_dat_LOGICAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -1950,30 +1961,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1987,11 +1998,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -2012,9 +2023,6 @@ end subroutine iotk_scan_dat_LOGICAL1_3
 subroutine iotk_dat_dummy_LOGICAL1_3
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_3
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -2314,9 +2322,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL1_4
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -2341,9 +2349,9 @@ subroutine iotk_scan_dat_LOGICAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -2362,7 +2370,7 @@ subroutine iotk_scan_dat_LOGICAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -2371,30 +2379,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -2408,11 +2416,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -2433,9 +2441,6 @@ end subroutine iotk_scan_dat_LOGICAL1_4
 subroutine iotk_dat_dummy_LOGICAL1_4
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_4
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -2735,9 +2740,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL1_5
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -2762,9 +2767,9 @@ subroutine iotk_scan_dat_LOGICAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -2783,7 +2788,7 @@ subroutine iotk_scan_dat_LOGICAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -2792,30 +2797,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -2829,11 +2834,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -2854,9 +2859,6 @@ end subroutine iotk_scan_dat_LOGICAL1_5
 subroutine iotk_dat_dummy_LOGICAL1_5
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_5
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -3173,9 +3175,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL1_6
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -3200,9 +3202,9 @@ subroutine iotk_scan_dat_LOGICAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -3221,7 +3223,7 @@ subroutine iotk_scan_dat_LOGICAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -3230,30 +3232,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -3267,11 +3269,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -3292,9 +3294,6 @@ end subroutine iotk_scan_dat_LOGICAL1_6
 subroutine iotk_dat_dummy_LOGICAL1_6
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_6
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -3594,9 +3593,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL1_7
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -3621,9 +3620,9 @@ subroutine iotk_scan_dat_LOGICAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL1),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -3642,7 +3641,7 @@ subroutine iotk_scan_dat_LOGICAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -3651,30 +3650,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -3688,11 +3687,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -3713,9 +3712,6 @@ end subroutine iotk_scan_dat_LOGICAL1_7
 subroutine iotk_dat_dummy_LOGICAL1_7
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL1_7
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -4026,9 +4022,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL2_0
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -4053,9 +4049,9 @@ subroutine iotk_scan_dat_LOGICAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default 
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -4074,7 +4070,7 @@ subroutine iotk_scan_dat_LOGICAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -4083,30 +4079,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==1) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(1))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 659 "iotk_dat.spp"
+# 699 "iotk_dat.spp"
         dat = tmpdat(1)
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -4120,11 +4116,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -4145,9 +4141,6 @@ end subroutine iotk_scan_dat_LOGICAL2_0
 subroutine iotk_dat_dummy_LOGICAL2_0
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_0
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -4502,42 +4495,50 @@ recursive subroutine iotk_scan_dat_aux_LOGICAL2(unit,dat,rkind,rlen,fmt,ierr)
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
-# 463 "iotk_dat.spp"
+# 483 "iotk_dat.spp"
   if(binary) then
     select case(rkind)
     case(kind(dat))
       if(raw) then
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       else
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) idummy, ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) idummy, dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       end if
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL1
     case(kind(dat1))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -4545,30 +4546,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat1(i), i=1,ubound(dat1,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat1 .and. .true.
 #else
       dat = dat1
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat1)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL3
     case(kind(dat3))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -4576,30 +4577,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat3(i), i=1,ubound(dat3,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat3 .and. .true.
 #else
       dat = dat3
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat3)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL4
     case(kind(dat4))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -4607,55 +4608,63 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat4(i), i=1,ubound(dat4,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat4 .and. .true.
 #else
       dat = dat4
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat4)
 #endif
-# 507 "iotk_dat.spp"
+# 535 "iotk_dat.spp"
     case default
       call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,'Kind incompatibility')
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_write(ierr,"kind",rkind)
     end select
   else
     if(raw) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     else if(iotk_strcomp(fmt,"*")) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
@@ -4665,7 +4674,7 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_getline(lunit,line,length,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 528 "iotk_dat.spp"
+# 564 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
@@ -4678,40 +4687,40 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           call iotk_getline(lunit,altline,altlength,ierr)
           if(ierr/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 544 "iotk_dat.spp"
+# 580 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
             return
           end if
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           read(lunit,"(a)",advance="no",iostat=iostat) altline(1:nexttag-1 + altlength - length)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
@@ -4720,45 +4729,49 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_read(dat,line(1:nexttag - 1),index,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 561 "iotk_dat.spp"
+# 597 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
-# 567 "iotk_dat.spp"
+# 603 "iotk_dat.spp"
         if(index == size(dat)) exit
-# 569 "iotk_dat.spp"
+# 605 "iotk_dat.spp"
         if(nexttag/=length + 1) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 570 "iotk_dat.spp"
+# 606 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
       end do
     else
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     end if
   end if
-# 583 "iotk_dat.spp"
+# 623 "iotk_dat.spp"
   if(idummy/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 584 "iotk_dat.spp"
+# 624 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
 end subroutine iotk_scan_dat_aux_LOGICAL2
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -4783,9 +4796,9 @@ subroutine iotk_scan_dat_LOGICAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -4804,7 +4817,7 @@ subroutine iotk_scan_dat_LOGICAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -4813,30 +4826,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -4850,11 +4863,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -4875,9 +4888,6 @@ end subroutine iotk_scan_dat_LOGICAL2_1
 subroutine iotk_dat_dummy_LOGICAL2_1
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_1
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -5177,9 +5187,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL2_2
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -5204,9 +5214,9 @@ subroutine iotk_scan_dat_LOGICAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -5225,7 +5235,7 @@ subroutine iotk_scan_dat_LOGICAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -5234,30 +5244,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -5271,11 +5281,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -5296,9 +5306,6 @@ end subroutine iotk_scan_dat_LOGICAL2_2
 subroutine iotk_dat_dummy_LOGICAL2_2
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_2
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -5615,9 +5622,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL2_3
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -5642,9 +5649,9 @@ subroutine iotk_scan_dat_LOGICAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -5663,7 +5670,7 @@ subroutine iotk_scan_dat_LOGICAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -5672,30 +5679,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -5709,11 +5716,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -5734,9 +5741,6 @@ end subroutine iotk_scan_dat_LOGICAL2_3
 subroutine iotk_dat_dummy_LOGICAL2_3
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_3
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -6036,9 +6040,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL2_4
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -6063,9 +6067,9 @@ subroutine iotk_scan_dat_LOGICAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -6084,7 +6088,7 @@ subroutine iotk_scan_dat_LOGICAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -6093,30 +6097,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -6130,11 +6134,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -6155,9 +6159,6 @@ end subroutine iotk_scan_dat_LOGICAL2_4
 subroutine iotk_dat_dummy_LOGICAL2_4
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_4
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -6457,9 +6458,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL2_5
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -6484,9 +6485,9 @@ subroutine iotk_scan_dat_LOGICAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -6505,7 +6506,7 @@ subroutine iotk_scan_dat_LOGICAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -6514,30 +6515,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -6551,11 +6552,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -6576,9 +6577,6 @@ end subroutine iotk_scan_dat_LOGICAL2_5
 subroutine iotk_dat_dummy_LOGICAL2_5
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_5
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -6895,9 +6893,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL2_6
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -6922,9 +6920,9 @@ subroutine iotk_scan_dat_LOGICAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -6943,7 +6941,7 @@ subroutine iotk_scan_dat_LOGICAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -6952,30 +6950,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -6989,11 +6987,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -7014,9 +7012,6 @@ end subroutine iotk_scan_dat_LOGICAL2_6
 subroutine iotk_dat_dummy_LOGICAL2_6
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_6
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -7316,9 +7311,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL2_7
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -7343,9 +7338,9 @@ subroutine iotk_scan_dat_LOGICAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL2),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -7364,7 +7359,7 @@ subroutine iotk_scan_dat_LOGICAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -7373,30 +7368,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -7410,11 +7405,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -7435,9 +7430,6 @@ end subroutine iotk_scan_dat_LOGICAL2_7
 subroutine iotk_dat_dummy_LOGICAL2_7
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL2_7
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -7748,9 +7740,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL3_0
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -7775,9 +7767,9 @@ subroutine iotk_scan_dat_LOGICAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default 
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -7796,7 +7788,7 @@ subroutine iotk_scan_dat_LOGICAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -7805,30 +7797,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==1) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(1))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 659 "iotk_dat.spp"
+# 699 "iotk_dat.spp"
         dat = tmpdat(1)
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -7842,11 +7834,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -7867,9 +7859,6 @@ end subroutine iotk_scan_dat_LOGICAL3_0
 subroutine iotk_dat_dummy_LOGICAL3_0
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_0
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -8224,42 +8213,50 @@ recursive subroutine iotk_scan_dat_aux_LOGICAL3(unit,dat,rkind,rlen,fmt,ierr)
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
-# 463 "iotk_dat.spp"
+# 483 "iotk_dat.spp"
   if(binary) then
     select case(rkind)
     case(kind(dat))
       if(raw) then
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       else
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) idummy, ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) idummy, dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       end if
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL1
     case(kind(dat1))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -8267,30 +8264,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat1(i), i=1,ubound(dat1,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat1 .and. .true.
 #else
       dat = dat1
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat1)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL2
     case(kind(dat2))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -8298,30 +8295,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat2(i), i=1,ubound(dat2,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat2 .and. .true.
 #else
       dat = dat2
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat2)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL4
     case(kind(dat4))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -8329,55 +8326,63 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat4(i), i=1,ubound(dat4,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat4 .and. .true.
 #else
       dat = dat4
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat4)
 #endif
-# 507 "iotk_dat.spp"
+# 535 "iotk_dat.spp"
     case default
       call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,'Kind incompatibility')
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_write(ierr,"kind",rkind)
     end select
   else
     if(raw) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     else if(iotk_strcomp(fmt,"*")) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
@@ -8387,7 +8392,7 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_getline(lunit,line,length,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 528 "iotk_dat.spp"
+# 564 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
@@ -8400,40 +8405,40 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           call iotk_getline(lunit,altline,altlength,ierr)
           if(ierr/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 544 "iotk_dat.spp"
+# 580 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
             return
           end if
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           read(lunit,"(a)",advance="no",iostat=iostat) altline(1:nexttag-1 + altlength - length)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
@@ -8442,45 +8447,49 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_read(dat,line(1:nexttag - 1),index,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 561 "iotk_dat.spp"
+# 597 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
-# 567 "iotk_dat.spp"
+# 603 "iotk_dat.spp"
         if(index == size(dat)) exit
-# 569 "iotk_dat.spp"
+# 605 "iotk_dat.spp"
         if(nexttag/=length + 1) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 570 "iotk_dat.spp"
+# 606 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
       end do
     else
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     end if
   end if
-# 583 "iotk_dat.spp"
+# 623 "iotk_dat.spp"
   if(idummy/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 584 "iotk_dat.spp"
+# 624 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
 end subroutine iotk_scan_dat_aux_LOGICAL3
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -8505,9 +8514,9 @@ subroutine iotk_scan_dat_LOGICAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -8526,7 +8535,7 @@ subroutine iotk_scan_dat_LOGICAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -8535,30 +8544,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -8572,11 +8581,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -8597,9 +8606,6 @@ end subroutine iotk_scan_dat_LOGICAL3_1
 subroutine iotk_dat_dummy_LOGICAL3_1
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_1
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -8899,9 +8905,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL3_2
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -8926,9 +8932,9 @@ subroutine iotk_scan_dat_LOGICAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -8947,7 +8953,7 @@ subroutine iotk_scan_dat_LOGICAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -8956,30 +8962,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -8993,11 +8999,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -9018,9 +9024,6 @@ end subroutine iotk_scan_dat_LOGICAL3_2
 subroutine iotk_dat_dummy_LOGICAL3_2
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_2
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -9337,9 +9340,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL3_3
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -9364,9 +9367,9 @@ subroutine iotk_scan_dat_LOGICAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -9385,7 +9388,7 @@ subroutine iotk_scan_dat_LOGICAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -9394,30 +9397,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -9431,11 +9434,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -9456,9 +9459,6 @@ end subroutine iotk_scan_dat_LOGICAL3_3
 subroutine iotk_dat_dummy_LOGICAL3_3
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_3
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -9758,9 +9758,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL3_4
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -9785,9 +9785,9 @@ subroutine iotk_scan_dat_LOGICAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -9806,7 +9806,7 @@ subroutine iotk_scan_dat_LOGICAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -9815,30 +9815,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -9852,11 +9852,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -9877,9 +9877,6 @@ end subroutine iotk_scan_dat_LOGICAL3_4
 subroutine iotk_dat_dummy_LOGICAL3_4
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_4
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -10179,9 +10176,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL3_5
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -10206,9 +10203,9 @@ subroutine iotk_scan_dat_LOGICAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -10227,7 +10224,7 @@ subroutine iotk_scan_dat_LOGICAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -10236,30 +10233,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -10273,11 +10270,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -10298,9 +10295,6 @@ end subroutine iotk_scan_dat_LOGICAL3_5
 subroutine iotk_dat_dummy_LOGICAL3_5
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_5
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -10617,9 +10611,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL3_6
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -10644,9 +10638,9 @@ subroutine iotk_scan_dat_LOGICAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -10665,7 +10659,7 @@ subroutine iotk_scan_dat_LOGICAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -10674,30 +10668,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -10711,11 +10705,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -10736,9 +10730,6 @@ end subroutine iotk_scan_dat_LOGICAL3_6
 subroutine iotk_dat_dummy_LOGICAL3_6
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_6
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -11038,9 +11029,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL3_7
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -11065,9 +11056,9 @@ subroutine iotk_scan_dat_LOGICAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL3),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -11086,7 +11077,7 @@ subroutine iotk_scan_dat_LOGICAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -11095,30 +11086,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -11132,11 +11123,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -11157,9 +11148,6 @@ end subroutine iotk_scan_dat_LOGICAL3_7
 subroutine iotk_dat_dummy_LOGICAL3_7
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL3_7
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -11470,9 +11458,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL4_0
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -11497,9 +11485,9 @@ subroutine iotk_scan_dat_LOGICAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default 
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -11518,7 +11506,7 @@ subroutine iotk_scan_dat_LOGICAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -11527,30 +11515,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==1) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(1))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 659 "iotk_dat.spp"
+# 699 "iotk_dat.spp"
         dat = tmpdat(1)
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -11564,11 +11552,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -11589,9 +11577,6 @@ end subroutine iotk_scan_dat_LOGICAL4_0
 subroutine iotk_dat_dummy_LOGICAL4_0
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_0
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -11946,42 +11931,50 @@ recursive subroutine iotk_scan_dat_aux_LOGICAL4(unit,dat,rkind,rlen,fmt,ierr)
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
-# 463 "iotk_dat.spp"
+# 483 "iotk_dat.spp"
   if(binary) then
     select case(rkind)
     case(kind(dat))
       if(raw) then
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 469 "iotk_dat.spp"
+# 493 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       else
+#ifdef __IOTK_WORKAROUND3
         read(lunit,iostat=iostat) idummy, ( dat(i), i=1,ubound(dat,1) )
+#else
+        read(lunit,iostat=iostat) idummy, dat
+#endif
         if(iostat/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 475 "iotk_dat.spp"
+# 503 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
           return
         end if
       end if
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL1
     case(kind(dat1))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -11989,30 +11982,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat1(i), i=1,ubound(dat1,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat1 .and. .true.
 #else
       dat = dat1
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat1)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL2
     case(kind(dat2))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -12020,30 +12013,30 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat2(i), i=1,ubound(dat2,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat2 .and. .true.
 #else
       dat = dat2
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat2)
 #endif
-# 481 "iotk_dat.spp"
+# 509 "iotk_dat.spp"
 #ifdef __IOTK_LOGICAL3
     case(kind(dat3))
       ! Giusto per scrupolo. Se e' raw non ci sono info sul kind, quindi questa linea e' irraggiungibile
       if(raw) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 485 "iotk_dat.spp"
+# 513 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
         return
       end if
@@ -12051,55 +12044,63 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       read(lunit,iostat=iostat) idummy,( dat3(i), i=1,ubound(dat3,1) )
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 491 "iotk_dat.spp"
+# 519 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
-# 495 "iotk_dat.spp"
+# 523 "iotk_dat.spp"
 #ifdef __IOTK_WORKAROUND2
       dat  = dat3 .and. .true.
 #else
       dat = dat3
 #endif
-# 503 "iotk_dat.spp"
+# 531 "iotk_dat.spp"
       deallocate(dat3)
 #endif
-# 507 "iotk_dat.spp"
+# 535 "iotk_dat.spp"
     case default
       call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_msg(ierr,'Kind incompatibility')
-# 508 "iotk_dat.spp"
+# 536 "iotk_dat.spp"
 call iotk_error_write(ierr,"kind",rkind)
     end select
   else
     if(raw) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 514 "iotk_dat.spp"
+# 546 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     else if(iotk_strcomp(fmt,"*")) then
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=*,iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=*,iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 520 "iotk_dat.spp"
+# 556 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
@@ -12109,7 +12110,7 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_getline(lunit,line,length,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 528 "iotk_dat.spp"
+# 564 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
@@ -12122,40 +12123,40 @@ call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 539 "iotk_dat.spp"
+# 575 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           call iotk_getline(lunit,altline,altlength,ierr)
           if(ierr/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 544 "iotk_dat.spp"
+# 580 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
             return
           end if
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 549 "iotk_dat.spp"
+# 585 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
           read(lunit,"(a)",advance="no",iostat=iostat) altline(1:nexttag-1 + altlength - length)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 554 "iotk_dat.spp"
+# 590 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
             return
           end if
@@ -12164,45 +12165,49 @@ call iotk_error_write(ierr,"iostat",iostat)
         call iotk_read(dat,line(1:nexttag - 1),index,ierr)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 561 "iotk_dat.spp"
+# 597 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
-# 567 "iotk_dat.spp"
+# 603 "iotk_dat.spp"
         if(index == size(dat)) exit
-# 569 "iotk_dat.spp"
+# 605 "iotk_dat.spp"
         if(nexttag/=length + 1) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 570 "iotk_dat.spp"
+# 606 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
           return
         end if
       end do
     else
+#ifdef __IOTK_WORKAROUND3
       read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) ( dat(i), i=1,ubound(dat,1) )
+#else
+      read(lunit,fmt=fmt(1:iotk_strlen(fmt)),iostat=iostat) dat
+#endif
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
-# 577 "iotk_dat.spp"
+# 617 "iotk_dat.spp"
 call iotk_error_write(ierr,"iostat",iostat)
         return
       end if
     end if
   end if
-# 583 "iotk_dat.spp"
+# 623 "iotk_dat.spp"
   if(idummy/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 584 "iotk_dat.spp"
+# 624 "iotk_dat.spp"
 call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
 end subroutine iotk_scan_dat_aux_LOGICAL4
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -12227,9 +12232,9 @@ subroutine iotk_scan_dat_LOGICAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -12248,7 +12253,7 @@ subroutine iotk_scan_dat_LOGICAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -12257,30 +12262,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -12294,11 +12299,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -12319,9 +12324,6 @@ end subroutine iotk_scan_dat_LOGICAL4_1
 subroutine iotk_dat_dummy_LOGICAL4_1
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_1
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -12621,9 +12623,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL4_2
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -12648,9 +12650,9 @@ subroutine iotk_scan_dat_LOGICAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -12669,7 +12671,7 @@ subroutine iotk_scan_dat_LOGICAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -12678,30 +12680,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -12715,11 +12717,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -12740,9 +12742,6 @@ end subroutine iotk_scan_dat_LOGICAL4_2
 subroutine iotk_dat_dummy_LOGICAL4_2
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_2
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -13059,9 +13058,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL4_3
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -13086,9 +13085,9 @@ subroutine iotk_scan_dat_LOGICAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -13107,7 +13106,7 @@ subroutine iotk_scan_dat_LOGICAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -13116,30 +13115,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -13153,11 +13152,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -13178,9 +13177,6 @@ end subroutine iotk_scan_dat_LOGICAL4_3
 subroutine iotk_dat_dummy_LOGICAL4_3
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_3
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -13480,9 +13476,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL4_4
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -13507,9 +13503,9 @@ subroutine iotk_scan_dat_LOGICAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -13528,7 +13524,7 @@ subroutine iotk_scan_dat_LOGICAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -13537,30 +13533,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -13574,11 +13570,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -13599,9 +13595,6 @@ end subroutine iotk_scan_dat_LOGICAL4_4
 subroutine iotk_dat_dummy_LOGICAL4_4
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_4
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -13901,9 +13894,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL4_5
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -13928,9 +13921,9 @@ subroutine iotk_scan_dat_LOGICAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -13949,7 +13942,7 @@ subroutine iotk_scan_dat_LOGICAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -13958,30 +13951,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -13995,11 +13988,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -14020,9 +14013,6 @@ end subroutine iotk_scan_dat_LOGICAL4_5
 subroutine iotk_dat_dummy_LOGICAL4_5
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_5
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -14339,9 +14329,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL4_6
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -14366,9 +14356,9 @@ subroutine iotk_scan_dat_LOGICAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -14387,7 +14377,7 @@ subroutine iotk_scan_dat_LOGICAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -14396,30 +14386,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -14433,11 +14423,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -14458,9 +14448,6 @@ end subroutine iotk_scan_dat_LOGICAL4_6
 subroutine iotk_dat_dummy_LOGICAL4_6
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_6
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
@@ -14760,9 +14747,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 end subroutine iotk_write_dat_LOGICAL4_7
 
 
-# 589 "iotk_dat.spp"
+# 629 "iotk_dat.spp"
 
-# 591 "iotk_dat.spp"
+# 631 "iotk_dat.spp"
 subroutine iotk_scan_dat_LOGICAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -14787,9 +14774,9 @@ subroutine iotk_scan_dat_LOGICAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   logical,         optional, intent(out) :: found
   LOGICAL (kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   integer,         optional, intent(out) :: ierr
-# 618 "iotk_dat.spp"
+# 658 "iotk_dat.spp"
   LOGICAL (kind=__IOTK_LOGICAL4),              allocatable :: tmpdat(:)
-# 620 "iotk_dat.spp"
+# 660 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -14808,7 +14795,7 @@ subroutine iotk_scan_dat_LOGICAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 637 "iotk_dat.spp"
+# 677 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
@@ -14817,30 +14804,30 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"LOGICAL") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 644 "iotk_dat.spp"
+# 684 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","LOGICAL")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 648 "iotk_dat.spp"
+# 688 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 655 "iotk_dat.spp"
+# 695 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
-# 668 "iotk_dat.spp"
+# 708 "iotk_dat.spp"
         dat = reshape(tmpdat,shape(dat))
-# 671 "iotk_dat.spp"
+# 711 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -14854,11 +14841,11 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 683 "iotk_dat.spp"
+# 723 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -14879,9 +14866,6 @@ end subroutine iotk_scan_dat_LOGICAL4_7
 subroutine iotk_dat_dummy_LOGICAL4_7
   write(0,*)
 end subroutine iotk_dat_dummy_LOGICAL4_7
-
-
-# 727 "iotk_dat.spp"
 
 
 # 45 "iotk_dat.spp"
