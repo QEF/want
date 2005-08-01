@@ -8,7 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 27Jul2005 at 19:32:27 
+  Date  1Aug2005 at 13:43: 2 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: copper_US.export/index.xml
@@ -650,200 +653,200 @@
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     4.86 secs
+                              Total time spent up to now :     2.77 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     4.95 secs
+                              Total time spent up to now :     2.83 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     5.03 secs
+                              Total time spent up to now :     2.90 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     5.12 secs
+                              Total time spent up to now :     2.97 secs
 
     Overlaps or Projections calculation for k-point   5
-                              Total time spent up to now :     5.20 secs
+                              Total time spent up to now :     3.04 secs
 
     Overlaps or Projections calculation for k-point   6
-                              Total time spent up to now :     5.28 secs
+                              Total time spent up to now :     3.09 secs
 
     Overlaps or Projections calculation for k-point   7
-                              Total time spent up to now :     5.34 secs
+                              Total time spent up to now :     3.15 secs
 
     Overlaps or Projections calculation for k-point   8
-                              Total time spent up to now :     5.44 secs
+                              Total time spent up to now :     3.23 secs
 
     Overlaps or Projections calculation for k-point   9
-                              Total time spent up to now :     5.51 secs
+                              Total time spent up to now :     3.30 secs
 
     Overlaps or Projections calculation for k-point  10
-                              Total time spent up to now :     5.59 secs
+                              Total time spent up to now :     3.35 secs
 
     Overlaps or Projections calculation for k-point  11
-                              Total time spent up to now :     5.66 secs
+                              Total time spent up to now :     3.40 secs
 
     Overlaps or Projections calculation for k-point  12
-                              Total time spent up to now :     5.76 secs
+                              Total time spent up to now :     3.48 secs
 
     Overlaps or Projections calculation for k-point  13
-                              Total time spent up to now :     5.87 secs
+                              Total time spent up to now :     3.56 secs
 
     Overlaps or Projections calculation for k-point  14
-                              Total time spent up to now :     5.96 secs
+                              Total time spent up to now :     3.63 secs
 
     Overlaps or Projections calculation for k-point  15
-                              Total time spent up to now :     6.07 secs
+                              Total time spent up to now :     3.71 secs
 
     Overlaps or Projections calculation for k-point  16
-                              Total time spent up to now :     6.17 secs
+                              Total time spent up to now :     3.79 secs
 
     Overlaps or Projections calculation for k-point  17
-                              Total time spent up to now :     6.23 secs
+                              Total time spent up to now :     3.84 secs
 
     Overlaps or Projections calculation for k-point  18
-                              Total time spent up to now :     6.31 secs
+                              Total time spent up to now :     3.91 secs
 
     Overlaps or Projections calculation for k-point  19
-                              Total time spent up to now :     6.39 secs
+                              Total time spent up to now :     3.96 secs
 
     Overlaps or Projections calculation for k-point  20
-                              Total time spent up to now :     6.46 secs
+                              Total time spent up to now :     4.04 secs
 
     Overlaps or Projections calculation for k-point  21
-                              Total time spent up to now :     6.54 secs
+                              Total time spent up to now :     4.09 secs
 
     Overlaps or Projections calculation for k-point  22
-                              Total time spent up to now :     6.60 secs
+                              Total time spent up to now :     4.14 secs
 
     Overlaps or Projections calculation for k-point  23
-                              Total time spent up to now :     6.66 secs
+                              Total time spent up to now :     4.18 secs
 
     Overlaps or Projections calculation for k-point  24
-                              Total time spent up to now :     6.75 secs
+                              Total time spent up to now :     4.25 secs
 
     Overlaps or Projections calculation for k-point  25
-                              Total time spent up to now :     6.81 secs
+                              Total time spent up to now :     4.31 secs
 
     Overlaps or Projections calculation for k-point  26
-                              Total time spent up to now :     6.88 secs
+                              Total time spent up to now :     4.36 secs
 
     Overlaps or Projections calculation for k-point  27
-                              Total time spent up to now :     6.95 secs
+                              Total time spent up to now :     4.41 secs
 
     Overlaps or Projections calculation for k-point  28
-                              Total time spent up to now :     7.04 secs
+                              Total time spent up to now :     4.48 secs
 
     Overlaps or Projections calculation for k-point  29
-                              Total time spent up to now :     7.11 secs
+                              Total time spent up to now :     4.54 secs
 
     Overlaps or Projections calculation for k-point  30
-                              Total time spent up to now :     7.20 secs
+                              Total time spent up to now :     4.61 secs
 
     Overlaps or Projections calculation for k-point  31
-                              Total time spent up to now :     7.28 secs
+                              Total time spent up to now :     4.67 secs
 
     Overlaps or Projections calculation for k-point  32
-                              Total time spent up to now :     7.36 secs
+                              Total time spent up to now :     4.75 secs
 
     Overlaps or Projections calculation for k-point  33
-                              Total time spent up to now :     7.42 secs
+                              Total time spent up to now :     4.79 secs
 
     Overlaps or Projections calculation for k-point  34
-                              Total time spent up to now :     7.49 secs
+                              Total time spent up to now :     4.84 secs
 
     Overlaps or Projections calculation for k-point  35
-                              Total time spent up to now :     7.54 secs
+                              Total time spent up to now :     4.89 secs
 
     Overlaps or Projections calculation for k-point  36
-                              Total time spent up to now :     7.62 secs
+                              Total time spent up to now :     4.94 secs
 
     Overlaps or Projections calculation for k-point  37
-                              Total time spent up to now :     7.68 secs
+                              Total time spent up to now :     4.99 secs
 
     Overlaps or Projections calculation for k-point  38
-                              Total time spent up to now :     7.73 secs
+                              Total time spent up to now :     5.04 secs
 
     Overlaps or Projections calculation for k-point  39
-                              Total time spent up to now :     7.79 secs
+                              Total time spent up to now :     5.10 secs
 
     Overlaps or Projections calculation for k-point  40
-                              Total time spent up to now :     7.86 secs
+                              Total time spent up to now :     5.15 secs
 
     Overlaps or Projections calculation for k-point  41
-                              Total time spent up to now :     7.91 secs
+                              Total time spent up to now :     5.20 secs
 
     Overlaps or Projections calculation for k-point  42
-                              Total time spent up to now :     7.97 secs
+                              Total time spent up to now :     5.25 secs
 
     Overlaps or Projections calculation for k-point  43
-                              Total time spent up to now :     8.03 secs
+                              Total time spent up to now :     5.30 secs
 
     Overlaps or Projections calculation for k-point  44
-                              Total time spent up to now :     8.09 secs
+                              Total time spent up to now :     5.36 secs
 
     Overlaps or Projections calculation for k-point  45
-                              Total time spent up to now :     8.16 secs
+                              Total time spent up to now :     5.41 secs
 
     Overlaps or Projections calculation for k-point  46
-                              Total time spent up to now :     8.23 secs
+                              Total time spent up to now :     5.47 secs
 
     Overlaps or Projections calculation for k-point  47
-                              Total time spent up to now :     8.30 secs
+                              Total time spent up to now :     5.52 secs
 
     Overlaps or Projections calculation for k-point  48
-                              Total time spent up to now :     8.36 secs
+                              Total time spent up to now :     5.58 secs
 
     Overlaps or Projections calculation for k-point  49
-                              Total time spent up to now :     8.45 secs
+                              Total time spent up to now :     5.64 secs
 
     Overlaps or Projections calculation for k-point  50
-                              Total time spent up to now :     8.52 secs
+                              Total time spent up to now :     5.72 secs
 
     Overlaps or Projections calculation for k-point  51
-                              Total time spent up to now :     8.60 secs
+                              Total time spent up to now :     5.80 secs
 
     Overlaps or Projections calculation for k-point  52
-                              Total time spent up to now :     8.68 secs
+                              Total time spent up to now :     5.86 secs
 
     Overlaps or Projections calculation for k-point  53
-                              Total time spent up to now :     8.76 secs
+                              Total time spent up to now :     5.92 secs
 
     Overlaps or Projections calculation for k-point  54
-                              Total time spent up to now :     8.85 secs
+                              Total time spent up to now :     5.99 secs
 
     Overlaps or Projections calculation for k-point  55
-                              Total time spent up to now :     8.94 secs
+                              Total time spent up to now :     6.04 secs
 
     Overlaps or Projections calculation for k-point  56
-                              Total time spent up to now :     9.01 secs
+                              Total time spent up to now :     6.10 secs
 
     Overlaps or Projections calculation for k-point  57
-                              Total time spent up to now :     9.09 secs
+                              Total time spent up to now :     6.17 secs
 
     Overlaps or Projections calculation for k-point  58
-                              Total time spent up to now :     9.17 secs
+                              Total time spent up to now :     6.25 secs
 
     Overlaps or Projections calculation for k-point  59
-                              Total time spent up to now :     9.25 secs
+                              Total time spent up to now :     6.30 secs
 
     Overlaps or Projections calculation for k-point  60
-                              Total time spent up to now :     9.33 secs
+                              Total time spent up to now :     6.36 secs
 
     Overlaps or Projections calculation for k-point  61
-                              Total time spent up to now :     9.40 secs
+                              Total time spent up to now :     6.43 secs
 
     Overlaps or Projections calculation for k-point  62
-                              Total time spent up to now :     9.48 secs
+                              Total time spent up to now :     6.49 secs
 
     Overlaps or Projections calculation for k-point  63
-                              Total time spent up to now :     9.56 secs
+                              Total time spent up to now :     6.54 secs
 
     Overlaps or Projections calculation for k-point  64
-                              Total time spent up to now :     9.64 secs
+                              Total time spent up to now :     6.61 secs
 
 
   Overlap and projections written on file: copper_US_WanT.ovp
-                              Total time spent up to now :    12.46 secs
+                              Total time spent up to now :     7.62 secs
 
 
   ======================================================================
@@ -864,20 +867,20 @@
   Iteration =     9   Omega_I =     13.16137341    Error =      0.00146130
   Iteration =    10   Omega_I =     13.15101513    Error =      0.00120521
 
-                              Total time spent up to now :    12.71 secs
+                              Total time spent up to now :     7.81 secs
 
   Iteration =    11   Omega_I =     13.14179907    Error =      0.00142531
   Iteration =    12   Omega_I =     13.13020696    Error =      0.00211540
-  Iteration =    13   Omega_I =     13.11269491    Error =      0.00329595
+  Iteration =    13   Omega_I =     13.11269492    Error =      0.00329595
   Iteration =    14   Omega_I =     13.08575126    Error =      0.00485485
   Iteration =    15   Omega_I =     13.04714711    Error =      0.00641997
   Iteration =    16   Omega_I =     12.99778487    Error =      0.00746682
-  Iteration =    17   Omega_I =     12.94223156    Error =      0.00766309
+  Iteration =    17   Omega_I =     12.94223157    Error =      0.00766309
   Iteration =    18   Omega_I =     12.88678170    Error =      0.00707578
   Iteration =    19   Omega_I =     12.83665218    Error =      0.00603007
   Iteration =    20   Omega_I =     12.79456437    Error =      0.00485763
 
-                              Total time spent up to now :    13.60 secs
+                              Total time spent up to now :     8.12 secs
 
   Iteration =    21   Omega_I =     12.76099858    Error =      0.00377011
   Iteration =    22   Omega_I =     12.73511590    Error =      0.00285874
@@ -890,7 +893,7 @@
   Iteration =    29   Omega_I =     12.66848825    Error =      0.00036030
   Iteration =    30   Omega_I =     12.66603122    Error =      0.00027000
 
-                              Total time spent up to now :    14.44 secs
+                              Total time spent up to now :     8.44 secs
 
   Iteration =    31   Omega_I =     12.66418902    Error =      0.00020298
   Iteration =    32   Omega_I =     12.66280332    Error =      0.00015307
@@ -903,7 +906,7 @@
   Iteration =    39   Omega_I =     12.65909344    Error =      0.00002273
   Iteration =    40   Omega_I =     12.65893778    Error =      0.00001743
 
-                              Total time spent up to now :    15.31 secs
+                              Total time spent up to now :     8.76 secs
 
   Iteration =    41   Omega_I =     12.65881836    Error =      0.00001339
   Iteration =    42   Omega_I =     12.65872662    Error =      0.00001029
@@ -916,7 +919,7 @@
   Iteration =    49   Omega_I =     12.65846874    Error =      0.00000167
   Iteration =    50   Omega_I =     12.65845727    Error =      0.00000129
 
-                              Total time spent up to now :    16.17 secs
+                              Total time spent up to now :     9.07 secs
 
   Iteration =    51   Omega_I =     12.65844840    Error =      0.00000100
   Iteration =    52   Omega_I =     12.65844154    Error =      0.00000077
@@ -929,7 +932,7 @@
   Iteration =    59   Omega_I =     12.65842197    Error =      0.00000013
   Iteration =    60   Omega_I =     12.65842108    Error =      0.00000010
 
-                              Total time spent up to now :    17.06 secs
+                              Total time spent up to now :     9.39 secs
 
   Iteration =    61   Omega_I =     12.65842039    Error =      0.00000008
   Iteration =    62   Omega_I =     12.65841986    Error =      0.00000006
@@ -942,7 +945,7 @@
   Iteration =    69   Omega_I =     12.65841834    Error =      0.00000001
   Iteration =    70   Omega_I =     12.65841827    Error =      0.00000001
 
-                              Total time spent up to now :    17.93 secs
+                              Total time spent up to now :     9.70 secs
 
 
 
@@ -953,7 +956,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):     12.65841817        3.54471529
    Avrg Omega_I                     :      2.10973636        0.59078588
 
-                              Total time spent up to now :    18.57 secs
+                              Total time spent up to now :     9.85 secs
 
 
   Subspace data written on file: copper_US_WanT.space
@@ -962,27 +965,27 @@
    <global routines>
              clock number :    21
 
-              disentangle :    19.04s CPU 
+              disentangle :     9.96s CPU 
 
-                want_init :     0.99s CPU
-                  bshells :     0.79s CPU
-              wfc_manager :    11.44s CPU
+                want_init :     0.74s CPU
+                  bshells :     0.53s CPU
+              wfc_manager :     6.87s CPU
           ggrids_read_ext :     0.01s CPU
               struct_fact :     0.00s CPU
-                init_us_1 :     3.56s CPU
-           wfc_data_kread :     3.75s CPU (     320 calls,   0.012 s avg)
-                init_us_2 :     0.26s CPU (     384 calls,   0.001 s avg)
-                  ccalbec :     0.09s CPU (     320 calls,   0.000 s avg)
-                  overlap :     0.45s CPU (     256 calls,   0.002 s avg)
-           overlap_setmap :     0.18s CPU (     256 calls,   0.001 s avg)
-          overlap_augment :     0.07s CPU (     256 calls,   0.000 s avg)
-                    s_psi :     0.01s CPU (      64 calls,   0.000 s avg)
-               projection :     0.15s CPU (      64 calls,   0.002 s avg)
-       trial_center_setup :     0.07s CPU (     384 calls,   0.000 s avg)
-               iterations :     6.11s CPU
+                init_us_1 :     1.76s CPU
+           wfc_data_kread :     3.15s CPU (     320 calls,   0.010 s avg)
+                init_us_2 :     0.17s CPU (     384 calls,   0.000 s avg)
+                  ccalbec :     0.05s CPU (     320 calls,   0.000 s avg)
+                  overlap :     0.30s CPU (     256 calls,   0.001 s avg)
+           overlap_setmap :     0.16s CPU (     256 calls,   0.001 s avg)
+          overlap_augment :     0.06s CPU (     256 calls,   0.000 s avg)
+                    s_psi :     0.02s CPU (      64 calls,   0.000 s avg)
+               projection :     0.09s CPU (      64 calls,   0.001 s avg)
+       trial_center_setup :     0.04s CPU (     384 calls,   0.000 s avg)
+               iterations :     2.23s CPU
              subapce_init :     0.01s CPU
-                  zmatrix :     0.41s CPU (    4480 calls,   0.000 s avg)
-               zmat_hdiag :     0.44s CPU (    4480 calls,   0.000 s avg)
-                  komegai :     0.58s CPU (    4480 calls,   0.000 s avg)
+                  zmatrix :     0.33s CPU (    4480 calls,   0.000 s avg)
+               zmat_hdiag :     0.28s CPU (    4480 calls,   0.000 s avg)
+                  komegai :     0.47s CPU (    4480 calls,   0.000 s avg)
 
 

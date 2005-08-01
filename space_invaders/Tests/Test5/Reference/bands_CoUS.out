@@ -8,7 +8,10 @@
 
 
   Program <bands>  v. 1.1.1  starts ...
-  Date 28Jul2005 at 12:54: 0 
+  Date  1Aug2005 at 12:40:54 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: cobalt_US.export/index.xml
@@ -175,8 +178,8 @@
    <global routines>
              clock number :     2
 
-                    bands :     0.59s CPU 
+                    bands :     0.37s CPU 
 
-                want_init :     0.21s CPU
+                want_init :     0.01s CPU
 
 

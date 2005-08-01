@@ -8,7 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 27Jul2005 at 16:22: 5 
+  Date  1Aug2005 at 12:15: 4 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: gold.export/index.xml
@@ -252,32 +255,32 @@
 
   Initializing atomic wfc
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     0.55 secs
+                              Total time spent up to now :     0.95 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     0.73 secs
+                              Total time spent up to now :     1.26 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     0.90 secs
+                              Total time spent up to now :     1.44 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     1.03 secs
+                              Total time spent up to now :     1.64 secs
 
     Overlaps or Projections calculation for k-point   5
-                              Total time spent up to now :     1.16 secs
+                              Total time spent up to now :     1.90 secs
 
     Overlaps or Projections calculation for k-point   6
-                              Total time spent up to now :     1.31 secs
+                              Total time spent up to now :     2.10 secs
 
     Overlaps or Projections calculation for k-point   7
-                              Total time spent up to now :     1.49 secs
+                              Total time spent up to now :     2.26 secs
 
     Overlaps or Projections calculation for k-point   8
-                              Total time spent up to now :     1.72 secs
+                              Total time spent up to now :     2.42 secs
 
 
   Overlap and projections written on file: gold_WanT.ovp
-                              Total time spent up to now :     1.99 secs
+                              Total time spent up to now :     2.53 secs
 
 
   ======================================================================
@@ -332,7 +335,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):     22.47799629        6.29447503
    Avrg Omega_I                     :      3.74633271        1.04907917
 
-                              Total time spent up to now :     2.00 secs
+                              Total time spent up to now :     2.53 secs
 
 
   Subspace decomposition:
@@ -373,22 +376,22 @@
    <global routines>
              clock number :    20
 
-              disentangle :     2.09s CPU 
+              disentangle :     2.56s CPU 
 
-                want_init :     0.09s CPU
-                  bshells :     0.03s CPU
-              wfc_manager :     1.90s CPU
-          ggrids_read_ext :     0.05s CPU
+                want_init :     0.10s CPU
+                  bshells :     0.02s CPU
+              wfc_manager :     2.43s CPU
+          ggrids_read_ext :     0.13s CPU
               struct_fact :     0.01s CPU
-                init_at_1 :     0.15s CPU
-           wfc_data_kread :     0.74s CPU (      32 calls,   0.023 s avg)
-                  overlap :     0.49s CPU (      24 calls,   0.021 s avg)
-           overlap_setmap :     0.12s CPU (      24 calls,   0.005 s avg)
+                init_at_1 :     0.08s CPU
+           wfc_data_kread :     1.33s CPU (      32 calls,   0.042 s avg)
+                  overlap :     0.29s CPU (      24 calls,   0.012 s avg)
+           overlap_setmap :     0.10s CPU (      24 calls,   0.004 s avg)
                     s_psi :     0.01s CPU (       8 calls,   0.001 s avg)
-               projection :     0.14s CPU (       8 calls,   0.018 s avg)
-       trial_center_setup :     0.04s CPU (      48 calls,   0.001 s avg)
-               atomic_wfc :     0.04s CPU (      48 calls,   0.001 s avg)
-               iterations :     0.01s CPU
+               projection :     0.11s CPU (       8 calls,   0.013 s avg)
+       trial_center_setup :     0.03s CPU (      48 calls,   0.001 s avg)
+               atomic_wfc :     0.03s CPU (      48 calls,   0.001 s avg)
+               iterations :     0.00s CPU
              subapce_init :     0.00s CPU
         projection_frozen :     0.00s CPU
                   zmatrix :     0.00s CPU

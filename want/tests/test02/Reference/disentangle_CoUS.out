@@ -8,7 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 27Jul2005 at 19:35:50 
+  Date  1Aug2005 at 13:45: 4 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: cobalt_US.export/index.xml
@@ -653,200 +656,200 @@
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     7.31 secs
+                              Total time spent up to now :     3.88 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     7.38 secs
+                              Total time spent up to now :     3.95 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     7.46 secs
+                              Total time spent up to now :     4.03 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     7.57 secs
+                              Total time spent up to now :     4.11 secs
 
     Overlaps or Projections calculation for k-point   5
-                              Total time spent up to now :     7.63 secs
+                              Total time spent up to now :     4.18 secs
 
     Overlaps or Projections calculation for k-point   6
-                              Total time spent up to now :     7.72 secs
+                              Total time spent up to now :     4.25 secs
 
     Overlaps or Projections calculation for k-point   7
-                              Total time spent up to now :     7.80 secs
+                              Total time spent up to now :     4.31 secs
 
     Overlaps or Projections calculation for k-point   8
-                              Total time spent up to now :     7.91 secs
+                              Total time spent up to now :     4.39 secs
 
     Overlaps or Projections calculation for k-point   9
-                              Total time spent up to now :     7.99 secs
+                              Total time spent up to now :     4.45 secs
 
     Overlaps or Projections calculation for k-point  10
-                              Total time spent up to now :     8.07 secs
+                              Total time spent up to now :     4.53 secs
 
     Overlaps or Projections calculation for k-point  11
-                              Total time spent up to now :     8.15 secs
+                              Total time spent up to now :     4.58 secs
 
     Overlaps or Projections calculation for k-point  12
-                              Total time spent up to now :     8.25 secs
+                              Total time spent up to now :     4.67 secs
 
     Overlaps or Projections calculation for k-point  13
-                              Total time spent up to now :     8.36 secs
+                              Total time spent up to now :     4.76 secs
 
     Overlaps or Projections calculation for k-point  14
-                              Total time spent up to now :     8.46 secs
+                              Total time spent up to now :     4.85 secs
 
     Overlaps or Projections calculation for k-point  15
-                              Total time spent up to now :     8.56 secs
+                              Total time spent up to now :     4.94 secs
 
     Overlaps or Projections calculation for k-point  16
-                              Total time spent up to now :     8.67 secs
+                              Total time spent up to now :     5.03 secs
 
     Overlaps or Projections calculation for k-point  17
-                              Total time spent up to now :     8.74 secs
+                              Total time spent up to now :     5.09 secs
 
     Overlaps or Projections calculation for k-point  18
-                              Total time spent up to now :     8.81 secs
+                              Total time spent up to now :     5.15 secs
 
     Overlaps or Projections calculation for k-point  19
-                              Total time spent up to now :     8.89 secs
+                              Total time spent up to now :     5.22 secs
 
     Overlaps or Projections calculation for k-point  20
-                              Total time spent up to now :     8.99 secs
+                              Total time spent up to now :     5.29 secs
 
     Overlaps or Projections calculation for k-point  21
-                              Total time spent up to now :     9.07 secs
+                              Total time spent up to now :     5.36 secs
 
     Overlaps or Projections calculation for k-point  22
-                              Total time spent up to now :     9.13 secs
+                              Total time spent up to now :     5.42 secs
 
     Overlaps or Projections calculation for k-point  23
-                              Total time spent up to now :     9.21 secs
+                              Total time spent up to now :     5.48 secs
 
     Overlaps or Projections calculation for k-point  24
-                              Total time spent up to now :     9.32 secs
+                              Total time spent up to now :     5.55 secs
 
     Overlaps or Projections calculation for k-point  25
-                              Total time spent up to now :     9.40 secs
+                              Total time spent up to now :     5.62 secs
 
     Overlaps or Projections calculation for k-point  26
-                              Total time spent up to now :     9.47 secs
+                              Total time spent up to now :     5.67 secs
 
     Overlaps or Projections calculation for k-point  27
-                              Total time spent up to now :     9.54 secs
+                              Total time spent up to now :     5.73 secs
 
     Overlaps or Projections calculation for k-point  28
-                              Total time spent up to now :     9.63 secs
+                              Total time spent up to now :     5.81 secs
 
     Overlaps or Projections calculation for k-point  29
-                              Total time spent up to now :     9.73 secs
+                              Total time spent up to now :     5.89 secs
 
     Overlaps or Projections calculation for k-point  30
-                              Total time spent up to now :     9.83 secs
+                              Total time spent up to now :     5.97 secs
 
     Overlaps or Projections calculation for k-point  31
-                              Total time spent up to now :     9.93 secs
+                              Total time spent up to now :     6.04 secs
 
     Overlaps or Projections calculation for k-point  32
-                              Total time spent up to now :    10.03 secs
+                              Total time spent up to now :     6.12 secs
 
     Overlaps or Projections calculation for k-point  33
-                              Total time spent up to now :    10.10 secs
+                              Total time spent up to now :     6.19 secs
 
     Overlaps or Projections calculation for k-point  34
-                              Total time spent up to now :    10.18 secs
+                              Total time spent up to now :     6.24 secs
 
     Overlaps or Projections calculation for k-point  35
-                              Total time spent up to now :    10.25 secs
+                              Total time spent up to now :     6.30 secs
 
     Overlaps or Projections calculation for k-point  36
-                              Total time spent up to now :    10.33 secs
+                              Total time spent up to now :     6.38 secs
 
     Overlaps or Projections calculation for k-point  37
-                              Total time spent up to now :    10.41 secs
+                              Total time spent up to now :     6.43 secs
 
     Overlaps or Projections calculation for k-point  38
-                              Total time spent up to now :    10.48 secs
+                              Total time spent up to now :     6.49 secs
 
     Overlaps or Projections calculation for k-point  39
-                              Total time spent up to now :    10.57 secs
+                              Total time spent up to now :     6.55 secs
 
     Overlaps or Projections calculation for k-point  40
-                              Total time spent up to now :    10.63 secs
+                              Total time spent up to now :     6.60 secs
 
     Overlaps or Projections calculation for k-point  41
-                              Total time spent up to now :    10.71 secs
+                              Total time spent up to now :     6.65 secs
 
     Overlaps or Projections calculation for k-point  42
-                              Total time spent up to now :    10.80 secs
+                              Total time spent up to now :     6.72 secs
 
     Overlaps or Projections calculation for k-point  43
-                              Total time spent up to now :    10.86 secs
+                              Total time spent up to now :     6.77 secs
 
     Overlaps or Projections calculation for k-point  44
-                              Total time spent up to now :    10.94 secs
+                              Total time spent up to now :     6.83 secs
 
     Overlaps or Projections calculation for k-point  45
-                              Total time spent up to now :    11.02 secs
+                              Total time spent up to now :     6.90 secs
 
     Overlaps or Projections calculation for k-point  46
-                              Total time spent up to now :    11.10 secs
+                              Total time spent up to now :     6.96 secs
 
     Overlaps or Projections calculation for k-point  47
-                              Total time spent up to now :    11.18 secs
+                              Total time spent up to now :     7.03 secs
 
     Overlaps or Projections calculation for k-point  48
-                              Total time spent up to now :    11.28 secs
+                              Total time spent up to now :     7.09 secs
 
     Overlaps or Projections calculation for k-point  49
-                              Total time spent up to now :    11.35 secs
+                              Total time spent up to now :     7.16 secs
 
     Overlaps or Projections calculation for k-point  50
-                              Total time spent up to now :    11.46 secs
+                              Total time spent up to now :     7.23 secs
 
     Overlaps or Projections calculation for k-point  51
-                              Total time spent up to now :    11.55 secs
+                              Total time spent up to now :     7.30 secs
 
     Overlaps or Projections calculation for k-point  52
-                              Total time spent up to now :    11.64 secs
+                              Total time spent up to now :     7.38 secs
 
     Overlaps or Projections calculation for k-point  53
-                              Total time spent up to now :    11.73 secs
+                              Total time spent up to now :     7.46 secs
 
     Overlaps or Projections calculation for k-point  54
-                              Total time spent up to now :    11.82 secs
+                              Total time spent up to now :     7.52 secs
 
     Overlaps or Projections calculation for k-point  55
-                              Total time spent up to now :    11.92 secs
+                              Total time spent up to now :     7.60 secs
 
     Overlaps or Projections calculation for k-point  56
-                              Total time spent up to now :    12.01 secs
+                              Total time spent up to now :     7.66 secs
 
     Overlaps or Projections calculation for k-point  57
-                              Total time spent up to now :    12.09 secs
+                              Total time spent up to now :     7.73 secs
 
     Overlaps or Projections calculation for k-point  58
-                              Total time spent up to now :    12.17 secs
+                              Total time spent up to now :     7.80 secs
 
     Overlaps or Projections calculation for k-point  59
-                              Total time spent up to now :    12.26 secs
+                              Total time spent up to now :     7.87 secs
 
     Overlaps or Projections calculation for k-point  60
-                              Total time spent up to now :    12.35 secs
+                              Total time spent up to now :     7.95 secs
 
     Overlaps or Projections calculation for k-point  61
-                              Total time spent up to now :    12.43 secs
+                              Total time spent up to now :     8.01 secs
 
     Overlaps or Projections calculation for k-point  62
-                              Total time spent up to now :    12.51 secs
+                              Total time spent up to now :     8.08 secs
 
     Overlaps or Projections calculation for k-point  63
-                              Total time spent up to now :    12.59 secs
+                              Total time spent up to now :     8.14 secs
 
     Overlaps or Projections calculation for k-point  64
-                              Total time spent up to now :    12.67 secs
+                              Total time spent up to now :     8.21 secs
 
 
   Overlap and projections written on file: cobalt_US_WanT.ovp
-                              Total time spent up to now :    16.24 secs
+                              Total time spent up to now :     9.32 secs
 
 
   ======================================================================
@@ -1002,7 +1005,7 @@
     0.92895  0.74575  0.80805  1.00000  1.00000  0.57983  0.54525  0.39216
 
       kpt = 46 (  0.000 0.451 0.902 )    dimwin =    9
-    0.72717  0.80035  0.80022  0.99975  1.00000  0.20301  0.20027  0.27387
+    0.72717  0.80035  0.80021  0.99975  1.00000  0.20301  0.20027  0.27387
     0.99535
 
       kpt = 47 ( -0.225 0.676 0.676 )    dimwin =    8
@@ -1075,12 +1078,12 @@
   Iteration =     9   Omega_I =     12.67115247    Error =      0.01023758
   Iteration =    10   Omega_I =     12.59483984    Error =      0.01239875
 
-                              Total time spent up to now :    16.54 secs
+                              Total time spent up to now :     9.57 secs
 
   Iteration =    11   Omega_I =     12.50319691    Error =      0.01492241
   Iteration =    12   Omega_I =     12.39464423    Error =      0.01744982
   Iteration =    13   Omega_I =     12.27019110    Error =      0.01963954
-  Iteration =    14   Omega_I =     12.13306660    Error =      0.02123379
+  Iteration =    14   Omega_I =     12.13306659    Error =      0.02123379
   Iteration =    15   Omega_I =     11.98792928    Error =      0.02209911
   Iteration =    16   Omega_I =     11.83991914    Error =      0.02222709
   Iteration =    17   Omega_I =     11.69383665    Error =      0.02170522
@@ -1088,20 +1091,20 @@
   Iteration =    19   Omega_I =     11.42205187    Error =      0.01929873
   Iteration =    20   Omega_I =     11.30089596    Error =      0.01772188
 
-                              Total time spent up to now :    17.75 secs
+                              Total time spent up to now :    10.03 secs
 
   Iteration =    21   Omega_I =     11.19092943    Error =      0.01606748
   Iteration =    22   Omega_I =     11.09222634    Error =      0.01442618
   Iteration =    23   Omega_I =     11.00436669    Error =      0.01285906
   Iteration =    24   Omega_I =     10.92662571    Error =      0.01140285
-  Iteration =    25   Omega_I =     10.85811921    Error =      0.01007594
+  Iteration =    25   Omega_I =     10.85811920    Error =      0.01007594
   Iteration =    26   Omega_I =     10.79790615    Error =      0.00888391
   Iteration =    27   Omega_I =     10.74505591    Error =      0.00782404
   Iteration =    28   Omega_I =     10.69868873    Error =      0.00688858
   Iteration =    29   Omega_I =     10.65799743    Error =      0.00606718
   Iteration =    30   Omega_I =     10.62225639    Error =      0.00534839
 
-                              Total time spent up to now :    18.94 secs
+                              Total time spent up to now :    10.48 secs
 
   Iteration =    31   Omega_I =     10.59082269    Error =      0.00472070
   Iteration =    32   Omega_I =     10.56313243    Error =      0.00417314
@@ -1114,7 +1117,7 @@
   Iteration =    39   Omega_I =     10.44019764    Error =      0.00185920
   Iteration =    40   Omega_I =     10.42937752    Error =      0.00167006
 
-                              Total time spent up to now :    20.13 secs
+                              Total time spent up to now :    10.92 secs
 
   Iteration =    41   Omega_I =     10.41966214    Error =      0.00150316
   Iteration =    42   Omega_I =     10.41092065    Error =      0.00135558
@@ -1127,7 +1130,7 @@
   Iteration =    49   Omega_I =     10.36909919    Error =      0.00069151
   Iteration =    50   Omega_I =     10.36508212    Error =      0.00063224
 
-                              Total time spent up to now :    21.31 secs
+                              Total time spent up to now :    11.36 secs
 
   Iteration =    51   Omega_I =     10.36140944    Error =      0.00057889
   Iteration =    52   Omega_I =     10.35804661    Error =      0.00053081
@@ -1140,7 +1143,7 @@
   Iteration =    59   Omega_I =     10.34099783    Error =      0.00029997
   Iteration =    60   Omega_I =     10.33925459    Error =      0.00027778
 
-                              Total time spent up to now :    22.50 secs
+                              Total time spent up to now :    11.78 secs
 
   Iteration =    61   Omega_I =     10.33764018    Error =      0.00025750
   Iteration =    62   Omega_I =     10.33614350    Error =      0.00023894
@@ -1148,12 +1151,12 @@
   Iteration =    64   Omega_I =     10.33346431    Error =      0.00020635
   Iteration =    65   Omega_I =     10.33226462    Error =      0.00019203
   Iteration =    66   Omega_I =     10.33114810    Error =      0.00017886
-  Iteration =    67   Omega_I =     10.33010807    Error =      0.00016673
+  Iteration =    67   Omega_I =     10.33010808    Error =      0.00016673
   Iteration =    68   Omega_I =     10.32913847    Error =      0.00015556
   Iteration =    69   Omega_I =     10.32823377    Error =      0.00014525
   Iteration =    70   Omega_I =     10.32738896    Error =      0.00013572
 
-                              Total time spent up to now :    23.70 secs
+                              Total time spent up to now :    12.20 secs
 
   Iteration =    71   Omega_I =     10.32659947    Error =      0.00012692
   Iteration =    72   Omega_I =     10.32586114    Error =      0.00011877
@@ -1166,24 +1169,24 @@
   Iteration =    79   Omega_I =     10.32184276    Error =      0.00007599
   Iteration =    80   Omega_I =     10.32140042    Error =      0.00007146
 
-                              Total time spent up to now :    24.90 secs
+                              Total time spent up to now :    12.63 secs
 
   Iteration =    81   Omega_I =     10.32098445    Error =      0.00006723
   Iteration =    82   Omega_I =     10.32059306    Error =      0.00006328
   Iteration =    83   Omega_I =     10.32022462    Error =      0.00005959
   Iteration =    84   Omega_I =     10.31987762    Error =      0.00005615
-  Iteration =    85   Omega_I =     10.31955067    Error =      0.00005292
+  Iteration =    85   Omega_I =     10.31955068    Error =      0.00005292
   Iteration =    86   Omega_I =     10.31924248    Error =      0.00004991
   Iteration =    87   Omega_I =     10.31895184    Error =      0.00004708
   Iteration =    88   Omega_I =     10.31867764    Error =      0.00004443
   Iteration =    89   Omega_I =     10.31841885    Error =      0.00004195
   Iteration =    90   Omega_I =     10.31817452    Error =      0.00003962
 
-                              Total time spent up to now :    26.08 secs
+                              Total time spent up to now :    13.07 secs
 
   Iteration =    91   Omega_I =     10.31794375    Error =      0.00003743
   Iteration =    92   Omega_I =     10.31772571    Error =      0.00003537
-  Iteration =    93   Omega_I =     10.31751963    Error =      0.00003344
+  Iteration =    93   Omega_I =     10.31751964    Error =      0.00003344
   Iteration =    94   Omega_I =     10.31732480    Error =      0.00003163
   Iteration =    95   Omega_I =     10.31714054    Error =      0.00002992
   Iteration =    96   Omega_I =     10.31696622    Error =      0.00002831
@@ -1192,11 +1195,11 @@
   Iteration =    99   Omega_I =     10.31649727    Error =      0.00002403
   Iteration =   100   Omega_I =     10.31635725    Error =      0.00002276
 
-                              Total time spent up to now :    27.30 secs
+                              Total time spent up to now :    13.51 secs
 
   Iteration =   101   Omega_I =     10.31622462    Error =      0.00002157
   Iteration =   102   Omega_I =     10.31609894    Error =      0.00002044
-  Iteration =   103   Omega_I =     10.31597982    Error =      0.00001937
+  Iteration =   103   Omega_I =     10.31597983    Error =      0.00001937
   Iteration =   104   Omega_I =     10.31586691    Error =      0.00001837
   Iteration =   105   Omega_I =     10.31575985    Error =      0.00001742
   Iteration =   106   Omega_I =     10.31565831    Error =      0.00001652
@@ -1205,20 +1208,20 @@
   Iteration =   109   Omega_I =     10.31538392    Error =      0.00001412
   Iteration =   110   Omega_I =     10.31530163    Error =      0.00001340
 
-                              Total time spent up to now :    28.48 secs
+                              Total time spent up to now :    13.95 secs
 
   Iteration =   111   Omega_I =     10.31522351    Error =      0.00001272
   Iteration =   112   Omega_I =     10.31514935    Error =      0.00001208
   Iteration =   113   Omega_I =     10.31507893    Error =      0.00001147
-  Iteration =   114   Omega_I =     10.31501204    Error =      0.00001090
+  Iteration =   114   Omega_I =     10.31501205    Error =      0.00001090
   Iteration =   115   Omega_I =     10.31494852    Error =      0.00001035
   Iteration =   116   Omega_I =     10.31488817    Error =      0.00000983
-  Iteration =   117   Omega_I =     10.31483082    Error =      0.00000935
+  Iteration =   117   Omega_I =     10.31483083    Error =      0.00000935
   Iteration =   118   Omega_I =     10.31477634    Error =      0.00000888
   Iteration =   119   Omega_I =     10.31472455    Error =      0.00000844
   Iteration =   120   Omega_I =     10.31467533    Error =      0.00000802
 
-                              Total time spent up to now :    29.70 secs
+                              Total time spent up to now :    14.38 secs
 
   Iteration =   121   Omega_I =     10.31462854    Error =      0.00000763
   Iteration =   122   Omega_I =     10.31458406    Error =      0.00000725
@@ -1231,10 +1234,10 @@
   Iteration =   129   Omega_I =     10.31432804    Error =      0.00000511
   Iteration =   130   Omega_I =     10.31429824    Error =      0.00000486
 
-                              Total time spent up to now :    31.01 secs
+                              Total time spent up to now :    14.79 secs
 
   Iteration =   131   Omega_I =     10.31426988    Error =      0.00000463
-  Iteration =   132   Omega_I =     10.31424288    Error =      0.00000440
+  Iteration =   132   Omega_I =     10.31424289    Error =      0.00000440
   Iteration =   133   Omega_I =     10.31421720    Error =      0.00000419
   Iteration =   134   Omega_I =     10.31419275    Error =      0.00000399
   Iteration =   135   Omega_I =     10.31416947    Error =      0.00000380
@@ -1244,20 +1247,20 @@
   Iteration =   139   Omega_I =     10.31408703    Error =      0.00000312
   Iteration =   140   Omega_I =     10.31406882    Error =      0.00000297
 
-                              Total time spent up to now :    32.26 secs
+                              Total time spent up to now :    15.23 secs
 
   Iteration =   141   Omega_I =     10.31405148    Error =      0.00000283
   Iteration =   142   Omega_I =     10.31403497    Error =      0.00000270
   Iteration =   143   Omega_I =     10.31401925    Error =      0.00000257
   Iteration =   144   Omega_I =     10.31400427    Error =      0.00000245
-  Iteration =   145   Omega_I =     10.31399000    Error =      0.00000233
+  Iteration =   145   Omega_I =     10.31399001    Error =      0.00000233
   Iteration =   146   Omega_I =     10.31397642    Error =      0.00000222
   Iteration =   147   Omega_I =     10.31396347    Error =      0.00000211
   Iteration =   148   Omega_I =     10.31395114    Error =      0.00000201
-  Iteration =   149   Omega_I =     10.31393939    Error =      0.00000192
+  Iteration =   149   Omega_I =     10.31393940    Error =      0.00000192
   Iteration =   150   Omega_I =     10.31392820    Error =      0.00000183
 
-                              Total time spent up to now :    33.45 secs
+                              Total time spent up to now :    15.66 secs
 
   Iteration =   151   Omega_I =     10.31391754    Error =      0.00000174
   Iteration =   152   Omega_I =     10.31390738    Error =      0.00000166
@@ -1270,7 +1273,7 @@
   Iteration =   159   Omega_I =     10.31384846    Error =      0.00000118
   Iteration =   160   Omega_I =     10.31384155    Error =      0.00000113
 
-                              Total time spent up to now :    34.63 secs
+                              Total time spent up to now :    16.10 secs
 
   Iteration =   161   Omega_I =     10.31383496    Error =      0.00000108
   Iteration =   162   Omega_I =     10.31382868    Error =      0.00000103
@@ -1278,12 +1281,12 @@
   Iteration =   164   Omega_I =     10.31381699    Error =      0.00000093
   Iteration =   165   Omega_I =     10.31381155    Error =      0.00000089
   Iteration =   166   Omega_I =     10.31380637    Error =      0.00000085
-  Iteration =   167   Omega_I =     10.31380142    Error =      0.00000081
+  Iteration =   167   Omega_I =     10.31380143    Error =      0.00000081
   Iteration =   168   Omega_I =     10.31379671    Error =      0.00000077
   Iteration =   169   Omega_I =     10.31379222    Error =      0.00000073
   Iteration =   170   Omega_I =     10.31378794    Error =      0.00000070
 
-                              Total time spent up to now :    35.88 secs
+                              Total time spent up to now :    16.51 secs
 
   Iteration =   171   Omega_I =     10.31378385    Error =      0.00000067
   Iteration =   172   Omega_I =     10.31377996    Error =      0.00000064
@@ -1291,12 +1294,12 @@
   Iteration =   174   Omega_I =     10.31377271    Error =      0.00000058
   Iteration =   175   Omega_I =     10.31376933    Error =      0.00000055
   Iteration =   176   Omega_I =     10.31376611    Error =      0.00000053
-  Iteration =   177   Omega_I =     10.31376304    Error =      0.00000050
+  Iteration =   177   Omega_I =     10.31376305    Error =      0.00000050
   Iteration =   178   Omega_I =     10.31376012    Error =      0.00000048
   Iteration =   179   Omega_I =     10.31375733    Error =      0.00000046
   Iteration =   180   Omega_I =     10.31375467    Error =      0.00000043
 
-                              Total time spent up to now :    37.09 secs
+                              Total time spent up to now :    16.95 secs
 
   Iteration =   181   Omega_I =     10.31375213    Error =      0.00000041
   Iteration =   182   Omega_I =     10.31374971    Error =      0.00000040
@@ -1309,7 +1312,7 @@
   Iteration =   189   Omega_I =     10.31373563    Error =      0.00000028
   Iteration =   190   Omega_I =     10.31373397    Error =      0.00000027
 
-                              Total time spent up to now :    38.27 secs
+                              Total time spent up to now :    17.36 secs
 
   Iteration =   191   Omega_I =     10.31373239    Error =      0.00000026
   Iteration =   192   Omega_I =     10.31373089    Error =      0.00000025
@@ -1322,7 +1325,7 @@
   Iteration =   199   Omega_I =     10.31372211    Error =      0.00000018
   Iteration =   200   Omega_I =     10.31372108    Error =      0.00000017
 
-                              Total time spent up to now :    39.54 secs
+                              Total time spent up to now :    17.78 secs
 
   Iteration =   201   Omega_I =     10.31372010    Error =      0.00000016
   Iteration =   202   Omega_I =     10.31371916    Error =      0.00000015
@@ -1335,7 +1338,7 @@
   Iteration =   209   Omega_I =     10.31371368    Error =      0.00000011
   Iteration =   210   Omega_I =     10.31371304    Error =      0.00000011
 
-                              Total time spent up to now :    40.75 secs
+                              Total time spent up to now :    18.24 secs
 
   Iteration =   211   Omega_I =     10.31371242    Error =      0.00000010
   Iteration =   212   Omega_I =     10.31371184    Error =      0.00000010
@@ -1348,7 +1351,7 @@
   Iteration =   219   Omega_I =     10.31370842    Error =      0.00000007
   Iteration =   220   Omega_I =     10.31370801    Error =      0.00000007
 
-                              Total time spent up to now :    41.92 secs
+                              Total time spent up to now :    18.68 secs
 
   Iteration =   221   Omega_I =     10.31370763    Error =      0.00000006
   Iteration =   222   Omega_I =     10.31370726    Error =      0.00000006
@@ -1358,23 +1361,23 @@
   Iteration =   226   Omega_I =     10.31370596    Error =      0.00000005
   Iteration =   227   Omega_I =     10.31370567    Error =      0.00000005
   Iteration =   228   Omega_I =     10.31370539    Error =      0.00000005
-  Iteration =   229   Omega_I =     10.31370512    Error =      0.00000004
+  Iteration =   229   Omega_I =     10.31370513    Error =      0.00000004
   Iteration =   230   Omega_I =     10.31370487    Error =      0.00000004
 
-                              Total time spent up to now :    43.10 secs
+                              Total time spent up to now :    19.14 secs
 
   Iteration =   231   Omega_I =     10.31370463    Error =      0.00000004
   Iteration =   232   Omega_I =     10.31370440    Error =      0.00000004
   Iteration =   233   Omega_I =     10.31370418    Error =      0.00000004
-  Iteration =   234   Omega_I =     10.31370397    Error =      0.00000003
+  Iteration =   234   Omega_I =     10.31370398    Error =      0.00000003
   Iteration =   235   Omega_I =     10.31370378    Error =      0.00000003
-  Iteration =   236   Omega_I =     10.31370358    Error =      0.00000003
+  Iteration =   236   Omega_I =     10.31370359    Error =      0.00000003
   Iteration =   237   Omega_I =     10.31370340    Error =      0.00000003
   Iteration =   238   Omega_I =     10.31370323    Error =      0.00000003
-  Iteration =   239   Omega_I =     10.31370306    Error =      0.00000003
+  Iteration =   239   Omega_I =     10.31370307    Error =      0.00000003
   Iteration =   240   Omega_I =     10.31370291    Error =      0.00000003
 
-                              Total time spent up to now :    44.31 secs
+                              Total time spent up to now :    19.59 secs
 
   Iteration =   241   Omega_I =     10.31370276    Error =      0.00000002
   Iteration =   242   Omega_I =     10.31370261    Error =      0.00000002
@@ -1387,7 +1390,7 @@
   Iteration =   249   Omega_I =     10.31370178    Error =      0.00000002
   Iteration =   250   Omega_I =     10.31370168    Error =      0.00000002
 
-                              Total time spent up to now :    45.53 secs
+                              Total time spent up to now :    20.01 secs
 
   Iteration =   251   Omega_I =     10.31370158    Error =      0.00000002
   Iteration =   252   Omega_I =     10.31370149    Error =      0.00000001
@@ -1400,7 +1403,7 @@
   Iteration =   259   Omega_I =     10.31370097    Error =      0.00000001
   Iteration =   260   Omega_I =     10.31370091    Error =      0.00000001
 
-                              Total time spent up to now :    46.81 secs
+                              Total time spent up to now :    20.42 secs
 
   Iteration =   261   Omega_I =     10.31370085    Error =      0.00000001
 
@@ -1412,7 +1415,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):     10.31370075        2.88812806
    Avrg Omega_I                     :      1.71895012        0.48135468
 
-                              Total time spent up to now :    47.80 secs
+                              Total time spent up to now :    20.63 secs
 
 
   Subspace decomposition:
@@ -1501,7 +1504,7 @@
     0.94435  0.94205  0.98162  0.99999  1.00000  0.81323  0.26497  0.05379
 
       kpt = 28 ( -0.451 0.902 0.000 )    dimwin =    9
-    0.92871  0.96050  0.99170  0.99053  0.99281  0.77667  0.27113  0.07848
+    0.92871  0.96051  0.99169  0.99053  0.99281  0.77667  0.27113  0.07848
     0.00947
 
       kpt = 29 (  0.451 0.451 0.902 )    dimwin =    8
@@ -1511,7 +1514,7 @@
     0.94440  0.94183  0.98162  0.99999  1.00000  0.81264  0.26578  0.05374
 
       kpt = 31 (  0.000 0.902 0.451 )    dimwin =    9
-    0.92992  0.96533  0.98674  0.98948  0.99263  0.59128  0.45665  0.07745
+    0.92992  0.96534  0.98673  0.98948  0.99263  0.59128  0.45665  0.07745
     0.01052
 
       kpt = 32 ( -0.225 1.127 0.225 )    dimwin =    8
@@ -1540,7 +1543,7 @@
     0.94435  0.94205  0.98162  0.99999  1.00000  0.81323  0.26496  0.05379
 
       kpt = 40 ( -0.902 0.451 0.000 )    dimwin =    9
-    0.92871  0.96884  0.98337  0.99053  0.99281  0.45997  0.58783  0.07848
+    0.92871  0.96888  0.98333  0.99053  0.99281  0.45997  0.58783  0.07848
     0.00947
 
       kpt = 41 (  0.000 0.000 0.902 )    dimwin =    9
@@ -1560,7 +1563,7 @@
     0.94463  0.94246  0.98005  1.00000  1.00000  0.81076  0.27032  0.05179
 
       kpt = 46 (  0.000 0.451 0.902 )    dimwin =    9
-    0.92871  0.96805  0.98416  0.99053  0.99281  0.60272  0.44508  0.07848
+    0.92871  0.96795  0.98426  0.99053  0.99281  0.60272  0.44507  0.07848
     0.00947
 
       kpt = 47 ( -0.225 0.676 0.676 )    dimwin =    8
@@ -1588,7 +1591,7 @@
     0.94440  0.94183  0.98163  0.99999  1.00000  0.81264  0.26578  0.05374
 
       kpt = 55 ( -0.902 0.000 0.451 )    dimwin =    9
-    0.92992  0.98304  0.96903  0.98948  0.99263  0.43297  0.61496  0.07745
+    0.92992  0.98309  0.96898  0.98948  0.99263  0.43297  0.61496  0.07745
     0.01052
 
       kpt = 56 ( -1.127 0.225 0.225 )    dimwin =    8
@@ -1598,7 +1601,7 @@
     0.94463  0.94246  0.98005  1.00000  1.00000  0.81075  0.27031  0.05179
 
       kpt = 58 ( -0.451 0.000 0.902 )    dimwin =    9
-    0.92871  0.99029  0.96192  0.99053  0.99281  0.05599  0.99180  0.07848
+    0.92871  0.99025  0.96195  0.99053  0.99281  0.05599  0.99180  0.07848
     0.00947
 
       kpt = 59 ( -0.676 0.225 0.676 )    dimwin =    8
@@ -1627,27 +1630,27 @@
    <global routines>
              clock number :    21
 
-              disentangle :    48.57s CPU 
+              disentangle :    20.80s CPU 
 
-                want_init :     1.25s CPU
-                  bshells :     0.86s CPU
-              wfc_manager :    14.96s CPU
-          ggrids_read_ext :     0.03s CPU
+                want_init :     0.89s CPU
+                  bshells :     0.52s CPU
+              wfc_manager :     8.42s CPU
+          ggrids_read_ext :     0.02s CPU
               struct_fact :     0.00s CPU
-                init_us_1 :     5.73s CPU
-           wfc_data_kread :     3.80s CPU (     320 calls,   0.012 s avg)
-                init_us_2 :     0.29s CPU (     384 calls,   0.001 s avg)
-                  ccalbec :     0.08s CPU (     320 calls,   0.000 s avg)
-                  overlap :     0.82s CPU (     256 calls,   0.003 s avg)
-           overlap_setmap :     0.34s CPU (     256 calls,   0.001 s avg)
-          overlap_augment :     0.22s CPU (     256 calls,   0.001 s avg)
-                    s_psi :     0.04s CPU (      64 calls,   0.001 s avg)
+                init_us_1 :     2.75s CPU
+           wfc_data_kread :     3.24s CPU (     320 calls,   0.010 s avg)
+                init_us_2 :     0.23s CPU (     384 calls,   0.001 s avg)
+                  ccalbec :     0.07s CPU (     320 calls,   0.000 s avg)
+                  overlap :     0.50s CPU (     256 calls,   0.002 s avg)
+           overlap_setmap :     0.27s CPU (     256 calls,   0.001 s avg)
+          overlap_augment :     0.14s CPU (     256 calls,   0.001 s avg)
+                    s_psi :     0.01s CPU (      64 calls,   0.000 s avg)
                projection :     0.13s CPU (      64 calls,   0.002 s avg)
        trial_center_setup :     0.05s CPU (     384 calls,   0.000 s avg)
-               iterations :    31.57s CPU
-             subapce_init :     0.04s CPU
-                  zmatrix :     2.15s CPU (   16704 calls,   0.000 s avg)
-               zmat_hdiag :     1.88s CPU (   16704 calls,   0.000 s avg)
-                  komegai :     2.70s CPU (   16704 calls,   0.000 s avg)
+               iterations :    11.31s CPU
+             subapce_init :     0.02s CPU
+                  zmatrix :     1.59s CPU (   16704 calls,   0.000 s avg)
+               zmat_hdiag :     1.57s CPU (   16704 calls,   0.000 s avg)
+                  komegai :     2.09s CPU (   16704 calls,   0.000 s avg)
 
 

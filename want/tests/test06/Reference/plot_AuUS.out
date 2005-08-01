@@ -1,3 +1,59 @@
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM001.gau'
+Output file (plot file):  './/gold_US_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.000705
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM002.gau'
+Output file (plot file):  './/gold_US_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM002.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.001248
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM003.gau'
+Output file (plot file):  './/gold_US_WanT_WFM003.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM003.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.001277
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/gold_US_WanT_WFM006.gau'
+Output file (plot file):  './/gold_US_WanT_WFM006.plt'
+Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM006.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Min value: 0.000000
+Max value: 0.001278
+Job done ...
+**********************************************************
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -8,7 +64,10 @@
 
 
   Program <plot>  v. 1.1.1  starts ...
-  Date 27Jul2005 at 16:25:18 
+  Date  1Aug2005 at 12:15:35 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: gold_US.export/index.xml
@@ -100,66 +159,18 @@
 
 
   writing WF(  1) plot on file: .//gold_US_WanT_WFM001.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/gold_US_WanT_WFM001.gau'
-Output file (plot file):  './/gold_US_WanT_WFM001.plt'
-Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM001.crd'
-
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
-Min value: 0.000000
-Max value: 0.000705
-Job done ...
-**********************************************************
   deleting tmp file: .//gold_US_WanT_WFM001.gau
 
 
   writing WF(  2) plot on file: .//gold_US_WanT_WFM002.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/gold_US_WanT_WFM002.gau'
-Output file (plot file):  './/gold_US_WanT_WFM002.plt'
-Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM002.crd'
-
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
-Min value: 0.000000
-Max value: 0.001248
-Job done ...
-**********************************************************
   deleting tmp file: .//gold_US_WanT_WFM002.gau
 
 
   writing WF(  3) plot on file: .//gold_US_WanT_WFM003.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/gold_US_WanT_WFM003.gau'
-Output file (plot file):  './/gold_US_WanT_WFM003.plt'
-Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM003.crd'
-
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
-Min value: 0.000000
-Max value: 0.001277
-Job done ...
-**********************************************************
   deleting tmp file: .//gold_US_WanT_WFM003.gau
 
 
   writing WF(  6) plot on file: .//gold_US_WanT_WFM006.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/gold_US_WanT_WFM006.gau'
-Output file (plot file):  './/gold_US_WanT_WFM006.plt'
-Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM006.crd'
-
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
-Min value: 0.000000
-Max value: 0.001278
-Job done ...
-**********************************************************
   deleting tmp file: .//gold_US_WanT_WFM006.gau
 
 
@@ -169,12 +180,12 @@ Job done ...
    <global routines>
              clock number :     6
 
-                     plot :    55.25s CPU 
+                     plot :    33.01s CPU 
 
-                want_init :     0.28s CPU
-          ggrids_read_ext :     0.13s CPU
-           wfc_data_kread :     0.14s CPU (       8 calls,   0.018 s avg)
-                   cfft3d :     2.16s CPU (      32 calls,   0.068 s avg)
-                 gcubeplt :     8.42s CPU (       4 calls,   2.104 s avg)
+                want_init :     0.25s CPU
+          ggrids_read_ext :     0.09s CPU
+           wfc_data_kread :     0.15s CPU (       8 calls,   0.019 s avg)
+                   cfft3d :     1.37s CPU (      32 calls,   0.043 s avg)
+                 gcubeplt :     6.31s CPU (       4 calls,   1.577 s avg)
 
 

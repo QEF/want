@@ -8,7 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 27Jul2005 at 18:20:57 
+  Date  1Aug2005 at 12:52:23 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: benzene.export/index.xml
@@ -224,11 +227,11 @@
 
   Initializing atomic wfc
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :    18.98 secs
+                              Total time spent up to now :     8.46 secs
 
 
   Overlap and projections written on file: benzene_WanT.ovp
-                              Total time spent up to now :    19.68 secs
+                              Total time spent up to now :     8.56 secs
 
 
   ======================================================================
@@ -262,7 +265,7 @@
   Iteration =     9   Omega_I =     66.68532813    Error =      0.00162101
   Iteration =    10   Omega_I =     66.62836826    Error =      0.00110486
 
-                              Total time spent up to now :    19.83 secs
+                              Total time spent up to now :     8.60 secs
 
   Iteration =    11   Omega_I =     66.58925914    Error =      0.00078434
   Iteration =    12   Omega_I =     66.56128182    Error =      0.00057980
@@ -275,7 +278,7 @@
   Iteration =    19   Omega_I =     66.48049108    Error =      0.00012729
   Iteration =    20   Omega_I =     66.47585312    Error =      0.00010417
 
-                              Total time spent up to now :    20.11 secs
+                              Total time spent up to now :     8.68 secs
 
   Iteration =    21   Omega_I =     66.47206072    Error =      0.00008490
   Iteration =    22   Omega_I =     66.46897280    Error =      0.00006887
@@ -288,7 +291,7 @@
   Iteration =    29   Omega_I =     66.45903176    Error =      0.00001416
   Iteration =    30   Omega_I =     66.45852008    Error =      0.00001114
 
-                              Total time spent up to now :    20.45 secs
+                              Total time spent up to now :     8.74 secs
 
   Iteration =    31   Omega_I =     66.45811744    Error =      0.00000875
   Iteration =    32   Omega_I =     66.45780134    Error =      0.00000686
@@ -301,7 +304,7 @@
   Iteration =    39   Omega_I =     66.45687181    Error =      0.00000120
   Iteration =    40   Omega_I =     66.45682866    Error =      0.00000093
 
-                              Total time spent up to now :    20.66 secs
+                              Total time spent up to now :     8.81 secs
 
   Iteration =    41   Omega_I =     66.45679516    Error =      0.00000072
   Iteration =    42   Omega_I =     66.45676919    Error =      0.00000056
@@ -314,7 +317,7 @@
   Iteration =    49   Omega_I =     66.45669484    Error =      0.00000009
   Iteration =    50   Omega_I =     66.45669149    Error =      0.00000007
 
-                              Total time spent up to now :    20.86 secs
+                              Total time spent up to now :     8.86 secs
 
   Iteration =    51   Omega_I =     66.45668890    Error =      0.00000006
   Iteration =    52   Omega_I =     66.45668690    Error =      0.00000004
@@ -333,7 +336,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):     66.45668094       18.60975121
    Avrg Omega_I                     :      3.69203783        1.03387507
 
-                              Total time spent up to now :    20.99 secs
+                              Total time spent up to now :     8.95 secs
 
 
   Subspace decomposition:
@@ -353,25 +356,25 @@
    <global routines>
              clock number :    19
 
-              disentangle :    21.07s CPU 
+              disentangle :     8.97s CPU 
 
-                want_init :     0.48s CPU
-                  bshells :     0.03s CPU
-              wfc_manager :    19.06s CPU
-          ggrids_read_ext :     0.58s CPU
-              struct_fact :     1.87s CPU
-                init_at_1 :     0.27s CPU
-           wfc_data_kread :     3.94s CPU (       4 calls,   0.986 s avg)
-                  overlap :     9.73s CPU (       3 calls,   3.243 s avg)
-           overlap_setmap :     0.28s CPU (       3 calls,   0.093 s avg)
-                    s_psi :     0.04s CPU
-               projection :     1.90s CPU
-       trial_center_setup :     1.10s CPU (      18 calls,   0.061 s avg)
+                want_init :     0.07s CPU
+                  bshells :     0.00s CPU
+              wfc_manager :     8.48s CPU
+          ggrids_read_ext :     0.22s CPU
+              struct_fact :     0.54s CPU
+                init_at_1 :     0.06s CPU
+           wfc_data_kread :     1.91s CPU (       4 calls,   0.478 s avg)
+                  overlap :     4.68s CPU (       3 calls,   1.559 s avg)
+           overlap_setmap :     0.11s CPU (       3 calls,   0.037 s avg)
+                    s_psi :     0.02s CPU
+               projection :     0.94s CPU
+       trial_center_setup :     0.60s CPU (      18 calls,   0.033 s avg)
                atomic_wfc :     0.03s CPU (       6 calls,   0.005 s avg)
-               iterations :     1.31s CPU
-             subapce_init :     0.12s CPU
-                  zmatrix :     0.08s CPU (      58 calls,   0.001 s avg)
+               iterations :     0.39s CPU
+             subapce_init :     0.00s CPU
+                  zmatrix :     0.12s CPU (      58 calls,   0.002 s avg)
                zmat_hdiag :     0.04s CPU (      58 calls,   0.001 s avg)
-                  komegai :     0.15s CPU (      58 calls,   0.003 s avg)
+                  komegai :     0.03s CPU (      58 calls,   0.001 s avg)
 
 

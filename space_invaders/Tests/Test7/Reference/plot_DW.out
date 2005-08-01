@@ -1,3 +1,87 @@
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/nichain_WanT_DW_WFM001.gau'
+Output file (plot file):  './/nichain_WanT_DW_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.000457
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/nichain_WanT_DW_WFM002.gau'
+Output file (plot file):  './/nichain_WanT_DW_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM002.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.000323
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/nichain_WanT_DW_WFM003.gau'
+Output file (plot file):  './/nichain_WanT_DW_WFM003.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM003.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.000320
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/nichain_WanT_DW_WFM004.gau'
+Output file (plot file):  './/nichain_WanT_DW_WFM004.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM004.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.000275
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/nichain_WanT_DW_WFM005.gau'
+Output file (plot file):  './/nichain_WanT_DW_WFM005.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM005.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.000320
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/nichain_WanT_DW_WFM006.gau'
+Output file (plot file):  './/nichain_WanT_DW_WFM006.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM006.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.000324
+Job done ...
+**********************************************************
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -8,7 +92,10 @@
 
 
   Program <plot>  v. 1.1.1  starts ...
-  Date 28Jul2005 at 13: 9:12 
+  Date  1Aug2005 at 12:45:42 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: nichain.export/index.xml
@@ -96,98 +183,26 @@
 
 
   writing WF(  1) plot on file: .//nichain_WanT_DW_WFM001.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/nichain_WanT_DW_WFM001.gau'
-Output file (plot file):  './/nichain_WanT_DW_WFM001.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM001.crd'
-
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.000457
-Job done ...
-**********************************************************
   deleting tmp file: .//nichain_WanT_DW_WFM001.gau
 
 
   writing WF(  2) plot on file: .//nichain_WanT_DW_WFM002.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/nichain_WanT_DW_WFM002.gau'
-Output file (plot file):  './/nichain_WanT_DW_WFM002.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM002.crd'
-
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.000323
-Job done ...
-**********************************************************
   deleting tmp file: .//nichain_WanT_DW_WFM002.gau
 
 
   writing WF(  3) plot on file: .//nichain_WanT_DW_WFM003.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/nichain_WanT_DW_WFM003.gau'
-Output file (plot file):  './/nichain_WanT_DW_WFM003.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM003.crd'
-
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.000320
-Job done ...
-**********************************************************
   deleting tmp file: .//nichain_WanT_DW_WFM003.gau
 
 
   writing WF(  4) plot on file: .//nichain_WanT_DW_WFM004.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/nichain_WanT_DW_WFM004.gau'
-Output file (plot file):  './/nichain_WanT_DW_WFM004.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM004.crd'
-
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.000275
-Job done ...
-**********************************************************
   deleting tmp file: .//nichain_WanT_DW_WFM004.gau
 
 
   writing WF(  5) plot on file: .//nichain_WanT_DW_WFM005.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/nichain_WanT_DW_WFM005.gau'
-Output file (plot file):  './/nichain_WanT_DW_WFM005.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM005.crd'
-
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.000320
-Job done ...
-**********************************************************
   deleting tmp file: .//nichain_WanT_DW_WFM005.gau
 
 
   writing WF(  6) plot on file: .//nichain_WanT_DW_WFM006.gau
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/nichain_WanT_DW_WFM006.gau'
-Output file (plot file):  './/nichain_WanT_DW_WFM006.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM006.crd'
-
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.000324
-Job done ...
-**********************************************************
   deleting tmp file: .//nichain_WanT_DW_WFM006.gau
 
 
@@ -197,12 +212,12 @@ Job done ...
    <global routines>
              clock number :     6
 
-                     plot :  1m16.55s CPU 
+                     plot :    20.68s CPU 
 
-                want_init :     0.67s CPU
-          ggrids_read_ext :     0.23s CPU
-           wfc_data_kread :     0.11s CPU (       4 calls,   0.028 s avg)
-                   cfft3d :     3.62s CPU (      24 calls,   0.151 s avg)
-                 gcubeplt :    11.62s CPU (       6 calls,   1.937 s avg)
+                want_init :     0.34s CPU
+          ggrids_read_ext :     0.10s CPU
+           wfc_data_kread :     0.06s CPU (       4 calls,   0.014 s avg)
+                   cfft3d :     1.00s CPU (      24 calls,   0.042 s avg)
+                 gcubeplt :     4.76s CPU (       6 calls,   0.793 s avg)
 
 

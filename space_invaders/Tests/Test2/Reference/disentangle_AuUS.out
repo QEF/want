@@ -8,7 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 27Jul2005 at 16:25: 4 
+  Date  1Aug2005 at 12:15:24 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: gold_US.export/index.xml
@@ -259,32 +262,32 @@
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     9.84 secs
+                              Total time spent up to now :     6.45 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :    10.14 secs
+                              Total time spent up to now :     6.77 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :    10.42 secs
+                              Total time spent up to now :     7.07 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :    10.69 secs
+                              Total time spent up to now :     7.34 secs
 
     Overlaps or Projections calculation for k-point   5
-                              Total time spent up to now :    10.97 secs
+                              Total time spent up to now :     7.70 secs
 
     Overlaps or Projections calculation for k-point   6
-                              Total time spent up to now :    11.25 secs
+                              Total time spent up to now :     8.07 secs
 
     Overlaps or Projections calculation for k-point   7
-                              Total time spent up to now :    11.53 secs
+                              Total time spent up to now :     8.39 secs
 
     Overlaps or Projections calculation for k-point   8
-                              Total time spent up to now :    11.86 secs
+                              Total time spent up to now :     8.64 secs
 
 
   Overlap and projections written on file: gold_US_WanT.ovp
-                              Total time spent up to now :    12.09 secs
+                              Total time spent up to now :     8.74 secs
 
 
   ======================================================================
@@ -336,7 +339,7 @@
   Iteration =     9   Omega_I =     20.75039426    Error =      0.00014830
   Iteration =    10   Omega_I =     20.74885158    Error =      0.00007529
 
-                              Total time spent up to now :    12.11 secs
+                              Total time spent up to now :     8.75 secs
 
   Iteration =    11   Omega_I =     20.74806882    Error =      0.00003811
   Iteration =    12   Omega_I =     20.74767282    Error =      0.00001924
@@ -349,7 +352,7 @@
   Iteration =    19   Omega_I =     20.74727375    Error =      0.00000016
   Iteration =    20   Omega_I =     20.74727214    Error =      0.00000008
 
-                              Total time spent up to now :    12.21 secs
+                              Total time spent up to now :     8.80 secs
 
   Iteration =    21   Omega_I =     20.74727133    Error =      0.00000004
   Iteration =    22   Omega_I =     20.74727093    Error =      0.00000002
@@ -363,7 +366,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):     20.74727053        5.80982284
    Avrg Omega_I                     :      3.45787842        0.96830381
 
-                              Total time spent up to now :    12.30 secs
+                              Total time spent up to now :     8.88 secs
 
 
   Subspace decomposition:
@@ -401,27 +404,27 @@
    <global routines>
              clock number :    21
 
-              disentangle :    12.37s CPU 
+              disentangle :     8.96s CPU 
 
-                want_init :     0.30s CPU
-                  bshells :     0.03s CPU
-              wfc_manager :    11.77s CPU
-          ggrids_read_ext :     0.13s CPU
-              struct_fact :     0.03s CPU
-                init_us_1 :     9.02s CPU
-           wfc_data_kread :     0.65s CPU (      32 calls,   0.020 s avg)
-                init_us_2 :     0.72s CPU (      40 calls,   0.018 s avg)
-                  ccalbec :     0.09s CPU (      32 calls,   0.003 s avg)
-                  overlap :     0.58s CPU (      24 calls,   0.024 s avg)
-           overlap_setmap :     0.30s CPU (      24 calls,   0.013 s avg)
-          overlap_augment :     0.01s CPU (      24 calls,   0.001 s avg)
-                    s_psi :     0.05s CPU (       8 calls,   0.006 s avg)
-               projection :     0.23s CPU (       8 calls,   0.028 s avg)
-       trial_center_setup :     0.12s CPU (      48 calls,   0.002 s avg)
-               iterations :     0.21s CPU
+                want_init :     0.41s CPU
+                  bshells :     0.02s CPU
+              wfc_manager :     8.32s CPU
+          ggrids_read_ext :     0.21s CPU
+              struct_fact :     0.02s CPU
+                init_us_1 :     5.24s CPU
+           wfc_data_kread :     1.42s CPU (      32 calls,   0.044 s avg)
+                init_us_2 :     0.56s CPU (      40 calls,   0.014 s avg)
+                  ccalbec :     0.08s CPU (      32 calls,   0.003 s avg)
+                  overlap :     0.41s CPU (      24 calls,   0.017 s avg)
+           overlap_setmap :     0.26s CPU (      24 calls,   0.011 s avg)
+          overlap_augment :     0.01s CPU (      24 calls,   0.000 s avg)
+                    s_psi :     0.04s CPU (       8 calls,   0.005 s avg)
+               projection :     0.16s CPU (       8 calls,   0.021 s avg)
+       trial_center_setup :     0.09s CPU (      48 calls,   0.002 s avg)
+               iterations :     0.14s CPU
              subapce_init :     0.00s CPU
                   zmatrix :     0.01s CPU (     184 calls,   0.000 s avg)
-               zmat_hdiag :     0.02s CPU (     184 calls,   0.000 s avg)
+               zmat_hdiag :     0.01s CPU (     184 calls,   0.000 s avg)
                   komegai :     0.01s CPU (     184 calls,   0.000 s avg)
 
 

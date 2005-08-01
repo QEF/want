@@ -8,7 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date 28Jul2005 at 13: 7:29 
+  Date  1Aug2005 at 12:45:12 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: GNU G95
 
 
   PW-DFT data read from file: nichain.export/index.xml
@@ -231,20 +234,20 @@
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :    25.55 secs
+                              Total time spent up to now :     6.43 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :    26.09 secs
+                              Total time spent up to now :     6.60 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :    26.65 secs
+                              Total time spent up to now :     6.77 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :    27.13 secs
+                              Total time spent up to now :     6.95 secs
 
 
   Overlap and projections written on file: nichain_WanT_DW.ovp
-                              Total time spent up to now :    27.46 secs
+                              Total time spent up to now :     7.01 secs
 
 
   ======================================================================
@@ -265,7 +268,7 @@
   Iteration =     9   Omega_I =     15.01677399    Error =      0.00003231
   Iteration =    10   Omega_I =     15.01653139    Error =      0.00001617
 
-                              Total time spent up to now :    27.47 secs
+                              Total time spent up to now :     7.02 secs
 
   Iteration =    11   Omega_I =     15.01640993    Error =      0.00000810
   Iteration =    12   Omega_I =     15.01634908    Error =      0.00000406
@@ -278,7 +281,7 @@
   Iteration =    19   Omega_I =     15.01628822    Error =      0.00000003
   Iteration =    20   Omega_I =     15.01628795    Error =      0.00000002
 
-                              Total time spent up to now :    27.62 secs
+                              Total time spent up to now :     7.05 secs
 
   Iteration =    21   Omega_I =     15.01628782    Error =      0.00000001
 
@@ -290,7 +293,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):     15.01628767        4.20498547
    Avrg Omega_I                     :      2.50271461        0.70083091
 
-                              Total time spent up to now :    27.76 secs
+                              Total time spent up to now :     7.07 secs
 
 
   Subspace data written on file: nichain_WanT_DW.space
@@ -299,24 +302,24 @@
    <global routines>
              clock number :    21
 
-              disentangle :    27.80s CPU 
+              disentangle :     7.08s CPU 
 
-                want_init :     0.70s CPU
-                  bshells :     0.05s CPU
-              wfc_manager :    26.75s CPU
-          ggrids_read_ext :     0.23s CPU
-              struct_fact :     0.09s CPU
-                init_us_1 :    23.88s CPU
-           wfc_data_kread :     0.79s CPU (      16 calls,   0.050 s avg)
-                init_us_2 :     0.42s CPU (      20 calls,   0.021 s avg)
+                want_init :     0.33s CPU
+                  bshells :     0.01s CPU
+              wfc_manager :     6.67s CPU
+          ggrids_read_ext :     0.10s CPU
+              struct_fact :     0.02s CPU
+                init_us_1 :     5.75s CPU
+           wfc_data_kread :     0.24s CPU (      16 calls,   0.015 s avg)
+                init_us_2 :     0.20s CPU (      20 calls,   0.010 s avg)
                   ccalbec :     0.03s CPU (      16 calls,   0.002 s avg)
-                  overlap :     0.85s CPU (      12 calls,   0.070 s avg)
-           overlap_setmap :     0.48s CPU (      12 calls,   0.040 s avg)
+                  overlap :     0.18s CPU (      12 calls,   0.015 s avg)
+           overlap_setmap :     0.13s CPU (      12 calls,   0.010 s avg)
           overlap_augment :     0.00s CPU (      12 calls,   0.000 s avg)
-                    s_psi :     0.01s CPU (       4 calls,   0.004 s avg)
-               projection :     0.08s CPU (       4 calls,   0.020 s avg)
-       trial_center_setup :     0.04s CPU (      24 calls,   0.002 s avg)
-               iterations :     0.31s CPU
+                    s_psi :     0.02s CPU (       4 calls,   0.004 s avg)
+               projection :     0.06s CPU (       4 calls,   0.014 s avg)
+       trial_center_setup :     0.03s CPU (      24 calls,   0.001 s avg)
+               iterations :     0.06s CPU
              subapce_init :     0.00s CPU
                   zmatrix :     0.00s CPU (      84 calls,   0.000 s avg)
                zmat_hdiag :     0.00s CPU (      84 calls,   0.000 s avg)
