@@ -21,8 +21,8 @@ MANUAL=" Usage
  wannier         perform the above cited minimization
  bands           interpolate the band structure using WFs
  plot            compute WFs on real space for plotting
- want            perform DISENTANGLE, WANNIER and BANDS all together 
  conductor       evaluate the transmittance, for the bulk case
+ want            perform DISENTANGLE, WANNIER, BANDS, PLOT, CONDUCTOR all together 
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -65,9 +65,9 @@ case $INPUT in
    (wannier)        WANNIER=".TRUE." ;;
    (bands)          BANDS=".TRUE." ;;
    (plot)           PLOT=".TRUE." ;;
-   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ; PLOT=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
+   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
+                    BANDS=".TRUE." ; PLOT=".TRUE."; CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; PLOT=".TRUE." ;
                     BANDS=".TRUE." ; CONDUCTOR=".TRUE." ;;
