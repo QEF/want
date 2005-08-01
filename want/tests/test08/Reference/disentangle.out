@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  1Aug2005 at 12:24:39 
+  Date  1Aug2005 at 17:43:33 
 
   Arch. / Op.Sys: LINUX
         Compiler: GNU G95
@@ -25,9 +25,9 @@
                       Postfix :     _WanT
             Working directory :     ./
 
-                 Restart Mode :     restart
-                Overlap Calc. :     FALSE
-             Projection Calc. :     FALSE
+                 Restart Mode :     from_scratch
+                Overlap Calc. :     TRUE 
+             Projection Calc. :     TRUE 
           Read Start Subspace :     FALSE
        Read Start Unitary mat :     FALSE
            Conditioned minim. :     FALSE
@@ -45,7 +45,7 @@
     Chosen shells (indexes) =   1  6
     Print info each  10 iterations
     Save data each   10 iterations
-    Starting minimization guess = from_file
+    Starting minimization guess = center_projections
     Ordering mode = none
     Verbosity = medium
     Unitariery check threshold =     0.000000500
@@ -58,7 +58,7 @@
     Spin component = none
     Mixing parameter (alpha_dis)=  0.500
     Max iteration number =   500
-    Starting minimization guess = from_file
+    Starting minimization guess = center_projections
     Disentangle convergence threshold =     0.000000010
     Print info each  10 iterations
     Save data each   10 iterations
@@ -333,11 +333,82 @@
   =                      Overlaps and Projections                      =
   ======================================================================
 
+  Reading density G-grid from file: al.export/index.xml
+  Reading Wfc grids from file: al.export/index.xml
 
-  Overlaps read from file: al_WanT.ovp
-  Projections read from file: al_WanT.ovp
 
+          Energy cut-off for wfcs =         15.00 (Ry)
+                         for rho  =         60.00 (Ry)
+      Total number of PW for rho  =      17737
+        Max number of PW for wfc  =       2248
+      Total number of PW for wfcs =       4323
+        FFT grid components (rho) =  (    50   50   15 )
+
+
+  Initializing global dft data
+    Overlaps or Projections calculation for k-point   1
+                              Total time spent up to now :     0.49 secs
+
+    Overlaps or Projections calculation for k-point   2
+                              Total time spent up to now :     0.71 secs
+
+    Overlaps or Projections calculation for k-point   3
+                              Total time spent up to now :     0.94 secs
+
+    Overlaps or Projections calculation for k-point   4
+                              Total time spent up to now :     1.15 secs
+
+    Overlaps or Projections calculation for k-point   5
+                              Total time spent up to now :     1.37 secs
+
+    Overlaps or Projections calculation for k-point   6
+                              Total time spent up to now :     1.59 secs
+
+    Overlaps or Projections calculation for k-point   7
+                              Total time spent up to now :     1.81 secs
+
+    Overlaps or Projections calculation for k-point   8
+                              Total time spent up to now :     2.03 secs
+
+    Overlaps or Projections calculation for k-point   9
+                              Total time spent up to now :     2.25 secs
+
+    Overlaps or Projections calculation for k-point  10
                               Total time spent up to now :     2.47 secs
+
+    Overlaps or Projections calculation for k-point  11
+                              Total time spent up to now :     2.69 secs
+
+    Overlaps or Projections calculation for k-point  12
+                              Total time spent up to now :     2.92 secs
+
+    Overlaps or Projections calculation for k-point  13
+                              Total time spent up to now :     3.14 secs
+
+    Overlaps or Projections calculation for k-point  14
+                              Total time spent up to now :     3.37 secs
+
+    Overlaps or Projections calculation for k-point  15
+                              Total time spent up to now :     3.60 secs
+
+    Overlaps or Projections calculation for k-point  16
+                              Total time spent up to now :     3.83 secs
+
+    Overlaps or Projections calculation for k-point  17
+                              Total time spent up to now :     4.06 secs
+
+    Overlaps or Projections calculation for k-point  18
+                              Total time spent up to now :     4.29 secs
+
+    Overlaps or Projections calculation for k-point  19
+                              Total time spent up to now :     4.53 secs
+
+    Overlaps or Projections calculation for k-point  20
+                              Total time spent up to now :     4.77 secs
+
+
+  Overlap and projections written on file: al_WanT.ovp
+                              Total time spent up to now :     5.51 secs
 
 
   ======================================================================
@@ -345,658 +416,657 @@
   ======================================================================
 
 
-  Initial trial subspace: from_file
-  Subspace data read from file: al_WanT.space
-
-  Iteration =     1   Omega_I =     25.66645540    Error =      0.00000776
-  Iteration =     2   Omega_I =     25.66633928    Error =      0.00000839
-  Iteration =     3   Omega_I =     25.66621502    Error =      0.00000874
-  Iteration =     4   Omega_I =     25.66608606    Error =      0.00000896
-  Iteration =     5   Omega_I =     25.66595415    Error =      0.00000911
-  Iteration =     6   Omega_I =     25.66582013    Error =      0.00000923
-  Iteration =     7   Omega_I =     25.66568444    Error =      0.00000933
-  Iteration =     8   Omega_I =     25.66554727    Error =      0.00000943
-  Iteration =     9   Omega_I =     25.66540873    Error =      0.00000952
-  Iteration =    10   Omega_I =     25.66526886    Error =      0.00000961
-
-                              Total time spent up to now :     3.73 secs
-
-  Iteration =    11   Omega_I =     25.66512767    Error =      0.00000970
-  Iteration =    12   Omega_I =     25.66498516    Error =      0.00000979
-  Iteration =    13   Omega_I =     25.66484134    Error =      0.00000988
-  Iteration =    14   Omega_I =     25.66469618    Error =      0.00000997
-  Iteration =    15   Omega_I =     25.66454969    Error =      0.00001006
-  Iteration =    16   Omega_I =     25.66440185    Error =      0.00001015
-  Iteration =    17   Omega_I =     25.66425265    Error =      0.00001025
-  Iteration =    18   Omega_I =     25.66410208    Error =      0.00001034
-  Iteration =    19   Omega_I =     25.66395012    Error =      0.00001044
-  Iteration =    20   Omega_I =     25.66379677    Error =      0.00001053
-
-                              Total time spent up to now :     4.13 secs
-
-  Iteration =    21   Omega_I =     25.66364201    Error =      0.00001063
-  Iteration =    22   Omega_I =     25.66348582    Error =      0.00001073
-  Iteration =    23   Omega_I =     25.66332820    Error =      0.00001083
-  Iteration =    24   Omega_I =     25.66316913    Error =      0.00001093
-  Iteration =    25   Omega_I =     25.66300860    Error =      0.00001103
-  Iteration =    26   Omega_I =     25.66284660    Error =      0.00001113
-  Iteration =    27   Omega_I =     25.66268311    Error =      0.00001123
-  Iteration =    28   Omega_I =     25.66251812    Error =      0.00001133
-  Iteration =    29   Omega_I =     25.66235162    Error =      0.00001144
-  Iteration =    30   Omega_I =     25.66218360    Error =      0.00001154
-
-                              Total time spent up to now :     4.53 secs
-
-  Iteration =    31   Omega_I =     25.66201403    Error =      0.00001165
-  Iteration =    32   Omega_I =     25.66184291    Error =      0.00001175
-  Iteration =    33   Omega_I =     25.66167022    Error =      0.00001186
-  Iteration =    34   Omega_I =     25.66149595    Error =      0.00001197
-  Iteration =    35   Omega_I =     25.66132009    Error =      0.00001208
-  Iteration =    36   Omega_I =     25.66114262    Error =      0.00001219
-  Iteration =    37   Omega_I =     25.66096352    Error =      0.00001230
-  Iteration =    38   Omega_I =     25.66078279    Error =      0.00001241
-  Iteration =    39   Omega_I =     25.66060040    Error =      0.00001253
-  Iteration =    40   Omega_I =     25.66041635    Error =      0.00001264
-
-                              Total time spent up to now :     4.92 secs
-
-  Iteration =    41   Omega_I =     25.66023062    Error =      0.00001276
-  Iteration =    42   Omega_I =     25.66004319    Error =      0.00001287
-  Iteration =    43   Omega_I =     25.65985405    Error =      0.00001299
-  Iteration =    44   Omega_I =     25.65966318    Error =      0.00001311
-  Iteration =    45   Omega_I =     25.65947058    Error =      0.00001323
-  Iteration =    46   Omega_I =     25.65927621    Error =      0.00001335
-  Iteration =    47   Omega_I =     25.65908008    Error =      0.00001347
-  Iteration =    48   Omega_I =     25.65888216    Error =      0.00001360
-  Iteration =    49   Omega_I =     25.65868243    Error =      0.00001372
-  Iteration =    50   Omega_I =     25.65848089    Error =      0.00001384
-
-                              Total time spent up to now :     5.32 secs
-
-  Iteration =    51   Omega_I =     25.65827751    Error =      0.00001397
-  Iteration =    52   Omega_I =     25.65807228    Error =      0.00001410
-  Iteration =    53   Omega_I =     25.65786519    Error =      0.00001423
-  Iteration =    54   Omega_I =     25.65765621    Error =      0.00001436
-  Iteration =    55   Omega_I =     25.65744534    Error =      0.00001449
-  Iteration =    56   Omega_I =     25.65723254    Error =      0.00001462
-  Iteration =    57   Omega_I =     25.65701782    Error =      0.00001475
-  Iteration =    58   Omega_I =     25.65680115    Error =      0.00001488
-  Iteration =    59   Omega_I =     25.65658251    Error =      0.00001502
-  Iteration =    60   Omega_I =     25.65636189    Error =      0.00001516
-
-                              Total time spent up to now :     5.72 secs
-
-  Iteration =    61   Omega_I =     25.65613926    Error =      0.00001529
-  Iteration =    62   Omega_I =     25.65591463    Error =      0.00001543
-  Iteration =    63   Omega_I =     25.65568795    Error =      0.00001557
-  Iteration =    64   Omega_I =     25.65545923    Error =      0.00001571
-  Iteration =    65   Omega_I =     25.65522843    Error =      0.00001586
-  Iteration =    66   Omega_I =     25.65499554    Error =      0.00001600
-  Iteration =    67   Omega_I =     25.65476055    Error =      0.00001614
-  Iteration =    68   Omega_I =     25.65452344    Error =      0.00001629
-  Iteration =    69   Omega_I =     25.65428419    Error =      0.00001644
-  Iteration =    70   Omega_I =     25.65404277    Error =      0.00001659
-
-                              Total time spent up to now :     6.12 secs
-
-  Iteration =    71   Omega_I =     25.65379917    Error =      0.00001674
-  Iteration =    72   Omega_I =     25.65355338    Error =      0.00001689
-  Iteration =    73   Omega_I =     25.65330537    Error =      0.00001704
-  Iteration =    74   Omega_I =     25.65305513    Error =      0.00001719
-  Iteration =    75   Omega_I =     25.65280263    Error =      0.00001735
-  Iteration =    76   Omega_I =     25.65254786    Error =      0.00001750
-  Iteration =    77   Omega_I =     25.65229079    Error =      0.00001766
-  Iteration =    78   Omega_I =     25.65203141    Error =      0.00001782
-  Iteration =    79   Omega_I =     25.65176970    Error =      0.00001798
-  Iteration =    80   Omega_I =     25.65150564    Error =      0.00001814
-
-                              Total time spent up to now :     6.52 secs
-
-  Iteration =    81   Omega_I =     25.65123921    Error =      0.00001831
-  Iteration =    82   Omega_I =     25.65097038    Error =      0.00001847
-  Iteration =    83   Omega_I =     25.65069915    Error =      0.00001864
-  Iteration =    84   Omega_I =     25.65042548    Error =      0.00001880
-  Iteration =    85   Omega_I =     25.65014936    Error =      0.00001897
-  Iteration =    86   Omega_I =     25.64987076    Error =      0.00001914
-  Iteration =    87   Omega_I =     25.64958967    Error =      0.00001931
-  Iteration =    88   Omega_I =     25.64930607    Error =      0.00001949
-  Iteration =    89   Omega_I =     25.64901992    Error =      0.00001966
-  Iteration =    90   Omega_I =     25.64873122    Error =      0.00001984
-
-                              Total time spent up to now :     6.92 secs
-
-  Iteration =    91   Omega_I =     25.64843995    Error =      0.00002001
-  Iteration =    92   Omega_I =     25.64814607    Error =      0.00002019
-  Iteration =    93   Omega_I =     25.64784957    Error =      0.00002037
-  Iteration =    94   Omega_I =     25.64755042    Error =      0.00002055
-  Iteration =    95   Omega_I =     25.64724861    Error =      0.00002074
-  Iteration =    96   Omega_I =     25.64694411    Error =      0.00002092
-  Iteration =    97   Omega_I =     25.64663690    Error =      0.00002111
-  Iteration =    98   Omega_I =     25.64632695    Error =      0.00002130
-  Iteration =    99   Omega_I =     25.64601425    Error =      0.00002149
-  Iteration =   100   Omega_I =     25.64569878    Error =      0.00002168
-
-                              Total time spent up to now :     7.31 secs
-
-  Iteration =   101   Omega_I =     25.64538050    Error =      0.00002187
-  Iteration =   102   Omega_I =     25.64505939    Error =      0.00002206
-  Iteration =   103   Omega_I =     25.64473544    Error =      0.00002226
-  Iteration =   104   Omega_I =     25.64440862    Error =      0.00002246
-  Iteration =   105   Omega_I =     25.64407890    Error =      0.00002266
-  Iteration =   106   Omega_I =     25.64374626    Error =      0.00002286
-  Iteration =   107   Omega_I =     25.64341068    Error =      0.00002306
-  Iteration =   108   Omega_I =     25.64307214    Error =      0.00002326
-  Iteration =   109   Omega_I =     25.64273060    Error =      0.00002347
-  Iteration =   110   Omega_I =     25.64238605    Error =      0.00002368
-
-                              Total time spent up to now :     7.70 secs
-
-  Iteration =   111   Omega_I =     25.64203846    Error =      0.00002389
-  Iteration =   112   Omega_I =     25.64168780    Error =      0.00002410
-  Iteration =   113   Omega_I =     25.64133406    Error =      0.00002431
-  Iteration =   114   Omega_I =     25.64097720    Error =      0.00002452
-  Iteration =   115   Omega_I =     25.64061720    Error =      0.00002474
-  Iteration =   116   Omega_I =     25.64025404    Error =      0.00002496
-  Iteration =   117   Omega_I =     25.63988769    Error =      0.00002518
-  Iteration =   118   Omega_I =     25.63951812    Error =      0.00002540
-  Iteration =   119   Omega_I =     25.63914532    Error =      0.00002562
-  Iteration =   120   Omega_I =     25.63876924    Error =      0.00002585
-
-                              Total time spent up to now :     8.11 secs
-
-  Iteration =   121   Omega_I =     25.63838987    Error =      0.00002607
-  Iteration =   122   Omega_I =     25.63800718    Error =      0.00002630
-  Iteration =   123   Omega_I =     25.63762115    Error =      0.00002653
-  Iteration =   124   Omega_I =     25.63723174    Error =      0.00002676
-  Iteration =   125   Omega_I =     25.63683893    Error =      0.00002700
-  Iteration =   126   Omega_I =     25.63644270    Error =      0.00002723
-  Iteration =   127   Omega_I =     25.63604301    Error =      0.00002747
-  Iteration =   128   Omega_I =     25.63563984    Error =      0.00002771
-  Iteration =   129   Omega_I =     25.63523316    Error =      0.00002795
-  Iteration =   130   Omega_I =     25.63482295    Error =      0.00002820
-
-                              Total time spent up to now :     8.51 secs
-
-  Iteration =   131   Omega_I =     25.63440917    Error =      0.00002844
-  Iteration =   132   Omega_I =     25.63399181    Error =      0.00002869
-  Iteration =   133   Omega_I =     25.63357082    Error =      0.00002894
-  Iteration =   134   Omega_I =     25.63314619    Error =      0.00002919
-  Iteration =   135   Omega_I =     25.63271788    Error =      0.00002944
-  Iteration =   136   Omega_I =     25.63228586    Error =      0.00002970
-  Iteration =   137   Omega_I =     25.63185011    Error =      0.00002995
-  Iteration =   138   Omega_I =     25.63141060    Error =      0.00003021
-  Iteration =   139   Omega_I =     25.63096730    Error =      0.00003047
-  Iteration =   140   Omega_I =     25.63052018    Error =      0.00003074
-
-                              Total time spent up to now :     8.90 secs
-
-  Iteration =   141   Omega_I =     25.63006920    Error =      0.00003100
-  Iteration =   142   Omega_I =     25.62961435    Error =      0.00003127
-  Iteration =   143   Omega_I =     25.62915559    Error =      0.00003154
-  Iteration =   144   Omega_I =     25.62869290    Error =      0.00003181
-  Iteration =   145   Omega_I =     25.62822623    Error =      0.00003208
-  Iteration =   146   Omega_I =     25.62775556    Error =      0.00003236
-  Iteration =   147   Omega_I =     25.62728087    Error =      0.00003263
-  Iteration =   148   Omega_I =     25.62680212    Error =      0.00003291
-  Iteration =   149   Omega_I =     25.62631927    Error =      0.00003319
-  Iteration =   150   Omega_I =     25.62583231    Error =      0.00003348
-
-                              Total time spent up to now :     9.30 secs
-
-  Iteration =   151   Omega_I =     25.62534119    Error =      0.00003376
-  Iteration =   152   Omega_I =     25.62484589    Error =      0.00003405
-  Iteration =   153   Omega_I =     25.62434638    Error =      0.00003434
-  Iteration =   154   Omega_I =     25.62384263    Error =      0.00003463
-  Iteration =   155   Omega_I =     25.62333459    Error =      0.00003493
-  Iteration =   156   Omega_I =     25.62282225    Error =      0.00003523
-  Iteration =   157   Omega_I =     25.62230557    Error =      0.00003552
-  Iteration =   158   Omega_I =     25.62178451    Error =      0.00003583
-  Iteration =   159   Omega_I =     25.62125906    Error =      0.00003613
-  Iteration =   160   Omega_I =     25.62072916    Error =      0.00003643
-
-                              Total time spent up to now :     9.69 secs
-
-  Iteration =   161   Omega_I =     25.62019480    Error =      0.00003674
-  Iteration =   162   Omega_I =     25.61965594    Error =      0.00003705
-  Iteration =   163   Omega_I =     25.61911254    Error =      0.00003736
-  Iteration =   164   Omega_I =     25.61856458    Error =      0.00003768
-  Iteration =   165   Omega_I =     25.61801202    Error =      0.00003800
-  Iteration =   166   Omega_I =     25.61745482    Error =      0.00003832
-  Iteration =   167   Omega_I =     25.61689296    Error =      0.00003864
-  Iteration =   168   Omega_I =     25.61632640    Error =      0.00003896
-  Iteration =   169   Omega_I =     25.61575511    Error =      0.00003929
-  Iteration =   170   Omega_I =     25.61517905    Error =      0.00003961
-
-                              Total time spent up to now :    10.09 secs
-
-  Iteration =   171   Omega_I =     25.61459820    Error =      0.00003995
-  Iteration =   172   Omega_I =     25.61401251    Error =      0.00004028
-  Iteration =   173   Omega_I =     25.61342195    Error =      0.00004061
-  Iteration =   174   Omega_I =     25.61282649    Error =      0.00004095
-  Iteration =   175   Omega_I =     25.61222610    Error =      0.00004129
-  Iteration =   176   Omega_I =     25.61162073    Error =      0.00004163
-  Iteration =   177   Omega_I =     25.61101036    Error =      0.00004198
-  Iteration =   178   Omega_I =     25.61039495    Error =      0.00004233
-  Iteration =   179   Omega_I =     25.60977447    Error =      0.00004268
-  Iteration =   180   Omega_I =     25.60914888    Error =      0.00004303
-
-                              Total time spent up to now :    10.48 secs
-
-  Iteration =   181   Omega_I =     25.60851815    Error =      0.00004338
-  Iteration =   182   Omega_I =     25.60788224    Error =      0.00004374
-  Iteration =   183   Omega_I =     25.60724112    Error =      0.00004410
-  Iteration =   184   Omega_I =     25.60659474    Error =      0.00004446
-  Iteration =   185   Omega_I =     25.60594309    Error =      0.00004482
-  Iteration =   186   Omega_I =     25.60528611    Error =      0.00004519
-  Iteration =   187   Omega_I =     25.60462378    Error =      0.00004556
-  Iteration =   188   Omega_I =     25.60395606    Error =      0.00004593
-  Iteration =   189   Omega_I =     25.60328291    Error =      0.00004631
-  Iteration =   190   Omega_I =     25.60260430    Error =      0.00004668
-
-                              Total time spent up to now :    10.87 secs
-
-  Iteration =   191   Omega_I =     25.60192020    Error =      0.00004706
-  Iteration =   192   Omega_I =     25.60123056    Error =      0.00004744
-  Iteration =   193   Omega_I =     25.60053535    Error =      0.00004783
-  Iteration =   194   Omega_I =     25.59983454    Error =      0.00004821
-  Iteration =   195   Omega_I =     25.59912808    Error =      0.00004860
-  Iteration =   196   Omega_I =     25.59841595    Error =      0.00004899
-  Iteration =   197   Omega_I =     25.59769810    Error =      0.00004939
-  Iteration =   198   Omega_I =     25.59697450    Error =      0.00004978
-  Iteration =   199   Omega_I =     25.59624512    Error =      0.00005018
-  Iteration =   200   Omega_I =     25.59550991    Error =      0.00005058
-
-                              Total time spent up to now :    11.27 secs
-
-  Iteration =   201   Omega_I =     25.59476885    Error =      0.00005099
-  Iteration =   202   Omega_I =     25.59402188    Error =      0.00005139
-  Iteration =   203   Omega_I =     25.59326899    Error =      0.00005180
-  Iteration =   204   Omega_I =     25.59251012    Error =      0.00005222
-  Iteration =   205   Omega_I =     25.59174525    Error =      0.00005263
-  Iteration =   206   Omega_I =     25.59097434    Error =      0.00005305
-  Iteration =   207   Omega_I =     25.59019734    Error =      0.00005347
-  Iteration =   208   Omega_I =     25.58941423    Error =      0.00005389
-  Iteration =   209   Omega_I =     25.58862497    Error =      0.00005431
-  Iteration =   210   Omega_I =     25.58782952    Error =      0.00005474
-
-                              Total time spent up to now :    11.66 secs
-
-  Iteration =   211   Omega_I =     25.58702784    Error =      0.00005517
-  Iteration =   212   Omega_I =     25.58621990    Error =      0.00005560
-  Iteration =   213   Omega_I =     25.58540566    Error =      0.00005604
-  Iteration =   214   Omega_I =     25.58458508    Error =      0.00005647
-  Iteration =   215   Omega_I =     25.58375813    Error =      0.00005691
-  Iteration =   216   Omega_I =     25.58292477    Error =      0.00005736
-  Iteration =   217   Omega_I =     25.58208496    Error =      0.00005780
-  Iteration =   218   Omega_I =     25.58123867    Error =      0.00005825
-  Iteration =   219   Omega_I =     25.58038585    Error =      0.00005870
-  Iteration =   220   Omega_I =     25.57952648    Error =      0.00005915
-
-                              Total time spent up to now :    12.06 secs
-
-  Iteration =   221   Omega_I =     25.57866052    Error =      0.00005961
-  Iteration =   222   Omega_I =     25.57778793    Error =      0.00006006
-  Iteration =   223   Omega_I =     25.57690867    Error =      0.00006052
-  Iteration =   224   Omega_I =     25.57602270    Error =      0.00006099
-  Iteration =   225   Omega_I =     25.57513000    Error =      0.00006145
-  Iteration =   226   Omega_I =     25.57423052    Error =      0.00006192
-  Iteration =   227   Omega_I =     25.57332423    Error =      0.00006239
-  Iteration =   228   Omega_I =     25.57241109    Error =      0.00006286
-  Iteration =   229   Omega_I =     25.57149107    Error =      0.00006334
-  Iteration =   230   Omega_I =     25.57056412    Error =      0.00006382
-
-                              Total time spent up to now :    12.46 secs
-
-  Iteration =   231   Omega_I =     25.56963022    Error =      0.00006430
-  Iteration =   232   Omega_I =     25.56868933    Error =      0.00006478
-  Iteration =   233   Omega_I =     25.56774141    Error =      0.00006526
-  Iteration =   234   Omega_I =     25.56678642    Error =      0.00006575
-  Iteration =   235   Omega_I =     25.56582434    Error =      0.00006624
-  Iteration =   236   Omega_I =     25.56485512    Error =      0.00006674
-  Iteration =   237   Omega_I =     25.56387873    Error =      0.00006723
-  Iteration =   238   Omega_I =     25.56289514    Error =      0.00006773
-  Iteration =   239   Omega_I =     25.56190431    Error =      0.00006823
-  Iteration =   240   Omega_I =     25.56090621    Error =      0.00006873
-
-                              Total time spent up to now :    12.85 secs
-
-  Iteration =   241   Omega_I =     25.55990079    Error =      0.00006924
-  Iteration =   242   Omega_I =     25.55888803    Error =      0.00006974
-  Iteration =   243   Omega_I =     25.55786790    Error =      0.00007025
-  Iteration =   244   Omega_I =     25.55684035    Error =      0.00007077
-  Iteration =   245   Omega_I =     25.55580536    Error =      0.00007128
-  Iteration =   246   Omega_I =     25.55476289    Error =      0.00007180
-  Iteration =   247   Omega_I =     25.55371290    Error =      0.00007232
-  Iteration =   248   Omega_I =     25.55265537    Error =      0.00007284
-  Iteration =   249   Omega_I =     25.55159026    Error =      0.00007336
-  Iteration =   250   Omega_I =     25.55051754    Error =      0.00007389
-
-                              Total time spent up to now :    13.25 secs
-
-  Iteration =   251   Omega_I =     25.54943717    Error =      0.00007442
-  Iteration =   252   Omega_I =     25.54834913    Error =      0.00007495
-  Iteration =   253   Omega_I =     25.54725338    Error =      0.00007548
-  Iteration =   254   Omega_I =     25.54614989    Error =      0.00007602
-  Iteration =   255   Omega_I =     25.54503863    Error =      0.00007655
-  Iteration =   256   Omega_I =     25.54391956    Error =      0.00007709
-  Iteration =   257   Omega_I =     25.54279266    Error =      0.00007764
-  Iteration =   258   Omega_I =     25.54165789    Error =      0.00007818
-  Iteration =   259   Omega_I =     25.54051523    Error =      0.00007873
-  Iteration =   260   Omega_I =     25.53936465    Error =      0.00007927
-
-                              Total time spent up to now :    13.64 secs
-
-  Iteration =   261   Omega_I =     25.53820611    Error =      0.00007982
-  Iteration =   262   Omega_I =     25.53703958    Error =      0.00008038
-  Iteration =   263   Omega_I =     25.53586504    Error =      0.00008093
-  Iteration =   264   Omega_I =     25.53468246    Error =      0.00008149
-  Iteration =   265   Omega_I =     25.53349181    Error =      0.00008205
-  Iteration =   266   Omega_I =     25.53229306    Error =      0.00008261
-  Iteration =   267   Omega_I =     25.53108618    Error =      0.00008317
-  Iteration =   268   Omega_I =     25.52987115    Error =      0.00008373
-  Iteration =   269   Omega_I =     25.52864795    Error =      0.00008430
-  Iteration =   270   Omega_I =     25.52741653    Error =      0.00008487
-
-                              Total time spent up to now :    14.03 secs
-
-  Iteration =   271   Omega_I =     25.52617688    Error =      0.00008544
-  Iteration =   272   Omega_I =     25.52492898    Error =      0.00008601
-  Iteration =   273   Omega_I =     25.52367279    Error =      0.00008658
-  Iteration =   274   Omega_I =     25.52240829    Error =      0.00008716
-  Iteration =   275   Omega_I =     25.52113546    Error =      0.00008774
-  Iteration =   276   Omega_I =     25.51985428    Error =      0.00008832
-  Iteration =   277   Omega_I =     25.51856471    Error =      0.00008890
-  Iteration =   278   Omega_I =     25.51726675    Error =      0.00008948
-  Iteration =   279   Omega_I =     25.51596036    Error =      0.00009006
-  Iteration =   280   Omega_I =     25.51464552    Error =      0.00009065
-
-                              Total time spent up to now :    14.43 secs
-
-  Iteration =   281   Omega_I =     25.51332222    Error =      0.00009123
-  Iteration =   282   Omega_I =     25.51199043    Error =      0.00009182
-  Iteration =   283   Omega_I =     25.51065013    Error =      0.00009241
-  Iteration =   284   Omega_I =     25.50930130    Error =      0.00009300
-  Iteration =   285   Omega_I =     25.50794393    Error =      0.00009359
-  Iteration =   286   Omega_I =     25.50657799    Error =      0.00009419
-  Iteration =   287   Omega_I =     25.50520347    Error =      0.00009478
-  Iteration =   288   Omega_I =     25.50382035    Error =      0.00009538
-  Iteration =   289   Omega_I =     25.50242861    Error =      0.00009598
-  Iteration =   290   Omega_I =     25.50102823    Error =      0.00009658
-
-                              Total time spent up to now :    14.82 secs
-
-  Iteration =   291   Omega_I =     25.49961921    Error =      0.00009718
-  Iteration =   292   Omega_I =     25.49820152    Error =      0.00009778
-  Iteration =   293   Omega_I =     25.49677516    Error =      0.00009838
-  Iteration =   294   Omega_I =     25.49534010    Error =      0.00009898
-  Iteration =   295   Omega_I =     25.49389633    Error =      0.00009959
-  Iteration =   296   Omega_I =     25.49244385    Error =      0.00010019
-  Iteration =   297   Omega_I =     25.49098264    Error =      0.00010080
-  Iteration =   298   Omega_I =     25.48951269    Error =      0.00010140
-  Iteration =   299   Omega_I =     25.48803399    Error =      0.00010201
-  Iteration =   300   Omega_I =     25.48654654    Error =      0.00010262
-
-                              Total time spent up to now :    15.22 secs
-
-  Iteration =   301   Omega_I =     25.48505031    Error =      0.00010323
-  Iteration =   302   Omega_I =     25.48354530    Error =      0.00010384
-  Iteration =   303   Omega_I =     25.48203152    Error =      0.00010445
-  Iteration =   304   Omega_I =     25.48050894    Error =      0.00010506
-  Iteration =   305   Omega_I =     25.47897757    Error =      0.00010567
-  Iteration =   306   Omega_I =     25.47743739    Error =      0.00010628
-  Iteration =   307   Omega_I =     25.47588841    Error =      0.00010689
-  Iteration =   308   Omega_I =     25.47433063    Error =      0.00010750
-  Iteration =   309   Omega_I =     25.47276403    Error =      0.00010811
-  Iteration =   310   Omega_I =     25.47118862    Error =      0.00010873
-
-                              Total time spent up to now :    15.61 secs
-
-  Iteration =   311   Omega_I =     25.46960439    Error =      0.00010934
-  Iteration =   312   Omega_I =     25.46801135    Error =      0.00010995
-  Iteration =   313   Omega_I =     25.46640950    Error =      0.00011056
-  Iteration =   314   Omega_I =     25.46479884    Error =      0.00011118
-  Iteration =   315   Omega_I =     25.46317937    Error =      0.00011179
-  Iteration =   316   Omega_I =     25.46155109    Error =      0.00011240
-  Iteration =   317   Omega_I =     25.45991402    Error =      0.00011301
-  Iteration =   318   Omega_I =     25.45826814    Error =      0.00011363
-  Iteration =   319   Omega_I =     25.45661348    Error =      0.00011424
-  Iteration =   320   Omega_I =     25.45495003    Error =      0.00011485
-
-                              Total time spent up to now :    16.01 secs
-
-  Iteration =   321   Omega_I =     25.45327781    Error =      0.00011546
-  Iteration =   322   Omega_I =     25.45159682    Error =      0.00011607
-  Iteration =   323   Omega_I =     25.44990708    Error =      0.00011668
-  Iteration =   324   Omega_I =     25.44820859    Error =      0.00011729
-  Iteration =   325   Omega_I =     25.44650137    Error =      0.00011789
-  Iteration =   326   Omega_I =     25.44478542    Error =      0.00011850
-  Iteration =   327   Omega_I =     25.44306077    Error =      0.00011911
-  Iteration =   328   Omega_I =     25.44132743    Error =      0.00011971
-  Iteration =   329   Omega_I =     25.43958541    Error =      0.00012032
-  Iteration =   330   Omega_I =     25.43783473    Error =      0.00012092
+  Initial trial subspace: projected localized orbitals
+
+  Iteration =     1   Omega_I =     62.86931384    Error =      0.26731594
+  Iteration =     2   Omega_I =     55.55744934    Error =      0.22721799
+  Iteration =     3   Omega_I =     50.10171781    Error =      0.16598614
+  Iteration =     4   Omega_I =     46.30868359    Error =      0.12225519
+  Iteration =     5   Omega_I =     43.60942547    Error =      0.09237264
+  Iteration =     6   Omega_I =     41.62244917    Error =      0.07196693
+  Iteration =     7   Omega_I =     40.10615685    Error =      0.05785108
+  Iteration =     8   Omega_I =     38.90811121    Error =      0.04788189
+  Iteration =     9   Omega_I =     37.93128103    Error =      0.04065901
+  Iteration =    10   Omega_I =     37.11294975    Error =      0.03527712
+
+                              Total time spent up to now :     5.66 secs
+
+  Iteration =    11   Omega_I =     36.41176339    Error =      0.03115111
+  Iteration =    12   Omega_I =     35.79980871    Error =      0.02790039
+  Iteration =    13   Omega_I =     35.25775415    Error =      0.02527447
+  Iteration =    14   Omega_I =     34.77184690    Error =      0.02310587
+  Iteration =    15   Omega_I =     34.33203639    Error =      0.02128051
+  Iteration =    16   Omega_I =     33.93078482    Error =      0.01971905
+  Iteration =    17   Omega_I =     33.56230073    Error =      0.01836504
+  Iteration =    18   Omega_I =     33.22203578    Error =      0.01717742
+  Iteration =    19   Omega_I =     32.90634758    Error =      0.01612566
+  Iteration =    20   Omega_I =     32.61226911    Error =      0.01518654
+
+                              Total time spent up to now :     6.05 secs
+
+  Iteration =    21   Omega_I =     32.33734740    Error =      0.01434207
+  Iteration =    22   Omega_I =     32.07952838    Error =      0.01357808
+  Iteration =    23   Omega_I =     31.83707292    Error =      0.01288317
+  Iteration =    24   Omega_I =     31.60849432    Error =      0.01224810
+  Iteration =    25   Omega_I =     31.39251102    Error =      0.01166522
+  Iteration =    26   Omega_I =     31.18801015    Error =      0.01112818
+  Iteration =    27   Omega_I =     30.99401902    Error =      0.01063165
+  Iteration =    28   Omega_I =     30.80968247    Error =      0.01017109
+  Iteration =    29   Omega_I =     30.63424474    Error =      0.00974261
+  Iteration =    30   Omega_I =     30.46703475    Error =      0.00934290
+
+                              Total time spent up to now :     6.44 secs
+
+  Iteration =    31   Omega_I =     30.30745394    Error =      0.00896906
+  Iteration =    32   Omega_I =     30.15496638    Error =      0.00861857
+  Iteration =    33   Omega_I =     30.00909034    Error =      0.00828926
+  Iteration =    34   Omega_I =     29.86939136    Error =      0.00797917
+  Iteration =    35   Omega_I =     29.73547631    Error =      0.00768662
+  Iteration =    36   Omega_I =     29.60698839    Error =      0.00741009
+  Iteration =    37   Omega_I =     29.48360281    Error =      0.00714826
+  Iteration =    38   Omega_I =     29.36502314    Error =      0.00689992
+  Iteration =    39   Omega_I =     29.25097809    Error =      0.00666402
+  Iteration =    40   Omega_I =     29.14121880    Error =      0.00643960
+
+                              Total time spent up to now :     6.83 secs
+
+  Iteration =    41   Omega_I =     29.03551641    Error =      0.00622580
+  Iteration =    42   Omega_I =     28.93366000    Error =      0.00602185
+  Iteration =    43   Omega_I =     28.83545472    Error =      0.00582706
+  Iteration =    44   Omega_I =     28.74072024    Error =      0.00564079
+  Iteration =    45   Omega_I =     28.64928927    Error =      0.00546248
+  Iteration =    46   Omega_I =     28.56100635    Error =      0.00529160
+  Iteration =    47   Omega_I =     28.47572674    Error =      0.00512768
+  Iteration =    48   Omega_I =     28.39331539    Error =      0.00497030
+  Iteration =    49   Omega_I =     28.31364614    Error =      0.00481905
+  Iteration =    50   Omega_I =     28.23660085    Error =      0.00467358
+
+                              Total time spent up to now :     7.21 secs
+
+  Iteration =    51   Omega_I =     28.16206879    Error =      0.00453357
+  Iteration =    52   Omega_I =     28.08994594    Error =      0.00439870
+  Iteration =    53   Omega_I =     28.02013445    Error =      0.00426869
+  Iteration =    54   Omega_I =     27.95254216    Error =      0.00414330
+  Iteration =    55   Omega_I =     27.88708212    Error =      0.00402228
+  Iteration =    56   Omega_I =     27.82367217    Error =      0.00390542
+  Iteration =    57   Omega_I =     27.76223460    Error =      0.00379251
+  Iteration =    58   Omega_I =     27.70269579    Error =      0.00368336
+  Iteration =    59   Omega_I =     27.64498591    Error =      0.00357781
+  Iteration =    60   Omega_I =     27.58903866    Error =      0.00347568
+
+                              Total time spent up to now :     7.59 secs
+
+  Iteration =    61   Omega_I =     27.53479100    Error =      0.00337683
+  Iteration =    62   Omega_I =     27.48218292    Error =      0.00328111
+  Iteration =    63   Omega_I =     27.43115724    Error =      0.00318840
+  Iteration =    64   Omega_I =     27.38165943    Error =      0.00309857
+  Iteration =    65   Omega_I =     27.33363742    Error =      0.00301150
+  Iteration =    66   Omega_I =     27.28704146    Error =      0.00292708
+  Iteration =    67   Omega_I =     27.24182393    Error =      0.00284522
+  Iteration =    68   Omega_I =     27.19793928    Error =      0.00276581
+  Iteration =    69   Omega_I =     27.15534384    Error =      0.00268877
+  Iteration =    70   Omega_I =     27.11399575    Error =      0.00261401
+
+                              Total time spent up to now :     7.98 secs
+
+  Iteration =    71   Omega_I =     27.07385482    Error =      0.00254144
+  Iteration =    72   Omega_I =     27.03488248    Error =      0.00247100
+  Iteration =    73   Omega_I =     26.99704164    Error =      0.00240260
+  Iteration =    74   Omega_I =     26.96029665    Error =      0.00233618
+  Iteration =    75   Omega_I =     26.92461322    Error =      0.00227167
+  Iteration =    76   Omega_I =     26.88995833    Error =      0.00220901
+  Iteration =    77   Omega_I =     26.85630015    Error =      0.00214814
+  Iteration =    78   Omega_I =     26.82360805    Error =      0.00208900
+  Iteration =    79   Omega_I =     26.79185247    Error =      0.00203153
+  Iteration =    80   Omega_I =     26.76100489    Error =      0.00197569
+
+                              Total time spent up to now :     8.36 secs
+
+  Iteration =    81   Omega_I =     26.73103781    Error =      0.00192142
+  Iteration =    82   Omega_I =     26.70192465    Error =      0.00186867
+  Iteration =    83   Omega_I =     26.67363978    Error =      0.00181740
+  Iteration =    84   Omega_I =     26.64615840    Error =      0.00176757
+  Iteration =    85   Omega_I =     26.61945656    Error =      0.00171912
+  Iteration =    86   Omega_I =     26.59351111    Error =      0.00167203
+  Iteration =    87   Omega_I =     26.56829964    Error =      0.00162624
+  Iteration =    88   Omega_I =     26.54380049    Error =      0.00158173
+  Iteration =    89   Omega_I =     26.51999270    Error =      0.00153845
+  Iteration =    90   Omega_I =     26.49685598    Error =      0.00149636
+
+                              Total time spent up to now :     8.74 secs
+
+  Iteration =    91   Omega_I =     26.47437068    Error =      0.00145544
+  Iteration =    92   Omega_I =     26.45251780    Error =      0.00141565
+  Iteration =    93   Omega_I =     26.43127890    Error =      0.00137696
+  Iteration =    94   Omega_I =     26.41063615    Error =      0.00133934
+  Iteration =    95   Omega_I =     26.39057226    Error =      0.00130275
+  Iteration =    96   Omega_I =     26.37107047    Error =      0.00126717
+  Iteration =    97   Omega_I =     26.35211456    Error =      0.00123257
+  Iteration =    98   Omega_I =     26.33368878    Error =      0.00119892
+  Iteration =    99   Omega_I =     26.31577787    Error =      0.00116619
+  Iteration =   100   Omega_I =     26.29836704    Error =      0.00113437
+
+                              Total time spent up to now :     9.13 secs
+
+  Iteration =   101   Omega_I =     26.28144195    Error =      0.00110342
+  Iteration =   102   Omega_I =     26.26498868    Error =      0.00107331
+  Iteration =   103   Omega_I =     26.24899374    Error =      0.00104404
+  Iteration =   104   Omega_I =     26.23344402    Error =      0.00101557
+  Iteration =   105   Omega_I =     26.21832685    Error =      0.00098787
+  Iteration =   106   Omega_I =     26.20362988    Error =      0.00096094
+  Iteration =   107   Omega_I =     26.18934116    Error =      0.00093475
+  Iteration =   108   Omega_I =     26.17544909    Error =      0.00090927
+  Iteration =   109   Omega_I =     26.16194242    Error =      0.00088449
+  Iteration =   110   Omega_I =     26.14881020    Error =      0.00086040
+
+                              Total time spent up to now :     9.51 secs
+
+  Iteration =   111   Omega_I =     26.13604182    Error =      0.00083696
+  Iteration =   112   Omega_I =     26.12362701    Error =      0.00081416
+  Iteration =   113   Omega_I =     26.11155574    Error =      0.00079199
+  Iteration =   114   Omega_I =     26.09981833    Error =      0.00077043
+  Iteration =   115   Omega_I =     26.08840534    Error =      0.00074945
+  Iteration =   116   Omega_I =     26.07730764    Error =      0.00072905
+  Iteration =   117   Omega_I =     26.06651633    Error =      0.00070921
+  Iteration =   118   Omega_I =     26.05602279    Error =      0.00068992
+  Iteration =   119   Omega_I =     26.04581865    Error =      0.00067115
+  Iteration =   120   Omega_I =     26.03589578    Error =      0.00065289
+
+                              Total time spent up to now :     9.90 secs
+
+  Iteration =   121   Omega_I =     26.02624626    Error =      0.00063514
+  Iteration =   122   Omega_I =     26.01686244    Error =      0.00061787
+  Iteration =   123   Omega_I =     26.00773687    Error =      0.00060107
+  Iteration =   124   Omega_I =     25.99886229    Error =      0.00058474
+  Iteration =   125   Omega_I =     25.99023170    Error =      0.00056885
+  Iteration =   126   Omega_I =     25.98183825    Error =      0.00055339
+  Iteration =   127   Omega_I =     25.97367532    Error =      0.00053836
+  Iteration =   128   Omega_I =     25.96573647    Error =      0.00052374
+  Iteration =   129   Omega_I =     25.95801544    Error =      0.00050952
+  Iteration =   130   Omega_I =     25.95050615    Error =      0.00049569
+
+                              Total time spent up to now :    10.28 secs
+
+  Iteration =   131   Omega_I =     25.94320268    Error =      0.00048224
+  Iteration =   132   Omega_I =     25.93609932    Error =      0.00046915
+  Iteration =   133   Omega_I =     25.92919048    Error =      0.00045643
+  Iteration =   134   Omega_I =     25.92247074    Error =      0.00044405
+  Iteration =   135   Omega_I =     25.91593485    Error =      0.00043201
+  Iteration =   136   Omega_I =     25.90957769    Error =      0.00042030
+  Iteration =   137   Omega_I =     25.90339430    Error =      0.00040890
+  Iteration =   138   Omega_I =     25.89737985    Error =      0.00039782
+  Iteration =   139   Omega_I =     25.89152964    Error =      0.00038705
+  Iteration =   140   Omega_I =     25.88583914    Error =      0.00037656
+
+                              Total time spent up to now :    10.66 secs
+
+  Iteration =   141   Omega_I =     25.88030389    Error =      0.00036637
+  Iteration =   142   Omega_I =     25.87491961    Error =      0.00035645
+  Iteration =   143   Omega_I =     25.86968211    Error =      0.00034680
+  Iteration =   144   Omega_I =     25.86458733    Error =      0.00033742
+  Iteration =   145   Omega_I =     25.85963131    Error =      0.00032829
+  Iteration =   146   Omega_I =     25.85481024    Error =      0.00031941
+  Iteration =   147   Omega_I =     25.85012036    Error =      0.00031078
+  Iteration =   148   Omega_I =     25.84555806    Error =      0.00030238
+  Iteration =   149   Omega_I =     25.84111982    Error =      0.00029421
+  Iteration =   150   Omega_I =     25.83680222    Error =      0.00028626
+
+                              Total time spent up to now :    11.05 secs
+
+  Iteration =   151   Omega_I =     25.83260192    Error =      0.00027853
+  Iteration =   152   Omega_I =     25.82851569    Error =      0.00027100
+  Iteration =   153   Omega_I =     25.82454040    Error =      0.00026369
+  Iteration =   154   Omega_I =     25.82067298    Error =      0.00025657
+  Iteration =   155   Omega_I =     25.81691046    Error =      0.00024965
+  Iteration =   156   Omega_I =     25.81324997    Error =      0.00024291
+  Iteration =   157   Omega_I =     25.80968869    Error =      0.00023636
+  Iteration =   158   Omega_I =     25.80622391    Error =      0.00022999
+  Iteration =   159   Omega_I =     25.80285295    Error =      0.00022379
+  Iteration =   160   Omega_I =     25.79957327    Error =      0.00021776
+
+                              Total time spent up to now :    11.43 secs
+
+  Iteration =   161   Omega_I =     25.79638233    Error =      0.00021189
+  Iteration =   162   Omega_I =     25.79327773    Error =      0.00020619
+  Iteration =   163   Omega_I =     25.79025707    Error =      0.00020064
+  Iteration =   164   Omega_I =     25.78731808    Error =      0.00019523
+  Iteration =   165   Omega_I =     25.78445850    Error =      0.00018998
+  Iteration =   166   Omega_I =     25.78167616    Error =      0.00018487
+  Iteration =   167   Omega_I =     25.77896896    Error =      0.00017990
+  Iteration =   168   Omega_I =     25.77633483    Error =      0.00017506
+  Iteration =   169   Omega_I =     25.77377178    Error =      0.00017035
+  Iteration =   170   Omega_I =     25.77127787    Error =      0.00016577
+
+                              Total time spent up to now :    11.82 secs
+
+  Iteration =   171   Omega_I =     25.76885120    Error =      0.00016132
+  Iteration =   172   Omega_I =     25.76648994    Error =      0.00015699
+  Iteration =   173   Omega_I =     25.76419231    Error =      0.00015277
+  Iteration =   174   Omega_I =     25.76195657    Error =      0.00014867
+  Iteration =   175   Omega_I =     25.75978103    Error =      0.00014468
+  Iteration =   176   Omega_I =     25.75766405    Error =      0.00014080
+  Iteration =   177   Omega_I =     25.75560404    Error =      0.00013702
+  Iteration =   178   Omega_I =     25.75359944    Error =      0.00013334
+  Iteration =   179   Omega_I =     25.75164875    Error =      0.00012977
+  Iteration =   180   Omega_I =     25.74975050    Error =      0.00012629
+
+                              Total time spent up to now :    12.19 secs
+
+  Iteration =   181   Omega_I =     25.74790326    Error =      0.00012290
+  Iteration =   182   Omega_I =     25.74610565    Error =      0.00011961
+  Iteration =   183   Omega_I =     25.74435631    Error =      0.00011641
+  Iteration =   184   Omega_I =     25.74265395    Error =      0.00011329
+  Iteration =   185   Omega_I =     25.74099727    Error =      0.00011026
+  Iteration =   186   Omega_I =     25.73938505    Error =      0.00010731
+  Iteration =   187   Omega_I =     25.73781607    Error =      0.00010443
+  Iteration =   188   Omega_I =     25.73628917    Error =      0.00010164
+  Iteration =   189   Omega_I =     25.73480319    Error =      0.00009892
+  Iteration =   190   Omega_I =     25.73335704    Error =      0.00009628
+
+                              Total time spent up to now :    12.58 secs
+
+  Iteration =   191   Omega_I =     25.73194964    Error =      0.00009370
+  Iteration =   192   Omega_I =     25.73057993    Error =      0.00009120
+  Iteration =   193   Omega_I =     25.72924689    Error =      0.00008876
+  Iteration =   194   Omega_I =     25.72794954    Error =      0.00008639
+  Iteration =   195   Omega_I =     25.72668690    Error =      0.00008408
+  Iteration =   196   Omega_I =     25.72545804    Error =      0.00008184
+  Iteration =   197   Omega_I =     25.72426205    Error =      0.00007965
+  Iteration =   198   Omega_I =     25.72309804    Error =      0.00007753
+  Iteration =   199   Omega_I =     25.72196514    Error =      0.00007546
+  Iteration =   200   Omega_I =     25.72086252    Error =      0.00007344
+
+                              Total time spent up to now :    12.96 secs
+
+  Iteration =   201   Omega_I =     25.71978935    Error =      0.00007149
+  Iteration =   202   Omega_I =     25.71874485    Error =      0.00006958
+  Iteration =   203   Omega_I =     25.71772823    Error =      0.00006772
+  Iteration =   204   Omega_I =     25.71673876    Error =      0.00006592
+  Iteration =   205   Omega_I =     25.71577569    Error =      0.00006416
+  Iteration =   206   Omega_I =     25.71483832    Error =      0.00006245
+  Iteration =   207   Omega_I =     25.71392595    Error =      0.00006079
+  Iteration =   208   Omega_I =     25.71303791    Error =      0.00005917
+  Iteration =   209   Omega_I =     25.71217354    Error =      0.00005760
+  Iteration =   210   Omega_I =     25.71133222    Error =      0.00005606
+
+                              Total time spent up to now :    13.34 secs
+
+  Iteration =   211   Omega_I =     25.71051331    Error =      0.00005457
+  Iteration =   212   Omega_I =     25.70971622    Error =      0.00005312
+  Iteration =   213   Omega_I =     25.70894036    Error =      0.00005171
+  Iteration =   214   Omega_I =     25.70818516    Error =      0.00005033
+  Iteration =   215   Omega_I =     25.70745007    Error =      0.00004899
+  Iteration =   216   Omega_I =     25.70673454    Error =      0.00004769
+  Iteration =   217   Omega_I =     25.70603804    Error =      0.00004642
+  Iteration =   218   Omega_I =     25.70536008    Error =      0.00004519
+  Iteration =   219   Omega_I =     25.70470015    Error =      0.00004399
+  Iteration =   220   Omega_I =     25.70405777    Error =      0.00004282
+
+                              Total time spent up to now :    13.72 secs
+
+  Iteration =   221   Omega_I =     25.70343247    Error =      0.00004168
+  Iteration =   222   Omega_I =     25.70282378    Error =      0.00004058
+  Iteration =   223   Omega_I =     25.70223127    Error =      0.00003950
+  Iteration =   224   Omega_I =     25.70165450    Error =      0.00003845
+  Iteration =   225   Omega_I =     25.70109305    Error =      0.00003743
+  Iteration =   226   Omega_I =     25.70054652    Error =      0.00003644
+  Iteration =   227   Omega_I =     25.70001449    Error =      0.00003547
+  Iteration =   228   Omega_I =     25.69949658    Error =      0.00003453
+  Iteration =   229   Omega_I =     25.69899242    Error =      0.00003361
+  Iteration =   230   Omega_I =     25.69850164    Error =      0.00003272
+
+                              Total time spent up to now :    14.11 secs
+
+  Iteration =   231   Omega_I =     25.69802388    Error =      0.00003186
+  Iteration =   232   Omega_I =     25.69755878    Error =      0.00003101
+  Iteration =   233   Omega_I =     25.69710603    Error =      0.00003019
+  Iteration =   234   Omega_I =     25.69666527    Error =      0.00002939
+  Iteration =   235   Omega_I =     25.69623620    Error =      0.00002861
+  Iteration =   236   Omega_I =     25.69581850    Error =      0.00002785
+  Iteration =   237   Omega_I =     25.69541187    Error =      0.00002712
+  Iteration =   238   Omega_I =     25.69501600    Error =      0.00002640
+  Iteration =   239   Omega_I =     25.69463063    Error =      0.00002570
+  Iteration =   240   Omega_I =     25.69425546    Error =      0.00002502
+
+                              Total time spent up to now :    14.49 secs
+
+  Iteration =   241   Omega_I =     25.69389022    Error =      0.00002436
+  Iteration =   242   Omega_I =     25.69353465    Error =      0.00002371
+  Iteration =   243   Omega_I =     25.69318849    Error =      0.00002309
+  Iteration =   244   Omega_I =     25.69285149    Error =      0.00002248
+  Iteration =   245   Omega_I =     25.69252341    Error =      0.00002188
+  Iteration =   246   Omega_I =     25.69220401    Error =      0.00002130
+  Iteration =   247   Omega_I =     25.69189305    Error =      0.00002074
+  Iteration =   248   Omega_I =     25.69159032    Error =      0.00002019
+  Iteration =   249   Omega_I =     25.69129559    Error =      0.00001966
+  Iteration =   250   Omega_I =     25.69100865    Error =      0.00001914
+
+                              Total time spent up to now :    14.87 secs
+
+  Iteration =   251   Omega_I =     25.69072929    Error =      0.00001863
+  Iteration =   252   Omega_I =     25.69045731    Error =      0.00001814
+  Iteration =   253   Omega_I =     25.69019252    Error =      0.00001766
+  Iteration =   254   Omega_I =     25.68993473    Error =      0.00001720
+  Iteration =   255   Omega_I =     25.68968374    Error =      0.00001674
+  Iteration =   256   Omega_I =     25.68943938    Error =      0.00001630
+  Iteration =   257   Omega_I =     25.68920147    Error =      0.00001587
+  Iteration =   258   Omega_I =     25.68896984    Error =      0.00001545
+  Iteration =   259   Omega_I =     25.68874433    Error =      0.00001504
+  Iteration =   260   Omega_I =     25.68852476    Error =      0.00001465
+
+                              Total time spent up to now :    15.25 secs
+
+  Iteration =   261   Omega_I =     25.68831099    Error =      0.00001426
+  Iteration =   262   Omega_I =     25.68810286    Error =      0.00001388
+  Iteration =   263   Omega_I =     25.68790022    Error =      0.00001352
+  Iteration =   264   Omega_I =     25.68770292    Error =      0.00001316
+  Iteration =   265   Omega_I =     25.68751082    Error =      0.00001281
+  Iteration =   266   Omega_I =     25.68732379    Error =      0.00001248
+  Iteration =   267   Omega_I =     25.68714168    Error =      0.00001215
+  Iteration =   268   Omega_I =     25.68696438    Error =      0.00001183
+  Iteration =   269   Omega_I =     25.68679175    Error =      0.00001152
+  Iteration =   270   Omega_I =     25.68662366    Error =      0.00001121
+
+                              Total time spent up to now :    15.63 secs
+
+  Iteration =   271   Omega_I =     25.68646000    Error =      0.00001092
+  Iteration =   272   Omega_I =     25.68630065    Error =      0.00001063
+  Iteration =   273   Omega_I =     25.68614550    Error =      0.00001035
+  Iteration =   274   Omega_I =     25.68599443    Error =      0.00001008
+  Iteration =   275   Omega_I =     25.68584734    Error =      0.00000981
+  Iteration =   276   Omega_I =     25.68570412    Error =      0.00000956
+  Iteration =   277   Omega_I =     25.68556467    Error =      0.00000930
+  Iteration =   278   Omega_I =     25.68542889    Error =      0.00000906
+  Iteration =   279   Omega_I =     25.68529668    Error =      0.00000882
+  Iteration =   280   Omega_I =     25.68516795    Error =      0.00000859
+
+                              Total time spent up to now :    16.02 secs
+
+  Iteration =   281   Omega_I =     25.68504260    Error =      0.00000836
+  Iteration =   282   Omega_I =     25.68492054    Error =      0.00000814
+  Iteration =   283   Omega_I =     25.68480170    Error =      0.00000793
+  Iteration =   284   Omega_I =     25.68468598    Error =      0.00000772
+  Iteration =   285   Omega_I =     25.68457330    Error =      0.00000752
+  Iteration =   286   Omega_I =     25.68446358    Error =      0.00000732
+  Iteration =   287   Omega_I =     25.68435674    Error =      0.00000713
+  Iteration =   288   Omega_I =     25.68425271    Error =      0.00000694
+  Iteration =   289   Omega_I =     25.68415141    Error =      0.00000676
+  Iteration =   290   Omega_I =     25.68405278    Error =      0.00000658
 
                               Total time spent up to now :    16.40 secs
 
-  Iteration =   331   Omega_I =     25.43607541    Error =      0.00012152
-  Iteration =   332   Omega_I =     25.43430746    Error =      0.00012212
-  Iteration =   333   Omega_I =     25.43253091    Error =      0.00012272
-  Iteration =   334   Omega_I =     25.43074578    Error =      0.00012332
-  Iteration =   335   Omega_I =     25.42895209    Error =      0.00012392
-  Iteration =   336   Omega_I =     25.42714985    Error =      0.00012451
-  Iteration =   337   Omega_I =     25.42533911    Error =      0.00012511
-  Iteration =   338   Omega_I =     25.42351987    Error =      0.00012570
-  Iteration =   339   Omega_I =     25.42169217    Error =      0.00012629
-  Iteration =   340   Omega_I =     25.41985604    Error =      0.00012688
+  Iteration =   291   Omega_I =     25.68395673    Error =      0.00000641
+  Iteration =   292   Omega_I =     25.68386320    Error =      0.00000624
+  Iteration =   293   Omega_I =     25.68377212    Error =      0.00000608
+  Iteration =   294   Omega_I =     25.68368344    Error =      0.00000592
+  Iteration =   295   Omega_I =     25.68359708    Error =      0.00000576
+  Iteration =   296   Omega_I =     25.68351298    Error =      0.00000561
+  Iteration =   297   Omega_I =     25.68343109    Error =      0.00000546
+  Iteration =   298   Omega_I =     25.68335135    Error =      0.00000532
+  Iteration =   299   Omega_I =     25.68327370    Error =      0.00000518
+  Iteration =   300   Omega_I =     25.68319808    Error =      0.00000505
 
-                              Total time spent up to now :    16.80 secs
+                              Total time spent up to now :    16.79 secs
 
-  Iteration =   341   Omega_I =     25.41801150    Error =      0.00012746
-  Iteration =   342   Omega_I =     25.41615858    Error =      0.00012805
-  Iteration =   343   Omega_I =     25.41429731    Error =      0.00012863
-  Iteration =   344   Omega_I =     25.41242773    Error =      0.00012921
-  Iteration =   345   Omega_I =     25.41054986    Error =      0.00012979
-  Iteration =   346   Omega_I =     25.40866375    Error =      0.00013037
-  Iteration =   347   Omega_I =     25.40676942    Error =      0.00013094
-  Iteration =   348   Omega_I =     25.40486691    Error =      0.00013151
-  Iteration =   349   Omega_I =     25.40295626    Error =      0.00013208
-  Iteration =   350   Omega_I =     25.40103751    Error =      0.00013265
+  Iteration =   301   Omega_I =     25.68312445    Error =      0.00000491
+  Iteration =   302   Omega_I =     25.68305274    Error =      0.00000479
+  Iteration =   303   Omega_I =     25.68298291    Error =      0.00000466
+  Iteration =   304   Omega_I =     25.68291491    Error =      0.00000454
+  Iteration =   305   Omega_I =     25.68284869    Error =      0.00000442
+  Iteration =   306   Omega_I =     25.68278420    Error =      0.00000430
+  Iteration =   307   Omega_I =     25.68272140    Error =      0.00000419
+  Iteration =   308   Omega_I =     25.68266025    Error =      0.00000408
+  Iteration =   309   Omega_I =     25.68260069    Error =      0.00000397
+  Iteration =   310   Omega_I =     25.68254269    Error =      0.00000387
 
-                              Total time spent up to now :    17.20 secs
+                              Total time spent up to now :    17.17 secs
 
-  Iteration =   351   Omega_I =     25.39911070    Error =      0.00013321
-  Iteration =   352   Omega_I =     25.39717586    Error =      0.00013377
-  Iteration =   353   Omega_I =     25.39523304    Error =      0.00013433
-  Iteration =   354   Omega_I =     25.39328228    Error =      0.00013488
-  Iteration =   355   Omega_I =     25.39132364    Error =      0.00013544
-  Iteration =   356   Omega_I =     25.38935714    Error =      0.00013599
-  Iteration =   357   Omega_I =     25.38738284    Error =      0.00013653
-  Iteration =   358   Omega_I =     25.38540079    Error =      0.00013707
-  Iteration =   359   Omega_I =     25.38341103    Error =      0.00013761
-  Iteration =   360   Omega_I =     25.38141361    Error =      0.00013815
+  Iteration =   311   Omega_I =     25.68248620    Error =      0.00000377
+  Iteration =   312   Omega_I =     25.68243120    Error =      0.00000367
+  Iteration =   313   Omega_I =     25.68237763    Error =      0.00000358
+  Iteration =   314   Omega_I =     25.68232545    Error =      0.00000348
+  Iteration =   315   Omega_I =     25.68227465    Error =      0.00000339
+  Iteration =   316   Omega_I =     25.68222516    Error =      0.00000330
+  Iteration =   317   Omega_I =     25.68217697    Error =      0.00000322
+  Iteration =   318   Omega_I =     25.68213004    Error =      0.00000313
+  Iteration =   319   Omega_I =     25.68208433    Error =      0.00000305
+  Iteration =   320   Omega_I =     25.68203981    Error =      0.00000297
 
-                              Total time spent up to now :    17.59 secs
+                              Total time spent up to now :    17.55 secs
 
-  Iteration =   361   Omega_I =     25.37940859    Error =      0.00013868
-  Iteration =   362   Omega_I =     25.37739602    Error =      0.00013921
-  Iteration =   363   Omega_I =     25.37537595    Error =      0.00013974
-  Iteration =   364   Omega_I =     25.37334843    Error =      0.00014026
-  Iteration =   365   Omega_I =     25.37131353    Error =      0.00014078
-  Iteration =   366   Omega_I =     25.36927129    Error =      0.00014129
-  Iteration =   367   Omega_I =     25.36722178    Error =      0.00014180
-  Iteration =   368   Omega_I =     25.36516505    Error =      0.00014231
-  Iteration =   369   Omega_I =     25.36310117    Error =      0.00014281
-  Iteration =   370   Omega_I =     25.36103020    Error =      0.00014331
+  Iteration =   321   Omega_I =     25.68199646    Error =      0.00000289
+  Iteration =   322   Omega_I =     25.68195423    Error =      0.00000282
+  Iteration =   323   Omega_I =     25.68191310    Error =      0.00000274
+  Iteration =   324   Omega_I =     25.68187305    Error =      0.00000267
+  Iteration =   325   Omega_I =     25.68183403    Error =      0.00000260
+  Iteration =   326   Omega_I =     25.68179604    Error =      0.00000254
+  Iteration =   327   Omega_I =     25.68175903    Error =      0.00000247
+  Iteration =   328   Omega_I =     25.68172298    Error =      0.00000241
+  Iteration =   329   Omega_I =     25.68168787    Error =      0.00000234
+  Iteration =   330   Omega_I =     25.68165368    Error =      0.00000228
 
-                              Total time spent up to now :    17.99 secs
+                              Total time spent up to now :    17.93 secs
 
-  Iteration =   371   Omega_I =     25.35895220    Error =      0.00014380
-  Iteration =   372   Omega_I =     25.35686723    Error =      0.00014429
-  Iteration =   373   Omega_I =     25.35477536    Error =      0.00014477
-  Iteration =   374   Omega_I =     25.35267665    Error =      0.00014525
-  Iteration =   375   Omega_I =     25.35057118    Error =      0.00014573
-  Iteration =   376   Omega_I =     25.34845900    Error =      0.00014620
-  Iteration =   377   Omega_I =     25.34634020    Error =      0.00014667
-  Iteration =   378   Omega_I =     25.34421484    Error =      0.00014713
-  Iteration =   379   Omega_I =     25.34208299    Error =      0.00014759
-  Iteration =   380   Omega_I =     25.33994472    Error =      0.00014804
+  Iteration =   331   Omega_I =     25.68162037    Error =      0.00000222
+  Iteration =   332   Omega_I =     25.68158792    Error =      0.00000217
+  Iteration =   333   Omega_I =     25.68155632    Error =      0.00000211
+  Iteration =   334   Omega_I =     25.68152554    Error =      0.00000205
+  Iteration =   335   Omega_I =     25.68149556    Error =      0.00000200
+  Iteration =   336   Omega_I =     25.68146635    Error =      0.00000195
+  Iteration =   337   Omega_I =     25.68143790    Error =      0.00000190
+  Iteration =   338   Omega_I =     25.68141019    Error =      0.00000185
+  Iteration =   339   Omega_I =     25.68138319    Error =      0.00000180
+  Iteration =   340   Omega_I =     25.68135689    Error =      0.00000176
 
-                              Total time spent up to now :    18.38 secs
+                              Total time spent up to now :    18.32 secs
 
-  Iteration =   381   Omega_I =     25.33780012    Error =      0.00014848
-  Iteration =   382   Omega_I =     25.33564925    Error =      0.00014893
-  Iteration =   383   Omega_I =     25.33349218    Error =      0.00014936
-  Iteration =   384   Omega_I =     25.33132901    Error =      0.00014979
-  Iteration =   385   Omega_I =     25.32915981    Error =      0.00015022
-  Iteration =   386   Omega_I =     25.32698465    Error =      0.00015064
-  Iteration =   387   Omega_I =     25.32480361    Error =      0.00015105
-  Iteration =   388   Omega_I =     25.32261679    Error =      0.00015146
-  Iteration =   389   Omega_I =     25.32042425    Error =      0.00015186
-  Iteration =   390   Omega_I =     25.31822609    Error =      0.00015226
+  Iteration =   341   Omega_I =     25.68133128    Error =      0.00000171
+  Iteration =   342   Omega_I =     25.68130632    Error =      0.00000167
+  Iteration =   343   Omega_I =     25.68128201    Error =      0.00000162
+  Iteration =   344   Omega_I =     25.68125832    Error =      0.00000158
+  Iteration =   345   Omega_I =     25.68123525    Error =      0.00000154
+  Iteration =   346   Omega_I =     25.68121277    Error =      0.00000150
+  Iteration =   347   Omega_I =     25.68119087    Error =      0.00000146
+  Iteration =   348   Omega_I =     25.68116954    Error =      0.00000142
+  Iteration =   349   Omega_I =     25.68114875    Error =      0.00000139
+  Iteration =   350   Omega_I =     25.68112850    Error =      0.00000135
 
-                              Total time spent up to now :    18.78 secs
+                              Total time spent up to now :    18.70 secs
 
-  Iteration =   391   Omega_I =     25.31602239    Error =      0.00015265
-  Iteration =   392   Omega_I =     25.31381323    Error =      0.00015304
-  Iteration =   393   Omega_I =     25.31159871    Error =      0.00015342
-  Iteration =   394   Omega_I =     25.30937890    Error =      0.00015379
-  Iteration =   395   Omega_I =     25.30715391    Error =      0.00015416
-  Iteration =   396   Omega_I =     25.30492381    Error =      0.00015452
-  Iteration =   397   Omega_I =     25.30268870    Error =      0.00015488
-  Iteration =   398   Omega_I =     25.30044867    Error =      0.00015523
-  Iteration =   399   Omega_I =     25.29820381    Error =      0.00015557
-  Iteration =   400   Omega_I =     25.29595422    Error =      0.00015591
+  Iteration =   351   Omega_I =     25.68110877    Error =      0.00000132
+  Iteration =   352   Omega_I =     25.68108954    Error =      0.00000128
+  Iteration =   353   Omega_I =     25.68107081    Error =      0.00000125
+  Iteration =   354   Omega_I =     25.68105255    Error =      0.00000122
+  Iteration =   355   Omega_I =     25.68103477    Error =      0.00000119
+  Iteration =   356   Omega_I =     25.68101744    Error =      0.00000116
+  Iteration =   357   Omega_I =     25.68100055    Error =      0.00000113
+  Iteration =   358   Omega_I =     25.68098409    Error =      0.00000110
+  Iteration =   359   Omega_I =     25.68096806    Error =      0.00000107
+  Iteration =   360   Omega_I =     25.68095243    Error =      0.00000104
 
-                              Total time spent up to now :    19.17 secs
+                              Total time spent up to now :    19.08 secs
 
-  Iteration =   401   Omega_I =     25.29369999    Error =      0.00015624
-  Iteration =   402   Omega_I =     25.29144122    Error =      0.00015656
-  Iteration =   403   Omega_I =     25.28917800    Error =      0.00015688
-  Iteration =   404   Omega_I =     25.28691043    Error =      0.00015719
-  Iteration =   405   Omega_I =     25.28463860    Error =      0.00015749
-  Iteration =   406   Omega_I =     25.28236263    Error =      0.00015779
-  Iteration =   407   Omega_I =     25.28008259    Error =      0.00015807
-  Iteration =   408   Omega_I =     25.27779861    Error =      0.00015836
-  Iteration =   409   Omega_I =     25.27551077    Error =      0.00015863
-  Iteration =   410   Omega_I =     25.27321919    Error =      0.00015890
+  Iteration =   361   Omega_I =     25.68093720    Error =      0.00000102
+  Iteration =   362   Omega_I =     25.68092236    Error =      0.00000099
+  Iteration =   363   Omega_I =     25.68090789    Error =      0.00000097
+  Iteration =   364   Omega_I =     25.68089379    Error =      0.00000094
+  Iteration =   365   Omega_I =     25.68088005    Error =      0.00000092
+  Iteration =   366   Omega_I =     25.68086666    Error =      0.00000089
+  Iteration =   367   Omega_I =     25.68085360    Error =      0.00000087
+  Iteration =   368   Omega_I =     25.68084087    Error =      0.00000085
+  Iteration =   369   Omega_I =     25.68082847    Error =      0.00000083
+  Iteration =   370   Omega_I =     25.68081638    Error =      0.00000081
 
-                              Total time spent up to now :    19.57 secs
+                              Total time spent up to now :    19.46 secs
 
-  Iteration =   411   Omega_I =     25.27092395    Error =      0.00015916
-  Iteration =   412   Omega_I =     25.26862517    Error =      0.00015942
-  Iteration =   413   Omega_I =     25.26632296    Error =      0.00015966
-  Iteration =   414   Omega_I =     25.26401740    Error =      0.00015990
-  Iteration =   415   Omega_I =     25.26170862    Error =      0.00016014
-  Iteration =   416   Omega_I =     25.25939672    Error =      0.00016036
-  Iteration =   417   Omega_I =     25.25708180    Error =      0.00016058
-  Iteration =   418   Omega_I =     25.25476397    Error =      0.00016079
-  Iteration =   419   Omega_I =     25.25244334    Error =      0.00016099
-  Iteration =   420   Omega_I =     25.25012002    Error =      0.00016119
+  Iteration =   371   Omega_I =     25.68080459    Error =      0.00000079
+  Iteration =   372   Omega_I =     25.68079310    Error =      0.00000077
+  Iteration =   373   Omega_I =     25.68078189    Error =      0.00000075
+  Iteration =   374   Omega_I =     25.68077097    Error =      0.00000073
+  Iteration =   375   Omega_I =     25.68076032    Error =      0.00000071
+  Iteration =   376   Omega_I =     25.68074993    Error =      0.00000069
+  Iteration =   377   Omega_I =     25.68073980    Error =      0.00000068
+  Iteration =   378   Omega_I =     25.68072993    Error =      0.00000066
+  Iteration =   379   Omega_I =     25.68072030    Error =      0.00000064
+  Iteration =   380   Omega_I =     25.68071090    Error =      0.00000063
 
-                              Total time spent up to now :    19.96 secs
+                              Total time spent up to now :    19.85 secs
 
-  Iteration =   421   Omega_I =     25.24779412    Error =      0.00016138
-  Iteration =   422   Omega_I =     25.24546575    Error =      0.00016156
-  Iteration =   423   Omega_I =     25.24313502    Error =      0.00016173
-  Iteration =   424   Omega_I =     25.24080203    Error =      0.00016189
-  Iteration =   425   Omega_I =     25.23846691    Error =      0.00016205
-  Iteration =   426   Omega_I =     25.23612976    Error =      0.00016220
-  Iteration =   427   Omega_I =     25.23379070    Error =      0.00016234
-  Iteration =   428   Omega_I =     25.23144983    Error =      0.00016248
-  Iteration =   429   Omega_I =     25.22910728    Error =      0.00016260
-  Iteration =   430   Omega_I =     25.22676316    Error =      0.00016272
+  Iteration =   381   Omega_I =     25.68070174    Error =      0.00000061
+  Iteration =   382   Omega_I =     25.68069281    Error =      0.00000060
+  Iteration =   383   Omega_I =     25.68068409    Error =      0.00000058
+  Iteration =   384   Omega_I =     25.68067559    Error =      0.00000057
+  Iteration =   385   Omega_I =     25.68066730    Error =      0.00000055
+  Iteration =   386   Omega_I =     25.68065921    Error =      0.00000054
+  Iteration =   387   Omega_I =     25.68065131    Error =      0.00000053
+  Iteration =   388   Omega_I =     25.68064361    Error =      0.00000051
+  Iteration =   389   Omega_I =     25.68063610    Error =      0.00000050
+  Iteration =   390   Omega_I =     25.68062876    Error =      0.00000049
 
-                              Total time spent up to now :    20.36 secs
+                              Total time spent up to now :    20.23 secs
 
-  Iteration =   431   Omega_I =     25.22441757    Error =      0.00016283
-  Iteration =   432   Omega_I =     25.22207064    Error =      0.00016293
-  Iteration =   433   Omega_I =     25.21972248    Error =      0.00016303
-  Iteration =   434   Omega_I =     25.21737320    Error =      0.00016311
-  Iteration =   435   Omega_I =     25.21502292    Error =      0.00016319
-  Iteration =   436   Omega_I =     25.21267176    Error =      0.00016326
-  Iteration =   437   Omega_I =     25.21031982    Error =      0.00016333
-  Iteration =   438   Omega_I =     25.20796723    Error =      0.00016338
-  Iteration =   439   Omega_I =     25.20561411    Error =      0.00016343
-  Iteration =   440   Omega_I =     25.20326057    Error =      0.00016346
+  Iteration =   391   Omega_I =     25.68062161    Error =      0.00000048
+  Iteration =   392   Omega_I =     25.68061462    Error =      0.00000047
+  Iteration =   393   Omega_I =     25.68060781    Error =      0.00000046
+  Iteration =   394   Omega_I =     25.68060115    Error =      0.00000044
+  Iteration =   395   Omega_I =     25.68059465    Error =      0.00000043
+  Iteration =   396   Omega_I =     25.68058831    Error =      0.00000042
+  Iteration =   397   Omega_I =     25.68058212    Error =      0.00000041
+  Iteration =   398   Omega_I =     25.68057607    Error =      0.00000040
+  Iteration =   399   Omega_I =     25.68057017    Error =      0.00000039
+  Iteration =   400   Omega_I =     25.68056440    Error =      0.00000039
 
-                              Total time spent up to now :    20.75 secs
+                              Total time spent up to now :    20.61 secs
 
-  Iteration =   441   Omega_I =     25.20090672    Error =      0.00016349
-  Iteration =   442   Omega_I =     25.19855268    Error =      0.00016352
-  Iteration =   443   Omega_I =     25.19619858    Error =      0.00016353
-  Iteration =   444   Omega_I =     25.19384452    Error =      0.00016354
-  Iteration =   445   Omega_I =     25.19149062    Error =      0.00016353
-  Iteration =   446   Omega_I =     25.18913700    Error =      0.00016352
-  Iteration =   447   Omega_I =     25.18678378    Error =      0.00016350
-  Iteration =   448   Omega_I =     25.18443107    Error =      0.00016348
-  Iteration =   449   Omega_I =     25.18207899    Error =      0.00016344
-  Iteration =   450   Omega_I =     25.17972766    Error =      0.00016340
+  Iteration =   401   Omega_I =     25.68055877    Error =      0.00000038
+  Iteration =   402   Omega_I =     25.68055327    Error =      0.00000037
+  Iteration =   403   Omega_I =     25.68054789    Error =      0.00000036
+  Iteration =   404   Omega_I =     25.68054264    Error =      0.00000035
+  Iteration =   405   Omega_I =     25.68053751    Error =      0.00000034
+  Iteration =   406   Omega_I =     25.68053249    Error =      0.00000034
+  Iteration =   407   Omega_I =     25.68052759    Error =      0.00000033
+  Iteration =   408   Omega_I =     25.68052280    Error =      0.00000032
+  Iteration =   409   Omega_I =     25.68051812    Error =      0.00000031
+  Iteration =   410   Omega_I =     25.68051354    Error =      0.00000031
 
-                              Total time spent up to now :    21.15 secs
+                              Total time spent up to now :    21.00 secs
 
-  Iteration =   451   Omega_I =     25.17737720    Error =      0.00016335
-  Iteration =   452   Omega_I =     25.17502771    Error =      0.00016329
-  Iteration =   453   Omega_I =     25.17267932    Error =      0.00016322
-  Iteration =   454   Omega_I =     25.17033214    Error =      0.00016315
-  Iteration =   455   Omega_I =     25.16798630    Error =      0.00016306
-  Iteration =   456   Omega_I =     25.16564189    Error =      0.00016297
-  Iteration =   457   Omega_I =     25.16329905    Error =      0.00016287
-  Iteration =   458   Omega_I =     25.16095788    Error =      0.00016276
-  Iteration =   459   Omega_I =     25.15861851    Error =      0.00016265
-  Iteration =   460   Omega_I =     25.15628104    Error =      0.00016252
+  Iteration =   411   Omega_I =     25.68050906    Error =      0.00000030
+  Iteration =   412   Omega_I =     25.68050468    Error =      0.00000029
+  Iteration =   413   Omega_I =     25.68050040    Error =      0.00000029
+  Iteration =   414   Omega_I =     25.68049621    Error =      0.00000028
+  Iteration =   415   Omega_I =     25.68049211    Error =      0.00000027
+  Iteration =   416   Omega_I =     25.68048810    Error =      0.00000027
+  Iteration =   417   Omega_I =     25.68048417    Error =      0.00000026
+  Iteration =   418   Omega_I =     25.68048033    Error =      0.00000026
+  Iteration =   419   Omega_I =     25.68047657    Error =      0.00000025
+  Iteration =   420   Omega_I =     25.68047288    Error =      0.00000025
 
-                              Total time spent up to now :    21.54 secs
+                              Total time spent up to now :    21.38 secs
 
-  Iteration =   461   Omega_I =     25.15394559    Error =      0.00016239
-  Iteration =   462   Omega_I =     25.15161227    Error =      0.00016225
-  Iteration =   463   Omega_I =     25.14928121    Error =      0.00016210
-  Iteration =   464   Omega_I =     25.14695250    Error =      0.00016195
-  Iteration =   465   Omega_I =     25.14462627    Error =      0.00016179
-  Iteration =   466   Omega_I =     25.14230262    Error =      0.00016161
-  Iteration =   467   Omega_I =     25.13998168    Error =      0.00016143
-  Iteration =   468   Omega_I =     25.13766354    Error =      0.00016125
-  Iteration =   469   Omega_I =     25.13534833    Error =      0.00016105
-  Iteration =   470   Omega_I =     25.13303614    Error =      0.00016085
+  Iteration =   421   Omega_I =     25.68046927    Error =      0.00000024
+  Iteration =   422   Omega_I =     25.68046574    Error =      0.00000024
+  Iteration =   423   Omega_I =     25.68046228    Error =      0.00000023
+  Iteration =   424   Omega_I =     25.68045889    Error =      0.00000023
+  Iteration =   425   Omega_I =     25.68045557    Error =      0.00000022
+  Iteration =   426   Omega_I =     25.68045231    Error =      0.00000022
+  Iteration =   427   Omega_I =     25.68044912    Error =      0.00000021
+  Iteration =   428   Omega_I =     25.68044598    Error =      0.00000021
+  Iteration =   429   Omega_I =     25.68044291    Error =      0.00000021
+  Iteration =   430   Omega_I =     25.68043990    Error =      0.00000020
 
-                              Total time spent up to now :    21.95 secs
+                              Total time spent up to now :    21.76 secs
 
-  Iteration =   471   Omega_I =     25.13072711    Error =      0.00016064
-  Iteration =   472   Omega_I =     25.12842132    Error =      0.00016042
-  Iteration =   473   Omega_I =     25.12611889    Error =      0.00016020
-  Iteration =   474   Omega_I =     25.12381993    Error =      0.00015996
-  Iteration =   475   Omega_I =     25.12152455    Error =      0.00015972
-  Iteration =   476   Omega_I =     25.11923285    Error =      0.00015948
-  Iteration =   477   Omega_I =     25.11694494    Error =      0.00015922
-  Iteration =   478   Omega_I =     25.11466092    Error =      0.00015896
-  Iteration =   479   Omega_I =     25.11238091    Error =      0.00015869
-  Iteration =   480   Omega_I =     25.11010500    Error =      0.00015841
+  Iteration =   431   Omega_I =     25.68043694    Error =      0.00000020
+  Iteration =   432   Omega_I =     25.68043404    Error =      0.00000019
+  Iteration =   433   Omega_I =     25.68043120    Error =      0.00000019
+  Iteration =   434   Omega_I =     25.68042840    Error =      0.00000019
+  Iteration =   435   Omega_I =     25.68042566    Error =      0.00000018
+  Iteration =   436   Omega_I =     25.68042296    Error =      0.00000018
+  Iteration =   437   Omega_I =     25.68042031    Error =      0.00000018
+  Iteration =   438   Omega_I =     25.68041771    Error =      0.00000018
+  Iteration =   439   Omega_I =     25.68041515    Error =      0.00000017
+  Iteration =   440   Omega_I =     25.68041263    Error =      0.00000017
 
-                              Total time spent up to now :    22.34 secs
+                              Total time spent up to now :    22.14 secs
 
-  Iteration =   481   Omega_I =     25.10783330    Error =      0.00015813
-  Iteration =   482   Omega_I =     25.10556591    Error =      0.00015783
-  Iteration =   483   Omega_I =     25.10330293    Error =      0.00015754
-  Iteration =   484   Omega_I =     25.10104446    Error =      0.00015723
-  Iteration =   485   Omega_I =     25.09879061    Error =      0.00015692
-  Iteration =   486   Omega_I =     25.09654147    Error =      0.00015660
-  Iteration =   487   Omega_I =     25.09429715    Error =      0.00015627
-  Iteration =   488   Omega_I =     25.09205774    Error =      0.00015593
-  Iteration =   489   Omega_I =     25.08982333    Error =      0.00015559
-  Iteration =   490   Omega_I =     25.08759402    Error =      0.00015525
+  Iteration =   441   Omega_I =     25.68041016    Error =      0.00000017
+  Iteration =   442   Omega_I =     25.68040772    Error =      0.00000016
+  Iteration =   443   Omega_I =     25.68040533    Error =      0.00000016
+  Iteration =   444   Omega_I =     25.68040297    Error =      0.00000016
+  Iteration =   445   Omega_I =     25.68040065    Error =      0.00000016
+  Iteration =   446   Omega_I =     25.68039836    Error =      0.00000015
+  Iteration =   447   Omega_I =     25.68039611    Error =      0.00000015
+  Iteration =   448   Omega_I =     25.68039389    Error =      0.00000015
+  Iteration =   449   Omega_I =     25.68039171    Error =      0.00000015
+  Iteration =   450   Omega_I =     25.68038955    Error =      0.00000015
 
-                              Total time spent up to now :    22.74 secs
+                              Total time spent up to now :    22.53 secs
 
-  Iteration =   491   Omega_I =     25.08536992    Error =      0.00015489
-  Iteration =   492   Omega_I =     25.08315110    Error =      0.00015453
-  Iteration =   493   Omega_I =     25.08093768    Error =      0.00015416
-  Iteration =   494   Omega_I =     25.07872973    Error =      0.00015379
-  Iteration =   495   Omega_I =     25.07652734    Error =      0.00015341
-  Iteration =   496   Omega_I =     25.07433062    Error =      0.00015302
-  Iteration =   497   Omega_I =     25.07213965    Error =      0.00015263
-  Iteration =   498   Omega_I =     25.06995452    Error =      0.00015223
-  Iteration =   499   Omega_I =     25.06777531    Error =      0.00015183
-  Iteration =   500   Omega_I =     25.06560211    Error =      0.00015142
+  Iteration =   451   Omega_I =     25.68038743    Error =      0.00000014
+  Iteration =   452   Omega_I =     25.68038533    Error =      0.00000014
+  Iteration =   453   Omega_I =     25.68038326    Error =      0.00000014
+  Iteration =   454   Omega_I =     25.68038122    Error =      0.00000014
+  Iteration =   455   Omega_I =     25.68037920    Error =      0.00000014
+  Iteration =   456   Omega_I =     25.68037721    Error =      0.00000013
+  Iteration =   457   Omega_I =     25.68037524    Error =      0.00000013
+  Iteration =   458   Omega_I =     25.68037330    Error =      0.00000013
+  Iteration =   459   Omega_I =     25.68037138    Error =      0.00000013
+  Iteration =   460   Omega_I =     25.68036948    Error =      0.00000013
 
-                              Total time spent up to now :    23.13 secs
+                              Total time spent up to now :    22.91 secs
+
+  Iteration =   461   Omega_I =     25.68036760    Error =      0.00000013
+  Iteration =   462   Omega_I =     25.68036574    Error =      0.00000013
+  Iteration =   463   Omega_I =     25.68036390    Error =      0.00000012
+  Iteration =   464   Omega_I =     25.68036208    Error =      0.00000012
+  Iteration =   465   Omega_I =     25.68036027    Error =      0.00000012
+  Iteration =   466   Omega_I =     25.68035848    Error =      0.00000012
+  Iteration =   467   Omega_I =     25.68035671    Error =      0.00000012
+  Iteration =   468   Omega_I =     25.68035495    Error =      0.00000012
+  Iteration =   469   Omega_I =     25.68035321    Error =      0.00000012
+  Iteration =   470   Omega_I =     25.68035148    Error =      0.00000012
+
+                              Total time spent up to now :    23.29 secs
+
+  Iteration =   471   Omega_I =     25.68034977    Error =      0.00000012
+  Iteration =   472   Omega_I =     25.68034806    Error =      0.00000012
+  Iteration =   473   Omega_I =     25.68034637    Error =      0.00000011
+  Iteration =   474   Omega_I =     25.68034470    Error =      0.00000011
+  Iteration =   475   Omega_I =     25.68034303    Error =      0.00000011
+  Iteration =   476   Omega_I =     25.68034137    Error =      0.00000011
+  Iteration =   477   Omega_I =     25.68033972    Error =      0.00000011
+  Iteration =   478   Omega_I =     25.68033808    Error =      0.00000011
+  Iteration =   479   Omega_I =     25.68033645    Error =      0.00000011
+  Iteration =   480   Omega_I =     25.68033483    Error =      0.00000011
+
+                              Total time spent up to now :    23.68 secs
+
+  Iteration =   481   Omega_I =     25.68033321    Error =      0.00000011
+  Iteration =   482   Omega_I =     25.68033160    Error =      0.00000011
+  Iteration =   483   Omega_I =     25.68033000    Error =      0.00000011
+  Iteration =   484   Omega_I =     25.68032840    Error =      0.00000011
+  Iteration =   485   Omega_I =     25.68032681    Error =      0.00000011
+  Iteration =   486   Omega_I =     25.68032523    Error =      0.00000011
+  Iteration =   487   Omega_I =     25.68032365    Error =      0.00000011
+  Iteration =   488   Omega_I =     25.68032207    Error =      0.00000011
+  Iteration =   489   Omega_I =     25.68032049    Error =      0.00000011
+  Iteration =   490   Omega_I =     25.68031892    Error =      0.00000011
+
+                              Total time spent up to now :    24.06 secs
+
+  Iteration =   491   Omega_I =     25.68031736    Error =      0.00000011
+  Iteration =   492   Omega_I =     25.68031579    Error =      0.00000011
+  Iteration =   493   Omega_I =     25.68031423    Error =      0.00000011
+  Iteration =   494   Omega_I =     25.68031266    Error =      0.00000011
+  Iteration =   495   Omega_I =     25.68031110    Error =      0.00000011
+  Iteration =   496   Omega_I =     25.68030954    Error =      0.00000011
+  Iteration =   497   Omega_I =     25.68030798    Error =      0.00000011
+  Iteration =   498   Omega_I =     25.68030642    Error =      0.00000011
+  Iteration =   499   Omega_I =     25.68030486    Error =      0.00000011
+  Iteration =   500   Omega_I =     25.68030329    Error =      0.00000011
+
+                              Total time spent up to now :    24.44 secs
 
 
 
@@ -1004,27 +1074,35 @@
   =                  Max number of iteration reached                   =
   ======================================================================
 
-  Final Omega_I (Bohr^2, Angstrom^2):     25.06180737        7.01801525
-   Avrg Omega_I                     :      6.26545184        1.75450381
+  Final Omega_I (Bohr^2, Angstrom^2):     25.68030056        7.19121084
+   Avrg Omega_I                     :      6.42007514        1.79780271
 
-                              Total time spent up to now :    23.38 secs
+                              Total time spent up to now :    24.68 secs
 
 
   Subspace data written on file: al_WanT.space
   ======================================================================
 
    <global routines>
-             clock number :     9
+             clock number :    17
 
-              disentangle :    23.65s CPU 
+              disentangle :    24.94s CPU 
 
-                want_init :     0.13s CPU
-                  bshells :     0.10s CPU
-              wfc_manager :     2.33s CPU
-               iterations :    20.91s CPU
-             subapce_init :     1.12s CPU
-                  zmatrix :     2.04s CPU (   10000 calls,   0.000 s avg)
-               zmat_hdiag :     2.95s CPU (   10000 calls,   0.000 s avg)
-                  komegai :     1.88s CPU (   10000 calls,   0.000 s avg)
+                want_init :     0.16s CPU
+                  bshells :     0.12s CPU
+              wfc_manager :     5.34s CPU
+          ggrids_read_ext :     0.02s CPU
+              struct_fact :     0.00s CPU
+           wfc_data_kread :     2.39s CPU (      80 calls,   0.030 s avg)
+                  overlap :     1.91s CPU (      60 calls,   0.032 s avg)
+           overlap_setmap :     0.13s CPU (      60 calls,   0.002 s avg)
+                    s_psi :     0.02s CPU (      20 calls,   0.001 s avg)
+               projection :     0.18s CPU (      20 calls,   0.009 s avg)
+       trial_center_setup :     0.07s CPU (      80 calls,   0.001 s avg)
+               iterations :    19.17s CPU
+             subapce_init :     0.00s CPU
+                  zmatrix :     2.05s CPU (   10000 calls,   0.000 s avg)
+               zmat_hdiag :     3.10s CPU (   10000 calls,   0.000 s avg)
+                  komegai :     1.90s CPU (   10000 calls,   0.000 s avg)
 
 
