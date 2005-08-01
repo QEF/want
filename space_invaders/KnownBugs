@@ -9,7 +9,7 @@
   When the array dimension overcomes a given threshold IOTK
   scan (and sometimes write) gives an error.
   This is a well known bug of the intel compiler.
-  Setting __IOTK_WORKAROUND7 in iotk_config.h file (IOTK_lib)
+  Setting __IOTK_WORKAROUND3 in iotk_config.h file (IOTK_lib)
   allows to run the code anyway.
 
 * sometimes, during recover (restart) procedure in wannier, 

@@ -10,7 +10,6 @@
 * plot.x: USPP features not fully implemented.
 * tests: strange spikes (test2 and 5) to be checked 
 * test6: add a true transport calculation test
-* test3: wannier functions do not converge
 * WanT:  a true manual (as the one in docs) is missing. 
          we need e.g. to explain better the choice of Wannier centers
 * tests: README in each test directory should be better written. They
@@ -22,4 +21,4 @@
 * portability issues, checks on various architectures
 * kpts in transport calculations
 * eigenchannel in transport calculation
-
+* wannier: bug in restart

@@ -27,10 +27,10 @@ MANUAL=" Usage
  plot_dw         the same for SPINDW states
  want_up         perform DISENTANGLE, WANNIER and BANDS for SPINUP
  want_dw         the same for SPINDW
- want            want_up and want_dw
  conductor_up    evaluate the transmittance, for the bulk case (SPINUP)
  conductor_dw    the same for SPINDW
  conductor       conductor_up and conductor_dw
+ want            want and conductor up & down
  all             perform all the above described steps
 
  clean           delete all output files and the temporary directory
@@ -86,13 +86,14 @@ case $INPUT in
                     BANDS_UP=".TRUE." ; PLOT_UP=".TRUE." ;;
    (want_dw)        DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
                     BANDS_DW=".TRUE." ; PLOT_DW=".TRUE." ;;
-   (want)           DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
-                    BANDS_UP=".TRUE." ;
-                    DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
-                    BANDS_DW=".TRUE." ; PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;;
    (conductor_up)   CONDUCTOR_UP=".TRUE." ;;
    (conductor_dw)   CONDUCTOR_DW=".TRUE." ;;
    (conductor)      CONDUCTOR_UP=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
+   (want)           DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
+                    BANDS_UP=".TRUE." ;
+                    DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
+                    BANDS_DW=".TRUE." ; PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;
+                    CONDUCTOR_UP=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ; 
                     BANDS_UP=".TRUE." ; CONDUCTOR_UP=".TRUE." ;

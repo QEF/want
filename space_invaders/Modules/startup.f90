@@ -10,6 +10,8 @@
 !*********************************************
    MODULE startup_module
 !*********************************************
+#include "configure.h"
+   !
    USE io_module, ONLY : stdout, ionode, ionode_id, io_global_start, io_global_getionode
    USE timing_module, ONLY : nclockx, timing, timing_allocate
    USE mp, ONLY: mp_start, mp_end, mp_env
@@ -81,6 +83,18 @@ CONTAINS
                    TRIM(main_name),version(6:10) 
       WRITE(stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
 
+      !
+      ! architecture / compilation details
+      !
+#ifdef __ARCHITECTURE
+      WRITE(stdout, "(2x,'Arch. / Op.Sys: ',a)" ) __ARCHITECTURE 
+#endif
+#ifdef __COMPILER
+      WRITE(stdout, "(2x,'      Compiler: ',a)" ) __COMPILER
+#endif
+#if defined __ARCHITECTURE || defined __COMPILER
+      WRITE(stdout, "()" )
+#endif
 
    END SUBROUTINE startup
 

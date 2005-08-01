@@ -35,7 +35,7 @@ MANUAL=" Usage
  all_leads            DFT_LEADS and WANT_LEADS tigether
 
  dft                  DFT_COND and DFT_LEADS toether
- want                 WANT_COND and WANT_LEADS together
+ want                 WANT_COND, WANT_LEADS, CONDUCTOR and BULK, together
  conductor            evaluate the transmittance for the general conductor geometry
  bulk                 evaluate the transmittance for the conductor region treated as a bulk
  all                  perform all the above described steps
@@ -118,12 +118,13 @@ case $INPUT in
 
    ( dft )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE.";;
+   ( conductor )         CONDUCTOR=".TRUE." ;;
+   ( bulk )              BULK=".TRUE." ;;
    ( want )              DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE." ;
                          DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
-                         BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE." ;;
-   ( conductor )         CONDUCTOR=".TRUE." ;;
-   ( bulk )              BULK=".TRUE." ;;
+                         BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE."; 
+                         BULK=".TRUE."; CONDUCTOR=".TRUE." ;;
    ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ; 
                          DISENTANGLE_COND=".TRUE." ; WANNIER_COND=".TRUE." ;  
                          BANDS_COND=".TRUE." ;  PLOT_COND=".TRUE." ;
