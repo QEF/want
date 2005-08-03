@@ -386,14 +386,6 @@ END SUBROUTINE zmat_hdiag
    IF ( dim2 <= 0) CALL errore('zmat_unitary','Invalid dim2',ABS(dim2)+1)
 
    !
-   ! workaround for a possible bug in the INTEL compiler
-   ! If the actual z matrix were passed to the BLAS routine nasty things occur
-   ! 
-   ALLOCATE( z_loc(dim1,dim2), STAT=ierr )
-      IF ( ierr /= 0 ) CALL errore('zmat_unitary','allocating z_loc',ABS(ierr))
-   z_loc = z
-
-   !
    ! check side LEFT
    !
    IF ( TRIM(side_) == 'both' .OR. TRIM(side_) == 'BOTH' .OR. &
@@ -401,11 +393,9 @@ END SUBROUTINE zmat_hdiag
 
        ALLOCATE( result(dim2,dim2), STAT=ierr )
           IF ( ierr /= 0 ) CALL errore('zmat_unitary','allocating result',ABS(ierr))
-       result = CZERO
        ! 
        ! matrix mult
-       CALL ZGEMM( 'C','N', dim2, dim2, dim1, CONE, z_loc(1,1), dim1, z_loc(1,1), &
-                   dim1, CZERO, result(1,1), dim2 )
+       CALL zmat_mul( result, z, 'C', z, 'N', dim2,dim2,dim1)
 
        DO j=1,dim2
        DO i=1,dim2
@@ -431,8 +421,7 @@ END SUBROUTINE zmat_hdiag
           IF ( ierr /= 0 ) CALL errore('zmat_unitary','allocating result',ABS(ierr))
        ! 
        ! matrix mult
-       CALL ZGEMM( 'N','C', dim1, dim1, dim2, CONE, z_loc(1,1), dim1, z_loc(1,1), &
-                   dim1, CZERO, result(1,1), dim1 )
+       CALL zmat_mul( result, z, 'N', z, 'C', dim1,dim1,dim2)
        
        DO j=1,dim1
        DO i=1,dim1
@@ -448,9 +437,6 @@ END SUBROUTINE zmat_hdiag
           IF ( ierr /= 0 ) CALL errore('zmat_unitary','deallocating result',ABS(ierr))
    ENDIF
       
-   DEALLOCATE(z_loc, STAT=ierr)
-      IF ( ierr /= 0 ) CALL errore('zmat_unitary','deallocating z_loc',ABS(ierr))
-       
    END FUNCTION zmat_unitary
 
 END MODULE util_module
