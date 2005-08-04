@@ -33,6 +33,7 @@ MANUAL=" Usage
  want            want and conductor up & down
  all             perform all the above described steps
 
+ check           check results with the reference outputs
  clean           delete all output files and the temporary directory
 "
 #
@@ -43,6 +44,7 @@ MANUAL=" Usage
 # source common enviroment, to be set before running the script
 . ../environment.conf
 TEST_HOME=`pwd`
+UTILITY_BIN=$TEST_HOME/../../utility
 WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
 TEST_NAME=Test7
@@ -64,6 +66,7 @@ PLOT_UP=
 PLOT_DW=
 CONDUCTOR_UP=
 CONDUCTOR_DW=
+CHECK=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -100,6 +103,7 @@ case $INPUT in
                     DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ; 
                     PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;
                     BANDS_DW=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
+   (check)          CHECK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -314,6 +318,22 @@ if [ "$CONDUCTOR_DW" = ".TRUE." ] ; then
    fi
 fi
 
+#
+# running CHECK
+#
+if [ "$CHECK" = ".TRUE." ] ; then
+   echo "running CHECK"
+   #
+   cd $TEST_HOME
+   list="disentangle_UP.out wannier_UP.out bands_UP.out
+         disentangle_DW.out wannier_DW.out bands_DW.out"
+   #
+   for file in $list
+   do
+      $UTILITY_BIN/check.sh $file
+   done
+fi
+
 
 #
 # eventually clean
@@ -329,7 +349,6 @@ fi
 
 #
 # exiting
-echo "run.sh : everything done"
 exit 0
 
 

@@ -40,6 +40,7 @@ MANUAL=" Usage
  bulk                 evaluate the transmittance for the conductor region treated as a bulk
  all                  perform all the above described steps
 
+ check                check results with the reference outputs
  clean                delete all output files and the temporary directory
 "
 #
@@ -77,6 +78,7 @@ PLOT_LEADS=
 
 CONDUCTOR=
 BULK=
+CHECK=
 CLEAN=
 
 
@@ -133,6 +135,7 @@ case $INPUT in
                          BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE." ;
                          CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
 
+   ( check )             CHECK=".TRUE." ;;
    ( clean )             CLEAN=".TRUE." ;;
    (*)                   echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;  
 esac
@@ -389,6 +392,23 @@ if [ "$BULK" = ".TRUE." ] ; then
 fi
 
 
+#
+# running CHECK
+#
+if [ "$CHECK" = ".TRUE." ] ; then
+   echo "running CHECK"
+   #
+   cd $TEST_HOME
+   list="disentangle_leads.out wannier_leads.out bands_leads.out
+         disentangle_cond.out  wannier_cond.out  bands_cond.out"
+   #
+   for file in $list
+   do
+      $UTILITY_BIN/check.sh $file
+   done
+fi
+
+
 
 #
 # eventually clean
@@ -404,7 +424,6 @@ fi
 
 #
 # exiting
-echo "run.sh : everything done"
 exit 0
 
 
