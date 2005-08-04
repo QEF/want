@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+03 Ago 2005      Makefile system in Tests replaced by run.sh script system. 
+                 Check script for test added in utility. (AF)
+
 01 Ago 2005      configure.h added to Include dir in order to take trace of the
                  architecture / conpilation environment (experimental). Output format
                  chenged. Test running script (run.sh) changed (transport calculations

@@ -2,7 +2,6 @@
 &CONTROL
    prefix = 'al'
    postfix = '_WanT'
-   restart_mode = 'from_scratch'
    work_dir = './'
    unitary_thr = 5.0e-7
 /

@@ -24,6 +24,7 @@ MANUAL=" Usage
  want            perform DISENTANGLE, WANNIER and BANDS all together 
  all             perform all the above described steps
 
+ check           check results with the reference outputs
  clean           delete all output files and the temporary directory
 "
 #
@@ -34,6 +35,7 @@ MANUAL=" Usage
 # source common enviroment, to be set before running the script
 . ../environment.conf
 TEST_HOME=`pwd`
+UTILITY_BIN=$TEST_HOME/../../utility
 WANT_BIN=$TEST_HOME/../../Main
 TRANS_BIN=$TEST_HOME/../../Transport
 TEST_NAME=Test1
@@ -49,6 +51,7 @@ BAND=
 DISENTANGLE=
 WANNIER=
 BANDS=
+CHECK=
 CLEAN=
 
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
@@ -68,6 +71,7 @@ case $INPUT in
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
                     BANDS=".TRUE." ;; 
+   (check)          CHECK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
@@ -188,6 +192,21 @@ if [ "$BANDS" = ".TRUE." ] ; then
    fi
 fi
 
+#
+# running CHECK
+#
+if [ "$CHECK" = ".TRUE." ] ; then
+   echo "running CHECK"
+   #
+   cd $TEST_HOME
+   list="disentangle_US.out wannier_US.out bands_US.out"
+   #
+   for file in $list
+   do
+      $UTILITY_BIN/check.sh $file
+   done
+fi
+
 
 #
 # eventually clean
@@ -203,7 +222,6 @@ fi
 
 #
 # exiting
-echo "run.sh : everything done"
 exit 0
 
 

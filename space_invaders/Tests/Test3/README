@@ -1,23 +1,23 @@
 
 ==============================================================================
-TEST3
+TEST3   Conductance of C-C chains (general geometry)
 ==============================================================================
 
 Calculation of valence band transmittance for a dimerized Carbon chain (polyyne).
-The computation is first done using "bulk.x" code starting from a bulk unit cell
-containing 4 C atoms. Then the same is done coupling different lead and conductor
-calculations: 2 atoms per cell have been used for the leads while 4 for the conductor.
-We used 8 kpts along chain direction for the leads and 4 kpts for the
-conductor to sampling Brillouin zone, and a cutoff of 20 Ry. 
-As before, numerically safer results are obtained with higher cutoff (not less than 40 Ry).
+The computation is first done for bulk case.
+Then the same is done coupling different lead and conductor
+calculations: 4 atoms per cell have been used for the leads while 
+8 for the conductor. We used 8 kpts along chain direction for the leads and 
+4 kpts for the conductor to sampling Brillouin zone, and a cutoff of 20 Ry for wfc
+(while 200 Ry for rho). 
 
 The output of the calculations are the conductance (namely the transmittance) 
-and dos from "bulk.x" code (cond_bulk.out and dos_bulk.out) and from 
-"conductor.x" (cond.out and dos.out).
+and dos for the bulk case (cond_bulk.dat and dos_bulk.dat) and for the general
+geometry case (cond.dat and dos.dat).
 
 The difference between the two (results from conductor are less converged) is due
 to the number of atoms in the lead cell giving rise to a poor description of the
-so-called "principal layer" (you can try to increase the number of atoms to 8 and 16
-in the lead and conductor calculations). 
+so-called "principal layer" (you can try to increase the number of atoms to larger
+values in the lead and conductor calculations). 
 
 

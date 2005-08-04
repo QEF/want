@@ -21,4 +21,5 @@
 * portability issues, checks on various architectures
 * kpts in transport calculations
 * eigenchannel in transport calculation
-* wannier: bug in restart
+
+

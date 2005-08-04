@@ -13,7 +13,7 @@
 
  * HOW TO run the tests
      After this operation you can start running tests both by using the 
-     simple Makefile system implemented here (type make to get an help) or
+     script run.sh (type ./run.sh to get an help) or
      by cd-ing in the test directories and typing ./run.sh <FLAG>. 
      The list of possible flag is printed in output with a simple explaination
      executing ./run.sh (typical flags are <FLAG> scf, nscf, disentangle
