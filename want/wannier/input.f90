@@ -95,12 +95,12 @@ CONTAINS
                                            nprint_wan,        &
                                            nsave_dis,         &
                                            nsave_wan,         &
-                                           start_mode_dis,    &
-                                           start_mode_wan 
+                                           subspace_init,     &
+                                           localization_init 
       USE input_parameters_module,  ONLY : verbosity_       => verbosity, &
                                            restart_mode_    => restart_mode, &
-                                           start_mode_dis_  => start_mode_dis, &
-                                           start_mode_wan_  => start_mode_wan, &
+                                           subspace_init_   => subspace_init, &
+                                           localization_init_  => localization_init, &
                                            nprint_dis_      => nprint_dis, &
                                            nprint_wan_      => nprint_wan, &
                                            nsave_dis_       => nsave_dis, &
@@ -127,8 +127,8 @@ CONTAINS
       do_condmin = .TRUE.
       IF ( a_condmin_ <= ZERO ) do_condmin = .FALSE.
 
-      start_mode_dis = start_mode_dis_
-      start_mode_wan = start_mode_wan_
+      subspace_init = subspace_init_
+      localization_init = localization_init_
 
       restart_mode = restart_mode_
       SELECT CASE ( TRIM(restart_mode_) )
@@ -136,15 +136,15 @@ CONTAINS
       CASE ( "restart" )
            overlaps_ = "from_file"
            projections_ = "from_file"
-           start_mode_dis = "from_file"
-           start_mode_wan = "from_file"
+           subspace_init = "from_file"
+           localization_init = "from_file"
       CASE DEFAULT
            CALL errore('setup_control', &
                        'Invalid value for restart_mode = '//TRIM(restart_mode_),1)
       END SELECT
 
-      IF ( TRIM( start_mode_dis_ ) == "from_file" ) read_subspace = .TRUE.
-      IF ( TRIM( start_mode_wan_ ) == "from_file" ) read_unitary = .TRUE.
+      IF ( TRIM( subspace_init_ ) == "from_file" ) read_subspace = .TRUE.
+      IF ( TRIM( localization_init_ ) == "from_file" ) read_unitary = .TRUE.
 
       !
       SELECT CASE( TRIM(overlaps_) )

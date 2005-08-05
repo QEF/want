@@ -1,12 +1,77 @@
 
 &INPUT_CONDUCTOR
-   nmxa = 16
-   nmxc = 32
-   nmxb = 16
+   nmxa = 12
+   nmxc = 24
+   nmxb = 12
    ne = 2000
-   niterx = 200
    emin = -20.0
    emax = 0.0
-   bias = 0.0
 /
 
+<HAMILTONIAN_DATA>
+
+   <H00_C>
+      &MATRIX_DATA
+         filename="COND/chain8_WanT.ham"
+         rows="1-24"
+         cols="1-24"
+         direction=0
+      /
+   </H00_C>
+
+   <HCI_CB>
+      &MATRIX_DATA
+         filename="COND/chain8_WanT.ham"
+         rows="1-24"
+         cols="1-12"
+         direction=1
+      /
+   </HCI_CB>
+
+   <HCI_AC>
+      &MATRIX_DATA
+         filename="COND/chain8_WanT.ham"
+         rows="13-24"
+         cols="1-24"
+         direction=1
+      /
+   </HCI_AC>
+
+   <H00_A>
+      &MATRIX_DATA
+         filename="LEADS/chain4_WanT.ham"
+         rows="1-12"
+         cols="1-12"
+         direction=0
+      /
+   </H00_A>
+
+   <H01_A>
+      &MATRIX_DATA
+         filename="LEADS/chain4_WanT.ham"
+         rows="1-12"
+         cols="1-12"
+         direction=1
+      /
+   </H01_A>
+
+   <H00_B>
+      &MATRIX_DATA
+         filename="LEADS/chain4_WanT.ham"
+         rows="1-12"
+         cols="1-12"
+         direction=0
+      /
+   </H00_B>
+
+   <H01_B>
+      &MATRIX_DATA
+         filename="LEADS/chain4_WanT.ham"
+         rows="1-12"
+         cols="1-12"
+         direction=1
+      /
+   </H01_B>
+
+
+</HAMILTONIAN_DATA>

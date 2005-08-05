@@ -19,11 +19,11 @@ Carbon dimer chain; USPP
       nat=8,
       ntyp=1,
       ecutwfc=20.0,
-      ecutwfc=200.0,
+      ecutrho=200.0,
       occupations='smearing',
       smearing='gaussian',
       degauss=0.01,
-      nbnd = 60
+      nbnd = 80
  /
  &ELECTRONS
     electron_maxstep = 50,

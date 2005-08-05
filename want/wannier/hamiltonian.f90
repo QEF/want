@@ -11,12 +11,12 @@
    MODULE hamiltonian_module
 !*********************************************
    USE kinds, ONLY : dbl
-   USE lattice_module, ONLY : avec, lattice_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, nk, kpoints_alloc 
+   USE lattice_module, ONLY : avec, bvec, lattice_alloc => alloc
+   USE kpoints_module, ONLY : nkpts, nk, vkpt, wk, kpoints_alloc 
    USE subspace_module, ONLY : dimwann, wan_eig, efermi, subspace_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
-   USE converters_module, ONLY : cry2cart
+   USE converters_module, ONLY : cry2cart, cart2cry
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -36,20 +36,20 @@
 !   
 
    ! ... dimensions
-   INTEGER                     :: nws                ! number of direct lattive vectors
-   INTEGER                     :: nwsx               ! max numb of nws ( = 3 * nkpts)
+   INTEGER                     :: nws          ! number of direct lattive vectors
+   INTEGER                     :: nwsx         ! max numb of nws ( = 3 * nkpts)
    !
    ! ... auxiliary data
-   INTEGER, ALLOCATABLE        :: indxws(:,:)        ! R lattice vector (cryst coord), DIM 3 * nwsx
-   INTEGER, ALLOCATABLE        :: degen(:)           ! R latt vect degeneracy, DIM: nwsx
-   REAL(dbl), ALLOCATABLE      :: vws(:,:)           ! R lattice vector (cart coord), DIM 3 * nws
+   INTEGER, ALLOCATABLE        :: indxws(:,:)  ! R lattice vector (cryst coord), DIM 3 * nwsx
+   INTEGER, ALLOCATABLE        :: degen(:)     ! R latt vect degeneracy, DIM: nwsx
+   REAL(dbl), ALLOCATABLE      :: vws(:,:)     ! R lattice vector (cart coord), DIM 3 * nws
    !
    ! ... hamiltonians
-   COMPLEX(dbl), ALLOCATABLE   :: rham(:,:,:)        ! DIM: dimwann, dimwann, nws
-                                                     ! real space hamiltonian
-   COMPLEX(dbl), ALLOCATABLE   :: kham(:,:,:)        ! DIM: dimwann, dimwann, nkpts
-                                                     ! kpt-symm hamiltonian rotated according to
-                                                     ! WF transform
+   COMPLEX(dbl), ALLOCATABLE   :: rham(:,:,:)  ! DIM: dimwann, dimwann, nws
+                                               ! real space hamiltonian
+   COMPLEX(dbl), ALLOCATABLE   :: kham(:,:,:)  ! DIM: dimwann, dimwann, nkpts
+                                               ! kpt-symm hamiltonian rotated according to
+                                               ! WF transform
    !
    LOGICAL :: alloc = .FALSE.
 
@@ -162,6 +162,7 @@ CONTAINS
        CHARACTER(*),    INTENT(in) :: name
        CHARACTER(nstrx)   :: attr
        CHARACTER(17)      :: subname="hamiltonian_write"
+       REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:)
        INTEGER            :: ik, iws, ierr
 
        IF ( .NOT. alloc ) RETURN
@@ -174,12 +175,24 @@ CONTAINS
        CALL iotk_write_attr(attr,"nws",nws) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
+       ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))   
+       vkpt_cry = vkpt
+       CALL cart2cry(vkpt_cry, bvec)
+
+       CALL iotk_write_dat(unit,"VKPT", vkpt_cry, COLUMNS=3, IERR=ierr) 
+            IF (ierr/=0) CALL errore(subname,'writing VKPT',ABS(ierr))
+       CALL iotk_write_dat(unit,"WK", wk, IERR=ierr) 
+            IF (ierr/=0) CALL errore(subname,'writing WK',ABS(ierr))
        CALL iotk_write_dat(unit,"VWS", vws, COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing VWS',ABS(ierr))
        CALL iotk_write_dat(unit,"INDXWS",indxws(:,1:nws), COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing INDXWS',ABS(ierr))
        CALL iotk_write_dat(unit,"DEGEN",degen(1:nws), IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing DEGEN',ABS(ierr))
+
+       DEALLOCATE( vkpt_cry, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating vkpt_cry',ABS(ierr))   
 
        CALL iotk_write_dat(unit,"WAN_EIGENVALUES",wan_eig)
        !

@@ -1,10 +1,32 @@
 
+
 &INPUT_CONDUCTOR
    nmxc = 6
    calculation_type = 'bulk'
    ne = 1000
-   niterx = 200
    emin = -10.0
    emax = 5.0
 /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C>
+      &MATRIX_DATA
+         filename="nichain_WanT_UP.ham"
+         cols="1-6"
+         rows="1-6"
+         direction=0
+      /
+   </H00_C>
+
+   <HCI_CB>
+      &MATRIX_DATA
+         filename="nichain_WanT_UP.ham"
+         cols="1-6"
+         rows="1-6"
+         direction=3
+      /
+   </HCI_CB>
+
+</HAMILTONIAN_DATA>
 

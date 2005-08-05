@@ -22,8 +22,8 @@
    
    CHARACTER(nstrx)          :: verbosity
    CHARACTER(nstrx)          :: restart_mode
-   CHARACTER(nstrx)          :: start_mode_dis
-   CHARACTER(nstrx)          :: start_mode_wan
+   CHARACTER(nstrx)          :: subspace_init
+   CHARACTER(nstrx)          :: localization_init
    CHARACTER(nstrx)          :: ordering_mode
 
    INTEGER                   :: nprint_dis
@@ -53,8 +53,8 @@
    PUBLIC :: verbosity
    PUBLIC :: restart_mode
    PUBLIC :: ordering_mode
-   PUBLIC :: start_mode_dis
-   PUBLIC :: start_mode_wan
+   PUBLIC :: subspace_init
+   PUBLIC :: localization_init
    PUBLIC :: nprint_dis
    PUBLIC :: nsave_dis
    PUBLIC :: nprint_wan

@@ -276,9 +276,9 @@
 !...  Set up the layer hamiltonians
 !     different layers in different files - read only version
 
-      CALL readH( nmaxa, nmaxb, nmaxc, loverlap, calculation_type, &
-                  h00_a, h01_a, s00_a, s01_a, h00_b, h01_b, s00_b, &
-                  s01_b, h00_c, s00_c, hci_ac, sci_ac, hci_cb, sci_cb)
+      CALL hamiltonian_setup( nmaxa, nmaxb, nmaxc, loverlap, calculation_type, &
+                              h00_a, h01_a, s00_a, s01_a, h00_b, h01_b, s00_b, &
+                              s01_b, h00_c, s00_c, hci_ac, sci_ac, hci_cb, sci_cb)
 
       hci_ca(:,:) = CONJG( TRANSPOSE(hci_ac(:,:)) )
       sci_ca(:,:) = CONJG( TRANSPOSE(sci_ac(:,:)) )

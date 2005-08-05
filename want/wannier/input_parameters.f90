@@ -140,7 +140,7 @@
    REAL(dbl) :: disentangle_thr = 1.0d-8  
        ! threshold for convergence of the iterative disentangle procedure
 
-   CHARACTER(nstrx) :: start_mode_dis = "center_projections"
+   CHARACTER(nstrx) :: subspace_init = "center_projections"
        ! ( 'randomized' | 'lower_states' | 'upper_states' | 
        !   'center_projections' | 'from_file' )
        !
@@ -155,9 +155,9 @@
        !                  (see the section TRIAL_CENTERS)
        ! 'from_file'    : read from an existing file (default for restart)
 
-   CHARACTER(nstrx) :: start_mode_dis_allowed(5)
-   DATA start_mode_dis_allowed / 'randomized', 'lower_states', 'upper_states', &
-                                 'center_projections', 'from_file' /
+   CHARACTER(nstrx) :: subspace_init_allowed(5)
+   DATA subspace_init_allowed / 'randomized', 'lower_states', 'upper_states', &
+                                'center_projections', 'from_file' /
 
    CHARACTER(10)    :: spin_component = 'none'
        ! ( 'up' | 'down' | 'none' )
@@ -171,11 +171,11 @@
 
    NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, spin_component, &
                          alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &
-                         start_mode_dis
+                         subspace_init
 
 
    PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component
-   PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, start_mode_dis
+   PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, subspace_init
    PUBLIC :: SUBSPACE
    
 
@@ -217,7 +217,7 @@
    INTEGER :: nsave_wan = 10  
        ! each nsave_wan iterations in wannier minimizations save data to disk
 
-   CHARACTER(nstrx) :: start_mode_wan = "center_projections"
+   CHARACTER(nstrx) :: localization_init = "center_projections"
        ! ( 'randomized' | 'no_guess' | 'center_projections' | 'from_file' )
        !
        ! Determine how the wannier localization is started
@@ -228,8 +228,8 @@
        !                  (see the section TRIAL_CENTERS)
        ! 'from_file'           : read from an existing file (default for restart)
 
-   CHARACTER(nstrx) :: start_mode_wan_allowed(4)
-   DATA start_mode_wan_allowed / 'no_guess', 'randomized', 'center_projections', &
+   CHARACTER(nstrx) :: localization_init_allowed(4)
+   DATA localization_init_allowed / 'no_guess', 'randomized', 'center_projections', &
                                  'from_file' /
 
    INTEGER :: nshells = 0
@@ -254,12 +254,12 @@
 
 
    NAMELIST / LOCALIZATION / wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, &
-     maxiter1_wan, nprint_wan, nsave_wan, ncg, start_mode_wan, nshells, nwhich, &
+     maxiter1_wan, nprint_wan, nsave_wan, ncg, localization_init, nshells, nwhich, &
      ordering_mode, nshells, nwhich, a_condmin, niter_condmin, dump_condmin
 
 
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan
-   PUBLIC :: nprint_wan, nsave_wan, ncg, start_mode_wan 
+   PUBLIC :: nprint_wan, nsave_wan, ncg, localization_init
    PUBLIC :: nshells, nwhich, ordering_mode, a_condmin, niter_condmin, dump_condmin
    PUBLIC :: LOCALIZATION
 
@@ -357,13 +357,13 @@ CONTAINS
       IF ( nprint_dis <= 0) CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
       IF ( nsave_dis <= 0 ) CALL errore(subname, ' nsave_dis must be > 0 ', -nsave_dis+1 )
 
-      CALL change_case(start_mode_dis,'lower')
+      CALL change_case(subspace_init,'lower')
       allowed=.FALSE.
-      DO i=1,SIZE(start_mode_dis_allowed)
-          IF ( TRIM(start_mode_dis) == start_mode_dis_allowed(i) ) allowed=.TRUE. 
+      DO i=1,SIZE(subspace_init_allowed)
+          IF ( TRIM(subspace_init) == subspace_init_allowed(i) ) allowed=.TRUE. 
       ENDDO
       IF (.NOT. allowed) &
-         CALL errore(subname,'Invalid start_mode_dis "'//TRIM(start_mode_dis)//'"',2)
+         CALL errore(subname,'Invalid subspace_init "'//TRIM(subspace_init)//'"',2)
 
       CALL change_case(spin_component,'lower')
       allowed=.FALSE.
@@ -411,13 +411,13 @@ CONTAINS
       IF ( nshells > nnx ) CALL errore(subname, 'nshells should be < nnx',nnx)
       IF ( ANY( nwhich(1:nshells) <= 0 ) ) CALL errore(subname, 'nwhich should be >= 1',2)
 
-      CALL change_case(start_mode_wan,'lower')
+      CALL change_case(localization_init,'lower')
       allowed=.FALSE.
-      DO i=1,SIZE(start_mode_wan_allowed)
-          IF ( TRIM(start_mode_wan) == start_mode_wan_allowed(i) ) allowed=.TRUE. 
+      DO i=1,SIZE(localization_init_allowed)
+          IF ( TRIM(localization_init) == localization_init_allowed(i) ) allowed=.TRUE. 
       ENDDO
       IF (.NOT. allowed) &
-         CALL errore(subname,'Invalid start_mode_wan "'//TRIM(start_mode_wan)//'"',2)
+         CALL errore(subname,'Invalid localization_init "'//TRIM(localization_init)//'"',2)
 
       CALL change_case(ordering_mode,'lower')
       allowed=.FALSE.

@@ -18,7 +18,7 @@
    USE kinds
    USE constants, ONLY: ZERO, CZERO, CI, TPI
    USE parameters, ONLY : nstrx
-   USE io_module, ONLY : stdout, ham_unit, work_dir 
+   USE io_module, ONLY : stdout, ham_unit, work_dir, prefix, postfix 
    USE timing_module, ONLY : timing
    USE parser_module, ONLY : int2char
 
@@ -119,10 +119,11 @@
           !
           IF ( indxws(1,iws)**2 + indxws(2,iws)**2 + indxws(3,iws)**2 <= 1 ) THEN
 
-               filename=TRIM(work_dir)//'/RHAM.'//TRIM(int2char( 100 + iws))
+               filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)// &
+                        '_RHAM.'//TRIM(int2char( 100 + iws))
                OPEN( UNIT=ham_unit,FILE=TRIM(filename),  STATUS='unknown', &
                      FORM='formatted', IOSTAT=ierr )
-                   IF ( ierr/=0 ) CALL errore(subname,'opening file '//TRIM(filename),ham_unit)
+                   IF (ierr/=0) CALL errore(subname,'opening file '//TRIM(filename),ham_unit)
   
                    WRITE (ham_unit,"(2i5,3x,3i4)") dimwann, dimwann, ( indxws(i,iws), i=1,3 )
                    DO j = 1, dimwann

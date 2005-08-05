@@ -186,9 +186,6 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    #
    # hopefully will be improoved very soon...
    #
-   ln -sf RHAM.111 H00_C
-   ln -sf RHAM.112 HCI_CB
-   #
    echo "running CONDUCTOR calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
    if [ ! -e CRASH ] ; then 

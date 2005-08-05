@@ -3,7 +3,6 @@
   List of needed changes
 *************************************
 
-* Wannier - conductor interface
 * Wannier: bshell elimination
 * disentangle:  overlap updated to be better implemented
                 (waste a little bit of memory but twice as fast)
@@ -21,5 +20,5 @@
 * portability issues, checks on various architectures
 * kpts in transport calculations
 * eigenchannel in transport calculation
-
+* direct calculation of current
 

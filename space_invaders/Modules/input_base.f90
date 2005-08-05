@@ -98,7 +98,7 @@ CONTAINS
    SUBROUTINE card_wannier_centers(unit, input_line )
    !**********************************************************
       USE parser_module,  ONLY : read_line, matches, change_case
-      USE control_module, ONLY : use_atomwfc
+      USE control_module, ONLY : use_atomwfc, do_condmin
       USE trial_center_data_module, ONLY : list => trial
       USE trial_center_module
       IMPLICIT NONE
@@ -147,6 +147,7 @@ CONTAINS
            ! ... init center
            CALL trial_center_init(list(iwann))
            list(iwann)%units = TRIM(units)
+           list(iwann)%weight = ZERO
 
            CALL read_line(unit, tmp_line )
            READ(tmp_line,*) list(iwann)%type 
@@ -157,8 +158,13 @@ CONTAINS
            ! ... chose the center type
            SELECT CASE ( TRIM(list(iwann)%type) )
            CASE ( "1gauss" )
-               READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
-                     list(iwann)%l, list(iwann)%m, list(iwann)%ndir, list(iwann)%decay
+               IF ( do_condmin ) THEN
+                   READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
+                        list(iwann)%l, list(iwann)%m, list(iwann)%decay, list(iwann)%weight
+               ELSE
+                   READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
+                        list(iwann)%l, list(iwann)%m, list(iwann)%decay
+               ENDIF
                IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
 
            CASE ( "2gauss" ) 
@@ -167,28 +173,37 @@ CONTAINS
                !
                list(iwann)%l = 0
                list(iwann)%m = 0
-               list(iwann)%ndir = 3
                !
-               READ(tmp_line,*, IOSTAT=ierr) adum, &
-                     list(iwann)%x1(1:3), list(iwann)%x2(1:3), list(iwann)%decay
+               IF ( do_condmin ) THEN
+                   READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
+                        list(iwann)%x2(1:3), list(iwann)%decay, list(iwann)%weight
+               ELSE
+                   READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
+                        list(iwann)%x2(1:3), list(iwann)%decay
+               ENDIF
                IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
                !
            CASE ( "atomic" )
                !
                use_atomwfc = .TRUE.
                !
-               list(iwann)%ndir = 3
                list(iwann)%decay = ZERO
                list(iwann)%x1 = ZERO
                list(iwann)%x2 = ZERO
                !
-               READ(tmp_line,*, IOSTAT=ierr) adum, &
-                     list(iwann)%iatom, list(iwann)%l, list(iwann)%m
+               IF ( do_condmin ) THEN
+                   READ(tmp_line,*, IOSTAT=ierr) adum, &
+                        list(iwann)%iatom, list(iwann)%l, list(iwann)%m, list(iwann)%weight
+               ELSE
+                   READ(tmp_line,*, IOSTAT=ierr) adum, &
+                        list(iwann)%iatom, list(iwann)%l, list(iwann)%m
+               ENDIF
                IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
                !
            CASE DEFAULT
                CALL errore('card_wannier_centers','Wrong wannier center type',iwann)
            END SELECT
+           !
            list(iwann)%alloc = .TRUE.
 
        ENDDO

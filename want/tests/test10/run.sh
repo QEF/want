@@ -36,8 +36,9 @@ MANUAL=" Usage
 
  dft                  DFT_COND and DFT_LEADS toether
  want                 WANT_COND, WANT_LEADS, CONDUCTOR and BULK, together
+ conductor_bulk       transmittance for the conductor treated as a bulk
+ conductor_auto       transmittance for leads and conductor taken from the same calculation
  conductor            evaluate the transmittance for the general conductor geometry
- bulk                 evaluate the transmittance for the conductor region treated as a bulk
  all                  perform all the above described steps
 
  check                check results with the reference outputs
@@ -77,7 +78,8 @@ BANDS_LEADS=
 PLOT_LEADS=
 
 CONDUCTOR=
-BULK=
+CONDUCTOR_BULK=
+CONDUCTOR_AUTO=
 CHECK=
 CLEAN=
 
@@ -121,19 +123,22 @@ case $INPUT in
    ( dft )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE.";;
    ( conductor )         CONDUCTOR=".TRUE." ;;
-   ( bulk )              BULK=".TRUE." ;;
+   ( conductor_bulk )    CONDUCTOR_BULK=".TRUE." ;;
+   ( conductor_auto )    CONDUCTOR_AUTO=".TRUE." ;;
    ( want )              DISENTANGLE_COND=".TRUE." ;
                          WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE." ;
                          DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
                          BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE."; 
-                         BULK=".TRUE."; CONDUCTOR=".TRUE." ;;
+                         CONDUCTOR=".TRUE." ; CONDUCTOR_BULK=".TRUE." ; 
+                         CONDUCTOR_AUTO=".TRUE." ;;
    ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ; 
                          DISENTANGLE_COND=".TRUE." ; WANNIER_COND=".TRUE." ;  
                          BANDS_COND=".TRUE." ;  PLOT_COND=".TRUE." ;
                          SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE."; 
                          DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
                          BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE." ;
-                         CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
+                         CONDUCTOR=".TRUE." ; CONDUCTOR_BULK=".TRUE." ; 
+                         CONDUCTOR_AUTO=".TRUE." ;;
 
    ( check )             CHECK=".TRUE." ;;
    ( clean )             CLEAN=".TRUE." ;;
@@ -347,24 +352,12 @@ fi
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
-   $UTILITY_BIN/matrix_extract.sh COND/RHAM.103    1  32   1 32  > H00_C
-   
-   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    1  32   1 16  > HCI_CB
-   $UTILITY_BIN/matrix_extract.sh COND/RHAM.104    17 32   1 32  > HCI_AC
-   
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  16   1 16  > H00_A
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.105   1  16   1 16  > H00_B
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  16   1 16  > H01_A
-   $UTILITY_BIN/matrix_extract.sh LEADS/RHAM.106   1  16   1 16  > H01_B
-
    echo "running CODNDUCTOR calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
       #
-      # also this needs to be improoved
-      #
-      cp dos.dat cond.dat $TEST_HOME
+      mv dos.dat cond.dat $TEST_HOME
    else
       echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
    fi
@@ -372,22 +365,35 @@ fi
 
 
 #
-# running BULK  (eventually)
+# running CONDUCTOR_BULK 
 #
-if [ "$BULK" = ".TRUE." ] ; then  
-   ln -sf COND/RHAM.103 H00_C
-   ln -sf COND/RHAM.104 HCI_CB
-   echo "running BULK calculation" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/bulk.in > $TEST_HOME/bulk.out
+if [ "$CONDUCTOR_BULK" = ".TRUE." ] ; then  
+   echo "running CONDUCTOR_BULK calculation" 
+   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_bulk.in > $TEST_HOME/conductor_bulk.out
    if [ ! -e CRASH ] ; then 
       echo "done" 
-      #
-      # also this needs to be improoved
       #
       mv dos.dat  $TEST_HOME/dos_bulk.dat
       mv cond.dat $TEST_HOME/cond_bulk.dat
    else
-      echo "found some problems in BULK calculation, stopping" ; cat CRASH ; exit 1
+      echo "found some problems in CONDUCTOR_BULK calculation, stopping" ; cat CRASH ; exit 1
+   fi
+fi
+
+
+#
+# running CONDUCTOR_AUTO
+#
+if [ "$CONDUCTOR_AUTO" = ".TRUE." ] ; then  
+   echo "running CONDUCTOR_AUTO calculation" 
+   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_auto.in > $TEST_HOME/conductor_auto.out
+   if [ ! -e CRASH ] ; then 
+      echo "done" 
+      #
+      mv dos.dat  $TEST_HOME/dos_auto.dat
+      mv cond.dat $TEST_HOME/cond_auto.dat
+   else
+      echo "found some problems in CONDUCTOR_AUTO calculation, stopping" ; cat CRASH ; exit 1
    fi
 fi
 

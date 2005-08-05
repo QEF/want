@@ -4,8 +4,13 @@
 
 include ../make.sys
 
-OBJS=conductor.o green.o transfer.o \
-     readH.o read_matrix.o transmittance.o
+OBJS= \
+conductor.o \
+green.o \
+hamiltonian_setup.o \
+transfer.o \
+read_matrix.o \
+transmittance.o
 
 #
 # main targets

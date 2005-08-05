@@ -21,10 +21,11 @@ INPUT file layout
   ...
 /
 
-WANNIER_CENTERS ( crystal | angstrom | bohr )
-gauss_typ1    x1  y1  z1    [l1  m1  ndir1]    [ xx1  yy1  zz1 ]    rloc1
+WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" )
+<type1>    <specific_fmt>
     ....
-gauss_typN    xN  yN  zN    [lN  mN  ndirN]    [ xxN  yyN  zzN ]    rlocN
+<typeN>    <specific_fmt>
+
 
 -----------------------------------
 
@@ -134,7 +135,7 @@ disentangle_thr    REAL
               threshold for convergence of the iterative disentangle procedure
               DEFAULT: 1.0d-8
 
-start_mode_dis     STRING
+subspace_init STRING
               ( "randomized", "lower_states", "upper_states",  &
                 "center_projections", "from_file" )
               Determine how the trial subspace is chosen
@@ -201,7 +202,7 @@ nwhich(ish)   INTEGER
               the indexes of the chosen shells
               DEFAULT: mandatory (ish =1, nshells)
 
-start_mode_wan     STRING
+localization_init   STRING
               ( "no_guess", "randomized", "center_projections", "from_file" )
               Determine how the wannier localization is started
               "no_guess" : disentangle states are used as starting point
@@ -246,25 +247,42 @@ dump_condmin  REAL
 
 ==============================================================================
 
-CARD WANNIER_CENTERS
+CARD 
+WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" )
 
-Contains DIMWANN lines giving the trial centers for the WFs. 
-Depending on the first flag in the line (GAUSS_TYP) which could be 1 or 2, 
-the format is different:
+Aside the tag WANNIER_CENTERS, units for positions maybe specified:
+"crystal"  : relative coordinates on the basis of a1,a2,a3 lattice vector (default)
+"bohr"     : cartesian coordinates in bohr
+"angstrom" : cartesian coordinates in angstrom
 
-IF ( gauss_typ == "1gauss" ) THEN
-   gauss_typ      x  y  z      l  m  ndir     rloc  
+Next the card contains DIMWANN lines giving the trial centers for the WFs. 
+Depending on the <TYPE> flag at the beginning of the line, 
+formats are different.
+
+
+<TYPE> may assume the values:  "1gauss", "2gauss", "atomic"
+
+IF ( TYPE == "1gauss" ) THEN
+   1gauss      x  y  z      l  m           rloc   [weight]
 ENDIF
 
-IF ( gauss_typ == "2gauss" ) THEN
-   gauss_typ      x  y  z      xx  yy  zz     rloc  
+IF ( TYPE == "2gauss" ) THEN
+   2gauss      x  y  z      xx  yy  zz     rloc   [weight]
 ENDIF
 
-In the case GAUSS_TYP == "1gauss", 
+IF ( TYPE == "atomic" ) THEN
+   atomic     iatom  l m   [weight] 
+ENDIF
+
+
+TYPE == "1gauss", 
+------------------------
+This center is given by a single gaussian set at a given position with a given
+angular momentum. Standard positions are usually atomic sites or bond midpoints.
+
    x,y,z    REAL
-            are the crystal components (i.e. r = x * a1 + y * a2 + z * a3 , 
-            where a_i are the direct lattice basis vectors) of the position 
-            of the trial WFs; 
+            define the position of the trial function. Units maybe specified aside
+            the tag WANNIER_CENTERS: see above for more details.
 
    l, m     INTEGER
             are the angular momentum quantum numbers for the spherical harmonics
@@ -289,19 +307,25 @@ In the case GAUSS_TYP == "1gauss",
                        m =  1 -->  yz
                        m =  2 -->  xy 
           
-   ndir     INTEGER
-            specifies which is the z direction for the spherical harmonics.
-            the possible values are 1, 2 or 3 (suggested value 3)
-   
-
    rloc     REAL
-            specifies the spread [Bohr] of the gaussian used for the radial part of the 
-            trial WF
+            specifies the spread of the gaussian used for the radial part of the 
+            trial WF. Units are bohr for both "bohr" and "crystal" and angstrom for 
+            "angstrom" specifier.
+
+   weight   REAL
+            this value is required when conditioned minimization is performed. In case, 
+            it should be in the interval [0, 1] ans weights the relative importance of 
+            each center in the penalty functional. weight = 0 is used to switch off the
+            constrain for a given center.  
 
 
-In the case GAUSS_TYP == "2gauss", 
+TYPE == "2gauss" 
+------------------------
+The trial function is given as the difference between gaussians with s-symmetry placed
+at positions selected by the user. This is useful to mimic a antibonding state.
+
    x,y,z    REAL
-            as before for GAUSS_TYP == "1gauss"
+            as before for TYPE == "1gauss"
      
  xx,yy,zz   REAL
             as before for x,y,z for the units, specify the center of a second gaussian 
@@ -309,8 +333,27 @@ In the case GAUSS_TYP == "2gauss",
             anti-bonding WF.
 
   rloc      REAL
-            as before for GAUSS_TYP == "1gauss"
+            as before for TYPE == "1gauss"
+
+  weight    REAL
+            as before for TYPE == "1gauss"
+        
           
+TYPE == "atomic" 
+------------------------
+Atomic (pseudo)-orbitals from pseudopotential files are used as trial functions. They are 
+specified by the atomic index and the required angular momentum quantum numbers.
+
+   iatom    INTEGER
+            the index of the chosen atom.  
+
+   l, m     INTEGER
+            as before for TYPE == "1gauss" for a detailed description.
+
+   weight   REAL
+            as before for TYPE == "1gauss"
+            
+     
 ==============================================================================
 
 
