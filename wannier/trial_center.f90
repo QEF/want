@@ -32,10 +32,10 @@
         INTEGER                 :: iatom       ! atom index if "atomic" center
         INTEGER                 :: l           ! sph-harmonic l-channel
         INTEGER                 :: m           ! sph-harmonic m-channel
-        INTEGER                 :: ndir        ! sph-harmonic polar-direction (1=x,2=y,3=z)
         REAL(dbl)               :: decay       ! gaussian decay factor if "?gauss" center
         REAL(dbl)               :: x1(3)       ! position of the first gaussian
         REAL(dbl)               :: x2(3)       ! position of the second gaussian
+        REAL(dbl)               :: weight      ! weight of the center for cond minimization
         CHARACTER(10)           :: units       ! coord units ("crystal"|"bohr"|"angstrom")
         LOGICAL                 :: alloc
    END TYPE trial_center
@@ -60,10 +60,10 @@ CONTAINS
       obj%iatom=0
       obj%l=0
       obj%m=0
-      obj%ndir=3
       obj%decay=0.0
       obj%x1=0.0
       obj%x2=0.0
+      obj%weight=0.0
       obj%units=" "
       obj%alloc=.FALSE.
    END SUBROUTINE trial_center_init

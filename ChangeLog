@@ -3,6 +3,15 @@
             WanT code:  Log of Changes 
 =======================================================
 
+05 Ago 2005      Center weights for conditioned minimization implemented. Trial_center
+                 type updated. IOTK updated to v1.0.0 . (AF)
+
+04 Ago 2005      start_mode_dis, start_mode_wan input variables moved to 
+                 subspace_init and localization_init respectively. Direct interface
+                 between wannier and conductor implemented. Input files fmt changed;
+                 tests updated. Internal format of *.ham file chenged in order to
+                 include kpts and related weights. (AF) 
+
 03 Ago 2005      Makefile system in Tests replaced by run.sh script system. 
                  Check script for test added in utility. (AF)
 

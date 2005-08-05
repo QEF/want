@@ -282,9 +282,6 @@ fi
 #
 if [ "$CONDUCTOR_UP" = ".TRUE." ] ; then  
    #
-   ln -sf RHAM_UP.103 H00_C
-   ln -sf RHAM_UP.104 HCI_CB
-   #
    echo "running CONDUCTOR_UP calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor_UP.in > $TEST_HOME/conductor_UP.out
    if [ ! -e CRASH ] ; then 
@@ -302,9 +299,6 @@ fi
 # running CONDUCTOR_DW
 #
 if [ "$CONDUCTOR_DW" = ".TRUE." ] ; then  
-   #
-   ln -sf RHAM_DW.103 H00_C
-   ln -sf RHAM_DW.104 HCI_CB
    #
    echo "running CONDUCTOR_DW calculation" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor_DW.in > $TEST_HOME/conductor_DW.out

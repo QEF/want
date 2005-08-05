@@ -16,9 +16,10 @@
    !
    ! domg / dW_k = 2/N \Sum_b w_b S[ At^kb ]     where
    !
-   ! At^{kb}_{mn} = a * (b * Dr_n)/ Mkb_nn  * Mkb_mn
+   ! At^{kb}_{mn} = a * w_n * (b * Dr_n)/ Mkb_nn  * Mkb_mn
    ! a:    coupling constant 
    ! Dr_n: <r>_n - r_n0,   r_n0 initial center position
+   ! w_n:  weight (from input) of the n-th center
    ! 
    !
    USE kinds
@@ -90,11 +91,11 @@
 
            !
            ! Compute:
-           !       qb_n  =  b * Dr_n
-           !       At_mn = (b * Dr_n) * Mkb_mn / Mkb_nn 
+           !       qb_n  = w_n *  b * Dr_n
+           !       At_mn = w_n * (b * Dr_n) * Mkb_mn / Mkb_nn 
            !
            DO n = 1, dimwann
-               qb(n) = DOT_PRODUCT( bk(:,ik,inn), Dr(:,n) ) 
+               qb(n) = trial(n)%weight * DOT_PRODUCT( bk(:,ik,inn), Dr(:,n) ) 
                DO m = 1, dimwann
                    At(m,n) = qb(n) * Mkb(m,n,inn,ik) / Mkb(n,n,inn,ik)
                ENDDO

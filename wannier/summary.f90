@@ -19,7 +19,7 @@
    USE control_module, ONLY : ordering_mode, verbosity, restart_mode, & 
                               use_pseudo, use_uspp, do_overlaps, do_projections, &
                               read_subspace, read_unitary, &
-                              unitary_thr, start_mode_dis, start_mode_wan, &
+                              unitary_thr, subspace_init, localization_init, &
                               nprint_dis, nprint_wan, nsave_dis, nsave_wan
    USE control_module, ONLY : do_condmin
    USE trial_center_data_module, ONLY : trial
@@ -169,7 +169,7 @@
           WRITE( unit,"(4x,'Chosen shells (indexes) = ', 100i3 )" ) nwhich(1:nshells)
           WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_wan
           WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_wan
-          WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(start_mode_wan)
+          WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(localization_init)
           WRITE( unit,"(4x,'Ordering mode = ', a )" ) TRIM(ordering_mode)
           WRITE( unit,"(4x,'Verbosity = ', a )" ) TRIM(verbosity)
           WRITE( unit,"(4x,'Unitariery check threshold = ', f15.9 )") unitary_thr
@@ -182,7 +182,7 @@
           WRITE( unit,"(4x,'Spin component = ', a )" ) TRIM(spin_component)
           WRITE( unit,"(4x,'Mixing parameter (alpha_dis)= ', f6.3 )" ) alpha_dis
           WRITE( unit,"(4x,'Max iteration number = ', i5 )" ) maxiter_dis
-          WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(start_mode_dis)
+          WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(subspace_init)
           WRITE( unit,"(4x,'Disentangle convergence threshold = ', f15.9 )") disentangle_thr
           WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_dis
           WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_dis
@@ -423,8 +423,13 @@
           IF ( .NOT. lfrozen ) THEN
                WRITE(unit," (/,4x,'inner window: NOT used --> NO FROZEN STATES' )" )
           ELSE
-               WRITE(unit," (/,4x,'inner window: E  = (', f8.4, ' , ',f8.4, &
+               IF ( froz_min < 10000.0 ) THEN
+                   WRITE(unit," (/,4x,'inner window: E  = (  -\inf , ',f8.4, &
+                      & ' ) --> FROZEN STATES' )" ) froz_max
+               ELSE
+                   WRITE(unit," (/,4x,'inner window: E  = (', f8.4, ' , ',f8.4, &
                       & ' ) --> FROZEN STATES' )" ) froz_min, froz_max
+               ENDIF
                DO ik=1,nkpts
                    WRITE(unit, "(4x, 'there are ', i3,' frozen states at k-point = ',i5)") &
                          dimfroz(ik), ik
