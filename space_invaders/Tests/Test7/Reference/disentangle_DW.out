@@ -8,10 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  1Aug2005 at 12:45:12 
+  Date  6Aug2005 at 17:39:30 
 
   Arch. / Op.Sys: LINUX
-        Compiler: GNU G95
+        Compiler: INTEL
 
 
   PW-DFT data read from file: nichain.export/index.xml
@@ -234,20 +234,20 @@
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     6.43 secs
+                              Total time spent up to now :     4.45 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     6.60 secs
+                              Total time spent up to now :     4.62 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     6.77 secs
+                              Total time spent up to now :     4.80 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     6.95 secs
+                              Total time spent up to now :     4.97 secs
 
 
   Overlap and projections written on file: nichain_WanT_DW.ovp
-                              Total time spent up to now :     7.01 secs
+                              Total time spent up to now :     5.05 secs
 
 
   ======================================================================
@@ -257,43 +257,44 @@
 
   Initial trial subspace: projected localized orbitals
 
-  Iteration =     1   Omega_I =     15.13308863    Error =      0.00735217
-  Iteration =     2   Omega_I =     15.07695186    Error =      0.00396284
-  Iteration =     3   Omega_I =     15.04703166    Error =      0.00203302
-  Iteration =     4   Omega_I =     15.03173732    Error =      0.00102592
-  Iteration =     5   Omega_I =     15.02402893    Error =      0.00051475
-  Iteration =     6   Omega_I =     15.02016296    Error =      0.00025776
-  Iteration =     7   Omega_I =     15.01822734    Error =      0.00012899
-  Iteration =     8   Omega_I =     15.01725870    Error =      0.00006455
-  Iteration =     9   Omega_I =     15.01677399    Error =      0.00003231
-  Iteration =    10   Omega_I =     15.01653139    Error =      0.00001617
+  Iteration =     1     Omega_I =   15.133089      Error =      0.00735217
+  Iteration =     2     Omega_I =   15.076952      Error =      0.00396284
+  Iteration =     3     Omega_I =   15.047032      Error =      0.00203302
+  Iteration =     4     Omega_I =   15.031737      Error =      0.00102592
+  Iteration =     5     Omega_I =   15.024029      Error =      0.00051475
+  Iteration =     6     Omega_I =   15.020163      Error =      0.00025776
+  Iteration =     7     Omega_I =   15.018227      Error =      0.00012899
+  Iteration =     8     Omega_I =   15.017259      Error =      0.00006455
+  Iteration =     9     Omega_I =   15.016774      Error =      0.00003231
+  Iteration =    10     Omega_I =   15.016531      Error =      0.00001617
 
-                              Total time spent up to now :     7.02 secs
+                              Total time spent up to now :     5.06 secs
 
-  Iteration =    11   Omega_I =     15.01640993    Error =      0.00000810
-  Iteration =    12   Omega_I =     15.01634908    Error =      0.00000406
-  Iteration =    13   Omega_I =     15.01631857    Error =      0.00000204
-  Iteration =    14   Omega_I =     15.01630326    Error =      0.00000102
-  Iteration =    15   Omega_I =     15.01629556    Error =      0.00000052
-  Iteration =    16   Omega_I =     15.01629168    Error =      0.00000026
-  Iteration =    17   Omega_I =     15.01628972    Error =      0.00000013
-  Iteration =    18   Omega_I =     15.01628872    Error =      0.00000007
-  Iteration =    19   Omega_I =     15.01628822    Error =      0.00000003
-  Iteration =    20   Omega_I =     15.01628795    Error =      0.00000002
+  Iteration =    11     Omega_I =   15.016410      Error =      0.00000810
+  Iteration =    12     Omega_I =   15.016349      Error =      0.00000406
+  Iteration =    13     Omega_I =   15.016319      Error =      0.00000204
+  Iteration =    14     Omega_I =   15.016303      Error =      0.00000102
+  Iteration =    15     Omega_I =   15.016296      Error =      0.00000052
+  Iteration =    16     Omega_I =   15.016292      Error =      0.00000026
+  Iteration =    17     Omega_I =   15.016290      Error =      0.00000013
+  Iteration =    18     Omega_I =   15.016289      Error =      0.00000007
+  Iteration =    19     Omega_I =   15.016288      Error =      0.00000003
+  Iteration =    20     Omega_I =   15.016288      Error =      0.00000002
 
-                              Total time spent up to now :     7.05 secs
+                              Total time spent up to now :     5.09 secs
 
-  Iteration =    21   Omega_I =     15.01628782    Error =      0.00000001
+  Iteration =    21     Omega_I =   15.016288      Error =      0.00000001
 
 
   ======================================================================
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Final Omega_I (Bohr^2, Angstrom^2):     15.01628767        4.20498547
-   Avrg Omega_I                     :      2.50271461        0.70083091
+  Iteration # :   21
+  Final Omega_I (Bohr^2, Angstrom^2):      15.016288         4.204985
+   Avrg Omega_I                     :       2.502715         0.700831
 
-                              Total time spent up to now :     7.07 secs
+                              Total time spent up to now :     5.12 secs
 
 
   Subspace data written on file: nichain_WanT_DW.space
@@ -302,27 +303,27 @@
    <global routines>
              clock number :    21
 
-              disentangle :     7.08s CPU 
-
-                want_init :     0.33s CPU
-                  bshells :     0.01s CPU
-              wfc_manager :     6.67s CPU
-          ggrids_read_ext :     0.10s CPU
+              disentangle :     5.15s CPU 
+ 
+                want_init :     0.15s CPU
+                  bshells :     0.00s CPU
+              wfc_manager :     4.90s CPU
+          ggrids_read_ext :     0.06s CPU
               struct_fact :     0.02s CPU
-                init_us_1 :     5.75s CPU
-           wfc_data_kread :     0.24s CPU (      16 calls,   0.015 s avg)
-                init_us_2 :     0.20s CPU (      20 calls,   0.010 s avg)
-                  ccalbec :     0.03s CPU (      16 calls,   0.002 s avg)
-                  overlap :     0.18s CPU (      12 calls,   0.015 s avg)
-           overlap_setmap :     0.13s CPU (      12 calls,   0.010 s avg)
+                init_us_1 :     4.02s CPU
+           wfc_data_kread :     0.17s CPU (      16 calls,   0.011 s avg)
+                init_us_2 :     0.21s CPU (      20 calls,   0.010 s avg)
+                  ccalbec :     0.05s CPU (      16 calls,   0.003 s avg)
+                  overlap :     0.17s CPU (      12 calls,   0.014 s avg)
+           overlap_setmap :     0.10s CPU (      12 calls,   0.008 s avg)
           overlap_augment :     0.00s CPU (      12 calls,   0.000 s avg)
-                    s_psi :     0.02s CPU (       4 calls,   0.004 s avg)
-               projection :     0.06s CPU (       4 calls,   0.014 s avg)
-       trial_center_setup :     0.03s CPU (      24 calls,   0.001 s avg)
-               iterations :     0.06s CPU
+                    s_psi :     0.02s CPU (       4 calls,   0.006 s avg)
+               projection :     0.07s CPU (       4 calls,   0.017 s avg)
+       trial_center_setup :     0.04s CPU (      24 calls,   0.002 s avg)
+               iterations :     0.07s CPU
              subapce_init :     0.00s CPU
                   zmatrix :     0.00s CPU (      84 calls,   0.000 s avg)
-               zmat_hdiag :     0.00s CPU (      84 calls,   0.000 s avg)
-                  komegai :     0.01s CPU (      84 calls,   0.000 s avg)
+               zmat_hdiag :     0.01s CPU (      84 calls,   0.000 s avg)
+                  komegai :     0.00s CPU (      84 calls,   0.000 s avg)
 
 

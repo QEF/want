@@ -9,14 +9,14 @@
 &SUBSPACE
    dimwann = 24
 !   win_max = 3.0
-!   froz_max =  -4.153652200
-   froz_max =  -10.0
+   froz_max =  -4.153652200
+!   froz_max =  -10.0
    alpha_dis = 0.5     
    maxiter_dis = 1500   
 /
 
 &LOCALIZATION
-  a_condmin = 20.0
+   a_condmin = 20.0
    maxiter0_wan = 100
    alpha0_wan = 0.3
    maxiter1_wan = 4000
@@ -24,34 +24,34 @@
    ncg = 5          
    nshells = 2       
    nwhich(1) = 1      
-   nwhich(2) = 4      
+   nwhich(2) = 2      
    ordering_mode = 'none'
 /
 
 WANNIER_CENTERS {crystal}
-atomic    1   1  0     ! *** C pi y,z ***
-atomic    1   1  1
-atomic    2   1  0
-atomic    2   1  1
-atomic    3   1  0
-atomic    3   1  1
-atomic    4   1  0
-atomic    4   1  1
-1gauss    0.0556569  0.0000000  0.0000000     0  0     1.0   ! *** C sgm ***
-1gauss    0.1806569  0.0000000  0.0000000     0  0     1.0
-1gauss    0.3056569  0.0000000  0.0000000     0  0     1.0
-1gauss    0.4306569  0.0000000  0.0000000     0  0     1.0
-atomic    5   1  0     ! *** C pi y,z ***
-atomic    5   1  1
-atomic    6   1  0
-atomic    6   1  1
-atomic    7   1  0
-atomic    7   1  1
-atomic    8   1  0
-atomic    8   1  1
-1gauss    0.5556569  0.0000000  0.0000000     0  0     1.0   ! *** C sgm ***
-1gauss    0.6806569  0.0000000  0.0000000     0  0     1.0
-1gauss    0.8056569  0.0000000  0.0000000     0  0     1.0
-1gauss    0.9306569  0.0000000  0.0000000     0  0     1.0
+atomic    1   1  0   1.0
+atomic    1   1  1   1.0
+atomic    2   1  0   1.0
+atomic    2   1  1   1.0
+atomic    3   1  0   1.0
+atomic    3   1  1   1.0
+atomic    4   1  0   1.0
+atomic    4   1  1   1.0
+1gauss    0.0556569  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.1806569  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.3056569  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.4306569  0.0000000  0.0000000     0  0     1.0   1.0
+atomic    5   1  0   1.0
+atomic    5   1  1   1.0
+atomic    6   1  0   1.0
+atomic    6   1  1   1.0
+atomic    7   1  0   1.0
+atomic    7   1  1   1.0
+atomic    8   1  0   1.0
+atomic    8   1  1   1.0
+1gauss    0.5556569  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.6806569  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.8056569  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.9306569  0.0000000  0.0000000     0  0     1.0   1.0
 
 

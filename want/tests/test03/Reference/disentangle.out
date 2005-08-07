@@ -8,10 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  1Aug2005 at 12:52:23 
+  Date  6Aug2005 at 17:40:27 
 
   Arch. / Op.Sys: LINUX
-        Compiler: GNU G95
+        Compiler: INTEL
 
 
   PW-DFT data read from file: benzene.export/index.xml
@@ -227,11 +227,11 @@
 
   Initializing atomic wfc
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     8.46 secs
+                              Total time spent up to now :     7.17 secs
 
 
   Overlap and projections written on file: benzene_WanT.ovp
-                              Total time spent up to now :     8.56 secs
+                              Total time spent up to now :     7.30 secs
 
 
   ======================================================================
@@ -254,89 +254,90 @@
 
 
 
-  Iteration =     1   Omega_I =     72.46422713    Error =      0.03881125
-  Iteration =     2   Omega_I =     70.65991608    Error =      0.04663391
-  Iteration =     3   Omega_I =     69.03320744    Error =      0.02814082
-  Iteration =     4   Omega_I =     68.05826151    Error =      0.01688731
-  Iteration =     5   Omega_I =     67.47444720    Error =      0.01019609
-  Iteration =     6   Omega_I =     67.12192418    Error =      0.00623030
-  Iteration =     7   Omega_I =     66.90613812    Error =      0.00387453
-  Iteration =     8   Omega_I =     66.77150087    Error =      0.00246785
-  Iteration =     9   Omega_I =     66.68532813    Error =      0.00162101
-  Iteration =    10   Omega_I =     66.62836826    Error =      0.00110486
+  Iteration =     1     Omega_I =   72.464227      Error =      0.03881125
+  Iteration =     2     Omega_I =   70.659916      Error =      0.04663391
+  Iteration =     3     Omega_I =   69.033207      Error =      0.02814082
+  Iteration =     4     Omega_I =   68.058262      Error =      0.01688731
+  Iteration =     5     Omega_I =   67.474447      Error =      0.01019609
+  Iteration =     6     Omega_I =   67.121924      Error =      0.00623030
+  Iteration =     7     Omega_I =   66.906138      Error =      0.00387453
+  Iteration =     8     Omega_I =   66.771501      Error =      0.00246785
+  Iteration =     9     Omega_I =   66.685328      Error =      0.00162101
+  Iteration =    10     Omega_I =   66.628368      Error =      0.00110486
 
-                              Total time spent up to now :     8.60 secs
+                              Total time spent up to now :     7.34 secs
 
-  Iteration =    11   Omega_I =     66.58925914    Error =      0.00078434
-  Iteration =    12   Omega_I =     66.56128182    Error =      0.00057980
-  Iteration =    13   Omega_I =     66.54045204    Error =      0.00044435
-  Iteration =    14   Omega_I =     66.52439387    Error =      0.00035047
-  Iteration =    15   Omega_I =     66.51167353    Error =      0.00028211
-  Iteration =    16   Omega_I =     66.50140599    Error =      0.00022997
-  Iteration =    17   Omega_I =     66.49302404    Error =      0.00018866
-  Iteration =    18   Omega_I =     66.48614435    Error =      0.00015506
-  Iteration =    19   Omega_I =     66.48049108    Error =      0.00012729
-  Iteration =    20   Omega_I =     66.47585312    Error =      0.00010417
+  Iteration =    11     Omega_I =   66.589259      Error =      0.00078434
+  Iteration =    12     Omega_I =   66.561282      Error =      0.00057980
+  Iteration =    13     Omega_I =   66.540452      Error =      0.00044435
+  Iteration =    14     Omega_I =   66.524394      Error =      0.00035047
+  Iteration =    15     Omega_I =   66.511674      Error =      0.00028211
+  Iteration =    16     Omega_I =   66.501406      Error =      0.00022997
+  Iteration =    17     Omega_I =   66.493024      Error =      0.00018866
+  Iteration =    18     Omega_I =   66.486144      Error =      0.00015506
+  Iteration =    19     Omega_I =   66.480491      Error =      0.00012729
+  Iteration =    20     Omega_I =   66.475853      Error =      0.00010417
 
-                              Total time spent up to now :     8.68 secs
+                              Total time spent up to now :     7.40 secs
 
-  Iteration =    21   Omega_I =     66.47206072    Error =      0.00008490
-  Iteration =    22   Omega_I =     66.46897280    Error =      0.00006887
-  Iteration =    23   Omega_I =     66.46647006    Error =      0.00005561
-  Iteration =    24   Omega_I =     66.46445106    Error =      0.00004470
-  Iteration =    25   Omega_I =     66.46282963    Error =      0.00003578
-  Iteration =    26   Omega_I =     66.46153300    Error =      0.00002852
-  Iteration =    27   Omega_I =     66.46050015    Error =      0.00002265
-  Iteration =    28   Omega_I =     66.45968036    Error =      0.00001793
-  Iteration =    29   Omega_I =     66.45903176    Error =      0.00001416
-  Iteration =    30   Omega_I =     66.45852008    Error =      0.00001114
+  Iteration =    21     Omega_I =   66.472061      Error =      0.00008490
+  Iteration =    22     Omega_I =   66.468973      Error =      0.00006887
+  Iteration =    23     Omega_I =   66.466470      Error =      0.00005561
+  Iteration =    24     Omega_I =   66.464451      Error =      0.00004470
+  Iteration =    25     Omega_I =   66.462830      Error =      0.00003578
+  Iteration =    26     Omega_I =   66.461533      Error =      0.00002852
+  Iteration =    27     Omega_I =   66.460500      Error =      0.00002265
+  Iteration =    28     Omega_I =   66.459680      Error =      0.00001793
+  Iteration =    29     Omega_I =   66.459032      Error =      0.00001416
+  Iteration =    30     Omega_I =   66.458520      Error =      0.00001114
 
-                              Total time spent up to now :     8.74 secs
+                              Total time spent up to now :     7.48 secs
 
-  Iteration =    31   Omega_I =     66.45811744    Error =      0.00000875
-  Iteration =    32   Omega_I =     66.45780134    Error =      0.00000686
-  Iteration =    33   Omega_I =     66.45755367    Error =      0.00000537
-  Iteration =    34   Omega_I =     66.45735996    Error =      0.00000419
-  Iteration =    35   Omega_I =     66.45720869    Error =      0.00000327
-  Iteration =    36   Omega_I =     66.45709073    Error =      0.00000255
-  Iteration =    37   Omega_I =     66.45699885    Error =      0.00000198
-  Iteration =    38   Omega_I =     66.45692737    Error =      0.00000154
-  Iteration =    39   Omega_I =     66.45687181    Error =      0.00000120
-  Iteration =    40   Omega_I =     66.45682866    Error =      0.00000093
+  Iteration =    31     Omega_I =   66.458117      Error =      0.00000875
+  Iteration =    32     Omega_I =   66.457801      Error =      0.00000686
+  Iteration =    33     Omega_I =   66.457554      Error =      0.00000537
+  Iteration =    34     Omega_I =   66.457360      Error =      0.00000419
+  Iteration =    35     Omega_I =   66.457209      Error =      0.00000327
+  Iteration =    36     Omega_I =   66.457091      Error =      0.00000255
+  Iteration =    37     Omega_I =   66.456999      Error =      0.00000198
+  Iteration =    38     Omega_I =   66.456927      Error =      0.00000154
+  Iteration =    39     Omega_I =   66.456872      Error =      0.00000120
+  Iteration =    40     Omega_I =   66.456829      Error =      0.00000093
 
-                              Total time spent up to now :     8.81 secs
+                              Total time spent up to now :     7.55 secs
 
-  Iteration =    41   Omega_I =     66.45679516    Error =      0.00000072
-  Iteration =    42   Omega_I =     66.45676919    Error =      0.00000056
-  Iteration =    43   Omega_I =     66.45674905    Error =      0.00000043
-  Iteration =    44   Omega_I =     66.45673345    Error =      0.00000034
-  Iteration =    45   Omega_I =     66.45672137    Error =      0.00000026
-  Iteration =    46   Omega_I =     66.45671202    Error =      0.00000020
-  Iteration =    47   Omega_I =     66.45670478    Error =      0.00000016
-  Iteration =    48   Omega_I =     66.45669918    Error =      0.00000012
-  Iteration =    49   Omega_I =     66.45669484    Error =      0.00000009
-  Iteration =    50   Omega_I =     66.45669149    Error =      0.00000007
+  Iteration =    41     Omega_I =   66.456795      Error =      0.00000072
+  Iteration =    42     Omega_I =   66.456769      Error =      0.00000056
+  Iteration =    43     Omega_I =   66.456749      Error =      0.00000043
+  Iteration =    44     Omega_I =   66.456733      Error =      0.00000034
+  Iteration =    45     Omega_I =   66.456721      Error =      0.00000026
+  Iteration =    46     Omega_I =   66.456712      Error =      0.00000020
+  Iteration =    47     Omega_I =   66.456705      Error =      0.00000016
+  Iteration =    48     Omega_I =   66.456699      Error =      0.00000012
+  Iteration =    49     Omega_I =   66.456695      Error =      0.00000009
+  Iteration =    50     Omega_I =   66.456691      Error =      0.00000007
 
-                              Total time spent up to now :     8.86 secs
+                              Total time spent up to now :     7.62 secs
 
-  Iteration =    51   Omega_I =     66.45668890    Error =      0.00000006
-  Iteration =    52   Omega_I =     66.45668690    Error =      0.00000004
-  Iteration =    53   Omega_I =     66.45668535    Error =      0.00000003
-  Iteration =    54   Omega_I =     66.45668416    Error =      0.00000003
-  Iteration =    55   Omega_I =     66.45668323    Error =      0.00000002
-  Iteration =    56   Omega_I =     66.45668252    Error =      0.00000002
-  Iteration =    57   Omega_I =     66.45668197    Error =      0.00000001
-  Iteration =    58   Omega_I =     66.45668154    Error =      0.00000001
+  Iteration =    51     Omega_I =   66.456689      Error =      0.00000006
+  Iteration =    52     Omega_I =   66.456687      Error =      0.00000004
+  Iteration =    53     Omega_I =   66.456685      Error =      0.00000003
+  Iteration =    54     Omega_I =   66.456684      Error =      0.00000003
+  Iteration =    55     Omega_I =   66.456683      Error =      0.00000002
+  Iteration =    56     Omega_I =   66.456683      Error =      0.00000002
+  Iteration =    57     Omega_I =   66.456682      Error =      0.00000001
+  Iteration =    58     Omega_I =   66.456682      Error =      0.00000001
 
 
   ======================================================================
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Final Omega_I (Bohr^2, Angstrom^2):     66.45668094       18.60975121
-   Avrg Omega_I                     :      3.69203783        1.03387507
+  Iteration # :   58
+  Final Omega_I (Bohr^2, Angstrom^2):      66.456681        18.609751
+   Avrg Omega_I                     :       3.692038         1.033875
 
-                              Total time spent up to now :     8.95 secs
+                              Total time spent up to now :     7.69 secs
 
 
   Subspace decomposition:
@@ -356,25 +357,25 @@
    <global routines>
              clock number :    19
 
-              disentangle :     8.97s CPU 
-
-                want_init :     0.07s CPU
+              disentangle :     7.72s CPU 
+ 
+                want_init :     0.02s CPU
                   bshells :     0.00s CPU
-              wfc_manager :     8.48s CPU
-          ggrids_read_ext :     0.22s CPU
-              struct_fact :     0.54s CPU
-                init_at_1 :     0.06s CPU
-           wfc_data_kread :     1.91s CPU (       4 calls,   0.478 s avg)
-                  overlap :     4.68s CPU (       3 calls,   1.559 s avg)
-           overlap_setmap :     0.11s CPU (       3 calls,   0.037 s avg)
-                    s_psi :     0.02s CPU
-               projection :     0.94s CPU
-       trial_center_setup :     0.60s CPU (      18 calls,   0.033 s avg)
-               atomic_wfc :     0.03s CPU (       6 calls,   0.005 s avg)
+              wfc_manager :     7.28s CPU
+          ggrids_read_ext :     0.15s CPU
+              struct_fact :     0.36s CPU
+                init_at_1 :     0.04s CPU
+           wfc_data_kread :     1.02s CPU (       4 calls,   0.256 s avg)
+                  overlap :     4.85s CPU (       3 calls,   1.616 s avg)
+           overlap_setmap :     0.11s CPU (       3 calls,   0.036 s avg)
+                    s_psi :     0.01s CPU
+               projection :     0.69s CPU
+       trial_center_setup :     0.31s CPU (      18 calls,   0.017 s avg)
+               atomic_wfc :     0.02s CPU (       6 calls,   0.004 s avg)
                iterations :     0.39s CPU
              subapce_init :     0.00s CPU
-                  zmatrix :     0.12s CPU (      58 calls,   0.002 s avg)
+                  zmatrix :     0.09s CPU (      58 calls,   0.002 s avg)
                zmat_hdiag :     0.04s CPU (      58 calls,   0.001 s avg)
-                  komegai :     0.03s CPU (      58 calls,   0.001 s avg)
+                  komegai :     0.04s CPU (      58 calls,   0.001 s avg)
 
 

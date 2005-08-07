@@ -249,8 +249,8 @@
             !
             ! write info on stdout
             !
-            WRITE( stdout, " (2x, 'Iteration = ',i5,'   Omega_I =',f16.8, &
-                         & 4x, 'Error =',f16.8 )") iter, omega_i_est, omega_err
+            WRITE( stdout, " (2x, 'Iteration = ',i5,5x,'Omega_I =',f12.6, &
+                         & 6x, 'Error =',f16.8 )") iter, omega_i_est, omega_err
 
             IF ( MOD(ncount, nprint_dis) == 0 )  THEN
                  WRITE(stdout, "()")
@@ -302,11 +302,12 @@
 
 
        !
-       ! ... Write the final omega_i. This should equal the one given by wannier
+       ! ... Write the final omega_I. This should equal the one given by wannier
        !
-       WRITE( stdout,"(2x,'Final Omega_I (Bohr^2, Angstrom^2):', f16.8,2x,f16.8)") &
+      WRITE( stdout, "(2x,'Iteration # : ',i4)") ncount
+       WRITE( stdout,"(2x,'Final Omega_I (Bohr^2, Angstrom^2):', f15.6,2x,f15.6)") &
                       omega_i, omega_i*bohr**2
-       WRITE( stdout,"(2x,' Avrg Omega_I                     :', f16.8,2x,f16.8)") &
+       WRITE( stdout,"(2x,' Avrg Omega_I                     :', f15.6,2x,f15.6)") &
                       omega_i/DBLE(dimwann), omega_i*bohr**2/DBLE(dimwann)
        WRITE( stdout,"()" ) 
        CALL timing_upto_now(stdout) 

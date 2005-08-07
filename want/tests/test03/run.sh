@@ -33,9 +33,6 @@ MANUAL=" Usage
 # source common enviroment, to be set before running the script
 . ../environment.conf
 TEST_HOME=`pwd`
-UTILITY_BIN=$TEST_HOME/../../utility
-WANT_BIN=$TEST_HOME/../../Main
-TRANS_BIN=$TEST_HOME/../../Transport
 TEST_NAME=Test8
 PSEUDO_LIST="C.blyp-mt.UPF  H.blyp-vbc.UPF"
 

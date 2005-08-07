@@ -2,7 +2,7 @@
   &INPUT_CONDUCTOR
     nmxc = 6
     calculation_type = 'bulk'
-    ne = 1000  
+    ne = 1000
     emin = -10.0
     emax =   5.0 
   /

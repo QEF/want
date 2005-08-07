@@ -188,11 +188,11 @@ CONTAINS
 
       IF ( lxprint ) THEN
            WRITE( unit, "(  2x, 'Spread Operator decomposition (Bohr^2): ')")
-           WRITE( unit, "(  4x,'Omega I    =   ', f15.9 ) " ) Omega_I
-           WRITE( unit, "(  4x,'Omega D    =   ', f15.9 ) " ) Omega_D
-           WRITE( unit, "(  4x,'Omega OD   =   ', f15.9 ) " ) Omega_OD
-           WRITE( unit, "(  4x,'Omega Tot  =   ', f15.9 ) " ) Omega_tot
-           WRITE( unit, "(  4x,'Omega Avrg =   ', f15.9 ) " ) Omega_tot/DBLE(dimwann)
+           WRITE( unit, "(  4x,'Omega I    =   ', f13.6 ) " ) Omega_I
+           WRITE( unit, "(  4x,'Omega D    =   ', f13.6 ) " ) Omega_D
+           WRITE( unit, "(  4x,'Omega OD   =   ', f13.6 ) " ) Omega_OD
+           WRITE( unit, "(  4x,'Omega Tot  =   ', f13.6 ) " ) Omega_tot
+           WRITE( unit, "(  4x,'Omega Avrg =   ', f13.6 ) " ) Omega_tot/DBLE(dimwann)
            WRITE( unit, "()")
       ENDIF
 

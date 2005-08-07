@@ -1,87 +1,3 @@
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/benzene_WanT_WFM001.gau'
-Output file (plot file):  './/benzene_WanT_WFM001.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM001.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.002043
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/benzene_WanT_WFM002.gau'
-Output file (plot file):  './/benzene_WanT_WFM002.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM002.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.002174
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/benzene_WanT_WFM007.gau'
-Output file (plot file):  './/benzene_WanT_WFM007.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM007.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.002193
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/benzene_WanT_WFM008.gau'
-Output file (plot file):  './/benzene_WanT_WFM008.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM008.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.002622
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/benzene_WanT_WFM014.gau'
-Output file (plot file):  './/benzene_WanT_WFM014.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM014.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.001512
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
-
-Input file:      './/benzene_WanT_WFM015.gau'
-Output file (plot file):  './/benzene_WanT_WFM015.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM015.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.001545
-Job done ...
-**********************************************************
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -92,10 +8,10 @@ Job done ...
 
 
   Program <plot>  v. 1.1.1  starts ...
-  Date  1Aug2005 at 12:52:36 
+  Date  6Aug2005 at 17:40:38 
 
   Arch. / Op.Sys: LINUX
-        Compiler: GNU G95
+        Compiler: INTEL
 
 
   PW-DFT data read from file: benzene.export/index.xml
@@ -187,26 +103,110 @@ Job done ...
 
 
   writing WF(  1) plot on file: .//benzene_WanT_WFM001.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM001.gau'
+Output file (plot file):  './/benzene_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002043
+Job done ...
+**********************************************************
   deleting tmp file: .//benzene_WanT_WFM001.gau
 
 
   writing WF(  2) plot on file: .//benzene_WanT_WFM002.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM002.gau'
+Output file (plot file):  './/benzene_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM002.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002174
+Job done ...
+**********************************************************
   deleting tmp file: .//benzene_WanT_WFM002.gau
 
 
   writing WF(  7) plot on file: .//benzene_WanT_WFM007.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM007.gau'
+Output file (plot file):  './/benzene_WanT_WFM007.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM007.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002193
+Job done ...
+**********************************************************
   deleting tmp file: .//benzene_WanT_WFM007.gau
 
 
   writing WF(  8) plot on file: .//benzene_WanT_WFM008.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM008.gau'
+Output file (plot file):  './/benzene_WanT_WFM008.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM008.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.002622
+Job done ...
+**********************************************************
   deleting tmp file: .//benzene_WanT_WFM008.gau
 
 
   writing WF( 14) plot on file: .//benzene_WanT_WFM014.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM014.gau'
+Output file (plot file):  './/benzene_WanT_WFM014.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM014.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.001512
+Job done ...
+**********************************************************
   deleting tmp file: .//benzene_WanT_WFM014.gau
 
 
   writing WF( 15) plot on file: .//benzene_WanT_WFM015.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './/benzene_WanT_WFM015.gau'
+Output file (plot file):  './/benzene_WanT_WFM015.plt'
+Coordinate file (in CHARMM 'crd' format): './/benzene_WanT_WFM015.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.001545
+Job done ...
+**********************************************************
   deleting tmp file: .//benzene_WanT_WFM015.gau
 
 
@@ -216,12 +216,12 @@ Job done ...
    <global routines>
              clock number :     6
 
-                     plot :  1m20.49s CPU 
-
-                want_init :     0.04s CPU
-          ggrids_read_ext :     0.28s CPU
-           wfc_data_kread :     0.55s CPU
-                   cfft3d :     0.76s CPU (       6 calls,   0.126 s avg)
-                 gcubeplt :     6.57s CPU (       6 calls,   1.095 s avg)
+                     plot :  1m13.57s CPU 
+ 
+                want_init :     0.02s CPU
+          ggrids_read_ext :     0.15s CPU
+           wfc_data_kread :     0.23s CPU
+                   cfft3d :     0.64s CPU (       6 calls,   0.106 s avg)
+                 gcubeplt :     7.29s CPU (       6 calls,   1.215 s avg)
 
 

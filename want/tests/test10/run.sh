@@ -34,11 +34,12 @@ MANUAL=" Usage
  want_leads           all the wannier function steps, DISENT., WANNIER (leads)
  all_leads            DFT_LEADS and WANT_LEADS tigether
 
- dft                  DFT_COND and DFT_LEADS toether
- want                 WANT_COND, WANT_LEADS, CONDUCTOR and BULK, together
  conductor_bulk       transmittance for the conductor treated as a bulk
  conductor_auto       transmittance for leads and conductor taken from the same calculation
  conductor            evaluate the transmittance for the general conductor geometry
+
+ dft                  DFT_COND and DFT_LEADS toether
+ want                 WANT_COND, WANT_LEADS, CONDUCTOR's together
  all                  perform all the above described steps
 
  check                check results with the reference outputs
@@ -52,9 +53,6 @@ MANUAL=" Usage
 # source common enviroment, to be set before running the script
 . ../environment.conf
 TEST_HOME=`pwd`
-WANT_BIN=$TEST_HOME/../../Main
-TRANS_BIN=$TEST_HOME/../../Transport
-UTILITY_BIN=$TEST_HOME/../../utility
 TEST_NAME=Test3
 PSEUDO_NAME=C.pbe-van_bm.UPF
 
@@ -405,8 +403,8 @@ if [ "$CHECK" = ".TRUE." ] ; then
    echo "running CHECK"
    #
    cd $TEST_HOME
-   list="disentangle_leads.out wannier_leads.out bands_leads.out
-         disentangle_cond.out  wannier_cond.out  bands_cond.out"
+   list="disentangle_leads.out wannier_leads.out 
+         disentangle_cond.out  wannier_cond.out "
    #
    for file in $list
    do

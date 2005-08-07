@@ -11,7 +11,6 @@
    dimwann = 6    
    win_max =  2.0        
    froz_max =  -2.0
-   maxiter_dis = 100
 /   
 
 &LOCALIZATION
@@ -21,10 +20,9 @@
    nshells = 2   
    nwhich(1) = 1 
    nwhich(2) = 2 
-!   ordering_mode = 'complete'
 /
 
-WANNIER_CENTERS {angstrom}
+WANNIER_CENTERS 
 atomic   1  0  0  
 atomic   1  2 -2  
 atomic   1  2 -1  

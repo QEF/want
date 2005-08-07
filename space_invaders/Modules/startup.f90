@@ -86,13 +86,13 @@ CONTAINS
       !
       ! architecture / compilation details
       !
-#ifdef __ARCHITECTURE
-      WRITE(stdout, "(2x,'Arch. / Op.Sys: ',a)" ) __ARCHITECTURE 
+#ifdef __MYARCHITECTURE
+      WRITE(stdout, "(2x,'Arch. / Op.Sys: ',a)" ) __MYARCHITECTURE 
 #endif
-#ifdef __COMPILER
-      WRITE(stdout, "(2x,'      Compiler: ',a)" ) __COMPILER
+#ifdef __MYCOMPILER
+      WRITE(stdout, "(2x,'      Compiler: ',a)" ) __MYCOMPILER
 #endif
-#if defined __ARCHITECTURE || defined __COMPILER
+#if defined __MYARCHITECTURE || defined __MYCOMPILER
       WRITE(stdout, "()" )
 #endif
 

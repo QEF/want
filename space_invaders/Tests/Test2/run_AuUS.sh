@@ -36,9 +36,6 @@ MANUAL=" Usage
 # source common enviroment, to be set before running the script
 . ../environment.conf
 TEST_HOME=`pwd`
-UTILITY_BIN=$TEST_HOME/../../utility
-WANT_BIN=$TEST_HOME/../../Main
-TRANS_BIN=$TEST_HOME/../../Transport
 TEST_NAME=Test2
 PSEUDO_NAME=Au.pw91-d-van.UPF
 
@@ -220,7 +217,7 @@ if [ "$CHECK" = ".TRUE." ] ; then
    echo "running CHECK"
    #
    cd $TEST_HOME
-   list="disentangle_AuUS.out wannier_AuUS.out bands_AuUS.out"
+   list="disentangle_AuUS.out wannier_AuUS.out"
    #
    for file in $list
    do

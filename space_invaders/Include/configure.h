@@ -7,11 +7,11 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 
-#ifdef __ARCHITECTURE 
-#   undefine __ARCHITECTURE
+#ifdef __MYARCHITECTURE 
+#   undefine __MYARCHITECTURE
 #endif
-#ifdef __COMPILER
-#   undefine __COMPILER
+#ifdef __MYCOMPILER
+#   undefine __MYCOMPILER
 #endif
 
 !
@@ -19,39 +19,39 @@
 !
 
 #ifdef __LINUX
-#    define __ARCHITECTURE "LINUX"
+#    define __MYARCHITECTURE "LINUX"
 #endif
 
 #ifdef __LINUX64
-#    define __ARCHITECTURE "LINUX 64bit" 
+#    define __MYARCHITECTURE "LINUX 64bit" 
 #endif
 
 #ifdef __AIX
-#    define __ARCHITECTURE "IBM AIX" 
+#    define __MYARCHITECTURE "IBM AIX" 
 #endif
 
 #ifdef __SGI
-#    define __ARCHITECTURE "SGI" 
+#    define __MYARCHITECTURE "SGI" 
 #endif
 
 #ifdef __SGI64
-#    define __ARCHITECTURE "SGI 64bit" 
+#    define __MYARCHITECTURE "SGI 64bit" 
 #endif
 
 #ifdef __ALPHA
-#    define __ARCHITECTURE "ALPHA" 
+#    define __MYARCHITECTURE "ALPHA" 
 #endif
 
 #ifdef __SUN
-#    define __ARCHITECTURE "SUN" 
+#    define __MYARCHITECTURE "SUN" 
 #endif
 
 #ifdef __X1
-#    define __ARCHITECTURE "CRAY X1" 
+#    define __MYARCHITECTURE "CRAY X1" 
 #endif
 
 #ifdef __MAC
-#    define __ARCHITECTURE "MAC" 
+#    define __MYARCHITECTURE "MAC" 
 #endif
 
 
@@ -59,14 +59,14 @@
 ! Compilers
 !
 #ifdef __INTEL
-#    define __COMPILER "INTEL" 
+#    define __MYCOMPILER "INTEL" 
 #endif
 
 #ifdef __PGI
-#    define __COMPILER "PGI" 
+#    define __MYCOMPILER "PGI" 
 #endif
 
 #ifdef __G95
-#    define __COMPILER "GNU G95" 
+#    define __MYCOMPILER "GNU G95" 
 #endif
 

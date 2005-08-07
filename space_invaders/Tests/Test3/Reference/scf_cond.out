@@ -1,0 +1,248 @@
+
+     Program PWSCF     v.2.1.3  starts ...
+     Today is  3Aug2005 at 14:43:55 
+
+     Ultrasoft (Vanderbilt) Pseudopotentials
+
+     Current dimensions of program pwscf are:
+     ntypx =10   npk =40000  lmax = 3
+     nchix = 6  ndmx = 2000  nbrx =14 nqfx = 8
+     Found additional translation:    0.2500    0.0000    0.0000
+     Found additional translation:   -0.5000    0.0000    0.0000
+     Found additional translation:   -0.2500    0.0000    0.0000
+
+
+     bravais-lattice index     =            8
+     lattice parameter (a_0)   =      20.7114  a.u.
+     unit-cell volume          =   11244.3354 (a.u.)^3
+     number of atoms/cell      =            8
+     number of atomic types    =            1
+     kinetic-energy cutoff     =      20.0000  Ry
+     charge density cutoff     =     200.0000  Ry
+     convergence threshold     =      1.0E-08
+     beta                      =       0.3000
+     number of iterations used =            8  plain     mixing
+     Exchange-correlation      =  SLA  PW   PBE  PBE (1434)
+     iswitch =  0
+
+     celldm(1)=  20.711406  celldm(2)=   1.125000  celldm(3)=   1.125000
+     celldm(4)=   0.000000  celldm(5)=   0.000000  celldm(6)=   0.000000
+
+     crystal axes: (cart. coord. in units of a_0)
+               a(1) = (  1.000000  0.000000  0.000000 )  
+               a(2) = (  0.000000  1.125000  0.000000 )  
+               a(3) = (  0.000000  0.000000  1.125000 )  
+
+     reciprocal axes: (cart. coord. in units 2 pi/a_0)
+               b(1) = (  1.000000  0.000000  0.000000 )  
+               b(2) = (  0.000000  0.888889  0.000000 )  
+               b(3) = (  0.000000  0.000000  0.888889 )  
+
+
+     PSEUDO 1 is C  (US)    zval =  4.0   lmax= 1   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   721 points
+     The pseudopotential has  4 beta functions with: 
+                l(1) =   0
+                l(2) =   0
+                l(3) =   1
+                l(4) =   1
+     Q(r) pseudized with  8 coefficients,  rinner =    0.800   0.800   0.800
+
+
+     atomic species   valence    mass     pseudopotential
+        C              4.00    12.01100     C ( 1.00)
+
+      8 Sym.Ops. (no inversion)
+
+
+   Cartesian axes
+
+     site n.     atom                  positions (a_0 units)
+         1           C   tau(  1) = (   0.0000000   0.0000000   0.0000000  )
+         2           C   tau(  2) = (   0.1113139   0.0000000   0.0000000  )
+         3           C   tau(  3) = (   0.2500000   0.0000000   0.0000000  )
+         4           C   tau(  4) = (   0.3613139   0.0000000   0.0000000  )
+         5           C   tau(  5) = (   0.5000000   0.0000000   0.0000000  )
+         6           C   tau(  6) = (   0.6113139   0.0000000   0.0000000  )
+         7           C   tau(  7) = (   0.7500000   0.0000000   0.0000000  )
+         8           C   tau(  8) = (   0.8613139   0.0000000   0.0000000  )
+
+     number of k points=    1  gaussian broad. (ryd)=  0.0100     ngauss =   0
+                       cart. coord. in units 2pi/a_0
+        k(   1) = (   0.2500000   0.0000000   0.0000000), wk =   2.0000000
+
+     G cutoff = 2173.1486  ( 537145 G-vectors)     FFT grid: ( 96,108,108)
+     G cutoff =  869.2594  ( 135939 G-vectors)  smooth grid: ( 60, 72, 72)
+
+     nbndx  =    80  nbnd   =    20  natomwfc =    32  npwx   =   17017
+     nelec  =   32.00 nkb   =    64  ngl    =   17515
+
+     Initial potential from superposition of free atoms
+
+     starting charge   31.99968, renormalised to   32.00000
+     Starting wfc are atomic
+
+     total cpu time spent up to now is     30.38 secs
+
+     Self-consistent Calculation
+
+     iteration #  1     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  1.00E-02,  avg # of iterations =  2.0
+
+     total cpu time spent up to now is     75.72 secs
+
+     total energy              =   -89.89007661 ryd
+     estimated scf accuracy    <     0.98846282 ryd
+
+     iteration #  2     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  3.09E-03,  avg # of iterations =  2.0
+
+     total cpu time spent up to now is    121.02 secs
+
+     total energy              =   -90.09334780 ryd
+     estimated scf accuracy    <     0.27432593 ryd
+
+     iteration #  3     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  8.57E-04,  avg # of iterations =  2.0
+
+     total cpu time spent up to now is    167.93 secs
+
+     total energy              =   -90.17420831 ryd
+     estimated scf accuracy    <     0.00802816 ryd
+
+     iteration #  4     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  2.51E-05,  avg # of iterations =  2.0
+
+     total cpu time spent up to now is    214.28 secs
+
+     total energy              =   -90.17336294 ryd
+     estimated scf accuracy    <     0.00643423 ryd
+
+     iteration #  5     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  2.01E-05,  avg # of iterations =  2.0
+
+     total cpu time spent up to now is    261.28 secs
+
+     total energy              =   -90.17543464 ryd
+     estimated scf accuracy    <     0.00001156 ryd
+
+     iteration #  6     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  3.61E-08,  avg # of iterations =  4.0
+
+     total cpu time spent up to now is    309.64 secs
+
+     total energy              =   -90.17544441 ryd
+     estimated scf accuracy    <     0.00000432 ryd
+
+     iteration #  7     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  1.35E-08,  avg # of iterations =  2.0
+
+     total cpu time spent up to now is    357.04 secs
+
+     total energy              =   -90.17544589 ryd
+     estimated scf accuracy    <     0.00000006 ryd
+
+     iteration #  8     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  1.77E-10,  avg # of iterations =  3.0
+
+     total cpu time spent up to now is    404.67 secs
+
+     total energy              =   -90.17544590 ryd
+     estimated scf accuracy    <     0.00000004 ryd
+
+     iteration #  9     ecut=    20.00 ryd     beta=0.30
+     Davidson diagonalization (with overlap)
+     ethr =  1.20E-10,  avg # of iterations =  2.0
+
+     total cpu time spent up to now is    449.13 secs
+
+     End of self-consistent calculation
+
+          k = 0.2500 0.0000 0.0000 (17017 PWs)   bands (ev):
+
+   -20.5156 -20.1749 -19.5368 -18.8326 -16.2377 -15.1605 -13.9457 -13.1337
+    -9.4231  -9.4231  -8.8703  -8.8703  -7.7882  -7.7882  -6.4193  -6.4193
+    -2.9816  -2.9816  -0.6732  -0.6732
+
+     the Fermi energy is    -5.4977 ev
+
+!    total energy              =   -90.17544591 ryd
+     estimated scf accuracy    <        1.8E-09 ryd
+
+     band energy sum           =   -29.77246525 ryd
+     one-electron contribution =  -286.91083057 ryd
+     hartree contribution      =   145.83565789 ryd
+     xc contribution           =   -26.57637084 ryd
+     ewald contribution        =    77.47609761 ryd
+     correction for metals     =     0.00000000 ryd
+
+     convergence has been achieved
+
+     Forces acting on atoms (Ry/au):
+
+     atom   1 type  1   force =    -0.22147213    0.00000000    0.00000000
+     atom   2 type  1   force =     0.22147213    0.00000000    0.00000000
+     atom   3 type  1   force =    -0.22147213    0.00000000    0.00000000
+     atom   4 type  1   force =     0.22147213    0.00000000    0.00000000
+     atom   5 type  1   force =    -0.22147213    0.00000000    0.00000000
+     atom   6 type  1   force =     0.22147213    0.00000000    0.00000000
+     atom   7 type  1   force =    -0.22147213    0.00000000    0.00000000
+     atom   8 type  1   force =     0.22147213    0.00000000    0.00000000
+
+     Total force =     0.626418     Total SCF correction =     0.000075
+
+     Writing file    chain8.save for program phonon
+
+     PWSCF        :  8m 5.55s CPU time
+
+     init_run     :    30.27s CPU
+     electrons    :   418.75s CPU
+     forces       :    35.85s CPU
+
+     electrons    :   418.75s CPU
+     c_bands      :    59.24s CPU (       9 calls,   6.582 s avg)
+     sum_band     :   102.92s CPU (       9 calls,  11.436 s avg)
+     v_of_rho     :   125.89s CPU (      19 calls,   6.626 s avg)
+     newd         :   114.27s CPU (      10 calls,  11.427 s avg)
+     mix_rho      :    20.48s CPU (       9 calls,   2.276 s avg)
+
+     c_bands      :    59.24s CPU (       9 calls,   6.582 s avg)
+     init_us_2    :     1.22s CPU (      19 calls,   0.064 s avg)
+     cegterg      :    56.72s CPU (       9 calls,   6.302 s avg)
+
+     sum_band     :   102.92s CPU (       9 calls,  11.436 s avg)
+     becsum       :     0.00s CPU (       9 calls,   0.000 s avg)
+     addusdens    :    82.98s CPU (       9 calls,   9.220 s avg)
+
+     wfcrot       :     3.35s CPU
+     cegterg      :    56.72s CPU (       9 calls,   6.302 s avg)
+     h_psi        :    51.40s CPU (      31 calls,   1.658 s avg)
+     g_psi        :     0.40s CPU (      21 calls,   0.019 s avg)
+     overlap      :     1.52s CPU (      21 calls,   0.072 s avg)
+     cdiaghg      :     0.08s CPU (      22 calls,   0.004 s avg)
+     update       :     1.60s CPU (      21 calls,   0.076 s avg)
+     last         :     0.59s CPU (       9 calls,   0.066 s avg)
+
+     h_psi        :    51.40s CPU (      31 calls,   1.658 s avg)
+     init         :     0.33s CPU (      31 calls,   0.011 s avg)
+     firstfft     :    21.40s CPU (     525 calls,   0.041 s avg)
+     secondfft    :    21.44s CPU (     525 calls,   0.041 s avg)
+     add_vuspsi   :     1.89s CPU (      31 calls,   0.061 s avg)
+     s_psi        :     2.10s CPU (      31 calls,   0.068 s avg)
+
+     General routines
+     ccalbec      :     2.17s CPU (      41 calls,   0.053 s avg)
+     cft3         :    63.06s CPU (     267 calls,   0.236 s avg)
+     cft3s        :    44.68s CPU (    1249 calls,   0.036 s avg)
+     interpolate  :     7.35s CPU (      19 calls,   0.387 s avg)
+     davcio       :     1.62s CPU (      10 calls,   0.162 s avg)
+

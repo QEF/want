@@ -1,0 +1,25 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <conductor>  v. 1.1.1  starts ...
+  Date  6Aug2005 at 17:37:26 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: INTEL
+
+
+   <global routines>
+             clock number :     3
+
+                conductor :    10.75s CPU 
+ 
+                 transfer :    10.18s CPU (    2000 calls,   0.005 s avg)
+                    green :     0.20s CPU (    2000 calls,   0.000 s avg)
+
+

@@ -8,18 +8,18 @@
 
 
   Program <conductor>  v. 1.1.1  starts ...
-  Date  1Aug2005 at 12:46: 4 
+  Date  6Aug2005 at 17:40:25 
 
   Arch. / Op.Sys: LINUX
-        Compiler: GNU G95
+        Compiler: INTEL
 
 
    <global routines>
              clock number :     3
 
-                conductor :     1.68s CPU 
-
-                 transfer :     1.52s CPU (    2000 calls,   0.001 s avg)
-                    green :     0.04s CPU (    2000 calls,   0.000 s avg)
+                conductor :     2.11s CPU 
+ 
+                 transfer :     1.92s CPU (    2000 calls,   0.001 s avg)
+                    green :     0.07s CPU (    2000 calls,   0.000 s avg)
 
 

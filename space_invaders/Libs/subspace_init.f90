@@ -13,6 +13,7 @@
    ! ...  Initialize the starting subspace for disentangle minimization
    !      according to the input choice of mode (and frozen windows):
    !
+   !      * 'randomized'     self explaining
    !      * 'lower_states'   select the dimwann lower bands
    !      * 'upper_states'   select the dimwann upper bands
    !      * 'center_projections'  uses the CA matrix to extract a subspace

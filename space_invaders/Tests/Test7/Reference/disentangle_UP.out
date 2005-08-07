@@ -8,10 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  1Aug2005 at 12:45: 5 
+  Date  6Aug2005 at 17:39:25 
 
   Arch. / Op.Sys: LINUX
-        Compiler: GNU G95
+        Compiler: INTEL
 
 
   PW-DFT data read from file: nichain.export/index.xml
@@ -234,20 +234,20 @@
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     6.62 secs
+                              Total time spent up to now :     4.40 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     6.81 secs
+                              Total time spent up to now :     4.57 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     7.00 secs
+                              Total time spent up to now :     4.73 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     7.20 secs
+                              Total time spent up to now :     4.91 secs
 
 
   Overlap and projections written on file: nichain_WanT_UP.ovp
-                              Total time spent up to now :     7.26 secs
+                              Total time spent up to now :     4.97 secs
 
 
   ======================================================================
@@ -257,43 +257,44 @@
 
   Initial trial subspace: projected localized orbitals
 
-  Iteration =     1   Omega_I =     14.41989284    Error =      0.00751839
-  Iteration =     2   Omega_I =     14.36525987    Error =      0.00403355
-  Iteration =     3   Omega_I =     14.33625406    Error =      0.00206648
-  Iteration =     4   Omega_I =     14.32144434    Error =      0.00104230
-  Iteration =     5   Omega_I =     14.31398342    Error =      0.00052283
-  Iteration =     6   Omega_I =     14.31024256    Error =      0.00026174
-  Iteration =     7   Omega_I =     14.30837009    Error =      0.00013094
-  Iteration =     8   Omega_I =     14.30743339    Error =      0.00006549
-  Iteration =     9   Omega_I =     14.30696490    Error =      0.00003275
-  Iteration =    10   Omega_I =     14.30673059    Error =      0.00001638
+  Iteration =     1     Omega_I =   14.419893      Error =      0.00751839
+  Iteration =     2     Omega_I =   14.365260      Error =      0.00403355
+  Iteration =     3     Omega_I =   14.336254      Error =      0.00206648
+  Iteration =     4     Omega_I =   14.321444      Error =      0.00104230
+  Iteration =     5     Omega_I =   14.313983      Error =      0.00052283
+  Iteration =     6     Omega_I =   14.310243      Error =      0.00026174
+  Iteration =     7     Omega_I =   14.308370      Error =      0.00013094
+  Iteration =     8     Omega_I =   14.307433      Error =      0.00006549
+  Iteration =     9     Omega_I =   14.306965      Error =      0.00003275
+  Iteration =    10     Omega_I =   14.306731      Error =      0.00001638
 
-                              Total time spent up to now :     7.27 secs
+                              Total time spent up to now :     4.97 secs
 
-  Iteration =    11   Omega_I =     14.30661339    Error =      0.00000820
-  Iteration =    12   Omega_I =     14.30655476    Error =      0.00000410
-  Iteration =    13   Omega_I =     14.30652543    Error =      0.00000205
-  Iteration =    14   Omega_I =     14.30651075    Error =      0.00000103
-  Iteration =    15   Omega_I =     14.30650340    Error =      0.00000051
-  Iteration =    16   Omega_I =     14.30649972    Error =      0.00000026
-  Iteration =    17   Omega_I =     14.30649787    Error =      0.00000013
-  Iteration =    18   Omega_I =     14.30649695    Error =      0.00000006
-  Iteration =    19   Omega_I =     14.30649648    Error =      0.00000003
-  Iteration =    20   Omega_I =     14.30649625    Error =      0.00000002
+  Iteration =    11     Omega_I =   14.306613      Error =      0.00000820
+  Iteration =    12     Omega_I =   14.306555      Error =      0.00000410
+  Iteration =    13     Omega_I =   14.306525      Error =      0.00000205
+  Iteration =    14     Omega_I =   14.306511      Error =      0.00000103
+  Iteration =    15     Omega_I =   14.306503      Error =      0.00000051
+  Iteration =    16     Omega_I =   14.306500      Error =      0.00000026
+  Iteration =    17     Omega_I =   14.306498      Error =      0.00000013
+  Iteration =    18     Omega_I =   14.306497      Error =      0.00000006
+  Iteration =    19     Omega_I =   14.306496      Error =      0.00000003
+  Iteration =    20     Omega_I =   14.306496      Error =      0.00000002
 
-                              Total time spent up to now :     7.31 secs
+                              Total time spent up to now :     5.01 secs
 
-  Iteration =    21   Omega_I =     14.30649613    Error =      0.00000001
+  Iteration =    21     Omega_I =   14.306496      Error =      0.00000001
 
 
   ======================================================================
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Final Omega_I (Bohr^2, Angstrom^2):     14.30649601        4.00622372
-   Avrg Omega_I                     :      2.38441600        0.66770395
+  Iteration # :   21
+  Final Omega_I (Bohr^2, Angstrom^2):      14.306496         4.006224
+   Avrg Omega_I                     :       2.384416         0.667704
 
-                              Total time spent up to now :     7.32 secs
+                              Total time spent up to now :     5.04 secs
 
 
   Subspace data written on file: nichain_WanT_UP.space
@@ -302,27 +303,27 @@
    <global routines>
              clock number :    21
 
-              disentangle :     7.34s CPU 
-
-                want_init :     0.33s CPU
-                  bshells :     0.01s CPU
-              wfc_manager :     6.93s CPU
-          ggrids_read_ext :     0.10s CPU
-              struct_fact :     0.02s CPU
-                init_us_1 :     5.93s CPU
-           wfc_data_kread :     0.26s CPU (      16 calls,   0.017 s avg)
-                init_us_2 :     0.21s CPU (      20 calls,   0.010 s avg)
-                  ccalbec :     0.04s CPU (      16 calls,   0.002 s avg)
-                  overlap :     0.19s CPU (      12 calls,   0.016 s avg)
-           overlap_setmap :     0.13s CPU (      12 calls,   0.011 s avg)
+              disentangle :     5.06s CPU 
+ 
+                want_init :     0.16s CPU
+                  bshells :     0.00s CPU
+              wfc_manager :     4.80s CPU
+          ggrids_read_ext :     0.06s CPU
+              struct_fact :     0.01s CPU
+                init_us_1 :     3.96s CPU
+           wfc_data_kread :     0.16s CPU (      16 calls,   0.010 s avg)
+                init_us_2 :     0.21s CPU (      20 calls,   0.011 s avg)
+                  ccalbec :     0.04s CPU (      16 calls,   0.003 s avg)
+                  overlap :     0.18s CPU (      12 calls,   0.015 s avg)
+           overlap_setmap :     0.10s CPU (      12 calls,   0.008 s avg)
           overlap_augment :     0.00s CPU (      12 calls,   0.000 s avg)
-                    s_psi :     0.02s CPU (       4 calls,   0.004 s avg)
-               projection :     0.06s CPU (       4 calls,   0.015 s avg)
-       trial_center_setup :     0.03s CPU (      24 calls,   0.001 s avg)
-               iterations :     0.06s CPU
+                    s_psi :     0.01s CPU (       4 calls,   0.004 s avg)
+               projection :     0.08s CPU (       4 calls,   0.021 s avg)
+       trial_center_setup :     0.05s CPU (      24 calls,   0.002 s avg)
+               iterations :     0.07s CPU
              subapce_init :     0.00s CPU
                   zmatrix :     0.00s CPU (      84 calls,   0.000 s avg)
-               zmat_hdiag :     0.01s CPU (      84 calls,   0.000 s avg)
-                  komegai :     0.01s CPU (      84 calls,   0.000 s avg)
+               zmat_hdiag :     0.00s CPU (      84 calls,   0.000 s avg)
+                  komegai :     0.00s CPU (      84 calls,   0.000 s avg)
 
 

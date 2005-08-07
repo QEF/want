@@ -3,6 +3,14 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+06 Ago 2005      envirnment.conf file in Tests updated with other internal environment
+                 variable definitions: this avoid to repeat definitions in each tests
+                 and allows some global setting to be better managed. run.sh scripts
+                 accordingly simplified. check.sh script updated with verbosity level
+                 managment. Output format of disentangle and wannier changed in order 
+                 to simplify automatic check. Test references updated. (AF)
+
 05 Ago 2005      Center weights for conditioned minimization implemented. Trial_center
                  type updated. IOTK updated to v1.0.0 . (AF)
 

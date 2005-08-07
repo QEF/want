@@ -19,11 +19,11 @@
    nwhich(2) = 2  
 /
 
-WANNIER_CENTERS {angstrom}
-1gauss   0.000000    0.000000     0.500000  0  0  0.5
-1gauss   0.000000    0.000000     0.500000  2 -2  0.5
-1gauss   0.000000    0.000000     0.500000  2 -1  0.5
-1gauss   0.000000    0.000000     0.500000  2  0  0.5
-1gauss   0.000000    0.000000     0.500000  2  1  0.5
-1gauss   0.000000    0.000000     0.500000  2  2  0.5
+WANNIER_CENTERS 
+atomic   1  0  0
+atomic   1  2 -2
+atomic   1  2 -1
+atomic   1  2  0
+atomic   1  2  1
+atomic   1  2  2
 

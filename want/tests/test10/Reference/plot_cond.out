@@ -1,0 +1,132 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <plot>  v. 1.1.1  starts ...
+  Date  6Aug2005 at 17:34:44 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: INTEL
+
+
+  PW-DFT data read from file: chain8.export/index.xml
+  Subspace data read from file: chain8_WanT.space
+  Wannier data read from file: chain8_WanT.wan
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =      20.7114060 (Bohr)
+  Alat  =      10.9599997 (Ang )
+  Omega =   11244.3353946 (Bohr^3)
+  Omega =    1666.2366039 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 20.7114  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 23.3003  0.0000 )     (   0.0000  1.1250  0.0000 )
+    a(3) = (  0.0000  0.0000 23.3003 )     (   0.0000  0.0000  1.1250 )
+  Crystal axes: (Ang)
+    a(1) = ( 10.9600  0.0000  0.0000 )
+    a(2) = (  0.0000 12.3300  0.0000 )
+    a(3) = (  0.0000  0.0000 12.3300 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.3034  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.2697  0.0000 )     (   0.0000  0.8889  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.8889 )
+</LATTICE>
+
+<K-POINTS>
+  nkpts =    2
+  Monkhorst-Pack grid:      nk = (  2  1  1 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.5000
+    k point   2:   (   0.15168  0.00000  0.00000 ),   weight =   0.5000
+</K-POINTS>
+
+
+  WARNING: USPP not fully implemented
+
+
+  Reading density G-grid from file: chain8.export/index.xml
+  Reading Wfc grids from file: chain8.export/index.xml
+
+
+          Energy cut-off for wfcs =         20.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =     537145
+        Max number of PW for wfc  =      17018
+      Total number of PW for wfcs =      18610
+        FFT grid components (rho) =  (    96  108  108 )
+
+
+  ======================================================================
+  =                     Wannier function plotting                      =
+  ======================================================================
+
+
+  nplot =   1 Wannier func.s to be plotted
+     wf (  1 ) =    1
+
+  Data type  :   modulus
+  Output fmt :   plt
+
+  Grid dimensions:
+      nrx   -48 -->     48
+      nry   -54 -->     53
+      nrz   -54 -->     53
+
+  Atoms in the selected cell: (cart. coord. in Bohr)
+     C    tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     C    tau(   2 ) = (   2.3054663   0.0000000   0.0000000 )
+     C    tau(   3 ) = (   5.1778515   0.0000000   0.0000000 )
+     C    tau(   4 ) = (   7.4833178   0.0000000   0.0000000 )
+     C    tau(   5 ) = ( -10.3557030   0.0000000   0.0000000 )
+     C    tau(   6 ) = (  -8.0502367   0.0000000   0.0000000 )
+     C    tau(   7 ) = (  -5.1778515   0.0000000   0.0000000 )
+     C    tau(   8 ) = (  -2.8723852   0.0000000   0.0000000 )
+
+
+  writing WF(  1) plot on file: ./COND//chain8_WanT_WFM001.gau
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './COND//chain8_WanT_WFM001.gau'
+Output file (plot file):  './COND//chain8_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './COND//chain8_WanT_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 8, x-, y-, z-origin (in Angstrom): -5.480002,-6.165001,-6.165001
+Min value: 0.000000
+Max value: 0.002610
+Job done ...
+**********************************************************
+  deleting tmp file: ./COND//chain8_WanT_WFM001.gau
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :     6
+
+                     plot :  1m55.55s CPU 
+ 
+                want_init :     0.05s CPU
+          ggrids_read_ext :     0.40s CPU
+           wfc_data_kread :     0.91s CPU (       2 calls,   0.455 s avg)
+                   cfft3d :     0.53s CPU (       2 calls,   0.266 s avg)
+                 gcubeplt :     2.61s CPU
+
+
