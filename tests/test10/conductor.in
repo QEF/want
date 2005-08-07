@@ -3,7 +3,7 @@
    nmxa = 12
    nmxc = 24
    nmxb = 12
-   ne = 2000
+   ne = 1000
    emin = -20.0
    emax = 0.0
 /

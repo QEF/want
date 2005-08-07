@@ -16,10 +16,11 @@
 
 &LOCALIZATION
     maxiter0_wan = 100, 
-    maxiter1_wan = 4000, 
+    maxiter1_wan = 3000, 
     ncg = 5                         
     nshells = 1                    
     nwhich(1) = 1                 
+    wannier_thr = 1.e-8
 /
 
 WANNIER_CENTERS {crystal}

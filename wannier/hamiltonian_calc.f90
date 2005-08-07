@@ -140,7 +140,7 @@
                    !
                    WRITE (stdout,"(/,4x,'R = (',3i4,' )')") ( indxws(i,iws), i=1,3 )
                    DO i = 1, dimwann
-                       WRITE(stdout,"(2f15.9)") rham(i,i,iws)
+                       WRITE(stdout,"(2f12.6)") rham(i,i,iws)
                    ENDDO
 
                ENDIF
@@ -169,7 +169,7 @@
                norm = norm + REAL( CONJG( rham(i,j,iws)) * rham(i,j,iws) )
           ENDDO
           ENDDO
-          WRITE(stdout,"(1x,i4,3x,3i4,3x,f11.7,4x,f15.9)") &
+          WRITE(stdout,"(1x,i4,3x,3i4,3x,f10.6,5x,f12.6)") &
                          iws,indxws(:,iws), rmod, SQRT( norm / REAL(dimwann) )
       ENDDO
 

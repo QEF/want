@@ -8,10 +8,10 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  1Aug2005 at 12:27:28 
+  Date  6Aug2005 at 17:38:33 
 
   Arch. / Op.Sys: LINUX
-        Compiler: GNU G95
+        Compiler: INTEL
 
 
   PW-DFT data read from file: gold.export/index.xml
@@ -205,7 +205,7 @@
     -5.6781  -5.6781  -5.6129  -3.5836  -0.5810  -0.5810   1.1285   2.0483
      2.8376   2.8377   2.9241   2.9241
 
-    inner window: E  = (-20.0000 ,  -2.5000 ) --> FROZEN STATES
+    inner window: E  = (  -\inf ,  -2.5000 ) --> FROZEN STATES
     there are  11 frozen states at k-point =     1
     there are  12 frozen states at k-point =     2
     there are  12 frozen states at k-point =     3
@@ -234,20 +234,20 @@
 
   Initializing atomic wfc
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     0.78 secs
+                              Total time spent up to now :     0.63 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     1.33 secs
+                              Total time spent up to now :     1.07 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     1.91 secs
+                              Total time spent up to now :     1.62 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     2.48 secs
+                              Total time spent up to now :     2.11 secs
 
 
   Overlap and projections written on file: gold_WanT.ovp
-                              Total time spent up to now :     2.61 secs
+                              Total time spent up to now :     2.34 secs
 
 
   ======================================================================
@@ -281,43 +281,44 @@
 
 
 
-  Iteration =     1   Omega_I =     45.05253475    Error =      0.00162464
-  Iteration =     2   Omega_I =     45.00589529    Error =      0.00112730
-  Iteration =     3   Omega_I =     44.97424359    Error =      0.00066938
-  Iteration =     4   Omega_I =     44.95629621    Error =      0.00038323
-  Iteration =     5   Omega_I =     44.94634292    Error =      0.00021401
-  Iteration =     6   Omega_I =     44.94091274    Error =      0.00011737
-  Iteration =     7   Omega_I =     44.93798738    Error =      0.00006349
-  Iteration =     8   Omega_I =     44.93642714    Error =      0.00003397
-  Iteration =     9   Omega_I =     44.93560174    Error =      0.00001802
-  Iteration =    10   Omega_I =     44.93516802    Error =      0.00000949
+  Iteration =     1     Omega_I =   45.052535      Error =      0.00162464
+  Iteration =     2     Omega_I =   45.005895      Error =      0.00112730
+  Iteration =     3     Omega_I =   44.974244      Error =      0.00066938
+  Iteration =     4     Omega_I =   44.956296      Error =      0.00038323
+  Iteration =     5     Omega_I =   44.946343      Error =      0.00021401
+  Iteration =     6     Omega_I =   44.940913      Error =      0.00011737
+  Iteration =     7     Omega_I =   44.937987      Error =      0.00006349
+  Iteration =     8     Omega_I =   44.936427      Error =      0.00003397
+  Iteration =     9     Omega_I =   44.935602      Error =      0.00001802
+  Iteration =    10     Omega_I =   44.935168      Error =      0.00000949
 
-                              Total time spent up to now :     2.65 secs
+                              Total time spent up to now :     2.36 secs
 
-  Iteration =    11   Omega_I =     44.93494140    Error =      0.00000497
-  Iteration =    12   Omega_I =     44.93482356    Error =      0.00000259
-  Iteration =    13   Omega_I =     44.93476254    Error =      0.00000134
-  Iteration =    14   Omega_I =     44.93473106    Error =      0.00000069
-  Iteration =    15   Omega_I =     44.93471486    Error =      0.00000036
-  Iteration =    16   Omega_I =     44.93470656    Error =      0.00000018
-  Iteration =    17   Omega_I =     44.93470231    Error =      0.00000009
-  Iteration =    18   Omega_I =     44.93470014    Error =      0.00000005
-  Iteration =    19   Omega_I =     44.93469903    Error =      0.00000002
-  Iteration =    20   Omega_I =     44.93469847    Error =      0.00000001
+  Iteration =    11     Omega_I =   44.934941      Error =      0.00000497
+  Iteration =    12     Omega_I =   44.934824      Error =      0.00000259
+  Iteration =    13     Omega_I =   44.934763      Error =      0.00000134
+  Iteration =    14     Omega_I =   44.934731      Error =      0.00000069
+  Iteration =    15     Omega_I =   44.934715      Error =      0.00000036
+  Iteration =    16     Omega_I =   44.934707      Error =      0.00000018
+  Iteration =    17     Omega_I =   44.934702      Error =      0.00000009
+  Iteration =    18     Omega_I =   44.934700      Error =      0.00000005
+  Iteration =    19     Omega_I =   44.934699      Error =      0.00000002
+  Iteration =    20     Omega_I =   44.934698      Error =      0.00000001
 
-                              Total time spent up to now :     2.72 secs
+                              Total time spent up to now :     2.47 secs
 
-  Iteration =    21   Omega_I =     44.93469818    Error =      0.00000001
+  Iteration =    21     Omega_I =   44.934698      Error =      0.00000001
 
 
   ======================================================================
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Final Omega_I (Bohr^2, Angstrom^2):     44.93469790       12.58298694
-   Avrg Omega_I                     :      3.74455816        1.04858225
+  Iteration # :   21
+  Final Omega_I (Bohr^2, Angstrom^2):      44.934698        12.582987
+   Avrg Omega_I                     :       3.744558         1.048582
 
-                              Total time spent up to now :     2.76 secs
+                              Total time spent up to now :     2.55 secs
 
 
   Subspace decomposition:
@@ -347,26 +348,26 @@
    <global routines>
              clock number :    20
 
-              disentangle :     2.80s CPU 
-
-                want_init :     0.05s CPU
-                  bshells :     0.01s CPU
-              wfc_manager :     2.56s CPU
+              disentangle :     2.61s CPU 
+ 
+                want_init :     0.02s CPU
+                  bshells :     0.00s CPU
+              wfc_manager :     2.31s CPU
           ggrids_read_ext :     0.07s CPU
-              struct_fact :     0.03s CPU
-                init_at_1 :     0.08s CPU
-           wfc_data_kread :     1.13s CPU (      16 calls,   0.071 s avg)
-                  overlap :     0.88s CPU (      12 calls,   0.073 s avg)
-           overlap_setmap :     0.10s CPU (      12 calls,   0.008 s avg)
-                    s_psi :     0.01s CPU (       4 calls,   0.003 s avg)
-               projection :     0.21s CPU (       4 calls,   0.051 s avg)
-       trial_center_setup :     0.07s CPU (      48 calls,   0.001 s avg)
-               atomic_wfc :     0.06s CPU (      48 calls,   0.001 s avg)
-               iterations :     0.15s CPU
+              struct_fact :     0.01s CPU
+                init_at_1 :     0.05s CPU
+           wfc_data_kread :     0.63s CPU (      16 calls,   0.040 s avg)
+                  overlap :     0.99s CPU (      12 calls,   0.082 s avg)
+           overlap_setmap :     0.09s CPU (      12 calls,   0.007 s avg)
+                    s_psi :     0.02s CPU (       4 calls,   0.005 s avg)
+               projection :     0.24s CPU (       4 calls,   0.060 s avg)
+       trial_center_setup :     0.09s CPU (      48 calls,   0.002 s avg)
+               atomic_wfc :     0.08s CPU (      48 calls,   0.002 s avg)
+               iterations :     0.21s CPU
              subapce_init :     0.00s CPU
         projection_frozen :     0.00s CPU
                   zmatrix :     0.00s CPU (      21 calls,   0.000 s avg)
                zmat_hdiag :     0.00s CPU (      21 calls,   0.000 s avg)
-                  komegai :     0.06s CPU (     168 calls,   0.000 s avg)
+                  komegai :     0.05s CPU (     168 calls,   0.000 s avg)
 
 

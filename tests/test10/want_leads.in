@@ -8,8 +8,8 @@
 
 &SUBSPACE
    dimwann = 12
-!   froz_max = -4.125121128
-   froz_max = -10.0
+   froz_max = -4.125121128
+!   froz_max = -10.0
    maxiter_dis = 1000
 /
 
@@ -19,21 +19,21 @@
    maxiter1_wan = 4000 
    nshells = 2   
    nwhich(1) = 1 
-   nwhich(2) = 4 
+   nwhich(2) = 2 
    ordering_mode = 'none'
 /
 
 WANNIER_CENTERS {crystal}
-atomic    1   1  0
-atomic    1   1  1
-atomic    2   1  0
-atomic    2   1  1
-atomic    3   1  0
-atomic    3   1  1
-atomic    4   1  0
-atomic    4   1  1
-1gauss    0.1113138  0.0000000  0.0000000     0  0     1.0
-1gauss    0.3613138  0.0000000  0.0000000     0  0     1.0
-1gauss    0.6113138  0.0000000  0.0000000     0  0     1.0
-1gauss    0.8613138  0.0000000  0.0000000     0  0     1.0
+atomic    1   1  0   1.0
+atomic    1   1  1   1.0
+atomic    2   1  0   1.0
+atomic    2   1  1   1.0
+atomic    3   1  0   1.0
+atomic    3   1  1   1.0
+atomic    4   1  0   1.0
+atomic    4   1  1   1.0
+1gauss    0.1113138  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.3613138  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.6113138  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.8613138  0.0000000  0.0000000     0  0     1.0   1.0
 
