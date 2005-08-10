@@ -96,7 +96,7 @@ do
     # update_ref
     #
     elif [ "$ACTION" = "update_ref" ] ; then
-       cp *.out *.dat Reference
+       cp *.out *.dat Reference 2> /dev/null
        echo " ### $mytest : Reference updated ### " 
     #
     # other flags

@@ -7,7 +7,6 @@
 * disentangle:  overlap updated to be better implemented
                 (waste a little bit of memory but twice as fast)
 * plot.x: USPP features not fully implemented.
-* tests: strange spikes (test2 and 5) to be checked 
 * test6: add a true transport calculation test
 * WanT:  a true manual (as the one in docs) is missing. 
          we need e.g. to explain better the choice of Wannier centers
