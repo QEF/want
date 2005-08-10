@@ -145,6 +145,14 @@
    IF (lnkpts <=0 ) CALL errore('read_matrix', 'invalid nkpts', ABS(ierr))
    IF (lnws <=0 ) CALL errore('read_matrix', 'invalid nws', ABS(ierr))
    !
+   DO i=1,ncols
+      IF ( icols(i) > ldimwann ) CALL errore('read_matrix', 'invalid icols(i)', i)
+   ENDDO
+   DO i=1,nrows
+      IF ( irows(i) > ldimwann ) CALL errore('read_matrix', 'invalid irows(i)', i)
+   ENDDO
+
+   !
    ALLOCATE( indxws(3,lnws), STAT=ierr )
       IF (ierr/=0) CALL errore('read_matrix', 'allocating indxws', ABS(ierr) )
    ALLOCATE( degen(lnws), STAT=ierr )

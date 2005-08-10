@@ -19,7 +19,8 @@
    USE fft_scalar,         ONLY : cfft3d
    USE timing_module,      ONLY : timing, timing_overview, global_list
    USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
-   USE io_module,          ONLY : space_unit, wan_unit, dft_unit, aux_unit, ioname
+   USE io_module,          ONLY : ioname, space_unit, wan_unit, dft_unit, &
+                                  aux_unit, aux1_unit 
    USE control_module,     ONLY : read_pseudo, use_uspp
    USE files_module,       ONLY : file_open, file_close, file_delete
    USE parser_module
@@ -58,7 +59,7 @@
    INTEGER :: nrxh, nryh, nrzh
    INTEGER :: nnrx, nnry, nnrz
    CHARACTER( 20 )  :: datatype   ! ( "modulus" | "real" | "imaginary"  )
-   CHARACTER( 20 )  :: output_fmt ! ( "plt" | "gau" )
+   CHARACTER( 20 )  :: output_fmt ! ( "txt" | "plt" | "gau" )
    LOGICAL          :: assume_ncpp
 
    INTEGER :: nx, ny, nz, nzz, nyy, nxx
@@ -74,13 +75,14 @@
    COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
 
    REAL(dbl)    :: arg, tmaxx, tmax
-   REAL(dbl)    :: avecl(3,3), raux(3), r0(3)
+   REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3)
+   REAL(dbl),    ALLOCATABLE :: rwann_out(:,:,:)
    REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
    CHARACTER(3), ALLOCATABLE :: symbtot(:)
 
    CHARACTER( nstrx )  :: filename
-   CHARACTER( 4 )      :: str
+   CHARACTER( 4 )      :: str, aux_fmt
    LOGICAL             :: lfound
    LOGICAL             :: okp( 3 )
    !
@@ -139,7 +141,8 @@
            CALL errore('plot', 'Invalid spin_component = '//TRIM(spin_component), 3)
            !
       CALL change_case(output_fmt,'lower')
-      IF ( TRIM(output_fmt) /= "plt" .AND. TRIM(output_fmt) /= "gau" ) &
+      IF ( TRIM(output_fmt) /= "txt" .AND. TRIM(output_fmt) /= "plt" .AND. &
+           TRIM(output_fmt) /= "gau" ) &
            CALL errore('plot', 'Invalid output_fmt = '//TRIM(output_fmt), 4)
    
       read_pseudo = .NOT. assume_ncpp
@@ -248,8 +251,8 @@
            ABS( DOT_PRODUCT( avec(:,1), avec(:,3) )) > EPS_m6 .OR. &
            ABS( DOT_PRODUCT( avec(:,2), avec(:,3) )) > EPS_m6   ) THEN 
            !
-           IF ( TRIM(output_fmt) == "plt" ) &
-                CALL errore('plot','plt is allowed only in orthorombic latt',4)
+           IF ( TRIM(output_fmt) == "plt" .OR. TRIM(output_fmt) == "txt" ) &
+                CALL errore('plot','TXT or PLT fmts allowed only in orthorombic latt',4)
       ENDIF
 
       !
@@ -526,32 +529,63 @@
 
       !
       ! Offset for position and WF's allignment
+      ! r0, r1  (bohr)
       !
       r0(1) = REAL( nrxl ) / REAL( nfft(1) )
       r0(2) = REAL( nryl ) / REAL( nfft(2) )
       r0(3) = REAL( nrzl ) / REAL( nfft(3) )
+      !
+      r1(1) = REAL( nrxh ) / REAL( nfft(1) )
+      r1(2) = REAL( nryh ) / REAL( nfft(2) )
+      r1(3) = REAL( nrzh ) / REAL( nfft(3) )
+      !
       CALL cry2cart( r0, avec )
+      CALL cry2cart( r1, avec )
       
 
+
       !
-      ! output filename
+      ! output and internal formats
+      ! when .plt is required, a .gau file is written and then converted to .plt
       !
-      SELECT CASE ( TRIM(datatype) )
-      CASE( "modulus" )    
-           str = "_WFM"
-      CASE( "real" )    
-           str = "_WFR"
-      CASE( "imaginary" )    
-           str = "_WFI"
+      SELECT CASE ( TRIM(output_fmt) )
+      CASE ( "txt")
+           aux_fmt = ".txt"
+      CASE ( "plt", "gau" )
+           aux_fmt = ".gau"
       CASE DEFAULT
-           CALL errore('plot','invalid DATATYPE '//TRIM(datatype),3)
-      END SELECT 
+           CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),4)
+      END SELECT
+
+      !
+      ! workspace for output writing
+      !
+      ALLOCATE( rwann_out( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
+         IF (ierr/=0) CALL errore('plot','allocating rwann_out',ABS(ierr))
 
 
       !
       ! final loop on different wfs
       !
       DO m = 1, nplot
+
+          !
+          ! output filename
+          !
+          SELECT CASE ( TRIM(datatype) )
+          CASE( "modulus" )    
+              str = "_WFM"
+              rwann_out(:,:,:) = REAL( cwann(:,:,:,m) * CONJG( cwann(:,:,:,m) ) )
+          CASE( "real" )    
+              str = "_WFR"
+              rwann_out(:,:,:) = REAL( cwann(:,:,:,m) )
+          CASE( "imaginary" )    
+              str = "_WFI"
+              rwann_out(:,:,:) = AIMAG( cwann(:,:,:,m) )
+          CASE DEFAULT
+              CALL errore('plot','invalid DATATYPE '//TRIM(datatype),3)
+          END SELECT 
+
 
           filename=TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)
           IF ( iwann(m) <= 9 ) THEN
@@ -566,42 +600,73 @@
           !
           !
           WRITE( stdout,"(2x,'writing WF(',i3,') plot on file: ',a)") &
-                 iwann(m), TRIM(filename)//".gau"
-          OPEN ( aux_unit, FILE=TRIM(filename)//".gau", FORM='formatted', STATUS='unknown' )
+                 iwann(m), TRIM(filename)//TRIM(aux_fmt)
+          OPEN ( aux_unit, FILE=TRIM(filename)//TRIM(aux_fmt), FORM='formatted', &
+                           STATUS='unknown', IOSTAT=ierr )
+          IF (ierr/=0) CALL errore('plot','opening file '//TRIM(filename)//TRIM(aux_fmt),1)
 
-          WRITE(aux_unit, '( " WanT" )') 
-          WRITE(aux_unit, '( " plot output - cube format" )' ) 
-          WRITE(aux_unit, '(i4,3f12.6)' ) natot, r0(:) 
-          WRITE(aux_unit, '(i4,3f12.6)' ) (nrxh-nrxl+1),  avecl(:,1) 
-          WRITE(aux_unit, '(i4,3f12.6)' ) (nryh-nryl+1),  avecl(:,2) 
-          WRITE(aux_unit, '(i4,3f12.6)' ) (nrzh-nrzl+1),  avecl(:,3) 
 
-          DO ia = 1, natot
-              CALL atomic_name2num( symbtot(ia), zatom )
-              WRITE(aux_unit, '(i4,4e13.5)' ) zatom, ONE, tautot( :, ia )
-          ENDDO
+          SELECT CASE ( TRIM(output_fmt) )
+          CASE( "gau", "plt" )
 
-          DO nx = nrxl, nrxh
-          DO ny = nryl, nryh
-              SELECT CASE ( TRIM(datatype) )
+              WRITE(aux_unit, '( " WanT" )') 
+              WRITE(aux_unit, '( " plot output - cube format" )' ) 
+              WRITE(aux_unit, '(i4,3f12.6)' ) natot, r0(:) 
+              WRITE(aux_unit, '(i4,3f12.6)' ) (nrxh-nrxl+1),  avecl(:,1) 
+              WRITE(aux_unit, '(i4,3f12.6)' ) (nryh-nryl+1),  avecl(:,2) 
+              WRITE(aux_unit, '(i4,3f12.6)' ) (nrzh-nrzl+1),  avecl(:,3) 
+    
+              DO ia = 1, natot
+                  CALL atomic_name2num( symbtot(ia), zatom )
+                  WRITE(aux_unit, '(i4,4e13.5)' ) zatom, ONE, tautot( :, ia )
+              ENDDO
+    
+              DO nx = nrxl, nrxh
+              DO ny = nryl, nryh
+                  WRITE( aux_unit, "(6e13.5)" ) rwann_out( nx, ny, : )
+              ENDDO
+              ENDDO
 
-              CASE( "modulus" )    
-                  WRITE( aux_unit, "(6e13.5)" ) &
-                     REAL ( cwann( nx, ny, :, m) * CONJG( cwann( nx, ny, :, m)) )  
+          CASE( "txt" )
 
-              CASE( "real" )    
-                  WRITE( aux_unit, "(6e13.5)" ) REAL ( cwann( nx, ny, :, m) )
+              WRITE(aux_unit, '( " 3 2" )') 
+              WRITE(aux_unit, '( 3i5 )' ) nrzh-nrzl+1, nryh-nryl+1, nrxh-nrxl+1
+              WRITE(aux_unit, '(6f10.4)' ) r0(3) * bohr, r1(3) * bohr,  &
+                                           r0(2) * bohr, r1(2) * bohr,  & 
+                                           r0(1) * bohr, r1(1) * bohr
 
-              CASE( "imaginary" )    
-                  WRITE( aux_unit, "(6e13.5)" ) AIMAG( cwann( nx, ny, :, m) )
+              DO nz = nrzl, nrzh
+              DO ny = nryl, nryh
+              DO nx = nrxl, nrxh
+                  WRITE( aux_unit, "(f20.10)" ) rwann_out( nx, ny, nz )
+              ENDDO
+              ENDDO
+              ENDDO
 
-              CASE DEFAULT
-                  CALL errore('plot','invalid DATATYPE '//TRIM(datatype),4)
-              END SELECT 
-          ENDDO
-          ENDDO
-
+          CASE DEFAULT
+              CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),5)
+          END SELECT
+          !
           CLOSE(aux_unit)
+
+        
+          !
+          ! ... write a XYZ file for the atomic positions, when the case
+          !
+          IF ( TRIM( output_fmt ) == "txt" .OR. TRIM( output_fmt ) == "plt" ) THEN
+              WRITE( stdout,"(18x,'atomic positions on file: ',a)") TRIM(filename)//".xyz"
+              OPEN ( aux1_unit, FILE=TRIM(filename)//".xyz", FORM='formatted', &
+                                STATUS='unknown', IOSTAT=ierr )
+              IF (ierr/=0) CALL errore('plot','opening file '//TRIM(filename)//".xyz",1)
+              !
+              WRITE(aux1_unit,"(i6)") natot
+              DO ia = 1, natot
+                  WRITE(aux1_unit, '(a2,3x,3f15.9)' ) symbtot(ia) , tautot( :, ia )*bohr
+              ENDDO
+              !
+              CLOSE( aux1_unit )
+          ENDIF
+
 
           !
           ! ... convert output to PLT fmt, if the case
@@ -612,13 +677,11 @@
                CALL timing('gcubeplt',OPR='stop')
                !
                ! removing temporary .gau file
-               WRITE(stdout,"(2x,'deleting tmp file: ',a,2/)" ) TRIM(filename)//".gau"
+               WRITE(stdout,"(2x,'deleting tmp files: ',a)" ) TRIM(filename)//".gau"
+               WRITE(stdout,"(22x,a,2/)" )                    TRIM(filename)//".crd"
                CALL file_delete( TRIM(filename)//".gau" )
+               CALL file_delete( TRIM(filename)//".crd" )
                !
-          ELSEIF ( TRIM( output_fmt ) == "gau" ) THEN
-               ! do nothing
-          ELSE
-               CALL errore('plot','Invalid output_fmt = '//TRIM(output_fmt),6)
           ENDIF
 
       ENDDO
@@ -654,10 +717,10 @@
          IF( ierr /=0 ) CALL errore('plot', 'deallocating cutot ', ABS(ierr) )
       DEALLOCATE( map, STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'deallocating map ', ABS(ierr) )
+      DEALLOCATE( rwann_out, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating rwann_out', ABS(ierr) )
 
       CALL cleanup 
 
-
-   STOP '*** THE END *** (plot.x)'
-   END PROGRAM plot
+END PROGRAM plot
 

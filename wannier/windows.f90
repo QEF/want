@@ -374,8 +374,9 @@ CONTAINS
        INTEGER,           INTENT(in) :: unit
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
-       CHARACTER(nstrx)   :: attr, str
        CHARACTER(16)      :: subname="windows_read_ext"
+       CHARACTER(nstrx)   :: attr, str
+       LOGICAL            :: lfound
        INTEGER            :: idum, lindex, ik, ierr
 
        CALL iotk_scan_begin(unit,TRIM(name),ATTR=attr,FOUND=found,IERR=ierr)
@@ -393,9 +394,9 @@ CONTAINS
        IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',ABS(ierr))
        CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to find efermi',ABS(ierr))
-       CALL iotk_scan_attr(attr,'units',str,IERR=ierr)
+       CALL iotk_scan_attr(attr,'units',str,FOUND=lfound, IERR=ierr)
        IF (ierr>0)  CALL errore(subname,'Wrong fmt in units',ABS(ierr))
-       IF ( ierr == 0 ) THEN
+       IF ( lfound ) THEN
            CALL change_case(str,'UPPER')
            IF (TRIM(str) /= 'RYDBERG' .AND. TRIM(str) /= 'RY' .AND. &
                TRIM(str) /= 'RYD')&

@@ -1,6 +1,6 @@
 
 &INPUT_CONDUCTOR
-   nmxc = 12
+   nmxc = 16
    calculation_type = 'bulk'
    ne = 1000
    emin = -20.0
@@ -11,18 +11,18 @@
 
    <H00_C>
       &MATRIX_DATA
-         filename="LEADS/chain4_WanT.ham"
-         rows="1-12"
-         cols="1-12"
+         filename="COND/chain8_WanT.ham"
+         rows="1-16"
+         cols="1-16"
          direction=0
       /
    </H00_C>
 
    <HCI_CB>
       &MATRIX_DATA
-         filename="LEADS/chain4_WanT.ham"
-         rows="1-12"
-         cols="1-12"
+         filename="COND/chain8_WanT.ham"
+         rows="1-16"
+         cols="1-16"
          direction=1
       /
    </HCI_CB>

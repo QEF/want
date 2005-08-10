@@ -192,6 +192,7 @@ CONTAINS
        INTEGER,           INTENT(in) :: unit
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
+       LOGICAL            :: lfound
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="subspace_read"
        INTEGER            :: nkpts_, dimwinx_
@@ -240,7 +241,7 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find CAMP',ABS(ierr))
        CALL iotk_scan_dat(unit,'EAMP',eamp,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find EAMP',ABS(ierr))
-       CALL iotk_scan_dat(unit,'COMP_EAMP',comp_eamp,IERR=ierr)
+       CALL iotk_scan_dat(unit,'COMP_EAMP',comp_eamp, FOUND=lfound, IERR=ierr)
        IF (ierr>0) CALL errore(subname,'Wrong fmt in COMP_EAMP',ABS(ierr))
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)

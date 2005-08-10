@@ -580,6 +580,5 @@
 
       CALL cleanup
 
-      STOP '*** THE END *** (wannier.x)'
-   END PROGRAM wannier
+END PROGRAM wannier
 

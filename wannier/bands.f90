@@ -302,8 +302,7 @@
       !
       CALL cleanup()
 
-      STOP '*** THE END *** (bands.x)'
-   END PROGRAM bands
+END PROGRAM bands
 
 
 

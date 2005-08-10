@@ -1,8 +1,8 @@
 
 &INPUT_CONDUCTOR
-   nmxa = 12
-   nmxc = 24
-   nmxb = 12
+   nmxa = 8
+   nmxc = 16
+   nmxb = 8
    ne = 1000
    emin = -20.0
    emax = 0.0
@@ -13,8 +13,8 @@
    <H00_C>
       &MATRIX_DATA
          filename="COND/chain8_WanT.ham"
-         rows="1-24"
-         cols="1-24"
+         rows="1-16"
+         cols="1-16"
          direction=0
       /
    </H00_C>
@@ -22,8 +22,8 @@
    <HCI_CB>
       &MATRIX_DATA
          filename="COND/chain8_WanT.ham"
-         rows="1-24"
-         cols="1-12"
+         rows="1-16"
+         cols="1-8"
          direction=1
       /
    </HCI_CB>
@@ -32,8 +32,8 @@
    <HCI_AC>
       &MATRIX_DATA
          filename="COND/chain8_WanT.ham"
-         rows="13-24"
-         cols="1-24"
+         rows="9-16"
+         cols="1-16"
          direction=1
       /
    </HCI_AC>
@@ -41,8 +41,8 @@
    <H00_A>
       &MATRIX_DATA
          filename="COND/chain8_WanT.ham"
-         rows="1-12"
-         cols="1-12"
+         rows="1-8"
+         cols="1-8"
          direction=0
       /
    </H00_A>
@@ -50,8 +50,8 @@
    <H01_A>
       &MATRIX_DATA
          filename="COND/chain8_WanT.ham"
-         rows="1-12"
-         cols="13-24"
+         rows="1-8"
+         cols="9-16"
          direction=0
       /
    </H01_A>
@@ -59,8 +59,8 @@
    <H00_B>
       &MATRIX_DATA
          filename="COND/chain8_WanT.ham"
-         rows="1-12"
-         cols="1-12"
+         rows="1-8"
+         cols="1-8"
          direction=0
       /
    </H00_B>
@@ -68,8 +68,8 @@
    <H01_B>
       &MATRIX_DATA
          filename="COND/chain8_WanT.ham"
-         rows="1-12"
-         cols="13-24"
+         rows="1-8"
+         cols="9-16"
          direction=0
       /
    </H01_B>
