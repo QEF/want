@@ -422,8 +422,7 @@
       !
       CALL cleanup()
 
-      STOP '*** THE END *** (blc2wan.x)'
-   END PROGRAM blc2wan
+END PROGRAM blc2wan
 
 
 

@@ -290,7 +290,7 @@
        ! ...  Status of the convergence
        !
        WRITE(stdout, "()")
-       CALL timing('iterations',OPR='STOP')
+       CALL timing('iterations',OPR='stop')
 
        WRITE( stdout, "(/,2x,70('='))" )
        IF ( ncount == maxiter_dis ) THEN 
@@ -498,6 +498,5 @@
 
        CALL cleanup()
 
-   STOP '*** THE END *** (disentangle.x)'
-   END PROGRAM disentangle
+END PROGRAM disentangle
 

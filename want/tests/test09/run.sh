@@ -43,6 +43,7 @@ MANUAL=" Usage
 #
 # source common enviroment, to be set before running the script
 . ../environment.conf
+. $UTILITY_BIN/basedef.sh
 TEST_HOME=`pwd`
 TEST_NAME=Test7
 PSEUDO_NAME=Ni.pz-nd-rrkjus.UPF
@@ -132,12 +133,12 @@ fi
 # running DFT SCF
 #
 if [ "$SCF" = ".TRUE." ] ; then  
-   echo "running SCF calculation" 
+   echo $ECHO_N "running SCF calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in SCF calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
 
@@ -145,12 +146,12 @@ fi
 # running DFT NSCF
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
-   echo "running NSCF calculation" 
+   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in NSCF calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
    
@@ -158,13 +159,13 @@ fi
 # running DFT PWEXPORT
 #
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation" 
+   echo "running PWEXPORT calculation... " 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
               <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
-      echo "found some problems in PWEXPORT calculation, stopping" ; exit 1
+      echo "problems found" ; exit 1
    fi
 fi
 
@@ -172,12 +173,12 @@ fi
 # running DISENTANGLE_UP
 #
 if [ "$DISENTANGLE_UP" = ".TRUE." ] ; then  
-   echo "running DISENTANGLE_UP calculation" 
+   echo $ECHO_N "running DISENTANGLE_UP calculation... $ECHO_C" 
    $WANT_BIN/disentangle.x < $TEST_HOME/want_UP.in > $TEST_HOME/disentangle_UP.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in DISENTANGLE_UP calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -185,12 +186,12 @@ fi
 # running DISENTANGLE_DW
 #
 if [ "$DISENTANGLE_DW" = ".TRUE." ] ; then  
-   echo "running DISENTANGLE_DW calculation" 
+   echo $ECHO_N "running DISENTANGLE_DW calculation... $ECHO_C" 
    $WANT_BIN/disentangle.x < $TEST_HOME/want_DW.in > $TEST_HOME/disentangle_DW.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in DISENTANGLE_DW calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -198,40 +199,38 @@ fi
 # running WANNIER_UP
 #
 if [ "$WANNIER_UP" = ".TRUE." ] ; then  
-   echo "running WANNIER_UP calculation" 
+   echo $ECHO_N "running WANNIER_UP calculation... $ECHO_C" 
    $WANT_BIN/wannier.x < $TEST_HOME/want_UP.in > $TEST_HOME/wannier_UP.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in WANNIER_UP calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
-   rename RHAM. RHAM_UP. RHAM*
 fi
 
 #
 # running WANNIER_DW
 #
 if [ "$WANNIER_DW" = ".TRUE." ] ; then  
-   echo "running WANNIER_DW calculation" 
+   echo $ECHO_N "running WANNIER_DW calculation... $ECHO_C" 
    $WANT_BIN/wannier.x < $TEST_HOME/want_DW.in > $TEST_HOME/wannier_DW.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in WANNIER_DW calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
-   rename RHAM. RHAM_DW. RHAM*
 fi
 
 #
 # running BANDS_UP
 #
 if [ "$BANDS_UP" = ".TRUE." ] ; then  
-   echo "running BANDS_UP calculation" 
+   echo $ECHO_N "running BANDS_UP calculation... $ECHO_C" 
    $WANT_BIN/bands.x < $TEST_HOME/bands_UP.in > $TEST_HOME/bands_UP.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in BANDS_UP calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -239,12 +238,12 @@ fi
 # running BANDS_DW
 #
 if [ "$BANDS_DW" = ".TRUE." ] ; then  
-   echo "running BANDS_DW calculation" 
+   echo $ECHO_N "running BANDS_DW calculation... $ECHO_C" 
    $WANT_BIN/bands.x < $TEST_HOME/bands_DW.in > $TEST_HOME/bands_DW.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in BANDS_DW calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -252,12 +251,12 @@ fi
 # running PLOT_UP
 #
 if [ "$PLOT_UP" = ".TRUE." ] ; then
-   echo "running PLOT_UP calculation"
+   echo $ECHO_N "running PLOT_UP calculation... $ECHO_C"
    $WANT_BIN/plot.x < $TEST_HOME/plot_UP.in > $TEST_HOME/plot_UP.out
    if [ ! -e CRASH ] ; then
-      echo "done"
+      echo "$ECHO_T done"
    else
-      echo "found some problems in PLOT_UP calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -265,12 +264,12 @@ fi
 # running PLOT_DW
 #
 if [ "$PLOT_DW" = ".TRUE." ] ; then
-   echo "running PLOT_DW calculation"
+   echo $ECHO_N "running PLOT_DW calculation... $ECHO_C"
    $WANT_BIN/plot.x < $TEST_HOME/plot_DW.in > $TEST_HOME/plot_DW.out
    if [ ! -e CRASH ] ; then
-      echo "done"
+      echo "$ECHO_T done"
    else
-      echo "found some problems in PLOT_DW calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -279,15 +278,14 @@ fi
 #
 if [ "$CONDUCTOR_UP" = ".TRUE." ] ; then  
    #
-   echo "running CONDUCTOR_UP calculation" 
+   echo $ECHO_N "running CONDUCTOR_UP calculation... $ECHO_C" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor_UP.in > $TEST_HOME/conductor_UP.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
-      #
+      echo "$ECHO_T done" 
       mv dos.dat $TEST_HOME/dos_UP.dat
       mv cond.dat $TEST_HOME/cond_UP.dat
    else
-      echo "found some problems in CONDUCTOR_UP calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -297,15 +295,14 @@ fi
 #
 if [ "$CONDUCTOR_DW" = ".TRUE." ] ; then  
    #
-   echo "running CONDUCTOR_DW calculation" 
+   echo $ECHO_N "running CONDUCTOR_DW calculation... $ECHO_C" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor_DW.in > $TEST_HOME/conductor_DW.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
-      #
+      echo "$ECHO_T done" 
       mv dos.dat $TEST_HOME/dos_DW.dat
       mv cond.dat $TEST_HOME/cond_DW.dat
    else
-      echo "found some problems in CONDUCTOR_DW calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -313,7 +310,7 @@ fi
 # running CHECK
 #
 if [ "$CHECK" = ".TRUE." ] ; then
-   echo "running CHECK"
+   echo "running CHECK..."
    #
    cd $TEST_HOME
    list="disentangle_UP.out wannier_UP.out 

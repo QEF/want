@@ -15,7 +15,7 @@ MANUAL=" Usage
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
  pwexport        export DFT data to WanT package using IOTK fmt
- band            compute DFT bands 
+ dft_bands       compute DFT bands 
  dft             perform SCF, NSCF, PWEXPORT all together
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
@@ -34,6 +34,7 @@ MANUAL=" Usage
 #
 # source common enviroment, to be set before running the script
 . ../environment.conf
+. $UTILITY_BIN/basedef.sh
 TEST_HOME=`pwd`
 TEST_NAME=Test9
 PSEUDO_NAME=Cu.pbe-d-rrkjus.UPF
@@ -44,7 +45,7 @@ PSEUDO_NAME=Cu.pbe-d-rrkjus.UPF
 SCF=
 NSCF=
 PWEXPORT=
-BAND=
+DFT_BANDS=
 DISENTANGLE=
 WANNIER=
 BANDS=
@@ -58,7 +59,7 @@ case $INPUT in
    (scf)            SCF=".TRUE." ;;
    (nscf)           NSCF=".TRUE." ;;
    (pwexport)       PWEXPORT=".TRUE." ;;
-   (band)           BAND=".TRUE." ;;
+   (dft_bands)      DFT_BANDS=".TRUE." ;;
    (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;; 
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
@@ -100,13 +101,13 @@ fi
 # running DFT SCF
 #
 if [ "$SCF" = ".TRUE." ] ; then  
-   echo "running SCF calculation" 
+   echo $ECHO_N "running SCF calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
                   < $TEST_HOME/scf_CuUS.in > $TEST_HOME/scf_CuUS.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in SCF calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
 
@@ -114,13 +115,13 @@ fi
 # running DFT NSCF
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
-   echo "running NSCF calculation" 
+   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
                   < $TEST_HOME/nscf_CuUS.in > $TEST_HOME/nscf_CuUS.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in NSCF calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
    
@@ -128,27 +129,27 @@ fi
 # running DFT PWEXPORT
 #
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation" 
+   echo "running PWEXPORT calculation..." 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
               <  $TEST_HOME/pwexport_CuUS.in > $TEST_HOME/pwexport_CuUS.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
-      echo "found some problems in PWEXPORT calculation, stopping" ; exit 1
+      echo "problems found" ; exit 1
    fi
 fi
 
 #
-# running DFT BAND
+# running DFT_BANDS
 #
-if [ "$BAND" = ".TRUE." ] ; then  
-   echo "running BAND calculation" 
+if [ "$DFT_BANDS" = ".TRUE." ] ; then  
+   echo $ECHO_N "running DFT_BANDS calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-               < $TEST_HOME/band_CuUS.in > $TEST_HOME/band_CuUS.out
+               < $TEST_HOME/dft_bands_CuUS.in > $TEST_HOME/dft_bands_CuUS.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in BAND calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
    
@@ -156,12 +157,12 @@ fi
 # running DISENTANGLE
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   echo "running DISENTANGLE calculation" 
+   echo $ECHO_N "running DISENTANGLE calculation... $ECHO_C" 
    $WANT_BIN/disentangle.x < $TEST_HOME/want_CuUS.in > $TEST_HOME/disentangle_CuUS.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in DISENTANGLE calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -169,12 +170,12 @@ fi
 # running WANNIER
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
-   echo "running WANNIER calculation" 
+   echo $ECHO_N "running WANNIER calculation... $ECHO_C" 
    $WANT_BIN/wannier.x < $TEST_HOME/want_CuUS.in > $TEST_HOME/wannier_CuUS.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in WANNIER calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -182,12 +183,12 @@ fi
 # running BANDS
 #
 if [ "$BANDS" = ".TRUE." ] ; then  
-   echo "running BANDS calculation" 
+   echo $ECHO_N "running BANDS calculation... $ECHO_C" 
    $WANT_BIN/bands.x < $TEST_HOME/bands_CuUS.in > $TEST_HOME/bands_CuUS.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in BANDS calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -195,7 +196,7 @@ fi
 # running CHECK
 #
 if [ "$CHECK" = ".TRUE." ] ; then
-   echo "running CHECK"
+   echo "running CHECK..."
    #
    cd $TEST_HOME
    list="disentangle_CuUS.out wannier_CuUS.out "

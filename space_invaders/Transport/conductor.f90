@@ -559,6 +559,5 @@
 
       CALL cleanup()
 
-      STOP '*** THE END *** (conductor.x)'
-   END PROGRAM conductor
+END PROGRAM conductor
   

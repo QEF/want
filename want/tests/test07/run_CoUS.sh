@@ -34,6 +34,7 @@ MANUAL=" Usage
 #
 # source common enviroment, to be set before running the script
 . ../environment.conf
+. $UTILITY_BIN/basedef.sh
 TEST_HOME=`pwd`
 TEST_NAME=Test5
 PSEUDO_NAME=Co.pbe-nd-rrkjus.UPF
@@ -64,7 +65,7 @@ case $INPUT in
    (bands)          BANDS=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE."; CONDUCTOR=".TRUE." ;;
+                    BANDS=".TRUE." ; CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
                     BANDS=".TRUE." ; CONDUCTOR=".TRUE." ;;
@@ -100,13 +101,13 @@ fi
 # running DFT SCF
 #
 if [ "$SCF" = ".TRUE." ] ; then  
-   echo "running SCF calculation" 
+   echo $ECHO_N "running SCF calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
                  < $TEST_HOME/scf_CoUS.in > $TEST_HOME/scf_CoUS.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in SCF calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
 
@@ -114,13 +115,13 @@ fi
 # running DFT NSCF
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
-   echo "running NSCF calculation" 
+   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
                  < $TEST_HOME/nscf_CoUS.in > $TEST_HOME/nscf_CoUS.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in NSCF calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
    
@@ -128,13 +129,13 @@ fi
 # running DFT PWEXPORT
 #
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation" 
+   echo "running PWEXPORT calculation..." 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
               <  $TEST_HOME/pwexport_CoUS.in > $TEST_HOME/pwexport_CoUS.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
-      echo "found some problems in PWEXPORT calculation, stopping" ; exit 1
+      echo "problems found" ; exit 1
    fi
 fi
 
@@ -142,12 +143,12 @@ fi
 # running DISENTANGLE
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   echo "running DISENTANGLE calculation" 
+   echo $ECHO_N "running DISENTANGLE calculation... $ECHO_C" 
    $WANT_BIN/disentangle.x < $TEST_HOME/want_CoUS.in > $TEST_HOME/disentangle_CoUS.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in DISENTANGLE calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -155,12 +156,12 @@ fi
 # running WANNIER
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
-   echo "running WANNIER calculation" 
+   echo $ECHO_N "running WANNIER calculation... $ECHO_C" 
    $WANT_BIN/wannier.x < $TEST_HOME/want_CoUS.in > $TEST_HOME/wannier_CoUS.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in WANNIER calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -168,30 +169,29 @@ fi
 # running BANDS
 #
 if [ "$BANDS" = ".TRUE." ] ; then  
-   echo "running BANDS calculation" 
+   echo $ECHO_N "running BANDS calculation... $ECHO_C" 
    $WANT_BIN/bands.x < $TEST_HOME/bands_CoUS.in > $TEST_HOME/bands_CoUS.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in BANDS calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
-
 
 #
 # running CONDUCTOR
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
-   echo "running CONDUCTOR calculation" 
+   echo $ECHO_N "running CONDUCTOR calculation... $ECHO_C" 
    $TRANS_BIN/conductor.x < $TEST_HOME/conductor_CoUS.in > $TEST_HOME/conductor_CoUS.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
       #
       mv dos.dat $TEST_HOME/dos_CoUS.dat
       mv cond.dat $TEST_HOME/cond_CoUS.dat
    else
-      echo "found some problems in CONDUCTOR calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -199,10 +199,10 @@ fi
 # running CHECK
 #
 if [ "$CHECK" = ".TRUE." ] ; then
-   echo "running CHECK"
+   echo "running CHECK... "
    #
    cd $TEST_HOME
-   list="disentangle_CoUS.out wannier_CoUS.out "
+   list="disentangle_CoUS.out wannier_CoUS.out"
    #
    for file in $list
    do
@@ -211,13 +211,13 @@ if [ "$CHECK" = ".TRUE." ] ; then
 fi
 
 
-
 #
 # eventually clean
 #
 if [ "$CLEAN" = ".TRUE." ] ; then  
    cd $TEST_HOME
       rm -rf *.out *.dat 2> /dev/null
+      test -e SCRATCH && rm SCRATCH
    cd $TMPDIR
       test -d $TEST_NAME && rm -rf $TEST_NAME
    exit 0

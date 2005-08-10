@@ -97,6 +97,7 @@ do
     #
     elif [ "$ACTION" = "update_ref" ] ; then
        cp *.out *.dat Reference
+       echo " ### $mytest : Reference updated ### " 
     #
     # other flags
     #
@@ -107,16 +108,15 @@ do
        SCRIPT_LIST=$( ls run*.sh )
        for script in $SCRIPT_LIST
        do
-          if [ "$ACTION" != "clean" ] ; then echo ; fi
           echo " ### $mytest : $script  $ACTION ### " 
           ./$script $ACTION
+          if [ "$ACTION" != "clean" ] ; then echo ; fi
        done
     fi
     cd ..
 done
 
 
-echo
 exit 0
 
 

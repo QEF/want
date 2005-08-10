@@ -4,6 +4,21 @@
 =======================================================
 
 
+10 Ago 2005      Plot.x now supports .txt format. Small changes in the code. Test8 
+                 partly updated (plot). CRD format used to writes coordinates for plotting
+                 substituted with XYZ fmt. For completeness reasons, CRD file is written
+                 anyway as tmp file by gcube2plt and then removed. (AF)
+
+08 Ago 2005      Remaining memory (missing deallocations) detected and solved (ions 
+                 and trial_center_data modules) thanks to G95 compiler. Checks added 
+                 during hamiltonian read in conductor.x: simply occurring errors 
+                 avoided. Further hidden memory allocations by iotk detected and 
+                 workarounded. (AF)
+
+07 Ago 2005      Test3 changed: only valence WFs are computed, no disentangle is performed.
+                 run.sh script output format (logs) changed; basedef.sh definition script
+                 added to utility dir. (AF)
+
 06 Ago 2005      envirnment.conf file in Tests updated with other internal environment
                  variable definitions: this avoid to repeat definitions in each tests
                  and allows some global setting to be better managed. run.sh scripts

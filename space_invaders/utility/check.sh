@@ -15,7 +15,7 @@ MANUAL=" Usage
 #================================================================
 #
 
-VERBOSITY=
+VERBOSITY=low
 
 while getopts :hv OPT
 do

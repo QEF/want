@@ -32,6 +32,7 @@ MANUAL=" Usage
 #
 # source common enviroment, to be set before running the script
 . ../environment.conf
+. $UTILITY_BIN/basedef.sh
 TEST_HOME=`pwd`
 TEST_NAME=Test8
 PSEUDO_LIST="C.pbe-van_bm.UPF  H.pbe-van_bm.UPF "
@@ -98,12 +99,12 @@ fi
 # running DFT SCF
 #
 if [ "$SCF" = ".TRUE." ] ; then  
-   echo "running SCF_US calculation" 
+   echo $ECHO_N "running SCF_US calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_US.in > $TEST_HOME/scf_US.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in SCF_US calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
 
@@ -111,12 +112,12 @@ fi
 # running DFT NSCF
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
-   echo "running NSCF_US calculation" 
+   echo $ECHO_N "running NSCF_US calculation... $ECHO_C" 
    $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf_US.in > $TEST_HOME/nscf_US.out
    if [ $? = 0 ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in NSCF_US calculation, stopping" ; exit 1
+      echo "$ECHO_T problems found" ; exit 1
    fi
 fi
 
@@ -124,13 +125,13 @@ fi
 # running DFT PWEXPORT
 #
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT_US calculation" 
+   echo "running PWEXPORT_US calculation..." 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
               <  $TEST_HOME/pwexport_US.in > $TEST_HOME/pwexport_US.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
-      echo "found some problems in PWEXPORT_US calculation, stopping" ; exit 1
+      echo "problems found" ; exit 1
    fi
 fi
 
@@ -138,12 +139,12 @@ fi
 # running DISENTANGLE
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   echo "running DISENTANGLE_US calculation" 
+   echo $ECHO_N "running DISENTANGLE_US calculation... $ECHO_C" 
    $WANT_BIN/disentangle.x < $TEST_HOME/want_US.in > $TEST_HOME/disentangle_US.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in DISENTANGLE_US calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -151,12 +152,12 @@ fi
 # running WANNIER
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
-   echo "running WANNIER_US calculation" 
+   echo $ECHO_N "running WANNIER_US calculation... $ECHO_C" 
    $WANT_BIN/wannier.x < $TEST_HOME/want_US.in > $TEST_HOME/wannier_US.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in WANNIER_US calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -164,12 +165,12 @@ fi
 # running PLOT
 #
 if [ "$PLOT" = ".TRUE." ] ; then  
-   echo "running PLOT_US calculation" 
+   echo $ECHO_N "running PLOT_US calculation... $ECHO_C" 
    $WANT_BIN/plot.x < $TEST_HOME/plot_US.in > $TEST_HOME/plot_US.out
    if [ ! -e CRASH ] ; then 
-      echo "done" 
+      echo "$ECHO_T done" 
    else
-      echo "found some problems in PLOT_US calculation, stopping" ; cat CRASH ; exit 1
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
 
@@ -177,7 +178,7 @@ fi
 # running CHECK
 #
 if [ "$CHECK" = ".TRUE." ] ; then
-   echo "running CHECK"
+   echo "running CHECK..."
    #
    cd $TEST_HOME
    list="disentangle_US.out wannier_US.out"

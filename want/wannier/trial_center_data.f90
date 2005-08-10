@@ -57,7 +57,7 @@ CONTAINS
       IF ( dimwann <= 0 ) CALL errore(subname,'invalid dimwann',-dimwann+1)
       ALLOCATE( trial(dimwann), STAT=ierr )
          IF (ierr/=0)  CALL errore(subname,'allocating trial_centers',ABS(ierr))
-      RETURN
+      alloc = .TRUE.
    END SUBROUTINE trial_center_data_allocate
 
 

@@ -38,6 +38,7 @@ CONTAINS
       USE kpoints_module,      ONLY : kpoints_deallocate, kpoints_alloc 
       USE kpoints_module,      ONLY : bshells_deallocate, bshells_alloc
       USE windows_module,      ONLY : windows_deallocate, windows_alloc => alloc 
+      USE ions_module,         ONLY : ions_deallocate, ions_alloc => alloc    
       USE subspace_module,     ONLY : subspace_deallocate, subspace_alloc => alloc 
       USE overlap_module,      ONLY : overlap_deallocate, overlap_alloc => alloc 
       USE ggrids_module,       ONLY : ggrids_deallocate, ggrids_alloc => alloc 
@@ -55,6 +56,7 @@ CONTAINS
       
       IF ( kpoints_alloc )  CALL kpoints_deallocate()
       IF ( bshells_alloc )  CALL bshells_deallocate()
+      IF ( ions_alloc )     CALL ions_deallocate()
       IF ( windows_alloc )  CALL windows_deallocate()
       IF ( subspace_alloc ) CALL subspace_deallocate()
       IF ( overlap_alloc )  CALL overlap_deallocate()
