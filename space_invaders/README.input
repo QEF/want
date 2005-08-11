@@ -482,9 +482,10 @@ datatype      STRING
               DEFAULT: "modulus"
 
 output_fmt    STRING
-              ("plt" | "gau" )
-              Define the format of the output file. PLT is binary and smaller but
-              GAU also deals with non-orthorombic lattices.
+              ( "plt" | "txt" | "gau" )
+              Define the format of the output file. PLT is binary and smaller than
+              GAU and TXT. While GAU deals also with non-orthorombic lattices, TXT
+              is suitable to be converted to further format.
               DEFAULT: "plt"
 
 nrxl, nrxh    INTEGER

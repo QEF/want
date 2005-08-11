@@ -358,7 +358,10 @@ SUBROUTINE init_us_1
   DO ik=1,nkpts
       nbkvect = nntot(ik)
       DO nn=1,nbkvect
-         bkvect(1:3,nn) = bk(1:3,ik,nn) / tpiba
+!XXXX CHECK
+         bkvect(1:3,nn) = ZERO
+!XXXX CHECK
+!         bkvect(1:3,nn) = bk(1:3,ik,nn) / tpiba
          bkmod(nn) = SQRT( bkvect(1,nn)**2 + bkvect(2,nn)**2 + bkvect(3,nn)**2 )
       ENDDO
 

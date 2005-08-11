@@ -4,6 +4,9 @@
 =======================================================
 
 
+11 Ago 2005      Plot.x: wannier functions are moved as close as possible to the 
+                 origin before plotting for sake of simplicity. Output changed. (AF) 
+
 10 Ago 2005      Plot.x now supports .txt format. Small changes in the code. Test8 
                  partly updated (plot). CRD format used to writes coordinates for plotting
                  substituted with XYZ fmt. For completeness reasons, CRD file is written

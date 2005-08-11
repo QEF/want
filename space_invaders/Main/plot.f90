@@ -40,7 +40,7 @@
    USE windows_module,     ONLY : imin, imax, dimwin, dimwinx, windows_read, &
                                   spin_component
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
-   USE localization_module,ONLY : cu, localization_read
+   USE localization_module,ONLY : cu, rave, localization_read
    USE ggrids_module,      ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
                                   ggrids_read_ext, ggrids_deallocate, &
                                   ggrids_gk_indexes
@@ -74,11 +74,14 @@
    COMPLEX(dbl), ALLOCATABLE :: kwann(:,:)       
    COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
 
-   REAL(dbl)    :: arg, tmaxx, tmax
+   REAL(dbl)    :: tmaxx, tmax
    REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3)
    REAL(dbl),    ALLOCATABLE :: rwann_out(:,:,:)
    REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
+   REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
+   REAL(dbl)    :: arg
+   COMPLEX(dbl) :: phase
    CHARACTER(3), ALLOCATABLE :: symbtot(:)
 
    CHARACTER( nstrx )  :: filename
@@ -279,9 +282,9 @@
       WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
       WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
       WRITE( stdout,"(/,2x,'Grid dimensions:')") 
-      WRITE( stdout,"( 6x, 'nrx', i6, ' --> ', i6 )" ) nrxl, nrxh 
-      WRITE( stdout,"( 6x, 'nry', i6, ' --> ', i6 )" ) nryl, nryh 
-      WRITE( stdout,"( 6x, 'nrz', i6, ' --> ', i6 )" ) nrzl, nrzh 
+      WRITE( stdout,"(  6x, 'nrx', i6, ' --> ', i6 )" ) nrxl, nrxh 
+      WRITE( stdout,"(  6x, 'nry', i6, ' --> ', i6 )" ) nryl, nryh 
+      WRITE( stdout,"(  6x, 'nrz', i6, ' --> ', i6 )" ) nrzl, nrzh 
       WRITE( stdout,"()")
 
 
@@ -306,6 +309,10 @@
          IF( ierr /=0 ) CALL errore('plot', 'allocating kwann ', ABS(ierr) )
       ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'allocating vkpt_cry ', ABS(ierr) )
+      ALLOCATE( rave_cry(3, dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating rave_cry ', ABS(ierr) )
+      ALLOCATE( rave_shift(3, dimwann), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating rave_shift ', ABS(ierr) )
       ALLOCATE( cutot(dimwinx, dimwann), STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'allocating cutot ', ABS(ierr) )
       ALLOCATE( map(npwkx), STAT=ierr )
@@ -314,10 +321,48 @@
 
       !
       ! convert vkpt from cart coord (bohr^-1) to cryst 
+      ! the same for rave, from cart coord (bohr) to cryst
       !
       vkpt_cry(:,:) = vkpt(:,:)
+      rave_cry(:,:) = rave(:,:)
       CALL cart2cry( vkpt_cry, bvec )
- 
+      CALL cart2cry( rave_cry, avec)
+
+      !
+      ! determine the shift to rave to set the WF in the wigner seitz cell
+      !
+      rave_shift(:,:) = ZERO
+      DO m=1,nplot
+         DO i=1,3
+            j = 0
+            IF ( rave_cry(i,iwann(m)) +0.5 < ZERO ) j = 1
+            rave_shift(i,iwann(m)) = REAL( INT( rave_cry(i,iwann(m)) +0.5) -j ) 
+         ENDDO
+      ENDDO
+
+      !
+      WRITE( stdout, " (/,2x, 'Centers for the required Wannier functions:')")
+      WRITE( stdout, " (/,8x,'in cartesian coord (Bohr)' )")
+      DO m=1,nplot
+         WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                iwann(m), rave(:,iwann(m))
+      ENDDO
+      !
+      WRITE( stdout, " (8x,'in crystal coord' )")
+      DO m=1,nplot
+         WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                iwann(m), rave_cry(:,iwann(m))
+      ENDDO
+      !
+      WRITE( stdout, " (/,2x,'Centers have been moved to:')")
+      WRITE( stdout, " (8x,'in crystal coord' )")
+      DO m=1,nplot
+         WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
+      ENDDO
+      !
+      WRITE( stdout, "(/)" )
+
 
       !
       ! ... allocating wfcs
@@ -365,6 +410,13 @@
           !
           DO m = 1, nplot
 
+              !
+              ! apply a globgal shift to set the WF in the required cell
+              !
+              arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_shift(:,iwann(m)) )
+              phase = CMPLX( COS(arg), -SIN(arg) )
+
+
               kwann( :, m ) = CZERO
               DO ig = 1, npwk(ik)
                  !
@@ -375,9 +427,11 @@
                      kwann( map(ig), m ) = kwann( map(ig), m ) + &
                                            cutot(n, iwann(m) ) * evc( ig, ib )
                  ENDDO
+                 !
+                 ! apply the translation phase
+                 kwann( map(ig) ,m) = kwann( map(ig) ,m) * phase 
               ENDDO
           ENDDO
-
 
           !
           ! logically clean wfcs (but memory is NOT free)
@@ -393,28 +447,24 @@
              CALL cfft3d( kwann(:,m), nfft(1), nfft(2), nfft(3),  &
                                       nfft(1), nfft(2), nfft(3),  1 )
              CALL timing('cfft3d',OPR='stop')
-          ENDDO
 
+             !
+             ! loop over FFT grid
+             !
+             DO nzz = nrzl, nrzh
+                 nz = MOD( nzz + nnrz * nfft(3) , nfft(3) ) + 1
+                 DO nyy = nryl, nryh
+                     ny = MOD( nyy + nnry * nfft(2) , nfft(2) ) + 1
+                     DO nxx = nrxl, nrxh
+                         nx = MOD( nxx + nnrx * nfft(1) , nfft(1) ) + 1
 
-          !
-          ! loop over FFT grid
-          !
-          DO m = 1, nplot 
+                         ir = nx + (ny-1) * nfft(1) + (nz-1) * nfft(1) * nfft(2)
 
-              DO nzz = nrzl, nrzh
-                  nz = MOD( nzz + nnrz * nfft(3) , nfft(3) ) + 1
-                  DO nyy = nryl, nryh
-                      ny = MOD( nyy + nnry * nfft(2) , nfft(2) ) + 1
-                      DO nxx = nrxl, nrxh
-                          nx = MOD( nxx + nnrx * nfft(1) , nfft(1) ) + 1
-
-                          ir = nx + (ny-1) * nfft(1) + (nz-1) * nfft(1) * nfft(2)
-
-                          arg   = vkpt_cry(1,ik) * DBLE(nxx) / DBLE(nfft(1)) + &
-                                  vkpt_cry(2,ik) * DBLE(nyy) / DBLE(nfft(2)) + &
-                                  vkpt_cry(3,ik) * DBLE(nzz) / DBLE(nfft(3))
-                          caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg) ) * &
-                                  kwann( ir, m ) 
+                         arg   = vkpt_cry(1,ik) * DBLE(nxx) / DBLE(nfft(1)) + &
+                                 vkpt_cry(2,ik) * DBLE(nyy) / DBLE(nfft(2)) + &
+                                 vkpt_cry(3,ik) * DBLE(nzz) / DBLE(nfft(3))
+                         caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg) ) * &
+                                 kwann( ir, m ) 
 
                          cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux
                       ENDDO
@@ -426,6 +476,8 @@
       !
       ! clean the large amount of memory used by wfcs and grids
       !
+      DEALLOCATE( kwann, STAT=ierr)
+         IF (ierr/=0) CALL errore('plot','deallocating kwann',ABS(ierr))
       CALL wfc_data_deallocate()
       CALL ggrids_deallocate()
       CALL file_close(dft_unit,PATH="/Eigenvectors/",ACTION="read")
@@ -437,7 +489,7 @@
       ! 
 
       arg = ONE / ( SQRT( REAL(nkpts) * SIZE(cwann(:,:,:,1) )  ) ) 
-
+      !
       DO m = 1, nplot
           !
           tmaxx = ZERO
@@ -449,8 +501,8 @@
                cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * arg
                tmax = cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) )
                IF ( tmax > tmaxx ) THEN
-                   tmaxx = tmax
-                   cmod = cwann( nxx, nyy, nzz, m)
+                    tmaxx = tmax
+                    cmod = cwann( nxx, nyy, nzz, m)
                ENDIF
           ENDDO
           ENDDO
@@ -701,16 +753,16 @@
 !
       DEALLOCATE( iwann, STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'deallocating iwann', ABS(ierr) )
-      DEALLOCATE( kwann, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating kwann', ABS(ierr) )
-      DEALLOCATE( cwann, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating cwann', ABS(ierr) )
       DEALLOCATE( tautot, STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'deallocating tautot', ABS(ierr) )
       DEALLOCATE( symbtot, STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'deallocating symbtot', ABS(ierr) )
       DEALLOCATE( vkpt_cry, STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'deallocating vkpt_cry', ABS(ierr) )
+      DEALLOCATE( rave_cry, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_cry', ABS(ierr) )
+      DEALLOCATE( rave_shift, STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_shift', ABS(ierr) )
       DEALLOCATE( tau_cry, STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'deallocating tau_cry', ABS(ierr) )
       DEALLOCATE( cutot, STAT=ierr )

@@ -252,7 +252,7 @@
            !
            CALL domega( dimwann, nkpts, Mkb, csheet, sheet, rave, domg)
            !
-           ! aply conditioned minimization if required
+           ! apply conditioned minimization if required
            !
            IF ( do_condmin ) THEN
                 CALL domega_aux( dimwann, nkpts, Mkb, rave, trial, a_condmin, domg_aux)
