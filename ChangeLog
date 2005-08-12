@@ -7,7 +7,8 @@
 12 Ago 2005      plot.x: plotting cell dimensions from input now in crystal units and
                  not as FFT mesh. locate_wf logical variable added in order to manage
                  whether shift WF's or not. Shift is now performed to a cell centered
-                 in the center of the plotting cell. Test input files updated. (AF)
+                 in the center of the plotting cell. Test input files updated. 
+                 Portability issues addressed for the shell scripts in the code. (AF)
 
 11 Ago 2005      Plot.x: wannier functions are moved as close as possible to the 
                  origin before plotting for sake of simplicity. Output changed. (AF) 
