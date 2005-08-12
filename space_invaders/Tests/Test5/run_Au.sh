@@ -1,4 +1,4 @@
-#!/bin/bash 
+#! /bin/bash 
 #
 # Test5     Au Chain NCPP
 #

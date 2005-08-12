@@ -1,4 +1,4 @@
-#!/bin/bash 
+#! /bin/bash 
 #
 # Test2    Au Chain USPP
 #

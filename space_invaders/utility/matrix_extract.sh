@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 #
 # utility to extrac minors from a given matrix 

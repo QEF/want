@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 
 #
 # portable definitions for echo command
