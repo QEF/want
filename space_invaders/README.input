@@ -508,6 +508,11 @@ assume_ncpp   LOGICAL
               .TRUE. in order to avoid PP reading.
               DEFAULT: .FALSE.
 
+locate_wf     LOGICAL
+              if .TRUE. move the WFs in a unit cell centerd around the origin. Useful
+              to plot purposes.
+              DEFAULT: .TRUE.
+
 spin_component    STRING
               ( "up" | "down" | "none" )
               define whether the calculation is spin polarized and if the case

@@ -53,14 +53,16 @@
    !
    ! local variables
    !
-   CHARACTER(nstrx) :: wann      ! contains the list of WF indexes to plot 
-                                 ! in the fmt e.g. "1-3,4,7-9"
+   CHARACTER(nstrx) :: wann       ! contains the list of WF indexes to plot 
+                                  ! in the fmt e.g. "1-3,4,7-9"
    INTEGER :: nrxl, nryl, nrzl
    INTEGER :: nrxh, nryh, nrzh
    INTEGER :: nnrx, nnry, nnrz
    CHARACTER( 20 )  :: datatype   ! ( "modulus" | "real" | "imaginary"  )
    CHARACTER( 20 )  :: output_fmt ! ( "txt" | "plt" | "gau" )
    LOGICAL          :: assume_ncpp
+   LOGICAL          :: locate_wf  ! move the centers of WF in a unit cell centered
+                                  ! around the origin
 
    INTEGER :: nx, ny, nz, nzz, nyy, nxx
    INTEGER :: ia, ib, ik, ig, isp, ir
@@ -92,7 +94,7 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
-                    datatype, assume_ncpp, output_fmt, &
+                    datatype, assume_ncpp, output_fmt, locate_wf, &
                     nrxl, nrxh, nryl, nryh, nrzl, nrzh, spin_component
    !
    ! end of declariations
@@ -113,6 +115,7 @@
       postfix                     = ' '
       work_dir                    = './'
       assume_ncpp                 = .FALSE.
+      locate_wf                   = .TRUE.
       wann                        = ' '
       datatype                    = 'modulus'
       output_fmt                  = 'plt'
@@ -332,13 +335,15 @@
       ! determine the shift to rave to set the WF in the wigner seitz cell
       !
       rave_shift(:,:) = ZERO
-      DO m=1,nplot
-         DO i=1,3
-            j = 0
-            IF ( rave_cry(i,iwann(m)) +0.5 < ZERO ) j = 1
-            rave_shift(i,iwann(m)) = REAL( INT( rave_cry(i,iwann(m)) +0.5) -j ) 
+      IF ( locate_wf ) THEN
+         DO m=1,nplot
+            DO i=1,3
+               j = 0
+               IF ( rave_cry(i,iwann(m)) +0.5 < ZERO ) j = 1
+               rave_shift(i,iwann(m)) = REAL( INT( rave_cry(i,iwann(m)) +0.5) -j ) 
+            ENDDO
          ENDDO
-      ENDDO
+      ENDIF
 
       !
       WRITE( stdout, " (/,2x, 'Centers for the required Wannier functions:')")
@@ -354,13 +359,15 @@
                 iwann(m), rave_cry(:,iwann(m))
       ENDDO
       !
-      WRITE( stdout, " (/,2x,'Centers have been moved to:')")
-      WRITE( stdout, " (8x,'in crystal coord' )")
-      DO m=1,nplot
-         WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
-                iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
-      ENDDO
-      !
+      IF ( locate_wf ) THEN
+          WRITE( stdout, " (/,2x,'Locating WFs: moving centers')")
+          WRITE( stdout, " (8x,'in crystal coord' )")
+          DO m=1,nplot
+             WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                    iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
+          ENDDO
+          !
+      ENDIF
       WRITE( stdout, "(/)" )
 
 
@@ -414,7 +421,7 @@
               ! apply a globgal shift to set the WF in the required cell
               !
               arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_shift(:,iwann(m)) )
-              phase = CMPLX( COS(arg), -SIN(arg) )
+              phase = CMPLX( COS(arg), SIN(arg) )
 
 
               kwann( :, m ) = CZERO
