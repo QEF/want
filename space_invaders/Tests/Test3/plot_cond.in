@@ -5,8 +5,5 @@
    work_dir = './COND/'
    datatype = 'modulus'
    output_fmt = 'plt'
-!   wann = '1-2'
-   wann = '1'
-   nrxl = -48
-   nrxh =  48
+   wann = '1-2'
  /

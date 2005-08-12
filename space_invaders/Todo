@@ -21,7 +21,3 @@
 * eigenchannel in transport calculation
 * direct calculation of current
 
-* plot: reset std input & output
-* plot: check wannier loc
-* wannier: ordering_type = "around_zero", new DEFAULT
-

@@ -488,20 +488,18 @@ output_fmt    STRING
               is suitable to be converted to further format.
               DEFAULT: "plt"
 
-nrxl, nrxh    INTEGER
-              the low and high indexes for the FFT grid. Using an interval of dimension
-              corresponding to the given FFT dimension (see eg disentangle output) 
-              will end in a box equal to the direct lattice unitary cell. Increasing
-              (decreasing) the values give a larger (smaller) box. 
-              DEFAULT: -fft_dim_x / 2 , +fft_dim_x / 2
+r1min, r1max  REAL
+              the starting and ending points of the plotting cell along a1 dir, 
+              in units of a1 lattice vector (crystal coord.).
+              DEFAULT: -0.5, 0.5
 
-nryl, nryh    INTEGER
-              as before but for y direction.
-              DEFAULT: -fft_dim_y / 2 , +fft_dim_y / 2
+r2min, r2max  REAL
+              as before but for a2 direction.
+              DEFAULT: -0.5, 0.5
              
-nrzl, nrzh    INTEGER
-              as before but for z direction.
-              DEFAULT: -fft_dim_z / 2 , +fft_dim_z / 2
+r3min, r3max  REAL
+              as before but for a3 direction.
+              DEFAULT: -0.5, 0.5
               
 assume_ncpp   LOGICAL
               if using DFT pseudoptentials not readable in WanT set this value to 
@@ -509,8 +507,8 @@ assume_ncpp   LOGICAL
               DEFAULT: .FALSE.
 
 locate_wf     LOGICAL
-              if .TRUE. move the WFs in a unit cell centerd around the origin. Useful
-              to plot purposes.
+              if .TRUE. move the WFs in a unit cell centerd around the midpoint of the 
+              plotting cell. Useful to plot purposes.
               DEFAULT: .TRUE.
 
 spin_component    STRING

@@ -5,7 +5,7 @@
    work_dir = './'
    datatype = 'modulus'
    wann = '1-6'
-   nrzl = -24
-   nrzh =  24
+   r3min = -1.0
+   r3max =  1.0
    spin_component = 'DOWN'
  /

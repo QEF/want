@@ -13,8 +13,8 @@
    ! real space plot of the computed Wannier functions
    !
    USE kinds
-   USE constants,          ONLY : ZERO, CZERO, ONE, CONE, CI, TPI, &
-                                  bohr => bohr_radius_angs, EPS_m6
+   USE constants,          ONLY : ZERO, CZERO, ONE, TWO, CONE, CI, TPI, &
+                                  bohr => bohr_radius_angs, EPS_m6, EPS_m4
    USE parameters,         ONLY : ntypx, natx, nstrx
    USE fft_scalar,         ONLY : cfft3d
    USE timing_module,      ONLY : timing, timing_overview, global_list
@@ -51,20 +51,33 @@
    IMPLICIT NONE
 
    !
+   ! input variables
+   !
+   CHARACTER(nstrx) :: wann             ! contains the list of WF indexes to plot 
+                                        ! in the fmt e.g. "1-3,4,7-9"
+   REAL(dbl)        :: r1min, r1max     ! plot cell dim along a1 (cry units)
+   REAL(dbl)        :: r2min, r2max     ! the same but for a2
+   REAL(dbl)        :: r3min, r3max     ! the same but for a3
+   CHARACTER( 20 )  :: datatype         ! ( "modulus" | "real" | "imaginary"  )
+   CHARACTER( 20 )  :: output_fmt       ! ( "txt" | "plt" | "gau" )
+   LOGICAL          :: assume_ncpp      ! If .TRUE. pp's are not read
+   LOGICAL          :: locate_wf        ! move the centers of WF in a unit cell centered
+                                        ! around the origin
+   !
+   ! input namelist
+   !
+   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
+                    datatype, assume_ncpp, output_fmt, locate_wf, &
+                    r1min, r1max, r2min, r2max, r3min, r3max, spin_component
+
+   !
    ! local variables
    !
-   CHARACTER(nstrx) :: wann       ! contains the list of WF indexes to plot 
-                                  ! in the fmt e.g. "1-3,4,7-9"
    INTEGER :: nrxl, nryl, nrzl
    INTEGER :: nrxh, nryh, nrzh
    INTEGER :: nnrx, nnry, nnrz
-   CHARACTER( 20 )  :: datatype   ! ( "modulus" | "real" | "imaginary"  )
-   CHARACTER( 20 )  :: output_fmt ! ( "txt" | "plt" | "gau" )
-   LOGICAL          :: assume_ncpp
-   LOGICAL          :: locate_wf  ! move the centers of WF in a unit cell centered
-                                  ! around the origin
-
    INTEGER :: nx, ny, nz, nzz, nyy, nxx
+   !
    INTEGER :: ia, ib, ik, ig, isp, ir
    INTEGER :: natot, nplot
    INTEGER :: m, n, i, j, ierr
@@ -77,7 +90,7 @@
    COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
 
    REAL(dbl)    :: tmaxx, tmax
-   REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3)
+   REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
    REAL(dbl),    ALLOCATABLE :: rwann_out(:,:,:)
    REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
@@ -90,12 +103,6 @@
    CHARACTER( 4 )      :: str, aux_fmt
    LOGICAL             :: lfound
    LOGICAL             :: okp( 3 )
-   !
-   ! input namelist
-   !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
-                    datatype, assume_ncpp, output_fmt, locate_wf, &
-                    nrxl, nrxh, nryl, nryh, nrzl, nrzh, spin_component
    !
    ! end of declariations
    !
@@ -120,12 +127,12 @@
       datatype                    = 'modulus'
       output_fmt                  = 'plt'
       spin_component              = 'none'
-      nrxl                        = -50000
-      nrxh                        =  50000
-      nryl                        = -50000
-      nryh                        =  50000
-      nrzl                        = -50000
-      nrzh                        =  50000
+      r1min                       = -0.5
+      r1max                       =  0.5
+      r2min                       = -0.5
+      r2max                       =  0.5
+      r3min                       = -0.5
+      r3max                       =  0.5
       
 
       READ(stdin, INPUT, IOSTAT=ierr)
@@ -150,7 +157,20 @@
       IF ( TRIM(output_fmt) /= "txt" .AND. TRIM(output_fmt) /= "plt" .AND. &
            TRIM(output_fmt) /= "gau" ) &
            CALL errore('plot', 'Invalid output_fmt = '//TRIM(output_fmt), 4)
-   
+
+      IF ( r1min > r1max ) CALL errore('plot', 'r1min > r1max',1)
+      IF ( r2min > r2max ) CALL errore('plot', 'r2min > r2max',2)
+      IF ( r3min > r3max ) CALL errore('plot', 'r3min > r3max',3)
+      IF ( ABS(r1max -r1min) < EPS_m4 ) CALL errore('plot', 'r1 too small',1)
+      IF ( ABS(r2max -r2min) < EPS_m4 ) CALL errore('plot', 'r2 too small',2)
+      IF ( ABS(r3max -r3min) < EPS_m4 ) CALL errore('plot', 'r3 too small',3)
+      rmin(1) = r1min 
+      rmin(2) = r2min
+      rmin(3) = r3min
+      rmax(1) = r1max 
+      rmax(2) = r2max
+      rmax(3) = r3max
+
       read_pseudo = .NOT. assume_ncpp
 
 
@@ -262,14 +282,14 @@
       ENDIF
 
       !
-      ! set the default FFT mesh
+      ! set the FFT mesh
       !
-      IF ( nrxl == -50000) nrxl = -nfft(1)/2
-      IF ( nrxh ==  50000) nrxh =  nfft(1) -1 -nfft(1)/2
-      IF ( nryl == -50000) nryl = -nfft(2)/2
-      IF ( nryh ==  50000) nryh =  nfft(2) -1 -nfft(2)/2
-      IF ( nrzl == -50000) nrzl = -nfft(3)/2
-      IF ( nrzh ==  50000) nrzh =  nfft(3) -1 -nfft(3)/2
+      nrxl = NINT( r1min * nfft(1) )
+      nrxh = NINT( r1max * nfft(1) )
+      nryl = NINT( r2min * nfft(2) )
+      nryh = NINT( r2max * nfft(2) )
+      nrzl = NINT( r3min * nfft(3) )
+      nrzh = NINT( r3max * nfft(3) )
 
       !
       ! summary of the input
@@ -284,10 +304,14 @@
       ENDDO
       WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
       WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
+      WRITE( stdout,"(/,2x,'Plotting Cell dimensions [cryst. coord]:')") 
+      WRITE( stdout,"(  6x, ' r1 :  ', f8.4, ' --> ', f8.4 )" ) r1min, r1max
+      WRITE( stdout,"(  6x, ' r2 :  ', f8.4, ' --> ', f8.4 )" ) r2min, r2max
+      WRITE( stdout,"(  6x, ' r3 :  ', f8.4, ' --> ', f8.4 )" ) r3min, r3max
       WRITE( stdout,"(/,2x,'Grid dimensions:')") 
-      WRITE( stdout,"(  6x, 'nrx', i6, ' --> ', i6 )" ) nrxl, nrxh 
-      WRITE( stdout,"(  6x, 'nry', i6, ' --> ', i6 )" ) nryl, nryh 
-      WRITE( stdout,"(  6x, 'nrz', i6, ' --> ', i6 )" ) nrzl, nrzh 
+      WRITE( stdout,"(  6x, 'nrx :  ', i8, ' --> ', i8 )" ) nrxl, nrxh 
+      WRITE( stdout,"(  6x, 'nry :  ', i8, ' --> ', i8 )" ) nryl, nryh 
+      WRITE( stdout,"(  6x, 'nrz :  ', i8, ' --> ', i8 )" ) nrzl, nrzh 
       WRITE( stdout,"()")
 
 
@@ -332,15 +356,18 @@
       CALL cart2cry( rave_cry, avec)
 
       !
-      ! determine the shift to rave to set the WF in the wigner seitz cell
+      ! determine the shift to rave to set the WF in the selected plotting cell
+      ! select the starting point of the shift cell as the mid point of 
+      ! rmin(i) and rmax(i)-1.0
       !
       rave_shift(:,:) = ZERO
       IF ( locate_wf ) THEN
          DO m=1,nplot
             DO i=1,3
                j = 0
-               IF ( rave_cry(i,iwann(m)) +0.5 < ZERO ) j = 1
-               rave_shift(i,iwann(m)) = REAL( INT( rave_cry(i,iwann(m)) +0.5) -j ) 
+               IF ( rave_cry(i,iwann(m)) -( rmin(i)+rmax(i)-ONE )/TWO < ZERO ) j = 1
+               rave_shift(i,iwann(m)) = REAL( INT( rave_cry(i,iwann(m)) &
+                                              -( rmin(i)+rmax(i)-ONE)/TWO ) -j ) 
             ENDDO
          ENDDO
       ENDIF
@@ -360,8 +387,14 @@
       ENDDO
       !
       IF ( locate_wf ) THEN
-          WRITE( stdout, " (/,2x,'Locating WFs: moving centers')")
-          WRITE( stdout, " (8x,'in crystal coord' )")
+          WRITE( stdout,"(/,2x,'Locating WFs: ')")
+          WRITE( stdout,"(2x,'Plotting Cell dimensions [cryst. coord]:')") 
+          DO i=1,3
+             WRITE( stdout,"(  6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4 )" ) &
+                    i, (rmin(i)+rmax(i)-ONE)/TWO, (rmin(i)+rmax(i)+ONE)/TWO
+          ENDDO
+          WRITE( stdout,"(/,2x,'New center positions [cryst. coord]:')") 
+          WRITE( stdout,"(8x,'in crystal coord' )")
           DO m=1,nplot
              WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
                     iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
