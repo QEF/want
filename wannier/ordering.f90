@@ -137,3 +137,4 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    IF (ierr/=0) CALL errore('ordering','deallocating RSWAP, CSWAP',ABS(ierr))
 
    END SUBROUTINE ordering
+
