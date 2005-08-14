@@ -291,8 +291,8 @@ END SUBROUTINE zmat_svd
            ENDDO
        ENDIF
    ELSE
-       CALL ZGEMM( opa, opb, m, n, k, CONE, a(1,1), &
-       SIZE(a,1), b(1,1), SIZE(b,1), CZERO, c(1,1), SIZE(c,1) )
+       CALL ZGEMM( opa, opb, m, n, k, CONE, a, SIZE(a,1), &
+                   b, SIZE(b,1), CZERO, c, SIZE(c,1) )
    ENDIF
    RETURN
 END SUBROUTINE
