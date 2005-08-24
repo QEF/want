@@ -4,8 +4,13 @@
 *************************************
 
 * Wannier: bshell elimination
-* disentangle:  overlap updated to be better implemented
-                (waste a little bit of memory but twice as fast)
+* disentangle: 
+     - overlap updating should be better implemented
+       (waste a little bit of memory but twice as fast)
+     - wfc stored in a k-indip array (waste small mem but
+       may increase performance)
+     - scalar products in projections and overlaps by BLAS
+               
 * plot.x: USPP features not fully implemented.
 * test6: add a true transport calculation test
 * WanT:  a true manual (as the one in docs) is missing. 
