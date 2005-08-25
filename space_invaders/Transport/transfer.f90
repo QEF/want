@@ -82,7 +82,7 @@
       ENDDO
 
       CALL ZGESV( nmax, nmax, t12, nmax, ipiv, t11, nmax, info )
-      IF ( info /= 0 )  CALL errore(' Stransfreb ', ' ZGESV (I) ', info )
+      IF ( info /= 0 )  CALL errore('transfer', 'ZGESV (I)', ABS(info) )
 
       !
       ! Compute intermediate t-matrices (defined as tau(nmax,nmax,niter)
@@ -128,7 +128,16 @@
 
 
          CALL ZGESV( nmax, nmax, s1, nmax, ipiv, s2, nmax, info )
-         IF ( info /= 0 )  CALL errore(' Stransfreb ', ' ZGESV (II) ', info )
+! XXXX
+         IF ( info /= 0 )  THEN 
+              WRITE(6, '(2x, " WARNING: singular matrix in ZGEEV (II) ")')
+              WRITE(6, '(2x, "          the current Omega value is skipped")')
+              tot = CZERO
+              tott = CZERO
+              CALL timing('transfer',OPR='stop')
+              RETURN
+         ENDIF
+!         IF ( info /= 0 )  CALL errore('transfer', 'ZGESV (II)',ABS(info))
 
 
          CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, tau(1,1,1), nmax, tau(1,1,1), nmax, &

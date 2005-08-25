@@ -210,7 +210,7 @@
         
    !
    ! Finally check that the states in the columns of the final matrix lamp are orthonormal
-   ! at every k-point (i.e., that the matrix is unitary in the sense that
+   ! at every k-point, i.e. that the matrix is unitary in the sense that
    !    lamp^{\dag} * lamp = 1 
    ! but not 
    !    lamp * lamp^{\dag} = 1

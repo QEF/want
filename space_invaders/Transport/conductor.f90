@@ -290,7 +290,8 @@
 !     (at the end leave the file opened)
 !
       IF ( lcorrelation ) THEN
-           CALL file_open( sgm_unit, TRIM(sgmfile), PATH="/", ACTION="read", FORM="formatted")
+           CALL file_open( sgm_unit, TRIM(sgmfile), PATH="/", ACTION="read", &
+                           FORM="formatted")
 
            CALL iotk_scan_empty(sgm_unit, "DATA", ATTR=attr, IERR=ierr)
               IF (ierr/=0) CALL errore('conductor','searching DATA',ABS(ierr))
@@ -338,7 +339,7 @@
 ! ... setting the energy grid
 !
       DO ie = 1, ne
-          rtmp = emin + REAL( ie -1) * (emax - emin) / REAL(ne -1)
+          rtmp = emin + REAL(ie -1) * (emax - emin) / REAL(ne -1)
           IF ( lcorrelation ) THEN
                IF ( ABS( egrid(ie ) - rtmp) > EPS_m5 ) &
                     CALL errore('conductor', 'grids not equal',ie)
@@ -351,6 +352,7 @@
 !
 ! ... main loop over frequency
 ! 
+      WRITE(stdout,"()")
 
       energies: &
       DO ie = 1, ne
@@ -359,6 +361,7 @@
          ! compute Retarded quantities
          !
          ene =  egrid(ie)  + delta * CI
+         WRITE(stdout,"(2x, 'Computing E = ', f9.5, ' eV' )") egrid(ie)
 
          !
          ! init

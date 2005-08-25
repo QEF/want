@@ -107,7 +107,7 @@ CONTAINS
    !  Note that the routine returns V**T, not V.
    !
    IMPLICIT NONE
-   INTEGER, INTENT(IN)    :: m, n
+   INTEGER,   INTENT(IN)  :: m, n
    REAL(dbl), INTENT(IN)  :: a(:,:)
    REAL(dbl), INTENT(OUT) :: s(:)
    REAL(dbl), INTENT(OUT) :: u(:,:), vt(:,:)
@@ -133,7 +133,7 @@ CONTAINS
 
    !
    ! save A (which is intent IN)
-   atmp(:,:) = a(:,:)
+   atmp(:,:) = a(1:m, 1:n)
 
    CALL DGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
                 work, lwork, info)
@@ -194,7 +194,7 @@ END SUBROUTINE dmat_svd
 
    !
    ! save A (which is intent IN)
-   atmp(:,:) = a(:,:)
+   atmp(:,:) = a(1:m, 1:n)
 
    CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
                 work, lwork, rwork, info)
@@ -422,7 +422,7 @@ END SUBROUTINE zmat_hdiag
        ! 
        ! matrix mult
        CALL zmat_mul( result, z, 'N', z, 'C', dim1,dim1,dim2)
-       
+
        DO j=1,dim1
        DO i=1,dim1
            IF ( i==j ) THEN
