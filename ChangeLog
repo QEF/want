@@ -4,6 +4,9 @@
 =======================================================
 
 
+24 Ago 2005      Array out-of-bound in the interfaces to ZGESV (util.f90): fixed.
+                 It is a reasonable cause for the weird errors involving zmat_unitary. (AF) 
+
 12 Ago 2005      plot.x: plotting cell dimensions from input now in crystal units and
                  not as FFT mesh. locate_wf logical variable added in order to manage
                  whether shift WF's or not. Shift is now performed to a cell centered
