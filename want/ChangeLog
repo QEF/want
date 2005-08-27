@@ -3,7 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
-26 Ago 2005      two bugs of small effect in external routine interfacing fixed. (AF)
+
+26 Ago 2005      Two bugs of small effect in external routine interfacing fixed. 
+                 kgrid.f90 program added to utility. (AF)
 
 24 Ago 2005      Array out-of-bound in the interfaces to ZGESV (util.f90): fixed.
                  It is a reasonable cause for the weird errors involving zmat_unitary. (AF) 

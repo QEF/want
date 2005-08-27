@@ -17,6 +17,7 @@ Cobalt FCC bulk PBE USPP
       occupations='smearing',
       smearing='gaussian',
       degauss=0.006,
+      nbnd = 20
  /
  &ELECTRONS
     electron_maxstep = 50,
