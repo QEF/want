@@ -48,7 +48,7 @@
   INTEGER                 :: ike           ! the ending ik (at the current spin)
   !
   INTEGER                 :: nk(3)         ! component of the MP kgrid
-  REAL(dbl)               :: s(3)          ! fractional shifts of the MP grid
+  INTEGER                 :: s(3)          ! fractional shifts of the MP grid
   REAL(dbl), ALLOCATABLE  :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts (Bohr^-1)
   REAL(dbl), ALLOCATABLE  :: wk(:)         ! weight of each kpt for BZ sums 
   REAL(dbl)               :: wksum         ! sum of the weights

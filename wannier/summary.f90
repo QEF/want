@@ -351,7 +351,7 @@
           WRITE( unit, "(2x, 'nkpts = ',i4 ) " ) nkpts
           WRITE( unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i3,' ),', &
                         & 6x,'shift = (',3i3,' )' ) " ) & 
-                          nk(:), NINT( s(:) )
+                          nk(:), s(:) 
           WRITE( unit, "(2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
           
 
