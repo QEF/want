@@ -152,7 +152,7 @@
            DO ik = 1, nkpts
                 IF ( dimwann > dimfroz(ik) )  THEN
                     CALL zmatrix( ik, lamp, Mkb(1,1,1,ik), mtrx_out(1,1,ik), dimwann, &
-                                  dimwin, dimwinx, dimfroz(ik), indxnfroz(1,ik), nbnd )
+                                  dimwin, dimwinx, dimfroz(ik), indxnfroz(1,ik) )
                 ENDIF
            ENDDO
 
