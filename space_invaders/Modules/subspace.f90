@@ -163,6 +163,7 @@ CONTAINS
    IMPLICIT NONE
        INTEGER,         INTENT(in) :: unit
        CHARACTER(*),    INTENT(in) :: name
+       INTEGER            :: ik
        CHARACTER(nstrx)   :: attr
        CHARACTER(14)      :: subname="subspace_write"
 
@@ -177,7 +178,10 @@ CONTAINS
 
        CALL iotk_write_dat(unit,"DIMWIN",dimwin) 
        CALL iotk_write_dat(unit,"WAN_EIGENVALUES",wan_eig)
-       CALL iotk_write_dat(unit,"LAMP",lamp)
+       DO ik =1,nkpts
+          CALL iotk_write_dat(unit,"LAMP"//TRIM(iotk_index(ik)), &
+               lamp(1:dimwin(ik),1:dimwann,ik))
+       ENDDO
        CALL iotk_write_dat(unit,"CAMP",camp)
        CALL iotk_write_dat(unit,"EAMP",eamp)
        IF ( lcompspace ) CALL iotk_write_dat(unit,"COMP_EAMP",comp_eamp)
@@ -196,7 +200,7 @@ CONTAINS
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="subspace_read"
        INTEGER            :: nkpts_, dimwinx_
-       INTEGER            :: ierr
+       INTEGER            :: ik, ierr
 
        IF ( alloc ) CALL subspace_deallocate()
 
@@ -235,8 +239,11 @@ CONTAINS
        CALL subspace_allocate()
        CALL iotk_scan_dat(unit,'WAN_EIGENVALUES',wan_eig,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find EIGENVALUES',ABS(ierr))
-       CALL iotk_scan_dat(unit,'LAMP',lamp,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find LAMP',ABS(ierr))
+       DO ik=1,nkpts
+           CALL iotk_scan_dat(unit,'LAMP'//TRIM(iotk_index(ik)), &
+                              lamp(1:dimwin(ik), 1:dimwann, ik),IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find LAMP at ik',ik)
+       ENDDO
        CALL iotk_scan_dat(unit,'CAMP',camp,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find CAMP',ABS(ierr))
        CALL iotk_scan_dat(unit,'EAMP',eamp,IERR=ierr)

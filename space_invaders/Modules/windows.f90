@@ -356,7 +356,17 @@ CONTAINS
        ELSE
             nkpts = nkpts_
        ENDIF
+       !
        CALL windows_allocate()
+       !
+       ALLOCATE( dimfroz(nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',ABS(ierr))
+       ALLOCATE( indxfroz(dimwinx,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',ABS(ierr))
+       ALLOCATE( indxnfroz(dimwinx,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',ABS(ierr))
+       ALLOCATE( frozen(dimwinx,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',ABS(ierr))
 
        CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
