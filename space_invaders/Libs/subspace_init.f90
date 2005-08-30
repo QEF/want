@@ -92,7 +92,8 @@
 
         WRITE( stdout,"(/,'  Initial trial subspace: random Unit transform',/)")
         DO ik=1, nkpts
-            lamp(:,:,ik) = CZERO
+! XXX
+!            lamp(:,:,ik) = CZERO
             CALL random_orthovect(dimwann, dimwin(ik), dimwinx, lamp(1,1,ik) )
         ENDDO           
            
@@ -151,7 +152,8 @@
   
         DO ik=1,nkpts
 
-           lamp(:,:,ik) = CZERO
+! XXX
+!           lamp(:,:,ik) = CZERO
            IF ( dimwann > dimfroz(ik) ) THEN
                 !
                 CALL mat_svd( dimwin(ik), dimwann, ca(:,:,ik), s, u, vt )
