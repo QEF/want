@@ -6,10 +6,10 @@
 
 30 Ago 2005      Dimensions in Lamp changed for debug purposes, allocations in windows
                  updated. Large cleanup of unused variables and implicit conversions,
-                 using G95.  (AF)
+                 using G95. LAMP writing upgraded in order to be more sensible to debug.(AF)
 
 26 Ago 2005      Two bugs of small effect in external routine interfacing fixed. 
-                 kgrid.f90 program added to utility. (AF)
+                 kgrid.f90 program added to utility. (AF) 
 
 24 Ago 2005      Array out-of-bound in the interfaces to ZGESV (util.f90): fixed.
                  It is a reasonable cause for the weird errors involving zmat_unitary. (AF) 
