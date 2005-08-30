@@ -15,7 +15,7 @@
    USE parameters,     ONLY : nnx
    USE timing_module,  ONLY : timing
    USE wfc_info_module 
-   USE ggrids_module,  ONLY : nfft, igv 
+   USE ggrids_module,  ONLY : nfft
 
    IMPLICIT NONE
       !
@@ -35,7 +35,7 @@
       ! ... Local Variables
       !
       INTEGER :: ierr
-      INTEGER :: i, j , ig
+      INTEGER :: ig
       INTEGER :: npwkx, npwx_g
       INTEGER :: j1, npwk1, ind1
       INTEGER :: j2, npwk2, ind2

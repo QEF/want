@@ -125,7 +125,6 @@ CONTAINS
    IMPLICIT NONE
        CHARACTER(21)      :: subname="struct_fact_data_init"
        REAL(dbl)          :: bg_(3,3)
-       INTEGER            :: i, ierr
 
        IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice not alloc',1) 
        IF ( .NOT. ions_alloc )    CALL errore(subname,'ions not alloc',1) 

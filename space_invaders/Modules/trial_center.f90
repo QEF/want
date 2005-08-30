@@ -127,7 +127,7 @@ CONTAINS
       TYPE(trial_center), INTENT(in) :: obj
       COMPLEX(dbl),       INTENT(out):: vect(npwk)
 
-      INTEGER                    :: i,j, ig, ierr, l, ilm
+      INTEGER                    :: i, ig, ierr, ilm
       INTEGER                    :: igvect(3)
       REAL(dbl)                  :: decay, x1(3), x2(3), vk(3)
       REAL(dbl)                  :: arg, prefactor 

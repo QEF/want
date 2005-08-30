@@ -37,7 +37,6 @@ SUBROUTINE init_us_1
   USE ions_module,     ONLY : ntyp => nsp
   USE lattice_module,  ONLY : omega, tpiba
   USE ggrids_module,   ONLY : g, gg
-  USE pseud_module,    ONLY : lloc, lmax
   USE us_module,       ONLY : okvan, nqxq, dq, nqx, tab, qrad
   USE uspp,            ONLY : nhtol, nhtoj, nhtolm, dvan, qq, qb, indv, ap, aainit, &
                               qq_so, dvan_so
@@ -67,7 +66,7 @@ SUBROUTINE init_us_1
   ! q-point grid for interpolation
   REAL(kind=dbl), ALLOCATABLE :: ylmk0 (:,:)
   ! the spherical harmonics
-  REAL(kind=dbl) ::  vll (0:lmaxx), vqint, sqrt2, j
+  REAL(kind=dbl) ::  vqint, sqrt2, j
   ! the denominator in KB case
   ! interpolated value
   INTEGER :: n1, m0, m1, n, li, mi, vi, vj, ijs, is1, is2, &

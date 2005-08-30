@@ -34,7 +34,7 @@
    USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read, &
                                     spin_component
    USE subspace_module,      ONLY : subspace_read
-   USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, degen, indxws, vws, rham, wan_eig, &
+   USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, degen, vws, rham, wan_eig, &
                                     hamiltonian_read, hamiltonian_init
    IMPLICIT NONE 
 
@@ -55,7 +55,7 @@
    REAL(dbl),    ALLOCATABLE :: eig_int(:,:)  ! interpolated band structure   
    CHARACTER(2), ALLOCATABLE :: kptname_in(:)    
    CHARACTER(nstrx)          :: filename
-   INTEGER :: i, j, m, ik, iws
+   INTEGER :: i, j, ik, iws
    INTEGER :: ierr
    LOGICAL :: lfound
    !

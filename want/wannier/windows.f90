@@ -52,16 +52,17 @@
    REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: nbnd, nkpts
    REAL(dbl)                   :: efermi             ! Fermi energy (from DFT)
    LOGICAL                     :: lcompspace=.TRUE.  ! whether COMPLEMENT space is NOT null
+   !
+   LOGICAL                     :: alloc=.FALSE.      
 
    !
    ! ... frozen states
    INTEGER,      ALLOCATABLE   :: dimfroz(:)         ! variable for using frozen (dim: nkpts)
    INTEGER,      ALLOCATABLE   :: indxfroz(:,:)      ! states which are kept equal
-   INTEGER,      ALLOCATABLE   :: indxnfroz(:,:)     ! dim: nbnd nkpts
+   INTEGER,      ALLOCATABLE   :: indxnfroz(:,:)     ! dim: dimwinx nkpts
    LOGICAL                     :: lfrozen =.FALSE.   ! whether FROZEN states are present
    LOGICAL,      ALLOCATABLE   :: frozen(:,:)        ! which are the frozen states
-                                                     ! dim: nbnd, nkpts
-   LOGICAL                     :: alloc=.FALSE.      ! 
+                                                     ! dim: dimwinx, nkpts
 !
 ! end of declarations
 !
@@ -103,8 +104,11 @@ CONTAINS
        IF ( SIZE(eig_,1) /= nbnd ) CALL errore(subname,'Invalid EIG size1',ABS(nbnd)+1)
        IF ( SIZE(eig_,2) /= nkpts ) CALL errore(subname,'Invalid EIG size2',ABS(nkpts)+1)
       
-       lfrozen = .FALSE.
-       kpoints: DO ik = 1,nkpts
+!
+! ... windows dimensions
+!
+       kpoints_loop: &
+       DO ik = 1,nkpts
 
           !
           ! ... Check which eigenvalues fall within the outer energy window
@@ -121,14 +125,35 @@ CONTAINS
               ENDIF
               IF ( eig_(i,ik) <= win_max ) imax(ik) = i
           ENDDO
-
+          !
           dimwin(ik) = imax(ik) - imin(ik) + 1       
-
+          !
           IF ( dimwin(ik) < dimwann) CALL errore(subname,'dimwin < dimwann ', ik )
           IF ( dimwin(ik) > nbnd) CALL errore(subname,'dimwin > nbnd ', ik )
           IF ( imax(ik) < imin(ik) ) CALL errore(subname,'imax < imin ',ik)
           IF ( imin(ik) < 1 ) CALL errore(subname,' imin < 1 ',ik)
+          !
+       ENDDO kpoints_loop
 
+
+!
+! ... frozen states
+!
+       dimwinx = MAXVAL( dimwin(:) )
+       !
+       ALLOCATE( dimfroz(nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',ABS(ierr))
+       ALLOCATE( indxfroz(dimwinx,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',ABS(ierr))
+       ALLOCATE( indxnfroz(dimwinx,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',ABS(ierr))
+       ALLOCATE( frozen(dimwinx,nkpts), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',ABS(ierr))
+       lfrozen = .FALSE.
+
+
+       kpoints_frozen_loop: &
+       DO ik = 1, nkpts
           !
           ! ... frozen states
           frozen(:,ik) = .FALSE.
@@ -180,8 +205,7 @@ CONTAINS
           IF ( idum /= dimwin(ik)-dimfroz(ik) )  &
               CALL errore(subname, 'wrong number of non-frozen states', ik)
 
-       ENDDO kpoints   
-       dimwinx = MAXVAL( dimwin(:) )
+       ENDDO kpoints_frozen_loop   
 
    END SUBROUTINE windows_init
 
@@ -206,17 +230,7 @@ CONTAINS
        ALLOCATE( eig(nbnd,nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating eig ',nbnd*nkpts)
 
-       ALLOCATE( dimfroz(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',nkpts) 
-       ALLOCATE( indxfroz(nbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',nkpts)
-       ALLOCATE( indxnfroz(nbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',nkpts)
-       ALLOCATE( frozen(nbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',nbnd*nkpts)      
-
        alloc = .TRUE.
-
    END SUBROUTINE windows_allocate
 
 

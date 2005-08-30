@@ -238,9 +238,7 @@ CONTAINS
    !
    IMPLICIT NONE
        CHARACTER(9)       :: subname="ions_init"
-       LOGICAL            :: equal
        INTEGER            :: ia, i
-       INTEGER            :: ierr
  
        IF ( .NOT. alloc ) CALL errore(subname,'IONS not allocated',1)
 
@@ -275,10 +273,10 @@ CONTAINS
    ! Freely inspired to the similar subroutine in ESPRESSO package
    !
       IMPLICIT NONE
-      REAL(dbl), INTENT(OUT) :: tausrt( :, : )
-      INTEGER, INTENT(OUT) :: isrt( : )
-      REAL(dbl), INTENT(IN) :: tau_( :, : )
-      INTEGER, INTENT(IN) :: isp( : ), na_(:)
+      REAL(dbl),   INTENT(OUT) :: tausrt( :, : )
+      INTEGER,     INTENT(OUT) :: isrt( : )
+      REAL(dbl),    INTENT(IN) :: tau_( :, : )
+      INTEGER,      INTENT(IN) :: isp( : ), na_(:)
       INTEGER :: ina( SIZE(na_) ), na_tmp( SIZE(na_) )
       INTEGER :: nsp_, is, ia
 
@@ -296,7 +294,7 @@ CONTAINS
       DO ia = 1, nat
         is  =  isp( ia )
         na_tmp( is ) = na_tmp( is ) + 1
-        tausrt( :, na_tmp(is) + ina(is) ) = tau(:, ia )
+        tausrt( :, na_tmp(is) + ina(is) ) = tau_(:, ia )
         isrt  (    na_tmp(is) + ina(is) ) = ia
       END DO
       RETURN

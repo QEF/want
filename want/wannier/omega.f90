@@ -16,7 +16,7 @@
    USE constants, ONLY : ZERO, ONE, CI 
    USE io_module, ONLY : stdout
    USE timing_module, ONLY : timing
-   USE kpoints_module, ONLY : nnx, nntot, nnlist, bk, wb
+   USE kpoints_module, ONLY : nnx, nntot, bk, wb
    IMPLICIT NONE
 
    !
@@ -33,7 +33,7 @@
    !
    ! local variables
    !
-   REAL(dbl) :: aux(3), rtmp, rtmp1
+   REAL(dbl) :: rtmp, rtmp1
    INTEGER :: ik, inn
    INTEGER :: i, m, n 
    !

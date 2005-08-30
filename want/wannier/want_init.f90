@@ -62,11 +62,9 @@ SUBROUTINE want_init(want_input, windows, bshells, pseudo)
 
    CHARACTER(9)              :: subname="want_init"
    CHARACTER(nstrx)          :: filename 
-   CHARACTER(nstrx)          :: attr
-   CHARACTER(nstrx)          :: string
    LOGICAL                   :: lfound
    LOGICAL                   :: want_input_, windows_, bshells_, pseudo_
-   INTEGER                   :: ierr, ia, ik, iwann, idum
+   INTEGER                   :: ierr, ia, iwann
    
 
 ! ... end of declarations

@@ -47,7 +47,7 @@
    INTEGER :: npwk
    INTEGER :: lmax
    INTEGER :: iwann, ib, ig, ind 
-   INTEGER :: i, j, ierr
+   INTEGER :: ierr
    INTEGER,      ALLOCATABLE :: ylm_info(:,:)
    REAL(dbl),    ALLOCATABLE :: ylm(:,:), vkg(:,:), vkgg(:)
    COMPLEX(dbl), ALLOCATABLE :: trial_vect(:)

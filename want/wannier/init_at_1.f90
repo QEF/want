@@ -23,7 +23,7 @@ SUBROUTINE init_at_1()
   !
   IMPLICIT NONE
   !
-  INTEGER :: n_starting_wfc, nt, nb, iq, ir, l, startq, lastq, ndm, ierr
+  INTEGER :: nt, nb, iq, ir, l, startq, lastq, ndm, ierr
   !
   REAL(dbl), allocatable :: aux (:), vchi (:)
   REAL(dbl) :: vqint, pref, q

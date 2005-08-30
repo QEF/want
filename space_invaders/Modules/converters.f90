@@ -69,7 +69,7 @@ CONTAINS
       REAL(dbl):: dtmp(3)
       REAL(dbl):: transf(3,3), det
       INTEGER  :: nvect 
-      INTEGER  :: i,j,l, ierr
+      INTEGER  :: i,j,l
 
       nvect = SIZE(coord(:,:),2)
       IF ( SIZE( coord(:,:),1 ) /= 3 ) CALL errore('cart2cry','Invalid COORD lead DIM',1)
@@ -123,7 +123,7 @@ CONTAINS
 
       REAL(dbl):: dtmp(3)
       INTEGER  :: nvect 
-      INTEGER  :: i,j,l, ierr
+      INTEGER  :: i,j,l
 
       nvect = SIZE(coord(:,:),2)
       IF ( SIZE( coord(:,:),1 ) /= 3 ) CALL errore('cry2cart','Invalid COORD lead DIM',1)

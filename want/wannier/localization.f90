@@ -206,7 +206,6 @@ CONTAINS
        INTEGER,         INTENT(in) :: unit
        CHARACTER(*),    INTENT(in) :: name
        CHARACTER(nstrx)   :: attr
-       CHARACTER(18)      :: subname="localization_write"
 
        IF ( .NOT. alloc ) RETURN
 

@@ -17,7 +17,7 @@
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
-                                 unitary_thr, verbosity, do_condmin, &
+                                 unitary_thr, do_condmin, &
                                  localization_init_ => localization_init
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
@@ -29,8 +29,7 @@
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
-      USE kpoints_module, ONLY: nkpts, nnx, &
-                          nntot, nnlist, neigh, bk, wb, bka, wbtot
+      USE kpoints_module, ONLY: nkpts, nnx, wbtot
       USE overlap_module,  ONLY : dimwann, ca, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr, cu, rave, rave2, r2ave, &
@@ -47,17 +46,16 @@
 
       ! external functions
       LOGICAL   :: lselect  ! external function non defined
-      REAL(dbl) :: rndm     ! external function giving random numbers (from NR)
 
       INTEGER :: ik 
       INTEGER :: i, j
-      INTEGER :: l, m, n
+      INTEGER :: m, n
       INTEGER :: info, ierr
       INTEGER :: nrguide, ncgfix, ncount, iter
       LOGICAL :: lcg
       REAL(dbl) :: Omega_old, Omega_var, Omega0, OmegaA
       REAL(dbl) :: gcnorm1, gcnorm0, doda0
-      REAL(dbl) :: eqc, eqb, eqa, alpha, alphamin
+      REAL(dbl) :: eqb, eqa, alpha, alphamin
 
       REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
@@ -69,7 +67,6 @@
       COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cdq(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  cz(:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  cv3(:,:) 
 
       COMPLEX(dbl), ALLOCATABLE :: cwschur1(:) !  cwschur1(dimwann)
       COMPLEX(dbl), ALLOCATABLE :: cwschur2(:) !  cwschur2(10*dimwann)
@@ -356,7 +353,6 @@
                !
                ! Take now optimal parabolic step
                !
-               eqc = Omega0
                eqb = doda0
                eqa = ( OmegaA - Omega0 - eqb * alpha ) / alpha
    

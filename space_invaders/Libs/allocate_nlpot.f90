@@ -28,7 +28,6 @@ subroutine allocate_nlpot
   USE kinds,           ONLY : dbl
   USE constants,       ONLY : ZERO, ONE
   USE parameters,      ONLY : nbrx, nchix
-  USE pseud_module,    ONLY : lmax, lloc
   USE ions_module,     ONLY : nat, ntyp => nsp, ityp
   USE lattice_module,  ONLY : tpiba
   USE windows_module,  ONLY : nspin
@@ -48,18 +47,16 @@ subroutine allocate_nlpot
   !
   !    a few local variables
   !
-  integer :: nt, na, nb, ldim, ierr  
+  integer :: nt, na, nb, ierr  
   ! counters on atom type, atoms, beta functions, ierr
   !
 
   REAL(dbl) :: gcutm, xqq(3)
-  REAL(dbl) :: cell_factor
   !
-  ! defining gcutm, xqq, and cell_factor
+  ! defining gcutm, xqq
   !
   gcutm = ecutrho / tpiba**2
   xqq = ZERO
-  cell_factor = ONE
   
   !
   !     calculate the number of beta functions for each atomic type
@@ -115,8 +112,7 @@ subroutine allocate_nlpot
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
   ENDIF
   !
-  nqxq = ( (SQRT(gcutm) + SQRT(xqq(1)**2 + xqq(2)**2 + xqq(3)**2) ) &
-          / dq + 4) * cell_factor
+  nqxq = INT (( SQRT(gcutm) + SQRT(xqq(1)**2 + xqq(2)**2 + xqq(3)**2) ) / dq ) + 4
   lmaxq = 2*lmaxkb+1
   !
   IF (lmaxq > 0) THEN 
@@ -137,7 +133,7 @@ subroutine allocate_nlpot
   !     Calculate dimensions for array tab (including a possible factor
   !     coming from cell contraction during variable cell relaxation/MD)
   !
-  nqx = (sqrt (ecutwfc) / dq + 4) * cell_factor
+  nqx = INT (SQRT (ecutwfc) / dq ) + 4
 
   ALLOCATE (tab( nqx , nbrx , ntyp), STAT=ierr)    
       IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab',ABS(ierr))

@@ -15,7 +15,7 @@
    USE kinds
    USE constants, ONLY : ZERO, ONE, TWO, CZERO, CI
    USE timing_module, ONLY : timing
-   USE kpoints_module, ONLY : nnx, nntot, nnlist, bk, wb
+   USE kpoints_module, ONLY : nnx, nntot, bk, wb
    IMPLICIT NONE 
 
    !  

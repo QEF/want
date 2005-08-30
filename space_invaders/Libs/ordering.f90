@@ -42,7 +42,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    COMPLEX(dbl), ALLOCATABLE   :: cswap(:,:,:)
    INTEGER, ALLOCATABLE        :: index(:)
    LOGICAL                     :: lspatial, lspread
-   INTEGER                     :: i,j,is,ie, ierr
+   INTEGER                     :: i, is, ie, ierr
 
 
 !------------------------------------------------

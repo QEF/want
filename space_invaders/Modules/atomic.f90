@@ -109,7 +109,6 @@ END SUBROUTINE atomic_name2num
    IMPLICIT NONE
    INTEGER,          INTENT(in)  :: zatom
    CHARACTER( * ),   INTENT(out) :: symbol
-   INTEGER :: i
 
    IF ( zatom <= 0  ) CALL errore('atomic_num2name','Zatom <= 0',-zatom+1) 
    IF ( zatom > 103 ) CALL errore('atomic_num2name','Zatom too large',zatom) 

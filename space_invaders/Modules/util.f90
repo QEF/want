@@ -369,8 +369,8 @@ END SUBROUTINE zmat_hdiag
    REAL(dbl)     :: toll_
    CHARACTER(10) :: side_
    INTEGER       :: dim1,dim2
-   INTEGER       :: i,j,l, ierr
-   COMPLEX(dbl), ALLOCATABLE  :: result(:,:),z_loc(:,:) 
+   INTEGER       :: i, j, ierr
+   COMPLEX(dbl), ALLOCATABLE  :: result(:,:)
    
    zmat_unitary = .TRUE. 
 

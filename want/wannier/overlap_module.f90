@@ -108,8 +108,7 @@ CONTAINS
        INTEGER,         INTENT(in) :: unit
        CHARACTER(*),    INTENT(in) :: name
        CHARACTER(nstrx)   :: attr
-       CHARACTER(13)      :: subname="overlap_write"
-       INTEGER            :: iwann, ib, ik, ikb, ierr
+       INTEGER            :: iwann, ib, ik, ikb
 
        IF ( .NOT. alloc ) RETURN
        CALL iotk_write_begin(unit,TRIM(name))

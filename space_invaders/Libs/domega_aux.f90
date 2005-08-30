@@ -25,7 +25,7 @@
    USE kinds
    USE constants, ONLY : ZERO, ONE, CZERO, CI, TWO
    USE timing_module, ONLY : timing
-   USE kpoints_module, ONLY : nnx, nntot, nnlist, bk, wb
+   USE kpoints_module, ONLY : nnx, nntot, bk, wb
    USE trial_center_module
    IMPLICIT NONE 
 

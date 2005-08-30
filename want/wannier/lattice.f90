@@ -60,8 +60,6 @@ CONTAINS
     USE io_module, ONLY: stdout
     IMPLICIT NONE
 
-    INTEGER :: i,j
-
     !
     ! avec and bvec are in units of bohr and bohr^-1 respectively
     ! omega in bohr^3, alat and tpiba in bohr and bohr^-1

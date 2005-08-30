@@ -27,7 +27,7 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
   INTEGER,      INTENT(in) :: ik
   INTEGER,      INTENT(in) :: dimwann, dimwin(*), dimwinx
   INTEGER,      INTENT(in) :: dimfroz, indxnfroz(*)
-  COMPLEX(dbl), INTENT(in) :: lamp(dimwinx,dimwinx,*)
+  COMPLEX(dbl), INTENT(in) :: lamp(dimwinx,dimwann,*)
   COMPLEX(dbl), INTENT(in) :: Mkb(dimwinx,dimwinx,*)
   COMPLEX(dbl), INTENT(inout) :: mtrx(dimwinx,dimwinx)
 

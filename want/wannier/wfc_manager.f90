@@ -25,7 +25,7 @@
    USE parameters,     ONLY : nstrx
    USE constants,      ONLY : CZERO, ZERO
    USE iotk_module
-   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, ioname, pseudo_dir
+   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, ioname
    USE timing_module,  ONLY : timing, timing_upto_now
    USE files_module,   ONLY : file_open, file_close
    USE util_module,    ONLY : zmat_mul
@@ -33,14 +33,14 @@
    USE control_module, ONLY : do_overlaps, do_projections, &
                               use_atomwfc, use_pseudo, use_uspp, &
                               read_overlaps, read_projections
-   USE lattice_module, ONLY : avec, bvec, tpiba, alat
+   USE lattice_module, ONLY : tpiba
    USE subspace_module,ONLY : dimwann
    USE trial_center_data_module,   ONLY : trial
-   USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, dimfroz, imin, imax
-   USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, bk, &
+   USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, imin, imax
+   USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, &
                               nntot, nnlist, nncell, neigh, nreverse
    USE overlap_module, ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
-   USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
+   USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, &
                               ggrids_read_ext, ggrids_deallocate
    USE wfc_data_module,ONLY : npwkx, npwk, igsort, evc, evc_info, &
                               wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate 
@@ -58,9 +58,9 @@
       REAL(dbl)                 :: xk(3)
       COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
       LOGICAL                   :: lfound
-      INTEGER                   :: ig, ib, ikb, ik, inn
+      INTEGER                   :: ib, ikb, ik, inn
       INTEGER                   :: indin, indout, index
-      INTEGER                   :: i, j, ierr
+      INTEGER                   :: ierr
 
 
       CALL timing('wfc_manager',OPR='start')

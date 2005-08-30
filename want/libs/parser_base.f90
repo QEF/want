@@ -177,7 +177,6 @@ CONTAINS
       CHARACTER(*),     INTENT(inout)    :: str        
       CHARACTER(*),     INTENT(in)       :: case
 
-      CHARACTER(5) :: case_                 
       INTEGER  :: i,length
 
       length = LEN_TRIM(str)

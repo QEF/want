@@ -16,7 +16,7 @@
         USE kinds
         IMPLICIT NONE
         REAL(dbl) :: rranf
-        INTEGER :: kk, m, konst
+        INTEGER :: m, konst
         DATA m/100001/, konst/125/
         SAVE m, konst
           m=m*konst
@@ -97,13 +97,13 @@ function rndm ()
      do i = 32 + 8, 1, - 1
         shuffle (min (i, 32) ) = rndx (irand)
      enddo
-     i = 32 * shuffle (1) + 1
+     i = 32 * INT (shuffle (1)) + 1
      first = .false.
   endif
   rndm = shuffle (i)
   shuffle (i) = rndx (irand)
 
-  i = 32 * rndm + 1
+  i = 32 * INT( rndm ) + 1
   return
  
 end function rndm

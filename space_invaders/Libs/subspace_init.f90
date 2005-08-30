@@ -26,7 +26,7 @@
    USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
    !
-   USE windows_module, ONLY : lfrozen, dimfroz, indxfroz, frozen, nbnd
+   USE windows_module, ONLY : lfrozen, dimfroz, indxfroz, frozen
    USE kpoints_module, ONLY : vkpt
    USE control_module, ONLY : unitary_thr, verbosity
    USE subspace_module, ONLY : subspace_read
@@ -36,7 +36,7 @@
    INTEGER,         INTENT(in)  :: dimwann, dimwinx, nkpts
    INTEGER,         INTENT(in)  :: dimwin(nkpts)
    COMPLEX(dbl),    INTENT(in)  :: ca(dimwinx,dimwann,nkpts)
-   COMPLEX(dbl),    INTENT(out) :: lamp(dimwinx,dimwinx,nkpts)
+   COMPLEX(dbl),    INTENT(out) :: lamp(dimwinx,dimwann,nkpts)
 
 
    !
@@ -48,7 +48,7 @@
    COMPLEX(dbl),    ALLOCATABLE :: cu(:,:)
    COMPLEX(dbl),    ALLOCATABLE :: vt(:,:), u(:,:)
    LOGICAL                      :: lfound
-   INTEGER                      :: i, j, l, ik, ierr, info
+   INTEGER                      :: i, j, l, ik, ierr
 
 
 !
@@ -92,8 +92,6 @@
 
         WRITE( stdout,"(/,'  Initial trial subspace: random Unit transform',/)")
         DO ik=1, nkpts
-! XXX
-!            lamp(:,:,ik) = CZERO
             CALL random_orthovect(dimwann, dimwin(ik), dimwinx, lamp(1,1,ik) )
         ENDDO           
            
@@ -151,9 +149,6 @@
             IF( ierr /= 0 ) CALL errore(subname, 'allocating s ', dimwann )
   
         DO ik=1,nkpts
-
-! XXX
-!           lamp(:,:,ik) = CZERO
            IF ( dimwann > dimfroz(ik) ) THEN
                 !
                 CALL mat_svd( dimwin(ik), dimwann, ca(:,:,ik), s, u, vt )
@@ -187,8 +182,8 @@
             ! NOTA BENE: instead of what happens in projections here no use od wfcs is done
             !            moreover, wfcs have already been deallocated and wasted away
             !
-            CALL projection_frozen( lamp, dimwann, dimwin, dimwinx, dimfroz, &
-                                    frozen, nkpts, nbnd)
+            CALL projection_frozen( lamp, dimwann, dimwin, dimwinx, nkpts, & 
+                                    dimfroz, frozen )
 
             ! Finally include the frozen states (if any) in the trial
             ! subspace at each k-point (put them at the bottom of lamp)

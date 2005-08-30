@@ -128,7 +128,6 @@ CONTAINS
       CHARACTER(9)                        :: subname='file_open'
       CHARACTER(7)                        :: status_
       CHARACTER(10)                       :: access_
-      INTEGER                             :: recl_
       CHARACTER(11)                       :: form_
       CHARACTER(6)                        :: position_
       CHARACTER(9)                        :: action_

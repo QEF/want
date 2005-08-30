@@ -34,7 +34,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    USE lattice_module,  ONLY : alat
    USE us_module,       ONLY : okvan
    USE uspp,            ONLY : nkb, qb
-   USE uspp_param,      ONLY : nh, nhm, tvanp
+   USE uspp_param,      ONLY : nh, tvanp
    USE ions_module,     ONLY : nat, ntyp => nsp, ityp, tau
    USE becmod,          ONLY : becp
    USE timing_module

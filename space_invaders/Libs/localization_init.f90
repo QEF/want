@@ -45,7 +45,7 @@
    REAL(dbl),       ALLOCATABLE :: singvd(:)
    COMPLEX(dbl),    ALLOCATABLE :: cv1(:,:), cv2(:,:)
    LOGICAL                      :: lfound
-   INTEGER                      :: i, j, l, ik, ierr, info
+   INTEGER                      :: i, ik, ierr
 
 
 !

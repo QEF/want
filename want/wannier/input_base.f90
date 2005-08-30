@@ -50,8 +50,7 @@ CONTAINS
       CHARACTER(LEN=80)  :: card
       LOGICAL            :: lend, lstop
       LOGICAL            :: wannier_centers_found
-      INTEGER :: ios
-      INTEGER :: i, ierr
+      INTEGER :: i
       !
 
       !
@@ -109,7 +108,7 @@ CONTAINS
       LOGICAL, SAVE      :: tread = .FALSE.
       CHARACTER(LEN=256) :: tmp_line
       INTEGER            :: dim
-      INTEGER            :: i, iwann, ierr
+      INTEGER            :: iwann, ierr
       CHARACTER(LEN=10)  :: adum, units
       !
       !

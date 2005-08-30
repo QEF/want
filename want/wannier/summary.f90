@@ -106,8 +106,8 @@
       LOGICAL                :: leig_
       LOGICAL                :: ldft_
 
-      INTEGER                :: ik, ia, ib, idnn 
-      INTEGER                :: i, j, m, is, nt, l
+      INTEGER                :: ik, ia, ib
+      INTEGER                :: i, j, is, nt, l
       REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:)
       INTEGER                :: ierr
       CHARACTER(5)           :: ps

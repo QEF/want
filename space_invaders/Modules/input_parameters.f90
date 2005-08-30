@@ -285,7 +285,7 @@ CONTAINS
 
       CHARACTER(21) :: subname='read_namelist_control'
       LOGICAL :: allowed
-      INTEGER :: i, ios, ierr
+      INTEGER :: i, ios
 
       READ(unit, CONTROL, IOSTAT=ios )
          IF (ios/=0) CALL errore(subname,'reading CONTROL namelist',ABS(ios))
@@ -339,7 +339,7 @@ CONTAINS
 
       CHARACTER(22) :: subname='read_namelist_subspace'
       LOGICAL :: allowed
-      INTEGER :: i, ios, ierr
+      INTEGER :: i, ios
 
       READ(unit, SUBSPACE, IOSTAT=ios )
          IF (ios/=0) CALL errore(subname,'reading SUBSPACE namelist',ABS(ios))
@@ -387,7 +387,7 @@ CONTAINS
 
       CHARACTER(26) :: subname='read_namelist_localization'
       LOGICAL :: allowed
-      INTEGER :: i, ios, ierr
+      INTEGER :: i, ios
 
       READ(unit, LOCALIZATION, IOSTAT=ios )
          IF (ios/=0) CALL errore(subname,'reading LOCALIZATION namelist',ABS(ios))

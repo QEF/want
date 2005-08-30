@@ -8,25 +8,22 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************
-   SUBROUTINE projection_frozen( lamp, dimwann, dimwin, dimwinx,  &
-                                 dimfroz, frozen, nkpts, nbnd)
+   SUBROUTINE projection_frozen( lamp, dimwann, dimwin, dimwinx, nkpts, dimfroz, frozen)
    !*******************************************
    USE kinds
    USE constants, ONLY : ZERO, CONE, CZERO, ONE, EPS_m8
    USE timing_module, ONLY : timing
    USE util_module, ONLY : zmat_hdiag, zmat_unitary, zmat_mul
    USE io_module, ONLY : stdout
+   USE control_module, ONLY : unitary_thr
    IMPLICIT NONE
 
-! XXXX
-
-       INTEGER :: nbnd 
        INTEGER :: dimwann 
        INTEGER :: nkpts
        INTEGER :: dimwin(nkpts), dimwinx
        INTEGER :: dimfroz(nkpts)
-       COMPLEX(dbl) :: lamp(dimwinx,dimwinx,nkpts)
-       LOGICAL :: frozen(nbnd,nkpts)
+       COMPLEX(dbl) :: lamp(dimwinx,dimwann,nkpts)
+       LOGICAL :: frozen(dimwinx,nkpts)
 
        REAL(dbl),    ALLOCATABLE :: w(:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
@@ -36,26 +33,25 @@
        COMPLEX(dbl), ALLOCATABLE :: qpq(:,:)
  
        INTEGER :: ik, j, l, n
-       INTEGER :: info
-       INTEGER :: m, il, iu, ierr
+       INTEGER :: il, iu, ierr
 
 ! ...  End of declarations
 
        CALL timing('projection_frozen',OPR='start')
  
 ! ...  Local allocations
-       ALLOCATE( z(nbnd,nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating z ', nbnd**2 )
-       ALLOCATE( w(nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating w ', nbnd )
-       ALLOCATE( p_s(nbnd,nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating p_s ', nbnd**2 )
-       ALLOCATE( q_froz(nbnd,nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating q_froz ',nbnd**2 )
-       ALLOCATE( pq(nbnd,nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating pq', nbnd**2 )
-       ALLOCATE( qpq(nbnd,nbnd), STAT = ierr )
-         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating qpq', nbnd**2 )
+       ALLOCATE( z(dimwinx,dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating z ', ABS(ierr) )
+       ALLOCATE( w(dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating w ', ABS(ierr) )
+       ALLOCATE( p_s(dimwinx,dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating p_s ', ABS(ierr) )
+       ALLOCATE( q_froz(dimwinx,dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating q_froz ',ABS(ierr) )
+       ALLOCATE( pq(dimwinx,dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating pq', ABS(ierr) )
+       ALLOCATE( qpq(dimwinx,dimwinx), STAT = ierr )
+         IF( ierr /= 0 ) CALL errore( 'projection_frozen', 'allocating qpq', ABS(ierr) )
 
 
        DO ik =1, nkpts
@@ -110,12 +106,11 @@
            ! ... check LEFT unitariery (lamp^dag * lamp = I)
            !
            IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),dimfroz(ik)+1:dimwann,ik), &
-                                  SIDE='left', TOLL=EPS_m8 ) ) &
+                                  SIDE='left', TOLL=unitary_thr ) ) &
                 CALL errore(' projection_frozen ', 'Vectors in lamp not orthonormal',ik)
 
          ENDIF ! dimwann>dimfroz(ik)
-
-       ENDDO ! ik
+       ENDDO 
 
        DEALLOCATE( z, STAT=ierr )
           IF (ierr/=0) CALL errore('projection_frozen','deallocating z',ABS(ierr))

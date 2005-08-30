@@ -22,7 +22,7 @@
    USE kinds
    USE constants, ONLY : ZERO
    USE timing_module
-   USE kpoints_module, ONLY : nnlist, nntot, wb, wbtot
+   USE kpoints_module, ONLY : nnlist, nntot, wb
    USE util_module, ONLY : zmat_mul
 
    IMPLICIT NONE
@@ -31,7 +31,7 @@
    INTEGER   :: ik
    INTEGER   :: mdim
    INTEGER   :: dimwann, dimwin(*), dimwinx
-   COMPLEX(dbl) :: lamp(dimwinx,dimwinx,*)
+   COMPLEX(dbl) :: lamp(dimwinx,dimwann,*)
    COMPLEX(dbl) :: Mkb(dimwinx,dimwinx,*)
  
    !
