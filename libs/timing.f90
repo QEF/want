@@ -147,7 +147,6 @@ CONTAINS
    !**********************************************************
       IMPLICIT NONE
       INTEGER,             INTENT(in)  :: nclock_max_
-      INTEGER                          :: ierr
  
       IF ( nclock_max_ < 1 ) CALL errore('timing_allocate','Invalid NCLOCK_MAX',1)
 
@@ -365,9 +364,9 @@ CONTAINS
 
       SELECT CASE ( TRIM(form_) ) 
       CASE ( "hms" )
-         nhour = obj%total_time / 3600
-         nmin = (obj%total_time-3600 * nhour) / 60
-         nsec = (obj%total_time-3600 * nhour) - 60 * nmin
+         nhour = INT( obj%total_time / 3600 )
+         nmin =  INT( (obj%total_time-3600 * nhour) / 60 )
+         nsec =  INT( obj%total_time-3600 * nhour - 60 * nmin )
          IF ( obj%call_number == 1 )  THEN
             IF (nhour > 0) THEN
                WRITE (unit, '(5x,a20," : ",3x,i2,"h",i2,"m CPU ")') &
@@ -418,8 +417,6 @@ CONTAINS
    !**********************************************************
       IMPLICIT NONE
       INTEGER,                INTENT(in) :: unit
-      LOGICAL                            :: found
-      INTEGER                            :: index
 
       IF ( .NOT. internal_list%alloc ) & 
            CALL errore('timing_upto_now','Internal clock not allocated',1)

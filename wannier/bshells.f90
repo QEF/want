@@ -23,7 +23,7 @@
    USE summary_module, ONLY: summary 
    USE io_module, ONLY: stdout
 
-   USE kpoints_module, ONLY : vkpt, nk, s, nkpts, wk, nnshell, nreverse, &
+   USE kpoints_module, ONLY : vkpt, nkpts, wk, nnshell, nreverse, &
                               bk, dnn, wb, wbtot, nnlist, nncell, &
                               nntot, bka, neigh, nnx, &
                               kpoints_alloc 
@@ -40,11 +40,11 @@
       REAL(dbl), PARAMETER :: eps = EPS_m6
  
       INTEGER :: ndnc
-      INTEGER :: i, j, l, m, n, nn, in, na, nap, ierr
+      INTEGER :: i, j, l, m, n, nn, in, na, nap
       INTEGER :: nkp, nkp2
-      INTEGER :: nlist, ndnn, nddn
+      INTEGER :: nlist, ndnn
       INTEGER :: nnsh, nnh
-      INTEGER :: ifpos, ifneg, ifound, info, ind
+      INTEGER :: ifpos, ifneg, ifound
       INTEGER :: ndim(nnx)
 
       REAL(dbl) :: ddelta
@@ -52,7 +52,7 @@
       REAL(dbl) :: singvd(nnx)
       REAL(dbl) :: dimbk(3,nnx)
       REAL(dbl) :: v1(nnx,nnx), v2(nnx,nnx)
-      REAL(dbl) :: eta, dnn0, dnn1, dist, bb1, bbn, factor
+      REAL(dbl) :: eta, dnn0, dnn1, dist, bb1, bbn
 
 
       CALL timing('bshells',OPR='start')

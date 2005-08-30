@@ -29,7 +29,7 @@
    !
    INTEGER :: n1, n2, n3
    INTEGER :: icnt, i, j, i1, i2, i3
-   INTEGER :: ndiff(3), indx(27), ifnd
+   INTEGER :: ndiff(3), indx(27)
    INTEGER :: nn, ndeg
    REAL(dbl) :: dist(27), dist_min
    REAL(dbl) :: tot
@@ -98,7 +98,7 @@
              !
              ! Find all the vectors R with the (same) smallest |r-R|;
              ! if R=0 is one of them, then the current point r belongs to 
-             ! Wignez-Seitz cell => set ifnd to 1
+             ! Wignez-Seitz cell 
              !
 
              !

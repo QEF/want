@@ -31,17 +31,13 @@
    USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx, windows_read
    USE subspace_module,      ONLY : eamp, subspace_read
    USE localization_module,  ONLY : cu, localization_read
-   USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, degen, indxws, vws, &
+   USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, indxws, vws, &
                                     hamiltonian_init
    USE util_module,          ONLY : zmat_mul
    IMPLICIT NONE 
 
    !
    ! local variables
-   !
-   INTEGER :: nkpts_in     ! Number of k-points generating the line (edges)
-   INTEGER :: nkpts_max    ! maximum number of interpolated points
-   INTEGER :: nkpts_tot    ! actual number of point in the line
    !
    REAL(dbl),    ALLOCATABLE :: grid(:), kpt(:,:)
    REAL(dbl),    ALLOCATABLE :: vwss(:), norms(:)

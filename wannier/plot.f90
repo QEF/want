@@ -34,10 +34,10 @@
    USE summary_module,     ONLY : summary
    USE parser_module
    !
-   USE lattice_module,     ONLY : avec, bvec, alat, omega
-   USE ions_module,        ONLY : nsp, symb, na, tau, ityp, nat
+   USE lattice_module,     ONLY : avec, bvec, alat
+   USE ions_module,        ONLY : symb, tau, nat
    USE kpoints_module,     ONLY : nkpts, vkpt
-   USE windows_module,     ONLY : imin, imax, dimwin, dimwinx, windows_read, &
+   USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, &
                                   spin_component
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
    USE localization_module,ONLY : cu, rave, localization_read
@@ -78,7 +78,7 @@
    INTEGER :: nnrx, nnry, nnrz
    INTEGER :: nx, ny, nz, nzz, nyy, nxx
    !
-   INTEGER :: ia, ib, ik, ig, isp, ir
+   INTEGER :: ia, ib, ik, ig, ir
    INTEGER :: natot, nplot
    INTEGER :: m, n, i, j, ierr
    INTEGER :: zatom
@@ -539,7 +539,7 @@
           DO nyy = nryl, nryh
           DO nxx=  nrxl, nrxh
                cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * arg
-               tmax = cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) )
+               tmax = REAL (cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) ) )
                IF ( tmax > tmaxx ) THEN
                     tmaxx = tmax
                     cmod = cwann( nxx, nyy, nzz, m)

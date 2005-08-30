@@ -48,7 +48,7 @@
    REAL(dbl),    ALLOCATABLE   :: wan_eig(:,:)       ! the eigenvalues in the new subspace
    !
    ! ... rotations defining the chosen subspace
-   COMPLEX(dbl), ALLOCATABLE   :: lamp(:,:,:)        ! dimwinx, dimwinx, nkpts
+   COMPLEX(dbl), ALLOCATABLE   :: lamp(:,:,:)        ! dimwinx, dimwann, nkpts
    COMPLEX(dbl), ALLOCATABLE   :: camp(:,:,:)        ! equal
    COMPLEX(dbl), ALLOCATABLE   :: eamp(:,:,:)        ! equal
    COMPLEX(dbl), ALLOCATABLE   :: comp_eamp(:,:,:)   ! equal
@@ -100,8 +100,8 @@ CONTAINS
        ALLOCATE( wan_eig(dimwann,nkpts), STAT=ierr )
            IF ( ierr/=0 ) CALL errore(subname,' allocating wan_eig ',dimwann*nkpts)
 
-       ALLOCATE( lamp(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating lamp ', dimwinx**2 *nkpts )
+       ALLOCATE( lamp(dimwinx,dimwann,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating lamp ', dimwinx*dimwann*nkpts )
        ALLOCATE( camp(dimwinx,dimwinx,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(subname, ' allocating camp ', dimwinx**2 *nkpts )
        ALLOCATE( eamp(dimwinx,dimwinx,nkpts), STAT = ierr )

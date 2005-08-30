@@ -18,7 +18,7 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   USE kinds,           ONLY : dbl
   USE constants,       ONLY : ZERO, CI
   USE atom_module,     ONLY : nchi, lchi, oc
-  USE ions_module,     ONLY : ityp, tau, symb
+  USE ions_module,     ONLY : ityp, tau
   USE lattice_module,  ONLY : alat
   USE us_module,       ONLY : tab_at, dq
   USE wfc_data_module, ONLY : igsort
@@ -79,7 +79,7 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
        ux = 1.0_dbl - px
        vx = 2.0_dbl - px
        wx = 3.0_dbl - px
-       i0 = vkg(ig) / dq + 1
+       i0 = INT( vkg(ig) / dq ) + 1
        i1 = i0 + 1
        i2 = i0 + 2
        i3 = i0 + 3

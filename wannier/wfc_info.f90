@@ -175,7 +175,6 @@ CONTAINS
    IMPLICIT NONE
        INTEGER,         INTENT(out)   :: index
        TYPE(wfc_info),  INTENT(in)    :: obj
-       CHARACTER(21)      :: subname="wfc_info_getfreeindex"
        INTEGER            :: i
 
        index = 0
@@ -203,7 +202,7 @@ CONTAINS
        INTEGER, OPTIONAL, INTENT(out)   :: INDEX
        TYPE(wfc_info),    INTENT(inout) :: obj
        CHARACTER(12)      :: subname="wfc_info_add"
-       INTEGER            :: ierr, lindex
+       INTEGER            :: lindex
 
        IF ( .NOT. obj%alloc ) CALL errore(subname,'obj NOT allocated',1) 
        IF ( npw > obj%npwx ) CALL errore(subname,'npw too large',npw)
@@ -233,7 +232,6 @@ CONTAINS
        INTEGER,         INTENT(in)    :: index
        TYPE(wfc_info),  INTENT(inout) :: obj
        CHARACTER(20)      :: subname="wfc_info_delete_base"
-       INTEGER            :: ierr
 
        IF ( .NOT. obj%used(index) ) CALL errore(subname,'index wfc not used',1)
        obj%nwfc_used = obj%nwfc_used - 1

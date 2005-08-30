@@ -190,7 +190,7 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        INTEGER            :: lnkpts
        REAL(dbl),ALLOCATABLE :: lwk(:), lvkpt(:,:)
-       CHARACTER(nstrx)   :: attr, string
+       CHARACTER(nstrx)   :: attr
        CHARACTER(16)      :: subname='kpoints_read_ext'
        INTEGER            :: ik, ierr
        
