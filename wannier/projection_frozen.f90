@@ -7,18 +7,18 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-       SUBROUTINE projection_frozen( lamp, dimwann, dimwin, dimwinx,  &
-                  dimfroz, frozen, nkpts, nbnd)
-!=----------------------------------------------------------------------------------=
+!*******************************************
+   SUBROUTINE projection_frozen( lamp, dimwann, dimwin, dimwinx,  &
+                                 dimfroz, frozen, nkpts, nbnd)
+   !*******************************************
+   USE kinds
+   USE constants, ONLY : ZERO, CONE, CZERO, ONE, EPS_m8
+   USE timing_module, ONLY : timing
+   USE util_module, ONLY : zmat_hdiag, zmat_unitary, zmat_mul
+   USE io_module, ONLY : stdout
+   IMPLICIT NONE
 
-       USE kinds
-       USE constants, ONLY : ZERO, CONE, CZERO, ONE, EPS_m8
-       USE timing_module, ONLY : timing
-       USE util_module, ONLY : zmat_hdiag, zmat_unitary, zmat_mul
-       USE io_module, ONLY : stdout
-
-       IMPLICIT NONE
+! XXXX
 
        INTEGER :: nbnd 
        INTEGER :: dimwann 
