@@ -12,6 +12,7 @@
 /
 
 &LOCALIZATION
+   a_condmin = 10.0
    maxiter0_wan = 200 
    maxiter1_wan = 4000 
    nshells = 2   
@@ -20,19 +21,14 @@
    ordering_mode = 'none'
 /
 
-WANNIER_CENTERS 
-atomic    1   1  0   1.0
-atomic    1   1 -1   1.0
-atomic    2   1  0   1.0
-atomic    2   1 -1   1.0
-atomic    3   1  0   1.0
-atomic    3   1 -1   1.0
-atomic    4   1  0   1.0
-atomic    4   1 -1   1.0
-
-{crystal}
+WANNIER_CENTERS {crystal}
 1gauss    0.1113138  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.1113138  0.0000000  0.0000000     1  0     1.0   1.0
+1gauss    0.1113138  0.0000000  0.0000000     1  1     1.0   1.0
 1gauss    0.3613138  0.0000000  0.0000000     0  0     1.0   1.0
 1gauss    0.6113138  0.0000000  0.0000000     0  0     1.0   1.0
+1gauss    0.6113138  0.0000000  0.0000000     1  0     1.0   1.0
+1gauss    0.6113138  0.0000000  0.0000000     1  1     1.0   1.0
 1gauss    0.8613138  0.0000000  0.0000000     0  0     1.0   1.0
+
 
