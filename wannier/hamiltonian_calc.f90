@@ -41,7 +41,7 @@
    !
    CHARACTER(16) :: subname = 'hamiltonian_calc'
 
-   INTEGER :: i, j, m, ik, iws
+   INTEGER :: i, j, m, ik, iws, inorm
    REAL(dbl)     :: norm, rmod
    REAL(dbl)     :: arg
    COMPLEX(dbl)  :: phase
@@ -117,7 +117,8 @@
           !
           ! chose nearest neighbours
           !
-          IF ( indxws(1,iws)**2 + indxws(2,iws)**2 + indxws(3,iws)**2 <= 1 ) THEN
+          inorm = indxws(1,iws)**2 + indxws(2,iws)**2 + indxws(3,iws)**2
+          IF ( inorm <= 1 ) THEN
 
                filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)// &
                         '_RHAM.'//TRIM(int2char( 100 + iws))
@@ -134,15 +135,12 @@
                    ENDDO
                CLOSE(ham_unit)
 
-               IF ( TRIM(verbosity) == "high" ) THEN
+               IF ( TRIM(verbosity) == "high" .AND. inorm /=0 ) THEN
                    !
-                   ! stdout (diagonal elements)
+                   ! stdout (diagonal elements), avoiding R=0
                    !
                    WRITE (stdout,"(/,4x,'R = (',3i4,' )')") ( indxws(i,iws), i=1,3 )
-                   DO i = 1, dimwann
-                       WRITE(stdout,"(2f12.6)") rham(i,i,iws)
-                   ENDDO
-
+                   WRITE(stdout,"( 3( 2f11.6',',2x) )") ( rham(i,i,iws), i =1,dimwann )
                ENDIF
           ENDIF
       ENDDO

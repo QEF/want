@@ -369,7 +369,8 @@ CONTAINS
                        vect(ig) = prefactor *  EXP( - vkg(ig)**2 * arg ) * phase(ig) 
                    ENDDO
                CASE DEFAULT
-                   CALL errore('trial_center_setup','Invalid m channel' ,ABS(obj%m)+1)
+                   CALL errore('trial_center_setup','Invalid m channel for l=-1' , &
+                               ABS(obj%m)+1)
                END SELECT
 
 

@@ -91,7 +91,7 @@
        ! assuming the DFT calculation has been performed within norm-conserving
        ! pseudopotentials (for whom no knowledge of them is required in the WanT calc)
 
-   REAL(dbl) :: unitary_thr = 1.0d-8  
+   REAL(dbl) :: unitary_thr = 1.0d-6  
        ! threshold for the check of matrix unitariery
 
    NAMELIST / CONTROL /  title, prefix, postfix, restart_mode, work_dir, verbosity, &
