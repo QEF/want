@@ -751,7 +751,7 @@
                                 STATUS='unknown', IOSTAT=ierr )
               IF (ierr/=0) CALL errore('plot','opening file '//TRIM(filename)//".xyz",1)
               !
-              WRITE(aux1_unit,"(i6)") natot
+              WRITE(aux1_unit,"(i6,/)") natot
               DO ia = 1, natot
                   WRITE(aux1_unit, '(a2,3x,3f15.9)' ) symbtot(ia) , tautot( :, ia )*bohr
               ENDDO

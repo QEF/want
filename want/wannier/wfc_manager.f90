@@ -379,7 +379,7 @@
           CALL file_close(ovp_unit,PATH="/",ACTION="write")
 
           CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
-          WRITE( stdout,"(/,'  Overlap and projections written on file: ',a)") TRIM(filename)
+          WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") TRIM(filename)
       ENDIF
 
       CALL timing_upto_now(stdout)
