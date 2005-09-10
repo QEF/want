@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 1.1.1  starts ...
-  Date  6Aug2005 at 17:36:40 
+  Date  8Sep2005 at 18:49: 1 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -77,27 +77,54 @@
   ======================================================================
 
 
-  nplot =   1 Wannier func.s to be plotted
+  nplot =   2 Wannier func.s to be plotted
      wf (  1 ) =    1
+     wf (  2 ) =    2
 
   Data type  :   modulus
   Output fmt :   plt
 
+  Plotting Cell dimensions [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -0.5000 -->   0.5000
+
   Grid dimensions:
-      nrx   -36 -->     36
-      nry   -54 -->     53
-      nrz   -54 -->     53
+      nrx :       -24 -->       24
+      nry :       -54 -->       54
+      nrz :       -54 -->       54
+
+
+  Centers for the required Wannier functions:
+
+        in cartesian coord (Bohr)
+    Wf(   1 ) = (     1.152732     0.000513     0.000003 )
+    Wf(   2 ) = (     1.152750     0.000000    -0.000003 )
+        in crystal coord
+    Wf(   1 ) = (     0.111314     0.000022     0.000000 )
+    Wf(   2 ) = (     0.111316     0.000000     0.000000 )
+
+  Locating WFs: 
+  Plotting Cell dimensions [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -0.5000 -->   0.5000
+
+  New center positions [cryst. coord]:
+        in crystal coord
+    Wf(   1 ) = (     0.111314     0.000022     0.000000 )
+    Wf(   2 ) = (     0.111316     0.000000     0.000000 )
+
 
   Atoms in the selected cell: (cart. coord. in Bohr)
      C    tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
      C    tau(   2 ) = (   2.3054663   0.0000000   0.0000000 )
      C    tau(   3 ) = (  -5.1778515   0.0000000   0.0000000 )
-     C    tau(   4 ) = (   5.1778515   0.0000000   0.0000000 )
-     C    tau(   5 ) = (  -2.8723852   0.0000000   0.0000000 )
-     C    tau(   6 ) = (   7.4833178   0.0000000   0.0000000 )
+     C    tau(   4 ) = (  -2.8723852   0.0000000   0.0000000 )
 
 
   writing WF(  1) plot on file: ./LEADS//chain4_WanT_WFM001.gau
+                  atomic positions on file: ./LEADS//chain4_WanT_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .gau --> .plt )                 
 
@@ -107,12 +134,33 @@ Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM001.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 6, x-, y-, z-origin (in Angstrom): -4.110001,-6.165001,-6.165001
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.740001,-6.165001,-6.165001
 Min value: 0.000000
-Max value: 0.000210
+Max value: 0.007583
 Job done ...
 **********************************************************
-  deleting tmp file: ./LEADS//chain4_WanT_WFM001.gau
+  deleting tmp files: ./LEADS//chain4_WanT_WFM001.gau
+                      ./LEADS//chain4_WanT_WFM001.crd
+
+
+  writing WF(  2) plot on file: ./LEADS//chain4_WanT_WFM002.gau
+                  atomic positions on file: ./LEADS//chain4_WanT_WFM002.xyz
+**********************************************************
+gCube2Plt conversion  ( .gau --> .plt )                 
+
+Input file:      './LEADS//chain4_WanT_WFM002.gau'
+Output file (plot file):  './LEADS//chain4_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM002.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.740001,-6.165001,-6.165001
+Min value: 0.000000
+Max value: 0.002242
+Job done ...
+**********************************************************
+  deleting tmp files: ./LEADS//chain4_WanT_WFM002.gau
+                      ./LEADS//chain4_WanT_WFM002.crd
 
 
 
@@ -121,12 +169,12 @@ Job done ...
    <global routines>
              clock number :     6
 
-                     plot :    34.68s CPU 
+                     plot :     9.00s CPU 
  
-                want_init :     0.06s CPU
-          ggrids_read_ext :     0.18s CPU
-           wfc_data_kread :     0.42s CPU (       4 calls,   0.105 s avg)
-                   cfft3d :     0.46s CPU (       4 calls,   0.115 s avg)
-                 gcubeplt :     1.94s CPU
+                want_init :     0.07s CPU
+          ggrids_read_ext :     0.22s CPU
+           wfc_data_kread :     0.11s CPU (       4 calls,   0.027 s avg)
+                   cfft3d :     1.36s CPU (       8 calls,   0.170 s avg)
+                 gcubeplt :     2.15s CPU (       2 calls,   1.073 s avg)
 
 
