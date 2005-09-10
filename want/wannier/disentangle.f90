@@ -335,7 +335,7 @@
            ! 
            ! check the unitariry of lamp
            !
-           IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),1:dimwann,ik), &
+           IF ( .NOT. zmat_unitary( dimwin(ik), dimwann, lamp(:,:,ik), &
                                     SIDE='left', TOLL=unitary_thr) )&
                  CALL errore('disentangle',"Lamp matrices not orthogonal",ik)
 

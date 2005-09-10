@@ -220,7 +220,7 @@
    ! while it should be SIDE = 'right' to perform A.A^{\dag}
    !
    DO ik = 1, nkpts
-       IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),1:dimwann,ik), &
+       IF ( .NOT. zmat_unitary( dimwin(ik), dimwann, lamp(:,:,ik), &
                                 SIDE='left', TOLL=unitary_thr ) ) &
        CALL errore(subname, 'Vectors in lamp not orthonormal',ik)
    ENDDO

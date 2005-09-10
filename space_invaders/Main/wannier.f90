@@ -321,7 +321,8 @@
                 cu(:,:,ik) = cmtmp(:,:)
 
 #ifdef __CHECK_UNITARY
-                IF (  .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  )  &
+                IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
+                                          SIDE='both', TOLL=unitary_thr )  )  &
                    WRITE (stdout,"(2x,'WARNING: U matrix NOT unitary (II) at ikpt = ',i4)")ik
 #endif
            ENDDO
@@ -395,7 +396,8 @@
                    cu(:,:,ik) = cmtmp(:,:)
 
 #ifdef __CHECK_UNITARY
-                   IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  )  &
+                   IF ( .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
+                                            SIDE='both', TOLL=unitary_thr )  )  &
                    WRITE(stdout,"(2x,'WARNING: U matrix NOT unitary (III) at ikpt = ',i4)")ik
 #endif
                ENDDO
@@ -495,7 +497,8 @@
       ! ... Unitariery of U matrix is checked
       !
       DO ik = 1, nkpts
-          IF (  .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  )  &
+          IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik),  &
+                                    SIDE='both', TOLL=unitary_thr )  )  &
                WRITE (stdout, " (2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")ik
       ENDDO
 

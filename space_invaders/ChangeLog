@@ -5,7 +5,8 @@
 
 
 09 Sep 2005      Small changes added around. Test6 added and checked. References updated
-                 in Test3 and Test6. KnownBugs file updated. (AF) 
+                 in Test3 and Test6. KnownBugs file updated. Added a workaround for a
+                 XLF compiler bug making zmat_unitary to fail. Still a test version. (AF)
 
 08 Sep 2005      Test3 properly working. (AF)
 

@@ -105,8 +105,9 @@
            !
            ! ... check LEFT unitariery (lamp^dag * lamp = I)
            !
-           IF ( .NOT. zmat_unitary( lamp(1:dimwin(ik),dimfroz(ik)+1:dimwann,ik), &
-                                  SIDE='left', TOLL=unitary_thr ) ) &
+           IF ( .NOT. zmat_unitary( dimwin(ik), dimwann-dimfroz(ik),  &
+                                    lamp(:,dimfroz(ik)+1:dimwann,ik), &
+                                    SIDE='left', TOLL=unitary_thr ) ) &
                 CALL errore(' projection_frozen ', 'Vectors in lamp not orthonormal',ik)
 
          ENDIF ! dimwann>dimfroz(ik)
