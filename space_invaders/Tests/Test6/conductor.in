@@ -1,0 +1,77 @@
+
+&INPUT_CONDUCTOR
+   nmxa = 6
+   nmxc = 50
+   nmxb = 6
+   ne = 1000
+   emin = -10.0
+   emax = 5.0
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C>
+      &MATRIX_DATA
+         filename="pt_h2_pt_WanT.ham"
+         rows="1-50"
+         cols="1-50"
+         direction=0
+      /
+   </H00_C>
+
+   <HCI_CB>
+      &MATRIX_DATA
+         filename="pt_h2_pt_WanT.ham"
+         rows="1-50"
+         cols="1-6"
+         direction=3
+      /
+   </HCI_CB>
+
+   <HCI_AC>
+      &MATRIX_DATA
+         filename="pt_h2_pt_WanT.ham"
+         rows="45-50"
+         cols="1-50"
+         direction=3
+      /
+   </HCI_AC>
+
+   <H00_A>
+      &MATRIX_DATA
+         filename="pt_h2_pt_WanT.ham"
+         rows="1-6"
+         cols="1-6"
+         direction=0
+      /
+   </H00_A>
+
+   <H01_A>
+      &MATRIX_DATA
+         filename="pt_h2_pt_WanT.ham"
+         rows="1-6"
+         cols="7-12"
+         direction=0
+      /
+   </H01_A>
+
+   <H00_B>
+      &MATRIX_DATA
+         filename="pt_h2_pt_WanT.ham"
+         rows="1-6"
+         cols="1-6"
+         direction=0
+      /
+   </H00_B>
+
+   <H01_B>
+      &MATRIX_DATA
+         filename="pt_h2_pt_WanT.ham"
+         rows="1-6"
+         cols="7-12"
+         direction=0
+      /
+   </H01_B>
+
+
+</HAMILTONIAN_DATA>

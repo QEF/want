@@ -209,6 +209,13 @@
   ENDDO
   ENDDO
 
+!
+! this is a debug purpose statement
+!
+#ifdef __DEBUG_REAL_MATRIX
+  a(:,:) = CMPLX( REAL(a(:,:)) )
+#endif
+
 
 !
 ! cleaning local workspace

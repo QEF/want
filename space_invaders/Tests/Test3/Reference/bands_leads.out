@@ -8,7 +8,7 @@
 
 
   Program <bands>  v. 1.1.1  starts ...
-  Date  6Aug2005 at 17:34:43 
+  Date  8Sep2005 at 18:49: 1 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -178,7 +178,7 @@
    <global routines>
              clock number :     2
 
-                    bands :     1.10s CPU 
+                    bands :     0.00s CPU 
  
                 want_init :     0.01s CPU
 

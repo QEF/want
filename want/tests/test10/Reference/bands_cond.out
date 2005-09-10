@@ -8,7 +8,7 @@
 
 
   Program <bands>  v. 1.1.1  starts ...
-  Date  6Aug2005 at 17:34:41 
+  Date  8Sep2005 at 18:34:11 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -46,11 +46,13 @@
 </LATTICE>
 
 <K-POINTS>
-  nkpts =    2
-  Monkhorst-Pack grid:      nk = (  2  1  1 ),      shift = (  0  0  0 )
+  nkpts =    4
+  Monkhorst-Pack grid:      nk = (  4  1  1 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.5000
-    k point   2:   (   0.15168  0.00000  0.00000 ),   weight =   0.5000
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
+    k point   2:   (   0.07584  0.00000  0.00000 ),   weight =   0.2500
+    k point   3:   (   0.15168  0.00000  0.00000 ),   weight =   0.2500
+    k point   4:   (   0.22753  0.00000  0.00000 ),   weight =   0.2500
 </K-POINTS>
 
 
@@ -176,8 +178,8 @@
    <global routines>
              clock number :     2
 
-                    bands :     2.21s CPU 
+                    bands :     0.00s CPU 
  
-                want_init :     0.01s CPU
+                want_init :     0.18s CPU
 
 

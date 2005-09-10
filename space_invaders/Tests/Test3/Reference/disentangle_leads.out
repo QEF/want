@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 1.1.1  starts ...
-  Date  6Aug2005 at 17:32:31 
+  Date  8Sep2005 at 18:48:55 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -34,7 +34,7 @@
 
 <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
-    Number of Wannier functions required =   12
+    Number of Wannier functions required =    8
     CG minim: Mixing parameter (alpha0_wan)=  0.500
     CG minim: Max iteration number =   200
     Minimization convergence threshold =     0.000001000
@@ -49,7 +49,7 @@
     Ordering mode = none
     Verbosity = high
     Unitariery check threshold =     0.000000010
-    Conditioned minim. amplitude =    20.000000000
+    Conditioned minim. amplitude =    10.000000000
     Conditioned minim.  iter num =  4200
 </WANNIER_FUNCTIONS>
 
@@ -69,18 +69,14 @@
 
       #     Type          l   m       Position                              Decay
     ----  ------------  --------   ------------------------------------   ---------
-      1    atomic  C      1   0    (   0.000000   0.000000   0.000000 )    0.00000
-      2    atomic  C      1   1    (   0.000000   0.000000   0.000000 )    0.00000
-      3    atomic  C      1   0    (   2.305466   0.000000   0.000000 )    0.00000
-      4    atomic  C      1   1    (   2.305466   0.000000   0.000000 )    0.00000
-      5    atomic  C      1   0    (   5.177852   0.000000   0.000000 )    0.00000
-      6    atomic  C      1   1    (   5.177852   0.000000   0.000000 )    0.00000
-      7    atomic  C      1   0    (   7.483318   0.000000   0.000000 )    0.00000
-      8    atomic  C      1   1    (   7.483318   0.000000   0.000000 )    0.00000
-      9    1gauss         0   0    (   1.152733   0.000000   0.000000 )    1.00000
-     10    1gauss         0   0    (   3.741658   0.000000   0.000000 )    1.00000
-     11    1gauss         0   0    (   6.330584   0.000000   0.000000 )    1.00000
-     12    1gauss         0   0    (   8.919510   0.000000   0.000000 )    1.00000
+      1    1gauss         0   0    (   1.152733   0.000000   0.000000 )    1.00000
+      2    1gauss         1   0    (   1.152733   0.000000   0.000000 )    1.00000
+      3    1gauss         1   1    (   1.152733   0.000000   0.000000 )    1.00000
+      4    1gauss         0   0    (   3.741658   0.000000   0.000000 )    1.00000
+      5    1gauss         0   0    (   6.330584   0.000000   0.000000 )    1.00000
+      6    1gauss         1   0    (   6.330584   0.000000   0.000000 )    1.00000
+      7    1gauss         1   1    (   6.330584   0.000000   0.000000 )    1.00000
+      8    1gauss         0   0    (   8.919510   0.000000   0.000000 )    1.00000
 
 </TRIAL_CENTERS>
 
@@ -181,55 +177,51 @@
 
 <WINDOWS>
   Definition of energy windows: (energies in eV)
-    outer window: E  = (  -\inf ,  \inf  )
-    Max number of bands within the energy window =    40
+    outer window: E  = (  -\inf ,   -4.1251 )
+    Max number of bands within the energy window =     8
 
   Electronic Structure from DFT calculation:
     nkpts =   4,     nbnd =  40,
     nspin =   1
-    Fermi energy =   -4.125121128 eV
+    Fermi energy =   -4.122643231 eV
 
-    kpt =  1 (  0.000 0.000 0.000 )    dimwin =   40
-                                         imin =    1  imax =   40
+    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
+                                         imin =    1  imax =    8
    Eigenvalues:
-   -20.5592 -18.6872 -16.4371 -13.0131  -9.4934  -9.4934  -6.0707  -6.0707
-    -3.4605  -3.4605  -0.3890   0.3052   0.6843   0.6843   0.7073   0.7811
-     1.5173   1.7215   1.7215   1.9247   2.9233   3.3406   3.7177   3.7177
-     3.7687   4.0141   4.4686   4.5367   4.6628   4.6628   4.7814   4.7968
-     4.7968   4.8276   4.8276   5.1525   5.5569   5.5804   5.6258   5.6265
+   -20.5523 -18.6743 -16.4412 -13.0104  -9.4890  -9.4890  -6.0640  -6.0640
+    -3.4595  -3.4595  -0.3889   0.3071   0.6845   0.6845   0.7074   0.7810
+     1.5174   1.7216   1.7216   1.9247   2.9236   3.3432   3.7178   3.7178
+     3.7689   4.0141   4.4691   4.5367   4.6629   4.6629   4.7813   4.8006
+     4.8006   4.8277   4.8277   5.1527   5.5571   5.5805   5.6256   5.6263
 
-    kpt =  2 (  0.152 0.000 0.000 )    dimwin =   40
-                                         imin =    1  imax =   40
+    kpt =  2 (  0.152 0.000 0.000 )    dimwin =    8
+                                         imin =    1  imax =    8
    Eigenvalues:
-   -20.3862 -19.1631 -15.7602 -13.4542  -9.2142  -9.2142  -7.1049  -7.1049
-    -1.9408  -1.9408  -0.1015   0.8360   0.9908   0.9908   1.0941   1.0996
-     1.8303   2.0266   2.0266   2.1808   2.2400   3.2314   3.2363   3.4197
-     3.4197   3.5027   3.5027   3.5984   4.0557   4.0557   4.0816   4.0863
-     4.3253   4.3345   4.5384   4.5384   4.8242   4.8498   4.9800   4.9801
+   -20.3791 -19.1531 -15.7613 -13.4519  -9.2098  -9.2098  -7.0996  -7.0996
+    -1.9383  -1.9383  -0.1012   0.8376   0.9911   0.9911   1.0941   1.1000
+     1.8304   2.0267   2.0267   2.1818   2.2400   3.2322   3.2366   3.4232
+     3.4232   3.5028   3.5028   3.5984   4.0558   4.0558   4.0819   4.0876
+     4.3253   4.3346   4.5384   4.5384   4.8244   4.8498   4.9800   4.9802
 
-    kpt =  3 (  0.303 0.000 0.000 )    dimwin =   40
-                                         imin =    1  imax =   40
+    kpt =  3 (  0.303 0.000 0.000 )    dimwin =    8
+                                         imin =    1  imax =    8
    Eigenvalues:
-   -19.8871 -19.8871 -14.5318 -14.5318  -8.3885  -8.3885  -8.3885  -8.3885
-     0.6903   0.6903   0.6903   0.6903   0.7763   0.7763   1.8168   1.8168
-     1.9645   1.9645   1.9645   1.9645   2.0332   2.0332   2.4952   2.4952
-     2.7694   2.7694   2.9845   2.9845   2.9845   2.9845   3.2148   3.2148
-     4.1752   4.1753   4.9768   4.9768   4.9768   4.9768   5.0206   5.0206
+   -19.8791 -19.8791 -14.5306 -14.5306  -8.3839  -8.3839  -8.3839  -8.3839
+     0.6936   0.6936   0.6936   0.6936   0.7768   0.7768   1.8175   1.8175
+     1.9646   1.9646   1.9646   1.9646   2.0332   2.0332   2.4968   2.4968
+     2.7695   2.7695   2.9845   2.9845   2.9845   2.9845   3.2148   3.2148
+     4.1755   4.1756   4.9769   4.9769   4.9769   4.9769   5.0208   5.0208
 
-    kpt =  4 (  0.455 0.000 0.000 )    dimwin =   40
-                                         imin =    1  imax =   40
+    kpt =  4 (  0.455 0.000 0.000 )    dimwin =    8
+                                         imin =    1  imax =    8
    Eigenvalues:
-   -20.3862 -19.1631 -15.7602 -13.4542  -9.2142  -9.2142  -7.1049  -7.1049
-    -1.9408  -1.9408  -0.1015   0.8360   0.9908   0.9908   1.0941   1.0996
-     1.8303   2.0266   2.0266   2.1808   2.2400   3.2314   3.2363   3.4197
-     3.4197   3.5027   3.5027   3.5984   4.0557   4.0557   4.0816   4.0863
-     4.3253   4.3345   4.5384   4.5384   4.8243   4.8497   4.9797   4.9802
+   -20.3791 -19.1531 -15.7613 -13.4519  -9.2098  -9.2098  -7.0996  -7.0996
+    -1.9383  -1.9383  -0.1012   0.8376   0.9911   0.9911   1.0941   1.1000
+     1.8304   2.0267   2.0267   2.1818   2.2400   3.2322   3.2366   3.4232
+     3.4232   3.5028   3.5028   3.5984   4.0558   4.0558   4.0819   4.0876
+     4.3253   4.3346   4.5384   4.5384   4.8244   4.8497   4.9798   4.9803
 
-    inner window: E  = (  -\inf ,  -4.1251 ) --> FROZEN STATES
-    there are   8 frozen states at k-point =     1
-    there are   8 frozen states at k-point =     2
-    there are   8 frozen states at k-point =     3
-    there are   8 frozen states at k-point =     4
+    inner window: NOT used --> NO FROZEN STATES
 </WINDOWS>
 
 
@@ -256,23 +248,21 @@
   Total number Nkb of beta functions:    32
 
 
-
-  Initializing atomic wfc
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     3.72 secs
+                              Total time spent up to now :     2.77 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     6.38 secs
+                              Total time spent up to now :     3.45 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     9.15 secs
+                              Total time spent up to now :     4.15 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :    12.01 secs
+                              Total time spent up to now :     4.76 secs
 
 
-  Overlap and projections written on file: chain4_WanT.ovp
-                              Total time spent up to now :    13.17 secs
+  Overlaps and projections written on file: chain4_WanT.ovp
+                              Total time spent up to now :     4.85 secs
 
 
   ======================================================================
@@ -281,250 +271,54 @@
 
 
   Initial trial subspace: projected localized orbitals
-  There are frozen states
 
 
   Subspace decomposition:
   Norms of the projected Bloch functions
 
-      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   40
+      kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.01123  0.84550  0.00009  0.99918  0.00000  0.00000  0.00011  0.00000
-    0.00000  0.00000  0.00000  0.00010  0.00000  0.43088  0.00000  0.00000
-    0.00000  0.00010  0.45656  0.00000  0.00000  0.00000  0.00000  0.69965
-    0.28464  0.00000  0.00000  0.01576  0.00075  0.25544  0.00000  0.00000
 
-      kpt =  2 (  0.152 0.000 0.000 )    dimwin =   40
+      kpt =  2 (  0.152 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.15126  0.37646  0.33904  0.30796  0.00095  0.00110  0.00000  0.40984
-    0.00000  0.00129  0.00276  0.57495  0.15824  0.28793  0.00000  0.27543
-    0.35406  0.00049  0.00001  0.00000  0.01983  0.00497  0.00000  0.42098
-    0.05923  0.00000  0.00016  0.00009  0.25151  0.00000  0.00072  0.00074
 
-      kpt =  3 (  0.303 0.000 0.000 )    dimwin =   40
+      kpt =  3 (  0.303 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.80013  0.10064  0.51590  0.48326  0.29450  0.37631  0.08640  0.11763
-    0.01243  0.01730  0.00781  0.00322  0.00000  0.00000  0.33379  0.29107
-    0.00000  0.00000  0.00166  0.00227  0.00244  0.00260  0.26800  0.27957
-    0.00000  0.00000  0.00125  0.00059  0.00110  0.00013  0.00000  0.00000
 
-      kpt =  4 (  0.455 0.000 0.000 )    dimwin =   40
+      kpt =  4 (  0.455 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.53359  0.27554  0.41651  0.66225  0.00016  0.00050  0.00000  0.53537
-    0.00000  0.00047  0.00082  0.08267  0.17655  0.09818  0.00000  0.17702
-    0.02405  0.00052  0.00026  0.00000  0.00497  0.00295  0.00000  0.60651
-    0.06673  0.00000  0.00014  0.00025  0.33351  0.00000  0.00001  0.00046
 
 
 
 
-  Iteration =     1     Omega_I =   94.692782      Error =      0.12138104
-  Iteration =     2     Omega_I =   85.230108      Error =      0.34119103
-  Iteration =     3     Omega_I =   73.473322      Error =      0.30783337
-  Iteration =     4     Omega_I =   64.037131      Error =      0.25740013
-  Iteration =     5     Omega_I =   56.992075      Error =      0.19348037
-  Iteration =     6     Omega_I =   52.024434      Error =      0.14342741
-  Iteration =     7     Omega_I =   48.489437      Error =      0.10877971
-  Iteration =     8     Omega_I =   45.888261      Error =      0.08523786
-  Iteration =     9     Omega_I =   43.899984      Error =      0.06885626
-  Iteration =    10     Omega_I =   42.328722      Error =      0.05690920
-
-                              Total time spent up to now :    13.40 secs
-
-  Iteration =    11     Omega_I =   41.056002      Error =      0.04770952
-  Iteration =    12     Omega_I =   40.008607      Error =      0.04028235
-  Iteration =    13     Omega_I =   39.138926      Error =      0.03408939
-  Iteration =    14     Omega_I =   38.413711      Error =      0.02883665
-  Iteration =    15     Omega_I =   37.807968      Error =      0.02435537
-  Iteration =    16     Omega_I =   37.301787      Error =      0.02053555
-  Iteration =    17     Omega_I =   36.878735      Error =      0.01729267
-  Iteration =    18     Omega_I =   36.525022      Error =      0.01455327
-  Iteration =    19     Omega_I =   36.229028      Error =      0.01224998
-  Iteration =    20     Omega_I =   35.980981      Error =      0.01032063
-
-                              Total time spent up to now :    14.00 secs
-
-  Iteration =    21     Omega_I =   35.772706      Error =      0.00870866
-  Iteration =    22     Omega_I =   35.597404      Error =      0.00736372
-  Iteration =    23     Omega_I =   35.449445      Error =      0.00624185
-  Iteration =    24     Omega_I =   35.324184      Error =      0.00530537
-  Iteration =    25     Omega_I =   35.217803      Error =      0.00452239
-  Iteration =    26     Omega_I =   35.127165      Error =      0.00386630
-  Iteration =    27     Omega_I =   35.049693      Error =      0.00331501
-  Iteration =    28     Omega_I =   34.983269      Error =      0.00285036
-  Iteration =    29     Omega_I =   34.926149      Error =      0.00245741
-  Iteration =    30     Omega_I =   34.876893      Error =      0.00212398
-
-                              Total time spent up to now :    14.60 secs
-
-  Iteration =    31     Omega_I =   34.834309      Error =      0.00184007
-  Iteration =    32     Omega_I =   34.797406      Error =      0.00159752
-  Iteration =    33     Omega_I =   34.765356      Error =      0.00138964
-  Iteration =    34     Omega_I =   34.737468      Error =      0.00121094
-  Iteration =    35     Omega_I =   34.713158      Error =      0.00105687
-  Iteration =    36     Omega_I =   34.691934      Error =      0.00092371
-  Iteration =    37     Omega_I =   34.673378      Error =      0.00080833
-  Iteration =    38     Omega_I =   34.657134      Error =      0.00070815
-  Iteration =    39     Omega_I =   34.642900      Error =      0.00062100
-  Iteration =    40     Omega_I =   34.630413      Error =      0.00054505
-
-                              Total time spent up to now :    15.18 secs
-
-  Iteration =    41     Omega_I =   34.619450      Error =      0.00047876
-  Iteration =    42     Omega_I =   34.609817      Error =      0.00042081
-  Iteration =    43     Omega_I =   34.601348      Error =      0.00037011
-  Iteration =    44     Omega_I =   34.593897      Error =      0.00032569
-  Iteration =    45     Omega_I =   34.587337      Error =      0.00028674
-  Iteration =    46     Omega_I =   34.581561      Error =      0.00025256
-  Iteration =    47     Omega_I =   34.576472      Error =      0.00022254
-  Iteration =    48     Omega_I =   34.571986      Error =      0.00019615
-  Iteration =    49     Omega_I =   34.568030      Error =      0.00017295
-  Iteration =    50     Omega_I =   34.564541      Error =      0.00015253
-
-                              Total time spent up to now :    15.78 secs
-
-  Iteration =    51     Omega_I =   34.561463      Error =      0.00013456
-  Iteration =    52     Omega_I =   34.558746      Error =      0.00011873
-  Iteration =    53     Omega_I =   34.556348      Error =      0.00010479
-  Iteration =    54     Omega_I =   34.554231      Error =      0.00009250
-  Iteration =    55     Omega_I =   34.552361      Error =      0.00008167
-  Iteration =    56     Omega_I =   34.550709      Error =      0.00007212
-  Iteration =    57     Omega_I =   34.549249      Error =      0.00006370
-  Iteration =    58     Omega_I =   34.547959      Error =      0.00005626
-  Iteration =    59     Omega_I =   34.546819      Error =      0.00004971
-  Iteration =    60     Omega_I =   34.545812      Error =      0.00004392
-
-                              Total time spent up to now :    16.37 secs
-
-  Iteration =    61     Omega_I =   34.544921      Error =      0.00003881
-  Iteration =    62     Omega_I =   34.544133      Error =      0.00003429
-  Iteration =    63     Omega_I =   34.543436      Error =      0.00003031
-  Iteration =    64     Omega_I =   34.542820      Error =      0.00002679
-  Iteration =    65     Omega_I =   34.542275      Error =      0.00002368
-  Iteration =    66     Omega_I =   34.541792      Error =      0.00002094
-  Iteration =    67     Omega_I =   34.541365      Error =      0.00001851
-  Iteration =    68     Omega_I =   34.540988      Error =      0.00001637
-  Iteration =    69     Omega_I =   34.540653      Error =      0.00001447
-  Iteration =    70     Omega_I =   34.540357      Error =      0.00001280
-
-                              Total time spent up to now :    16.99 secs
-
-  Iteration =    71     Omega_I =   34.540095      Error =      0.00001132
-  Iteration =    72     Omega_I =   34.539863      Error =      0.00001001
-  Iteration =    73     Omega_I =   34.539657      Error =      0.00000885
-  Iteration =    74     Omega_I =   34.539475      Error =      0.00000783
-  Iteration =    75     Omega_I =   34.539313      Error =      0.00000692
-  Iteration =    76     Omega_I =   34.539170      Error =      0.00000612
-  Iteration =    77     Omega_I =   34.539043      Error =      0.00000542
-  Iteration =    78     Omega_I =   34.538931      Error =      0.00000479
-  Iteration =    79     Omega_I =   34.538831      Error =      0.00000424
-  Iteration =    80     Omega_I =   34.538742      Error =      0.00000375
-
-                              Total time spent up to now :    17.59 secs
-
-  Iteration =    81     Omega_I =   34.538664      Error =      0.00000332
-  Iteration =    82     Omega_I =   34.538594      Error =      0.00000293
-  Iteration =    83     Omega_I =   34.538532      Error =      0.00000259
-  Iteration =    84     Omega_I =   34.538477      Error =      0.00000229
-  Iteration =    85     Omega_I =   34.538428      Error =      0.00000203
-  Iteration =    86     Omega_I =   34.538384      Error =      0.00000180
-  Iteration =    87     Omega_I =   34.538345      Error =      0.00000159
-  Iteration =    88     Omega_I =   34.538311      Error =      0.00000140
-  Iteration =    89     Omega_I =   34.538280      Error =      0.00000124
-  Iteration =    90     Omega_I =   34.538252      Error =      0.00000110
-
-                              Total time spent up to now :    18.20 secs
-
-  Iteration =    91     Omega_I =   34.538227      Error =      0.00000097
-  Iteration =    92     Omega_I =   34.538205      Error =      0.00000086
-  Iteration =    93     Omega_I =   34.538185      Error =      0.00000076
-  Iteration =    94     Omega_I =   34.538167      Error =      0.00000067
-  Iteration =    95     Omega_I =   34.538151      Error =      0.00000059
-  Iteration =    96     Omega_I =   34.538136      Error =      0.00000052
-  Iteration =    97     Omega_I =   34.538123      Error =      0.00000046
-  Iteration =    98     Omega_I =   34.538111      Error =      0.00000041
-  Iteration =    99     Omega_I =   34.538100      Error =      0.00000036
-  Iteration =   100     Omega_I =   34.538090      Error =      0.00000032
-
-                              Total time spent up to now :    18.80 secs
-
-  Iteration =   101     Omega_I =   34.538080      Error =      0.00000028
-  Iteration =   102     Omega_I =   34.538072      Error =      0.00000025
-  Iteration =   103     Omega_I =   34.538063      Error =      0.00000022
-  Iteration =   104     Omega_I =   34.538056      Error =      0.00000019
-  Iteration =   105     Omega_I =   34.538048      Error =      0.00000017
-  Iteration =   106     Omega_I =   34.538041      Error =      0.00000015
-  Iteration =   107     Omega_I =   34.538035      Error =      0.00000013
-  Iteration =   108     Omega_I =   34.538028      Error =      0.00000012
-  Iteration =   109     Omega_I =   34.538022      Error =      0.00000010
-  Iteration =   110     Omega_I =   34.538016      Error =      0.00000009
-
-                              Total time spent up to now :    19.38 secs
-
-  Iteration =   111     Omega_I =   34.538010      Error =      0.00000008
-  Iteration =   112     Omega_I =   34.538004      Error =      0.00000007
-  Iteration =   113     Omega_I =   34.537998      Error =      0.00000006
-  Iteration =   114     Omega_I =   34.537991      Error =      0.00000006
-  Iteration =   115     Omega_I =   34.537985      Error =      0.00000005
-  Iteration =   116     Omega_I =   34.537979      Error =      0.00000004
-  Iteration =   117     Omega_I =   34.537973      Error =      0.00000004
-  Iteration =   118     Omega_I =   34.537966      Error =      0.00000003
-  Iteration =   119     Omega_I =   34.537959      Error =      0.00000003
-  Iteration =   120     Omega_I =   34.537953      Error =      0.00000003
-
-                              Total time spent up to now :    19.93 secs
-
-  Iteration =   121     Omega_I =   34.537945      Error =      0.00000002
-  Iteration =   122     Omega_I =   34.537938      Error =      0.00000002
-  Iteration =   123     Omega_I =   34.537930      Error =      0.00000002
-  Iteration =   124     Omega_I =   34.537922      Error =      0.00000002
-  Iteration =   125     Omega_I =   34.537914      Error =      0.00000001
-  Iteration =   126     Omega_I =   34.537905      Error =      0.00000001
-  Iteration =   127     Omega_I =   34.537896      Error =      0.00000001
-  Iteration =   128     Omega_I =   34.537886      Error =      0.00000001
+  Iteration =     1     Omega_I =   25.024397      Error =      0.00000000
 
 
   ======================================================================
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Iteration # :  128
-  Final Omega_I (Bohr^2, Angstrom^2):      34.537886         9.671585
-   Avrg Omega_I                     :       2.878157         0.805965
+  Iteration # :    1
+  Final Omega_I (Bohr^2, Angstrom^2):      25.024397         7.007539
+   Avrg Omega_I                     :       3.128050         0.875942
 
-                              Total time spent up to now :    20.48 secs
+                              Total time spent up to now :     4.87 secs
 
 
   Subspace decomposition:
   Norms of the projected Bloch functions
 
-      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   40
+      kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.01328  0.98676  0.00000  1.00000  0.00000  0.00000  0.00000  0.00000
-    0.00000  0.00000  0.00000  0.00000  0.00000  0.94870  0.00000  0.00000
-    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.71151
-    0.28848  0.00000  0.00000  0.05123  0.00000  0.00000  0.00000  0.00000
 
-      kpt =  2 (  0.152 0.000 0.000 )    dimwin =   40
+      kpt =  2 (  0.152 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.28666  0.71194  0.03691  0.68960  0.00157  0.00183  0.00000  0.27162
-    0.00000  0.00249  0.00539  0.31021  0.00185  0.28791  0.00000  0.41908
-    0.53699  0.00101  0.00003  0.00000  0.02506  0.00627  0.00000  0.35172
-    0.00000  0.00000  0.00025  0.00014  0.05013  0.00000  0.00062  0.00072
 
-      kpt =  3 (  0.303 0.000 0.000 )    dimwin =   40
+      kpt =  3 (  0.303 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.81849  0.10373  0.53037  0.49571  0.10441  0.10446  0.22500  0.22487
-    0.01296  0.01819  0.00811  0.00336  0.00000  0.00000  0.63531  0.63548
-    0.00000  0.00000  0.00144  0.00196  0.00211  0.00227  0.03520  0.03524
-    0.00000  0.00000  0.00053  0.00025  0.00046  0.00006  0.00000  0.00000
 
-      kpt =  4 (  0.455 0.000 0.000 )    dimwin =   40
+      kpt =  4 (  0.455 0.000 0.000 )    dimwin =    8
     1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-    0.65821  0.34043  0.03689  0.68955  0.00081  0.00257  0.00000  0.27169
-    0.00000  0.00286  0.00498  0.31052  0.00186  0.28820  0.00000  0.84159
-    0.11449  0.00067  0.00033  0.00000  0.01969  0.01165  0.00000  0.35127
-    0.00000  0.00000  0.00014  0.00025  0.04997  0.00000  0.00003  0.00134
 
 
 
@@ -532,32 +326,29 @@
   ======================================================================
 
    <global routines>
-             clock number :    24
+             clock number :    21
 
-              disentangle :    20.89s CPU 
+              disentangle :     4.00s CPU 
  
-                want_init :     0.07s CPU
-                  bshells :     0.00s CPU
-              wfc_manager :    13.09s CPU
-          ggrids_read_ext :     0.18s CPU
-              struct_fact :     0.15s CPU
-                init_us_1 :     0.55s CPU
-                init_at_1 :     0.05s CPU
-           wfc_data_kread :     1.87s CPU (      16 calls,   0.117 s avg)
-                init_us_2 :     0.57s CPU (      20 calls,   0.028 s avg)
-                  ccalbec :     0.62s CPU (      16 calls,   0.039 s avg)
-                  overlap :     7.03s CPU (      12 calls,   0.586 s avg)
-           overlap_setmap :     0.48s CPU (      12 calls,   0.040 s avg)
-          overlap_augment :     0.14s CPU (      12 calls,   0.011 s avg)
-                    s_psi :     0.21s CPU (       4 calls,   0.053 s avg)
-               projection :     0.53s CPU (       4 calls,   0.132 s avg)
-       trial_center_setup :     0.16s CPU (      48 calls,   0.003 s avg)
-               atomic_wfc :     0.04s CPU (      32 calls,   0.001 s avg)
-               iterations :     7.31s CPU
+                want_init :     0.32s CPU
+                  bshells :     0.04s CPU
+              wfc_manager :     4.35s CPU
+          ggrids_read_ext :     0.37s CPU
+              struct_fact :     0.14s CPU
+                init_us_1 :     0.81s CPU
+           wfc_data_kread :     0.84s CPU (      16 calls,   0.053 s avg)
+                init_us_2 :     0.59s CPU (      20 calls,   0.030 s avg)
+                  ccalbec :     0.19s CPU (      16 calls,   0.012 s avg)
+                  overlap :     0.93s CPU (      12 calls,   0.077 s avg)
+           overlap_setmap :     0.56s CPU (      12 calls,   0.046 s avg)
+          overlap_augment :     0.02s CPU (      12 calls,   0.002 s avg)
+                    s_psi :     0.06s CPU (       4 calls,   0.014 s avg)
+               projection :     0.28s CPU (       4 calls,   0.070 s avg)
+       trial_center_setup :     0.21s CPU (      32 calls,   0.007 s avg)
+               iterations :     0.02s CPU
              subapce_init :     0.02s CPU
-        projection_frozen :     0.02s CPU
-                  zmatrix :     0.72s CPU (     512 calls,   0.001 s avg)
-               zmat_hdiag :     0.59s CPU (     512 calls,   0.001 s avg)
-                  komegai :     1.15s CPU (    1024 calls,   0.001 s avg)
+                  zmatrix :     0.00s CPU (       4 calls,   0.000 s avg)
+               zmat_hdiag :     0.00s CPU (       4 calls,   0.000 s avg)
+                  komegai :     0.00s CPU (       4 calls,   0.000 s avg)
 
 
