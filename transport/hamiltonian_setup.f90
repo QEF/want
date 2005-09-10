@@ -180,14 +180,6 @@
       CALL iotk_scan_end( 5, 'HAMILTONIAN_DATA', IERR=ierr )
          IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
 
-!! XXXX
-!WRITE(0,*) "DEBUG H01_A"
-!DO i=1,SIZE(h00_a,2)
-!   WRITE(0,*)
-!   WRITE(0,"(2f20.12)") h01_a(:,i)
-!ENDDO
-!STOP "debug"
-
 END SUBROUTINE hamiltonian_setup
 
 

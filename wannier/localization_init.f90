@@ -140,8 +140,9 @@
    ! ... check unitariery of Cu
    !
    DO ik=1,nkpts
-      IF ( .NOT. zmat_unitary( cu(:,:,ik), SIDE='both', TOLL=unitary_thr )  ) &
-                CALL errore(subname,'U matrix not unitary', ik)
+      IF ( .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
+                 SIDE='both', TOLL=unitary_thr )  ) &
+                 CALL errore(subname,'U matrix not unitary', ik)
    ENDDO
 
 

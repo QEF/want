@@ -353,14 +353,16 @@ END SUBROUTINE zmat_hdiag
 
 
 !**********************************************************
-   FUNCTION  zmat_unitary( z, side, toll )
+   FUNCTION  zmat_unitary( m, n, z, side, toll )
    !**********************************************************
    IMPLICIT NONE
    LOGICAL                            :: zmat_unitary
+   INTEGER,                INTENT(in) :: m,n
    COMPLEX(dbl),           INTENT(in) :: z(:,:)
    CHARACTER(*), OPTIONAL, INTENT(in) :: side 
    REAL(dbl), OPTIONAL,    INTENT(in) :: toll
    !
+   ! m, n : actual dimensions of A
    ! check if a complex matrix is unitary.
    ! SIDE='left'  only   A^{\dag} * A = I
    ! SIDE='right' only   A * A^{\dag} = I
@@ -380,8 +382,10 @@ END SUBROUTINE zmat_hdiag
    IF ( PRESENT(toll) ) toll_ = toll
    IF ( toll_ <= 0 ) CALL errore('zmat_unitary','Invalid TOLL',1)
   
-   dim1 = SIZE( z, 1)
-   dim2 = SIZE( z, 2)
+   IF ( m > SIZE( z, 1) ) CALL errore('zmat_unitary','Invalid m',m)
+   IF ( n > SIZE( z, 2) ) CALL errore('zmat_unitary','Invalid n',n)
+   dim1 = m
+   dim2 = n
    IF ( dim1 <= 0) CALL errore('zmat_unitary','Invalid dim1',ABS(dim1)+1)
    IF ( dim2 <= 0) CALL errore('zmat_unitary','Invalid dim2',ABS(dim2)+1)
 
