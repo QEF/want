@@ -92,7 +92,7 @@ CONTAINS
        IF (ierr/=0)  CALL errore(subname,'Unable to find npwkx',ABS(ierr))
 
        !
-       ! WARINIG: nasty redefinition
+       ! WARNING: nasty redefinition
        npwkx = npwkx + 1
 
        IF ( npwkx <= 0 )  CALL errore(subname,'npwkx <= 0',ABS(npwkx)+1)

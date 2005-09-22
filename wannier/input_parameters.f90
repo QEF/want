@@ -168,13 +168,15 @@
    DATA spin_component_allowed / 'up',  'down', 'none' /
        ! the allowed values for spin_component
 
+   LOGICAL :: use_blimit = .FALSE.
+       ! if .TRUE. sets b = 0 in the calculation of overlap augmentation
 
    NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, spin_component, &
                          alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &
-                         subspace_init
+                         subspace_init, use_blimit
 
 
-   PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component
+   PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component, use_blimit
    PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, subspace_init
    PUBLIC :: SUBSPACE
    

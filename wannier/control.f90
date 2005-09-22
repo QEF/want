@@ -35,6 +35,7 @@
    LOGICAL                   :: use_pseudo 
    LOGICAL                   :: use_uspp
    LOGICAL                   :: use_atomwfc 
+   LOGICAL                   :: use_blimit 
 
    LOGICAL                   :: do_overlaps
    LOGICAL                   :: do_projections
@@ -64,6 +65,7 @@
    PUBLIC :: use_pseudo
    PUBLIC :: use_atomwfc
    PUBLIC :: use_uspp
+   PUBLIC :: use_blimit
 
    PUBLIC :: do_overlaps
    PUBLIC :: do_projections

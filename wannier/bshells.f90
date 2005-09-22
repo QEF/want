@@ -48,7 +48,7 @@
       INTEGER :: ndim(nnx)
 
       REAL(dbl) :: ddelta
-      REAL(dbl) :: vkpp(3)
+      REAL(dbl) :: vkpp(3), vshells(3,10*nnx)
       REAL(dbl) :: singvd(nnx)
       REAL(dbl) :: dimbk(3,nnx)
       REAL(dbl) :: v1(nnx,nnx), v2(nnx,nnx)
@@ -100,6 +100,7 @@
           dnn1 = eta
       ENDDO
 
+!
 ! ... Now build up the list of nearest-neighbour shells for each k-point.
 !     nnlist(nkp,1...nnx) points to the nnx neighbours (ordered along increasing shells)
 !     of the k-point nkp. nncell(i,nnth,nkp) tells us in which BZ is the nnth 
@@ -107,6 +108,7 @@
 !     nkp to each neighbour bk(1:3,nkp,1...nnx).
 !
 !     kvect in bohr^-1
+!
 
       DO nkp = 1, nkpts
         nntot(nkp) = 0
@@ -161,140 +163,126 @@
       ! ... Check that the moduli of the b-vectors inside a shell are all identical
       !
       DO nkp = 1, nkpts
-        in = 0
-        DO ndnc = 1, nshells
-          ndnn = nwhich(ndnc)
-          IF ( ndnn > nnx ) CALL errore('bshell','invalid nwhich',ndnn)
-          DO nnsh = 1, nnshell(nkp,ndnn)
-            bb1 = 0.0d0
-            bbn = 0.0d0
-            in = in + 1
-            DO i = 1, 3
-              bb1 = bb1 + bk(i,1,in) * bk(i,1,in)
-              bbn = bbn + bk(i,nkp,in) * bk(i,nkp,in)
-            END DO
-
-            IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
-              CALL errore('bshell', ' Non-symmetric k-point neighbours!', bb1 )
-
-          END DO
-        END DO
-      END DO
+          in = 0
+          DO ndnc = 1, nshells
+              ndnn = nwhich(ndnc)
+              IF ( ndnn > nnx ) CALL errore('bshell','invalid nwhich',ndnn)
+              DO nnsh = 1, nnshell(nkp,ndnn)
+                  in = in + 1
+                  bb1 = DOT_PRODUCT( bk(:,1,in), bk(:,1,in) )
+                  bbn = DOT_PRODUCT( bk(:,nkp,in), bk(:,nkp,in) )
+            
+                  IF ( ABS( SQRT(bb1) - SQRT(bbn) ) > eps ) &
+                     CALL errore('bshell', ' Non-symmetric k-point neighbours!', bb1 )
+              ENDDO
+          ENDDO
+      ENDDO
 
       !
       ! ... Now find the dimensionality of each shell of neighbours
       !
       in = 0
       DO ndnc = 1, nshells
-        ndnn = nwhich(ndnc)
-        ndim(ndnn) = 0
+          ndnn = nwhich(ndnc)
+          ndim(ndnn) = 0
 
-        DO nnsh = 1, nnshell(1,ndnn)
-          in = in + 1
-          DO i = 1, 3
-            dimbk(i,nnsh) = bk(i,1,in)
-          END DO
-        END DO
+          DO nnsh = 1, nnshell(1,ndnn)
+              in = in + 1
+              dimbk(:,nnsh) = bk(:,1,in)
+          ENDDO
 
-        nnsh = nnshell(1,ndnn)
-        IF( nnsh > nnx ) CALL errore(' wannier ',' nnsh too big ', nnsh )
+          nnsh = nnshell(1,ndnn)
+          IF( nnsh > nnx ) CALL errore(' wannier ',' nnsh too big ', nnsh )
 
-        !
-        ! use SVD decomposition
-        !
-        CALL mat_svd( 3, nnsh, dimbk, singvd, v1, v2)
-        DO nn = 1, nnsh
-          IF ( ABS( singvd(nn) ) > eps ) ndim(ndnn) = ndim(ndnn) + 1
-        ENDDO
+          !
+          ! use SVD decomposition
+          !
+          CALL mat_svd( 3, nnsh, dimbk, singvd, v1, v2)
+          DO nn = 1, nnsh
+             IF ( ABS( singvd(nn) ) > eps ) ndim(ndnn) = ndim(ndnn) + 1
+          ENDDO
 
-
-!
-!...    Some checks on the NNs
-!
-        IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
-          IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
-               ( nnshell(1,ndnn) /= 12 ) ) THEN
-               !
-               ! for a more detailed treatment see Ref. PRB 56, 12847 (1997)
-               !
-               CALL errore('bshells','Invalid number of NNeighb.',ABS(nnshell(1,ndnn))+1)
-            ENDIF
+          !
+          ! Some checks on the NNs
+          !
+          IF ( ( nshells == 1 ) .AND. ( ndim(1) == 3 ) ) THEN
+              IF ( ( nnshell(1,ndnn) /= 6 ) .AND. ( nnshell(1,ndnn) /= 8) .AND. &
+                   ( nnshell(1,ndnn) /= 12 ) ) THEN
+                   !
+                   ! for a more detailed treatment see Ref. PRB 56, 12847 (1997)
+                   CALL errore('bshells','Invalid number of NNeighb.',ABS(nnshell(1,ndnn))+1)
+              ENDIF
        !  ELSE
        !    CALL errore('bshells','Invalid number of NNeighb. II',ABS(nshells)+1)
-        ENDIF
-!...
-
+          ENDIF
       ENDDO
 
-      DO nkp = 1, nkpts
-        in = 0
-        DO ndnc = 1, nshells
-          ndnn = nwhich(ndnc)
-          DO nnsh = 1, nnshell(nkp,ndnn)
-            bb1 = ZERO
-            bbn = ZERO
-            in = in + 1
-            DO i = 1, 3
-              bb1 = bb1 + bk(i,1,in) * bk(i,1,in)
-              bbn = bbn + bk(i,nkp,in) * bk(i,nkp,in)
-            END DO
-            wb(nkp,in) = DBLE( ndim(ndnn) ) / bbn / nnshell(nkp,ndnn)
-          END DO
-        END DO
-      END DO
-
-!...  17/06/2004
-!     now check that the completeness relation is satisfied
-!     Eq. B1 in Appendix  B PRB 56 12847 (1997)
 
       DO nkp = 1, nkpts
-
-        DO i = 1, 3
-          DO j = 1, 3
-            ddelta = ZERO
-            in = 0
-
-            DO ndnc = 1, nshells
+          in = 0
+          DO ndnc = 1, nshells
               ndnn = nwhich(ndnc)
-              DO nnsh =1, nnshell(1,ndnn)
-                in = in + 1
-                ddelta = ddelta + wb(nkp,in) * bk(i,nkp,in) * bk(j,nkp,in)
+              DO nnsh = 1, nnshell(nkp,ndnn)
+                  in = in + 1
+                  bbn = DOT_PRODUCT( bk(:,nkp,in), bk(:,nkp,in))
+                  wb(nkp,in) = DBLE( ndim(ndnn) ) / bbn / nnshell(nkp,ndnn)
               ENDDO
-            ENDDO
+          ENDDO
+      ENDDO
 
-            IF ( ( i == j ) .AND. ( ABS( ddelta - ONE ) > eps ) ) THEN
-                CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
-                CALL errore('bshell', 'B1 not satisfied (I)', 1 )
-            ENDIF
-         
-            IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) THEN
-                CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
-                CALL errore('bshell', 'B1 not satisfied (II)', 1 )
-            ENDIF
+!
+!    now check that the completeness relation is satisfied
+!  ( see Appendix B, PRB 56 12847 (1997) for more details )
+!
+      DO nkp = 1, nkpts
+
+          DO i = 1, 3
+          DO j = 1, 3
+
+              ddelta = ZERO
+              in = 0
+
+              DO ndnc = 1, nshells
+                  ndnn = nwhich(ndnc)
+                  DO nnsh =1, nnshell(1,ndnn)
+                      in = in + 1
+                      ddelta = ddelta + wb(nkp,in) * bk(i,nkp,in) * bk(j,nkp,in)
+                  ENDDO
+              ENDDO
+
+              IF ( ( i == j ) .AND. ( ABS( ddelta - ONE ) > eps ) ) THEN
+                  CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
+                  CALL errore('bshell', 'B1 not satisfied (I)', 1 )
+              ENDIF
+              ! 
+              IF ( ( i /= j ) .AND. ( ABS( ddelta ) > eps ) ) THEN
+                  CALL summary(stdout, LEIG=.FALSE., LATOMS=.FALSE., LPSEUDO=.FALSE.)
+                  CALL errore('bshell', 'B1 not satisfied (II)', 1 )
+              ENDIF
         
           ENDDO
-        ENDDO
-
+          ENDDO
       ENDDO
-      !
-      ! Completeness relation is fully satisfied!
-      ! ( see Appendix B, PRB 56 12847 (1997) for more details )
-      !
 
 
+!
+! Total weight
+!
       wbtot = ZERO
       in = 0
       DO ndnc = 1, nshells
-        ndnn = nwhich(ndnc)
-        DO nnsh = 1, nnshell(1,ndnn)
-          in = in + 1
-          wbtot = wbtot + wb(1,in)
-        END DO
-      END DO
+          ndnn = nwhich(ndnc)
+          DO nnsh = 1, nnshell(1,ndnn)
+              in = in + 1
+              wbtot = wbtot + wb(1,in)
+          ENDDO
+      ENDDO
 
-! ... Now it regroups the bk, in order to have an index that runs along
-!     consistent directions
 
+!
+! Now it regroups the bk, in order to have an index that runs along
+! consistent directions
+!
       DO ndnc = 1, nshells
 
         ndnn = nwhich(ndnc)

@@ -141,6 +141,7 @@
               !     here we compute (among other quantities) \int dr Q_ij(r)
               !                                              \int dr e^ibr Q_ij(r)
               CALL init_us_1()
+              WRITE( stdout, '(2x, "WARNING: setting b = 0 in qb (overlap augment.)" )') 
               WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5,2/ ) ') nkb
 
               !

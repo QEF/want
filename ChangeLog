@@ -3,6 +3,27 @@
             WanT code:  Log of Changes 
 =======================================================
 
+22 Sep 2005      Output fmt changed in hamiltonian_calc (to much noise at the
+                 end of wannier).
+
+21 Sep 2005      INSTALL and documentation in the main Makefile updated. 
+                 XSF format now supported in plot.f90, xsf utilities taken from
+                 espresso. (AF)
+
+20 Sep 2005      Version string changed to 2.0.0 in view of the outcoming release. 
+                 The Gaussian CUBE format is not called "cube" and not "gau" as before.
+                 Plot input files added to test9. use_blimit variable added to SUBSPACE
+                 namelist. (AF)
+
+19 Sep 2005      Missing lapack and blas routines added to Libs in order to make the 
+                 WanT package self-contained (blas.f, lapack.f lapack2.f added), as
+                 suggested by Paolo Giannozzi. Other portability issues due to the
+                 different blas and lapack libraries addressed as in espresso: 
+                 lapack_mkl.f lapack_ibm.f lapack_t3e.f added. 
+                 lib_invaders.a re-named to libwant.a .(AF)
+
+15 Sep 2005      The same variable accessed throught different modules in 
+                 hamiltonian_calc.f90 (reported by Malgorzata Wierzbowska): fixed. (AF)
 
 09 Sep 2005      Small changes added around. Test6 added and checked. References updated
                  in Test3 and Test6. KnownBugs file updated. Added a workaround for a

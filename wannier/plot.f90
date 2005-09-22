@@ -59,7 +59,7 @@
    REAL(dbl)        :: r2min, r2max     ! the same but for a2
    REAL(dbl)        :: r3min, r3max     ! the same but for a3
    CHARACTER( 20 )  :: datatype         ! ( "modulus" | "real" | "imaginary"  )
-   CHARACTER( 20 )  :: output_fmt       ! ( "txt" | "plt" | "gau" )
+   CHARACTER( 20 )  :: output_fmt       ! ( "txt" | "plt" | "cube" | "xsf" )
    LOGICAL          :: assume_ncpp      ! If .TRUE. pp's are not read
    LOGICAL          :: locate_wf        ! move the centers of WF in a unit cell centered
                                         ! around the origin
@@ -100,7 +100,7 @@
    CHARACTER(3), ALLOCATABLE :: symbtot(:)
 
    CHARACTER( nstrx )  :: filename
-   CHARACTER( 4 )      :: str, aux_fmt
+   CHARACTER( 5 )      :: str, aux_fmt
    LOGICAL             :: lfound
    LOGICAL             :: okp( 3 )
    !
@@ -155,7 +155,7 @@
            !
       CALL change_case(output_fmt,'lower')
       IF ( TRIM(output_fmt) /= "txt" .AND. TRIM(output_fmt) /= "plt" .AND. &
-           TRIM(output_fmt) /= "gau" ) &
+           TRIM(output_fmt) /= "cube" .AND. TRIM(output_fmt) /= "xsf" ) &
            CALL errore('plot', 'Invalid output_fmt = '//TRIM(output_fmt), 4)
 
       IF ( r1min > r1max ) CALL errore('plot', 'r1min > r1max',1)
@@ -271,7 +271,7 @@
       ENDDO
       !
       !
-      ! if lattice is not orthorombic, only .gau output fmt is allowed
+      ! if lattice is not orthorombic, only .cube output fmt is allowed
       !
       IF ( ABS( DOT_PRODUCT( avec(:,1), avec(:,2) )) > EPS_m6 .OR. &
            ABS( DOT_PRODUCT( avec(:,1), avec(:,3) )) > EPS_m6 .OR. &
@@ -612,12 +612,6 @@
       WRITE(stdout, "(/)" )
 
       
-      !
-      ! set avecl (bohr)
-      !
-      DO i=1,3
-         avecl(:,i) = avec(:,i) / nfft(i) 
-      ENDDO
 
       !
       ! Offset for position and WF's allignment
@@ -638,13 +632,15 @@
 
       !
       ! output and internal formats
-      ! when .plt is required, a .gau file is written and then converted to .plt
+      ! when .plt is required, a .cube file is written and then converted to .plt
       !
       SELECT CASE ( TRIM(output_fmt) )
       CASE ( "txt")
            aux_fmt = ".txt"
-      CASE ( "plt", "gau" )
-           aux_fmt = ".gau"
+      CASE ( "xsf" )
+           aux_fmt = ".xsf"
+      CASE ( "plt", "cube" )
+           aux_fmt = ".cube"
       CASE DEFAULT
            CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),4)
       END SELECT
@@ -699,7 +695,13 @@
 
 
           SELECT CASE ( TRIM(output_fmt) )
-          CASE( "gau", "plt" )
+          CASE( "cube", "plt" )
+
+              ! 
+              ! bohr
+              DO i=1,3
+                 avecl(:,i) = avec(:,i) / REAL(nfft(i)) 
+              ENDDO
 
               WRITE(aux_unit, '( " WanT" )') 
               WRITE(aux_unit, '( " plot output - cube format" )' ) 
@@ -735,6 +737,23 @@
               ENDDO
               ENDDO
 
+          CASE( "xsf" )
+
+              ! 
+              ! bohr
+              avecl(:,1) = avec(:,1) * REAL(nrxh-nrxl+1) / REAL(nfft(1)) 
+              avecl(:,2) = avec(:,2) * REAL(nryh-nryl+1) / REAL(nfft(2)) 
+              avecl(:,3) = avec(:,3) * REAL(nrzh-nrzl+1) / REAL(nfft(3)) 
+              
+              !
+              ! avec, tautot in bohr, but converted to Ang in the routine
+!              CALL xsf_struct ( avec, natom, tautot, symbtot, aux_unit )
+              CALL xsf_struct ( avec, nat, tau, symb, aux_unit )
+              !
+              CALL xsf_datagrid_3d ( rwann_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
+                                        nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
+                                        r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
+
           CASE DEFAULT
               CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),5)
           END SELECT
@@ -768,10 +787,10 @@
                CALL gcube2plt( filename, LEN_TRIM(filename) )
                CALL timing('gcubeplt',OPR='stop')
                !
-               ! removing temporary .gau file
-               WRITE(stdout,"(2x,'deleting tmp files: ',a)" ) TRIM(filename)//".gau"
+               ! removing temporary .cube file
+               WRITE(stdout,"(2x,'deleting tmp files: ',a)" ) TRIM(filename)//".cube"
                WRITE(stdout,"(22x,a,2/)" )                    TRIM(filename)//".crd"
-               CALL file_delete( TRIM(filename)//".gau" )
+               CALL file_delete( TRIM(filename)//".cube" )
                CALL file_delete( TRIM(filename)//".crd" )
                !
           ENDIF
