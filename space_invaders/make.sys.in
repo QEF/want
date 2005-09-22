@@ -41,7 +41,7 @@ FDFLAGS        = @fdflags@
 IFLAGS         = -I../Include @ifftw@
 MODFLAGS       = @imod@. @imod@../Modules @imod@../IOTK_lib @imod@../Main
 
-LIBOBJS        = ../IOTK_lib/lib_iotk.a ../Libs/lib_invaders.a
+LIBOBJS        = ../IOTK_lib/lib_iotk.a ../Libs/libwant.a
 # LIBS must contain the location of all needed external libraries
 LIBS           = @libs@
 # MYLIB can be one of the following (depending on LIBS):

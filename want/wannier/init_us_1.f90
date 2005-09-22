@@ -43,6 +43,7 @@ SUBROUTINE init_us_1
   USE uspp_param,      ONLY : lmaxq, dion, betar, qfunc, qfcoef, rinner, nbeta, &
                               kkbeta, nqf, nqlc, lll, jjj, lmaxkb, nh, tvanp, nhm
   USE spin_orb_module, ONLY : lspinorb, rot_ylm, fcoef
+  USE control_module,  ONLY : use_blimit
   !
   ! added for WFs
   USE kpoints_module,  ONLY : bk, nkpts, nntot, nnx
@@ -360,6 +361,15 @@ SUBROUTINE init_us_1
          bkvect(1:3,nn) = bk(1:3,ik,nn) / tpiba
          bkmod(nn) = SQRT( bkvect(1,nn)**2 + bkvect(2,nn)**2 + bkvect(3,nn)**2 )
       ENDDO
+
+      !
+      ! using this option allows for the calculation of overlap
+      ! augmentations using b = 0 (thermodynamic limit)
+      !
+      IF ( use_blimit) THEN
+         bkvect(:,1:nbkvect) = ZERO
+         bkmod(1:nbkvect) = ZERO
+      ENDIF
 
       ALLOCATE (ylmk0( nbkvect, lmaxq * lmaxq), STAT=ierr)    
          IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))

@@ -24,7 +24,6 @@
 
    USE control_module,       ONLY : verbosity
    USE kpoints_module,       ONLY : vkpt
-   USE windows_module,       ONLY : efermi
    USE hamiltonian_module,   ONLY : wan_eig, efermi, rham, kham, nws, indxws, vws, &
                                     ham_alloc => alloc 
 
@@ -157,18 +156,24 @@
       !
       DO iws = 1, nws
           !
-          rmod = SQRT( DOT_PRODUCT( vws(:,iws), vws(:,iws) ))
-          !
-          ! compute the 2-norm of H_ij(R)
-          !
-          norm = ZERO
-          DO j=1,dimwann
-          DO i=1,dimwann
-               norm = norm + REAL( CONJG( rham(i,j,iws)) * rham(i,j,iws) )
-          ENDDO
-          ENDDO
-          WRITE(stdout,"(1x,i4,3x,3i4,3x,f10.6,5x,f12.6)") &
-                         iws,indxws(:,iws), rmod, SQRT( norm / REAL(dimwann) )
+          IF ( ALL( indxws(:,iws) >= 0 .AND. indxws(:,iws) <= 4)  ) THEN
+              !
+              ! consider only positive directions, and a cutoff of 4 cells
+              ! for each dir
+              !
+              rmod = SQRT( DOT_PRODUCT( vws(:,iws), vws(:,iws) ))
+              !
+              ! compute the 2-norm of H_ij(R)
+              !
+              norm = ZERO
+              DO j=1,dimwann
+              DO i=1,dimwann
+                   norm = norm + REAL( CONJG( rham(i,j,iws)) * rham(i,j,iws) )
+              ENDDO
+              ENDDO
+              WRITE(stdout,"(1x,i4,3x,3i4,3x,f10.6,5x,f12.6)") &
+                             iws,indxws(:,iws), rmod, SQRT( norm / REAL(dimwann) )
+          ENDIF
       ENDDO
 
       CALL timing('hamiltonian_calc',OPR='stop')

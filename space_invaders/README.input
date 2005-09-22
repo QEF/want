@@ -131,6 +131,13 @@ nsave_dis     INTEGER
               every nsave_dis iterations save subspace data to disk
               DEFAULT: 10
 
+use_blimit    LOGICAL
+              if .TRUE., b vectors are set to zero when calculation overlap augmentations.
+              This essentially means we are doing a sort of thermodynamic limit
+              even if this is not consistent with the actual kpt grid. The .TRUE. value
+              should be considered for debug purposes.
+              DEFAULT: .FALSE.
+
 disentangle_thr    REAL
               threshold for convergence of the iterative disentangle procedure
               DEFAULT: 1.0d-8
@@ -482,9 +489,9 @@ datatype      STRING
               DEFAULT: "modulus"
 
 output_fmt    STRING
-              ( "plt" | "txt" | "gau" )
+              ( "plt" | "txt" | "cube" )
               Define the format of the output file. PLT is binary and smaller than
-              GAU and TXT. While GAU deals also with non-orthorombic lattices, TXT
+              CUBE and TXT. While CUBE deals also with non-orthorombic lattices, TXT
               is suitable to be converted to further format.
               DEFAULT: "plt"
 

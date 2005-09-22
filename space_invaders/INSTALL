@@ -112,15 +112,12 @@ Second step : compiling
 
 Here is a list of available compilation targets:
 
-  make all          compile Main/window.x         (step 1), 
-                            Main/disentangle.x    (step 2), 
-                            Main/wannier.x        (step 3), 
-                            Main/hamiltonian.x    (step 4), 
+  make all          compile Main/disentangle.x    (step 1), 
+                            Main/wannier.x        (step 2), 
+                            Main/bands.x          (post proc), 
                             Main/plot.x           (post proc), 
-                            Transport/bulk.x      (bulk conductance)
+                            Main/blc2wan.x        (post proc), 
                             Transport/conductor.x (lead-conductor-lead conductance)
-  make links        create symbolic links to all executables in bin/
-                      (required to run the examples)
   make clean        remove object files and executables
   make veryclean    remove configuration files too
 
@@ -130,3 +127,4 @@ after a previous (successful or failed) compilation, you must run
 "make clean" before recompiling, unless you know exactly which
 routines are affected by the changed options and how to force their
 recompilation.
+

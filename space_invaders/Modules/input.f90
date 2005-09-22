@@ -96,6 +96,7 @@ CONTAINS
                                            nsave_dis,         &
                                            nsave_wan,         &
                                            subspace_init,     &
+                                           use_blimit,        &
                                            localization_init 
       USE input_parameters_module,  ONLY : verbosity_       => verbosity, &
                                            restart_mode_    => restart_mode, &
@@ -110,6 +111,7 @@ CONTAINS
                                            unitary_thr_     => unitary_thr, &
                                            a_condmin_       => a_condmin, &
                                            ordering_mode_   => ordering_mode, &
+                                           use_blimit_      => use_blimit, &
                                            assume_ncpp_     => assume_ncpp
 
       IMPLICIT NONE
@@ -121,6 +123,7 @@ CONTAINS
       nsave_dis = nsave_dis_
       nprint_wan = nprint_wan_
       nsave_wan = nsave_wan_
+      use_blimit = use_blimit_
       read_pseudo = .NOT. assume_ncpp_
       use_pseudo  = .NOT. assume_ncpp_
 

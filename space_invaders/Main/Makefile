@@ -7,7 +7,7 @@ include ../make.sys
 EXE = disentangle.x wannier.x bands.x plot.x blc2wan.x
 all: $(EXE)
 
-$(EXE): ../Libs/lib_invaders.a ../IOTK_lib/lib_iotk.a ../Modules/*.o
+$(EXE): ../IOTK_lib/lib_iotk.a ../Modules/*.o ../Libs/libwant.a 
 
 clean: 
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x
