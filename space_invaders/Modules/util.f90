@@ -291,6 +291,7 @@ END SUBROUTINE zmat_svd
            ENDDO
        ENDIF
    ELSE
+
        CALL ZGEMM( opa, opb, m, n, k, CONE, a, SIZE(a,1), &
                    b, SIZE(b,1), CZERO, c, SIZE(c,1) )
    ENDIF
@@ -388,6 +389,7 @@ END SUBROUTINE zmat_hdiag
    dim2 = n
    IF ( dim1 <= 0) CALL errore('zmat_unitary','Invalid dim1',ABS(dim1)+1)
    IF ( dim2 <= 0) CALL errore('zmat_unitary','Invalid dim2',ABS(dim2)+1)
+
 
    !
    ! check side LEFT

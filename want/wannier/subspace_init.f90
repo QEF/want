@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE subspace_init( mode, dimwann, dimwin, dimwinx, nkpts, ca, lamp)
+   SUBROUTINE subspace_init( mode )
    !*******************************************************************
    !
    ! ...  Initialize the starting subspace for disentangle minimization
@@ -26,17 +26,14 @@
    USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
    !
-   USE windows_module, ONLY : lfrozen, dimfroz, indxfroz, frozen
-   USE kpoints_module, ONLY : vkpt
-   USE control_module, ONLY : unitary_thr, verbosity
-   USE subspace_module, ONLY : subspace_read
+   USE windows_module,  ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
+   USE kpoints_module,  ONLY : vkpt
+   USE control_module,  ONLY : unitary_thr, verbosity
+   USE subspace_module, ONLY : subspace_read, lamp, nkpts, dimwann
+   USE overlap_module,  ONLY : ca 
    IMPLICIT NONE
 
    CHARACTER(*),    INTENT(in)  :: mode      
-   INTEGER,         INTENT(in)  :: dimwann, dimwinx, nkpts
-   INTEGER,         INTENT(in)  :: dimwin(nkpts)
-   COMPLEX(dbl),    INTENT(in)  :: ca(dimwinx,dimwann,nkpts)
-   COMPLEX(dbl),    INTENT(out) :: lamp(dimwinx,dimwann,nkpts)
 
 
    !
@@ -60,7 +57,6 @@
    !
    ! few checks
    IF ( dimwann <=0 ) CALL errore(subname,'invalid dimwann',-dimwann+1)
-   IF ( dimwinx /= MAXVAL(dimwin) ) CALL errore(subname,'invalid dimwinx',ABS(dimwinx)+1)
    !
    ! this may be generalized
    IF ( lfrozen .AND. ( TRIM( mode ) /= 'center_projections' .AND. &

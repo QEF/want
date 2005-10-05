@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE localization_init( mode, dimwann, nkpts, ca, cu, Mkb)
+   SUBROUTINE localization_init( mode )
    !*******************************************************************
    !
    ! ...  Initialize the localization procedure in Wannier
@@ -25,16 +25,13 @@
    USE io_module, ONLY : stdout, ioname, wan_unit
    USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
-   USE localization_module, ONLY : localization_read, cu_module => cu
+   USE localization_module, ONLY : localization_read, cu 
+   USE overlap_module, ONLY : Mkb, ca, dimwann, nkpts 
    USE control_module, ONLY : unitary_thr
    USE kpoints_module, ONLY : nnx
    IMPLICIT NONE
 
    CHARACTER(*),    INTENT(in)  :: mode      
-   INTEGER,         INTENT(in)  :: dimwann, nkpts
-   COMPLEX(dbl),    INTENT(in)  :: ca(dimwann,dimwann,nkpts)
-   COMPLEX(dbl),    INTENT(inout) :: cu(dimwann,dimwann,nkpts)
-   COMPLEX(dbl),    INTENT(inout) :: Mkb(dimwann,dimwann,nnx,nkpts)
 
 
    !
@@ -79,8 +76,6 @@
         CALL ioname('wannier',filename,LPATH=.FALSE.)
         WRITE( stdout,"(2x,'Unitary matrices read from file: ',a,/)") TRIM(filename)
         
-        cu(:,:,:) = cu_module(:,:,:)
-
    CASE ( 'center_projections' )
         WRITE( stdout,"(/,'  Initial unitary rotations : projected localized orbitals',/)")
         !

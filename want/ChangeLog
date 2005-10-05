@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+05 Oct 2005      Interface of localization_init changed for stability reasons
+                 (bugs in the xlf compiler): strange behaviours in restarting fixed.
+                 The same has been done in subspace_init.f90 . (AF)
+
 22 Sep 2005      Output fmt changed in hamiltonian_calc (to much noise at the
                  end of wannier).
 
