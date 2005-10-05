@@ -23,7 +23,7 @@
        USE timing_module,    ONLY: timing, timing_upto_now, timing_overview, global_list
        USE input_module,     ONLY: input_manager
        USE want_init_module, ONLY: want_init
-       USE control_module,   ONLY: subspace_init_ => subspace_init, verbosity, &
+       USE control_module,   ONLY: subspace_init_mode => subspace_init, verbosity, &
                                    unitary_thr, nprint_dis, nsave_dis
        USE util_module,      ONLY: zmat_unitary, zmat_hdiag, zmat_mul
        USE kpoints_module,   ONLY: nkpts, vkpt, wbtot
@@ -133,7 +133,7 @@
        !
        ! ...  Initialize the starting subspace
        !
-       CALL subspace_init(subspace_init_, dimwann, dimwin, dimwinx, nkpts, ca, lamp)
+       CALL subspace_init( subspace_init_mode )
 
 
        iteration_loop : &

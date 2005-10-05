@@ -18,7 +18,7 @@
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
                                  unitary_thr, do_condmin, &
-                                 localization_init_ => localization_init
+                                 localization_init_mode => localization_init
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
       USE files_module, ONLY : file_open, file_close
@@ -164,7 +164,7 @@
       WRITE( stdout, "(2x,'=',21x,'Init localization procedure',20x,'=')" )
       WRITE( stdout, "(2x,70('='),/)" )
 
-      CALL localization_init(localization_init_, dimwann, nkpts, ca, cu, Mkb)
+      CALL localization_init( localization_init_mode )
 
       ! 
       ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
