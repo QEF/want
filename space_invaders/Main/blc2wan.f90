@@ -365,9 +365,6 @@
            IF (ierr/=0) CALL errore('blc2wan','closing IN_UNIT',ABS(ierr))
       CALL iotk_close_write(out_unit)
       !
-! XXX
-!      CALL file_close(in_unit,PATH="/",ACTION="read")
-!      CALL file_close(out_unit,PATH="/",ACTION="write")
 
 
 

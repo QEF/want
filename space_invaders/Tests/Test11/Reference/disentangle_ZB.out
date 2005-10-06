@@ -1,0 +1,22 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 2.0.0  starts ...
+  Date  6Oct2005 at 15:33: 7 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: INTEL
+
+
+ *** from PE    :     0
+ *** in routine : file_open
+ *** error msg. : During opening of file: ./zincblende.export/index.xml
+ *** error code :     1
+ *** aborting ***
+

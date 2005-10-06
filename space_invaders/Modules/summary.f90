@@ -18,15 +18,15 @@
    USE io_module, ONLY : title, prefix, postfix, work_dir
    USE control_module, ONLY : ordering_mode, verbosity, restart_mode, & 
                               use_pseudo, use_uspp, do_overlaps, do_projections, &
-                              read_subspace, read_unitary, &
+                              use_blimit, read_subspace, read_unitary, &
                               unitary_thr, subspace_init, localization_init, &
                               nprint_dis, nprint_wan, nsave_dis, nsave_wan
    USE control_module, ONLY : do_condmin
    USE trial_center_data_module, ONLY : trial
    USE lattice_module, ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module, ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
-   USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, nshells, nwhich, &
-                              bshells_alloc, dnn, nnshell, nntot, bk, wb, bka, nnx
+   USE kpoints_module, ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, &
+                              bshells_alloc, nb, vb, wb, wbtot
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
                               dimfroz, lfrozen, dimwinx, nspin, spin_component, &
                               win_min, win_max, froz_min, froz_max
@@ -165,8 +165,6 @@
           WRITE( unit,"(4x,'SD minim: Mixing parameter (alpha1_wan) = ', f6.3 )" ) alpha1_wan
           WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) maxiter1_wan
           WRITE( unit,"(4x,'Every ',i3,' iteration perform a CG minimization (ncg)')" ) ncg
-          WRITE( unit,"(4x,'Number of k-point shells = ', i3 )" ) nshells
-          WRITE( unit,"(4x,'Chosen shells (indexes) = ', 100i3 )" ) nwhich(1:nshells)
           WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_wan
           WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_wan
           WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(localization_init)
@@ -186,6 +184,8 @@
           WRITE( unit,"(4x,'Disentangle convergence threshold = ', f15.9 )") disentangle_thr
           WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_dis
           WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_dis
+          IF ( use_blimit ) &
+             WRITE( unit,"(4x,'WARNING: setting b = 0 in qb (overlap augment.)')")
           WRITE( unit, " ( '</DISENTANGLE>',/)" )
 
           WRITE( unit, " ( '<TRIAL_CENTERS>')" )
@@ -364,28 +364,14 @@
 
       IF ( bshells_alloc .AND. lkpoints_ ) THEN
           WRITE( unit, " (  '<B-SHELL>')" )
-          WRITE( unit,"(2x, 'Nearest-neighbour shells for k-point 1: (in Bohr^-1)' ) " )
-          DO i = 1, nnx
-             WRITE( unit, "(4x, 'shell (',i3,' )    radius = ', f9.5 )")  i, dnn(i)
-          ENDDO
-          WRITE( unit,"()")
-          WRITE( unit,"(2x,'Number of nearest-neighbours for K-point 1', &
-                          &' (representetive for the BZ):')")
-          DO i=1, nshells
-              WRITE( unit, " (4x,'shell (', i3, ' )    neighbours  = ', i4 )")  &
-                   nwhich(i), nnshell(1,nwhich(i))
+          !
+          WRITE (unit, "(2x, 'List of the ' , i2, ' b-vectors : (Bohr^-1) ') ") nb
+          DO i = 1, nb
+              WRITE(unit, " (4x, 'b (', i2, ') =    ( ',3f9.5, ' ),   weight = ',f8.4 )")&
+                             i, ( vb(j,i), j=1,3 ), wb(i)
           ENDDO
           !
-          WRITE (unit, "(/,2x, 'List of the ' , i2, ' vectors b_k: (Bohr^-1) ') ") nntot(1)
-          DO i = 1, nntot(1)
-              WRITE(unit, " (4x, 'b_k', i4, ':   ( ',3f9.5, ' ),   weight = ',f8.4 )")&
-                             i, ( bk(j,1,i), j=1,3 ), wb(1,i)
-          ENDDO
-          !
-          WRITE (unit, "(/,2x, 'The ',i2, '  bk directions are (Bohr^-1):' )") nntot(1)/2
-          DO i=1,nntot(1)/2
-              WRITE(unit, "(4x,'dir',i2,':   ( ',3f9.5, ' ) ')" ) i, ( bka(j,i), j=1,3 )
-          ENDDO
+          WRITE (unit, "(/,2x, 'Total weight = ' , f8.4) ") wbtot
           WRITE( unit, " (  '</B-SHELL>',/)" )
       ENDIF
       !
@@ -413,7 +399,7 @@
           WRITE( unit,"(  4x,'nspin =',i4 ) " ) nspin
           WRITE( unit,"(  4x,'Fermi energy =',f15.9,' eV')") efermi
           DO ik=1,nkpts
-              WRITE(unit, " (/,4x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
+              WRITE(unit, " (/,4x,'kpt =', i4, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                               ik, vkpt(:,ik), dimwin(ik)
               WRITE(unit, " (41x,'imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
               WRITE(unit, "(3x,'Eigenvalues:')"  )

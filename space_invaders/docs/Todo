@@ -3,8 +3,6 @@
   List of needed changes
 *************************************
 
-* Wannier: bshell elimination
-
 * WanT:  a true manual (as the one in docs) is missing. 
          we need e.g. to explain better the choice of Wannier centers
 
@@ -16,7 +14,7 @@
 * repository restyling (too much noise in the main dir)
 * plot.x: USPP features not fully implemented.
 
-* disentangle: 
+* disentangle + wannier: 
      - overlap updating should be better implemented
        (waste a little bit of memory but twice as fast)
      - wfc stored in a k-indip array (waste small mem but

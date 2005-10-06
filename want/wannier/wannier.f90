@@ -29,7 +29,7 @@
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
-      USE kpoints_module, ONLY: nkpts, nnx, wbtot
+      USE kpoints_module, ONLY: nkpts, nb, wbtot
       USE overlap_module,  ONLY : dimwann, ca, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr, cu, rave, rave2, r2ave, &
@@ -120,9 +120,9 @@
       !
       ! ... allocate local variables
       !
-      ALLOCATE( csheet(dimwann,nnx,nkpts), STAT=ierr )
+      ALLOCATE( csheet(dimwann,nb,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet ', ABS(ierr))
-      ALLOCATE( sheet(dimwann,nnx,nkpts), STAT=ierr )
+      ALLOCATE( sheet(dimwann,nb,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet ', ABS(ierr))
 
       ALLOCATE( cwschur1(dimwann), cwschur2( 10*dimwann ), STAT=ierr )
@@ -139,7 +139,7 @@
 
       ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0 ', ABS(ierr) )
-      ALLOCATE( Mkb0(dimwann,dimwann,nnx,nkpts), STAT=ierr )
+      ALLOCATE( Mkb0(dimwann,dimwann,nb,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0 ', ABS(ierr) )
       ALLOCATE( domg(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating domg ', ABS(ierr) )
@@ -248,6 +248,7 @@
            ! compute the derivative of the functional
            !
            CALL domega( dimwann, nkpts, Mkb, csheet, sheet, rave, domg)
+
            !
            ! apply conditioned minimization if required
            !
@@ -284,7 +285,7 @@
                ENDDO
                ENDDO
            ENDDO
-           doda0 = doda0 / wbtot / FOUR
+           doda0 = doda0 / ( FOUR * wbtot )
            !
            ! The cg step is calculated
            cdq = alpha / ( FOUR * wbtot ) * cdq
@@ -293,8 +294,8 @@
            !
            DO ik = 1, nkpts
 
-                CALL ZGEES( 'V', 'N', lselect, dimwann, cdq(1,1,ik), dimwann, ierr,     &
-                      cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,    &
+                CALL ZGEES( 'V', 'N', lselect, dimwann, cdq(1,1,ik), dimwann, ierr,   &
+                      cwschur1, cz, dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,    &
                       cwschur4, info )
 
                 IF ( info /= 0 ) CALL errore ('wannier', 'wrong schur procedure', info)
@@ -362,7 +363,7 @@
                IF ( alphamin < ZERO ) alphamin = alpha * TWO
                IF ( alphamin > THREE * alpha ) alphamin = THREE * alpha
                !
-               cdq(:,:,:) = alphamin / wbtot / FOUR * cdqkeep(:,:,:)
+               cdq(:,:,:) = alphamin/( FOUR * wbtot ) * cdqkeep(:,:,:)
    
    
                !
@@ -451,7 +452,6 @@
                 CALL file_close(wan_unit,PATH="/",ACTION="write")
            ENDIF
                 
-        
            !
            ! convergence condition
            !

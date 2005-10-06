@@ -15,9 +15,6 @@
    a_condmin = 10.0
    maxiter0_wan = 200 
    maxiter1_wan = 4000 
-   nshells = 2   
-   nwhich(1) = 1 
-   nwhich(2) = 2 
    ordering_mode = 'none'
 /
 

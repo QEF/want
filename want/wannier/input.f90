@@ -22,7 +22,6 @@
 ! SUBROUTINE setup_control()
 ! SUBROUTINE setup_io()
 ! SUBROUTINE setup_windows()
-! SUBROUTINE setup_kpoints()
 ! SUBROUTINE setup_subspace()
 ! SUBROUTINE setup_localization()
 ! 
@@ -62,7 +61,6 @@ CONTAINS
       CALL setup_control()
       CALL setup_io()
       CALL setup_windows()
-      CALL setup_kpoints()
       CALL setup_subspace()
       CALL setup_localization()
 
@@ -213,18 +211,6 @@ CONTAINS
       froz_max   = froz_max_
       spin_component = spin_component_
    END SUBROUTINE setup_windows
-
-
-!**********************************************************
-   SUBROUTINE setup_kpoints()
-   !**********************************************************
-      USE kpoints_module,           ONLY : nshells, nwhich
-      USE input_parameters_module,  ONLY : nshells_   => nshells,      &
-                                           nwhich_    => nwhich
-      IMPLICIT NONE
-      nshells  = nshells_
-      nwhich   = nwhich_
-   END SUBROUTINE setup_kpoints
 
 
 !**********************************************************

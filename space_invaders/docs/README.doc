@@ -1,0 +1,23 @@
+
+=====================================================================
+
+              ********* WanT documentation **********
+
+=====================================================================
+
+In the current directory it is possible to find more documentation
+about the theory and the usage of Wannier functions for transport
+calculations, as implemented in the WanT code.
+
+Files in the directory:
+
+README.doc      the current file
+want_ug.pdf     the WanT USER-GUIDE. It is also possible to generate
+                the pdf file directly from the tex sources in tex/
+
+                $LATEX want_ug.tex     (also working with pdflatex)
+
+                Note that all the other tex files should not be 
+                compiled and are simply included in the main manual
+
+

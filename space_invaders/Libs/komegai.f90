@@ -22,7 +22,7 @@
    USE kinds
    USE constants, ONLY : ZERO
    USE timing_module
-   USE kpoints_module, ONLY : nnlist, nntot, wb
+   USE kpoints_module, ONLY : nnlist, nb, wb
    USE util_module, ONLY : zmat_mul
 
    IMPLICIT NONE
@@ -54,8 +54,8 @@
    !
    ! ...  Loop over b-vectors
    !
-   DO inn = 1, nntot(ik)
-       ikb = nnlist(ik, inn)
+   DO inn = 1, nb
+       ikb = nnlist(inn, ik)
 
        !     
        ! compute aux1 = Lamp(ik)^{\dag} * Mkb * Lamp(ikb)
@@ -68,7 +68,7 @@
 
        DO n = 1, dimwann     
        DO m = 1, mdim   
-            komegai = komegai - wb(ik,inn) * REAL( CONJG( aux1(m,n) ) * aux1(m,n) )
+            komegai = komegai - wb(inn) * REAL( CONJG( aux1(m,n) ) * aux1(m,n) )
        ENDDO 
        ENDDO 
 

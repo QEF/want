@@ -1,0 +1,632 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 2.0.0  starts ...
+  Date  6Oct2005 at 15:35:24 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: INTEL
+
+
+  PW-DFT data read from file: wurtzite_US.export/index.xml
+
+  ======================================================================
+  =                                Main                                =
+  ======================================================================
+
+            Calculation Title :     Wannier Transport Calculation
+                       Prefix :     wurtzite_US
+                      Postfix :     _WanT
+            Working directory :     ./
+
+                 Restart Mode :     from_scratch
+                Overlap Calc. :     TRUE 
+             Projection Calc. :     TRUE 
+          Read Start Subspace :     FALSE
+       Read Start Unitary mat :     FALSE
+           Conditioned minim. :     FALSE
+
+<WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =   24
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
+    CG minim: Max iteration number =   100
+    Minimization convergence threshold =     0.000001000
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
+    SD minim: Max iteration number =  2000
+    Every   3 iteration perform a CG minimization (ncg)
+    Print info each  10 iterations
+    Save data each   10 iterations
+    Starting minimization guess = center_projections
+    Ordering mode = none
+    Verbosity = medium
+    Unitariery check threshold =     0.000001000
+    Conditioned minim. amplitude =     0.000000000
+    Conditioned minim.  iter num =  2100
+</WANNIER_FUNCTIONS>
+
+<DISENTANGLE>
+  Input parameters for subspace definition
+    Spin component = none
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =  1000
+    Starting minimization guess = center_projections
+    Disentangle convergence threshold =     0.000000010
+    Print info each  10 iterations
+    Save data each   10 iterations
+</DISENTANGLE>
+
+<TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+
+      #     Type          l   m       Position                              Decay
+    ----  ------------  --------   ------------------------------------   ---------
+      1    1gauss         0   0    (   0.000000   0.000000   1.790372 )    0.50000
+      2    1gauss         0   0    (   1.468703  -0.847956  -0.596781 )    0.50000
+      3    1gauss         0   0    (  -1.468697  -0.847956  -0.596781 )    0.50000
+      4    1gauss         0   0    (   0.000003   1.695907  -0.596781 )    0.50000
+      5    1gauss         0   0    (   2.937397  -1.695907   6.564706 )    0.50000
+      6    1gauss         0   0    (   1.468703  -0.847956   4.177525 )    0.50000
+      7    1gauss         0   0    (   4.406103  -0.847956   4.177525 )    0.50000
+      8    1gauss         0   0    (   2.937403  -3.391819   4.177525 )    0.50000
+      9    1gauss         0   0    (   0.000000   0.000000  11.339012 )    0.50000
+     10    1gauss         0   0    (   1.468703  -0.847956   8.951859 )    0.50000
+     11    1gauss         0   0    (  -1.468697  -0.847956   8.951859 )    0.50000
+     12    1gauss         0   0    (   0.000003   1.695907   8.951859 )    0.50000
+     13    1gauss         0   0    (   2.937397  -1.695907  16.113347 )    0.50000
+     14    1gauss         0   0    (   1.468703  -0.847956  13.726194 )    0.50000
+     15    1gauss         0   0    (   4.406103  -0.847956  13.726194 )    0.50000
+     16    1gauss         0   0    (   2.937403  -3.391819  13.726194 )    0.50000
+     17    1gauss         0   0    (   0.000000   0.000000  20.887682 )    0.50000
+     18    1gauss         0   0    (   1.468703  -0.847956  18.500500 )    0.50000
+     19    1gauss         0   0    (  -1.468697  -0.847956  18.500500 )    0.50000
+     20    1gauss         0   0    (   0.000003   1.695907  18.500500 )    0.50000
+     21    1gauss         0   0    (   2.937397  -1.695907  25.661987 )    0.50000
+     22    1gauss         0   0    (   1.468703  -0.847956  23.274834 )    0.50000
+     23    1gauss         0   0    (   4.406103  -0.847956  23.274834 )    0.50000
+     24    1gauss         0   0    (   2.937403  -3.391819  23.274834 )    0.50000
+
+</TRIAL_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =       5.8748000 (Bohr)
+  Alat  =       3.1088090 (Ang )
+  Omega =     856.2094872 (Bohr^3)
+  Omega =     126.8770041 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = (  5.8748  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = ( -2.9374  5.0877  0.0000 )     (  -0.5000  0.8660  0.0000 )
+    a(3) = (  0.0000  0.0000 28.6460 )     (   0.0000  0.0000  4.8761 )
+  Crystal axes: (Ang)
+    a(1) = (  3.1088  0.0000  0.0000 )
+    a(2) = ( -1.5544  2.6923  0.0000 )
+    a(3) = (  0.0000  0.0000 15.1588 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  1.0695  0.6175  0.0000 )     (   1.0000  0.5774  0.0000 )
+    b(2) = (  0.0000  1.2350  0.0000 )     (   0.0000  1.1547  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2193 )     (   0.0000  0.0000  0.2051 )
+</LATTICE>
+
+<IONS>
+  Number of chemical species =  2
+  Calculation is done within US pseudopot.
+
+     Pseudo( 1) = N.pbe-van_bm.UPF
+     Pseudo( 2) = Al.pbe-n-van.UPF
+
+     Pseudo( 1) is N  (US)    zval =  5.0   lmax= 1   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   729 points
+     The pseudopotential has  4 beta functions with: 
+                l(1) =   0
+                l(2) =   0
+                l(3) =   1
+                l(4) =   1
+     Q(r) pseudized with  8 coefficients,  rinner =    0.800   0.800   0.800
+
+
+     Pseudo( 2) is Al (US)    zval =  3.0   lmax= 1   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   893 points
+     The pseudopotential has  2 beta functions with: 
+                l(1) =   0
+                l(2) =   1
+     Q(r) pseudized with  8 coefficients,  rinner =    0.900   0.900   0.900
+
+
+  Atomic positions: (cart. coord. in Bohr)
+     Al   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     Al   tau(   2 ) = (   2.9373971  -1.6959070   4.7743346 )
+     N    tau(   3 ) = (   0.0000000   0.0000000   3.5807438 )
+     N    tau(   4 ) = (   2.9373971  -1.6959070   8.3550783 )
+     Al   tau(   5 ) = (   0.0000000   0.0000000   9.5486405 )
+     Al   tau(   6 ) = (   2.9373971  -1.6959070  14.3229751 )
+     N    tau(   7 ) = (   0.0000000   0.0000000  13.1293843 )
+     N    tau(   8 ) = (   2.9373971  -1.6959070  17.9037188 )
+     Al   tau(   9 ) = (   0.0000000   0.0000000  19.0973096 )
+     Al   tau(  10 ) = (   2.9373971  -1.6959070  23.8716156 )
+     N    tau(  11 ) = (   0.0000000   0.0000000  22.6780534 )
+     N    tau(  12 ) = (   2.9373971  -1.6959070  27.4523593 )
+</IONS>
+
+<K-POINTS>
+  nkpts =   32
+  Monkhorst-Pack grid:      nk = (  4  4  2 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.0312
+    k point   2:   (   0.00000  0.30874  0.00000 ),   weight =   0.0312
+    k point   3:   (   0.00000 -0.30874  0.00000 ),   weight =   0.0312
+    k point   4:   (   0.00000 -0.61748  0.00000 ),   weight =   0.0312
+    k point   5:   (   0.26738  0.15437  0.00000 ),   weight =   0.0312
+    k point   6:   (   0.26738  0.46311  0.00000 ),   weight =   0.0312
+    k point   7:   (   0.26738 -0.46311  0.00000 ),   weight =   0.0312
+    k point   8:   (   0.26738 -0.15437  0.00000 ),   weight =   0.0312
+    k point   9:   (  -0.26738 -0.15437  0.00000 ),   weight =   0.0312
+    k point  10:   (  -0.26738  0.15437  0.00000 ),   weight =   0.0312
+    k point  11:   (  -0.26738 -0.77186  0.00000 ),   weight =   0.0312
+    k point  12:   (  -0.26738 -0.46311  0.00000 ),   weight =   0.0312
+    k point  13:   (  -0.53476 -0.30874  0.00000 ),   weight =   0.0312
+    k point  14:   (  -0.53476  0.00000  0.00000 ),   weight =   0.0312
+    k point  15:   (  -0.53476 -0.92623  0.00000 ),   weight =   0.0312
+    k point  16:   (  -0.53476 -0.61748  0.00000 ),   weight =   0.0312
+    k point  17:   (   0.00000  0.00000  0.10967 ),   weight =   0.0312
+    k point  18:   (   0.00000  0.30874  0.10967 ),   weight =   0.0312
+    k point  19:   (   0.00000 -0.30874  0.10967 ),   weight =   0.0312
+    k point  20:   (   0.00000 -0.61748  0.10967 ),   weight =   0.0312
+    k point  21:   (   0.26738  0.15437  0.10967 ),   weight =   0.0312
+    k point  22:   (   0.26738  0.46311  0.10967 ),   weight =   0.0312
+    k point  23:   (   0.26738 -0.46311  0.10967 ),   weight =   0.0312
+    k point  24:   (   0.26738 -0.15437  0.10967 ),   weight =   0.0312
+    k point  25:   (  -0.26738 -0.15437  0.10967 ),   weight =   0.0312
+    k point  26:   (  -0.26738  0.15437  0.10967 ),   weight =   0.0312
+    k point  27:   (  -0.26738 -0.77186  0.10967 ),   weight =   0.0312
+    k point  28:   (  -0.26738 -0.46311  0.10967 ),   weight =   0.0312
+    k point  29:   (  -0.53476 -0.30874  0.10967 ),   weight =   0.0312
+    k point  30:   (  -0.53476  0.00000  0.10967 ),   weight =   0.0312
+    k point  31:   (  -0.53476 -0.92623  0.10967 ),   weight =   0.0312
+    k point  32:   (  -0.53476 -0.61748  0.10967 ),   weight =   0.0312
+</K-POINTS>
+
+<B-SHELL>
+  List of the  8 b-vectors : (Bohr^-1) 
+    b ( 1) =    (   0.00000  0.00000 -0.10967 ),   weight =  41.5716
+    b ( 2) =    (   0.00000  0.00000  0.10967 ),   weight =  41.5716
+    b ( 3) =    (  -0.26738 -0.15437  0.00000 ),   weight =   3.4969
+    b ( 4) =    (   0.26738  0.15437  0.00000 ),   weight =   3.4969
+    b ( 5) =    (   0.00000  0.30874  0.00000 ),   weight =   3.4969
+    b ( 6) =    (   0.00000 -0.30874  0.00000 ),   weight =   3.4969
+    b ( 7) =    (   0.26738 -0.15437  0.00000 ),   weight =   3.4969
+    b ( 8) =    (  -0.26738  0.15437  0.00000 ),   weight =   3.4969
+
+  Total weight = 104.1248
+</B-SHELL>
+
+<WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = (  -\inf ,  \inf  )
+    Max number of bands within the energy window =    24
+
+  Electronic Structure from DFT calculation:
+    nkpts =  32,     nbnd =  24,
+    nspin =   1
+    Fermi energy =    6.892903721 eV
+
+    kpt =   1 (  0.000 0.000 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -8.1740  -7.7746  -7.7746  -6.7824  -6.7823  -6.1120   0.9713   2.2768
+     2.2769   4.9999   5.0000   6.2725   6.2726   6.4231   6.4231   6.4231
+     6.4231   6.7309   6.7309   6.7310   6.7310   6.8842   6.8929   6.8929
+
+    kpt =   2 (  0.000 0.309 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.4261  -7.0759  -7.0758  -6.2444  -6.2444  -5.7275   1.8845   2.4563
+     2.4563   3.5845   3.5845   3.6256   4.5772   4.6155   4.6155   5.5564
+     5.8014   5.8014   6.0684   6.0684   6.3532   6.3533   6.4821   6.6712
+
+    kpt =   3 (  0.000-0.309 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.4261  -7.0759  -7.0758  -6.2444  -6.2444  -5.7275   1.8845   2.4563
+     2.4563   3.5845   3.5845   3.6256   4.5772   4.6155   4.6155   5.5564
+     5.8014   5.8014   6.0684   6.0684   6.3532   6.3533   6.4821   6.6712
+
+    kpt =   4 (  0.000-0.617 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2148  -6.0345  -6.0345  -5.6963  -5.6963  -5.5485   1.3177   1.3178
+     1.5905   1.8846   1.8846   2.8354   3.6423   4.8227   4.8228   5.0281
+     5.1888   5.3151   5.3152   5.8538   5.8538   5.9739   5.9740   6.3792
+
+    kpt =   5 (  0.267 0.154 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.4261  -7.0759  -7.0758  -6.2444  -6.2444  -5.7275   1.8845   2.4563
+     2.4563   3.5845   3.5845   3.6256   4.5772   4.6155   4.6155   5.5564
+     5.8014   5.8014   6.0684   6.0684   6.3532   6.3533   6.4821   6.6712
+
+    kpt =   6 (  0.267 0.463 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.3094  -6.0989  -6.0989  -5.6762  -5.6762  -5.4710   2.1366   2.1366
+     2.2893   2.2894   2.4593   2.9500   3.4517   3.8507   3.8508   4.1935
+     4.5167   4.5167   5.2462   5.2514   5.2515   5.5321   6.1762   6.1762
+
+    kpt =   7 (  0.267-0.463 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.3094  -6.0989  -6.0989  -5.6762  -5.6762  -5.4710   2.1366   2.1366
+     2.2893   2.2894   2.4594   2.9500   3.4517   3.8507   3.8508   4.1935
+     4.5167   4.5168   5.2462   5.2515   5.2515   5.5321   6.1762   6.1762
+
+    kpt =   8 (  0.267-0.154 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.4261  -7.0759  -7.0758  -6.2444  -6.2444  -5.7275   1.8845   2.4563
+     2.4563   3.5845   3.5845   3.6256   4.5772   4.6155   4.6155   5.5565
+     5.8014   5.8015   6.0684   6.0684   6.3532   6.3533   6.4821   6.6712
+
+    kpt =   9 ( -0.267-0.154 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.4261  -7.0759  -7.0758  -6.2444  -6.2444  -5.7275   1.8845   2.4563
+     2.4563   3.5845   3.5845   3.6256   4.5772   4.6155   4.6155   5.5564
+     5.8014   5.8014   6.0684   6.0684   6.3532   6.3533   6.4821   6.6712
+
+    kpt =  10 ( -0.267 0.154 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.4261  -7.0759  -7.0758  -6.2444  -6.2444  -5.7275   1.8845   2.4563
+     2.4563   3.5845   3.5845   3.6256   4.5772   4.6155   4.6155   5.5565
+     5.8014   5.8015   6.0684   6.0684   6.3532   6.3533   6.4821   6.6712
+
+    kpt =  11 ( -0.267-0.772 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.3094  -6.0989  -6.0989  -5.6762  -5.6762  -5.4710   2.1366   2.1366
+     2.2893   2.2894   2.4594   2.9500   3.4517   3.8507   3.8508   4.1935
+     4.5167   4.5168   5.2462   5.2515   5.2515   5.5321   6.1762   6.1762
+
+    kpt =  12 ( -0.267-0.463 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.3094  -6.0989  -6.0989  -5.6762  -5.6762  -5.4710   2.1366   2.1366
+     2.2893   2.2894   2.4593   2.9500   3.4517   3.8507   3.8508   4.1935
+     4.5167   4.5167   5.2462   5.2514   5.2515   5.5321   6.1762   6.1762
+
+    kpt =  13 ( -0.535-0.309 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2148  -6.0345  -6.0345  -5.6963  -5.6963  -5.5485   1.3177   1.3178
+     1.5905   1.8846   1.8846   2.8354   3.6423   4.8227   4.8228   5.0281
+     5.1888   5.3151   5.3152   5.8538   5.8538   5.9739   5.9740   6.3792
+
+    kpt =  14 ( -0.535 0.000 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.3094  -6.0989  -6.0989  -5.6762  -5.6762  -5.4710   2.1366   2.1366
+     2.2893   2.2894   2.4594   2.9500   3.4517   3.8507   3.8508   4.1935
+     4.5167   4.5168   5.2462   5.2515   5.2515   5.5321   6.1762   6.1762
+
+    kpt =  15 ( -0.535-0.926 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2148  -6.0345  -6.0345  -5.6963  -5.6963  -5.5485   1.3177   1.3178
+     1.5905   1.8845   1.8846   2.8354   3.6423   4.8227   4.8228   5.0281
+     5.1888   5.3151   5.3152   5.8538   5.8538   5.9739   5.9740   6.3792
+
+    kpt =  16 ( -0.535-0.617 0.000 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.3094  -6.0989  -6.0989  -5.6762  -5.6762  -5.4710   2.1366   2.1366
+     2.2893   2.2894   2.4594   2.9500   3.4517   3.8507   3.8508   4.1935
+     4.5167   4.5168   5.2462   5.2515   5.2515   5.5321   6.1762   6.1762
+
+    kpt =  17 (  0.000 0.000 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -8.0716  -8.0716  -7.3190  -7.3190  -6.3098  -6.3098   1.3289   1.3289
+     3.5778   3.5779   6.2791   6.2791   6.3158   6.3158   6.3158   6.3158
+     6.5815   6.5815   6.5815   6.5815   6.8435   6.8435   6.8435   6.8435
+
+    kpt =  18 (  0.000 0.309 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.3356  -7.3356  -6.6863  -6.6863  -5.8752  -5.8752   2.0468   2.0468
+     3.0066   3.0066   3.7666   3.7666   4.4014   4.4014   5.3706   5.3707
+     5.6248   5.6248   6.0663   6.0664   6.4215   6.4215   6.5860   6.5860
+
+    kpt =  19 (  0.000-0.309 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.3356  -7.3356  -6.6863  -6.6863  -5.8752  -5.8752   2.0468   2.0468
+     3.0066   3.0066   3.7666   3.7666   4.4014   4.4014   5.3706   5.3707
+     5.6248   5.6248   6.0663   6.0664   6.4215   6.4215   6.5860   6.5860
+
+    kpt =  20 (  0.000-0.617 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.1659  -6.1659  -5.8601  -5.8601  -5.5862  -5.5862   1.4516   1.4516
+     1.4533   1.4534   2.4832   2.4832   4.0212   4.0212   5.1042   5.1042
+     5.5163   5.5163   5.5777   5.5779   5.6260   5.6260   6.2705   6.2705
+
+    kpt =  21 (  0.267 0.154 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.3356  -7.3356  -6.6863  -6.6863  -5.8752  -5.8752   2.0468   2.0468
+     3.0066   3.0066   3.7666   3.7666   4.4014   4.4014   5.3706   5.3707
+     5.6248   5.6248   6.0663   6.0664   6.4215   6.4215   6.5860   6.5860
+
+    kpt =  22 (  0.267 0.463 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2533  -6.2533  -5.8868  -5.8867  -5.5252  -5.5252   2.1128   2.1128
+     2.4319   2.4319   2.4766   2.4766   3.9684   3.9684   4.1059   4.1059
+     4.1490   4.1490   5.0782   5.0782   5.8449   5.8449   5.9734   5.9735
+
+    kpt =  23 (  0.267-0.463 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2533  -6.2533  -5.8868  -5.8867  -5.5252  -5.5252   2.1128   2.1128
+     2.4319   2.4319   2.4766   2.4766   3.9684   3.9684   4.1059   4.1059
+     4.1490   4.1490   5.0782   5.0782   5.8449   5.8449   5.9734   5.9735
+
+    kpt =  24 (  0.267-0.154 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.3356  -7.3356  -6.6863  -6.6863  -5.8752  -5.8752   2.0468   2.0468
+     3.0065   3.0066   3.7666   3.7666   4.4014   4.4014   5.3706   5.3707
+     5.6248   5.6248   6.0664   6.0664   6.4215   6.4215   6.5860   6.5860
+
+    kpt =  25 ( -0.267-0.154 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.3356  -7.3356  -6.6863  -6.6863  -5.8752  -5.8752   2.0468   2.0468
+     3.0066   3.0066   3.7666   3.7666   4.4014   4.4014   5.3706   5.3707
+     5.6248   5.6248   6.0663   6.0664   6.4215   6.4215   6.5860   6.5860
+
+    kpt =  26 ( -0.267 0.154 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -7.3356  -7.3356  -6.6863  -6.6863  -5.8752  -5.8752   2.0468   2.0468
+     3.0065   3.0066   3.7666   3.7666   4.4014   4.4014   5.3706   5.3707
+     5.6248   5.6248   6.0664   6.0664   6.4215   6.4215   6.5860   6.5860
+
+    kpt =  27 ( -0.267-0.772 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2533  -6.2533  -5.8868  -5.8867  -5.5252  -5.5252   2.1128   2.1128
+     2.4319   2.4319   2.4766   2.4766   3.9684   3.9684   4.1059   4.1059
+     4.1490   4.1490   5.0782   5.0782   5.8449   5.8449   5.9734   5.9735
+
+    kpt =  28 ( -0.267-0.463 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2533  -6.2533  -5.8868  -5.8867  -5.5252  -5.5252   2.1128   2.1128
+     2.4319   2.4319   2.4766   2.4766   3.9684   3.9684   4.1059   4.1059
+     4.1490   4.1490   5.0782   5.0782   5.8449   5.8449   5.9734   5.9735
+
+    kpt =  29 ( -0.535-0.309 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.1659  -6.1659  -5.8601  -5.8601  -5.5862  -5.5862   1.4516   1.4516
+     1.4533   1.4534   2.4832   2.4832   4.0212   4.0212   5.1042   5.1042
+     5.5163   5.5163   5.5777   5.5779   5.6260   5.6260   6.2705   6.2705
+
+    kpt =  30 ( -0.535 0.000 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2533  -6.2533  -5.8868  -5.8867  -5.5252  -5.5252   2.1128   2.1128
+     2.4319   2.4319   2.4766   2.4766   3.9684   3.9684   4.1059   4.1059
+     4.1490   4.1490   5.0782   5.0782   5.8449   5.8449   5.9734   5.9735
+
+    kpt =  31 ( -0.535-0.926 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.1659  -6.1659  -5.8601  -5.8601  -5.5863  -5.5863   1.4516   1.4516
+     1.4533   1.4533   2.4831   2.4831   4.0213   4.0213   5.1042   5.1042
+     5.5163   5.5163   5.5778   5.5779   5.6260   5.6260   6.2705   6.2705
+
+    kpt =  32 ( -0.535-0.617 0.110 )    dimwin =   24
+                                         imin =    1  imax =   24
+   Eigenvalues:
+    -6.2533  -6.2533  -5.8868  -5.8867  -5.5252  -5.5252   2.1128   2.1128
+     2.4319   2.4319   2.4766   2.4766   3.9684   3.9684   4.1059   4.1059
+     4.1490   4.1490   5.0782   5.0782   5.8449   5.8449   5.9734   5.9735
+
+    inner window: NOT used --> NO FROZEN STATES
+</WINDOWS>
+
+
+
+  ======================================================================
+  =                      Overlaps and Projections                      =
+  ======================================================================
+
+  Reading density G-grid from file: wurtzite_US.export/index.xml
+  Reading Wfc grids from file: wurtzite_US.export/index.xml
+
+
+          Energy cut-off for wfcs =         25.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =      40923
+        Max number of PW for wfc  =       1834
+      Total number of PW for wfcs =       3059
+        FFT grid components (rho) =  (    27   27  135 )
+
+
+  Initializing global dft data
+
+  Initializing US pseudopot. data
+  WARNING: setting b = 0 in qb (overlap augment.)
+  Total number Nkb of beta functions:    72
+
+
+    Overlaps or Projections calculation for k-point   1
+                              Total time spent up to now :     2.62 secs
+
+    Overlaps or Projections calculation for k-point   2
+                              Total time spent up to now :     3.51 secs
+
+    Overlaps or Projections calculation for k-point   3
+                              Total time spent up to now :     4.32 secs
+
+    Overlaps or Projections calculation for k-point   4
+                              Total time spent up to now :     5.18 secs
+
+    Overlaps or Projections calculation for k-point   5
+                              Total time spent up to now :     6.15 secs
+
+    Overlaps or Projections calculation for k-point   6
+                              Total time spent up to now :     7.18 secs
+
+    Overlaps or Projections calculation for k-point   7
+                              Total time spent up to now :     8.14 secs
+
+    Overlaps or Projections calculation for k-point   8
+                              Total time spent up to now :     8.92 secs
+
+    Overlaps or Projections calculation for k-point   9
+                              Total time spent up to now :     9.72 secs
+
+    Overlaps or Projections calculation for k-point  10
+                              Total time spent up to now :    10.63 secs
+
+    Overlaps or Projections calculation for k-point  11
+                              Total time spent up to now :    11.45 secs
+
+    Overlaps or Projections calculation for k-point  12
+                              Total time spent up to now :    12.24 secs
+
+    Overlaps or Projections calculation for k-point  13
+                              Total time spent up to now :    13.14 secs
+
+    Overlaps or Projections calculation for k-point  14
+                              Total time spent up to now :    13.92 secs
+
+    Overlaps or Projections calculation for k-point  15
+                              Total time spent up to now :    14.74 secs
+
+    Overlaps or Projections calculation for k-point  16
+                              Total time spent up to now :    15.54 secs
+
+    Overlaps or Projections calculation for k-point  17
+                              Total time spent up to now :    16.50 secs
+
+    Overlaps or Projections calculation for k-point  18
+                              Total time spent up to now :    17.34 secs
+
+    Overlaps or Projections calculation for k-point  19
+                              Total time spent up to now :    18.25 secs
+
+    Overlaps or Projections calculation for k-point  20
+                              Total time spent up to now :    19.08 secs
+
+    Overlaps or Projections calculation for k-point  21
+                              Total time spent up to now :    19.86 secs
+
+    Overlaps or Projections calculation for k-point  22
+                              Total time spent up to now :    20.68 secs
+
+    Overlaps or Projections calculation for k-point  23
+                              Total time spent up to now :    21.57 secs
+
+    Overlaps or Projections calculation for k-point  24
+                              Total time spent up to now :    22.33 secs
+
+    Overlaps or Projections calculation for k-point  25
+                              Total time spent up to now :    23.11 secs
+
+    Overlaps or Projections calculation for k-point  26
+                              Total time spent up to now :    23.99 secs
+
+    Overlaps or Projections calculation for k-point  27
+                              Total time spent up to now :    24.83 secs
+
+    Overlaps or Projections calculation for k-point  28
+                              Total time spent up to now :    25.61 secs
+
+    Overlaps or Projections calculation for k-point  29
+                              Total time spent up to now :    26.53 secs
+
+    Overlaps or Projections calculation for k-point  30
+                              Total time spent up to now :    27.31 secs
+
+    Overlaps or Projections calculation for k-point  31
+                              Total time spent up to now :    28.10 secs
+
+    Overlaps or Projections calculation for k-point  32
+                              Total time spent up to now :    28.99 secs
+
+
+  Overlaps and projections written on file: wurtzite_US_WanT.ovp
+                              Total time spent up to now :    34.56 secs
+
+
+  ======================================================================
+  =                      Starting Iteration loop                      =
+  ======================================================================
+
+
+  Initial trial subspace: projected localized orbitals
+
+  Iteration =     1     Omega_I =   64.486782      Error =      0.00000000
+
+
+  ======================================================================
+  =                        Convergence Achieved                        =
+  ======================================================================
+
+  Iteration # :    1
+  Final Omega_I (Bohr^2, Angstrom^2):      64.486782        18.058124
+   Avrg Omega_I                     :       2.686949         0.752422
+
+                              Total time spent up to now :    34.85 secs
+
+
+  Subspace data written on file: wurtzite_US_WanT.space
+  ======================================================================
+
+   <global routines>
+             clock number :    21
+
+              disentangle :    35.00s CPU 
+ 
+                want_init :     0.32s CPU
+                  bshells :     0.02s CPU
+              wfc_manager :    34.23s CPU
+          ggrids_read_ext :     0.06s CPU
+              struct_fact :     0.11s CPU
+                init_us_1 :     1.18s CPU
+           wfc_data_kread :     5.17s CPU (     160 calls,   0.032 s avg)
+                init_us_2 :     3.26s CPU (     192 calls,   0.017 s avg)
+                  ccalbec :     2.86s CPU (     160 calls,   0.018 s avg)
+                  overlap :     9.59s CPU (     128 calls,   0.075 s avg)
+           overlap_setmap :     0.95s CPU (     128 calls,   0.007 s avg)
+          overlap_augment :     1.54s CPU (     128 calls,   0.012 s avg)
+                    s_psi :     0.62s CPU (      32 calls,   0.019 s avg)
+               projection :     4.07s CPU (      32 calls,   0.127 s avg)
+       trial_center_setup :     1.66s CPU (     768 calls,   0.002 s avg)
+               iterations :     0.29s CPU
+             subapce_init :     0.11s CPU
+                  zmatrix :     0.09s CPU (      32 calls,   0.003 s avg)
+               zmat_hdiag :     0.02s CPU (      32 calls,   0.001 s avg)
+                  komegai :     0.06s CPU (      32 calls,   0.002 s avg)
+
+

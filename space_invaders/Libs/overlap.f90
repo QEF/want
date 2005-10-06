@@ -12,7 +12,6 @@
    !************************************************************
    USE kinds
    USE constants,      ONLY : CZERO
-   USE parameters,     ONLY : nnx
    USE timing_module,  ONLY : timing
    USE wfc_info_module 
    USE ggrids_module,  ONLY : nfft

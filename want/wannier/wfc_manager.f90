@@ -38,7 +38,7 @@
    USE trial_center_data_module,   ONLY : trial
    USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, imin, imax
    USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, &
-                              nntot, nnlist, nncell, neigh, nreverse
+                              nb, nnlist, nncell, nnrev, nnpos
    USE overlap_module, ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
    USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, &
                               ggrids_read_ext, ggrids_deallocate
@@ -227,9 +227,7 @@
                 ! overlap
                 !
                 neighbours : &
-                DO inn=1,nntot(ik)
-                    ikb = nnlist(ik, inn)
-
+                DO inn=1,nb/2
                     !
                     ! here impose the symmetrization on Mkb: i.e.
                     ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
@@ -238,50 +236,47 @@
                     ! for half of the defined b vectors and then impose the
                     ! other values by symmetry
                     !
-                    IF ( ANY( neigh(ik, 1:nntot(ik)/2 ) == inn ) ) THEN
-                        !
-                        ! neigh contains the indexes of the "positive" b vecotrs
-                        ! (half of the total number)
-                        !
-                        CALL wfc_data_kread(dft_unit, ikb, "IKB", evc, evc_info)
-                        !
-                        IF( use_uspp ) THEN
-                            !
-                            index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
-                            !
-                            xk(:) = vkpt(:,ikb) / tpiba
-                            CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
-                            vkb_ik = ikb
-                            CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb),&
-                                          vkb, evc(1,index))
-                        ENDIF
-
-                        CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), &
-                                      imin(ik), imin(ikb), dimwinx, evc, evc_info,  &
-                                      igsort, nncell(1,inn,ik), Mkb(1,1,inn,ik) )
-
-                        !
-                        ! ... add the augmentation term fo USPP
-                        !
-                        IF ( use_uspp ) THEN
-                            CALL overlap_augment(dimwinx, dimwin(ik), dimwin(ikb), &
-                                                 ik, ikb, inn, aux)
-                            Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =  &
-                                         Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
-                                         aux(1:dimwin(ik),1:dimwin(ikb))
-                        ENDIF
-              
-                        !
-                        ! clean nn wfc data (but not free memory!)
-                        !
-                        CALL wfc_info_delete(evc_info, LABEL="IKB" )
-
-                        !
-                        ! apply the symmetrization
-                        ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
-                        !
-                        Mkb(:,:, nreverse(inn,ik), ikb) = CONJG( TRANSPOSE( Mkb(:,:,inn,ik)))
+                    ib = nnpos(inn)
+                    ikb = nnlist( ib , ik)
+                    !
+                    CALL wfc_data_kread(dft_unit, ikb, "IKB", evc, evc_info)
+                    !
+                    IF( use_uspp ) THEN
+                          !
+                          index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
+                          !
+                          xk(:) = vkpt(:,ikb) / tpiba
+                          CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
+                          vkb_ik = ikb
+                          CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb),&
+                                        vkb, evc(1,index))
                     ENDIF
+                    !
+                    CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), &
+                                  imin(ik), imin(ikb), dimwinx, evc, evc_info,  &
+                                  igsort, nncell(1,ib,ik), Mkb(1,1,ib,ik) )
+
+                    !
+                    ! ... add the augmentation term fo USPP
+                    !
+                    IF ( use_uspp ) THEN
+                         CALL overlap_augment(dimwinx, dimwin(ik), dimwin(ikb), &
+                                              ik, ikb, ib, aux)
+                         Mkb(1:dimwin(ik), 1:dimwin(ikb), ib, ik) =        &
+                                Mkb(1:dimwin(ik), 1:dimwin(ikb), ib, ik) + &
+                                aux(1:dimwin(ik), 1:dimwin(ikb))
+                    ENDIF
+              
+                    !
+                    ! clean nn wfc data (but not free memory!)
+                    !
+                    CALL wfc_info_delete(evc_info, LABEL="IKB" )
+
+                    !
+                    ! apply the symmetrization
+                    ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
+                    !
+                    Mkb(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb(:,:,ib,ik)))
                 ENDDO neighbours
              ENDIF
 

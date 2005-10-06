@@ -20,7 +20,7 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
   USE kinds
   USE constants, ONLY : CZERO
   USE timing_module
-  USE kpoints_module, ONLY : nnlist, nntot, wb
+  USE kpoints_module, ONLY : nnlist, nb, wb
  
   IMPLICIT NONE
 
@@ -50,8 +50,8 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
    !
    ! ...  Loop over b-vectors
    ! 
-   DO inn = 1, nntot(ik)
-       ikb = nnlist(ik, inn)
+   DO inn = 1, nb
+       ikb = nnlist(inn, ik)
 
        !
        ! loop over the generators of the subspace
@@ -73,7 +73,7 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
             !
             DO n = 1, dimwin(ik) - dimfroz
             DO m = 1, n
-                 mtrx(m,n) = mtrx(m,n) + wb(ik,inn) * a(m) * CONJG( a(n) )
+                 mtrx(m,n) = mtrx(m,n) + wb(inn) * a(m) * CONJG( a(n) )
             ENDDO
             ENDDO
        ENDDO 

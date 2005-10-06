@@ -22,25 +22,46 @@
 ! SUBROUTINE  zmat_unpack( z, zp, n)
 ! SUBROUTINE  zmat_svd( m, n, a, s, u, vt)
 ! SUBROUTINE  dmat_svd( m, n, a, s, u, vt)
+! SUBROUTINE  zmat_sv ( m, n, a, s, u, vt)
+! SUBROUTINE  dmat_sv ( m, n, a, s, u, vt)
 ! SUBROUTINE  zmat_mul( c, a, opa, b, opb, m, n, k)
 ! SUBROUTINE  zmat_hdiag( z, w, a, n)
-! LOGICAL FUNCTION  zmat_unitary( z [,side] [,toll])
+! LOGICAL FUNCTION  zmat_unitary( m, n, z [,side] [,toll])
+! INTEGER FUNCTION  zmat_rank( m, n, a, toll)
 ! 
 ! </INFO>
 !
 
+! singular value decomposition
 INTERFACE mat_svd
    MODULE PROCEDURE zmat_svd
    MODULE PROCEDURE dmat_svd
 END INTERFACE
+!
+! simple linear system solver
+INTERFACE mat_sv
+   MODULE PROCEDURE zmat_sv
+   MODULE PROCEDURE zmat_sv_1
+   MODULE PROCEDURE dmat_sv
+   MODULE PROCEDURE dmat_sv_1
+END INTERFACE
+!
+! rank calculation
+INTERFACE mat_rank
+   MODULE PROCEDURE zmat_rank
+   MODULE PROCEDURE dmat_rank
+END INTERFACE
+
 
 
 PUBLIC :: zmat_pack
 PUBLIC :: zmat_unpack
 PUBLIC ::  mat_svd
+PUBLIC ::  mat_sv
 PUBLIC :: zmat_mul
 PUBLIC :: zmat_hdiag
 PUBLIC :: zmat_unitary
+PUBLIC ::  mat_rank
 
 CONTAINS
 
@@ -203,14 +224,164 @@ END SUBROUTINE dmat_svd
    IF ( info > 0 ) CALL errore('zmat_svd', 'ZGESVD: ZBESQR not converged', info )
     
    DEALLOCATE( atmp, work, rwork, STAT=ierr)
-      IF(ierr/=0) CALL errore('zmat_svd','deallocating atpm, work, rwork',ABS(ierr))
+      IF(ierr/=0) CALL errore('zmat_svd','deallocating atmp, work, rwork',ABS(ierr))
 
    RETURN
 END SUBROUTINE zmat_svd
 
 
+!**********************************************************
+   SUBROUTINE dmat_sv(n, nrhs, a, b)
+   !**********************************************************
+   !
+   !  Computes the solution of the real system of linear equations
+   !     A * X = B,
+   !  where A is an N-by-N matrix and X and B are N-by-NRHS matrices.
+   !
+   !  The LU decomposition with partial pivoting and row interchanges is
+   !  used to factor A as
+   !     A = P * L * U,
+   !  where P is a permutation matrix, L is unit lower triangular, and U is
+   !  upper triangular.  The factored form of A is then used to solve the
+   !  system of equations A * X = B.
+   !
+   IMPLICIT NONE
+   INTEGER, INTENT(IN)         :: n, nrhs
+   REAL(dbl), INTENT(IN)       :: a(:,:)
+   REAL(dbl), INTENT(INOUT)    :: b(:,:)
+
+   INTEGER :: ierr, info
+   INTEGER,      ALLOCATABLE :: ipiv(:)
+   REAL(dbl), ALLOCATABLE    :: atmp(:,:)
+
+   IF ( n > SIZE(a,1) .OR. n > SIZE(a,2) ) CALL errore('dmat_sv','matrix A too small',1)
+   IF ( n > SIZE(b,1) ) CALL errore('dmat_sv','matrix B too small (I)',1)
+   IF ( nrhs > SIZE(b,2) ) CALL errore('dmat_sv','matrix B too small (II)',1)
+
+   ALLOCATE( atmp(n,n), ipiv(n), STAT=ierr )
+     IF (ierr/=0) CALL errore('dmat_sv','allocating atmp, ipiv',ABS(ierr))
+   !
+   ! make a local copy of a
+   atmp(:,:) = a(1:n,1:n) 
+
+   CALL DGESV( n, nrhs, atmp, n, ipiv, b, SIZE(b,1), info)
+
+   IF ( info < 0 ) CALL errore('dmat_sv', 'DGESV: info illegal value', -info )
+   IF ( info > 0 ) CALL errore('dmat_sv', 'DGESV: singular matrix', info )
+    
+   DEALLOCATE( atmp, ipiv, STAT=ierr)
+      IF(ierr/=0) CALL errore('dmat_sv','deallocating atmp, ipiv',ABS(ierr))
+
+   RETURN
+END SUBROUTINE dmat_sv
 
 
+!**********************************************************
+   SUBROUTINE dmat_sv_1(n, nrhs, a, b)
+   !**********************************************************
+   !
+   ! Interface to dmat_sv when nrhs = 1
+   !
+   IMPLICIT NONE
+   INTEGER, INTENT(IN)      :: n, nrhs
+   REAL(dbl), INTENT(IN)    :: a(:,:)
+   REAL(dbl), INTENT(INOUT) :: b(:)
+   !
+   INTEGER  :: ierr
+   REAL(dbl),   ALLOCATABLE :: bl(:,:)
+
+   IF ( nrhs /= 1) CALL errore('dmat_sv_1','more than 1 rhs ??',ABS(nrhs)+1)
+   IF ( n > SIZE(b,1) ) CALL errore('dmat_sv_1','vector b too small',2)
+   !
+   ALLOCATE( bl(n,1), STAT=ierr )
+   IF (ierr/=0) CALL errore('dmat_sv_1','allocating bl',ABS(ierr))
+
+   bl(:,1) = b(1:n)
+   CALL dmat_sv( n, 1, a, bl)
+   b(1:n) = bl(1:n,1)
+
+   DEALLOCATE( bl, STAT=ierr)
+   IF (ierr/=0) CALL errore('dmat_sv_1','deallocating bl',ABS(ierr))
+
+   RETURN
+END SUBROUTINE dmat_sv_1
+
+
+!**********************************************************
+   SUBROUTINE zmat_sv(n, nrhs, a, b)
+   !**********************************************************
+   !
+   !  Computes the solution of the complex system of linear equations
+   !     A * X = B,
+   !  where A is an N-by-N matrix and X and B are N-by-NRHS matrices.
+   !
+   !  The LU decomposition with partial pivoting and row interchanges is
+   !  used to factor A as
+   !     A = P * L * U,
+   !  where P is a permutation matrix, L is unit lower triangular, and U is
+   !  upper triangular.  The factored form of A is then used to solve the
+   !  system of equations A * X = B.
+   !
+   IMPLICIT NONE
+   INTEGER, INTENT(IN)         :: n, nrhs
+   COMPLEX(dbl), INTENT(IN)    :: a(:,:)
+   COMPLEX(dbl), INTENT(INOUT) :: b(:,:)
+
+   INTEGER :: ierr, info
+   INTEGER,      ALLOCATABLE :: ipiv(:)
+   COMPLEX(dbl), ALLOCATABLE :: atmp(:,:)
+
+   IF ( n > SIZE(a,1) .OR. n > SIZE(a,2) ) CALL errore('zmat_sv','matrix A too small',1)
+   IF ( n > SIZE(b,1) ) CALL errore('zmat_sv','matrix B too small (I)',1)
+   IF ( nrhs > SIZE(b,2) ) CALL errore('zmat_sv','matrix B too small (II)',1)
+
+   ALLOCATE( atmp(n,n), ipiv(n), STAT=ierr )
+     IF (ierr/=0) CALL errore('zmat_sv','allocating atmp, ipiv',ABS(ierr))
+   !
+   ! make a local copy of a
+   atmp(:,:) = a(1:n,1:n) 
+
+   CALL ZGESV( n, nrhs, atmp, n, ipiv, b, SIZE(b,1), info)
+
+   IF ( info < 0 ) CALL errore('zmat_sv', 'ZGESV: info illegal value', -info )
+   IF ( info > 0 ) CALL errore('zmat_sv', 'ZGESV: singular matrix', info )
+    
+   DEALLOCATE( atmp, ipiv, STAT=ierr)
+      IF(ierr/=0) CALL errore('zmat_sv','deallocating atmp, ipiv',ABS(ierr))
+
+   RETURN
+END SUBROUTINE zmat_sv
+
+
+!**********************************************************
+   SUBROUTINE zmat_sv_1(n, nrhs, a, b)
+   !**********************************************************
+   !
+   ! Interface to zmat_sv when nrhs = 1
+   !
+   IMPLICIT NONE
+   INTEGER, INTENT(IN)         :: n, nrhs
+   COMPLEX(dbl), INTENT(IN)    :: a(:,:)
+   COMPLEX(dbl), INTENT(INOUT) :: b(:)
+   !
+   INTEGER  :: ierr
+   COMPLEX(dbl),   ALLOCATABLE :: bl(:,:)
+
+   IF ( nrhs /= 1) CALL errore('zmat_sv_1','more than 1 rhs ??',ABS(nrhs)+1)
+   IF ( n > SIZE(b,1) ) CALL errore('zmat_sv_1','vector b too small',2)
+   !
+   ALLOCATE( bl(n,1), STAT=ierr )
+   IF (ierr/=0) CALL errore('zmat_sv_1','allocating bl',ABS(ierr))
+
+   bl(:,1) = b(1:n)
+   CALL zmat_sv( n, 1, a, bl)
+   b(1:n) = bl(1:n,1)
+
+   DEALLOCATE( bl, STAT=ierr)
+   IF (ierr/=0) CALL errore('zmat_sv_1','deallocating bl',ABS(ierr))
+
+   RETURN
+END SUBROUTINE zmat_sv_1
 
 
 !**********************************************************
@@ -442,8 +613,92 @@ END SUBROUTINE zmat_hdiag
        DEALLOCATE( result, STAT=ierr)
           IF ( ierr /= 0 ) CALL errore('zmat_unitary','deallocating result',ABS(ierr))
    ENDIF
-      
-   END FUNCTION zmat_unitary
+   RETURN
+END FUNCTION zmat_unitary
+
+
+!**********************************************************
+   FUNCTION  zmat_rank( m, n, a, toll )
+   !**********************************************************
+   IMPLICIT NONE
+   INTEGER                            :: zmat_rank
+   INTEGER,                INTENT(in) :: m,n
+   COMPLEX(dbl),           INTENT(in) :: a(:,:)
+   REAL(dbl),              INTENT(in) :: toll
+   !
+   INTEGER :: i,ierr 
+   REAL(dbl),    ALLOCATABLE :: s(:)
+   COMPLEX(dbl), ALLOCATABLE :: atmp(:,:), u(:,:), vt(:,:)
+
+   IF ( m > SIZE(a,1) ) CALL errore('zmat_rank','Invalid m',ABS(m)+1)
+   IF ( n > SIZE(a,2) ) CALL errore('zmat_rank','Invalid n',ABS(n)+1)
+
+   ALLOCATE( atmp(m,n), u(m,m), vt(n,n), s(MIN(m,n)), STAT=ierr )
+   IF ( ierr /=0 ) CALL errore('zmat_rank','allocating atmp--s',ABS(ierr))
+
+   !
+   ! local copy
+   atmp(:,:) = a(1:m,1:n)
+   !
+   ! svd decomposition
+   CALL mat_svd(m,n,atmp,s,u,vt)
+   !
+   ! TO BE SUBSTITUTED TO A CALL TO LOCATE
+   zmat_rank = MIN(m,n)
+   DO i=1, MIN(m,n)
+       IF ( ABS(s(i)) < toll ) THEN
+          zmat_rank = i-1
+          EXIT
+       ENDIF
+   ENDDO
+   !
+   DEALLOCATE( atmp, u, vt, s, STAT=ierr )
+   IF ( ierr /=0 ) CALL errore('zmat_rank','deallocating atmp--s',ABS(ierr))
+   !
+END FUNCTION zmat_rank
+
+
+!**********************************************************
+   FUNCTION  dmat_rank( m, n, a, toll )
+   !**********************************************************
+   IMPLICIT NONE
+   INTEGER                            :: dmat_rank
+   INTEGER,                INTENT(in) :: m,n
+   REAL(dbl),              INTENT(in) :: a(:,:)
+   REAL(dbl),              INTENT(in) :: toll
+   !
+   INTEGER :: i,ierr 
+   REAL(dbl), ALLOCATABLE :: s(:)
+   REAL(dbl), ALLOCATABLE :: atmp(:,:), u(:,:), vt(:,:)
+
+
+   IF ( m > SIZE(a,1) ) CALL errore('dmat_rank','Invalid m',ABS(m)+1)
+   IF ( n > SIZE(a,2) ) CALL errore('dmat_rank','Invalid n',ABS(n)+1)
+
+   ALLOCATE( atmp(m,n), u(m,m), vt(n,n), s(MIN(m,n)), STAT=ierr )
+   IF ( ierr /=0 ) CALL errore('dmat_rank','allocating atmp--s',ABS(ierr))
+
+   !
+   ! local copy
+   atmp(:,:) = a(1:m,1:n)
+
+   !
+   ! svd decomposition
+   CALL mat_svd(m,n,atmp,s,u,vt)
+   !
+   ! TO BE SUBSTITUTED TO A CALL TO LOCATE
+   dmat_rank = MIN(m,n)
+   DO i=1, MIN(m,n)
+       IF ( ABS(s(i)) < toll ) THEN
+          dmat_rank = i-1
+          EXIT
+       ENDIF
+   ENDDO
+   !
+   DEALLOCATE( atmp, u, vt, s, STAT=ierr )
+   IF ( ierr /=0 ) CALL errore('dmat_rank','deallocating atmp--s',ABS(ierr))
+   !
+END FUNCTION dmat_rank
 
 END MODULE util_module
 

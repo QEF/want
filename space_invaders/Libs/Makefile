@@ -1,7 +1,7 @@
 include ../make.sys
 
 
-OBJS= compar.o domega.o domega_aux.o error.o \
+OBJS= domega.o domega_aux.o error.o \
       get_points.o indexx.o komegai.o \
       bshells.o omega.o hamiltonian_calc.o \
       phases.o projection.o projection_frozen.o \

@@ -41,13 +41,13 @@ subroutine allocate_nlpot
   USE spin_orb_module, ONLY : lspinorb, fcoef
   !
   ! added for WFs
-  USE kpoints_module,  ONLY : nnx, nkpts
+  USE kpoints_module,  ONLY : nb
   !
   IMPLICIT NONE
   !
   !    a few local variables
   !
-  integer :: nt, na, nb, ierr  
+  integer :: nt, na, ib, ierr  
   ! counters on atom type, atoms, beta functions, ierr
   !
 
@@ -64,9 +64,9 @@ subroutine allocate_nlpot
   lmaxkb = - 1
   do nt = 1, ntyp
      nh (nt) = 0
-     do nb = 1, nbeta (nt)
-        nh (nt) = nh (nt) + 2 * lll (nb, nt) + 1
-        lmaxkb = max (lmaxkb, lll (nb, nt) )
+     do ib = 1, nbeta (nt)
+        nh (nt) = nh (nt) + 2 * lll (ib, nt) + 1
+        lmaxkb = max (lmaxkb, lll (ib, nt) )
      enddo
   enddo
   !
@@ -108,7 +108,7 @@ subroutine allocate_nlpot
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
     !
     ! added for Wannier calc. (ANDREA)
-    ALLOCATE (qb( nhm, nhm, ntyp, nnx, nkpts ), STAT=ierr)
+    ALLOCATE (qb( nhm, nhm, ntyp, nb ), STAT=ierr)
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
   ENDIF
   !

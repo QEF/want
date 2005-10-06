@@ -1,0 +1,32 @@
+
+****************************************
+ List of the known bugs
+****************************************
+
+
+* INTEL ifort 8.1 (and previous versions) 
+  IOTK library is not properly working on large integer arrays.
+  When the array dimension overcomes a given threshold IOTK
+  scan (and sometimes write) gives an error.
+  This is a well known bug of the intel compiler.
+  Setting __IOTK_WORKAROUND3 in iotk_config.h file (IOTK_lib)
+  allows to run the code anyway, but should be further and largerly 
+  tested.
+
+* During recover (restart) procedure, but even in
+  ordinary calculations, unitary checks fail without any clear reason.
+  It happens on a IBM SP5 machine.
+  It seems to be a bug of the XLF IBM compiler badly managing
+  array dimensions through moduli and assumed shape interfaces.
+  A workaround is under test. Results are correct anyway, since
+  the failure involves only a check during the calculation: therefore
+  it is possible to comment the checks (at the end of Libs/subspace_init.f90
+  and Libs/localization_init.f90) to run the calculation anyway.
+
+* In transport calculations, spikes lowering the conductance 
+  of some units may appear. They are very often due to a 
+  slight numerical misalignment of the electronic structure
+  in the lead-conductor-lead system.
+
+
+

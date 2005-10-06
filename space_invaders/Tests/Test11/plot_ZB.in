@@ -1,0 +1,10 @@
+
+ &INPUT
+   prefix = 'zincblend'
+   postfix = '_WanT'
+   output_fmt = 'xsf'
+   datatype = 'modulus'
+   locate_wf = .TRUE.
+   wann = '9-12'
+ /
+

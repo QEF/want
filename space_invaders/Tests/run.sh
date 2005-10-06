@@ -91,13 +91,15 @@ do
     # info
     #
     if [ "$ACTION" = "info" ] ; then
-        grep TEST README
+        str="$(grep TEST README)"
+        echo "${mytest%\/}     ${str#TEST[0-9]* }"
+        
     #
     # update_ref
     #
     elif [ "$ACTION" = "update_ref" ] ; then
-       cp *.out *.dat Reference 2> /dev/null
-       echo " ### $mytest : Reference updated ### " 
+        cp *.out *.dat Reference 2> /dev/null
+        echo " ### $mytest : Reference updated ### " 
     #
     # other flags
     #
@@ -115,6 +117,7 @@ do
     fi
     cd ..
 done
+echo
 
 
 exit 0

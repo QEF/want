@@ -5,10 +5,22 @@
 
 05 Oct 2005      Interface of localization_init changed for stability reasons
                  (bugs in the xlf compiler): strange behaviours in restarting fixed.
-                 The same has been done in subspace_init.f90 . (AF)
+                 The same has been done in subspace_init.f90 . Output fmt changes in
+                 summary.f90 and plot.f90 .
+
+04 Sep 2005      compar.f90 deleted (used in the past in bshells.f90). 
+                 plot.x : bug fixed in converting to plt fmt. (AF)
+
+29 Sep 2005      behslls.f90 completely changed, auto-determination of bvectors
+                 implemented, global simplification performed in b-vectors data and
+                 changed spread all over the code, input modified and test updated
+                 consistently. (AF)
+
+24 Sep 2005      dgels.f added to lapack2.f; bshells.f changed in order to allow
+                 for the automatic determination of b-vectors. (AF)
 
 22 Sep 2005      Output fmt changed in hamiltonian_calc (to much noise at the
-                 end of wannier).
+                 end of wannier). (AF)
 
 21 Sep 2005      INSTALL and documentation in the main Makefile updated. 
                  XSF format now supported in plot.f90, xsf utilities taken from

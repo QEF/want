@@ -25,7 +25,7 @@
    USE kinds
    USE constants, ONLY : ZERO, ONE, CZERO, CI, TWO
    USE timing_module, ONLY : timing
-   USE kpoints_module, ONLY : nnx, nntot, bk, wb
+   USE kpoints_module, ONLY : nb, vb, wb
    USE trial_center_module
    IMPLICIT NONE 
 
@@ -35,7 +35,7 @@
    INTEGER,            INTENT(in)  :: dimwann, nkpts
    REAL(dbl),          INTENT(in)  :: rave(3,dimwann), a
    TYPE(trial_center), INTENT(in)  :: trial(dimwann)
-   COMPLEX(dbl),       INTENT(in)  :: Mkb(dimwann,dimwann,nnx,nkpts)
+   COMPLEX(dbl),       INTENT(in)  :: Mkb(dimwann,dimwann,nb,nkpts)
    COMPLEX(dbl),       INTENT(out) :: domg(dimwann,dimwann,nkpts)
 
    !
@@ -56,7 +56,6 @@
 !----------------------------------------
 !
    CALL timing('domega_aux',OPR='start')
-      
 
    ALLOCATE( qb(dimwann), STAT=ierr )
         IF( ierr /=0 ) CALL errore('domega_aux', 'allocating qb', ABS(ierr) )
@@ -84,10 +83,10 @@
    ! domg_aux is calculated
    !
    DO ik = 1, nkpts
-
+       !
        aux2(:,:) = CZERO
-
-       DO inn = 1, nntot(ik)
+       !
+       DO inn = 1, nb
 
            !
            ! Compute:
@@ -95,7 +94,7 @@
            !       At_mn = w_n * (b * Dr_n) * Mkb_mn / Mkb_nn 
            !
            DO n = 1, dimwann
-               qb(n) = trial(n)%weight * DOT_PRODUCT( bk(:,ik,inn), Dr(:,n) ) 
+               qb(n) = trial(n)%weight * DOT_PRODUCT( vb(:,inn), Dr(:,n) ) 
                DO m = 1, dimwann
                    At(m,n) = qb(n) * Mkb(m,n,inn,ik) / Mkb(n,n,inn,ik)
                ENDDO
@@ -109,7 +108,7 @@
                 !
                 ! S[At^{k,b}] = -i(At+At\dag)/2 
                 !
-                aux2(m,n) = aux2(m,n) - wb(ik,inn) * CI * ( At(m,n) + CONJG(At(n,m)) )
+                aux2(m,n) = aux2(m,n) - wb(inn) * CI * ( At(m,n) + CONJG(At(n,m)) )
 
            ENDDO
            ENDDO

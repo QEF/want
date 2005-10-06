@@ -1,0 +1,45 @@
+
+AlN zincblend
+NC - pbe
+   &CONTROL
+      calculation = 'scf',
+      restart_mode='from_scratch',
+      prefix='zincblend',
+      nstep=2000,
+      tprnfor = .true.,
+      verbosity = 'high'
+   /
+   &SYSTEM
+      ibrav=4, 
+      celldm(1)=5.8748
+      celldm(3)=4.8760724,
+      nat=12,
+      ntyp=2,
+      ecutwfc=60.0,
+      occupations='fixed',
+   /
+   &ELECTRONS
+      electron_maxstep = 50,
+      mixing_mode = 'plain',
+      mixing_beta = 0.3,
+      conv_thr =  1.0d-6,
+   /   
+ATOMIC_SPECIES
+ N   14.01   N.pbe-gp.UPF
+ Al  26.98   Al.pbe-rrkj.UPF
+ATOMIC_POSITIONS (crystal)
+Al      0.000000    0.000000    0.000000
+Al     -0.333333   -0.666667    0.166667
+N       0.000000    0.000000    0.124900
+N      -0.333333   -0.666667    0.291667
+Al      0.333333   -0.333333    0.333333
+Al      0.000000    0.000000    0.500000
+N       0.333333   -0.333333    0.458333
+N       0.000000    0.000000    0.625000
+Al     -0.333333   -0.666667    0.666667
+Al      0.333333   -0.333333    0.833333
+N      -0.333333   -0.666667    0.791667
+N       0.333333   -0.333333    0.958333
+K_POINTS {automatic}
+10  10  4     1  1  1
+

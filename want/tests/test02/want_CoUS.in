@@ -17,8 +17,6 @@
    maxiter1_wan = 2000
    alpha1_wan = 0.4
    ncg = 9    
-   nshells = 1  
-   nwhich(1) = 1  
    ordering_mode = 'none'
 /
 

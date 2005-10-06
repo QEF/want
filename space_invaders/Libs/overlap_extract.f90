@@ -18,7 +18,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE util_module,  ONLY : zmat_mul
    USE subspace_module, ONLY : eamp, subspace_read
    USE windows_module,  ONLY : dimwinx, dimwin, windows_read
-   USE kpoints_module,  ONLY : nnx, nkpts, nntot, nnlist 
+   USE kpoints_module,  ONLY : nkpts, nb, nnlist 
    USE overlap_module,  ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
    IMPLICIT NONE
 
@@ -90,7 +90,7 @@ SUBROUTINE overlap_extract(dimwann)
 !
 ! ... here allocate the temporary variables for the extracted CM and CA 
 !
-   ALLOCATE( Mkb_tmp(dimwann,dimwann,nnx,nkpts), STAT=ierr ) 
+   ALLOCATE( Mkb_tmp(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
       IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
       IF (ierr/=0) CALL errore(subname,"allocating ca_tmp",ABS(ierr))
@@ -118,15 +118,16 @@ SUBROUTINE overlap_extract(dimwann)
    ! CM
    !
    DO ik = 1, nkpts
-      DO inn= 1, nntot( ik )
-         ikb = nnlist( ik, inn )
-
-         CALL zmat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
-                       dimwann, dimwin(ikb), dimwin(ik) )
-         CALL zmat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
-                       dimwann, dimwann, dimwin(ikb) )
-
-      ENDDO
+   DO inn= 1, nb
+       !
+       ikb = nnlist( inn, ik )
+       !
+       CALL zmat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
+                     dimwann, dimwin(ikb), dimwin(ik) )
+       CALL zmat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
+                     dimwann, dimwann, dimwin(ikb) )
+       !
+   ENDDO
    ENDDO
 
    !

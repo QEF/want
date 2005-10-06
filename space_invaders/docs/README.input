@@ -201,14 +201,6 @@ ncg           INTEGER
               each ncg iterations in the second minimization part, do a CG minimization
               DEFAULT : 3
 
-nshells       INTEGER
-              number of different nearest-neighbour k-point shells used in the calc
-              DEFAULT : mandatory
-
-nwhich(ish)   INTEGER
-              the indexes of the chosen shells
-              DEFAULT: mandatory (ish =1, nshells)
-
 localization_init   STRING
               ( "no_guess", "randomized", "center_projections", "from_file" )
               Determine how the wannier localization is started
