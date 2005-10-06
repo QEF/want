@@ -30,7 +30,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    !
    USE kinds,           ONLY : dbl
    USE constants,       ONLY : ZERO, CZERO
-   USE kpoints_module,  ONLY : bk
+   USE kpoints_module,  ONLY : vb
    USE lattice_module,  ONLY : alat
    USE us_module,       ONLY : okvan
    USE uspp,            ONLY : nkb, qb
@@ -69,9 +69,9 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
          DO na = 1, nat
             !
             ! compute the phase factor e^i(b*tau)
-            ! bk in bohr^-1, tau in alat and directly converted
+            ! vb in bohr^-1, tau in alat and directly converted
             !
-            arg = DOT_PRODUCT( bk(:,ik1,inn), tau(:,na) ) * alat
+            arg = DOT_PRODUCT( vb(:,inn), tau(:,na) ) * alat
             phase = DCMPLX ( COS(arg), -SIN(arg) )
             !
             IF ( ityp(na) == nt ) THEN
@@ -84,7 +84,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
                      DO ibnd1 = 1, dimw1
                          Mkb(ibnd1,ibnd2) = Mkb(ibnd1,ibnd2) +  &
                                  CONJG( becp(ikb,ibnd1,ik1) ) * becp(jkb,ibnd2,ik2) *&
-                                 phase * qb(ih,jh,nt,inn,ik1) 
+                                 phase * qb(ih,jh,nt,inn) 
                      ENDDO
                      ENDDO
                   ENDDO

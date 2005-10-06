@@ -411,7 +411,7 @@ long int GCUBE2PLT( const char * filename, const int * length )
     int i;
 
     printf("**********************************************************\n");
-    printf("gCube2Plt conversion  ( .gau --> .plt )                 \n\n");
+    printf("gCube2Plt conversion  ( .cube --> .plt )                \n\n");
 
     for ( i = 0; ( i < *length ) && ( i < 248 ); i ++ ) {
         InputFile[ i ] = filename[ i ];
@@ -422,7 +422,7 @@ long int GCUBE2PLT( const char * filename, const int * length )
     OutputFile[ i ] = '\0';
     CoordinateFile[ i ] = '\0';
 
-    strncat( InputFile , ".gau" , 4 ) ;
+    strncat( InputFile , ".cube" , 5 ) ;
     strncat( OutputFile , ".plt" , 4 ) ;
     strncat( CoordinateFile , ".crd" , 4 ) ;
 

@@ -1,0 +1,188 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <plot>  v. 2.0.0  starts ...
+  Date  6Oct2005 at 13: 7:23 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: INTEL
+
+
+  PW-DFT data read from file: wurtzite_US.export/index.xml
+  Subspace data read from file: wurtzite_US_WanT.space
+  Wannier data read from file: wurtzite_US_WanT.wan
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+<LATTICE>
+  Alat  =       5.8748000 (Bohr)
+  Alat  =       3.1088090 (Ang )
+  Omega =     856.2094872 (Bohr^3)
+  Omega =     126.8770041 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = (  5.8748  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = ( -2.9374  5.0877  0.0000 )     (  -0.5000  0.8660  0.0000 )
+    a(3) = (  0.0000  0.0000 28.6460 )     (   0.0000  0.0000  4.8761 )
+  Crystal axes: (Ang)
+    a(1) = (  3.1088  0.0000  0.0000 )
+    a(2) = ( -1.5544  2.6923  0.0000 )
+    a(3) = (  0.0000  0.0000 15.1588 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  1.0695  0.6175  0.0000 )     (   1.0000  0.5774  0.0000 )
+    b(2) = (  0.0000  1.2350  0.0000 )     (   0.0000  1.1547  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2193 )     (   0.0000  0.0000  0.2051 )
+</LATTICE>
+
+<K-POINTS>
+  nkpts =   32
+  Monkhorst-Pack grid:      nk = (  4  4  2 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.0312
+    k point   2:   (   0.00000  0.30874  0.00000 ),   weight =   0.0312
+    k point   3:   (   0.00000 -0.30874  0.00000 ),   weight =   0.0312
+    k point   4:   (   0.00000 -0.61748  0.00000 ),   weight =   0.0312
+    k point   5:   (   0.26738  0.15437  0.00000 ),   weight =   0.0312
+    k point   6:   (   0.26738  0.46311  0.00000 ),   weight =   0.0312
+    k point   7:   (   0.26738 -0.46311  0.00000 ),   weight =   0.0312
+    k point   8:   (   0.26738 -0.15437  0.00000 ),   weight =   0.0312
+    k point   9:   (  -0.26738 -0.15437  0.00000 ),   weight =   0.0312
+    k point  10:   (  -0.26738  0.15437  0.00000 ),   weight =   0.0312
+    k point  11:   (  -0.26738 -0.77186  0.00000 ),   weight =   0.0312
+    k point  12:   (  -0.26738 -0.46311  0.00000 ),   weight =   0.0312
+    k point  13:   (  -0.53476 -0.30874  0.00000 ),   weight =   0.0312
+    k point  14:   (  -0.53476  0.00000  0.00000 ),   weight =   0.0312
+    k point  15:   (  -0.53476 -0.92623  0.00000 ),   weight =   0.0312
+    k point  16:   (  -0.53476 -0.61748  0.00000 ),   weight =   0.0312
+    k point  17:   (   0.00000  0.00000  0.10967 ),   weight =   0.0312
+    k point  18:   (   0.00000  0.30874  0.10967 ),   weight =   0.0312
+    k point  19:   (   0.00000 -0.30874  0.10967 ),   weight =   0.0312
+    k point  20:   (   0.00000 -0.61748  0.10967 ),   weight =   0.0312
+    k point  21:   (   0.26738  0.15437  0.10967 ),   weight =   0.0312
+    k point  22:   (   0.26738  0.46311  0.10967 ),   weight =   0.0312
+    k point  23:   (   0.26738 -0.46311  0.10967 ),   weight =   0.0312
+    k point  24:   (   0.26738 -0.15437  0.10967 ),   weight =   0.0312
+    k point  25:   (  -0.26738 -0.15437  0.10967 ),   weight =   0.0312
+    k point  26:   (  -0.26738  0.15437  0.10967 ),   weight =   0.0312
+    k point  27:   (  -0.26738 -0.77186  0.10967 ),   weight =   0.0312
+    k point  28:   (  -0.26738 -0.46311  0.10967 ),   weight =   0.0312
+    k point  29:   (  -0.53476 -0.30874  0.10967 ),   weight =   0.0312
+    k point  30:   (  -0.53476  0.00000  0.10967 ),   weight =   0.0312
+    k point  31:   (  -0.53476 -0.92623  0.10967 ),   weight =   0.0312
+    k point  32:   (  -0.53476 -0.61748  0.10967 ),   weight =   0.0312
+</K-POINTS>
+
+
+  WARNING: USPP not fully implemented
+
+
+  Reading density G-grid from file: wurtzite_US.export/index.xml
+  Reading Wfc grids from file: wurtzite_US.export/index.xml
+
+
+          Energy cut-off for wfcs =         25.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =      40923
+        Max number of PW for wfc  =       1834
+      Total number of PW for wfcs =       3059
+        FFT grid components (rho) =  (    27   27  135 )
+
+
+  ======================================================================
+  =                     Wannier function plotting                      =
+  ======================================================================
+
+
+  nplot =   4 Wannier func.s to be plotted
+     wf (  1 ) =    9
+     wf (  2 ) =   10
+     wf (  3 ) =   11
+     wf (  4 ) =   12
+
+  Data type  :   modulus
+  Output fmt :   xsf
+
+  Plotting Cell dimensions [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -0.5000 -->   0.5000
+
+  Grid dimensions:
+      nrx :       -14 -->       14
+      nry :       -14 -->       14
+      nrz :       -68 -->       68
+
+
+  Centers for the required Wannier functions:
+
+        in cartesian coord (Bohr)
+    Wf(   9 ) = (     0.000000    -0.000374    12.281681 )
+    Wf(  10 ) = (     2.244171    -1.295920     8.651481 )
+    Wf(  11 ) = (    -2.244178    -1.295920     8.651479 )
+    Wf(  12 ) = (    -0.000003     2.592173     8.645849 )
+        in crystal coord
+    Wf(   9 ) = (    -0.000037    -0.000073     0.428741 )
+    Wf(  10 ) = (     0.254642    -0.254715     0.302014 )
+    Wf(  11 ) = (    -0.509358    -0.254715     0.302014 )
+    Wf(  12 ) = (     0.254747     0.509495     0.301817 )
+
+  Locating WFs: 
+  Plotting Cell dimensions [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -0.5000 -->   0.5000
+
+  New center positions [cryst. coord]:
+        in crystal coord
+    Wf(   9 ) = (    -0.000037    -0.000073     0.428741 )
+    Wf(  10 ) = (     0.254642    -0.254715     0.302014 )
+    Wf(  11 ) = (     0.490642    -0.254715     0.302014 )
+    Wf(  12 ) = (     0.254747    -0.490505     0.301817 )
+
+
+  Atoms in the selected cell: (cart. coord. in Bohr)
+     Al   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     Al   tau(   2 ) = (   2.9373971  -1.6959070   4.7743346 )
+     N    tau(   3 ) = (   0.0000000   0.0000000   3.5807438 )
+     N    tau(   4 ) = (   2.9373971  -1.6959070   8.3550783 )
+     Al   tau(   5 ) = (   0.0000000   0.0000000   9.5486405 )
+     Al   tau(   6 ) = (   2.9373971  -1.6959070 -14.3229751 )
+     Al   tau(   7 ) = (   2.9373971  -1.6959070  14.3229751 )
+     N    tau(   8 ) = (   0.0000000   0.0000000  13.1293843 )
+     N    tau(   9 ) = (   2.9373971  -1.6959070 -10.7422313 )
+     Al   tau(  10 ) = (   0.0000000   0.0000000  -9.5486405 )
+     Al   tau(  11 ) = (   2.9373971  -1.6959070  -4.7743346 )
+     N    tau(  12 ) = (   0.0000000   0.0000000  -5.9678967 )
+     N    tau(  13 ) = (   2.9373971  -1.6959070  -1.1935908 )
+
+
+  writing WF(  9) plot on file: .//wurtzite_US_WanT_WFM009.xsf
+  writing WF( 10) plot on file: .//wurtzite_US_WanT_WFM010.xsf
+  writing WF( 11) plot on file: .//wurtzite_US_WanT_WFM011.xsf
+  writing WF( 12) plot on file: .//wurtzite_US_WanT_WFM012.xsf
+
+  ======================================================================
+
+   <global routines>
+             clock number :     5
+
+                     plot :  2m22.00s CPU 
+ 
+                want_init :     0.17s CPU
+          ggrids_read_ext :     0.06s CPU
+           wfc_data_kread :     0.78s CPU (      32 calls,   0.024 s avg)
+                   cfft3d :     6.06s CPU (     128 calls,   0.047 s avg)
+
+

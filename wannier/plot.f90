@@ -17,7 +17,7 @@
                                   bohr => bohr_radius_angs, EPS_m6, EPS_m4
    USE parameters,         ONLY : ntypx, natx, nstrx
    USE fft_scalar,         ONLY : cfft3d
-   USE timing_module,      ONLY : timing, timing_overview, global_list
+   USE timing_module,      ONLY : timing, timing_upto_now, timing_overview, global_list
    USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
    USE io_module,          ONLY : ioname, space_unit, wan_unit, dft_unit, &
                                   aux_unit, aux1_unit 
@@ -316,7 +316,7 @@
 
 
 !
-! ... Initialize the data used for the fast fourier transforms
+! Initialize the data used for the fast fourier transforms
 !
       IF( nrxh - nrxl < 0 ) CALL errore( 'plot', 'wrong nrxl and nrxh ', 1 )
       IF( nryh - nryl < 0 ) CALL errore( 'plot', 'wrong nryl and nryh ', 1 )
@@ -404,8 +404,57 @@
       WRITE( stdout, "(/)" )
 
 
+!
+! Get the atoms in the plotting cell
+!
+      ALLOCATE( tau_cry(3, nat), STAT=ierr  )  
+         IF( ierr /=0 ) CALL errore('plot', 'allocating tau_cry', ABS(ierr) ) 
+      ALLOCATE( tautot( 3, 125*nat ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating tautot ', ABS(ierr) ) 
+      ALLOCATE( symbtot( 125*nat ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('plot', 'allocating symbtot ', ABS(ierr) ) 
+
+      tau_cry(:,:) = tau(:,:) * alat
+      CALL cart2cry( tau_cry, avec )  
+
+      natot = 0
+      DO ia = 1, nat
+           DO nx = -2, 2
+           DO ny = -2, 2
+           DO nz = -2, 2
+                raux(1) = ( tau_cry(1,ia) + REAL(nx) ) * REAL( nfft(1) )
+                raux(2) = ( tau_cry(2,ia) + REAL(ny) ) * REAL( nfft(2) )
+                raux(3) = ( tau_cry(3,ia) + REAL(nz) ) * REAL( nfft(3) )
+
+                okp(1) = ( raux(1) >= (nrxl - 1) ) .AND. ( raux(1) < nrxh )
+                okp(2) = ( raux(2) >= (nryl - 1) ) .AND. ( raux(2) < nryh ) 
+                okp(3) = ( raux(3) >= (nrzl - 1) ) .AND. ( raux(3) < nrzh ) 
+                IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
+                     natot = natot+1
+                     tautot(:,natot) = raux(:) / REAL(nfft(:))
+                     symbtot(natot)  = symb( ia )
+                ENDIF
+           ENDDO
+           ENDDO
+           ENDDO
+      ENDDO
+
       !
-      ! ... allocating wfcs
+      ! convert atoms to cartesian coords (bohr)
+      !
+      CALL cry2cart( tautot, avec )
+      
+      WRITE(stdout, " (2x,'Atoms in the selected cell: (cart. coord. in Bohr)' ) " )
+      DO ia = 1, natot
+           WRITE( stdout, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
+                  symbtot(ia), ia, (tautot( i, ia ), i = 1, 3)
+      ENDDO
+      WRITE(stdout, "(/)" )
+
+
+!
+! wfc allocations
+!
       CALL wfc_info_allocate(npwkx, dimwinx, nkpts, dimwinx, evc_info)
       ALLOCATE( evc(npwkx, dimwinx ), STAT=ierr )
          IF (ierr/=0) CALL errore('plot','allocating EVC',ABS(ierr))
@@ -426,6 +475,8 @@
     
       kpoint_loop: &
       DO ik = 1, nkpts
+          ! 
+          WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i3 )") ik
 
           !
           ! getting wfc 
@@ -511,7 +562,11 @@
                   ENDDO
               ENDDO
           ENDDO 
+          !
+          CALL timing_upto_now(stdout)
       ENDDO kpoint_loop
+      !
+      WRITE(stdout, "()")
 
       !
       ! clean the large amount of memory used by wfcs and grids
@@ -558,60 +613,10 @@
           ENDDO
       ENDDO
 
-
-!
-! ... We prepare a graphic output for gopenmol or for dans; 
-!     depending on the geometry of the cell, if it is orthorombic, gopenmol is used 
-!     (this includes the cubic case); otherwise, dan is used.
-!
-
-      ALLOCATE( tau_cry(3, nat), STAT=ierr  )  
-         IF( ierr /=0 ) CALL errore('plot', 'allocating tau_cry', ABS(ierr) ) 
-      ALLOCATE( tautot( 3, 125*nat ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating tautot ', ABS(ierr) ) 
-      ALLOCATE( symbtot( 125*nat ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating symbtot ', ABS(ierr) ) 
-
-
-      tau_cry(:,:) = tau(:,:) * alat
-      CALL cart2cry( tau_cry, avec )  
-
-      natot = 0
-      DO ia = 1, nat
-           DO nx = -2, 2
-           DO ny = -2, 2
-           DO nz = -2, 2
-                raux(1) = ( tau_cry(1,ia) + DBLE(nx) ) * nfft(1)
-                raux(2) = ( tau_cry(2,ia) + DBLE(ny) ) * nfft(2)
-                raux(3) = ( tau_cry(3,ia) + DBLE(nz) ) * nfft(3)
-
-                okp(1) = ( raux(1) >= (nrxl - 1) ) .AND. ( raux(1) < nrxh )
-                okp(2) = ( raux(2) >= (nryl - 1) ) .AND. ( raux(2) < nryh ) 
-                okp(3) = ( raux(3) >= (nrzl - 1) ) .AND. ( raux(3) < nrzh ) 
-                IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
-                     natot = natot+1
-                     tautot(:,natot) = raux(:) / nfft(:)
-                     symbtot(natot)  = symb( ia )
-                ENDIF
-           ENDDO
-           ENDDO
-           ENDDO
-      ENDDO
-
-
-      !
-      ! convert atoms to cartesian coords (bohr)
-      !
-      CALL cry2cart( tautot, avec )
       
-      WRITE(stdout, " (2x,'Atoms in the selected cell: (cart. coord. in Bohr)' ) " )
-      DO ia = 1, natot
-           WRITE( stdout, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
-                  symbtot(ia), ia, (tautot( i, ia ), i = 1, 3)
-      ENDDO
-      WRITE(stdout, "(/)" )
-
-      
+!
+! We prepare a graphic output for gopenmol, dans or xcrysden; 
+!
 
       !
       ! Offset for position and WF's allignment

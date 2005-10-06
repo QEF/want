@@ -16,9 +16,6 @@
    maxiter0_wan = 100
    maxiter1_wan = 1500
    ncg = 5    
-   nshells = 2  
-   nwhich(1) = 1  
-   nwhich(2) = 2  
 /
 
 WANNIER_CENTERS 

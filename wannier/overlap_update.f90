@@ -18,7 +18,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    USE kinds, ONLY : dbl
    USE timing_module, ONLY : timing
    USE util_module,  ONLY : zmat_mul
-   USE kpoints_module,  ONLY : nnx, nntot, nnlist 
+   USE kpoints_module,  ONLY : nb, nnlist 
    IMPLICIT NONE
 
    
@@ -27,7 +27,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    !
    INTEGER,         INTENT(in)    :: dimwann, nkpts
    COMPLEX(dbl),    INTENT(in)    :: U(dimwann,dimwann,nkpts) 
-   COMPLEX(dbl),    INTENT(inout) :: Mkb(dimwann,dimwann,nnx,nkpts) 
+   COMPLEX(dbl),    INTENT(inout) :: Mkb(dimwann,dimwann,nb,nkpts) 
 
    !
    ! local variables
@@ -53,8 +53,8 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
 
 
    DO ik = 1, nkpts
-      DO inn= 1, nntot( ik )
-         ikb = nnlist( ik, inn )
+      DO inn= 1, nb
+         ikb = nnlist( inn, ik )
 
          !
          ! aux1 = U(ik)^dag * Mkb * U(ikb)

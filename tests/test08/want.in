@@ -19,9 +19,6 @@
    maxiter1_wan = 1500, 
    alpha1_wan = 0.5
    ncg = 5      
-   nshells = 2   
-   nwhich(1) = 1  
-   nwhich(2) = 6  
 /
 
 WANNIER_CENTERS {crystal}

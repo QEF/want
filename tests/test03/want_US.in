@@ -19,8 +19,6 @@
    maxiter0_wan = 200
    maxiter1_wan = 4000
    ncg = 5    
-   nshells = 1  
-   nwhich(1) = 1  
 /
 
 WANNIER_CENTERS {bohr}

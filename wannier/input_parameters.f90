@@ -10,7 +10,7 @@
    MODULE input_parameters_module
 !********************************************
    USE kinds, ONLY : dbl
-   USE parameters, ONLY : nstrx, nnx
+   USE parameters, ONLY : nstrx
    USE parser_module, ONLY : change_case
    IMPLICIT NONE
    PRIVATE
@@ -234,14 +234,6 @@
    DATA localization_init_allowed / 'no_guess', 'randomized', 'center_projections', &
                                  'from_file' /
 
-   INTEGER :: nshells = 0
-       ! the number of kpt nearest-neighbour shells used in the calculations
-       ! Hopefully will be removed very soon
-
-   INTEGER :: nwhich(nnx) = 0
-       ! the indexes of the chosen shells
-       ! as above, hopefully it will be removed very soon
-
    CHARACTER(nstrx) :: ordering_mode = "none"
        ! ( "none" | "spatial" | "spread" | "complete" ) 
        ! after the minimization WF's maybe ordered for simplicity purposes
@@ -256,13 +248,13 @@
 
 
    NAMELIST / LOCALIZATION / wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, &
-     maxiter1_wan, nprint_wan, nsave_wan, ncg, localization_init, nshells, nwhich, &
-     ordering_mode, nshells, nwhich, a_condmin, niter_condmin, dump_condmin
+     maxiter1_wan, nprint_wan, nsave_wan, ncg, localization_init, &
+     ordering_mode, a_condmin, niter_condmin, dump_condmin
 
 
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan
    PUBLIC :: nprint_wan, nsave_wan, ncg, localization_init
-   PUBLIC :: nshells, nwhich, ordering_mode, a_condmin, niter_condmin, dump_condmin
+   PUBLIC :: ordering_mode, a_condmin, niter_condmin, dump_condmin
    PUBLIC :: LOCALIZATION
 
 
@@ -409,9 +401,6 @@ CONTAINS
       IF ( nprint_wan <= 0 ) CALL errore(subname, ' nprint_wan must be > 0 ', -nprint_wan+1 )
       IF ( nsave_wan <= 0 ) CALL errore(subname, ' nsave_wan must be > 0 ', -nsave_wan+1 )
       IF ( ncg <= 0 ) CALL errore(subname, 'ncg should be >0',1)
-      IF ( nshells <= 0 ) CALL errore(subname, 'nshells should be > 0',1)
-      IF ( nshells > nnx ) CALL errore(subname, 'nshells should be < nnx',nnx)
-      IF ( ANY( nwhich(1:nshells) <= 0 ) ) CALL errore(subname, 'nwhich should be >= 1',2)
 
       CALL change_case(localization_init,'lower')
       allowed=.FALSE.

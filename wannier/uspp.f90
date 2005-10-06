@@ -88,7 +88,7 @@ MODULE uspp
        qq(:,:,:),             &! the q functions in the solid
        nhtoj(:,:)              ! correspondence n <-> total angular momentum
   COMPLEX(dbl), ALLOCATABLE :: & 
-       qb(:,:,:,:,:)           ! the b FT of the Q(r) for each kpt (i,j,ia,inn,ik)
+       qb(:,:,:,:)             ! the b FT of the Q(r) for each kpt (i,j,ia,ib)
   !
   COMPLEX(dbl), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:
        qq_so(:,:,:,:),           &! Q_{nm}

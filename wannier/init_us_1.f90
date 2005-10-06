@@ -46,7 +46,7 @@ SUBROUTINE init_us_1
   USE control_module,  ONLY : use_blimit
   !
   ! added for WFs
-  USE kpoints_module,  ONLY : bk, nkpts, nntot, nnx
+  USE kpoints_module,  ONLY : nb, vb, nkpts
   USE timing_module
   !
   IMPLICIT NONE
@@ -54,7 +54,7 @@ SUBROUTINE init_us_1
   !     here a few local variables
   !
 
-  INTEGER :: nt, ih, jh, nb, mb, nmb, l, m, ir, iq, is, startq, &
+  INTEGER :: nt, ih, jh, ib, jb, nmb, l, m, ir, iq, is, startq, &
        lastq, ilast, ndm
   ! various counters
   REAL(kind=dbl), ALLOCATABLE :: aux (:), aux1 (:), besr (:), qtot (:,:,:)
@@ -72,10 +72,10 @@ SUBROUTINE init_us_1
   ! interpolated value
   INTEGER :: n1, m0, m1, n, li, mi, vi, vj, ijs, is1, is2, &
              lk, mk, vk, kh, lh, sph_ind, ierr
-  INTEGER :: nbkvect, nn, ik
-  ! WFs  nnx <- 1
-  COMPLEX(kind=dbl) :: coeff, qgm(nnx)
+  INTEGER :: nn, ik
   REAL(kind=dbl) :: spinor, ji, jk
+  COMPLEX(kind=dbl) :: coeff
+  COMPLEX(kind=dbl), ALLOCATABLE :: qgm(:)
 
   CALL timing('init_us_1',OPR='start')
   !
@@ -87,9 +87,11 @@ SUBROUTINE init_us_1
   ALLOCATE (aux1( ndm), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating aux1',ABS(ierr))
     !
-  ALLOCATE (bkvect( 3, nnx ), STAT=ierr)    
+  ALLOCATE (qgm( nb ), STAT=ierr)    
+    IF ( ierr/=0) CALL errore('init_us_1','allocating qgm',ABS(ierr))
+  ALLOCATE (bkvect( 3, nb ), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating bkvect',ABS(ierr))
-  ALLOCATE (bkmod( nnx ), STAT=ierr)    
+  ALLOCATE (bkmod( nb ), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating bkmod',ABS(ierr))
   ALLOCATE (besr( ndm), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating besr',ABS(ierr))
@@ -132,14 +134,14 @@ SUBROUTINE init_us_1
   !
   do nt = 1, ntyp
      ih = 1
-     do nb = 1, nbeta (nt)
-        l = lll (nb, nt)
-        j = jjj (nb, nt)
+     do ib = 1, nbeta (nt)
+        l = lll (ib, nt)
+        j = jjj (ib, nt)
         do m = 1, 2 * l + 1
            nhtol (ih, nt) = l
            nhtolm(ih, nt) = l*l+m
            nhtoj (ih, nt) = j
-           indv  (ih, nt) = nb
+           indv  (ih, nt) = ib
            ih = ih + 1
         enddo
      enddo
@@ -242,25 +244,25 @@ SUBROUTINE init_us_1
      if (tvanp (nt) ) then
         do l = 0, nqlc (nt) - 1
            !
-           !     first we build for each nb,mb,l the total Q(|r|) function
+           !     first we build for each ib,jb,l the total Q(|r|) function
            !     note that l is the true angular momentum, and the arrays
            !     have dimensions 1..l+1
            !
-           do nb = 1, nbeta (nt)
-              do mb = nb, nbeta (nt)
-                 if ( (l >= abs (lll (nb, nt) - lll (mb, nt) ) ) .and. &
-                      (l <= lll (nb, nt) + lll (mb, nt) )        .and. &
-                      (mod (l + lll (nb, nt) + lll (mb, nt), 2) == 0) ) then
+           do ib = 1, nbeta (nt)
+              do jb = ib, nbeta (nt)
+                 if ( (l >= abs (lll (ib, nt) - lll (jb, nt) ) ) .and. &
+                      (l <= lll (ib, nt) + lll (jb, nt) )        .and. &
+                      (mod (l + lll (ib, nt) + lll (jb, nt), 2) == 0) ) then
                     do ir = 1, kkbeta (nt)
                        if (r (ir, nt) >= rinner (l + 1, nt) ) then
-                          qtot (ir, nb, mb) = qfunc (ir, nb, mb, nt)
+                          qtot (ir, ib, jb) = qfunc (ir, ib, jb, nt)
                        else
                           ilast = ir
                        endif
                     enddo
                    if (rinner (l + 1, nt) > ZERO ) &
-                         call setqf(qfcoef (1, l+1, nb, mb, nt), &
-                                    qtot(1,nb,mb), r(1,nt), nqf(nt),l,ilast)
+                         call setqf(qfcoef (1, l+1, ib, jb, nt), &
+                                    qtot(1,ib,jb), r(1,nt), nqf(nt),l,ilast)
                  endif
               enddo
            enddo
@@ -273,17 +275,17 @@ SUBROUTINE init_us_1
               !
               !   and then we integrate with all the Q functions
               !
-              do nb = 1, nbeta (nt)
+              do ib = 1, nbeta (nt)
                  !
                  !    the Q are symmetric with respect to indices
                  !
-                 do mb = nb, nbeta (nt)
-                    nmb = mb * (mb - 1) / 2 + nb
-                    if ( (l >= abs (lll (nb, nt) - lll (mb, nt) ) ) .and. &
-                         (l <= lll (nb, nt) + lll (mb, nt) )        .and. &
-                         (mod (l + lll(nb, nt) + lll(mb, nt), 2) == 0) ) then
+                 do jb = ib, nbeta (nt)
+                    nmb = jb * (jb - 1) / 2 + ib
+                    if ( (l >= abs (lll (ib, nt) - lll (jb, nt) ) ) .and. &
+                         (l <= lll (ib, nt) + lll (jb, nt) )        .and. &
+                         (mod (l + lll(ib, nt) + lll(jb, nt), 2) == 0) ) then
                        do ir = 1, kkbeta (nt)
-                          aux1 (ir) = aux (ir) * qtot (ir, nb, mb)
+                          aux1 (ir) = aux (ir) * qtot (ir, ib, jb)
                        enddo
                        call simpson (kkbeta(nt), aux1, rab(1, nt), &
                                      qrad(iq,nmb,l + 1, nt) )
@@ -349,45 +351,45 @@ SUBROUTINE init_us_1
   enddo
   DEALLOCATE (ylmk0, STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','deallocating aux',ABS(ierr))
+
   !
   ! ... qb computation, added for WFs
-  !     Conversion from bohr^-1 to tpiba units is performed for the bk vecotrs.
+  !     Conversion from bohr^-1 to tpiba units is performed for the b vecotrs.
   !     Before gg is used instead of SQRT(gg) because there we were interested
   !     only in the first element which is gg = 0
   !
-  DO ik=1,nkpts
-      nbkvect = nntot(ik)
-      DO nn=1,nbkvect
-         bkvect(1:3,nn) = bk(1:3,ik,nn) / tpiba
+  DO nn=1,nb
+         bkvect(1:3,nn) = vb(1:3,nn) / tpiba
          bkmod(nn) = SQRT( bkvect(1,nn)**2 + bkvect(2,nn)**2 + bkvect(3,nn)**2 )
-      ENDDO
-
-      !
-      ! using this option allows for the calculation of overlap
-      ! augmentations using b = 0 (thermodynamic limit)
-      !
-      IF ( use_blimit) THEN
-         bkvect(:,1:nbkvect) = ZERO
-         bkmod(1:nbkvect) = ZERO
-      ENDIF
-
-      ALLOCATE (ylmk0( nbkvect, lmaxq * lmaxq), STAT=ierr)    
-         IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
-
-      CALL ylmr2 (lmaxq * lmaxq, nbkvect, bkvect, bkmod, ylmk0)
-      DO nt = 1, ntyp
-         IF (tvanp (nt) ) THEN
-            DO ih = 1, nh (nt)
-            DO jh = 1, nh (nt)
-               CALL qvan2 (nbkvect, ih, jh, nt, bkmod, qgm, ylmk0)
-               qb (ih, jh, nt, 1:nbkvect, ik) = omega * qgm (1:nbkvect) 
-            ENDDO
-            ENDDO
-         ENDIF
-      ENDDO
-      DEALLOCATE (ylmk0, STAT=ierr)    
-         IF ( ierr/=0) CALL errore('init_us_1','deallocating aux',ABS(ierr))
   ENDDO
+
+  !
+  ! using this option allows for the calculation of overlap
+  ! augmentations using b = 0 (thermodynamic limit)
+  !
+  IF ( use_blimit) THEN
+       bkvect(:,1:nb) = ZERO
+       bkmod(1:nb) = ZERO
+  ENDIF
+
+  ALLOCATE (ylmk0( nb, lmaxq * lmaxq), STAT=ierr)    
+  IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
+
+  CALL ylmr2 (lmaxq * lmaxq, nb, bkvect, bkmod, ylmk0)
+  DO nt = 1, ntyp
+     IF (tvanp (nt) ) THEN
+         DO ih = 1, nh (nt)
+         DO jh = 1, nh (nt)
+            CALL qvan2 (nb, ih, jh, nt, bkmod, qgm, ylmk0)
+            qb (ih, jh, nt, 1:nb) = omega * qgm (1:nb) 
+         ENDDO
+         ENDDO
+     ENDIF
+  ENDDO
+  !
+  DEALLOCATE (ylmk0, STAT=ierr)    
+  IF ( ierr/=0) CALL errore('init_us_1','deallocating aux',ABS(ierr))
+  
 
 
 #ifdef __PARA
@@ -401,7 +403,7 @@ SUBROUTINE init_us_1
   !
   !     fill the interpolation table tab
   !
-  pref = fpi / sqrt (omega)
+  pref = FPI / sqrt (omega)
   !
   !     as before, because of the current serial implementation
   !     the call to DIVIDE is replace
@@ -414,16 +416,16 @@ SUBROUTINE init_us_1
 
   tab (:,:,:) = ZERO
   do nt = 1, ntyp
-     do nb = 1, nbeta (nt)
-        l = lll (nb, nt)
+     do ib = 1, nbeta (nt)
+        l = lll (ib, nt)
         do iq = startq, lastq
            qi = (iq - 1) * dq
            call sph_bes (kkbeta (nt), r (1, nt), qi, l, besr)
            do ir = 1, kkbeta (nt)
-              aux (ir) = betar (ir, nb, nt) * besr (ir) * r (ir, nt)
+              aux (ir) = betar (ir, ib, nt) * besr (ir) * r (ir, nt)
            enddo
            call simpson (kkbeta (nt), aux, rab (1, nt), vqint)
-           tab (iq, nb, nt) = vqint * pref
+           tab (iq, ib, nt) = vqint * pref
         enddo
      enddo
   enddo
@@ -434,6 +436,7 @@ SUBROUTINE init_us_1
   deallocate (besr)
   deallocate (aux1)
   deallocate (aux)
+  deallocate (qgm)
   deallocate (bkvect)
   deallocate (bkmod)
 

@@ -15,7 +15,7 @@
    USE kinds
    USE constants, ONLY : ZERO, ONE, TWO, CZERO, CI
    USE timing_module, ONLY : timing
-   USE kpoints_module, ONLY : nnx, nntot, bk, wb
+   USE kpoints_module, ONLY : nb, vb, wb
    IMPLICIT NONE 
 
    !  
@@ -23,9 +23,9 @@
    !  
    INTEGER,      INTENT(in)  :: dimwann, nkpts
    REAL(dbl),    INTENT(in)  :: rave(3,dimwann)
-   REAL(dbl),    INTENT(in)  :: sheet(dimwann,nnx,nkpts)
-   COMPLEX(dbl), INTENT(in)  :: csheet(dimwann,nnx,nkpts)
-   COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nnx,nkpts)
+   REAL(dbl),    INTENT(in)  :: sheet(dimwann,nb,nkpts)
+   COMPLEX(dbl), INTENT(in)  :: csheet(dimwann,nb,nkpts)
+   COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nb,nkpts)
    COMPLEX(dbl), INTENT(out) :: domg(dimwann,dimwann,nkpts)
 
    !
@@ -68,7 +68,7 @@
        aux1(:,:) = CZERO
        aux2(:,:) = CZERO
 
-       DO inn = 1, nntot(ik)
+       DO inn = 1, nb
 
            !
            ! Compute:
@@ -79,7 +79,7 @@
            !
            DO n = 1, dimwann
                qkb(n) = AIMAG( LOG( csheet(n,inn,ik)* Mkb(n,n,inn,ik) ) - &
-                               sheet(n,inn,ik) ) + DOT_PRODUCT( bk(:,ik,inn), rave(:,n) ) 
+                               sheet(n,inn,ik) ) + DOT_PRODUCT( vb(:,inn), rave(:,n) ) 
                DO m = 1, dimwann
                    R (m,n) = Mkb(m,n,inn,ik) * CONJG( Mkb(n,n,inn,ik) )
                    Rt(m,n) = Mkb(m,n,inn,ik) / Mkb(n,n,inn,ik)
@@ -97,12 +97,12 @@
                 ! where    R_mn = Mkb(m,n) * CONJG( Mkb(n,n) )
                 ! which is different from what reported on the paper PRB 56, 12852 (97)
                 !
-                aux1(m,n) = aux1(m,n) + wb(ik,inn) * ( R(m,n) - CONJG( R(n,m)) )
+                aux1(m,n) = aux1(m,n) + wb(inn) * ( R(m,n) - CONJG( R(n,m)) )
 
                 !
                 ! -S[T^{k,b}] = +i(T+Tdag)/2 
                 !
-                aux2(m,n) = aux2(m,n) + wb(ik,inn) * CI * ( T(m,n) + CONJG(T(n,m)) )
+                aux2(m,n) = aux2(m,n) + wb(inn) * CI * ( T(m,n) + CONJG(T(n,m)) )
 
            ENDDO
            ENDDO

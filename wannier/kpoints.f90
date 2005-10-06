@@ -13,7 +13,7 @@
 !*********************************************
    USE kinds, ONLY: dbl
    USE constants, ONLY : ONE, TWO, TPI, EPS_m6
-   USE parameters, ONLY : npkx, nstrx, nnx, nnhx 
+   USE parameters, ONLY : nstrx, nnx
    USE lattice_module, ONLY : alat, avec, bvec, lattice_alloc => alloc
    USE iotk_module
 
@@ -56,18 +56,13 @@
   !
   ! ... Nearest neighbor data (b vectors)
 
-  INTEGER                 :: nshells       ! input number of shells to be used
-  INTEGER                 :: nwhich(nnx)   ! the chosen shells
-  INTEGER, ALLOCATABLE    :: nntot(:)      ! DIM: nkpts
-  INTEGER, ALLOCATABLE    :: nnshell(:,:)  ! DIM: nkpts*nnx
-  INTEGER, ALLOCATABLE    :: nnlist(:,:)   ! DIM: nkpts*nnx
-  INTEGER, ALLOCATABLE    :: nncell(:,:,:) ! DIM: 3*nnx*nkpts
-  INTEGER, ALLOCATABLE    :: neigh(:,:)    ! DIM: nkpts*nnhx
-  INTEGER, ALLOCATABLE    :: nreverse(:,:) ! DIM: nnx*nkpts
-  REAL(dbl), ALLOCATABLE  :: bk(:,:,:)     ! DIM: 3*nkpts*nnx (bohr^-1)
-  REAL(dbl), ALLOCATABLE  :: wb(:,:)       ! b-weights, DIM: nkpts*nnx
-  REAL(dbl), ALLOCATABLE  :: bka(:,:)      ! DIM: 3*nnhx (bohr^-1)
-  REAL(dbl), ALLOCATABLE  :: dnn(:)        ! DIM: nnx (bohr^-1)
+  INTEGER                 :: nb            ! number of neighbours
+  INTEGER, ALLOCATABLE    :: nnlist(:,:)   ! k+b list for each k, DIM: nb*nkpts
+  INTEGER, ALLOCATABLE    :: nncell(:,:,:) ! k+b cell, DIM: 3*nb*nkpts
+  INTEGER, ALLOCATABLE    :: nnrev(:)      ! -b index for each b, DIM: nb
+  INTEGER, ALLOCATABLE    :: nnpos(:)      ! DIM: nb/2 "positive" def b-vectors
+  REAL(dbl), ALLOCATABLE  :: vb (:,:)      ! b coords, DIM: 3*nb (bohr^-1)
+  REAL(dbl), ALLOCATABLE  :: wb(:)         ! b-weights, DIM: nb
   REAL(dbl)               :: wbtot         ! sum of the b-weights
 
   LOGICAL :: kpoints_alloc = .FALSE.
@@ -84,20 +79,14 @@
   PUBLIC :: vkpt
   PUBLIC :: wk, wksum
 
-  PUBLIC :: nnx, nnhx
-  PUBLIC :: nshells
-  PUBLIC :: nwhich
-  PUBLIC :: nntot
-  PUBLIC :: nnshell
+  PUBLIC :: nb
+  PUBLIC :: vb
+  PUBLIC :: wb
+  PUBLIC :: wbtot
   PUBLIC :: nnlist
   PUBLIC :: nncell
-  PUBLIC :: neigh
-  PUBLIC :: nreverse
-  PUBLIC :: bk
-  PUBLIC :: wb
-  PUBLIC :: dnn
-  PUBLIC :: bka
-  PUBLIC :: wbtot
+  PUBLIC :: nnrev
+  PUBLIC :: nnpos
   PUBLIC :: kpoints_alloc, bshells_alloc
 
   PUBLIC :: bshells_init
@@ -138,29 +127,20 @@ CONTAINS
       CHARACTER(16)     :: subname="bshells_allocate"
 
       IF ( nkpts <= 0)  CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
-      IF ( nnx <= 0 ) CALL errore(subname,'Invalid NNX',ABS(nnx)+1)
-      IF ( nnhx <= 0) CALL errore(subname,'Invalid NNHX ',ABS(nnhx)+1)
+      IF ( nb <= 0 .OR. nb > nnx )  CALL errore(subname,'Invalid NB',ABS(nb)+1)
 
-      ALLOCATE( nntot(nkpts), STAT=ierr )
-         IF (ierr /=0 ) CALL errore(subname,'allocating nntot',nkpts)
-      ALLOCATE( nnshell(nkpts,nnx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nnshell ', nkpts*nnx )
-      ALLOCATE( nnlist(nkpts,nnx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', nkpts*nnx )
-      ALLOCATE( nncell(3,nnx,nkpts), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', 3*nnx*nkpts )
-      ALLOCATE( neigh(nkpts,nnhx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating neigh ', nkpts*nnhx )
-      ALLOCATE( nreverse(nnx,nkpts), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nreverse ', nkpts*nnx )
-      ALLOCATE( bk(3,nkpts,nnx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating bk ', 3*nkpts*nnx )
-      ALLOCATE( wb(nkpts,nnx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating wb ', nkpts*nnx )
-      ALLOCATE( dnn(nnx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating dnn ', nnx )
-      ALLOCATE( bka(3,nnhx), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating bka ', 3*nnhx )
+      ALLOCATE( nnlist(nb,nkpts), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', ABS(ierr) )
+      ALLOCATE( nncell(3,nb,nkpts), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', ABS(ierr) )
+      ALLOCATE( nnrev(nb), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nnrev ', ABS(ierr) )
+      ALLOCATE( vb(3,nb), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating vb ', ABS(ierr) )
+      ALLOCATE( nnpos(nb/2), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating nnpos ', ABS(ierr) )
+      ALLOCATE( wb(nb), STAT = ierr )
+         IF( ierr /=0 ) CALL errore(subname, ' allocating wb ', ABS(ierr) )
 
       bshells_alloc = .TRUE.
    END SUBROUTINE bshells_allocate
@@ -174,8 +154,7 @@ CONTAINS
       IF ( .NOT. lattice_alloc ) CALL errore('bshells_init','Lattice NOT allocated',1)
       ! ... Setup the shells of b-vectors around each K-point
       ! 
-      CALL bshells_allocate()
-      CALL bshells(bvec, nshells, nwhich)
+      CALL bshells()
 
     RETURN
    END SUBROUTINE bshells_init
@@ -284,14 +263,6 @@ CONTAINS
    IMPLICIT NONE
     INTEGER   :: ierr
 
-    IF ( ALLOCATED( nntot ) ) THEN
-       DEALLOCATE( nntot, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nntot',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( nnshell ) ) THEN
-       DEALLOCATE( nnshell, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnshell',ABS(ierr))
-    ENDIF
     IF ( ALLOCATED( nnlist ) ) THEN
        DEALLOCATE( nnlist, STAT=ierr )
        IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnlist',ABS(ierr))
@@ -300,29 +271,21 @@ CONTAINS
        DEALLOCATE( nncell, STAT=ierr )
        IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nncell',ABS(ierr))
     ENDIF
-    IF ( ALLOCATED( neigh ) ) THEN
-       DEALLOCATE( neigh, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating neigh',ABS(ierr))
+    IF ( ALLOCATED( nnrev ) ) THEN
+       DEALLOCATE( nnrev, STAT=ierr )
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnrev',ABS(ierr))
     ENDIF
-    IF ( ALLOCATED( nreverse ) ) THEN
-       DEALLOCATE( nreverse, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nreverse',ABS(ierr))
+    IF ( ALLOCATED( vb ) ) THEN
+       DEALLOCATE( vb, STAT=ierr )
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating vb',ABS(ierr))
     ENDIF
-    IF ( ALLOCATED( bk ) ) THEN
-       DEALLOCATE( bk, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating bk',ABS(ierr))
+    IF ( ALLOCATED( nnpos ) ) THEN
+       DEALLOCATE( nnpos, STAT=ierr )
+       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnpos',ABS(ierr))
     ENDIF
     IF ( ALLOCATED( wb ) ) THEN
        DEALLOCATE( wb, STAT=ierr )
        IF (ierr/=0) CALL errore('bshells_deallocate','deallocating wb',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( dnn ) ) THEN
-       DEALLOCATE( dnn, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating dnn',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( bka ) ) THEN
-       DEALLOCATE( bka, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating bka',ABS(ierr))
     ENDIF
 
     bshells_alloc = .FALSE.
