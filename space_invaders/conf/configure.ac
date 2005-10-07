@@ -1,4 +1,4 @@
-AC_INIT(ESPRESSO, 2.1, , espresso)
+AC_INIT(WanT, 2.0, , want)
 
 # -----------------------------
 # application-specific settings
@@ -1174,7 +1174,7 @@ AC_OUTPUT
 
 # final warnings
 echo -----------------------------------------------------------------
-echo ESPRESSO can take advantage of several optimized numerical libraries
+echo WanT can take advantage of several optimized numerical libraries
 echo \(essl, fftw, mkl...\).  This configure script attempts to find them,
 echo but may fail if they have been installed in non-standard locations.
 echo
@@ -1192,7 +1192,7 @@ echo If any libraries are missing, you may specify a list of directories
 echo to search and retry, as follows:
 echo "  ./configure LIBDIRS=\"list of directories, separated by spaces\""
 echo
-echo For more information, read README.install or the ESPRESSO User\'s Guide.
+echo For more information, read README.install or the WanT User\'s Guide.
 echo -----------------------------------------------------------------
 
 if test "$use_parallel" -ne 0 && test "$parallel" -eq 0

@@ -1,9 +1,14 @@
-#!/bin/sh
+#! /bin/sh 
 # compute dependencies for the WanT directory tree
 
 # run from directory where this script is
 cd `echo $0 | sed 's/\(.*\)\/.*/\1/'` # extract pathname
+# come back to WanT HOME
+cd ..  
+#
 TOPDIR=`pwd`
+BINDIR=$TOPDIR/conf
+
 
 for DIR in IOTK_lib Modules Libs Main Transport
 do
@@ -19,8 +24,8 @@ do
     if test -d $TOPDIR/$DIR
     then
         cd $TOPDIR/$DIR
-        $TOPDIR/moduledep.sh $DEPENDS > make.depend
-        $TOPDIR/includedep.sh $DEPENDS >> make.depend
+        $BINDIR/moduledep.sh $DEPENDS > make.depend
+        $BINDIR/includedep.sh $DEPENDS >> make.depend
     fi
 
     # handle special cases

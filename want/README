@@ -69,8 +69,10 @@ write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, 
 
 TECHNICAL NOTES
 
-- Installation procedure is reported in INSTALL file
-- README.run describes how to run the code step by step
-- README.input description of the input files
+- Installation procedure is reported in the docs/README.install file
+- docs/README.run describes how to run the code step by step
+- docs/README.input description of the input files
+
+See also the WanT User's Guide in docs/want_ug.pdf
 
 
