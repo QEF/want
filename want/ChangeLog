@@ -6,7 +6,8 @@
 
 07 Oct 2005      Clean up of the WanT homedir: configure machinery moved to ./conf;
                  a new wrapper created in the home. README file is back again in the
-                 home, pointing to other documentation in docs. (AF)
+                 home, pointing to other documentation in docs. 
+                 Bug in plot.x (courtesy of Malgorzata Wierzbowska) fixed. (AF)
 
 05 Oct 2005      Interface of localization_init changed for stability reasons
                  (bugs in the xlf compiler): strange behaviours in restarting fixed.

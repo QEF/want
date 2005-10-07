@@ -442,7 +442,7 @@
       !
       ! convert atoms to cartesian coords (bohr)
       !
-      CALL cry2cart( tautot, avec )
+      CALL cry2cart( tautot(:,1:natot), avec )
       
       WRITE(stdout, " (2x,'Atoms in the selected cell: (cart. coord. in Bohr)' ) " )
       DO ia = 1, natot
