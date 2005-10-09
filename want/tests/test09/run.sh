@@ -279,7 +279,7 @@ fi
 if [ "$CONDUCTOR_UP" = ".TRUE." ] ; then  
    #
    echo $ECHO_N "running CONDUCTOR_UP calculation... $ECHO_C" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_UP.in > $TEST_HOME/conductor_UP.out
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor_UP.in > $TEST_HOME/conductor_UP.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       mv dos.dat $TEST_HOME/dos_UP.dat
@@ -296,7 +296,7 @@ fi
 if [ "$CONDUCTOR_DW" = ".TRUE." ] ; then  
    #
    echo $ECHO_N "running CONDUCTOR_DW calculation... $ECHO_C" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_DW.in > $TEST_HOME/conductor_DW.out
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor_DW.in > $TEST_HOME/conductor_DW.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       mv dos.dat $TEST_HOME/dos_DW.dat

@@ -198,7 +198,7 @@ fi
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
    echo $ECHO_N "running CONDUCTOR calculation... $ECHO_C" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_Au.in > $TEST_HOME/conductor_Au.out
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor_Au.in > $TEST_HOME/conductor_Au.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       #

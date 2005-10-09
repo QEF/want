@@ -346,7 +346,7 @@ fi
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    #
    echo $ECHO_N "running CODNDUCTOR calculation... $ECHO_C" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       mv dos.dat cond.dat $TEST_HOME
@@ -361,7 +361,7 @@ fi
 #
 if [ "$CONDUCTOR_BULK" = ".TRUE." ] ; then  
    echo $ECHO_N "running CONDUCTOR_BULK calculation... $ECHO_C" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_bulk.in > $TEST_HOME/conductor_bulk.out
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor_bulk.in > $TEST_HOME/conductor_bulk.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       mv dos.dat  $TEST_HOME/dos_bulk.dat
@@ -377,7 +377,7 @@ fi
 #
 if [ "$CONDUCTOR_AUTO" = ".TRUE." ] ; then  
    echo $ECHO_N "running CONDUCTOR_AUTO calculation... $ECHO_C" 
-   $TRANS_BIN/conductor.x < $TEST_HOME/conductor_auto.in > $TEST_HOME/conductor_auto.out
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor_auto.in > $TEST_HOME/conductor_auto.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       mv dos.dat  $TEST_HOME/dos_auto.dat
