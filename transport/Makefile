@@ -20,6 +20,7 @@ all: conductor.x
 
 conductor.x: $(OBJS)
 	$(LD) -o conductor.x $(OBJS) ../Modules/*.o $(MODULES) $(LDFLAGS)
+	- ( cd ../bin ; ln -fs ../Transport/$@ . )
 
 
 clean:
