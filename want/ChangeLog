@@ -4,6 +4,9 @@
 =======================================================
 
 
+09 Oct 2005      Further clean up in the WanT homedir: iotk, include and bin dir added. 
+                 Makefile system updated. (AF)
+
 07 Oct 2005      Clean up of the WanT homedir: configure machinery moved to ./conf;
                  a new wrapper created in the home. README file is back again in the
                  home, pointing to other documentation in docs. 

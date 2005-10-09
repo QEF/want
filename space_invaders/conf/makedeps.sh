@@ -10,14 +10,14 @@ TOPDIR=`pwd`
 BINDIR=$TOPDIR/conf
 
 
-for DIR in IOTK_lib Modules Libs Main Transport
+for DIR in iotk Modules Libs Main Transport
 do
     # set inter-directory dependencies
     case $DIR in
-        IOTK_lib ) DEPENDS="../Include"                        ;;
-        Modules )  DEPENDS="../Include ../IOTK_lib"            ;;
+        iotk )     DEPENDS="../include"                    ;;
+        Modules )  DEPENDS="../include ../iotk"            ;;
         Libs | Main | Transport )
-                   DEPENDS="../Include ../IOTK_lib ../Modules" ;;
+                   DEPENDS="../include ../iotk ../Modules" ;;
     esac
 
     # generate dependencies file

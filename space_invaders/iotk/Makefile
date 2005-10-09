@@ -45,9 +45,9 @@ OBJS = \
     
 #----------------------------------------------------
     
-all : lib_iotk.a
+all : libiotk.a
    
-lib_iotk.a : $(OBJS)
+libiotk.a : $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
     
 clean:

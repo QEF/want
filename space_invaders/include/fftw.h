@@ -29,7 +29,7 @@
  */
 
 /* fftw.h -- system-wide definitions */
-/* $Id: fftw.h,v 1.1 2005-01-31 12:14:43 arrigo Exp $ */
+/* $Id: fftw.h,v 1.1 2005-10-09 16:08:25 arrigo Exp $ */
 
 #ifndef FFTW_H
 #define FFTW_H

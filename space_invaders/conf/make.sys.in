@@ -38,10 +38,10 @@ RANLIB         = @ranlib@
 # (possible arguments to -D or -U) and their meaning
 DFLAGS         = @dflags@
 FDFLAGS        = @fdflags@
-IFLAGS         = -I../Include @ifftw@
-MODFLAGS       = @imod@. @imod@../Modules @imod@../IOTK_lib @imod@../Main
+IFLAGS         = -I../include @ifftw@
+MODFLAGS       = @imod@. @imod@../Modules @imod@../iotk @imod@../Main
 
-LIBOBJS        = ../IOTK_lib/lib_iotk.a ../Libs/libwant.a
+LIBOBJS        = ../iotk/libiotk.a ../Libs/libwant.a
 # LIBS must contain the location of all needed external libraries
 LIBS           = @libs@
 # MYLIB can be one of the following (depending on LIBS):
