@@ -18,6 +18,7 @@
    !
    USE kinds,     ONLY : dbl
    USE constants, ONLY : CZERO, CONE, CI, ZERO , EPS_m5
+   USE util_module,      ONLY : zmat_mul, mat_sv
    IMPLICIT NONE
 
    !
@@ -73,9 +74,7 @@
            tmp(j,j) = tmp(j,j) + 2*EPS_m5
        ENDDO
 
-       CALL ZGESV(nmaxc, nmaxc, tmp, nmaxc, ipiv, lambda, nmaxc, info)
-       IF ( info > 0 ) CALL errore('transmittance','info > 0 in ZGESV',info)
-       IF ( info < 0 ) CALL errore('transmittance','invalid argument in ZGESV',-info)
+       CALL mat_sv(nmaxc, nmaxc, tmp, lambda)
 
 
    ELSE
@@ -102,19 +101,19 @@
    !
    ! gL * gintr -> tmp
    !
-   CALL ZGEMM('N','N',nmaxc,nmaxc,nmaxc,CONE,gL,nmaxc,gintr, nmaxc,CZERO,tmp,nmaxc)  
+   CALL zmat_mul(tmp, gL, 'N', gintr, 'N', nmaxc, nmaxc, nmaxc)
    !
    ! gL * gintr * gR -> tmp1
    !
-   CALL ZGEMM('N','N',nmaxc,nmaxc,nmaxc,CONE,tmp,nmaxc,gR, nmaxc,CZERO,tmp1,nmaxc)  
+   CALL zmat_mul(tmp1, tmp, 'N', gR, 'N', nmaxc, nmaxc, nmaxc)
    !
    ! gL * gintr * gR * lambda -> tmp
    !
-   CALL ZGEMM('N','N',nmaxc,nmaxc,nmaxc,CONE,tmp1,nmaxc,lambda, nmaxc,CZERO,tmp,nmaxc)  
+   CALL zmat_mul(tmp, tmp1, 'N', lambda, 'N', nmaxc, nmaxc, nmaxc)
    !
    ! gL * gintr * gR * lambda * ginta -> tmp1
    !
-   CALL ZGEMM('N','C',nmaxc,nmaxc,nmaxc,CONE,tmp,nmaxc,gintr, nmaxc,CZERO,tmp1,nmaxc)  
+   CALL zmat_mul(tmp1, tmp, 'N', gintr, 'C', nmaxc, nmaxc, nmaxc)
        
       
    DO i=1,nmaxc

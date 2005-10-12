@@ -12,6 +12,8 @@
                  home, pointing to other documentation in docs. 
                  Bug in plot.x (courtesy of Malgorzata Wierzbowska) fixed. (AF)
 
+06 Oct 2005      BLAS and LAPACK interfaces added to transport program. (BB)
+
 05 Oct 2005      Interface of localization_init changed for stability reasons
                  (bugs in the xlf compiler): strange behaviours in restarting fixed.
                  The same has been done in subspace_init.f90 . Output fmt changes in

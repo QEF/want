@@ -23,6 +23,7 @@
    USE kinds
    USE constants, ONLY : CZERO, CONE
    USE timing_module, ONLY : timing
+   USE util_module,      ONLY : zmat_mul, mat_sv
    IMPLICIT NONE
 
       !
@@ -62,8 +63,8 @@
 !...     Construct the surface green's function g00 
 !
 
-         CALL zgemm('N','N', nmax, nmax, nmax, CONE, c01, nmax, tot, &
-                     nmax, CZERO, s1, nmax )
+
+         CALL zmat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
          eh0(:,:) = -c00(:,:) -s1(:,:)
        
          g(:,:) = CZERO
@@ -72,8 +73,7 @@
          ENDDO
       
          IF ( invert == 1 ) THEN
-            CALL zgesv( nmax, nmax, eh0, nmax, ipiv, g, nmax, info )
-            IF ( info /= 0 )  CALL errore('green', ' zgesv (I) ', info )
+            CALL mat_sv(nmax, nmax, eh0, g)
          ENDIF
 
       ENDIF
@@ -82,8 +82,7 @@
 !
 !...  Construct the dual surface green's function gbar00 
 !
-         CALL zgemm( 'C', 'N', nmax, nmax, nmax, CONE, c01, nmax, tott, &
-                      nmax,  CZERO, s1, nmax )
+         CALL zmat_mul(s1, c01, 'C', tott, 'N', nmax, nmax, nmax)
 
          eh0(:,:) = -c00(:,:) -s1(:,:)
        
@@ -95,8 +94,7 @@
          ENDDO
 
          IF ( invert == 1 ) THEN
-            CALL zgesv( nmax, nmax, eh0, nmax, ipiv, g, nmax, info )
-            IF ( info /= 0 )  CALL errore('green', 'zgesv (II)', info )
+            CALL mat_sv(nmax, nmax, eh0, g)
          ENDIF
       
       ENDIF
@@ -106,10 +104,8 @@
 !...  Construct the bulk green's function gnn or (if surface=.true.) the
 !     sub-surface green's function
 !
-         CALL zgemm( 'N', 'N', nmax, nmax, nmax, CONE, c01, nmax, tot, &
-                      nmax, CZERO, s1, nmax )
-         CALL zgemm( 'C', 'N', nmax, nmax, nmax, CONE, c01, nmax, tott,&
-                      nmax, CZERO, s2, nmax )
+         CALL zmat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
+         CALL zmat_mul(s2, c01, 'C', tott, 'N', nmax, nmax, nmax)
 
          eh0(:,:) = -c00(:,:) -s1(:,:) -s2(:,:)
        
@@ -121,8 +117,7 @@
          ENDDO
 
          IF ( invert == 1 ) THEN
-            CALL zgesv( nmax, nmax, eh0, nmax, ipiv, g, nmax, info )
-            IF ( info /= 0 )  CALL errore('green', 'zgesv (III)', info )
+            CALL mat_sv(nmax, nmax, eh0, g)
          ENDIF
 
       ENDIF

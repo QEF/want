@@ -18,10 +18,11 @@
    USE cleanup_module,   ONLY : cleanup
    USE io_module,        ONLY : stdout, stdin, sgm_unit => aux_unit,   &
                                 dos_unit => aux1_unit, cond_unit => aux2_unit
-   USE parser_module,    ONLY : change_case
    USE iotk_module
+   USE parser_module,    ONLY : change_case
    USE files_module,     ONLY : file_open, file_close
    USE timing_module,    ONLY : timing, timing_deallocate, timing_overview, global_list
+   USE util_module,      ONLY : zmat_mul, mat_sv
    IMPLICIT NONE
 
 
@@ -46,7 +47,7 @@
       REAL(dbl),    ALLOCATABLE :: egrid(:)
       REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
 
-      INTEGER,      ALLOCATABLE :: ipiv2(:)
+      INTEGER,      ALLOCATABLE :: ipiv(:)
       COMPLEX(dbl), ALLOCATABLE :: h00_a(:,:), h01_a(:,:)
       COMPLEX(dbl), ALLOCATABLE :: h00_b(:,:), h01_b(:,:)
       COMPLEX(dbl), ALLOCATABLE :: h00_c(:,:)
@@ -77,8 +78,6 @@
       COMPLEX(dbl), ALLOCATABLE :: aux(:,:), aux1(:,:), aux2(:,:)
       COMPLEX(dbl), ALLOCATABLE :: sLr(:,:)
       COMPLEX(dbl), ALLOCATABLE :: sRr(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: s1(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: s2(:,:)
       COMPLEX(dbl), ALLOCATABLE :: c1(:,:)
       COMPLEX(dbl), ALLOCATABLE :: c2(:,:)
       COMPLEX(dbl), ALLOCATABLE :: tran(:,:)
@@ -164,8 +163,8 @@
 !
 ! ... local variables
 !
-      ALLOCATE ( ipiv2(nmaxc), STAT=ierr )
-           IF( ierr /=0 ) CALL errore('conductor', ' allocating ipiv2 ', 1 ) 
+      ALLOCATE ( ipiv(nmaxc), STAT=ierr )
+           IF( ierr /=0 ) CALL errore('conductor', ' allocating ipiv ', 1 ) 
 
       ALLOCATE ( h00_a(nmaxa,nmaxa), STAT=ierr )
            IF( ierr /=0 ) CALL errore('conductor', ' allocating h00_a ', 1 )
@@ -252,10 +251,6 @@
            IF( ierr /=0 ) CALL errore('conductor', ' allocating sLr ', 1 )
       ALLOCATE ( sRr(nmaxc,nmaxc), STAT=ierr )
            IF( ierr /=0 ) CALL errore('conductor', ' allocating sRr ', 1 )
-      ALLOCATE ( s1(nmaxc,nmaxc), STAT=ierr )
-           IF( ierr /=0 ) CALL errore('conductor', ' allocating s1 ', 1 )
-      ALLOCATE ( s2(nmaxc,nmaxc), STAT=ierr )
-           IF( ierr /=0 ) CALL errore('conductor', ' allocating s2 ', 1 )
       ALLOCATE ( c1(nmaxc,nmaxa), STAT=ierr )
            IF( ierr /=0 ) CALL errore('conductor', ' allocating c1 ', 1 )
       ALLOCATE ( c2(nmaxc,nmaxb), STAT=ierr )
@@ -402,20 +397,17 @@
 ! ene + bias
          CALL transfer( nmaxb, niterx, totB, tottB, c00_b, c01_b )
          CALL green( nmaxb, totB, tottB, c00_b, c01_b, ene+bias, gB, 1, 1 )
-
-         CALL zgemm('N','N', nmaxc, nmaxb, nmaxb, CONE, cci_cb, nmaxc, gB, nmaxb, &
-                             CZERO, c2, nmaxc )
-         CALL zgemm('N','N', nmaxc, nmaxc, nmaxb, CONE, c2, nmaxc, cci_bc, nmaxb, &
-                             CZERO, sRr, nmaxc )
+!
+!
+         CALL zmat_mul(c2, cci_cb, 'N', gB, 'N', nmaxc, nmaxb, nmaxb)
+         CALL zmat_mul(sRr, c2, 'N', cci_bc, 'N', nmaxc, nmaxc, nmaxb)
 
 ! ene
          CALL transfer( nmaxa, niterx, totA, tottA, c00_a, c01_a )
          CALL green( nmaxa, totA, tottA, c00_a, c01_a, ene, gA, -1, 1 )
 
-         CALL zgemm('N','N', nmaxc, nmaxa, nmaxa, CONE, cci_ca, nmaxc, gA, nmaxa, &
-                             CZERO, c1, nmaxc )
-         CALL zgemm('N','N', nmaxc, nmaxc, nmaxa, CONE, c1, nmaxc, cci_ac, nmaxa, &
-                             CZERO, sLr, nmaxc )
+         CALL zmat_mul(c1, cci_ca, 'N', gA, 'N', nmaxc, nmaxa, nmaxa)
+         CALL zmat_mul(sLr, c1, 'N', cci_ac, 'N', nmaxc, nmaxc, nmaxa) 
 
          !
          ! gL and gR
@@ -434,8 +426,7 @@
             gintr(i,i)= CONE
          ENDDO
 
-         CALL ZGESV( nmaxc, nmaxc, aux, nmaxc, ipiv2, gintr, nmaxc, info )
-            IF ( info /= 0 )  CALL errore('conductor', ' ZGESV (I) ', info )
+         CALL mat_sv(nmaxc, nmaxc, aux, gintr)
 
          !
          ! Compute density of states for the conductor layer
@@ -489,8 +480,8 @@
 !
 !...  free memory
 !
-      DEALLOCATE ( ipiv2, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('conductor', ' deallocating ipiv2 ', 1 )
+      DEALLOCATE ( ipiv, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('conductor', ' deallocating ipiv ', 1 )
 
       DEALLOCATE ( h00_a, h01_a, STAT=ierr )
            IF( ierr /=0 ) CALL errore('conductor', ' deallocating h00_a, h01_a ', 1 )
@@ -545,8 +536,6 @@
            IF( ierr /=0 ) CALL errore('conductor', ' deallocating aux,aux1,aux2 ', 1 )
       DEALLOCATE ( sRr, sLr, STAT=ierr )
            IF( ierr /=0 ) CALL errore('conductor', ' deallocating sRr, sLr ', 1 )
-      DEALLOCATE ( s1, s2, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('conductor', ' deallocating s1, s2 ', 1 )
       DEALLOCATE ( c1, c2, STAT=ierr )
            IF( ierr /=0 ) CALL errore('conductor', ' deallocating c1, c2 ', 1 )
       DEALLOCATE ( tran, STAT=ierr )

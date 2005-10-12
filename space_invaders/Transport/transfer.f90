@@ -16,8 +16,9 @@
    !     and ibid. v.15, 851 (1985)
    !
    USE kinds
-   USE constants, ONLY : CZERO, CONE, ZERO, EPS_m7
-   USE timing_module, ONLY : timing
+   USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7
+   USE timing_module,    ONLY : timing
+   USE util_module,      ONLY : zmat_mul, mat_sv
    IMPLICIT NONE
 
 
@@ -81,17 +82,14 @@
           t11(i,i) = CONE
       ENDDO
 
-      CALL ZGESV( nmax, nmax, t12, nmax, ipiv, t11, nmax, info )
-      IF ( info /= 0 )  CALL errore('transfer', 'ZGESV (I)', ABS(info) )
+      CALL mat_sv(nmax, nmax, t12, t11)
 
       !
       ! Compute intermediate t-matrices (defined as tau(nmax,nmax,niter)
       ! and taut(...))
 
-      CALL ZGEMM( 'N', 'C', nmax, nmax, nmax, CONE, t11, nmax, c01, nmax,    &
-                  CZERO, tau, nmax )
-      CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, t11, nmax, c01, nmax,    &
-                  CZERO, taut, nmax )
+      CALL zmat_mul(tau(:,:,1), t11, 'N', c01, 'C', nmax, nmax, nmax)
+      CALL zmat_mul(taut(:,:,1), t11, 'N', c01, 'N', nmax, nmax, nmax)
 
       !
       ! Initialize T
@@ -112,10 +110,8 @@
       lconverged = .FALSE.
       DO m = 1, nterx
 
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, tau, nmax, taut, nmax, &
-                     CZERO, t11, nmax )
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, taut, nmax, tau, nmax, &
-                     CZERO, t12, nmax )
+         CALL zmat_mul(t11, tau(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax)
+         CALL zmat_mul(t12, taut(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)  
 
 
          s1(:,:) = -( t11(:,:) + t12(:,:) )
@@ -127,7 +123,7 @@
          ENDDO
 
 
-         CALL ZGESV( nmax, nmax, s1, nmax, ipiv, s2, nmax, info )
+         CALL mat_sv(nmax, nmax, s1, s2)
 ! XXXX
          IF ( info /= 0 )  THEN 
               WRITE(6, '(2x, " WARNING: singular matrix in ZGEEV (II) ")')
@@ -137,41 +133,43 @@
               CALL timing('transfer',OPR='stop')
               RETURN
          ENDIF
-!         IF ( info /= 0 )  CALL errore('transfer', 'ZGESV (II)',ABS(info))
 
 
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, tau(1,1,1), nmax, tau(1,1,1), nmax, &
-                     CZERO, t11, nmax )
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, taut(1,1,1), nmax, taut(1,1,1), nmax,&
-                     CZERO, t12, nmax )
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, s2, nmax, t11, nmax, &
-                     CZERO, tau(1,1,2), nmax )
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, s2, nmax, t12, nmax, &
-                     CZERO, taut(1,1,2), nmax )
+         CALL zmat_mul(t11, tau(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)
+         CALL zmat_mul(t12, taut(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax) 
+         CALL zmat_mul(tau(:,:,2), s2, 'N', t11, 'N', nmax, nmax, nmax)
+         CALL zmat_mul(taut(:,:,2), s2, 'N', t12, 'N', nmax, nmax, nmax)
 
          !
          ! Put the transfer matrices together
          !
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, tsum, nmax, tau(1,1,2), nmax,    &
-                     CZERO, t11, nmax )
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, tsum, nmax, taut(1,1,2), nmax,   & 
-                     CZERO, s1, nmax )
-         CALL ZCOPY( nmax*nmax, t11, 1, s2, 1 )
-         CALL ZAXPY( nmax*nmax, CONE, tot, 1, s2, 1 )
+         CALL zmat_mul(t11, tsum, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
+         CALL zmat_mul(s1, tsum, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
+  
+! XXX
+!         CALL ZCOPY( nmax*nmax, t11, 1, s2, 1 )
+! XXX
+!         CALL ZAXPY( nmax*nmax, CONE, tot, 1, s2, 1 )
 
-         tot(:,:) = s2(:,:)
-         tsum(:,:) = s1(:,:)
+!         s2 = tot + t11
+!         tot(:,:) = s2(:,:)
+
+         tot = tot + t11
+         tsum = s1
 
 
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, tsumt, nmax, taut(1,1,2), nmax, &
-                     CZERO, t11, nmax )
-         CALL ZGEMM( 'N', 'N', nmax, nmax, nmax, CONE, tsumt, nmax, tau(1,1,2), nmax, &
-                     CZERO, s1, nmax )
-         CALL ZCOPY( nmax*nmax, t11, 1, s2, 1 )
-         CALL ZAXPY( nmax*nmax, CONE, tott, 1, s2, 1 )
+         CALL zmat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
+         CALL zmat_mul(s1, tsumt, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
 
-         tott(:,:) = s2(:,:)
-         tsumt(:,:) = s1(:,:)
+! XXXX
+!         CALL ZCOPY( nmax*nmax, t11, 1, s2, 1 )
+!         CALL ZAXPY( nmax*nmax, CONE, tott, 1, s2, 1 )
+!         s2 = t11
+!         s2 = s2 + tott
+
+         tott  = tott + t11
+         tsumt = s1
+         !
          tau(:,:,1) = tau(:,:,2)
          taut(:,:,1) = taut(:,:,2)
 
@@ -184,8 +182,8 @@
 
          DO j = 1, nmax
          DO i = 1, nmax
-              conver = conver + SQRT( REAL( tau(i,j,2) * CONJG( tau(i,j,2) )) )
-              conver2 = conver2 + SQRT( REAL( taut(i,j,2) * CONJG( taut(i,j,2) )) )
+              conver = conver +   REAL( tau(i,j,2) * CONJG( tau(i,j,2) )) 
+              conver2 = conver2 + REAL( taut(i,j,2) * CONJG( taut(i,j,2) )) 
          ENDDO
          ENDDO
          IF ( conver < EPS_m7 .AND. conver2 < EPS_m7 ) THEN 
@@ -196,7 +194,7 @@
       ENDDO 
 
       IF ( .NOT. lconverged ) &
-          CALL errore('transfreb', 'bad t-matrix convergence', 10 )
+          CALL errore('transferb', 'bad t-matrix convergence', 10 )
 
 !
 ! ... local cleaning
