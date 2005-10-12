@@ -27,6 +27,7 @@ default:
 	@echo 
 	@echo  "     all                all the above executables "
 	@echo  "     clean              remove executables and objects"
+	@echo  "     clean_test         clean up the test examples"
 	@echo  "     veryclean          revert distribution to the original status"
 	@echo 
 
@@ -40,7 +41,7 @@ all: main tran
 #
 libiotk:
 	if test -d iotk ; then \
-	( cd Main ; $(MAKE) ) ; fi
+	( cd iotk ; $(MAKE) ) ; fi
 mod: libiotk
 	if test -d Modules ; then \
 	( cd Modules ; $(MAKE) ) ; fi
@@ -84,12 +85,13 @@ clean:
 	cd Libs;      $(MAKE) clean;
 	cd Main;      $(MAKE) clean;
 	cd Transport; $(MAKE) clean;
+	- /bin/rm -rf bin/*.x
 
 clean_test:
 	if test -d Tests ; then \
-	( cd Tests ; $(MAKE) clean ) ; fi
+	( cd Tests ; ./run.sh -r clean ) ; fi
 
-veryclean : clean
+veryclean : clean clean_test
 	- /bin/rm -rf make.rules make.sys */.dependencies \
 		config.log config.status */dum1 */dum2 bin/*.x \
 		intel.pcl */intel.pcl
