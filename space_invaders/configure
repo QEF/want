@@ -31,9 +31,8 @@ cd `echo $0 | sed 's/\(.*\)\/.*/\1/'` # extract pathname
 # detect the simplest cases 
 #
 case $1 in 
-  ("-d" | "--deps" )      ./conf/makedeps.sh ; 
-                          ./conf/includedep.sh ; exit 0 ;;
-  ("-h" | "--help" )      echo "$MANUAL" ; exit 0 ;;
+  ("-d" | "--deps" )      ./conf/makedeps.sh ; exit 0 ;;
+  ("-h" | "--help" )      echo "$MANUAL"     ; exit 0 ;;
 esac
 
 #
