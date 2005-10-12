@@ -5921,10 +5921,10 @@ echo setting RANLIB... $ranlib
 echo setting MYLIB... $mylib
 
 # generate dependencies
-if test -x $topdir/makedeps.sh
+if test -x $topdir/conf/makedeps.sh
 then
 	echo checking dependencies...
-	( cd $topdir ; ./makedeps.sh )
+	( cd $topdir ; ./conf/makedeps.sh )
 fi
 
 # export settings to generated files
