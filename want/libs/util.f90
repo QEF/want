@@ -290,7 +290,7 @@ END SUBROUTINE dmat_sv
    INTEGER  :: ierr
    REAL(dbl),   ALLOCATABLE :: bl(:,:)
 
-   IF ( nrhs /= 1) CALL errore('dmat_sv_1','more than 1 rhs ??',ABS(nrhs)+1)
+   IF ( nrhs /= 1) CALL errore('dmat_sv_1','more than 1 rhs ? ',ABS(nrhs)+1)
    IF ( n > SIZE(b,1) ) CALL errore('dmat_sv_1','vector b too small',2)
    !
    ALLOCATE( bl(n,1), STAT=ierr )
@@ -367,7 +367,7 @@ END SUBROUTINE zmat_sv
    INTEGER  :: ierr
    COMPLEX(dbl),   ALLOCATABLE :: bl(:,:)
 
-   IF ( nrhs /= 1) CALL errore('zmat_sv_1','more than 1 rhs ??',ABS(nrhs)+1)
+   IF ( nrhs /= 1) CALL errore('zmat_sv_1','more than 1 rhs ?',ABS(nrhs)+1)
    IF ( n > SIZE(b,1) ) CALL errore('zmat_sv_1','vector b too small',2)
    !
    ALLOCATE( bl(n,1), STAT=ierr )
