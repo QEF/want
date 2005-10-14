@@ -22,7 +22,7 @@
    USE parser_module,    ONLY : change_case
    USE files_module,     ONLY : file_open, file_close
    USE timing_module,    ONLY : timing, timing_deallocate, timing_overview, global_list
-   USE util_module,      ONLY : zmat_mul, mat_sv
+   USE util_module,      ONLY : mat_mul, mat_sv
    IMPLICIT NONE
 
 
@@ -399,15 +399,15 @@
          CALL green( nmaxb, totB, tottB, c00_b, c01_b, ene+bias, gB, 1, 1 )
 !
 !
-         CALL zmat_mul(c2, cci_cb, 'N', gB, 'N', nmaxc, nmaxb, nmaxb)
-         CALL zmat_mul(sRr, c2, 'N', cci_bc, 'N', nmaxc, nmaxc, nmaxb)
+         CALL mat_mul(c2, cci_cb, 'N', gB, 'N', nmaxc, nmaxb, nmaxb)
+         CALL mat_mul(sRr, c2, 'N', cci_bc, 'N', nmaxc, nmaxc, nmaxb)
 
 ! ene
          CALL transfer( nmaxa, niterx, totA, tottA, c00_a, c01_a )
          CALL green( nmaxa, totA, tottA, c00_a, c01_a, ene, gA, -1, 1 )
 
-         CALL zmat_mul(c1, cci_ca, 'N', gA, 'N', nmaxc, nmaxa, nmaxa)
-         CALL zmat_mul(sLr, c1, 'N', cci_ac, 'N', nmaxc, nmaxc, nmaxa) 
+         CALL mat_mul(c1, cci_ca, 'N', gA, 'N', nmaxc, nmaxa, nmaxa)
+         CALL mat_mul(sLr, c1, 'N', cci_ac, 'N', nmaxc, nmaxc, nmaxa) 
 
          !
          ! gL and gR

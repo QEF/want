@@ -28,7 +28,6 @@
    USE io_module,      ONLY : stdout, dft_unit, ovp_unit, ioname
    USE timing_module,  ONLY : timing, timing_upto_now
    USE files_module,   ONLY : file_open, file_close
-   USE util_module,    ONLY : zmat_mul
    
    USE control_module, ONLY : do_overlaps, do_projections, &
                               use_atomwfc, use_pseudo, use_uspp, &

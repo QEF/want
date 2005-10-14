@@ -7,8 +7,8 @@
   ======================================================================
 
 
-  Program <plot>  v. 1.1.1  starts ...
-  Date  8Sep2005 at 18:49: 1 
+  Program <plot>  v. 2.0.0  starts ...
+  Date 14Oct2005 at 13: 0: 6 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -98,10 +98,10 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (     1.152732     0.000513     0.000003 )
-    Wf(   2 ) = (     1.152750     0.000000    -0.000003 )
+    Wf(   1 ) = (     1.152732     0.000602    -0.000003 )
+    Wf(   2 ) = (     1.152750     0.000000     0.000003 )
         in crystal coord
-    Wf(   1 ) = (     0.111314     0.000022     0.000000 )
+    Wf(   1 ) = (     0.111314     0.000026     0.000000 )
     Wf(   2 ) = (     0.111316     0.000000     0.000000 )
 
   Locating WFs: 
@@ -112,7 +112,7 @@
 
   New center positions [cryst. coord]:
         in crystal coord
-    Wf(   1 ) = (     0.111314     0.000022     0.000000 )
+    Wf(   1 ) = (     0.111314     0.000026     0.000000 )
     Wf(   2 ) = (     0.111316     0.000000     0.000000 )
 
 
@@ -123,12 +123,25 @@
      C    tau(   4 ) = (  -2.8723852   0.0000000   0.0000000 )
 
 
-  writing WF(  1) plot on file: ./LEADS//chain4_WanT_WFM001.gau
+    Wfc Fourier Transf. for k-point   1
+                              Total time spent up to now :     1.55 secs
+
+    Wfc Fourier Transf. for k-point   2
+                              Total time spent up to now :     2.59 secs
+
+    Wfc Fourier Transf. for k-point   3
+                              Total time spent up to now :     3.73 secs
+
+    Wfc Fourier Transf. for k-point   4
+                              Total time spent up to now :     4.89 secs
+
+
+  writing WF(  1) plot on file: ./LEADS//chain4_WanT_WFM001.cube
                   atomic positions on file: ./LEADS//chain4_WanT_WFM001.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './LEADS//chain4_WanT_WFM001.gau'
+Input file:      './LEADS//chain4_WanT_WFM001.cube'
 Output file (plot file):  './LEADS//chain4_WanT_WFM001.plt'
 Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM001.crd'
 
@@ -139,16 +152,16 @@ Min value: 0.000000
 Max value: 0.007583
 Job done ...
 **********************************************************
-  deleting tmp files: ./LEADS//chain4_WanT_WFM001.gau
+  deleting tmp files: ./LEADS//chain4_WanT_WFM001.cube
                       ./LEADS//chain4_WanT_WFM001.crd
 
 
-  writing WF(  2) plot on file: ./LEADS//chain4_WanT_WFM002.gau
+  writing WF(  2) plot on file: ./LEADS//chain4_WanT_WFM002.cube
                   atomic positions on file: ./LEADS//chain4_WanT_WFM002.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './LEADS//chain4_WanT_WFM002.gau'
+Input file:      './LEADS//chain4_WanT_WFM002.cube'
 Output file (plot file):  './LEADS//chain4_WanT_WFM002.plt'
 Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM002.crd'
 
@@ -159,7 +172,7 @@ Min value: 0.000000
 Max value: 0.002242
 Job done ...
 **********************************************************
-  deleting tmp files: ./LEADS//chain4_WanT_WFM002.gau
+  deleting tmp files: ./LEADS//chain4_WanT_WFM002.cube
                       ./LEADS//chain4_WanT_WFM002.crd
 
 
@@ -169,12 +182,12 @@ Job done ...
    <global routines>
              clock number :     6
 
-                     plot :     9.00s CPU 
+                     plot :    10.00s CPU 
  
-                want_init :     0.07s CPU
-          ggrids_read_ext :     0.22s CPU
-           wfc_data_kread :     0.11s CPU (       4 calls,   0.027 s avg)
-                   cfft3d :     1.36s CPU (       8 calls,   0.170 s avg)
-                 gcubeplt :     2.15s CPU (       2 calls,   1.073 s avg)
+                want_init :     0.05s CPU
+          ggrids_read_ext :     0.21s CPU
+           wfc_data_kread :     0.11s CPU (       4 calls,   0.028 s avg)
+                   cfft3d :     1.15s CPU (       8 calls,   0.144 s avg)
+                 gcubeplt :     3.09s CPU (       2 calls,   1.547 s avg)
 
 

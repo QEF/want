@@ -18,7 +18,7 @@
    USE kinds
    USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7
    USE timing_module,    ONLY : timing
-   USE util_module,      ONLY : zmat_mul, mat_sv
+   USE util_module,      ONLY : mat_mul, mat_sv
    IMPLICIT NONE
 
 
@@ -88,8 +88,8 @@
       ! Compute intermediate t-matrices (defined as tau(nmax,nmax,niter)
       ! and taut(...))
 
-      CALL zmat_mul(tau(:,:,1), t11, 'N', c01, 'C', nmax, nmax, nmax)
-      CALL zmat_mul(taut(:,:,1), t11, 'N', c01, 'N', nmax, nmax, nmax)
+      CALL mat_mul(tau(:,:,1), t11, 'N', c01, 'C', nmax, nmax, nmax)
+      CALL mat_mul(taut(:,:,1), t11, 'N', c01, 'N', nmax, nmax, nmax)
 
       !
       ! Initialize T
@@ -110,8 +110,8 @@
       lconverged = .FALSE.
       DO m = 1, nterx
 
-         CALL zmat_mul(t11, tau(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax)
-         CALL zmat_mul(t12, taut(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)  
+         CALL mat_mul(t11, tau(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax)
+         CALL mat_mul(t12, taut(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)  
 
 
          s1(:,:) = -( t11(:,:) + t12(:,:) )
@@ -135,37 +135,23 @@
          ENDIF
 
 
-         CALL zmat_mul(t11, tau(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)
-         CALL zmat_mul(t12, taut(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax) 
-         CALL zmat_mul(tau(:,:,2), s2, 'N', t11, 'N', nmax, nmax, nmax)
-         CALL zmat_mul(taut(:,:,2), s2, 'N', t12, 'N', nmax, nmax, nmax)
+         CALL mat_mul(t11, tau(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)
+         CALL mat_mul(t12, taut(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax) 
+         CALL mat_mul(tau(:,:,2), s2, 'N', t11, 'N', nmax, nmax, nmax)
+         CALL mat_mul(taut(:,:,2), s2, 'N', t12, 'N', nmax, nmax, nmax)
 
          !
          ! Put the transfer matrices together
          !
-         CALL zmat_mul(t11, tsum, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
-         CALL zmat_mul(s1, tsum, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
+         CALL mat_mul(t11, tsum, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
+         CALL mat_mul(s1, tsum, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
   
-! XXX
-!         CALL ZCOPY( nmax*nmax, t11, 1, s2, 1 )
-! XXX
-!         CALL ZAXPY( nmax*nmax, CONE, tot, 1, s2, 1 )
-
-!         s2 = tot + t11
-!         tot(:,:) = s2(:,:)
-
          tot = tot + t11
          tsum = s1
 
 
-         CALL zmat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
-         CALL zmat_mul(s1, tsumt, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
-
-! XXXX
-!         CALL ZCOPY( nmax*nmax, t11, 1, s2, 1 )
-!         CALL ZAXPY( nmax*nmax, CONE, tott, 1, s2, 1 )
-!         s2 = t11
-!         s2 = s2 + tott
+         CALL mat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
+         CALL mat_mul(s1, tsumt, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
 
          tott  = tott + t11
          tsumt = s1

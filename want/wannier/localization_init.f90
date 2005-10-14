@@ -24,7 +24,7 @@
    USE timing_module, ONLY : timing
    USE io_module, ONLY : stdout, ioname, wan_unit
    USE files_module, ONLY : file_open, file_close
-   USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
+   USE util_module, ONLY : zmat_unitary, mat_mul, mat_svd
    USE localization_module, ONLY : localization_read, cu 
    USE overlap_module, ONLY : Mkb, ca, dimwann, nkpts 
    USE control_module, ONLY : unitary_thr
@@ -102,7 +102,7 @@
         DO ik = 1, nkpts
              !
              CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
-             CALL zmat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
+             CALL mat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
         ENDDO
 
         DEALLOCATE( singvd, cv1, cv2, STAT=ierr )

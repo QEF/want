@@ -16,9 +16,10 @@
    ! otherwise uses another formula derived in the
    ! paper PRL 94, 
    !
-   USE kinds,     ONLY : dbl
-   USE constants, ONLY : CZERO, CONE, CI, ZERO , EPS_m5
-   USE util_module,      ONLY : zmat_mul, mat_sv
+   USE kinds,          ONLY : dbl
+   USE constants,      ONLY : CZERO, CONE, CI, ZERO , EPS_m5
+   USE util_module,    ONLY : mat_mul, mat_sv
+   USE timing_module,  ONLY : timing
    IMPLICIT NONE
 
    !
@@ -47,6 +48,7 @@
 ! main body
 !------------------------------
 !
+   CALL timing('transmittance', OPR='start')
 
    ALLOCATE( tmp(nmaxc,nmaxc), tmp1(nmaxc,nmaxc), STAT=ierr )
       IF (ierr/=0) CALL errore('transmittance','allocating tmp,tm1',ABS(ierr))
@@ -101,19 +103,19 @@
    !
    ! gL * gintr -> tmp
    !
-   CALL zmat_mul(tmp, gL, 'N', gintr, 'N', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp, gL, 'N', gintr, 'N', nmaxc, nmaxc, nmaxc)
    !
    ! gL * gintr * gR -> tmp1
    !
-   CALL zmat_mul(tmp1, tmp, 'N', gR, 'N', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp1, tmp, 'N', gR, 'N', nmaxc, nmaxc, nmaxc)
    !
    ! gL * gintr * gR * lambda -> tmp
    !
-   CALL zmat_mul(tmp, tmp1, 'N', lambda, 'N', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp, tmp1, 'N', lambda, 'N', nmaxc, nmaxc, nmaxc)
    !
    ! gL * gintr * gR * lambda * ginta -> tmp1
    !
-   CALL zmat_mul(tmp1, tmp, 'N', gintr, 'C', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp1, tmp, 'N', gintr, 'C', nmaxc, nmaxc, nmaxc)
        
       
    DO i=1,nmaxc
@@ -130,6 +132,6 @@
    DEALLOCATE( ipiv, STAT=ierr )
       IF (ierr/=0) CALL errore('transmittance','deallocating ipiv',ABS(ierr))
       
-
+   CALL timing('transmittance', OPR='stop')
 END SUBROUTINE transmittance
 

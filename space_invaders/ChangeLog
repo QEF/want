@@ -3,6 +3,17 @@
             WanT code:  Log of Changes 
 =======================================================
 
+14 Oct 2005      Further optimizations in wannier.f90; merging with updates in 
+                 transport; test check and reference update; (AF)
+
+13 Oct 2005      Routine unitary_update.f90 added to libs: wannier main changed 
+                 accordingly. Wigner_seitz: check added. (AF)
+
+12 Oct 2005      wannier.f90: minimization algorith partly changed; calls to different
+                 and more standard lapack routines. (AF)
+
+11 Oct 2005      Tests: references updated. Disentangle procedure optimized, changes to
+                 komegai, zmatrix and to the main loop reverted. (AF)
 
 09 Oct 2005      Further clean up in the WanT homedir: iotk, include and bin dir added. 
                  Makefile system updated. (AF)

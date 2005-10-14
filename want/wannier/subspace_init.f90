@@ -24,7 +24,7 @@
    USE timing_module, ONLY : timing
    USE io_module, ONLY : stdout, ioname, space_unit
    USE files_module, ONLY : file_open, file_close
-   USE util_module, ONLY : zmat_unitary, zmat_mul, mat_svd
+   USE util_module, ONLY : zmat_unitary, mat_mul, mat_svd
    !
    USE windows_module,  ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
    USE kpoints_module,  ONLY : vkpt
@@ -149,7 +149,7 @@
                 !
                 CALL mat_svd( dimwin(ik), dimwann, ca(:,:,ik), s, u, vt )
                 !
-                CALL zmat_mul( cu, u, 'N', vt, 'N', dimwin(ik), dimwann, dimwann )
+                CALL mat_mul( cu, u, 'N', vt, 'N', dimwin(ik), dimwann, dimwann )
                 lamp(  1:dimwin(ik), 1:dimwann , ik) = cu( 1:dimwin(ik), 1:dimwann )
            ENDIF
         ENDDO
@@ -230,8 +230,8 @@
        DO ik=1,nkpts
              WRITE(stdout,"(6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                    ik, vkpt(:,ik), dimwin(ik)
-             CALL zmat_mul(cu, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
-                           dimwin(ik), dimwin(ik), dimwann )
+             CALL mat_mul(cu, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+                          dimwin(ik), dimwin(ik), dimwann )
             WRITE(stdout,"(2x, 8f9.5)") ( REAL(cu(i,i)), i=1,dimwin(ik) )
             WRITE( stdout,"()" )
        ENDDO

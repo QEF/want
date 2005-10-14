@@ -10,14 +10,14 @@
 SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    !*********************************************************
    !
-   ! This subroutine update the overlaps integrals by a unitary
+   ! This subroutine updates the overlaps integrals by a unitary
    ! transformation, according to the formula
    !
    ! Mkb(k,b) =  U(k)^dag * Mkb(k,b) * U(k+b)
    !
    USE kinds, ONLY : dbl
    USE timing_module, ONLY : timing
-   USE util_module,  ONLY : zmat_mul
+   USE util_module,  ONLY : mat_mul
    USE kpoints_module,  ONLY : nb, nnlist 
    IMPLICIT NONE
 
@@ -32,7 +32,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    !
    ! local variables
    !
-   COMPLEX(dbl), ALLOCATABLE :: aux(:,:), aux1(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
    INTEGER                   :: ik, ikb, inn, ierr
    ! 
    ! ... end of declarations
@@ -48,8 +48,6 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
 
    ALLOCATE( aux(dimwann,dimwann), STAT=ierr ) 
       IF (ierr/=0) CALL errore("overlap_update","allocating aux",ABS(ierr))
-   ALLOCATE( aux1(dimwann,dimwann), STAT=ierr ) 
-      IF (ierr/=0) CALL errore("overlap_update","allocating aux1",ABS(ierr))
 
 
    DO ik = 1, nkpts
@@ -59,15 +57,10 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
          !
          ! aux1 = U(ik)^dag * Mkb * U(ikb)
          !
-         CALL zmat_mul(aux, U(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
-                       dimwann, dimwann, dimwann)
-         CALL zmat_mul(aux1(:,:), aux, 'N', U(:,:,ikb), 'N', & 
-                       dimwann, dimwann, dimwann)
-         !
-         ! update Mkb
-         !
-         Mkb(:,:,inn,ik) = aux1(:,:)
-
+         CALL mat_mul(aux, U(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
+                      dimwann, dimwann, dimwann)
+         CALL mat_mul(Mkb(:,:,inn,ik), aux, 'N', U(:,:,ikb), 'N', & 
+                      dimwann, dimwann, dimwann)
       ENDDO
    ENDDO
 
@@ -76,8 +69,6 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    !
    DEALLOCATE( aux, STAT=ierr ) 
       IF (ierr/=0) CALL errore("overlap_update","deallocating aux",ABS(ierr))
-   DEALLOCATE( aux1, STAT=ierr ) 
-      IF (ierr/=0) CALL errore("overlap_update","deallocating aux1",ABS(ierr))
 
    CALL timing('overlap_update',OPR='stop')
 

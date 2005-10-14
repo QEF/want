@@ -37,12 +37,12 @@
 
    ! ... dimensions
    INTEGER                     :: nws          ! number of direct lattive vectors
-   INTEGER                     :: nwsx         ! max numb of nws ( = 3 * nkpts)
+   INTEGER                     :: nwsx         ! max numb of nws ( see below for the def )
    !
    ! ... auxiliary data
-   INTEGER, ALLOCATABLE        :: indxws(:,:)  ! R lattice vector (cryst coord), DIM 3 * nwsx
+   INTEGER, ALLOCATABLE        :: indxws(:,:)  ! R lattice vector (cryst coord), DIM 3*nwsx
    INTEGER, ALLOCATABLE        :: degen(:)     ! R latt vect degeneracy, DIM: nwsx
-   REAL(dbl), ALLOCATABLE      :: vws(:,:)     ! R lattice vector (cart coord), DIM 3 * nws
+   REAL(dbl), ALLOCATABLE      :: vws(:,:)     ! R lattice vector (cart coord), DIM 3*nws
    !
    ! ... hamiltonians
    COMPLEX(dbl), ALLOCATABLE   :: rham(:,:,:)  ! DIM: dimwann, dimwann, nws
@@ -101,7 +101,7 @@ CONTAINS
        !
        degen(:) = 0
        indxws(:,:) = 0
-       CALL wigner_seitz( avec, nk, indxws, nws, degen )
+       CALL wigner_seitz( avec, nk, nwsx, nws, degen, indxws )
 
        !
        ! other allocations

@@ -7,8 +7,8 @@
   ======================================================================
 
 
-  Program <plot>  v. 1.1.1  starts ...
-  Date  9Sep2005 at 19: 3: 7 
+  Program <plot>  v. 2.0.0  starts ...
+  Date 14Oct2005 at 13:10: 2 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -107,26 +107,26 @@
 
         in cartesian coord (Bohr)
     Wf(   1 ) = (    -0.000012    -0.000014    -0.000442 )
-    Wf(   2 ) = (    -0.000006    -0.000058    -0.018625 )
-    Wf(   3 ) = (    -0.000441    -0.000144    -0.000486 )
-    Wf(   4 ) = (    -0.001604    -0.000069    -0.017550 )
-    Wf(   5 ) = (    -0.000075    -0.000001    -0.000442 )
-    Wf(   6 ) = (    -0.010914     0.004342     2.309801 )
-    Wf(  24 ) = (    -0.002576     0.013889    15.696855 )
-    Wf(  25 ) = (     0.001247     0.003207    18.370375 )
-    Wf(  26 ) = (     0.001704    -0.011548    21.062806 )
-    Wf(  27 ) = (    -0.012290    -0.003122    21.981600 )
+    Wf(   2 ) = (    -0.000006    -0.000055    -0.018627 )
+    Wf(   3 ) = (    -0.000444    -0.000145    -0.000486 )
+    Wf(   4 ) = (    -0.001609    -0.000069    -0.017553 )
+    Wf(   5 ) = (    -0.000076    -0.000001    -0.000442 )
+    Wf(   6 ) = (    -0.010976     0.004345     2.309793 )
+    Wf(  24 ) = (    -0.002651     0.013928    15.697413 )
+    Wf(  25 ) = (     0.001187     0.003340    18.370915 )
+    Wf(  26 ) = (     0.001673    -0.011841    21.063380 )
+    Wf(  27 ) = (    -0.012322    -0.003077    21.983196 )
         in crystal coord
     Wf(   1 ) = (    -0.000001    -0.000001    -0.000011 )
     Wf(   2 ) = (     0.000000    -0.000003    -0.000467 )
-    Wf(   3 ) = (    -0.000024    -0.000008    -0.000012 )
+    Wf(   3 ) = (    -0.000025    -0.000008    -0.000012 )
     Wf(   4 ) = (    -0.000089    -0.000004    -0.000440 )
     Wf(   5 ) = (    -0.000004     0.000000    -0.000011 )
-    Wf(   6 ) = (    -0.000606     0.000241     0.057956 )
-    Wf(  24 ) = (    -0.000143     0.000772     0.393856 )
-    Wf(  25 ) = (     0.000069     0.000178     0.460938 )
-    Wf(  26 ) = (     0.000095    -0.000642     0.528495 )
-    Wf(  27 ) = (    -0.000683    -0.000173     0.551548 )
+    Wf(   6 ) = (    -0.000610     0.000241     0.057956 )
+    Wf(  24 ) = (    -0.000147     0.000774     0.393870 )
+    Wf(  25 ) = (     0.000066     0.000186     0.460951 )
+    Wf(  26 ) = (     0.000093    -0.000658     0.528509 )
+    Wf(  27 ) = (    -0.000685    -0.000171     0.551589 )
 
   Locating WFs: 
   Plotting Cell dimensions [cryst. coord]:
@@ -138,14 +138,14 @@
         in crystal coord
     Wf(   1 ) = (    -0.000001    -0.000001     0.999989 )
     Wf(   2 ) = (     0.000000    -0.000003     0.999533 )
-    Wf(   3 ) = (    -0.000024    -0.000008     0.999988 )
+    Wf(   3 ) = (    -0.000025    -0.000008     0.999988 )
     Wf(   4 ) = (    -0.000089    -0.000004     0.999560 )
     Wf(   5 ) = (    -0.000004     0.000000     0.999989 )
-    Wf(   6 ) = (    -0.000606     0.000241     0.057956 )
-    Wf(  24 ) = (    -0.000143     0.000772     0.393856 )
-    Wf(  25 ) = (     0.000069     0.000178     0.460938 )
-    Wf(  26 ) = (     0.000095    -0.000642     0.528495 )
-    Wf(  27 ) = (    -0.000683    -0.000173     0.551548 )
+    Wf(   6 ) = (    -0.000610     0.000241     0.057956 )
+    Wf(  24 ) = (    -0.000147     0.000774     0.393870 )
+    Wf(  25 ) = (     0.000066     0.000186     0.460951 )
+    Wf(  26 ) = (     0.000093    -0.000658     0.528509 )
+    Wf(  27 ) = (    -0.000685    -0.000171     0.551589 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -161,12 +161,25 @@
      Pt   tau(  10 ) = (   0.0000000   0.0000000  35.3000981 )
 
 
-  writing WF(  1) plot on file: .//pt_h2_pt_WanT_WFM001.gau
+    Wfc Fourier Transf. for k-point   1
+                              Total time spent up to now :   358.73 secs
+
+    Wfc Fourier Transf. for k-point   2
+                              Total time spent up to now :   811.42 secs
+
+    Wfc Fourier Transf. for k-point   3
+                              Total time spent up to now :  1166.17 secs
+
+    Wfc Fourier Transf. for k-point   4
+                              Total time spent up to now :  1516.02 secs
+
+
+  writing WF(  1) plot on file: .//pt_h2_pt_WanT_WFM001.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM001.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM001.gau'
+Input file:      './/pt_h2_pt_WanT_WFM001.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM001.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM001.crd'
 
@@ -177,16 +190,16 @@ Min value: 0.000000
 Max value: 0.002570
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM001.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM001.cube
                       .//pt_h2_pt_WanT_WFM001.crd
 
 
-  writing WF(  2) plot on file: .//pt_h2_pt_WanT_WFM002.gau
+  writing WF(  2) plot on file: .//pt_h2_pt_WanT_WFM002.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM002.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM002.gau'
+Input file:      './/pt_h2_pt_WanT_WFM002.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM002.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM002.crd'
 
@@ -197,16 +210,16 @@ Min value: 0.000000
 Max value: 0.002605
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM002.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM002.cube
                       .//pt_h2_pt_WanT_WFM002.crd
 
 
-  writing WF(  3) plot on file: .//pt_h2_pt_WanT_WFM003.gau
+  writing WF(  3) plot on file: .//pt_h2_pt_WanT_WFM003.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM003.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM003.gau'
+Input file:      './/pt_h2_pt_WanT_WFM003.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM003.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM003.crd'
 
@@ -217,16 +230,16 @@ Min value: 0.000000
 Max value: 0.002115
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM003.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM003.cube
                       .//pt_h2_pt_WanT_WFM003.crd
 
 
-  writing WF(  4) plot on file: .//pt_h2_pt_WanT_WFM004.gau
+  writing WF(  4) plot on file: .//pt_h2_pt_WanT_WFM004.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM004.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM004.gau'
+Input file:      './/pt_h2_pt_WanT_WFM004.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM004.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM004.crd'
 
@@ -237,16 +250,16 @@ Min value: 0.000000
 Max value: 0.002600
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM004.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM004.cube
                       .//pt_h2_pt_WanT_WFM004.crd
 
 
-  writing WF(  5) plot on file: .//pt_h2_pt_WanT_WFM005.gau
+  writing WF(  5) plot on file: .//pt_h2_pt_WanT_WFM005.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM005.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM005.gau'
+Input file:      './/pt_h2_pt_WanT_WFM005.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM005.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM005.crd'
 
@@ -257,16 +270,16 @@ Min value: 0.000000
 Max value: 0.002588
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM005.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM005.cube
                       .//pt_h2_pt_WanT_WFM005.crd
 
 
-  writing WF(  6) plot on file: .//pt_h2_pt_WanT_WFM006.gau
+  writing WF(  6) plot on file: .//pt_h2_pt_WanT_WFM006.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM006.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM006.gau'
+Input file:      './/pt_h2_pt_WanT_WFM006.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM006.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM006.crd'
 
@@ -277,16 +290,16 @@ Min value: 0.000000
 Max value: 0.001915
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM006.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM006.cube
                       .//pt_h2_pt_WanT_WFM006.crd
 
 
-  writing WF( 24) plot on file: .//pt_h2_pt_WanT_WFM024.gau
+  writing WF( 24) plot on file: .//pt_h2_pt_WanT_WFM024.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM024.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM024.gau'
+Input file:      './/pt_h2_pt_WanT_WFM024.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM024.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM024.crd'
 
@@ -294,19 +307,19 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM024.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.003435
+Max value: 0.003436
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM024.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM024.cube
                       .//pt_h2_pt_WanT_WFM024.crd
 
 
-  writing WF( 25) plot on file: .//pt_h2_pt_WanT_WFM025.gau
+  writing WF( 25) plot on file: .//pt_h2_pt_WanT_WFM025.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM025.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM025.gau'
+Input file:      './/pt_h2_pt_WanT_WFM025.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM025.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM025.crd'
 
@@ -314,19 +327,19 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM025.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.004465
+Max value: 0.004463
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM025.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM025.cube
                       .//pt_h2_pt_WanT_WFM025.crd
 
 
-  writing WF( 26) plot on file: .//pt_h2_pt_WanT_WFM026.gau
+  writing WF( 26) plot on file: .//pt_h2_pt_WanT_WFM026.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM026.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM026.gau'
+Input file:      './/pt_h2_pt_WanT_WFM026.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM026.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM026.crd'
 
@@ -334,19 +347,19 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM026.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.002086
+Max value: 0.002089
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM026.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM026.cube
                       .//pt_h2_pt_WanT_WFM026.crd
 
 
-  writing WF( 27) plot on file: .//pt_h2_pt_WanT_WFM027.gau
+  writing WF( 27) plot on file: .//pt_h2_pt_WanT_WFM027.cube
                   atomic positions on file: .//pt_h2_pt_WanT_WFM027.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/pt_h2_pt_WanT_WFM027.gau'
+Input file:      './/pt_h2_pt_WanT_WFM027.cube'
 Output file (plot file):  './/pt_h2_pt_WanT_WFM027.plt'
 Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM027.crd'
 
@@ -354,10 +367,10 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM027.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.002282
+Max value: 0.002284
 Job done ...
 **********************************************************
-  deleting tmp files: .//pt_h2_pt_WanT_WFM027.gau
+  deleting tmp files: .//pt_h2_pt_WanT_WFM027.cube
                       .//pt_h2_pt_WanT_WFM027.crd
 
 
@@ -367,12 +380,12 @@ Job done ...
    <global routines>
              clock number :     6
 
-                     plot : 22m33.00s CPU 
+                     plot : 26m 7.00s CPU 
  
-                want_init :     0.11s CPU
-          ggrids_read_ext :     0.39s CPU
-           wfc_data_kread :     1.25s CPU (       4 calls,   0.313 s avg)
-                   cfft3d :    18.67s CPU (      40 calls,   0.467 s avg)
-                 gcubeplt :    21.84s CPU (      10 calls,   2.184 s avg)
+                want_init :     0.10s CPU
+          ggrids_read_ext :     0.55s CPU
+           wfc_data_kread :     2.61s CPU (       4 calls,   0.653 s avg)
+                   cfft3d :    21.88s CPU (      40 calls,   0.547 s avg)
+                 gcubeplt :    23.93s CPU (      10 calls,   2.393 s avg)
 
 

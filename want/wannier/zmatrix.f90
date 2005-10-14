@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !************************************************
-SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indxnfroz)
+SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
   !************************************************
   !
   ! Compute the Z matrix according to the formula:
@@ -20,38 +20,35 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
   USE kinds
   USE constants, ONLY : CZERO
   USE timing_module
-  USE kpoints_module, ONLY : nnlist, nb, wb
+  USE kpoints_module, ONLY : nb, wb
  
   IMPLICIT NONE
 
   INTEGER,      INTENT(in) :: ik
   INTEGER,      INTENT(in) :: dimwann, dimwin(*), dimwinx
   INTEGER,      INTENT(in) :: dimfroz, indxnfroz(*)
-  COMPLEX(dbl), INTENT(in) :: lamp(dimwinx,dimwann,*)
-  COMPLEX(dbl), INTENT(in) :: Mkb(dimwinx,dimwinx,*)
+  COMPLEX(dbl), INTENT(in) :: Akb(dimwinx,dimwann,*)
   COMPLEX(dbl), INTENT(inout) :: mtrx(dimwinx,dimwinx)
 
   !
   ! few local variables
   !
-  INTEGER :: inn, ikb
-  INTEGER :: m, n, l, j, ierr
-  COMPLEX(dbl), ALLOCATABLE :: a(:)
+  INTEGER :: ib
+  INTEGER :: m, n, mf, nf, l, j, ierr
 
 !
 !--------------------------------------------------------------------
 !
-   CALL timing('zmatrix',OPR='start')
 
    mtrx(:,:) = CZERO
-   ALLOCATE( a(dimwinx), STAT=ierr )
-       IF (ierr/=0) CALL errore('zmatrix','allocating a',ABS(ierr))
+   IF ( dimwann == dimfroz ) RETURN
+   !
+   CALL timing('zmatrix',OPR='start')
 
    !
    ! ...  Loop over b-vectors
    ! 
-   DO inn = 1, nb
-       ikb = nnlist(inn, ik)
+   DO ib = 1, nb
 
        !
        ! loop over the generators of the subspace
@@ -59,22 +56,18 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
        DO l = 1, dimwann
 
             !
-            ! Calculate the quantities  a_{m,l}^{k,b} = \Sum_j lamp(j,l,ikb) * Mkb_{m,j}
-            !
-            DO m = 1, dimwin(ik) - dimfroz
-                a(m) = CZERO
-                DO j = 1, dimwin(ikb)
-                     a(m) = a(m) + lamp(j,l,ikb) * Mkb( indxnfroz(m), j, inn )
-                ENDDO
-            ENDDO
-
-            !
             ! update mtrx
             !
             DO n = 1, dimwin(ik) - dimfroz
-            DO m = 1, n
-                 mtrx(m,n) = mtrx(m,n) + wb(inn) * a(m) * CONJG( a(n) )
-            ENDDO
+                nf = indxnfroz(n)
+                !
+                DO m = 1, n
+                    mf = indxnfroz(m)
+                    !
+                    mtrx(m,n) = mtrx(m,n) +  &
+                                wb(ib) * Akb(mf,l,ib) * CONJG( Akb(nf,l,ib) )
+
+                ENDDO
             ENDDO
        ENDDO 
    ENDDO 
@@ -88,8 +81,6 @@ SUBROUTINE zmatrix( ik, lamp, Mkb, mtrx, dimwann, dimwin, dimwinx, dimfroz, indx
    ENDDO
    ENDDO
  
-   DEALLOCATE( a, STAT=ierr )
-       IF (ierr/=0) CALL errore('zmatrix','deallocating a',ABS(ierr))
    CALL timing('zmatrix',OPR='stop')
  
 END SUBROUTINE zmatrix

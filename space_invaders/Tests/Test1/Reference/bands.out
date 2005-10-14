@@ -7,11 +7,11 @@
   ======================================================================
 
 
-  Program <bands>  v. 1.1.1  starts ...
-  Date  8Aug2005 at 16: 0:17 
+  Program <bands>  v. 2.0.0  starts ...
+  Date 14Oct2005 at 12:24:36 
 
   Arch. / Op.Sys: LINUX
-        Compiler: GNU G95
+        Compiler: INTEL
 
 
   PW-DFT data read from file: silicon.export/index.xml
@@ -640,8 +640,8 @@
    <global routines>
              clock number :     2
 
-                    bands :     3.38s CPU 
-
-                want_init :     0.03s CPU
+                    bands :     2.00s CPU 
+ 
+                want_init :     0.04s CPU
 
 

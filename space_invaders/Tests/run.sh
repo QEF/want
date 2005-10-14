@@ -107,13 +107,17 @@ do
        #
        # get different run script
        #
-       SCRIPT_LIST=$( ls run*.sh )
-       for script in $SCRIPT_LIST
-       do
-          echo " ### $mytest : $script  $ACTION ### " 
-          ./$script $ACTION
-          if [ "$ACTION" != "clean" ] ; then echo ; fi
-       done
+       SCRIPT_LIST=$( ls run*.sh  2> /dev/null )
+       if [ -z "$SCRIPT_LIST" ] ; then 
+           echo " ### nothing to do for $mytest ### " $ECHO_N
+       else
+           for script in $SCRIPT_LIST
+           do
+              echo " ### $mytest : $script  $ACTION ### " 
+              ./$script $ACTION
+              if [ "$ACTION" != "clean" ] ; then echo ; fi
+           done
+       fi
     fi
     cd ..
 done

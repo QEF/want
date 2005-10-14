@@ -89,20 +89,22 @@
 
            !
            ! compute the contribution to the variation of the functional
+           ! note that a term -i has been factorized out to make dOmega/dW
+           ! hermitean
            !
            DO n = 1, dimwann
            DO m = 1, dimwann
                 !
-                ! A[R^{k,b}] = ( R - R^dag )/2
+                ! A[R^{k,b}] = -i ( R - R^dag )/2
                 ! where    R_mn = Mkb(m,n) * CONJG( Mkb(n,n) )
                 ! which is different from what reported on the paper PRB 56, 12852 (97)
                 !
-                aux1(m,n) = aux1(m,n) + wb(inn) * ( R(m,n) - CONJG( R(n,m)) )
+                aux1(m,n) = aux1(m,n) - wb(inn) * CI * ( R(m,n) - CONJG( R(n,m)) )
 
                 !
-                ! -S[T^{k,b}] = +i(T+Tdag)/2 
+                ! S[T^{k,b}] = (T+Tdag)/2 
                 !
-                aux2(m,n) = aux2(m,n) + wb(inn) * CI * ( T(m,n) + CONJG(T(n,m)) )
+                aux2(m,n) = aux2(m,n) + wb(inn) * ( T(m,n) + CONJG(T(n,m)) )
 
            ENDDO
            ENDDO

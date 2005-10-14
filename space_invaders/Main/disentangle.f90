@@ -25,8 +25,8 @@
        USE want_init_module, ONLY: want_init
        USE control_module,   ONLY: subspace_init_mode => subspace_init, verbosity, &
                                    unitary_thr, nprint_dis, nsave_dis
-       USE util_module,      ONLY: zmat_unitary, zmat_hdiag, zmat_mul
-       USE kpoints_module,   ONLY: nkpts, vkpt, wbtot
+       USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
+       USE kpoints_module,   ONLY: nkpts, vkpt, wbtot, nb, nnlist
        USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, &
                                    dimfroz, indxnfroz
        USE windows_module,   ONLY: windows_allocate, windows_write
@@ -42,22 +42,17 @@
 !
 ! ... local variables
 !
-       EXTERNAL  :: komegai
-       REAL(dbl) :: komegai
-       EXTERNAL  :: lambda_avg
-       REAL(dbl) :: lambda_avg
-
-       REAL(dbl) :: omega_i, omega_i_est
-       REAL(dbl) :: omega_err
-       REAL(dbl) :: aux
+       REAL(dbl) :: omega_i, omega_i_save, omega_i_err
+       REAL(dbl) :: rtmp
 
        REAL(dbl), ALLOCATABLE :: w(:)
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: z(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: z(:,:), aux(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: Akb_aux(:,:,:,:), Mkb_aux(:,:,:,:)
        CHARACTER(LEN=nstrx) :: filename 
 
        INTEGER :: i, j, l, m, ierr
-       INTEGER :: ik, iter, ncount
+       INTEGER :: ik, ib, ikb, iter, ncount
 
 !      
 ! ...  end of declarations
@@ -97,10 +92,14 @@
        !
        ALLOCATE( ham(dimwinx,dimwinx,nkpts), STAT=ierr ) 
            IF( ierr /=0 ) CALL errore('disentangle', 'allocating ham', ABS(ierr) )
-       ALLOCATE( z(dimwinx,dimwinx), STAT = ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating z', ABS(ierr) )
-       ALLOCATE( w(dimwinx), STAT = ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating w', ABS(ierr) )
+       ALLOCATE( z(dimwinx,dimwinx), w(dimwinx), STAT = ierr )
+           IF( ierr /=0 ) CALL errore('disentangle', 'allocating z, w', ABS(ierr) )
+       ALLOCATE( aux(dimwinx,dimwinx), STAT = ierr )
+           IF( ierr /=0 ) CALL errore('disentangle', 'allocating aux', ABS(ierr) )
+       ALLOCATE( Mkb_aux(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore('disentangle', 'allocating Mkb_aux', ABS(ierr) )
+       ALLOCATE( Akb_aux(dimwinx,dimwann,nb,nkpts), STAT=ierr ) 
+           IF( ierr /=0 ) CALL errore('disentangle', 'allocating Akb_aux', ABS(ierr) )
 
 
 
@@ -134,80 +133,133 @@
        ! ...  Initialize the starting subspace
        !
        CALL subspace_init( subspace_init_mode )
+       omega_i_save = ZERO
 
 
        iteration_loop : &
-       DO iter = 1, maxiter_dis
+       DO iter = 0, maxiter_dis
            ncount = iter
 
 
-           ! 
-           ! ... Construct the new z-matrix mtrx_out at the relevant K-points
-           ! 
            DO ik = 1, nkpts
-                IF ( dimwann > dimfroz(ik) )  THEN
-                    CALL zmatrix( ik, lamp, Mkb(1,1,1,ik), mtrx_out(1,1,ik), dimwann, &
-                                  dimwin, dimwinx, dimfroz(ik), indxnfroz(1,ik) )
-                ENDIF
+               !
+               ! ... update Mkb_aux, according to lamp
+               !     Mkb_aux = Lamp(k)^{dag} * Mkb(k,b) * Lamp(k+b)
+               ! 
+               !     Akb     = Mkb * Lamp(ikb)
+               !     Mkb_aux = Lamp(ik)^{\dag} * Akb
+               !
+               DO ib = 1, nb
+                    ikb = nnlist(ib, ik)
+                    CALL mat_mul(Akb_aux(:,:,ib,ik), Mkb(:,:,ib,ik), 'N',  &
+                                 lamp(:,:,ikb), 'N', dimwin(ik), dimwann, dimwin(ikb) )
+                    CALL mat_mul(Mkb_aux(:,:,ib,ik), lamp(:,:,ik), 'C', & 
+                                 Akb_aux(:,:,ib,ik), 'N', dimwann, dimwann, dimwin(ik) )
+               ENDDO
            ENDDO
-
-
+      
 
            !
-           ! Compute the current z-matrix at each relevant K-point 
+           ! Compute Omega_I using the updated subspaces at all k
+           ! 
+           CALL omegai( omega_i, dimwann, dimwann, dimwin, nkpts, Mkb_aux)
+    
+
+           !
+           ! write info on stdout
+           !
+           IF ( ncount > 0 ) THEN
+                !
+                omega_i_err  = ( omega_i_save - omega_i ) / omega_i  
+                !
+                WRITE( stdout, " (2x, 'Iteration = ',i5,5x,'Omega_I =',f12.6, &
+                                & 6x, 'Error =',f16.8 )") iter, omega_i, omega_i_err
+
+                !
+                ! timing
+                !
+                IF ( MOD(ncount, nprint_dis) == 0 )  THEN
+                    WRITE(stdout, "()")
+                    CALL timing_upto_now(stdout) 
+                ENDIF
+
+                !
+                ! write data to disk
+                !
+                IF ( MOD(ncount, nsave_dis) == 0 )  THEN
+                    CALL ioname('space',filename)
+                    CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write", &
+                                   FORM="formatted")
+                       CALL windows_write(space_unit,"WINDOWS")
+                       CALL subspace_write(space_unit,"SUBSPACE")
+                    CALL file_close(space_unit,PATH="/",ACTION="write")
+                ENDIF
+
+                !
+                ! convergence condition
+                !
+                IF ( ABS( omega_i_err ) < disentangle_thr ) EXIT iteration_loop
+           ENDIF
+           !     
+           omega_i_save = omega_i
+
+
+      !
+      ! update lamp
+      !
+
+           ! 
+           ! Construct the new z-matrix mtrx_out at the relevant k-points
+           ! 
+           DO ik = 1, nkpts
+                CALL zmatrix( ik, dimwann, dimwin, dimwinx, Akb_aux(1,1,1,ik), &
+                              mtrx_out(1,1,ik), dimfroz(ik), indxnfroz(1,ik) )
+           ENDDO
+
+           !
+           ! Compute the current z-matrix at each relevant k-point 
            ! using the mixing scheme
            ! 
-           IF ( iter == 1 ) THEN
-                mtrx_in(:,:,:) = mtrx_out(:,:,:)
+           IF ( iter == 0 ) THEN
+               mtrx_in(:,:,:) = mtrx_out(:,:,:)
+               !
+           ELSE
+               ! 
+               DO ik = 1, nkpts
+                   IF ( dimwann > dimfroz(ik) )  THEN
+                       DO i = 1, dimwin(ik)-dimfroz(ik)
+                       DO j = 1, i
+                            mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
+                                              (ONE-alpha_dis) * mtrx_in(j,i,ik)
+                            !
+                            ! use hermiticity
+                            !
+                            mtrx_in(i,j,ik) = CONJG(mtrx_in(j,i,ik))     
+                       ENDDO
+                       ENDDO
+                   ENDIF
+               ENDDO
+               ! 
            ENDIF
-           !
-           DO ik = 1, nkpts
-                IF ( dimwann > dimfroz(ik) )  THEN
-                    DO i = 1, dimwin(ik)-dimfroz(ik)
-                    DO j = 1, i
-                         mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
-                                           (ONE-alpha_dis) * mtrx_in(j,i,ik)
-                         !
-                         ! use hermiticity
-                         !
-                         mtrx_in(i,j,ik) = CONJG(mtrx_in(j,i,ik))     
-                    ENDDO
-                    ENDDO
-                ENDIF
-           ENDDO
 
 
            !
-           ! body of the loop
+           ! update the subspace (lamp) using zmatrix
            !
-           omega_i_est = ZERO
            DO ik = 1, nkpts
                ! 
                ! Diagonalize z matrix mtrx_in at all relevant k-points
                ! 
                IF ( dimwann > dimfroz(ik) )  THEN
                     !
-                    CALL timing('zmat_hdiag', OPR='start')
+                    CALL timing('mat_hdiag', OPR='start')
                     !
                     m = dimwin(ik)-dimfroz(ik)
-                    CALL zmat_hdiag( z(:,:), w(:), mtrx_in(:,:,ik), m)
+                    CALL mat_hdiag( z(:,:), w(:), mtrx_in(:,:,ik), m)
                     !
-                    CALL timing('zmat_hdiag', OPR='stop')
+                    CALL timing('mat_hdiag', OPR='stop')
                ENDIF
 
-
-               ! Contribution from frozen states (if any)
-               ! 
-               IF ( dimfroz(ik) > 0 )  THEN
-                   ! 
-                   ! Note that at this point lamp for the non-frozen states pertains 
-                   ! to the previous iteration step, which is exactly what we need 
-                   ! as an input for the subroutine komegai
-                   ! 
-                   aux = komegai( ik, dimfroz(ik), dimwann, dimwin, dimwinx,  &
-                                  lamp, Mkb(1,1,1,ik))
-                   omega_i_est = omega_i_est + aux
-               ENDIF
                ! 
                ! Contribution from non-frozen states (if any). 
                ! pick the dimwann-dimfroz(ik) leading eigenvectors of the z-matrix 
@@ -217,59 +269,15 @@
                    m = dimfroz(ik)
                    DO j = dimwin(ik)-dimwann+1, dimwin(ik)-dimfroz(ik)
                         m = m+1
-                        omega_i_est = omega_i_est - w(j)
                         lamp( 1:dimwin(ik), m, ik) = CZERO
                         DO i = 1, dimwin(ik)-dimfroz(ik)
-                            lamp( indxnfroz(i,ik), m, ik) = z(i,j)     ! *** CHECK!!! ***
+                            lamp( indxnfroz(i,ik), m, ik) = z(i,j) 
                         ENDDO
                    ENDDO
                ENDIF
-            ENDDO
-            omega_i_est = omega_i_est / DBLE( nkpts ) + DBLE(dimwann) * wbtot
+           ENDDO
 
 
-           
-            !
-            ! ... Compute omega_i using the updated subspaces at all k
-            ! 
-            omega_i = ZERO
-            DO ik = 1, nkpts
-                aux = komegai( ik, dimwann, dimwann, dimwin, dimwinx, lamp, Mkb(1,1,1,ik) )
-                omega_i = omega_i + aux
-            ENDDO
-            omega_i = omega_i / DBLE(nkpts) + DBLE(dimwann) * wbtot
-            omega_err = ( omega_i_est -omega_i ) / omega_i 
-    
-
-            !
-            ! write info on stdout
-            !
-            WRITE( stdout, " (2x, 'Iteration = ',i5,5x,'Omega_I =',f12.6, &
-                         & 6x, 'Error =',f16.8 )") iter, omega_i_est, omega_err
-
-            IF ( MOD(ncount, nprint_dis) == 0 )  THEN
-                 WRITE(stdout, "()")
-                 CALL timing_upto_now(stdout) 
-            ENDIF
-
-
-            !
-            ! write data to disk
-            !
-            IF ( MOD(ncount, nsave_dis) == 0 )  THEN
-                 CALL ioname('space',filename)
-                 CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write", &
-                                FORM="formatted")
-                    CALL windows_write(space_unit,"WINDOWS")
-                    CALL subspace_write(space_unit,"SUBSPACE")
-                 CALL file_close(space_unit,PATH="/",ACTION="write")
-            ENDIF
-
-
-            !
-            ! convergence condition
-            !
-            IF ( ABS( omega_err ) < disentangle_thr ) EXIT iteration_loop
        ENDDO iteration_loop
        !
        ! ... End of iter loop
@@ -299,7 +307,7 @@
        !
        ! ... Write the final omega_I. This should equal the one given by wannier
        !
-      WRITE( stdout, "(2x,'Iteration # : ',i4)") ncount
+       WRITE( stdout, "(2x,'Iteration # : ',i4)") ncount
        WRITE( stdout,"(2x,'Final Omega_I (Bohr^2, Angstrom^2):', f15.6,2x,f15.6)") &
                       omega_i, omega_i*bohr**2
        WRITE( stdout,"(2x,' Avrg Omega_I                     :', f15.6,2x,f15.6)") &
@@ -319,8 +327,8 @@
             DO ik=1,nkpts
                   WRITE(stdout,"(6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                         ik, vkpt(:,ik), dimwin(ik)
-                  CALL zmat_mul(z, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
-                                dimwin(ik), dimwin(ik), dimwann )
+                  CALL mat_mul(z, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+                               dimwin(ik), dimwin(ik), dimwann )
                   WRITE(stdout,"(2x, 8f9.5)") ( REAL(z(i,i)), i=1,dimwin(ik) )
                   WRITE( stdout,"()" ) 
             ENDDO
@@ -347,7 +355,10 @@
                ENDDO
            ENDDO
            ENDDO
-           CALL zmat_hdiag(z(:,:), wan_eig(:,ik), ham(:,:,ik), dimwann)
+           !
+           CALL timing('mat_hdiag', OPR='start')
+           CALL mat_hdiag(z(:,:), wan_eig(:,ik), ham(:,:,ik), dimwann)
+           CALL timing('mat_hdiag', OPR='stop')
  
            !
            ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
@@ -437,7 +448,10 @@
                    ENDDO
 
                    m = dimwin(ik)-dimwann
-                   CALL zmat_hdiag( z(:,:), w(:), ham(:,:,ik), m )
+                   !
+                   CALL timing('mat_hdiag', OPR='start')
+                   CALL mat_hdiag( z(:,:), w(:), ham(:,:,ik), m )
+                   CALL timing('mat_hdiag', OPR='stop')
  
                    ! ... Calculate amplitudes of the energy eigenvectors in the complement 
                    !     subspace in terms of the original energy eigenvectors
@@ -486,10 +500,14 @@
        !
        ! ...  Deallocate local arrays
        !
-       DEALLOCATE( z, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating z', ABS(ierr) )
-       DEALLOCATE( w, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating w', ABS(ierr) )
+       DEALLOCATE( ham, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating ham', ABS(ierr) )
+       DEALLOCATE( z, w, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating z, w', ABS(ierr) )
+       DEALLOCATE( aux, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating aux', ABS(ierr) )
+       DEALLOCATE( Mkb_aux, Akb_aux, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating Mkb_ Akb_aux', ABS(ierr) )
 
        CALL cleanup()
 

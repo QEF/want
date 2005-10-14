@@ -7,8 +7,8 @@
   ======================================================================
 
 
-  Program <plot>  v. 1.1.1  starts ...
-  Date  6Aug2005 at 17:27: 9 
+  Program <plot>  v. 2.0.0  starts ...
+  Date 14Oct2005 at 12:57:42 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -90,88 +90,153 @@
   Data type  :   modulus
   Output fmt :   plt
 
+  Plotting Cell dimensions [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -1.5000 -->   1.5000
+
   Grid dimensions:
-      nrx   -48 -->     47
-      nry   -48 -->     47
-      nrz   -48 -->     48
+      nrx :       -48 -->       48
+      nry :       -48 -->       48
+      nrz :       -36 -->       36
+
+
+  Centers for the required Wannier functions:
+
+        in cartesian coord (Bohr)
+    Wf(   1 ) = (    -0.000015     0.000131    -1.417261 )
+    Wf(   2 ) = (     0.000000     0.000000     0.944863 )
+    Wf(   3 ) = (     0.000000    -0.000142     0.944892 )
+    Wf(   6 ) = (     0.000000     0.000000     0.944863 )
+        in crystal coord
+    Wf(   1 ) = (    -0.000001     0.000007    -0.299993 )
+    Wf(   2 ) = (     0.000000     0.000000     0.200000 )
+    Wf(   3 ) = (     0.000000    -0.000007     0.200006 )
+    Wf(   6 ) = (     0.000000     0.000000     0.200000 )
+
+  Locating WFs: 
+  Plotting Cell dimensions [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -0.5000 -->   0.5000
+
+  New center positions [cryst. coord]:
+        in crystal coord
+    Wf(   1 ) = (    -0.000001     0.000007    -0.299993 )
+    Wf(   2 ) = (     0.000000     0.000000     0.200000 )
+    Wf(   3 ) = (     0.000000    -0.000007     0.200006 )
+    Wf(   6 ) = (     0.000000     0.000000     0.200000 )
+
 
   Atoms in the selected cell: (cart. coord. in Bohr)
-     Au   tau(   1 ) = (   0.0000000   0.0000000  -8.5037766 )
-     Au   tau(   2 ) = (   0.0000000   0.0000000  -3.7794566 )
-     Au   tau(   3 ) = (   0.0000000   0.0000000   0.9448634 )
-     Au   tau(   4 ) = (   0.0000000   0.0000000   5.6691834 )
+     Au   tau(   1 ) = (   0.0000000   0.0000000  -3.7794566 )
+     Au   tau(   2 ) = (   0.0000000   0.0000000   0.9448634 )
+     Au   tau(   3 ) = (   0.0000000   0.0000000   5.6691834 )
 
 
-  writing WF(  1) plot on file: .//gold_US_WanT_WFM001.gau
+    Wfc Fourier Transf. for k-point   1
+                              Total time spent up to now :     1.54 secs
+
+    Wfc Fourier Transf. for k-point   2
+                              Total time spent up to now :     2.66 secs
+
+    Wfc Fourier Transf. for k-point   3
+                              Total time spent up to now :     3.79 secs
+
+    Wfc Fourier Transf. for k-point   4
+                              Total time spent up to now :     4.62 secs
+
+    Wfc Fourier Transf. for k-point   5
+                              Total time spent up to now :     5.55 secs
+
+    Wfc Fourier Transf. for k-point   6
+                              Total time spent up to now :     6.46 secs
+
+    Wfc Fourier Transf. for k-point   7
+                              Total time spent up to now :     7.59 secs
+
+    Wfc Fourier Transf. for k-point   8
+                              Total time spent up to now :     8.94 secs
+
+
+  writing WF(  1) plot on file: .//gold_US_WanT_WFM001.cube
+                  atomic positions on file: .//gold_US_WanT_WFM001.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/gold_US_WanT_WFM001.gau'
+Input file:      './/gold_US_WanT_WFM001.cube'
 Output file (plot file):  './/gold_US_WanT_WFM001.plt'
 Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM001.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
 Min value: 0.000000
-Max value: 0.000707
+Max value: 0.000920
 Job done ...
 **********************************************************
-  deleting tmp file: .//gold_US_WanT_WFM001.gau
+  deleting tmp files: .//gold_US_WanT_WFM001.cube
+                      .//gold_US_WanT_WFM001.crd
 
 
-  writing WF(  2) plot on file: .//gold_US_WanT_WFM002.gau
+  writing WF(  2) plot on file: .//gold_US_WanT_WFM002.cube
+                  atomic positions on file: .//gold_US_WanT_WFM002.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/gold_US_WanT_WFM002.gau'
+Input file:      './/gold_US_WanT_WFM002.cube'
 Output file (plot file):  './/gold_US_WanT_WFM002.plt'
 Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM002.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
 Min value: 0.000000
-Max value: 0.001248
+Max value: 0.001625
 Job done ...
 **********************************************************
-  deleting tmp file: .//gold_US_WanT_WFM002.gau
+  deleting tmp files: .//gold_US_WanT_WFM002.cube
+                      .//gold_US_WanT_WFM002.crd
 
 
-  writing WF(  3) plot on file: .//gold_US_WanT_WFM003.gau
+  writing WF(  3) plot on file: .//gold_US_WanT_WFM003.cube
+                  atomic positions on file: .//gold_US_WanT_WFM003.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/gold_US_WanT_WFM003.gau'
+Input file:      './/gold_US_WanT_WFM003.cube'
 Output file (plot file):  './/gold_US_WanT_WFM003.plt'
 Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM003.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
 Min value: 0.000000
-Max value: 0.001265
+Max value: 0.001646
 Job done ...
 **********************************************************
-  deleting tmp file: .//gold_US_WanT_WFM003.gau
+  deleting tmp files: .//gold_US_WanT_WFM003.cube
+                      .//gold_US_WanT_WFM003.crd
 
 
-  writing WF(  6) plot on file: .//gold_US_WanT_WFM006.gau
+  writing WF(  6) plot on file: .//gold_US_WanT_WFM006.cube
+                  atomic positions on file: .//gold_US_WanT_WFM006.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/gold_US_WanT_WFM006.gau'
+Input file:      './/gold_US_WanT_WFM006.cube'
 Output file (plot file):  './/gold_US_WanT_WFM006.plt'
 Coordinate file (in CHARMM 'crd' format): './/gold_US_WanT_WFM006.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.000004
+Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
 Min value: 0.000000
-Max value: 0.001278
+Max value: 0.001663
 Job done ...
 **********************************************************
-  deleting tmp file: .//gold_US_WanT_WFM006.gau
+  deleting tmp files: .//gold_US_WanT_WFM006.cube
+                      .//gold_US_WanT_WFM006.crd
 
 
 
@@ -180,12 +245,12 @@ Job done ...
    <global routines>
              clock number :     6
 
-                     plot :    33.45s CPU 
+                     plot :    20.00s CPU 
  
-                want_init :     0.13s CPU
+                want_init :     0.10s CPU
           ggrids_read_ext :     0.07s CPU
-           wfc_data_kread :     0.08s CPU (       8 calls,   0.010 s avg)
-                   cfft3d :     1.55s CPU (      32 calls,   0.049 s avg)
-                 gcubeplt :     8.00s CPU (       4 calls,   2.001 s avg)
+           wfc_data_kread :     0.06s CPU (       8 calls,   0.008 s avg)
+                   cfft3d :     1.61s CPU (      32 calls,   0.050 s avg)
+                 gcubeplt :     5.64s CPU (       4 calls,   1.410 s avg)
 
 

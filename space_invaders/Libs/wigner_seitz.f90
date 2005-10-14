@@ -8,7 +8,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !********************************************************************
-   SUBROUTINE wigner_seitz( avec, nk, indxws, nws, degen )
+   SUBROUTINE wigner_seitz( avec, nk, nwsx, nws, degen, indxws )
    !********************************************************************
    USE kinds
    USE io_module, ONLY : stdout
@@ -20,6 +20,7 @@
    !
    REAL(dbl), INTENT(in) :: avec(3,3)
    INTEGER,   INTENT(in) :: nk(3)
+   INTEGER,   INTENT(in) :: nwsx
    INTEGER,   INTENT(out):: nws
    INTEGER,   INTENT(out):: indxws(3,*)
    INTEGER,   INTENT(out):: degen(*)
@@ -107,6 +108,7 @@
              dist_min = dist(indx(1))
              IF ( ABS( dist(14) - dist_min ) < EPS_m8 ) THEN
                nws = nws + 1
+               IF ( nws > nwsx ) CALL errore('wigner_seitz','too many R vectors', nws)
 
                ndeg = 0
                DO nn = 1,27

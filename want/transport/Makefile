@@ -8,8 +8,8 @@ OBJS= \
 conductor.o \
 green.o \
 hamiltonian_setup.o \
-transfer.o \
 read_matrix.o \
+transfer.o \
 transmittance.o
 
 #

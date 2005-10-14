@@ -7,8 +7,8 @@
   ======================================================================
 
 
-  Program <disentangle>  v. 1.1.1  starts ...
-  Date  5Sep2005 at 18:57:22 
+  Program <disentangle>  v. 2.0.0  starts ...
+  Date 14Oct2005 at 12:59: 7 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -30,7 +30,7 @@
              Projection Calc. :     TRUE 
           Read Start Subspace :     FALSE
        Read Start Unitary mat :     FALSE
-           Conditioned minim. :     FALSE
+           Conditioned minim. :     TRUE 
 
 <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
@@ -41,15 +41,13 @@
     SD minim: Mixing parameter (alpha1_wan) =  0.500
     SD minim: Max iteration number =  4000
     Every   3 iteration perform a CG minimization (ncg)
-    Number of k-point shells =   2
-    Chosen shells (indexes) =   1  4
     Print info each  10 iterations
     Save data each   10 iterations
     Starting minimization guess = center_projections
     Ordering mode = none
     Verbosity = high
-    Unitariery check threshold =     0.000000010
-    Conditioned minim. amplitude =     0.000000000
+    Unitariery check threshold =     0.000001000
+    Conditioned minim. amplitude =    10.000000000
     Conditioned minim.  iter num =  4200
 </WANNIER_FUNCTIONS>
 
@@ -155,36 +153,15 @@
 </K-POINTS>
 
 <B-SHELL>
-  Nearest-neighbour shells for k-point 1: (in Bohr^-1)
-    shell (  1 )    radius =   0.07584
-    shell (  2 )    radius =   0.15168
-    shell (  3 )    radius =   0.22753
-    shell (  4 )    radius =   0.26966
-    shell (  5 )    radius =   0.28012
-    shell (  6 )    radius =   0.30337
-    shell (  7 )    radius =   0.30939
-    shell (  8 )    radius =   0.35282
-    shell (  9 )    radius =   0.37921
-    shell ( 10 )    radius =   0.38136
-    shell ( 11 )    radius =   0.38883
-    shell ( 12 )    radius =   0.40589
+  List of the  6 b-vectors : (Bohr^-1) 
+    b ( 1) =    (   0.07584  0.00000  0.00000 ),   weight =  86.9259
+    b ( 2) =    (  -0.07584  0.00000  0.00000 ),   weight =  86.9259
+    b ( 3) =    (   0.00000 -0.26966  0.00000 ),   weight =   6.8760
+    b ( 4) =    (   0.00000  0.26966  0.00000 ),   weight =   6.8760
+    b ( 5) =    (   0.00000  0.00000  0.26966 ),   weight =   6.8760
+    b ( 6) =    (   0.00000  0.00000 -0.26966 ),   weight =   6.8760
 
-  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
-    shell (  1 )    neighbours  =    2
-    shell (  4 )    neighbours  =    4
-
-  List of the  6 vectors b_k: (Bohr^-1) 
-    b_k   1:   (   0.07584  0.00000  0.00000 ),   weight =  86.9259
-    b_k   2:   (  -0.07584  0.00000  0.00000 ),   weight =  86.9259
-    b_k   3:   (   0.00000 -0.26966  0.00000 ),   weight =   6.8760
-    b_k   4:   (   0.00000  0.00000 -0.26966 ),   weight =   6.8760
-    b_k   5:   (   0.00000  0.00000  0.26966 ),   weight =   6.8760
-    b_k   6:   (   0.00000  0.26966  0.00000 ),   weight =   6.8760
-
-  The  3  bk directions are (Bohr^-1):
-    dir 1:   (   0.07584  0.00000  0.00000 ) 
-    dir 2:   (   0.00000 -0.26966  0.00000 ) 
-    dir 3:   (   0.00000  0.00000 -0.26966 ) 
+  Total weight = 201.3558
 </B-SHELL>
 
 <WINDOWS>
@@ -197,7 +174,7 @@
     nspin =   1
     Fermi energy =   -4.151018974 eV
 
-    kpt =  1 (  0.000 0.000 0.000 )    dimwin =   16
+    kpt =   1 (   0.00000  0.00000  0.00000 )    dimwin =   16
                                          imin =    1  imax =   16
    Eigenvalues:
    -20.5523 -19.8791 -19.8791 -18.6742 -16.4412 -14.5305 -14.5305 -13.0104
@@ -211,7 +188,7 @@
      4.7813   4.8007   4.8007   4.8277   4.8277   4.9769   4.9769   4.9769
      4.9769   5.0208   5.0208   5.1527   5.2602   5.2602   5.5574   5.5809
 
-    kpt =  2 (  0.076 0.000 0.000 )    dimwin =   16
+    kpt =   2 (   0.07584  0.00000  0.00000 )    dimwin =   16
                                          imin =    1  imax =   16
    Eigenvalues:
    -20.5086 -20.1675 -19.5281 -18.8208 -16.2406 -15.1601 -13.9439 -13.1312
@@ -225,7 +202,7 @@
      4.4731   4.5122   4.5122   4.6150   4.6157   4.7146   4.7462   4.7462
      4.7555   4.8596   4.8797   4.9205   4.9205   5.2412   5.3553   5.3704
 
-    kpt =  3 (  0.152 0.000 0.000 )    dimwin =   16
+    kpt =   3 (   0.15168  0.00000  0.00000 )    dimwin =   16
                                          imin =    1  imax =   16
    Eigenvalues:
    -20.3790 -20.3790 -19.1530 -19.1530 -15.7613 -15.7613 -13.4519 -13.4519
@@ -239,7 +216,7 @@
      4.3253   4.3253   4.3346   4.3346   4.5384   4.5384   4.5384   4.5384
      4.8244   4.8244   4.8497   4.8498   4.9797   4.9797   4.9797   4.9798
 
-    kpt =  4 (  0.228 0.000 0.000 )    dimwin =   16
+    kpt =   4 (   0.22753  0.00000  0.00000 )    dimwin =   16
                                          imin =    1  imax =   16
    Eigenvalues:
    -20.5086 -20.1675 -19.5281 -18.8208 -16.2406 -15.1601 -13.9439 -13.1312
@@ -277,24 +254,25 @@
   Initializing global dft data
 
   Initializing US pseudopot. data
+  WARNING: setting b = 0 in qb (overlap augment.)
   Total number Nkb of beta functions:    64
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     5.59 secs
+                              Total time spent up to now :     5.88 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     8.59 secs
+                              Total time spent up to now :     9.07 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :    11.44 secs
+                              Total time spent up to now :    12.35 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :    14.28 secs
+                              Total time spent up to now :    15.43 secs
 
 
   Overlaps and projections written on file: chain8_WanT.ovp
-                              Total time spent up to now :    14.39 secs
+                              Total time spent up to now :    15.57 secs
 
 
   ======================================================================
@@ -338,7 +316,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      54.594515        15.288009
    Avrg Omega_I                     :       3.412157         0.955501
 
-                              Total time spent up to now :    14.41 secs
+                              Total time spent up to now :    15.58 secs
 
 
   Subspace decomposition:
@@ -368,27 +346,27 @@
    <global routines>
              clock number :    21
 
-              disentangle :    14.00s CPU 
+              disentangle :    15.00s CPU 
  
-                want_init :     0.08s CPU
-                  bshells :     0.01s CPU
-              wfc_manager :    14.31s CPU
-          ggrids_read_ext :     0.50s CPU
-              struct_fact :     0.57s CPU
-                init_us_1 :     1.50s CPU
-           wfc_data_kread :     2.00s CPU (      16 calls,   0.125 s avg)
-                init_us_2 :     2.12s CPU (      20 calls,   0.106 s avg)
-                  ccalbec :     0.88s CPU (      16 calls,   0.055 s avg)
-                  overlap :     4.65s CPU (      12 calls,   0.387 s avg)
-           overlap_setmap :     1.10s CPU (      12 calls,   0.092 s avg)
-          overlap_augment :     0.26s CPU (      12 calls,   0.021 s avg)
-                    s_psi :     0.26s CPU (       4 calls,   0.066 s avg)
-               projection :     1.45s CPU (       4 calls,   0.361 s avg)
-       trial_center_setup :     0.91s CPU (      64 calls,   0.014 s avg)
-               iterations :     0.02s CPU
+                want_init :     0.13s CPU
+                  bshells :     0.00s CPU
+              wfc_manager :    15.43s CPU
+          ggrids_read_ext :     0.63s CPU
+              struct_fact :     0.62s CPU
+                init_us_1 :     1.02s CPU
+           wfc_data_kread :     3.60s CPU (      16 calls,   0.225 s avg)
+                init_us_2 :     1.92s CPU (      20 calls,   0.096 s avg)
+                  ccalbec :     1.03s CPU (      16 calls,   0.065 s avg)
+                  overlap :     4.66s CPU (      12 calls,   0.388 s avg)
+           overlap_setmap :     1.00s CPU (      12 calls,   0.084 s avg)
+          overlap_augment :     0.05s CPU (      12 calls,   0.004 s avg)
+                    s_psi :     0.37s CPU (       4 calls,   0.092 s avg)
+               projection :     1.34s CPU (       4 calls,   0.334 s avg)
+       trial_center_setup :     0.92s CPU (      64 calls,   0.014 s avg)
+               iterations :     0.01s CPU
              subapce_init :     0.00s CPU
-                  zmatrix :     0.00s CPU (       4 calls,   0.001 s avg)
-               zmat_hdiag :     0.00s CPU (       4 calls,   0.000 s avg)
-                  komegai :     0.01s CPU (       4 calls,   0.002 s avg)
+                   omegai :     0.00s CPU (       2 calls,   0.000 s avg)
+                  zmatrix :     0.00s CPU (       4 calls,   0.000 s avg)
+                mat_hdiag :     0.00s CPU (       8 calls,   0.000 s avg)
 
 

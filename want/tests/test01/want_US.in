@@ -11,7 +11,7 @@
     win_max =  14.8    
     maxiter_dis = 200
     subspace_init = 'center_projections'
-    use_blimit = .TRUE.
+!    use_blimit = .TRUE.
 /
 
 &LOCALIZATION

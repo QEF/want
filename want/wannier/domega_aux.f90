@@ -102,20 +102,22 @@
 
            !
            ! compute the contribution to the variation of the functional
+           ! note that a term -i has been factorized out ot make dOmega/dW
+           ! hermitean
            !
            DO n = 1, dimwann
            DO m = 1, dimwann
                 !
-                ! S[At^{k,b}] = -i(At+At\dag)/2 
+                ! S[At^{k,b}] = (At+At\dag)/2 
                 !
-                aux2(m,n) = aux2(m,n) - wb(inn) * CI * ( At(m,n) + CONJG(At(n,m)) )
+                aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
 
            ENDDO
            ENDDO
        ENDDO
 
        !
-       ! dOmega/dW(k) = a * 2 * \Sum_b wb * (  S[T] )
+       ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
        !
        domg(:,:,ik) = a * ONE / DBLE(nkpts) * aux2(:,:)
    ENDDO

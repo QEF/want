@@ -15,7 +15,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE timing_module, ONLY : timing
    USE io_module,  ONLY : stdout, ovp_unit, space_unit, ioname
    USE files_module, ONLY : file_open, file_close
-   USE util_module,  ONLY : zmat_mul
+   USE util_module,  ONLY : mat_mul
    USE subspace_module, ONLY : eamp, subspace_read
    USE windows_module,  ONLY : dimwinx, dimwin, windows_read
    USE kpoints_module,  ONLY : nkpts, nb, nnlist 
@@ -122,10 +122,10 @@ SUBROUTINE overlap_extract(dimwann)
        !
        ikb = nnlist( inn, ik )
        !
-       CALL zmat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
-                     dimwann, dimwin(ikb), dimwin(ik) )
-       CALL zmat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
-                     dimwann, dimwann, dimwin(ikb) )
+       CALL mat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
+                    dimwann, dimwin(ikb), dimwin(ik) )
+       CALL mat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
+                    dimwann, dimwann, dimwin(ikb) )
        !
    ENDDO
    ENDDO
@@ -135,8 +135,8 @@ SUBROUTINE overlap_extract(dimwann)
    !
    DO ik = 1, nkpts
 
-      CALL zmat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
-                     dimwann, dimwann, dimwin(ik) )
+      CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
+                    dimwann, dimwann, dimwin(ik) )
    ENDDO
 
 

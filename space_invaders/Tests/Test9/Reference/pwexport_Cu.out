@@ -1,6 +1,6 @@
 
-     Program POST-PROC v.2.1.3  starts ...
-     Today is  1Aug2005 at 13:40:55 
+     Program POST-PROC v.2.1.5  starts ...
+     Today is 10Oct2005 at 12:12:52 
 
      Reading file copper.save ... 
      read complete
@@ -8,5 +8,5 @@
      Reading file copper.save ... 
      read complete
 
-     nbndx  =    10  nbnd   =    10  natomwfc =     9  npwx   =    2148
+     nbndx  =    20  nbnd   =    20  natomwfc =     9  npwx   =    2148
      nelec  =   11.00 nkb   =     8  ngl    =     214

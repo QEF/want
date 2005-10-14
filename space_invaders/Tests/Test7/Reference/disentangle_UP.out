@@ -7,8 +7,8 @@
   ======================================================================
 
 
-  Program <disentangle>  v. 1.1.1  starts ...
-  Date  6Aug2005 at 17:39:25 
+  Program <disentangle>  v. 2.0.0  starts ...
+  Date 14Oct2005 at 13:36:23 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -41,14 +41,12 @@
     SD minim: Mixing parameter (alpha1_wan) =  0.500
     SD minim: Max iteration number =  1500
     Every   5 iteration perform a CG minimization (ncg)
-    Number of k-point shells =   2
-    Chosen shells (indexes) =   1  2
     Print info each  10 iterations
     Save data each   10 iterations
     Starting minimization guess = center_projections
     Ordering mode = none
     Verbosity = medium
-    Unitariery check threshold =     0.000000010
+    Unitariery check threshold =     0.000001000
     Conditioned minim. amplitude =     0.000000000
     Conditioned minim.  iter num =  1600
 </WANNIER_FUNCTIONS>
@@ -140,36 +138,15 @@
 </K-POINTS>
 
 <B-SHELL>
-  Nearest-neighbour shells for k-point 1: (in Bohr^-1)
-    shell (  1 )    radius =   0.31416
-    shell (  2 )    radius =   0.33249
-    shell (  3 )    radius =   0.44429
-    shell (  4 )    radius =   0.45743
-    shell (  5 )    radius =   0.55493
-    shell (  6 )    radius =   0.62832
-    shell (  7 )    radius =   0.66498
-    shell (  8 )    radius =   0.70248
-    shell (  9 )    radius =   0.71087
-    shell ( 10 )    radius =   0.73546
-    shell ( 11 )    radius =   0.77719
-    shell ( 12 )    radius =   0.79975
+  List of the  6 b-vectors : (Bohr^-1) 
+    b ( 1) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0661
+    b ( 2) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
+    b ( 3) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b ( 4) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b ( 5) =    (   0.00000  0.00000  0.33249 ),   weight =   4.5228
+    b ( 6) =    (   0.00000  0.00000 -0.33249 ),   weight =   4.5228
 
-  Number of nearest-neighbours for K-point 1 (representetive for the BZ):
-    shell (  1 )    neighbours  =    4
-    shell (  2 )    neighbours  =    2
-
-  List of the  6 vectors b_k: (Bohr^-1) 
-    b_k   1:   (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
-    b_k   2:   (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
-    b_k   3:   (   0.00000  0.31416  0.00000 ),   weight =   5.0661
-    b_k   4:   (   0.31416  0.00000  0.00000 ),   weight =   5.0661
-    b_k   5:   (   0.00000  0.00000  0.33249 ),   weight =   4.5228
-    b_k   6:   (   0.00000  0.00000 -0.33249 ),   weight =   4.5228
-
-  The  3  bk directions are (Bohr^-1):
-    dir 1:   (  -0.31416  0.00000  0.00000 ) 
-    dir 2:   (   0.00000 -0.31416  0.00000 ) 
-    dir 3:   (   0.00000  0.00000  0.33249 ) 
+  Total weight =  29.3099
 </B-SHELL>
 
 <WINDOWS>
@@ -182,25 +159,25 @@
     nspin =   2
     Fermi energy =   -4.318844561 eV
 
-    kpt =  1 (  0.000 0.000 0.000 )    dimwin =    9
+    kpt =   1 (   0.00000  0.00000  0.00000 )    dimwin =    9
                                          imin =    1  imax =    9
    Eigenvalues:
     -7.6054  -5.5725  -5.4967  -5.4965  -5.0778  -5.0778  -1.6333  -1.6333
     -0.2456   0.7141
 
-    kpt =  2 (  0.000 0.000 0.332 )    dimwin =    6
+    kpt =   2 (   0.00000  0.00000  0.33249 )    dimwin =    6
                                          imin =    1  imax =    6
    Eigenvalues:
     -6.0847  -5.7771  -5.7771  -5.3620  -5.3618  -4.8021   0.1640   0.1640
      1.2386   2.2072
 
-    kpt =  3 (  0.000 0.000 0.665 )    dimwin =    6
+    kpt =   3 (   0.00000  0.00000  0.66498 )    dimwin =    6
                                          imin =    1  imax =    6
    Eigenvalues:
     -6.2927  -6.2927  -5.2280  -5.2279  -5.0694  -1.0007   0.9108   4.0446
      4.0446   5.6334
 
-    kpt =  4 (  0.000 0.000 0.997 )    dimwin =    6
+    kpt =   4 (   0.00000  0.00000  0.99747 )    dimwin =    6
                                          imin =    1  imax =    6
    Eigenvalues:
     -6.0847  -5.7771  -5.7771  -5.3620  -5.3618  -4.8021   0.1640   0.1640
@@ -230,24 +207,25 @@
   Initializing global dft data
 
   Initializing US pseudopot. data
+  WARNING: setting b = 0 in qb (overlap augment.)
   Total number Nkb of beta functions:    18
 
 
     Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     4.40 secs
+                              Total time spent up to now :     4.11 secs
 
     Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     4.57 secs
+                              Total time spent up to now :     4.23 secs
 
     Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     4.73 secs
+                              Total time spent up to now :     4.35 secs
 
     Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     4.91 secs
+                              Total time spent up to now :     4.49 secs
 
 
-  Overlap and projections written on file: nichain_WanT_UP.ovp
-                              Total time spent up to now :     4.97 secs
+  Overlaps and projections written on file: nichain_WanT_UP.ovp
+                              Total time spent up to now :     4.53 secs
 
 
   ======================================================================
@@ -257,44 +235,30 @@
 
   Initial trial subspace: projected localized orbitals
 
-  Iteration =     1     Omega_I =   14.419893      Error =      0.00751839
-  Iteration =     2     Omega_I =   14.365260      Error =      0.00403355
-  Iteration =     3     Omega_I =   14.336254      Error =      0.00206648
-  Iteration =     4     Omega_I =   14.321444      Error =      0.00104230
-  Iteration =     5     Omega_I =   14.313983      Error =      0.00052283
-  Iteration =     6     Omega_I =   14.310243      Error =      0.00026174
-  Iteration =     7     Omega_I =   14.308370      Error =      0.00013094
-  Iteration =     8     Omega_I =   14.307433      Error =      0.00006549
-  Iteration =     9     Omega_I =   14.306965      Error =      0.00003275
-  Iteration =    10     Omega_I =   14.306731      Error =      0.00001638
+  Iteration =     1     Omega_I =   14.312288      Error =      0.01808309
+  Iteration =     2     Omega_I =   14.307550      Error =      0.00033115
+  Iteration =     3     Omega_I =   14.306690      Error =      0.00006012
+  Iteration =     4     Omega_I =   14.306533      Error =      0.00001097
+  Iteration =     5     Omega_I =   14.306504      Error =      0.00000203
+  Iteration =     6     Omega_I =   14.306498      Error =      0.00000039
+  Iteration =     7     Omega_I =   14.306497      Error =      0.00000009
+  Iteration =     8     Omega_I =   14.306496      Error =      0.00000002
+  Iteration =     9     Omega_I =   14.306496      Error =      0.00000001
+  Iteration =    10     Omega_I =   14.306496      Error =      0.00000001
 
-                              Total time spent up to now :     4.97 secs
+                              Total time spent up to now :     4.57 secs
 
-  Iteration =    11     Omega_I =   14.306613      Error =      0.00000820
-  Iteration =    12     Omega_I =   14.306555      Error =      0.00000410
-  Iteration =    13     Omega_I =   14.306525      Error =      0.00000205
-  Iteration =    14     Omega_I =   14.306511      Error =      0.00000103
-  Iteration =    15     Omega_I =   14.306503      Error =      0.00000051
-  Iteration =    16     Omega_I =   14.306500      Error =      0.00000026
-  Iteration =    17     Omega_I =   14.306498      Error =      0.00000013
-  Iteration =    18     Omega_I =   14.306497      Error =      0.00000006
-  Iteration =    19     Omega_I =   14.306496      Error =      0.00000003
-  Iteration =    20     Omega_I =   14.306496      Error =      0.00000002
-
-                              Total time spent up to now :     5.01 secs
-
-  Iteration =    21     Omega_I =   14.306496      Error =      0.00000001
 
 
   ======================================================================
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Iteration # :   21
+  Iteration # :   10
   Final Omega_I (Bohr^2, Angstrom^2):      14.306496         4.006224
    Avrg Omega_I                     :       2.384416         0.667704
 
-                              Total time spent up to now :     5.04 secs
+                              Total time spent up to now :     4.61 secs
 
 
   Subspace data written on file: nichain_WanT_UP.space
@@ -303,27 +267,27 @@
    <global routines>
              clock number :    21
 
-              disentangle :     5.06s CPU 
+              disentangle :     4.00s CPU 
  
-                want_init :     0.16s CPU
-                  bshells :     0.00s CPU
-              wfc_manager :     4.80s CPU
-          ggrids_read_ext :     0.06s CPU
+                want_init :     0.45s CPU
+                  bshells :     0.01s CPU
+              wfc_manager :     3.97s CPU
+          ggrids_read_ext :     0.16s CPU
               struct_fact :     0.01s CPU
-                init_us_1 :     3.96s CPU
-           wfc_data_kread :     0.16s CPU (      16 calls,   0.010 s avg)
-                init_us_2 :     0.21s CPU (      20 calls,   0.011 s avg)
-                  ccalbec :     0.04s CPU (      16 calls,   0.003 s avg)
-                  overlap :     0.18s CPU (      12 calls,   0.015 s avg)
-           overlap_setmap :     0.10s CPU (      12 calls,   0.008 s avg)
+                init_us_1 :     3.09s CPU
+           wfc_data_kread :     0.19s CPU (      16 calls,   0.012 s avg)
+                init_us_2 :     0.16s CPU (      20 calls,   0.008 s avg)
+                  ccalbec :     0.06s CPU (      16 calls,   0.004 s avg)
+                  overlap :     0.13s CPU (      12 calls,   0.011 s avg)
+           overlap_setmap :     0.08s CPU (      12 calls,   0.007 s avg)
           overlap_augment :     0.00s CPU (      12 calls,   0.000 s avg)
                     s_psi :     0.01s CPU (       4 calls,   0.004 s avg)
-               projection :     0.08s CPU (       4 calls,   0.021 s avg)
-       trial_center_setup :     0.05s CPU (      24 calls,   0.002 s avg)
-               iterations :     0.07s CPU
-             subapce_init :     0.00s CPU
-                  zmatrix :     0.00s CPU (      84 calls,   0.000 s avg)
-               zmat_hdiag :     0.00s CPU (      84 calls,   0.000 s avg)
-                  komegai :     0.00s CPU (      84 calls,   0.000 s avg)
+               projection :     0.06s CPU (       4 calls,   0.015 s avg)
+       trial_center_setup :     0.04s CPU (      24 calls,   0.002 s avg)
+               iterations :     0.08s CPU
+             subapce_init :     0.03s CPU
+                   omegai :     0.00s CPU (      11 calls,   0.000 s avg)
+                  zmatrix :     0.00s CPU (      40 calls,   0.000 s avg)
+                mat_hdiag :     0.00s CPU (      44 calls,   0.000 s avg)
 
 

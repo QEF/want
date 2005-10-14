@@ -28,7 +28,7 @@
    USE cleanup_module,     ONLY : cleanup
    USE want_init_module,   ONLY : want_init
    USE version_module,     ONLY : version_number
-   USE util_module,        ONLY : zmat_mul
+   USE util_module,        ONLY : mat_mul
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE atomic_module,      ONLY : atomic_name2num, atomic_num2name
    USE summary_module,     ONLY : summary
@@ -486,8 +486,8 @@
           !
           ! built the right transformation to rotate the original wfcs.
           !
-          CALL zmat_mul( cutot, eamp(:,:,ik), 'N', cu(:,:,ik), 'N' ,  &
-                         dimwin(ik), dimwann, dimwann)
+          CALL mat_mul( cutot, eamp(:,:,ik), 'N', cu(:,:,ik), 'N' ,  &
+                        dimwin(ik), dimwann, dimwann)
 
           !
           ! set the FFT map
