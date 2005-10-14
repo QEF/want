@@ -13,7 +13,7 @@
    USE kinds
    USE constants, ONLY : ZERO, CONE, CZERO, ONE, EPS_m8
    USE timing_module, ONLY : timing
-   USE util_module, ONLY : zmat_hdiag, zmat_unitary, zmat_mul
+   USE util_module, ONLY : mat_hdiag, zmat_unitary, mat_mul
    USE io_module, ONLY : stdout
    USE control_module, ONLY : unitary_thr
    IMPLICIT NONE
@@ -68,23 +68,23 @@
               ENDDO
               !      
               ! p_s = lamp * lamp^{dag}
-              CALL zmat_mul( p_s, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
-                                  dimwin(ik), dimwin(ik), dimwann )
+              CALL mat_mul( p_s, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+                                 dimwin(ik), dimwin(ik), dimwann )
          
               !
               ! pq = p_s * q_froz
-              CALL zmat_mul( pq, p_s, 'N', q_froz, 'N', &
-                                  dimwin(ik), dimwin(ik), dimwin(ik) )
+              CALL mat_mul( pq, p_s, 'N', q_froz, 'N', &
+                                 dimwin(ik), dimwin(ik), dimwin(ik) )
               
               !
               ! qpq = q_froz * pq
-              CALL zmat_mul( qpq, q_froz, 'N', pq, 'N', &
-                                  dimwin(ik), dimwin(ik), dimwin(ik) )
+              CALL mat_mul( qpq, q_froz, 'N', pq, 'N', &
+                                 dimwin(ik), dimwin(ik), dimwin(ik) )
               
 !
 ! ...      Diagonalize qpq and check its hermiticity
 
-           CALL zmat_hdiag(z, w, qpq, dimwin(ik) )
+           CALL mat_hdiag(z, w, qpq, dimwin(ik) )
 
 ! ...      Pick the dimwann-dimfroz(ik) leading eigenvectors to be trial states; 
 !          put them right after the frozen states in lamp

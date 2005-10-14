@@ -28,7 +28,7 @@
    USE want_init_module,     ONLY : want_init
    USE summary_module,       ONLY : summary
    USE version_module,       ONLY : version_number
-   USE util_module,          ONLY : zmat_hdiag
+   USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart
    USE lattice_module,       ONLY : bvec
    USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read, &
@@ -181,7 +181,8 @@
       ! convert kpts to internal cartesian representation (bohr^-1)
       CALL cry2cart( kpt_in, bvec )
       !
-      CALL get_points(nkpts_in, nkpts_max, kpt_in, xval_in, kptname_in, kpt, xval, nkpts_tot )
+      CALL get_points(nkpts_in, nkpts_max, kpt_in, xval_in,  &
+                      kptname_in, kpt, xval, nkpts_tot )
  
       ALLOCATE( eig_int( dimwann, nkpts_tot ), STAT=ierr )
           IF( ierr /=0 ) CALL errore('bands','allocating eig_int', ABS(ierr) )
@@ -207,7 +208,7 @@
            !
            ! Diagonalize the hamiltonian at the present k-point
            !
-           CALL zmat_hdiag( z, eig_int(:,ik), ham(:,:), dimwann)
+           CALL mat_hdiag( z, eig_int(:,ik), ham(:,:), dimwann)
       ENDDO 
 
 

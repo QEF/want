@@ -1,6 +1,6 @@
 
-     Program POST-PROC v.2.1.3  starts ...
-     Today is  1Aug2005 at 13:45: 3 
+     Program POST-PROC v.2.1.5  starts ...
+     Today is 10Oct2005 at 11:23: 8 
 
      Reading file cobalt_US.save ... 
      read complete
@@ -8,6 +8,6 @@
      Reading file cobalt_US.save ... 
      read complete
 
-     nbndx  =     9  nbnd   =     9  natomwfc =     6  npwx   =     190
+     nbndx  =    20  nbnd   =    20  natomwfc =     6  npwx   =     190
      nelec  =    9.00 nkb   =    18  ngl    =     125
   warning: negative or imaginary core charge    -0.000012    0.000000

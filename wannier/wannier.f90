@@ -13,7 +13,7 @@
 !=----------------------------------------------------------------------------------=
 
       USE kinds
-      USE constants, ONLY: CZERO, CONE, CI, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
+      USE constants, ONLY: CZERO, CONE, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
@@ -25,7 +25,7 @@
       USE startup_module, ONLY : startup
       USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
-      USE util_module, ONLY: zmat_mul, zmat_unitary, mat_svd
+      USE util_module, ONLY: zmat_unitary, mat_mul, mat_svd, mat_hdiag
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
@@ -44,41 +44,30 @@
 !
       IMPLICIT NONE
 
-      ! external functions
-      LOGICAL   :: lselect  ! external function non defined
-
       INTEGER :: ik 
       INTEGER :: i, j
       INTEGER :: m, n
       INTEGER :: info, ierr
-      INTEGER :: nrguide, ncgfix, ncount, iter
-      LOGICAL :: lcg
+      INTEGER :: ncgfix, ncount, iter
+      LOGICAL :: lcg, do_conjgrad
       REAL(dbl) :: Omega_old, Omega_var, Omega0, OmegaA
-      REAL(dbl) :: gcnorm1, gcnorm0, doda0
-      REAL(dbl) :: eqb, eqa, alpha, alphamin
+      REAL(dbl) :: gcnorm1, gcnorm0, gcnorm_aux
+      REAL(dbl) :: aux1, aux2, eqb, eqa, alpha, alphamin
 
       REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  domg(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  dq(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE ::  dq0(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  cdU(:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  cmtmp(:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  domg(:,:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  cdqkeep(:,:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  cdq(:,:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  cz(:,:) 
-
-      COMPLEX(dbl), ALLOCATABLE :: cwschur1(:) !  cwschur1(dimwann)
-      COMPLEX(dbl), ALLOCATABLE :: cwschur2(:) !  cwschur2(10*dimwann)
-      REAL(dbl),    ALLOCATABLE :: cwschur3(:) !  cwschur3(dimwann)
-      LOGICAL,      ALLOCATABLE :: cwschur4(:) !  cwschur4(dimwann)
-
-      COMPLEX(dbl) :: cfact
+      !
       CHARACTER( LEN=nstrx )  :: filename
-
-!
-! ... end of declarations
-!
+      !
+      ! ... end of declarations
+      !
 
 !
 !--------------------------------------------
@@ -121,34 +110,24 @@
       ! ... allocate local variables
       !
       ALLOCATE( csheet(dimwann,nb,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet ', ABS(ierr))
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet', ABS(ierr))
       ALLOCATE( sheet(dimwann,nb,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet ', ABS(ierr))
-
-      ALLOCATE( cwschur1(dimwann), cwschur2( 10*dimwann ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cwschur1 cwschur2 ', ABS(ierr))
-      ALLOCATE( cz(dimwann, dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cz ', ABS(ierr))
-      ALLOCATE( cwschur3(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cwschur3 ', ABS(ierr))
-      ALLOCATE( cwschur4(dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cwschur4 ', ABS(ierr))
-
-      ALLOCATE( cmtmp(dimwann,dimwann), STAT=ierr )
-         IF (ierr/=0) CALL errore('wannier','allocating CMTMP',ABS(ierr))
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet', ABS(ierr))
 
       ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0 ', ABS(ierr) )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0', ABS(ierr) )
       ALLOCATE( Mkb0(dimwann,dimwann,nb,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0 ', ABS(ierr) )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0', ABS(ierr) )
       ALLOCATE( domg(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg ', ABS(ierr) )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg', ABS(ierr) )
       ALLOCATE( domg_aux(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg_aux ', ABS(ierr) )
-      ALLOCATE( cdqkeep(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdqkeep ', ABS(ierr) )
-      ALLOCATE( cdq(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier ', ' allocating cdq ', ABS(ierr) )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg_aux', ABS(ierr) )
+      ALLOCATE( dq0(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating dq0', ABS(ierr) )
+      ALLOCATE( dq(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating dq', ABS(ierr) )
+      ALLOCATE( cdU(dimwann,dimwann,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdU', ABS(ierr) )
 
  
 
@@ -166,14 +145,8 @@
 
       CALL localization_init( localization_init_mode )
 
-      ! 
-      ! ... Find the guiding centers, and set up the 'best' Riemannian sheets for 
-      !     the complex logarithms. This is used to move all wannier centers in the
-      !     R = 0 cell.
-      !
       sheet(:,:,:)   = ZERO
       csheet(:,:,:)  = CONE
-      !CALL phases( dimwann, nkpts, Mkb, csheet, sheet)
 
 
       !
@@ -193,11 +166,11 @@
       !
       lcg = .TRUE.
       IF ( ncg < 1 ) lcg = .FALSE.
-      IF ( ncg == 0 ) ncg = ncg + 1
+      IF ( ncg == 0 ) ncg = 1
       ncgfix = ncg
 
-      nrguide = 10
-      cdqkeep(:,:,:) = CZERO
+      aux1 = ONE / ( FOUR * wbtot )
+      dq0(:,:,:) = CZERO
 
 
 
@@ -217,19 +190,22 @@
       iteration_loop : &
       DO iter = 1, maxiter0_wan + maxiter1_wan
            ncount = iter
+
            !
            ! Store cu and Mkb
            !
-           cu0 = cu
-           Mkb0 = Mkb
+           cu0(:,:,:)    = cu(:,:,:)
+           Mkb0(:,:,:,:) = Mkb(:,:,:,:)
 
            !
            ! settings
            !
            IF ( ncount <= maxiter0_wan ) THEN
+                do_conjgrad = .FALSE.
                 ncg   = 1
                 alpha = alpha0_wan
            ELSE
+                do_conjgrad = lcg
                 ncg   = ncgfix
                 alpha = alpha1_wan
            ENDIF
@@ -238,11 +214,6 @@
                 IF ( a_condmin < EPS_m4 ) do_condmin = .FALSE.
            ENDIF
 
-           !!
-           !! this is used to move wannier centers to the R = 0 cell.
-           !!
-           !IF ( MOD( ncount, 10 ) == 0 .AND. ( ncount >= nrguide ) )   &
-           !    CALL phases( dimwann, nkpts, Mkb, csheet, sheet )
 
            !
            ! compute the derivative of the functional
@@ -259,78 +230,66 @@
 
 
            !
-           ! set cdq
+           ! compute the norm of domg
            !
            gcnorm1 = ZERO
            DO ik = 1, nkpts
                DO n = 1, dimwann
-               DO m= 1, dimwann
-                   gcnorm1 = gcnorm1 + REAL( domg(m,n,ik) * CONJG( domg(m,n,ik) ) )
+               DO m = 1, dimwann
+                   gcnorm1 = gcnorm1 + REAL( domg(m,n,ik)*CONJG( domg(m,n,ik) ) )
                ENDDO
                ENDDO
            ENDDO
+
+
            !
-           cdq(:,:,:) = domg(:,:,:)
-           IF ( MOD( (ncount-1), ncg ) /= 0 ) &
-               cdq(:,:,:) = cdq(:,:,:) + gcnorm1/gcnorm0 * cdqkeep(:,:,:)
+           ! set dq
+           !
+           dq(:,:,:) = domg(:,:,:) 
+           IF ( MOD( (ncount-1), ncg ) /= 0 )  THEN 
+                dq(:,:,:) = dq(:,:,:) + gcnorm1/gcnorm0 * dq0(:,:,:)
+           ENDIF
            !
            gcnorm0 = gcnorm1
-           cdqkeep = cdq
+           dq0(:,:,:) = dq(:,:,:)
 
-           doda0 = ZERO
+           
+           !
+           ! auxiliary norm for cg
+           !
+           gcnorm_aux = ZERO
            DO ik = 1, nkpts
-               DO m = 1, dimwann
+               !
                DO n = 1, dimwann
-                   doda0 = doda0 + REAL( cdq(m,n,ik) * domg(n,m,ik) )
+               DO m = 1, dimwann
+                   gcnorm_aux = gcnorm_aux - REAL( dq(m,n,ik) * CONJG( domg(m,n,ik)) )
                ENDDO
                ENDDO
+               !
            ENDDO
-           doda0 = doda0 / ( FOUR * wbtot )
+           !
+           gcnorm_aux = gcnorm_aux * aux1
+
            !
            ! The cg step is calculated
-           cdq = alpha / ( FOUR * wbtot ) * cdq
+           !
+           aux2 = alpha * aux1
+           dq(:,:,:) = aux2 * dq(:,:,:)
 
 
            !
-           DO ik = 1, nkpts
-
-                CALL ZGEES( 'V', 'N', lselect, dimwann, cdq(1,1,ik), dimwann, ierr,   &
-                      cwschur1, cz, dimwann, cwschur2, SIZE( cwschur2 ), cwschur3,    &
-                      cwschur4, info )
-
-                IF ( info /= 0 ) CALL errore ('wannier', 'wrong schur procedure', info)
-
-                cdq( :, :, ik ) = CZERO
-                DO m = 1, dimwann
-                     cfact = EXP( cwschur1(m) )
-                     DO j = 1, dimwann
-                     DO i = 1, dimwann
-                         cdq(i,j,ik) = cdq(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
-                     ENDDO
-                     ENDDO
-                ENDDO
-
-           ENDDO
+           ! compute the change in the unitary matrix dU = e^(i * dq)
+           ! and update U
+           !
+           CALL unitary_update( dimwann, nkpts, dq, cu, cdU ) 
 
 
            !
-           ! The orbitals are rotated 
+           ! update the overlap Mkb, according to the new dCu
            !
-           DO ik = 1, nkpts
-                CALL zmat_mul( cmtmp(:,:), cu(:,:,ik), 'N', cdq(:,:,ik), 'N', &
-                               dimwann, dimwann, dimwann )
-                cu(:,:,ik) = cmtmp(:,:)
+           CALL overlap_update(dimwann, nkpts, cdU, Mkb)
 
-#ifdef __CHECK_UNITARY
-                IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
-                                          SIDE='both', TOLL=unitary_thr )  )  &
-                   WRITE (stdout,"(2x,'WARNING: U matrix NOT unitary (II) at ikpt = ',i4)")ik
-#endif
-           ENDDO
-           !
-           ! And the M_ij are updated
-           !
-           CALL overlap_update(dimwann, nkpts, cdq, Mkb)
+
            !
            ! The functional is recalculated
            !
@@ -342,12 +301,11 @@
 
 
            !
-           ! If LCG is false, or still in the first maxiter0_wan iterations, 
-           ! it skips the optimal alpha paraphernalia 
+           ! perform Conjugate-Gradinent minimization if the case
            ! 
-           IF ( lcg .AND. ( ncount > maxiter0_wan ) ) THEN
+           IF ( do_conjgrad ) THEN
                !
-               ! store cu and Mkb
+               ! recover cu and Mkb
                !
                cu = cu0
                Mkb = Mkb0
@@ -355,57 +313,31 @@
                !
                ! Take now optimal parabolic step
                !
-               eqb = doda0
+               eqb = gcnorm_aux
                eqa = ( OmegaA - Omega0 - eqb * alpha ) / alpha
    
                alphamin = alpha
-               IF ( ABS(eqa) > EPS_m8 ) alphamin = -eqb / TWO / eqa
-               IF ( alphamin < ZERO ) alphamin = alpha * TWO
+               IF ( ABS(eqa) > EPS_m8 ) alphamin = -eqb / ( TWO * eqa )
+               IF ( alphamin < ZERO )   alphamin = TWO * alpha 
                IF ( alphamin > THREE * alpha ) alphamin = THREE * alpha
                !
-               cdq(:,:,:) = alphamin/( FOUR * wbtot ) * cdqkeep(:,:,:)
+               aux2 = alphamin * aux1
+               dq(:,:,:) = aux2 * dq0(:,:,:)
    
-   
-               !
-               ! schur factorization
-               !
-               DO ik = 1, nkpts
-                   CALL ZGEES( 'V', 'N', lselect, dimwann, cdq(1,1,ik), dimwann, ierr,   &
-                        cwschur1, cz(1,1), dimwann, cwschur2, SIZE( cwschur2 ), cwschur3, &
-                        cwschur4, info )
-   
-                   IF (info/= 0) CALL errore('wannier', 'wrong Schur procedure (II)', info)
-   
-                   cdq(:,:,ik) = CZERO
-                   DO m = 1, dimwann
-                       cfact =  EXP( cwschur1(m) ) 
-                       DO j = 1, dimwann
-                       DO i = 1, dimwann
-                           cdq(i,j,ik) = cdq(i,j,ik) + cz(i,m) * cfact * CONJG( cz(j,m) )
-                       ENDDO
-                       ENDDO
-                   ENDDO
-               ENDDO
-   
-   
-               !
-               ! The orbitals are rotated 
-               !
-               DO ik = 1, nkpts
-                   CALL zmat_mul( cmtmp(:,:), cu(:,:,ik), 'N', cdq(:,:,ik), 'N', &
-                                  dimwann, dimwann, dimwann )
-                   cu(:,:,ik) = cmtmp(:,:)
 
-#ifdef __CHECK_UNITARY
-                   IF ( .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
-                                            SIDE='both', TOLL=unitary_thr )  )  &
-                   WRITE(stdout,"(2x,'WARNING: U matrix NOT unitary (III) at ikpt = ',i4)")ik
-#endif
-               ENDDO
                !
-               ! M_ij are updated
+               ! compute the change in the unitary matrix dU = e^(i * dq)
+               ! and update U
                !
-               CALL overlap_update( dimwann, nkpts, cdq, Mkb)
+               CALL unitary_update( dimwann, nkpts, dq, cu, cdU ) 
+
+
+               !
+               ! update the overlap Mkb, according to the new dCu
+               !
+               CALL overlap_update( dimwann, nkpts, cdU, Mkb)
+
+
                !
                ! The functional is recalculated
                !  
@@ -456,6 +388,7 @@
            ! convergence condition
            !
            IF ( ABS( Omega_var ) < wannier_thr ) EXIT iteration_loop
+
       ENDDO iteration_loop
       !
       ! ... End of iter loop
@@ -550,32 +483,22 @@
       !
       ! ... Deallocate local arrays
       !
-      DEALLOCATE( cwschur1, cwschur2, STAT=ierr )
-           IF( ierr /=0 )&
-           CALL errore(' wannier ', ' deallocating cwschur1 cwschur1 ', ABS(ierr) )
-      DEALLOCATE( cz, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cz ', ABS(ierr) )
-      DEALLOCATE( cwschur3, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur3 ', ABS(ierr) )
-      DEALLOCATE( cwschur4, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cwschur4 ', ABS(ierr) )
-
       DEALLOCATE( csheet, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating csheet ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating csheet', ABS(ierr) )
       DEALLOCATE( sheet, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating sheet ', ABS(ierr) )
-      DEALLOCATE( cmtmp, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cmtmp ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating sheet', ABS(ierr) )
       DEALLOCATE( cu0, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cu0 ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating cu0', ABS(ierr) )
       DEALLOCATE( Mkb0, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating Mkb0 ', ABS(ierr) )
-      DEALLOCATE( domg, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating domg ', ABS(ierr) )
-      DEALLOCATE( cdqkeep, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdqkeep ', ABS(ierr) )
-      DEALLOCATE( cdq, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(' wannier ', ' deallocating cdq ', ABS(ierr) )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb0', ABS(ierr) )
+      DEALLOCATE( domg, domg_aux, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating domg', ABS(ierr) )
+      DEALLOCATE( dq0, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq0', ABS(ierr) )
+      DEALLOCATE( dq, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq', ABS(ierr) )
+      DEALLOCATE( cdu, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating cdu', ABS(ierr) )
 
       CALL cleanup
 

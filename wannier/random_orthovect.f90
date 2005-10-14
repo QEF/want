@@ -17,7 +17,7 @@
    !
    USE kinds, ONLY : dbl
    USE constants, ONLY : ZERO, ONE, CZERO, EPS_m6
-   USE util_module, ONLY : zmat_mul
+   USE util_module, ONLY : mat_mul
    IMPLICIT NONE
 
    !
@@ -65,7 +65,7 @@
            ! check if the i-1 vectors and the new one
            ! are linearly indipendent
            !
-           CALL zmat_mul( aux, vect(1:dim, 1:i), 'C', vect(1:dim,i:i), 'N', i, 1, dim )
+           CALL mat_mul( aux, vect(1:dim, 1:i), 'C', vect(1:dim,i:i), 'N', i, 1, dim )
            !
            ! doing this way, aux(1:i-1) contains the projections on the i-1 ON already
            ! found vectors, while aux(i,i) is the square norm of the new vector

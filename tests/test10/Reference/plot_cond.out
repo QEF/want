@@ -7,8 +7,8 @@
   ======================================================================
 
 
-  Program <plot>  v. 1.1.1  starts ...
-  Date  8Sep2005 at 18:34:21 
+  Program <plot>  v. 2.0.0  starts ...
+  Date 14Oct2005 at 12:59:33 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -98,8 +98,8 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (     1.152731     0.002598     0.000003 )
-    Wf(   2 ) = (     1.152750     0.000000    -0.000004 )
+    Wf(   1 ) = (     1.152731     0.002616    -0.000003 )
+    Wf(   2 ) = (     1.152750     0.000000     0.000004 )
         in crystal coord
     Wf(   1 ) = (     0.055657     0.000112     0.000000 )
     Wf(   2 ) = (     0.055658     0.000000     0.000000 )
@@ -127,12 +127,25 @@
      C    tau(   8 ) = (  -2.8723852   0.0000000   0.0000000 )
 
 
-  writing WF(  1) plot on file: ./COND//chain8_WanT_WFM001.gau
+    Wfc Fourier Transf. for k-point   1
+                              Total time spent up to now :     5.81 secs
+
+    Wfc Fourier Transf. for k-point   2
+                              Total time spent up to now :    10.46 secs
+
+    Wfc Fourier Transf. for k-point   3
+                              Total time spent up to now :    15.92 secs
+
+    Wfc Fourier Transf. for k-point   4
+                              Total time spent up to now :    21.26 secs
+
+
+  writing WF(  1) plot on file: ./COND//chain8_WanT_WFM001.cube
                   atomic positions on file: ./COND//chain8_WanT_WFM001.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './COND//chain8_WanT_WFM001.gau'
+Input file:      './COND//chain8_WanT_WFM001.cube'
 Output file (plot file):  './COND//chain8_WanT_WFM001.plt'
 Coordinate file (in CHARMM 'crd' format): './COND//chain8_WanT_WFM001.crd'
 
@@ -143,16 +156,16 @@ Min value: 0.000000
 Max value: 0.007657
 Job done ...
 **********************************************************
-  deleting tmp files: ./COND//chain8_WanT_WFM001.gau
+  deleting tmp files: ./COND//chain8_WanT_WFM001.cube
                       ./COND//chain8_WanT_WFM001.crd
 
 
-  writing WF(  2) plot on file: ./COND//chain8_WanT_WFM002.gau
+  writing WF(  2) plot on file: ./COND//chain8_WanT_WFM002.cube
                   atomic positions on file: ./COND//chain8_WanT_WFM002.xyz
 **********************************************************
-gCube2Plt conversion  ( .gau --> .plt )                 
+gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './COND//chain8_WanT_WFM002.gau'
+Input file:      './COND//chain8_WanT_WFM002.cube'
 Output file (plot file):  './COND//chain8_WanT_WFM002.plt'
 Coordinate file (in CHARMM 'crd' format): './COND//chain8_WanT_WFM002.crd'
 
@@ -163,7 +176,7 @@ Min value: 0.000000
 Max value: 0.002260
 Job done ...
 **********************************************************
-  deleting tmp files: ./COND//chain8_WanT_WFM002.gau
+  deleting tmp files: ./COND//chain8_WanT_WFM002.cube
                       ./COND//chain8_WanT_WFM002.crd
 
 
@@ -175,10 +188,10 @@ Job done ...
 
                      plot :    32.00s CPU 
  
-                want_init :     0.26s CPU
-          ggrids_read_ext :     0.68s CPU
-           wfc_data_kread :     1.91s CPU (       4 calls,   0.478 s avg)
-                   cfft3d :     2.93s CPU (       8 calls,   0.367 s avg)
-                 gcubeplt :     4.32s CPU (       2 calls,   2.161 s avg)
+                want_init :     0.05s CPU
+          ggrids_read_ext :     0.38s CPU
+           wfc_data_kread :     0.48s CPU (       4 calls,   0.119 s avg)
+                   cfft3d :     2.35s CPU (       8 calls,   0.294 s avg)
+                 gcubeplt :     4.94s CPU (       2 calls,   2.468 s avg)
 
 

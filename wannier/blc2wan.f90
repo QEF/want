@@ -27,13 +27,12 @@
    USE want_init_module,     ONLY : want_init
    USE summary_module,       ONLY : summary
    USE version_module,       ONLY : version_number
-   USE util_module,          ONLY : zmat_hdiag
    USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx, windows_read
    USE subspace_module,      ONLY : eamp, subspace_read
    USE localization_module,  ONLY : cu, localization_read
    USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, indxws, vws, &
                                     hamiltonian_init
-   USE util_module,          ONLY : zmat_mul
+   USE util_module,          ONLY : mat_mul
    IMPLICIT NONE 
 
    !
@@ -246,8 +245,8 @@
       !
       DO ik=1,nkpts
           cutot(:,:,ik) = CZERO
-          CALL zmat_mul( cutot(:,:,ik), eamp(:,:,ik), 'N', cu(:,:,ik), 'N' ,  &
-                         dimwin(ik), dimwann, dimwann)
+          CALL mat_mul( cutot(:,:,ik), eamp(:,:,ik), 'N', cu(:,:,ik), 'N' ,  &
+                        dimwin(ik), dimwann, dimwann)
       ENDDO
 
   
@@ -302,10 +301,10 @@
                !
                ! converting data to oprk(ik) = cutot^dag(ik) * opr_in(ik) * cutot(ik)
                !
-               CALL zmat_mul( work, opr_in(imin(ik):imax(ik),imin(ik):imax(ik),ik), 'N', &
-                              cutot(:,:,ik), 'N', dimwin(ik), dimwann, dimwin(ik) )
-               CALL zmat_mul( oprk(:,:,ik), cutot(:,:,ik), 'C', &
-                              work(:,:), 'N', dimwann, dimwann, dimwin(ik) )
+               CALL mat_mul( work, opr_in(imin(ik):imax(ik),imin(ik):imax(ik),ik), 'N', &
+                             cutot(:,:,ik), 'N', dimwin(ik), dimwann, dimwin(ik) )
+               CALL mat_mul( oprk(:,:,ik), cutot(:,:,ik), 'C', &
+                             work(:,:), 'N', dimwann, dimwann, dimwin(ik) )
 
                !
                ! eventually this writing call may be eliminated

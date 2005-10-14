@@ -15,10 +15,8 @@
 * plot.x: USPP features not fully implemented.
 
 * disentangle + wannier: 
-     - overlap updating should be better implemented
-       (waste a little bit of memory but twice as fast)
      - wfc stored in a k-indip array (waste small mem but
-       may increase performance)
+       increase performance)
      - scalar products in projections and overlaps by BLAS
                
 * kpts in transport calculations

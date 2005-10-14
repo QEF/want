@@ -20,18 +20,24 @@
 ! routines in this module:
 ! SUBROUTINE  zmat_pack( zp, z, n)
 ! SUBROUTINE  zmat_unpack( z, zp, n)
-! SUBROUTINE  zmat_svd( m, n, a, s, u, vt)
-! SUBROUTINE  dmat_svd( m, n, a, s, u, vt)
-! SUBROUTINE  zmat_sv ( m, n, a, s, u, vt)
-! SUBROUTINE  dmat_sv ( m, n, a, s, u, vt)
-! SUBROUTINE  zmat_mul( c, a, opa, b, opb, m, n, k)
-! SUBROUTINE  zmat_hdiag( z, w, a, n)
+! SUBROUTINE   mat_svd( m, n, a, s, u, vt)
+! SUBROUTINE   mat_sv ( m, n, a, s, u, vt)
+! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
+! SUBROUTINE   mat_hdiag( z, w, a, n)
+! SUBROUTINE  zmat_diag( z, w, a, n, side)
 ! LOGICAL FUNCTION  zmat_unitary( m, n, z [,side] [,toll])
-! INTEGER FUNCTION  zmat_rank( m, n, a, toll)
+! INTEGER FUNCTION   mat_rank( m, n, a, toll)
 ! 
 ! </INFO>
 !
 
+!
+! matrix multiplication
+INTERFACE mat_mul
+   MODULE PROCEDURE zmat_mul
+   MODULE PROCEDURE dmat_mul
+END INTERFACE
+!
 ! singular value decomposition
 INTERFACE mat_svd
    MODULE PROCEDURE zmat_svd
@@ -51,6 +57,12 @@ INTERFACE mat_rank
    MODULE PROCEDURE zmat_rank
    MODULE PROCEDURE dmat_rank
 END INTERFACE
+!
+! matrix diagonalization
+INTERFACE mat_hdiag
+   MODULE PROCEDURE zmat_hdiag
+   MODULE PROCEDURE dmat_hdiag
+END INTERFACE
 
 
 
@@ -58,8 +70,9 @@ PUBLIC :: zmat_pack
 PUBLIC :: zmat_unpack
 PUBLIC ::  mat_svd
 PUBLIC ::  mat_sv
-PUBLIC :: zmat_mul
-PUBLIC :: zmat_hdiag
+PUBLIC ::  mat_mul
+PUBLIC ::  mat_hdiag
+PUBLIC :: zmat_diag
 PUBLIC :: zmat_unitary
 PUBLIC ::  mat_rank
 
@@ -401,7 +414,7 @@ END SUBROUTINE zmat_sv_1
    !
    IF ( m <= 0 .OR. n<=0 .OR. k<=0) CALL errore('zmat_mul','Invalid DIM',1)
    IF( opb /= 'N' .AND. opb /= 'C' ) &
-     CALL errore( ' zmat_mul ', ' argument value not allowed ', 5 )
+     CALL errore('zmat_mul','argument value not allowed', 5 )
 
    IF( k < 20 ) THEN
        IF( ( opb == 'N' ) .AND. ( opa == 'N' ) ) THEN
@@ -466,13 +479,100 @@ END SUBROUTINE zmat_sv_1
        CALL ZGEMM( opa, opb, m, n, k, CONE, a, SIZE(a,1), &
                    b, SIZE(b,1), CZERO, c, SIZE(c,1) )
    ENDIF
-   RETURN
-END SUBROUTINE
+END SUBROUTINE zmat_mul
+
+
+!**********************************************************
+   SUBROUTINE dmat_mul( c, a, opa, b, opb, m, n, k )
+   !**********************************************************
+   IMPLICIT NONE
+   REAL(dbl), INTENT(IN)  :: a(:,:)
+   REAL(dbl), INTENT(IN)  :: b(:,:)
+   REAL(dbl), INTENT(OUT) :: c(:,:)
+   CHARACTER, INTENT(IN) :: opa, opb
+   INTEGER, INTENT(IN) :: m, n, k
+   INTEGER :: i, j, l
+   !
+   ! According to BLAS convention:
+   ! C = opa(A) * opb(B)      op* = 'N' normal, 'T' transpose 
+   !                          C is m*n,   opa(A) is m*k, opb(B) = k*n
+   !
+   IF ( m <= 0 .OR. n<=0 .OR. k<=0) CALL errore('dmat_mul','Invalid DIM',1)
+   IF( opb /= 'N' .AND. opb /= 'T' ) &
+     CALL errore('dmat_mul','argument value not allowed ', 5 )
+
+   IF( k < 20 ) THEN
+       IF( ( opb == 'N' ) .AND. ( opa == 'N' ) ) THEN
+           !
+           IF ( m > SIZE(c,1) .OR. m > SIZE(a,1) ) CALL  errore('dmat_mul','Invalid C,A',m)
+           IF ( n > SIZE(c,2) .OR. n > SIZE(b,2) ) CALL  errore('dmat_mul','Invalid C,B',n)
+           IF ( k > SIZE(a,2) .OR. k > SIZE(b,1) ) CALL  errore('dmat_mul','Invalid A,B',k)
+           !
+           DO j = 1, n
+           DO i = 1, m
+               c(i,j) = ZERO
+               DO l = 1, k
+                   c(i,j) = c(i,j) + a(i,l) * b(l,j)
+               ENDDO
+           ENDDO
+           ENDDO
+       ELSE IF( ( opa == 'N' ) .AND. ( opb == 'T' ) ) THEN
+           !
+           IF ( m > SIZE(c,1) .OR. m > SIZE(a,1) ) CALL  errore('dmat_mul','Invalid C,A',m)
+           IF ( n > SIZE(c,2) .OR. n > SIZE(b,1) ) CALL  errore('dmat_mul','Invalid C,B',n)
+           IF ( k > SIZE(a,2) .OR. k > SIZE(b,2) ) CALL  errore('dmat_mul','Invalid A,B',k)
+           !
+           DO j = 1, n
+           DO i = 1, m
+               c(i,j) = ZERO
+               DO l = 1, k
+                   c(i,j) = c(i,j) + a(i,l) * b(j,l)
+               ENDDO
+           ENDDO
+           ENDDO
+       ELSE IF( ( opa == 'T' ) .AND. ( opb == 'N' ) ) THEN
+           !
+           IF ( m > SIZE(c,1) .OR. m > SIZE(a,2) ) CALL  errore('dmat_mul','Invalid C,A',m)
+           IF ( n > SIZE(c,2) .OR. n > SIZE(b,2) ) CALL  errore('dmat_mul','Invalid C,B',n)
+           IF ( k > SIZE(a,1) .OR. k > SIZE(b,1) ) CALL  errore('dmat_mul','Invalid A,B',k)
+           !
+           DO j = 1, n
+           DO i = 1, m
+               c(i,j) = ZERO
+               DO l = 1, k
+                   c(i,j) = c(i,j) + a(l,i) * b(l,j) 
+               ENDDO
+           ENDDO
+           ENDDO
+       ELSE IF( ( opb == 'T' ) .AND. ( opa == 'T' ) ) THEN
+           !
+           IF ( m > SIZE(c,1) .OR. m > SIZE(a,2) ) CALL  errore('dmat_mul','Invalid C,A',m)
+           IF ( n > SIZE(c,2) .OR. n > SIZE(b,1) ) CALL  errore('dmat_mul','Invalid C,B',n)
+           IF ( k > SIZE(a,1) .OR. k > SIZE(b,2) ) CALL  errore('dmat_mul','Invalid A,B',k)
+           !
+           DO j = 1, n
+           DO i = 1, m
+               c(i,j) = ZERO
+               DO l = 1, k
+                   c(i,j) = c(i,j) + a(l,i) * b(j,l) 
+               ENDDO
+           ENDDO
+           ENDDO
+       ENDIF
+   ELSE
+
+       CALL DGEMM( opa, opb, m, n, k, ONE, a, SIZE(a,1), &
+                   b, SIZE(b,1), ZERO, c, SIZE(c,1) )
+   ENDIF
+END SUBROUTINE dmat_mul
 
 
 !**********************************************************
    SUBROUTINE zmat_hdiag( z, w, a, n )
    !**********************************************************
+   !
+   ! utility to diagonalize complex hermitean matrices
+   !
    IMPLICIT NONE
    COMPLEX(dbl), INTENT(IN)  :: a(:,:)
    COMPLEX(dbl), INTENT(OUT) :: z(:,:)
@@ -522,6 +622,127 @@ END SUBROUTINE
 
    RETURN
 END SUBROUTINE zmat_hdiag
+
+
+!**********************************************************
+   SUBROUTINE dmat_hdiag( z, w, a, n )
+   !**********************************************************
+   !
+   ! utility to diagonalize real symmetric matrices
+   !
+   IMPLICIT NONE
+   REAL(dbl),    INTENT(IN)  :: a(:,:)
+   REAL(dbl),    INTENT(OUT) :: z(:,:)
+   REAL(dbl),    INTENT(OUT) :: w(:)
+   INTEGER,      INTENT(in)  :: n
+
+   INTEGER :: i, j, ierr, info
+   REAL(dbl), ALLOCATABLE :: ap(:)
+   REAL(dbl), ALLOCATABLE :: work(:)
+   REAL(dbl), ALLOCATABLE :: rwork(:)
+   INTEGER,   ALLOCATABLE :: ifail(:)
+   INTEGER,   ALLOCATABLE :: iwork(:)
+
+   ! get the dimension of the problem
+   IF ( n <= 0 ) CALL errore('dmat_hdiag','Invalid N',ABS(n)+1)
+   IF ( n > SIZE(a,1) .OR. n > SIZE(a,2) ) &
+        CALL errore('dmat_hdiag','Invalid A dimensions',ABS(n)+1)
+   IF ( n > SIZE(z,1) .OR. n > SIZE(z,2) ) &
+        CALL errore('dmat_hdiag','Invalid Z dimensions',ABS(n)+1)
+   
+   ALLOCATE( ap(n*(n+1)/2), STAT=ierr )
+      IF(ierr/=0) CALL errore('dmat_hdiag','allocating ap',ABS(ierr))
+   ALLOCATE( work(8*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('dmat_hdiag','allocating work',ABS(ierr))
+   ALLOCATE( ifail(n), STAT=ierr )
+      IF(ierr/=0) CALL errore('dmat_hdiag','allocating ifail',ABS(ierr))
+   ALLOCATE( iwork(5*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('dmat_hdiag','allocating iwork',ABS(ierr))
+
+   DO j = 1, n
+   DO i = 1, j
+      ap(i + ( (j-1)*j)/2 ) = a(i,j)
+   ENDDO
+   ENDDO
+
+   CALL DSPEVX( 'v', 'a', 'u', n, ap(1), ZERO, ZERO, 0, 0, -ONE, i, w(1), &
+                 z(1,1), SIZE(z,1), work(1), iwork(1), ifail(1), info )
+
+   IF ( info < 0 ) CALL errore('dmat_hdiag', 'zhpevx: info illegal value', -info )
+   IF ( info > 0 ) &
+        CALL errore('dmat_hdiag', 'zhpevx: eigenvectors not converged', info )
+    
+   DEALLOCATE( ap, work, iwork, ifail, STAT=ierr)
+      IF(ierr/=0) CALL errore('dmat_hdiag','deallocating ap...ifail',ABS(ierr))
+
+   RETURN
+END SUBROUTINE dmat_hdiag
+
+
+!**********************************************************
+   SUBROUTINE zmat_diag( z, w, a, n, side )
+   !**********************************************************
+   !
+   ! utility to diagonalize complex non-hermitean matrices
+   !
+   IMPLICIT NONE
+   COMPLEX(dbl),        INTENT(IN)  :: a(:,:)
+   COMPLEX(dbl),        INTENT(OUT) :: z(:,:)
+   COMPLEX(dbl),        INTENT(OUT) :: w(:)
+   INTEGER,             INTENT(in)  :: n
+   CHARACTER,           INTENT(in)  :: side
+
+   INTEGER   :: i, j, ierr, info, lwork
+   CHARACTER :: jobvl, jobvr
+   COMPLEX(dbl), ALLOCATABLE :: work(:), vl(:,:), vr(:,:)
+   REAL(dbl),    ALLOCATABLE :: rwork(:)
+
+   ! get the dimension of the problem
+   IF ( n <= 0 ) CALL errore('zmat_diag','Invalid N',ABS(n)+1)
+   IF ( n > SIZE(a,1) .OR. n > SIZE(a,2) ) &
+        CALL errore('zmat_diag','Invalid A dimensions',ABS(n)+1)
+   IF ( n > SIZE(z,1) .OR. n > SIZE(z,2) ) &
+        CALL errore('zmat_diag','Invalid Z dimensions',ABS(n)+1)
+
+   SELECT CASE ( side )
+   CASE ( 'L', 'l' )
+       jobvl = 'V'
+       jobvr = 'N'
+   CASE ( 'R', 'r' )
+       jobvl = 'N'
+       jobvr = 'V'
+   CASE DEFAULT   
+       CALL errore('zmat_diag','Invalid side',3)
+   END SELECT
+   
+   lwork = 2 * n
+   ALLOCATE( work(lwork), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_diag','allocating work',ABS(ierr))
+   ALLOCATE( rwork(2*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_diag','allocating rwork',ABS(ierr))
+   ALLOCATE( vl(n,n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_diag','allocating vl',ABS(ierr))
+   ALLOCATE( vr(n,n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_diag','allocating vr',ABS(ierr))
+
+   CALL ZGEEV( jobvl, jobvr, n, a, SIZE(a,1), w, vl, n, vr, n, work, &
+               lwork, rwork, info )
+
+   IF ( info < 0 ) CALL errore('zmat_diag', 'zgeev: info illegal value', -info )
+   IF ( info > 0 ) CALL errore('zmat_diag', 'zgeev: eigenvectors not converged', info )
+
+   SELECT CASE ( side )
+   CASE ( 'L', 'l' )
+       z(1:n,1:n) = vl
+   CASE ( 'R', 'r' )
+       z(1:n,1:n) = vr
+   END SELECT
+    
+   DEALLOCATE( work, rwork, vl, vr, STAT=ierr)
+      IF(ierr/=0) CALL errore('zmat_diag','deallocating work--vr',ABS(ierr))
+
+   RETURN
+END SUBROUTINE zmat_diag
 
 
 !**********************************************************
@@ -621,10 +842,10 @@ END FUNCTION zmat_unitary
    FUNCTION  zmat_rank( m, n, a, toll )
    !**********************************************************
    IMPLICIT NONE
-   INTEGER                            :: zmat_rank
-   INTEGER,                INTENT(in) :: m,n
-   COMPLEX(dbl),           INTENT(in) :: a(:,:)
-   REAL(dbl),              INTENT(in) :: toll
+   INTEGER          :: zmat_rank
+   INTEGER          :: m,n
+   COMPLEX(dbl)     :: a(:,:)
+   REAL(dbl)        :: toll
    !
    INTEGER :: i,ierr 
    REAL(dbl),    ALLOCATABLE :: s(:)
@@ -662,10 +883,10 @@ END FUNCTION zmat_rank
    FUNCTION  dmat_rank( m, n, a, toll )
    !**********************************************************
    IMPLICIT NONE
-   INTEGER                            :: dmat_rank
-   INTEGER,                INTENT(in) :: m,n
-   REAL(dbl),              INTENT(in) :: a(:,:)
-   REAL(dbl),              INTENT(in) :: toll
+   INTEGER            :: dmat_rank
+   INTEGER            :: m,n
+   REAL(dbl)          :: a(:,:)
+   REAL(dbl)          :: toll
    !
    INTEGER :: i,ierr 
    REAL(dbl), ALLOCATABLE :: s(:)
@@ -699,6 +920,7 @@ END FUNCTION zmat_rank
    IF ( ierr /=0 ) CALL errore('dmat_rank','deallocating atmp--s',ABS(ierr))
    !
 END FUNCTION dmat_rank
+
 
 END MODULE util_module
 

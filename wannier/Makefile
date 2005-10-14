@@ -1,15 +1,15 @@
 include ../make.sys
 
 
-OBJS= domega.o domega_aux.o error.o \
-      get_points.o indexx.o komegai.o \
-      bshells.o omega.o hamiltonian_calc.o \
+OBJS= omegai.o omega.o domega.o domega_aux.o \
+      get_points.o indexx.o error.o \
+      bshells.o hamiltonian_calc.o \
       phases.o projection.o projection_frozen.o \
       wigner_seitz.o zmatrix.o fft_stick.o \
       gcube2plt.o cptimer.o date_and_tim.o \
-      ordering.o sort.o recips.o  \
-      overlap.o overlap_setmap.o \
-      overlap_extract.o overlap_update.o overlap_augment.o \
+      ordering.o sort.o recips.o unitary_update.o \
+      overlap.o overlap_setmap.o overlap_extract.o \
+      overlap_update.o overlap_augment.o \
       get_monkpack.o subspace_init.o localization_init.o \
       readpp.o read_pseudo.o read_ncpp.o readnewvan.o readvan.o \
       bachel.o simpsn.o ylmr2.o invmat.o rranf.o erf.o \

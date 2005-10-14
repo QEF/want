@@ -23,7 +23,7 @@
    USE kinds
    USE constants, ONLY : CZERO, CONE
    USE timing_module, ONLY : timing
-   USE util_module,      ONLY : zmat_mul, mat_sv
+   USE util_module,      ONLY : mat_mul, mat_sv
    IMPLICIT NONE
 
       !
@@ -64,7 +64,7 @@
 !
 
 
-         CALL zmat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
+         CALL mat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
          eh0(:,:) = -c00(:,:) -s1(:,:)
        
          g(:,:) = CZERO
@@ -82,7 +82,7 @@
 !
 !...  Construct the dual surface green's function gbar00 
 !
-         CALL zmat_mul(s1, c01, 'C', tott, 'N', nmax, nmax, nmax)
+         CALL mat_mul(s1, c01, 'C', tott, 'N', nmax, nmax, nmax)
 
          eh0(:,:) = -c00(:,:) -s1(:,:)
        
@@ -104,8 +104,8 @@
 !...  Construct the bulk green's function gnn or (if surface=.true.) the
 !     sub-surface green's function
 !
-         CALL zmat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
-         CALL zmat_mul(s2, c01, 'C', tott, 'N', nmax, nmax, nmax)
+         CALL mat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
+         CALL mat_mul(s2, c01, 'C', tott, 'N', nmax, nmax, nmax)
 
          eh0(:,:) = -c00(:,:) -s1(:,:) -s2(:,:)
        
