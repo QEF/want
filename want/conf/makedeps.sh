@@ -14,10 +14,10 @@ for DIR in iotk libs wannier transport
 do
     # set inter-directory dependencies
     case $DIR in
-        iotk )     DEPENDS="../include"                 ;;
-        libs )     DEPENDS="../include ../iotk"         ;;
-        wannier | transport )
-                   DEPENDS="../include ../iotk ../libs" ;;
+        iotk )      DEPENDS="../include"                 ;;
+        libs )      DEPENDS="../include ../iotk"         ;;
+        wannier )   DEPENDS="../include ../iotk ../libs" ;;
+        transport ) DEPENDS="../include ../iotk ../libs ../wannier " ;;
     esac
 
     # generate dependencies file

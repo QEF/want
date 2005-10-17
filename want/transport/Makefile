@@ -1,27 +1,36 @@
 #
-# Makefile for transport programs
+#===============================
+# WanT package
+#===============================
 #
-
 include ../make.sys
 
+
 OBJS= \
-conductor.o \
 green.o \
 hamiltonian_setup.o \
 read_matrix.o \
 transfer.o \
 transmittance.o
 
+
+EXTERNAL_LIBS= ../iotk/libiotk.a ../libs/libwant.a
+LOCAL_LIBS=    ../wannier/libwannier.a ./libtrans.a
+BIN_DEPS=      $(LOCAL_LIBS) $(EXTERNAL_LIBS)
+
 #
 # main targets
 #
-
 all: conductor.x 
 
-conductor.x: $(OBJS)
-	$(LD) -o conductor.x $(OBJS) ../Modules/*.o $(MODULES) $(LDFLAGS)
-	- ( cd ../bin ; ln -fs ../Transport/$@ . )
 
+libtrans.a : $(OBJS)
+	$(AR) $(ARFLAGS) $@ $?
+	$(RANLIB) $@
+
+conductor.x: conductor.o $(BIN_DEPS)
+	$(LD) -o $@ conductor.o $(LOCAL_LIBS) $(LDFLAGS)
+	- ( cd ../bin ; ln -sf ../transport/$@ . )
 
 clean:
 	rm -rf *.o *.a *core  work.pc work.pcl *.mod *.x

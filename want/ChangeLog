@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+17 Oct 2005      repository restyling done: src dirs now are libs, wannier and 
+                 transport. Makefile system changed. Tests renamed.
+                 Local copies of blas and lapack updated. (AF)
+
 14 Oct 2005      Further optimizations in wannier.f90; merging with updates in 
                  transport; test check and reference update; (AF)
 
