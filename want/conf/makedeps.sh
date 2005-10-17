@@ -10,14 +10,14 @@ TOPDIR=`pwd`
 BINDIR=$TOPDIR/conf
 
 
-for DIR in iotk Modules Libs Main Transport
+for DIR in iotk libs wannier transport
 do
     # set inter-directory dependencies
     case $DIR in
-        iotk )     DEPENDS="../include"                    ;;
-        Modules )  DEPENDS="../include ../iotk"            ;;
-        Libs | Main | Transport )
-                   DEPENDS="../include ../iotk ../Modules" ;;
+        iotk )     DEPENDS="../include"                 ;;
+        libs )     DEPENDS="../include ../iotk"         ;;
+        wannier | transport )
+                   DEPENDS="../include ../iotk ../libs" ;;
     esac
 
     # generate dependencies file
@@ -29,7 +29,7 @@ do
     fi
 
     # handle special cases
-    if test "$DIR" = "Libs"
+    if test "$DIR" = "libs"
     then
         mv make.depend make.depend.tmp
         sed 's/@fftw.c@/fftw.c/' make.depend.tmp > make.depend

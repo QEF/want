@@ -91,7 +91,7 @@ do
     # info
     #
     if [ "$ACTION" = "info" ] ; then
-        str="$(grep TEST README)"
+        str="$(grep TEST README 2> /dev/null)"
         echo "${mytest%\/}     ${str#TEST[0-9]* }"
         
     #
