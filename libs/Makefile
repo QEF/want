@@ -6,34 +6,34 @@
 include ../make.sys
 
 OBJS= \
-constants.f90 \
-date_and_tim.f90 \
-erf.f90 \
-error.f90 \
-fft_scalar.f90 \
-files.f90 \
-indexx.f90 \
-invmat.f90 \
-kind.f90 \
-mp.f90 \
-mp_global.f90 \
-parallel_include.f90 \
-parameters.f90 \
-parser_base.f90 \
-parser.f90 \
-rranf.f90 \
-shmem_include.f90 \
-simpsn.f90 \
-sort.f90 \
-sph_bes.f90 \
-sph_har.f90 \
-startup.f90 \
-timing.f90 \
-util.f90 \
-ylmr2.f90 \
-cptimer.c \  \
-fft_stick.c \ 
-fftw.c
+constants.o \
+date_and_tim.o \
+erf.o \
+error.o \
+fft_scalar.o \
+files.o \
+indexx.o \
+invmat.o \
+io_global.o \
+kind.o \
+mp.o \
+mp_global.o \
+parallel_include.o \
+parameters.o \
+parser_base.o \
+parser.o \
+rranf.o \
+shmem_include.o \
+simpsn.o \
+sort.o \
+sph_bes.o \
+sph_har.o \
+timing.o \
+util.o \
+ylmr2.o \
+cptimer.o \
+fft_stick.o \
+fftw.o
 
 
 #

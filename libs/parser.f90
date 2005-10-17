@@ -28,9 +28,11 @@
 MODULE parser_module
   !----------------------------------------------------------------------------
   !
-  USE io_module, ONLY : stdout
   USE kinds
   USE parser_base_module
+  USE io_global_module, ONLY : stdout
+  IMPLICIT NONE
+  !
   !
   CONTAINS
   !
@@ -192,7 +194,7 @@ MODULE parser_module
     !
     USE mp,        ONLY : mp_bcast
     USE mp_global, ONLY : group
-    USE io_module, ONLY : ionode, ionode_id
+    USE io_global_module, ONLY : ionode, ionode_id
     !
     IMPLICIT NONE
     !

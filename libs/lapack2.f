@@ -15429,3 +15429,2299 @@
 *     End of DTZRZF
 *
       END
+      SUBROUTINE DOPMTR( SIDE, UPLO, TRANS, M, N, AP, TAU, C, LDC, WORK,
+     $                   INFO )
+*
+*  -- LAPACK routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     September 30, 1994
+*
+*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS, UPLO
+      INTEGER            INFO, LDC, M, N
+*     ..
+*     .. Array Arguments ..
+      DOUBLE PRECISION   AP( * ), C( LDC, * ), TAU( * ), WORK( * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  DOPMTR overwrites the general real M-by-N matrix C with
+*
+*                  SIDE = 'L'     SIDE = 'R'
+*  TRANS = 'N':      Q * C          C * Q
+*  TRANS = 'T':      Q**T * C       C * Q**T
+*
+*  where Q is a real orthogonal matrix of order nq, with nq = m if
+*  SIDE = 'L' and nq = n if SIDE = 'R'. Q is defined as the product of
+*  nq-1 elementary reflectors, as returned by DSPTRD using packed
+*  storage:
+*
+*  if UPLO = 'U', Q = H(nq-1) . . . H(2) H(1);
+*
+*  if UPLO = 'L', Q = H(1) H(2) . . . H(nq-1).
+*
+*  Arguments
+*  =========
+*
+*  SIDE    (input) CHARACTER*1
+*          = 'L': apply Q or Q**T from the Left;
+*          = 'R': apply Q or Q**T from the Right.
+*
+*  UPLO    (input) CHARACTER*1
+*          = 'U': Upper triangular packed storage used in previous
+*                 call to DSPTRD;
+*          = 'L': Lower triangular packed storage used in previous
+*                 call to DSPTRD.
+*
+*  TRANS   (input) CHARACTER*1
+*          = 'N':  No transpose, apply Q;
+*          = 'T':  Transpose, apply Q**T.
+*
+*  M       (input) INTEGER
+*          The number of rows of the matrix C. M >= 0.
+*
+*  N       (input) INTEGER
+*          The number of columns of the matrix C. N >= 0.
+*
+*  AP      (input) DOUBLE PRECISION array, dimension
+*                               (M*(M+1)/2) if SIDE = 'L'
+*                               (N*(N+1)/2) if SIDE = 'R'
+*          The vectors which define the elementary reflectors, as
+*          returned by DSPTRD.  AP is modified by the routine but
+*          restored on exit.
+*
+*  TAU     (input) DOUBLE PRECISION array, dimension (M-1) if SIDE = 'L'
+*                                     or (N-1) if SIDE = 'R'
+*          TAU(i) must contain the scalar factor of the elementary
+*          reflector H(i), as returned by DSPTRD.
+*
+*  C       (input/output) DOUBLE PRECISION array, dimension (LDC,N)
+*          On entry, the M-by-N matrix C.
+*          On exit, C is overwritten by Q*C or Q**T*C or C*Q**T or C*Q.
+*
+*  LDC     (input) INTEGER
+*          The leading dimension of the array C. LDC >= max(1,M).
+*
+*  WORK    (workspace) DOUBLE PRECISION array, dimension
+*                                   (N) if SIDE = 'L'
+*                                   (M) if SIDE = 'R'
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -i, the i-th argument had an illegal value
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            FORWRD, LEFT, NOTRAN, UPPER
+      INTEGER            I, I1, I2, I3, IC, II, JC, MI, NI, NQ
+      DOUBLE PRECISION   AII
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           DLARF, XERBLA
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          MAX
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input arguments
+*
+      INFO = 0
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+      UPPER = LSAME( UPLO, 'U' )
+*
+*     NQ is the order of Q
+*
+      IF( LEFT ) THEN
+         NQ = M
+      ELSE
+         NQ = N
+      END IF
+      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+         INFO = -3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DOPMTR', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( M.EQ.0 .OR. N.EQ.0 )
+     $   RETURN
+*
+      IF( UPPER ) THEN
+*
+*        Q was determined by a call to DSPTRD with UPLO = 'U'
+*
+         FORWRD = ( LEFT .AND. NOTRAN ) .OR.
+     $            ( .NOT.LEFT .AND. .NOT.NOTRAN )
+*
+         IF( FORWRD ) THEN
+            I1 = 1
+            I2 = NQ - 1
+            I3 = 1
+            II = 2
+         ELSE
+            I1 = NQ - 1
+            I2 = 1
+            I3 = -1
+            II = NQ*( NQ+1 ) / 2 - 1
+         END IF
+*
+         IF( LEFT ) THEN
+            NI = N
+         ELSE
+            MI = M
+         END IF
+*
+         DO 10 I = I1, I2, I3
+            IF( LEFT ) THEN
+*
+*              H(i) is applied to C(1:i,1:n)
+*
+               MI = I
+            ELSE
+*
+*              H(i) is applied to C(1:m,1:i)
+*
+               NI = I
+            END IF
+*
+*           Apply H(i)
+*
+            AII = AP( II )
+            AP( II ) = ONE
+            CALL DLARF( SIDE, MI, NI, AP( II-I+1 ), 1, TAU( I ), C, LDC,
+     $                  WORK )
+            AP( II ) = AII
+*
+            IF( FORWRD ) THEN
+               II = II + I + 2
+            ELSE
+               II = II - I - 1
+            END IF
+   10    CONTINUE
+      ELSE
+*
+*        Q was determined by a call to DSPTRD with UPLO = 'L'.
+*
+         FORWRD = ( LEFT .AND. .NOT.NOTRAN ) .OR.
+     $            ( .NOT.LEFT .AND. NOTRAN )
+*
+         IF( FORWRD ) THEN
+            I1 = 1
+            I2 = NQ - 1
+            I3 = 1
+            II = 2
+         ELSE
+            I1 = NQ - 1
+            I2 = 1
+            I3 = -1
+            II = NQ*( NQ+1 ) / 2 - 1
+         END IF
+*
+         IF( LEFT ) THEN
+            NI = N
+            JC = 1
+         ELSE
+            MI = M
+            IC = 1
+         END IF
+*
+         DO 20 I = I1, I2, I3
+            AII = AP( II )
+            AP( II ) = ONE
+            IF( LEFT ) THEN
+*
+*              H(i) is applied to C(i+1:m,1:n)
+*
+               MI = M - I
+               IC = I + 1
+            ELSE
+*
+*              H(i) is applied to C(1:m,i+1:n)
+*
+               NI = N - I
+               JC = I + 1
+            END IF
+*
+*           Apply H(i)
+*
+            CALL DLARF( SIDE, MI, NI, AP( II ), 1, TAU( I ),
+     $                  C( IC, JC ), LDC, WORK )
+            AP( II ) = AII
+*
+            IF( FORWRD ) THEN
+               II = II + NQ - I + 1
+            ELSE
+               II = II - NQ + I - 2
+            END IF
+   20    CONTINUE
+      END IF
+      RETURN
+*
+*     End of DOPMTR
+*
+      END
+      SUBROUTINE DSPEVX( JOBZ, RANGE, UPLO, N, AP, VL, VU, IL, IU,
+     $                   ABSTOL, M, W, Z, LDZ, WORK, IWORK, IFAIL,
+     $                   INFO )
+*
+*  -- LAPACK driver routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     June 30, 1999
+*
+*     .. Scalar Arguments ..
+      CHARACTER          JOBZ, RANGE, UPLO
+      INTEGER            IL, INFO, IU, LDZ, M, N
+      DOUBLE PRECISION   ABSTOL, VL, VU
+*     ..
+*     .. Array Arguments ..
+      INTEGER            IFAIL( * ), IWORK( * )
+      DOUBLE PRECISION   AP( * ), W( * ), WORK( * ), Z( LDZ, * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  DSPEVX computes selected eigenvalues and, optionally, eigenvectors
+*  of a real symmetric matrix A in packed storage.  Eigenvalues/vectors
+*  can be selected by specifying either a range of values or a range of
+*  indices for the desired eigenvalues.
+*
+*  Arguments
+*  =========
+*
+*  JOBZ    (input) CHARACTER*1
+*          = 'N':  Compute eigenvalues only;
+*          = 'V':  Compute eigenvalues and eigenvectors.
+*
+*  RANGE   (input) CHARACTER*1
+*          = 'A': all eigenvalues will be found;
+*          = 'V': all eigenvalues in the half-open interval (VL,VU]
+*                 will be found;
+*          = 'I': the IL-th through IU-th eigenvalues will be found.
+*
+*  UPLO    (input) CHARACTER*1
+*          = 'U':  Upper triangle of A is stored;
+*          = 'L':  Lower triangle of A is stored.
+*
+*  N       (input) INTEGER
+*          The order of the matrix A.  N >= 0.
+*
+*  AP      (input/output) DOUBLE PRECISION array, dimension (N*(N+1)/2)
+*          On entry, the upper or lower triangle of the symmetric matrix
+*          A, packed columnwise in a linear array.  The j-th column of A
+*          is stored in the array AP as follows:
+*          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1<=i<=j;
+*          if UPLO = 'L', AP(i + (j-1)*(2*n-j)/2) = A(i,j) for j<=i<=n.
+*
+*          On exit, AP is overwritten by values generated during the
+*          reduction to tridiagonal form.  If UPLO = 'U', the diagonal
+*          and first superdiagonal of the tridiagonal matrix T overwrite
+*          the corresponding elements of A, and if UPLO = 'L', the
+*          diagonal and first subdiagonal of T overwrite the
+*          corresponding elements of A.
+*
+*  VL      (input) DOUBLE PRECISION
+*  VU      (input) DOUBLE PRECISION
+*          If RANGE='V', the lower and upper bounds of the interval to
+*          be searched for eigenvalues. VL < VU.
+*          Not referenced if RANGE = 'A' or 'I'.
+*
+*  IL      (input) INTEGER
+*  IU      (input) INTEGER
+*          If RANGE='I', the indices (in ascending order) of the
+*          smallest and largest eigenvalues to be returned.
+*          1 <= IL <= IU <= N, if N > 0; IL = 1 and IU = 0 if N = 0.
+*          Not referenced if RANGE = 'A' or 'V'.
+*
+*  ABSTOL  (input) DOUBLE PRECISION
+*          The absolute error tolerance for the eigenvalues.
+*          An approximate eigenvalue is accepted as converged
+*          when it is determined to lie in an interval [a,b]
+*          of width less than or equal to
+*
+*                  ABSTOL + EPS *   max( |a|,|b| ) ,
+*
+*          where EPS is the machine precision.  If ABSTOL is less than
+*          or equal to zero, then  EPS*|T|  will be used in its place,
+*          where |T| is the 1-norm of the tridiagonal matrix obtained
+*          by reducing AP to tridiagonal form.
+*
+*          Eigenvalues will be computed most accurately when ABSTOL is
+*          set to twice the underflow threshold 2*DLAMCH('S'), not zero.
+*          If this routine returns with INFO>0, indicating that some
+*          eigenvectors did not converge, try setting ABSTOL to
+*          2*DLAMCH('S').
+*
+*          See "Computing Small Singular Values of Bidiagonal Matrices
+*          with Guaranteed High Relative Accuracy," by Demmel and
+*          Kahan, LAPACK Working Note #3.
+*
+*  M       (output) INTEGER
+*          The total number of eigenvalues found.  0 <= M <= N.
+*          If RANGE = 'A', M = N, and if RANGE = 'I', M = IU-IL+1.
+*
+*  W       (output) DOUBLE PRECISION array, dimension (N)
+*          If INFO = 0, the selected eigenvalues in ascending order.
+*
+*  Z       (output) DOUBLE PRECISION array, dimension (LDZ, max(1,M))
+*          If JOBZ = 'V', then if INFO = 0, the first M columns of Z
+*          contain the orthonormal eigenvectors of the matrix A
+*          corresponding to the selected eigenvalues, with the i-th
+*          column of Z holding the eigenvector associated with W(i).
+*          If an eigenvector fails to converge, then that column of Z
+*          contains the latest approximation to the eigenvector, and the
+*          index of the eigenvector is returned in IFAIL.
+*          If JOBZ = 'N', then Z is not referenced.
+*          Note: the user must ensure that at least max(1,M) columns are
+*          supplied in the array Z; if RANGE = 'V', the exact value of M
+*          is not known in advance and an upper bound must be used.
+*
+*  LDZ     (input) INTEGER
+*          The leading dimension of the array Z.  LDZ >= 1, and if
+*          JOBZ = 'V', LDZ >= max(1,N).
+*
+*  WORK    (workspace) DOUBLE PRECISION array, dimension (8*N)
+*
+*  IWORK   (workspace) INTEGER array, dimension (5*N)
+*
+*  IFAIL   (output) INTEGER array, dimension (N)
+*          If JOBZ = 'V', then if INFO = 0, the first M elements of
+*          IFAIL are zero.  If INFO > 0, then IFAIL contains the
+*          indices of the eigenvectors that failed to converge.
+*          If JOBZ = 'N', then IFAIL is not referenced.
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -i, the i-th argument had an illegal value
+*          > 0:  if INFO = i, then i eigenvectors failed to converge.
+*                Their indices are stored in array IFAIL.
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            ALLEIG, INDEIG, VALEIG, WANTZ
+      CHARACTER          ORDER
+      INTEGER            I, IINFO, IMAX, INDD, INDE, INDEE, INDIBL,
+     $                   INDISP, INDIWO, INDTAU, INDWRK, ISCALE, ITMP1,
+     $                   J, JJ, NSPLIT
+      DOUBLE PRECISION   ABSTLL, ANRM, BIGNUM, EPS, RMAX, RMIN, SAFMIN,
+     $                   SIGMA, SMLNUM, TMP1, VLL, VUU
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      DOUBLE PRECISION   DLAMCH, DLANSP
+      EXTERNAL           LSAME, DLAMCH, DLANSP
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           DCOPY, DOPGTR, DOPMTR, DSCAL, DSPTRD, DSTEBZ,
+     $                   DSTEIN, DSTEQR, DSTERF, DSWAP, XERBLA
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN, SQRT
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters.
+*
+      WANTZ = LSAME( JOBZ, 'V' )
+      ALLEIG = LSAME( RANGE, 'A' )
+      VALEIG = LSAME( RANGE, 'V' )
+      INDEIG = LSAME( RANGE, 'I' )
+*
+      INFO = 0
+      IF( .NOT.( WANTZ .OR. LSAME( JOBZ, 'N' ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( ALLEIG .OR. VALEIG .OR. INDEIG ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( LSAME( UPLO, 'L' ) .OR. LSAME( UPLO, 'U' ) ) )
+     $          THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE
+         IF( VALEIG ) THEN
+            IF( N.GT.0 .AND. VU.LE.VL )
+     $         INFO = -7
+         ELSE IF( INDEIG ) THEN
+            IF( IL.LT.1 .OR. IL.GT.MAX( 1, N ) ) THEN
+               INFO = -8
+            ELSE IF( IU.LT.MIN( N, IL ) .OR. IU.GT.N ) THEN
+               INFO = -9
+            END IF
+         END IF
+      END IF
+      IF( INFO.EQ.0 ) THEN
+         IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) )
+     $      INFO = -14
+      END IF
+*
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DSPEVX', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      M = 0
+      IF( N.EQ.0 )
+     $   RETURN
+*
+      IF( N.EQ.1 ) THEN
+         IF( ALLEIG .OR. INDEIG ) THEN
+            M = 1
+            W( 1 ) = AP( 1 )
+         ELSE
+            IF( VL.LT.AP( 1 ) .AND. VU.GE.AP( 1 ) ) THEN
+               M = 1
+               W( 1 ) = AP( 1 )
+            END IF
+         END IF
+         IF( WANTZ )
+     $      Z( 1, 1 ) = ONE
+         RETURN
+      END IF
+*
+*     Get machine constants.
+*
+      SAFMIN = DLAMCH( 'Safe minimum' )
+      EPS = DLAMCH( 'Precision' )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = MIN( SQRT( BIGNUM ), ONE / SQRT( SQRT( SAFMIN ) ) )
+*
+*     Scale matrix to allowable range, if necessary.
+*
+      ISCALE = 0
+      ABSTLL = ABSTOL
+      IF( VALEIG ) THEN
+         VLL = VL
+         VUU = VU
+      ELSE
+         VLL = ZERO
+         VUU = ZERO
+      END IF
+      ANRM = DLANSP( 'M', UPLO, N, AP, WORK )
+      IF( ANRM.GT.ZERO .AND. ANRM.LT.RMIN ) THEN
+         ISCALE = 1
+         SIGMA = RMIN / ANRM
+      ELSE IF( ANRM.GT.RMAX ) THEN
+         ISCALE = 1
+         SIGMA = RMAX / ANRM
+      END IF
+      IF( ISCALE.EQ.1 ) THEN
+         CALL DSCAL( ( N*( N+1 ) ) / 2, SIGMA, AP, 1 )
+         IF( ABSTOL.GT.0 )
+     $      ABSTLL = ABSTOL*SIGMA
+         IF( VALEIG ) THEN
+            VLL = VL*SIGMA
+            VUU = VU*SIGMA
+         END IF
+      END IF
+*
+*     Call DSPTRD to reduce symmetric packed matrix to tridiagonal form.
+*
+      INDTAU = 1
+      INDE = INDTAU + N
+      INDD = INDE + N
+      INDWRK = INDD + N
+      CALL DSPTRD( UPLO, N, AP, WORK( INDD ), WORK( INDE ),
+     $             WORK( INDTAU ), IINFO )
+*
+*     If all eigenvalues are desired and ABSTOL is less than or equal
+*     to zero, then call DSTERF or DOPGTR and SSTEQR.  If this fails
+*     for some eigenvalue, then try DSTEBZ.
+*
+      IF( ( ALLEIG .OR. ( INDEIG .AND. IL.EQ.1 .AND. IU.EQ.N ) ) .AND.
+     $    ( ABSTOL.LE.ZERO ) ) THEN
+         CALL DCOPY( N, WORK( INDD ), 1, W, 1 )
+         INDEE = INDWRK + 2*N
+         IF( .NOT.WANTZ ) THEN
+            CALL DCOPY( N-1, WORK( INDE ), 1, WORK( INDEE ), 1 )
+            CALL DSTERF( N, W, WORK( INDEE ), INFO )
+         ELSE
+            CALL DOPGTR( UPLO, N, AP, WORK( INDTAU ), Z, LDZ,
+     $                   WORK( INDWRK ), IINFO )
+            CALL DCOPY( N-1, WORK( INDE ), 1, WORK( INDEE ), 1 )
+            CALL DSTEQR( JOBZ, N, W, WORK( INDEE ), Z, LDZ,
+     $                   WORK( INDWRK ), INFO )
+            IF( INFO.EQ.0 ) THEN
+               DO 10 I = 1, N
+                  IFAIL( I ) = 0
+   10          CONTINUE
+            END IF
+         END IF
+         IF( INFO.EQ.0 ) THEN
+            M = N
+            GO TO 20
+         END IF
+         INFO = 0
+      END IF
+*
+*     Otherwise, call DSTEBZ and, if eigenvectors are desired, SSTEIN.
+*
+      IF( WANTZ ) THEN
+         ORDER = 'B'
+      ELSE
+         ORDER = 'E'
+      END IF
+      INDIBL = 1
+      INDISP = INDIBL + N
+      INDIWO = INDISP + N
+      CALL DSTEBZ( RANGE, ORDER, N, VLL, VUU, IL, IU, ABSTLL,
+     $             WORK( INDD ), WORK( INDE ), M, NSPLIT, W,
+     $             IWORK( INDIBL ), IWORK( INDISP ), WORK( INDWRK ),
+     $             IWORK( INDIWO ), INFO )
+*
+      IF( WANTZ ) THEN
+         CALL DSTEIN( N, WORK( INDD ), WORK( INDE ), M, W,
+     $                IWORK( INDIBL ), IWORK( INDISP ), Z, LDZ,
+     $                WORK( INDWRK ), IWORK( INDIWO ), IFAIL, INFO )
+*
+*        Apply orthogonal matrix used in reduction to tridiagonal
+*        form to eigenvectors returned by DSTEIN.
+*
+         CALL DOPMTR( 'L', UPLO, 'N', N, M, AP, WORK( INDTAU ), Z, LDZ,
+     $                WORK( INDWRK ), INFO )
+      END IF
+*
+*     If matrix was scaled, then rescale eigenvalues appropriately.
+*
+   20 CONTINUE
+      IF( ISCALE.EQ.1 ) THEN
+         IF( INFO.EQ.0 ) THEN
+            IMAX = M
+         ELSE
+            IMAX = INFO - 1
+         END IF
+         CALL DSCAL( IMAX, ONE / SIGMA, W, 1 )
+      END IF
+*
+*     If eigenvalues are not in order, then sort them, along with
+*     eigenvectors.
+*
+      IF( WANTZ ) THEN
+         DO 40 J = 1, M - 1
+            I = 0
+            TMP1 = W( J )
+            DO 30 JJ = J + 1, M
+               IF( W( JJ ).LT.TMP1 ) THEN
+                  I = JJ
+                  TMP1 = W( JJ )
+               END IF
+   30       CONTINUE
+*
+            IF( I.NE.0 ) THEN
+               ITMP1 = IWORK( INDIBL+I-1 )
+               W( I ) = W( J )
+               IWORK( INDIBL+I-1 ) = IWORK( INDIBL+J-1 )
+               W( J ) = TMP1
+               IWORK( INDIBL+J-1 ) = ITMP1
+               CALL DSWAP( N, Z( 1, I ), 1, Z( 1, J ), 1 )
+               IF( INFO.NE.0 ) THEN
+                  ITMP1 = IFAIL( I )
+                  IFAIL( I ) = IFAIL( J )
+                  IFAIL( J ) = ITMP1
+               END IF
+            END IF
+   40    CONTINUE
+      END IF
+*
+      RETURN
+*
+*     End of DSPEVX
+*
+      END
+      SUBROUTINE ZGEEV( JOBVL, JOBVR, N, A, LDA, W, VL, LDVL, VR, LDVR,
+     $                  WORK, LWORK, RWORK, INFO )
+*
+*  -- LAPACK driver routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     June 30, 1999
+*
+*     .. Scalar Arguments ..
+      CHARACTER          JOBVL, JOBVR
+      INTEGER            INFO, LDA, LDVL, LDVR, LWORK, N
+*     ..
+*     .. Array Arguments ..
+      DOUBLE PRECISION   RWORK( * )
+      COMPLEX*16         A( LDA, * ), VL( LDVL, * ), VR( LDVR, * ),
+     $                   W( * ), WORK( * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  ZGEEV computes for an N-by-N complex nonsymmetric matrix A, the
+*  eigenvalues and, optionally, the left and/or right eigenvectors.
+*
+*  The right eigenvector v(j) of A satisfies
+*                   A * v(j) = lambda(j) * v(j)
+*  where lambda(j) is its eigenvalue.
+*  The left eigenvector u(j) of A satisfies
+*                u(j)**H * A = lambda(j) * u(j)**H
+*  where u(j)**H denotes the conjugate transpose of u(j).
+*
+*  The computed eigenvectors are normalized to have Euclidean norm
+*  equal to 1 and largest component real.
+*
+*  Arguments
+*  =========
+*
+*  JOBVL   (input) CHARACTER*1
+*          = 'N': left eigenvectors of A are not computed;
+*          = 'V': left eigenvectors of are computed.
+*
+*  JOBVR   (input) CHARACTER*1
+*          = 'N': right eigenvectors of A are not computed;
+*          = 'V': right eigenvectors of A are computed.
+*
+*  N       (input) INTEGER
+*          The order of the matrix A. N >= 0.
+*
+*  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+*          On entry, the N-by-N matrix A.
+*          On exit, A has been overwritten.
+*
+*  LDA     (input) INTEGER
+*          The leading dimension of the array A.  LDA >= max(1,N).
+*
+*  W       (output) COMPLEX*16 array, dimension (N)
+*          W contains the computed eigenvalues.
+*
+*  VL      (output) COMPLEX*16 array, dimension (LDVL,N)
+*          If JOBVL = 'V', the left eigenvectors u(j) are stored one
+*          after another in the columns of VL, in the same order
+*          as their eigenvalues.
+*          If JOBVL = 'N', VL is not referenced.
+*          u(j) = VL(:,j), the j-th column of VL.
+*
+*  LDVL    (input) INTEGER
+*          The leading dimension of the array VL.  LDVL >= 1; if
+*          JOBVL = 'V', LDVL >= N.
+*
+*  VR      (output) COMPLEX*16 array, dimension (LDVR,N)
+*          If JOBVR = 'V', the right eigenvectors v(j) are stored one
+*          after another in the columns of VR, in the same order
+*          as their eigenvalues.
+*          If JOBVR = 'N', VR is not referenced.
+*          v(j) = VR(:,j), the j-th column of VR.
+*
+*  LDVR    (input) INTEGER
+*          The leading dimension of the array VR.  LDVR >= 1; if
+*          JOBVR = 'V', LDVR >= N.
+*
+*  WORK    (workspace/output) COMPLEX*16 array, dimension (LWORK)
+*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+*
+*  LWORK   (input) INTEGER
+*          The dimension of the array WORK.  LWORK >= max(1,2*N).
+*          For good performance, LWORK must generally be larger.
+*
+*          If LWORK = -1, then a workspace query is assumed; the routine
+*          only calculates the optimal size of the WORK array, returns
+*          this value as the first entry of the WORK array, and no error
+*          message related to LWORK is issued by XERBLA.
+*
+*  RWORK   (workspace) DOUBLE PRECISION array, dimension (2*N)
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -i, the i-th argument had an illegal value.
+*          > 0:  if INFO = i, the QR algorithm failed to compute all the
+*                eigenvalues, and no eigenvectors have been computed;
+*                elements and i+1:N of W contain eigenvalues which have
+*                converged.
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            LQUERY, SCALEA, WANTVL, WANTVR
+      CHARACTER          SIDE
+      INTEGER            HSWORK, I, IBAL, IERR, IHI, ILO, IRWORK, ITAU,
+     $                   IWRK, K, MAXB, MAXWRK, MINWRK, NOUT
+      DOUBLE PRECISION   ANRM, BIGNUM, CSCALE, EPS, SCL, SMLNUM
+      COMPLEX*16         TMP
+*     ..
+*     .. Local Arrays ..
+      LOGICAL            SELECT( 1 )
+      DOUBLE PRECISION   DUM( 1 )
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           XERBLA, ZDSCAL, ZGEBAK, ZGEBAL, ZGEHRD, ZHSEQR,
+     $                   ZLACPY, ZLASCL, ZSCAL, ZTREVC, ZUNGHR
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      INTEGER            IDAMAX, ILAENV
+      DOUBLE PRECISION   DLAMCH, DZNRM2, ZLANGE
+      EXTERNAL           LSAME, IDAMAX, ILAENV, DLAMCH, DZNRM2, ZLANGE
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          DBLE, DCMPLX, DCONJG, DIMAG, MAX, MIN, SQRT
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input arguments
+*
+      INFO = 0
+      LQUERY = ( LWORK.EQ.-1 )
+      WANTVL = LSAME( JOBVL, 'V' )
+      WANTVR = LSAME( JOBVR, 'V' )
+      IF( ( .NOT.WANTVL ) .AND. ( .NOT.LSAME( JOBVL, 'N' ) ) ) THEN
+         INFO = -1
+      ELSE IF( ( .NOT.WANTVR ) .AND. ( .NOT.LSAME( JOBVR, 'N' ) ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      ELSE IF( LDVL.LT.1 .OR. ( WANTVL .AND. LDVL.LT.N ) ) THEN
+         INFO = -8
+      ELSE IF( LDVR.LT.1 .OR. ( WANTVR .AND. LDVR.LT.N ) ) THEN
+         INFO = -10
+      END IF
+*
+*     Compute workspace
+*      (Note: Comments in the code beginning "Workspace:" describe the
+*       minimal amount of workspace needed at that point in the code,
+*       as well as the preferred amount for good performance.
+*       CWorkspace refers to complex workspace, and RWorkspace to real
+*       workspace. NB refers to the optimal block size for the
+*       immediately following subroutine, as returned by ILAENV.
+*       HSWORK refers to the workspace preferred by ZHSEQR, as
+*       calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
+*       the worst case.)
+*
+      MINWRK = 1
+      IF( INFO.EQ.0 .AND. ( LWORK.GE.1 .OR. LQUERY ) ) THEN
+         MAXWRK = N + N*ILAENV( 1, 'ZGEHRD', ' ', N, 1, N, 0 )
+         IF( ( .NOT.WANTVL ) .AND. ( .NOT.WANTVR ) ) THEN
+            MINWRK = MAX( 1, 2*N )
+            MAXB = MAX( ILAENV( 8, 'ZHSEQR', 'EN', N, 1, N, -1 ), 2 )
+            K = MIN( MAXB, N, MAX( 2, ILAENV( 4, 'ZHSEQR', 'EN', N, 1,
+     $          N, -1 ) ) )
+            HSWORK = MAX( K*( K+2 ), 2*N )
+            MAXWRK = MAX( MAXWRK, HSWORK )
+         ELSE
+            MINWRK = MAX( 1, 2*N )
+            MAXWRK = MAX( MAXWRK, N+( N-1 )*
+     $               ILAENV( 1, 'ZUNGHR', ' ', N, 1, N, -1 ) )
+            MAXB = MAX( ILAENV( 8, 'ZHSEQR', 'SV', N, 1, N, -1 ), 2 )
+            K = MIN( MAXB, N, MAX( 2, ILAENV( 4, 'ZHSEQR', 'SV', N, 1,
+     $          N, -1 ) ) )
+            HSWORK = MAX( K*( K+2 ), 2*N )
+            MAXWRK = MAX( MAXWRK, HSWORK, 2*N )
+         END IF
+         WORK( 1 ) = MAXWRK
+      END IF
+      IF( LWORK.LT.MINWRK .AND. .NOT.LQUERY ) THEN
+         INFO = -12
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'ZGEEV ', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
+*     Get machine constants
+*
+      EPS = DLAMCH( 'P' )
+      SMLNUM = DLAMCH( 'S' )
+      BIGNUM = ONE / SMLNUM
+      CALL DLABAD( SMLNUM, BIGNUM )
+      SMLNUM = SQRT( SMLNUM ) / EPS
+      BIGNUM = ONE / SMLNUM
+*
+*     Scale A if max element outside range [SMLNUM,BIGNUM]
+*
+      ANRM = ZLANGE( 'M', N, N, A, LDA, DUM )
+      SCALEA = .FALSE.
+      IF( ANRM.GT.ZERO .AND. ANRM.LT.SMLNUM ) THEN
+         SCALEA = .TRUE.
+         CSCALE = SMLNUM
+      ELSE IF( ANRM.GT.BIGNUM ) THEN
+         SCALEA = .TRUE.
+         CSCALE = BIGNUM
+      END IF
+      IF( SCALEA )
+     $   CALL ZLASCL( 'G', 0, 0, ANRM, CSCALE, N, N, A, LDA, IERR )
+*
+*     Balance the matrix
+*     (CWorkspace: none)
+*     (RWorkspace: need N)
+*
+      IBAL = 1
+      CALL ZGEBAL( 'B', N, A, LDA, ILO, IHI, RWORK( IBAL ), IERR )
+*
+*     Reduce to upper Hessenberg form
+*     (CWorkspace: need 2*N, prefer N+N*NB)
+*     (RWorkspace: none)
+*
+      ITAU = 1
+      IWRK = ITAU + N
+      CALL ZGEHRD( N, ILO, IHI, A, LDA, WORK( ITAU ), WORK( IWRK ),
+     $             LWORK-IWRK+1, IERR )
+*
+      IF( WANTVL ) THEN
+*
+*        Want left eigenvectors
+*        Copy Householder vectors to VL
+*
+         SIDE = 'L'
+         CALL ZLACPY( 'L', N, N, A, LDA, VL, LDVL )
+*
+*        Generate unitary matrix in VL
+*        (CWorkspace: need 2*N-1, prefer N+(N-1)*NB)
+*        (RWorkspace: none)
+*
+         CALL ZUNGHR( N, ILO, IHI, VL, LDVL, WORK( ITAU ), WORK( IWRK ),
+     $                LWORK-IWRK+1, IERR )
+*
+*        Perform QR iteration, accumulating Schur vectors in VL
+*        (CWorkspace: need 1, prefer HSWORK (see comments) )
+*        (RWorkspace: none)
+*
+         IWRK = ITAU
+         CALL ZHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, W, VL, LDVL,
+     $                WORK( IWRK ), LWORK-IWRK+1, INFO )
+*
+         IF( WANTVR ) THEN
+*
+*           Want left and right eigenvectors
+*           Copy Schur vectors to VR
+*
+            SIDE = 'B'
+            CALL ZLACPY( 'F', N, N, VL, LDVL, VR, LDVR )
+         END IF
+*
+      ELSE IF( WANTVR ) THEN
+*
+*        Want right eigenvectors
+*        Copy Householder vectors to VR
+*
+         SIDE = 'R'
+         CALL ZLACPY( 'L', N, N, A, LDA, VR, LDVR )
+*
+*        Generate unitary matrix in VR
+*        (CWorkspace: need 2*N-1, prefer N+(N-1)*NB)
+*        (RWorkspace: none)
+*
+         CALL ZUNGHR( N, ILO, IHI, VR, LDVR, WORK( ITAU ), WORK( IWRK ),
+     $                LWORK-IWRK+1, IERR )
+*
+*        Perform QR iteration, accumulating Schur vectors in VR
+*        (CWorkspace: need 1, prefer HSWORK (see comments) )
+*        (RWorkspace: none)
+*
+         IWRK = ITAU
+         CALL ZHSEQR( 'S', 'V', N, ILO, IHI, A, LDA, W, VR, LDVR,
+     $                WORK( IWRK ), LWORK-IWRK+1, INFO )
+*
+      ELSE
+*
+*        Compute eigenvalues only
+*        (CWorkspace: need 1, prefer HSWORK (see comments) )
+*        (RWorkspace: none)
+*
+         IWRK = ITAU
+         CALL ZHSEQR( 'E', 'N', N, ILO, IHI, A, LDA, W, VR, LDVR,
+     $                WORK( IWRK ), LWORK-IWRK+1, INFO )
+      END IF
+*
+*     If INFO > 0 from ZHSEQR, then quit
+*
+      IF( INFO.GT.0 )
+     $   GO TO 50
+*
+      IF( WANTVL .OR. WANTVR ) THEN
+*
+*        Compute left and/or right eigenvectors
+*        (CWorkspace: need 2*N)
+*        (RWorkspace: need 2*N)
+*
+         IRWORK = IBAL + N
+         CALL ZTREVC( SIDE, 'B', SELECT, N, A, LDA, VL, LDVL, VR, LDVR,
+     $                N, NOUT, WORK( IWRK ), RWORK( IRWORK ), IERR )
+      END IF
+*
+      IF( WANTVL ) THEN
+*
+*        Undo balancing of left eigenvectors
+*        (CWorkspace: none)
+*        (RWorkspace: need N)
+*
+         CALL ZGEBAK( 'B', 'L', N, ILO, IHI, RWORK( IBAL ), N, VL, LDVL,
+     $                IERR )
+*
+*        Normalize left eigenvectors and make largest component real
+*
+         DO 20 I = 1, N
+            SCL = ONE / DZNRM2( N, VL( 1, I ), 1 )
+            CALL ZDSCAL( N, SCL, VL( 1, I ), 1 )
+            DO 10 K = 1, N
+               RWORK( IRWORK+K-1 ) = DBLE( VL( K, I ) )**2 +
+     $                               DIMAG( VL( K, I ) )**2
+   10       CONTINUE
+            K = IDAMAX( N, RWORK( IRWORK ), 1 )
+            TMP = DCONJG( VL( K, I ) ) / SQRT( RWORK( IRWORK+K-1 ) )
+            CALL ZSCAL( N, TMP, VL( 1, I ), 1 )
+            VL( K, I ) = DCMPLX( DBLE( VL( K, I ) ), ZERO )
+   20    CONTINUE
+      END IF
+*
+      IF( WANTVR ) THEN
+*
+*        Undo balancing of right eigenvectors
+*        (CWorkspace: none)
+*        (RWorkspace: need N)
+*
+         CALL ZGEBAK( 'B', 'R', N, ILO, IHI, RWORK( IBAL ), N, VR, LDVR,
+     $                IERR )
+*
+*        Normalize right eigenvectors and make largest component real
+*
+         DO 40 I = 1, N
+            SCL = ONE / DZNRM2( N, VR( 1, I ), 1 )
+            CALL ZDSCAL( N, SCL, VR( 1, I ), 1 )
+            DO 30 K = 1, N
+               RWORK( IRWORK+K-1 ) = DBLE( VR( K, I ) )**2 +
+     $                               DIMAG( VR( K, I ) )**2
+   30       CONTINUE
+            K = IDAMAX( N, RWORK( IRWORK ), 1 )
+            TMP = DCONJG( VR( K, I ) ) / SQRT( RWORK( IRWORK+K-1 ) )
+            CALL ZSCAL( N, TMP, VR( 1, I ), 1 )
+            VR( K, I ) = DCMPLX( DBLE( VR( K, I ) ), ZERO )
+   40    CONTINUE
+      END IF
+*
+*     Undo scaling if necessary
+*
+   50 CONTINUE
+      IF( SCALEA ) THEN
+         CALL ZLASCL( 'G', 0, 0, CSCALE, ANRM, N-INFO, 1, W( INFO+1 ),
+     $                MAX( N-INFO, 1 ), IERR )
+         IF( INFO.GT.0 ) THEN
+            CALL ZLASCL( 'G', 0, 0, CSCALE, ANRM, ILO-1, 1, W, N, IERR )
+         END IF
+      END IF
+*
+      WORK( 1 ) = MAXWRK
+      RETURN
+*
+*     End of ZGEEV
+*
+      END
+      SUBROUTINE ZLATRS( UPLO, TRANS, DIAG, NORMIN, N, A, LDA, X, SCALE,
+     $                   CNORM, INFO )
+*
+*  -- LAPACK auxiliary routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     June 30, 1992
+*
+*     .. Scalar Arguments ..
+      CHARACTER          DIAG, NORMIN, TRANS, UPLO
+      INTEGER            INFO, LDA, N
+      DOUBLE PRECISION   SCALE
+*     ..
+*     .. Array Arguments ..
+      DOUBLE PRECISION   CNORM( * )
+      COMPLEX*16         A( LDA, * ), X( * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  ZLATRS solves one of the triangular systems
+*
+*     A * x = s*b,  A**T * x = s*b,  or  A**H * x = s*b,
+*
+*  with scaling to prevent overflow.  Here A is an upper or lower
+*  triangular matrix, A**T denotes the transpose of A, A**H denotes the
+*  conjugate transpose of A, x and b are n-element vectors, and s is a
+*  scaling factor, usually less than or equal to 1, chosen so that the
+*  components of x will be less than the overflow threshold.  If the
+*  unscaled problem will not cause overflow, the Level 2 BLAS routine
+*  ZTRSV is called. If the matrix A is singular (A(j,j) = 0 for some j),
+*  then s is set to 0 and a non-trivial solution to A*x = 0 is returned.
+*
+*  Arguments
+*  =========
+*
+*  UPLO    (input) CHARACTER*1
+*          Specifies whether the matrix A is upper or lower triangular.
+*          = 'U':  Upper triangular
+*          = 'L':  Lower triangular
+*
+*  TRANS   (input) CHARACTER*1
+*          Specifies the operation applied to A.
+*          = 'N':  Solve A * x = s*b     (No transpose)
+*          = 'T':  Solve A**T * x = s*b  (Transpose)
+*          = 'C':  Solve A**H * x = s*b  (Conjugate transpose)
+*
+*  DIAG    (input) CHARACTER*1
+*          Specifies whether or not the matrix A is unit triangular.
+*          = 'N':  Non-unit triangular
+*          = 'U':  Unit triangular
+*
+*  NORMIN  (input) CHARACTER*1
+*          Specifies whether CNORM has been set or not.
+*          = 'Y':  CNORM contains the column norms on entry
+*          = 'N':  CNORM is not set on entry.  On exit, the norms will
+*                  be computed and stored in CNORM.
+*
+*  N       (input) INTEGER
+*          The order of the matrix A.  N >= 0.
+*
+*  A       (input) COMPLEX*16 array, dimension (LDA,N)
+*          The triangular matrix A.  If UPLO = 'U', the leading n by n
+*          upper triangular part of the array A contains the upper
+*          triangular matrix, and the strictly lower triangular part of
+*          A is not referenced.  If UPLO = 'L', the leading n by n lower
+*          triangular part of the array A contains the lower triangular
+*          matrix, and the strictly upper triangular part of A is not
+*          referenced.  If DIAG = 'U', the diagonal elements of A are
+*          also not referenced and are assumed to be 1.
+*
+*  LDA     (input) INTEGER
+*          The leading dimension of the array A.  LDA >= max (1,N).
+*
+*  X       (input/output) COMPLEX*16 array, dimension (N)
+*          On entry, the right hand side b of the triangular system.
+*          On exit, X is overwritten by the solution vector x.
+*
+*  SCALE   (output) DOUBLE PRECISION
+*          The scaling factor s for the triangular system
+*             A * x = s*b,  A**T * x = s*b,  or  A**H * x = s*b.
+*          If SCALE = 0, the matrix A is singular or badly scaled, and
+*          the vector x is an exact or approximate solution to A*x = 0.
+*
+*  CNORM   (input or output) DOUBLE PRECISION array, dimension (N)
+*
+*          If NORMIN = 'Y', CNORM is an input argument and CNORM(j)
+*          contains the norm of the off-diagonal part of the j-th column
+*          of A.  If TRANS = 'N', CNORM(j) must be greater than or equal
+*          to the infinity-norm, and if TRANS = 'T' or 'C', CNORM(j)
+*          must be greater than or equal to the 1-norm.
+*
+*          If NORMIN = 'N', CNORM is an output argument and CNORM(j)
+*          returns the 1-norm of the offdiagonal part of the j-th column
+*          of A.
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -k, the k-th argument had an illegal value
+*
+*  Further Details
+*  ======= =======
+*
+*  A rough bound on x is computed; if that is less than overflow, ZTRSV
+*  is called, otherwise, specific code is used which checks for possible
+*  overflow or divide-by-zero at every operation.
+*
+*  A columnwise scheme is used for solving A*x = b.  The basic algorithm
+*  if A is lower triangular is
+*
+*       x[1:n] := b[1:n]
+*       for j = 1, ..., n
+*            x(j) := x(j) / A(j,j)
+*            x[j+1:n] := x[j+1:n] - x(j) * A[j+1:n,j]
+*       end
+*
+*  Define bounds on the components of x after j iterations of the loop:
+*     M(j) = bound on x[1:j]
+*     G(j) = bound on x[j+1:n]
+*  Initially, let M(0) = 0 and G(0) = max{x(i), i=1,...,n}.
+*
+*  Then for iteration j+1 we have
+*     M(j+1) <= G(j) / | A(j+1,j+1) |
+*     G(j+1) <= G(j) + M(j+1) * | A[j+2:n,j+1] |
+*            <= G(j) ( 1 + CNORM(j+1) / | A(j+1,j+1) | )
+*
+*  where CNORM(j+1) is greater than or equal to the infinity-norm of
+*  column j+1 of A, not counting the diagonal.  Hence
+*
+*     G(j) <= G(0) product ( 1 + CNORM(i) / | A(i,i) | )
+*                  1<=i<=j
+*  and
+*
+*     |x(j)| <= ( G(0) / |A(j,j)| ) product ( 1 + CNORM(i) / |A(i,i)| )
+*                                   1<=i< j
+*
+*  Since |x(j)| <= M(j), we use the Level 2 BLAS routine ZTRSV if the
+*  reciprocal of the largest M(j), j=1,..,n, is larger than
+*  max(underflow, 1/overflow).
+*
+*  The bound on x(j) is also used to determine when a step in the
+*  columnwise method can be performed without fear of overflow.  If
+*  the computed bound is greater than a large constant, x is scaled to
+*  prevent overflow, but if the bound overflows, x is set to 0, x(j) to
+*  1, and scale to 0, and a non-trivial solution to A*x = 0 is found.
+*
+*  Similarly, a row-wise scheme is used to solve A**T *x = b  or
+*  A**H *x = b.  The basic algorithm for A upper triangular is
+*
+*       for j = 1, ..., n
+*            x(j) := ( b(j) - A[1:j-1,j]' * x[1:j-1] ) / A(j,j)
+*       end
+*
+*  We simultaneously compute two bounds
+*       G(j) = bound on ( b(i) - A[1:i-1,i]' * x[1:i-1] ), 1<=i<=j
+*       M(j) = bound on x(i), 1<=i<=j
+*
+*  The initial values are G(0) = 0, M(0) = max{b(i), i=1,..,n}, and we
+*  add the constraint G(j) >= G(j-1) and M(j) >= M(j-1) for j >= 1.
+*  Then the bound on x(j) is
+*
+*       M(j) <= M(j-1) * ( 1 + CNORM(j) ) / | A(j,j) |
+*
+*            <= M(0) * product ( ( 1 + CNORM(i) ) / |A(i,i)| )
+*                      1<=i<=j
+*
+*  and we can safely call ZTRSV if 1/M(n) and 1/G(n) are both greater
+*  than max(underflow, 1/overflow).
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, HALF, ONE, TWO
+      PARAMETER          ( ZERO = 0.0D+0, HALF = 0.5D+0, ONE = 1.0D+0,
+     $                   TWO = 2.0D+0 )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            NOTRAN, NOUNIT, UPPER
+      INTEGER            I, IMAX, J, JFIRST, JINC, JLAST
+      DOUBLE PRECISION   BIGNUM, GROW, REC, SMLNUM, TJJ, TMAX, TSCAL,
+     $                   XBND, XJ, XMAX
+      COMPLEX*16         CSUMJ, TJJS, USCAL, ZDUM
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      INTEGER            IDAMAX, IZAMAX
+      DOUBLE PRECISION   DLAMCH, DZASUM
+      COMPLEX*16         ZDOTC, ZDOTU, ZLADIV
+      EXTERNAL           LSAME, IDAMAX, IZAMAX, DLAMCH, DZASUM, ZDOTC,
+     $                   ZDOTU, ZLADIV
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           DSCAL, XERBLA, ZAXPY, ZDSCAL, ZTRSV
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, DBLE, DCMPLX, DCONJG, DIMAG, MAX, MIN
+*     ..
+*     .. Statement Functions ..
+      DOUBLE PRECISION   CABS1, CABS2
+*     ..
+*     .. Statement Function definitions ..
+      CABS1( ZDUM ) = ABS( DBLE( ZDUM ) ) + ABS( DIMAG( ZDUM ) )
+      CABS2( ZDUM ) = ABS( DBLE( ZDUM ) / 2.D0 ) +
+     $                ABS( DIMAG( ZDUM ) / 2.D0 )
+*     ..
+*     .. Executable Statements ..
+*
+      INFO = 0
+      UPPER = LSAME( UPLO, 'U' )
+      NOTRAN = LSAME( TRANS, 'N' )
+      NOUNIT = LSAME( DIAG, 'N' )
+*
+*     Test the input parameters.
+*
+      IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT.
+     $         LSAME( TRANS, 'C' ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.NOUNIT .AND. .NOT.LSAME( DIAG, 'U' ) ) THEN
+         INFO = -3
+      ELSE IF( .NOT.LSAME( NORMIN, 'Y' ) .AND. .NOT.
+     $         LSAME( NORMIN, 'N' ) ) THEN
+         INFO = -4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'ZLATRS', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
+*     Determine machine dependent parameters to control overflow.
+*
+      SMLNUM = DLAMCH( 'Safe minimum' )
+      BIGNUM = ONE / SMLNUM
+      CALL DLABAD( SMLNUM, BIGNUM )
+      SMLNUM = SMLNUM / DLAMCH( 'Precision' )
+      BIGNUM = ONE / SMLNUM
+      SCALE = ONE
+*
+      IF( LSAME( NORMIN, 'N' ) ) THEN
+*
+*        Compute the 1-norm of each column, not including the diagonal.
+*
+         IF( UPPER ) THEN
+*
+*           A is upper triangular.
+*
+            DO 10 J = 1, N
+               CNORM( J ) = DZASUM( J-1, A( 1, J ), 1 )
+   10       CONTINUE
+         ELSE
+*
+*           A is lower triangular.
+*
+            DO 20 J = 1, N - 1
+               CNORM( J ) = DZASUM( N-J, A( J+1, J ), 1 )
+   20       CONTINUE
+            CNORM( N ) = ZERO
+         END IF
+      END IF
+*
+*     Scale the column norms by TSCAL if the maximum element in CNORM is
+*     greater than BIGNUM/2.
+*
+      IMAX = IDAMAX( N, CNORM, 1 )
+      TMAX = CNORM( IMAX )
+      IF( TMAX.LE.BIGNUM*HALF ) THEN
+         TSCAL = ONE
+      ELSE
+         TSCAL = HALF / ( SMLNUM*TMAX )
+         CALL DSCAL( N, TSCAL, CNORM, 1 )
+      END IF
+*
+*     Compute a bound on the computed solution vector to see if the
+*     Level 2 BLAS routine ZTRSV can be used.
+*
+      XMAX = ZERO
+      DO 30 J = 1, N
+         XMAX = MAX( XMAX, CABS2( X( J ) ) )
+   30 CONTINUE
+      XBND = XMAX
+*
+      IF( NOTRAN ) THEN
+*
+*        Compute the growth in A * x = b.
+*
+         IF( UPPER ) THEN
+            JFIRST = N
+            JLAST = 1
+            JINC = -1
+         ELSE
+            JFIRST = 1
+            JLAST = N
+            JINC = 1
+         END IF
+*
+         IF( TSCAL.NE.ONE ) THEN
+            GROW = ZERO
+            GO TO 60
+         END IF
+*
+         IF( NOUNIT ) THEN
+*
+*           A is non-unit triangular.
+*
+*           Compute GROW = 1/G(j) and XBND = 1/M(j).
+*           Initially, G(0) = max{x(i), i=1,...,n}.
+*
+            GROW = HALF / MAX( XBND, SMLNUM )
+            XBND = GROW
+            DO 40 J = JFIRST, JLAST, JINC
+*
+*              Exit the loop if the growth factor is too small.
+*
+               IF( GROW.LE.SMLNUM )
+     $            GO TO 60
+*
+               TJJS = A( J, J )
+               TJJ = CABS1( TJJS )
+*
+               IF( TJJ.GE.SMLNUM ) THEN
+*
+*                 M(j) = G(j-1) / abs(A(j,j))
+*
+                  XBND = MIN( XBND, MIN( ONE, TJJ )*GROW )
+               ELSE
+*
+*                 M(j) could overflow, set XBND to 0.
+*
+                  XBND = ZERO
+               END IF
+*
+               IF( TJJ+CNORM( J ).GE.SMLNUM ) THEN
+*
+*                 G(j) = G(j-1)*( 1 + CNORM(j) / abs(A(j,j)) )
+*
+                  GROW = GROW*( TJJ / ( TJJ+CNORM( J ) ) )
+               ELSE
+*
+*                 G(j) could overflow, set GROW to 0.
+*
+                  GROW = ZERO
+               END IF
+   40       CONTINUE
+            GROW = XBND
+         ELSE
+*
+*           A is unit triangular.
+*
+*           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
+*
+            GROW = MIN( ONE, HALF / MAX( XBND, SMLNUM ) )
+            DO 50 J = JFIRST, JLAST, JINC
+*
+*              Exit the loop if the growth factor is too small.
+*
+               IF( GROW.LE.SMLNUM )
+     $            GO TO 60
+*
+*              G(j) = G(j-1)*( 1 + CNORM(j) )
+*
+               GROW = GROW*( ONE / ( ONE+CNORM( J ) ) )
+   50       CONTINUE
+         END IF
+   60    CONTINUE
+*
+      ELSE
+*
+*        Compute the growth in A**T * x = b  or  A**H * x = b.
+*
+         IF( UPPER ) THEN
+            JFIRST = 1
+            JLAST = N
+            JINC = 1
+         ELSE
+            JFIRST = N
+            JLAST = 1
+            JINC = -1
+         END IF
+*
+         IF( TSCAL.NE.ONE ) THEN
+            GROW = ZERO
+            GO TO 90
+         END IF
+*
+         IF( NOUNIT ) THEN
+*
+*           A is non-unit triangular.
+*
+*           Compute GROW = 1/G(j) and XBND = 1/M(j).
+*           Initially, M(0) = max{x(i), i=1,...,n}.
+*
+            GROW = HALF / MAX( XBND, SMLNUM )
+            XBND = GROW
+            DO 70 J = JFIRST, JLAST, JINC
+*
+*              Exit the loop if the growth factor is too small.
+*
+               IF( GROW.LE.SMLNUM )
+     $            GO TO 90
+*
+*              G(j) = max( G(j-1), M(j-1)*( 1 + CNORM(j) ) )
+*
+               XJ = ONE + CNORM( J )
+               GROW = MIN( GROW, XBND / XJ )
+*
+               TJJS = A( J, J )
+               TJJ = CABS1( TJJS )
+*
+               IF( TJJ.GE.SMLNUM ) THEN
+*
+*                 M(j) = M(j-1)*( 1 + CNORM(j) ) / abs(A(j,j))
+*
+                  IF( XJ.GT.TJJ )
+     $               XBND = XBND*( TJJ / XJ )
+               ELSE
+*
+*                 M(j) could overflow, set XBND to 0.
+*
+                  XBND = ZERO
+               END IF
+   70       CONTINUE
+            GROW = MIN( GROW, XBND )
+         ELSE
+*
+*           A is unit triangular.
+*
+*           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
+*
+            GROW = MIN( ONE, HALF / MAX( XBND, SMLNUM ) )
+            DO 80 J = JFIRST, JLAST, JINC
+*
+*              Exit the loop if the growth factor is too small.
+*
+               IF( GROW.LE.SMLNUM )
+     $            GO TO 90
+*
+*              G(j) = ( 1 + CNORM(j) )*G(j-1)
+*
+               XJ = ONE + CNORM( J )
+               GROW = GROW / XJ
+   80       CONTINUE
+         END IF
+   90    CONTINUE
+      END IF
+*
+      IF( ( GROW*TSCAL ).GT.SMLNUM ) THEN
+*
+*        Use the Level 2 BLAS solve if the reciprocal of the bound on
+*        elements of X is not too small.
+*
+         CALL ZTRSV( UPLO, TRANS, DIAG, N, A, LDA, X, 1 )
+      ELSE
+*
+*        Use a Level 1 BLAS solve, scaling intermediate results.
+*
+         IF( XMAX.GT.BIGNUM*HALF ) THEN
+*
+*           Scale X so that its components are less than or equal to
+*           BIGNUM in absolute value.
+*
+            SCALE = ( BIGNUM*HALF ) / XMAX
+            CALL ZDSCAL( N, SCALE, X, 1 )
+            XMAX = BIGNUM
+         ELSE
+            XMAX = XMAX*TWO
+         END IF
+*
+         IF( NOTRAN ) THEN
+*
+*           Solve A * x = b
+*
+            DO 120 J = JFIRST, JLAST, JINC
+*
+*              Compute x(j) = b(j) / A(j,j), scaling x if necessary.
+*
+               XJ = CABS1( X( J ) )
+               IF( NOUNIT ) THEN
+                  TJJS = A( J, J )*TSCAL
+               ELSE
+                  TJJS = TSCAL
+                  IF( TSCAL.EQ.ONE )
+     $               GO TO 110
+               END IF
+               TJJ = CABS1( TJJS )
+               IF( TJJ.GT.SMLNUM ) THEN
+*
+*                    abs(A(j,j)) > SMLNUM:
+*
+                  IF( TJJ.LT.ONE ) THEN
+                     IF( XJ.GT.TJJ*BIGNUM ) THEN
+*
+*                          Scale x by 1/b(j).
+*
+                        REC = ONE / XJ
+                        CALL ZDSCAL( N, REC, X, 1 )
+                        SCALE = SCALE*REC
+                        XMAX = XMAX*REC
+                     END IF
+                  END IF
+                  X( J ) = ZLADIV( X( J ), TJJS )
+                  XJ = CABS1( X( J ) )
+               ELSE IF( TJJ.GT.ZERO ) THEN
+*
+*                    0 < abs(A(j,j)) <= SMLNUM:
+*
+                  IF( XJ.GT.TJJ*BIGNUM ) THEN
+*
+*                       Scale x by (1/abs(x(j)))*abs(A(j,j))*BIGNUM
+*                       to avoid overflow when dividing by A(j,j).
+*
+                     REC = ( TJJ*BIGNUM ) / XJ
+                     IF( CNORM( J ).GT.ONE ) THEN
+*
+*                          Scale by 1/CNORM(j) to avoid overflow when
+*                          multiplying x(j) times column j.
+*
+                        REC = REC / CNORM( J )
+                     END IF
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                     XMAX = XMAX*REC
+                  END IF
+                  X( J ) = ZLADIV( X( J ), TJJS )
+                  XJ = CABS1( X( J ) )
+               ELSE
+*
+*                    A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
+*                    scale = 0, and compute a solution to A*x = 0.
+*
+                  DO 100 I = 1, N
+                     X( I ) = ZERO
+  100             CONTINUE
+                  X( J ) = ONE
+                  XJ = ONE
+                  SCALE = ZERO
+                  XMAX = ZERO
+               END IF
+  110          CONTINUE
+*
+*              Scale x if necessary to avoid overflow when adding a
+*              multiple of column j of A.
+*
+               IF( XJ.GT.ONE ) THEN
+                  REC = ONE / XJ
+                  IF( CNORM( J ).GT.( BIGNUM-XMAX )*REC ) THEN
+*
+*                    Scale x by 1/(2*abs(x(j))).
+*
+                     REC = REC*HALF
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                  END IF
+               ELSE IF( XJ*CNORM( J ).GT.( BIGNUM-XMAX ) ) THEN
+*
+*                 Scale x by 1/2.
+*
+                  CALL ZDSCAL( N, HALF, X, 1 )
+                  SCALE = SCALE*HALF
+               END IF
+*
+               IF( UPPER ) THEN
+                  IF( J.GT.1 ) THEN
+*
+*                    Compute the update
+*                       x(1:j-1) := x(1:j-1) - x(j) * A(1:j-1,j)
+*
+                     CALL ZAXPY( J-1, -X( J )*TSCAL, A( 1, J ), 1, X,
+     $                           1 )
+                     I = IZAMAX( J-1, X, 1 )
+                     XMAX = CABS1( X( I ) )
+                  END IF
+               ELSE
+                  IF( J.LT.N ) THEN
+*
+*                    Compute the update
+*                       x(j+1:n) := x(j+1:n) - x(j) * A(j+1:n,j)
+*
+                     CALL ZAXPY( N-J, -X( J )*TSCAL, A( J+1, J ), 1,
+     $                           X( J+1 ), 1 )
+                     I = J + IZAMAX( N-J, X( J+1 ), 1 )
+                     XMAX = CABS1( X( I ) )
+                  END IF
+               END IF
+  120       CONTINUE
+*
+         ELSE IF( LSAME( TRANS, 'T' ) ) THEN
+*
+*           Solve A**T * x = b
+*
+            DO 170 J = JFIRST, JLAST, JINC
+*
+*              Compute x(j) = b(j) - sum A(k,j)*x(k).
+*                                    k<>j
+*
+               XJ = CABS1( X( J ) )
+               USCAL = TSCAL
+               REC = ONE / MAX( XMAX, ONE )
+               IF( CNORM( J ).GT.( BIGNUM-XJ )*REC ) THEN
+*
+*                 If x(j) could overflow, scale x by 1/(2*XMAX).
+*
+                  REC = REC*HALF
+                  IF( NOUNIT ) THEN
+                     TJJS = A( J, J )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                  END IF
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.ONE ) THEN
+*
+*                       Divide by A(j,j) when scaling x if A(j,j) > 1.
+*
+                     REC = MIN( ONE, REC*TJJ )
+                     USCAL = ZLADIV( USCAL, TJJS )
+                  END IF
+                  IF( REC.LT.ONE ) THEN
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                     XMAX = XMAX*REC
+                  END IF
+               END IF
+*
+               CSUMJ = ZERO
+               IF( USCAL.EQ.DCMPLX( ONE ) ) THEN
+*
+*                 If the scaling needed for A in the dot product is 1,
+*                 call ZDOTU to perform the dot product.
+*
+                  IF( UPPER ) THEN
+                     CSUMJ = ZDOTU( J-1, A( 1, J ), 1, X, 1 )
+                  ELSE IF( J.LT.N ) THEN
+                     CSUMJ = ZDOTU( N-J, A( J+1, J ), 1, X( J+1 ), 1 )
+                  END IF
+               ELSE
+*
+*                 Otherwise, use in-line code for the dot product.
+*
+                  IF( UPPER ) THEN
+                     DO 130 I = 1, J - 1
+                        CSUMJ = CSUMJ + ( A( I, J )*USCAL )*X( I )
+  130                CONTINUE
+                  ELSE IF( J.LT.N ) THEN
+                     DO 140 I = J + 1, N
+                        CSUMJ = CSUMJ + ( A( I, J )*USCAL )*X( I )
+  140                CONTINUE
+                  END IF
+               END IF
+*
+               IF( USCAL.EQ.DCMPLX( TSCAL ) ) THEN
+*
+*                 Compute x(j) := ( x(j) - CSUMJ ) / A(j,j) if 1/A(j,j)
+*                 was not used to scale the dotproduct.
+*
+                  X( J ) = X( J ) - CSUMJ
+                  XJ = CABS1( X( J ) )
+                  IF( NOUNIT ) THEN
+                     TJJS = A( J, J )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                     IF( TSCAL.EQ.ONE )
+     $                  GO TO 160
+                  END IF
+*
+*                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
+*
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.SMLNUM ) THEN
+*
+*                       abs(A(j,j)) > SMLNUM:
+*
+                     IF( TJJ.LT.ONE ) THEN
+                        IF( XJ.GT.TJJ*BIGNUM ) THEN
+*
+*                             Scale X by 1/abs(x(j)).
+*
+                           REC = ONE / XJ
+                           CALL ZDSCAL( N, REC, X, 1 )
+                           SCALE = SCALE*REC
+                           XMAX = XMAX*REC
+                        END IF
+                     END IF
+                     X( J ) = ZLADIV( X( J ), TJJS )
+                  ELSE IF( TJJ.GT.ZERO ) THEN
+*
+*                       0 < abs(A(j,j)) <= SMLNUM:
+*
+                     IF( XJ.GT.TJJ*BIGNUM ) THEN
+*
+*                          Scale x by (1/abs(x(j)))*abs(A(j,j))*BIGNUM.
+*
+                        REC = ( TJJ*BIGNUM ) / XJ
+                        CALL ZDSCAL( N, REC, X, 1 )
+                        SCALE = SCALE*REC
+                        XMAX = XMAX*REC
+                     END IF
+                     X( J ) = ZLADIV( X( J ), TJJS )
+                  ELSE
+*
+*                       A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
+*                       scale = 0 and compute a solution to A**T *x = 0.
+*
+                     DO 150 I = 1, N
+                        X( I ) = ZERO
+  150                CONTINUE
+                     X( J ) = ONE
+                     SCALE = ZERO
+                     XMAX = ZERO
+                  END IF
+  160             CONTINUE
+               ELSE
+*
+*                 Compute x(j) := x(j) / A(j,j) - CSUMJ if the dot
+*                 product has already been divided by 1/A(j,j).
+*
+                  X( J ) = ZLADIV( X( J ), TJJS ) - CSUMJ
+               END IF
+               XMAX = MAX( XMAX, CABS1( X( J ) ) )
+  170       CONTINUE
+*
+         ELSE
+*
+*           Solve A**H * x = b
+*
+            DO 220 J = JFIRST, JLAST, JINC
+*
+*              Compute x(j) = b(j) - sum A(k,j)*x(k).
+*                                    k<>j
+*
+               XJ = CABS1( X( J ) )
+               USCAL = TSCAL
+               REC = ONE / MAX( XMAX, ONE )
+               IF( CNORM( J ).GT.( BIGNUM-XJ )*REC ) THEN
+*
+*                 If x(j) could overflow, scale x by 1/(2*XMAX).
+*
+                  REC = REC*HALF
+                  IF( NOUNIT ) THEN
+                     TJJS = DCONJG( A( J, J ) )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                  END IF
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.ONE ) THEN
+*
+*                       Divide by A(j,j) when scaling x if A(j,j) > 1.
+*
+                     REC = MIN( ONE, REC*TJJ )
+                     USCAL = ZLADIV( USCAL, TJJS )
+                  END IF
+                  IF( REC.LT.ONE ) THEN
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                     XMAX = XMAX*REC
+                  END IF
+               END IF
+*
+               CSUMJ = ZERO
+               IF( USCAL.EQ.DCMPLX( ONE ) ) THEN
+*
+*                 If the scaling needed for A in the dot product is 1,
+*                 call ZDOTC to perform the dot product.
+*
+                  IF( UPPER ) THEN
+                     CSUMJ = ZDOTC( J-1, A( 1, J ), 1, X, 1 )
+                  ELSE IF( J.LT.N ) THEN
+                     CSUMJ = ZDOTC( N-J, A( J+1, J ), 1, X( J+1 ), 1 )
+                  END IF
+               ELSE
+*
+*                 Otherwise, use in-line code for the dot product.
+*
+                  IF( UPPER ) THEN
+                     DO 180 I = 1, J - 1
+                        CSUMJ = CSUMJ + ( DCONJG( A( I, J ) )*USCAL )*
+     $                          X( I )
+  180                CONTINUE
+                  ELSE IF( J.LT.N ) THEN
+                     DO 190 I = J + 1, N
+                        CSUMJ = CSUMJ + ( DCONJG( A( I, J ) )*USCAL )*
+     $                          X( I )
+  190                CONTINUE
+                  END IF
+               END IF
+*
+               IF( USCAL.EQ.DCMPLX( TSCAL ) ) THEN
+*
+*                 Compute x(j) := ( x(j) - CSUMJ ) / A(j,j) if 1/A(j,j)
+*                 was not used to scale the dotproduct.
+*
+                  X( J ) = X( J ) - CSUMJ
+                  XJ = CABS1( X( J ) )
+                  IF( NOUNIT ) THEN
+                     TJJS = DCONJG( A( J, J ) )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                     IF( TSCAL.EQ.ONE )
+     $                  GO TO 210
+                  END IF
+*
+*                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
+*
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.SMLNUM ) THEN
+*
+*                       abs(A(j,j)) > SMLNUM:
+*
+                     IF( TJJ.LT.ONE ) THEN
+                        IF( XJ.GT.TJJ*BIGNUM ) THEN
+*
+*                             Scale X by 1/abs(x(j)).
+*
+                           REC = ONE / XJ
+                           CALL ZDSCAL( N, REC, X, 1 )
+                           SCALE = SCALE*REC
+                           XMAX = XMAX*REC
+                        END IF
+                     END IF
+                     X( J ) = ZLADIV( X( J ), TJJS )
+                  ELSE IF( TJJ.GT.ZERO ) THEN
+*
+*                       0 < abs(A(j,j)) <= SMLNUM:
+*
+                     IF( XJ.GT.TJJ*BIGNUM ) THEN
+*
+*                          Scale x by (1/abs(x(j)))*abs(A(j,j))*BIGNUM.
+*
+                        REC = ( TJJ*BIGNUM ) / XJ
+                        CALL ZDSCAL( N, REC, X, 1 )
+                        SCALE = SCALE*REC
+                        XMAX = XMAX*REC
+                     END IF
+                     X( J ) = ZLADIV( X( J ), TJJS )
+                  ELSE
+*
+*                       A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
+*                       scale = 0 and compute a solution to A**H *x = 0.
+*
+                     DO 200 I = 1, N
+                        X( I ) = ZERO
+  200                CONTINUE
+                     X( J ) = ONE
+                     SCALE = ZERO
+                     XMAX = ZERO
+                  END IF
+  210             CONTINUE
+               ELSE
+*
+*                 Compute x(j) := x(j) / A(j,j) - CSUMJ if the dot
+*                 product has already been divided by 1/A(j,j).
+*
+                  X( J ) = ZLADIV( X( J ), TJJS ) - CSUMJ
+               END IF
+               XMAX = MAX( XMAX, CABS1( X( J ) ) )
+  220       CONTINUE
+         END IF
+         SCALE = SCALE / TSCAL
+      END IF
+*
+*     Scale the column norms by 1/TSCAL for return.
+*
+      IF( TSCAL.NE.ONE ) THEN
+         CALL DSCAL( N, ONE / TSCAL, CNORM, 1 )
+      END IF
+*
+      RETURN
+*
+*     End of ZLATRS
+*
+      END
+      SUBROUTINE ZTREVC( SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
+     $                   LDVR, MM, M, WORK, RWORK, INFO )
+*
+*  -- LAPACK routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     June 30, 1999
+*
+*     .. Scalar Arguments ..
+      CHARACTER          HOWMNY, SIDE
+      INTEGER            INFO, LDT, LDVL, LDVR, M, MM, N
+*     ..
+*     .. Array Arguments ..
+      LOGICAL            SELECT( * )
+      DOUBLE PRECISION   RWORK( * )
+      COMPLEX*16         T( LDT, * ), VL( LDVL, * ), VR( LDVR, * ),
+     $                   WORK( * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  ZTREVC computes some or all of the right and/or left eigenvectors of
+*  a complex upper triangular matrix T.
+*
+*  The right eigenvector x and the left eigenvector y of T corresponding
+*  to an eigenvalue w are defined by:
+*
+*               T*x = w*x,     y'*T = w*y'
+*
+*  where y' denotes the conjugate transpose of the vector y.
+*
+*  If all eigenvectors are requested, the routine may either return the
+*  matrices X and/or Y of right or left eigenvectors of T, or the
+*  products Q*X and/or Q*Y, where Q is an input unitary
+*  matrix. If T was obtained from the Schur factorization of an
+*  original matrix A = Q*T*Q', then Q*X and Q*Y are the matrices of
+*  right or left eigenvectors of A.
+*
+*  Arguments
+*  =========
+*
+*  SIDE    (input) CHARACTER*1
+*          = 'R':  compute right eigenvectors only;
+*          = 'L':  compute left eigenvectors only;
+*          = 'B':  compute both right and left eigenvectors.
+*
+*  HOWMNY  (input) CHARACTER*1
+*          = 'A':  compute all right and/or left eigenvectors;
+*          = 'B':  compute all right and/or left eigenvectors,
+*                  and backtransform them using the input matrices
+*                  supplied in VR and/or VL;
+*          = 'S':  compute selected right and/or left eigenvectors,
+*                  specified by the logical array SELECT.
+*
+*  SELECT  (input) LOGICAL array, dimension (N)
+*          If HOWMNY = 'S', SELECT specifies the eigenvectors to be
+*          computed.
+*          If HOWMNY = 'A' or 'B', SELECT is not referenced.
+*          To select the eigenvector corresponding to the j-th
+*          eigenvalue, SELECT(j) must be set to .TRUE..
+*
+*  N       (input) INTEGER
+*          The order of the matrix T. N >= 0.
+*
+*  T       (input/output) COMPLEX*16 array, dimension (LDT,N)
+*          The upper triangular matrix T.  T is modified, but restored
+*          on exit.
+*
+*  LDT     (input) INTEGER
+*          The leading dimension of the array T. LDT >= max(1,N).
+*
+*  VL      (input/output) COMPLEX*16 array, dimension (LDVL,MM)
+*          On entry, if SIDE = 'L' or 'B' and HOWMNY = 'B', VL must
+*          contain an N-by-N matrix Q (usually the unitary matrix Q of
+*          Schur vectors returned by ZHSEQR).
+*          On exit, if SIDE = 'L' or 'B', VL contains:
+*          if HOWMNY = 'A', the matrix Y of left eigenvectors of T;
+*                           VL is lower triangular. The i-th column
+*                           VL(i) of VL is the eigenvector corresponding
+*                           to T(i,i).
+*          if HOWMNY = 'B', the matrix Q*Y;
+*          if HOWMNY = 'S', the left eigenvectors of T specified by
+*                           SELECT, stored consecutively in the columns
+*                           of VL, in the same order as their
+*                           eigenvalues.
+*          If SIDE = 'R', VL is not referenced.
+*
+*  LDVL    (input) INTEGER
+*          The leading dimension of the array VL.  LDVL >= max(1,N) if
+*          SIDE = 'L' or 'B'; LDVL >= 1 otherwise.
+*
+*  VR      (input/output) COMPLEX*16 array, dimension (LDVR,MM)
+*          On entry, if SIDE = 'R' or 'B' and HOWMNY = 'B', VR must
+*          contain an N-by-N matrix Q (usually the unitary matrix Q of
+*          Schur vectors returned by ZHSEQR).
+*          On exit, if SIDE = 'R' or 'B', VR contains:
+*          if HOWMNY = 'A', the matrix X of right eigenvectors of T;
+*                           VR is upper triangular. The i-th column
+*                           VR(i) of VR is the eigenvector corresponding
+*                           to T(i,i).
+*          if HOWMNY = 'B', the matrix Q*X;
+*          if HOWMNY = 'S', the right eigenvectors of T specified by
+*                           SELECT, stored consecutively in the columns
+*                           of VR, in the same order as their
+*                           eigenvalues.
+*          If SIDE = 'L', VR is not referenced.
+*
+*  LDVR    (input) INTEGER
+*          The leading dimension of the array VR.  LDVR >= max(1,N) if
+*           SIDE = 'R' or 'B'; LDVR >= 1 otherwise.
+*
+*  MM      (input) INTEGER
+*          The number of columns in the arrays VL and/or VR. MM >= M.
+*
+*  M       (output) INTEGER
+*          The number of columns in the arrays VL and/or VR actually
+*          used to store the eigenvectors.  If HOWMNY = 'A' or 'B', M
+*          is set to N.  Each selected eigenvector occupies one
+*          column.
+*
+*  WORK    (workspace) COMPLEX*16 array, dimension (2*N)
+*
+*  RWORK   (workspace) DOUBLE PRECISION array, dimension (N)
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -i, the i-th argument had an illegal value
+*
+*  Further Details
+*  ===============
+*
+*  The algorithm used in this program is basically backward (forward)
+*  substitution, with scaling to make the the code robust against
+*  possible overflow.
+*
+*  Each eigenvector is normalized so that the element of largest
+*  magnitude has magnitude 1; here the magnitude of a complex number
+*  (x,y) is taken to be |x| + |y|.
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      COMPLEX*16         CMZERO, CMONE
+      PARAMETER          ( CMZERO = ( 0.0D+0, 0.0D+0 ),
+     $                   CMONE = ( 1.0D+0, 0.0D+0 ) )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            ALLV, BOTHV, LEFTV, OVER, RIGHTV, SOMEV
+      INTEGER            I, II, IS, J, K, KI
+      DOUBLE PRECISION   OVFL, REMAX, SCALE, SMIN, SMLNUM, ULP, UNFL
+      COMPLEX*16         CDUM
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      INTEGER            IZAMAX
+      DOUBLE PRECISION   DLAMCH, DZASUM
+      EXTERNAL           LSAME, IZAMAX, DLAMCH, DZASUM
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           XERBLA, ZCOPY, ZDSCAL, ZGEMV, ZLATRS
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, DBLE, DCMPLX, DCONJG, DIMAG, MAX
+*     ..
+*     .. Statement Functions ..
+      DOUBLE PRECISION   CABS1
+*     ..
+*     .. Statement Function definitions ..
+      CABS1( CDUM ) = ABS( DBLE( CDUM ) ) + ABS( DIMAG( CDUM ) )
+*     ..
+*     .. Executable Statements ..
+*
+*     Decode and test the input parameters
+*
+      BOTHV = LSAME( SIDE, 'B' )
+      RIGHTV = LSAME( SIDE, 'R' ) .OR. BOTHV
+      LEFTV = LSAME( SIDE, 'L' ) .OR. BOTHV
+*
+      ALLV = LSAME( HOWMNY, 'A' )
+      OVER = LSAME( HOWMNY, 'B' )
+      SOMEV = LSAME( HOWMNY, 'S' )
+*
+*     Set M to the number of columns required to store the selected
+*     eigenvectors.
+*
+      IF( SOMEV ) THEN
+         M = 0
+         DO 10 J = 1, N
+            IF( SELECT( J ) )
+     $         M = M + 1
+   10    CONTINUE
+      ELSE
+         M = N
+      END IF
+*
+      INFO = 0
+      IF( .NOT.RIGHTV .AND. .NOT.LEFTV ) THEN
+         INFO = -1
+      ELSE IF( .NOT.ALLV .AND. .NOT.OVER .AND. .NOT.SOMEV ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDVL.LT.1 .OR. ( LEFTV .AND. LDVL.LT.N ) ) THEN
+         INFO = -8
+      ELSE IF( LDVR.LT.1 .OR. ( RIGHTV .AND. LDVR.LT.N ) ) THEN
+         INFO = -10
+      ELSE IF( MM.LT.M ) THEN
+         INFO = -11
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'ZTREVC', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible.
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
+*     Set the constants to control overflow.
+*
+      UNFL = DLAMCH( 'Safe minimum' )
+      OVFL = ONE / UNFL
+      CALL DLABAD( UNFL, OVFL )
+      ULP = DLAMCH( 'Precision' )
+      SMLNUM = UNFL*( N / ULP )
+*
+*     Store the diagonal elements of T in working array WORK.
+*
+      DO 20 I = 1, N
+         WORK( I+N ) = T( I, I )
+   20 CONTINUE
+*
+*     Compute 1-norm of each column of strictly upper triangular
+*     part of T to control overflow in triangular solver.
+*
+      RWORK( 1 ) = ZERO
+      DO 30 J = 2, N
+         RWORK( J ) = DZASUM( J-1, T( 1, J ), 1 )
+   30 CONTINUE
+*
+      IF( RIGHTV ) THEN
+*
+*        Compute right eigenvectors.
+*
+         IS = M
+         DO 80 KI = N, 1, -1
+*
+            IF( SOMEV ) THEN
+               IF( .NOT.SELECT( KI ) )
+     $            GO TO 80
+            END IF
+            SMIN = MAX( ULP*( CABS1( T( KI, KI ) ) ), SMLNUM )
+*
+            WORK( 1 ) = CMONE
+*
+*           Form right-hand side.
+*
+            DO 40 K = 1, KI - 1
+               WORK( K ) = -T( K, KI )
+   40       CONTINUE
+*
+*           Solve the triangular system:
+*              (T(1:KI-1,1:KI-1) - T(KI,KI))*X = SCALE*WORK.
+*
+            DO 50 K = 1, KI - 1
+               T( K, K ) = T( K, K ) - T( KI, KI )
+               IF( CABS1( T( K, K ) ).LT.SMIN )
+     $            T( K, K ) = SMIN
+   50       CONTINUE
+*
+            IF( KI.GT.1 ) THEN
+               CALL ZLATRS( 'Upper', 'No transpose', 'Non-unit', 'Y',
+     $                      KI-1, T, LDT, WORK( 1 ), SCALE, RWORK,
+     $                      INFO )
+               WORK( KI ) = SCALE
+            END IF
+*
+*           Copy the vector x or Q*x to VR and normalize.
+*
+            IF( .NOT.OVER ) THEN
+               CALL ZCOPY( KI, WORK( 1 ), 1, VR( 1, IS ), 1 )
+*
+               II = IZAMAX( KI, VR( 1, IS ), 1 )
+               REMAX = ONE / CABS1( VR( II, IS ) )
+               CALL ZDSCAL( KI, REMAX, VR( 1, IS ), 1 )
+*
+               DO 60 K = KI + 1, N
+                  VR( K, IS ) = CMZERO
+   60          CONTINUE
+            ELSE
+               IF( KI.GT.1 )
+     $            CALL ZGEMV( 'N', N, KI-1, CMONE, VR, LDVR, WORK( 1 ),
+     $                        1, DCMPLX( SCALE ), VR( 1, KI ), 1 )
+*
+               II = IZAMAX( N, VR( 1, KI ), 1 )
+               REMAX = ONE / CABS1( VR( II, KI ) )
+               CALL ZDSCAL( N, REMAX, VR( 1, KI ), 1 )
+            END IF
+*
+*           Set back the original diagonal elements of T.
+*
+            DO 70 K = 1, KI - 1
+               T( K, K ) = WORK( K+N )
+   70       CONTINUE
+*
+            IS = IS - 1
+   80    CONTINUE
+      END IF
+*
+      IF( LEFTV ) THEN
+*
+*        Compute left eigenvectors.
+*
+         IS = 1
+         DO 130 KI = 1, N
+*
+            IF( SOMEV ) THEN
+               IF( .NOT.SELECT( KI ) )
+     $            GO TO 130
+            END IF
+            SMIN = MAX( ULP*( CABS1( T( KI, KI ) ) ), SMLNUM )
+*
+            WORK( N ) = CMONE
+*
+*           Form right-hand side.
+*
+            DO 90 K = KI + 1, N
+               WORK( K ) = -DCONJG( T( KI, K ) )
+   90       CONTINUE
+*
+*           Solve the triangular system:
+*              (T(KI+1:N,KI+1:N) - T(KI,KI))'*X = SCALE*WORK.
+*
+            DO 100 K = KI + 1, N
+               T( K, K ) = T( K, K ) - T( KI, KI )
+               IF( CABS1( T( K, K ) ).LT.SMIN )
+     $            T( K, K ) = SMIN
+  100       CONTINUE
+*
+            IF( KI.LT.N ) THEN
+               CALL ZLATRS( 'Upper', 'Conjugate transpose', 'Non-unit',
+     $                      'Y', N-KI, T( KI+1, KI+1 ), LDT,
+     $                      WORK( KI+1 ), SCALE, RWORK, INFO )
+               WORK( KI ) = SCALE
+            END IF
+*
+*           Copy the vector x or Q*x to VL and normalize.
+*
+            IF( .NOT.OVER ) THEN
+               CALL ZCOPY( N-KI+1, WORK( KI ), 1, VL( KI, IS ), 1 )
+*
+               II = IZAMAX( N-KI+1, VL( KI, IS ), 1 ) + KI - 1
+               REMAX = ONE / CABS1( VL( II, IS ) )
+               CALL ZDSCAL( N-KI+1, REMAX, VL( KI, IS ), 1 )
+*
+               DO 110 K = 1, KI - 1
+                  VL( K, IS ) = CMZERO
+  110          CONTINUE
+            ELSE
+               IF( KI.LT.N )
+     $            CALL ZGEMV( 'N', N, N-KI, CMONE, VL( 1, KI+1 ), LDVL,
+     $                        WORK( KI+1 ), 1, DCMPLX( SCALE ),
+     $                        VL( 1, KI ), 1 )
+*
+               II = IZAMAX( N, VL( 1, KI ), 1 )
+               REMAX = ONE / CABS1( VL( II, KI ) )
+               CALL ZDSCAL( N, REMAX, VL( 1, KI ), 1 )
+            END IF
+*
+*           Set back the original diagonal elements of T.
+*
+            DO 120 K = KI + 1, N
+               T( K, K ) = WORK( K+N )
+  120       CONTINUE
+*
+            IS = IS + 1
+  130    CONTINUE
+      END IF
+*
+      RETURN
+*
+*     End of ZTREVC
+*
+      END

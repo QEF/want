@@ -12,10 +12,11 @@
 !------------------------------------------------------------------------------!
     MODULE mp
 !------------------------------------------------------------------------------!
-      USE kinds,     ONLY : dbl, i4b
-      USE io_module, ONLY : stdout
+      USE kinds,            ONLY : dbl, i4b
+      USE io_global_module, ONLY : stdout
       USE parallel_include
       IMPLICIT NONE
+      !
 
 !      PRIVATE
       PUBLIC :: mp_start, mp_end, mp_env, mp_group, mp_cart_create, &

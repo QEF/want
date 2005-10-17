@@ -39,9 +39,9 @@ RANLIB         = @ranlib@
 DFLAGS         = @dflags@
 FDFLAGS        = @fdflags@
 IFLAGS         = -I../include @ifftw@
-MODFLAGS       = @imod@. @imod@../Modules @imod@../iotk @imod@../Main
+MODFLAGS       = @imod@. @imod@../iotk @imod@../libs @imod@../wannier @imod@../transport
 
-LIBOBJS        = ../iotk/libiotk.a ../Libs/libwant.a
+LIBOBJS        = ../iotk/libiotk.a ../libs/libwant.a
 # LIBS must contain the location of all needed external libraries
 LIBS           = @libs@
 # MYLIB can be one of the following (depending on LIBS):

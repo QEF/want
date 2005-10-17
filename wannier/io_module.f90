@@ -12,6 +12,8 @@
 !*********************************************
    USE parameters, ONLY : nstrx
    USE iotk_module
+   USE io_global_module, ONLY : stdout, stdin, ionode, ionode_id, &
+                                io_global_start, io_global_getionode
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -36,8 +38,6 @@
 ! </INFO>
 !
    INTEGER, PARAMETER         ::   &
-          stdin = 5,               &! std input unit
-         stdout = 6,               &! std output unit
        dft_unit = 10,              &! input file (DFT data) unit
     pseudo_unit = 11,              &! input pseudopotential data unit
        ovp_unit = 20,              &! overlap and projections unit
@@ -66,10 +66,6 @@
    CHARACTER(nstrx)           :: title
    CHARACTER(nstrx)           :: pseudo_dir
          
-   INTEGER :: ionode_id = 0
-   LOGICAL :: ionode = .TRUE.
-   LOGICAL :: first = .TRUE.
-
 !
 ! end delcarations
 !
@@ -201,56 +197,6 @@
       CALL iotk_write_empty(unit,name,ATTR=attr)
 
    END SUBROUTINE write_iodata
-
-!
-! Copyright (C) 2002 FPMD & PWSCF group
-! This file is distributed under the terms of the
-! GNU General Public License. See the file `License'
-! in the root directory of the present distribution,
-! or http://www.gnu.org/copyleft/gpl.txt .
-!
-     !
-     !-----------------------------------------------------------------------
-     SUBROUTINE io_global_start( mpime, ionode_set )
-       !-----------------------------------------------------------------------
-       !
-       IMPLICIT NONE
-       !
-       INTEGER, INTENT(IN) :: mpime, ionode_set
-       !
-       !
-       IF ( mpime == ionode_set ) THEN
-          ionode = .TRUE.
-       ELSE
-          ionode = .FALSE.
-       END IF
-       !
-       ionode_id = ionode_set
-       first = .FALSE.
-       !
-       RETURN
-       !
-     END SUBROUTINE io_global_start
-     !
-     !
-     !-----------------------------------------------------------------------
-     SUBROUTINE io_global_getionode( ionode_out, ionode_id_out )
-       !-----------------------------------------------------------------------
-       !
-       IMPLICIT NONE
-       !
-       LOGICAL, INTENT(OUT) :: ionode_out
-       INTEGER, INTENT(OUT) :: ionode_id_out
-       !
-       !
-       IF ( first ) &
-          CALL errore( ' get_ionode ', ' ionode not yet defined ', 1 )
-       ionode_out = ionode
-       ionode_id_out = ionode_id
-       !
-       RETURN
-       !
-     END SUBROUTINE io_global_getionode
 
 END MODULE io_module
 
