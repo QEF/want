@@ -15,7 +15,6 @@
    USE parameters,       ONLY : nstrx 
    USE startup_module,   ONLY : startup
    USE version_module,   ONLY : version_number
-   USE cleanup_module,   ONLY : cleanup
    USE io_module,        ONLY : stdout, stdin, sgm_unit => aux_unit,   &
                                 dos_unit => aux1_unit, cond_unit => aux2_unit
    USE iotk_module
@@ -475,6 +474,8 @@
 !
       CALL timing('conductor',OPR='stop')
       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='conductor')
+      CALL timing_deallocate()
+
 
 
 !
@@ -548,8 +549,6 @@
            IF( ierr /=0 ) CALL errore('conductor', ' deallocating sgm_r ', 1 )
       DEALLOCATE ( egrid, STAT=ierr )
            IF( ierr /=0 ) CALL errore('conductor', ' deallocating egrid ', 1 )
-
-      CALL cleanup()
 
 END PROGRAM conductor
   
