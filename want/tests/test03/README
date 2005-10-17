@@ -1,6 +1,6 @@
 
 ==============================================================================
-TEST08   Isolated benzene molecule (both NC and USPP)
+@title@   Isolated benzene molecule (both NC and USPP)
 ==============================================================================
 
 This test performs the calculation of the wannier functions for the

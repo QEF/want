@@ -477,7 +477,6 @@
       CALL timing_deallocate()
 
 
-
 !
 !...  free memory
 !

@@ -13,10 +13,14 @@ read_matrix.o \
 transfer.o \
 transmittance.o
 
+WANNIER_OBJS= \
+../wannier/io_module.o \
+../wannier/startup.o \
+../wannier/version.o
+
 
 EXTERNAL_LIBS= ../iotk/libiotk.a ../libs/libwant.a
-LOCAL_LIBS=    ../wannier/libwannier.a ./libtrans.a
-BIN_DEPS=      $(LOCAL_LIBS) $(EXTERNAL_LIBS)
+BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 
 #
 # main targets
@@ -24,12 +28,8 @@ BIN_DEPS=      $(LOCAL_LIBS) $(EXTERNAL_LIBS)
 all: conductor.x 
 
 
-libtrans.a : $(OBJS)
-	$(AR) $(ARFLAGS) $@ $?
-	$(RANLIB) $@
-
 conductor.x: conductor.o $(BIN_DEPS)
-	$(LD) -o $@ conductor.o $(LOCAL_LIBS) $(LDFLAGS)
+	$(LD) -o $@ conductor.o $(OBJS) $(WANNIER_OBJS) $(LDFLAGS)
 	- ( cd ../bin ; ln -sf ../transport/$@ . )
 
 clean:
