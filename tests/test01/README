@@ -1,7 +1,7 @@
 
 
 ==============================================================================
-TEST01   Silicon bulk (NCPP & USPP)
+@title@   Silicon bulk (NCPP & USPP)
 ==============================================================================
 
 Wannier function calculation for Silicon bulk. No transport calculation is performed. 

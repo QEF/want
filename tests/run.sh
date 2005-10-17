@@ -6,9 +6,9 @@
 # Input flags for this script (./run.sh FLAG): 
 #
 MANUAL=" Usage
-   run.sh [-h] [-r <flag>] [<Test_list>] 
+   run.sh [-h] [-r <flag>] [<test_list>] 
 
- run the action <flag> on the <Test_list> 
+ run the action <flag> on the <test_list> 
  if <flag> is not present the action is assumed as "ALL" while
  if the <test_list> is missing ALL tests are included.
  When the command line is empty the following manual page is printed:
@@ -46,7 +46,7 @@ LIST="$*"
 
 if [ -z "$LIST" -a -z "$ACTION" ] ; then echo "$MANUAL" ; exit 0 ; fi
 if [ -z "$ACTION" ] ; then ACTION="all" ; fi
-if [ -z "$LIST" ] ; then LIST=$(ls -d Test*/ ) ; fi
+if [ -z "$LIST" ] ; then LIST=$(ls -d test*/ ) ; fi
 
 tmp=$( echo $ACTION | tr [:upper:] [:lower:] )
 ACTION=$tmp
@@ -91,8 +91,8 @@ do
     # info
     #
     if [ "$ACTION" = "info" ] ; then
-        str="$(grep TEST README 2> /dev/null)"
-        echo "${mytest%\/}     ${str#TEST[0-9]* }"
+        str="$(grep @title@ README 2> /dev/null)"
+        echo "${mytest%\/}     ${str#@title@ }"
         
     #
     # update_ref

@@ -94,8 +94,7 @@ plot.x \
 blc2wan.x
 
 EXTERNAL_LIBS= ../iotk/libiotk.a ../libs/libwant.a 
-LOCAL_LIBS=    ./libwannier.a 
-BIN_DEPS=      $(LOCAL_LIBS) $(EXTERNAL_LIBS)
+BIN_DEPS=      $(OBJS) $(EXTERNAL_LIBS)
 
 #
 # main targets
@@ -103,28 +102,24 @@ BIN_DEPS=      $(LOCAL_LIBS) $(EXTERNAL_LIBS)
 all : $(BIN)
 
 
-libwannier.a : $(OBJS)
-	$(AR) $(ARFLAGS) $@ $?
-	$(RANLIB) $@
-
 disentangle.x: disentangle.o $(BIN_DEPS)
-	$(LD) -o $@ disentangle.o $(LOCAL_LIBS) $(LDFLAGS)
+	$(LD) -o $@ disentangle.o $(OBJS) $(LDFLAGS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
 wannier.x:     wannier.o $(BIN_DEPS)
-	$(LD) -o $@ wannier.o $(LOCAL_LIBS) $(LDFLAGS)
+	$(LD) -o $@ wannier.o $(OBJS) $(LDFLAGS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
 plot.x:        plot.o $(BIN_DEPS)
-	$(LD) -o $@ plot.o $(LOCAL_LIBS) $(LDFLAGS)
+	$(LD) -o $@ plot.o $(OBJS) $(LDFLAGS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
 bands.x:       bands.o $(BIN_DEPS)
-	$(LD) -o $@ bands.o $(LOCAL_LIBS) $(LDFLAGS)
+	$(LD) -o $@ bands.o $(OBJS) $(LDFLAGS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
 blc2wan.x:     blc2wan.o $(BIN_DEPS)
-	$(LD) -o $@ blc2wan.o $(LOCAL_LIBS) $(LDFLAGS)
+	$(LD) -o $@ blc2wan.o $(OBJS) $(LDFLAGS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
 #

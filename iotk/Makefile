@@ -51,7 +51,7 @@ libiotk.a : $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
     
 clean:
-	rm -rf *.o *.a *core *.F90 *.mod work.pc work.pcl
+	rm -rf *.o *.a *core *.F90 *.mod *.d work.pc work.pcl
 
 # dependencies
 include make.depend

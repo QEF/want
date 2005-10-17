@@ -1,6 +1,6 @@
 #! /bin/bash 
 #
-# Test11
+# AlN zincblend NCPP
 # 
 #================================================================
 #
@@ -33,8 +33,8 @@ MANUAL=" Usage
 # source common enviroment, to be set before running the script
 . ../environment.conf
 . $UTILITY_BIN/basedef.sh
-TEST_HOME=`pwd`
-TEST_NAME=Test11
+TEST_HOME=$(pwd)
+TEST_NAME=$(echo $TEST_HOME | sed 's/\//\n/g' | tail -1)
 PSEUDO_LIST="Al.pbe-rrkj.UPF N.pbe-gp.UPF"
 SUFFIX="_ZB"
 
@@ -78,7 +78,7 @@ if [ -z "$CLEAN" ] ; then
    test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
    cd $TMPDIR/$TEST_NAME
    for item in $PSEUDO_LIST ; do
-       ln -sf $TEST_HOME/../Pseudo/$item
+       ln -sf $TEST_HOME/../pseudo/$item
    done
    if [ ! -e $TEST_HOME/SCRATCH ] ; then
        cd $TEST_HOME
