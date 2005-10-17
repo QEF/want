@@ -16,25 +16,21 @@ default:
 	@echo  "  to compile,   type:  make <target>"
 	@echo 
 	@echo  "  Possible <target>'s are: "
+	@echo  "     wannier            compile Wannier function suite"
+	@echo  "     transport          compile transport executables"
+	@echo  "     libwant            compile the want utility library"
 	@echo  "     libiotk            compile iotk library"
-	@echo  "     disentangle        WanT step 1: subspace determination"
-	@echo  "     wannier            WanT step 2: localization procedure"
-	@echo  "     bands              interpolate band structure using WFs"
-	@echo  "     plot               utility for WF plotting"
-	@echo  "     blc2wan            converts operators to WF basis"
-	@echo  "     conductor          compile transport code"
-	@echo  "     tran               as before"
 	@echo 
 	@echo  "     all                all the above executables "
 	@echo  "     clean              remove executables and objects"
 	@echo  "     clean_test         clean up the test examples"
-	@echo  "     veryclean          revert distribution to the original status"
+	@echo  "     wash               revert distribution to the original status"
 	@echo 
 
 #
 # MAIN target
 #
-all: main tran
+all: wannier transport
 
 # 
 # LIBS and MODULES
@@ -42,38 +38,18 @@ all: main tran
 libiotk:
 	if test -d iotk ; then \
 	( cd iotk ; $(MAKE) ) ; fi
-mod: libiotk
-	if test -d Modules ; then \
-	( cd Modules ; $(MAKE) ) ; fi
-lib: libiotk mod
-	if test -d Libs ; then \
-	( cd Libs ; $(MAKE) ) ; fi
-main: libiotk mod lib 
-	if test -d Main ; then \
-	( cd Main ; $(MAKE) ) ; fi
 
-#
-# EXPLICIT reference to EXECUTABLES
-#
-disentangle: lib mod
-	if test -d Main ; then \
-	( cd Main ; $(MAKE) disentangle.x ) ; fi
-wannier: lib mod
-	if test -d Main ; then \
-	( cd Main ; $(MAKE) wannier.x ) ; fi
-bands: lib mod
-	if test -d Main ; then \
-	( cd Main ; $(MAKE) bands.x ) ; fi
-plot: lib mod
-	if test -d Main ; then \
-	( cd Main ; $(MAKE) plot.x ) ; fi
-blc2wan: lib mod
-	if test -d Main ; then \
-	( cd Main ; $(MAKE) blc2wan.x ) ; fi
-conductor: tran
-tran: lib mod
-	if test -d Transport ; then \
-	( cd Transport ; $(MAKE) conductor.x ) ; fi
+libwant: libiotk
+	if test -d libs ; then \
+	( cd libs ; $(MAKE) ) ; fi
+
+wannier: libiotk libwant
+	if test -d wannier ; then \
+	( cd wannier ; $(MAKE) ) ; fi
+
+transport: libiotk libwant
+	if test -d transport ; then \
+	( cd transport ; $(MAKE) ) ; fi
 
 
 #
@@ -81,18 +57,17 @@ tran: lib mod
 #
 clean:
 	cd iotk;      $(MAKE) clean;
-	cd Modules;   $(MAKE) clean;
-	cd Libs;      $(MAKE) clean;
-	cd Main;      $(MAKE) clean;
-	cd Transport; $(MAKE) clean;
+	cd libs;      $(MAKE) clean;
+	cd wannier;   $(MAKE) clean;
+	cd transport; $(MAKE) clean;
 	- /bin/rm -rf bin/*.x
 
 clean_test:
-	if test -d Tests ; then \
-	( cd Tests ; ./run.sh -r clean ) ; fi
+	if test -d tests ; then \
+	( cd tests ; ./run.sh -r clean ) ; fi
 
-veryclean : clean clean_test
-	- /bin/rm -rf make.rules make.sys */.dependencies \
-		config.log config.status */dum1 */dum2 bin/*.x \
-		intel.pcl */intel.pcl
+wash : clean clean_test
+	- /bin/rm -rf make.sys */make.depend \
+		conf/config.log conf/config.status \
+	        */dum1 */dum2 bin/*.x 
 
