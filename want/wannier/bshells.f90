@@ -39,7 +39,7 @@
    INTEGER   :: nq, rank
    LOGICAL   :: eqv_found, found
    !
-   REAL(dbl) :: aux, vkb(3), vtmp(3)
+   REAL(dbl) :: aux, aux1, vkb(3), vtmp(3)
    REAL(dbl) :: work(6,6), work1(6,6), rhs(6)
    !
    INTEGER   :: lwork_aux, info, ipiv(6)
@@ -110,14 +110,45 @@
       IF (ierr/=0) CALL errore('bshells','allocating vb_aux, vbb, ivb ',ABS(ierr))
 
    !
-   ! first found the 12 candidates
-   ! search for 6 not parallel to each other
+   ! first found the candidates:
+   ! search for 6 vectors not parallel to each other
+   ! always include the 3 vectors parallel to the generators of 
+   ! the reciprocal lattice
    !
 
-   ivb(1)  = index(2)          
-   vb_aux(:,1) = vq(:, index(2) )
-   vbb(1)  = vqq(2)
-   inum = 1
+   inum = 0
+   !
+   ! found the 3 vectors parallel to the reciprocal lattice gen.
+   !
+   DO j = 1, 3
+
+      ! suqared norm of the generators
+      aux1 = DOT_PRODUCT( bvec(:,j), bvec(:,j) ) 
+
+      found = .FALSE.
+      DO i = 2, nq
+          !
+          aux = DOT_PRODUCT( bvec(:,j),vq(:,index(i)) ) /  &
+                    SQRT( aux1 * vqq(i) )
+          aux = ABS(aux)
+          !
+          IF ( ABS( aux - ONE ) < EPS_m6 ) THEN
+             found = .TRUE.
+             !
+             inum = inum +1
+             ivb(inum)  = index(i)
+             vb_aux(:,inum) = vq(:, ivb(inum) )
+             vbb(inum)  = vqq( i )
+             !
+             EXIT
+          ENDIF 
+      ENDDO
+      !
+      IF ( .NOT. found ) CALL errore('bshells','vb parallel to bvec not found',j)
+   ENDDO
+    
+   !
+   ! now search for the reamining vectors
    !
    DO i = 3, nq      
        eqv_found = .FALSE.
@@ -271,7 +302,6 @@
    !
    wbtot = SUM( wb(1:nb) )
 
-
 !
 !  now check that the completeness relation is satisfied
 !  (see Appendix B, PRB 56 12847 (1997) for more details )
@@ -285,11 +315,12 @@
       DO ib = 1, nb
           aux = aux + wb(ib) * vb(i,ib) * vb(j,ib)
       ENDDO
+
       IF ( i == j ) aux = aux - ONE
       !
       IF ( ABS( aux ) > EPS_m6 ) &
-         CALL errore('bshells', 'sum rule not satisfied', i+j )
-         !   
+        CALL errore('bshells', 'sum rule not satisfied', i+j )
+        !   
    ENDDO
    ENDDO
 

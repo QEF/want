@@ -3,12 +3,30 @@
             WanT code:  Log of Changes 
 =======================================================
 
-17 Oct 2005      repository restyling done: src dirs now are libs, wannier and 
+
+-------------------------------------------------
+Date: XX Nov 2005    Version: WanT-2.0.0
+-------------------------------------------------
+
+
+24 Oct 2005      Bug fixed in bshells: algorith generalized (courtesy of BB and AC). (AF)
+
+20 Oct 2005      Cleaning in green.f90 ; startup and cleanup modules made simple 
+                 routines. Plot input added to test02. (AF)
+                 Data and input modules added to transport code 
+                 (control, hamiltonian, egrid, input_parameters, input); 
+                 cleanup routine added. (BB)
+
+19 Oct 2005      Global cleanup of unused variables; omegai.f90 intergace changed and
+                 simplified; test05 refs updated. (AF)
+                 Data and input modules added to transport. (BB)
+
+17 Oct 2005      Repository restyling done: src dirs now are libs, wannier and 
                  transport. Makefile system changed. Tests renamed.
                  Local copies of blas and lapack updated. Test scripts updated. (AF)
 
 14 Oct 2005      Further optimizations in wannier.f90; merging with updates in 
-                 transport; test check and reference update; (AF)
+                 transport; test check and reference updated; (AF)
 
 13 Oct 2005      Routine unitary_update.f90 added to libs: wannier main changed 
                  accordingly. Wigner_seitz: check added. (AF)
