@@ -1,6 +1,6 @@
 
   &INPUT_CONDUCTOR
-    nmxc = 12
+    dimC = 12
     calculation_type = 'bulk'
     ne = 1000  
     emin = -10.0

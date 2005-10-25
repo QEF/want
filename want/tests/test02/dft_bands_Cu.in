@@ -17,6 +17,7 @@ copper FCC bulk pw91
       occupations='smearing',
       smearing='gaussian',
       degauss=0.006,
+      nbnd = 16
  /
  &ELECTRONS
     electron_maxstep = 50,

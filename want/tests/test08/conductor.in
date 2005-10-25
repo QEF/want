@@ -1,7 +1,7 @@
 
 
   &INPUT_CONDUCTOR
-    nmxc = 4
+    dimC = 4
     calculation_type = 'bulk'
     ne = 1000
     niterx = 200

@@ -8,9 +8,9 @@
 !
 ! Based on a previous version by Nicola Marzari and David Vanderbilt
 !
-!*****************************************************
+!=====================================================
    PROGRAM bands
-   !*****************************************************
+   !=====================================================
    !  
    ! Interpolates the band structure from the knowledge of
    ! the direct lattice hamiltonian on Wannier function basis
@@ -23,8 +23,6 @@
    USE files_module,         ONLY : file_open, file_close
    USE timing_module,        ONLY : timing, timing_overview, global_list
    USE parser_module
-   USE startup_module,       ONLY : startup
-   USE cleanup_module,       ONLY : cleanup
    USE want_init_module,     ONLY : want_init
    USE summary_module,       ONLY : summary
    USE version_module,       ONLY : version_number
@@ -71,7 +69,7 @@
 ! main body
 !------------------------------
 !
-      CALL startup(version_number,MAIN_NAME='bands')
+      CALL startup(version_number,'bands')
 
 
 !

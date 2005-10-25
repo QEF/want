@@ -28,7 +28,6 @@
    USE localization_module, ONLY : localization_read, cu 
    USE overlap_module, ONLY : Mkb, ca, dimwann, nkpts 
    USE control_module, ONLY : unitary_thr
-   USE kpoints_module, ONLY : nb
    IMPLICIT NONE
 
    !

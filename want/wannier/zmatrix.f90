@@ -34,7 +34,7 @@ SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
   ! few local variables
   !
   INTEGER :: ib
-  INTEGER :: m, n, mf, nf, l, j, ierr
+  INTEGER :: m, n, mf, nf, l
 
 !
 !--------------------------------------------------------------------

@@ -133,14 +133,14 @@ CONTAINS
       CHARACTER(9)                        :: action_
       CHARACTER(10*nstrx)                 :: path_
        
-      LOGICAL                             :: fmt_iotk, tmp, binary, new
+      LOGICAL                             :: fmt_iotk, tmp, binary
       INTEGER                             :: ierr, ndir, i
       CHARACTER(nstrx), POINTER           :: tags(:)
 
       !
       ! Allowed value for OPENING attributes
       !
-      ! STATUS     = "old", "new", "replace", "unknown"
+      ! STATUS     = "old", "replace", "unknown"
       ! ACCESS     = "direct", "sequential"
       ! FORM       = "formatted", "unformatted"
       ! POSITION   = "asis", "rewind", "append"
@@ -250,8 +250,6 @@ CONTAINS
          
          binary = .FALSE.  
          IF ( TRIM(form_) == "UNFORMATTED" ) binary = .TRUE.
-         new = .FALSE.
-         IF ( TRIM(status_) == "NEW" ) new = .TRUE.
          
          SELECT CASE (TRIM(action_))
          CASE("READ")

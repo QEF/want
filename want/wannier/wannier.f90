@@ -8,9 +8,9 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-      PROGRAM wannier
-!=----------------------------------------------------------------------------------=
+!=====================================================
+   PROGRAM wannier
+   !=====================================================
 
       USE kinds
       USE constants, ONLY: CZERO, CONE, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
@@ -22,15 +22,13 @@
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
       USE files_module, ONLY : file_open, file_close
-      USE startup_module, ONLY : startup
-      USE cleanup_module, ONLY : cleanup
       USE version_module, ONLY : version_number
       USE util_module, ONLY: zmat_unitary, mat_mul, mat_svd, mat_hdiag
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
       USE kpoints_module, ONLY: nkpts, nb, wbtot
-      USE overlap_module,  ONLY : dimwann, ca, Mkb
+      USE overlap_module,  ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr, cu, rave, rave2, r2ave, &
                        Omega_I, Omega_D, Omega_OD, Omega_tot, &
@@ -44,10 +42,7 @@
 !
       IMPLICIT NONE
 
-      INTEGER :: ik 
-      INTEGER :: i, j
-      INTEGER :: m, n
-      INTEGER :: info, ierr
+      INTEGER :: ik, m, n, ierr
       INTEGER :: ncgfix, ncount, iter
       LOGICAL :: lcg, do_conjgrad
       REAL(dbl) :: Omega_old, Omega_var, Omega0, OmegaA
@@ -74,7 +69,7 @@
 ! ... Startup
 !--------------------------------------------
 !
-      CALL startup(version_number,MAIN_NAME='wannier')
+      CALL startup(version_number,'wannier')
 
       !
       ! ... Read input parameters from DFT_DATA file

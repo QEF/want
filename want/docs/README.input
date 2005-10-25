@@ -541,15 +541,15 @@ INPUT file layout
 
 NAMELIST &INPUT_CONDUCTOR
 
-nmxa        INTEGER
+dimA        INTEGER
             number of sites in the lead A
             DEFAULT : 0
             
-nmxb        INTEGER
+dimB        INTEGER
             number of sites in the lead B
             DEFAULT : 0
 
-nmxc        INTEGER
+dimC        INTEGER
             number of sites in the conductor C
             DEFAULT : 0
 

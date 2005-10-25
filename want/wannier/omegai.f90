@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************
-    SUBROUTINE omegai( Omega_I, mdim, dimwann, dimwin, nkpts, Mkb )
+    SUBROUTINE omegai( Omega_I, dimwann, nkpts, Mkb )
    !***************************************************
    !
    ! Calculates the contribution of a given k-point to Omega_I
@@ -30,21 +30,19 @@
    ! input variables
    !
    REAL(dbl),    INTENT(out) :: Omega_I
-   INTEGER,      INTENT(in)  :: mdim, dimwann, nkpts, dimwin(nkpts)
+   INTEGER,      INTENT(in)  :: dimwann, nkpts
    COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nb,nkpts)
  
    !
    ! local variables
    !
    INTEGER :: m, n 
-   INTEGER :: ik, ib, ikb, ierr
+   INTEGER :: ik, ib
 
 !----------------------------------------------------------------
 
    CALL timing('omegai',OPR='start') 
   
-   IF ( mdim < 0 .OR. mdim > dimwann ) CALL errore('omegai','invalid mdim',ABS(mdim)+1)
-   
    Omega_I = ZERO
    !
    ! ...  Loop over k- and b-vectors
@@ -53,7 +51,7 @@
    DO ib = 1, nb
 
        DO n = 1, dimwann     
-       DO m = 1, mdim   
+       DO m = 1, dimwann
             Omega_I = Omega_I - wb(ib) * &
                       REAL( CONJG( Mkb(m,n,ib,ik) ) * Mkb(m,n,ib,ik) )
        ENDDO 

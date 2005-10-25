@@ -202,7 +202,7 @@
           !
           kpoints : &
           DO ik=1,nkpts
-             WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point ',i3)") ik
+             WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point ',i4)") ik
 
              CALL wfc_data_kread(dft_unit, ik, "IK", evc, evc_info)
 
@@ -374,7 +374,8 @@
           CALL file_close(ovp_unit,PATH="/",ACTION="write")
 
           CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
-          WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") TRIM(filename)
+          WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") &
+                 TRIM(filename)
       ENDIF
 
       CALL timing_upto_now(stdout)

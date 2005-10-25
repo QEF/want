@@ -19,7 +19,7 @@
 ! This module contains the definitions of the parameters in the
 ! input file and of thier default values (when any). 
 ! These data are then exported to the input module where the
-! main routine control the IO and after that exported to the
+! main routine controls the IO and after that exports to the
 ! final modules where internal data are stored.
 !
 ! Here are also the routine reading and checking each NAMELIST

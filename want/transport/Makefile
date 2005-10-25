@@ -7,8 +7,14 @@ include ../make.sys
 
 
 OBJS= \
+cleanup.o \
+control.o \
+egrid.o \
 green.o \
-hamiltonian_setup.o \
+hamiltonian.o \
+hamiltonian_init.o \
+input.o \
+input_parameters.o \
 read_matrix.o \
 transfer.o \
 transmittance.o
@@ -33,7 +39,7 @@ conductor.x: conductor.o $(BIN_DEPS)
 	- ( cd ../bin ; ln -sf ../transport/$@ . )
 
 clean:
-	rm -rf *.o *.a *core  work.pc work.pcl *.mod *.x
+	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x
 
 # dependencies
 include make.depend

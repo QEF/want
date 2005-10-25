@@ -8,17 +8,14 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************************
-   SUBROUTINE green( nmax, tot, tott, c00, c01, ene, g, igreen, invert)
+   SUBROUTINE green( dim, tot, tott, c00, c01, ene, g, igreen)
    !***********************************************************************************
    !
-   !...  Construct green's functions
+   !  Construct green's functions
    !     
-   !     igreen = -1  right surface - left transfer
-   !     igreen =  1  left surface - right transfer
-   !     igreen =  0  bulk
-   !
-   !...  invert = 0 computes g^-1
-   !     invert = 1 computes g^-1 and g
+   !  igreen = -1  right surface - left transfer
+   !  igreen =  1  left surface - right transfer
+   !  igreen =  0  bulk
    !
    USE kinds
    USE constants, ONLY : CZERO, CONE
@@ -26,112 +23,87 @@
    USE util_module,      ONLY : mat_mul, mat_sv
    IMPLICIT NONE
 
-      !
-      ! I/O variables
-      !
-      INTEGER,      INTENT(in)    :: nmax
-      INTEGER,      INTENT(in)    :: igreen, invert
-      COMPLEX(dbl), INTENT(in)    :: tot(nmax,nmax), tott(nmax,nmax)
-      COMPLEX(dbl), INTENT(in)    :: c00(nmax,nmax)
-      COMPLEX(dbl), INTENT(in)    :: c01(nmax,nmax)
-      COMPLEX(dbl), INTENT(out)   :: g(nmax, nmax)
+   !
+   ! I/O variables
+   !
+   INTEGER,      INTENT(in)    :: dim
+   INTEGER,      INTENT(in)    :: igreen
+   COMPLEX(dbl), INTENT(in)    :: tot(dim,dim), tott(dim,dim)
+   COMPLEX(dbl), INTENT(in)    :: c00(dim,dim)
+   COMPLEX(dbl), INTENT(in)    :: c01(dim,dim)
+   COMPLEX(dbl), INTENT(out)   :: g(dim, dim)
 
-      !
-      ! local variables
-      !
-      INTEGER                   :: i, j, k, l, m, info, ierr
-      INTEGER,      ALLOCATABLE :: ipiv(:)
-      COMPLEX(dbl)              :: ene, dos
-      COMPLEX(dbl), ALLOCATABLE :: eh0(:,:), s1(:,:), s2(:,:)
+   !
+   ! local variables
+   !
+   INTEGER                   :: i, ierr
+   COMPLEX(dbl)              :: ene
+   COMPLEX(dbl), ALLOCATABLE :: eh0(:,:), s1(:,:), s2(:,:)
 
 !
 !----------------------------------------
 ! main Body
 !----------------------------------------
 !
-      CALL timing('green',OPR='start')
+   CALL timing('green',OPR='start')
+
+
+   ALLOCATE( eh0(dim,dim), s1(dim,dim), s2(dim,dim), STAT=ierr)
+      IF (ierr/=0) CALL errore('green','allocating eh0,s1,s2',ABS(ierr))
+
+
+   SELECT CASE ( igreen )
+
+   CASE ( 1 )
+      !
+      ! Construct the surface green's function g00 
+      !
+
+      CALL mat_mul(s1, c01, 'N', tot, 'N', dim, dim, dim)
+      eh0(:,:) = -c00(:,:) -s1(:,:)
+    
+   CASE( -1 )
+      !
+      ! Construct the dual surface green's function gbar00 
+      !
+
+      CALL mat_mul(s1, c01, 'C', tott, 'N', dim, dim, dim)
+      eh0(:,:) = -c00(:,:) -s1(:,:)
+    
+   CASE ( 0 )
+      !
+      ! Construct the bulk green's function gnn or (if surface=.true.) the
+      ! sub-surface green's function
+      !
+      CALL mat_mul(s1, c01, 'N', tot, 'N', dim, dim, dim)
+      CALL mat_mul(s2, c01, 'C', tott, 'N', dim, dim, dim)
+      !
+      eh0(:,:) = -c00(:,:) -s1(:,:) -s2(:,:)
+    
+   CASE DEFAULT 
+      CALL errore('green','invalid igreen', ABS(igreen))
+
+   END SELECT
 
    
-      ALLOCATE( eh0(nmax,nmax), s1(nmax,nmax), s2(nmax,nmax), STAT=ierr)
-         IF (ierr/=0) CALL errore('green','allocating eh0,s1,s2',ABS(ierr))
-      ALLOCATE( ipiv(nmax), STAT=ierr)
-         IF (ierr/=0) CALL errore('green','allocating ipiv',ABS(ierr))
-
-
-      IF ( igreen == 1) THEN 
 !
-!...     Construct the surface green's function g00 
+! set the identity and compute G inverting eh0
 !
-
-
-         CALL mat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
-         eh0(:,:) = -c00(:,:) -s1(:,:)
-       
-         g(:,:) = CZERO
-         DO i = 1, nmax
-             g(i,i) = CONE
-         ENDDO
-      
-         IF ( invert == 1 ) THEN
-            CALL mat_sv(nmax, nmax, eh0, g)
-         ENDIF
-
-      ENDIF
-
-      IF ( igreen == -1 ) THEN
-!
-!...  Construct the dual surface green's function gbar00 
-!
-         CALL mat_mul(s1, c01, 'C', tott, 'N', nmax, nmax, nmax)
-
-         eh0(:,:) = -c00(:,:) -s1(:,:)
-       
-         DO j = 1, nmax
-         DO i = 1, nmax
-             g(i,j) = CZERO
-             IF ( i == j ) g(i,j) = CONE
-         ENDDO
-         ENDDO
-
-         IF ( invert == 1 ) THEN
-            CALL mat_sv(nmax, nmax, eh0, g)
-         ENDIF
-      
-      ENDIF
-
-      IF ( igreen == 0 ) THEN
-!
-!...  Construct the bulk green's function gnn or (if surface=.true.) the
-!     sub-surface green's function
-!
-         CALL mat_mul(s1, c01, 'N', tot, 'N', nmax, nmax, nmax)
-         CALL mat_mul(s2, c01, 'C', tott, 'N', nmax, nmax, nmax)
-
-         eh0(:,:) = -c00(:,:) -s1(:,:) -s2(:,:)
-       
-         DO j = 1, nmax
-         DO i = 1, nmax
-             g(i,j) = CZERO
-             IF ( i == j ) g(i,j) = CONE
-         ENDDO
-         ENDDO
-
-         IF ( invert == 1 ) THEN
-            CALL mat_sv(nmax, nmax, eh0, g)
-         ENDIF
-
-      ENDIF
+   g(:,:) = CZERO
+   DO i = 1, dim
+      g(i,i) = CONE
+   ENDDO
+   !
+   CALL mat_sv(dim, dim, eh0, g)
 
 
 !
 ! ... local cleaning
 !
-      DEALLOCATE( eh0, s1, s2, STAT=ierr)
-         IF (ierr/=0) CALL errore('green','deallocating eh0, s1, s2',ABS(ierr))
-      DEALLOCATE( ipiv, STAT=ierr)
-         IF (ierr/=0) CALL errore('green','deallocating ipiv',ABS(ierr))
+   DEALLOCATE( eh0, s1, s2, STAT=ierr)
+      IF (ierr/=0) CALL errore('green','deallocating eh0, s1, s2',ABS(ierr))
 
-      CALL timing('green',OPR='stop')
+   CALL timing('green',OPR='stop')
 
-   END SUBROUTINE green
+END SUBROUTINE green
 

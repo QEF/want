@@ -33,7 +33,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    !
    ! local variables
    !
-   INTEGER                   :: ik, i, j, m, ierr
+   INTEGER                   :: ik, i, j, ierr
    REAL(dbl),    ALLOCATABLE :: w(:)
    COMPLEX(dbl), ALLOCATABLE :: z(:,:), cw(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)

@@ -1,8 +1,8 @@
 
 &INPUT_CONDUCTOR
-   nmxa = 8
-   nmxc = 16
-   nmxb = 8
+   dimA = 8
+   dimC = 16
+   dimB = 8
    ne = 1000
    emin = -20.0
    emax = 0.0
