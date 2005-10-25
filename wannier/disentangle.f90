@@ -1,23 +1,22 @@
 ! 
 ! Copyright (C) 2004 WanT Group
-! Copyright (C) 2002 Nicola Marzari, Ivo Souza, David Vanderbilt
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!=----------------------------------------------------------------------------------=
-       PROGRAM disentangle
-!=----------------------------------------------------------------------------------=
+! Based on a previous version by I.Souza, N.Marzari and D.Vanderbilt
+!
+!=====================================================
+   PROGRAM disentangle
+   !=====================================================
 
        USE kinds,            ONLY: dbl
        USE constants,        ONLY: PI, RYD, har => au, bohr => bohr_radius_angs, &
                                    ZERO, ONE, CZERO, CONE, EPS_m8
        USE parameters,       ONLY: nstrx
        USE version_module,   ONLY: version_number
-       USE startup_module,   ONLY: startup
-       USE cleanup_module,   ONLY: cleanup
        USE io_module,        ONLY: stdout, ioname, space_unit
        USE files_module,     ONLY: file_open, file_close
        USE timing_module,    ONLY: timing, timing_upto_now, timing_overview, global_list
@@ -26,7 +25,7 @@
        USE control_module,   ONLY: subspace_init_mode => subspace_init, verbosity, &
                                    unitary_thr, nprint_dis, nsave_dis
        USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
-       USE kpoints_module,   ONLY: nkpts, vkpt, wbtot, nb, nnlist
+       USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist
        USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, &
                                    dimfroz, indxnfroz
        USE windows_module,   ONLY: windows_allocate, windows_write
@@ -34,7 +33,7 @@
                                    mtrx_in, mtrx_out
        USE subspace_module,  ONLY: disentangle_thr, maxiter_dis, alpha_dis, &
                                    subspace_allocate, subspace_write
-       USE overlap_module,   ONLY: Mkb, ca, overlap_allocate
+       USE overlap_module,   ONLY: Mkb, overlap_allocate
        USE summary_module,   ONLY: summary
 
        IMPLICIT NONE
@@ -43,11 +42,10 @@
 ! ... local variables
 !
        REAL(dbl) :: omega_i, omega_i_save, omega_i_err
-       REAL(dbl) :: rtmp
 
        REAL(dbl), ALLOCATABLE :: w(:)
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: z(:,:), aux(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: z(:,:)
        COMPLEX(dbl), ALLOCATABLE :: Akb_aux(:,:,:,:), Mkb_aux(:,:,:,:)
        CHARACTER(LEN=nstrx) :: filename 
 
@@ -63,7 +61,7 @@
 ! ...  Startup
 !--------------------------------------------
 !
-       CALL startup(version_number,MAIN_NAME='disentangle')
+       CALL startup(version_number,'disentangle')
 
        !      
        ! ...  Read input parameters from DFT_DATA file
@@ -94,8 +92,6 @@
            IF( ierr /=0 ) CALL errore('disentangle', 'allocating ham', ABS(ierr) )
        ALLOCATE( z(dimwinx,dimwinx), w(dimwinx), STAT = ierr )
            IF( ierr /=0 ) CALL errore('disentangle', 'allocating z, w', ABS(ierr) )
-       ALLOCATE( aux(dimwinx,dimwinx), STAT = ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating aux', ABS(ierr) )
        ALLOCATE( Mkb_aux(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
            IF( ierr /=0 ) CALL errore('disentangle', 'allocating Mkb_aux', ABS(ierr) )
        ALLOCATE( Akb_aux(dimwinx,dimwann,nb,nkpts), STAT=ierr ) 
@@ -162,7 +158,7 @@
            !
            ! Compute Omega_I using the updated subspaces at all k
            ! 
-           CALL omegai( omega_i, dimwann, dimwann, dimwin, nkpts, Mkb_aux)
+           CALL omegai( omega_i, dimwann, nkpts, Mkb_aux)
     
 
            !
@@ -504,8 +500,6 @@
            IF( ierr /=0 ) CALL errore('disentangle', 'deallocating ham', ABS(ierr) )
        DEALLOCATE( z, w, STAT=ierr )
            IF( ierr /=0 ) CALL errore('disentangle', 'deallocating z, w', ABS(ierr) )
-       DEALLOCATE( aux, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating aux', ABS(ierr) )
        DEALLOCATE( Mkb_aux, Akb_aux, STAT=ierr )
            IF( ierr /=0 ) CALL errore('disentangle', 'deallocating Mkb_ Akb_aux', ABS(ierr) )
 

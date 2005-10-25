@@ -26,8 +26,7 @@ subroutine xsf_struct (at, nat, tau, symb, ounit)
   character(len=3) :: symb(nat)
   real(kind=dbl)   :: tau (3, nat), at (3, 3)
   ! --
-  integer          :: i, j, n
-  real(kind=dbl)    :: at1 (3, 3)
+  integer          :: n
 
   write(ounit,*) 'CRYSTAL'
   write(ounit,*) 'PRIMVEC'

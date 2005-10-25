@@ -34,8 +34,6 @@
    !
    ! local variables
    !
-   REAL(dbl) :: aux1, aux2
-   INTEGER   :: nw1, nw2
    INTEGER   :: i, j, ierr
    !
    INTEGER                   :: ldimwann, lnkpts, lnws, iws

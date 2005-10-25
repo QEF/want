@@ -7,7 +7,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************
-   SUBROUTINE transmittance(nmaxc, gL, gR, gintr, sgm_r, formula, conduct)
+   SUBROUTINE transmittance(dimC, gL, gR, gintr, sgm_r, formula, conduct)
    !***********************************************
    !
    ! Calculates the matrix involved in the quantum transmittance, 
@@ -25,20 +25,19 @@
    !
    ! input/output variables
    !
-   INTEGER,      INTENT(in) ::  nmaxc
-   COMPLEX(dbl), INTENT(in) ::  gL(nmaxc,nmaxc), gR(nmaxc,nmaxc)
-   COMPLEX(dbl), INTENT(in) ::  gintr(nmaxc,nmaxc)
-   COMPLEX(dbl), INTENT(in) ::  sgm_r(nmaxc,nmaxc)
+   INTEGER,      INTENT(in) ::  dimC
+   COMPLEX(dbl), INTENT(in) ::  gL(dimC,dimC), gR(dimC,dimC)
+   COMPLEX(dbl), INTENT(in) ::  gintr(dimC,dimC)
+   COMPLEX(dbl), INTENT(in) ::  sgm_r(dimC,dimC)
    CHARACTER(*), INTENT(in) ::  formula
-   REAL(dbl),    INTENT(out)::  conduct(nmaxc)
+   REAL(dbl),    INTENT(out)::  conduct(dimC)
 
    !
    ! local variables
    !
-   INTEGER,      ALLOCATABLE :: ipiv(:)
    COMPLEX(dbl), ALLOCATABLE :: tmp(:,:), tmp1(:,:)
    COMPLEX(dbl), ALLOCATABLE :: lambda(:,:)
-   INTEGER :: i, j, ierr, info
+   INTEGER :: i, j, ierr
    !
    ! end of declarations
    !
@@ -50,12 +49,10 @@
 !
    CALL timing('transmittance', OPR='start')
 
-   ALLOCATE( tmp(nmaxc,nmaxc), tmp1(nmaxc,nmaxc), STAT=ierr )
+   ALLOCATE( tmp(dimC,dimC), tmp1(dimC,dimC), STAT=ierr )
       IF (ierr/=0) CALL errore('transmittance','allocating tmp,tm1',ABS(ierr))
-   ALLOCATE( lambda(nmaxc,nmaxc), STAT=ierr )
+   ALLOCATE( lambda(dimC,dimC), STAT=ierr )
       IF (ierr/=0) CALL errore('transmittance','allocating lambda',ABS(ierr))
-   ALLOCATE( ipiv(nmaxc), STAT=ierr )
-      IF (ierr/=0) CALL errore('transmittance','allocating ipiv',ABS(ierr))
 
 !
 ! if FORMULA = "generalized"
@@ -68,15 +65,15 @@
 ! 
 
    IF ( TRIM(formula) == "generalized" )  THEN
-       DO j=1,nmaxc
-           DO i=1,nmaxc
+       DO j=1,dimC
+           DO i=1,dimC
                lambda(i,j) =  CI * ( sgm_r(i,j) - CONJG(sgm_r(j,i))  )
                tmp(i,j) =  gL(i,j) + gR(i,j) 
            ENDDO
            tmp(j,j) = tmp(j,j) + 2*EPS_m5
        ENDDO
 
-       CALL mat_sv(nmaxc, nmaxc, tmp, lambda)
+       CALL mat_sv(dimC, dimC, tmp, lambda)
 
 
    ELSE
@@ -89,7 +86,7 @@
    ! 
    ! adding the identity matrix
    ! 
-   DO i=1,nmaxc
+   DO i=1,dimC
        lambda(i,i) = lambda(i,i) + CONE
    ENDDO
 
@@ -103,23 +100,23 @@
    !
    ! gL * gintr -> tmp
    !
-   CALL mat_mul(tmp, gL, 'N', gintr, 'N', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp, gL, 'N', gintr, 'N', dimC, dimC, dimC)
    !
    ! gL * gintr * gR -> tmp1
    !
-   CALL mat_mul(tmp1, tmp, 'N', gR, 'N', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp1, tmp, 'N', gR, 'N', dimC, dimC, dimC)
    !
    ! gL * gintr * gR * lambda -> tmp
    !
-   CALL mat_mul(tmp, tmp1, 'N', lambda, 'N', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp, tmp1, 'N', lambda, 'N', dimC, dimC, dimC)
    !
    ! gL * gintr * gR * lambda * ginta -> tmp1
    !
-   CALL mat_mul(tmp1, tmp, 'N', gintr, 'C', nmaxc, nmaxc, nmaxc)
+   CALL mat_mul(tmp1, tmp, 'N', gintr, 'C', dimC, dimC, dimC)
        
       
-   DO i=1,nmaxc
-      conduct(i) = tmp1(i,i)
+   DO i=1,dimC
+      conduct(i) = REAL( tmp1(i,i) )
    ENDDO
 
 !
@@ -129,8 +126,6 @@
       IF (ierr/=0) CALL errore('transmittance','deallocating tmp,tm1',ABS(ierr))
    DEALLOCATE( lambda, STAT=ierr )
       IF (ierr/=0) CALL errore('transmittance','deallocating lambda',ABS(ierr))
-   DEALLOCATE( ipiv, STAT=ierr )
-      IF (ierr/=0) CALL errore('transmittance','deallocating ipiv',ABS(ierr))
       
    CALL timing('transmittance', OPR='stop')
 END SUBROUTINE transmittance

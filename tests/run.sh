@@ -109,7 +109,8 @@ do
        #
        SCRIPT_LIST=$( ls run*.sh  2> /dev/null )
        if [ -z "$SCRIPT_LIST" ] ; then 
-           echo " ### nothing to do for $mytest ### " $ECHO_N
+           echo " ### nothing to do for $mytest ### " 
+           echo
        else
            for script in $SCRIPT_LIST
            do

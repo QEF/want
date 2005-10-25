@@ -8,6 +8,8 @@
 Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
+25 Oct 2005      hamiltonian.f90 module added in transport; conductor changed accordingly;
+                 hamiltonian_setup.f90 updated and renamed to hamiltonian_init.f90 . (BB)
 
 24 Oct 2005      Bug fixed in bshells: algorith generalized (courtesy of BB and AC). (AF)
 

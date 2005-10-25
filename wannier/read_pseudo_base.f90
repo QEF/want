@@ -157,7 +157,6 @@ subroutine scan_end (iunps, string)
   character (len=*) :: string  
   ! String read from file
   character (len=75) :: rstring
-  logical :: rew
 
   read (iunps, '(a)', iostat = ios, err = 300) rstring  
   if (matches ("</PP_"//string//">", rstring) ) return  
@@ -179,8 +178,7 @@ subroutine read_pseudo_header (upf, iunps)
   TYPE (pseudo_upf), INTENT(INOUT) :: upf
   integer :: iunps  
   !
-  integer :: is, ierr  
-  integer :: nb, ios, nw  
+  integer :: ios, nw  
   character (len=80) :: dummy  
 
   ! Version number (presently ignored)
@@ -232,7 +230,6 @@ subroutine read_pseudo_mesh (upf, iunps)
   TYPE (pseudo_upf), INTENT(INOUT) :: upf
   !
   integer :: ir, ios
-  character (len=75) :: dummy  
 
   ALLOCATE( upf%r( 0:upf%mesh ), upf%rab( 0:upf%mesh ) )
   upf%r   = 0.0d0
@@ -289,7 +286,6 @@ subroutine read_pseudo_local (upf, iunps)
   TYPE (pseudo_upf), INTENT(INOUT) :: upf
   !
   integer :: ir, ios
-  character (len=75) :: dummy
   !
   ALLOCATE( upf%vloc( 0:upf%mesh ) )
   upf%vloc = 0.0d0
@@ -315,7 +311,7 @@ subroutine read_pseudo_nl (upf, iunps)
   integer :: iunps  
   TYPE (pseudo_upf), INTENT(INOUT) :: upf
   !
-  integer :: nb, mb, n, ir, nd, ios, idum, ldum, icon, lp, i, ikk
+  integer :: nb, mb, n, ir, ios, idum, ldum, icon, lp, i, ikk
   ! counters
   character (len=75) :: dummy  
   !

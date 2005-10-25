@@ -6,9 +6,9 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!*****************************************************
+!=====================================================
    PROGRAM blc2wan
-   !*****************************************************
+   !=====================================================
    !  
    ! Given a (dynamical) operator from file in the bloch basis
    ! it is calculated on the WFs basis
@@ -22,8 +22,6 @@
    USE iotk_module
    USE files_module
    USE timing_module,        ONLY : timing, timing_overview, global_list
-   USE startup_module,       ONLY : startup
-   USE cleanup_module,       ONLY : cleanup
    USE want_init_module,     ONLY : want_init
    USE summary_module,       ONLY : summary
    USE version_module,       ONLY : version_number
@@ -65,7 +63,7 @@
 ! main body
 !------------------------------
 !
-      CALL startup(version_number,MAIN_NAME='blc2wan')
+      CALL startup(version_number,'blc2wan')
 
 
 !

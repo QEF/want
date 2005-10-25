@@ -36,9 +36,8 @@ subroutine allocate_nlpot
 
   USE us_module,       ONLY : qrad, tab, tab_at, dq, nqx, nqxq
   USE uspp,            ONLY : indv, nhtol, nhtolm, qq, qb, dvan, deeq, vkb, nkb, &
-                              nkbus, nhtoj, becsum, qq_so, dvan_so, deeq_nc
+                              nkbus, nhtoj, becsum
   USE uspp_param,      ONLY : lmaxq, lmaxkb, lll, nbeta, nh, nhm, tvanp
-  USE spin_orb_module, ONLY : lspinorb, fcoef
   !
   ! added for WFs
   USE kpoints_module,  ONLY : nb
@@ -95,22 +94,14 @@ subroutine allocate_nlpot
   ALLOCATE (deeq( nhm, nhm, nat, nspin), STAT=ierr)    
      IF (ierr/=0) CALL errore('allocate_nlpot','allocating deeq',ABS(ierr))
 
-  IF (lspinorb) then
-    ! spin orbit is not implemented
-    CALL errore('allocate_nlpot','spinorb not implemented',1)
-    !ALLOCATE (qq_so(nhm, nhm, 4, ntyp))    
-    !ALLOCATE (dvan_so( nhm, nhm, nspin, ntyp))    
-    !ALLOCATE (fcoef(nhm,nhm,2,2,ntyp))
-  ELSE
-    ALLOCATE (qq(   nhm, nhm, ntyp), STAT=ierr)    
-       IF (ierr/=0) CALL errore('allocate_nlpot','allocating qq',ABS(ierr))
-    ALLOCATE (dvan( nhm, nhm, ntyp), STAT=ierr)    
-       IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
-    !
-    ! added for Wannier calc. (ANDREA)
-    ALLOCATE (qb( nhm, nhm, ntyp, nb ), STAT=ierr)
-       IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
-  ENDIF
+  ALLOCATE (qq(   nhm, nhm, ntyp), STAT=ierr)    
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating qq',ABS(ierr))
+  ALLOCATE (dvan( nhm, nhm, ntyp), STAT=ierr)    
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
+  !
+  ! added for Wannier calc. (ANDREA)
+  ALLOCATE (qb( nhm, nhm, ntyp, nb ), STAT=ierr)
+     IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
   !
   nqxq = INT (( SQRT(gcutm) + SQRT(xqq(1)**2 + xqq(2)**2 + xqq(3)**2) ) / dq ) + 4
   lmaxq = 2*lmaxkb+1

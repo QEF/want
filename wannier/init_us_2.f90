@@ -37,7 +37,7 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !
   !     Local variables
   !
-  INTEGER :: i0,i1,i2,i3, ig, l, lm, na, nt, nb, ih, jkb
+  INTEGER :: i0,i1,i2,i3, ig, lm, na, nt, nb, ih, jkb
 
   REAL(dbl) :: px, ux, vx, wx, arg
   REAL(dbl), allocatable :: gk (:,:), qg (:), vq (:), ylm (:,:), vkb1(:,:)
@@ -94,7 +94,6 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
         ! add spherical harmonic part
         DO ih = 1, nh (nt)
            IF ( nb  == indv (ih, nt) ) THEN
-              l = nhtol (ih, nt)
               lm =nhtolm (ih, nt)
               DO ig = 1, npw_
                  vkb1 (ig,ih) = ylm (ig, lm) * vq (ig)

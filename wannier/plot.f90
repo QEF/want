@@ -6,9 +6,9 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!******************************************
+!=====================================================
    PROGRAM plot
-   !******************************************
+   !=====================================================
    !
    ! real space plot of the computed Wannier functions
    !
@@ -24,8 +24,6 @@
    USE control_module,     ONLY : read_pseudo, use_uspp
    USE files_module,       ONLY : file_open, file_close, file_delete
    USE parser_module
-   USE startup_module,     ONLY : startup
-   USE cleanup_module,     ONLY : cleanup
    USE want_init_module,   ONLY : want_init
    USE version_module,     ONLY : version_number
    USE util_module,        ONLY : mat_mul
@@ -112,7 +110,7 @@
 ! main body
 !------------------------------
 !
-      CALL startup(version_number,MAIN_NAME='plot')
+      CALL startup(version_number,'plot')
 
 
 !

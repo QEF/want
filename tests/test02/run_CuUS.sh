@@ -21,7 +21,8 @@ MANUAL=" Usage
                  the wannier minimization
  wannier         perform the above cited minimization
  bands           interpolates the band structure using WFs
- want            perform DISENTANGLE, WANNIER and BANDS all together 
+ plot            compute WFs on real space for plotting
+ want            perform DISENTANGLE, WANNIER, BANDS and PLOT all together
  all             perform all the above described steps
 
  check           check results with the reference outputs
@@ -49,6 +50,7 @@ DFT_BANDS=
 DISENTANGLE=
 WANNIER=
 BANDS=
+PLOT=
 CHECK=
 CLEAN=
 
@@ -64,11 +66,12 @@ case $INPUT in
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
    (bands)          BANDS=".TRUE." ;;
+   (plot)           PLOT=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ;;
+                    BANDS=".TRUE." ; PLOT=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BANDS=".TRUE." ;; 
+                    BANDS=".TRUE." ; PLOT=".TRUE." ;; 
    (check)          CHECK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -187,6 +190,19 @@ if [ "$BANDS" = ".TRUE." ] ; then
    $WANT_BIN/bands.x < $TEST_HOME/bands_CuUS.in > $TEST_HOME/bands_CuUS.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
+   else
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
+   fi
+fi
+
+#
+# running PLOT
+#
+if [ "$PLOT" = ".TRUE." ] ; then
+   echo $ECHO_N "running PLOT calculation... $ECHO_C"
+   $WANT_BIN/plot.x < $TEST_HOME/plot_CuUS.in > $TEST_HOME/plot_CuUS.out
+   if [ ! -e CRASH ] ; then
+      echo "$ECHO_T done"
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi

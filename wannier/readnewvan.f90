@@ -20,7 +20,7 @@ subroutine readnewvan (is, iunps)
   USE atom_module,  ONLY: zmesh, mesh, xmin, dx, r, rab, chi, oc, nchi, &
        lchi, rho_at, rho_atc, nlcc
   USE pseud_module, ONLY: zp, lmax, lloc
-  USE uspp_param,   ONLY: vloc_at, dion, betar, qqq, qfcoef, qfunc, nqlc, &
+  USE uspp_param,   ONLY: vloc_at, dion, betar, qqq, qfunc, nqlc, &
        rinner, nbeta, kkbeta, lll, psd, tvanp
   USE funct_module
   !

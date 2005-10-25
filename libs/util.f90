@@ -639,7 +639,6 @@ END SUBROUTINE zmat_hdiag
    INTEGER :: i, j, ierr, info
    REAL(dbl), ALLOCATABLE :: ap(:)
    REAL(dbl), ALLOCATABLE :: work(:)
-   REAL(dbl), ALLOCATABLE :: rwork(:)
    INTEGER,   ALLOCATABLE :: ifail(:)
    INTEGER,   ALLOCATABLE :: iwork(:)
 
@@ -692,7 +691,7 @@ END SUBROUTINE dmat_hdiag
    INTEGER,             INTENT(in)  :: n
    CHARACTER,           INTENT(in)  :: side
 
-   INTEGER   :: i, j, ierr, info, lwork
+   INTEGER   :: ierr, info, lwork
    CHARACTER :: jobvl, jobvr
    COMPLEX(dbl), ALLOCATABLE :: work(:), vl(:,:), vr(:,:)
    REAL(dbl),    ALLOCATABLE :: rwork(:)

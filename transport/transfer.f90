@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************
-   SUBROUTINE transfer( nmax, nterx, tot, tott, c00, c01 )
+   SUBROUTINE transfer( dim, niterx, tot, tott, c00, c01 )
    !***********************************************************************
    !
    !...  Iterative construction of the transfer matrix
@@ -25,20 +25,19 @@
       !
       ! I/O variables
       !
-      INTEGER,      INTENT(in) :: nmax, nterx
-      COMPLEX(dbl), INTENT(in) :: c00(nmax,nmax)
-      COMPLEX(dbl), INTENT(in) :: c01(nmax,nmax)
-      COMPLEX(dbl), INTENT(inout) :: tot(nmax,nmax)
-      COMPLEX(dbl), INTENT(inout) :: tott(nmax,nmax)
+      INTEGER,      INTENT(in) :: dim, niterx
+      COMPLEX(dbl), INTENT(in) :: c00(dim,dim)
+      COMPLEX(dbl), INTENT(in) :: c01(dim,dim)
+      COMPLEX(dbl), INTENT(inout) :: tot(dim,dim)
+      COMPLEX(dbl), INTENT(inout) :: tott(dim,dim)
 
 
       !
       ! local variables
       !
-      INTEGER      :: i, j, k, l, m, info, ierr
+      INTEGER      :: i, j, m, ierr
       REAL(dbl)    :: conver, conver2
       LOGICAL      :: lconverged
-      INTEGER,      ALLOCATABLE :: ipiv(:)
       COMPLEX(dbl), ALLOCATABLE :: tau(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: taut(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: tsum(:,:)
@@ -55,15 +54,13 @@
       CALL timing('transfer',OPR='start')
 
 
-      ALLOCATE( ipiv(nmax), STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','allocating ipiv',ABS(ierr))
-      ALLOCATE( tau(nmax, nmax, 2), taut(nmax, nmax, 2), STAT=ierr)
+      ALLOCATE( tau(dim, dim, 2), taut(dim, dim, 2), STAT=ierr)
          IF (ierr/=0) CALL errore('transfer','allocating tau, taut',ABS(ierr))
-      ALLOCATE( tsum(nmax, nmax), tsumt(nmax, nmax), STAT=ierr)
+      ALLOCATE( tsum(dim, dim), tsumt(dim, dim), STAT=ierr)
          IF (ierr/=0) CALL errore('transfer','allocating tsum, tsumt',ABS(ierr))
-      ALLOCATE( t11(nmax, nmax), t12(nmax, nmax), STAT=ierr)
+      ALLOCATE( t11(dim, dim), t12(dim, dim), STAT=ierr)
          IF (ierr/=0) CALL errore('transfer','allocating t11, t12',ABS(ierr))
-      ALLOCATE( s1(nmax, nmax), s2(nmax, nmax), STAT=ierr)
+      ALLOCATE( s1(dim, dim), s2(dim, dim), STAT=ierr)
          IF (ierr/=0) CALL errore('transfer','allocating s1, s2',ABS(ierr))
 
 
@@ -78,18 +75,18 @@
       t11(:,:) = CZERO
       t12(:,:) = -c00(:,:)
 
-      DO i = 1, nmax
+      DO i = 1, dim
           t11(i,i) = CONE
       ENDDO
 
-      CALL mat_sv(nmax, nmax, t12, t11)
+      CALL mat_sv(dim, dim, t12, t11)
 
       !
-      ! Compute intermediate t-matrices (defined as tau(nmax,nmax,niter)
+      ! Compute intermediate t-matrices (defined as tau(dim,dim,niter)
       ! and taut(...))
 
-      CALL mat_mul(tau(:,:,1), t11, 'N', c01, 'C', nmax, nmax, nmax)
-      CALL mat_mul(taut(:,:,1), t11, 'N', c01, 'N', nmax, nmax, nmax)
+      CALL mat_mul(tau(:,:,1), t11, 'N', c01, 'C', dim, dim, dim)
+      CALL mat_mul(taut(:,:,1), t11, 'N', c01, 'N', dim, dim, dim)
 
       !
       ! Initialize T
@@ -108,50 +105,44 @@
       ! Main loop
       !
       lconverged = .FALSE.
-      DO m = 1, nterx
+      DO m = 1, niterx
 
-         CALL mat_mul(t11, tau(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax)
-         CALL mat_mul(t12, taut(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)  
+         CALL mat_mul(t11, tau(:,:,1), 'N', taut(:,:,1), 'N', dim, dim, dim)
+         CALL mat_mul(t12, taut(:,:,1), 'N', tau(:,:,1), 'N', dim, dim, dim)  
 
 
          s1(:,:) = -( t11(:,:) + t12(:,:) )
          s2(:,:) = CZERO
 
-         DO i=1,nmax
+         DO i=1,dim
              s1(i,i) = CONE + s1(i,i)
              s2(i,i) = CONE
          ENDDO
 
 
-         CALL mat_sv(nmax, nmax, s1, s2)
-! XXXX
-         IF ( info /= 0 )  THEN 
-              WRITE(6, '(2x, " WARNING: singular matrix in ZGEEV (II) ")')
-              WRITE(6, '(2x, "          the current Omega value is skipped")')
-              tot = CZERO
-              tott = CZERO
-              CALL timing('transfer',OPR='stop')
-              RETURN
-         ENDIF
+         !
+         ! XXX add and error in output to mat_sv
+         !
+         CALL mat_sv(dim, dim, s1, s2)
 
 
-         CALL mat_mul(t11, tau(:,:,1), 'N', tau(:,:,1), 'N', nmax, nmax, nmax)
-         CALL mat_mul(t12, taut(:,:,1), 'N', taut(:,:,1), 'N', nmax, nmax, nmax) 
-         CALL mat_mul(tau(:,:,2), s2, 'N', t11, 'N', nmax, nmax, nmax)
-         CALL mat_mul(taut(:,:,2), s2, 'N', t12, 'N', nmax, nmax, nmax)
+         CALL mat_mul(t11, tau(:,:,1), 'N', tau(:,:,1), 'N', dim, dim, dim)
+         CALL mat_mul(t12, taut(:,:,1), 'N', taut(:,:,1), 'N', dim, dim, dim) 
+         CALL mat_mul(tau(:,:,2), s2, 'N', t11, 'N', dim, dim, dim)
+         CALL mat_mul(taut(:,:,2), s2, 'N', t12, 'N', dim, dim, dim)
 
          !
          ! Put the transfer matrices together
          !
-         CALL mat_mul(t11, tsum, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
-         CALL mat_mul(s1, tsum, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
+         CALL mat_mul(t11, tsum, 'N', tau(:,:,2), 'N', dim, dim, dim)
+         CALL mat_mul(s1, tsum, 'N', taut(:,:,2), 'N', dim, dim, dim)
   
          tot = tot + t11
          tsum = s1
 
 
-         CALL mat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', nmax, nmax, nmax)
-         CALL mat_mul(s1, tsumt, 'N', tau(:,:,2), 'N', nmax, nmax, nmax)
+         CALL mat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', dim, dim, dim)
+         CALL mat_mul(s1, tsumt, 'N', tau(:,:,2), 'N', dim, dim, dim)
 
          tott  = tott + t11
          tsumt = s1
@@ -166,8 +157,8 @@
          conver = ZERO
          conver2 = ZERO
 
-         DO j = 1, nmax
-         DO i = 1, nmax
+         DO j = 1, dim
+         DO i = 1, dim
               conver = conver +   REAL( tau(i,j,2) * CONJG( tau(i,j,2) )) 
               conver2 = conver2 + REAL( taut(i,j,2) * CONJG( taut(i,j,2) )) 
          ENDDO
@@ -185,8 +176,6 @@
 !
 ! ... local cleaning
 !
-      DEALLOCATE( ipiv, STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','deallocating ipiv',ABS(ierr))
       DEALLOCATE( tau, taut, STAT=ierr)
          IF (ierr/=0) CALL errore('transfer','deallocating tau, taut',ABS(ierr))
       DEALLOCATE( tsum, tsumt, STAT=ierr)

@@ -131,10 +131,9 @@
      INTEGER, INTENT(IN) :: nsl, nz, ldc
      COMPLEX (dbl) :: c(:), cout(:) 
      REAL(dbl)  :: tscale
-     INTEGER    :: i, j, err, idir, ip, isign
+     INTEGER    :: i, j, idir, ip, isign
      INTEGER, SAVE :: zdims( 3, ndims ) = -1
      INTEGER, SAVE :: icurrent = 1
-     INTEGER :: isys = 0
 
 
      IF( nsl < 0 ) THEN
@@ -281,7 +280,7 @@
      INTEGER, INTENT(IN) :: sgn, ldx, ldy, nx, ny, nzl
      INTEGER, OPTIONAL, INTENT(IN) :: pl2ix(:)
      COMPLEX (dbl) :: r( : )
-     INTEGER :: i, k, j, err, idir, ip, isign, kk
+     INTEGER :: i, k, j, idir, ip, isign, kk
      REAL(dbl) :: tscale
      INTEGER, SAVE :: icurrent = 1
      INTEGER, SAVE :: dims( 4, ndims) = -1
@@ -496,7 +495,7 @@
 
      INTEGER, INTENT(IN) :: nr1, nr2, nr3, nr1x, nr2x, nr3x, sgn 
      COMPLEX (dbl) :: f(:)
-     INTEGER :: i, k, j, err, idir, ip, isign
+     INTEGER :: i, k, j, idir, ip, isign
      REAL(dbl) :: tscale
      INTEGER, SAVE :: icurrent = 1
      INTEGER, SAVE :: dims(3,ndims) = -1
@@ -668,7 +667,7 @@ subroutine cfft3ds (f, nr1, nr2, nr3, nrx1, nrx2, nrx3, sign, do_fft_x, do_fft_y
   ! aux2 is work space
   !
   integer :: m, incx1, incx2
-  INTEGER :: i, k, j, err, idir, ip, isign, ii, jj
+  INTEGER :: i, k, j, idir, ip, isign, ii, jj
   REAL(dbl) :: tscale
   INTEGER, SAVE :: icurrent = 1
   INTEGER, SAVE :: dims(3,ndims) = -1
@@ -904,7 +903,7 @@ subroutine cfft3ds (f, nr1, nr2, nr3, nrx1, nrx2, nrx3, sign, do_fft_x, do_fft_y
       integer n1,n2,n3,n1x,n2x,n3x,imin3,imax3,sgn
       complex(kind=8) :: f(:)
 
-      integer isign, naux, ibid, nplanes, nstart, k
+      integer isign, nplanes, nstart
       real(dbl) :: tscale
 
       integer :: ip, i
