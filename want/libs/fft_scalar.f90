@@ -900,7 +900,7 @@ subroutine cfft3ds (f, nr1, nr2, nr3, nrx1, nrx2, nrx3, sign, do_fft_x, do_fft_y
 !     with imin3 .le. n3 .le. imax3
 !
       implicit none
-      integer n1,n2,n3,n1x,n2x,n3x,imin3,imax3,sgn
+      integer :: k,n1,n2,n3,n1x,n2x,n3x,imin3,imax3,sgn
       complex(kind=8) :: f(:)
 
       integer isign, nplanes, nstart
@@ -1028,7 +1028,7 @@ subroutine cfft3ds (f, nr1, nr2, nr3, nrx1, nrx2, nrx3, sign, do_fft_x, do_fft_y
      
       !   y-direction
      
-      DO K = imin3, imax3
+      DO k = imin3, imax3
         nstart = ( k - 1 ) * n1x * n2x + 1
         call dcft( 0, f(nstart), n1x, 1, f(nstart), n1x, 1, n2, n1x, isign,        &
      &        tscale, aux2(1,ip), ltabl, work(1), lwork)
