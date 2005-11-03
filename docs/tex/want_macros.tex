@@ -1,3 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Copyright (C) 2005 WanT group                         %
+%  This file is distributed under the terms of the       %
+%  GNU General Public License.                           %
+%  See the file `License'  in the root directory of      %
+%  the present distribution,                             %
+%  or http://www.gnu.org/copyleft/gpl.txt                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % generally useful macros
 %
@@ -8,22 +16,52 @@
 \newcommand{\eqnref}[1] {\mbox{eq (\ref{#1})}}
 \newcommand{\mycite}[2] {\cite{#2}}
 
-\newcommand{\br} {\mathbf{r}}
+%
+% macros for math conventions in the theory description.
+%
+\newcommand{\cc}{{*}}
+\newcommand{\br}{{\vec{r}}}
+\newcommand{\bpsi}{{\vec{\psi}}}
+\newcommand{\bphi}{{\vec{\phi}}}
+\newcommand{\brho}{{\bar \rho}}
+\newcommand{\bk}{{\vec{k}}}
+\newcommand{\bR}{{\vec{R}}}
+\newcommand{\bF}{{\vec{F}}}
+\newcommand{\dpsi}{{\delta\psi}}
+\newcommand{\ttvu}{{\bpsi^{(k+1)}}}
+\newcommand{\tepsilon}{{\epsilon^{(k)}}}
+\newcommand{\epsilonkj}{{\epsilon^{(k)}_j}}
+\newcommand{\psij}{{\psi_j}}
+\newcommand{\psii}{{\psi_i}}
+\newcommand{\epsilonj}{{\epsilon_{j}}}
+\newcommand{\psik}{{{\bpsi}^{(k)}}}
+\newcommand{\psikj}{{{\bpsi}^{(k)}_j}}
+\newcommand{\psikone}{{{\bpsi}^{(k)}_1}}
+\newcommand{\psikN}{{{\bpsi}^{(k)}_N}}
+\newcommand{\dpsik}{{{{\delta\bpsi}^{(k)}}}}
+\newcommand{\dpsikj}{{{{\delta\bpsi}^{(k)}_j}}}
+\newcommand{\dpsikone}{{{{\delta\bpsi}^{(k)}_1}}}
+\newcommand{\dpsikN}{{{{\delta\bpsi}^{(k)}_N}}}
+\newcommand{\rkj}{{{\br}^{(k)}_j}}
+\newcommand{\Psik}{{\Psi^{(k)}}}
+\newcommand{\Phik}{{\Phi^{(k)}}}
 
-\newcommand{\PDAC} {PDAC}
-\newcommand{\PDACNAME} {Pyroclastic Dispersal Analysis Code}
-%\newcommand{\PDACDATE} {\today}
-\newcommand{\PDACDATE} {January 2004}
-\newcommand{\RMAUTHORS} {
- A.~Neri, T.~Esposti Ongaro, C.~Cavazzoni, G.~Erbacci and G.~Macedonio }
+\newcommand{\WANT} {{\sc WanT}}
+\newcommand{\WANTSUBTITLE}{{\sc an integrated approach to ab initio electronic
+transport from maximally-localized Wannier functions}}
+\newcommand{\WANTNAME} {an integrated approach to ab initio electronic transport
+from maximally-localized Wannier functions}
+%\newcommand{\WANTDATE} {\today}
+\newcommand{\WANTDATE} {October 2005}
 \newcommand{\UGAUTHORS} {
-T.~Esposti Ongaro, C.~Cavazzoni and A.~Neri }
-\newcommand{\PDACVERSION} {2.0}
-\newcommand{\PDACNOTES} {\sc (Restricted Draft: Do Not Release or Cite)}
-\newcommand{\PDACADDRESS} {\underline{pdac@pi.ingv.it}}
-\newcommand{\PDACURL} {\underline{http://www.pi.ingv.it/PDAC}}
+A. Ferretti, A. Calzolari, C.~Cavazzoni and M. Buongiorno
+Nardelli}
+\newcommand{\WANTVERSION} {2.0.0}
+\newcommand{\WANTNOTES} {(Restricted Draft: Do Not Release or Cite)}
+\newcommand{\WANTADDRESS} {\underline{pdac@pi.ingv.it}}
+\newcommand{\WANTURL} {www.wannier-transport.org}
 % title of PDAC paper
-\newcommand{\PDACPAPER} {PDAC: A transient, multiphase flow code
+\newcommand{\WANTPAPER} {PDAC: A transient, multiphase flow code
 for the 3D simulation of pyroclastic dispersal dynamics}
 
 
@@ -62,27 +100,25 @@ for the 3D simulation of pyroclastic dispersal dynamics}
 
 \newcommand{\UGTITLE} {User's Guide}
 \newcommand{\RMTITLE} {Reference Manual}
-\newcommand{\UGDESC} {
-This {\em\UGTITLE\/} describes how to run and use the 
-various features of the \PDACNAME\ \PDAC.  
-This guide includes a description of the capabilities of the program, how 
-to use these capabilities, the necessary input files and 
-formats, and how to run the program on both uniprocessor 
-and parallel machines.}
+\newcommand{\UGDESC} {\noindent This {\em\UGTITLE\/} describes how to run and use the various
+features of the integrated \WANT\ approach. This guide includes a
+description of the capabilities of the program, how to use these
+capabilities, the necessary input files and formats, and how to
+run the program on both uniprocessor and parallel machines.}
 
 \newcommand{\RMDESC} {
-The \PDAC\ (\PDACNAME)\ {\em\RMTITLE\/} is intended for the user who wants
-to overview the model equations and the numerical technique
-or for the programmer who wants to 
-cooperate to the \PDAC\ development. The manual describes how the model 
-equations are discretized and solved, provides the explicative list of 
-all variables used in the numerical code and gives a brief description of the 
-parallelization strategy, so that the advanced user can optimize the
-code efficiency on several computational platforms.}
+The \WANT\ (\PDACNAME)\ {\em\RMTITLE\/} is intended for the user
+who wants to overview the model equations and the numerical
+technique or for the programmer who wants to cooperate to the
+\WANTC\ development. The manual describes how the model equations
+are discretized and solved, provides the explicative list of all
+variables used in the numerical code and gives a brief description
+of the parallelization strategy, so that the advanced user can
+optimize the code efficiency on several computational platforms.}
 
-\newcommand{\PG}{\PDAC\ {\it Programmer's Guide\/}}
-\newcommand{\UG}{\PDAC\ {\it User's Guide\/}}
-\newcommand{\RM}{\PDAC\ {\it Reference Manual\/}}
+\newcommand{\PG}{\WANT\ {\it Programmer's Guide\/}}
+\newcommand{\UG}{\WANT\ {\it User's Guide\/}}
+\newcommand{\RM}{\WANT\ {\it Reference Manual\/}}
 \newcommand{\prettypar}{
 
 \smallskip
@@ -104,7 +140,7 @@ code efficiency on several computational platforms.}
 
 \newcommand{\icommand}[1]{#1\index{#1 command}}
 
-\newcommand{\PDACCONF}[4]{%
+\newcommand{\WANTCONF}[4]{%
 %  \addcontentsline{toc}{subparagraph}{#1}%
   {\bf \tt #1 } $<$ #2 $>$ \\%
   \index{#1 parameter}
@@ -112,7 +148,7 @@ code efficiency on several computational platforms.}
   {\bf Description: } #4%
 }
 
-\newcommand{\PDACCONFWDEF}[5]{%
+\newcommand{\WANTCONFWDEF}[5]{%
 %  \addcontentsline{toc}{subparagraph}{#1}%
   {\bf \tt #1 } $<$ #2 $>$ \\%
   \index{#1 parameter}
