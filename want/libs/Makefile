@@ -32,8 +32,7 @@ timing.o \
 util.o \
 ylmr2.o \
 cptimer.o \
-fft_stick.o \
-fftw.o
+fft_stick.o
 
 
 #
