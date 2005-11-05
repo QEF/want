@@ -3,9 +3,6 @@
   List of needed changes
 *************************************
 
-* WanT:  a true manual (as the one in docs) is missing. 
-         we need e.g. to explain better the choice of Wannier centers
-
 * tests: README in each test directory should be better written. They
          should contain the description of the input (main features) 
          and a commentof the outputs (why wannier functions can be considered
@@ -18,7 +15,6 @@
        increase performance)
      - scalar products in projections and overlaps by BLAS
                
-* kpts in transport calculations
 * eigenchannel in transport calculation
 * direct calculation of current
 

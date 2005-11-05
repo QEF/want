@@ -11,13 +11,13 @@ calculations, as implemented in the WanT code.
 
 Files in the directory:
 
-README.doc      the current file
-want_ug.pdf     the WanT USER-GUIDE. It is also possible to generate
-                the pdf file directly from the tex sources in tex/
+README.doc          the current file
+want_manual.pdf     the WanT Manual file. It is also possible to generate
+                    the pdf file directly from the tex sources in tex/
+                    using the reported Makefile.
 
-                $LATEX want_ug.tex     (also working with pdflatex)
-
-                Note that all the other tex files should not be 
-                compiled and are simply included in the main manual
+                    Note that only want_manual.tex file should be compiled,
+                    while all the other tex sources are simply included 
+                    in the main file.
 
 
