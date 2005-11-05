@@ -103,7 +103,6 @@ pdfview:
 
 
 clean:
-	-rm *.aux *.idx *.blg *.bbl *.dvi *.log *.toc  
-	-rm $(PDFFIG) $(JPGFIG)
-	-rm $(TEX).ps $(TEX).pdf
+	-rm *.aux *.idx *.blg *.bbl *.dvi *.log *.toc \
+	    $(PDFFIG) $(JPGFIG) $(TEX).ps $(TEX).pdf
 
