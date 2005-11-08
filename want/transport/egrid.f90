@@ -62,10 +62,10 @@ CONTAINS
        !
        ! setting the energy grid
        !
-       de = (emax - emin) / REAL(ne -1)
+       de = (emax - emin) / REAL(ne -1, dbl)
        !
        DO ie = 1, ne
-          egrid(ie) = emin + REAL(ie -1) * de
+          egrid(ie) = emin + REAL(ie -1, dbl) * de
        ENDDO
 
        alloc = .TRUE.

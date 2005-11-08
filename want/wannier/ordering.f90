@@ -9,7 +9,8 @@
 !*********************************************************
 SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    !*********************************************************
-   USE kinds
+   USE kinds,     ONLY : dbl
+   USE constants, ONLY : EPS_m6, EPS_m2
    IMPLICIT NONE
 
 ! <INFO>
@@ -30,8 +31,8 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
 !
 ! </INFO>
 
-   REAL(dbl), PARAMETER        :: toll_dist = 5.0e-2
-   REAL(dbl), PARAMETER        :: toll_spread = 1.0e-6
+   REAL(dbl), PARAMETER        :: toll_dist = 5.0 * EPS_m2
+   REAL(dbl), PARAMETER        :: toll_spread = EPS_m6
 
    INTEGER, INTENT(in)         :: dimwann, nkpts
    REAL(dbl), INTENT(inout)    :: rave(3,dimwann), rave2(dimwann), r2ave(dimwann)

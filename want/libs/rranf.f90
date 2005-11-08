@@ -79,12 +79,12 @@ function rndm ()
   !
   !   RANDOM NUMBER GENERATOR equivalent to ran1 of Num.Rec.
   !
-  USE kinds, DP => dbl
+  USE kinds, ONLY : dbl
   implicit none
   integer :: irand
   common/random_number/ irand
-  real(kind=DP) :: rndm, shuffle (32)
-  real(kind=DP), external :: rndx
+  real(kind=dbl) :: rndm, shuffle (32)
+  real(kind=dbl), external :: rndx
   integer :: i
   logical :: first
   data first / .true. /
@@ -112,10 +112,10 @@ function rndx (irand)
   !
   !   RANDOM NUMBER GENERATOR equivalent to ran0 of Num.Rec.
   !
-  USE kinds, ONLY : DP => dbl
+  USE kinds, ONLY : dbl
   implicit none
   integer :: im, ia, iq, ir, irand, is, it
-  real(kind=DP) :: rndx, obm
+  real(kind=dbl) :: rndx, obm
   logical :: first
   data first / .true. /
   save im, ia, iq, ir, obm, first
@@ -144,11 +144,11 @@ subroutine set_rndm_seed(iseed)
 !
 ! this subroutine initialize the random number with the given seed
 !
-  USE kinds, ONLY : DP => dbl
+  USE kinds, ONLY : dbl
   implicit none
   integer :: irand,iseed
   common/random_number/ irand
-  real(kind=DP) :: dummy, rndm
+  real(kind=dbl) :: dummy, rndm
   if (iseed.le.0) call errore('set_rndm_seed', &
                   'seed should be a positive integer',1)
 ! make sure rndm() has been called already once !

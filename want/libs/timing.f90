@@ -382,15 +382,15 @@ CONTAINS
             IF (nhour > 0) THEN
                WRITE(unit,'(5x,a20," : ",3x,i2,"h",i2,"m CPU (", &
                           &  i8," calls,",f8.3," s avg)")') TRIM(obj%name), nhour, nmin, &
-                              obj%call_number , obj%total_time / REAL( obj%call_number )
+                              obj%call_number , obj%total_time / REAL( obj%call_number, dbl )
             ELSEIF (nmin > 0) THEN
                WRITE (unit, '(5x,a20," : ",i2,"m",f5.2,"s CPU (", &
                           &    i8," calls,",f8.3," s avg)")') TRIM(obj%name), nmin, nsec, &
-                              obj%call_number , obj%total_time / REAL( obj%call_number )
+                              obj%call_number , obj%total_time / REAL( obj%call_number, dbl )
             ELSE
                WRITE (unit, '(5x,a20," : ",3x,f5.2,"s CPU (", &
                           &    i8," calls,",f8.3," s avg)")') TRIM(obj%name), nsec, &
-                              obj%call_number , obj%total_time / REAL( obj%call_number )
+                              obj%call_number , obj%total_time / REAL( obj%call_number, dbl )
             ENDIF
          ENDIF
 
@@ -403,7 +403,7 @@ CONTAINS
          ELSE
             WRITE (unit, '(5x,a20," :",f9.2,"s CPU (", i8," calls,",f8.3," s avg)")')  &
                   TRIM(obj%name) , obj%total_time , obj%call_number ,   &
-                  obj%total_time / REAL( obj%call_number )
+                  obj%total_time / REAL( obj%call_number, dbl )
          ENDIF
       CASE DEFAULT
          CALL errore('clock_write','Invalid FORM '//TRIM(form_),1 )

@@ -60,7 +60,7 @@
    ENDDO 
    ENDDO 
    !
-   Omega_I = Omega_I / DBLE(nkpts) + DBLE(dimwann) * wbtot
+   Omega_I = Omega_I / REAL(nkpts, dbl) + REAL(dimwann, dbl) * wbtot
 
    CALL timing('omegai',OPR='stop') 
     

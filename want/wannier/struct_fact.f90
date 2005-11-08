@@ -69,7 +69,7 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
            DO ng = 1, ngm
               arg = (g (1, ng) * tau (1, na) + g (2, ng) * tau (2, na) &
                    + g (3, ng) * tau (3, na) ) * TPI
-              strf (ng, nt) = strf (ng, nt) + DCMPLX( COS(arg), -SIN(arg) )
+              strf (ng, nt) = strf (ng, nt) + CMPLX( COS(arg), -SIN(arg), dbl )
            ENDDO
         ENDIF
      ENDDO
@@ -83,15 +83,15 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
      ENDDO
      DO n1 = - nr1, nr1
         arg = TPI * n1 * bgtau (1)
-        eigts1 (n1, na) = DCMPLX( COS(arg), -SIN(arg) )
+        eigts1 (n1, na) = CMPLX( COS(arg), -SIN(arg), dbl )
      ENDDO
      DO n2 = - nr2, nr2
         arg = TPI * n2 * bgtau (2)
-        eigts2 (n2, na) = DCMPLX( COS(arg), -SIN(arg) )
+        eigts2 (n2, na) = CMPLX( COS(arg), -SIN(arg), dbl )
      ENDDO
      DO n3 = - nr3, nr3
         arg = TPI * n3 * bgtau (3)
-        eigts3 (n3, na) = DCMPLX( COS(arg), -SIN(arg) )
+        eigts3 (n3, na) = CMPLX( COS(arg), -SIN(arg), dbl )
      ENDDO
   ENDDO
 

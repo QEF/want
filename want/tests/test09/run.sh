@@ -282,8 +282,8 @@ if [ "$CONDUCTOR_UP" = ".TRUE." ] ; then
    $WANT_BIN/conductor.x < $TEST_HOME/conductor_UP.in > $TEST_HOME/conductor_UP.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      mv dos.dat $TEST_HOME/dos_UP.dat
-      mv cond.dat $TEST_HOME/cond_UP.dat
+      test -e dos.dat && mv dos.dat $TEST_HOME/dos_UP.dat
+      test -e cond.dat && mv cond.dat $TEST_HOME/cond_UP.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
@@ -299,8 +299,8 @@ if [ "$CONDUCTOR_DW" = ".TRUE." ] ; then
    $WANT_BIN/conductor.x < $TEST_HOME/conductor_DW.in > $TEST_HOME/conductor_DW.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      mv dos.dat $TEST_HOME/dos_DW.dat
-      mv cond.dat $TEST_HOME/cond_DW.dat
+      test -e dos.dat && mv dos.dat $TEST_HOME/dos_DW.dat
+      test -e cond.dat && mv cond.dat $TEST_HOME/cond_DW.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi

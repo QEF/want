@@ -33,8 +33,8 @@
    !
    ! local variables
    !
-   REAL(dbl) :: rtmp, rtmp1
-   INTEGER :: ik, inn
+   REAL(dbl) :: rtmp, rtmp1, log
+   INTEGER :: ik, ib
    INTEGER :: i, m, n 
    !
    ! end of declariations
@@ -52,49 +52,43 @@
 ! computing wannier centers and spreads
 !
       !
-      ! compute <r(i)_m> = -1/Nk \Sum{k,b} wb * b(i) * Im Mkb(m,m)
-      !
-      DO m = 1, dimwann
-      DO i = 1, 3
-           rave(i,m) = ZERO
-
-           DO ik = 1, nkpts
-           DO inn = 1, nb
-                 rave(i,m) = rave(i,m) + wb(inn) * vb(i,inn) *     &
-                     ( AIMAG(LOG( csheet(m,inn,ik) * Mkb(m,m,inn,ik) ) ) &
-                     - sheet(m,inn,ik) )
-           ENDDO
-           ENDDO
-           rave(i,m) = - rave(i,m) / DBLE(nkpts)
-      ENDDO
-      ENDDO
-      !
-      ! compute | <r_n> |^2
-      !
-      DO m = 1, dimwann
-          rave2(m) = rave(1,m)**2 + rave(2,m)**2 + rave(3,m)**2
-      ENDDO
-
-
-      !
-      ! compute <r^2_m> = -1/Nk \Sum{k,b} wb * &
+      ! compute <r(i)_m> = -1/Nk \Sum{k,b} wb * b(i) * Im Log Mkb(m,m)
+      !         <r^2_m>  = -1/Nk \Sum{k,b} wb * &
       !                         [ 1 - |Mkb(m,m)|^2 + ( Im Log (Mkb(m,m)) )^2 ]
       !
       ! note the use of csheet and sheet to get the right Riemann sheet for the 
       ! evaluation of the complex LOG
       !
       DO m = 1, dimwann
-           r2ave(m) = ZERO
-
+           !
+           rave(:,m) = ZERO
+           r2ave(m)  = ZERO
+           !
            DO ik = 1, nkpts
-           DO inn = 1, nb
-               r2ave(m) = r2ave(m) + wb(inn) *  &
-                    ( ONE - DBLE( Mkb(m,m,inn,ik) * CONJG( Mkb(m,m,inn,ik)) ) + &
-                    ( AIMAG( LOG( csheet(m,inn,ik) * Mkb(m,m,inn,ik)) ) &
-                    - sheet(m,inn,ik) )**2 )
+           DO ib = 1, nb
+                ! 
+                log = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
+                       - sheet(m,ib,ik) )
+
+                r2ave(m) = r2ave(m) + wb(ib) *  &
+                    ( ONE - REAL( Mkb(m,m,ib,ik) * CONJG( Mkb(m,m,ib,ik)), dbl ) + &
+                    log ** 2 
+  
+                DO i = 1, 3
+                    rave(i,m) = rave(i,m) + wb(ib) * vb(i,ib) * log
+                ENDDO
            ENDDO
            ENDDO
-           r2ave(m) = r2ave(m) / DBLE(nkpts)
+           rave(i,m) = - rave(i,m) / REAL(nkpts, dbl)
+           r2ave(m) =     r2ave(m) / REAL(nkpts, dbl)
+      ENDDO
+      ENDDO
+
+      !
+      ! compute | <r_n> |^2
+      !
+      DO m = 1, dimwann
+          rave2(m) = rave(1,m)**2 + rave(2,m)**2 + rave(3,m)**2
       ENDDO
 
 
@@ -106,63 +100,70 @@
       !
       ! Omega_I = 1/Nk \Sum_{ik, nn} wb(nn) * ( Nwann - \Sum_mn | Mkb(m,n,nn,ik) |^2 )
       !
+CALL timing('omega_I',OPR='start')
       Omega_I = ZERO
       DO ik = 1, nkpts
-      DO inn = 1, nb
+      DO ib = 1, nb
            rtmp = ZERO
            DO n = 1, dimwann
            DO m = 1, dimwann
-                rtmp = rtmp + REAL( Mkb(m,n,inn,ik) * CONJG( Mkb(m,n,inn,ik) ) )
+                rtmp = rtmp + REAL( Mkb(m,n,ib,ik) * CONJG( Mkb(m,n,ib,ik) ), dbl )
            ENDDO
            ENDDO
-           Omega_I = Omega_I + wb(inn) * ( DBLE(dimwann)- rtmp )
+           Omega_I = Omega_I + wb(ib) * ( REAL(dimwann, dbl)- rtmp )
       ENDDO
       ENDDO
-      Omega_I = Omega_I / DBLE(nkpts)
+      Omega_I = Omega_I / REAL(nkpts, dbl)
+CALL timing('omega_I',OPR='stop')
 
 
       !
       ! Omega_OD = 1/Nk \Sum_{ik, nn} wb(nn) * \Sum_{m/=n} | Mkb(m,n,nn,ik) |^2
       !
+CALL timing('omega_OD',OPR='start')
       Omega_OD = ZERO
       DO ik = 1, nkpts
-      DO inn = 1, nb
+      DO ib = 1, nb
 
            rtmp = ZERO
            DO n = 1, dimwann
                 DO m = 1, dimwann
-                    rtmp = rtmp + DBLE( Mkb(m,n,inn,ik)*CONJG( Mkb(m,n,inn,ik)) )
+                    rtmp = rtmp + REAL( Mkb(m,n,ib,ik)*CONJG( Mkb(m,n,ib,ik)), dbl )
                 ENDDO
                 !
                 ! eliminate the diagonal term
-                rtmp = rtmp - DBLE ( Mkb(n,n,inn,ik) * CONJG( Mkb(n,n,inn,ik) ))
+                rtmp = rtmp - REAL( Mkb(n,n,ib,ik) * CONJG( Mkb(n,n,ib,ik)), dbl)
            ENDDO
-           Omega_OD = Omega_OD + wb(inn) * rtmp
+           Omega_OD = Omega_OD + wb(ib) * rtmp
       ENDDO
       ENDDO
-      Omega_OD = Omega_OD / DBLE(nkpts)
+      Omega_OD = Omega_OD / REAL(nkpts, dbl)
+CALL timing('omega_OD',OPR='stop')
 
 
       !
       ! func_D =  1/Nk \Sum_{ik, nn} wb(nn) * \Sum_m ( Im Log Mkb(m,m) + b * <r>_m )**2
       !
+CALL timing('omega_D',OPR='start')
       Omega_D = ZERO
       DO ik = 1, nkpts
-      DO inn = 1, nb
+      DO ib = 1, nb
            rtmp = ZERO
            DO m = 1, dimwann
-                 rtmp1 = DOT_PRODUCT( vb(:, inn), rave(:, m) )
-                 rtmp = rtmp + ( AIMAG( LOG( csheet(m,inn,ik) * Mkb(m,m,inn,ik) ) ) &
-                               - sheet(m,inn,ik) + rtmp1 )**2
+                 rtmp1 = DOT_PRODUCT( vb(:, ib), rave(:, m) )
+                 rtmp = rtmp + ( AIMAG( LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
+                               - sheet(m,ib,ik) + rtmp1 )**2
            ENDDO
-           Omega_D = Omega_D + wb(inn) * rtmp
+           Omega_D = Omega_D + wb(ib) * rtmp
       ENDDO
       ENDDO
-      Omega_D = Omega_D / DBLE(nkpts)
+      Omega_D = Omega_D / REAL(nkpts, dbl)
+
+CALL timing('omega_D',OPR='stop')
 
 
       !
-      ! he total functional
+      ! total functional
       !
       Omega_tot = Omega_I + Omega_D + Omega_OD
 

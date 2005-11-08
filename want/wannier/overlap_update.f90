@@ -65,7 +65,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    ENDDO
 
    !
-   ! ... cleaning
+   ! cleaning
    !
    DEALLOCATE( aux, STAT=ierr ) 
       IF (ierr/=0) CALL errore("overlap_update","deallocating aux",ABS(ierr))

@@ -11,12 +11,12 @@ MODULE atom_module
   !
   ! ... The variables needed to describe the atoms and related quantities
   !
-  USE kinds,      ONLY : DP => dbl
+  USE kinds,      ONLY : dbl
   USE parameters, ONLY : npsx, ndmx, nchix
   !
   SAVE
   !
-  REAL(KIND=DP) :: &
+  REAL(KIND=dbl) :: &
        zmesh(npsx),              &! the atomic charge for mesh generation
        xmin(npsx),               &! initial linear mesh point
        dx(npsx),                 &! linear interval for logaritmic mesh

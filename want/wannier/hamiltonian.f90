@@ -12,7 +12,8 @@
 !*********************************************
    USE kinds, ONLY : dbl
    USE lattice_module, ONLY : avec, bvec, lattice_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, nk, vkpt, wk, kpoints_alloc 
+   USE kpoints_module, ONLY : nkpts, nk, vkpt, wk,  &
+                              nrtot, nr, vr, ivr,  wr,  kpoints_alloc 
    USE subspace_module, ONLY : dimwann, wan_eig, efermi, subspace_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
@@ -35,17 +36,9 @@
 ! declarations of common variables
 !   
 
-   ! ... dimensions
-   INTEGER                     :: nws          ! number of direct lattive vectors
-   INTEGER                     :: nwsx         ! max numb of nws ( see below for the def )
-   !
-   ! ... auxiliary data
-   INTEGER, ALLOCATABLE        :: indxws(:,:)  ! R lattice vector (cryst coord), DIM 3*nwsx
-   INTEGER, ALLOCATABLE        :: degen(:)     ! R latt vect degeneracy, DIM: nwsx
-   REAL(dbl), ALLOCATABLE      :: vws(:,:)     ! R lattice vector (cart coord), DIM 3*nws
    !
    ! ... hamiltonians
-   COMPLEX(dbl), ALLOCATABLE   :: rham(:,:,:)  ! DIM: dimwann, dimwann, nws
+   COMPLEX(dbl), ALLOCATABLE   :: rham(:,:,:)  ! DIM: dimwann, dimwann, nrtot
                                                ! real space hamiltonian
    COMPLEX(dbl), ALLOCATABLE   :: kham(:,:,:)  ! DIM: dimwann, dimwann, nkpts
                                                ! kpt-symm hamiltonian rotated according to
@@ -57,9 +50,9 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, nws, dimwann
+   PUBLIC :: nkpts, dimwann
+   PUBLIC :: nrtot
    PUBLIC :: wan_eig, efermi
-   PUBLIC :: vws, indxws, degen
    PUBLIC :: rham
    PUBLIC :: kham
    PUBLIC :: alloc
@@ -81,43 +74,23 @@ CONTAINS
    IMPLICIT NONE
        CHARACTER(16)      :: subname="hamiltonian_init"
        INTEGER            :: ierr 
-      
-       IF ( dimwann <= 0 ) CALL errore(subname,'Invalid DIMWANN',1)
-       IF ( nkpts <= 0 )   CALL errore(subname,'Invalid NKPTS',1)
-       nwsx = ( INT( REAL(nkpts)**0.35 ) + 2 )**3
 
        IF ( .NOT. lattice_alloc )   CALL errore(subname,'lattice NOT alloc',1)
        IF ( .NOT. kpoints_alloc )   CALL errore(subname,'kpoints NOT alloc',1)
        IF ( .NOT. subspace_alloc )  CALL errore(subname,'subspace NOT alloc',1)
        
-       ALLOCATE( indxws(3,nwsx), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating indxws', ABS(ierr) )
-       ALLOCATE( degen(nwsx), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating degen', ABS(ierr) )
-
-       !
-       ! get the R vectors correspoinding to the chosen kpts
-       ! in particular determin nws
-       !
-       degen(:) = 0
-       indxws(:,:) = 0
-       CALL wigner_seitz( avec, nk, nwsx, nws, degen, indxws )
+       IF ( dimwann <= 0 )  CALL errore(subname,'Invalid DIMWANN',1)
+       IF ( nkpts <= 0 )    CALL errore(subname,'Invalid NKPTS',1)
+       IF ( nrtot <= 0 )    CALL errore(subname,'Invalid NRTOT',1)
+       IF ( nrtot < nkpts ) CALL errore(subname,'Invalid NRTOT < NKPTS',1)
 
        !
        ! other allocations
        !
-       ALLOCATE( rham(dimwann,dimwann,nws), STAT=ierr )
+       ALLOCATE( rham(dimwann,dimwann,nrtot), STAT=ierr )
            IF( ierr /=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
        ALLOCATE( kham(dimwann,dimwann,nkpts), STAT=ierr )
            IF( ierr /=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
-       ALLOCATE( vws(3,nws), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
-
-       !
-       ! convert indxws to cart coord (bohr)
-       !
-       vws(:,1:nws) = REAL(indxws(:,1:nws))
-       CALL cry2cart(vws, avec)
 
        alloc = .TRUE.
 
@@ -131,18 +104,6 @@ CONTAINS
        CHARACTER(22)      :: subname="hamiltonian_deallocate"
        INTEGER            :: ierr 
       
-       IF ( ALLOCATED(indxws) ) THEN 
-            DEALLOCATE(indxws, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,'deallocating indxws ',ABS(ierr))
-       ENDIF
-       IF ( ALLOCATED(degen) ) THEN 
-            DEALLOCATE(degen, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,'deallocating degen ',ABS(ierr))
-       ENDIF
-       IF ( ALLOCATED(vws) ) THEN 
-            DEALLOCATE(vws, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,'deallocating vws ',ABS(ierr))
-       ENDIF
        IF ( ALLOCATED(rham) ) THEN 
             DEALLOCATE(rham, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,'deallocating rham ',ABS(ierr))
@@ -163,7 +124,7 @@ CONTAINS
        CHARACTER(nstrx)   :: attr
        CHARACTER(17)      :: subname="hamiltonian_write"
        REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:)
-       INTEGER            :: ik, iws, ierr
+       INTEGER            :: ik, ir, ierr
 
        IF ( .NOT. alloc ) RETURN
        IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1)
@@ -172,7 +133,9 @@ CONTAINS
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
        CALL iotk_write_attr(attr,"nkpts",nkpts) 
-       CALL iotk_write_attr(attr,"nws",nws) 
+       CALL iotk_write_attr(attr,"nk",nk) 
+       CALL iotk_write_attr(attr,"nrtot",nrtot) 
+       CALL iotk_write_attr(attr,"nr",nr) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
        ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
@@ -180,16 +143,24 @@ CONTAINS
        vkpt_cry = vkpt
        CALL cart2cry(vkpt_cry, bvec)
 
-       CALL iotk_write_dat(unit,"VKPT", vkpt_cry, COLUMNS=3, IERR=ierr) 
+       CALL iotk_write_attr(attr,"units","bohr",FIRST=.TRUE.)
+       CALL iotk_write_dat(unit,"DIRECT_LATTICE", avec, ATTR=attr, COLUMNS=3) 
+       !
+       CALL iotk_write_attr(attr,"units","bohr^-1",FIRST=.TRUE.)
+       CALL iotk_write_dat(unit,"RECIPROCAL_LATTICE", bvec, ATTR=attr, COLUMNS=3) 
+       !
+       CALL iotk_write_attr(attr,"units","crystal",FIRST=.TRUE.)
+       CALL iotk_write_dat(unit,"VKPT", vkpt_cry, ATTR=attr, COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing VKPT',ABS(ierr))
+            !
        CALL iotk_write_dat(unit,"WK", wk, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing WK',ABS(ierr))
-       CALL iotk_write_dat(unit,"VWS", vws, COLUMNS=3, IERR=ierr) 
-            IF (ierr/=0) CALL errore(subname,'writing VWS',ABS(ierr))
-       CALL iotk_write_dat(unit,"INDXWS",indxws(:,1:nws), COLUMNS=3, IERR=ierr) 
-            IF (ierr/=0) CALL errore(subname,'writing INDXWS',ABS(ierr))
-       CALL iotk_write_dat(unit,"DEGEN",degen(1:nws), IERR=ierr) 
-            IF (ierr/=0) CALL errore(subname,'writing DEGEN',ABS(ierr))
+            !
+       CALL iotk_write_dat(unit,"IVR", ivr, ATTR=attr, COLUMNS=3, IERR=ierr) 
+            IF (ierr/=0) CALL errore(subname,'writing ivr',ABS(ierr))
+            !
+       CALL iotk_write_dat(unit,"WR", wr, IERR=ierr) 
+            IF (ierr/=0) CALL errore(subname,'writing wr',ABS(ierr))
 
        DEALLOCATE( vkpt_cry, STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'deallocating vkpt_cry',ABS(ierr))   
@@ -203,13 +174,14 @@ CONTAINS
        CALL iotk_write_end(unit,"KHAM")
        !
        CALL iotk_write_begin(unit,"RHAM")
-       DO iws = 1, nws
-             CALL iotk_write_dat(unit,"WS"//TRIM(iotk_index(iws)), rham(:,:,iws))
+       DO ir = 1, nrtot
+             CALL iotk_write_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir))
        ENDDO
        CALL iotk_write_end(unit,"RHAM")
 
        CALL iotk_write_end(unit,TRIM(name))
    END SUBROUTINE hamiltonian_write
+
 
 !**********************************************************
    SUBROUTINE hamiltonian_read(unit,name,found)
@@ -220,8 +192,8 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(16)      :: subname="hamiltonian_read"
-       INTEGER            :: nkpts_, nws_, dimwann_
-       INTEGER            :: ik, iws, ierr
+       INTEGER            :: nkpts_, nrtot_, dimwann_
+       INTEGER            :: ik, ir, ierr
 
        IF ( alloc ) CALL hamiltonian_deallocate()
        CALL hamiltonian_init()
@@ -237,12 +209,12 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nws',nws_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NWS',ABS(ierr))
+       CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr NRTOT',ABS(ierr))
 
        IF ( dimwann_ /= dimwann) CALL errore(subname,'invalid dimwann',1)
        IF ( nkpts_ /= nkpts) CALL errore(subname,'invalid nkpts',2)
-       IF ( nws_ /= nws) CALL errore(subname,'invalid nws',3)
+       IF ( nrtot_ /= nrtot) CALL errore(subname,'invalid nrtot',3)
 
        CALL iotk_scan_begin(unit,"KHAM", IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag KHAM',ABS(ierr))
@@ -255,9 +227,9 @@ CONTAINS
        !
        CALL iotk_scan_begin(unit,"RHAM", IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag RHAM',ABS(ierr))
-       DO iws = 1, nws
-             CALL iotk_scan_dat(unit,"WS"//TRIM(iotk_index(iws)), rham(:,:,iws), IERR=ierr)
-             IF (ierr/=0) CALL errore(subname,'Unable to find dat WS in RHAM',iws)
+       DO ir = 1, nrtot
+             CALL iotk_scan_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir), IERR=ierr)
+             IF (ierr/=0) CALL errore(subname,'Unable to find dat VR in RHAM',ir)
        ENDDO
        CALL iotk_scan_end(unit,"RHAM", IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag RHAM',ABS(ierr))

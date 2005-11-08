@@ -8,6 +8,29 @@
 Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
+07 Nov 2005      kind related issues ( dbl, DP, *8, DBLE, REAL, DREAL, DCMPLX ) 
+                 uniformized using dbl=SELECTED_REAL_KIND() around the code. (AF)
+
+04 Nov 2005      Makefile added in Docs/tex; transport_init.f90 routine removed; 
+                 Documentation updated. (AF)
+                 Kpt implementation in transport completed. (AF & BB) 
+
+03 Nov 2005      Portability bugs fixed in fft routines and libs Makefile 
+                 (courtesy of MBN). (AF)
+
+28 Oct 2005      Bug fixed in kpoints.f90; phases deleted; cleanup in test03. (AF)
+
+27 Oct 2005      bshells.f90 renamed to bshells_init.f90; kpoints module changed;
+                 kpoints_init added; want_init updated; wigner_seitz routine deleted;
+                 get_rgrid added in kpoints_init. Global updated of rgrid variables
+                 around the code done. (AF) 
+
+26 Oct 2005      input_conductor namelist changed (datafile_L, datafile_R, datafile_C, 
+                 transport_dir added);
+                 variables dimA, dimB, sgmfile renamed to dimL, dimR, datafile_sgm;
+                 transport_init.f90 subroutine added in transport;
+                 kpoints.f90 module added in transport.   (BB)
+
 25 Oct 2005      hamiltonian.f90 module added in transport; conductor changed accordingly;
                  hamiltonian_setup.f90 updated and renamed to hamiltonian_init.f90 . (BB)
 

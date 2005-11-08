@@ -30,7 +30,7 @@
    USE files_module,   ONLY : file_open, file_close
    
    USE control_module, ONLY : do_overlaps, do_projections, &
-                              use_atomwfc, use_pseudo, use_uspp, &
+                              use_atomwfc, use_pseudo, use_uspp, use_blimit, &
                               read_overlaps, read_projections
    USE lattice_module, ONLY : tpiba
    USE subspace_module,ONLY : dimwann
@@ -140,7 +140,9 @@
               !     here we compute (among other quantities) \int dr Q_ij(r)
               !                                              \int dr e^ibr Q_ij(r)
               CALL init_us_1()
-              WRITE( stdout, '(2x, "WARNING: setting b = 0 in qb (overlap augment.)" )') 
+              IF ( use_blimit ) &
+                 WRITE( stdout, '(2x, "WARNING: setting b = 0 in qb (overlap augment.)" )')
+                 !
               WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5,2/ ) ') nkb
 
               !

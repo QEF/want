@@ -71,7 +71,7 @@
        !
        ! ...  Global data init
        !
-       CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE., PSEUDO=.TRUE.)
+       CALL want_init(WANT_INPUT=.TRUE., PSEUDO=.TRUE.)
 
        !
        ! ...  Summary of the input and DFT data
@@ -303,11 +303,11 @@
        !
        ! ... Write the final omega_I. This should equal the one given by wannier
        !
-       WRITE( stdout, "(2x,'Iteration # : ',i4)") ncount
+       WRITE( stdout, "(2x,'Iteration # : ',i5)") ncount
        WRITE( stdout,"(2x,'Final Omega_I (Bohr^2, Angstrom^2):', f15.6,2x,f15.6)") &
                       omega_i, omega_i*bohr**2
        WRITE( stdout,"(2x,' Avrg Omega_I                     :', f15.6,2x,f15.6)") &
-                      omega_i/DBLE(dimwann), omega_i*bohr**2/DBLE(dimwann)
+                      omega_i/REAL(dimwann, dbl), omega_i*bohr**2/REAL(dimwann, dbl)
        WRITE( stdout,"()" ) 
        CALL timing_upto_now(stdout) 
 

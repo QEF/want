@@ -26,10 +26,10 @@
    USE summary_module,       ONLY : summary
    USE version_module,       ONLY : version_number
    USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx, windows_read
+   USE kpoints_module,       ONLY : nrtot, nkpts, ivr, vr
    USE subspace_module,      ONLY : eamp, subspace_read
    USE localization_module,  ONLY : cu, localization_read
-   USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, indxws, vws, &
-                                    hamiltonian_init
+   USE hamiltonian_module,   ONLY : dimwann, hamiltonian_init
    USE util_module,          ONLY : mat_mul
    IMPLICIT NONE 
 
@@ -37,7 +37,7 @@
    ! local variables
    !
    REAL(dbl),    ALLOCATABLE :: grid(:), kpt(:,:)
-   REAL(dbl),    ALLOCATABLE :: vwss(:), norms(:)
+   REAL(dbl),    ALLOCATABLE :: vrr(:), norms(:)
    COMPLEX(dbl), ALLOCATABLE :: phase(:,:)
    COMPLEX(dbl), ALLOCATABLE :: opr_in(:,:,:), opr_out(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: oprk(:,:,:), cutot(:,:,:)
@@ -47,7 +47,7 @@
    CHARACTER(nstrx)          :: filename, filein, fileout
    CHARACTER(nstrx)          :: attr, name
    !
-   INTEGER :: i, j, m, ie, ik, iws, ierr
+   INTEGER :: i, j, m, ie, ik, ir, ierr
    INTEGER :: nbnd_, nkpts_, nomega
    LOGICAL :: lfound, ldynamical, lband_diag, ascii
    !
@@ -84,7 +84,8 @@
       !
       IF ( LEN_TRIM(filein) == 0 )  CALL errore('blc2wan','invalid void filein',1)
       IF ( LEN_TRIM(fileout) == 0 ) CALL errore('blc2wan','invalid void fileout',2)
-      IF ( TRIM(filein) == TRIM(fileout) ) CALL errore('blc2wan','filein and fileout equal',3)
+      IF ( TRIM(filein) == TRIM(fileout) ) &
+                CALL errore('blc2wan','filein and fileout equal',3)
 
 
 !
@@ -140,7 +141,7 @@
          IF (ierr/=0) CALL errore('blc2wan','allocating opr_in',ABS(ierr))
       ALLOCATE( oprk(dimwann,dimwann,nkpts), STAT=ierr )
          IF (ierr/=0) CALL errore('blc2wan','allocating oprk',ABS(ierr))
-      ALLOCATE( opr_out(dimwann,dimwann,nws), STAT=ierr )
+      ALLOCATE( opr_out(dimwann,dimwann,nrtot), STAT=ierr )
          IF (ierr/=0) CALL errore('blc2wan','allocating opr_out',ABS(ierr))
       ALLOCATE( cutot(dimwinx,dimwann,nkpts), STAT=ierr )
          IF (ierr/=0) CALL errore('blc2wan','allocating opr_out',ABS(ierr))
@@ -150,12 +151,12 @@
          IF (ierr/=0) CALL errore('blc2wan','allocating work',ABS(ierr))
       ALLOCATE( kpt(3,nkpts), STAT=ierr )
          IF (ierr/=0) CALL errore('blc2wan','allocating kpt',ABS(ierr))
-      ALLOCATE( phase(nkpts,nws), STAT=ierr )
+      ALLOCATE( phase(nkpts,nrtot), STAT=ierr )
          IF (ierr/=0) CALL errore('blc2wan','allocating phase',ABS(ierr))
-      ALLOCATE( norms(nws), STAT=ierr )     
+      ALLOCATE( norms(nrtot), STAT=ierr )     
          IF (ierr/=0) CALL errore('blc2wan','allocating norms',ABS(ierr))
-      ALLOCATE( vwss(nws), STAT=ierr )     
-         IF (ierr/=0) CALL errore('blc2wan','allocating vwss',ABS(ierr))
+      ALLOCATE( vrr(nrtot), STAT=ierr )     
+         IF (ierr/=0) CALL errore('blc2wan','allocating vrr',ABS(ierr))
 
 
 !
@@ -208,10 +209,10 @@
       CALL iotk_open_write(out_unit, TRIM(filename), BINARY=.NOT. ascii)
 
       CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.)
-      CALL iotk_write_attr(attr,"nws",nws)
+      CALL iotk_write_attr(attr,"nrtot",nrtot)
       CALL iotk_write_attr(attr,"nomega",nomega)
       CALL iotk_write_empty(out_unit,"DATA",ATTR=attr)
-      CALL iotk_write_dat(out_unit,"VWS",vws, COLUMNS=3)
+      CALL iotk_write_dat(out_unit,"VR",vr, COLUMNS=3)
       IF ( ldynamical ) CALL iotk_write_dat(out_unit,"GRID",grid)
 
            
@@ -226,15 +227,15 @@
       !
       ! set the phase factors
       !
-      DO iws = 1, nws
+      DO ir = 1, nrtot
           DO ik=1,nkpts
-              arg = DOT_PRODUCT( kpt(:,ik), vws(:,iws) )
-              phase(ik,iws) = CMPLX( COS(arg), -SIN(arg) )
+              arg = DOT_PRODUCT( kpt(:,ik), vr(:,ir) )
+              phase(ik,ir) = CMPLX( COS(arg), -SIN(arg) )
           ENDDO
           !
-          ! compute also the norms of the vws vectors
+          ! compute also the norms of the vr vectors
           !
-          vwss(iws) = SQRT( DOT_PRODUCT(vws(:,iws), vws(:,iws)) ) 
+          vrr(ir) = SQRT( DOT_PRODUCT(vr(:,ir), vr(:,ir)) ) 
       ENDDO
 
 
@@ -315,30 +316,30 @@
           ! final Fourier transform
           !
           rlattice: &
-          DO iws =1, nws
+          DO ir =1, nrtot
                
-               opr_out(:,:,iws) = CZERO
+               opr_out(:,:,ir) = CZERO
                DO ik = 1, nkpts
                     DO j=1,dimwann
                     DO i=1,dimwann
-                         opr_out(i,j,iws) = opr_out(i,j,iws) + phase(ik,iws) * oprk(i,j,ik) 
+                         opr_out(i,j,ir) = opr_out(i,j,ir) + phase(ik,ir) * oprk(i,j,ik) 
                     ENDDO
                     ENDDO
                ENDDO
-               opr_out(:,:,iws) = opr_out(:,:,iws) / REAL(nkpts)
+               opr_out(:,:,ir) = opr_out(:,:,ir) / REAL(nkpts, dbl)
 
                !
                ! write to file
                !
-               CALL iotk_write_dat(out_unit,"WS"//TRIM(iotk_index(iws)), opr_out(:,:,iws))
+               CALL iotk_write_dat(out_unit,"VR"//TRIM(iotk_index(ir)), opr_out(:,:,ir))
 
                !
                ! add the contribution to the localization measure
                !
                DO j=1,dimwann
                DO i=1,dimwann
-                   norms(iws) = norms(iws) + &
-                                REAL(  CONJG( opr_out(i,j,iws)) * opr_out(i,j,iws) )
+                   norms(ir) = norms(ir) + &
+                                REAL(  CONJG( opr_out(i,j,ir)) * opr_out(i,j,ir) )
                ENDDO
                ENDDO
 
@@ -372,9 +373,9 @@
       WRITE(stdout,"(/,2x,'Real space decay of OPR:',/)")
       WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of Opr(R) [eV]')")
       !
-      DO iws = 1, nws
+      DO ir = 1, nrtot
           WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") &
-                         indxws(:,iws), vwss(iws), SQRT(  norms(iws) / REAL(dimwann*nomega) )
+                         ivr(:,ir), vrr(ir), SQRT(  norms(ir) / REAL(dimwann*nomega, dbl) )
       ENDDO
       
 
@@ -400,8 +401,8 @@
          IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating aux, work', ABS(ierr) )
       DEALLOCATE( phase, kpt, STAT=ierr)
          IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating phase, kpt', ABS(ierr) )
-      DEALLOCATE( vwss, norms, STAT=ierr)
-         IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating vwss, norms', ABS(ierr) )
+      DEALLOCATE( vrr, norms, STAT=ierr)
+         IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating vrr, norms', ABS(ierr) )
       IF ( ALLOCATED(grid) ) THEN 
            DEALLOCATE( grid, STAT=ierr)
            IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating grid', ABS(ierr) )

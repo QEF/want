@@ -72,7 +72,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
             ! vb in bohr^-1, tau in alat and directly converted
             !
             arg = DOT_PRODUCT( vb(:,inn), tau(:,na) ) * alat
-            phase = DCMPLX ( COS(arg), -SIN(arg) )
+            phase = CMPLX ( COS(arg), -SIN(arg), dbl )
             !
             IF ( ityp(na) == nt ) THEN
                DO jh = 1, nh(nt)

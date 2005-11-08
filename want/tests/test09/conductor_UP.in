@@ -6,27 +6,25 @@
    ne = 1000
    emin = -10.0
    emax = 5.0
+   datafile_C = "nichain_WanT_UP.ham"
+   transport_dir = 3
 /
 
 <HAMILTONIAN_DATA>
 
    <H00_C>
       &MATRIX_DATA
-         filename="nichain_WanT_UP.ham"
          cols="1-6"
          rows="1-6"
-         direction=0
       /
    </H00_C>
 
-   <HCI_CB>
+   <H_CR>
       &MATRIX_DATA
-         filename="nichain_WanT_UP.ham"
          cols="1-6"
          rows="1-6"
-         direction=3
       /
-   </HCI_CB>
+   </H_CR>
 
 </HAMILTONIAN_DATA>
 

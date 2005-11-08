@@ -41,8 +41,9 @@
    !
    ! local variables
    !
-   INTEGER :: ik, inn
-   INTEGER :: m, n, ierr
+   INTEGER   :: ik, inn
+   INTEGER   :: m, n, ierr
+   REAL(dbl) :: fact
    REAL(dbl),    ALLOCATABLE :: qb(:), Dr(:,:) 
    COMPLEX(dbl), ALLOCATABLE :: At(:,:)
    COMPLEX(dbl), ALLOCATABLE :: aux2(:,:)
@@ -82,6 +83,8 @@
    !
    ! domg_aux is calculated
    !
+   fact = a / REAL( nkpts, dbl)
+
    DO ik = 1, nkpts
        !
        aux2(:,:) = CZERO
@@ -119,7 +122,7 @@
        !
        ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
        !
-       domg(:,:,ik) = a * ONE / DBLE(nkpts) * aux2(:,:)
+       domg(:,:,ik) = fact * aux2(:,:)
    ENDDO
 
    DEALLOCATE( qb, STAT=ierr )

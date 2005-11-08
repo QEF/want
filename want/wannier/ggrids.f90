@@ -179,7 +179,7 @@ CONTAINS
        ! ... init, units are in tpiba (2pi/alat) according to Espresso units
        !
        IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice quantities not allocated',4)
-       g(:,:) = REAL( igv(:,:) )
+       g(:,:) = REAL( igv(:,:), dbl )
        tmp(:,:) =  bvec(:,:) / tpiba
        CALL cry2cart(g, tmp )
        DO i=1,SIZE(igv,2)

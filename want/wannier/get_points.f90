@@ -73,12 +73,13 @@
                IF ( nkpts_tot ==  1 ) THEN
                    xval(nkpts_tot) = ZERO
                ELSE
-                   xval(nkpts_tot) = xval(nkpts_tot-1) + length(i)/DBLE(n)
+                   xval(nkpts_tot) = xval(nkpts_tot-1) + length(i)/REAL(n, dbl)
                ENDIF
 
                IF ( j ==  1 ) xval_in(i) = xval(nkpts_tot)
 
-               kpt(:,nkpts_tot) = kpt_in(:,i) + ( kpt_in(:,i+1) - kpt_in(:,i) ) * DBLE(j-1)/DBLE(n)  
+               kpt(:,nkpts_tot) = kpt_in(:,i) + ( kpt_in(:,i+1) - kpt_in(:,i) ) * &
+                                                  REAL(j-1, dbl) / REAL(n, dbl)  
            ENDDO
        ENDDO
        
@@ -86,7 +87,7 @@
        ! Last point
        !
        nkpts_tot = nkpts_tot + 1
-       xval(nkpts_tot)   = xval(nkpts_tot-1) + length(nkpts_in-1)/DBLE(n)
+       xval(nkpts_tot)   = xval(nkpts_tot-1) + length(nkpts_in-1) / REAL(n, dbl)
        kpt(:,nkpts_tot)  = kpt_in(:,nkpts_in)
        xval_in(nkpts_in) = xval(nkpts_tot) 
 

@@ -1,77 +1,67 @@
 
 &INPUT_CONDUCTOR
-   dimA = 6
+   dimL = 6
    dimC = 50
-   dimB = 6
+   dimR = 6
    ne = 1000
    emin = -10.0
    emax = 5.0
+   datafile_L = "pt_h2_pt_WanT.ham"
+   datafile_C = "pt_h2_pt_WanT.ham"
+   datafile_R = "pt_h2_pt_WanT.ham"
+   transport_dir = 3
 /
 
 <HAMILTONIAN_DATA>
 
    <H00_C>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
          rows="1-50"
          cols="1-50"
-         direction=0
       /
    </H00_C>
 
-   <HCI_CB>
+   <H_CR>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
          rows="1-50"
          cols="1-6"
-         direction=3
       /
-   </HCI_CB>
+   </H_CR>
 
-   <HCI_AC>
+   <H_LC>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
          rows="45-50"
          cols="1-50"
-         direction=3
       /
-   </HCI_AC>
+   </H_LC>
 
-   <H00_A>
+   <H00_L>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
          rows="1-6"
          cols="1-6"
-         direction=0
       /
-   </H00_A>
+   </H00_L>
 
-   <H01_A>
+   <H01_L>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
          rows="1-6"
          cols="7-12"
-         direction=0
       /
-   </H01_A>
+   </H01_L>
 
-   <H00_B>
+   <H00_R>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
          rows="1-6"
          cols="1-6"
-         direction=0
       /
-   </H00_B>
+   </H00_R>
 
-   <H01_B>
+   <H01_R>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
          rows="1-6"
          cols="7-12"
-         direction=0
       /
-   </H01_B>
+   </H01_R>
 
 
 </HAMILTONIAN_DATA>

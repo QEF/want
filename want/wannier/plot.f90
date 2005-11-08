@@ -296,9 +296,9 @@
       WRITE( stdout, "(2x,'=',21x,'Wannier function plotting',22x,'=')" )
       WRITE( stdout, "(2x,70('='),2/)" )
 
-      WRITE( stdout,"(2x,'nplot = ',i3, ' Wannier func.s to be plotted')") nplot
+      WRITE( stdout,"(2x,'nplot = ',i4, ' Wannier func.s to be plotted')") nplot
       DO m=1,nplot
-          WRITE( stdout,"(5x,'wf (',i3,' ) = ',i4 )") m, iwann(m)
+          WRITE( stdout,"(5x,'wf (',i4,' ) = ',i4 )") m, iwann(m)
       ENDDO
       WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
       WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
@@ -420,16 +420,16 @@
            DO nx = -2, 2
            DO ny = -2, 2
            DO nz = -2, 2
-                raux(1) = ( tau_cry(1,ia) + REAL(nx) ) * REAL( nfft(1) )
-                raux(2) = ( tau_cry(2,ia) + REAL(ny) ) * REAL( nfft(2) )
-                raux(3) = ( tau_cry(3,ia) + REAL(nz) ) * REAL( nfft(3) )
+                raux(1) = ( tau_cry(1,ia) + REAL(nx, dbl) ) * REAL( nfft(1), dbl )
+                raux(2) = ( tau_cry(2,ia) + REAL(ny, dbl) ) * REAL( nfft(2), dbl )
+                raux(3) = ( tau_cry(3,ia) + REAL(nz, dbl) ) * REAL( nfft(3), dbl )
 
                 okp(1) = ( raux(1) >= (nrxl - 1) ) .AND. ( raux(1) < nrxh )
                 okp(2) = ( raux(2) >= (nryl - 1) ) .AND. ( raux(2) < nryh ) 
                 okp(3) = ( raux(3) >= (nrzl - 1) ) .AND. ( raux(3) < nrzh ) 
                 IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
                      natot = natot+1
-                     tautot(:,natot) = raux(:) / REAL(nfft(:))
+                     tautot(:,natot) = raux(:) / REAL(nfft(:), dbl)
                      symbtot(natot)  = symb( ia )
                 ENDIF
            ENDDO
@@ -474,7 +474,7 @@
       kpoint_loop: &
       DO ik = 1, nkpts
           ! 
-          WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i3 )") ik
+          WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i4 )") ik
 
           !
           ! getting wfc 
@@ -499,6 +499,8 @@
           !
           DO m = 1, nplot
 
+              CALL timing('kwann_calc',OPR='start')
+
               !
               ! apply a globgal shift to set the WF in the required cell
               !
@@ -507,6 +509,7 @@
 
 
               kwann( :, m ) = CZERO
+              !
               DO ig = 1, npwk(ik)
                  !
                  DO n = 1, dimwin(ik)
@@ -520,6 +523,8 @@
                  ! apply the translation phase
                  kwann( map(ig) ,m) = kwann( map(ig) ,m) * phase 
               ENDDO
+              !
+              CALL timing('kwann_calc',OPR='stop')
           ENDDO
 
           !
@@ -537,6 +542,7 @@
                                       nfft(1), nfft(2), nfft(3),  1 )
              CALL timing('cfft3d',OPR='stop')
 
+             CALL timing('cwann_calc',OPR='start')
              !
              ! loop over FFT grid
              !
@@ -549,16 +555,18 @@
 
                          ir = nx + (ny-1) * nfft(1) + (nz-1) * nfft(1) * nfft(2)
 
-                         arg   = vkpt_cry(1,ik) * DBLE(nxx) / DBLE(nfft(1)) + &
-                                 vkpt_cry(2,ik) * DBLE(nyy) / DBLE(nfft(2)) + &
-                                 vkpt_cry(3,ik) * DBLE(nzz) / DBLE(nfft(3))
+                         arg   = vkpt_cry(1,ik) * REAL(nxx, dbl) / REAL(nfft(1), dbl) + &
+                                 vkpt_cry(2,ik) * REAL(nyy, dbl) / REAL(nfft(2), dbl) + &
+                                 vkpt_cry(3,ik) * REAL(nzz, dbl) / REAL(nfft(3), dbl)
                          caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg) ) * &
                                  kwann( ir, m ) 
 
                          cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux
-                      ENDDO
-                  ENDDO
-              ENDDO
+                     ENDDO
+                 ENDDO
+             ENDDO
+             !
+             CALL timing('cwann_calc',OPR='stop')
           ENDDO 
           !
           CALL timing_upto_now(stdout)
@@ -581,7 +589,7 @@
       ! at the point where it has max modulus
       ! 
 
-      arg = ONE / ( SQRT( REAL(nkpts) * SIZE(cwann(:,:,:,1) )  ) ) 
+      arg = ONE / ( SQRT( REAL(nkpts, dbl) * REAL( SIZE(cwann(:,:,:,1)), dbl) ) ) 
       !
       DO m = 1, nplot
           !
@@ -601,14 +609,11 @@
           ENDDO
           ENDDO
 
+          ! set the phase and invert it
           cmod = cmod / SQRT( cmod * CONJG(cmod) ) 
-          DO nzz = nrzl, nrzh
-          DO nyy = nryl, nryh
-          DO nxx = nrxl, nrxh
-              cwann(nxx,nyy,nzz,m) = cwann(nxx,nyy,nzz,m) / cmod
-          ENDDO
-          ENDDO
-          ENDDO
+          cmod = CONJG( cmod )   
+          !
+          cwann(:,:,:,m) = cwann(:,:,:,m) * cmod
       ENDDO
 
       
@@ -620,13 +625,13 @@
       ! Offset for position and WF's allignment
       ! r0, r1  (bohr)
       !
-      r0(1) = REAL( nrxl ) / REAL( nfft(1) )
-      r0(2) = REAL( nryl ) / REAL( nfft(2) )
-      r0(3) = REAL( nrzl ) / REAL( nfft(3) )
+      r0(1) = REAL( nrxl, dbl ) / REAL( nfft(1), dbl )
+      r0(2) = REAL( nryl, dbl ) / REAL( nfft(2), dbl )
+      r0(3) = REAL( nrzl, dbl ) / REAL( nfft(3), dbl )
       !
-      r1(1) = REAL( nrxh ) / REAL( nfft(1) )
-      r1(2) = REAL( nryh ) / REAL( nfft(2) )
-      r1(3) = REAL( nrzh ) / REAL( nfft(3) )
+      r1(1) = REAL( nrxh, dbl ) / REAL( nfft(1), dbl )
+      r1(2) = REAL( nryh, dbl ) / REAL( nfft(2), dbl )
+      r1(3) = REAL( nrzh, dbl ) / REAL( nfft(3), dbl )
       !
       CALL cry2cart( r0, avec )
       CALL cry2cart( r1, avec )
@@ -690,7 +695,7 @@
           ENDIF
           !
           !
-          WRITE( stdout,"(2x,'writing WF(',i3,') plot on file: ',a)") &
+          WRITE( stdout,"(2x,'writing WF(',i4,') plot on file: ',a)") &
                  iwann(m), TRIM(filename)//TRIM(aux_fmt)
           OPEN ( aux_unit, FILE=TRIM(filename)//TRIM(aux_fmt), FORM='formatted', &
                            STATUS='unknown', IOSTAT=ierr )
@@ -703,7 +708,7 @@
               ! 
               ! bohr
               DO i=1,3
-                 avecl(:,i) = avec(:,i) / REAL(nfft(i)) 
+                 avecl(:,i) = avec(:,i) / REAL(nfft(i), dbl) 
               ENDDO
 
               WRITE(aux_unit, '( " WanT" )') 
@@ -744,9 +749,9 @@
 
               ! 
               ! bohr
-              avecl(:,1) = avec(:,1) * REAL(nrxh-nrxl+1) / REAL(nfft(1)) 
-              avecl(:,2) = avec(:,2) * REAL(nryh-nryl+1) / REAL(nfft(2)) 
-              avecl(:,3) = avec(:,3) * REAL(nrzh-nrzl+1) / REAL(nfft(3)) 
+              avecl(:,1) = avec(:,1) * REAL(nrxh-nrxl+1, dbl) / REAL(nfft(1), dbl) 
+              avecl(:,2) = avec(:,2) * REAL(nryh-nryl+1, dbl) / REAL(nfft(2), dbl) 
+              avecl(:,3) = avec(:,3) * REAL(nrzh-nrzl+1, dbl) / REAL(nfft(3), dbl) 
               
               !
               ! avec, tautot in bohr, but converted to Ang in the routine

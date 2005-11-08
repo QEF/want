@@ -1,6 +1,6 @@
 
  &INPUT
-   prefix = 'copper'
+   prefix = 'cobalt_US'
    postfix = '_WanT'
    work_dir = './'
    datatype = 'real'
