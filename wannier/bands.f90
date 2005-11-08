@@ -29,10 +29,11 @@
    USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart
    USE lattice_module,       ONLY : bvec
+   USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
    USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read, &
                                     spin_component
    USE subspace_module,      ONLY : subspace_read
-   USE hamiltonian_module,   ONLY : dimwann, nws, nkpts, degen, vws, rham, wan_eig, &
+   USE hamiltonian_module,   ONLY : dimwann, rham, wan_eig, &
                                     hamiltonian_read, hamiltonian_init
    IMPLICIT NONE 
 
@@ -53,7 +54,7 @@
    REAL(dbl),    ALLOCATABLE :: eig_int(:,:)  ! interpolated band structure   
    CHARACTER(2), ALLOCATABLE :: kptname_in(:)    
    CHARACTER(nstrx)          :: filename
-   INTEGER :: i, j, ik, iws
+   INTEGER :: i, j, ik, ir
    INTEGER :: ierr
    LOGICAL :: lfound
    !
@@ -187,7 +188,7 @@
 
       !
       ! Interpolate H_ij(k') at those k-points by fourier interpolation
-      ! H_ij(k') ~ sum_R e^{ik'R} H_ij(R)/degen(R), where the sum over R is over a 
+      ! H_ij(k') ~ sum_R e^{ik'R} H_ij(R), where the sum over R is over a 
       ! finite grid (truncation)
       ! 
 
@@ -195,10 +196,10 @@
            DO j = 1, dimwann
            DO i = 1, dimwann
                 ham(i,j) = CZERO
-                DO iws = 1, nws
-                    arg = DOT_PRODUCT( kpt(:,ik), vws(:,iws) )
-                    phase = CMPLX( COS(arg), SIN(arg) )
-                    ham(i,j) = ham(i,j) + phase * rham(i,j,iws) / degen(iws)
+                DO ir = 1, nrtot
+                    arg = DOT_PRODUCT( kpt(:,ik), vr(:,ir) )
+                    phase = CMPLX( COS(arg), SIN(arg) ) * wr(ir)
+                    ham(i,j) = ham(i,j) + phase * rham(i,j,ir) 
                 ENDDO
            ENDDO
            ENDDO
@@ -244,7 +245,8 @@
       !
       DO i = 1, dimwann
           DO ik = 1, nkpts
-            WRITE (ham_unit, "(2e16.8)") REAL(ik-1)/REAL(nkpts), wan_eig(i,ik) -efermi
+            WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
+                               wan_eig(i,ik) -efermi
           ENDDO
           WRITE( ham_unit, "()") 
       ENDDO
@@ -257,7 +259,8 @@
       DO i = 1, nbnd
           DO ik = 1, nkpts
              IF ( i >= imin(ik) .AND. i <= imax(ik) ) THEN
-                 WRITE (ham_unit, "(2e16.8)") REAL(ik-1)/REAL(nkpts), eig(i,ik) -efermi
+                 WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
+                                              eig(i,ik) -efermi
              ELSE
                  WRITE (ham_unit, "()")
              ENDIF

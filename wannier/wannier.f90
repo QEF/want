@@ -79,7 +79,7 @@
       !
       ! ... Global data init
       !
-      CALL want_init(WANT_INPUT=.TRUE., WINDOWS=.TRUE., BSHELLS=.TRUE., PSEUDO=.TRUE.)
+      CALL want_init(WANT_INPUT=.TRUE., PSEUDO=.TRUE.)
 
 
       !
@@ -408,7 +408,7 @@
           WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
       ENDIF
       WRITE( stdout, "(2x,70('='),2/)" )
-      WRITE( stdout, "(2x,'Iteration # : ',i4)") ncount
+      WRITE( stdout, "(2x,'Iteration # : ',i5)") ncount
 
 
       !

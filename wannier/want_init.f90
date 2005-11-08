@@ -11,7 +11,7 @@ MODULE want_init_module
 CONTAINS
 
 !*********************************************************
-SUBROUTINE want_init(want_input, windows, bshells, pseudo)
+SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
    !*********************************************************
    USE kinds
    USE constants,  ONLY : CZERO, RYD
@@ -25,11 +25,11 @@ SUBROUTINE want_init(want_input, windows, bshells, pseudo)
    USE control_module, ONLY : use_uspp
    USE trial_center_module, ONLY : trial_center_convert
    USE trial_center_data_module, ONLY : trial, dimwann
-   USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec, bvec
+   USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec
    USE ions_module,  ONLY : ions_read_ext, ions_init, tau
    USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin, spin_component
-   USE kpoints_module,  ONLY : nkpts, nkpts_tot, iks, ike, nk, s, vkpt, &
-                               kpoints_read_ext, bshells_init
+   USE kpoints_module,  ONLY : nkpts, nkpts_tot, iks, ike, &
+                               kpoints_read_ext, kpoints_init
    USE dft_interface_module, ONLY : dft_interface_read_spin
    USE us_module,   ONLY : okvan
    USE uspp_param,  ONLY : tvanp
@@ -38,6 +38,7 @@ SUBROUTINE want_init(want_input, windows, bshells, pseudo)
 
    LOGICAL, OPTIONAL, INTENT(in) :: want_input
    LOGICAL, OPTIONAL, INTENT(in) :: windows
+   LOGICAL, OPTIONAL, INTENT(in) :: kpoints
    LOGICAL, OPTIONAL, INTENT(in) :: bshells
    LOGICAL, OPTIONAL, INTENT(in) :: pseudo
 
@@ -55,7 +56,8 @@ SUBROUTINE want_init(want_input, windows, bshells, pseudo)
 ! * init want input data (if required by WANT_INPUT = .TRUE.)
 ! * init windows data    (if required by WINDOWS = .TRUE.)
 ! * init ions data    
-! * init kpoints data    (including bshells if required)
+! * init kpoints data    (if required by KPOINTS = .TRUE.)
+! * init bshells data    (if required by BSHELLS = .TRUE.)
 ! * init pseudo data     (if required by PSEUDO=.TRUE.)
 !
 ! </INFO>
@@ -63,8 +65,8 @@ SUBROUTINE want_init(want_input, windows, bshells, pseudo)
    CHARACTER(9)              :: subname="want_init"
    CHARACTER(nstrx)          :: filename 
    LOGICAL                   :: lfound
-   LOGICAL                   :: want_input_, windows_, bshells_, pseudo_
-   INTEGER                   :: ierr, ia, iwann
+   LOGICAL                   :: want_input_, windows_, kpoints_, bshells_, pseudo_
+   INTEGER                   :: ia, iwann
    
 
 ! ... end of declarations
@@ -76,13 +78,16 @@ SUBROUTINE want_init(want_input, windows, bshells, pseudo)
 !   
     want_input_ = .FALSE.
     IF ( PRESENT(want_input) ) want_input_ = want_input
-    windows_ = .FALSE.
+    windows_ = .TRUE.
     IF ( PRESENT(windows) ) windows_ = windows
-    bshells_ = .FALSE.
+    kpoints_ = .TRUE.
+    IF ( PRESENT(kpoints) ) kpoints_ = kpoints
+    bshells_ = kpoints_
     IF ( PRESENT(bshells) ) bshells_ = bshells
     pseudo_ = .FALSE.
     IF ( PRESENT(pseudo) ) pseudo_ = pseudo
 
+    IF ( bshells_ .AND. .NOT. kpoints_ ) CALL errore(subname,'bshells need kpoints',1)
 
 !
 ! ... opening the file containing the PW-DFT data
@@ -159,13 +164,17 @@ SUBROUTINE want_init(want_input, windows, bshells, pseudo)
 !
 ! ... read kpoints data
 !
-    CALL kpoints_read_ext(dft_unit, "Kmesh", lfound)
-    IF ( .NOT. lfound ) CALL errore(subname,'Tag '//'Kmesh'//' not found',2)
-    CALL get_monkpack(nk,s,nkpts,vkpt,'CARTESIAN',bvec,ierr)
-    IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+    IF ( kpoints_ ) THEN
+        CALL kpoints_read_ext(dft_unit, "Kmesh", lfound)
+        IF ( .NOT. lfound ) CALL errore(subname,'Tag '//'Kmesh'//' not found',2)
+        CALL kpoints_init()
+    ENDIF
+
     !
-    ! ...  allocations and initializations
-    IF ( bshells_ ) CALL bshells_init( )
+    ! ... b-vectors initializations
+    IF ( bshells_ ) THEN 
+        CALL bshells_init( )
+    ENDIF
 
 !
 ! ... eigenvalues data read

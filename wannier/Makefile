@@ -13,7 +13,7 @@ atomic.o \
 atomic_wfc.o \
 bachel.o \
 becmod.o \
-bshells.o \
+bshells_init.o \
 ccalbec.o \
 cleanup.o \
 control.o \
@@ -22,6 +22,7 @@ dft_interface.o \
 domega_aux.o \
 domega.o \
 functionals.o \
+get_rgrid.o \
 get_monkpack.o \
 get_points.o \
 ggrids.o \
@@ -48,7 +49,6 @@ overlap.o \
 overlap_module.o \
 overlap_setmap.o \
 overlap_update.o \
-phases.o \
 projection.o \
 projection_frozen.o \
 pseudo_types.o \
@@ -80,7 +80,6 @@ want_init.o \
 wfc_data.o \
 wfc_info.o \
 wfc_manager.o \
-wigner_seitz.o \
 windows.o \
 xsf.o \
 zmatrix.o \

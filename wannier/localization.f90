@@ -192,7 +192,7 @@ CONTAINS
            WRITE( unit, "(  4x,'Omega D    =   ', f13.6 ) " ) Omega_D
            WRITE( unit, "(  4x,'Omega OD   =   ', f13.6 ) " ) Omega_OD
            WRITE( unit, "(  4x,'Omega Tot  =   ', f13.6 ) " ) Omega_tot
-           WRITE( unit, "(  4x,'Omega Avrg =   ', f13.6 ) " ) Omega_tot/DBLE(dimwann)
+           WRITE( unit, "(  4x,'Omega Avrg =   ', f13.6 ) " ) Omega_tot/REAL(dimwann, dbl)
            WRITE( unit, "()")
       ENDIF
 

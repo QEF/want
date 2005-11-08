@@ -11,11 +11,12 @@
 !*********************************************
    MODULE kpoints_module
 !*********************************************
-   USE kinds, ONLY: dbl
-   USE constants, ONLY : ONE, TWO, TPI, EPS_m6
-   USE parameters, ONLY : nstrx, nnx
-   USE lattice_module, ONLY : alat, avec, bvec, lattice_alloc => alloc
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : ONE, TWO, TPI, EPS_m6
+   USE parameters,        ONLY : nstrx, nnx
+   USE lattice_module,    ONLY : alat, avec, bvec, lattice_alloc => alloc
    USE iotk_module
+   USE converters_module, ONLY : cart2cry
 
    IMPLICIT NONE
    PRIVATE
@@ -27,9 +28,10 @@
 ! routines in this module:
 ! SUBROUTINE kpoints_allocate()
 ! SUBROUTINE kpoints_deallocate()
+! SUBROUTINE kpoints_init()
 ! SUBROUTINE bshells_allocate()
 ! SUBROUTINE bshells_deallocate()
-! SUBROUTINE bshells_init( )
+! SUBROUTINE bshells_init()
 ! SUBROUTINE kpoints_read_ext( unit, name, found )
 
 !
@@ -53,9 +55,18 @@
   REAL(dbl), ALLOCATABLE  :: wk(:)         ! weight of each kpt for BZ sums 
   REAL(dbl)               :: wksum         ! sum of the weights
 
+  LOGICAL :: kpoints_alloc = .FALSE.
+
+  !
+  ! ... Real space lattice vectors (R vectors)
+  INTEGER                 :: nrtot         ! total number R vects
+  INTEGER                 :: nr(3)         ! uniform grid of R vectors
+  INTEGER,   ALLOCATABLE  :: ivr(:,:)      ! R vector components (crystal)
+  REAL(dbl), ALLOCATABLE  :: vr(:,:)       ! R vector components (bohr)
+  REAL(dbl), ALLOCATABLE  :: wr(:)         ! R vector weights 
+
   !
   ! ... Nearest neighbor data (b vectors)
-
   INTEGER                 :: nb            ! number of neighbours
   INTEGER, ALLOCATABLE    :: nnlist(:,:)   ! k+b list for each k, DIM: nb*nkpts
   INTEGER, ALLOCATABLE    :: nncell(:,:,:) ! k+b cell, DIM: 3*nb*nkpts
@@ -65,8 +76,8 @@
   REAL(dbl), ALLOCATABLE  :: wb(:)         ! b-weights, DIM: nb
   REAL(dbl)               :: wbtot         ! sum of the b-weights
 
-  LOGICAL :: kpoints_alloc = .FALSE.
   LOGICAL :: bshells_alloc = .FALSE.
+
 
 !
 ! end of declaration scope 
@@ -78,7 +89,10 @@
   PUBLIC :: nk, s
   PUBLIC :: vkpt
   PUBLIC :: wk, wksum
-
+  !
+  PUBLIC :: nrtot, nr
+  PUBLIC :: ivr, vr, wr
+  !
   PUBLIC :: nb
   PUBLIC :: vb
   PUBLIC :: wb
@@ -87,13 +101,13 @@
   PUBLIC :: nncell
   PUBLIC :: nnrev
   PUBLIC :: nnpos
+  !
   PUBLIC :: kpoints_alloc, bshells_alloc
-
-  PUBLIC :: bshells_init
-  PUBLIC :: kpoints_allocate
-  PUBLIC :: bshells_allocate
+  !
   PUBLIC :: kpoints_read_ext
+  PUBLIC :: kpoints_init
   PUBLIC :: kpoints_deallocate
+  PUBLIC :: bshells_allocate
   PUBLIC :: bshells_deallocate
 
 
@@ -120,7 +134,56 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE bshells_allocate()
+   SUBROUTINE kpoints_init( )
+   !**********************************************************
+   IMPLICIT NONE
+      INTEGER           :: ierr
+      CHARACTER(12)     :: subname="kpoints_init"
+      REAL(dbl), ALLOCATABLE :: vr_cry(:,:)
+
+      IF ( .NOT. lattice_alloc ) CALL errore(subname,'lattice NOT alloc',1) 
+      IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1) 
+
+      !
+      ! get the monkhorst pack grid
+      !
+      CALL get_monkpack(nk,s,nkpts,vkpt,'CARTESIAN',bvec,ierr)
+      IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+
+      !
+      ! init the R vectors, corresponding to the given MP grid
+      !
+      nr(1:3) = nk(1:3)
+      nrtot   = PRODUCT(nr)
+      !
+      ALLOCATE( vr( 3, nrtot ), STAT=ierr )
+         IF ( ierr /= 0) CALL errore(subname,'allocating vr',ABS(ierr))
+      ALLOCATE( ivr( 3, nrtot ), STAT=ierr )
+         IF ( ierr /= 0) CALL errore(subname,'allocating ivr',ABS(ierr))
+      ALLOCATE( wr( nrtot ), STAT=ierr )
+         IF ( ierr /= 0) CALL errore(subname,'allocating wr',ABS(ierr))
+         !
+      CALL get_Rgrid(nr, nrtot, wr, vr, avec )
+
+      !
+      ! compute ivr, crystal compononet of vr
+      !
+      ALLOCATE( vr_cry( 3, nrtot ), STAT=ierr )
+         IF ( ierr /= 0) CALL errore(subname,'allocating vr_cry',ABS(ierr))
+         !
+      vr_cry(:,:) = vr(:,:) 
+      CALL cart2cry(vr_cry, avec)
+      !
+      ivr(:,:) = NINT( vr_cry(:,:) )
+      !
+      DEALLOCATE( vr_cry, STAT=ierr )
+         IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
+      
+   END SUBROUTINE kpoints_init
+
+
+!**********************************************************
+   SUBROUTINE bshells_allocate( )
    !**********************************************************
    IMPLICIT NONE
       INTEGER   :: ierr
@@ -144,20 +207,6 @@ CONTAINS
 
       bshells_alloc = .TRUE.
    END SUBROUTINE bshells_allocate
-
-
-!**********************************************************
-   SUBROUTINE bshells_init( )
-   !**********************************************************
-    IMPLICIT NONE
-
-      IF ( .NOT. lattice_alloc ) CALL errore('bshells_init','Lattice NOT allocated',1)
-      ! ... Setup the shells of b-vectors around each K-point
-      ! 
-      CALL bshells()
-
-    RETURN
-   END SUBROUTINE bshells_init
 
 
 !**********************************************************
@@ -211,7 +260,7 @@ CONTAINS
        wk(:) = wk(:) * nkpts_tot / ( TWO * nkpts )
        wksum = SUM(wk(:))
        DO ik = 1,nkpts
-          IF( ABS( wk(ik) - ONE/REAL(nkpts) ) > EPS_m6 ) &
+          IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) &
               CALL errore(subname,'Invalid kpt weight',ik)
        ENDDO
 
@@ -252,7 +301,20 @@ CONTAINS
        DEALLOCATE( wk, STAT=ierr )
        IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wk',ABS(ierr))
     ENDIF
-
+    !
+    IF ( ALLOCATED( ivr ) ) THEN
+       DEALLOCATE( ivr, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating ivr',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( vr ) ) THEN
+       DEALLOCATE( vr, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating vr',ABS(ierr))
+    ENDIF
+    IF ( ALLOCATED( wr ) ) THEN
+       DEALLOCATE( wr, STAT=ierr )
+       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wr',ABS(ierr))
+    ENDIF
+    !
     kpoints_alloc = .FALSE.
    END SUBROUTINE kpoints_deallocate
 

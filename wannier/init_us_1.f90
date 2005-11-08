@@ -234,7 +234,7 @@ SUBROUTINE init_us_1
         do ih = 1, nh (nt)
           do jh = ih, nh (nt)
              call qvan2 (1, ih, jh, nt, gg, qgm, ylmk0)
-             qq (ih, jh, nt) = omega * DREAL (qgm (1) )
+             qq (ih, jh, nt) = omega * REAL (qgm (1), dbl )
              qq (jh, ih, nt) = qq (ih, jh, nt)
           enddo
         enddo

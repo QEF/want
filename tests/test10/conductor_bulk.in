@@ -5,27 +5,25 @@
    ne = 1000
    emin = -20.0
    emax = 0.0
+   datafile_C = "COND/chain8_WanT.ham"
+   transport_dir = 1
 /
 
 <HAMILTONIAN_DATA>
 
    <H00_C>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
          rows="1-16"
          cols="1-16"
-         direction=0
       /
    </H00_C>
 
-   <HCI_CB>
+   <H_CR>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
          rows="1-16"
          cols="1-16"
-         direction=1
       /
-   </HCI_CB>
+   </H_CR>
 
 </HAMILTONIAN_DATA>
 

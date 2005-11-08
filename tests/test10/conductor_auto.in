@@ -1,78 +1,69 @@
 
 &INPUT_CONDUCTOR
-   dimA = 8
+   dimL = 8
    dimC = 16
-   dimB = 8
+   dimR = 8
    ne = 1000
    emin = -20.0
    emax = 0.0
+   datafile_L = "COND/chain8_WanT.ham"
+   datafile_C = "COND/chain8_WanT.ham"
+   datafile_R = "COND/chain8_WanT.ham"
+   transport_dir = 1
+
 /
 
 <HAMILTONIAN_DATA>
 
    <H00_C>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
          rows="1-16"
          cols="1-16"
-         direction=0
       /
    </H00_C>
 
-   <HCI_CB>
+   <H_CR>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
          rows="1-16"
          cols="1-8"
-         direction=1
       /
-   </HCI_CB>
+   </H_CR>
 
 
-   <HCI_AC>
+   <H_LC>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
          rows="9-16"
          cols="1-16"
-         direction=1
       /
-   </HCI_AC>
+   </H_LC>
 
-   <H00_A>
+   <H00_L>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
-         rows="1-8"
-         cols="1-8"
-         direction=0
-      /
-   </H00_A>
-
-   <H01_A>
-      &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
-         rows="1-8"
+         rows="9-16"
          cols="9-16"
-         direction=0
       /
-   </H01_A>
+   </H00_L>
 
-   <H00_B>
+   <H01_L>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
-         rows="1-8"
+         rows="9-16"
          cols="1-8"
-         direction=0
       /
-   </H00_B>
+   </H01_L>
 
-   <H01_B>
+   <H00_R>
       &MATRIX_DATA
-         filename="COND/chain8_WanT.ham"
-         rows="1-8"
+         rows="9-16"
          cols="9-16"
-         direction=0
       /
-   </H01_B>
+   </H00_R>
+
+   <H01_R>
+      &MATRIX_DATA
+         rows="9-16"
+         cols="1-8"
+      /
+   </H01_R>
 
 
 </HAMILTONIAN_DATA>

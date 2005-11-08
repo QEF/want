@@ -5,27 +5,26 @@
    ne = 1000
    emin = -10.0
    emax = 5.0
+   datafile_C = "pt_h2_pt_WanT.ham"
+   transport_dir = 3
 /
 
 <HAMILTONIAN_DATA>
 
    <H00_C>
       &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
-         rows="1-6"
-         cols="1-6"
-         direction=0
+         rows="45-50"
+         cols="45-50"
       /
    </H00_C>
 
-   <HCI_CB>
+   <H_CR>
       &MATRIX_DATA
          filename="pt_h2_pt_WanT.ham"
-         rows="1-6"
-         cols="7-12"
-         direction=0
+         rows="45-50"
+         cols="1-6"
       /
-   </HCI_CB>
+   </H_CR>
 
 </HAMILTONIAN_DATA>
 

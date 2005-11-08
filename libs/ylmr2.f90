@@ -72,7 +72,7 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
   !
   lm = 0
   do l = 0, lmax
-     c = sqrt (dble(2*l+1) / FPI)
+     c = sqrt (real(2*l+1, dbl) / FPI)
      if ( l == 0 ) then
         P (:,0,0) = ONE
      else if ( l == 1 ) then
@@ -86,7 +86,7 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
            P(:,l,m) = (cost(:)*(2*l-1)*P(:,l-1,m) - (l+m-1)*P(:,l-2,m))/(l-m)
         end do
         P(:,l,l-1) = cost(:) * (2*l-1) * P(:,l-1,l-1)
-        P(:,l,l)   = (-1)**l * semifact(2*l-1) * (max(ZERO,ONE-cost(:)**2))**(dble(l)/2)
+        P(:,l,l)   = (-1)**l * semifact(2*l-1) * (max(ZERO,ONE-cost(:)**2))**(real(l, dbl)/2)
      end if
      !
      ! Y_lm, m = 0
@@ -99,13 +99,13 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
         ! Y_lm, m > 0
         !
         lm = lm + 1
-        ylm (:, lm) = c * sqrt(dble(fact(l-m))/dble(fact(l+m))) * &
+        ylm (:, lm) = c * sqrt(real(fact(l-m), dbl)/ real(fact(l+m), dbl)) * &
              sqrt(2.d0) * P(:,l,m) * cos (m*phi(:))
         !
         ! Y_lm, m < 0
         !
         lm = lm + 1
-        ylm (:, lm) = c * sqrt(dble(fact(l-m))/dble(fact(l+m))) * &
+        ylm (:, lm) = c * sqrt(real(fact(l-m), dbl) / real(fact(l+m), dbl)) * &
              sqrt(2.d0) * P(:,l,m) * sin (m*phi(:))
      end do
   end do

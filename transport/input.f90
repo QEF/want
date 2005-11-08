@@ -68,13 +68,23 @@ CONTAINS
                                            use_overlap,       &
                                            use_correlation,   &
                                            niterx,            &
-                                           bias 
+                                           bias,              &
+                                           transport_dir,     &
+                                           datafile_L,        &
+                                           datafile_C,        &
+                                           datafile_R,        &
+                                           datafile_sgm
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
                                            conduct_formula_   => conduct_formula, &
                                            use_overlap_       => use_overlap, &
                                            use_correlation_   => use_correlation, &
                                            niterx_            => niterx, &
-                                           bias_              => bias
+                                           bias_              => bias, &
+                                           transport_dir_     => transport_dir, &
+                                           datafile_L_        => datafile_L, &
+                                           datafile_C_        => datafile_C, &
+                                           datafile_R_        => datafile_R, &
+                                           datafile_sgm_      => datafile_sgm
 
       IMPLICIT NONE
 
@@ -84,6 +94,11 @@ CONTAINS
       use_correlation     = use_correlation_
       niterx              = niterx_
       bias                = bias_
+      datafile_sgm        = datafile_sgm_
+      datafile_L          = datafile_L_
+      datafile_C          = datafile_C_
+      datafile_R          = datafile_R_
+      transport_dir       = transport_dir_
 
    END SUBROUTINE setup_control
       
@@ -111,20 +126,17 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_hamiltonian()
    !**********************************************************
-      USE T_hamiltonian_module, ONLY :     dimA,    &
-                                           dimB,    &
-                                           dimC,    &
-                                           sgmfile
-      USE T_input_parameters_module,ONLY : dimA_     => dimA, &
-                                           dimB_     => dimB, &
-                                           dimC_     => dimC, &
-                                           sgmfile_  => sgmfile
+      USE T_hamiltonian_module, ONLY :     dimL,    &
+                                           dimR,    &
+                                           dimC
+      USE T_input_parameters_module,ONLY : dimL_     => dimL, &
+                                           dimR_     => dimR, &
+                                           dimC_     => dimC
       IMPLICIT NONE
       
-      dimA    = dimA_
-      dimB    = dimB_
-      dimC    = dimC_
-      sgmfile = sgmfile_
+      dimL            = dimL_
+      dimR            = dimR_
+      dimC            = dimC_
 
    END SUBROUTINE setup_hamiltonian
 

@@ -23,9 +23,8 @@
    USE parser_module, ONLY : int2char
 
    USE control_module,       ONLY : verbosity
-   USE kpoints_module,       ONLY : vkpt
-   USE hamiltonian_module,   ONLY : wan_eig, efermi, rham, kham, nws, indxws, vws, &
-                                    ham_alloc => alloc 
+   USE kpoints_module,       ONLY : vkpt, nrtot, vr, ivr
+   USE hamiltonian_module,   ONLY : wan_eig, efermi, rham, kham, ham_alloc => alloc 
 
 
    IMPLICIT NONE 
@@ -40,13 +39,13 @@
    !
    CHARACTER(16) :: subname = 'hamiltonian_calc'
 
-   INTEGER :: i, j, m, ik, iws, inorm
+   INTEGER :: i, j, m, ik, ir, inorm
    REAL(dbl)     :: norm, rmod
    REAL(dbl)     :: arg
    COMPLEX(dbl)  :: phase
  
-   INTEGER   :: ierr
-   CHARACTER(nstrx) :: filename
+   INTEGER       :: ierr
+   CHARACTER(nstrx)       :: filename
    !
    ! end of declariations
    !
@@ -88,16 +87,16 @@
       ! 
       ! Fourier transform it: H_ij(k) --> H_ij(R) = (1/N_kpts) sum_k e^{-ikR} H_ij(k)
       !
-      DO iws = 1, nws
+      DO ir = 1, nrtot
          DO j = 1, dimwann
          DO i = 1, dimwann
-            rham(i,j,iws) = CZERO
+            rham(i,j,ir) = CZERO
             DO ik = 1, nkpts
-                arg = DOT_PRODUCT( vkpt(:,ik), vws(:,iws) )
+                arg = DOT_PRODUCT( vkpt(:,ik), vr(:,ir) )
                 phase = CMPLX( COS(arg), -SIN(arg) )
-                rham(i,j,iws) = rham(i,j,iws) + phase * kham(i,j,ik)
+                rham(i,j,ir) = rham(i,j,ir) + phase * kham(i,j,ik)
             ENDDO
-            rham(i,j,iws) = rham(i,j,iws) / DBLE(nkpts)
+            rham(i,j,ir) = rham(i,j,ir) / REAL(nkpts, dbl)
          ENDDO
          ENDDO
       ENDDO
@@ -112,34 +111,40 @@
           WRITE(stdout,"(  2x,'dimwann = ',i5)") dimwann
       ENDIF
 
-      DO iws = 1, nws
+      DO ir = 1, nrtot
           !
           ! chose nearest neighbours
           !
-          inorm = indxws(1,iws)**2 + indxws(2,iws)**2 + indxws(3,iws)**2
+          inorm =  ivr(1,ir)**2 + ivr(2,ir)**2 + ivr(3,ir)**2 
           IF ( inorm <= 1 ) THEN
 
+!
+! added for further check purposes
+!
+#ifdef __CHECK_HAMILTONIAN
                filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)// &
-                        '_RHAM.'//TRIM(int2char( 100 + iws))
+                        '_RHAM.'//TRIM(int2char( 100 + ir))
                OPEN( UNIT=ham_unit,FILE=TRIM(filename),  STATUS='unknown', &
                      FORM='formatted', IOSTAT=ierr )
                    IF (ierr/=0) CALL errore(subname,'opening file '//TRIM(filename),ham_unit)
   
-                   WRITE (ham_unit,"(2i5,3x,3i4)") dimwann, dimwann, ( indxws(i,iws), i=1,3 )
+                   WRITE (ham_unit,"(2i5,3x,3i4)") dimwann, dimwann, &
+                                    ( ivr(i,ir) , i=1,3 )
                    DO j = 1, dimwann
                        WRITE (ham_unit,"()")
                        DO i = 1, dimwann
-                           WRITE(ham_unit, "(2f20.12)" ) rham(i,j,iws)
+                           WRITE(ham_unit, "(2f20.12)" ) rham(i,j,ir)
                        ENDDO
                    ENDDO
                CLOSE(ham_unit)
+#endif
 
                IF ( TRIM(verbosity) == "high" .AND. inorm /=0 ) THEN
                    !
                    ! stdout (diagonal elements), avoiding R=0
                    !
-                   WRITE (stdout,"(/,4x,'R = (',3i4,' )')") ( indxws(i,iws), i=1,3 )
-                   WRITE(stdout,"( 3( 2f11.6',',2x) )") ( rham(i,i,iws), i =1,dimwann )
+                   WRITE (stdout,"(/,4x,'R = (',3i4,' )')") ( ivr(i,ir), i=1,3 )
+                   WRITE(stdout,"( 3( 2f11.6',',2x) )") ( rham(i,i,ir), i =1,dimwann )
                ENDIF
           ENDIF
       ENDDO
@@ -151,28 +156,28 @@
       ! (again, except in the single-band case, where it should be exactly the same)
       !
       WRITE(stdout,"(/,2x,'Decay of the real space Hamiltonian:')") 
-      WRITE(stdout,"(  2x,'  (number of R vectors (nws) :',i5,/)") nws
+      WRITE(stdout,"(  2x,'  (number of R vectors (nrtot) :',i5,/)") nrtot
       WRITE(stdout,"(  4x,'#       R [cry]     |R| [Bohr]      Norm of H(R) [eV]')") 
       !
-      DO iws = 1, nws
+      DO ir = 1, nrtot
           !
-          IF ( ALL( indxws(:,iws) >= 0 .AND. indxws(:,iws) <= 4)  ) THEN
+          IF ( ALL( ivr(:,ir) >= 0 .AND. ivr(:,ir) <= 3)  ) THEN
               !
               ! consider only positive directions, and a cutoff of 4 cells
               ! for each dir
               !
-              rmod = SQRT( DOT_PRODUCT( vws(:,iws), vws(:,iws) ))
+              rmod = SQRT( DOT_PRODUCT( vr(:,ir), vr(:,ir) ))
               !
               ! compute the 2-norm of H_ij(R)
               !
               norm = ZERO
               DO j=1,dimwann
               DO i=1,dimwann
-                   norm = norm + REAL( CONJG( rham(i,j,iws)) * rham(i,j,iws) )
+                   norm = norm + REAL( CONJG( rham(i,j,ir)) * rham(i,j,ir) )
               ENDDO
               ENDDO
               WRITE(stdout,"(1x,i4,3x,3i4,3x,f10.6,5x,f12.6)") &
-                             iws,indxws(:,iws), rmod, SQRT( norm / REAL(dimwann) )
+                             ir,ivr(:,ir), rmod, SQRT( norm / REAL(dimwann, dbl) )
           ENDIF
       ENDDO
 

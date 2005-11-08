@@ -14,7 +14,7 @@ subroutine readnewvan (is, iunps)
   !     pseudopotential from the file produced by the atomic program.
   !     It is compatible only with the ld1 atomic code
   !
-  USE kinds, only: dp => dbl
+  USE kinds, only: dbl
   USE parameters,   ONLY: nchix, lmaxx, nbrx, ndmx, npsx, lqmax
   USE constants,    ONLY: fpi
   USE atom_module,  ONLY: zmesh, mesh, xmin, dx, r, rab, chi, oc, nchi, &
@@ -42,7 +42,7 @@ subroutine readnewvan (is, iunps)
   ! counter on angular momentum
   ! the kkbeta for each beta
 
-  real(kind=DP) :: x, etotps, rdum
+  real(kind=dbl) :: x, etotps, rdum
   ! auxiliary variable
   ! total energy of the pseudoatom
   ! dummy real variable
@@ -167,7 +167,7 @@ subroutine readnewvan (is, iunps)
   !    compute the radial mesh
   !
   do ir = 1, mesh (is)
-     x = xmin (is) + dble (ir - 1) * dx (is)
+     x = xmin (is) + real (ir - 1, dbl) * dx (is)
      r (ir, is) = exp (x) / zmesh (is)
      rab (ir, is) = dx (is) * r (ir, is)
   enddo

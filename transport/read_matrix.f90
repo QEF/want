@@ -7,10 +7,10 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************************************
-   SUBROUTINE read_matrix( unit, name, dim1, dim2, a )
+   SUBROUTINE read_matrix( file, name, dim1, dim2, a, lda1, lda2 )
    !***************************************************************************
    !
-   ! First the routine reads from UNIT (usually stdin) a namelist called MATRIX_DATA
+   ! First, the routine reads from stdin a namelist called MATRIX_DATA
    ! inside a NAME xml-iotk block, giving all the information related to the 
    ! required matrix A. Then the matrix is finally read from the wannier datafile.
    !
@@ -18,37 +18,38 @@
    USE KINDS
    USE parameters,       ONLY : nstrx
    USE files_module,     ONLY : file_open, file_close, file_delete
-   USE io_module,        ONLY : aux_unit
+   USE io_module,        ONLY : stdin, aux_unit
    USE iotk_module
+   USE timing_module
    USE parser_module
+   USE T_control_module, ONLY : transport_dir
+   USE T_kpoints_module, ONLY : kpoints_alloc => alloc, nrtot_par, vr_par
    IMPLICIT NONE
 
    ! 
    ! input variables
    !
-   INTEGER,      INTENT(in)  :: unit
-   CHARACTER(*), INTENT(in)  :: name 
-   INTEGER,      INTENT(in)  :: dim1, dim2
-   COMPLEX(dbl), INTENT(out) :: a(dim1,dim2)
+   CHARACTER(*), INTENT(in)  :: file, name 
+   INTEGER,      INTENT(in)  :: dim1, dim2, lda1, lda2
+   COMPLEX(dbl), INTENT(out) :: a(lda1,lda2,nrtot_par)
 
    !
    ! local variables
    !
    INTEGER   :: i, j, ierr
    !
-   INTEGER                   :: ldimwann, lnkpts, lnws, iws
-   INTEGER,      ALLOCATABLE :: indxws(:,:), degen(:)
-   REAL(dbl),    ALLOCATABLE :: vkpt(:,:)
+   INTEGER                   :: ldimwann, nrtot, ir, ir_par
+   INTEGER,      ALLOCATABLE :: ivr(:,:)
    COMPLEX(dbl), ALLOCATABLE :: lmatrix(:,:)
    CHARACTER(nstrx)          :: attr
    !
-   INTEGER                   :: idir(3)
+   LOGICAL                   :: found
+   INTEGER                   :: index, ivr_aux(3)
    INTEGER                   :: ncols, nrows
    INTEGER,      ALLOCATABLE :: icols(:), irows(:)
-   CHARACTER(nstrx) :: filename, cols, rows
-   INTEGER                   :: direction
+   CHARACTER(nstrx)          :: cols, rows
    !
-   NAMELIST / MATRIX_DATA / filename, cols, rows, direction
+   NAMELIST / MATRIX_DATA / cols, rows
 
 
    !
@@ -60,27 +61,38 @@
 ! main Body
 !----------------------------------------
 !
+   CALL timing( 'read_matrix', OPR='start' )
 
-   CALL iotk_scan_begin(unit, TRIM(name), IERR=ierr)
+   !
+   ! some checks
+   !
+   IF ( dim1 > lda1 ) CALL errore('read_matrix', 'invalid dim1', 1 )
+   IF ( dim2 > lda2 ) CALL errore('read_matrix', 'invalid dim2', 2 )
+
+   CALL iotk_scan_begin(stdin, TRIM(name), IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching for '//TRIM(name), ABS(ierr) )
 
    !
    ! setting defaults
    !
-   filename=" "
-   cols=" "
-   rows=" "
-   direction=0
+   cols="all"
+   rows="all"
    !
-   READ(unit, MATRIX_DATA, IOSTAT=ierr )
+   READ(stdin, MATRIX_DATA, IOSTAT=ierr )
       IF (ierr/=0) CALL errore('read_matrix', 'reading namelist in '//TRIM(name), ABS(ierr) )
 
-   CALL iotk_scan_end(unit, TRIM(name), IERR=ierr)
+   CALL iotk_scan_end(stdin, TRIM(name), IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching end for '//TRIM(name), ABS(ierr) )
+
+   CALL change_case( cols, 'lower')
+   CALL change_case( rows, 'lower')
+
 
 !
 ! parse the obtained data
 !
+   ! XXX
+   ! maneggiare il caso COLS="ALL"...
    
    !
    ! get the number of required rows and cols
@@ -111,37 +123,24 @@
        IF ( icols(i) <=0 ) CALL errore('read_matrix','invalid icols(i)',i) 
    ENDDO
 
-   !
-   ! get the idir vector from DIRECTION
-   ! direction = 0  ->  R = 0 0 0
-   ! direction = 1  ->  R = 1 0 0
-   ! direction = 2  ->  R = 0 1 0
-   ! direction = 3  ->  R = 0 0 1
-   !
-   IF ( direction < 0 .OR. direction > 3 ) &
-        CALL errore('read_matrix','invalid direction',ABS(direction)+1)
-   idir(:) = 0
-   IF ( direction /= 0 ) idir ( direction ) = 1
-   
 
 !
 ! reading form iotk-formatted .ham file produced by wannier
 !
-   CALL file_open( aux_unit, TRIM(filename), PATH="/HAMILTONIAN/", &
+   CALL file_open( aux_unit, TRIM(file), PATH="/HAMILTONIAN/", &
                    ACTION="read", FORM="formatted" )
    !
    CALL iotk_scan_empty(aux_unit, "DATA", ATTR=attr, IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching DATA', ABS(ierr) )
    CALL iotk_scan_attr(attr,"dimwann",ldimwann, IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching dimwann', ABS(ierr) )
-   CALL iotk_scan_attr(attr,"nkpts",lnkpts, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching nkpts', ABS(ierr) )
-   CALL iotk_scan_attr(attr,"nws",lnws, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching nws', ABS(ierr) )
+   CALL iotk_scan_attr(attr,"nrtot",nrtot, IERR=ierr)
+      IF (ierr/=0) CALL errore('read_matrix', 'searching nrtot', ABS(ierr) )
+
+! XXX mettere un check su nr 3D
 
    IF (ldimwann <=0 ) CALL errore('read_matrix', 'invalid dimwann', ABS(ierr))
-   IF (lnkpts <=0 ) CALL errore('read_matrix', 'invalid nkpts', ABS(ierr))
-   IF (lnws <=0 ) CALL errore('read_matrix', 'invalid nws', ABS(ierr))
+   IF (nrtot <=0 ) CALL errore('read_matrix', 'invalid nrtot', ABS(ierr))
    !
    DO i=1,ncols
       IF ( icols(i) > ldimwann ) CALL errore('read_matrix', 'invalid icols(i)', i)
@@ -151,81 +150,113 @@
    ENDDO
 
    !
-   ALLOCATE( indxws(3,lnws), STAT=ierr )
-      IF (ierr/=0) CALL errore('read_matrix', 'allocating indxws', ABS(ierr) )
-   ALLOCATE( degen(lnws), STAT=ierr )
-      IF (ierr/=0) CALL errore('read_matrix', 'allocating degen', ABS(ierr) )
-   ALLOCATE( vkpt(3,lnkpts), STAT=ierr )
-      IF (ierr/=0) CALL errore('read_matrix', 'allocating vkpt', ABS(ierr) )
+   ALLOCATE( ivr(3,nrtot), STAT=ierr )
+      IF (ierr/=0) CALL errore('read_matrix', 'allocating ivr', ABS(ierr) )
    ALLOCATE( lmatrix(ldimwann,ldimwann), STAT=ierr )
       IF (ierr/=0) CALL errore('read_matrix', 'allocating lmatrix', ABS(ierr) )
 
-   CALL iotk_scan_dat(aux_unit, "VKPT", vkpt, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching vkpt', ABS(ierr) )
-   CALL iotk_scan_dat(aux_unit, "INDXWS", indxws, IERR=ierr)
+   CALL iotk_scan_dat(aux_unit, "IVR", ivr, IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching indxws', ABS(ierr) )
-   CALL iotk_scan_dat(aux_unit, "DEGEN", degen, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching degen', ABS(ierr) )
 
    !
-   ! get the desired R index
+   ! get the desired R indexes
    !
-   iws = 0
-   R_loop: &
-   DO i = 1, lnws
-      IF ( indxws(1,i) == idir(1) .AND. &
-           indxws(2,i) == idir(2) .AND. &
-           indxws(3,i) == idir(3)   ) THEN 
-         iws = i
-         EXIT R_loop
-      ENDIF
-   ENDDO R_loop
-   IF ( iws == 0 ) CALL errore('read_matrix', 'searching iws', 4)
-
-
-!
-! searching the required hamiltonian matrix
-!
    CALL iotk_scan_begin(aux_unit, "RHAM", IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching RHAM', ABS(ierr) )
-   CALL iotk_scan_dat( aux_unit, "WS"//TRIM(iotk_index(iws)), lmatrix, IERR=ierr)
-      IF (ierr/=0) &
-         CALL errore('read_matrix', 'searching WS'//TRIM(iotk_index(iws)), ABS(ierr) )
-   CALL iotk_scan_end(aux_unit, "RHAM", IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching end of RHAM', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'searching RHAM', ABS(ierr) )
 
+   R_loop: &
+   DO ir_par = 1, nrtot_par
+
+
+      !
+      ! set the 3D corresponding R vector
+      !
+      j = 0
+      DO i=1,3
+         !         
+         IF ( i == transport_dir ) THEN
+            !
+            ! set ivr_aux(i) = 0 , 1 depending on the
+            ! required matrix (from the name input variable)
+            !
+            SELECT CASE( TRIM(name) )
+            CASE( "H00_C", "H00_R", "H00_L" )
+                ivr_aux(i) = 0
+            CASE( "H01_R", "H01_L", "H_LC", "H_CR" )
+                ivr_aux(i) = 1
+            CASE DEFAULT
+                CALL errore('read_matrix', 'invalid name = '//TRIM(name), ABS(ierr) )
+            END SELECT
+            !
+         ELSE
+            !
+            ! set the 2D parallel indexes
+            !
+            j = j + 1
+            ivr_aux(i) = vr_par( j, ir_par)
+         ENDIF
+      ENDDO
+
+      !
+      ! search the 3D index corresponding to ivr_aux
+      !
+      found = .FALSE.
+      DO ir = 1, nrtot
+          ! 
+          IF ( ALL( ivr(:,ir) == ivr_aux(:) ) )  THEN
+               found = .TRUE.
+               index = ir 
+               EXIT 
+          ENDIF
+      ENDDO
+      !
+      IF ( .NOT. found ) CALL errore('read_matrix', '3D R-vector not found', ir_par )
+
+
+      !
+      ! read the 3D R matrix corresponding to index
+      !
+      CALL iotk_scan_dat( aux_unit, "VR"//TRIM(iotk_index(index)), lmatrix, IERR=ierr)
+      IF (ierr/=0) &
+         CALL errore('read_matrix', 'searching VR'//TRIM(iotk_index(index)), ABS(ierr) )
+
+      !
+      ! cut the total hamiltonian according to the required rows and cols
+      !
+      DO j=1,ncols
+      DO i=1,nrows
+         a(i, j, ir_par) = lmatrix( irows(i), icols(j) )
+      ENDDO
+      ENDDO
+
+      !
+      ! this is a debug purpose statement
+      ! to be used to check differences arising due to non real wannier
+      ! hamiltonians
+      !
+#ifdef __DEBUG_REAL_MATRIX
+      a(1:dim1, 1:dim2, ir_par) = CMPLX( REAL(a(1:dim1, 1:dim2, ir_par)) )
+#endif
+
+   ENDDO R_loop
+
+
+   CALL iotk_scan_end(aux_unit, "RHAM", IERR=ierr)
+   IF (ierr/=0) CALL errore('read_matrix', 'searching end of RHAM', ABS(ierr) )
 
    CALL file_close( aux_unit, PATH="/HAMILTONIAN/", ACTION="read" )
 
 
 !
-! cut the total hamiltonian according to the required rows and cols
-!
-  DO j=1,ncols
-  DO i=1,nrows
-      a(i,j) = lmatrix( irows(i), icols(j) )
-  ENDDO
-  ENDDO
-
-!
-! this is a debug purpose statement
-!
-#ifdef __DEBUG_REAL_MATRIX
-  a(:,:) = CMPLX( REAL(a(:,:)) )
-#endif
-
-
-!
 ! cleaning local workspace
 !
-   DEALLOCATE( indxws, degen, STAT=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'deallocating indxws, degen', ABS(ierr) )
-   DEALLOCATE( vkpt, STAT=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'deallocating vkpt', ABS(ierr) )
+   DEALLOCATE( ivr, STAT=ierr)
+      IF (ierr/=0) CALL errore('read_matrix', 'deallocating ivr', ABS(ierr) )
    DEALLOCATE( lmatrix, STAT=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'deallocating lmatrix', ABS(ierr) )
    DEALLOCATE( icols, irows, STAT=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'deallocating icols, irows', ABS(ierr) )
 
+   CALL timing( 'read_matrix', OPR='stop' )
 END SUBROUTINE read_matrix
 

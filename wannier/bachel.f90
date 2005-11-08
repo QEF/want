@@ -10,7 +10,8 @@
 subroutine bachel (alps, aps, npseu, lmax)
   !----------------------------------------------------------------------
   !
-  USE kinds, ONLY : DP => dbl
+  USE kinds,     ONLY : dbl
+  USE constants, ONLY : PI
   implicit none
   !
   !   First dummy variables
@@ -19,7 +20,7 @@ subroutine bachel (alps, aps, npseu, lmax)
   integer :: npseu, lmax (npseu)
   ! input:  number of pseudopotential
   ! input:  max. angul. momentum of the ps
-  real(kind=DP) :: alps (3, 0:3, npseu), aps (6, 0:3, npseu)
+  real(kind=dbl) :: alps (3, 0:3, npseu), aps (6, 0:3, npseu)
   ! input:  the b_l coefficient
   ! in/out: the a_l coefficient
   !
@@ -36,12 +37,8 @@ subroutine bachel (alps, aps, npseu, lmax)
   !  variables
   !
   !
-  real(kind=DP) :: pi
-  ! pi constant
 
-  parameter (pi = 3.141592653589793_DP)
-
-  real(kind=DP) :: s (6, 6), alpl, alpi, ail
+  real(kind=dbl) :: s (6, 6), alpl, alpi, ail
   ! auxiliary array
   ! first real aux. var. (fix. value of al
   ! second real aux. var. (fix. value of a
@@ -56,10 +53,10 @@ subroutine bachel (alps, aps, npseu, lmax)
               ia = mod (i - 1, 3) + 1
               alpi = alps (ia, l, np)
               ail = alpi + alpl
-              s (i, k) = sqrt (pi / ail) / 4.d0 / ail
+              s (i, k) = sqrt (PI / ail) / 4.0_dbl / ail
               nik = int ( (k - 1) / 3) + int ( (i - 1) / 3) + 1
               do j = 2, nik
-                 s (i, k) = s (i, k) / 2.d0 / ail * (2 * j - 1)
+                 s (i, k) = s (i, k) / 2.0_dbl / ail * (2 * j - 1)
               enddo
            enddo
         enddo

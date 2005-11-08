@@ -18,7 +18,7 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
 ! This subroutine generates the nk(3) and s(3) parameters 
 ! of the Monkhorst-Pack grid if the input vkpt(3,nkpts) are
 ! generated using the MP algorithm (and IERR=0). 
-! If not IERR results /= 0 and nk = 0 and s = 0.
+! If not, IERR gives /= 0 and nk(3) = 0 and s(3) = 0.
 !
 ! VKPT are supposed to be in the coordinates given in input by
 ! 'CARTESIAN' or 'CRYSTAL' strings.
@@ -43,7 +43,7 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    INTEGER                   :: i,j,k
 
 !
-! ... end of allocations
+! ... end of declarations
 !-------------------------------------------------------------
 !
 

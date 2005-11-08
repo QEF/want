@@ -15,9 +15,11 @@ hamiltonian.o \
 hamiltonian_init.o \
 input.o \
 input_parameters.o \
+kpoints.o \
+fourier_par.o \
 read_matrix.o \
 transfer.o \
-transmittance.o
+transmittance.o 
 
 WANNIER_OBJS= \
 ../wannier/io_module.o \

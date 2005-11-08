@@ -5,27 +5,25 @@
     ne = 1000  
     emin = -10.0
     emax =  5.0 
+    transport_dir=3
+    datafile_C="cobalt_US_WanT.ham"
   /
 
 <HAMILTONIAN_DATA>
 
    <H00_C>
       &MATRIX_DATA
-         filename="cobalt_US_WanT.ham"
          cols="1-12"
          rows="1-12"
-         direction=0
       /
    </H00_C>
 
-   <HCI_CB>
+   <H_CR>
       &MATRIX_DATA
-         filename="cobalt_US_WanT.ham"
          cols="1-12"
          rows="1-12"
-         direction=3
       /
-   </HCI_CB>
+   </H_CR>
 
 </HAMILTONIAN_DATA>
 

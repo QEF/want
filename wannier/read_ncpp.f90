@@ -10,7 +10,7 @@
 subroutine read_ncpp (np, iunps)
   !-----------------------------------------------------------------------
   !
-  USE kinds, only: dp => dbl
+  USE kinds, only: dbl
   USE parameters, ONLY: nchix, lmaxx, ndmx
   USE atom_module,  ONLY: zmesh, msh, mesh, xmin, dx, r, rab, chi, oc, &
        nchi, lchi, rho_at, rho_atc, numeric, nlcc
@@ -22,10 +22,10 @@ subroutine read_ncpp (np, iunps)
   !
   integer :: iunps, np
   !
-  real(kind=DP) :: x, vll
-  real(kind=DP), allocatable:: vnl(:,:)
-  real(kind=DP), parameter :: rcut = 10.0_DP, e2 = 2.0_DP
-  real(kind=DP), external :: erf
+  real(kind=dbl) :: x, vll
+  real(kind=dbl), allocatable:: vnl(:,:)
+  real(kind=dbl), parameter :: rcut = 10.0_dbl, e2 = 2.0_dbl
+  real(kind=dbl), external :: erf
   integer :: nb, ios, i, l, ir
   logical :: bhstype
   !
@@ -117,7 +117,7 @@ subroutine read_ncpp (np, iunps)
   !    compute the radial mesh
   !
   do ir = 1, mesh (np)
-     x = xmin (np) + dble (ir - 1) * dx (np)
+     x = xmin (np) + real (ir - 1, dbl) * dx (np)
      r (ir, np) = exp (x) / zmesh (np)
      rab (ir, np) = dx (np) * r (ir, np)
   enddo

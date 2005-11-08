@@ -40,14 +40,17 @@
 ! INPUT_CONDUCTOR Namelist parameters
 !======================================== 
 
-   INTEGER :: dimA = 0
+   INTEGER :: dimL = 0
        ! WF number in lead A
 
-   INTEGER :: dimB = 0
+   INTEGER :: dimR = 0
        ! WF number in lead B
 
    INTEGER :: dimC = 0
        ! WF number in the central conductor region
+
+   INTEGER :: transport_dir = 0
+       ! transport direction 
 
    CHARACTER(nstrx) :: calculation_type = 'conductor'
        ! ( 'conductor' | 'bulk' )
@@ -91,16 +94,24 @@
    LOGICAL :: use_correlation = .FALSE.
        ! wheter to include correlation corrections
 
-   CHARACTER(nstrx) :: sgmfile = ' '
+   CHARACTER(nstrx) :: datafile_L = ' '
+       ! the name of the file containing L lead data
+   CHARACTER(nstrx) :: datafile_C = ' '
+       ! the name of the file containing central conductor data
+   CHARACTER(nstrx) :: datafile_R = ' '
+       ! the name of the file containing R lead data
+   CHARACTER(nstrx) :: datafile_sgm = ' '
        ! the name of the file containing correlation self-energy
 
-   NAMELIST / INPUT_CONDUCTOR / dimA, dimB, dimC, calculation_type, &
+   NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type, &
                  conduct_formula, niterx, ne, emin, emax, delta, bias, &
-                 use_overlap, use_correlation, sgmfile 
+                 datafile_L, datafile_C, datafile_R, datafile_sgm, &
+                 transport_dir, use_overlap, use_correlation 
 
 
-   PUBLIC :: dimA, dimB, dimC, calculation_type, conduct_formula, niterx
-   PUBLIC :: ne, emin, emax, delta, bias, use_overlap, use_correlation, sgmfile
+   PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx
+   PUBLIC :: ne, emin, emax, delta, bias, use_overlap, use_correlation, datafile_sgm
+   PUBLIC :: datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: INPUT_CONDUCTOR
 
 
@@ -131,7 +142,14 @@ CONTAINS
       !
       ! ... checking parameters
       !
+      IF ( transport_dir < 1 .OR. transport_dir > 3) &
+           CALL errore(subname,'Invalid transport_dir',1)
+
       IF ( dimC <= 0) CALL errore(subname,'Invalid dimC',1)
+
+      IF ( LEN_TRIM(datafile_C) == 0 ) &
+           CALL errore(subname,'datafile_C unspecified',1)
+
       IF ( emax <= emin ) CALL errore(subname,'Invalid EMIN EMAX',1)
       IF ( ne <= 1 ) CALL errore(subname,'Invalid NE',1)
       IF ( niterx <= 0 ) CALL errore(subname,'Invalid NITERX',1)
@@ -156,24 +174,34 @@ CONTAINS
 
 
       IF ( TRIM(calculation_type) == 'conductor' ) THEN
-           IF ( dimA <= 0) CALL errore(subname,'Invalid dimA',1)
-           IF ( dimB <= 0) CALL errore(subname,'Invalid dimB',1)
+           IF ( dimL <= 0) CALL errore(subname,'Invalid dimL',1)
+           IF ( dimR <= 0) CALL errore(subname,'Invalid dimR',1)
+           !
+           IF ( LEN_TRIM(datafile_L) == 0 ) &
+                CALL errore(subname,'datafile_L unspecified',1)
+           IF ( LEN_TRIM(datafile_R) == 0 ) &
+                CALL errore(subname,'datafile_R unspecified',1)
       ELSE
            !
            ! bulk case
            !
-           IF ( dimA /= 0) CALL errore(subname,'dimA should not be specified',1)
-           IF ( dimB /= 0) CALL errore(subname,'dimB should not be specified',1)
-           dimA = dimC
-           dimB = dimC
+           IF ( dimL /= 0) CALL errore(subname,'dimL should not be specified',1)
+           IF ( dimR /= 0) CALL errore(subname,'dimR should not be specified',1)
+           dimL = dimC
+           dimR = dimC
+!!!!!!!!!!!!!!!!!!!!e' vero o e' una cazzata????????
+!           IF ( LEN_TRIM(datafile_L) /= 0 ) &
+!                CALL errore(subname,'datafile_L should not be specified',1)
+!           IF ( LEN_TRIM(datafile_R) /= 0 ) &
+!                CALL errore(subname,'datafile_R should not be specified',1)
       ENDIF
 
 
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. .NOT. use_correlation ) &
            CALL errore(subname,'invalid conduct formula',1)
            !
-      IF ( use_correlation .AND. LEN_TRIM(sgmfile) == 0 ) &
-           CALL errore(subname,'sgmfile unspecified',1)
+      IF ( use_correlation .AND. LEN_TRIM(datafile_sgm) == 0 ) &
+           CALL errore(subname,'datafile_sgm unspecified',1)
 
    END SUBROUTINE read_namelist_input_conductor
 

@@ -95,7 +95,7 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   ! xk in bohr^-1 
   !
   arg = DOT_PRODUCT(xk(:), tau(:,iatom) ) * alat
-  kphase = DCMPLX (cos (arg), - sin (arg) )
+  kphase = CMPLX (cos (arg), - sin (arg), dbl )
   !
   !  the factor i^l MUST BE PRESENT in order to produce
   !  wavefunctions for k=0 that are real in real space

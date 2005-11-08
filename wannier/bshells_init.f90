@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !******************************************************
-   SUBROUTINE bshells( )
+   SUBROUTINE bshells_init( )
    !******************************************************
    !
    !  Computes the shells of b-vectors connecting every k-point to its
@@ -22,7 +22,7 @@
    USE io_module, ONLY: stdout
 
    USE parameters,     ONLY : nnx
-   USE lattice_module, ONLY : bvec
+   USE lattice_module, ONLY : bvec, lattice_alloc => alloc
    USE kpoints_module, ONLY : vkpt, nkpts, nb, vb, wb, wbtot, &
                               nnlist, nncell, nnrev, nnpos, &
                               kpoints_alloc, bshells_allocate 
@@ -34,7 +34,7 @@
 
    REAL(dbl), PARAMETER :: eps = EPS_m6
  
-   INTEGER   :: ik, ik1, ib, iq, inum, ierr
+   INTEGER   :: ik, ik1, ib, inum, ierr
    INTEGER   :: i, j, l, m, n
    INTEGER   :: nq, rank
    LOGICAL   :: eqv_found, found
@@ -56,10 +56,11 @@
 ! main body
 !------------------------------
 !
-   CALL timing('bshells',OPR='start')
+   CALL timing('bshells_init',OPR='start')
 
-   IF ( .NOT. kpoints_alloc ) CALL errore('bshells', 'Kpoints NOT alloc', 1 )
-   IF ( nkpts <= 0) CALL errore('bshells', 'Invaid nkpts', ABS(nkpts)+1 )
+   IF ( .NOT. lattice_alloc ) CALL errore('bshells_init', 'lattice NOT alloc', 1 )
+   IF ( .NOT. kpoints_alloc ) CALL errore('bshells_init', 'kpoints NOT alloc', 1 )
+   IF ( nkpts <= 0) CALL errore('bshells_init', 'Invaid nkpts', ABS(nkpts)+1 )
 
 
 !
@@ -72,8 +73,9 @@
    ! 125 = 5 **3 
    !
    nq = 125*nkpts
+
    ALLOCATE( vq(3,nq), vqq(nq), index(nq),  STAT=ierr )
-     IF (ierr/=0) CALL errore('bshells','allocating vq--index',ABS(ierr))
+     IF (ierr/=0) CALL errore('bshells_init','allocating vq--index',ABS(ierr))
 
    !
    ! loop over 125 different cells in rec space
@@ -107,7 +109,7 @@
 ! zero-weight is found.
 !
    ALLOCATE( vb_aux(3,nnx), vbb(nnx), ivb(nnx), STAT=ierr )
-      IF (ierr/=0) CALL errore('bshells','allocating vb_aux, vbb, ivb ',ABS(ierr))
+      IF (ierr/=0) CALL errore('bshells_init','allocating vb_aux, vbb, ivb ',ABS(ierr))
 
    !
    ! first found the candidates:
@@ -144,7 +146,7 @@
           ENDIF 
       ENDDO
       !
-      IF ( .NOT. found ) CALL errore('bshells','vb parallel to bvec not found',j)
+      IF ( .NOT. found ) CALL errore('bshells_init','vb parallel to bvec not found',j)
    ENDDO
     
    !
@@ -176,7 +178,7 @@
    ENDDO
    !
    DEALLOCATE( ivb, vbb, vq, vqq, index, STAT=ierr )
-      IF (ierr/=0) CALL errore('bshells','deallocating ivb--index ',ABS(ierr))
+      IF (ierr/=0) CALL errore('bshells_init','deallocating ivb--index ',ABS(ierr))
 
    !
    ! then impose the sum rule to find the weights
@@ -236,7 +238,7 @@
    ENDDO outer_column_loop
 
    IF ( mat_rank( 6, rank, work1, EPS_m6 ) /= rank ) &
-        CALL errore('bshells','work still a rank-deficient matrix',3)
+        CALL errore('bshells_init','work still a rank-deficient matrix',3)
 
    !
    ! solve the 6 x rank overdetermined system of linear equations
@@ -245,12 +247,12 @@
    !
    CALL DGELS( 'N', 6, rank, 1, work1, 6, rhs, 6, work_aux, lwork_aux, info)
    !
-   IF ( info < 0 )  CALL errore('bshells','invalid value in DGELS',-info)
+   IF ( info < 0 )  CALL errore('bshells_init','invalid value in DGELS',-info)
    DEALLOCATE( work_aux )
    !
 
    IF ( ANY( rhs(1:rank) < -EPS_m6 ) ) &
-      CALL errore('bshells','negative weights',4)
+      CALL errore('bshells_init','negative weights',4)
     
    !
    ! found the non negligible weights, and complete the b, -b pairs
@@ -292,10 +294,10 @@
          !
       ENDIF
    ENDDO
-   IF( j/=nb ) CALL errore('bshells','j /= nb, unexpected',ABS(j)+1)
+   IF( j/=nb ) CALL errore('bshells_init','j /= nb, unexpected',ABS(j)+1)
    !
    DEALLOCATE( vb_aux, STAT=ierr)
-      IF (ierr/=0) CALL errore('bshells','deallocating vb_aux',ABS(ierr))
+      IF (ierr/=0) CALL errore('bshells_init','deallocating vb_aux',ABS(ierr))
 
    !
    ! get the tsum of the weights
@@ -319,7 +321,7 @@
       IF ( i == j ) aux = aux - ONE
       !
       IF ( ABS( aux ) > EPS_m6 ) &
-        CALL errore('bshells', 'sum rule not satisfied', i+j )
+        CALL errore('bshells_init', 'sum rule not satisfied', i+j )
         !   
    ENDDO
    ENDDO
@@ -370,12 +372,12 @@
           ENDDO
        ENDDO inner_kpt_loop
        !
-       IF ( .NOT. found ) CALL errore('bshells','k+b not found',ib+ik)
+       IF ( .NOT. found ) CALL errore('bshells_init','k+b not found',ib+ik)
        !
    ENDDO 
    ENDDO
 
-   CALL timing('bshells',OPR='stop')
-END SUBROUTINE bshells
+   CALL timing('bshells_init',OPR='stop')
+END SUBROUTINE bshells_init
 
 

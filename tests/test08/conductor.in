@@ -7,27 +7,25 @@
     niterx = 200
     emin = -10.0
     emax =  10.0
+    datafile_C = "al_WanT.ham"
+    transport_dir = 3
   /
 
 <HAMILTONIAN_DATA>
 
    <H00_C>
       &MATRIX_DATA
-         filename="al_WanT.ham"
          cols="1-4"
          rows="1-4"
-         direction=0
       /
    </H00_C>
 
-   <HCI_CB>
+   <H_CR>
       &MATRIX_DATA
-         filename="al_WanT.ham"
          cols="1-4"
          rows="1-4"
-         direction=3
       /
-   </HCI_CB>
+   </H_CR>
 
 </HAMILTONIAN_DATA>
 

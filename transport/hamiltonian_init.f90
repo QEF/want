@@ -16,28 +16,28 @@
    !
    !     Given a conductor (C) bonded to a right lead (A) and a left lead (B)
    !
-   !       H01_A    H00_A   HCI_AC    H00_C     HCI_CB   H00_B   H01_B
-   !       S01_A    S00_A   SCI_AC    S00_C     SCI_CB   S00_B   S01_B
+   !       H01_L    H00_L   H_LC    H00_C     H_CR   H00_R   H01_R
+   !       S01_L    S00_L   S_LC    S00_C     S_CR   S00_R   S01_R
    !   ...--------------------------------------------------------------...
    !         |                |                   |                | 
-   !         |     LEAD A     |    CONDUCTOR C    |     LEAD B     |
+   !         |     LEAD L     |    CONDUCTOR C    |     LEAD R     |
    !         |                |                   |                | 
    !   ...--------------------------------------------------------------...
    !
-   !     H00_A, H00_B    = on site hamiltonian of the leads (from bulk calculation)
-   !     H01_A, H01_B    = hopping hamiltonian of the leads (from bulk calculation)
+   !     H00_L, H00_R    = on site hamiltonian of the leads (from bulk calculation)
+   !     H01_L, H01_R    = hopping hamiltonian of the leads (from bulk calculation)
    !     H00_C           = on site hamiltonian of the conductor (from supercell calculation)
-   !     HCI_AC, HCI_CB  = coupling matrix between leads and conductor 
+   !     H_LC, H_CR  = coupling matrix between leads and conductor 
    !                       (from supercell calculation)
    !
-   !     S00_A, S00_B, S00_C  = on site overlap matrices
-   !     S01_A, S01_B         = hopping overlap matrices
-   !     SCI_AC, SCI_CB       = coupling overlap matrices
+   !     S00_L, S00_R, S00_C  = on site overlap matrices
+   !     S01_L, S01_R         = hopping overlap matrices
+   !     S_LC, S_CR           = coupling overlap matrices
    !
    !...  Overlap
    !     if  use_overlap = .FALSE. (default) the basis set is orthonormal =>
-   !         S00_A, S00_B, S00_C = Identity
-   !         S01_A, S01_B, SCI_AC, SCI_CB = Zero
+   !         S00_L, S00_R, S00_C = Identity
+   !         S01_L, S01_R, S_LC, S_CR = Zero
    !     if  use_overlap=  .TRUE. => external reading  
    !                (not implemented within the current interface)
    !
@@ -47,11 +47,13 @@
    USE kinds
    USE constants,            ONLY : CZERO, CONE
    USE io_global_module,     ONLY : stdin
+   USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R
+   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, nrtot_par
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate,   &
-                                    dimA, dimB, dimC,       &
-                                    h00_a, h01_a, h00_b, h01_b, h00_c, &
-                                    s00_a, s01_a, s00_b, s01_b, s00_c, &
-                                    hci_ac, hci_cb, sci_ac, sci_cb
+                                    dimL, dimR, dimC,       &
+                                    h00_L, h01_L, h00_R, h01_R, h00_C, &
+                                    s00_L, s01_L, s00_R, s01_R, s00_C, &
+                                    h_LC, h_CR, s_LC, s_CR
    USE iotk_module
    IMPLICIT NONE
 
@@ -64,7 +66,8 @@
    ! local variables
    !
    CHARACTER(16) :: subname="hamiltonian_init"
-   INTEGER       :: i, ierr
+   COMPLEX(dbl), ALLOCATABLE :: aux(:,:,:)
+   INTEGER       :: i, lda, ierr
 
    !
    ! end of declarations
@@ -82,30 +85,34 @@
    IF ( use_overlap ) CALL errore(subname,'overlaps not currently implemented',1)
 
    !
-   ! allocate main quantities
+   ! allocations
    !
    CALL hamiltonian_allocate()
+   !
+   lda = MAX( dimL, dimC, dimR)
+   ALLOCATE( aux(lda,lda,nrtot_par), STAT=ierr)
+      IF ( ierr/=0 ) CALL errore(subname,'allocating aux',ABS(ierr))
 
    !
-   ! set defaults for overlaps
+   ! set defaults for overlaps ( already in the fourier transformed, R_par to k_par)
    ! NOTE: at the moment overlaps are not impemented 
    !
-   s00_a(:,:)  = CZERO
-   s01_a(:,:)  = CZERO
-   s00_b(:,:)  = CZERO
-   s01_b(:,:)  = CZERO
-   s00_c(:,:)  = CZERO
-   sci_ac(:,:) = CZERO
-   sci_cb(:,:) = CZERO
+   s00_L(:,:,:)  = CZERO
+   s01_L(:,:,:)  = CZERO
+   s00_R(:,:,:)  = CZERO
+   s01_R(:,:,:)  = CZERO
+   s00_C(:,:,:)  = CZERO
+   s_LC(:,:,:) = CZERO
+   s_CR(:,:,:) = CZERO
 
-   DO i = 1, dimA
-       s00_a(i,i) = CONE
+   DO i = 1, dimL
+       s00_L(i,i,:) = CONE
    ENDDO
-   DO i = 1, dimB
-       s00_b(i,i) = CONE
+   DO i = 1, dimR
+       s00_R(i,i,:) = CONE
    ENDDO
    DO i = 1, dimC
-       s00_c(i,i) = CONE
+       s00_C(i,i,:) = CONE
    ENDDO
 
 
@@ -119,12 +126,19 @@
    !
    ! read basic quantities
    !
-   CALL read_matrix( stdin, 'H00_C',  dimC, dimC, h00_c)
-   CALL read_matrix( stdin, 'HCI_CB', dimC, dimB, hci_cb)
+   CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, aux, lda, lda)
+   CALL fourier_par(h00_C, dimC, dimC, aux, lda, lda)   
+   !
+   CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, aux, lda, lda)
+   CALL fourier_par(h_CR, dimC, dimR, aux, lda, lda)   
 
    IF ( use_overlap ) THEN
-       CALL read_matrix( stdin, 'S00_C',  dimC, dimC, s00_c)
-       CALL read_matrix( stdin, 'SCI_CB', dimC, dimB, sci_cb)
+       !
+       CALL read_matrix( datafile_C, 'S00_C', dimC, dimC, aux, lda, lda)
+       CALL fourier_par (s00_C, dimC, dimC, aux, lda, lda)   
+       !
+       CALL read_matrix( datafile_C, 'S_CR', dimC, dimR, aux, lda, lda)
+       CALL fourier_par (s_CR, dimC, dimR, aux, lda, lda)   
    ENDIF
 
    !
@@ -136,36 +150,55 @@
        !
        ! read the missing data
        !
-       CALL read_matrix( stdin, 'HCI_AC', dimA, dimC, hci_ac)
-       CALL read_matrix( stdin, 'H00_A',  dimA, dimA, h00_a)
-       CALL read_matrix( stdin, 'H01_A',  dimA, dimA, h01_a)
-       CALL read_matrix( stdin, 'H00_B',  dimB, dimB, h00_b)
-       CALL read_matrix( stdin, 'H01_B',  dimB, dimB, h01_b)
+       CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, aux, lda, lda)
+       CALL fourier_par (h_LC, dimL, dimC, aux, lda, lda)   
+       !
+       CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, aux, lda, lda)
+       CALL fourier_par (h00_L, dimL, dimL, aux, lda, lda)   
+       !
+       CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, aux, lda, lda)
+       CALL fourier_par (h01_L, dimL, dimL, aux, lda, lda)   
+       !
+       CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, aux, lda, lda)
+       CALL fourier_par (h00_R, dimR, dimR, aux, lda, lda)   
+       !
+       CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, aux, lda, lda)
+       CALL fourier_par (h01_R, dimR, dimR, aux, lda, lda)   
        !
        IF ( use_overlap ) THEN
-           CALL read_matrix( stdin, 'SCI_AC', dimA, dimC, sci_ac)
-           CALL read_matrix( stdin, 'S00_A',  dimA, dimA, s00_a)
-           CALL read_matrix( stdin, 'S01_A',  dimA, dimA, s01_a)
-           CALL read_matrix( stdin, 'S00_B',  dimB, dimB, s00_b)
-           CALL read_matrix( stdin, 'S01_B',  dimB, dimB, s01_b)
+           !
+           CALL read_matrix( datafile_C, 'S_LC', dimL, dimC, aux, lda, lda)
+           CALL fourier_par (s_LC, dimL, dimC, aux, lda, lda)   
+           !
+           CALL read_matrix( datafile_L, 'S00_L',  dimL, dimL, aux, lda, lda)
+           CALL fourier_par (s00_L, dimL, dimL, aux, lda, lda)   
+           !
+           CALL read_matrix( datafile_L, 'S01_L',  dimL, dimL, aux, lda, lda)
+           CALL fourier_par (s01_L, dimL, dimL, aux, lda, lda)   
+           !
+           CALL read_matrix( datafile_R, 'S00_R',  dimR, dimR, aux, lda, lda)
+           CALL fourier_par (s00_R, dimR, dimR, aux, lda, lda)   
+           !
+           CALL read_matrix( datafile_R, 'S01_R',  dimR, dimR, aux, lda, lda)
+           CALL fourier_par (s01_R, dimR, dimR, aux, lda, lda)   
        ENDIF
 
    CASE ( "bulk" )
        !
        ! rearrange the data already read
        !
-       h00_a(:,:) = h00_c(:,:)
-       h00_b(:,:) = h00_c(:,:)
-       h01_a(:,:) = hci_cb(:,:)
-       h01_b(:,:) = hci_cb(:,:)
-       hci_ac(:,:)= hci_cb(:,:)
+       h00_L(:,:,:) = h00_C(:,:,:)
+       h00_R(:,:,:) = h00_C(:,:,:)
+       h01_L(:,:,:) = h_CR(:,:,:)
+       h01_R(:,:,:) = h_CR(:,:,:)
+       h_LC(:,:,:)  = h_CR(:,:,:)
        !
        IF ( use_overlap ) THEN
-           s00_a(:,:) = s00_c(:,:)
-           s00_b(:,:) = s00_c(:,:)
-           s01_a(:,:) = sci_cb(:,:)
-           s01_b(:,:) = sci_cb(:,:)
-           sci_ac(:,:)= sci_cb(:,:)
+           s00_L(:,:,:) = s00_C(:,:,:)
+           s00_R(:,:,:) = s00_C(:,:,:)
+           s01_L(:,:,:) = s_CR(:,:,:)
+           s01_R(:,:,:) = s_CR(:,:,:)
+           s_LC(:,:,:)= s_CR(:,:,:)
        ENDIF
 
    CASE DEFAULT
@@ -175,6 +208,13 @@
 
    CALL iotk_scan_end( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
       IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
+
+
+   !
+   ! local cleaning
+   !
+   DEALLOCATE( aux, STAT=ierr)
+      IF ( ierr/=0 ) CALL errore(subname,'deallocating aux',ABS(ierr))
 
 END SUBROUTINE hamiltonian_init
 
