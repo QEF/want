@@ -9,7 +9,9 @@ Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
 08 Nov 2005      bugs fixed in omega.f90; (AC)
-                 optimization performed in omega.f90 and overlap_update.f90. (AF)
+                 optimization performed in omega.f90 and overlap_update.f90. 
+                 omegai.f90 used also in wannier to compute Omega_I instead of the 
+                 global call to omega.f90 .(AF)
 
 07 Nov 2005      kind related issues ( dbl, DP, *8, DBLE, REAL, DREAL, DCMPLX ) 
                  uniformized using dbl=SELECTED_REAL_KIND() around the code. (AF)

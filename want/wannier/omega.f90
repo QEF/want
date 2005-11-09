@@ -10,7 +10,7 @@
 !
 !********************************************************
    SUBROUTINE omega( dimwann, nkpts, Mkb, csheet, sheet,  &
-                     rave, r2ave, rave2, Omega_I, Omega_D, Omega_OD, Omega_tot )
+                     rave, r2ave, rave2, Omega_D, Omega_OD )
    !********************************************************
    USE kinds
    USE constants, ONLY : ZERO, ONE, CI 
@@ -28,7 +28,7 @@
    COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nb,nkpts)
 
    REAL(dbl), INTENT(out) :: r2ave(dimwann), rave2(dimwann), rave(3,dimwann)
-   REAL(dbl), INTENT(out) :: Omega_I, Omega_D, Omega_OD, Omega_tot
+   REAL(dbl), INTENT(out) :: Omega_D, Omega_OD
 
    !
    ! local variables
@@ -112,25 +112,6 @@
 ! computing the functionals
 !
 
-
-      !
-      ! Omega_I = 1/Nk \Sum_{ik, nn} wb(nn) * ( Nwann - \Sum_mn | Mkb(m,n,nn,ik) |^2 )
-      !
-      Omega_I = ZERO
-      DO ik = 1, nkpts
-      DO ib = 1, nb
-           rtmp = ZERO
-           DO n = 1, dimwann
-           DO m = 1, dimwann
-                rtmp = rtmp + REAL( Mkb(m,n,ib,ik) * CONJG( Mkb(m,n,ib,ik) ), dbl )
-           ENDDO
-           ENDDO
-           Omega_I = Omega_I + wb(ib) * ( REAL(dimwann, dbl)- rtmp )
-      ENDDO
-      ENDDO
-      Omega_I = Omega_I / REAL(nkpts, dbl)
-
-
       !
       ! Omega_OD = 1/Nk \Sum_{ik, nn} wb(nn) * \Sum_{m/=n} | Mkb(m,n,nn,ik) |^2
       !
@@ -168,12 +149,6 @@
       ENDDO
       ENDDO
       Omega_D = Omega_D / REAL(nkpts, dbl)
-
-
-      !
-      ! total functional
-      !
-      Omega_tot = Omega_I + Omega_D + Omega_OD
 
 
       !
