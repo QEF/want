@@ -33,9 +33,10 @@
    !
    ! local variables
    !
-   REAL(dbl) :: rtmp, rtmp1, log
-   INTEGER :: ik, ib
-   INTEGER :: i, m, n 
+   INTEGER   :: ik, ib
+   INTEGER   :: i, m, n, ierr 
+   REAL(dbl) :: rtmp, rtmp1
+   REAL(dbl), ALLOCATABLE :: aux(:,:,:)
    !
    ! end of declariations
    !
@@ -51,6 +52,25 @@
 !
 ! computing wannier centers and spreads
 !
+
+      !
+      ! first compute the auxiliary quantity
+      ! aux(m,ib,ik) =  Im Log (Mkb(m,m))
+      !
+      ALLOCATE( aux(dimwann,nb,nkpts), STAT=ierr)
+         IF (ierr/=0) CALL errore('omega','allocating aux', ABS(ierr))
+     
+      DO ik = 1, nkpts
+      DO ib = 1, nb
+           DO m = 1, dimwann
+                !
+                aux(m,ib,ik) = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
+                               - sheet(m,ib,ik) 
+           ENDDO
+      ENDDO
+      ENDDO
+
+
       !
       ! compute <r(i)_m> = -1/Nk \Sum{k,b} wb * b(i) * Im Log Mkb(m,m)
       !         <r^2_m>  = -1/Nk \Sum{k,b} wb * &
@@ -59,30 +79,26 @@
       ! note the use of csheet and sheet to get the right Riemann sheet for the 
       ! evaluation of the complex LOG
       !
-      DO m = 1, dimwann
-           !
-           rave(:,m) = ZERO
-           r2ave(m)  = ZERO
-           !
-           DO ik = 1, nkpts
-           DO ib = 1, nb
-                ! 
-                log = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
-                       - sheet(m,ib,ik) )
+      rave(:,:) = ZERO
+      r2ave(:)  = ZERO
 
+      DO ik = 1, nkpts
+      DO ib = 1, nb
+           !
+           !
+           DO m = 1, dimwann
+                !
                 r2ave(m) = r2ave(m) + wb(ib) *  &
-                    ( ONE - REAL( Mkb(m,m,ib,ik) * CONJG( Mkb(m,m,ib,ik)), dbl ) + &
-                    log ** 2 
-  
-                DO i = 1, 3
-                    rave(i,m) = rave(i,m) + wb(ib) * vb(i,ib) * log
-                ENDDO
+                    ( ONE - REAL( Mkb(m,m,ib,ik) * CONJG( Mkb(m,m,ib,ik)) ) + &
+                    aux(m,ib,ik) ** 2 )
+                    !
+                rave(:,m) = rave(:,m) + wb(ib) * aux(m,ib,ik) * vb(:,ib) 
            ENDDO
-           ENDDO
-           rave(i,m) = - rave(i,m) / REAL(nkpts, dbl)
-           r2ave(m) =     r2ave(m) / REAL(nkpts, dbl)
       ENDDO
       ENDDO
+      !
+      rave(:,:) = - rave(:,:) / REAL(nkpts, dbl)
+      r2ave(:) =     r2ave(:) / REAL(nkpts, dbl)
 
       !
       ! compute | <r_n> |^2
@@ -100,7 +116,6 @@
       !
       ! Omega_I = 1/Nk \Sum_{ik, nn} wb(nn) * ( Nwann - \Sum_mn | Mkb(m,n,nn,ik) |^2 )
       !
-CALL timing('omega_I',OPR='start')
       Omega_I = ZERO
       DO ik = 1, nkpts
       DO ib = 1, nb
@@ -114,13 +129,11 @@ CALL timing('omega_I',OPR='start')
       ENDDO
       ENDDO
       Omega_I = Omega_I / REAL(nkpts, dbl)
-CALL timing('omega_I',OPR='stop')
 
 
       !
       ! Omega_OD = 1/Nk \Sum_{ik, nn} wb(nn) * \Sum_{m/=n} | Mkb(m,n,nn,ik) |^2
       !
-CALL timing('omega_OD',OPR='start')
       Omega_OD = ZERO
       DO ik = 1, nkpts
       DO ib = 1, nb
@@ -138,28 +151,23 @@ CALL timing('omega_OD',OPR='start')
       ENDDO
       ENDDO
       Omega_OD = Omega_OD / REAL(nkpts, dbl)
-CALL timing('omega_OD',OPR='stop')
 
 
       !
       ! func_D =  1/Nk \Sum_{ik, nn} wb(nn) * \Sum_m ( Im Log Mkb(m,m) + b * <r>_m )**2
       !
-CALL timing('omega_D',OPR='start')
       Omega_D = ZERO
       DO ik = 1, nkpts
       DO ib = 1, nb
            rtmp = ZERO
            DO m = 1, dimwann
                  rtmp1 = DOT_PRODUCT( vb(:, ib), rave(:, m) )
-                 rtmp = rtmp + ( AIMAG( LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
-                               - sheet(m,ib,ik) + rtmp1 )**2
+                 rtmp = rtmp + ( aux(m,ib,ik) + rtmp1 ) **2
            ENDDO
            Omega_D = Omega_D + wb(ib) * rtmp
       ENDDO
       ENDDO
       Omega_D = Omega_D / REAL(nkpts, dbl)
-
-CALL timing('omega_D',OPR='stop')
 
 
       !
@@ -167,6 +175,12 @@ CALL timing('omega_D',OPR='stop')
       !
       Omega_tot = Omega_I + Omega_D + Omega_OD
 
+
+      !
+      ! cleaning
+      !
+      DEALLOCATE( aux, STAT=ierr)
+         IF (ierr/=0) CALL errore('omega','deallocating aux', ABS(ierr))
 
       CALL timing('omega',OPR='stop')
    END SUBROUTINE omega

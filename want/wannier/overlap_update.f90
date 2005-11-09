@@ -33,7 +33,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    ! local variables
    !
    COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
-   INTEGER                   :: ik, ikb, inn, ierr
+   INTEGER                   :: ik, ikb, ib, ierr
    ! 
    ! ... end of declarations
    ! 
@@ -51,15 +51,15 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
 
 
    DO ik = 1, nkpts
-      DO inn= 1, nb
-         ikb = nnlist( inn, ik )
+      DO ib= 1, nb
+         ikb = nnlist( ib, ik )
 
          !
          ! aux1 = U(ik)^dag * Mkb * U(ikb)
          !
-         CALL mat_mul(aux, U(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
+         CALL mat_mul(aux, U(:,:,ik), 'C', Mkb(:,:,ib,ik), 'N', &
                       dimwann, dimwann, dimwann)
-         CALL mat_mul(Mkb(:,:,inn,ik), aux, 'N', U(:,:,ikb), 'N', & 
+         CALL mat_mul(Mkb(:,:,ib,ik), aux, 'N', U(:,:,ikb), 'N', & 
                       dimwann, dimwann, dimwann)
       ENDDO
    ENDDO
