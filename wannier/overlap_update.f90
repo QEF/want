@@ -18,7 +18,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    USE kinds, ONLY : dbl
    USE timing_module, ONLY : timing
    USE util_module,  ONLY : mat_mul
-   USE kpoints_module,  ONLY : nb, nnlist 
+   USE kpoints_module,  ONLY : nb, nnpos, nnrev, nnlist 
    IMPLICIT NONE
 
    
@@ -33,7 +33,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    ! local variables
    !
    COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
-   INTEGER                   :: ik, ikb, ib, ierr
+   INTEGER                   :: ik, ikb, ib, inn, ierr
    ! 
    ! ... end of declarations
    ! 
@@ -51,7 +51,16 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
 
 
    DO ik = 1, nkpts
-      DO ib= 1, nb
+      !
+      ! take advantage on the symmetry properties of Mkb
+      ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
+      !
+      ! perform the loop only for the "positive" b, 
+      ! and symmetrize at the end
+      !
+      DO inn= 1, nb/2
+         !
+         ib  = nnpos (inn)
          ikb = nnlist( ib, ik )
 
          !
@@ -61,6 +70,11 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
                       dimwann, dimwann, dimwann)
          CALL mat_mul(Mkb(:,:,ib,ik), aux, 'N', U(:,:,ikb), 'N', & 
                       dimwann, dimwann, dimwann)
+
+         !
+         ! symmetrize
+         !
+         Mkb(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb(:,:,ib,ik)))
       ENDDO
    ENDDO
 

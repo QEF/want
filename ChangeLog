@@ -8,6 +8,9 @@
 Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
+08 Nov 2005      bugs fixed in omega.f90; (AC)
+                 optimization performed in omega.f90 and overlap_update.f90. (AF)
+
 07 Nov 2005      kind related issues ( dbl, DP, *8, DBLE, REAL, DREAL, DCMPLX ) 
                  uniformized using dbl=SELECTED_REAL_KIND() around the code. (AF)
 
