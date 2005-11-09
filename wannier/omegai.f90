@@ -10,14 +10,12 @@
     SUBROUTINE omegai( Omega_I, dimwann, nkpts, Mkb )
    !***************************************************
    !
-   ! Calculates the contribution of a given k-point to Omega_I
-   ! Omega_I(ik) = - \Sum_b wb * \Sum_m,n  | Mkb_upd_{m,n} |^2  
+   ! Calculates the invariant spread functional Omega_I
+   !
+   ! Omega_I = 1/Nk \Sum_{ik, ib} wb(ib) * ( Nwann - \Sum_mn | Mkb(m,n,ib,ik) |^2 )
+   !
    ! where
    ! Mkb_upd = Lamp(ik)^dag * Mkb0 * Lamp(ikb)
-   !
-   ! NOTA: m = 1, mdim
-   !       n = 1, dimwann     and other matrix dimensions accordingly
-   ! 
    !
    USE kinds
    USE constants, ONLY : ZERO
@@ -53,7 +51,7 @@
        DO n = 1, dimwann     
        DO m = 1, dimwann
             Omega_I = Omega_I - wb(ib) * &
-                      REAL( CONJG( Mkb(m,n,ib,ik) ) * Mkb(m,n,ib,ik) )
+                      REAL( CONJG( Mkb(m,n,ib,ik) ) * Mkb(m,n,ib,ik), dbl )
        ENDDO 
        ENDDO 
 

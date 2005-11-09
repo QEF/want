@@ -147,8 +147,11 @@
       !
       ! ... Calculate the average positions of the WFs
       !
+      CALL omegai( Omega_I, dimwann, nkpts, Mkb )
       CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2,  &
-                  Omega_I, Omega_D, Omega_OD, Omega_tot )
+                  Omega_D, Omega_OD )
+      Omega_tot = Omega_I + Omega_D + Omega_OD 
+      !
       CALL localization_print(stdout,FMT="extended")
 
       Omega0 = Omega_tot
@@ -289,8 +292,9 @@
            ! The functional is recalculated
            !
            CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
-                       Omega_I, Omega_D, Omega_OD, Omega_tot )
-
+                       Omega_D, Omega_OD )
+           Omega_tot = Omega_I + Omega_D + Omega_OD
+           !
            OmegaA = Omega_tot
            Omega_var = Omega_tot - Omega_old
 
@@ -337,7 +341,8 @@
                ! The functional is recalculated
                !  
                CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
-                           Omega_I, Omega_D, Omega_OD, Omega_tot )
+                           Omega_D, Omega_OD )
+               Omega_tot = Omega_I + Omega_D + Omega_OD
            
                OmegaA = Omega_tot
                Omega_var = Omega_tot - Omega_old
