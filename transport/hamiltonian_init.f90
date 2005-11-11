@@ -50,7 +50,7 @@
    USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, nrtot_par
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate,   &
-                                    dimL, dimR, dimC,       &
+                                    dimL, dimR, dimC, dimx, &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, &
                                     s00_L, s01_L, s00_R, s01_R, s00_C, &
                                     h_LC, h_CR, s_LC, s_CR
@@ -67,7 +67,7 @@
    !
    CHARACTER(16) :: subname="hamiltonian_init"
    COMPLEX(dbl), ALLOCATABLE :: aux(:,:,:)
-   INTEGER       :: i, lda, ierr
+   INTEGER       :: i, ierr
 
    !
    ! end of declarations
@@ -89,8 +89,8 @@
    !
    CALL hamiltonian_allocate()
    !
-   lda = MAX( dimL, dimC, dimR)
-   ALLOCATE( aux(lda,lda,nrtot_par), STAT=ierr)
+   ! dimx = MAX( dimL, dimC, dimR) 
+   ALLOCATE( aux(dimx,dimx,nrtot_par), STAT=ierr)
       IF ( ierr/=0 ) CALL errore(subname,'allocating aux',ABS(ierr))
 
    !
@@ -126,19 +126,19 @@
    !
    ! read basic quantities
    !
-   CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, aux, lda, lda)
-   CALL fourier_par(h00_C, dimC, dimC, aux, lda, lda)   
+   CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, aux, dimx, dimx)
+   CALL fourier_par(h00_C, dimC, dimC, aux, dimx, dimx)   
    !
-   CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, aux, lda, lda)
-   CALL fourier_par(h_CR, dimC, dimR, aux, lda, lda)   
+   CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, aux, dimx, dimx)
+   CALL fourier_par(h_CR, dimC, dimR, aux, dimx, dimx)   
 
    IF ( use_overlap ) THEN
        !
-       CALL read_matrix( datafile_C, 'S00_C', dimC, dimC, aux, lda, lda)
-       CALL fourier_par (s00_C, dimC, dimC, aux, lda, lda)   
+       CALL read_matrix( datafile_C, 'S00_C', dimC, dimC, aux, dimx, dimx)
+       CALL fourier_par (s00_C, dimC, dimC, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_C, 'S_CR', dimC, dimR, aux, lda, lda)
-       CALL fourier_par (s_CR, dimC, dimR, aux, lda, lda)   
+       CALL read_matrix( datafile_C, 'S_CR', dimC, dimR, aux, dimx, dimx)
+       CALL fourier_par (s_CR, dimC, dimR, aux, dimx, dimx)   
    ENDIF
 
    !
@@ -150,37 +150,37 @@
        !
        ! read the missing data
        !
-       CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, aux, lda, lda)
-       CALL fourier_par (h_LC, dimL, dimC, aux, lda, lda)   
+       CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, aux, dimx, dimx)
+       CALL fourier_par (h_LC, dimL, dimC, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, aux, lda, lda)
-       CALL fourier_par (h00_L, dimL, dimL, aux, lda, lda)   
+       CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, aux, dimx, dimx)
+       CALL fourier_par (h00_L, dimL, dimL, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, aux, lda, lda)
-       CALL fourier_par (h01_L, dimL, dimL, aux, lda, lda)   
+       CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, aux, dimx, dimx)
+       CALL fourier_par (h01_L, dimL, dimL, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, aux, lda, lda)
-       CALL fourier_par (h00_R, dimR, dimR, aux, lda, lda)   
+       CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, aux, dimx, dimx)
+       CALL fourier_par (h00_R, dimR, dimR, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, aux, lda, lda)
-       CALL fourier_par (h01_R, dimR, dimR, aux, lda, lda)   
+       CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, aux, dimx, dimx)
+       CALL fourier_par (h01_R, dimR, dimR, aux, dimx, dimx)   
        !
        IF ( use_overlap ) THEN
            !
-           CALL read_matrix( datafile_C, 'S_LC', dimL, dimC, aux, lda, lda)
-           CALL fourier_par (s_LC, dimL, dimC, aux, lda, lda)   
+           CALL read_matrix( datafile_C, 'S_LC', dimL, dimC, aux, dimx, dimx)
+           CALL fourier_par (s_LC, dimL, dimC, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_L, 'S00_L',  dimL, dimL, aux, lda, lda)
-           CALL fourier_par (s00_L, dimL, dimL, aux, lda, lda)   
+           CALL read_matrix( datafile_L, 'S00_L',  dimL, dimL, aux, dimx, dimx)
+           CALL fourier_par (s00_L, dimL, dimL, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_L, 'S01_L',  dimL, dimL, aux, lda, lda)
-           CALL fourier_par (s01_L, dimL, dimL, aux, lda, lda)   
+           CALL read_matrix( datafile_L, 'S01_L',  dimL, dimL, aux, dimx, dimx)
+           CALL fourier_par (s01_L, dimL, dimL, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_R, 'S00_R',  dimR, dimR, aux, lda, lda)
-           CALL fourier_par (s00_R, dimR, dimR, aux, lda, lda)   
+           CALL read_matrix( datafile_R, 'S00_R',  dimR, dimR, aux, dimx, dimx)
+           CALL fourier_par (s00_R, dimR, dimR, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_R, 'S01_R',  dimR, dimR, aux, lda, lda)
-           CALL fourier_par (s01_R, dimR, dimR, aux, lda, lda)   
+           CALL read_matrix( datafile_R, 'S01_R',  dimR, dimR, aux, dimx, dimx)
+           CALL fourier_par (s01_R, dimR, dimR, aux, dimx, dimx)   
        ENDIF
 
    CASE ( "bulk" )

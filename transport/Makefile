@@ -19,7 +19,8 @@ kpoints.o \
 fourier_par.o \
 read_matrix.o \
 transfer.o \
-transmittance.o 
+transmittance.o \
+workspace.o
 
 WANNIER_OBJS= \
 ../wannier/io_module.o \

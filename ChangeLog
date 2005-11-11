@@ -8,7 +8,12 @@
 Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
-08 Nov 2005      bugs fixed in omega.f90; (AC)
+11 Nov 2005      workspace module added to transport in order to clear the main
+                 source. Cleanup performed in conductor code. Transport input 
+                 changed: no more namelists in HAMILTONIAN_DATA, chnaged to iotk fmt. 
+                 Test updated accordingly. (AF)
+
+08 Nov 2005      Bugs fixed in omega.f90; (AC)
                  optimization performed in omega.f90 and overlap_update.f90. 
                  omegai.f90 used also in wannier to compute Omega_I instead of the 
                  global call to omega.f90 .(AF)

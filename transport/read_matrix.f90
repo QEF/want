@@ -48,8 +48,6 @@
    INTEGER                   :: ncols, nrows
    INTEGER,      ALLOCATABLE :: icols(:), irows(:)
    CHARACTER(nstrx)          :: cols, rows
-   !
-   NAMELIST / MATRIX_DATA / cols, rows
 
 
    !
@@ -69,30 +67,28 @@
    IF ( dim1 > lda1 ) CALL errore('read_matrix', 'invalid dim1', 1 )
    IF ( dim2 > lda2 ) CALL errore('read_matrix', 'invalid dim2', 2 )
 
-   CALL iotk_scan_begin(stdin, TRIM(name), IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching for '//TRIM(name), ABS(ierr) )
-
+   CALL iotk_scan_empty(stdin, TRIM(name), ATTR=attr, IERR=ierr)
+   IF (ierr/=0) CALL errore('read_matrix', 'searching for '//TRIM(name), ABS(ierr) )
    !
-   ! setting defaults
-   !
-   cols="all"
-   rows="all"
-   !
-   READ(stdin, MATRIX_DATA, IOSTAT=ierr )
-      IF (ierr/=0) CALL errore('read_matrix', 'reading namelist in '//TRIM(name), ABS(ierr) )
-
-   CALL iotk_scan_end(stdin, TRIM(name), IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching end for '//TRIM(name), ABS(ierr) )
-
+   CALL iotk_scan_attr(attr, 'cols', cols, FOUND=found, IERR=ierr)
+   IF (ierr/=0) CALL errore('read_matrix', 'searching for cols', ABS(ierr) )
+   IF( .NOT. found ) cols = 'all'
    CALL change_case( cols, 'lower')
+   !
+   CALL iotk_scan_attr(attr, 'rows', rows, FOUND=found, IERR=ierr)
+   IF (ierr/=0) CALL errore('read_matrix', 'searching for rows', ABS(ierr) )
+   IF( .NOT. found ) rows = 'all'
    CALL change_case( rows, 'lower')
 
 
 !
 ! parse the obtained data
 !
-   ! XXX
-   ! maneggiare il caso COLS="ALL"...
+   !
+   ! deal with rows or cols = "all"
+   !
+   IF ( TRIM(rows) == "all" ) rows="1-"//TRIM( int2char(dim1))
+   IF ( TRIM(cols) == "all" ) cols="1-"//TRIM( int2char(dim2))
    
    !
    ! get the number of required rows and cols

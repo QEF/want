@@ -10,26 +10,31 @@
 !***********************************************
    PROGRAM conductor
    !***********************************************
-   USE kinds
-   USE constants,            ONLY : PI, ZERO, CZERO, CONE, CI, EPS_m5, EPS_m2
+   USE iotk_module
+   USE kinds,                ONLY : dbl
+   USE constants,            ONLY : PI, ZERO, CZERO, CONE, CI, EPS_m5
    USE parameters,           ONLY : nstrx 
    USE version_module,       ONLY : version_number
+   USE parser_module,        ONLY : change_case
+   USE files_module,         ONLY : file_open, file_close
+   USE timing_module,        ONLY : timing, timing_overview, global_list
+   USE util_module,          ONLY : mat_mul, mat_sv
+   USE T_input_module,       ONLY : input_manager
    USE io_module,            ONLY : stdout, stdin, sgm_unit => aux_unit,   &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
                                     conduct_formula, niterx, bias, datafile_sgm 
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par , wk_par
-   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC,                  &
+   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 
                                     s00_L, s01_L, s00_R, s01_R, s00_c, &
                                     h_LC, h_CR, s_LC, s_CR
-   USE iotk_module
-   USE parser_module,    ONLY : change_case
-   USE files_module,     ONLY : file_open, file_close
-   USE timing_module,    ONLY : timing, timing_overview, global_list
-   USE util_module,      ONLY : mat_mul, mat_sv
-   USE T_input_module,   ONLY : input_manager
+   USE T_workspace_module,   ONLY : aux00_L, aux01_L, aux00_R, aux01_R, aux00_C, &
+                                    aux_LC, aux_CL, aux_CR, aux_RC,    &
+                                    totL, tottL, totR, tottR,          &
+                                    gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
+                                    workspace_allocate
 
    IMPLICIT NONE
 
@@ -46,27 +51,8 @@
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
    !
-   COMPLEX(dbl), ALLOCATABLE :: c00_a(:,:), c01_a(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: c00_b(:,:), c01_b(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: c00_c(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: cci_ac(:,:), cci_ca(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: cci_cb(:,:), cci_bc(:,:)
-   !
-   COMPLEX(dbl), ALLOCATABLE :: totA(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: totB(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: tottA(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: tottB(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: gR(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: gL(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: gA(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: gB(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: gintr(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: sLr(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: sRr(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: c1(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: c2(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: sgm_r(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: work(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: sgm_corr(:,:)
      
 
 !
@@ -111,64 +97,18 @@
 !
 ! local variable allocations
 !
-   ALLOCATE ( c00_a(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating c00_a ', 1 )
-   ALLOCATE ( c01_a(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating c01_a ', 1 )
-   ALLOCATE ( c00_b(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating c00_b ', 1 )
-   ALLOCATE ( c01_b(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating c01_b ', 1 )
-   ALLOCATE ( c00_c(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating c00_c ', 1 )
-   ALLOCATE ( cci_ac(dimL,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating cci_ac ', 1 )
-   ALLOCATE ( cci_cb(dimC,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating cci_cb ', 1 )
-   ALLOCATE ( cci_ca(dimC,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating cci_ca ', 1 )
-   ALLOCATE ( cci_bc(dimR,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating cci_bc ', 1 )
-
-   ALLOCATE ( totA(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating totA ', 1 )
-   ALLOCATE ( totB(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating totB ', 1 )
-   ALLOCATE ( tottA(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating tottA ', 1 )
-   ALLOCATE ( tottB(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating tottB ', 1 )
-
-   ALLOCATE ( gR(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating gR ', 1 )
-   ALLOCATE ( gL(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating gL ', 1 )
-   ALLOCATE ( gA(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating gA ', 1 )
-   ALLOCATE ( gB(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating gB ', 1 )
-
-   ALLOCATE ( gintr(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating gintr ', 1 )
-   ALLOCATE ( aux(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating aux', 1 )
-   ALLOCATE ( sLr(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating sLr ', 1 )
-   ALLOCATE ( sRr(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating sRr ', 1 )
-   ALLOCATE ( c1(dimC,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating c1 ', 1 )
-   ALLOCATE ( c2(dimC,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating c2 ', 1 )
+   CALL workspace_allocate()
 
    ALLOCATE ( dos(dimC,ne), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating dos ', 1 )
+      IF( ierr /=0 ) CALL errore('conductor','allocating dos', ABS(ierr) )
    ALLOCATE ( conduct(dimC,ne), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating conduct ', 1 )
+      IF( ierr /=0 ) CALL errore('conductor','allocating conduct', ABS(ierr) )
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating cond_aux ', 1 )
-   ALLOCATE ( sgm_r(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor', ' allocating sgm_r ', 1 )
+      IF( ierr /=0 ) CALL errore('conductor','allocating cond_aux', ABS(ierr) )
+   ALLOCATE ( sgm_corr(dimC,dimC), STAT=ierr )
+      IF( ierr /=0 ) CALL errore('conductor','allocating sgm_corr', ABS(ierr) )
+   ALLOCATE ( work(dimx,dimx), STAT=ierr )
+      IF( ierr /=0 ) CALL errore('conductor','allocating work', ABS(ierr) )
 
 !
 ! get the correlation self-energy if the case
@@ -244,19 +184,19 @@
           !
           ! init
           !
-          c00_a(:,:)  = h00_L(:,:,ik)  -ene * s00_L(:,:,ik)
-          c01_a(:,:)  = h01_L(:,:,ik)  -ene * s01_L(:,:,ik)
+          aux00_L(:,:)  = h00_L(:,:,ik)  -ene * s00_L(:,:,ik)
+          aux01_L(:,:)  = h01_L(:,:,ik)  -ene * s01_L(:,:,ik)
           !
-          c00_b(:,:)  = h00_R(:,:,ik)  -ene * s00_R(:,:,ik)
-          c01_b(:,:)  = h01_R(:,:,ik)  -ene * s01_R(:,:,ik)
+          aux00_R(:,:)  = h00_R(:,:,ik)  -ene * s00_R(:,:,ik)
+          aux01_R(:,:)  = h01_R(:,:,ik)  -ene * s01_R(:,:,ik)
           !
-          c00_c(:,:)  = h00_C(:,:,ik)  -ene * s00_c(:,:,ik)
+          aux00_C(:,:)  = h00_C(:,:,ik)  -ene * s00_c(:,:,ik)
           !
-          cci_ac(:,:) = h_LC(:,:,ik) -ene * s_LC(:,:,ik) 
-          cci_cb(:,:) = h_CR(:,:,ik) -ene * s_CR(:,:,ik)
+          aux_LC(:,:) = h_LC(:,:,ik) -ene * s_LC(:,:,ik) 
+          aux_CR(:,:) = h_CR(:,:,ik) -ene * s_CR(:,:,ik)
           !
-          cci_ca(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene)*s_LC(:,:,ik) ))
-          cci_bc(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene)*s_CR(:,:,ik) ))
+          aux_CL(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene)*s_LC(:,:,ik) ))
+          aux_RC(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene)*s_CR(:,:,ik) ))
  
  
           !
@@ -266,12 +206,12 @@
           IF ( use_correlation ) THEN
               CALL iotk_scan_begin(sgm_unit, "OPR"//TRIM(iotk_index(ie)), IERR=ierr)
                   IF (ierr/=0) CALL errore('conductor','searching for OPR',ie)
-              CALL iotk_scan_dat(sgm_unit, TRIM(sgmtag), sgm_r, IERR=ierr)
+              CALL iotk_scan_dat(sgm_unit, TRIM(sgmtag), sgm_corr, IERR=ierr)
                   IF (ierr/=0) CALL errore('conductor','searching for '//TRIM(sgmtag),ie)
               CALL iotk_scan_end(sgm_unit, "OPR"//TRIM(iotk_index(ie)), IERR=ierr)
                   IF (ierr/=0) CALL errore('conductor','searching end for OPR',ie)
           ELSE
-              sgm_r(:,:) = CZERO
+              sgm_corr(:,:) = CZERO
           ENDIF
           
  
@@ -279,43 +219,43 @@
           ! construct leads self-energies 
           ! 
           ! ene + bias
-          CALL transfer( dimR, niterx, totB, tottB, c00_b, c01_b )
-          CALL green( dimR, totB, tottB, c00_b, c01_b, ene+bias, gB, 1 )
+          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R )
+          CALL green( dimR, totR, tottR, aux00_R, aux01_R, ene+bias, gR, 1 )
           !
-          CALL mat_mul(c2, cci_cb, 'N', gB, 'N', dimC, dimR, dimR)
-          CALL mat_mul(sRr, c2, 'N', cci_bc, 'N', dimC, dimC, dimR)
+          CALL mat_mul(work, aux_CR, 'N', gR, 'N', dimC, dimR, dimR)
+          CALL mat_mul(sgm_R, work, 'N', aux_RC, 'N', dimC, dimC, dimR)
  
           ! ene
-          CALL transfer( dimL, niterx, totA, tottA, c00_a, c01_a )
-          CALL green( dimL, totA, tottA, c00_a, c01_a, ene, gA, -1 )
+          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L )
+          CALL green( dimL, totL, tottL, aux00_L, aux01_L, ene, gL, -1 )
           !
-          CALL mat_mul(c1, cci_ca, 'N', gA, 'N', dimC, dimL, dimL)
-          CALL mat_mul(sLr, c1, 'N', cci_ac, 'N', dimC, dimC, dimL) 
+          CALL mat_mul(work, aux_CL, 'N', gL, 'N', dimC, dimL, dimL)
+          CALL mat_mul(sgm_L, work, 'N', aux_LC, 'N', dimC, dimC, dimL) 
  
           !
-          ! gL and gR
+          ! gamma_L and gamma_R
           !
-          gL(:,:) = CI * (  sLr(:,:) - CONJG( TRANSPOSE(sLr(:,:)) )   )
-          gR(:,:) = CI * (  sRr(:,:) - CONJG( TRANSPOSE(sRr(:,:)) )   )
+          gamma_L(:,:) = CI * (  sgm_L(:,:) - CONJG( TRANSPOSE(sgm_L(:,:)) )   )
+          gamma_R(:,:) = CI * (  sgm_R(:,:) - CONJG( TRANSPOSE(sgm_R(:,:)) )   )
  
           !
           ! Construct the conductor green's function
-          ! G_C = aux^-1  (retarded)
+          ! gC = work^-1  (retarded)
           !
-          aux(:,:) = -c00_c(:,:) -sLr(:,:) -sRr(:,:) -sgm_r(:,:)
+          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:)
   
-          gintr(:,:) = CZERO
+          gC(:,:) = CZERO
           DO i = 1, dimC
-             gintr(i,i)= CONE
+             gC(i,i)= CONE
           ENDDO
  
-          CALL mat_sv(dimC, dimC, aux, gintr)
+          CALL mat_sv(dimC, dimC, work, gC)
  
           !
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimC
-             dos(i,ie) = dos(i,ie) - wk_par(ik) * AIMAG( gintr(i,i) ) / PI
+             dos(i,ie) = dos(i,ie) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
  
           !
@@ -323,8 +263,8 @@
           ! or (in the correlated case) to the generalized expression as 
           ! from PRL 94, 116802 (2005)
           !
-          CALL transmittance(dimC, gL, gR, gintr, sgm_r, TRIM(conduct_formula),  &
-                             cond_aux )
+          CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr, &
+                             TRIM(conduct_formula), cond_aux )
           conduct(:,ie) = conduct(:,ie) + wk_par(ik) * cond_aux(:)
       
       ENDDO kpt_loop 
@@ -365,45 +305,16 @@
 !
 !...  free memory
 !
-   DEALLOCATE ( c00_a, c01_a, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating c00_a, c01_a ', 1 )
-   DEALLOCATE ( c00_b, c01_b, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating c01_b, c01_b ', 1 )
-   DEALLOCATE ( c00_c, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating c00_c ', 1 )
-   DEALLOCATE ( cci_ac, cci_ca, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating cci_ac, cci_ca ', 1 )
-   DEALLOCATE ( cci_cb, cci_bc, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating cci_cb, cci_bc ', 1 )
-
-   DEALLOCATE ( totA, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating totA ', 1 )
-   DEALLOCATE ( totB, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating totB ', 1 )
-   DEALLOCATE ( tottA, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating tottA ', 1 )
-   DEALLOCATE ( tottB, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating tottB ', 1 )
-
-   DEALLOCATE ( gR, gL, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating gR, gL ', 1 )
-   DEALLOCATE ( gA, gB, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating gA, gB ', 1 )
-
-   DEALLOCATE ( gintr, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating gintr ', 1 )
-   DEALLOCATE ( aux, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating aux', 1 )
-   DEALLOCATE ( sRr, sLr, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating sRr, sLr ', 1 )
-   DEALLOCATE ( c1, c2, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating c1, c2 ', 1 )
    DEALLOCATE ( dos, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating dos ', 1 )
+        IF( ierr /=0 ) CALL errore('conductor','deallocating dos', ABS(ierr) )
    DEALLOCATE ( conduct, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating conduct ', 1 )
-   DEALLOCATE ( sgm_r, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor', ' deallocating sgm_r ', 1 )
+        IF( ierr /=0 ) CALL errore('conductor','deallocating conduct', ABS(ierr) )
+   DEALLOCATE ( cond_aux, STAT=ierr )
+        IF( ierr /=0 ) CALL errore('conductor','deallocating cond_aux', ABS(ierr) )
+   DEALLOCATE ( sgm_corr, STAT=ierr )
+        IF( ierr /=0 ) CALL errore('conductor','deallocating sgm_corr', ABS(ierr) )
+   DEALLOCATE ( work, STAT=ierr )
+        IF( ierr /=0 ) CALL errore('conductor','deallocating work', ABS(ierr) )
 
    CALL cleanup()
 

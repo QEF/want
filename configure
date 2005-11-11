@@ -24,7 +24,8 @@ MANUAL=" Usage
 
 
 # run from directory where this script is
-cd `echo $0 | sed 's/\(.*\)\/.*/\1/'` # extract pathname
+auxdir=`echo $0 | sed 's/\(.*\)\/.*/\1/'` # extract pathname
+if [ "$auxdir" != "configure" ] ; then cd $auxdir ; fi
 
 
 #

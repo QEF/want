@@ -23,6 +23,7 @@
     INTEGER                   :: dimL  
     INTEGER                   :: dimC       
     INTEGER                   :: dimR       
+    INTEGER                   :: dimx      ! MAX ( dimL, dimC, dimR )       
     !
     COMPLEX(dbl), ALLOCATABLE :: h00_L(:,:,:), h01_L(:,:,:)
     COMPLEX(dbl), ALLOCATABLE :: h00_R(:,:,:), h01_R(:,:,:)
@@ -43,7 +44,7 @@
 ! end delcarations
 !
 
-   PUBLIC :: dimL, dimR, dimC     
+   PUBLIC :: dimL, dimC, dimR, dimx     
    PUBLIC :: nkpts_par
    !
    PUBLIC :: h00_L, h01_L

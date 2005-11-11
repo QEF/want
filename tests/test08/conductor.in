@@ -13,19 +13,8 @@
 
 <HAMILTONIAN_DATA>
 
-   <H00_C>
-      &MATRIX_DATA
-         cols="1-4"
-         rows="1-4"
-      /
-   </H00_C>
-
-   <H_CR>
-      &MATRIX_DATA
-         cols="1-4"
-         rows="1-4"
-      /
-   </H_CR>
+   <H00_C />
+   <H_CR  />
 
 </HAMILTONIAN_DATA>
 
