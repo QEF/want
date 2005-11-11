@@ -14,54 +14,13 @@
 
 <HAMILTONIAN_DATA>
 
-   <H00_C>
-      &MATRIX_DATA
-         rows="1-50"
-         cols="1-50"
-      /
-   </H00_C>
-
-   <H_CR>
-      &MATRIX_DATA
-         rows="1-50"
-         cols="1-6"
-      /
-   </H_CR>
-
-   <H_LC>
-      &MATRIX_DATA
-         rows="45-50"
-         cols="1-50"
-      /
-   </H_LC>
-
-   <H00_L>
-      &MATRIX_DATA
-         rows="1-6"
-         cols="1-6"
-      /
-   </H00_L>
-
-   <H01_L>
-      &MATRIX_DATA
-         rows="1-6"
-         cols="7-12"
-      /
-   </H01_L>
-
-   <H00_R>
-      &MATRIX_DATA
-         rows="1-6"
-         cols="1-6"
-      /
-   </H00_R>
-
-   <H01_R>
-      &MATRIX_DATA
-         rows="1-6"
-         cols="7-12"
-      /
-   </H01_R>
-
+   <H00_C   rows="1-50"  cols="1-50" />
+   <H_CR    rows="1-50"  cols="1-6"  />
+   <H_LC    rows="45-50" cols="1-50" />
+   <H00_L   rows="1-6"   cols="1-6"  />
+   <H01_L   rows="1-6"   cols="7-12" />
+   <H00_R   rows="1-6"   cols="1-6"  />
+   <H01_R   rows="1-6"   cols="7-12" />
 
 </HAMILTONIAN_DATA>
+

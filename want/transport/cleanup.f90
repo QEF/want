@@ -18,11 +18,13 @@
    ! and nothing happens.
    !
    USE timing_module,        ONLY : timing_deallocate, timing_alloc => alloc 
+   USE T_workspace_module,   ONLY : workspace_deallocate, work_alloc => alloc
    USE T_egrid_module,       ONLY : egrid_deallocate, egrid_alloc => alloc
    USE T_hamiltonian_module, ONLY : hamiltonian_deallocate, ham_alloc => alloc
    USE T_kpoints_module,     ONLY : kpoints_deallocate
    IMPLICIT NONE
       
+      IF ( work_alloc )     CALL workspace_deallocate()
       IF ( egrid_alloc )    CALL egrid_deallocate()
       IF ( timing_alloc )   CALL timing_deallocate()
       IF ( ham_alloc)       CALL hamiltonian_deallocate()

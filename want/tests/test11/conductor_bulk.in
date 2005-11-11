@@ -11,20 +11,8 @@
 
 <HAMILTONIAN_DATA>
 
-   <H00_C>
-      &MATRIX_DATA
-         rows="45-50"
-         cols="45-50"
-      /
-   </H00_C>
-
-   <H_CR>
-      &MATRIX_DATA
-         filename="pt_h2_pt_WanT.ham"
-         rows="45-50"
-         cols="1-6"
-      /
-   </H_CR>
+   <H00_C rows="45-50" cols="45-50" />
+   <H_CR  rows="45-50" cols="1-6"   />
 
 </HAMILTONIAN_DATA>
 

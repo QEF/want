@@ -11,19 +11,8 @@
 
 <HAMILTONIAN_DATA>
 
-   <H00_C>
-      &MATRIX_DATA
-         rows="1-16"
-         cols="1-16"
-      /
-   </H00_C>
-
-   <H_CR>
-      &MATRIX_DATA
-         rows="1-16"
-         cols="1-16"
-      /
-   </H_CR>
+   <H00_C rows="1-16" cols="1-16" />
+   <H_CR  rows="1-16" cols="1-16" />
 
 </HAMILTONIAN_DATA>
 
