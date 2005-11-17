@@ -399,9 +399,9 @@
           WRITE( unit,"(  4x,'nspin =',i4 ) " ) nspin
           WRITE( unit,"(  4x,'Fermi energy =',f15.9,' eV')") efermi
           DO ik=1,nkpts
-              WRITE(unit, " (/,4x,'kpt =', i4, ' ( ',3f9.5,' )    dimwin = ', i4)" ) &
+              WRITE(unit, " (/,4x,'kpt = ', i4, ' ( ',3f9.5,' )    dimwin = ', i4)" ) &
                               ik, vkpt(:,ik), dimwin(ik)
-              WRITE(unit, " (41x,'imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
+              WRITE(unit, " (39x,'imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
               WRITE(unit, "(3x,'Eigenvalues:')"  )
               WRITE(unit,'(2x, 8f9.4)') ( eig(i,ik), i=1,nbnd )
           ENDDO

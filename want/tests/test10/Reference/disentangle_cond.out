@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 12:59: 7 
+  Date 17Nov2005 at  1:44:27 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -174,8 +174,8 @@
     nspin =   1
     Fermi energy =   -4.151018974 eV
 
-    kpt =   1 (   0.00000  0.00000  0.00000 )    dimwin =   16
-                                         imin =    1  imax =   16
+    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =   16
+                                       imin =    1  imax =   16
    Eigenvalues:
    -20.5523 -19.8791 -19.8791 -18.6742 -16.4412 -14.5305 -14.5305 -13.0104
     -9.4890  -9.4890  -8.3839  -8.3839  -8.3839  -8.3839  -6.0639  -6.0639
@@ -188,8 +188,8 @@
      4.7813   4.8007   4.8007   4.8277   4.8277   4.9769   4.9769   4.9769
      4.9769   5.0208   5.0208   5.1527   5.2602   5.2602   5.5574   5.5809
 
-    kpt =   2 (   0.07584  0.00000  0.00000 )    dimwin =   16
-                                         imin =    1  imax =   16
+    kpt =    2 (   0.07584  0.00000  0.00000 )    dimwin =   16
+                                       imin =    1  imax =   16
    Eigenvalues:
    -20.5086 -20.1675 -19.5281 -18.8208 -16.2406 -15.1601 -13.9439 -13.1312
     -9.4187  -9.4187  -8.8658  -8.8658  -7.7832  -7.7832  -6.4132  -6.4132
@@ -202,8 +202,8 @@
      4.4731   4.5122   4.5122   4.6150   4.6157   4.7146   4.7462   4.7462
      4.7555   4.8596   4.8797   4.9205   4.9205   5.2412   5.3553   5.3704
 
-    kpt =   3 (   0.15168  0.00000  0.00000 )    dimwin =   16
-                                         imin =    1  imax =   16
+    kpt =    3 (   0.15168  0.00000  0.00000 )    dimwin =   16
+                                       imin =    1  imax =   16
    Eigenvalues:
    -20.3790 -20.3790 -19.1530 -19.1530 -15.7613 -15.7613 -13.4519 -13.4519
     -9.2097  -9.2097  -9.2097  -9.2097  -7.0996  -7.0996  -7.0996  -7.0996
@@ -216,8 +216,8 @@
      4.3253   4.3253   4.3346   4.3346   4.5384   4.5384   4.5384   4.5384
      4.8244   4.8244   4.8497   4.8498   4.9797   4.9797   4.9797   4.9798
 
-    kpt =   4 (   0.22753  0.00000  0.00000 )    dimwin =   16
-                                         imin =    1  imax =   16
+    kpt =    4 (   0.22753  0.00000  0.00000 )    dimwin =   16
+                                       imin =    1  imax =   16
    Eigenvalues:
    -20.5086 -20.1675 -19.5281 -18.8208 -16.2406 -15.1601 -13.9439 -13.1312
     -9.4187  -9.4187  -8.8658  -8.8658  -7.7832  -7.7832  -6.4132  -6.4132
@@ -254,25 +254,24 @@
   Initializing global dft data
 
   Initializing US pseudopot. data
-  WARNING: setting b = 0 in qb (overlap augment.)
   Total number Nkb of beta functions:    64
 
 
-    Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     5.88 secs
+    Overlaps or Projections calculation for k-point    1
+                              Total time spent up to now :     9.36 secs
 
-    Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     9.07 secs
+    Overlaps or Projections calculation for k-point    2
+                              Total time spent up to now :    14.64 secs
 
-    Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :    12.35 secs
+    Overlaps or Projections calculation for k-point    3
+                              Total time spent up to now :    20.03 secs
 
-    Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :    15.43 secs
+    Overlaps or Projections calculation for k-point    4
+                              Total time spent up to now :    24.93 secs
 
 
   Overlaps and projections written on file: chain8_WanT.ovp
-                              Total time spent up to now :    15.57 secs
+                              Total time spent up to now :    25.25 secs
 
 
   ======================================================================
@@ -312,11 +311,11 @@
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Iteration # :    1
+  Iteration # :     1
   Final Omega_I (Bohr^2, Angstrom^2):      54.594515        15.288009
    Avrg Omega_I                     :       3.412157         0.955501
 
-                              Total time spent up to now :    15.58 secs
+                              Total time spent up to now :    25.27 secs
 
 
   Subspace decomposition:
@@ -346,25 +345,25 @@
    <global routines>
              clock number :    21
 
-              disentangle :    15.00s CPU 
+              disentangle :    25.00s CPU 
  
                 want_init :     0.13s CPU
-                  bshells :     0.00s CPU
-              wfc_manager :    15.43s CPU
-          ggrids_read_ext :     0.63s CPU
-              struct_fact :     0.62s CPU
-                init_us_1 :     1.02s CPU
-           wfc_data_kread :     3.60s CPU (      16 calls,   0.225 s avg)
-                init_us_2 :     1.92s CPU (      20 calls,   0.096 s avg)
-                  ccalbec :     1.03s CPU (      16 calls,   0.065 s avg)
-                  overlap :     4.66s CPU (      12 calls,   0.388 s avg)
-           overlap_setmap :     1.00s CPU (      12 calls,   0.084 s avg)
-          overlap_augment :     0.05s CPU (      12 calls,   0.004 s avg)
-                    s_psi :     0.37s CPU (       4 calls,   0.092 s avg)
-               projection :     1.34s CPU (       4 calls,   0.334 s avg)
-       trial_center_setup :     0.92s CPU (      64 calls,   0.014 s avg)
-               iterations :     0.01s CPU
-             subapce_init :     0.00s CPU
+             bshells_init :     0.00s CPU
+              wfc_manager :    25.09s CPU
+          ggrids_read_ext :     0.94s CPU
+              struct_fact :     0.91s CPU
+                init_us_1 :     1.62s CPU
+           wfc_data_kread :     5.87s CPU (      16 calls,   0.367 s avg)
+                init_us_2 :     3.13s CPU (      20 calls,   0.156 s avg)
+                  ccalbec :     1.66s CPU (      16 calls,   0.104 s avg)
+                  overlap :     7.78s CPU (      12 calls,   0.649 s avg)
+           overlap_setmap :     1.62s CPU (      12 calls,   0.135 s avg)
+          overlap_augment :     0.11s CPU (      12 calls,   0.009 s avg)
+                    s_psi :     0.54s CPU (       4 calls,   0.136 s avg)
+               projection :     2.14s CPU (       4 calls,   0.535 s avg)
+       trial_center_setup :     1.47s CPU (      64 calls,   0.023 s avg)
+               iterations :     0.02s CPU
+             subapce_init :     0.02s CPU
                    omegai :     0.00s CPU (       2 calls,   0.000 s avg)
                   zmatrix :     0.00s CPU (       4 calls,   0.000 s avg)
                 mat_hdiag :     0.00s CPU (       8 calls,   0.000 s avg)

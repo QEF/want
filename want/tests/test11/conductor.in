@@ -18,9 +18,9 @@
    <H_CR    rows="1-50"  cols="1-6"  />
    <H_LC    rows="45-50" cols="1-50" />
    <H00_L   rows="1-6"   cols="1-6"  />
-   <H01_L   rows="1-6"   cols="7-12" />
+   <H01_L   rows="45-50" cols="1-6" />
    <H00_R   rows="1-6"   cols="1-6"  />
-   <H01_R   rows="1-6"   cols="7-12" />
+   <H01_R   rows="45-50" cols="1-6" />
 
 </HAMILTONIAN_DATA>
 

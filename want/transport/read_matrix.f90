@@ -14,6 +14,9 @@
    ! inside a NAME xml-iotk block, giving all the information related to the 
    ! required matrix A. Then the matrix is finally read from the wannier datafile.
    !
+   ! NOTE: some data about cols and rows, are saved to be used for correlation
+   !       self-energies. This is a fragile implementation to be made safer. 
+   !
    !
    USE KINDS
    USE parameters,       ONLY : nstrx
@@ -22,8 +25,10 @@
    USE iotk_module
    USE timing_module
    USE parser_module
-   USE T_control_module, ONLY : transport_dir
-   USE T_kpoints_module, ONLY : kpoints_alloc => alloc, nrtot_par, vr_par
+   USE T_control_module, ONLY : transport_dir, use_correlation
+   USE T_kpoints_module, ONLY : kpoints_alloc => alloc, nrtot_par, vr_par, nr_par
+   USE T_correlation_module, ONLY : icols_corr => icols, irows_corr => irows,  &
+                                    ncols_corr => ncols, nrows_corr => nrows
    IMPLICIT NONE
 
    ! 
@@ -44,7 +49,7 @@
    CHARACTER(nstrx)          :: attr
    !
    LOGICAL                   :: found
-   INTEGER                   :: index, ivr_aux(3)
+   INTEGER                   :: index, ivr_aux(3), nr_aux(3)
    INTEGER                   :: ncols, nrows
    INTEGER,      ALLOCATABLE :: icols(:), irows(:)
    CHARACTER(nstrx)          :: cols, rows
@@ -119,6 +124,25 @@
        IF ( icols(i) <=0 ) CALL errore('read_matrix','invalid icols(i)',i) 
    ENDDO
 
+   !
+   ! save cols and rows data of H00_C for correlation self-energies
+   ! this statement is quite fragile and should be improved
+   !
+   IF ( use_correlation ) THEN
+      IF ( TRIM(name) == 'H00_C') THEN 
+           !
+           ncols_corr = ncols
+           nrows_corr = nrows
+           ALLOCATE( icols_corr(ncols_corr), STAT=ierr )
+               IF (ierr/=0) CALL errore('read_matrix','allocating icols_corr',ABS(ierr))
+           ALLOCATE( irows_corr(nrows_corr), STAT=ierr )
+               IF (ierr/=0) CALL errore('read_matrix','allocating irows_corr',ABS(ierr))
+
+           icols_corr(:) = icols(:)
+           irows_corr(:) = irows(:)
+      ENDIF
+   ENDIF
+
 
 !
 ! reading form iotk-formatted .ham file produced by wannier
@@ -130,13 +154,22 @@
       IF (ierr/=0) CALL errore('read_matrix', 'searching DATA', ABS(ierr) )
    CALL iotk_scan_attr(attr,"dimwann",ldimwann, IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching dimwann', ABS(ierr) )
+   CALL iotk_scan_attr(attr,"nr",nr_aux, IERR=ierr)
+      IF (ierr/=0) CALL errore('read_matrix', 'searching nr', ABS(ierr) )
    CALL iotk_scan_attr(attr,"nrtot",nrtot, IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching nrtot', ABS(ierr) )
 
-! XXX mettere un check su nr 3D
-
    IF (ldimwann <=0 ) CALL errore('read_matrix', 'invalid dimwann', ABS(ierr))
    IF (nrtot <=0 ) CALL errore('read_matrix', 'invalid nrtot', ABS(ierr))
+   !
+   i = 0
+   DO j= 1, 3
+      IF ( transport_dir /= j ) THEN
+         i = i+1
+         IF ( nr_aux(j) /= nr_par(i) ) CALL errore('read_matrix', 'invalid nr', j)
+      ENDIF
+   ENDDO
+
    !
    DO i=1,ncols
       IF ( icols(i) > ldimwann ) CALL errore('read_matrix', 'invalid icols(i)', i)

@@ -8,7 +8,7 @@
 
 
   Program <conductor>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 13: 1: 7 
+  Date 17Nov2005 at  1:41: 7 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -1016,12 +1016,14 @@
   Computing E =   5.00000 eV
 
    <global routines>
-             clock number :     4
+             clock number :     6
 
-                conductor :     7.00s CPU 
+                conductor :    12.00s CPU 
  
-                 transfer :     6.47s CPU (    2000 calls,   0.003 s avg)
-                    green :     0.15s CPU (    2000 calls,   0.000 s avg)
-            transmittance :     0.07s CPU (    1000 calls,   0.000 s avg)
+              read_matrix :     0.04s CPU (       2 calls,   0.021 s avg)
+              fourier_par :     0.00s CPU (       2 calls,   0.000 s avg)
+                 transfer :    12.05s CPU (    2000 calls,   0.006 s avg)
+                    green :     0.28s CPU (    2000 calls,   0.000 s avg)
+            transmittance :     0.14s CPU (    1000 calls,   0.000 s avg)
 
 

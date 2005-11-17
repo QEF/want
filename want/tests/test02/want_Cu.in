@@ -7,16 +7,15 @@
 
 &SUBSPACE
    win_max = 19.78
-!   froz_max = 13.6
    froz_max = 12.7979
    dimwann = 6
    maxiter_dis = 400
 /
 
 &LOCALIZATION
-   maxiter0_wan = 0
-   maxiter1_wan = 1000
-   alpha1_wan = 0.3
+   maxiter0_wan = 1
+   maxiter1_wan = 2000
+   alpha1_wan = 0.5
    ncg = 9    
    ordering_mode = 'none'
 /

@@ -9,6 +9,7 @@ include ../make.sys
 OBJS= \
 cleanup.o \
 control.o \
+correlation.o \
 egrid.o \
 green.o \
 hamiltonian.o \

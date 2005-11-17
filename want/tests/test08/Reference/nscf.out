@@ -1,6 +1,6 @@
 
      Program PWSCF     v.2.1.5  starts ...
-     Today is 10Oct2005 at  8:46:31 
+     Today is 18Oct2005 at  0:24:36 
 
      Ultrasoft (Vanderbilt) Pseudopotentials
 
@@ -81,7 +81,7 @@
      The initial potential is read from file         al.pot
      Starting wfc are atomic +  16 random wfc
 
-     total cpu time spent up to now is      5.59 secs
+     total cpu time spent up to now is      5.66 secs
 
      Band Structure Calculation
      Davidson diagonalization (with overlap)
@@ -91,7 +91,7 @@
    WARNING:     1 eigenvalues not converged
      ethr =  3.33E-10,  avg # of iterations = 16.7
 
-     total cpu time spent up to now is     67.19 secs
+     total cpu time spent up to now is     66.35 secs
 
      End of band structure calculation
 
@@ -217,39 +217,39 @@
 
      Writing file        al.save for program phonon
  
-     PWSCF        :  1m 9.87s CPU time
+     PWSCF        :  1m 8.96s CPU time
 
-     init_run     :     5.58s CPU
-     electrons    :    61.60s CPU
+     init_run     :     5.65s CPU
+     electrons    :    60.69s CPU
  
-     electrons    :    61.60s CPU
-     c_bands      :    61.60s CPU
-     sum_band     :     2.67s CPU
+     electrons    :    60.69s CPU
+     c_bands      :    60.69s CPU
+     sum_band     :     2.60s CPU
  
-     c_bands      :    61.60s CPU
+     c_bands      :    60.69s CPU
      init_us_2    :     0.10s CPU (      60 calls,   0.002 s avg)
-     cegterg      :    61.47s CPU (      24 calls,   2.561 s avg)
+     cegterg      :    60.57s CPU (      24 calls,   2.524 s avg)
  
-     sum_band     :     2.67s CPU
+     sum_band     :     2.60s CPU
  
-     wfcrot       :     5.11s CPU (      20 calls,   0.255 s avg)
-     cegterg      :    61.47s CPU (      24 calls,   2.561 s avg)
-     h_psi        :    55.04s CPU (     378 calls,   0.146 s avg)
+     wfcrot       :     5.19s CPU (      20 calls,   0.260 s avg)
+     cegterg      :    60.57s CPU (      24 calls,   2.524 s avg)
+     h_psi        :    54.31s CPU (     378 calls,   0.144 s avg)
      g_psi        :     0.53s CPU (     334 calls,   0.002 s avg)
-     overlap      :     3.16s CPU (     334 calls,   0.009 s avg)
-     cdiaghg      :     2.12s CPU (     354 calls,   0.006 s avg)
-     update       :     3.20s CPU (     334 calls,   0.010 s avg)
+     overlap      :     3.18s CPU (     334 calls,   0.010 s avg)
+     cdiaghg      :     2.13s CPU (     354 calls,   0.006 s avg)
+     update       :     3.15s CPU (     334 calls,   0.009 s avg)
      last         :     1.39s CPU (      70 calls,   0.020 s avg)
  
-     h_psi        :    55.04s CPU (     378 calls,   0.146 s avg)
-     init         :     0.33s CPU (     378 calls,   0.001 s avg)
-     firstfft     :    25.97s CPU (    4512 calls,   0.006 s avg)
-     secondfft    :    23.71s CPU (    4512 calls,   0.005 s avg)
-     add_vuspsi   :     0.36s CPU (     378 calls,   0.001 s avg)
+     h_psi        :    54.31s CPU (     378 calls,   0.144 s avg)
+     init         :     0.32s CPU (     378 calls,   0.001 s avg)
+     firstfft     :    25.70s CPU (    4512 calls,   0.006 s avg)
+     secondfft    :    23.21s CPU (    4512 calls,   0.005 s avg)
+     add_vuspsi   :     0.51s CPU (     378 calls,   0.001 s avg)
  
      General routines
-     ccalbec      :     0.34s CPU (     378 calls,   0.001 s avg)
+     ccalbec      :     0.33s CPU (     378 calls,   0.001 s avg)
      cft3         :     0.01s CPU
-     cft3s        :    47.33s CPU (    9424 calls,   0.005 s avg)
-     davcio       :     0.17s CPU (      84 calls,   0.002 s avg)
+     cft3s        :    46.37s CPU (    9424 calls,   0.005 s avg)
+     davcio       :     0.15s CPU (      84 calls,   0.002 s avg)
  
