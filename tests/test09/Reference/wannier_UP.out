@@ -8,7 +8,7 @@
 
 
   Program <wannier>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 13:36:32 
+  Date 17Nov2005 at  1:43:18 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -139,10 +139,10 @@
 
 <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0661
-    b ( 2) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
-    b ( 3) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
-    b ( 4) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b ( 1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b ( 2) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0661
+    b ( 3) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0661
+    b ( 4) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
     b ( 5) =    (   0.00000  0.00000  0.33249 ),   weight =   4.5228
     b ( 6) =    (   0.00000  0.00000 -0.33249 ),   weight =   4.5228
 
@@ -154,7 +154,7 @@
   Overlap and projections read from file: nichain_WanT_UP.ovp
 
   Overlaps and projections setup completed
-                              Total time spent up to now :     0.74 secs
+                              Total time spent up to now :     0.44 secs
 
 
   ======================================================================
@@ -197,7 +197,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.811656 )  Omega =     23.158346
 
   Omega variation (Bohr^2):     -0.788370
-                              Total time spent up to now :     0.81 secs
+                              Total time spent up to now :     0.44 secs
 
 
   Iteration =    10
@@ -211,7 +211,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.815029 )  Omega =     18.732874
 
   Omega variation (Bohr^2):     -0.323208
-                              Total time spent up to now :     0.81 secs
+                              Total time spent up to now :     0.44 secs
 
 
   Iteration =    20
@@ -225,7 +225,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.816238 )  Omega =     16.699230
 
   Omega variation (Bohr^2):     -0.133064
-                              Total time spent up to now :     0.84 secs
+                              Total time spent up to now :     0.47 secs
 
 
   Iteration =    30
@@ -239,7 +239,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.816299 )  Omega =     15.830762
 
   Omega variation (Bohr^2):     -0.058804
-                              Total time spent up to now :     0.85 secs
+                              Total time spent up to now :     0.50 secs
 
 
   Iteration =    40
@@ -253,7 +253,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.815898 )  Omega =     15.436907
 
   Omega variation (Bohr^2):     -0.027364
-                              Total time spent up to now :     0.86 secs
+                              Total time spent up to now :     0.55 secs
 
 
   Iteration =    50
@@ -267,7 +267,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.815341 )  Omega =     15.249136
 
   Omega variation (Bohr^2):     -0.013394
-                              Total time spent up to now :     0.87 secs
+                              Total time spent up to now :     0.56 secs
 
 
   Iteration =    60
@@ -281,7 +281,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.814767 )  Omega =     15.154493
 
   Omega variation (Bohr^2):     -0.006975
-                              Total time spent up to now :     0.88 secs
+                              Total time spent up to now :     0.56 secs
 
 
   Iteration =    70
@@ -295,7 +295,7 @@
   ! Center Sum = (     -0.000156     0.000169    11.814230 )  Omega =     15.103308
 
   Omega variation (Bohr^2):     -0.003928
-                              Total time spent up to now :     0.89 secs
+                              Total time spent up to now :     0.59 secs
 
 
   Iteration =    80
@@ -309,7 +309,7 @@
   ! Center Sum = (     -0.000156     0.000168    11.813752 )  Omega =     15.073155
 
   Omega variation (Bohr^2):     -0.002420
-                              Total time spent up to now :     0.89 secs
+                              Total time spent up to now :     0.59 secs
 
 
   Iteration =    90
@@ -323,7 +323,7 @@
   ! Center Sum = (     -0.000156     0.000168    11.813336 )  Omega =     15.053699
 
   Omega variation (Bohr^2):     -0.001629
-                              Total time spent up to now :     0.90 secs
+                              Total time spent up to now :     0.61 secs
 
 
   Iteration =   100
@@ -337,7 +337,7 @@
   ! Center Sum = (     -0.000155     0.000168    11.812978 )  Omega =     15.040067
 
   Omega variation (Bohr^2):     -0.001181
-                              Total time spent up to now :     0.91 secs
+                              Total time spent up to now :     0.62 secs
 
 
   Iteration =   110
@@ -351,7 +351,7 @@
   ! Center Sum = (     -0.000155     0.000167    11.811426 )  Omega =     14.996416
 
   Omega variation (Bohr^2):     -0.003192
-                              Total time spent up to now :     0.92 secs
+                              Total time spent up to now :     0.64 secs
 
 
   Iteration =   120
@@ -365,7 +365,7 @@
   ! Center Sum = (     -0.000154     0.000167    11.810993 )  Omega =     14.987435
 
   Omega variation (Bohr^2):     -0.000664
-                              Total time spent up to now :     0.95 secs
+                              Total time spent up to now :     0.66 secs
 
 
   Iteration =   130
@@ -379,7 +379,7 @@
   ! Center Sum = (     -0.000154     0.000167    11.810865 )  Omega =     14.985558
 
   Omega variation (Bohr^2):     -0.000140
-                              Total time spent up to now :     0.96 secs
+                              Total time spent up to now :     0.68 secs
 
 
   Iteration =   140
@@ -393,7 +393,7 @@
   ! Center Sum = (     -0.000154     0.000166    11.810823 )  Omega =     14.985162
 
   Omega variation (Bohr^2):     -0.000030
-                              Total time spent up to now :     0.97 secs
+                              Total time spent up to now :     0.70 secs
 
 
 
@@ -402,7 +402,7 @@
   ======================================================================
 
 
-  Iteration # :  146
+  Iteration # :   146
   Wannier function ordering : none
 
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
@@ -421,7 +421,7 @@
     Omega Tot  =       14.985104
     Omega Avrg =        2.497517
 
-                              Total time spent up to now :     0.98 secs
+                              Total time spent up to now :     0.71 secs
 
 
   Unitary transf. matrixes written on file: nichain_WanT_UP.wan
@@ -429,12 +429,12 @@
 
 
   Decay of the real space Hamiltonian:
-    (number of R vectors (nws) :    5
+    (number of R vectors (nrtot) :    4
 
     #       R [cry]     |R| [Bohr]      Norm of H(R) [eV]
-    3      0   0   0     0.000000         1.182787
-    4      0   0   1     4.724320         0.671708
-    5      0   0   2     9.448640         0.257846
+    2      0   0   0     0.000000         1.182787
+    3      0   0   1     4.724320         0.671708
+    4      0   0   2     9.448640         0.257846
 
   Hamiltonian on WF basis written on file : nichain_WanT_UP.ham
 
@@ -442,19 +442,20 @@
   ======================================================================
 
    <global routines>
-             clock number :    11
+             clock number :    12
 
-                  wannier :     1.00s CPU 
+                  wannier :     0.00s CPU 
  
-                want_init :     0.42s CPU
-                  bshells :     0.05s CPU
-          overlap_extract :     0.23s CPU
-        localization_init :     0.06s CPU
-           overlap_update :     0.02s CPU (     193 calls,   0.000 s avg)
-                    omega :     0.04s CPU (     193 calls,   0.000 s avg)
-               iterations :     0.18s CPU
-                   domega :     0.02s CPU (     146 calls,   0.000 s avg)
-           unitary_update :     0.04s CPU (     192 calls,   0.000 s avg)
-         hamiltonian_calc :     0.02s CPU
+                want_init :     0.20s CPU
+             bshells_init :     0.00s CPU
+          overlap_extract :     0.24s CPU
+        localization_init :     0.00s CPU
+           overlap_update :     0.01s CPU (     193 calls,   0.000 s avg)
+                   omegai :     0.00s CPU
+                    omega :     0.02s CPU (     193 calls,   0.000 s avg)
+               iterations :     0.27s CPU
+                   domega :     0.03s CPU (     146 calls,   0.000 s avg)
+           unitary_update :     0.06s CPU (     192 calls,   0.000 s avg)
+         hamiltonian_calc :     0.00s CPU
 
 

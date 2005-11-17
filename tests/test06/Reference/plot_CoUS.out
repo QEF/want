@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 12:58:15 
+  Date 17Nov2005 at  1:39:29 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -81,11 +81,11 @@
   ======================================================================
 
 
-  nplot =   4 Wannier func.s to be plotted
-     wf (  1 ) =    1
-     wf (  2 ) =    2
-     wf (  3 ) =    3
-     wf (  4 ) =    6
+  nplot =    4 Wannier func.s to be plotted
+     wf (   1 ) =    1
+     wf (   2 ) =    2
+     wf (   3 ) =    3
+     wf (   4 ) =    6
 
   Data type  :   modulus
   Output fmt :   plt
@@ -134,32 +134,32 @@
      Co   tau(   3 ) = (   0.0000000   0.0000000   5.6691834 )
 
 
-    Wfc Fourier Transf. for k-point   1
-                              Total time spent up to now :     3.63 secs
+    Wfc Fourier Transf. for k-point    1
+                              Total time spent up to now :     5.80 secs
 
-    Wfc Fourier Transf. for k-point   2
-                              Total time spent up to now :     6.29 secs
+    Wfc Fourier Transf. for k-point    2
+                              Total time spent up to now :    10.64 secs
 
-    Wfc Fourier Transf. for k-point   3
-                              Total time spent up to now :     9.02 secs
+    Wfc Fourier Transf. for k-point    3
+                              Total time spent up to now :    15.54 secs
 
-    Wfc Fourier Transf. for k-point   4
-                              Total time spent up to now :    11.78 secs
+    Wfc Fourier Transf. for k-point    4
+                              Total time spent up to now :    20.40 secs
 
-    Wfc Fourier Transf. for k-point   5
-                              Total time spent up to now :    14.76 secs
+    Wfc Fourier Transf. for k-point    5
+                              Total time spent up to now :    25.29 secs
 
-    Wfc Fourier Transf. for k-point   6
-                              Total time spent up to now :    17.58 secs
+    Wfc Fourier Transf. for k-point    6
+                              Total time spent up to now :    30.19 secs
 
-    Wfc Fourier Transf. for k-point   7
-                              Total time spent up to now :    20.19 secs
+    Wfc Fourier Transf. for k-point    7
+                              Total time spent up to now :    35.11 secs
 
-    Wfc Fourier Transf. for k-point   8
-                              Total time spent up to now :    22.64 secs
+    Wfc Fourier Transf. for k-point    8
+                              Total time spent up to now :    40.06 secs
 
 
-  writing WF(  1) plot on file: .//cobalt_US_WanT_WFM001.cube
+  writing WF(   1) plot on file: .//cobalt_US_WanT_WFM001.cube
                   atomic positions on file: .//cobalt_US_WanT_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -179,7 +179,7 @@ Job done ...
                       .//cobalt_US_WanT_WFM001.crd
 
 
-  writing WF(  2) plot on file: .//cobalt_US_WanT_WFM002.cube
+  writing WF(   2) plot on file: .//cobalt_US_WanT_WFM002.cube
                   atomic positions on file: .//cobalt_US_WanT_WFM002.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -199,7 +199,7 @@ Job done ...
                       .//cobalt_US_WanT_WFM002.crd
 
 
-  writing WF(  3) plot on file: .//cobalt_US_WanT_WFM003.cube
+  writing WF(   3) plot on file: .//cobalt_US_WanT_WFM003.cube
                   atomic positions on file: .//cobalt_US_WanT_WFM003.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -219,7 +219,7 @@ Job done ...
                       .//cobalt_US_WanT_WFM003.crd
 
 
-  writing WF(  6) plot on file: .//cobalt_US_WanT_WFM006.cube
+  writing WF(   6) plot on file: .//cobalt_US_WanT_WFM006.cube
                   atomic positions on file: .//cobalt_US_WanT_WFM006.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -243,14 +243,16 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :     6
+             clock number :     8
 
-                     plot :    50.00s CPU 
+                     plot :  1m28.00s CPU 
  
-                want_init :     0.13s CPU
-          ggrids_read_ext :     0.16s CPU
-           wfc_data_kread :     0.13s CPU (       8 calls,   0.017 s avg)
-                   cfft3d :     4.11s CPU (      32 calls,   0.128 s avg)
-                 gcubeplt :    13.47s CPU (       4 calls,   3.367 s avg)
+                want_init :     0.15s CPU
+          ggrids_read_ext :     0.20s CPU
+           wfc_data_kread :     0.25s CPU (       8 calls,   0.031 s avg)
+               kwann_calc :    18.55s CPU (      32 calls,   0.580 s avg)
+                   cfft3d :     7.87s CPU (      32 calls,   0.246 s avg)
+               cwann_calc :    12.24s CPU (      32 calls,   0.383 s avg)
+                 gcubeplt :    23.31s CPU (       4 calls,   5.828 s avg)
 
 

@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 12:59:33 
+  Date 17Nov2005 at  1:45: 9 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -77,9 +77,9 @@
   ======================================================================
 
 
-  nplot =   2 Wannier func.s to be plotted
-     wf (  1 ) =    1
-     wf (  2 ) =    2
+  nplot =    2 Wannier func.s to be plotted
+     wf (   1 ) =    1
+     wf (   2 ) =    2
 
   Data type  :   modulus
   Output fmt :   plt
@@ -127,20 +127,20 @@
      C    tau(   8 ) = (  -2.8723852   0.0000000   0.0000000 )
 
 
-    Wfc Fourier Transf. for k-point   1
-                              Total time spent up to now :     5.81 secs
+    Wfc Fourier Transf. for k-point    1
+                              Total time spent up to now :    10.44 secs
 
-    Wfc Fourier Transf. for k-point   2
-                              Total time spent up to now :    10.46 secs
+    Wfc Fourier Transf. for k-point    2
+                              Total time spent up to now :    19.79 secs
 
-    Wfc Fourier Transf. for k-point   3
-                              Total time spent up to now :    15.92 secs
+    Wfc Fourier Transf. for k-point    3
+                              Total time spent up to now :    29.06 secs
 
-    Wfc Fourier Transf. for k-point   4
-                              Total time spent up to now :    21.26 secs
+    Wfc Fourier Transf. for k-point    4
+                              Total time spent up to now :    38.52 secs
 
 
-  writing WF(  1) plot on file: ./COND//chain8_WanT_WFM001.cube
+  writing WF(   1) plot on file: ./COND//chain8_WanT_WFM001.cube
                   atomic positions on file: ./COND//chain8_WanT_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -160,7 +160,7 @@ Job done ...
                       ./COND//chain8_WanT_WFM001.crd
 
 
-  writing WF(  2) plot on file: ./COND//chain8_WanT_WFM002.cube
+  writing WF(   2) plot on file: ./COND//chain8_WanT_WFM002.cube
                   atomic positions on file: ./COND//chain8_WanT_WFM002.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -184,14 +184,16 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :     6
+             clock number :     8
 
-                     plot :    32.00s CPU 
+                     plot :    56.00s CPU 
  
-                want_init :     0.05s CPU
-          ggrids_read_ext :     0.38s CPU
-           wfc_data_kread :     0.48s CPU (       4 calls,   0.119 s avg)
-                   cfft3d :     2.35s CPU (       8 calls,   0.294 s avg)
-                 gcubeplt :     4.94s CPU (       2 calls,   2.468 s avg)
+                want_init :     0.06s CPU
+          ggrids_read_ext :     0.54s CPU
+           wfc_data_kread :     0.99s CPU (       4 calls,   0.247 s avg)
+               kwann_calc :    28.82s CPU (       8 calls,   3.603 s avg)
+                   cfft3d :     5.16s CPU (       8 calls,   0.646 s avg)
+               cwann_calc :     2.25s CPU (       8 calls,   0.281 s avg)
+                 gcubeplt :     8.45s CPU (       2 calls,   4.227 s avg)
 
 

@@ -8,7 +8,7 @@
 
 
   Program <wannier>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 12:59:32 
+  Date 17Nov2005 at  1:45: 7 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -157,7 +157,7 @@
   Overlap and projections read from file: chain4_WanT.ovp
 
   Overlaps and projections setup completed
-                              Total time spent up to now :     0.22 secs
+                              Total time spent up to now :     0.35 secs
 
 
   ======================================================================
@@ -204,7 +204,7 @@
   ! Center Sum = (     36.552051     0.004548     0.000000 )  Omega =    274.670158
 
   Omega variation (Bohr^2):   -122.018056
-                              Total time spent up to now :     0.22 secs
+                              Total time spent up to now :     0.35 secs
 
 
   Iteration =    10   (condit. minim, A =   10.0000 )
@@ -220,7 +220,7 @@
   ! Center Sum = (     36.070885     0.009141    -0.000001 )  Omega =    105.532593
 
   Omega variation (Bohr^2):     -8.133862
-                              Total time spent up to now :     0.24 secs
+                              Total time spent up to now :     0.37 secs
 
 
   Iteration =    20   (condit. minim, A =   10.0000 )
@@ -236,7 +236,7 @@
   ! Center Sum = (     36.137726     0.008637    -0.000001 )  Omega =     68.634701
 
   Omega variation (Bohr^2):     -1.841039
-                              Total time spent up to now :     0.25 secs
+                              Total time spent up to now :     0.40 secs
 
 
   Iteration =    30   (condit. minim, A =   10.0000 )
@@ -252,7 +252,7 @@
   ! Center Sum = (     35.788077     0.007536    -0.000001 )  Omega =     57.544813
 
   Omega variation (Bohr^2):     -0.711233
-                              Total time spent up to now :     0.26 secs
+                              Total time spent up to now :     0.41 secs
 
 
   Iteration =    40   (condit. minim, A =   10.0000 )
@@ -268,7 +268,7 @@
   ! Center Sum = (     35.527792     0.006457    -0.000001 )  Omega =     52.741287
 
   Omega variation (Bohr^2):     -0.353447
-                              Total time spent up to now :     0.28 secs
+                              Total time spent up to now :     0.43 secs
 
 
   Iteration =    50   (condit. minim, A =   10.0000 )
@@ -284,7 +284,7 @@
   ! Center Sum = (     35.367032     0.005432    -0.000001 )  Omega =     49.792197
 
   Omega variation (Bohr^2):     -0.273092
-                              Total time spent up to now :     0.29 secs
+                              Total time spent up to now :     0.46 secs
 
 
   Iteration =    60   (condit. minim, A =   10.0000 )
@@ -300,7 +300,7 @@
   ! Center Sum = (     35.274637     0.004451    -0.000001 )  Omega =     46.925577
 
   Omega variation (Bohr^2):     -0.306223
-                              Total time spent up to now :     0.30 secs
+                              Total time spent up to now :     0.47 secs
 
 
   Iteration =    70   (condit. minim, A =   10.0000 )
@@ -316,7 +316,7 @@
   ! Center Sum = (     35.222787     0.003522    -0.000001 )  Omega =     43.634008
 
   Omega variation (Bohr^2):     -0.340392
-                              Total time spent up to now :     0.32 secs
+                              Total time spent up to now :     0.49 secs
 
 
   Iteration =    80   (condit. minim, A =   10.0000 )
@@ -332,7 +332,7 @@
   ! Center Sum = (     35.192902     0.002678    -0.000001 )  Omega =     40.355001
 
   Omega variation (Bohr^2):     -0.307726
-                              Total time spent up to now :     0.33 secs
+                              Total time spent up to now :     0.52 secs
 
 
   Iteration =    90   (condit. minim, A =   10.0000 )
@@ -348,7 +348,7 @@
   ! Center Sum = (     35.174171     0.001952    -0.000001 )  Omega =     37.659849
 
   Omega variation (Bohr^2):     -0.236742
-                              Total time spent up to now :     0.35 secs
+                              Total time spent up to now :     0.53 secs
 
 
   Iteration =   100   (condit. minim, A =   10.0000 )
@@ -364,7 +364,7 @@
   ! Center Sum = (     35.161162     0.001352     0.000000 )  Omega =     35.666226
 
   Omega variation (Bohr^2):     -0.171049
-                              Total time spent up to now :     0.36 secs
+                              Total time spent up to now :     0.55 secs
 
 
   Iteration =   110   (condit. minim, A =   10.0000 )
@@ -380,7 +380,7 @@
   ! Center Sum = (     35.151421     0.000867     0.000000 )  Omega =     34.242182
 
   Omega variation (Bohr^2):     -0.121279
-                              Total time spent up to now :     0.38 secs
+                              Total time spent up to now :     0.58 secs
 
 
   Iteration =   120   (condit. minim, A =   10.0000 )
@@ -396,7 +396,7 @@
   ! Center Sum = (     35.143814     0.000478     0.000000 )  Omega =     33.237743
 
   Omega variation (Bohr^2):     -0.085190
-                              Total time spent up to now :     0.39 secs
+                              Total time spent up to now :     0.59 secs
 
 
   Iteration =   130   (condit. minim, A =   10.0000 )
@@ -412,7 +412,7 @@
   ! Center Sum = (     35.137743     0.000169     0.000000 )  Omega =     32.534506
 
   Omega variation (Bohr^2):     -0.059499
-                              Total time spent up to now :     0.41 secs
+                              Total time spent up to now :     0.61 secs
 
 
   Iteration =   140   (condit. minim, A =   10.0000 )
@@ -428,7 +428,7 @@
   ! Center Sum = (     35.132847    -0.000074     0.000001 )  Omega =     32.043963
 
   Omega variation (Bohr^2):     -0.041483
-                              Total time spent up to now :     0.42 secs
+                              Total time spent up to now :     0.64 secs
 
 
   Iteration =   150   (condit. minim, A =   10.0000 )
@@ -444,7 +444,7 @@
   ! Center Sum = (     35.128877    -0.000264     0.000001 )  Omega =     31.701680
 
   Omega variation (Bohr^2):     -0.028985
-                              Total time spent up to now :     0.44 secs
+                              Total time spent up to now :     0.65 secs
 
 
   Iteration =   160   (condit. minim, A =   10.0000 )
@@ -460,7 +460,7 @@
   ! Center Sum = (     35.125648    -0.000410     0.000001 )  Omega =     31.461859
 
   Omega variation (Bohr^2):     -0.020371
-                              Total time spent up to now :     0.45 secs
+                              Total time spent up to now :     0.68 secs
 
 
   Iteration =   170   (condit. minim, A =   10.0000 )
@@ -476,7 +476,7 @@
   ! Center Sum = (     35.123017    -0.000521     0.000001 )  Omega =     31.292540
 
   Omega variation (Bohr^2):     -0.014450
-                              Total time spent up to now :     0.46 secs
+                              Total time spent up to now :     0.70 secs
 
 
   Iteration =   180   (condit. minim, A =   10.0000 )
@@ -492,7 +492,7 @@
   ! Center Sum = (     35.120871    -0.000605     0.000001 )  Omega =     31.171690
 
   Omega variation (Bohr^2):     -0.010377
-                              Total time spent up to now :     0.48 secs
+                              Total time spent up to now :     0.78 secs
 
 
   Iteration =   190   (condit. minim, A =   10.0000 )
@@ -508,7 +508,7 @@
   ! Center Sum = (     35.119119    -0.000665     0.000001 )  Omega =     31.084234
 
   Omega variation (Bohr^2):     -0.007566
-                              Total time spent up to now :     0.49 secs
+                              Total time spent up to now :     0.79 secs
 
 
   Iteration =   200   (condit. minim, A =   10.0000 )
@@ -524,7 +524,7 @@
   ! Center Sum = (     35.117689    -0.000708     0.000002 )  Omega =     31.019898
 
   Omega variation (Bohr^2):     -0.005613
-                              Total time spent up to now :     0.50 secs
+                              Total time spent up to now :     0.81 secs
 
 
   Iteration =   210   (condit. minim, A =   10.0000 )
@@ -540,7 +540,7 @@
   ! Center Sum = (     35.113061    -0.000760     0.000002 )  Omega =     30.850307
 
   Omega variation (Bohr^2):     -0.013295
-                              Total time spent up to now :     0.53 secs
+                              Total time spent up to now :     0.84 secs
 
 
   Iteration =   220   (condit. minim, A =   10.0000 )
@@ -556,7 +556,7 @@
   ! Center Sum = (     35.111776    -0.000660     0.000002 )  Omega =     30.798048
 
   Omega variation (Bohr^2):     -0.001853
-                              Total time spent up to now :     0.55 secs
+                              Total time spent up to now :     0.87 secs
 
 
   Iteration =   230   (condit. minim, A =   10.0000 )
@@ -572,7 +572,7 @@
   ! Center Sum = (     35.111381    -0.000529     0.000002 )  Omega =     30.772444
 
   Omega variation (Bohr^2):     -0.001827
-                              Total time spent up to now :     0.57 secs
+                              Total time spent up to now :     0.90 secs
 
 
   Iteration =   240   (condit. minim, A =   10.0000 )
@@ -588,7 +588,7 @@
   ! Center Sum = (     35.111263    -0.000405     0.000002 )  Omega =     30.759398
 
   Omega variation (Bohr^2):     -0.001329
-                              Total time spent up to now :     0.59 secs
+                              Total time spent up to now :     0.93 secs
 
 
   Iteration =   250   (condit. minim, A =   10.0000 )
@@ -604,7 +604,7 @@
   ! Center Sum = (     35.111229    -0.000313     0.000002 )  Omega =     30.753497
 
   Omega variation (Bohr^2):     -0.000225
-                              Total time spent up to now :     0.62 secs
+                              Total time spent up to now :     0.97 secs
 
 
   Iteration =   260   (condit. minim, A =   10.0000 )
@@ -620,7 +620,7 @@
   ! Center Sum = (     35.111216    -0.000236     0.000001 )  Omega =     30.750310
 
   Omega variation (Bohr^2):     -0.000231
-                              Total time spent up to now :     0.64 secs
+                              Total time spent up to now :     1.00 secs
 
 
   Iteration =   270   (condit. minim, A =   10.0000 )
@@ -636,7 +636,7 @@
   ! Center Sum = (     35.111210    -0.000174     0.000001 )  Omega =     30.748650
 
   Omega variation (Bohr^2):     -0.000170
-                              Total time spent up to now :     0.66 secs
+                              Total time spent up to now :     1.03 secs
 
 
   Iteration =   280   (condit. minim, A =   10.0000 )
@@ -652,7 +652,7 @@
   ! Center Sum = (     35.111207    -0.000132     0.000001 )  Omega =     30.747892
 
   Omega variation (Bohr^2):     -0.000029
-                              Total time spent up to now :     0.69 secs
+                              Total time spent up to now :     1.06 secs
 
 
   Iteration =   290   (condit. minim, A =   10.0000 )
@@ -668,7 +668,7 @@
   ! Center Sum = (     35.111205    -0.000098     0.000001 )  Omega =     30.747481
 
   Omega variation (Bohr^2):     -0.000030
-                              Total time spent up to now :     0.71 secs
+                              Total time spent up to now :     1.09 secs
 
 
   Iteration =   300   (condit. minim, A =   10.0000 )
@@ -684,7 +684,7 @@
   ! Center Sum = (     35.111204    -0.000072     0.000001 )  Omega =     30.747265
 
   Omega variation (Bohr^2):     -0.000022
-                              Total time spent up to now :     0.74 secs
+                              Total time spent up to now :     1.12 secs
 
 
   Iteration =   310   (condit. minim, A =   10.0000 )
@@ -700,7 +700,7 @@
   ! Center Sum = (     35.111203    -0.000054     0.000000 )  Omega =     30.747166
 
   Omega variation (Bohr^2):     -0.000004
-                              Total time spent up to now :     0.76 secs
+                              Total time spent up to now :     1.17 secs
 
 
   Iteration =   320   (condit. minim, A =   10.0000 )
@@ -716,7 +716,7 @@
   ! Center Sum = (     35.111202    -0.000040     0.000000 )  Omega =     30.747112
 
   Omega variation (Bohr^2):     -0.000004
-                              Total time spent up to now :     0.78 secs
+                              Total time spent up to now :     1.20 secs
 
 
   Iteration =   330   (condit. minim, A =   10.0000 )
@@ -732,7 +732,7 @@
   ! Center Sum = (     35.111202    -0.000029     0.000000 )  Omega =     30.747083
 
   Omega variation (Bohr^2):     -0.000003
-                              Total time spent up to now :     0.81 secs
+                              Total time spent up to now :     1.23 secs
 
 
 
@@ -741,7 +741,7 @@
   ======================================================================
 
 
-  Iteration # :  331
+  Iteration # :   331
   Wannier function ordering : none
 
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
@@ -762,7 +762,7 @@
     Omega Tot  =       30.747083
     Omega Avrg =        3.843385
 
-                              Total time spent up to now :     0.82 secs
+                              Total time spent up to now :     1.24 secs
 
 
   Unitary transf. matrixes written on file: chain4_WanT.wan
@@ -783,12 +783,12 @@
 
 
   Decay of the real space Hamiltonian:
-    (number of R vectors (nws) :    5
+    (number of R vectors (nrtot) :    4
 
     #       R [cry]     |R| [Bohr]      Norm of H(R) [eV]
-    3      0   0   0     0.000000         9.828691
-    4      1   0   0    10.355703         0.753366
-    5      2   0   0    20.711406         0.047062
+    2      0   0   0     0.000000         9.828691
+    3      1   0   0    10.355703         0.753366
+    4      2   0   0    20.711406         0.047062
 
   Hamiltonian on WF basis written on file : chain4_WanT.ham
 
@@ -796,20 +796,21 @@
   ======================================================================
 
    <global routines>
-             clock number :    12
+             clock number :    13
 
-                  wannier :     0.00s CPU 
+                  wannier :     1.00s CPU 
  
-                want_init :     0.05s CPU
-                  bshells :     0.00s CPU
-          overlap_extract :     0.17s CPU
+                want_init :     0.07s CPU
+             bshells_init :     0.00s CPU
+          overlap_extract :     0.28s CPU
         localization_init :     0.00s CPU
-           overlap_update :     0.13s CPU (     463 calls,   0.000 s avg)
-                    omega :     0.11s CPU (     463 calls,   0.000 s avg)
-               iterations :     0.59s CPU
-                   domega :     0.04s CPU (     331 calls,   0.000 s avg)
-               domega_aux :     0.03s CPU (     331 calls,   0.000 s avg)
-           unitary_update :     0.14s CPU (     462 calls,   0.000 s avg)
+           overlap_update :     0.18s CPU (     463 calls,   0.000 s avg)
+                   omegai :     0.00s CPU
+                    omega :     0.09s CPU (     463 calls,   0.000 s avg)
+               iterations :     0.89s CPU
+                   domega :     0.06s CPU (     331 calls,   0.000 s avg)
+               domega_aux :     0.05s CPU (     331 calls,   0.000 s avg)
+           unitary_update :     0.28s CPU (     462 calls,   0.001 s avg)
          hamiltonian_calc :     0.00s CPU
 
 

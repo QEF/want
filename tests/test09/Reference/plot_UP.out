@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 13:36:34 
+  Date 17Nov2005 at  1:43:20 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -77,13 +77,13 @@
   ======================================================================
 
 
-  nplot =   6 Wannier func.s to be plotted
-     wf (  1 ) =    1
-     wf (  2 ) =    2
-     wf (  3 ) =    3
-     wf (  4 ) =    4
-     wf (  5 ) =    5
-     wf (  6 ) =    6
+  nplot =    6 Wannier func.s to be plotted
+     wf (   1 ) =    1
+     wf (   2 ) =    2
+     wf (   3 ) =    3
+     wf (   4 ) =    4
+     wf (   5 ) =    5
+     wf (   6 ) =    6
 
   Data type  :   modulus
   Output fmt :   plt
@@ -137,20 +137,20 @@
      Ni   tau(   2 ) = (   0.0000000   0.0000000   2.3621600 )
 
 
-    Wfc Fourier Transf. for k-point   1
-                              Total time spent up to now :     1.81 secs
+    Wfc Fourier Transf. for k-point    1
+                              Total time spent up to now :     3.30 secs
 
-    Wfc Fourier Transf. for k-point   2
-                              Total time spent up to now :     2.93 secs
+    Wfc Fourier Transf. for k-point    2
+                              Total time spent up to now :     5.43 secs
 
-    Wfc Fourier Transf. for k-point   3
-                              Total time spent up to now :     3.98 secs
+    Wfc Fourier Transf. for k-point    3
+                              Total time spent up to now :     7.53 secs
 
-    Wfc Fourier Transf. for k-point   4
-                              Total time spent up to now :     5.07 secs
+    Wfc Fourier Transf. for k-point    4
+                              Total time spent up to now :     9.66 secs
 
 
-  writing WF(  1) plot on file: .//nichain_WanT_UP_WFM001.cube
+  writing WF(   1) plot on file: .//nichain_WanT_UP_WFM001.cube
                   atomic positions on file: .//nichain_WanT_UP_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -170,7 +170,7 @@ Job done ...
                       .//nichain_WanT_UP_WFM001.crd
 
 
-  writing WF(  2) plot on file: .//nichain_WanT_UP_WFM002.cube
+  writing WF(   2) plot on file: .//nichain_WanT_UP_WFM002.cube
                   atomic positions on file: .//nichain_WanT_UP_WFM002.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -190,7 +190,7 @@ Job done ...
                       .//nichain_WanT_UP_WFM002.crd
 
 
-  writing WF(  3) plot on file: .//nichain_WanT_UP_WFM003.cube
+  writing WF(   3) plot on file: .//nichain_WanT_UP_WFM003.cube
                   atomic positions on file: .//nichain_WanT_UP_WFM003.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -210,7 +210,7 @@ Job done ...
                       .//nichain_WanT_UP_WFM003.crd
 
 
-  writing WF(  4) plot on file: .//nichain_WanT_UP_WFM004.cube
+  writing WF(   4) plot on file: .//nichain_WanT_UP_WFM004.cube
                   atomic positions on file: .//nichain_WanT_UP_WFM004.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -230,7 +230,7 @@ Job done ...
                       .//nichain_WanT_UP_WFM004.crd
 
 
-  writing WF(  5) plot on file: .//nichain_WanT_UP_WFM005.cube
+  writing WF(   5) plot on file: .//nichain_WanT_UP_WFM005.cube
                   atomic positions on file: .//nichain_WanT_UP_WFM005.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -250,7 +250,7 @@ Job done ...
                       .//nichain_WanT_UP_WFM005.crd
 
 
-  writing WF(  6) plot on file: .//nichain_WanT_UP_WFM006.cube
+  writing WF(   6) plot on file: .//nichain_WanT_UP_WFM006.cube
                   atomic positions on file: .//nichain_WanT_UP_WFM006.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -274,14 +274,16 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :     6
+             clock number :     8
 
-                     plot :    17.00s CPU 
+                     plot :    31.00s CPU 
  
-                want_init :     0.13s CPU
-          ggrids_read_ext :     0.07s CPU
-           wfc_data_kread :     0.04s CPU (       4 calls,   0.010 s avg)
-                   cfft3d :     1.24s CPU (      24 calls,   0.052 s avg)
-                 gcubeplt :     5.80s CPU (       6 calls,   0.966 s avg)
+                want_init :     0.21s CPU
+          ggrids_read_ext :     0.09s CPU
+           wfc_data_kread :     0.06s CPU (       4 calls,   0.014 s avg)
+               kwann_calc :     3.24s CPU (      24 calls,   0.135 s avg)
+                   cfft3d :     2.99s CPU (      24 calls,   0.125 s avg)
+               cwann_calc :     2.74s CPU (      24 calls,   0.114 s avg)
+                 gcubeplt :    10.51s CPU (       6 calls,   1.752 s avg)
 
 

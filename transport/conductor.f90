@@ -35,24 +35,21 @@
                                     totL, tottL, totR, tottR,          &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     workspace_allocate
+   USE T_correlation_module, ONLY : sgm_corr, correlation_sgmread, correlation_allocate, &
+                                    correlation_init
 
    IMPLICIT NONE
 
    !
    ! local variables
    !
-   INTEGER          :: dimwann_, nws_, nomega_
-   INTEGER          :: i, ie, iws, ik
-   INTEGER          :: ierr
    COMPLEX(dbl)     :: ene
-   CHARACTER(nstrx) :: attr, sgmtag, filename
+   CHARACTER(nstrx) :: filename
+   INTEGER          :: i, ie, ik, ierr
    !   
-   REAL(dbl),    ALLOCATABLE :: vws(:,:)
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
-   !
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: sgm_corr(:,:)
      
 
 !
@@ -88,15 +85,29 @@
 !   CALL summary(stdout)
 
 
-!
-! Set up the layer hamiltonians
-!
+   !
+   ! Set up the layer hamiltonians
+   !
    CALL hamiltonian_init( use_overlap, calculation_type )
 
 
-!
-! local variable allocations
-!
+   !
+   ! setup correlation data, if the case
+   !
+   CALL correlation_allocate()
+   sgm_corr(:,:,:) = CZERO
+   !
+   IF ( use_correlation ) THEN 
+       !
+       CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", &
+                       FORM="formatted")
+       CALL correlation_init( sgm_unit )
+   ENDIF   
+
+
+   !
+   ! local variable allocations
+   !
    CALL workspace_allocate()
 
    ALLOCATE ( dos(dimC,ne), STAT=ierr )
@@ -105,57 +116,8 @@
       IF( ierr /=0 ) CALL errore('conductor','allocating conduct', ABS(ierr) )
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
       IF( ierr /=0 ) CALL errore('conductor','allocating cond_aux', ABS(ierr) )
-   ALLOCATE ( sgm_corr(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor','allocating sgm_corr', ABS(ierr) )
    ALLOCATE ( work(dimx,dimx), STAT=ierr )
       IF( ierr /=0 ) CALL errore('conductor','allocating work', ABS(ierr) )
-
-!
-! get the correlation self-energy if the case
-! (at the end leave the file opened)
-!
-   IF ( use_correlation ) THEN
-        CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", &
-                        FORM="formatted")
-
-           CALL iotk_scan_empty(sgm_unit, "DATA", ATTR=attr, IERR=ierr)
-              IF (ierr/=0) CALL errore('conductor','searching DATA',ABS(ierr))
-           CALL iotk_scan_attr(attr,"dimwann",dimwann_, IERR=ierr)
-              IF (ierr/=0) CALL errore('conductor','searching DIMWANN',ABS(ierr))
-           CALL iotk_scan_attr(attr,"nws",nws_, IERR=ierr)
-              IF (ierr/=0) CALL errore('conductor','searching nws_',ABS(ierr))
-           CALL iotk_scan_attr(attr,"nomega",nomega_, IERR=ierr)
-              IF (ierr/=0) CALL errore('conductor','searching NOMEGA_',ABS(ierr))
-
-           IF (nomega_ /= ne) CALL errore('conductor','invalid nomega from SGM',2)
-           IF (dimwann_ /= dimC) CALL errore('conductor','invalid dimwann from SGM',2)
-           IF (nws_  <= 0 ) CALL errore('conductor','invalid nws from SGM',2)
- 
-           !
-           ! real space lattice vector
-           !
-           ALLOCATE( vws(3,nws_), STAT=ierr )
-              IF (ierr/=0) CALL errore('conductor','allocating vws',ABS(ierr))
-           CALL iotk_scan_dat(sgm_unit, "VWS",  vws, IERR=ierr)
-              IF (ierr/=0) CALL errore('conductor','searching VWS',ABS(ierr))
-           
-           !
-           ! chose the R=0 vector
-           !
-           DO iws = 1, nws_
-                IF ( DOT_PRODUCT(vws(:,iws), vws(:,iws))  < EPS_m5 ) THEN 
-                   sgmtag = "WS"//TRIM(iotk_index(iws))
-                   EXIT
-                ENDIF
-           ENDDO
-         
-           DEALLOCATE( vws, STAT=ierr )
-              IF (ierr/=0) CALL errore('conductor','deallocating vws',ABS(ierr))
-
-           !
-           ! XXX add a check on the energy grid
-           !
-   ENDIF 
 
 
 !
@@ -174,6 +136,13 @@
 
       dos(:,ie) = ZERO
       conduct(:,ie) = ZERO
+
+      !
+      ! get correlaiton self-energy if the case
+      !
+      IF ( use_correlation ) &
+          CALL correlation_sgmread(sgm_unit, ie, sgm_corr)
+ 
 
       !
       ! parallel kpt loop
@@ -198,22 +167,6 @@
           aux_CL(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene)*s_LC(:,:,ik) ))
           aux_RC(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene)*s_CR(:,:,ik) ))
  
- 
-          !
-          ! get correlaiton self-energy if the case
-          !
-! XXX aggiornare con kpt
-          IF ( use_correlation ) THEN
-              CALL iotk_scan_begin(sgm_unit, "OPR"//TRIM(iotk_index(ie)), IERR=ierr)
-                  IF (ierr/=0) CALL errore('conductor','searching for OPR',ie)
-              CALL iotk_scan_dat(sgm_unit, TRIM(sgmtag), sgm_corr, IERR=ierr)
-                  IF (ierr/=0) CALL errore('conductor','searching for '//TRIM(sgmtag),ie)
-              CALL iotk_scan_end(sgm_unit, "OPR"//TRIM(iotk_index(ie)), IERR=ierr)
-                  IF (ierr/=0) CALL errore('conductor','searching end for OPR',ie)
-          ELSE
-              sgm_corr(:,:) = CZERO
-          ENDIF
-          
  
           ! 
           ! construct leads self-energies 
@@ -242,7 +195,7 @@
           ! Construct the conductor green's function
           ! gC = work^-1  (retarded)
           !
-          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:)
+          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)
   
           gC(:,:) = CZERO
           DO i = 1, dimC
@@ -263,7 +216,7 @@
           ! or (in the correlated case) to the generalized expression as 
           ! from PRL 94, 116802 (2005)
           !
-          CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr, &
+          CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr(1,1,ik), &
                              TRIM(conduct_formula), cond_aux )
           conduct(:,ie) = conduct(:,ie) + wk_par(ik) * cond_aux(:)
       
@@ -311,8 +264,6 @@
         IF( ierr /=0 ) CALL errore('conductor','deallocating conduct', ABS(ierr) )
    DEALLOCATE ( cond_aux, STAT=ierr )
         IF( ierr /=0 ) CALL errore('conductor','deallocating cond_aux', ABS(ierr) )
-   DEALLOCATE ( sgm_corr, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor','deallocating sgm_corr', ABS(ierr) )
    DEALLOCATE ( work, STAT=ierr )
         IF( ierr /=0 ) CALL errore('conductor','deallocating work', ABS(ierr) )
 

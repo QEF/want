@@ -7,7 +7,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************
-   SUBROUTINE transmittance(dimC, gL, gR, gintr, sgm_r, formula, conduct)
+   SUBROUTINE transmittance(dimC, gL, gR, gintr, sgm_corr, formula, conduct)
    !***********************************************
    !
    ! Calculates the matrix involved in the quantum transmittance, 
@@ -28,7 +28,7 @@
    INTEGER,      INTENT(in) ::  dimC
    COMPLEX(dbl), INTENT(in) ::  gL(dimC,dimC), gR(dimC,dimC)
    COMPLEX(dbl), INTENT(in) ::  gintr(dimC,dimC)
-   COMPLEX(dbl), INTENT(in) ::  sgm_r(dimC,dimC)
+   COMPLEX(dbl), INTENT(in) ::  sgm_corr(dimC,dimC)
    CHARACTER(*), INTENT(in) ::  formula
    REAL(dbl),    INTENT(out)::  conduct(dimC)
 
@@ -61,13 +61,13 @@
 ! lambda = (gR + gL +2*eta)^{-1} * ( g_corr + gR + gL + 2*eta )
 !         = I + (gR + gL +2*eta)^{-1} * ( g_corr )
 !
-! where g_corr = i (sgm_r - sgm_r^\dag)
+! where g_corr = i (sgm_corr - sgm_corr^\dag)
 ! 
 
    IF ( TRIM(formula) == "generalized" )  THEN
        DO j=1,dimC
            DO i=1,dimC
-               lambda(i,j) =  CI * ( sgm_r(i,j) - CONJG(sgm_r(j,i))  )
+               lambda(i,j) =  CI * ( sgm_corr(i,j) - CONJG(sgm_corr(j,i))  )
                tmp(i,j) =  gL(i,j) + gR(i,j) 
            ENDDO
            tmp(j,j) = tmp(j,j) + 2*EPS_m5

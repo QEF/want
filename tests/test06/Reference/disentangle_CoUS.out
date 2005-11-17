@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 12:58: 5 
+  Date 17Nov2005 at  1:39:12 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -143,12 +143,12 @@
 
 <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (   0.00000  0.00000  0.16625 ),   weight =  18.0913
-    b ( 2) =    (   0.00000  0.00000 -0.16625 ),   weight =  18.0913
-    b ( 3) =    (  -0.20944  0.00000  0.00000 ),   weight =  11.3986
-    b ( 4) =    (   0.20944  0.00000  0.00000 ),   weight =  11.3986
-    b ( 5) =    (   0.00000 -0.20944  0.00000 ),   weight =  11.3986
-    b ( 6) =    (   0.00000  0.20944  0.00000 ),   weight =  11.3986
+    b ( 1) =    (  -0.20944  0.00000  0.00000 ),   weight =  11.3986
+    b ( 2) =    (   0.20944  0.00000  0.00000 ),   weight =  11.3986
+    b ( 3) =    (   0.00000 -0.20944  0.00000 ),   weight =  11.3986
+    b ( 4) =    (   0.00000  0.20944  0.00000 ),   weight =  11.3986
+    b ( 5) =    (   0.00000  0.00000  0.16625 ),   weight =  18.0913
+    b ( 6) =    (   0.00000  0.00000 -0.16625 ),   weight =  18.0913
 
   Total weight =  81.7771
 </B-SHELL>
@@ -163,50 +163,50 @@
     nspin =   1
     Fermi energy =   -4.545670023 eV
 
-    kpt =   1 (   0.00000  0.00000  0.00000 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -7.3917  -5.2521  -4.8660  -4.8635  -4.2722  -4.2722  -1.9186  -1.9186
     -0.2488   0.2716
 
-    kpt =   2 (   0.00000  0.00000  0.16625 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    2 (   0.00000  0.00000  0.16625 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -6.9205  -5.0834  -4.8144  -4.8141  -4.5956  -4.5956  -1.3823  -1.3823
      0.1229   0.6463
 
-    kpt =   3 (   0.00000  0.00000  0.33249 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    3 (   0.00000  0.00000  0.33249 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.6306  -5.1695  -5.1695  -4.6884  -4.6859  -4.5722  -0.0578  -0.0578
      1.2388   1.7711
 
-    kpt =   4 (   0.00000  0.00000  0.49874 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    4 (   0.00000  0.00000  0.49874 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.6158  -5.6158  -4.5782  -4.5624  -4.5620  -3.0117   1.8827   1.8827
      3.0660   3.6472
 
-    kpt =   5 (   0.00000  0.00000  0.66498 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    5 (   0.00000  0.00000  0.66498 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.7795  -5.7795  -4.5132  -4.5098  -4.3502  -1.0347   1.3385   3.8948
      3.8948   5.2258
 
-    kpt =   6 (   0.00000  0.00000  0.83123 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    6 (   0.00000  0.00000  0.83123 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.6158  -5.6158  -4.5782  -4.5624  -4.5620  -3.0117   1.8827   1.8827
      3.0661   3.6469
 
-    kpt =   7 (   0.00000  0.00000  0.99747 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    7 (   0.00000  0.00000  0.99747 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.6306  -5.1695  -5.1695  -4.6884  -4.6859  -4.5722  -0.0578  -0.0578
      1.2388   1.7710
 
-    kpt =   8 (   0.00000  0.00000  1.16372 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    8 (   0.00000  0.00000  1.16372 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -6.9205  -5.0834  -4.8144  -4.8141  -4.5956  -4.5956  -1.3823  -1.3823
      0.1230   0.6464
@@ -235,39 +235,38 @@
   Initializing global dft data
 
   Initializing US pseudopot. data
-  WARNING: setting b = 0 in qb (overlap augment.)
   Total number Nkb of beta functions:    18
 
 
 
   Initializing atomic wfc
-    Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     4.90 secs
+    Overlaps or Projections calculation for k-point    1
+                              Total time spent up to now :     9.05 secs
 
-    Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     5.28 secs
+    Overlaps or Projections calculation for k-point    2
+                              Total time spent up to now :     9.75 secs
 
-    Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     5.62 secs
+    Overlaps or Projections calculation for k-point    3
+                              Total time spent up to now :    10.56 secs
 
-    Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     5.98 secs
+    Overlaps or Projections calculation for k-point    4
+                              Total time spent up to now :    11.26 secs
 
-    Overlaps or Projections calculation for k-point   5
-                              Total time spent up to now :     6.35 secs
+    Overlaps or Projections calculation for k-point    5
+                              Total time spent up to now :    11.96 secs
 
-    Overlaps or Projections calculation for k-point   6
-                              Total time spent up to now :     6.75 secs
+    Overlaps or Projections calculation for k-point    6
+                              Total time spent up to now :    12.70 secs
 
-    Overlaps or Projections calculation for k-point   7
-                              Total time spent up to now :     7.15 secs
+    Overlaps or Projections calculation for k-point    7
+                              Total time spent up to now :    13.54 secs
 
-    Overlaps or Projections calculation for k-point   8
-                              Total time spent up to now :     7.57 secs
+    Overlaps or Projections calculation for k-point    8
+                              Total time spent up to now :    14.21 secs
 
 
   Overlaps and projections written on file: cobalt_US_WanT.ovp
-                              Total time spent up to now :     7.73 secs
+                              Total time spent up to now :    14.41 secs
 
 
   ======================================================================
@@ -327,7 +326,7 @@
   Iteration =     9     Omega_I =   21.074068      Error =      0.00022585
   Iteration =    10     Omega_I =   21.070263      Error =      0.00018059
 
-                              Total time spent up to now :     7.75 secs
+                              Total time spent up to now :    14.46 secs
 
   Iteration =    11     Omega_I =   21.067187      Error =      0.00014604
   Iteration =    12     Omega_I =   21.064679      Error =      0.00011907
@@ -340,7 +339,7 @@
   Iteration =    19     Omega_I =   21.055282      Error =      0.00004712
   Iteration =    20     Omega_I =   21.054128      Error =      0.00005481
 
-                              Total time spent up to now :     7.82 secs
+                              Total time spent up to now :    14.58 secs
 
   Iteration =    21     Omega_I =   21.052580      Error =      0.00007354
   Iteration =    22     Omega_I =   21.050243      Error =      0.00011100
@@ -353,7 +352,7 @@
   Iteration =    29     Omega_I =   20.818399      Error =      0.00471596
   Iteration =    30     Omega_I =   20.660016      Error =      0.00766618
 
-                              Total time spent up to now :     7.87 secs
+                              Total time spent up to now :    14.66 secs
 
   Iteration =    31     Omega_I =   20.419621      Error =      0.01177276
   Iteration =    32     Omega_I =   20.084815      Error =      0.01666957
@@ -366,7 +365,7 @@
   Iteration =    39     Omega_I =   17.502044      Error =      0.01199009
   Iteration =    40     Omega_I =   17.344186      Error =      0.00910155
 
-                              Total time spent up to now :     7.91 secs
+                              Total time spent up to now :    14.75 secs
 
   Iteration =    41     Omega_I =   17.226851      Error =      0.00681113
   Iteration =    42     Omega_I =   17.140235      Error =      0.00505340
@@ -379,7 +378,7 @@
   Iteration =    49     Omega_I =   16.928612      Error =      0.00058431
   Iteration =    50     Omega_I =   16.921356      Error =      0.00042877
 
-                              Total time spent up to now :     7.96 secs
+                              Total time spent up to now :    14.82 secs
 
   Iteration =    51     Omega_I =   16.916032      Error =      0.00031475
   Iteration =    52     Omega_I =   16.912122      Error =      0.00023117
@@ -392,7 +391,7 @@
   Iteration =    59     Omega_I =   16.902511      Error =      0.00002725
   Iteration =    60     Omega_I =   16.902170      Error =      0.00002017
 
-                              Total time spent up to now :     8.01 secs
+                              Total time spent up to now :    14.91 secs
 
   Iteration =    61     Omega_I =   16.901917      Error =      0.00001496
   Iteration =    62     Omega_I =   16.901729      Error =      0.00001111
@@ -405,7 +404,7 @@
   Iteration =    69     Omega_I =   16.901244      Error =      0.00000152
   Iteration =    70     Omega_I =   16.901224      Error =      0.00000117
 
-                              Total time spent up to now :     8.05 secs
+                              Total time spent up to now :    14.99 secs
 
   Iteration =    71     Omega_I =   16.901209      Error =      0.00000091
   Iteration =    72     Omega_I =   16.901197      Error =      0.00000071
@@ -418,7 +417,7 @@
   Iteration =    79     Omega_I =   16.901159      Error =      0.00000017
   Iteration =    80     Omega_I =   16.901156      Error =      0.00000014
 
-                              Total time spent up to now :     8.09 secs
+                              Total time spent up to now :    15.06 secs
 
   Iteration =    81     Omega_I =   16.901154      Error =      0.00000012
   Iteration =    82     Omega_I =   16.901153      Error =      0.00000011
@@ -431,7 +430,7 @@
   Iteration =    89     Omega_I =   16.901145      Error =      0.00000005
   Iteration =    90     Omega_I =   16.901144      Error =      0.00000004
 
-                              Total time spent up to now :     8.15 secs
+                              Total time spent up to now :    15.15 secs
 
   Iteration =    91     Omega_I =   16.901143      Error =      0.00000004
   Iteration =    92     Omega_I =   16.901143      Error =      0.00000004
@@ -444,7 +443,7 @@
   Iteration =    99     Omega_I =   16.901139      Error =      0.00000002
   Iteration =   100     Omega_I =   16.901139      Error =      0.00000002
 
-                              Total time spent up to now :     8.20 secs
+                              Total time spent up to now :    15.23 secs
 
   Iteration =   101     Omega_I =   16.901139      Error =      0.00000002
   Iteration =   102     Omega_I =   16.901139      Error =      0.00000002
@@ -460,11 +459,11 @@
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Iteration # :  108
+  Iteration # :   108
   Final Omega_I (Bohr^2, Angstrom^2):      16.901137         4.732797
    Avrg Omega_I                     :       2.816856         0.788799
 
-                              Total time spent up to now :     8.25 secs
+                              Total time spent up to now :    15.30 secs
 
 
   Subspace decomposition:
@@ -510,29 +509,29 @@
    <global routines>
              clock number :    23
 
-              disentangle :     8.00s CPU 
+              disentangle :    15.00s CPU 
  
-                want_init :     0.19s CPU
-                  bshells :     0.00s CPU
-              wfc_manager :     7.53s CPU
-          ggrids_read_ext :     0.24s CPU
-              struct_fact :     0.03s CPU
-                init_us_1 :     3.97s CPU
-                init_at_1 :     0.07s CPU
-           wfc_data_kread :     0.64s CPU (      32 calls,   0.020 s avg)
-                init_us_2 :     0.84s CPU (      40 calls,   0.021 s avg)
-                  ccalbec :     0.16s CPU (      32 calls,   0.005 s avg)
-                  overlap :     1.11s CPU (      24 calls,   0.046 s avg)
-           overlap_setmap :     0.47s CPU (      24 calls,   0.020 s avg)
+                want_init :     0.35s CPU
+             bshells_init :     0.00s CPU
+              wfc_manager :    13.98s CPU
+          ggrids_read_ext :     0.32s CPU
+              struct_fact :     0.05s CPU
+                init_us_1 :     7.28s CPU
+                init_at_1 :     0.12s CPU
+           wfc_data_kread :     1.86s CPU (      32 calls,   0.058 s avg)
+                init_us_2 :     1.32s CPU (      40 calls,   0.033 s avg)
+                  ccalbec :     0.30s CPU (      32 calls,   0.010 s avg)
+                  overlap :     2.00s CPU (      24 calls,   0.083 s avg)
+           overlap_setmap :     0.79s CPU (      24 calls,   0.033 s avg)
           overlap_augment :     0.02s CPU (      24 calls,   0.001 s avg)
-                    s_psi :     0.09s CPU (       8 calls,   0.011 s avg)
-               projection :     0.17s CPU (       8 calls,   0.021 s avg)
-       trial_center_setup :     0.06s CPU (      48 calls,   0.001 s avg)
-               atomic_wfc :     0.05s CPU (      48 calls,   0.001 s avg)
-               iterations :     0.51s CPU
-             subapce_init :     0.00s CPU
+                    s_psi :     0.15s CPU (       8 calls,   0.019 s avg)
+               projection :     0.29s CPU (       8 calls,   0.036 s avg)
+       trial_center_setup :     0.10s CPU (      48 calls,   0.002 s avg)
+               atomic_wfc :     0.09s CPU (      48 calls,   0.002 s avg)
+               iterations :     0.89s CPU
+             subapce_init :     0.02s CPU
                    omegai :     0.00s CPU (     109 calls,   0.000 s avg)
-                  zmatrix :     0.03s CPU (     864 calls,   0.000 s avg)
-                mat_hdiag :     0.09s CPU (     880 calls,   0.000 s avg)
+                  zmatrix :     0.08s CPU (     864 calls,   0.000 s avg)
+                mat_hdiag :     0.18s CPU (     880 calls,   0.000 s avg)
 
 

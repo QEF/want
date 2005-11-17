@@ -45,7 +45,7 @@ MANUAL=" Usage
 . ../environment.conf
 . $UTILITY_BIN/basedef.sh
 TEST_HOME=$(pwd)
-TEST_NAME=$(echo $TEST_HOME | sed 's/\//\n/g' | tail -1)
+TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
 PSEUDO_NAME=Ni.pz-nd-rrkjus.UPF
 
 #

@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 13:37:19 
+  Date 17Nov2005 at  0:39:50 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -71,13 +71,13 @@
   ======================================================================
 
 
-  nplot =   6 Wannier func.s to be plotted
-     wf (  1 ) =    1
-     wf (  2 ) =    2
-     wf (  3 ) =    7
-     wf (  4 ) =    8
-     wf (  5 ) =   14
-     wf (  6 ) =   15
+  nplot =    6 Wannier func.s to be plotted
+     wf (   1 ) =    1
+     wf (   2 ) =    2
+     wf (   3 ) =    7
+     wf (   4 ) =    8
+     wf (   5 ) =   14
+     wf (   6 ) =   15
 
   Data type  :   modulus
   Output fmt :   plt
@@ -126,11 +126,11 @@
      C    tau(  12 ) = (  -4.3123567   2.4812114   3.1142699 )
 
 
-    Wfc Fourier Transf. for k-point   1
-                              Total time spent up to now :    47.68 secs
+    Wfc Fourier Transf. for k-point    1
+                              Total time spent up to now :    89.89 secs
 
 
-  writing WF(  1) plot on file: .//benzene_WanT_WFM001.cube
+  writing WF(   1) plot on file: .//benzene_WanT_WFM001.cube
                   atomic positions on file: .//benzene_WanT_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -150,7 +150,7 @@ Job done ...
                       .//benzene_WanT_WFM001.crd
 
 
-  writing WF(  2) plot on file: .//benzene_WanT_WFM002.cube
+  writing WF(   2) plot on file: .//benzene_WanT_WFM002.cube
                   atomic positions on file: .//benzene_WanT_WFM002.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -170,7 +170,7 @@ Job done ...
                       .//benzene_WanT_WFM002.crd
 
 
-  writing WF(  7) plot on file: .//benzene_WanT_WFM007.cube
+  writing WF(   7) plot on file: .//benzene_WanT_WFM007.cube
                   atomic positions on file: .//benzene_WanT_WFM007.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -190,7 +190,7 @@ Job done ...
                       .//benzene_WanT_WFM007.crd
 
 
-  writing WF(  8) plot on file: .//benzene_WanT_WFM008.cube
+  writing WF(   8) plot on file: .//benzene_WanT_WFM008.cube
                   atomic positions on file: .//benzene_WanT_WFM008.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -210,7 +210,7 @@ Job done ...
                       .//benzene_WanT_WFM008.crd
 
 
-  writing WF( 14) plot on file: .//benzene_WanT_WFM014.cube
+  writing WF(  14) plot on file: .//benzene_WanT_WFM014.cube
                   atomic positions on file: .//benzene_WanT_WFM014.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -230,7 +230,7 @@ Job done ...
                       .//benzene_WanT_WFM014.crd
 
 
-  writing WF( 15) plot on file: .//benzene_WanT_WFM015.cube
+  writing WF(  15) plot on file: .//benzene_WanT_WFM015.cube
                   atomic positions on file: .//benzene_WanT_WFM015.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
@@ -254,14 +254,16 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :     6
+             clock number :     8
 
-                     plot :  1m 0.00s CPU 
+                     plot :  1m54.00s CPU 
  
                 want_init :     0.02s CPU
-          ggrids_read_ext :     0.17s CPU
-           wfc_data_kread :     0.19s CPU
-                   cfft3d :     0.84s CPU (       6 calls,   0.141 s avg)
-                 gcubeplt :     6.40s CPU (       6 calls,   1.067 s avg)
+          ggrids_read_ext :     0.22s CPU
+           wfc_data_kread :     0.40s CPU
+               kwann_calc :    86.24s CPU (       6 calls,  14.373 s avg)
+                   cfft3d :     1.92s CPU (       6 calls,   0.320 s avg)
+               cwann_calc :     0.66s CPU (       6 calls,   0.110 s avg)
+                 gcubeplt :    11.92s CPU (       6 calls,   1.987 s avg)
 
 

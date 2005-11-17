@@ -213,6 +213,7 @@
       CALL iotk_write_attr(attr,"nomega",nomega)
       CALL iotk_write_empty(out_unit,"DATA",ATTR=attr)
       CALL iotk_write_dat(out_unit,"VR",vr, COLUMNS=3)
+      CALL iotk_write_dat(out_unit,"IVR",ivr, COLUMNS=3)
       IF ( ldynamical ) CALL iotk_write_dat(out_unit,"GRID",grid)
 
            

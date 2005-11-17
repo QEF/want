@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 12:21:56 
+  Date 17Nov2005 at  0:32:45 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -194,12 +194,12 @@
 
 <B-SHELL>
   List of the  8 b-vectors : (Bohr^-1) 
-    b ( 1) =    (   0.14820  0.14820  0.14820 ),   weight =   5.6917
-    b ( 2) =    (  -0.14820 -0.14820 -0.14820 ),   weight =   5.6917
-    b ( 3) =    (  -0.14820  0.14820 -0.14820 ),   weight =   5.6917
-    b ( 4) =    (   0.14820 -0.14820  0.14820 ),   weight =   5.6917
-    b ( 5) =    (  -0.14820 -0.14820  0.14820 ),   weight =   5.6917
-    b ( 6) =    (   0.14820  0.14820 -0.14820 ),   weight =   5.6917
+    b ( 1) =    (  -0.14820 -0.14820  0.14820 ),   weight =   5.6917
+    b ( 2) =    (   0.14820  0.14820 -0.14820 ),   weight =   5.6917
+    b ( 3) =    (   0.14820  0.14820  0.14820 ),   weight =   5.6917
+    b ( 4) =    (  -0.14820 -0.14820 -0.14820 ),   weight =   5.6917
+    b ( 5) =    (  -0.14820  0.14820 -0.14820 ),   weight =   5.6917
+    b ( 6) =    (   0.14820 -0.14820  0.14820 ),   weight =   5.6917
     b ( 7) =    (   0.14820 -0.14820 -0.14820 ),   weight =   5.6917
     b ( 8) =    (  -0.14820  0.14820  0.14820 ),   weight =   5.6917
 
@@ -216,386 +216,386 @@
     nspin =   1
     Fermi energy =    5.078999972 eV
 
-    kpt =   1 (   0.00000  0.00000  0.00000 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -6.2144   5.0790   5.0790   5.0790   7.2949   7.5836   7.5836   7.5836
     12.3834  12.7702  12.7702  15.8870  15.8870  15.8870  19.5180  26.6712
 
-    kpt =   2 (  -0.14820  0.14820 -0.14820 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =    2 (  -0.14820  0.14820 -0.14820 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6517  21.9738
 
-    kpt =   3 (  -0.29639  0.29639 -0.29639 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =    3 (  -0.29639  0.29639 -0.29639 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
     15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7482
 
-    kpt =   4 (  -0.44459  0.44459 -0.44459 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =    4 (  -0.44459  0.44459 -0.44459 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
 
-    kpt =   5 (   0.14820  0.14820  0.14820 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =    5 (   0.14820  0.14820  0.14820 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6519  21.9738
 
-    kpt =   6 (   0.00000  0.29639  0.00000 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    6 (   0.00000  0.29639  0.00000 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
     12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
 
-    kpt =   7 (  -0.14820  0.44459 -0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =    7 (  -0.14820  0.44459 -0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8758  22.2648
 
-    kpt =   8 (  -0.29639  0.59278 -0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =    8 (  -0.29639  0.59278 -0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =   9 (   0.29639  0.29639  0.29639 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =    9 (   0.29639  0.29639  0.29639 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
     15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7482
 
-    kpt =  10 (   0.14820  0.44459  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   10 (   0.14820  0.44459  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  11 (   0.00000  0.59278  0.00000 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   11 (   0.00000  0.59278  0.00000 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.4084  -2.4084   2.4666   2.4666   5.8918   5.8918  14.2699  14.2699
     15.6861  15.6861  16.7336  16.7336  17.2328  17.2328  22.8325  22.8325
 
-    kpt =  12 (  -0.14820  0.74098 -0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   12 (  -0.14820  0.74098 -0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  13 (   0.44459  0.44459  0.44459 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =   13 (   0.44459  0.44459  0.44459 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
 
-    kpt =  14 (   0.29639  0.59278  0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   14 (   0.29639  0.59278  0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  15 (   0.14820  0.74098  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   15 (   0.14820  0.74098  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  16 (   0.00000  0.88917  0.00000 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   16 (   0.00000  0.88917  0.00000 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
     12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3830
 
-    kpt =  17 (  -0.14820 -0.14820  0.14820 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =   17 (  -0.14820 -0.14820  0.14820 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
 
-    kpt =  18 (  -0.29639  0.00000  0.00000 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   18 (  -0.29639  0.00000  0.00000 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
     12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
 
-    kpt =  19 (  -0.44459  0.14820 -0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   19 (  -0.44459  0.14820 -0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  20 (  -0.59278  0.29639 -0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   20 (  -0.59278  0.29639 -0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  21 (   0.00000  0.00000  0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   21 (   0.00000  0.00000  0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
     12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
 
-    kpt =  22 (  -0.14820  0.14820  0.14820 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =   22 (  -0.14820  0.14820  0.14820 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6516  21.9738
 
-    kpt =  23 (  -0.29639  0.29639  0.00000 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   23 (  -0.29639  0.29639  0.00000 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  24 (  -0.44459  0.44459 -0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   24 (  -0.44459  0.44459 -0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  25 (   0.14820  0.14820  0.44459 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   25 (   0.14820  0.14820  0.44459 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  26 (   0.00000  0.29639  0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   26 (   0.00000  0.29639  0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  27 (  -0.14820  0.44459  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   27 (  -0.14820  0.44459  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  28 (  -0.29639  0.59278  0.00000 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   28 (  -0.29639  0.59278  0.00000 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
     14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
 
-    kpt =  29 (   0.29639  0.29639  0.59278 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   29 (   0.29639  0.29639  0.59278 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  30 (   0.14820  0.44459  0.44459 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   30 (   0.14820  0.44459  0.44459 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  31 (   0.00000  0.59278  0.29639 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   31 (   0.00000  0.59278  0.29639 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
     14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
 
-    kpt =  32 (  -0.14820  0.74098  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   32 (  -0.14820  0.74098  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  33 (  -0.29639 -0.29639  0.29639 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   33 (  -0.29639 -0.29639  0.29639 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
     15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7482
 
-    kpt =  34 (  -0.44459 -0.14820  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   34 (  -0.44459 -0.14820  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  35 (  -0.59278  0.00000  0.00000 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   35 (  -0.59278  0.00000  0.00000 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.4084  -2.4084   2.4666   2.4666   5.8918   5.8918  14.2699  14.2699
     15.6861  15.6861  16.7336  16.7336  17.2328  17.2328  22.8325  22.8326
 
-    kpt =  36 (  -0.74098  0.14820 -0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   36 (  -0.74098  0.14820 -0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  37 (  -0.14820 -0.14820  0.44459 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   37 (  -0.14820 -0.14820  0.44459 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  38 (  -0.29639  0.00000  0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   38 (  -0.29639  0.00000  0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  39 (  -0.44459  0.14820  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   39 (  -0.44459  0.14820  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  40 (  -0.59278  0.29639  0.00000 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   40 (  -0.59278  0.29639  0.00000 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
     14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
 
-    kpt =  41 (   0.00000  0.00000  0.59278 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   41 (   0.00000  0.00000  0.59278 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.4084  -2.4084   2.4666   2.4666   5.8918   5.8918  14.2699  14.2699
     15.6861  15.6861  16.7336  16.7336  17.2328  17.2328  22.8325  22.8326
 
-    kpt =  42 (  -0.14820  0.14820  0.44459 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   42 (  -0.14820  0.14820  0.44459 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  43 (  -0.29639  0.29639  0.29639 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   43 (  -0.29639  0.29639  0.29639 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -4.1035  -1.4726   3.9649   3.9649   6.2255   8.4280   8.4280  12.4747
     15.3457  15.3457  15.4327  15.7932  15.7932  16.5434  22.9100  23.7482
 
-    kpt =  44 (  -0.44459  0.44459  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   44 (  -0.44459  0.44459  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  45 (   0.14820  0.14820  0.74098 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   45 (   0.14820  0.14820  0.74098 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  46 (   0.00000  0.29639  0.59278 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   46 (   0.00000  0.29639  0.59278 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
     14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
 
-    kpt =  47 (  -0.14820  0.44459  0.44459 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   47 (  -0.14820  0.44459  0.44459 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  48 (  -0.29639  0.59278  0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   48 (  -0.29639  0.59278  0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  49 (  -0.44459 -0.44459  0.44459 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =   49 (  -0.44459 -0.44459  0.44459 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6517  21.9738
 
-    kpt =  50 (  -0.59278 -0.29639  0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   50 (  -0.59278 -0.29639  0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  51 (  -0.74098 -0.14820  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   51 (  -0.74098 -0.14820  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  52 (  -0.88917  0.00000  0.00000 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   52 (  -0.88917  0.00000  0.00000 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
     12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3829
 
-    kpt =  53 (  -0.29639 -0.29639  0.59278 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   53 (  -0.29639 -0.29639  0.59278 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  54 (  -0.44459 -0.14820  0.44459 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   54 (  -0.44459 -0.14820  0.44459 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2648
 
-    kpt =  55 (  -0.59278  0.00000  0.29639 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   55 (  -0.59278  0.00000  0.29639 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
     14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
 
-    kpt =  56 (  -0.74098  0.14820  0.14820 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   56 (  -0.74098  0.14820  0.14820 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  57 (  -0.14820 -0.14820  0.74098 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   57 (  -0.14820 -0.14820  0.74098 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  58 (  -0.29639  0.00000  0.59278 )    dimwin =    8
-                                         imin =    1  imax =    8
+    kpt =   58 (  -0.29639  0.00000  0.59278 )    dimwin =    8
+                                       imin =    1  imax =    8
    Eigenvalues:
     -2.2783  -2.2783   1.5901   1.5901   9.2799   9.2799   9.6816   9.6816
     14.9674  14.9674  17.2439  17.2439  20.6661  20.6661  22.4970  22.4970
 
-    kpt =  59 (  -0.44459  0.14820  0.44459 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   59 (  -0.44459  0.14820  0.44459 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8757  22.2647
 
-    kpt =  60 (  -0.59278  0.29639  0.29639 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   60 (  -0.59278  0.29639  0.29639 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  61 (   0.00000  0.00000  0.88917 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   61 (   0.00000  0.00000  0.88917 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -5.2193   1.5573   3.3597   3.3597   6.2353   8.1107  10.4867  10.4867
     12.1778  13.8964  15.6351  17.5337  17.5337  18.1722  21.3829  21.3830
 
-    kpt =  62 (  -0.14820  0.14820  0.74098 )    dimwin =    9
-                                         imin =    1  imax =    9
+    kpt =   62 (  -0.14820  0.14820  0.74098 )    dimwin =    9
+                                       imin =    1  imax =    9
    Eigenvalues:
     -3.7312  -1.0421   1.8334   3.0611   6.6163   9.3612  10.3147  10.7622
     14.5584  15.2072  16.6401  16.7036  17.2919  20.8142  21.8758  22.2647
 
-    kpt =  63 (  -0.29639  0.29639  0.59278 )    dimwin =   10
-                                         imin =    1  imax =   10
+    kpt =   63 (  -0.29639  0.29639  0.59278 )    dimwin =   10
+                                       imin =    1  imax =   10
    Eigenvalues:
     -4.3440  -0.2182   1.6592   3.8570   7.3949   9.6449   9.9037  10.6411
     11.5393  14.0753  16.8307  17.5282  17.7984  20.7840  21.1221  21.2191
 
-    kpt =  64 (  -0.44459  0.44459  0.44459 )    dimwin =   11
-                                         imin =    1  imax =   11
+    kpt =   64 (  -0.44459  0.44459  0.44459 )    dimwin =   11
+                                       imin =    1  imax =   11
    Eigenvalues:
     -5.4802   1.3133   4.3802   4.3802   6.7124   8.4816   8.4816  11.1019
     12.2246  12.2246  13.5620  16.1119  19.0161  19.0161  21.6518  21.9738
@@ -622,201 +622,201 @@
 
 
   Initializing global dft data
-    Overlaps or Projections calculation for k-point   1
-                              Total time spent up to now :     0.48 secs
+    Overlaps or Projections calculation for k-point    1
+                              Total time spent up to now :     0.73 secs
 
-    Overlaps or Projections calculation for k-point   2
-                              Total time spent up to now :     0.57 secs
+    Overlaps or Projections calculation for k-point    2
+                              Total time spent up to now :     0.93 secs
 
-    Overlaps or Projections calculation for k-point   3
-                              Total time spent up to now :     0.65 secs
+    Overlaps or Projections calculation for k-point    3
+                              Total time spent up to now :     1.11 secs
 
-    Overlaps or Projections calculation for k-point   4
-                              Total time spent up to now :     0.82 secs
+    Overlaps or Projections calculation for k-point    4
+                              Total time spent up to now :     1.30 secs
 
-    Overlaps or Projections calculation for k-point   5
-                              Total time spent up to now :     0.96 secs
+    Overlaps or Projections calculation for k-point    5
+                              Total time spent up to now :     1.59 secs
 
-    Overlaps or Projections calculation for k-point   6
-                              Total time spent up to now :     1.04 secs
+    Overlaps or Projections calculation for k-point    6
+                              Total time spent up to now :     1.76 secs
 
-    Overlaps or Projections calculation for k-point   7
-                              Total time spent up to now :     1.15 secs
+    Overlaps or Projections calculation for k-point    7
+                              Total time spent up to now :     1.94 secs
 
-    Overlaps or Projections calculation for k-point   8
-                              Total time spent up to now :     1.24 secs
+    Overlaps or Projections calculation for k-point    8
+                              Total time spent up to now :     2.21 secs
 
-    Overlaps or Projections calculation for k-point   9
-                              Total time spent up to now :     1.31 secs
+    Overlaps or Projections calculation for k-point    9
+                              Total time spent up to now :     2.65 secs
 
-    Overlaps or Projections calculation for k-point  10
-                              Total time spent up to now :     1.40 secs
-
-    Overlaps or Projections calculation for k-point  11
-                              Total time spent up to now :     1.48 secs
-
-    Overlaps or Projections calculation for k-point  12
-                              Total time spent up to now :     1.57 secs
-
-    Overlaps or Projections calculation for k-point  13
-                              Total time spent up to now :     1.66 secs
-
-    Overlaps or Projections calculation for k-point  14
-                              Total time spent up to now :     1.75 secs
-
-    Overlaps or Projections calculation for k-point  15
-                              Total time spent up to now :     1.83 secs
-
-    Overlaps or Projections calculation for k-point  16
-                              Total time spent up to now :     1.92 secs
-
-    Overlaps or Projections calculation for k-point  17
-                              Total time spent up to now :     2.01 secs
-
-    Overlaps or Projections calculation for k-point  18
-                              Total time spent up to now :     2.09 secs
-
-    Overlaps or Projections calculation for k-point  19
-                              Total time spent up to now :     2.17 secs
-
-    Overlaps or Projections calculation for k-point  20
-                              Total time spent up to now :     2.25 secs
-
-    Overlaps or Projections calculation for k-point  21
-                              Total time spent up to now :     2.32 secs
-
-    Overlaps or Projections calculation for k-point  22
-                              Total time spent up to now :     2.40 secs
-
-    Overlaps or Projections calculation for k-point  23
-                              Total time spent up to now :     2.48 secs
-
-    Overlaps or Projections calculation for k-point  24
-                              Total time spent up to now :     2.56 secs
-
-    Overlaps or Projections calculation for k-point  25
-                              Total time spent up to now :     2.63 secs
-
-    Overlaps or Projections calculation for k-point  26
-                              Total time spent up to now :     2.70 secs
-
-    Overlaps or Projections calculation for k-point  27
-                              Total time spent up to now :     2.77 secs
-
-    Overlaps or Projections calculation for k-point  28
-                              Total time spent up to now :     2.85 secs
-
-    Overlaps or Projections calculation for k-point  29
-                              Total time spent up to now :     2.92 secs
-
-    Overlaps or Projections calculation for k-point  30
-                              Total time spent up to now :     3.00 secs
-
-    Overlaps or Projections calculation for k-point  31
+    Overlaps or Projections calculation for k-point   10
                               Total time spent up to now :     3.08 secs
 
-    Overlaps or Projections calculation for k-point  32
-                              Total time spent up to now :     3.15 secs
+    Overlaps or Projections calculation for k-point   11
+                              Total time spent up to now :     3.61 secs
 
-    Overlaps or Projections calculation for k-point  33
-                              Total time spent up to now :     3.25 secs
+    Overlaps or Projections calculation for k-point   12
+                              Total time spent up to now :     4.13 secs
 
-    Overlaps or Projections calculation for k-point  34
-                              Total time spent up to now :     3.34 secs
+    Overlaps or Projections calculation for k-point   13
+                              Total time spent up to now :     4.48 secs
 
-    Overlaps or Projections calculation for k-point  35
-                              Total time spent up to now :     3.40 secs
+    Overlaps or Projections calculation for k-point   14
+                              Total time spent up to now :     4.79 secs
 
-    Overlaps or Projections calculation for k-point  36
-                              Total time spent up to now :     3.47 secs
+    Overlaps or Projections calculation for k-point   15
+                              Total time spent up to now :     5.11 secs
 
-    Overlaps or Projections calculation for k-point  37
-                              Total time spent up to now :     3.52 secs
+    Overlaps or Projections calculation for k-point   16
+                              Total time spent up to now :     5.42 secs
 
-    Overlaps or Projections calculation for k-point  38
-                              Total time spent up to now :     3.60 secs
+    Overlaps or Projections calculation for k-point   17
+                              Total time spent up to now :     5.69 secs
 
-    Overlaps or Projections calculation for k-point  39
-                              Total time spent up to now :     3.66 secs
+    Overlaps or Projections calculation for k-point   18
+                              Total time spent up to now :     5.94 secs
 
-    Overlaps or Projections calculation for k-point  40
-                              Total time spent up to now :     3.72 secs
+    Overlaps or Projections calculation for k-point   19
+                              Total time spent up to now :     6.18 secs
 
-    Overlaps or Projections calculation for k-point  41
-                              Total time spent up to now :     3.79 secs
+    Overlaps or Projections calculation for k-point   20
+                              Total time spent up to now :     6.44 secs
 
-    Overlaps or Projections calculation for k-point  42
-                              Total time spent up to now :     3.87 secs
+    Overlaps or Projections calculation for k-point   21
+                              Total time spent up to now :     6.78 secs
 
-    Overlaps or Projections calculation for k-point  43
-                              Total time spent up to now :     3.95 secs
+    Overlaps or Projections calculation for k-point   22
+                              Total time spent up to now :     7.03 secs
 
-    Overlaps or Projections calculation for k-point  44
-                              Total time spent up to now :     4.01 secs
+    Overlaps or Projections calculation for k-point   23
+                              Total time spent up to now :     7.27 secs
 
-    Overlaps or Projections calculation for k-point  45
-                              Total time spent up to now :     4.07 secs
+    Overlaps or Projections calculation for k-point   24
+                              Total time spent up to now :     7.51 secs
 
-    Overlaps or Projections calculation for k-point  46
-                              Total time spent up to now :     4.16 secs
+    Overlaps or Projections calculation for k-point   25
+                              Total time spent up to now :     7.75 secs
 
-    Overlaps or Projections calculation for k-point  47
-                              Total time spent up to now :     4.25 secs
+    Overlaps or Projections calculation for k-point   26
+                              Total time spent up to now :     8.00 secs
 
-    Overlaps or Projections calculation for k-point  48
-                              Total time spent up to now :     4.32 secs
+    Overlaps or Projections calculation for k-point   27
+                              Total time spent up to now :     8.24 secs
 
-    Overlaps or Projections calculation for k-point  49
-                              Total time spent up to now :     4.41 secs
+    Overlaps or Projections calculation for k-point   28
+                              Total time spent up to now :     8.48 secs
 
-    Overlaps or Projections calculation for k-point  50
-                              Total time spent up to now :     4.49 secs
+    Overlaps or Projections calculation for k-point   29
+                              Total time spent up to now :     8.69 secs
 
-    Overlaps or Projections calculation for k-point  51
-                              Total time spent up to now :     4.55 secs
+    Overlaps or Projections calculation for k-point   30
+                              Total time spent up to now :     8.91 secs
 
-    Overlaps or Projections calculation for k-point  52
-                              Total time spent up to now :     4.61 secs
+    Overlaps or Projections calculation for k-point   31
+                              Total time spent up to now :     9.24 secs
 
-    Overlaps or Projections calculation for k-point  53
-                              Total time spent up to now :     4.68 secs
+    Overlaps or Projections calculation for k-point   32
+                              Total time spent up to now :     9.47 secs
 
-    Overlaps or Projections calculation for k-point  54
-                              Total time spent up to now :     4.75 secs
+    Overlaps or Projections calculation for k-point   33
+                              Total time spent up to now :     9.59 secs
 
-    Overlaps or Projections calculation for k-point  55
-                              Total time spent up to now :     4.81 secs
+    Overlaps or Projections calculation for k-point   34
+                              Total time spent up to now :     9.71 secs
 
-    Overlaps or Projections calculation for k-point  56
-                              Total time spent up to now :     4.87 secs
+    Overlaps or Projections calculation for k-point   35
+                              Total time spent up to now :     9.84 secs
 
-    Overlaps or Projections calculation for k-point  57
-                              Total time spent up to now :     4.94 secs
+    Overlaps or Projections calculation for k-point   36
+                              Total time spent up to now :     9.97 secs
 
-    Overlaps or Projections calculation for k-point  58
-                              Total time spent up to now :     4.99 secs
+    Overlaps or Projections calculation for k-point   37
+                              Total time spent up to now :    10.10 secs
 
-    Overlaps or Projections calculation for k-point  59
-                              Total time spent up to now :     5.06 secs
+    Overlaps or Projections calculation for k-point   38
+                              Total time spent up to now :    10.22 secs
 
-    Overlaps or Projections calculation for k-point  60
-                              Total time spent up to now :     5.13 secs
+    Overlaps or Projections calculation for k-point   39
+                              Total time spent up to now :    10.35 secs
 
-    Overlaps or Projections calculation for k-point  61
-                              Total time spent up to now :     5.20 secs
+    Overlaps or Projections calculation for k-point   40
+                              Total time spent up to now :    11.02 secs
 
-    Overlaps or Projections calculation for k-point  62
-                              Total time spent up to now :     5.27 secs
+    Overlaps or Projections calculation for k-point   41
+                              Total time spent up to now :    11.14 secs
 
-    Overlaps or Projections calculation for k-point  63
-                              Total time spent up to now :     5.35 secs
+    Overlaps or Projections calculation for k-point   42
+                              Total time spent up to now :    11.26 secs
 
-    Overlaps or Projections calculation for k-point  64
-                              Total time spent up to now :     5.41 secs
+    Overlaps or Projections calculation for k-point   43
+                              Total time spent up to now :    11.38 secs
+
+    Overlaps or Projections calculation for k-point   44
+                              Total time spent up to now :    11.50 secs
+
+    Overlaps or Projections calculation for k-point   45
+                              Total time spent up to now :    11.62 secs
+
+    Overlaps or Projections calculation for k-point   46
+                              Total time spent up to now :    11.83 secs
+
+    Overlaps or Projections calculation for k-point   47
+                              Total time spent up to now :    11.93 secs
+
+    Overlaps or Projections calculation for k-point   48
+                              Total time spent up to now :    12.05 secs
+
+    Overlaps or Projections calculation for k-point   49
+                              Total time spent up to now :    12.19 secs
+
+    Overlaps or Projections calculation for k-point   50
+                              Total time spent up to now :    12.32 secs
+
+    Overlaps or Projections calculation for k-point   51
+                              Total time spent up to now :    12.44 secs
+
+    Overlaps or Projections calculation for k-point   52
+                              Total time spent up to now :    12.58 secs
+
+    Overlaps or Projections calculation for k-point   53
+                              Total time spent up to now :    12.71 secs
+
+    Overlaps or Projections calculation for k-point   54
+                              Total time spent up to now :    12.84 secs
+
+    Overlaps or Projections calculation for k-point   55
+                              Total time spent up to now :    12.96 secs
+
+    Overlaps or Projections calculation for k-point   56
+                              Total time spent up to now :    13.10 secs
+
+    Overlaps or Projections calculation for k-point   57
+                              Total time spent up to now :    13.22 secs
+
+    Overlaps or Projections calculation for k-point   58
+                              Total time spent up to now :    13.35 secs
+
+    Overlaps or Projections calculation for k-point   59
+                              Total time spent up to now :    13.43 secs
+
+    Overlaps or Projections calculation for k-point   60
+                              Total time spent up to now :    13.49 secs
+
+    Overlaps or Projections calculation for k-point   61
+                              Total time spent up to now :    13.55 secs
+
+    Overlaps or Projections calculation for k-point   62
+                              Total time spent up to now :    13.61 secs
+
+    Overlaps or Projections calculation for k-point   63
+                              Total time spent up to now :    13.66 secs
+
+    Overlaps or Projections calculation for k-point   64
+                              Total time spent up to now :    13.72 secs
 
 
   Overlaps and projections written on file: silicon_WanT.ovp
-                              Total time spent up to now :     6.40 secs
+                              Total time spent up to now :    15.49 secs
 
 
   ======================================================================
@@ -837,7 +837,7 @@
   Iteration =     9     Omega_I =   47.657024      Error =      0.01593230
   Iteration =    10     Omega_I =   47.126135      Error =      0.01126527
 
-                              Total time spent up to now :     6.64 secs
+                              Total time spent up to now :    15.91 secs
 
   Iteration =    11     Omega_I =   46.766305      Error =      0.00769423
   Iteration =    12     Omega_I =   46.526068      Error =      0.00516348
@@ -850,7 +850,7 @@
   Iteration =    19     Omega_I =   46.073509      Error =      0.00032392
   Iteration =    20     Omega_I =   46.063227      Error =      0.00022322
 
-                              Total time spent up to now :     7.07 secs
+                              Total time spent up to now :    16.63 secs
 
   Iteration =    21     Omega_I =   46.056101      Error =      0.00015473
   Iteration =    22     Omega_I =   46.051135      Error =      0.00010784
@@ -863,7 +863,7 @@
   Iteration =    29     Omega_I =   46.040302      Error =      0.00000974
   Iteration =    30     Omega_I =   46.039979      Error =      0.00000700
 
-                              Total time spent up to now :     7.56 secs
+                              Total time spent up to now :    17.43 secs
 
   Iteration =    31     Omega_I =   46.039747      Error =      0.00000505
   Iteration =    32     Omega_I =   46.039578      Error =      0.00000365
@@ -876,7 +876,7 @@
   Iteration =    39     Omega_I =   46.039178      Error =      0.00000040
   Iteration =    40     Omega_I =   46.039164      Error =      0.00000030
 
-                              Total time spent up to now :     8.05 secs
+                              Total time spent up to now :    18.13 secs
 
   Iteration =    41     Omega_I =   46.039154      Error =      0.00000022
   Iteration =    42     Omega_I =   46.039146      Error =      0.00000016
@@ -889,7 +889,7 @@
   Iteration =    49     Omega_I =   46.039128      Error =      0.00000002
   Iteration =    50     Omega_I =   46.039127      Error =      0.00000002
 
-                              Total time spent up to now :     8.65 secs
+                              Total time spent up to now :    18.82 secs
 
   Iteration =    51     Omega_I =   46.039126      Error =      0.00000001
   Iteration =    52     Omega_I =   46.039126      Error =      0.00000001
@@ -899,11 +899,11 @@
   =                        Convergence Achieved                        =
   ======================================================================
 
-  Iteration # :   52
+  Iteration # :    52
   Final Omega_I (Bohr^2, Angstrom^2):      46.039126        12.892258
    Avrg Omega_I                     :       5.754891         1.611532
 
-                              Total time spent up to now :     8.90 secs
+                              Total time spent up to now :    19.22 secs
 
 
   Subspace data written on file: silicon_WanT.space
@@ -912,23 +912,23 @@
    <global routines>
              clock number :    17
 
-              disentangle :     9.00s CPU 
+              disentangle :    19.00s CPU 
  
-                want_init :     0.16s CPU
-                  bshells :     0.02s CPU
-              wfc_manager :     6.23s CPU
-          ggrids_read_ext :     0.01s CPU
+                want_init :     0.20s CPU
+             bshells_init :     0.03s CPU
+              wfc_manager :    15.26s CPU
+          ggrids_read_ext :     0.03s CPU
               struct_fact :     0.00s CPU
-           wfc_data_kread :     3.50s CPU (     320 calls,   0.011 s avg)
-                  overlap :     0.85s CPU (     256 calls,   0.003 s avg)
-           overlap_setmap :     0.19s CPU (     256 calls,   0.001 s avg)
+           wfc_data_kread :    11.06s CPU (     320 calls,   0.035 s avg)
+                  overlap :     1.27s CPU (     256 calls,   0.005 s avg)
+           overlap_setmap :     0.22s CPU (     256 calls,   0.001 s avg)
                     s_psi :     0.01s CPU (      64 calls,   0.000 s avg)
-               projection :     0.63s CPU (      64 calls,   0.010 s avg)
-       trial_center_setup :     0.47s CPU (     512 calls,   0.001 s avg)
-               iterations :     2.50s CPU
-             subapce_init :     0.01s CPU
-                   omegai :     0.03s CPU (      53 calls,   0.000 s avg)
-                  zmatrix :     0.22s CPU (    3328 calls,   0.000 s avg)
-                mat_hdiag :     0.38s CPU (    3392 calls,   0.000 s avg)
+               projection :     0.79s CPU (      64 calls,   0.012 s avg)
+       trial_center_setup :     0.65s CPU (     512 calls,   0.001 s avg)
+               iterations :     3.73s CPU
+             subapce_init :     0.02s CPU
+                   omegai :     0.04s CPU (      53 calls,   0.001 s avg)
+                  zmatrix :     0.38s CPU (    3328 calls,   0.000 s avg)
+                mat_hdiag :     0.58s CPU (    3392 calls,   0.000 s avg)
 
 

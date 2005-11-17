@@ -8,7 +8,7 @@
 
 
   Program <bands>  v. 2.0.0  starts ...
-  Date 14Oct2005 at 13:36:34 
+  Date 17Nov2005 at  1:43:19 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -180,6 +180,6 @@
 
                     bands :     0.00s CPU 
  
-                want_init :     0.22s CPU
+                want_init :     0.01s CPU
 
 
