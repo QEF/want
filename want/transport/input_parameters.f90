@@ -189,11 +189,10 @@ CONTAINS
            IF ( dimR /= 0) CALL errore(subname,'dimR should not be specified',1)
            dimL = dimC
            dimR = dimC
-!!!!!!!!!!!!!!!!!!!!e' vero o e' una cazzata????????
-!           IF ( LEN_TRIM(datafile_L) /= 0 ) &
-!                CALL errore(subname,'datafile_L should not be specified',1)
-!           IF ( LEN_TRIM(datafile_R) /= 0 ) &
-!                CALL errore(subname,'datafile_R should not be specified',1)
+           IF ( LEN_TRIM(datafile_L) /= 0 ) &
+                CALL errore(subname,'datafile_L should not be specified',1)
+           IF ( LEN_TRIM(datafile_R) /= 0 ) &
+                CALL errore(subname,'datafile_R should not be specified',1)
       ENDIF
 
 

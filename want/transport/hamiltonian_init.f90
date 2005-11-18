@@ -48,7 +48,7 @@
    USE constants,            ONLY : CZERO, CONE
    USE io_global_module,     ONLY : stdin
    USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R
-   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, nrtot_par
+   USE T_kpoints_module,     ONLY : kpoints_init, nrtot_par
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate,   &
                                     dimL, dimR, dimC, dimx, &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, &

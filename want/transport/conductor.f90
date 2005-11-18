@@ -125,7 +125,7 @@
 ! 
    WRITE(stdout,"()")
 
-   energies: &
+   energy_loop: &
    DO ie = 1, ne
 
       !
@@ -221,7 +221,7 @@
           conduct(:,ie) = conduct(:,ie) + wk_par(ik) * cond_aux(:)
       
       ENDDO kpt_loop 
-   ENDDO energies
+   ENDDO energy_loop
 
    !
    ! close sgm file
