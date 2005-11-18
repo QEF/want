@@ -69,6 +69,7 @@
    !
    ! some checks
    !
+   IF ( .NOT. kpoints_alloc ) CALL errore('read_matrix', 'kpoints not alloc', 1 )
    IF ( dim1 > lda1 ) CALL errore('read_matrix', 'invalid dim1', 1 )
    IF ( dim2 > lda2 ) CALL errore('read_matrix', 'invalid dim2', 2 )
 
@@ -222,7 +223,7 @@
             ! set the 2D parallel indexes
             !
             j = j + 1
-            ivr_aux(i) = vr_par( j, ir_par)
+            ivr_aux(i) = NINT( vr_par( j, ir_par) )
          ENDIF
       ENDDO
 
