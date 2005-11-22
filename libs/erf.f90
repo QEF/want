@@ -6,7 +6,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !---------------------------------------------------------------------
-real(dbl) function erf (x)  
+  function erf (x)  
   !---------------------------------------------------------------------
   !
   !     Error function - computed from the rational approximations of
@@ -17,6 +17,9 @@ real(dbl) function erf (x)
   !
   USE kinds, ONLY : dbl
   IMPLICIT NONE  
+
+  REAL(dbl) :: erf
+
    
   real(dbl) :: x, x2, p1 (4), q1 (4)
   real(dbl), external :: erfc  
@@ -45,13 +48,17 @@ real(dbl) function erf (x)
 end function erf
 !
 !---------------------------------------------------------------------
-real(dbl) function erfc (x)  
+  function erfc (x)  
   !---------------------------------------------------------------------
   !
   !     erfc(x) = 1-erf(x)  - See comments in erf
   !
   USE kinds, ONLY : dbl
-  implicit none  
+  IMPLICIT NONE  
+ 
+  REAL(dbl) :: erfc
+
+
   real(dbl) :: x, ax, x2, xm2, p2 (8), q2 (8), p3 (5), q3 (5), pim1
   real(dbl), external :: erf  
   data p2 / 3.00459261020162d2, 4.51918953711873d2, &
@@ -100,14 +107,16 @@ real(dbl) function erfc (x)
 end function erfc
 !
 !---------------------------------------------------------------------
-real(dbl) function gauss_freq (x)
+  function gauss_freq (x)
   !---------------------------------------------------------------------
   !
   !     gauss_freq(x) = (1+erf(x/sqrt(2)))/2 = erfc(-x/sqrt(2))/2
   !             - See comments in erf
   !
-  USE kinds
+  USE kinds, ONLY : dbl
   IMPLICIT NONE
+
+  REAL(dbl) :: gauss_freq
 
   real(dbl) :: x
   real(dbl), parameter :: c =  0.707106781186548d0
