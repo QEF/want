@@ -107,6 +107,15 @@ case $INPUT in
 esac
 
 #
+# switches
+#
+if [ "$PLOT_SWITCH" = "no" ] ; then 
+   PLOT_UP=".FALSE." 
+   PLOT_DW=".FALSE." 
+fi
+
+
+#
 # preliminaries
 #
 if [ -z "$CLEAN" ] ; then

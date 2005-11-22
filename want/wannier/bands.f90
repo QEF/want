@@ -198,7 +198,7 @@
                 ham(i,j) = CZERO
                 DO ir = 1, nrtot
                     arg = DOT_PRODUCT( kpt(:,ik), vr(:,ir) )
-                    phase = CMPLX( COS(arg), SIN(arg) ) * wr(ir)
+                    phase = CMPLX( COS(arg), SIN(arg), dbl ) * wr(ir)
                     ham(i,j) = ham(i,j) + phase * rham(i,j,ir) 
                 ENDDO
            ENDDO

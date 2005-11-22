@@ -505,7 +505,7 @@
               ! apply a globgal shift to set the WF in the required cell
               !
               arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_shift(:,iwann(m)) )
-              phase = CMPLX( COS(arg), SIN(arg) )
+              phase = CMPLX( COS(arg), SIN(arg), dbl )
 
 
               kwann( :, m ) = CZERO
@@ -558,7 +558,7 @@
                          arg   = vkpt_cry(1,ik) * REAL(nxx, dbl) / REAL(nfft(1), dbl) + &
                                  vkpt_cry(2,ik) * REAL(nyy, dbl) / REAL(nfft(2), dbl) + &
                                  vkpt_cry(3,ik) * REAL(nzz, dbl) / REAL(nfft(3), dbl)
-                         caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg) ) * &
+                         caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg), dbl ) * &
                                  kwann( ir, m ) 
 
                          cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux

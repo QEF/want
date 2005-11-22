@@ -144,6 +144,13 @@ case $INPUT in
    (*)                   echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;  
 esac
 
+#
+# switches
+#
+if [ "$PLOT_SWITCH" = "no" ] ; then 
+    PLOT_COND=".FALSE." 
+    PLOT_LEADS=".FALSE." 
+fi
 
 #
 # preliminaries

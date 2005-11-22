@@ -7,7 +7,13 @@
 -------------------------------------------------
 Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
-17 Nov 2005      Test references updated. (BB)
+
+
+22 Nov 2005      CMPLX intrinsic always used with the explicit kind (dbl) for
+                 portability purposes (Courtesy of Carlo Cavazzoni). (AF)
+
+17 Nov 2005      Test references updated. (BB) 
+                 environment.conf and run.sh scripts (tests) improved. (AF)
 
 16 Nov 2005      Portability issue fixed in run.sh scripts (tests). (AF) 
 

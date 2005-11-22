@@ -190,13 +190,13 @@ CONTAINS
            ! ... bphase = e^-i b*x1
            DO i=1,3
                arg = DOT_PRODUCT( bvec(:,i) , x1(:) )
-               bphase(i) = CMPLX( COS(arg), -SIN(arg) )
+               bphase(i) = CMPLX( COS(arg), -SIN(arg), dbl )
            ENDDO
 
            !
            ! ... kphase = e^-i vk*x1
            arg = DOT_PRODUCT( vk(:) , x1(:) )
-           kphase = CMPLX( COS(arg), -SIN(arg) )
+           kphase = CMPLX( COS(arg), -SIN(arg), dbl )
 
            !
            ! ... construct the pahses as follows:
@@ -219,12 +219,12 @@ CONTAINS
                ! ... bphase = e^-i b*x2
                DO i=1,3
                    arg = DOT_PRODUCT( bvec(:,i) , x2(:) )
-                   bphase(i) = CMPLX( COS(arg), -SIN(arg) )
+                   bphase(i) = CMPLX( COS(arg), -SIN(arg), dbl )
                ENDDO
                !
                ! ... kphase = e^-i vk*x2
                arg = DOT_PRODUCT( vk(:) , x2(:) )
-               kphase = CMPLX( COS(arg), -SIN(arg) )
+               kphase = CMPLX( COS(arg), -SIN(arg), dbl )
 
                DO ig = 1, npwk
                    igvect(:) = igv(:,igsort(ig,ik))
