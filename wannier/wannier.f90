@@ -58,6 +58,10 @@
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
+
+! XXX
+INTEGER :: i,j, l
+COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
       !
       CHARACTER( LEN=nstrx )  :: filename
       !
@@ -430,6 +434,39 @@
       ! ... Unitariery of U matrix is checked
       !
       DO ik = 1, nkpts
+
+! XXX
+          ALLOCATE(aux(dimwann,dimwann))
+
+          DO j = 1, dimwann
+          DO i = 1, dimwann
+               aux(i,j) = CZERO
+               DO l=1, dimwann
+                     aux(i,j) = aux(i,j) + CONJG( cu(l,i,ik) ) * cu(l,j,ik)
+               ENDDO
+          ENDDO
+          ENDDO
+
+!          CALL mat_mul( aux, cu(:,:,ik), 'C', cu(:,:,ik), 'N', &
+!                        dimwann, dimwann, dimwann)
+
+          DO i = 1, dimwann
+              aux(i,i) = aux(i,i) - CONE
+          ENDDO
+
+          DO j = 1, dimwann
+          DO i = 1, dimwann
+               IF ( ABS(aux(i,j)) > unitary_thr )  THEN
+                  WRITE (stdout, "(2x, 'DEBUG: i, j, ikpt, AUX  ',3i4,2x,2f15.9)") &
+                         i, j, ik, aux(i,j)
+               ENDIF
+          ENDDO
+          ENDDO
+
+          DEALLOCATE(aux)
+! XXX
+
+
           IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik),  &
                                     SIDE='both', TOLL=unitary_thr )  )  &
                WRITE (stdout, " (2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")ik

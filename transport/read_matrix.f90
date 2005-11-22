@@ -265,7 +265,7 @@
       ! hamiltonians
       !
 #ifdef __DEBUG_REAL_MATRIX
-      a(1:dim1, 1:dim2, ir_par) = CMPLX( REAL(a(1:dim1, 1:dim2, ir_par)) )
+      a(1:dim1, 1:dim2, ir_par) = CMPLX( REAL(a(1:dim1, 1:dim2, ir_par)), dbl )
 #endif
 
    ENDDO R_loop

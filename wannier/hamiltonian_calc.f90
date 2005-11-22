@@ -93,7 +93,7 @@
             rham(i,j,ir) = CZERO
             DO ik = 1, nkpts
                 arg = DOT_PRODUCT( vkpt(:,ik), vr(:,ir) )
-                phase = CMPLX( COS(arg), -SIN(arg) )
+                phase = CMPLX( COS(arg), -SIN(arg), dbl )
                 rham(i,j,ir) = rham(i,j,ir) + phase * kham(i,j,ik)
             ENDDO
             rham(i,j,ir) = rham(i,j,ir) / REAL(nkpts, dbl)

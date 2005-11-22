@@ -18,8 +18,10 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    !
    USE kinds,          ONLY : dbl
    USE constants,      ONLY : CZERO
+   USE io_module,      ONLY : stdout
    USE timing_module,  ONLY : timing
    USE util_module,    ONLY : mat_mul, mat_hdiag, zmat_unitary
+   USE control_module, ONLY : unitary_thr
    IMPLICIT NONE
 
    !
@@ -67,7 +69,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
         ! compute dU on the spectral basis of dq
         ! cw = e^(i * w)
         !
-        cw = CMPLX( COS(w), SIN(w) )
+        cw = CMPLX( COS(w), SIN(w), dbl )
 
         !
         ! we want to compute z * cw * z^{dag} now construct  

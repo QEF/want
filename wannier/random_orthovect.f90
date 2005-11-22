@@ -137,7 +137,7 @@ END SUBROUTINE random_orthovect
       ! a new vector is generated
       norm = ZERO
       DO i = 1, ndim
-          z(i) = CMPLX( rndm(), rndm() )
+          z(i) = CMPLX( rndm(), rndm(), dbl )
           norm = norm + REAL ( z(i) * CONJG( z(i) )  )
       ENDDO
       !

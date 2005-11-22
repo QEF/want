@@ -169,7 +169,7 @@ CONTAINS
       DO ik = 1, nkpts_par
       DO ir = 1, nrtot_par
            arg = TPI * DOT_PRODUCT( vkpt_par(:,ik), vr_par(:,ir) )
-           table_par(ir,ik) = CMPLX( COS(arg), SIN(arg) )
+           table_par(ir,ik) = CMPLX( COS(arg), SIN(arg), dbl )
       ENDDO
       ENDDO
 

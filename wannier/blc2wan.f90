@@ -231,7 +231,7 @@
       DO ir = 1, nrtot
           DO ik=1,nkpts
               arg = DOT_PRODUCT( kpt(:,ik), vr(:,ir) )
-              phase(ik,ir) = CMPLX( COS(arg), -SIN(arg) )
+              phase(ik,ir) = CMPLX( COS(arg), -SIN(arg), dbl )
           ENDDO
           !
           ! compute also the norms of the vr vectors

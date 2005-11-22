@@ -34,7 +34,7 @@
    ! local variables
    !
    INTEGER   :: ik, ib
-   INTEGER   :: i, m, n, ierr 
+   INTEGER   :: m, n, ierr 
    REAL(dbl) :: rtmp, rtmp1
    REAL(dbl), ALLOCATABLE :: aux(:,:,:)
    !

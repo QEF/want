@@ -72,6 +72,11 @@ case $INPUT in
 esac
 
 #
+# switches
+#
+if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
+
+#
 # preliminaries
 #
 if [ -z "$CLEAN" ] ; then

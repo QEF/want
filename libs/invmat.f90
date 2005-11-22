@@ -13,17 +13,17 @@ subroutine invmat (n, a, a_inv, da)
   ! if the matrix is dimensioned 3x3, it also computes determinant "da"
   ! matrix "a" is unchanged on output - LAPACK
   !
-  USE kinds, ONLY : DP => dbl
+  USE kinds, ONLY : dbl
   implicit none
   integer :: n
-  real(kind=DP), DIMENSION (n,n) :: a, a_inv
-  real(kind=DP) :: da
+  real(kind=dbl), DIMENSION (n,n) :: a, a_inv
+  real(kind=dbl) :: da
   !
   integer :: info, lda, lwork, ipiv (n)
   ! info=0: inversion was successful
   ! lda   : leading dimension (the same as n)
   ! ipiv  : work space for pivoting (assumed of length lwork=n)
-  real(kind=DP) :: work (n) 
+  real(kind=dbl) :: work (n) 
   ! more work space
   !
   lda = n
