@@ -84,6 +84,9 @@
        ! effective bias between the leads
        ! not fully implemented at the moment
 
+   INTEGER :: nprint = 20 
+       ! every nprint energy step write to stdout
+
    INTEGER :: niterx = 200
        ! max number of iterations in the calculation of
        ! lead self-energies
@@ -104,13 +107,13 @@
        ! the name of the file containing correlation self-energy
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type, &
-                 conduct_formula, niterx, ne, emin, emax, delta, bias, &
+                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, use_correlation 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx
-   PUBLIC :: ne, emin, emax, delta, bias, use_overlap, use_correlation, datafile_sgm
+   PUBLIC :: ne, emin, emax, nprint, delta, bias, use_overlap, use_correlation, datafile_sgm
    PUBLIC :: datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: INPUT_CONDUCTOR
 
@@ -153,6 +156,7 @@ CONTAINS
       IF ( emax <= emin ) CALL errore(subname,'Invalid EMIN EMAX',1)
       IF ( ne <= 1 ) CALL errore(subname,'Invalid NE',1)
       IF ( niterx <= 0 ) CALL errore(subname,'Invalid NITERX',1)
+      IF ( nprint <= 0) CALL errore(subname, ' nprint must be > 0 ', -nprint+1 )
       IF ( delta < ZERO ) CALL errore(subname,'Invalid DELTA',1)
       IF ( delta > EPS_m2 ) CALL errore(subname,'DELTA too large',1)
 

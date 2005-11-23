@@ -68,6 +68,7 @@ CONTAINS
                                            use_overlap,       &
                                            use_correlation,   &
                                            niterx,            &
+                                           nprint,            &
                                            bias,              &
                                            transport_dir,     &
                                            datafile_L,        &
@@ -79,6 +80,7 @@ CONTAINS
                                            use_overlap_       => use_overlap, &
                                            use_correlation_   => use_correlation, &
                                            niterx_            => niterx, &
+                                           nprint_            => nprint, &
                                            bias_              => bias, &
                                            transport_dir_     => transport_dir, &
                                            datafile_L_        => datafile_L, &
@@ -93,6 +95,7 @@ CONTAINS
       use_overlap         = use_overlap_
       use_correlation     = use_correlation_
       niterx              = niterx_
+      nprint              = nprint_
       bias                = bias_
       datafile_sgm        = datafile_sgm_
       datafile_L          = datafile_L_
