@@ -17,14 +17,14 @@
    USE version_module,       ONLY : version_number
    USE parser_module,        ONLY : change_case
    USE files_module,         ONLY : file_open, file_close
-   USE timing_module,        ONLY : timing, timing_overview, global_list
+   USE timing_module,        ONLY : timing, timing_overview, global_list, timing_upto_now
    USE util_module,          ONLY : mat_mul, mat_sv
    USE T_input_module,       ONLY : input_manager
    USE io_module,            ONLY : stdout, stdin, sgm_unit => aux_unit,   &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
-                                    conduct_formula, niterx, bias, datafile_sgm 
-   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta
+                                    conduct_formula, niterx, nprint, bias, datafile_sgm 
+   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta, de
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par , wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 
@@ -45,7 +45,7 @@
    !
    COMPLEX(dbl)     :: ene
    CHARACTER(nstrx) :: filename
-   INTEGER          :: i, ie, ik, ierr
+   INTEGER          :: i, ie, ik, ierr, ncount
    !   
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
@@ -58,7 +58,6 @@
 !------------------------------
 !
    CALL startup(version_number,'conductor')
-
 
 !
 ! read input file
@@ -82,15 +81,16 @@
    !
    ! summarize the first part of the initializaton
    !
-!   CALL summary(stdout)
 
 
    !
    ! Set up the layer hamiltonians
    !
    CALL hamiltonian_init( use_overlap, calculation_type )
-
-
+   !
+   ! write input data on output file
+   !
+   CALL summary( stdout )
    !
    ! setup correlation data, if the case
    !
@@ -127,12 +127,17 @@
 
    energy_loop: &
    DO ie = 1, ne
+      ncount = ie
 
       !
       ! grids and misc
       !
       ene =  egrid(ie)  + delta * CI
-      WRITE(stdout,"(2x, 'Computing E = ', f9.5, ' eV' )") egrid(ie)
+           IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
+!                WRITE( stdout,"(2x,'Energy step = ',i5) ") ncount
+                WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") ncount, egrid(ie)
+                CALL timing_upto_now(stdout)
+           ENDIF
 
       dos(:,ie) = ZERO
       conduct(:,ie) = ZERO

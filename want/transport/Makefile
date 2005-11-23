@@ -19,6 +19,7 @@ input_parameters.o \
 kpoints.o \
 fourier_par.o \
 read_matrix.o \
+summary.o \
 transfer.o \
 transmittance.o \
 workspace.o

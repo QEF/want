@@ -31,6 +31,8 @@
    !
    INTEGER                   :: niterx
    !
+   INTEGER                   :: nprint
+   !
    REAL(dbl)                 :: bias
 
 !
@@ -48,6 +50,8 @@
    PUBLIC :: use_correlation
    !
    PUBLIC :: niterx
+   !
+   PUBLIC :: nprint
    !
    PUBLIC :: bias
 

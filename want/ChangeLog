@@ -8,6 +8,9 @@
 Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
+23 Nov 2005      summary subroutine, writing to stdout information about
+                 the system, added to transport; nprint parameter added 
+                 to INPUT_CONDUCTOR namelist. (BB)  
 
 22 Nov 2005      CMPLX intrinsic always used with the explicit kind (dbl) for
                  portability purposes (Courtesy of Carlo Cavazzoni). (AF)
