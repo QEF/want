@@ -149,7 +149,8 @@ CONTAINS
            list(iwann)%weight = ZERO
 
            CALL read_line(unit, tmp_line )
-           READ(tmp_line,*) list(iwann)%type 
+           READ(tmp_line,*, IOSTAT=ierr) list(iwann)%type 
+           IF (ierr/=0) CALL errore('card_wannier_centers','reading line I',ABS(ierr))
            !
            CALL change_case(list(iwann)%type,'lower')
 
@@ -164,7 +165,7 @@ CONTAINS
                    READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
                         list(iwann)%l, list(iwann)%m, list(iwann)%decay
                ENDIF
-               IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
+               IF (ierr/=0) CALL errore('card_wannier_centers','reading line II',ABS(ierr))
 
            CASE ( "2gauss" ) 
                !
