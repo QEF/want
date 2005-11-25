@@ -36,8 +36,7 @@
    !
    ! local variables
    !
-   CHARACTER(7) :: subname="summary"
-   INTEGER      :: i, ik, ierr
+   INTEGER      :: i, ik
    INTEGER      :: nk_par3D(3)       ! 3D kpt mesh generator
    INTEGER      :: nr_par3D(3)       ! 3D R-vect mesh generator
    REAL(dbl)    :: vkpt_par3D(3)     ! 3D kpt-vectors

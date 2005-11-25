@@ -24,7 +24,7 @@
                                     dos_unit => aux1_unit, cond_unit => aux2_unit
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
                                     conduct_formula, niterx, nprint, bias, datafile_sgm 
-   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta, de
+   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par , wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 

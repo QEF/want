@@ -207,7 +207,7 @@ MODULE parser_module
     !
     !
     IF( LEN( line ) < 256 ) THEN
-       CALL errore(' read_line ', ' input line too short ', LEN( line ) )
+       CALL errore('read_line', 'input line too short', ABS(LEN(line))+1 )
     END IF
     !
     IF ( ionode ) THEN
@@ -224,7 +224,7 @@ MODULE parser_module
     IF( PRESENT(end_of_file) ) THEN
        end_of_file = tend
     ELSE IF( tend ) THEN
-       CALL errore(' read_line ', ' end of file ', 0 )
+       CALL errore('read_line', 'end of file', 1 )
     ELSE
        IF( PRESENT(field) ) CALL field_compare( line, nfield, field )
     END IF

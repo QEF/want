@@ -8,6 +8,9 @@
 Date: XX Nov 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
+
+25 Nov 2005      Small fixes in input reading. (BB)
+
 23 Nov 2005      summary subroutine, writing to stdout information about
                  the system, added to transport; nprint parameter added 
                  to INPUT_CONDUCTOR namelist. (BB)  
