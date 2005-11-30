@@ -204,7 +204,9 @@
           !
           kpoints : &
           DO ik=1,nkpts
-             WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point ',i4)") ik
+             !
+             WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point: ',i4)") ik
+             WRITE(stdout,"( 4x,'npw = ',i6,',', 4x,'dimwin = ',i4)") npwk(ik), dimwin(ik)
 
              CALL wfc_data_kread(dft_unit, ik, "IK", evc, evc_info)
 

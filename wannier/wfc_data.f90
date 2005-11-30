@@ -179,6 +179,7 @@ CONTAINS
        !
        ! lwfc is supposed to be already allocated
        IF ( .NOT. lwfc%alloc ) CALL errore(subname,'lwfc not yet allocated',1)
+       IF ( ik <= 0 .OR. ik > nkpts ) CALL errore(subname,'invalid ik',2)
 
        ibs = imin(ik)
        ibe = imax(ik)
@@ -203,9 +204,11 @@ CONTAINS
        DO ib=ibs,ibe
             name = 'Wfc'//TRIM(iotk_index(ib))
             CALL wfc_info_add(npwk(ik), ib, ik, TRIM(label), lwfc, INDEX=lindex )
+            !
             CALL iotk_scan_dat(unit,TRIM(name), wfc(1:npwk(ik),lindex),IERR=ierr)
+            IF (ierr/=0 ) CALL errore(subname,'reading '//TRIM(name),iks+ik-1)
+            !
             wfc(npwk(ik)+1:,lindex) = CZERO
-            IF (ierr/=0 ) CALL errore(subname,'reading '//TRIM(name),ABS(ierr))
        ENDDO
        !
        ! also here recorrect for the spin

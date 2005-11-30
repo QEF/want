@@ -269,14 +269,14 @@
       ENDDO
       !
       !
-      ! if lattice is not orthorombic, only .cube output fmt is allowed
+      ! if lattice is not orthorombic, only .cube or .xsf output fmts are allowed
       !
       IF ( ABS( DOT_PRODUCT( avec(:,1), avec(:,2) )) > EPS_m6 .OR. &
            ABS( DOT_PRODUCT( avec(:,1), avec(:,3) )) > EPS_m6 .OR. &
            ABS( DOT_PRODUCT( avec(:,2), avec(:,3) )) > EPS_m6   ) THEN 
            !
            IF ( TRIM(output_fmt) == "plt" .OR. TRIM(output_fmt) == "txt" ) &
-                CALL errore('plot','TXT or PLT fmts allowed only in orthorombic latt',4)
+                CALL errore('plot','lattice not orthorombic: use xsf or cube output_fmt',4)
       ENDIF
 
       !
@@ -754,9 +754,12 @@
               avecl(:,3) = avec(:,3) * REAL(nrzh-nrzl+1, dbl) / REAL(nfft(3), dbl) 
               
               !
-              ! avec, tautot in bohr, but converted to Ang in the routine
-!              CALL xsf_struct ( avec, natom, tautot, symbtot, aux_unit )
+              ! tau is temporarily converted to bohr 
+              ! avec and tau passed in bohr, but converted to Ang in the routine
+              !
+              tau = tau * alat
               CALL xsf_struct ( avec, nat, tau, symb, aux_unit )
+              tau = tau / alat
               !
               CALL xsf_datagrid_3d ( rwann_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
                                         nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
