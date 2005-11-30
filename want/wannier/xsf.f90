@@ -24,7 +24,7 @@ subroutine xsf_struct (at, nat, tau, symb, ounit)
 
   integer          :: nat, ounit
   character(len=3) :: symb(nat)
-  real(kind=dbl)   :: tau (3, nat), at (3, 3)
+  real(dbl)        :: tau (3, nat), at (3, 3)
   ! --
   integer          :: n
 
