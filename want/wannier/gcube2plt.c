@@ -392,7 +392,7 @@ extern char *Number2Name(int);
 #     define GCUBE2PLT gcube2plt_
 #  endif
 #endif
-#if defined __AIX | defined __HP 
+#if defined __AIX | defined __HP | defined __MAC 
 #  define GCUBE2PLT gcube2plt
 #endif
 #if defined __ALPHA 
