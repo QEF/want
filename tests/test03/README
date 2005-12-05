@@ -3,11 +3,46 @@
 @title@   Isolated benzene molecule (both NC and USPP)
 ==============================================================================
 
-This test performs the calculation of the wannier functions for the
-isolated benzene molecule, both in the norm-conserving and ultra-soft
-pseudopotential case. The molecule is oriented in the xy plane. 
+  This test performs the calculation of the wannier functions for the
+  isolated benzene molecule, both in the norm-conserving and ultra-soft
+  pseudopotential case. The molecule is oriented in the xy plane. 
 
-RESULT discussion
+  Disentangle calculation is performed within an energy window of 2.0 eV upper-
+  bound, in order to obtain 18 Wannier functions. A conditioned minimization 
+  is carried out and the amplitude of the penalty functional is set to 20 (see 
+  the manual for further details). Eighteen initial guess centers are considered: 
+  12 of 1gauss-type with s-geometry, localized at the bond midpoints and 6 s-type 
+  atomic orbitals,localized on the C atoms (see the manual for further details).
+  The last number near each starting center coordinates is the value of the center 
+  weight in the penalty functional expression.
+  
+
+  RESULTS discussion
+
+  Disentangle convergence is achieved in about 50 iterations for NC pseudopots 
+  (about 90 for US pseudopots) and the final invariant spread (\Omega_I) is 
+  about 66.457 Bohr^2 for NC pseudopots (66.794 Bohr^2 for US pseudopots), 
+  3.692 Bohr^2 on average (3.711 Bohr^2 for US): this component of the spread
+  will remain unchanged during the Wannier localization.
+
+  After about 560 iterations Wannier convergence for NC pseudopots is achieved 
+  (670 iterations in the US case).
+  A total spread of about 102.205 Bohr^2 for NC (104.399 Bohr^2 for US) is found,
+  with an average of about 5.678 Bohr^2 for NC (5.780 Bohr^2 for US).
+
+  In both cases the computed localization of Wannier functions is verified:
+
+      * Average invariant spread is small.
+
+      * Final average total spreads are small.
+
+   It can be verified that if a not conditioned minimization is performed the 
+   center positions are not exactly inidviduated and the localization procedure
+   fail.
+
+   Norm-conserving and Ultra-soft calculations show some small differences 
+   which can be safely attributed to the pseudopotentials and their pseudization 
+   types.
 
 
 
