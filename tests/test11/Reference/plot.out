@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 17Nov2005 at  1:53: 5 
+  Date  1Dec2005 at 19:39: 2 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -23,7 +23,7 @@
   =                              DFT data                              =
   ======================================================================
 
-<LATTICE>
+ <LATTICE>
   Alat  =      18.0000000 (Bohr)
   Alat  =       9.5251860 (Ang )
   Omega =   12912.8056934 (Bohr^3)
@@ -44,9 +44,9 @@
     b(1) = (  0.3491  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3491  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  0.1577 )     (   0.0000  0.0000  0.4516 )
-</LATTICE>
+ </LATTICE>
 
-<K-POINTS>
+ <K-POINTS>
   nkpts =    4
   Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -54,7 +54,7 @@
     k point   2:   (   0.00000  0.00000  0.03941 ),   weight =   0.2500
     k point   3:   (   0.00000  0.00000  0.07883 ),   weight =   0.2500
     k point   4:   (   0.00000  0.00000  0.11824 ),   weight =   0.2500
-</K-POINTS>
+ </K-POINTS>
 
 
   WARNING: USPP not fully implemented
@@ -68,7 +68,7 @@
                          for rho  =        176.00 (Ry)
       Total number of PW for rho  =     508969
         Max number of PW for wfc  =      22573
-      Total number of PW for wfcs =      24118
+      Total number of PW for wfcs =      24117
         FFT grid components (rho) =  (    80   80  180 )
 
 
@@ -106,27 +106,27 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -0.000012    -0.000014    -0.000442 )
-    Wf(   2 ) = (    -0.000006    -0.000055    -0.018627 )
-    Wf(   3 ) = (    -0.000444    -0.000145    -0.000486 )
-    Wf(   4 ) = (    -0.001609    -0.000069    -0.017553 )
-    Wf(   5 ) = (    -0.000076    -0.000001    -0.000442 )
-    Wf(   6 ) = (    -0.010976     0.004345     2.309793 )
-    Wf(  24 ) = (    -0.002651     0.013928    15.697413 )
-    Wf(  25 ) = (     0.001187     0.003340    18.370915 )
-    Wf(  26 ) = (     0.001673    -0.011841    21.063380 )
-    Wf(  27 ) = (    -0.012322    -0.003077    21.983196 )
+    Wf(   1 ) = (     0.000029     0.000000    -0.000443 )
+    Wf(   2 ) = (    -0.000010     0.000359    -0.014707 )
+    Wf(   3 ) = (     0.000238     0.000120    -0.000466 )
+    Wf(   4 ) = (     0.001250    -0.000027    -0.016722 )
+    Wf(   5 ) = (     0.000037     0.000010    -0.000443 )
+    Wf(   6 ) = (     0.006756     0.003384     2.309638 )
+    Wf(  24 ) = (     0.023580     0.035381    15.687705 )
+    Wf(  25 ) = (    -0.000516    -0.002165    18.347360 )
+    Wf(  26 ) = (    -0.024077    -0.024690    20.892324 )
+    Wf(  27 ) = (    -0.032911    -0.087378    21.681019 )
         in crystal coord
-    Wf(   1 ) = (    -0.000001    -0.000001    -0.000011 )
-    Wf(   2 ) = (     0.000000    -0.000003    -0.000467 )
-    Wf(   3 ) = (    -0.000025    -0.000008    -0.000012 )
-    Wf(   4 ) = (    -0.000089    -0.000004    -0.000440 )
-    Wf(   5 ) = (    -0.000004     0.000000    -0.000011 )
-    Wf(   6 ) = (    -0.000610     0.000241     0.057956 )
-    Wf(  24 ) = (    -0.000147     0.000774     0.393870 )
-    Wf(  25 ) = (     0.000066     0.000186     0.460951 )
-    Wf(  26 ) = (     0.000093    -0.000658     0.528509 )
-    Wf(  27 ) = (    -0.000685    -0.000171     0.551589 )
+    Wf(   1 ) = (     0.000002     0.000000    -0.000011 )
+    Wf(   2 ) = (    -0.000001     0.000020    -0.000369 )
+    Wf(   3 ) = (     0.000013     0.000007    -0.000012 )
+    Wf(   4 ) = (     0.000069    -0.000002    -0.000420 )
+    Wf(   5 ) = (     0.000002     0.000001    -0.000011 )
+    Wf(   6 ) = (     0.000375     0.000188     0.057952 )
+    Wf(  24 ) = (     0.001310     0.001966     0.393626 )
+    Wf(  25 ) = (    -0.000029    -0.000120     0.460360 )
+    Wf(  26 ) = (    -0.001338    -0.001372     0.524217 )
+    Wf(  27 ) = (    -0.001828    -0.004854     0.544006 )
 
   Locating WFs: 
   Plotting Cell dimensions [cryst. coord]:
@@ -136,16 +136,16 @@
 
   New center positions [cryst. coord]:
         in crystal coord
-    Wf(   1 ) = (    -0.000001    -0.000001     0.999989 )
-    Wf(   2 ) = (     0.000000    -0.000003     0.999533 )
-    Wf(   3 ) = (    -0.000025    -0.000008     0.999988 )
-    Wf(   4 ) = (    -0.000089    -0.000004     0.999560 )
-    Wf(   5 ) = (    -0.000004     0.000000     0.999989 )
-    Wf(   6 ) = (    -0.000610     0.000241     0.057956 )
-    Wf(  24 ) = (    -0.000147     0.000774     0.393870 )
-    Wf(  25 ) = (     0.000066     0.000186     0.460951 )
-    Wf(  26 ) = (     0.000093    -0.000658     0.528509 )
-    Wf(  27 ) = (    -0.000685    -0.000171     0.551589 )
+    Wf(   1 ) = (     0.000002     0.000000     0.999989 )
+    Wf(   2 ) = (    -0.000001     0.000020     0.999631 )
+    Wf(   3 ) = (     0.000013     0.000007     0.999988 )
+    Wf(   4 ) = (     0.000069    -0.000002     0.999580 )
+    Wf(   5 ) = (     0.000002     0.000001     0.999989 )
+    Wf(   6 ) = (     0.000375     0.000188     0.057952 )
+    Wf(  24 ) = (     0.001310     0.001966     0.393626 )
+    Wf(  25 ) = (    -0.000029    -0.000120     0.460360 )
+    Wf(  26 ) = (    -0.001338    -0.001372     0.524217 )
+    Wf(  27 ) = (    -0.001828    -0.004854     0.544006 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -162,16 +162,16 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :   320.21 secs
+                              Total time spent up to now :   643.91 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :   635.75 secs
+                              Total time spent up to now :  1274.99 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :   952.62 secs
+                              Total time spent up to now :  1909.16 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :  1267.90 secs
+                              Total time spent up to now :  2540.15 secs
 
 
   writing WF(   1) plot on file: .//pt_h2_pt_WanT_WFM001.cube
@@ -227,7 +227,7 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM003.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.002115
+Max value: 0.002135
 Job done ...
 **********************************************************
   deleting tmp files: .//pt_h2_pt_WanT_WFM003.cube
@@ -247,7 +247,7 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM004.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.002600
+Max value: 0.002595
 Job done ...
 **********************************************************
   deleting tmp files: .//pt_h2_pt_WanT_WFM004.cube
@@ -287,7 +287,7 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM006.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.001915
+Max value: 0.001902
 Job done ...
 **********************************************************
   deleting tmp files: .//pt_h2_pt_WanT_WFM006.cube
@@ -307,7 +307,7 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM024.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.003436
+Max value: 0.003583
 Job done ...
 **********************************************************
   deleting tmp files: .//pt_h2_pt_WanT_WFM024.cube
@@ -327,7 +327,7 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM025.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.004463
+Max value: 0.004482
 Job done ...
 **********************************************************
   deleting tmp files: .//pt_h2_pt_WanT_WFM025.cube
@@ -347,7 +347,7 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM026.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.002089
+Max value: 0.001293
 Job done ...
 **********************************************************
   deleting tmp files: .//pt_h2_pt_WanT_WFM026.cube
@@ -367,7 +367,7 @@ Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM027.crd'
  plot output - cube format
 Number of atoms: 10, x-, y-, z-origin (in Angstrom): -4.762594,-4.762594,0.000000
 Min value: 0.000000
-Max value: 0.002284
+Max value: 0.002537
 Job done ...
 **********************************************************
   deleting tmp files: .//pt_h2_pt_WanT_WFM027.cube
@@ -380,14 +380,14 @@ Job done ...
    <global routines>
              clock number :     8
 
-                     plot : 21m54.00s CPU 
+                     plot : 43m49.00s CPU 
  
-                want_init :     0.10s CPU
-          ggrids_read_ext :     0.30s CPU
-           wfc_data_kread :     1.44s CPU (       4 calls,   0.361 s avg)
-               kwann_calc : 20m38.00s CPU (      40 calls,  30.965 s avg)
-                   cfft3d :    18.99s CPU (      40 calls,   0.475 s avg)
-               cwann_calc :     5.80s CPU (      40 calls,   0.145 s avg)
-                 gcubeplt :    22.82s CPU (      10 calls,   2.282 s avg)
+                want_init :     0.16s CPU
+          ggrids_read_ext :     0.57s CPU
+           wfc_data_kread :     2.46s CPU (       4 calls,   0.615 s avg)
+               kwann_calc : 41m24.00s CPU (      40 calls,  62.108 s avg)
+                   cfft3d :    35.80s CPU (      40 calls,   0.895 s avg)
+               cwann_calc :    11.67s CPU (      40 calls,   0.292 s avg)
+                 gcubeplt :    42.41s CPU (      10 calls,   4.241 s avg)
 
 

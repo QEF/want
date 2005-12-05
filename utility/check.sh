@@ -71,6 +71,9 @@ do
               grep -v  "Iteration ="     |
               grep -vi "Center"          |
               grep -v  "Omega variation" |
+              grep -v  "k point"         |
+              grep -v  "Fermi energy"    |
+              grep -v  "^[<>] *! "       |
               uniq
       fi
    fi

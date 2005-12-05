@@ -8,7 +8,7 @@
 
 
   Program <bands>  v. 2.0.0  starts ...
-  Date 17Nov2005 at  1:38:28 
+  Date  1Dec2005 at 19:20:53 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -22,7 +22,7 @@
   =                              DFT data                              =
   ======================================================================
 
-<LATTICE>
+ <LATTICE>
   Alat  =      20.0000000 (Bohr)
   Alat  =      10.5835400 (Ang )
   Omega =    1889.7280000 (Bohr^3)
@@ -43,9 +43,9 @@
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
-</LATTICE>
+ </LATTICE>
 
-<K-POINTS>
+ <K-POINTS>
   nkpts =    8
   Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -57,7 +57,7 @@
     k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250
     k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250
     k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250
-</K-POINTS>
+ </K-POINTS>
 
 
   ======================================================================

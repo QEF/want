@@ -16,6 +16,7 @@
    !     and ibid. v.15, 851 (1985)
    !
    USE kinds
+   USE io_global_module, ONLY : stdout
    USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7
    USE timing_module,    ONLY : timing
    USE util_module,      ONLY : mat_mul, mat_sv
@@ -105,6 +106,8 @@
       ! Main loop
       !
       lconverged = .FALSE.
+
+      convergence_loop: &
       DO m = 1, niterx
 
          CALL mat_mul(t11, tau(:,:,1), 'N', taut(:,:,1), 'N', dim, dim, dim)
@@ -114,16 +117,31 @@
          s1(:,:) = -( t11(:,:) + t12(:,:) )
          s2(:,:) = CZERO
 
+         !
+         ! invert the matrix
+         !
          DO i=1,dim
              s1(i,i) = CONE + s1(i,i)
              s2(i,i) = CONE
          ENDDO
-
-
          !
-         ! XXX add and error in output to mat_sv
+         CALL mat_sv(dim, dim, s1, s2, IERR=ierr)
          !
-         CALL mat_sv(dim, dim, s1, s2)
+         ! exit the main loop, 
+         ! set all the matrices to be computed to zero
+         ! and print a warning
+         !
+         IF ( ierr/=0 ) THEN
+              !
+              tot  = CZERO
+              tott = CZERO
+              !
+              WRITE(stdout, "(2x, 'WARNING: singular matrix at iteration', i4)" ) m
+              WRITE(stdout, "(2x, '         energy descarted')" )
+              !
+              lconverged = .TRUE.
+              EXIT convergence_loop
+         ENDIF
 
 
          CALL mat_mul(t11, tau(:,:,1), 'N', tau(:,:,1), 'N', dim, dim, dim)
@@ -168,10 +186,10 @@
               EXIT
          ENDIF
 
-      ENDDO 
+      ENDDO convergence_loop
 
       IF ( .NOT. lconverged ) &
-          CALL errore('transferb', 'bad t-matrix convergence', 10 )
+          CALL errore('transfer', 'bad t-matrix convergence', 10 )
 
 !
 ! ... local cleaning

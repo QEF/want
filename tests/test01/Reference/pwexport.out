@@ -1,12 +1,12 @@
 
-     Program POST-PROC v.2.1.5  starts ...
-     Today is 17Oct2005 at 17:31:58 
+     Program POST-PROC v.3.0    starts ...
+     Today is 30Nov2005 at 14:45:58 
 
-     Reading file silicon.save ... 
+     Reading file silicon.save ...      only dimensions
      read complete
 
-     Reading file silicon.save ... 
+     Reading file silicon.save ...      all except wavefuctions
      read complete
 
      nbndx  =    16  nbnd   =    16  natomwfc =     8  npwx   =     869
-     nelec  =    8.00 nkb   =     8  ngl    =     117
+     nelec  =   8.00  nkb   =     8  ngl    =     117

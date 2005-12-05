@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 17Nov2005 at  0:41:58 
+  Date  1Dec2005 at 18:33: 0 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -23,7 +23,7 @@
   =                              DFT data                              =
   ======================================================================
 
-<LATTICE>
+ <LATTICE>
   Alat  =      20.0000000 (Bohr)
   Alat  =      10.5835400 (Ang )
   Omega =    8000.0000000 (Bohr^3)
@@ -44,14 +44,14 @@
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  0.3142 )     (   0.0000  0.0000  1.0000 )
-</LATTICE>
+ </LATTICE>
 
-<K-POINTS>
+ <K-POINTS>
   nkpts =    1
   Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
     k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
-</K-POINTS>
+ </K-POINTS>
 
 
   WARNING: USPP not fully implemented
@@ -99,19 +99,19 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -5.380042     2.480923     3.236044 )
-    Wf(   2 ) = (    -3.517172     5.689021     3.217282 )
-    Wf(   7 ) = (     2.037868     2.477169     3.166983 )
-    Wf(   8 ) = (     0.332203     1.326453     3.154100 )
-    Wf(  14 ) = (    -0.380391     4.702338     3.163570 )
-    Wf(  15 ) = (     0.898324     2.477548     3.150638 )
+    Wf(   1 ) = (    -5.380084     2.480914     3.236093 )
+    Wf(   2 ) = (    -3.517164     5.689008     3.217241 )
+    Wf(   7 ) = (     2.037826     2.477168     3.166943 )
+    Wf(   8 ) = (     0.332193     1.326444     3.154114 )
+    Wf(  14 ) = (    -0.380403     4.702350     3.163612 )
+    Wf(  15 ) = (     0.898302     2.477535     3.150619 )
         in crystal coord
-    Wf(   1 ) = (    -0.269002     0.124046     0.161802 )
-    Wf(   2 ) = (    -0.175859     0.284451     0.160864 )
-    Wf(   7 ) = (     0.101893     0.123858     0.158349 )
-    Wf(   8 ) = (     0.016610     0.066323     0.157705 )
-    Wf(  14 ) = (    -0.019020     0.235117     0.158179 )
-    Wf(  15 ) = (     0.044916     0.123877     0.157532 )
+    Wf(   1 ) = (    -0.269004     0.124046     0.161805 )
+    Wf(   2 ) = (    -0.175858     0.284450     0.160862 )
+    Wf(   7 ) = (     0.101891     0.123858     0.158347 )
+    Wf(   8 ) = (     0.016610     0.066322     0.157706 )
+    Wf(  14 ) = (    -0.019020     0.235118     0.158181 )
+    Wf(  15 ) = (     0.044915     0.123877     0.157531 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -130,7 +130,7 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :    44.10 secs
+                              Total time spent up to now :    42.53 secs
 
 
   writing WF(   1) plot on file: .//benzene_US_WanT_WFM001.cube
@@ -259,14 +259,14 @@ Job done ...
    <global routines>
              clock number :     8
 
-                     plot :  1m27.00s CPU 
+                     plot :  1m24.00s CPU 
  
                 want_init :     0.08s CPU
-          ggrids_read_ext :     0.36s CPU
-           wfc_data_kread :     0.18s CPU
-               kwann_calc :    37.44s CPU (       6 calls,   6.240 s avg)
-                   cfft3d :     4.31s CPU (       6 calls,   0.719 s avg)
-               cwann_calc :     1.14s CPU (       6 calls,   0.190 s avg)
-                 gcubeplt :    20.47s CPU (       6 calls,   3.411 s avg)
+          ggrids_read_ext :     0.43s CPU
+           wfc_data_kread :     0.16s CPU
+               kwann_calc :    37.27s CPU (       6 calls,   6.212 s avg)
+                   cfft3d :     2.90s CPU (       6 calls,   0.484 s avg)
+               cwann_calc :     1.12s CPU (       6 calls,   0.187 s avg)
+                 gcubeplt :    19.68s CPU (       6 calls,   3.280 s avg)
 
 

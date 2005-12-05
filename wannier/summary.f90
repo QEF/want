@@ -156,7 +156,7 @@
           WRITE(unit,"(  7x,'    Conditioned minim. :',5x,a)") log2char(do_condmin)
 
 
-          WRITE( unit,"( /, '<WANNIER_FUNCTIONS>')" )
+          WRITE( unit,"( /, ' <WANNIER_FUNCTIONS>')" )
           WRITE( unit,"(2x,'Input parameters for Wannier func. calculation')")
           WRITE( unit,"(4x,'Number of Wannier functions required = ', i4 )" ) dimwann
           WRITE( unit,"(4x,'CG minim: Mixing parameter (alpha0_wan)= ', f6.3 )" ) alpha0_wan
@@ -173,9 +173,9 @@
           WRITE( unit,"(4x,'Unitariery check threshold = ', f15.9 )") unitary_thr
           WRITE( unit,"(4x,'Conditioned minim. amplitude = ', f15.9 )") a_condmin
           WRITE( unit,"(4x,'Conditioned minim.  iter num = ', i5 )") niter_condmin
-          WRITE( unit,"( '</WANNIER_FUNCTIONS>',/)" )
+          WRITE( unit,"( ' </WANNIER_FUNCTIONS>',/)" )
 
-          WRITE( unit, " ( '<DISENTANGLE>')" )
+          WRITE( unit, " ( ' <DISENTANGLE>')" )
           WRITE(unit, " (2x,'Input parameters for subspace definition')")
           WRITE( unit,"(4x,'Spin component = ', a )" ) TRIM(spin_component)
           WRITE( unit,"(4x,'Mixing parameter (alpha_dis)= ', f6.3 )" ) alpha_dis
@@ -186,9 +186,9 @@
           WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_dis
           IF ( use_blimit ) &
              WRITE( unit,"(4x,'WARNING: setting b = 0 in qb (overlap augment.)')")
-          WRITE( unit, " ( '</DISENTANGLE>',/)" )
+          WRITE( unit, " ( ' </DISENTANGLE>',/)" )
 
-          WRITE( unit, " ( '<TRIAL_CENTERS>')" )
+          WRITE( unit, " ( ' <TRIAL_CENTERS>')" )
           ALLOCATE( center_cart1(3,dimwann), center_cart2(3,dimwann), STAT=ierr )
              IF (ierr/=0) CALL errore('summary','allocating center_cart*',ABS(ierr))
           ! ... initialize with crystal coordinates and then convert
@@ -212,7 +212,7 @@
           ENDDO
           DEALLOCATE( center_cart1, center_cart2, STAT=ierr )
              IF (ierr/=0) CALL errore('summary','deallocating center_cart*',ABS(ierr))
-          WRITE( unit, " (/, '</TRIAL_CENTERS>',/)" )
+          WRITE( unit, " (/, ' </TRIAL_CENTERS>',/)" )
 
       ENDIF
       WRITE(unit,"()")      
@@ -229,7 +229,7 @@
       !
       ! ... Lattice
       IF ( lattice_alloc .AND. llattice_ ) THEN
-          WRITE( unit, " (  '<LATTICE>')" )
+          WRITE( unit, " (  ' <LATTICE>')" )
           WRITE( unit, " (2x,'Alat  = ', F15.7, ' (Bohr)' )" ) alat
           WRITE( unit, " (2x,'Alat  = ', F15.7, ' (Ang )' )" ) alat * BOHR
           WRITE( unit, " (2x,'Omega = ', F15.7, ' (Bohr^3)' )" ) omega
@@ -253,13 +253,13 @@
              WRITE ( unit, fmt="(4x,'b(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
                       j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / TPI, i=1,3 )
           ENDDO
-          WRITE( unit, " (  '</LATTICE>',/)" )
+          WRITE( unit, " (  ' </LATTICE>',/)" )
       ENDIF
 
       !
       ! ... ions
       IF ( ions_alloc .AND. latoms_ ) THEN 
-          WRITE( unit, " (  '<IONS>')" )
+          WRITE( unit, " (  ' <IONS>')" )
           WRITE( unit, " (2x,'Number of chemical species =', i3 ) " ) nsp
           IF ( .NOT. use_pseudo )  THEN
              WRITE( unit, " (2x,'WARNING: Pseudopots not read, assumed to be norm cons.')") 
@@ -341,13 +341,13 @@
              WRITE( unit, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
                       symb(ia), ia, (tau( i, ia )*alat, i = 1, 3)
           ENDDO
-          WRITE( unit, " (  '</IONS>',/)" )
+          WRITE( unit, " (  ' </IONS>',/)" )
       ENDIF
           
       !
       ! ... kpoints
       IF ( kpoints_alloc .AND. lkpoints_ ) THEN 
-          WRITE( unit, " (  '<K-POINTS>')" )
+          WRITE( unit, " (  ' <K-POINTS>')" )
           WRITE( unit, "(2x, 'nkpts = ',i4 ) " ) nkpts
           WRITE( unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i3,' ),', &
                         & 6x,'shift = (',3i3,' )' ) " ) & 
@@ -359,11 +359,11 @@
              WRITE( unit, " (4x, 'k point', i4, ':   ( ',3f9.5,' ),   weight = ', f8.4 )") &
              ik, ( vkpt(i,ik), i=1,3 ), wk(ik)
           ENDDO
-          WRITE( unit, " (  '</K-POINTS>',/)" )
+          WRITE( unit, " (  ' </K-POINTS>',/)" )
       ENDIF
 
       IF ( bshells_alloc .AND. lkpoints_ ) THEN
-          WRITE( unit, " (  '<B-SHELL>')" )
+          WRITE( unit, " (  ' <B-SHELL>')" )
           !
           WRITE (unit, "(2x, 'List of the ' , i2, ' b-vectors : (Bohr^-1) ') ") nb
           DO i = 1, nb
@@ -372,13 +372,13 @@
           ENDDO
           !
           WRITE (unit, "(/,2x, 'Total weight = ' , f8.4) ") wbtot
-          WRITE( unit, " (  '</B-SHELL>',/)" )
+          WRITE( unit, " (  ' </B-SHELL>',/)" )
       ENDIF
       !
       ! ... eigs and windows
       IF ( windows_alloc .AND. leig_ ) THEN 
           IF ( .NOT. kpoints_alloc ) CALL errore('summary','Unexpectedly kpts NOT alloc',1)
-          WRITE( unit, " (  '<WINDOWS>')" )
+          WRITE( unit, " (  ' <WINDOWS>')" )
           WRITE( unit," (2x, 'Definition of energy windows: (energies in eV)' ) " )
           IF ( win_min < 10000.0 .AND. win_max > 10000.0 ) THEN
               WRITE( unit, " (4x, 'outer window: E  = (  -\inf ,  \inf  )' )" ) 
@@ -401,11 +401,12 @@
 
           IF ( TRIM(verbosity) == "medium" .OR. TRIM(verbosity) == "high" ) THEN
               DO ik=1,nkpts
-                  WRITE(unit, " (/,4x,'kpt = ', i4, ' ( ',3f9.5,' )    dimwin = ', i4)" ) &
-                                  ik, vkpt(:,ik), dimwin(ik)
-                  WRITE(unit, " (39x,'imin = ', i4, '  imax = ', i4)" ) imin(ik), imax(ik)
-                  WRITE(unit, "(3x,'Eigenvalues:')"  )
-                  WRITE(unit,'(2x, 8f9.4)') ( eig(i,ik), i=1,nbnd )
+                  WRITE(unit,"(1x,'!')")
+                  WRITE(unit,"(1x,'!',4x,'kpt = ',i4,' ( ',3f9.5,' )    dimwin = ',i4)") &
+                               ik, vkpt(:,ik), dimwin(ik)
+                  WRITE(unit,"(1x,'!',39x,'imin = ',i4,'  imax = ',i4)") imin(ik), imax(ik)
+                  WRITE(unit,"(1x,'!',3x,'Eigenvalues:')"  )
+                  WRITE(unit,"(1x,'!',2x, 8f9.4)") ( eig(i,ik), i=1,nbnd )
               ENDDO
           ENDIF
 
@@ -425,7 +426,7 @@
                ENDDO
           ENDIF
 
-          WRITE( unit, " (  '</WINDOWS>',/)" )
+          WRITE( unit, " (  ' </WINDOWS>',/)" )
       ENDIF
 
   END SUBROUTINE summary

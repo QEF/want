@@ -46,23 +46,22 @@
 \newcommand{\Psik}{{\Psi^{(k)}}}
 \newcommand{\Phik}{{\Phi^{(k)}}}
 
-\newcommand{\WANT} {{\sc WanT}}
+\newcommand{\WANT} {{\sc WanT}{}}
 \newcommand{\WANTSUBTITLE}{{\sc an integrated approach to ab initio electronic
 transport from maximally-localized Wannier functions}}
-\newcommand{\WANTNAME} {an integrated approach to ab initio electronic transport
-from maximally-localized Wannier functions}
+\newcommand{\WANTNAME} {Wannier Transport}
 %\newcommand{\WANTDATE} {\today}
 \newcommand{\WANTDATE} {October 2005}
 \newcommand{\UGAUTHORS} {
 A. Ferretti, A. Calzolari, C.~Cavazzoni and M. Buongiorno
 Nardelli}
 \newcommand{\WANTVERSION} {2.0.0}
-\newcommand{\WANTNOTES} {(Restricted Draft: Do Not Release or Cite)}
-\newcommand{\WANTADDRESS} {\underline{pdac@pi.ingv.it}}
-\newcommand{\WANTURL} {www.wannier-transport.org}
-% title of PDAC paper
-\newcommand{\WANTPAPER} {PDAC: A transient, multiphase flow code
-for the 3D simulation of pyroclastic dispersal dynamics}
+\newcommand{\WANTURL} {\texttt{http://www.wannier-transport.org}}
+%
+% other cited codes
+\newcommand{\PWSCF} { \textsc{PWscf}{ }}
+\newcommand{\PWSCFURL} {\texttt {http://www.pwscf.org}{}}
+\newcommand{\ABINIT} { \textsc{Abinit}{}}
 
 
 %
@@ -104,10 +103,10 @@ for the 3D simulation of pyroclastic dispersal dynamics}
 features of the integrated \WANT\ approach. This guide includes a
 description of the capabilities of the program, how to use these
 capabilities, the necessary input files and formats, and how to
-run the program on both uniprocessor and parallel machines.}
+run the program on both serial and parallel machines.}
 
 \newcommand{\RMDESC} {
-The \WANT\ (\PDACNAME)\ {\em\RMTITLE\/} is intended for the user
+The \WANT\ (\WANTNAME)\ {\em\RMTITLE\/} is intended for the user
 who wants to overview the model equations and the numerical
 technique or for the programmer who wants to cooperate to the
 \WANTC\ development. The manual describes how the model equations

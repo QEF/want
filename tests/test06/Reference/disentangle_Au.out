@@ -8,7 +8,7 @@
 
 
   Program <disentangle>  v. 2.0.0  starts ...
-  Date 17Nov2005 at  1:37:13 
+  Date  1Dec2005 at 19:19:41 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -32,7 +32,7 @@
        Read Start Unitary mat :     FALSE
            Conditioned minim. :     FALSE
 
-<WANNIER_FUNCTIONS>
+ <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    6
     CG minim: Mixing parameter (alpha0_wan)=  0.500
@@ -49,9 +49,9 @@
     Unitariery check threshold =     0.000001000
     Conditioned minim. amplitude =     0.000000000
     Conditioned minim.  iter num =  1600
-</WANNIER_FUNCTIONS>
+ </WANNIER_FUNCTIONS>
 
-<DISENTANGLE>
+ <DISENTANGLE>
   Input parameters for subspace definition
     Spin component = none
     Mixing parameter (alpha_dis)=  0.500
@@ -60,9 +60,9 @@
     Disentangle convergence threshold =     0.000000010
     Print info each  10 iterations
     Save data each   10 iterations
-</DISENTANGLE>
+ </DISENTANGLE>
 
-<TRIAL_CENTERS>
+ <TRIAL_CENTERS>
   Trial centers: (cart. coord. in Bohr)
 
       #     Type          l   m       Position                              Decay
@@ -74,14 +74,14 @@
       5    atomic  Au     2   1    (   0.000000   0.000000   0.944863 )    0.00000
       6    atomic  Au     2   2    (   0.000000   0.000000   0.944863 )    0.00000
 
-</TRIAL_CENTERS>
+ </TRIAL_CENTERS>
 
 
   ======================================================================
   =                              DFT data                              =
   ======================================================================
 
-<LATTICE>
+ <LATTICE>
   Alat  =      20.0000000 (Bohr)
   Alat  =      10.5835400 (Ang )
   Omega =    1889.7280000 (Bohr^3)
@@ -102,9 +102,9 @@
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
-</LATTICE>
+ </LATTICE>
 
-<IONS>
+ <IONS>
   Number of chemical species =  1
      Pseudo( 1) = Au11pw91.mt.UPF
 
@@ -113,9 +113,9 @@
 
   Atomic positions: (cart. coord. in Bohr)
      Au   tau(   1 ) = (   0.0000000   0.0000000   0.9448634 )
-</IONS>
+ </IONS>
 
-<K-POINTS>
+ <K-POINTS>
   nkpts =    8
   Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -127,9 +127,9 @@
     k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250
     k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250
     k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250
-</K-POINTS>
+ </K-POINTS>
 
-<B-SHELL>
+ <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
     b ( 1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
     b ( 2) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0661
@@ -139,9 +139,9 @@
     b ( 6) =    (   0.00000  0.00000 -0.16625 ),   weight =  18.0913
 
   Total weight =  56.4468
-</B-SHELL>
+ </B-SHELL>
 
-<WINDOWS>
+ <WINDOWS>
   Definition of energy windows: (energies in eV)
     outer window: E  = (  -\inf ,    2.0000 )
     Max number of bands within the energy window =     9
@@ -149,55 +149,55 @@
   Electronic Structure from DFT calculation:
     nkpts =   8,     nbnd =  10,
     nspin =   1
-    Fermi energy =   -4.902412577 eV
-
-    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =    9
-                                       imin =    1  imax =    9
-   Eigenvalues:
-   -10.5537  -6.5842  -6.5841  -6.3248  -4.9046  -4.9046  -1.1316  -1.1316
-     1.1450   2.1105
-
-    kpt =    2 (   0.00000  0.00000  0.16625 )    dimwin =    9
-                                       imin =    1  imax =    9
-   Eigenvalues:
-    -9.7487  -6.4887  -6.4886  -6.0936  -5.6338  -5.6338  -0.4240  -0.4240
-     1.5131   2.4789
-
-    kpt =    3 (   0.00000  0.00000  0.33249 )    dimwin =    8
-                                       imin =    1  imax =    8
-   Eigenvalues:
-    -7.5516  -6.9088  -6.9088  -6.2511  -6.2510  -5.3755   1.0896   1.0896
-     2.6190   3.5844
-
-    kpt =    4 (   0.00000  0.00000  0.49874 )    dimwin =    6
-                                       imin =    1  imax =    6
-   Eigenvalues:
-    -7.8859  -7.8859  -6.0027  -6.0025  -5.5588  -3.2060   3.0736   3.0736
-     4.4746   5.6932
-
-    kpt =    5 (   0.00000  0.00000  0.66498 )    dimwin =    6
-                                       imin =    1  imax =    6
-   Eigenvalues:
-    -8.2412  -8.2412  -5.8964  -5.8962  -5.1043  -0.1305   2.2902   4.7913
-     4.7913   7.0247
-
-    kpt =    6 (   0.00000  0.00000  0.83123 )    dimwin =    6
-                                       imin =    1  imax =    6
-   Eigenvalues:
-    -7.8859  -7.8859  -6.0027  -6.0025  -5.5588  -3.2060   3.0736   3.0736
-     4.4746   5.6938
-
-    kpt =    7 (   0.00000  0.00000  0.99747 )    dimwin =    8
-                                       imin =    1  imax =    8
-   Eigenvalues:
-    -7.5516  -6.9088  -6.9088  -6.2511  -6.2510  -5.3755   1.0896   1.0896
-     2.6190   3.5845
-
-    kpt =    8 (   0.00000  0.00000  1.16372 )    dimwin =    9
-                                       imin =    1  imax =    9
-   Eigenvalues:
-    -9.7487  -6.4887  -6.4886  -6.0936  -5.6338  -5.6338  -0.4240  -0.4240
-     1.5131   2.4789
+    Fermi energy =   -4.903059370 eV
+ !
+ !    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !   -10.5543  -6.5846  -6.5845  -6.3250  -4.9052  -4.9052  -1.1317  -1.1317
+ !     1.1450   2.1104
+ !
+ !    kpt =    2 (   0.00000  0.00000  0.16625 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !    -9.7493  -6.4891  -6.4890  -6.0938  -5.6344  -5.6344  -0.4241  -0.4241
+ !     1.5131   2.4789
+ !
+ !    kpt =    3 (   0.00000  0.00000  0.33249 )    dimwin =    8
+ !                                       imin =    1  imax =    8
+ !   Eigenvalues:
+ !    -7.5522  -6.9094  -6.9094  -6.2516  -6.2514  -5.3757   1.0896   1.0896
+ !     2.6190   3.5845
+ !
+ !    kpt =    4 (   0.00000  0.00000  0.49874 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -7.8865  -7.8865  -6.0032  -6.0030  -5.5593  -3.2063   3.0736   3.0736
+ !     4.4746   5.4269
+ !
+ !    kpt =    5 (   0.00000  0.00000  0.66498 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -8.2418  -8.2418  -5.8969  -5.8967  -5.1048  -0.1308   2.2898   4.7913
+ !     4.7913   7.0229
+ !
+ !    kpt =    6 (   0.00000  0.00000  0.83123 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -7.8865  -7.8865  -6.0032  -6.0030  -5.5593  -3.2063   3.0736   3.0736
+ !     4.4746   5.4269
+ !
+ !    kpt =    7 (   0.00000  0.00000  0.99747 )    dimwin =    8
+ !                                       imin =    1  imax =    8
+ !   Eigenvalues:
+ !    -7.5522  -6.9094  -6.9094  -6.2516  -6.2514  -5.3757   1.0896   1.0896
+ !     2.6190   3.5845
+ !
+ !    kpt =    8 (   0.00000  0.00000  1.16372 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !    -9.7493  -6.4891  -6.4890  -6.0938  -5.6344  -5.6344  -0.4241  -0.4241
+ !     1.5131   2.4789
 
     inner window: E  = (  -\inf ,  -2.0000 ) --> FROZEN STATES
     there are   6 frozen states at k-point =     1
@@ -208,7 +208,7 @@
     there are   6 frozen states at k-point =     6
     there are   6 frozen states at k-point =     7
     there are   6 frozen states at k-point =     8
-</WINDOWS>
+ </WINDOWS>
 
 
 
@@ -231,33 +231,41 @@
   Initializing global dft data
 
   Initializing atomic wfc
-    Overlaps or Projections calculation for k-point    1
-                              Total time spent up to now :     1.87 secs
+    Overlaps or Projections calculation for k-point:    1
+    npw =  11303,    dimwin =    9
+                              Total time spent up to now :     1.09 secs
 
-    Overlaps or Projections calculation for k-point    2
-                              Total time spent up to now :     2.48 secs
+    Overlaps or Projections calculation for k-point:    2
+    npw =  11299,    dimwin =    9
+                              Total time spent up to now :     1.75 secs
 
-    Overlaps or Projections calculation for k-point    3
-                              Total time spent up to now :     2.96 secs
+    Overlaps or Projections calculation for k-point:    3
+    npw =  11287,    dimwin =    8
+                              Total time spent up to now :     2.37 secs
 
-    Overlaps or Projections calculation for k-point    4
-                              Total time spent up to now :     3.36 secs
+    Overlaps or Projections calculation for k-point:    4
+    npw =  11254,    dimwin =    6
+                              Total time spent up to now :     2.91 secs
 
-    Overlaps or Projections calculation for k-point    5
-                              Total time spent up to now :     3.86 secs
+    Overlaps or Projections calculation for k-point:    5
+    npw =  11226,    dimwin =    6
+                              Total time spent up to now :     3.43 secs
 
-    Overlaps or Projections calculation for k-point    6
-                              Total time spent up to now :     4.51 secs
+    Overlaps or Projections calculation for k-point:    6
+    npw =  11254,    dimwin =    6
+                              Total time spent up to now :     4.01 secs
 
-    Overlaps or Projections calculation for k-point    7
-                              Total time spent up to now :     5.27 secs
+    Overlaps or Projections calculation for k-point:    7
+    npw =  11287,    dimwin =    8
+                              Total time spent up to now :     4.82 secs
 
-    Overlaps or Projections calculation for k-point    8
-                              Total time spent up to now :     6.00 secs
+    Overlaps or Projections calculation for k-point:    8
+    npw =  11299,    dimwin =    9
+                              Total time spent up to now :     5.58 secs
 
 
   Overlaps and projections written on file: gold_WanT.ovp
-                              Total time spent up to now :     6.16 secs
+                              Total time spent up to now :     5.75 secs
 
 
   ======================================================================
@@ -302,7 +310,7 @@
 
 
 
-  Iteration =     1     Omega_I =   22.209947      Error =      0.00000000
+  Iteration =     1     Omega_I =   22.209376      Error =      0.00000000
 
 
   ======================================================================
@@ -310,42 +318,42 @@
   ======================================================================
 
   Iteration # :     1
-  Final Omega_I (Bohr^2, Angstrom^2):      22.209947         6.219414
-   Avrg Omega_I                     :       3.701658         1.036569
+  Final Omega_I (Bohr^2, Angstrom^2):      22.209376         6.219254
+   Avrg Omega_I                     :       3.701563         1.036542
 
-                              Total time spent up to now :     6.16 secs
+                              Total time spent up to now :     5.75 secs
 
 
   Subspace decomposition:
   Norms of the projected Bloch functions
 
-      kpt =  1 (  0.000 0.000 0.000 )    dimwin =    9
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
-    0.00000
-
-      kpt =  2 (  0.000 0.000 0.166 )    dimwin =    9
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
-    0.00000
-
-      kpt =  3 (  0.000 0.000 0.332 )    dimwin =    8
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
-
-      kpt =  4 (  0.000 0.000 0.499 )    dimwin =    6
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-
-      kpt =  5 (  0.000 0.000 0.665 )    dimwin =    6
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-
-      kpt =  6 (  0.000 0.000 0.831 )    dimwin =    6
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-
-      kpt =  7 (  0.000 0.000 0.997 )    dimwin =    8
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
-
-      kpt =  8 (  0.000 0.000 1.164 )    dimwin =    9
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
-    0.00000
-
+ !      kpt =  1 (  0.000 0.000 0.000 )    dimwin =    9
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
+ !    0.00000
+ !
+ !      kpt =  2 (  0.000 0.000 0.166 )    dimwin =    9
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
+ !    0.00000
+ !
+ !      kpt =  3 (  0.000 0.000 0.332 )    dimwin =    8
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
+ !
+ !      kpt =  4 (  0.000 0.000 0.499 )    dimwin =    6
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+ !
+ !      kpt =  5 (  0.000 0.000 0.665 )    dimwin =    6
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+ !
+ !      kpt =  6 (  0.000 0.000 0.831 )    dimwin =    6
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+ !
+ !      kpt =  7 (  0.000 0.000 0.997 )    dimwin =    8
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
+ !
+ !      kpt =  8 (  0.000 0.000 1.164 )    dimwin =    9
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000
+ !    0.00000
+ !
 
 
   Subspace data written on file: gold_WanT.space
@@ -354,21 +362,21 @@
    <global routines>
              clock number :    20
 
-              disentangle :     6.00s CPU 
+              disentangle :     5.00s CPU 
  
-                want_init :     0.10s CPU
+                want_init :     0.09s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :     6.04s CPU
-          ggrids_read_ext :     0.38s CPU
-              struct_fact :     0.01s CPU
-                init_at_1 :     0.05s CPU
-           wfc_data_kread :     2.23s CPU (      32 calls,   0.070 s avg)
-                  overlap :     2.21s CPU (      24 calls,   0.092 s avg)
-           overlap_setmap :     0.42s CPU (      24 calls,   0.018 s avg)
-                    s_psi :     0.05s CPU (       8 calls,   0.006 s avg)
-               projection :     0.56s CPU (       8 calls,   0.070 s avg)
-       trial_center_setup :     0.26s CPU (      48 calls,   0.005 s avg)
-               atomic_wfc :     0.25s CPU (      48 calls,   0.005 s avg)
+              wfc_manager :     5.65s CPU
+          ggrids_read_ext :     0.14s CPU
+              struct_fact :     0.02s CPU
+                init_at_1 :     0.12s CPU
+           wfc_data_kread :     2.35s CPU (      32 calls,   0.073 s avg)
+                  overlap :     2.20s CPU (      24 calls,   0.092 s avg)
+           overlap_setmap :     0.38s CPU (      24 calls,   0.016 s avg)
+                    s_psi :     0.06s CPU (       8 calls,   0.008 s avg)
+               projection :     0.48s CPU (       8 calls,   0.060 s avg)
+       trial_center_setup :     0.20s CPU (      48 calls,   0.004 s avg)
+               atomic_wfc :     0.17s CPU (      48 calls,   0.004 s avg)
                iterations :     0.00s CPU
              subapce_init :     0.00s CPU
         projection_frozen :     0.00s CPU

@@ -54,7 +54,6 @@
    INTEGER,      ALLOCATABLE :: icols(:), irows(:)
    CHARACTER(nstrx)          :: cols, rows
 
-
    !
    ! end of declarations
    !

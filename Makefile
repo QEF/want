@@ -12,7 +12,7 @@ default:
 	@echo 
 	@echo  "  *** Wannier-Transport (WanT) package *** "
 	@echo 
-	@echo  "  to configure, type:  ./configure <options>"
+	@echo  "  to configure, type:  ./configure [<options>]"
 	@echo  "  to compile,   type:  make <target>"
 	@echo 
 	@echo  "  Possible <target>'s are: "

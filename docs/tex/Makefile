@@ -61,15 +61,15 @@ default:
 #
 
 all:    
-	make one
+	make latex
 	make bib
-	make one
-	make one
-	make one
+	make latex
+	make latex
+	make latex
 	make pdf
 	make update
 
-one:    
+latex:    
 	$(LATEX) $(TEX).tex
 
 bib:
@@ -104,5 +104,5 @@ pdfview:
 
 clean:
 	-rm *.aux *.idx *.blg *.bbl *.dvi *.log *.toc \
-	    $(PDFFIG) $(JPGFIG) $(TEX).ps $(TEX).pdf
+	    $(PDFFIG) $(TEX).ps $(TEX).pdf
 

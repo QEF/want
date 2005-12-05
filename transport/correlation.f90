@@ -78,6 +78,7 @@ CONTAINS
       !
       ALLOCATE ( sgm_corr(dimC,dimC,nkpts_par), STAT=ierr )
            IF( ierr /=0 ) CALL errore(subname, 'allocating sgm_corr', ABS(ierr) )
+      alloc = .TRUE.
 
    END SUBROUTINE correlation_allocate
 
@@ -139,7 +140,6 @@ CONTAINS
       DEALLOCATE( grid_file, STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'deallocating grid',ABS(ierr))
       
-      alloc = .TRUE.
    END SUBROUTINE correlation_init
 
 

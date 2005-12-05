@@ -7,16 +7,14 @@
 
 &SUBSPACE
     dimwann = 8       
-    win_min =  -13.0
     win_max =  14.8    
     maxiter_dis = 200
     subspace_init = 'center_projections'
-!    use_blimit = .TRUE.
 /
 
 &LOCALIZATION
-    maxiter0_wan  = 100
-    maxiter1_wan  = 3000
+    maxiter0_wan  = 0
+    maxiter1_wan  = 5000
     ncg = 5      
     wannier_thr = 1.e-8
 /

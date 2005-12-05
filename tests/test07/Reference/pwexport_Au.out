@@ -1,13 +1,14 @@
 
-     Program POST-PROC v.2.1.5  starts ...
-     Today is 18Oct2005 at  0: 9:51 
+     Program POST-PROC v.3.0    starts ...
+     Today is 30Nov2005 at 20:44:35 
 
-     Reading file gold.save ... 
+     Reading file gold.save ...      only dimensions
      read complete
 
-     Reading file gold.save ... 
+     Reading file gold.save ...      all except wavefuctions
      read complete
 
      nbndx  =    20  nbnd   =    20  natomwfc =    18  npwx   =    8007
-     nelec  =   22.00 nkb   =    16  ngl    =    3621
-  warning: negative or imaginary core charge    -0.000071    0.000000
+     nelec  =  22.00  nkb   =    16  ngl    =    3621
+
+     Check: negative/imaginary core charge=   -0.000071    0.000000

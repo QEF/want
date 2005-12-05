@@ -1,12 +1,12 @@
 
-     Program POST-PROC v.2.1.5  starts ...
-     Today is 18Oct2005 at  2:12:12 
+     Program POST-PROC v.3.0    starts ...
+     Today is 30Nov2005 at 23:55:22 
 
-     Reading file pt_h2_pt.save ... 
+     Reading file pt_h2_pt.save ...      only dimensions
      read complete
 
-     Reading file pt_h2_pt.save ... 
+     Reading file pt_h2_pt.save ...      all except wavefuctions
      read complete
 
      nbndx  =    60  nbnd   =    60  natomwfc =    50  npwx   =   22572
-     nelec  =   82.00 nkb   =   108  ngl    =   26868
+     nelec  =  82.00  nkb   =   108  ngl    =   26868

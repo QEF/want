@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 17Nov2005 at  1:38:29 
+  Date  1Dec2005 at 19:20:53 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -23,7 +23,7 @@
   =                              DFT data                              =
   ======================================================================
 
-<LATTICE>
+ <LATTICE>
   Alat  =      20.0000000 (Bohr)
   Alat  =      10.5835400 (Ang )
   Omega =    1889.7280000 (Bohr^3)
@@ -44,9 +44,9 @@
     b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
     b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
     b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
-</LATTICE>
+ </LATTICE>
 
-<K-POINTS>
+ <K-POINTS>
   nkpts =    8
   Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -58,7 +58,7 @@
     k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250
     k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250
     k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250
-</K-POINTS>
+ </K-POINTS>
 
 
   WARNING: USPP not fully implemented
@@ -104,14 +104,14 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -0.000015     0.000131    -1.417261 )
+    Wf(   1 ) = (     0.000000     0.000157    -1.417258 )
     Wf(   2 ) = (     0.000000     0.000000     0.944863 )
-    Wf(   3 ) = (     0.000000    -0.000142     0.944892 )
+    Wf(   3 ) = (     0.000000    -0.000151     0.944893 )
     Wf(   6 ) = (     0.000000     0.000000     0.944863 )
         in crystal coord
-    Wf(   1 ) = (    -0.000001     0.000007    -0.299993 )
+    Wf(   1 ) = (     0.000000     0.000008    -0.299992 )
     Wf(   2 ) = (     0.000000     0.000000     0.200000 )
-    Wf(   3 ) = (     0.000000    -0.000007     0.200006 )
+    Wf(   3 ) = (     0.000000    -0.000008     0.200006 )
     Wf(   6 ) = (     0.000000     0.000000     0.200000 )
 
   Locating WFs: 
@@ -122,9 +122,9 @@
 
   New center positions [cryst. coord]:
         in crystal coord
-    Wf(   1 ) = (    -0.000001     0.000007    -0.299993 )
+    Wf(   1 ) = (     0.000000     0.000008    -0.299992 )
     Wf(   2 ) = (     0.000000     0.000000     0.200000 )
-    Wf(   3 ) = (     0.000000    -0.000007     0.200006 )
+    Wf(   3 ) = (     0.000000    -0.000008     0.200006 )
     Wf(   6 ) = (     0.000000     0.000000     0.200000 )
 
 
@@ -135,28 +135,28 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :     3.09 secs
+                              Total time spent up to now :     2.91 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :     5.46 secs
+                              Total time spent up to now :     5.16 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :     7.65 secs
+                              Total time spent up to now :     7.19 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :     9.47 secs
+                              Total time spent up to now :     8.86 secs
 
     Wfc Fourier Transf. for k-point    5
-                              Total time spent up to now :    11.29 secs
+                              Total time spent up to now :    10.58 secs
 
     Wfc Fourier Transf. for k-point    6
-                              Total time spent up to now :    13.13 secs
+                              Total time spent up to now :    12.25 secs
 
     Wfc Fourier Transf. for k-point    7
-                              Total time spent up to now :    15.24 secs
+                              Total time spent up to now :    14.44 secs
 
     Wfc Fourier Transf. for k-point    8
-                              Total time spent up to now :    17.66 secs
+                              Total time spent up to now :    16.84 secs
 
 
   writing WF(   1) plot on file: .//gold_US_WanT_WFM001.cube
@@ -245,14 +245,14 @@ Job done ...
    <global routines>
              clock number :     8
 
-                     plot :    40.00s CPU 
+                     plot :    38.00s CPU 
  
-                want_init :     0.16s CPU
-          ggrids_read_ext :     0.11s CPU
+                want_init :     0.15s CPU
+          ggrids_read_ext :     0.10s CPU
            wfc_data_kread :     0.11s CPU (       8 calls,   0.014 s avg)
-               kwann_calc :     7.16s CPU (      32 calls,   0.224 s avg)
-                   cfft3d :     4.00s CPU (      32 calls,   0.125 s avg)
-               cwann_calc :     5.62s CPU (      32 calls,   0.176 s avg)
-                 gcubeplt :    10.38s CPU (       4 calls,   2.595 s avg)
+               kwann_calc :     7.27s CPU (      32 calls,   0.227 s avg)
+                   cfft3d :     3.06s CPU (      32 calls,   0.096 s avg)
+               cwann_calc :     5.66s CPU (      32 calls,   0.177 s avg)
+                 gcubeplt :    10.09s CPU (       4 calls,   2.523 s avg)
 
 

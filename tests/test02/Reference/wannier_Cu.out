@@ -8,7 +8,7 @@
 
 
   Program <wannier>  v. 2.0.0  starts ...
-  Date 17Nov2005 at 13:21:47 
+  Date  1Dec2005 at 18:25:30 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -32,7 +32,7 @@
        Read Start Unitary mat :     FALSE
            Conditioned minim. :     FALSE
 
-<WANNIER_FUNCTIONS>
+ <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    6
     CG minim: Mixing parameter (alpha0_wan)=  0.500
@@ -49,9 +49,9 @@
     Unitariery check threshold =     0.000001000
     Conditioned minim. amplitude =     0.000000000
     Conditioned minim.  iter num =  2001
-</WANNIER_FUNCTIONS>
+ </WANNIER_FUNCTIONS>
 
-<DISENTANGLE>
+ <DISENTANGLE>
   Input parameters for subspace definition
     Spin component = none
     Mixing parameter (alpha_dis)=  0.500
@@ -60,9 +60,9 @@
     Disentangle convergence threshold =     0.000000010
     Print info each  10 iterations
     Save data each   10 iterations
-</DISENTANGLE>
+ </DISENTANGLE>
 
-<TRIAL_CENTERS>
+ <TRIAL_CENTERS>
   Trial centers: (cart. coord. in Bohr)
 
       #     Type          l   m       Position                              Decay
@@ -74,14 +74,14 @@
       5    1gauss         2  -1    (   0.000000   0.000000   0.000000 )    1.00000
       6    1gauss         2  -2    (   0.000000   0.000000   0.000000 )    1.00000
 
-</TRIAL_CENTERS>
+ </TRIAL_CENTERS>
 
 
   ======================================================================
   =                              DFT data                              =
   ======================================================================
 
-<LATTICE>
+ <LATTICE>
   Alat  =       6.9678000 (Bohr)
   Alat  =       3.6871995 (Ang )
   Omega =      84.5720851 (Bohr^3)
@@ -102,9 +102,9 @@
     b(1) = ( -0.9017 -0.9017  0.9017 )     (  -1.0000 -1.0000  1.0000 )
     b(2) = (  0.9017  0.9017  0.9017 )     (   1.0000  1.0000  1.0000 )
     b(3) = ( -0.9017  0.9017 -0.9017 )     (  -1.0000  1.0000 -1.0000 )
-</LATTICE>
+ </LATTICE>
 
-<IONS>
+ <IONS>
   Number of chemical species =  1
      Pseudo( 1) = Cu.pw91-cpi.UPF
 
@@ -113,9 +113,9 @@
 
   Atomic positions: (cart. coord. in Bohr)
      Cu   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
-</IONS>
+ </IONS>
 
-<K-POINTS>
+ <K-POINTS>
   nkpts =   64
   Monkhorst-Pack grid:      nk = (  4  4  4 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -183,9 +183,9 @@
     k point  62:   (  -0.22544  0.22544  1.12718 ),   weight =   0.0156
     k point  63:   (  -0.45087  0.45087  0.90175 ),   weight =   0.0156
     k point  64:   (  -0.67631  0.67631  0.67631 ),   weight =   0.0156
-</K-POINTS>
+ </K-POINTS>
 
-<B-SHELL>
+ <B-SHELL>
   List of the  8 b-vectors : (Bohr^-1) 
     b ( 1) =    (  -0.22544 -0.22544  0.22544 ),   weight =   2.4596
     b ( 2) =    (   0.22544  0.22544 -0.22544 ),   weight =   2.4596
@@ -197,14 +197,14 @@
     b ( 8) =    (  -0.22544  0.22544  0.22544 ),   weight =   2.4596
 
   Total weight =  19.6767
-</B-SHELL>
+ </B-SHELL>
 
 
   Subspace data read from file: copper_WanT.space
   Overlap and projections read from file: copper_WanT.ovp
 
   Overlaps and projections setup completed
-                              Total time spent up to now :     1.86 secs
+                              Total time spent up to now :     3.86 secs
 
 
   ======================================================================
@@ -215,20 +215,20 @@
   Initial unitary rotations : projected localized orbitals
 
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.065046     1.065046     1.065046 )  Omega =     33.233528
-    Center   2 = (     -0.003360     0.003360     0.000201 )  Omega =      1.681306
-    Center   3 = (     -0.003865     0.000709     0.003865 )  Omega =      1.863920
-    Center   4 = (     -0.001241     0.001241     0.004439 )  Omega =      1.681309
-    Center   5 = (     -0.000709     0.003865     0.003865 )  Omega =      1.863920
-    Center   6 = (     -0.003865     0.003865     0.000709 )  Omega =      1.863920
-  ! Center Sum = (     -1.078087     1.078087     1.078125 )  Omega =     42.187903
+    Center   1 = (     -1.065049     1.065049     1.065049 )  Omega =     33.233313
+    Center   2 = (     -0.003360     0.003360     0.000201 )  Omega =      1.681249
+    Center   3 = (     -0.003864     0.000709     0.003864 )  Omega =      1.863837
+    Center   4 = (     -0.001241     0.001241     0.004438 )  Omega =      1.681252
+    Center   5 = (     -0.000709     0.003864     0.003864 )  Omega =      1.863837
+    Center   6 = (     -0.003864     0.003864     0.000709 )  Omega =      1.863837
+  ! Center Sum = (     -1.078088     1.078088     1.078126 )  Omega =     42.187325
 
   Spread Operator decomposition (Bohr^2): 
-    Omega I    =       12.197598
-    Omega D    =       27.215729
-    Omega OD   =        2.774575
-    Omega Tot  =       42.187903
-    Omega Avrg =        7.031317
+    Omega I    =       12.197478
+    Omega D    =       27.215509
+    Omega OD   =        2.774338
+    Omega Tot  =       42.187325
+    Omega Avrg =        7.031221
 
 
   ======================================================================
@@ -238,380 +238,380 @@
 
   Iteration =     1
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.064786     1.064786     1.064786 )  Omega =     33.040706
-    Center   2 = (     -0.003471     0.003471     0.000196 )  Omega =      1.680885
-    Center   3 = (     -0.003867     0.000713     0.003867 )  Omega =      1.863941
-    Center   4 = (     -0.001275     0.001275     0.004588 )  Omega =      1.680888
-    Center   5 = (     -0.000713     0.003867     0.003867 )  Omega =      1.863941
-    Center   6 = (     -0.003867     0.003867     0.000713 )  Omega =      1.863940
-  ! Center Sum = (     -1.077978     1.077978     1.078016 )  Omega =     41.994301
+    Center   1 = (     -1.064789     1.064789     1.064788 )  Omega =     33.040502
+    Center   2 = (     -0.003470     0.003470     0.000196 )  Omega =      1.680828
+    Center   3 = (     -0.003867     0.000713     0.003867 )  Omega =      1.863858
+    Center   4 = (     -0.001274     0.001274     0.004587 )  Omega =      1.680831
+    Center   5 = (     -0.000713     0.003867     0.003867 )  Omega =      1.863858
+    Center   6 = (     -0.003867     0.003867     0.000713 )  Omega =      1.863858
+  ! Center Sum = (     -1.077979     1.077979     1.078018 )  Omega =     41.993736
 
-  Omega variation (Bohr^2):     -0.193601
-                              Total time spent up to now :     1.87 secs
+  Omega variation (Bohr^2):     -0.193589
+                              Total time spent up to now :     3.91 secs
 
 
   Iteration =    10
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.054243     1.054243     1.054230 )  Omega =     23.017568
-    Center   2 = (     -0.010156     0.010156    -0.000392 )  Omega =      1.679515
-    Center   3 = (     -0.004327     0.000069     0.004327 )  Omega =      1.981633
-    Center   4 = (     -0.003114     0.003114     0.013693 )  Omega =      1.679513
-    Center   5 = (     -0.000069     0.004327     0.004327 )  Omega =      1.981633
-    Center   6 = (     -0.004327     0.004327     0.000070 )  Omega =      1.981626
-  ! Center Sum = (     -1.076236     1.076236     1.076255 )  Omega =     32.321489
+    Center   1 = (     -1.054246     1.054246     1.054233 )  Omega =     23.017741
+    Center   2 = (     -0.010156     0.010156    -0.000392 )  Omega =      1.679461
+    Center   3 = (     -0.004326     0.000069     0.004326 )  Omega =      1.981541
+    Center   4 = (     -0.003114     0.003114     0.013692 )  Omega =      1.679459
+    Center   5 = (     -0.000069     0.004326     0.004326 )  Omega =      1.981541
+    Center   6 = (     -0.004326     0.004326     0.000070 )  Omega =      1.981534
+  ! Center Sum = (     -1.076237     1.076237     1.076256 )  Omega =     32.321276
 
-  Omega variation (Bohr^2):     -0.113603
-                              Total time spent up to now :     2.00 secs
+  Omega variation (Bohr^2):     -0.113600
+                              Total time spent up to now :     4.16 secs
 
 
   Iteration =    20
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.081600     1.081600     1.081576 )  Omega =     19.339161
-    Center   2 = (     -0.013597     0.013597    -0.001100 )  Omega =      1.682003
-    Center   3 = (     -0.008482    -0.003576     0.008483 )  Omega =      2.162987
-    Center   4 = (     -0.003792     0.003792     0.018511 )  Omega =      1.681992
-    Center   5 = (      0.003576     0.008482     0.008483 )  Omega =      2.162988
-    Center   6 = (     -0.008481     0.008481    -0.003577 )  Omega =      2.162972
-  ! Center Sum = (     -1.112376     1.112376     1.112375 )  Omega =     29.192102
+    Center   1 = (     -1.081600     1.081600     1.081577 )  Omega =     19.339469
+    Center   2 = (     -0.013596     0.013596    -0.001100 )  Omega =      1.681949
+    Center   3 = (     -0.008481    -0.003576     0.008481 )  Omega =      2.162885
+    Center   4 = (     -0.003791     0.003791     0.018509 )  Omega =      1.681938
+    Center   5 = (      0.003576     0.008481     0.008481 )  Omega =      2.162885
+    Center   6 = (     -0.008480     0.008480    -0.003576 )  Omega =      2.162870
+  ! Center Sum = (     -1.112373     1.112373     1.112372 )  Omega =     29.191997
 
-  Omega variation (Bohr^2):     -0.078575
-                              Total time spent up to now :     2.18 secs
+  Omega variation (Bohr^2):     -0.078571
+                              Total time spent up to now :     4.50 secs
 
 
   Iteration =    30
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.160258     1.160258     1.160227 )  Omega =     16.379927
-    Center   2 = (     -0.015058     0.015058    -0.001328 )  Omega =      1.677307
-    Center   3 = (     -0.019953    -0.010428     0.019954 )  Omega =      2.359832
-    Center   4 = (     -0.004127     0.004127     0.020533 )  Omega =      1.677293
-    Center   5 = (      0.010428     0.019953     0.019954 )  Omega =      2.359832
-    Center   6 = (     -0.019951     0.019951    -0.010429 )  Omega =      2.359804
-  ! Center Sum = (     -1.208920     1.208920     1.208911 )  Omega =     26.813995
+    Center   1 = (     -1.160247     1.160247     1.160217 )  Omega =     16.380512
+    Center   2 = (     -0.015057     0.015057    -0.001328 )  Omega =      1.677254
+    Center   3 = (     -0.019950    -0.010427     0.019950 )  Omega =      2.359722
+    Center   4 = (     -0.004127     0.004127     0.020532 )  Omega =      1.677240
+    Center   5 = (      0.010427     0.019950     0.019950 )  Omega =      2.359722
+    Center   6 = (     -0.019948     0.019948    -0.010428 )  Omega =      2.359694
+  ! Center Sum = (     -1.208902     1.208902     1.208893 )  Omega =     26.814144
 
-  Omega variation (Bohr^2):     -0.206622
-                              Total time spent up to now :     2.35 secs
+  Omega variation (Bohr^2):     -0.206592
+                              Total time spent up to now :     4.81 secs
 
 
   Iteration =    40
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.398380     1.398380     1.398347 )  Omega =     10.311749
-    Center   2 = (     -0.015518     0.015518    -0.001582 )  Omega =      1.675545
-    Center   3 = (     -0.056044    -0.006549     0.056043 )  Omega =      2.542928
-    Center   4 = (     -0.004105     0.004105     0.021240 )  Omega =      1.675529
-    Center   5 = (      0.006549     0.056044     0.056043 )  Omega =      2.542928
-    Center   6 = (     -0.056040     0.056040    -0.006551 )  Omega =      2.542895
-  ! Center Sum = (     -1.523539     1.523539     1.523539 )  Omega =     21.291574
+    Center   1 = (     -1.398367     1.398367     1.398334 )  Omega =     10.312187
+    Center   2 = (     -0.015518     0.015518    -0.001582 )  Omega =      1.675491
+    Center   3 = (     -0.056041    -0.006551     0.056040 )  Omega =      2.542881
+    Center   4 = (     -0.004105     0.004105     0.021238 )  Omega =      1.675475
+    Center   5 = (      0.006551     0.056041     0.056040 )  Omega =      2.542881
+    Center   6 = (     -0.056037     0.056037    -0.006553 )  Omega =      2.542849
+  ! Center Sum = (     -1.523516     1.523516     1.523517 )  Omega =     21.291765
 
-  Omega variation (Bohr^2):     -0.507460
-                              Total time spent up to now :     2.51 secs
+  Omega variation (Bohr^2):     -0.507510
+                              Total time spent up to now :     5.11 secs
 
 
   Iteration =    50
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.539695     1.539695     1.539645 )  Omega =      7.972011
-    Center   2 = (     -0.015823     0.015822    -0.001817 )  Omega =      1.667201
-    Center   3 = (     -0.047807     0.001199     0.047807 )  Omega =      2.166815
-    Center   4 = (     -0.004039     0.004039     0.021744 )  Omega =      1.667185
-    Center   5 = (     -0.001199     0.047807     0.047807 )  Omega =      2.166815
-    Center   6 = (     -0.047803     0.047803     0.001199 )  Omega =      2.166781
-  ! Center Sum = (     -1.656366     1.656366     1.656385 )  Omega =     17.806808
+    Center   1 = (     -1.539699     1.539699     1.539650 )  Omega =      7.972120
+    Center   2 = (     -0.015822     0.015822    -0.001817 )  Omega =      1.667149
+    Center   3 = (     -0.047806     0.001198     0.047806 )  Omega =      2.166749
+    Center   4 = (     -0.004039     0.004039     0.021743 )  Omega =      1.667133
+    Center   5 = (     -0.001198     0.047806     0.047806 )  Omega =      2.166749
+    Center   6 = (     -0.047802     0.047802     0.001198 )  Omega =      2.166715
+  ! Center Sum = (     -1.656366     1.656366     1.656385 )  Omega =     17.806614
 
-  Omega variation (Bohr^2):     -0.196999
-                              Total time spent up to now :     2.65 secs
+  Omega variation (Bohr^2):     -0.197016
+                              Total time spent up to now :     5.47 secs
 
 
   Iteration =    60
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.598954     1.598954     1.598884 )  Omega =      7.280800
-    Center   2 = (     -0.015226     0.015226    -0.001671 )  Omega =      1.656142
-    Center   3 = (     -0.037808     0.001848     0.037809 )  Omega =      2.045678
-    Center   4 = (     -0.003930     0.003930     0.020915 )  Omega =      1.656127
-    Center   5 = (     -0.001848     0.037808     0.037809 )  Omega =      2.045678
-    Center   6 = (     -0.037804     0.037804     0.001848 )  Omega =      2.045636
-  ! Center Sum = (     -1.695569     1.695569     1.695594 )  Omega =     16.730061
+    Center   1 = (     -1.598960     1.598960     1.598890 )  Omega =      7.280874
+    Center   2 = (     -0.015225     0.015225    -0.001671 )  Omega =      1.656090
+    Center   3 = (     -0.037807     0.001847     0.037808 )  Omega =      2.045601
+    Center   4 = (     -0.003929     0.003929     0.020914 )  Omega =      1.656076
+    Center   5 = (     -0.001847     0.037807     0.037808 )  Omega =      2.045601
+    Center   6 = (     -0.037803     0.037803     0.001847 )  Omega =      2.045559
+  ! Center Sum = (     -1.695572     1.695572     1.695597 )  Omega =     16.729800
 
-  Omega variation (Bohr^2):     -0.082402
-                              Total time spent up to now :     2.80 secs
+  Omega variation (Bohr^2):     -0.082406
+                              Total time spent up to now :     5.77 secs
 
 
   Iteration =    70
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.632387     1.632387     1.632297 )  Omega =      6.953893
-    Center   2 = (     -0.014101     0.014101    -0.001405 )  Omega =      1.647430
-    Center   3 = (     -0.030069     0.001607     0.030071 )  Omega =      2.011074
-    Center   4 = (     -0.003726     0.003726     0.019339 )  Omega =      1.647418
-    Center   5 = (     -0.001607     0.030069     0.030071 )  Omega =      2.011074
-    Center   6 = (     -0.030065     0.030065     0.001607 )  Omega =      2.011027
-  ! Center Sum = (     -1.711956     1.711956     1.711980 )  Omega =     16.281917
+    Center   1 = (     -1.632394     1.632394     1.632303 )  Omega =      6.953957
+    Center   2 = (     -0.014100     0.014100    -0.001405 )  Omega =      1.647379
+    Center   3 = (     -0.030069     0.001606     0.030070 )  Omega =      2.010995
+    Center   4 = (     -0.003725     0.003725     0.019338 )  Omega =      1.647367
+    Center   5 = (     -0.001606     0.030069     0.030070 )  Omega =      2.010995
+    Center   6 = (     -0.030065     0.030065     0.001606 )  Omega =      2.010948
+  ! Center Sum = (     -1.711959     1.711959     1.711983 )  Omega =     16.281642
 
-  Omega variation (Bohr^2):     -0.042425
-                              Total time spent up to now :     2.95 secs
+  Omega variation (Bohr^2):     -0.042426
+                              Total time spent up to now :     6.07 secs
 
 
   Iteration =    80
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.656247     1.656247     1.656138 )  Omega =      6.776525
-    Center   2 = (     -0.012749     0.012749    -0.001114 )  Omega =      1.641048
-    Center   3 = (     -0.023880     0.001233     0.023882 )  Omega =      1.999685
-    Center   4 = (     -0.003464     0.003464     0.017449 )  Omega =      1.641038
-    Center   5 = (     -0.001233     0.023880     0.023882 )  Omega =      1.999685
-    Center   6 = (     -0.023876     0.023876     0.001233 )  Omega =      1.999633
-  ! Center Sum = (     -1.721448     1.721448     1.721469 )  Omega =     16.057616
+    Center   1 = (     -1.656253     1.656253     1.656144 )  Omega =      6.776588
+    Center   2 = (     -0.012748     0.012748    -0.001113 )  Omega =      1.640997
+    Center   3 = (     -0.023879     0.001232     0.023881 )  Omega =      1.999606
+    Center   4 = (     -0.003464     0.003464     0.017447 )  Omega =      1.640988
+    Center   5 = (     -0.001232     0.023879     0.023881 )  Omega =      1.999606
+    Center   6 = (     -0.023875     0.023875     0.001231 )  Omega =      1.999554
+  ! Center Sum = (     -1.721451     1.721451     1.721472 )  Omega =     16.057340
 
   Omega variation (Bohr^2):     -0.025016
-                              Total time spent up to now :     3.10 secs
+                              Total time spent up to now :     6.36 secs
 
 
   Iteration =    90
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.674548     1.674548     1.674425 )  Omega =      6.666736
-    Center   2 = (     -0.011314     0.011314    -0.000847 )  Omega =      1.636466
-    Center   3 = (     -0.018935     0.000884     0.018938 )  Omega =      1.996962
-    Center   4 = (     -0.003161     0.003161     0.015453 )  Omega =      1.636459
-    Center   5 = (     -0.000884     0.018935     0.018938 )  Omega =      1.996962
-    Center   6 = (     -0.018932     0.018932     0.000884 )  Omega =      1.996906
-  ! Center Sum = (     -1.727774     1.727774     1.727790 )  Omega =     15.930490
+    Center   1 = (     -1.674553     1.674553     1.674430 )  Omega =      6.666798
+    Center   2 = (     -0.011314     0.011314    -0.000847 )  Omega =      1.636416
+    Center   3 = (     -0.018935     0.000883     0.018937 )  Omega =      1.996883
+    Center   4 = (     -0.003161     0.003161     0.015452 )  Omega =      1.636409
+    Center   5 = (     -0.000883     0.018935     0.018937 )  Omega =      1.996883
+    Center   6 = (     -0.018931     0.018931     0.000883 )  Omega =      1.996827
+  ! Center Sum = (     -1.727776     1.727776     1.727793 )  Omega =     15.930215
 
-  Omega variation (Bohr^2):     -0.016090
-                              Total time spent up to now :     3.25 secs
+  Omega variation (Bohr^2):     -0.016089
+                              Total time spent up to now :     6.66 secs
 
 
   Iteration =   100
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.686859     1.686859     1.686726 )  Omega =      6.601171
-    Center   2 = (     -0.010094     0.010094    -0.000654 )  Omega =      1.633615
-    Center   3 = (     -0.015542     0.000643     0.015544 )  Omega =      1.998036
-    Center   4 = (     -0.002881     0.002881     0.013765 )  Omega =      1.633609
-    Center   5 = (     -0.000643     0.015542     0.015544 )  Omega =      1.998036
-    Center   6 = (     -0.015538     0.015538     0.000642 )  Omega =      1.997977
-  ! Center Sum = (     -1.731556     1.731556     1.731568 )  Omega =     15.862444
+    Center   1 = (     -1.686864     1.686864     1.686731 )  Omega =      6.601234
+    Center   2 = (     -0.010093     0.010093    -0.000654 )  Omega =      1.633565
+    Center   3 = (     -0.015541     0.000642     0.015543 )  Omega =      1.997957
+    Center   4 = (     -0.002881     0.002881     0.013764 )  Omega =      1.633559
+    Center   5 = (     -0.000642     0.015541     0.015543 )  Omega =      1.997957
+    Center   6 = (     -0.015538     0.015538     0.000641 )  Omega =      1.997898
+  ! Center Sum = (     -1.731558     1.731558     1.731569 )  Omega =     15.862170
 
   Omega variation (Bohr^2):     -0.001252
-                              Total time spent up to now :     3.40 secs
+                              Total time spent up to now :     6.96 secs
 
 
   Iteration =   110
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.696858     1.696858     1.696719 )  Omega =      6.550777
-    Center   2 = (     -0.008918     0.008918    -0.000496 )  Omega =      1.631464
-    Center   3 = (     -0.012741     0.000462     0.012743 )  Omega =      2.000800
-    Center   4 = (     -0.002594     0.002594     0.012145 )  Omega =      1.631459
-    Center   5 = (     -0.000462     0.012741     0.012743 )  Omega =      2.000800
-    Center   6 = (     -0.012737     0.012737     0.000461 )  Omega =      2.000739
-  ! Center Sum = (     -1.734309     1.734309     1.734316 )  Omega =     15.816038
+    Center   1 = (     -1.696862     1.696862     1.696723 )  Omega =      6.550841
+    Center   2 = (     -0.008917     0.008917    -0.000496 )  Omega =      1.631414
+    Center   3 = (     -0.012740     0.000461     0.012742 )  Omega =      2.000721
+    Center   4 = (     -0.002594     0.002594     0.012144 )  Omega =      1.631409
+    Center   5 = (     -0.000461     0.012740     0.012742 )  Omega =      2.000721
+    Center   6 = (     -0.012737     0.012737     0.000460 )  Omega =      2.000660
+  ! Center Sum = (     -1.734311     1.734311     1.734317 )  Omega =     15.815765
 
   Omega variation (Bohr^2):     -0.001686
-                              Total time spent up to now :     3.55 secs
+                              Total time spent up to now :     7.28 secs
 
 
   Iteration =   120
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.704968     1.704968     1.704826 )  Omega =      6.511302
-    Center   2 = (     -0.007814     0.007814    -0.000370 )  Omega =      1.629846
-    Center   3 = (     -0.010433     0.000334     0.010434 )  Omega =      2.004391
-    Center   4 = (     -0.002311     0.002311     0.010632 )  Omega =      1.629842
-    Center   5 = (     -0.000334     0.010433     0.010434 )  Omega =      2.004391
-    Center   6 = (     -0.010429     0.010429     0.000333 )  Omega =      2.004329
-  ! Center Sum = (     -1.736288     1.736288     1.736291 )  Omega =     15.784102
+    Center   1 = (     -1.704971     1.704971     1.704830 )  Omega =      6.511367
+    Center   2 = (     -0.007814     0.007814    -0.000370 )  Omega =      1.629796
+    Center   3 = (     -0.010432     0.000333     0.010434 )  Omega =      2.004312
+    Center   4 = (     -0.002310     0.002310     0.010631 )  Omega =      1.629793
+    Center   5 = (     -0.000333     0.010432     0.010434 )  Omega =      2.004312
+    Center   6 = (     -0.010429     0.010429     0.000333 )  Omega =      2.004249
+  ! Center Sum = (     -1.736290     1.736290     1.736292 )  Omega =     15.783829
 
   Omega variation (Bohr^2):     -0.001706
-                              Total time spent up to now :     3.70 secs
+                              Total time spent up to now :     7.58 secs
 
 
   Iteration =   130
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.711550     1.711550     1.711409 )  Omega =      6.480205
-    Center   2 = (     -0.006801     0.006801    -0.000273 )  Omega =      1.628637
-    Center   3 = (     -0.008531     0.000247     0.008532 )  Omega =      2.008231
-    Center   4 = (     -0.002039     0.002039     0.009247 )  Omega =      1.628634
-    Center   5 = (     -0.000247     0.008531     0.008532 )  Omega =      2.008231
-    Center   6 = (     -0.008527     0.008527     0.000247 )  Omega =      2.008167
-  ! Center Sum = (     -1.737695     1.737695     1.737694 )  Omega =     15.762105
+    Center   1 = (     -1.711553     1.711553     1.711412 )  Omega =      6.480270
+    Center   2 = (     -0.006801     0.006801    -0.000273 )  Omega =      1.628587
+    Center   3 = (     -0.008530     0.000246     0.008532 )  Omega =      2.008152
+    Center   4 = (     -0.002039     0.002039     0.009246 )  Omega =      1.628584
+    Center   5 = (     -0.000246     0.008530     0.008532 )  Omega =      2.008152
+    Center   6 = (     -0.008527     0.008527     0.000246 )  Omega =      2.008088
+  ! Center Sum = (     -1.737696     1.737696     1.737695 )  Omega =     15.761832
 
   Omega variation (Bohr^2):     -0.001530
-                              Total time spent up to now :     3.86 secs
+                              Total time spent up to now :     7.94 secs
 
 
   Iteration =   140
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.716904     1.716904     1.716765 )  Omega =      6.455735
-    Center   2 = (     -0.005886     0.005886    -0.000199 )  Omega =      1.627738
-    Center   3 = (     -0.006963     0.000190     0.006964 )  Omega =      2.011954
-    Center   4 = (     -0.001785     0.001785     0.007999 )  Omega =      1.627736
-    Center   5 = (     -0.000190     0.006963     0.006964 )  Omega =      2.011954
-    Center   6 = (     -0.006960     0.006960     0.000189 )  Omega =      2.011889
-  ! Center Sum = (     -1.738687     1.738687     1.738683 )  Omega =     15.747004
+    Center   1 = (     -1.716907     1.716907     1.716768 )  Omega =      6.455800
+    Center   2 = (     -0.005886     0.005886    -0.000199 )  Omega =      1.627688
+    Center   3 = (     -0.006963     0.000189     0.006964 )  Omega =      2.011874
+    Center   4 = (     -0.001785     0.001785     0.007999 )  Omega =      1.627686
+    Center   5 = (     -0.000189     0.006963     0.006964 )  Omega =      2.011874
+    Center   6 = (     -0.006960     0.006960     0.000188 )  Omega =      2.011809
+  ! Center Sum = (     -1.738688     1.738688     1.738684 )  Omega =     15.746732
 
   Omega variation (Bohr^2):     -0.001279
-                              Total time spent up to now :     4.01 secs
+                              Total time spent up to now :     8.24 secs
 
 
   Iteration =   150
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.721271     1.721271     1.721136 )  Omega =      6.436558
-    Center   2 = (     -0.005070     0.005070    -0.000144 )  Omega =      1.627076
-    Center   3 = (     -0.005671     0.000151     0.005673 )  Omega =      2.015350
-    Center   4 = (     -0.001552     0.001552     0.006890 )  Omega =      1.627074
-    Center   5 = (     -0.000151     0.005671     0.005673 )  Omega =      2.015350
-    Center   6 = (     -0.005668     0.005668     0.000151 )  Omega =      2.015284
-  ! Center Sum = (     -1.739384     1.739384     1.739377 )  Omega =     15.736693
+    Center   1 = (     -1.721274     1.721274     1.721139 )  Omega =      6.436624
+    Center   2 = (     -0.005070     0.005070    -0.000144 )  Omega =      1.627026
+    Center   3 = (     -0.005671     0.000151     0.005672 )  Omega =      2.015271
+    Center   4 = (     -0.001552     0.001552     0.006889 )  Omega =      1.627024
+    Center   5 = (     -0.000151     0.005671     0.005672 )  Omega =      2.015271
+    Center   6 = (     -0.005668     0.005668     0.000150 )  Omega =      2.015205
+  ! Center Sum = (     -1.739385     1.739385     1.739378 )  Omega =     15.736421
 
   Omega variation (Bohr^2):     -0.001018
-                              Total time spent up to now :     4.15 secs
+                              Total time spent up to now :     8.56 secs
 
 
   Iteration =   160
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.724845     1.724845     1.724715 )  Omega =      6.421609
-    Center   2 = (     -0.004352     0.004352    -0.000104 )  Omega =      1.626591
-    Center   3 = (     -0.004608     0.000124     0.004609 )  Omega =      2.018324
-    Center   4 = (     -0.001342     0.001342     0.005913 )  Omega =      1.626589
-    Center   5 = (     -0.000124     0.004608     0.004609 )  Omega =      2.018324
-    Center   6 = (     -0.004605     0.004605     0.000124 )  Omega =      2.018257
-  ! Center Sum = (     -1.739876     1.739876     1.739867 )  Omega =     15.729694
+    Center   1 = (     -1.724847     1.724847     1.724718 )  Omega =      6.421674
+    Center   2 = (     -0.004351     0.004351    -0.000104 )  Omega =      1.626541
+    Center   3 = (     -0.004608     0.000124     0.004609 )  Omega =      2.018244
+    Center   4 = (     -0.001342     0.001342     0.005913 )  Omega =      1.626540
+    Center   5 = (     -0.000124     0.004608     0.004609 )  Omega =      2.018244
+    Center   6 = (     -0.004605     0.004605     0.000123 )  Omega =      2.018178
+  ! Center Sum = (     -1.739876     1.739876     1.739867 )  Omega =     15.729422
 
   Omega variation (Bohr^2):     -0.000782
-                              Total time spent up to now :     4.30 secs
+                              Total time spent up to now :     8.87 secs
 
 
   Iteration =   170
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.727777     1.727777     1.727654 )  Omega =      6.410019
-    Center   2 = (     -0.003724     0.003724    -0.000074 )  Omega =      1.626239
-    Center   3 = (     -0.003734     0.000104     0.003735 )  Omega =      2.020848
-    Center   4 = (     -0.001155     0.001155     0.005062 )  Omega =      1.626238
-    Center   5 = (     -0.000104     0.003734     0.003735 )  Omega =      2.020848
-    Center   6 = (     -0.003731     0.003731     0.000103 )  Omega =      2.020780
-  ! Center Sum = (     -1.740225     1.740225     1.740215 )  Omega =     15.724972
+    Center   1 = (     -1.727779     1.727779     1.727656 )  Omega =      6.410085
+    Center   2 = (     -0.003724     0.003724    -0.000074 )  Omega =      1.626189
+    Center   3 = (     -0.003734     0.000103     0.003735 )  Omega =      2.020769
+    Center   4 = (     -0.001155     0.001155     0.005061 )  Omega =      1.626188
+    Center   5 = (     -0.000103     0.003734     0.003735 )  Omega =      2.020769
+    Center   6 = (     -0.003731     0.003731     0.000102 )  Omega =      2.020701
+  ! Center Sum = (     -1.740226     1.740226     1.740215 )  Omega =     15.724700
 
   Omega variation (Bohr^2):     -0.000584
-                              Total time spent up to now :     4.46 secs
+                              Total time spent up to now :     9.18 secs
 
 
   Iteration =   180
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.730189     1.730189     1.730074 )  Omega =      6.401082
-    Center   2 = (     -0.003181     0.003181    -0.000053 )  Omega =      1.625985
-    Center   3 = (     -0.003017     0.000086     0.003018 )  Omega =      2.022941
-    Center   4 = (     -0.000991     0.000991     0.004325 )  Omega =      1.625984
-    Center   5 = (     -0.000086     0.003017     0.003018 )  Omega =      2.022941
-    Center   6 = (     -0.003015     0.003015     0.000085 )  Omega =      2.022872
-  ! Center Sum = (     -1.740478     1.740478     1.740467 )  Omega =     15.721806
+    Center   1 = (     -1.730191     1.730191     1.730076 )  Omega =      6.401148
+    Center   2 = (     -0.003180     0.003180    -0.000053 )  Omega =      1.625936
+    Center   3 = (     -0.003017     0.000085     0.003018 )  Omega =      2.022862
+    Center   4 = (     -0.000991     0.000991     0.004325 )  Omega =      1.625934
+    Center   5 = (     -0.000085     0.003017     0.003018 )  Omega =      2.022862
+    Center   6 = (     -0.003014     0.003014     0.000084 )  Omega =      2.022793
+  ! Center Sum = (     -1.740479     1.740479     1.740467 )  Omega =     15.721534
 
   Omega variation (Bohr^2):     -0.000427
-                              Total time spent up to now :     4.61 secs
+                              Total time spent up to now :     9.48 secs
 
 
   Iteration =   190
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.731897     1.731897     1.731788 )  Omega =      6.395185
-    Center   2 = (     -0.002780     0.002780    -0.000039 )  Omega =      1.625827
-    Center   3 = (     -0.002513     0.000071     0.002514 )  Omega =      2.024399
-    Center   4 = (     -0.000869     0.000869     0.003782 )  Omega =      1.625826
-    Center   5 = (     -0.000071     0.002513     0.002514 )  Omega =      2.024399
-    Center   6 = (     -0.002511     0.002511     0.000069 )  Omega =      2.024329
-  ! Center Sum = (     -1.740641     1.740641     1.740628 )  Omega =     15.719965
+    Center   1 = (     -1.731898     1.731898     1.731790 )  Omega =      6.395251
+    Center   2 = (     -0.002780     0.002780    -0.000039 )  Omega =      1.625778
+    Center   3 = (     -0.002513     0.000070     0.002514 )  Omega =      2.024319
+    Center   4 = (     -0.000869     0.000869     0.003781 )  Omega =      1.625777
+    Center   5 = (     -0.000070     0.002513     0.002514 )  Omega =      2.024319
+    Center   6 = (     -0.002511     0.002511     0.000069 )  Omega =      2.024250
+  ! Center Sum = (     -1.740641     1.740641     1.740629 )  Omega =     15.719694
 
   Omega variation (Bohr^2):     -0.000035
-                              Total time spent up to now :     4.80 secs
+                              Total time spent up to now :     9.78 secs
 
 
   Iteration =   200
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.733363     1.733363     1.733262 )  Omega =      6.390450
-    Center   2 = (     -0.002425     0.002425    -0.000029 )  Omega =      1.625708
-    Center   3 = (     -0.002085     0.000055     0.002085 )  Omega =      2.025620
-    Center   4 = (     -0.000760     0.000760     0.003301 )  Omega =      1.625706
-    Center   5 = (     -0.000055     0.002085     0.002085 )  Omega =      2.025620
-    Center   6 = (     -0.002082     0.002082     0.000054 )  Omega =      2.025549
-  ! Center Sum = (     -1.740771     1.740771     1.740758 )  Omega =     15.718652
+    Center   1 = (     -1.733365     1.733365     1.733263 )  Omega =      6.390515
+    Center   2 = (     -0.002425     0.002425    -0.000029 )  Omega =      1.625658
+    Center   3 = (     -0.002085     0.000055     0.002085 )  Omega =      2.025540
+    Center   4 = (     -0.000760     0.000760     0.003301 )  Omega =      1.625657
+    Center   5 = (     -0.000055     0.002085     0.002085 )  Omega =      2.025540
+    Center   6 = (     -0.002082     0.002082     0.000053 )  Omega =      2.025470
+  ! Center Sum = (     -1.740772     1.740772     1.740759 )  Omega =     15.718381
 
   Omega variation (Bohr^2):     -0.000048
-                              Total time spent up to now :     4.95 secs
+                              Total time spent up to now :    10.09 secs
 
 
   Iteration =   210
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.734605     1.734605     1.734510 )  Omega =      6.386715
-    Center   2 = (     -0.002117     0.002117    -0.000021 )  Omega =      1.625618
-    Center   3 = (     -0.001727     0.000039     0.001727 )  Omega =      2.026618
-    Center   4 = (     -0.000665     0.000665     0.002884 )  Omega =      1.625617
-    Center   5 = (     -0.000039     0.001727     0.001727 )  Omega =      2.026618
-    Center   6 = (     -0.001724     0.001724     0.000037 )  Omega =      2.026547
-  ! Center Sum = (     -1.740877     1.740877     1.740864 )  Omega =     15.717733
+    Center   1 = (     -1.734606     1.734606     1.734512 )  Omega =      6.386781
+    Center   2 = (     -0.002117     0.002117    -0.000021 )  Omega =      1.625569
+    Center   3 = (     -0.001727     0.000039     0.001727 )  Omega =      2.026538
+    Center   4 = (     -0.000665     0.000665     0.002883 )  Omega =      1.625568
+    Center   5 = (     -0.000039     0.001727     0.001727 )  Omega =      2.026538
+    Center   6 = (     -0.001724     0.001724     0.000037 )  Omega =      2.026467
+  ! Center Sum = (     -1.740877     1.740877     1.740864 )  Omega =     15.717462
 
   Omega variation (Bohr^2):     -0.000050
-                              Total time spent up to now :     5.10 secs
+                              Total time spent up to now :    10.45 secs
 
 
   Iteration =   220
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.735671     1.735671     1.735584 )  Omega =      6.383738
-    Center   2 = (     -0.001847     0.001847    -0.000016 )  Omega =      1.625551
-    Center   3 = (     -0.001424     0.000023     0.001424 )  Omega =      2.027438
-    Center   4 = (     -0.000581     0.000581     0.002517 )  Omega =      1.625550
-    Center   5 = (     -0.000023     0.001424     0.001424 )  Omega =      2.027439
-    Center   6 = (     -0.001421     0.001421     0.000020 )  Omega =      2.027367
-  ! Center Sum = (     -1.740966     1.740966     1.740953 )  Omega =     15.717083
+    Center   1 = (     -1.735672     1.735672     1.735585 )  Omega =      6.383803
+    Center   2 = (     -0.001847     0.001847    -0.000016 )  Omega =      1.625502
+    Center   3 = (     -0.001424     0.000022     0.001424 )  Omega =      2.027359
+    Center   4 = (     -0.000581     0.000581     0.002517 )  Omega =      1.625501
+    Center   5 = (     -0.000022     0.001424     0.001424 )  Omega =      2.027359
+    Center   6 = (     -0.001421     0.001421     0.000020 )  Omega =      2.027287
+  ! Center Sum = (     -1.740967     1.740967     1.740954 )  Omega =     15.716812
 
   Omega variation (Bohr^2):     -0.000046
-                              Total time spent up to now :     5.25 secs
+                              Total time spent up to now :    10.75 secs
 
 
   Iteration =   230
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.736585     1.736585     1.736505 )  Omega =      6.381378
-    Center   2 = (     -0.001611     0.001611    -0.000011 )  Omega =      1.625501
-    Center   3 = (     -0.001168     0.000005     0.001169 )  Omega =      2.028106
-    Center   4 = (     -0.000507     0.000507     0.002198 )  Omega =      1.625500
-    Center   5 = (     -0.000005     0.001168     0.001169 )  Omega =      2.028106
-    Center   6 = (     -0.001166     0.001166     0.000002 )  Omega =      2.028034
-  ! Center Sum = (     -1.741043     1.741043     1.741031 )  Omega =     15.716627
+    Center   1 = (     -1.736586     1.736586     1.736506 )  Omega =      6.381444
+    Center   2 = (     -0.001611     0.001611    -0.000011 )  Omega =      1.625452
+    Center   3 = (     -0.001168     0.000005     0.001169 )  Omega =      2.028027
+    Center   4 = (     -0.000507     0.000507     0.002197 )  Omega =      1.625451
+    Center   5 = (     -0.000005     0.001168     0.001169 )  Omega =      2.028027
+    Center   6 = (     -0.001166     0.001166     0.000002 )  Omega =      2.027955
+  ! Center Sum = (     -1.741044     1.741044     1.741031 )  Omega =     15.716355
 
   Omega variation (Bohr^2):     -0.000040
-                              Total time spent up to now :     5.40 secs
+                              Total time spent up to now :    11.06 secs
 
 
   Iteration =   240
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.737367     1.737367     1.737294 )  Omega =      6.379519
-    Center   2 = (     -0.001407     0.001407    -0.000008 )  Omega =      1.625464
-    Center   3 = (     -0.000955    -0.000013     0.000955 )  Omega =      2.028645
-    Center   4 = (     -0.000443     0.000443     0.001920 )  Omega =      1.625463
-    Center   5 = (      0.000013     0.000955     0.000955 )  Omega =      2.028645
-    Center   6 = (     -0.000953     0.000953    -0.000017 )  Omega =      2.028572
-  ! Center Sum = (     -1.741111     1.741111     1.741099 )  Omega =     15.716308
+    Center   1 = (     -1.737368     1.737368     1.737295 )  Omega =      6.379585
+    Center   2 = (     -0.001406     0.001406    -0.000008 )  Omega =      1.625415
+    Center   3 = (     -0.000955    -0.000013     0.000955 )  Omega =      2.028566
+    Center   4 = (     -0.000443     0.000443     0.001920 )  Omega =      1.625413
+    Center   5 = (      0.000013     0.000955     0.000955 )  Omega =      2.028566
+    Center   6 = (     -0.000953     0.000953    -0.000017 )  Omega =      2.028493
+  ! Center Sum = (     -1.741111     1.741111     1.741099 )  Omega =     15.716037
 
   Omega variation (Bohr^2):     -0.000032
-                              Total time spent up to now :     5.55 secs
+                              Total time spent up to now :    11.40 secs
 
 
   Iteration =   250
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.738019     1.738019     1.737952 )  Omega =      6.378096
-    Center   2 = (     -0.001234     0.001234    -0.000006 )  Omega =      1.625437
-    Center   3 = (     -0.000780    -0.000031     0.000780 )  Omega =      2.029066
-    Center   4 = (     -0.000389     0.000389     0.001686 )  Omega =      1.625436
-    Center   5 = (      0.000031     0.000780     0.000780 )  Omega =      2.029066
-    Center   6 = (     -0.000779     0.000779    -0.000035 )  Omega =      2.028992
-  ! Center Sum = (     -1.741169     1.741169     1.741158 )  Omega =     15.716093
+    Center   1 = (     -1.738020     1.738020     1.737953 )  Omega =      6.378162
+    Center   2 = (     -0.001234     0.001234    -0.000006 )  Omega =      1.625388
+    Center   3 = (     -0.000780    -0.000031     0.000780 )  Omega =      2.028986
+    Center   4 = (     -0.000389     0.000389     0.001686 )  Omega =      1.625386
+    Center   5 = (      0.000031     0.000780     0.000780 )  Omega =      2.028986
+    Center   6 = (     -0.000779     0.000779    -0.000035 )  Omega =      2.028913
+  ! Center Sum = (     -1.741170     1.741170     1.741158 )  Omega =     15.715821
 
   Omega variation (Bohr^2):     -0.000025
-                              Total time spent up to now :     5.70 secs
+                              Total time spent up to now :    11.71 secs
 
 
   Iteration =   260
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.738577     1.738577     1.738516 )  Omega =      6.376978
-    Center   2 = (     -0.001085     0.001085    -0.000004 )  Omega =      1.625417
-    Center   3 = (     -0.000635    -0.000049     0.000635 )  Omega =      2.029402
-    Center   4 = (     -0.000342     0.000342     0.001483 )  Omega =      1.625416
-    Center   5 = (      0.000049     0.000635     0.000635 )  Omega =      2.029402
-    Center   6 = (     -0.000633     0.000633    -0.000054 )  Omega =      2.029328
-  ! Center Sum = (     -1.741222     1.741222     1.741211 )  Omega =     15.715943
+    Center   1 = (     -1.738578     1.738578     1.738517 )  Omega =      6.377044
+    Center   2 = (     -0.001085     0.001085    -0.000004 )  Omega =      1.625368
+    Center   3 = (     -0.000635    -0.000050     0.000635 )  Omega =      2.029323
+    Center   4 = (     -0.000342     0.000342     0.001483 )  Omega =      1.625366
+    Center   5 = (      0.000050     0.000635     0.000635 )  Omega =      2.029323
+    Center   6 = (     -0.000633     0.000633    -0.000054 )  Omega =      2.029248
+  ! Center Sum = (     -1.741223     1.741223     1.741211 )  Omega =     15.715671
 
   Omega variation (Bohr^2):     -0.000020
-                              Total time spent up to now :     5.85 secs
+                              Total time spent up to now :    12.02 secs
 
 
 
@@ -624,59 +624,87 @@
   Wannier function ordering : none
 
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (     -1.738666     1.738666     1.738606 )  Omega =      6.376806
-    Center   2 = (     -0.001061     0.001061    -0.000004 )  Omega =      1.625414
-    Center   3 = (     -0.000612    -0.000053     0.000612 )  Omega =      2.029454
-    Center   4 = (     -0.000334     0.000334     0.001451 )  Omega =      1.625413
-    Center   5 = (      0.000053     0.000612     0.000612 )  Omega =      2.029454
-    Center   6 = (     -0.000610     0.000610    -0.000057 )  Omega =      2.029380
-  ! Center Sum = (     -1.741231     1.741231     1.741220 )  Omega =     15.715921
+    Center   1 = (     -1.738667     1.738667     1.738607 )  Omega =      6.376872
+    Center   2 = (     -0.001061     0.001061    -0.000004 )  Omega =      1.625365
+    Center   3 = (     -0.000612    -0.000053     0.000612 )  Omega =      2.029375
+    Center   4 = (     -0.000334     0.000334     0.001451 )  Omega =      1.625363
+    Center   5 = (      0.000053     0.000612     0.000612 )  Omega =      2.029375
+    Center   6 = (     -0.000610     0.000610    -0.000057 )  Omega =      2.029300
+  ! Center Sum = (     -1.741231     1.741231     1.741220 )  Omega =     15.715650
 
   Spread Operator decomposition (Bohr^2): 
-    Omega I    =       12.197598
-    Omega D    =        0.872479
-    Omega OD   =        2.645844
-    Omega Tot  =       15.715921
-    Omega Avrg =        2.619320
+    Omega I    =       12.197478
+    Omega D    =        0.872508
+    Omega OD   =        2.645663
+    Omega Tot  =       15.715650
+    Omega Avrg =        2.619275
 
-                              Total time spent up to now :     5.89 secs
+                              Total time spent up to now :    12.09 secs
 
 
   Unitary transf. matrixes written on file: copper_WanT.wan
   ======================================================================
+ !
+ !    R = (   0   0  -1 )
+ !  -0.845819   0.000000,     0.226155   0.000000,     0.052179   0.000000,
+ !  -0.109031   0.000000,     0.052179   0.000000,    -0.269653   0.000000,
+ !
+ !    R = (   0  -1   0 )
+ !  -0.846169   0.000000,    -0.025006   0.000000,     0.052165   0.000000,
+ !   0.142553   0.000000,    -0.269706   0.000000,     0.052174   0.000000,
+ !
+ !    R = (  -1   0   0 )
+ !  -0.846169   0.000000,    -0.025006   0.000000,    -0.269706   0.000000,
+ !   0.142553   0.000000,     0.052165   0.000000,     0.052174   0.000000,
+ !
+ !    R = (   0   0   0 )
+ !  -2.790665   0.000000,    -3.584633   0.000000,    -3.477983   0.000000,
+ !  -3.584529   0.000000,    -3.477983   0.000000,    -3.478045   0.000000,
+ !
+ !    R = (   1   0   0 )
+ !  -0.846169   0.000000,    -0.025006   0.000000,    -0.269706   0.000000,
+ !   0.142553   0.000000,     0.052165   0.000000,     0.052174   0.000000,
+ !
+ !    R = (   0   1   0 )
+ !  -0.846169   0.000000,    -0.025006   0.000000,     0.052165   0.000000,
+ !   0.142553   0.000000,    -0.269706   0.000000,     0.052174   0.000000,
+ !
+ !    R = (   0   0   1 )
+ !  -0.845819   0.000000,     0.226155   0.000000,     0.052179   0.000000,
+ !  -0.109031   0.000000,     0.052179   0.000000,    -0.269653   0.000000,
 
 
   Decay of the real space Hamiltonian:
     (number of R vectors (nrtot) :   64
 
     #       R [cry]     |R| [Bohr]      Norm of H(R) [eV]
-   22      0   0   0     0.000000         3.433784
-   23      1   0   0     4.926979         0.498268
-   24      2   0   0     9.853957         0.061020
-   26      0   1   0     4.926979         0.498268
-   27      1   1   0     8.533777         0.192412
+   22      0   0   0     0.000000         3.434019
+   23      1   0   0     4.926979         0.498271
+   24      2   0   0     9.853957         0.061019
+   26      0   1   0     4.926979         0.498271
+   27      1   1   0     8.533777         0.192406
    28      2   1   0    13.035560         0.076974
-   30      0   2   0     9.853957         0.061020
+   30      0   2   0     9.853957         0.061019
    31      1   2   0    13.035560         0.076974
-   32      2   2   0    17.067555         0.044679
-   38      0   0   1     4.926979         0.498215
-   39      1   0   1     8.533777         0.192590
+   32      2   2   0    17.067555         0.044677
+   38      0   0   1     4.926979         0.498219
+   39      1   0   1     8.533777         0.192583
    40      2   0   1    13.035560         0.076938
-   42      0   1   1     8.533777         0.192590
-   43      1   1   1    12.068584         0.186417
-   44      2   1   1    16.340939         0.100469
+   42      0   1   1     8.533777         0.192583
+   43      1   1   1    12.068584         0.186419
+   44      2   1   1    16.340939         0.100468
    46      0   2   1    13.035560         0.076938
-   47      1   2   1    16.340939         0.100469
-   48      2   2   1    20.314453         0.055117
-   54      0   0   2     9.853957         0.061067
+   47      1   2   1    16.340939         0.100468
+   48      2   2   1    20.314453         0.055116
+   54      0   0   2     9.853957         0.061066
    55      1   0   2    13.035560         0.076982
-   56      2   0   2    17.067555         0.044573
+   56      2   0   2    17.067555         0.044571
    58      0   1   2    13.035560         0.076982
-   59      1   1   2    16.340939         0.100425
-   60      2   1   2    20.314453         0.055028
-   62      0   2   2    17.067555         0.044573
-   63      1   2   2    20.314453         0.055028
-   64      2   2   2    24.137167         0.089904
+   59      1   1   2    16.340939         0.100424
+   60      2   1   2    20.314453         0.055027
+   62      0   2   2    17.067555         0.044571
+   63      1   2   2    20.314453         0.055027
+   64      2   2   2    24.137167         0.089903
 
   Hamiltonian on WF basis written on file : copper_WanT.ham
 
@@ -686,18 +714,18 @@
    <global routines>
              clock number :    12
 
-                  wannier :     5.00s CPU 
+                  wannier :    12.00s CPU 
  
-                want_init :     0.12s CPU
-             bshells_init :     0.03s CPU
-          overlap_extract :     1.74s CPU
-        localization_init :     0.01s CPU
-           overlap_update :     0.85s CPU (     524 calls,   0.002 s avg)
+                want_init :     0.20s CPU
+             bshells_init :     0.02s CPU
+          overlap_extract :     3.67s CPU
+        localization_init :     0.02s CPU
+           overlap_update :     1.71s CPU (     524 calls,   0.003 s avg)
                    omegai :     0.00s CPU
-                    omega :     0.49s CPU (     524 calls,   0.001 s avg)
-               iterations :     4.02s CPU
-                   domega :     0.43s CPU (     262 calls,   0.002 s avg)
-           unitary_update :     1.50s CPU (     523 calls,   0.003 s avg)
-         hamiltonian_calc :     0.02s CPU
+                    omega :     0.89s CPU (     524 calls,   0.002 s avg)
+               iterations :     8.20s CPU
+                   domega :     0.83s CPU (     262 calls,   0.003 s avg)
+           unitary_update :     3.23s CPU (     523 calls,   0.006 s avg)
+         hamiltonian_calc :     0.05s CPU
 
 

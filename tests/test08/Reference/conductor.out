@@ -8,1022 +8,210 @@
 
 
   Program <conductor>  v. 2.0.0  starts ...
-  Date 17Nov2005 at  1:43: 0 
+  Date  1Dec2005 at 19:25:22 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
 
 
-  Computing E = -10.00000 eV
-  Computing E =  -9.97998 eV
-  Computing E =  -9.95996 eV
-  Computing E =  -9.93994 eV
-  Computing E =  -9.91992 eV
-  Computing E =  -9.89990 eV
-  Computing E =  -9.87988 eV
-  Computing E =  -9.85986 eV
-  Computing E =  -9.83984 eV
-  Computing E =  -9.81982 eV
-  Computing E =  -9.79980 eV
-  Computing E =  -9.77978 eV
-  Computing E =  -9.75976 eV
-  Computing E =  -9.73974 eV
-  Computing E =  -9.71972 eV
-  Computing E =  -9.69970 eV
-  Computing E =  -9.67968 eV
-  Computing E =  -9.65966 eV
-  Computing E =  -9.63964 eV
-  Computing E =  -9.61962 eV
-  Computing E =  -9.59960 eV
-  Computing E =  -9.57958 eV
-  Computing E =  -9.55956 eV
-  Computing E =  -9.53954 eV
-  Computing E =  -9.51952 eV
-  Computing E =  -9.49950 eV
-  Computing E =  -9.47948 eV
-  Computing E =  -9.45946 eV
-  Computing E =  -9.43944 eV
-  Computing E =  -9.41942 eV
-  Computing E =  -9.39940 eV
-  Computing E =  -9.37938 eV
-  Computing E =  -9.35936 eV
-  Computing E =  -9.33934 eV
-  Computing E =  -9.31932 eV
-  Computing E =  -9.29930 eV
-  Computing E =  -9.27928 eV
-  Computing E =  -9.25926 eV
-  Computing E =  -9.23924 eV
-  Computing E =  -9.21922 eV
-  Computing E =  -9.19920 eV
-  Computing E =  -9.17918 eV
-  Computing E =  -9.15916 eV
-  Computing E =  -9.13914 eV
-  Computing E =  -9.11912 eV
-  Computing E =  -9.09910 eV
-  Computing E =  -9.07908 eV
-  Computing E =  -9.05906 eV
-  Computing E =  -9.03904 eV
-  Computing E =  -9.01902 eV
-  Computing E =  -8.99900 eV
-  Computing E =  -8.97898 eV
-  Computing E =  -8.95896 eV
-  Computing E =  -8.93894 eV
-  Computing E =  -8.91892 eV
-  Computing E =  -8.89890 eV
-  Computing E =  -8.87888 eV
-  Computing E =  -8.85886 eV
-  Computing E =  -8.83884 eV
-  Computing E =  -8.81882 eV
-  Computing E =  -8.79880 eV
-  Computing E =  -8.77878 eV
-  Computing E =  -8.75876 eV
-  Computing E =  -8.73874 eV
-  Computing E =  -8.71872 eV
-  Computing E =  -8.69870 eV
-  Computing E =  -8.67868 eV
-  Computing E =  -8.65866 eV
-  Computing E =  -8.63864 eV
-  Computing E =  -8.61862 eV
-  Computing E =  -8.59860 eV
-  Computing E =  -8.57858 eV
-  Computing E =  -8.55856 eV
-  Computing E =  -8.53854 eV
-  Computing E =  -8.51852 eV
-  Computing E =  -8.49850 eV
-  Computing E =  -8.47848 eV
-  Computing E =  -8.45846 eV
-  Computing E =  -8.43844 eV
-  Computing E =  -8.41842 eV
-  Computing E =  -8.39840 eV
-  Computing E =  -8.37838 eV
-  Computing E =  -8.35836 eV
-  Computing E =  -8.33834 eV
-  Computing E =  -8.31832 eV
-  Computing E =  -8.29830 eV
-  Computing E =  -8.27828 eV
-  Computing E =  -8.25826 eV
-  Computing E =  -8.23824 eV
-  Computing E =  -8.21822 eV
-  Computing E =  -8.19820 eV
-  Computing E =  -8.17818 eV
-  Computing E =  -8.15816 eV
-  Computing E =  -8.13814 eV
-  Computing E =  -8.11812 eV
-  Computing E =  -8.09810 eV
-  Computing E =  -8.07808 eV
-  Computing E =  -8.05806 eV
-  Computing E =  -8.03804 eV
-  Computing E =  -8.01802 eV
-  Computing E =  -7.99800 eV
-  Computing E =  -7.97798 eV
-  Computing E =  -7.95796 eV
-  Computing E =  -7.93794 eV
-  Computing E =  -7.91792 eV
-  Computing E =  -7.89790 eV
-  Computing E =  -7.87788 eV
-  Computing E =  -7.85786 eV
-  Computing E =  -7.83784 eV
-  Computing E =  -7.81782 eV
-  Computing E =  -7.79780 eV
-  Computing E =  -7.77778 eV
-  Computing E =  -7.75776 eV
-  Computing E =  -7.73774 eV
-  Computing E =  -7.71772 eV
-  Computing E =  -7.69770 eV
-  Computing E =  -7.67768 eV
-  Computing E =  -7.65766 eV
-  Computing E =  -7.63764 eV
-  Computing E =  -7.61762 eV
-  Computing E =  -7.59760 eV
-  Computing E =  -7.57758 eV
-  Computing E =  -7.55756 eV
-  Computing E =  -7.53754 eV
-  Computing E =  -7.51752 eV
-  Computing E =  -7.49750 eV
-  Computing E =  -7.47748 eV
-  Computing E =  -7.45746 eV
-  Computing E =  -7.43744 eV
-  Computing E =  -7.41742 eV
-  Computing E =  -7.39740 eV
-  Computing E =  -7.37738 eV
-  Computing E =  -7.35736 eV
-  Computing E =  -7.33734 eV
-  Computing E =  -7.31732 eV
-  Computing E =  -7.29730 eV
-  Computing E =  -7.27728 eV
-  Computing E =  -7.25726 eV
-  Computing E =  -7.23724 eV
-  Computing E =  -7.21722 eV
-  Computing E =  -7.19720 eV
-  Computing E =  -7.17718 eV
-  Computing E =  -7.15716 eV
-  Computing E =  -7.13714 eV
-  Computing E =  -7.11712 eV
-  Computing E =  -7.09710 eV
-  Computing E =  -7.07708 eV
-  Computing E =  -7.05706 eV
-  Computing E =  -7.03704 eV
-  Computing E =  -7.01702 eV
-  Computing E =  -6.99700 eV
-  Computing E =  -6.97698 eV
-  Computing E =  -6.95696 eV
-  Computing E =  -6.93694 eV
-  Computing E =  -6.91692 eV
-  Computing E =  -6.89690 eV
-  Computing E =  -6.87688 eV
-  Computing E =  -6.85686 eV
-  Computing E =  -6.83684 eV
-  Computing E =  -6.81682 eV
-  Computing E =  -6.79680 eV
-  Computing E =  -6.77678 eV
-  Computing E =  -6.75676 eV
-  Computing E =  -6.73674 eV
-  Computing E =  -6.71672 eV
-  Computing E =  -6.69670 eV
-  Computing E =  -6.67668 eV
-  Computing E =  -6.65666 eV
-  Computing E =  -6.63664 eV
-  Computing E =  -6.61662 eV
-  Computing E =  -6.59660 eV
-  Computing E =  -6.57658 eV
-  Computing E =  -6.55656 eV
-  Computing E =  -6.53654 eV
-  Computing E =  -6.51652 eV
-  Computing E =  -6.49650 eV
-  Computing E =  -6.47648 eV
-  Computing E =  -6.45646 eV
-  Computing E =  -6.43644 eV
-  Computing E =  -6.41642 eV
-  Computing E =  -6.39640 eV
-  Computing E =  -6.37638 eV
-  Computing E =  -6.35636 eV
-  Computing E =  -6.33634 eV
-  Computing E =  -6.31632 eV
-  Computing E =  -6.29630 eV
-  Computing E =  -6.27628 eV
-  Computing E =  -6.25626 eV
-  Computing E =  -6.23624 eV
-  Computing E =  -6.21622 eV
-  Computing E =  -6.19620 eV
-  Computing E =  -6.17618 eV
-  Computing E =  -6.15616 eV
-  Computing E =  -6.13614 eV
-  Computing E =  -6.11612 eV
-  Computing E =  -6.09610 eV
-  Computing E =  -6.07608 eV
-  Computing E =  -6.05606 eV
-  Computing E =  -6.03604 eV
-  Computing E =  -6.01602 eV
-  Computing E =  -5.99600 eV
-  Computing E =  -5.97598 eV
-  Computing E =  -5.95596 eV
-  Computing E =  -5.93594 eV
-  Computing E =  -5.91592 eV
-  Computing E =  -5.89590 eV
-  Computing E =  -5.87588 eV
-  Computing E =  -5.85586 eV
-  Computing E =  -5.83584 eV
-  Computing E =  -5.81582 eV
-  Computing E =  -5.79580 eV
-  Computing E =  -5.77578 eV
-  Computing E =  -5.75576 eV
-  Computing E =  -5.73574 eV
-  Computing E =  -5.71572 eV
-  Computing E =  -5.69570 eV
-  Computing E =  -5.67568 eV
-  Computing E =  -5.65566 eV
-  Computing E =  -5.63564 eV
-  Computing E =  -5.61562 eV
-  Computing E =  -5.59560 eV
-  Computing E =  -5.57558 eV
-  Computing E =  -5.55556 eV
-  Computing E =  -5.53554 eV
-  Computing E =  -5.51552 eV
-  Computing E =  -5.49550 eV
-  Computing E =  -5.47548 eV
-  Computing E =  -5.45546 eV
-  Computing E =  -5.43544 eV
-  Computing E =  -5.41542 eV
-  Computing E =  -5.39540 eV
-  Computing E =  -5.37538 eV
-  Computing E =  -5.35536 eV
-  Computing E =  -5.33534 eV
-  Computing E =  -5.31532 eV
-  Computing E =  -5.29530 eV
-  Computing E =  -5.27528 eV
-  Computing E =  -5.25526 eV
-  Computing E =  -5.23524 eV
-  Computing E =  -5.21522 eV
-  Computing E =  -5.19520 eV
-  Computing E =  -5.17518 eV
-  Computing E =  -5.15516 eV
-  Computing E =  -5.13514 eV
-  Computing E =  -5.11512 eV
-  Computing E =  -5.09510 eV
-  Computing E =  -5.07508 eV
-  Computing E =  -5.05506 eV
-  Computing E =  -5.03504 eV
-  Computing E =  -5.01502 eV
-  Computing E =  -4.99499 eV
-  Computing E =  -4.97497 eV
-  Computing E =  -4.95495 eV
-  Computing E =  -4.93493 eV
-  Computing E =  -4.91491 eV
-  Computing E =  -4.89489 eV
-  Computing E =  -4.87487 eV
-  Computing E =  -4.85485 eV
-  Computing E =  -4.83483 eV
-  Computing E =  -4.81481 eV
-  Computing E =  -4.79479 eV
-  Computing E =  -4.77477 eV
-  Computing E =  -4.75475 eV
-  Computing E =  -4.73473 eV
-  Computing E =  -4.71471 eV
-  Computing E =  -4.69469 eV
-  Computing E =  -4.67467 eV
-  Computing E =  -4.65465 eV
-  Computing E =  -4.63463 eV
-  Computing E =  -4.61461 eV
-  Computing E =  -4.59459 eV
-  Computing E =  -4.57457 eV
-  Computing E =  -4.55455 eV
-  Computing E =  -4.53453 eV
-  Computing E =  -4.51451 eV
-  Computing E =  -4.49449 eV
-  Computing E =  -4.47447 eV
-  Computing E =  -4.45445 eV
-  Computing E =  -4.43443 eV
-  Computing E =  -4.41441 eV
-  Computing E =  -4.39439 eV
-  Computing E =  -4.37437 eV
-  Computing E =  -4.35435 eV
-  Computing E =  -4.33433 eV
-  Computing E =  -4.31431 eV
-  Computing E =  -4.29429 eV
-  Computing E =  -4.27427 eV
-  Computing E =  -4.25425 eV
-  Computing E =  -4.23423 eV
-  Computing E =  -4.21421 eV
-  Computing E =  -4.19419 eV
-  Computing E =  -4.17417 eV
-  Computing E =  -4.15415 eV
-  Computing E =  -4.13413 eV
-  Computing E =  -4.11411 eV
-  Computing E =  -4.09409 eV
-  Computing E =  -4.07407 eV
-  Computing E =  -4.05405 eV
-  Computing E =  -4.03403 eV
-  Computing E =  -4.01401 eV
-  Computing E =  -3.99399 eV
-  Computing E =  -3.97397 eV
-  Computing E =  -3.95395 eV
-  Computing E =  -3.93393 eV
-  Computing E =  -3.91391 eV
-  Computing E =  -3.89389 eV
-  Computing E =  -3.87387 eV
-  Computing E =  -3.85385 eV
-  Computing E =  -3.83383 eV
-  Computing E =  -3.81381 eV
-  Computing E =  -3.79379 eV
-  Computing E =  -3.77377 eV
-  Computing E =  -3.75375 eV
-  Computing E =  -3.73373 eV
-  Computing E =  -3.71371 eV
-  Computing E =  -3.69369 eV
-  Computing E =  -3.67367 eV
-  Computing E =  -3.65365 eV
-  Computing E =  -3.63363 eV
-  Computing E =  -3.61361 eV
-  Computing E =  -3.59359 eV
-  Computing E =  -3.57357 eV
-  Computing E =  -3.55355 eV
-  Computing E =  -3.53353 eV
-  Computing E =  -3.51351 eV
-  Computing E =  -3.49349 eV
-  Computing E =  -3.47347 eV
-  Computing E =  -3.45345 eV
-  Computing E =  -3.43343 eV
-  Computing E =  -3.41341 eV
-  Computing E =  -3.39339 eV
-  Computing E =  -3.37337 eV
-  Computing E =  -3.35335 eV
-  Computing E =  -3.33333 eV
-  Computing E =  -3.31331 eV
-  Computing E =  -3.29329 eV
-  Computing E =  -3.27327 eV
-  Computing E =  -3.25325 eV
-  Computing E =  -3.23323 eV
-  Computing E =  -3.21321 eV
-  Computing E =  -3.19319 eV
-  Computing E =  -3.17317 eV
-  Computing E =  -3.15315 eV
-  Computing E =  -3.13313 eV
-  Computing E =  -3.11311 eV
-  Computing E =  -3.09309 eV
-  Computing E =  -3.07307 eV
-  Computing E =  -3.05305 eV
-  Computing E =  -3.03303 eV
-  Computing E =  -3.01301 eV
-  Computing E =  -2.99299 eV
-  Computing E =  -2.97297 eV
-  Computing E =  -2.95295 eV
-  Computing E =  -2.93293 eV
-  Computing E =  -2.91291 eV
-  Computing E =  -2.89289 eV
-  Computing E =  -2.87287 eV
-  Computing E =  -2.85285 eV
-  Computing E =  -2.83283 eV
-  Computing E =  -2.81281 eV
-  Computing E =  -2.79279 eV
-  Computing E =  -2.77277 eV
-  Computing E =  -2.75275 eV
-  Computing E =  -2.73273 eV
-  Computing E =  -2.71271 eV
-  Computing E =  -2.69269 eV
-  Computing E =  -2.67267 eV
-  Computing E =  -2.65265 eV
-  Computing E =  -2.63263 eV
-  Computing E =  -2.61261 eV
-  Computing E =  -2.59259 eV
-  Computing E =  -2.57257 eV
-  Computing E =  -2.55255 eV
-  Computing E =  -2.53253 eV
-  Computing E =  -2.51251 eV
-  Computing E =  -2.49249 eV
-  Computing E =  -2.47247 eV
-  Computing E =  -2.45245 eV
-  Computing E =  -2.43243 eV
-  Computing E =  -2.41241 eV
-  Computing E =  -2.39239 eV
-  Computing E =  -2.37237 eV
-  Computing E =  -2.35235 eV
-  Computing E =  -2.33233 eV
-  Computing E =  -2.31231 eV
-  Computing E =  -2.29229 eV
-  Computing E =  -2.27227 eV
-  Computing E =  -2.25225 eV
-  Computing E =  -2.23223 eV
-  Computing E =  -2.21221 eV
-  Computing E =  -2.19219 eV
-  Computing E =  -2.17217 eV
-  Computing E =  -2.15215 eV
-  Computing E =  -2.13213 eV
-  Computing E =  -2.11211 eV
-  Computing E =  -2.09209 eV
-  Computing E =  -2.07207 eV
-  Computing E =  -2.05205 eV
-  Computing E =  -2.03203 eV
-  Computing E =  -2.01201 eV
-  Computing E =  -1.99199 eV
-  Computing E =  -1.97197 eV
-  Computing E =  -1.95195 eV
-  Computing E =  -1.93193 eV
-  Computing E =  -1.91191 eV
-  Computing E =  -1.89189 eV
-  Computing E =  -1.87187 eV
-  Computing E =  -1.85185 eV
-  Computing E =  -1.83183 eV
-  Computing E =  -1.81181 eV
-  Computing E =  -1.79179 eV
-  Computing E =  -1.77177 eV
-  Computing E =  -1.75175 eV
-  Computing E =  -1.73173 eV
-  Computing E =  -1.71171 eV
-  Computing E =  -1.69169 eV
-  Computing E =  -1.67167 eV
-  Computing E =  -1.65165 eV
-  Computing E =  -1.63163 eV
-  Computing E =  -1.61161 eV
-  Computing E =  -1.59159 eV
-  Computing E =  -1.57157 eV
-  Computing E =  -1.55155 eV
-  Computing E =  -1.53153 eV
-  Computing E =  -1.51151 eV
-  Computing E =  -1.49149 eV
-  Computing E =  -1.47147 eV
-  Computing E =  -1.45145 eV
-  Computing E =  -1.43143 eV
-  Computing E =  -1.41141 eV
-  Computing E =  -1.39139 eV
-  Computing E =  -1.37137 eV
-  Computing E =  -1.35135 eV
-  Computing E =  -1.33133 eV
-  Computing E =  -1.31131 eV
-  Computing E =  -1.29129 eV
-  Computing E =  -1.27127 eV
-  Computing E =  -1.25125 eV
-  Computing E =  -1.23123 eV
-  Computing E =  -1.21121 eV
-  Computing E =  -1.19119 eV
-  Computing E =  -1.17117 eV
-  Computing E =  -1.15115 eV
-  Computing E =  -1.13113 eV
-  Computing E =  -1.11111 eV
-  Computing E =  -1.09109 eV
-  Computing E =  -1.07107 eV
-  Computing E =  -1.05105 eV
-  Computing E =  -1.03103 eV
-  Computing E =  -1.01101 eV
-  Computing E =  -0.99099 eV
-  Computing E =  -0.97097 eV
-  Computing E =  -0.95095 eV
-  Computing E =  -0.93093 eV
-  Computing E =  -0.91091 eV
-  Computing E =  -0.89089 eV
-  Computing E =  -0.87087 eV
-  Computing E =  -0.85085 eV
-  Computing E =  -0.83083 eV
-  Computing E =  -0.81081 eV
-  Computing E =  -0.79079 eV
-  Computing E =  -0.77077 eV
-  Computing E =  -0.75075 eV
-  Computing E =  -0.73073 eV
-  Computing E =  -0.71071 eV
-  Computing E =  -0.69069 eV
-  Computing E =  -0.67067 eV
-  Computing E =  -0.65065 eV
-  Computing E =  -0.63063 eV
-  Computing E =  -0.61061 eV
-  Computing E =  -0.59059 eV
-  Computing E =  -0.57057 eV
-  Computing E =  -0.55055 eV
-  Computing E =  -0.53053 eV
-  Computing E =  -0.51051 eV
-  Computing E =  -0.49049 eV
-  Computing E =  -0.47047 eV
-  Computing E =  -0.45045 eV
-  Computing E =  -0.43043 eV
-  Computing E =  -0.41041 eV
-  Computing E =  -0.39039 eV
-  Computing E =  -0.37037 eV
-  Computing E =  -0.35035 eV
-  Computing E =  -0.33033 eV
-  Computing E =  -0.31031 eV
-  Computing E =  -0.29029 eV
-  Computing E =  -0.27027 eV
-  Computing E =  -0.25025 eV
-  Computing E =  -0.23023 eV
-  Computing E =  -0.21021 eV
-  Computing E =  -0.19019 eV
-  Computing E =  -0.17017 eV
-  Computing E =  -0.15015 eV
-  Computing E =  -0.13013 eV
-  Computing E =  -0.11011 eV
-  Computing E =  -0.09009 eV
-  Computing E =  -0.07007 eV
-  Computing E =  -0.05005 eV
-  Computing E =  -0.03003 eV
-  Computing E =  -0.01001 eV
-  Computing E =   0.01001 eV
-  Computing E =   0.03003 eV
-  Computing E =   0.05005 eV
-  Computing E =   0.07007 eV
-  Computing E =   0.09009 eV
-  Computing E =   0.11011 eV
-  Computing E =   0.13013 eV
-  Computing E =   0.15015 eV
-  Computing E =   0.17017 eV
-  Computing E =   0.19019 eV
-  Computing E =   0.21021 eV
-  Computing E =   0.23023 eV
-  Computing E =   0.25025 eV
-  Computing E =   0.27027 eV
-  Computing E =   0.29029 eV
-  Computing E =   0.31031 eV
-  Computing E =   0.33033 eV
-  Computing E =   0.35035 eV
-  Computing E =   0.37037 eV
-  Computing E =   0.39039 eV
-  Computing E =   0.41041 eV
-  Computing E =   0.43043 eV
-  Computing E =   0.45045 eV
-  Computing E =   0.47047 eV
-  Computing E =   0.49049 eV
-  Computing E =   0.51051 eV
-  Computing E =   0.53053 eV
-  Computing E =   0.55055 eV
-  Computing E =   0.57057 eV
-  Computing E =   0.59059 eV
-  Computing E =   0.61061 eV
-  Computing E =   0.63063 eV
-  Computing E =   0.65065 eV
-  Computing E =   0.67067 eV
-  Computing E =   0.69069 eV
-  Computing E =   0.71071 eV
-  Computing E =   0.73073 eV
-  Computing E =   0.75075 eV
-  Computing E =   0.77077 eV
-  Computing E =   0.79079 eV
-  Computing E =   0.81081 eV
-  Computing E =   0.83083 eV
-  Computing E =   0.85085 eV
-  Computing E =   0.87087 eV
-  Computing E =   0.89089 eV
-  Computing E =   0.91091 eV
-  Computing E =   0.93093 eV
-  Computing E =   0.95095 eV
-  Computing E =   0.97097 eV
-  Computing E =   0.99099 eV
-  Computing E =   1.01101 eV
-  Computing E =   1.03103 eV
-  Computing E =   1.05105 eV
-  Computing E =   1.07107 eV
-  Computing E =   1.09109 eV
-  Computing E =   1.11111 eV
-  Computing E =   1.13113 eV
-  Computing E =   1.15115 eV
-  Computing E =   1.17117 eV
-  Computing E =   1.19119 eV
-  Computing E =   1.21121 eV
-  Computing E =   1.23123 eV
-  Computing E =   1.25125 eV
-  Computing E =   1.27127 eV
-  Computing E =   1.29129 eV
-  Computing E =   1.31131 eV
-  Computing E =   1.33133 eV
-  Computing E =   1.35135 eV
-  Computing E =   1.37137 eV
-  Computing E =   1.39139 eV
-  Computing E =   1.41141 eV
-  Computing E =   1.43143 eV
-  Computing E =   1.45145 eV
-  Computing E =   1.47147 eV
-  Computing E =   1.49149 eV
-  Computing E =   1.51151 eV
-  Computing E =   1.53153 eV
-  Computing E =   1.55155 eV
-  Computing E =   1.57157 eV
-  Computing E =   1.59159 eV
-  Computing E =   1.61161 eV
-  Computing E =   1.63163 eV
-  Computing E =   1.65165 eV
-  Computing E =   1.67167 eV
-  Computing E =   1.69169 eV
-  Computing E =   1.71171 eV
-  Computing E =   1.73173 eV
-  Computing E =   1.75175 eV
-  Computing E =   1.77177 eV
-  Computing E =   1.79179 eV
-  Computing E =   1.81181 eV
-  Computing E =   1.83183 eV
-  Computing E =   1.85185 eV
-  Computing E =   1.87187 eV
-  Computing E =   1.89189 eV
-  Computing E =   1.91191 eV
-  Computing E =   1.93193 eV
-  Computing E =   1.95195 eV
-  Computing E =   1.97197 eV
-  Computing E =   1.99199 eV
-  Computing E =   2.01201 eV
-  Computing E =   2.03203 eV
-  Computing E =   2.05205 eV
-  Computing E =   2.07207 eV
-  Computing E =   2.09209 eV
-  Computing E =   2.11211 eV
-  Computing E =   2.13213 eV
-  Computing E =   2.15215 eV
-  Computing E =   2.17217 eV
-  Computing E =   2.19219 eV
-  Computing E =   2.21221 eV
-  Computing E =   2.23223 eV
-  Computing E =   2.25225 eV
-  Computing E =   2.27227 eV
-  Computing E =   2.29229 eV
-  Computing E =   2.31231 eV
-  Computing E =   2.33233 eV
-  Computing E =   2.35235 eV
-  Computing E =   2.37237 eV
-  Computing E =   2.39239 eV
-  Computing E =   2.41241 eV
-  Computing E =   2.43243 eV
-  Computing E =   2.45245 eV
-  Computing E =   2.47247 eV
-  Computing E =   2.49249 eV
-  Computing E =   2.51251 eV
-  Computing E =   2.53253 eV
-  Computing E =   2.55255 eV
-  Computing E =   2.57257 eV
-  Computing E =   2.59259 eV
-  Computing E =   2.61261 eV
-  Computing E =   2.63263 eV
-  Computing E =   2.65265 eV
-  Computing E =   2.67267 eV
-  Computing E =   2.69269 eV
-  Computing E =   2.71271 eV
-  Computing E =   2.73273 eV
-  Computing E =   2.75275 eV
-  Computing E =   2.77277 eV
-  Computing E =   2.79279 eV
-  Computing E =   2.81281 eV
-  Computing E =   2.83283 eV
-  Computing E =   2.85285 eV
-  Computing E =   2.87287 eV
-  Computing E =   2.89289 eV
-  Computing E =   2.91291 eV
-  Computing E =   2.93293 eV
-  Computing E =   2.95295 eV
-  Computing E =   2.97297 eV
-  Computing E =   2.99299 eV
-  Computing E =   3.01301 eV
-  Computing E =   3.03303 eV
-  Computing E =   3.05305 eV
-  Computing E =   3.07307 eV
-  Computing E =   3.09309 eV
-  Computing E =   3.11311 eV
-  Computing E =   3.13313 eV
-  Computing E =   3.15315 eV
-  Computing E =   3.17317 eV
-  Computing E =   3.19319 eV
-  Computing E =   3.21321 eV
-  Computing E =   3.23323 eV
-  Computing E =   3.25325 eV
-  Computing E =   3.27327 eV
-  Computing E =   3.29329 eV
-  Computing E =   3.31331 eV
-  Computing E =   3.33333 eV
-  Computing E =   3.35335 eV
-  Computing E =   3.37337 eV
-  Computing E =   3.39339 eV
-  Computing E =   3.41341 eV
-  Computing E =   3.43343 eV
-  Computing E =   3.45345 eV
-  Computing E =   3.47347 eV
-  Computing E =   3.49349 eV
-  Computing E =   3.51351 eV
-  Computing E =   3.53353 eV
-  Computing E =   3.55355 eV
-  Computing E =   3.57357 eV
-  Computing E =   3.59359 eV
-  Computing E =   3.61361 eV
-  Computing E =   3.63363 eV
-  Computing E =   3.65365 eV
-  Computing E =   3.67367 eV
-  Computing E =   3.69369 eV
-  Computing E =   3.71371 eV
-  Computing E =   3.73373 eV
-  Computing E =   3.75375 eV
-  Computing E =   3.77377 eV
-  Computing E =   3.79379 eV
-  Computing E =   3.81381 eV
-  Computing E =   3.83383 eV
-  Computing E =   3.85385 eV
-  Computing E =   3.87387 eV
-  Computing E =   3.89389 eV
-  Computing E =   3.91391 eV
-  Computing E =   3.93393 eV
-  Computing E =   3.95395 eV
-  Computing E =   3.97397 eV
-  Computing E =   3.99399 eV
-  Computing E =   4.01401 eV
-  Computing E =   4.03403 eV
-  Computing E =   4.05405 eV
-  Computing E =   4.07407 eV
-  Computing E =   4.09409 eV
-  Computing E =   4.11411 eV
-  Computing E =   4.13413 eV
-  Computing E =   4.15415 eV
-  Computing E =   4.17417 eV
-  Computing E =   4.19419 eV
-  Computing E =   4.21421 eV
-  Computing E =   4.23423 eV
-  Computing E =   4.25425 eV
-  Computing E =   4.27427 eV
-  Computing E =   4.29429 eV
-  Computing E =   4.31431 eV
-  Computing E =   4.33433 eV
-  Computing E =   4.35435 eV
-  Computing E =   4.37437 eV
-  Computing E =   4.39439 eV
-  Computing E =   4.41441 eV
-  Computing E =   4.43443 eV
-  Computing E =   4.45445 eV
-  Computing E =   4.47447 eV
-  Computing E =   4.49449 eV
-  Computing E =   4.51451 eV
-  Computing E =   4.53453 eV
-  Computing E =   4.55455 eV
-  Computing E =   4.57457 eV
-  Computing E =   4.59459 eV
-  Computing E =   4.61461 eV
-  Computing E =   4.63463 eV
-  Computing E =   4.65465 eV
-  Computing E =   4.67467 eV
-  Computing E =   4.69469 eV
-  Computing E =   4.71471 eV
-  Computing E =   4.73473 eV
-  Computing E =   4.75475 eV
-  Computing E =   4.77477 eV
-  Computing E =   4.79479 eV
-  Computing E =   4.81481 eV
-  Computing E =   4.83483 eV
-  Computing E =   4.85485 eV
-  Computing E =   4.87487 eV
-  Computing E =   4.89489 eV
-  Computing E =   4.91491 eV
-  Computing E =   4.93493 eV
-  Computing E =   4.95495 eV
-  Computing E =   4.97497 eV
-  Computing E =   4.99499 eV
-  Computing E =   5.01502 eV
-  Computing E =   5.03504 eV
-  Computing E =   5.05506 eV
-  Computing E =   5.07508 eV
-  Computing E =   5.09510 eV
-  Computing E =   5.11512 eV
-  Computing E =   5.13514 eV
-  Computing E =   5.15516 eV
-  Computing E =   5.17518 eV
-  Computing E =   5.19520 eV
-  Computing E =   5.21522 eV
-  Computing E =   5.23524 eV
-  Computing E =   5.25526 eV
-  Computing E =   5.27528 eV
-  Computing E =   5.29530 eV
-  Computing E =   5.31532 eV
-  Computing E =   5.33534 eV
-  Computing E =   5.35536 eV
-  Computing E =   5.37538 eV
-  Computing E =   5.39540 eV
-  Computing E =   5.41542 eV
-  Computing E =   5.43544 eV
-  Computing E =   5.45546 eV
-  Computing E =   5.47548 eV
-  Computing E =   5.49550 eV
-  Computing E =   5.51552 eV
-  Computing E =   5.53554 eV
-  Computing E =   5.55556 eV
-  Computing E =   5.57558 eV
-  Computing E =   5.59560 eV
-  Computing E =   5.61562 eV
-  Computing E =   5.63564 eV
-  Computing E =   5.65566 eV
-  Computing E =   5.67568 eV
-  Computing E =   5.69570 eV
-  Computing E =   5.71572 eV
-  Computing E =   5.73574 eV
-  Computing E =   5.75576 eV
-  Computing E =   5.77578 eV
-  Computing E =   5.79580 eV
-  Computing E =   5.81582 eV
-  Computing E =   5.83584 eV
-  Computing E =   5.85586 eV
-  Computing E =   5.87588 eV
-  Computing E =   5.89590 eV
-  Computing E =   5.91592 eV
-  Computing E =   5.93594 eV
-  Computing E =   5.95596 eV
-  Computing E =   5.97598 eV
-  Computing E =   5.99600 eV
-  Computing E =   6.01602 eV
-  Computing E =   6.03604 eV
-  Computing E =   6.05606 eV
-  Computing E =   6.07608 eV
-  Computing E =   6.09610 eV
-  Computing E =   6.11612 eV
-  Computing E =   6.13614 eV
-  Computing E =   6.15616 eV
-  Computing E =   6.17618 eV
-  Computing E =   6.19620 eV
-  Computing E =   6.21622 eV
-  Computing E =   6.23624 eV
-  Computing E =   6.25626 eV
-  Computing E =   6.27628 eV
-  Computing E =   6.29630 eV
-  Computing E =   6.31632 eV
-  Computing E =   6.33634 eV
-  Computing E =   6.35636 eV
-  Computing E =   6.37638 eV
-  Computing E =   6.39640 eV
-  Computing E =   6.41642 eV
-  Computing E =   6.43644 eV
-  Computing E =   6.45646 eV
-  Computing E =   6.47648 eV
-  Computing E =   6.49650 eV
-  Computing E =   6.51652 eV
-  Computing E =   6.53654 eV
-  Computing E =   6.55656 eV
-  Computing E =   6.57658 eV
-  Computing E =   6.59660 eV
-  Computing E =   6.61662 eV
-  Computing E =   6.63664 eV
-  Computing E =   6.65666 eV
-  Computing E =   6.67668 eV
-  Computing E =   6.69670 eV
-  Computing E =   6.71672 eV
-  Computing E =   6.73674 eV
-  Computing E =   6.75676 eV
-  Computing E =   6.77678 eV
-  Computing E =   6.79680 eV
-  Computing E =   6.81682 eV
-  Computing E =   6.83684 eV
-  Computing E =   6.85686 eV
-  Computing E =   6.87688 eV
-  Computing E =   6.89690 eV
-  Computing E =   6.91692 eV
-  Computing E =   6.93694 eV
-  Computing E =   6.95696 eV
-  Computing E =   6.97698 eV
-  Computing E =   6.99700 eV
-  Computing E =   7.01702 eV
-  Computing E =   7.03704 eV
-  Computing E =   7.05706 eV
-  Computing E =   7.07708 eV
-  Computing E =   7.09710 eV
-  Computing E =   7.11712 eV
-  Computing E =   7.13714 eV
-  Computing E =   7.15716 eV
-  Computing E =   7.17718 eV
-  Computing E =   7.19720 eV
-  Computing E =   7.21722 eV
-  Computing E =   7.23724 eV
-  Computing E =   7.25726 eV
-  Computing E =   7.27728 eV
-  Computing E =   7.29730 eV
-  Computing E =   7.31732 eV
-  Computing E =   7.33734 eV
-  Computing E =   7.35736 eV
-  Computing E =   7.37738 eV
-  Computing E =   7.39740 eV
-  Computing E =   7.41742 eV
-  Computing E =   7.43744 eV
-  Computing E =   7.45746 eV
-  Computing E =   7.47748 eV
-  Computing E =   7.49750 eV
-  Computing E =   7.51752 eV
-  Computing E =   7.53754 eV
-  Computing E =   7.55756 eV
-  Computing E =   7.57758 eV
-  Computing E =   7.59760 eV
-  Computing E =   7.61762 eV
-  Computing E =   7.63764 eV
-  Computing E =   7.65766 eV
-  Computing E =   7.67768 eV
-  Computing E =   7.69770 eV
-  Computing E =   7.71772 eV
-  Computing E =   7.73774 eV
-  Computing E =   7.75776 eV
-  Computing E =   7.77778 eV
-  Computing E =   7.79780 eV
-  Computing E =   7.81782 eV
-  Computing E =   7.83784 eV
-  Computing E =   7.85786 eV
-  Computing E =   7.87788 eV
-  Computing E =   7.89790 eV
-  Computing E =   7.91792 eV
-  Computing E =   7.93794 eV
-  Computing E =   7.95796 eV
-  Computing E =   7.97798 eV
-  Computing E =   7.99800 eV
-  Computing E =   8.01802 eV
-  Computing E =   8.03804 eV
-  Computing E =   8.05806 eV
-  Computing E =   8.07808 eV
-  Computing E =   8.09810 eV
-  Computing E =   8.11812 eV
-  Computing E =   8.13814 eV
-  Computing E =   8.15816 eV
-  Computing E =   8.17818 eV
-  Computing E =   8.19820 eV
-  Computing E =   8.21822 eV
-  Computing E =   8.23824 eV
-  Computing E =   8.25826 eV
-  Computing E =   8.27828 eV
-  Computing E =   8.29830 eV
-  Computing E =   8.31832 eV
-  Computing E =   8.33834 eV
-  Computing E =   8.35836 eV
-  Computing E =   8.37838 eV
-  Computing E =   8.39840 eV
-  Computing E =   8.41842 eV
-  Computing E =   8.43844 eV
-  Computing E =   8.45846 eV
-  Computing E =   8.47848 eV
-  Computing E =   8.49850 eV
-  Computing E =   8.51852 eV
-  Computing E =   8.53854 eV
-  Computing E =   8.55856 eV
-  Computing E =   8.57858 eV
-  Computing E =   8.59860 eV
-  Computing E =   8.61862 eV
-  Computing E =   8.63864 eV
-  Computing E =   8.65866 eV
-  Computing E =   8.67868 eV
-  Computing E =   8.69870 eV
-  Computing E =   8.71872 eV
-  Computing E =   8.73874 eV
-  Computing E =   8.75876 eV
-  Computing E =   8.77878 eV
-  Computing E =   8.79880 eV
-  Computing E =   8.81882 eV
-  Computing E =   8.83884 eV
-  Computing E =   8.85886 eV
-  Computing E =   8.87888 eV
-  Computing E =   8.89890 eV
-  Computing E =   8.91892 eV
-  Computing E =   8.93894 eV
-  Computing E =   8.95896 eV
-  Computing E =   8.97898 eV
-  Computing E =   8.99900 eV
-  Computing E =   9.01902 eV
-  Computing E =   9.03904 eV
-  Computing E =   9.05906 eV
-  Computing E =   9.07908 eV
-  Computing E =   9.09910 eV
-  Computing E =   9.11912 eV
-  Computing E =   9.13914 eV
-  Computing E =   9.15916 eV
-  Computing E =   9.17918 eV
-  Computing E =   9.19920 eV
-  Computing E =   9.21922 eV
-  Computing E =   9.23924 eV
-  Computing E =   9.25926 eV
-  Computing E =   9.27928 eV
-  Computing E =   9.29930 eV
-  Computing E =   9.31932 eV
-  Computing E =   9.33934 eV
-  Computing E =   9.35936 eV
-  Computing E =   9.37938 eV
-  Computing E =   9.39940 eV
-  Computing E =   9.41942 eV
-  Computing E =   9.43944 eV
-  Computing E =   9.45946 eV
-  Computing E =   9.47948 eV
-  Computing E =   9.49950 eV
-  Computing E =   9.51952 eV
-  Computing E =   9.53954 eV
-  Computing E =   9.55956 eV
-  Computing E =   9.57958 eV
-  Computing E =   9.59960 eV
-  Computing E =   9.61962 eV
-  Computing E =   9.63964 eV
-  Computing E =   9.65966 eV
-  Computing E =   9.67968 eV
-  Computing E =   9.69970 eV
-  Computing E =   9.71972 eV
-  Computing E =   9.73974 eV
-  Computing E =   9.75976 eV
-  Computing E =   9.77978 eV
-  Computing E =   9.79980 eV
-  Computing E =   9.81982 eV
-  Computing E =   9.83984 eV
-  Computing E =   9.85986 eV
-  Computing E =   9.87988 eV
-  Computing E =   9.89990 eV
-  Computing E =   9.91992 eV
-  Computing E =   9.93994 eV
-  Computing E =   9.95996 eV
-  Computing E =   9.97998 eV
-  Computing E =  10.00000 eV
+
+  <INPUT>
+       Calculation Type    :     bulk
+       Conductance Formula :     landauer
+       Transport Direction :      3
+       Use Overlap         :     FALSE
+       Use Correlation     :     FALSE
+       Max iteration number:      200
+
+       Print info each  20 energy step
+
+       Conductor data read from file  :     al_WanT.ham
+  </INPUT>
+
+
+  <ENERGY_GRID>
+       Dimension   :       1000
+       Min Energy  :      -10.00000
+       Max Energy  :       10.00000
+       Energy Step :        0.02002
+       Delta       :        0.00001
+  </ENERGY_GRID>
+
+
+  <K-POINTS>
+       nkpts_par =    1
+       nrtot_par =    1
+       Parallel kpoints grid:      nk = (  1  1  1 )
+       k point    1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+
+       Parallel R vector grid:      nr = (  1  1  1 )
+       R vector   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+  </K-POINTS>
+
+
+  Computing E(     1 ) = -10.00000 eV
+                              Total time spent up to now :     0.04 secs
+
+  Computing E(    20 ) =  -9.61962 eV
+                              Total time spent up to now :     0.04 secs
+
+  Computing E(    40 ) =  -9.21922 eV
+                              Total time spent up to now :     0.05 secs
+
+  Computing E(    60 ) =  -8.81882 eV
+                              Total time spent up to now :     0.06 secs
+
+  Computing E(    80 ) =  -8.41842 eV
+                              Total time spent up to now :     0.06 secs
+
+  Computing E(   100 ) =  -8.01802 eV
+                              Total time spent up to now :     0.07 secs
+
+  Computing E(   120 ) =  -7.61762 eV
+                              Total time spent up to now :     0.09 secs
+
+  Computing E(   140 ) =  -7.21722 eV
+                              Total time spent up to now :     0.09 secs
+
+  Computing E(   160 ) =  -6.81682 eV
+                              Total time spent up to now :     0.10 secs
+
+  Computing E(   180 ) =  -6.41642 eV
+                              Total time spent up to now :     0.10 secs
+
+  Computing E(   200 ) =  -6.01602 eV
+                              Total time spent up to now :     0.12 secs
+
+  Computing E(   220 ) =  -5.61562 eV
+                              Total time spent up to now :     0.12 secs
+
+  Computing E(   240 ) =  -5.21522 eV
+                              Total time spent up to now :     0.15 secs
+
+  Computing E(   260 ) =  -4.81481 eV
+                              Total time spent up to now :     0.18 secs
+
+  Computing E(   280 ) =  -4.41441 eV
+                              Total time spent up to now :     0.21 secs
+
+  Computing E(   300 ) =  -4.01401 eV
+                              Total time spent up to now :     0.25 secs
+
+  Computing E(   320 ) =  -3.61361 eV
+                              Total time spent up to now :     0.28 secs
+
+  Computing E(   340 ) =  -3.21321 eV
+                              Total time spent up to now :     0.31 secs
+
+  Computing E(   360 ) =  -2.81281 eV
+                              Total time spent up to now :     0.36 secs
+
+  Computing E(   380 ) =  -2.41241 eV
+                              Total time spent up to now :     0.39 secs
+
+  Computing E(   400 ) =  -2.01201 eV
+                              Total time spent up to now :     0.43 secs
+
+  Computing E(   420 ) =  -1.61161 eV
+                              Total time spent up to now :     0.46 secs
+
+  Computing E(   440 ) =  -1.21121 eV
+                              Total time spent up to now :     0.52 secs
+
+  Computing E(   460 ) =  -0.81081 eV
+                              Total time spent up to now :     0.57 secs
+
+  Computing E(   480 ) =  -0.41041 eV
+                              Total time spent up to now :     0.60 secs
+
+  Computing E(   500 ) =  -0.01001 eV
+                              Total time spent up to now :     0.63 secs
+
+  Computing E(   520 ) =   0.39039 eV
+                              Total time spent up to now :     0.67 secs
+
+  Computing E(   540 ) =   0.79079 eV
+                              Total time spent up to now :     0.70 secs
+
+  Computing E(   560 ) =   1.19119 eV
+                              Total time spent up to now :     0.75 secs
+
+  Computing E(   580 ) =   1.59159 eV
+                              Total time spent up to now :     0.78 secs
+
+  Computing E(   600 ) =   1.99199 eV
+                              Total time spent up to now :     0.82 secs
+
+  Computing E(   620 ) =   2.39239 eV
+                              Total time spent up to now :     0.85 secs
+
+  Computing E(   640 ) =   2.79279 eV
+                              Total time spent up to now :     0.90 secs
+
+  Computing E(   660 ) =   3.19319 eV
+                              Total time spent up to now :     0.93 secs
+
+  Computing E(   680 ) =   3.59359 eV
+                              Total time spent up to now :     0.97 secs
+
+  Computing E(   700 ) =   3.99399 eV
+                              Total time spent up to now :     1.00 secs
+
+  Computing E(   720 ) =   4.39439 eV
+                              Total time spent up to now :     1.05 secs
+
+  Computing E(   740 ) =   4.79479 eV
+                              Total time spent up to now :     1.08 secs
+
+  Computing E(   760 ) =   5.19520 eV
+                              Total time spent up to now :     1.12 secs
+
+  Computing E(   780 ) =   5.59560 eV
+                              Total time spent up to now :     1.15 secs
+
+  Computing E(   800 ) =   5.99600 eV
+                              Total time spent up to now :     1.18 secs
+
+  Computing E(   820 ) =   6.39640 eV
+                              Total time spent up to now :     1.23 secs
+
+  Computing E(   840 ) =   6.79680 eV
+                              Total time spent up to now :     1.26 secs
+
+  Computing E(   860 ) =   7.19720 eV
+                              Total time spent up to now :     1.30 secs
+
+  Computing E(   880 ) =   7.59760 eV
+                              Total time spent up to now :     1.32 secs
+
+  Computing E(   900 ) =   7.99800 eV
+                              Total time spent up to now :     1.33 secs
+
+  Computing E(   920 ) =   8.39840 eV
+                              Total time spent up to now :     1.33 secs
+
+  Computing E(   940 ) =   8.79880 eV
+                              Total time spent up to now :     1.35 secs
+
+  Computing E(   960 ) =   9.19920 eV
+                              Total time spent up to now :     1.36 secs
+
+  Computing E(   980 ) =   9.59960 eV
+                              Total time spent up to now :     1.36 secs
+
+  Computing E(  1000 ) =  10.00000 eV
+                              Total time spent up to now :     1.39 secs
+
 
    <global routines>
              clock number :     6
 
                 conductor :     1.00s CPU 
  
-              read_matrix :     0.02s CPU (       2 calls,   0.012 s avg)
+              read_matrix :     0.02s CPU (       2 calls,   0.011 s avg)
               fourier_par :     0.00s CPU (       2 calls,   0.000 s avg)
-                 transfer :     1.19s CPU (    2000 calls,   0.001 s avg)
-                    green :     0.09s CPU (    2000 calls,   0.000 s avg)
+                 transfer :     1.24s CPU (    2000 calls,   0.001 s avg)
+                    green :     0.04s CPU (    2000 calls,   0.000 s avg)
             transmittance :     0.01s CPU (    1000 calls,   0.000 s avg)
 
 
