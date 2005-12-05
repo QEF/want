@@ -3,25 +3,54 @@
 @title@   Gold and Cobalt chains (NCPP and USPP)
 ==============================================================================
 
-This test performs the calculations for the bulk conductance of Gold and Cobalt chains.
-The calculation is done setting one atom in the unit cell, using a (1 1 4, 0 0 1) 
-(according to PWSCF notation) Monkrost-Pack grid in the SCF run and a (1 1 4, 0 0 0) 
-grid in the NSCF run. 
-The wave-function and charge-density cutoff in the NCPP case has been chosen 
-to be 20 Ry in order to make the test running fast, but results are of course 
-not converged. A cutoff of 40 Ry of more will lead to more physical results.
-In the USPP case instead cutoff of 20 and 200 Ry are used for wfc and rho respectively.
-Note the larger ration wfc/rho cutoffs which is due to the hardness of augmentation
-charges needed within USPP.
-Wannier functions for the s-d manifold (6-dim) of Gold are computed using also
-the disentanglement procedure, and transmittance is calculated through the bulk.x code.
+  This test performs the calculations for the bulk conductance of Gold and 
+  Cobalt chains, using both NC and US pseudopotentials in the gold case, only 
+  US for cobalt. 
+  The calculation is done setting one atom in the unit cell, using a 
+  (1 1 4, 0 0 1) (according to PWSCF notation) Monkrost-Pack grid in the SCF 
+  run and a (1 1 4, 0 0 0) grid in the NSCF run. 
+  The wave-function and charge-density cutoff in the NCPP case has been chosen 
+  to be 20 Ry in order to make the test running fast, but results are of course 
+  not converged. A cutoff of 40 Ry or more will lead to more physical results.
+  In the USPP case instead cutoff of 20 and 200 Ry are used for wfc and rho 
+  respectively. Note the larger ratio wfc/rho cutoffs which is due to the 
+  hardness of augmentation charges needed within USPP.
 
-The main outputs of the transport calculation are written in the dos*.out and cond*.out
-files
+  Disentangle calculation is performed within an energy window ranging up to
+  2 eV for Au with NC pseudopotential (1.8 eV for AuUS); states are frozen up
+  to -2 eV. Wannier functions for the s-d manifold (6-dim) of Gold are computed.
 
-RESULTS
-  Note that the final transmittance are slightly different probably due to the 
-  different convergence level between NC and USPP (the second case is more close to
-  convergence, which is around 25 Ry for wfc and 200 Ry for rho cutoff energies)
+  Bulk-like conductance is calculated: leads and conductor are made of the same 
+  material and conductance of the ideal and infinite structure is computed.
+  Quantum conductance calculation is performed according to the Landauer formula.
+
+
+  RESULTS discussion
+
+  Disentangle convergence is achieved in only 1 iteration for gold, beacuse only
+  occupied states are considered in calculation; the convergence in the cobalt case 
+  requires about 120 iterations. The final invariant spread is about 22.209 Bohr^2 
+  for Au (3.702 Bohr^2 on average), 20.995 Bohr^2 for AuUS (3.499 Bohr^2 on average)
+  and 16.901 Bohr^2 for Co (2.817 Bohr^2 on average).
+
+  After about 300 iterations Wannier convergence for gold is achieved (340 for cobalt).
+  A total spread of about 23.773 Bohr^2 for Au is found (22.899 Bohr^2 for AuUS,
+  17.604 Bohr^2 for Co), 3.955 Bohr^2 on average (3.816 Bohr^2 for AuUS, 2.934 Bohr^2
+  for Co). 
+
+  The main outputs of the transport calculation are written in the dos*.out and 
+  cond*.out files.
+  Transport calculation results are plotted in files:
+     $TESTDIR/cond_Au.dat and $TESTDIR/dos_Au.dat
+     $TESTDIR/cond_AuUS.dat and $TESTDIR/dos_AuUS.dat
+     $TESTDIR/cond_CoUS.dat and $TESTDIR/dos_CoUS.dat
+
+  Conductance exhibit a stepwise behaviour due to the bulk-like calculation.
+  Pronounced peaks are observable in the DOS plot, due to the Van Hove singularities.
+ 
+  Note that the final conductance in the Au and AuUS cases are slightly different 
+  probably due to the different convergence level between NC and USPP (the second 
+  case is more close to convergence, which is around 25 Ry for wfc and 200 Ry for rho 
+  cutoff energies).
 
 
