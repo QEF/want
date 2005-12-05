@@ -8,7 +8,7 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date 17Nov2005 at 13:21:54 
+  Date  1Dec2005 at 18:25:44 
 
   Arch. / Op.Sys: LINUX
         Compiler: INTEL
@@ -23,7 +23,7 @@
   =                              DFT data                              =
   ======================================================================
 
-<LATTICE>
+ <LATTICE>
   Alat  =       6.9678000 (Bohr)
   Alat  =       3.6871995 (Ang )
   Omega =      84.5720851 (Bohr^3)
@@ -44,9 +44,9 @@
     b(1) = ( -0.9017 -0.9017  0.9017 )     (  -1.0000 -1.0000  1.0000 )
     b(2) = (  0.9017  0.9017  0.9017 )     (   1.0000  1.0000  1.0000 )
     b(3) = ( -0.9017  0.9017 -0.9017 )     (  -1.0000  1.0000 -1.0000 )
-</LATTICE>
+ </LATTICE>
 
-<K-POINTS>
+ <K-POINTS>
   nkpts =   64
   Monkhorst-Pack grid:      nk = (  4  4  4 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -114,7 +114,7 @@
     k point  62:   (  -0.22544  0.22544  1.12718 ),   weight =   0.0156
     k point  63:   (  -0.45087  0.45087  0.90175 ),   weight =   0.0156
     k point  64:   (  -0.67631  0.67631  0.67631 ),   weight =   0.0156
-</K-POINTS>
+ </K-POINTS>
 
 
   Reading density G-grid from file: copper.export/index.xml
@@ -125,7 +125,7 @@
                          for rho  =        520.00 (Ry)
       Total number of PW for rho  =      16865
         Max number of PW for wfc  =       2149
-      Total number of PW for wfcs =       2890
+      Total number of PW for wfcs =       2865
         FFT grid components (rho) =  (    36   36   36 )
 
 
@@ -159,7 +159,7 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -1.738666     1.738666     1.738606 )
+    Wf(   1 ) = (    -1.738667     1.738667     1.738607 )
     Wf(   2 ) = (    -0.001061     0.001061    -0.000004 )
     Wf(   3 ) = (    -0.000612    -0.000053     0.000612 )
     Wf(   4 ) = (    -0.000334     0.000334     0.001451 )
@@ -220,196 +220,196 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :     2.23 secs
+                              Total time spent up to now :     4.42 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :     3.52 secs
+                              Total time spent up to now :     7.01 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :     4.81 secs
+                              Total time spent up to now :     9.63 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :     6.03 secs
+                              Total time spent up to now :    12.08 secs
 
     Wfc Fourier Transf. for k-point    5
-                              Total time spent up to now :     7.29 secs
+                              Total time spent up to now :    14.65 secs
 
     Wfc Fourier Transf. for k-point    6
-                              Total time spent up to now :     8.52 secs
+                              Total time spent up to now :    17.14 secs
 
     Wfc Fourier Transf. for k-point    7
-                              Total time spent up to now :     9.82 secs
+                              Total time spent up to now :    19.78 secs
 
     Wfc Fourier Transf. for k-point    8
-                              Total time spent up to now :    11.07 secs
+                              Total time spent up to now :    22.29 secs
 
     Wfc Fourier Transf. for k-point    9
-                              Total time spent up to now :    12.37 secs
+                              Total time spent up to now :    24.93 secs
 
     Wfc Fourier Transf. for k-point   10
-                              Total time spent up to now :    13.69 secs
+                              Total time spent up to now :    27.56 secs
 
     Wfc Fourier Transf. for k-point   11
-                              Total time spent up to now :    14.91 secs
+                              Total time spent up to now :    30.06 secs
 
     Wfc Fourier Transf. for k-point   12
-                              Total time spent up to now :    16.23 secs
+                              Total time spent up to now :    32.69 secs
 
     Wfc Fourier Transf. for k-point   13
-                              Total time spent up to now :    17.44 secs
+                              Total time spent up to now :    35.14 secs
 
     Wfc Fourier Transf. for k-point   14
-                              Total time spent up to now :    18.70 secs
+                              Total time spent up to now :    37.67 secs
 
     Wfc Fourier Transf. for k-point   15
-                              Total time spent up to now :    20.00 secs
+                              Total time spent up to now :    40.30 secs
 
     Wfc Fourier Transf. for k-point   16
-                              Total time spent up to now :    21.25 secs
+                              Total time spent up to now :    42.79 secs
 
     Wfc Fourier Transf. for k-point   17
-                              Total time spent up to now :    22.54 secs
+                              Total time spent up to now :    45.45 secs
 
     Wfc Fourier Transf. for k-point   18
-                              Total time spent up to now :    23.83 secs
+                              Total time spent up to now :    48.02 secs
 
     Wfc Fourier Transf. for k-point   19
-                              Total time spent up to now :    25.17 secs
+                              Total time spent up to now :    50.76 secs
 
     Wfc Fourier Transf. for k-point   20
-                              Total time spent up to now :    26.47 secs
+                              Total time spent up to now :    53.36 secs
 
     Wfc Fourier Transf. for k-point   21
-                              Total time spent up to now :    27.73 secs
+                              Total time spent up to now :    55.93 secs
 
     Wfc Fourier Transf. for k-point   22
-                              Total time spent up to now :    29.03 secs
+                              Total time spent up to now :    58.55 secs
 
     Wfc Fourier Transf. for k-point   23
-                              Total time spent up to now :    30.30 secs
+                              Total time spent up to now :    61.15 secs
 
     Wfc Fourier Transf. for k-point   24
-                              Total time spent up to now :    31.68 secs
+                              Total time spent up to now :    63.87 secs
 
     Wfc Fourier Transf. for k-point   25
-                              Total time spent up to now :    33.02 secs
+                              Total time spent up to now :    66.61 secs
 
     Wfc Fourier Transf. for k-point   26
-                              Total time spent up to now :    34.31 secs
+                              Total time spent up to now :    69.21 secs
 
     Wfc Fourier Transf. for k-point   27
-                              Total time spent up to now :    35.64 secs
+                              Total time spent up to now :    71.94 secs
 
     Wfc Fourier Transf. for k-point   28
-                              Total time spent up to now :    37.01 secs
+                              Total time spent up to now :    74.69 secs
 
     Wfc Fourier Transf. for k-point   29
-                              Total time spent up to now :    38.31 secs
+                              Total time spent up to now :    77.29 secs
 
     Wfc Fourier Transf. for k-point   30
-                              Total time spent up to now :    39.65 secs
+                              Total time spent up to now :    80.09 secs
 
     Wfc Fourier Transf. for k-point   31
-                              Total time spent up to now :    41.02 secs
+                              Total time spent up to now :    82.84 secs
 
     Wfc Fourier Transf. for k-point   32
-                              Total time spent up to now :    42.36 secs
+                              Total time spent up to now :    85.58 secs
 
     Wfc Fourier Transf. for k-point   33
-                              Total time spent up to now :    43.72 secs
+                              Total time spent up to now :    88.30 secs
 
     Wfc Fourier Transf. for k-point   34
-                              Total time spent up to now :    45.05 secs
+                              Total time spent up to now :    91.05 secs
 
     Wfc Fourier Transf. for k-point   35
-                              Total time spent up to now :    46.34 secs
+                              Total time spent up to now :    93.64 secs
 
     Wfc Fourier Transf. for k-point   36
-                              Total time spent up to now :    47.68 secs
+                              Total time spent up to now :    96.36 secs
 
     Wfc Fourier Transf. for k-point   37
-                              Total time spent up to now :    49.04 secs
+                              Total time spent up to now :    99.12 secs
 
     Wfc Fourier Transf. for k-point   38
-                              Total time spent up to now :    50.31 secs
+                              Total time spent up to now :   101.85 secs
 
     Wfc Fourier Transf. for k-point   39
-                              Total time spent up to now :    51.68 secs
+                              Total time spent up to now :   104.98 secs
 
     Wfc Fourier Transf. for k-point   40
-                              Total time spent up to now :    53.02 secs
+                              Total time spent up to now :   107.75 secs
 
     Wfc Fourier Transf. for k-point   41
-                              Total time spent up to now :    54.31 secs
+                              Total time spent up to now :   110.39 secs
 
     Wfc Fourier Transf. for k-point   42
-                              Total time spent up to now :    55.65 secs
+                              Total time spent up to now :   113.19 secs
 
     Wfc Fourier Transf. for k-point   43
-                              Total time spent up to now :    57.01 secs
+                              Total time spent up to now :   115.91 secs
 
     Wfc Fourier Transf. for k-point   44
-                              Total time spent up to now :    58.39 secs
+                              Total time spent up to now :   118.65 secs
 
     Wfc Fourier Transf. for k-point   45
-                              Total time spent up to now :    59.73 secs
+                              Total time spent up to now :   121.39 secs
 
     Wfc Fourier Transf. for k-point   46
-                              Total time spent up to now :    61.10 secs
+                              Total time spent up to now :   124.14 secs
 
     Wfc Fourier Transf. for k-point   47
-                              Total time spent up to now :    62.44 secs
+                              Total time spent up to now :   126.86 secs
 
     Wfc Fourier Transf. for k-point   48
-                              Total time spent up to now :    63.74 secs
+                              Total time spent up to now :   129.46 secs
 
     Wfc Fourier Transf. for k-point   49
-                              Total time spent up to now :    64.98 secs
+                              Total time spent up to now :   132.01 secs
 
     Wfc Fourier Transf. for k-point   50
-                              Total time spent up to now :    66.30 secs
+                              Total time spent up to now :   134.62 secs
 
     Wfc Fourier Transf. for k-point   51
-                              Total time spent up to now :    67.64 secs
+                              Total time spent up to now :   137.38 secs
 
     Wfc Fourier Transf. for k-point   52
-                              Total time spent up to now :    68.92 secs
+                              Total time spent up to now :   139.95 secs
 
     Wfc Fourier Transf. for k-point   53
-                              Total time spent up to now :    70.19 secs
+                              Total time spent up to now :   142.55 secs
 
     Wfc Fourier Transf. for k-point   54
-                              Total time spent up to now :    71.56 secs
+                              Total time spent up to now :   145.30 secs
 
     Wfc Fourier Transf. for k-point   55
-                              Total time spent up to now :    72.90 secs
+                              Total time spent up to now :   148.04 secs
 
     Wfc Fourier Transf. for k-point   56
-                              Total time spent up to now :    74.27 secs
+                              Total time spent up to now :   150.77 secs
 
     Wfc Fourier Transf. for k-point   57
-                              Total time spent up to now :    75.61 secs
+                              Total time spent up to now :   153.51 secs
 
     Wfc Fourier Transf. for k-point   58
-                              Total time spent up to now :    76.99 secs
+                              Total time spent up to now :   156.32 secs
 
     Wfc Fourier Transf. for k-point   59
-                              Total time spent up to now :    78.32 secs
+                              Total time spent up to now :   159.06 secs
 
     Wfc Fourier Transf. for k-point   60
-                              Total time spent up to now :    79.62 secs
+                              Total time spent up to now :   161.66 secs
 
     Wfc Fourier Transf. for k-point   61
-                              Total time spent up to now :    80.88 secs
+                              Total time spent up to now :   164.22 secs
 
     Wfc Fourier Transf. for k-point   62
-                              Total time spent up to now :    82.24 secs
+                              Total time spent up to now :   166.97 secs
 
     Wfc Fourier Transf. for k-point   63
-                              Total time spent up to now :    83.52 secs
+                              Total time spent up to now :   169.56 secs
 
     Wfc Fourier Transf. for k-point   64
-                              Total time spent up to now :    84.80 secs
+                              Total time spent up to now :   172.15 secs
 
 
   writing WF(   1) plot on file: .//copper_WanT_WFR001.xsf
@@ -424,13 +424,13 @@
    <global routines>
              clock number :     7
 
-                     plot :  1m41.00s CPU 
+                     plot :  3m25.00s CPU 
  
-                want_init :     0.06s CPU
-          ggrids_read_ext :     0.02s CPU
-           wfc_data_kread :     0.34s CPU (      64 calls,   0.005 s avg)
-               kwann_calc :    16.24s CPU (     384 calls,   0.042 s avg)
-                   cfft3d :     2.84s CPU (     384 calls,   0.007 s avg)
-               cwann_calc :    64.17s CPU (     384 calls,   0.167 s avg)
+                want_init :     0.08s CPU
+          ggrids_read_ext :     0.03s CPU
+           wfc_data_kread :     0.75s CPU (      64 calls,   0.012 s avg)
+               kwann_calc :    32.57s CPU (     384 calls,   0.085 s avg)
+                   cfft3d :     5.21s CPU (     384 calls,   0.014 s avg)
+               cwann_calc :   131.35s CPU (     384 calls,   0.342 s avg)
 
 

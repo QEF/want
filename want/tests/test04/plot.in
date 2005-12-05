@@ -1,0 +1,10 @@
+
+ &INPUT
+   prefix = 'guanine'
+   postfix = '_WanT'
+   work_dir = './'
+   output_fmt = 'plt'
+   datatype = 'modulus'
+   locate_wf = .FALSE.
+   wann = '20-28'
+ /

@@ -1,0 +1,320 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 2.0.0  starts ...
+  Date  2Dec2005 at 19:47: 1 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: INTEL
+
+
+  PW-DFT data read from file: guanine.export/index.xml
+
+  ======================================================================
+  =                                Main                                =
+  ======================================================================
+
+            Calculation Title :     Wannier Transport Calculation
+                       Prefix :     guanine
+                      Postfix :     _WanT
+            Working directory :     ./
+
+                 Restart Mode :     from_scratch
+                Overlap Calc. :     TRUE 
+             Projection Calc. :     TRUE 
+          Read Start Subspace :     FALSE
+       Read Start Unitary mat :     FALSE
+           Conditioned minim. :     FALSE
+
+ <WANNIER_FUNCTIONS>
+  Input parameters for Wannier func. calculation
+    Number of Wannier functions required =   28
+    CG minim: Mixing parameter (alpha0_wan)=  0.500
+    CG minim: Max iteration number =   100
+    Minimization convergence threshold =     0.000001000
+    SD minim: Mixing parameter (alpha1_wan) =  0.500
+    SD minim: Max iteration number =  2000
+    Every   5 iteration perform a CG minimization (ncg)
+    Print info each  10 iterations
+    Save data each   10 iterations
+    Starting minimization guess = center_projections
+    Ordering mode = none
+    Verbosity = medium
+    Unitariery check threshold =     0.000001000
+    Conditioned minim. amplitude =     0.000000000
+    Conditioned minim.  iter num =  2100
+ </WANNIER_FUNCTIONS>
+
+ <DISENTANGLE>
+  Input parameters for subspace definition
+    Spin component = none
+    Mixing parameter (alpha_dis)=  0.500
+    Max iteration number =  1000
+    Starting minimization guess = center_projections
+    Disentangle convergence threshold =     0.000000010
+    Print info each  10 iterations
+    Save data each   10 iterations
+ </DISENTANGLE>
+
+ <TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+
+      #     Type          l   m       Position                              Decay
+    ----  ------------  --------   ------------------------------------   ---------
+      1    1gauss         0   0    ( -10.298707   2.949718  -7.244914 )    0.94486
+      2    1gauss         0   0    (  -9.336557   3.249671  -9.091126 )    0.94486
+      3    1gauss         0   0    ( -11.355293   3.196492  -8.981766 )    0.94486
+      4    1gauss         0   0    (  -8.878262   2.734331  -5.669587 )    0.94486
+      5    1gauss         0   0    ( -10.876011   2.642054  -5.303900 )    0.94486
+      6    1gauss         0   0    (  -7.043641   2.897573  -6.518972 )    0.94486
+      7    1gauss         0   0    (  -5.089365   3.151981  -7.945287 )    0.94486
+      8    1gauss         0   0    (  -7.292683   3.220200  -8.656896 )    0.94486
+      9    1gauss         0   0    (  -2.812507   3.133838  -7.542816 )    0.94486
+     10    1gauss         0   0    (  -3.587875   3.426806  -9.559924 )    0.94486
+     11    1gauss         0   0    (  -4.354738   3.753742 -11.788602 )    0.94486
+     12    1gauss         0   0    (  -2.490823   3.693031 -11.170370 )    0.94486
+     13    1gauss         0   0    (  -4.914628   4.067843 -13.903140 )    0.94486
+     14    1gauss         0   0    (  -6.518611   3.810937 -12.420147 )    0.94486
+     15    1gauss         0   0    (  -5.223664   4.349702 -15.779715 )    0.94486
+     16    1gauss         0   0    (  -3.609804   4.316858 -15.373342 )    0.94486
+     17    1gauss         0   0    (  -7.955066   3.552220 -10.903078 )    0.94486
+     18    1gauss         1   1    ( -10.507959   3.142431  -8.528531 )    0.94486
+     19    1gauss         1   1    ( -10.089457   2.757004  -5.961299 )    0.94486
+     20    1gauss         1   1    (  -7.667068   2.711657  -5.377873 )    0.94486
+     21    1gauss         1   1    (  -6.420214   3.083491  -7.660070 )    0.94486
+     22    1gauss         1   1    (  -3.758518   3.220471  -8.230504 )    0.94486
+     23    1gauss         1   1    (  -1.866497   3.047204  -6.855131 )    0.94486
+     24    1gauss         1   1    (  -3.417232   3.633141 -10.889345 )    0.94486
+     25    1gauss         1   1    (  -5.292242   3.874343 -12.687859 )    0.94486
+     26    1gauss         1   1    (  -4.537012   4.261341 -15.118420 )    0.94486
+     27    1gauss         1   1    (  -7.744980   3.747529 -12.152433 )    0.94486
+     28    1gauss         1   1    (  -8.165153   3.356911  -9.653721 )    0.94486
+
+ </TRIAL_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      30.0000000 (Bohr)
+  Alat  =      15.8753100 (Ang )
+  Omega =   17550.0000000 (Bohr^3)
+  Omega =    2600.6385769 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 30.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 19.5000  0.0000 )     (   0.0000  0.6500  0.0000 )
+    a(3) = (  0.0000  0.0000 30.0000 )     (   0.0000  0.0000  1.0000 )
+  Crystal axes: (Ang)
+    a(1) = ( 15.8753  0.0000  0.0000 )
+    a(2) = (  0.0000 10.3190  0.0000 )
+    a(3) = (  0.0000  0.0000 15.8753 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.2094  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3222  0.0000 )     (   0.0000  1.5385  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2094 )     (   0.0000  0.0000  1.0000 )
+ </LATTICE>
+
+ <IONS>
+  Number of chemical species =  4
+  Calculation is done within US pseudopot.
+
+     Pseudo( 1) = C.pbe-van_bm.UPF
+     Pseudo( 2) = N.pbe-van_bm.UPF
+     Pseudo( 3) = H.pbe-van_bm.UPF
+     Pseudo( 4) = O.pbe-van_bm.UPF
+
+     Pseudo( 1) is C  (US)    zval =  4.0   lmax= 1   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   721 points
+     The pseudopotential has  4 beta functions with: 
+                l(1) =   0
+                l(2) =   0
+                l(3) =   1
+                l(4) =   1
+     Q(r) pseudized with  8 coefficients,  rinner =    0.800   0.800   0.800
+
+
+     Pseudo( 2) is N  (US)    zval =  5.0   lmax= 1   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   729 points
+     The pseudopotential has  4 beta functions with: 
+                l(1) =   0
+                l(2) =   0
+                l(3) =   1
+                l(4) =   1
+     Q(r) pseudized with  8 coefficients,  rinner =    0.800   0.800   0.800
+
+
+     Pseudo( 3) is H  (US)    zval =  1.0   lmax= 0   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   615 points
+     The pseudopotential has  1 beta functions with: 
+                l(1) =   0
+     Q(r) pseudized with  8 coefficients,  rinner =    0.800
+
+     Pseudo( 4) is O  (US)    zval =  6.0   lmax= 1   lloc= 0
+     Version   0  0  0 of US pseudo code
+     Using log mesh of   737 points
+     The pseudopotential has  4 beta functions with: 
+                l(1) =   0
+                l(2) =   0
+                l(3) =   1
+                l(4) =   1
+     Q(r) pseudized with  8 coefficients,  rinner =    0.800   0.800   0.800
+
+
+  Atomic positions: (cart. coord. in Bohr)
+     N    tau(   1 ) = ( -10.5079593   3.1424310  -8.5285309 )
+     C    tau(   2 ) = ( -10.0894566   2.7570043  -5.9612993 )
+     N    tau(   3 ) = (  -7.6670679   2.7116570  -5.3778727 )
+     C    tau(   4 ) = (  -6.4202139   3.0834906  -7.6600704 )
+     C    tau(   5 ) = (  -3.7585177   3.2204710  -8.2305036 )
+     O    tau(   6 ) = (  -1.8664971   3.0472044  -6.8551312 )
+     N    tau(   7 ) = (  -3.4172319   3.6331413 -10.8893452 )
+     C    tau(   8 ) = (  -5.2922419   3.8743431 -12.6878589 )
+     N    tau(   9 ) = (  -4.5370119   4.2613412 -15.1184201 )
+     N    tau(  10 ) = (  -7.7449799   3.7475288 -12.1524335 )
+     C    tau(  11 ) = (  -8.1651526   3.3569105  -9.6537215 )
+     H    tau(  12 ) = ( -12.2026253   3.2505531  -9.4350019 )
+     H    tau(  13 ) = ( -11.6625648   2.5271011  -4.6465020 )
+     H    tau(  14 ) = (  -1.5644136   3.7529201 -11.4513934 )
+     H    tau(  15 ) = (  -5.9103159   4.4380607 -16.4410078 )
+     H    tau(  16 ) = (  -2.6825951   4.3723738 -15.6282657 )
+ </IONS>
+
+ <K-POINTS>
+  nkpts =    1
+  Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+ </K-POINTS>
+
+ <B-SHELL>
+  List of the  6 b-vectors : (Bohr^-1) 
+    b ( 1) =    (  -0.20944  0.00000  0.00000 ),   weight =  11.3986
+    b ( 2) =    (   0.20944  0.00000  0.00000 ),   weight =  11.3986
+    b ( 3) =    (   0.00000  0.32221  0.00000 ),   weight =   4.8159
+    b ( 4) =    (   0.00000 -0.32221  0.00000 ),   weight =   4.8159
+    b ( 5) =    (   0.00000  0.00000 -0.20944 ),   weight =  11.3986
+    b ( 6) =    (   0.00000  0.00000  0.20944 ),   weight =  11.3986
+
+  Total weight =  55.2264
+ </B-SHELL>
+
+ <WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = (  -\inf ,  \inf  )
+    Max number of bands within the energy window =    28
+
+  Electronic Structure from DFT calculation:
+    nkpts =   1,     nbnd =  28,
+    nspin =   1
+    Fermi energy =   -4.737350482 eV
+ !
+ !    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =   28
+ !                                       imin =    1  imax =   28
+ !   Eigenvalues:
+ !   -25.7904 -25.1407 -24.7130 -22.5610 -22.2690 -21.4491 -18.4287 -16.3600
+ !   -16.0606 -15.0161 -14.5787 -13.2129 -13.1564 -12.5207 -11.5286 -11.3001
+ !   -10.9136 -10.1273 -10.0884  -9.4280  -9.0951  -7.3043  -7.1614  -6.5612
+ !    -6.4627  -5.8204  -5.4467  -4.7374
+
+    inner window: NOT used --> NO FROZEN STATES
+ </WINDOWS>
+
+
+
+  ======================================================================
+  =                      Overlaps and Projections                      =
+  ======================================================================
+
+  Reading density G-grid from file: guanine.export/index.xml
+  Reading Wfc grids from file: guanine.export/index.xml
+
+
+          Energy cut-off for wfcs =         25.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =     838167
+        Max number of PW for wfc  =      37108
+      Total number of PW for wfcs =      37108
+        FFT grid components (rho) =  (   144   90  144 )
+
+
+  Initializing global dft data
+
+  Initializing US pseudopot. data
+  Total number Nkb of beta functions:    93
+
+
+    Overlaps or Projections calculation for k-point:    1
+    npw =  37107,    dimwin =   28
+                              Total time spent up to now :    18.84 secs
+
+
+  Overlaps and projections written on file: guanine_WanT.ovp
+                              Total time spent up to now :    18.93 secs
+
+
+  ======================================================================
+  =                      Starting Iteration loop                      =
+  ======================================================================
+
+
+  Initial trial subspace: projected localized orbitals
+
+  Iteration =     1     Omega_I =   61.261424      Error =      0.00000000
+
+
+  ======================================================================
+  =                        Convergence Achieved                        =
+  ======================================================================
+
+  Iteration # :     1
+  Final Omega_I (Bohr^2, Angstrom^2):      61.261424        17.154932
+   Avrg Omega_I                     :       2.187908         0.612676
+
+                              Total time spent up to now :    18.97 secs
+
+
+  Subspace data written on file: guanine_WanT.space
+  ======================================================================
+
+   <global routines>
+             clock number :    21
+
+              disentangle :    18.00s CPU 
+ 
+                want_init :     0.60s CPU
+             bshells_init :     0.09s CPU
+              wfc_manager :    18.22s CPU
+          ggrids_read_ext :     0.50s CPU
+              struct_fact :     1.57s CPU
+                init_us_1 :     3.66s CPU
+           wfc_data_kread :     1.10s CPU (       4 calls,   0.276 s avg)
+                init_us_2 :     1.48s CPU (       5 calls,   0.297 s avg)
+                  ccalbec :     1.07s CPU (       4 calls,   0.267 s avg)
+                  overlap :     6.83s CPU (       3 calls,   2.277 s avg)
+           overlap_setmap :     0.32s CPU (       3 calls,   0.108 s avg)
+          overlap_augment :     0.03s CPU (       3 calls,   0.011 s avg)
+                    s_psi :     0.32s CPU
+               projection :     1.35s CPU
+       trial_center_setup :     0.73s CPU (      28 calls,   0.026 s avg)
+               iterations :     0.04s CPU
+             subapce_init :     0.04s CPU
+                   omegai :     0.00s CPU (       2 calls,   0.000 s avg)
+                  zmatrix :     0.00s CPU
+                mat_hdiag :     0.00s CPU (       2 calls,   0.001 s avg)
+
+

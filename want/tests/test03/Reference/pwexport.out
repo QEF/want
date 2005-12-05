@@ -1,12 +1,12 @@
 
-     Program POST-PROC v.2.1.5  starts ...
-     Today is 17Oct2005 at 17:44:43 
+     Program POST-PROC v.3.0    starts ...
+     Today is 30Nov2005 at 15:39:16 
 
-     Reading file benzene.save ... 
+     Reading file benzene.save ...      only dimensions
      read complete
 
-     Reading file benzene.save ... 
+     Reading file benzene.save ...      all except wavefuctions
      read complete
 
      nbndx  =    40  nbnd   =    40  natomwfc =    30  npwx   =   28017
-     nelec  =   30.00 nkb   =     6  ngl    =    1185
+     nelec  =  30.00  nkb   =     6  ngl    =    1185

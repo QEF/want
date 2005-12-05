@@ -5,9 +5,22 @@
 
 
 -------------------------------------------------
-Date: XX Nov 2005    Version: WanT-2.0.0
+Date: XX Dec 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
+04 Dec 2005      Optional IERR argument passed to mat_sv routines to give to
+                 possibility of a direct management of the error. Changes to
+                 inversions in transport. References for test04 ans test05 updated. (AF)
+
+02 Dec 2005      Test04 (Guanine dipole moment) added; porting issues on MAC tackled. 
+                 (AF)
+
+01 Dec 2005      README files in tests upgraded (BB). 
+                 Changes in the fmt of output files in order to enhance check 
+                 procedure.  Updates also in utility/check.sh . 
+                 References in tests updated (using espresso v3.0). (AF)
+
+30 Nov 2005      Bug fixed in xsf output format (plot.x). (AF)
 
 25 Nov 2005      Small fixes in input reading. (BB)
 
@@ -16,7 +29,8 @@ Date: XX Nov 2005    Version: WanT-2.0.0
                  to INPUT_CONDUCTOR namelist. (BB)  
 
 22 Nov 2005      CMPLX intrinsic always used with the explicit kind (dbl) for
-                 portability purposes (Courtesy of Carlo Cavazzoni). (AF)
+                 portability purposes (Courtesy of Carlo Cavazzoni). 
+                 Other few bugs fixed. (AF)
 
 17 Nov 2005      Test references updated. (BB) 
                  environment.conf and run.sh scripts (tests) improved. (AF)

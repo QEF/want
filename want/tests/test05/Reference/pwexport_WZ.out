@@ -1,12 +1,12 @@
 
-     Program POST-PROC v.2.1.5  starts ...
-     Today is 17Oct2005 at 20:46:34 
+     Program POST-PROC v.3.0    starts ...
+     Today is  2Dec2005 at 21:13:55 
 
-     Reading file wurtzite.save ... 
+     Reading file wurtzite.save ...      only dimensions
      read complete
 
-     Reading file wurtzite.save ... 
+     Reading file wurtzite.save ...      all except wavefuctions
      read complete
 
      nbndx  =    24  nbnd   =    24  natomwfc =    48  npwx   =    6761
-     nelec  =   48.00 nkb   =    54  ngl    =    2701
+     nelec  =  48.00  nkb   =    54  ngl    =    2701

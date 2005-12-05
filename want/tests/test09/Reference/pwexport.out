@@ -1,13 +1,14 @@
 
-     Program POST-PROC v.2.1.5  starts ...
-     Today is 18Oct2005 at  0:29:45 
+     Program POST-PROC v.3.0    starts ...
+     Today is 30Nov2005 at 21: 7:11 
 
-     Reading file nichain.save ... 
+     Reading file nichain.save ...      only dimensions
      read complete
 
-     Reading file nichain.save ... 
+     Reading file nichain.save ...      all except wavefuctions
      read complete
 
      nbndx  =    10  nbnd   =    10  natomwfc =     6  npwx   =    2911
-     nelec  =   10.00 nkb   =    18  ngl    =    4885
-  warning: negative or imaginary core charge    -0.000038    0.000000
+     nelec  =  10.00  nkb   =    18  ngl    =    4885
+
+     Check: negative/imaginary core charge=   -0.000038    0.000000

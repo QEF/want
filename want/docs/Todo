@@ -3,11 +3,6 @@
   List of needed changes
 *************************************
 
-* tests: README in each test directory should be better written. They
-         should contain the description of the input (main features) 
-         and a commentof the outputs (why wannier functions can be considered
-         converged ?, which are the key parameters in order to say that ? ... )
-
 * plot.x: USPP features not fully implemented.
 
 * disentangle + wannier: 
@@ -17,4 +12,7 @@
                
 * eigenchannel in transport calculation
 * direct calculation of current
+
+* coherent units everywhere (bohr and bohr^-1)
+
 

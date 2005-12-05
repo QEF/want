@@ -11,198 +11,278 @@
 \section{How to run \WANT\ : a step by step description}\label{section:run}
 
 \noindent \underline {NOTE}: At present the \WANT\ code is
-implemented to work as post processing of the self-consistent
-calculations done using the Pwscf package (www.pwscf.org); thus we
-will refer to that code in the following description.\\
+implemented to work as post processing of DFT 
+calculations done using the \PWSCF package (\PWSCFURL); we
+will refer to that code in the following.\\
 
 \noindent Following the theoretical description of
 Section~\ref{section:intro}, the evaluation of transport
-properties requires a three separate steps:
+properties requires three separate steps:
 
 \begin{enumerate}
-\item Calculation of DFT-PW electronic structure:
+\item Calculation of DFT electronic structure
 \item Calculation of maximally-localized Wannier functions
-\item Calculation of the quantum conductance
+\item Calculation of quantum conductance
 \end{enumerate}
 
 \noindent \underline{IMPORTANT}: For a correct results, the
-following steps $***$MUST$***$ be done in this order.
+following steps \textbf{MUST} be done in the reported order.
 
-\subsection{Preliminary Steps: DFT-PW
+\subsection{Preliminary Steps: DFT
 Calculations}\label{subsection:run_dft}
 \renewcommand{\theenumi}{\roman{enumi}}
 \renewcommand{\labelenumi}{\theenumi)}
 \begin{enumerate}
-\item Self-consistent calculation with the Pwscf code.\\
-      \noindent For the description of the input and for further details see the Pwscf
-      manual at www.pwscf.org.
+%
+\item Self-consistent calculation using the \PWSCF code.\\
+      \noindent For the description of the input and for further details see the \PWSCF
+      manual.
+      %
 \item Bandstucture calculation.\\
       \noindent  Starting from the self-consistent charge
       calculated in point $(1)$, we calculate the Bloch functions for a
-      {\bf UNIFORM k-point grid in the COMPLETE Brillouin Zone}; Gamma point
-      must be included. Time-reversal reduction of k-poins is not
-      allowed. In order to obtain the correct k-point grid,
-      include flag "nosym = .true.'' in the namelist "\&SYSTEM''
-      and the complete list of k-points in the "K\_POINTS" card.
-\item From Pwsc to Wannier code.\\
-      \noindent Using the post processing
-      {\bf pw\_export.x} (distributed in the Pwscf package),
-      the input data, necessary for the following Wannier
-      calculations,
-      will be extracted from PWscf outputs and stored in the
-      new-created directory {\em prefix.export}.
+      {\bf REGULAR {\bf k}-point grid in the COMPLETE Brillouin Zone}; Gamma point
+      must be included. Reduction of \textbf{k}-points due to time-reversal 
+      symmetry is not (yet) allowed. The complete list of 
+      \textbf{k}-points should be specified in the {\tt K\_POINTS} card. 
+      The simple program
+      {\tt kgrid.f90} in {\tt \$TOPDIR/utility }can be used to generate non-symmetrized 
+      Monkhorst-Pack grids.
+      %
+\item From \PWSCF to the Wannier code.\\
+      \noindent Use the post processing
+      {\tt pw\_export.x} (distributed in the \PWSCF package 
+      %
+      \footnote{The export utility is already distributed in the 
+      Qantum-Espresso v3.0, but a patch to include it also in versions v2.1.x is
+      available at \WANTURL{} or \PWSCFURL{}.} 
+      ),
+      %
+      to extract the input data necessary for the following Wannier
+      calculations
+      from \PWSCF output datafile. Data will be stored in the
+      newly-created directory {\tt \$prefix.export/}.
 \end{enumerate}
 
-\noindent \underline{NOTE}: Steeps (i-iii) may be run, using the
+\noindent \underline{NOTE}: Steeps (i-iii) should be be run, using the
 parallel version of the code, paying attention to use the same
 number of processors. From this point to the end, instead, the
 code is scalar.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection {Calculation of maximally-localized Wannier
 functions}\label{subsection:run_wannier}
 
-Following the list of input parameter of
-Section~\ref{section:input} (also reported in the file
-docs/README.input) and the examples in directory Tests, create the
-input file, that will be used for the following 2 steps (a-b).
+Following the list of input parameters as in
+Section~\ref{section:input} (also reported in the {\tt README.input} file
+in {\tt \$TOPDIR/docs/}) and the examples in directory {\tt \$TOPDIR/tests/}, 
+create your own input file, that will be used for the following two steps (a-b).
 \renewcommand{\theenumi}{\alph{enumi}}
 \renewcommand{\labelenumi}{\theenumi)}
+%
+%
 \begin{enumerate}
-\item Starting from the data stored at level (iii), {\bf
-      disentangle.x}
-      selects the working energy window, from which
-      it will extract a selected number ($N$) of  WFs.
-      For each k-point, the energy window  MUST
-      contain at least a number of band equal to the WFs to be calculated $N$.
+\item {\tt disentangle.x}: Starting from the data stored at level (iii), 
+      the code selects the working energy window. From there
+      it will extract a selected number ($N$) of WFs to setup the 
+      Hilbert subspace for Wannier localization.
+      For each \textbf{k}-point, the energy window {\bf must}
+      contain a number of bands not lower than $N$.
       It is possible to use an inner window (inside the working one) to
-      treat frozen-states, for details see Phys. Rev. B 65 035109 (2002).
-      Disentangle.x extracts a manifold of $N$ bands along
-      the Brillouin Zone, from an entangled group in the selected energy window.
-      Trial wannier centers are not mandatory in this step (depending
-      on itrial flag).
-      Disentangle.x produces a standard output with the main results,
-      and two internal files: {\em prefix.ovp} and {\em
-      prefix.space}
-\item Running {\bf wannier.x} (using the same input as before), we
-      perform the localization
-      procedure and the optimal unitary matrix U(k), that minimizes the
-      spread operator, is obtained.
-      In this step the definition of the trial centers is necessary, even
-      in the case they have not been used in step (a).
-      Wannier.x produces a standard output with the main results, and
-      a set of files ({\em prefix\_RHAM.XXX}) containing the
-      complex hamiltonian matrices, written by columns. The first two integers
-      in the first line give the dimension of the matrix, the last
-      three integers describe the lattice vector, the WFs are belonging
-      to (e.g. 0 0 0 is the reference cell, 1 0 0 is the first neighbour
-      cell along the first axis direction, etc).
-      Wannier.x produces also two internal binary files: {\em prefix.ham}, {\em prefix.wan}.
-      The former file will be (one of ) the  input for the transport calculation.
+      treat frozen-states, for details see Ref.~\cite{ivo2}:
+      these frozen Bloch-states will be kept as they are in the Wannier subspace.
+      % 
+      Trial Wannier centers are not mandatory in this step (depending
+      on the {\tt subspace\_init} flag).
+      The code produces a standard output with the main results,
+      and two internal files: {\tt \$prefix\_\$postfix.ovp} and
+      {\tt \$prefix\_\$postfix.space} . The former keeps trace of the 
+      computed overlap and projection integrals (to be re-used in further 
+      or restarted calculations) while the latter describe the wannier optimal 
+      subspace.
+      %
+
+\item {\tt wannier.x}: the code reads the same input of {\tt disentangle.x} and
+      performs the localization
+      procedure leading to the maximally localized WFs. 
+      The optimal unitary matrices $U(\mathbf{k})$ governing the transformation between
+      Bloch and Wannier states are obtained.
+      In this step different trial centers can be used, but it is a standard procedure
+      to keep those used in the {\tt disentangle.x} run.
+      {\tt wannier.x} produces a standard output with describing the iterative
+      path to the optimally localized WFs. 
+      The code also writes two internal data-files: {\tt \$prefix\_\$postfix.wan}
+      containing the $U(\mathbf{k})$ and {\tt \$prefix\_\$postfix.ham} with the 
+      hamiltonian matrix elements on the Wannier basis.
+      %
 \end{enumerate}
+%
+%
 
-\noindent \underline{NOTES}: Steps (a-b) are the most expensive
-ones of the overall procedure, both in term of memory and in term
-of CPU time. Calculations for big systems may take over several
-hours! On the contrary other steps of the chain are quite
-inexpensive.\\
-
-\noindent Further physical information may be obtained as external
+\noindent
+Further physical information may be obtained as external
 post-processing of the Wfs calculation. They are not necessary for
-the transport calculation, but they may be very useful for a
+the transport calculation, but they may be useful for a
 better understanding of the intrinsic electronic properties of the
 system. These codes require a separate input, to be generated
-following Section~\ref{section:input} or the file
-docs/README.input.
+following Sec.~\ref{section:input} or the file
+{\tt \$TOPDIR/docs/README.input} .
 
+%
+%
 \begin{itemize}
-\item The code {\bf bands.x} calculates  the interpolated bandstructure
-      for the system along selected direction in the Brillouin Zone
-      The comparison with the original bandstructure calculated
-      using the Pwscf code constitutes a good test to check the accuracy
-      of the results. For details see also Phys. Rev. B 65 035109 (2002).
-      The code produces three files {\em prefix.dftband.dat,
-      prefix.intband.dat, prefix.wanband.dat} that
-      may be used for a direct visualization.
-\item The code {\bf plot.x} calculates Wfs (among the calculated ones) in the unitary
-      cell. Wfs are expressed in a numerical form on the real space FFT mesh, and formatted into a txt
-      file. You can use free visualization software
-      (e.g. gOpenMol) to plot Wfs.
-\item The code {\bf blc2wan.x} transforms a generic operator $\widehat{A}$ expressed on the Bloch
-      eigenstates (BF) into the Wannier function basis set. Using the unitary
-      matrices U(k) calculated at step (b), we first
-      calculate the  corresponding matrix in the rotated basis,
-      $A^{(rot)}({\bf k})=(U^{({\bf k})})^{\dagger}\widetilde{A}({\bf
-      k})U^{({\bf k})}$ then we Fourier transform $A^{(rot)}({\bf k})$ into a set of $N_{kp}$
-      Bravais lattice vectors {\bf R} within a Wigner-Seitz supercell
-      centered around {\bf R}=0.
+%
+\item {\tt bands.x}: the code computes the interpolated band-structure
+      of the system along selected direction in the Brillouin Zone.
+      The comparison with indipendently calculated DFT eigenvalues is
+      a nice test to check the localization of the obtained WFs.
+      When they are well behaved ({\it i.e.} localized), only few $\mathbf{R}$ lattice 
+      vectors are required to described the Hamiltonian on the Wannier basis 
+      [$H_{ij}(\mathbf{R})$]
+      Starting with a small set of $\mathbf{k}$ in the DFT calculation
+      we obtain the Hamiltonian on the related (small) set of lattice vectors. 
+      When WFs are well localized 
+      the Hamiltonian is fully described on this set of $\mathbf{R}$ and we can
+      diagonalize it for an arbitrary large set of $\mathbf{k}$ points 
+      (as a post-processing of the Wannier code). This is the
+      interpolation of the band structure using WFs. If they are not localized
+      we are essentially throuwing away some non-negligible matrix elements 
+      in the Hamiltonian representation, and the bands
+      are not accurate. Typical unphysical oscillations appears in these cases.
+      % 
+      The code produces three files {\tt \$prefix\_\$postfix\_dftband.dat,
+      \$prefix\_\$postfix\_wanband.dat} and {\tt \$prefix\_\$postfix\_intband.dat}
+      which cab be used for a direct visualization.
+      %
+
+\item {\tt plot.x}: this is an utility to plot WFs in real space.
+      The plotting region can be tuned and a genereic number of WFs can be
+      handled in a single run.
+      The real or immaginary parts of the WFs as well as their squared moduli are
+      allowed fields to be plotted.
+      The code produces plot files in various formats (txt, gaussian cube, xsf, plt) 
+      allowing the use of standard open source visualization-packages
+      such as gOpenMol or xCrysDen. Output files are labelled as 
+      {\tt \$prefix\_\$postfix\_WF\$type\_\$num.\$fmt}, where {\tt \$type} can be
+      {\tt R, I, M} according to the plotted field (real or immaginary part, squared 
+      modulus), {\tt \$num} is the index of the chosen WF and {\tt \$fmt} is the
+      output format. If needed, an auxiliary file with the atomic structure 
+      in the {\tt xyz} format is also produced.
+      %
+\item {\tt blc2wan.x}: transforms a generic (eventually dynamic) operator 
+      given on the Bloch eigenstates basis $A_{mn}(\mathbf{k}) =
+      \langle \psi_{m\mathbf{k}} |\, \widehat{A}(\omega) \,| 
+      \psi_{n\mathbf{k}} \rangle$ to the WFs representation. 
+      Using the unitary matrices $U(\mathbf{k})$ calculated during the Wannier localization
+      (b) and the definition of the Wannier subspace in terms of the Bloch eigenstates
+      (a), $\widehat{A}(\omega)$ is described in terms of the matrix elements
+      $A_{ij}(\mathbf{R}) = \langle w_{i\mathbf{0}} |\, \widehat{A}(\omega) \,| 
+      w_{j\mathbf{R}} \rangle$ .
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-\subsection {Calculation of electronic
-transport}\label{subsection:transport}
+\subsection {Calculation of electronic transport}
+\label{subsection:transport}
 
 Using the hamiltonian matrices calculated in step (b) we can
-calculate both the "bulk" and the "two terminal" transmittance.
-Input file may be generated following Section~\ref{section:input}
-or the file docs/README.input. The result ({\em cond.dat}) is
-expressed in unit of the quantum of conductance (2e$^2$/h).
-Additional output file {\em dos.dat} contains the density of
-states ($N(E)$) of the overall open system, deriving from the
-trace of the conductor Green's function $G_C$
-($N(E)=-(1/\pi)Im[TrG_C(E)]$).\\
+calculate both the {\em bulk} and the {\em two-terminal} transmittance.
+Input file may be generated following Sec.~\ref{section:input}
+or the file {\tt README.input} in {\tt \$TOPDIR/docs}. The main result of the 
+calculation is the quantum transmittance across the conductor region
+which is written on file {\tt \$SCRATCH/cond.dat}. Conductance is given
+in $2e^2/h$ units. Calculations are performed using the Fisher-Lee formula
+according to Sec.~\ref{subsec:tran}.
+As an auxiliary piece of information, the density of states (DOS) projected on
+the conductor is also writte in {\tt \$SCRATCH/dos.dat}.
+This DOS is computed as the trace of the conductor Green's function
+$ N(E) = -(1/\pi)\, \text{Im} \, \text{Tr}\, G_C(E)$.
 
-\noindent {\bf conductor.x} calculates both the {\bf bulk} and the
-{\bf two-terminal} transmittance for the systems.
-\begin{itemize}
-\item In the case of {\bf bulk} transmittance, the conductor and the leads are
-      constituted of the same system.
-      Only two hamiltonian matrices are needed: that belonging to the
-      reference cell ( 0 0 0 three last number in the first line, see
-      step (b) ) and  that  belonging to the first
-      cell in the direction along which we calculate the transport ( e.g.
-      1 0 0 in the first line, in order to calculate the transport along
-      x-dirction).
+Except the special case of the bulk transmittance (see below), the systems one is
+interested in are generally not periodic along the transport direction. This does not
+in principle avoid a 2D periodicity in the orthogonal plane. The use of 
+2D mesh of $\mathbf{k}$-points in this context is implemented in the present 
+version of the code.  \\
 
-\item In the case of {\bf two terminal} transmittance we need, in principle, three sets of
-      calculations (two only if the leads are of the same material): bulk
-      calculations for the two infinite leads and a supercell calculation
-      for the conductor and the contacts (see PRB 69, 035108 (2004)).
-      The labels for the hamiltonian matrices used in the input of conductor.x refer to the
-      scheme below.
-\end{itemize}
-
-\noindent{\bf Matrix definition}
-      Given a conductor (C) bonded to a right lead (A) and a left lead
-      (B)\\
-
-\begin{figure}[h]
-\includegraphics{acb}\label{acb:ham}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+\begin{figure}
+   \centering
+   \includegraphics[clip,width=0.6\textwidth]{acb}
+   \caption{Schematic definitions for Hamiltonian block matrices used in 
+	    transport calculations. \label{fig:matrix_naming}}
 \end{figure}
-\begin{displaymath}
-\begin{array}{lll}
-\textrm{H00\_A} &=& \textrm{N}\times\textrm{N on site hamiltonian
-of the leads A (H00 from bulk calculation)}\\
-\textrm{H01\_A} &=& \textrm{N}\times\textrm{N hopping hamiltonian
-of the leads A (H01 from bulk calculation)}\\
-\textrm{H00\_B} &=& \textrm{P}\times\textrm{P on site hamiltonian
-of the leads B (H00 from bulk calculation)}\\
-\textrm{H01\_B} &=& \textrm{P}\times\textrm{P hopping hamiltonian
-of the leads B (H01 from bulk calculation)}\\
-\textrm{H00\_C} &=& \textrm{M}\times\textrm{M on site hamiltonian
-of the conductor C (H00 from bulk calculation)}\\
-\textrm{HCI\_AC} &=& \textrm{N}\times\textrm{M coupling matrices
-between lead A and conductor C}\\
-\textrm{HCI\_CB} &=& \textrm{M}\times\textrm{P coupling matrices
-between conductor C and lead B}\\
-\textrm{ } &\textrm{ }& \textrm{the coupling matrices have to be
-adapted from H01 of supercell calculation}
-\end{array}
-\end{displaymath}
+%
+%
+\noindent 
+Before discussing in more ditail the actual calculations performed by
+the transport code, we precisely define the adopted convention for the
+names of the real-space ({\i.e.} WF) Hamiltonian blocks.  
+Given a conductor (C) connected to left (L) and right (R) leads, containing
+respectively $N_C$, $N_L$ and $N_R$ WFs, 
+we define the following matrices (see Fig.~\ref{fig:matrix_naming}): \\
+
+%
+%
+\begin{tabular}{lllll}
+\texttt{H00\_L} &=& $N_L\times N_L$ on-site hamiltonian
+of the leads L & (from L-bulk calc.)\\
+\texttt{H01\_L} &=& $N_L\times N_L$ hopping hamiltonian
+of the leads L & (from L-bulk calc.) \\
+\texttt{H00\_R} &=& $N_R\times N_R$ on site hamiltonian
+of the leads R & (from R-bulk calc.) \\
+\texttt{H01\_R} &=& $N_R\times N_R$ hopping hamiltonian
+of the leads R & (from R-bulk calc.) \\
+\texttt{H00\_C} &=& $N_C\times N_C$ on site hamiltonian
+of the conductor C & (from C-supercell calc.) \\
+\texttt{H\_LC}  &=& $N_L\times N_C$ coupling
+between lead L and conductor C & (from C-supercell calc.) \\
+\texttt{H\_CR}  &=& $N_C\times N_R$ coupling
+between conductor C and lead R & (from C-supercell calc.)
+%
+%
+\end{tabular}
+%
+%
+\\
+
+\noindent
+In the general case we need to compute the electronic structure and
+WFs for three different regions L, C, R.
+This picture may be simplified as we will discuss below.
+
 
 \noindent \underline{NOTES}: (i) The definition of the coupling
 matrices HCI\_ {\bf MUST BE DONE CAREFULLY case by case},
 depending on the particular system definition. (ii) In order to
 match the hamiltonian matrices at the boundary, it is necessary to
 check that the diagonal elements of the H00 matrices were aligned.
-If not a rigid shift must be done.
+If not, a rigid shift may be applied. \\
+
+
+\noindent {\tt conductor.x} calculates both the {\em bulk} and the
+{\em two-terminal} transmittance for the systems.
+%
+%
+\begin{itemize}
+\item {\bf bulk} transmittance: the conductor and the leads are
+      the same and the whole system is periodic.
+      According to the 
+      We only need hamiltonian matrices are needed: that belonging to the
+      reference cell ( 0 0 0 three last number in the first line, see
+      step (b) ) and  that  belonging to the first
+      cell in the direction along which we calculate the transport ( e.g.
+      1 0 0 in the first line, in order to calculate the transport along
+      x-dirction).
+
+\item In the case of {\bf two-terminal} transmittance we need, in principle, 
+      three sets of
+      calculations (two only if the leads are of the same material): bulk
+      calculations for the two infinite leads and a supercell calculation
+      for the conductor and the contacts (see PRB 69, 035108 (2004)).
+      The labels for the hamiltonian matrices used in the input of conductor.x 
+      refer to the scheme below.
+\end{itemize}
+%
+%
