@@ -4,5 +4,56 @@
 @title@   Pt-H2-Pt junction
 ==============================================================================
 
+  Calculation of conductance for a Pt-H2-Pt junction. The calculation is done 
+  setting a chain of 8 Pt atoms with an H2 molecule between them in the unit cell.
+  We used 4 kpts along chain direction to sampling Brillouin zone, and a cutoff 
+  of 22 Ry for wfc (while 176 Ry for rho).
 
+  The output of the calculations are the conductance (namely the transmittance)
+  and dos for the bulk-like platinum leads (cond_bulk.dat and dos_bulk.dat) and 
+  for the general geometry of platinum leads contacted through the H2 molecule 
+  (cond.dat and dos.dat).
+  transport calculation is carried out coupling conductor (8 Pt and 2 H atoms 
+  per cell, 50 WFs) with leads (1 Pt atom, 6 WFs), extracting the coupling 
+  matrices directly from the supercell conductor calculation (see the manual for 
+  further details). 
+
+  Disentangle calculation is performed within an energy window ranging up to 
+  10 eV. A conditioned minimization is carried out and the amplitude of the 
+  penalty functional is set to 20 (see manual for further details). Fifty initial 
+  guess centers are considered: 10 of 1gauss type with s-geometry are localized 
+  at the bond midpoints, and 5 d-type atomic orbitals are localized on each Pt 
+  atom.
+
+  Quantum conductance calculation is performed according to the Landauer formula.
+  DOS is calculated as the trace of conductor Green's function.
+
+
+RESULTS discussion
+
+  After 1000 iterations disentangle convergence is not fully achieved, but it can 
+  be considered adequate. The final invariant spread is about 219.434 Bohr^2 
+  (4.389 Bohr^2 on average): this component of the spread will remain unchanged
+  during the Wannier localization.
+
+  After about 1200 iterations Wannier convergence is achieved. A total spread of 
+  about 247.874 Bohr^2 is found, 4.957 Bohr^2 on average.
+
+  The main outputs of the transport calculation are written in the dos*.out and
+  cond*.out files.
+
+  Transport calculation results are plotted in files:
+     $TESTDIR/cond_bulk.dat and $TESTDIR/dos_bulk.dat
+     $TESTDIR/cond.dat and $TESTDIR/dos.dat
+
+  In the bulk-like calculation, conductance exhibit a stepwise behaviour, with the
+  presence of dips due to the lack of symmetry in the simulated interactions. This 
+  stepwise behaviour results dramatically changed in the general geometry calculation.
+  This is due to numerical effects in matching the hamiltonian matrices of conductor 
+  and leads at the boundary (see the manual for further details). Interface principal 
+  layers, used in matching conductor and leads and extracted from conductor supercell 
+  calculation, could be not completely equivalent.
+  Pronounced peaks are observable in the DOS plot, due to the Van Hove singularities. 
+  Also the DOS curve results modified in the general geometry wrt the bulk-like leads
+  calculation, affected by numerical effects rising from conductor-leads matching.
 

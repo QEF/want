@@ -7,14 +7,14 @@
   isolated benzene molecule, both in the norm-conserving and ultra-soft
   pseudopotential case. The molecule is oriented in the xy plane. 
 
-  Disentangle calculation is performed within an energy window of 2.0 eV upper-
-  bound, in order to obtain 18 Wannier functions. A conditioned minimization 
-  is carried out and the amplitude of the penalty functional is set to 20 (see 
-  the manual for further details). Eighteen initial guess centers are considered: 
-  12 of 1gauss-type with s-geometry, localized at the bond midpoints and 6 s-type 
-  atomic orbitals,localized on the C atoms (see the manual for further details).
-  The last number near each starting center coordinates is the value of the center 
-  weight in the penalty functional expression.
+  Disentangle calculation is performed within an energy window ranging up to 
+  2.0 eV. A conditioned minimization is carried out and the amplitude of the 
+  penalty functional is set to 20 (see the manual for further details). 
+  Eighteen initial guess centers are considered: 12 of 1gauss-type with s-geometry, 
+  localized at the bond midpoints and 6 s-type atomic orbitals,localized on the 
+  C atoms (see the manual for further details).The last number near each starting 
+  center coordinates is the value of the center weight in the penalty functional 
+  expression.
   
 
   RESULTS discussion

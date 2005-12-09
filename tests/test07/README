@@ -3,7 +3,51 @@
 @title@   Gold and Cobalt chains (2 atoms per cell)
 ==============================================================================
 
-This test performs the calculations for the bulk conductance of a Gold and Cobalt
-chains containing 2 atoms per unit cell. 
+  This test performs the calculations for the bulk conductance of a Gold and 
+  Cobalt chains containing 2 atoms per unit cell. Calculations are performed 
+  both with NC and US pseudopots for gold and only with US pseudopot for cobalt. 
+
+  Disentangle calculation is performed within an energy window ranging up to 
+  1.5 eV for Au; states are frozen from -20 eV to -2.5 eV.
+  Twelve initial guess centers of atomic type are considered: 5 d-type and 1 
+  s-type orbitals localized on each Au (or Co) atom (see the manual for further 
+  details).
+
+  Bulk-like conductance is calculated: leads and conductor are made of the same
+  material and conductance of the ideal and infinite structure is computed.
+  Quantum conductance calculation is performed according to the Landauer formula.
+  DOS is calculated as the trace of the conductor Green's function.
+
+
+  RESULTS discussion
+
+  Disentangle convergence is achieved in about 20 iterations for gold (about 40
+  for AuUS and 60 for Co) and the final invariant spread (\Omega_I) is about 
+  44.935 Bohr^2 for Au (40.644 Bohr^2 for AuUS and 33.240 Bohr^2 for Co), 
+  3.744 Bohr^2 on average (3.387 Bohr^2 for AuUS and 2.770 Bohr^2 for Co): 
+  this component of the spread will remain unchanged during the Wannier localization.
+
+  After about 280 iterations Wannier convergence for gold (after 230 iterations 
+  in the US case and 200 for cobalt) is achieved. A total spread of about 
+  48.486 Bohr^2 for Au (43.940 Bohr^2 for AuUS, 35.232 Bohr^2 for Co) is found, 
+  with an average of about 4.040 Bohr^2 for Au (3.662 Bohr^2 for AuUS, 2.936 Bohr^2 
+  for Co).
+
+  The main outputs of the transport calculation are written in the dos*.out and
+  cond*.out files.
+  Transport calculation results are plotted in files:
+     $TESTDIR/cond_Au.dat and $TESTDIR/dos_Au.dat
+     $TESTDIR/cond_AuUS.dat and $TESTDIR/dos_AuUS.dat
+     $TESTDIR/cond_CoUS.dat and $TESTDIR/dos_CoUS.dat
+
+  Conductance exhibit a stepwise behaviour due to the bulk-like calculation.
+  Additional dips are present in the conductance plot compared with the calculations 
+  performed with 1 atom per cell. The 2 atoms in the cell are not subjected to symmetric 
+  interactions and the lack of symmetry causes gaps opening in bands structure, 
+  corresponding to dips in the conductance. This behaviour could be corrected, increasing 
+  the number of atoms per cell until interactions with the outermost atoms become weak.  
+  Pronounced peaks are observable in the DOS plot, due to the Van Hove singularities.
+
+
 
 

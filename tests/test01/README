@@ -10,10 +10,10 @@
   interpolation on the Wannier function Hamiltonian. 
   
   Disentangle calculation is performed within an energy window ranging up to 
-  14.8 eV (with lower-bond of -13 eV lower-bond in the US case), in order to 
-  obtain 8 Wannier functions. Eight initial guess centers are considered: 4 
-  of them are of 1gauss type, localized on the Si atoms with a hybridized sp3 
-  geometry, and 4 are of 2gauss type (see the manual for further details). 
+  14.8 eV (with lower-bond of -13 eV in the US case).
+  Eight initial guess centers are considered: 4 of them are of 1gauss type, 
+  localized on the Si atoms with a hybridized sp3 geometry, and 4 are of 2gauss 
+  type (see the manual for further details). 
 
 
   RESULTS discussion
