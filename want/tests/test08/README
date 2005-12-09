@@ -3,16 +3,54 @@
 @title@   Aluminum Chain (within disentangle)
 ==============================================================================
 
-This test performs the calculation for the bulk conductance of an Aluminum chain.
-It is different wrt test2 because of the entangled conduction band of Al.
-The calculation is done setting one atom in the unit cell, using a (1 1 40, 0 0 1) 
-(according to PWSCF notation) Monkrost-Pack grid in the SCF run and a (1 1 20, 0 0 0) 
-grid in the NSCF run. The wave-function and charge-density cutoff has been chosen 
-to be 15 Ry which can be considered converged. 
-The 1D Aluminum has and entangled sp bands which is extracted from a large manyfold
-using the disentangle code. The original DFT eigenvalues are accordingly slightly
-changed and written to the energies.dat file. After the Wannier minimization the
-interpolated band structure (file band.dat) should exactly reproduce the eigs
-written by disentangle.
+  This test performs the calculation for the bulk conductance of an Aluminum 
+  chain. It is different wrt test06 because of the entangled conduction band of   
+  Al. The calculation is done setting one atom in the unit cell, using a 
+  (1 1 40, 0 0 1) (according to PWSCF notation) Monkrost-Pack grid in the SCF 
+  run and a (1 1 20, 0 0 0) grid in the NSCF run. The wave-function and charge-
+  density cutoff has been chosen to be 15 Ry which can be considered converged. 
+
+  The 1D Aluminum has an entangled sp band which is extracted from a large 
+  manyfold using the disentangle code. The original DFT eigenvalues are 
+  accordingly slightly changed. After the Wannier minimization the interpolated 
+  band structure (file band.dat) should exactly reproduce the eigs written by 
+  disentangle.
+
+  Disentangle calculation is performed within an energy window ranging from 
+  -20 eV to 10 eV. Four initial guess centers of 1gauss type are considered:
+  3 with p-type and 1 with s-type geometry, localized on the Al atom (see the 
+  manual for further details).
+
+  Bulk-like conductance is calculated: leads and conductor are made of the same
+  material and conductance of the ideal and infinite structure is computed.
+  Quantum conductance calculation is performed according to the Landauer formula.
+  DOS is calculated as the trace of the conductor Green's function.
+
+
+  RESULTS discussion
+
+  After 500 iterations Disentangle convergence is not fully achieved but
+  can be considered adequate. The final invariant spread is about 25.724 Bohr^2
+  (6.431 Bohr^2 on average): this component of the spread will remain unchanged 
+  during the Wannier localization.
+  
+  After about 520 iterations Wannier convergence is achieved.
+  A total spread of about 36.945 Bohr^2 is found, 9.236 Bohr^2 on average.
+
+  The main outputs of the transport calculation are written in the dos*.out and
+  cond*.out files.
+  Transport calculations are performed considering only nearest neighbors interactions
+  (one atom per cell), therefore s band-width are slightly different from the DFT ones:
+  this is due to numerical effects because they are under-converged.
+  Transport calculation results are plotted in files:
+     $TESTDIR/cond.dat 
+     $TESTDIR/dos.dat
+
+  Conductance exhibit a stepwise behaviour due to the bulk-like calculation.
+  Pronounced peaks are observable in the DOS plot, due to the Van Hove singularities.
+
+
+
+
 
 

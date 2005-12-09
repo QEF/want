@@ -3,29 +3,63 @@
 @title@   Spin Polarized (LSD) Nichel Chain (USPP)
 ==============================================================================
 
-This test performs the calculation for the bulk conductance of a Nichel chain
-Using Ultrasoft pseudopotentials with collinear spin polarization. 
-Geometrical parameters are the same as in Test5, cutoff energies are 20 Ry 
-for wfcs and 200 Ry for density expansions.
+  This test performs the calculation for the bulk conductance of a Nichel chain
+  Using Ultrasoft pseudopotentials with collinear spin polarization. 
+  Geometrical parameters are the same as in test06, cutoff energies are 20 Ry 
+  for wfcs and 200 Ry for density expansions.
 
-Here we also set  
-  nspin = 2
-  starting_magnetization(1) = 0.5 
-in the DFT calculation input files, and then select the spin channel by 
-setting 
-  spin_component = "UP" or "DOWN"
-in the input files related to the WanT package.
+  Here we also set  
+    nspin = 2
+    starting_magnetization(1) = 0.5 
+  in the DFT calculation input files, and then select the spin channel by setting 
+    spin_component = "UP" or "DOWN"
+  in the input files related to the WanT package.
 
-Note that for the moment WanT datafile will be OVERWRITTEN passing from
-UP to DOWN component if the same postfix is specified (prefix
-must be the same in order to read DFT data from the right file).
-Moreover also properly setting postfix, output files of hamiltonian.x
-(RHAM.xxx) and bulk.x / conductor.x (dos.out, cond.out) should be
-renamed manually in order to avoid overwriting.
+  Note that WanT datafiles will be overwritten passing from UP to DOWN component 
+  if the same postfix is specified (prefix must be the same in order to read DFT 
+  data from the right file). In order to avoid overwriting of datafiles _WanT_UP 
+  and _WanT_DW postfixes are used for the 2 different spins.
+  Moreover also properly setting postfix, output files dos.out and cond.out 
+  should be renamed manually in order to avoid overwriting.
+
+  In both spin component cases disentangle calculation is performed within an 
+  energy window ranging from -12 eV to 0 eV. Six initial guess centers of atomic 
+  type are considered: 5 d-type and 1 s-type orbitals localized on Ni atom (see 
+  the manual for further details). 
+
+  Bulk-like conductance is calculated: leads and conductor are made of the same
+  material and conductance of the ideal and infinite structure is computed.
+  Quantum conductance calculation is performed according to the Landauer formula.
+  DOS is calculated as the trace of the conductor Green's function.
 
 
 RESULT discussion
 
+  Disentangle convergence is achieved in about 10 iteration. The final invariant 
+  spread for spin UP is about 14.306 Bohr^2 (2.384 Bohr^2 on average), for 
+  spin DOWN is about 15.016 Bohr^2 (2.503 Bohr^2 on average): this component of 
+  the spread will remain unchanged during the Wannier localization.
+
+  After about 150 iterations Wannier convergence is achieved.
+  A total spread of about 14.985 Bohr^2 for spin UP is found (15.891 Bohr^2 for 
+  spin DOWN), 2.497 Bohr^2 on average (2.648 Bohr^2 for spin DOWN).
+
+  The main outputs of the transport calculation are written in the dos*.out and
+  cond*.out files.
+  Transport calculations are performed considering only nearest neighbors 
+  interactions (one atom per cell), therefore s band-width are slightly 
+  different from the DFT ones: this is due to numerical effects because they 
+  are under-converged.
+  Transport calculation results are plotted in files:
+     $TESTDIR/cond_UP.dat and $TESTDIR/dos_UP.dat
+     $TESTDIR/cond_DW.dat and $TESTDIR/dos_DW.dat
+
+  Conductance exhibit a stepwise behaviour due to the bulk-like calculation. 
+  Conductance curves have almost the same shape for spin UP and spin DOWN, but
+  they are slightly shifted one wrt the other.
+  In both spin cases pronounced peaks are observable in the DOS plot, due to the 
+  Van Hove singularities. The peaks are not exacltly the same and they are in 
+  different positions for spin UP and spin DOWN.
 
 
 

@@ -37,7 +37,7 @@
   spread of about 15.716 Bohr^2 for Cu (16.009 Bohr^2 for CuUS) is found, with an 
   average of about 2.619 Bohr^2 for Cu (2.668 Bohr^2 for CuUS).
   After 2000 iterations Wannier convergence for cobalt is not fully achieved but 
-  can be considered reached. A total spread of about 19.421 Bohr^2 is found (with 
+  can be considered adequate. A total spread of about 19.421 Bohr^2 is found (with 
   an average of about 3.237 Bohr^2).
 
   In every case the computed localization of Wannier functions is verified:
