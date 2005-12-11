@@ -41,10 +41,10 @@
 !======================================== 
 
    INTEGER :: dimL = 0
-       ! WF number in lead A
+       ! WF number in lead L
 
    INTEGER :: dimR = 0
-       ! WF number in lead B
+       ! WF number in lead R
 
    INTEGER :: dimC = 0
        ! WF number in the central conductor region
@@ -99,10 +99,13 @@
 
    CHARACTER(nstrx) :: datafile_L = ' '
        ! the name of the file containing L lead data
+
    CHARACTER(nstrx) :: datafile_C = ' '
        ! the name of the file containing central conductor data
+
    CHARACTER(nstrx) :: datafile_R = ' '
        ! the name of the file containing R lead data
+
    CHARACTER(nstrx) :: datafile_sgm = ' '
        ! the name of the file containing correlation self-energy
 

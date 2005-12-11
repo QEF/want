@@ -55,7 +55,8 @@ Calculations}\label{subsection:run_dft}
       %
       \footnote{The export utility is already distributed in the 
       Qantum-Espresso v3.0, but a patch to include it also in versions v2.1.x is
-      available at \WANTURL{} or \PWSCFURL{}.} 
+      available at \WANTURL{} or \PWSCFURL{}. When using v.3.0.0 do not compile with
+      the {\tt -D\_\_NEWPUNCH} pre-processor flag.} 
       ),
       %
       to extract the input data necessary for the following Wannier
@@ -74,7 +75,7 @@ code is scalar.
 functions}\label{subsection:run_wannier}
 
 Following the list of input parameters as in
-Section~\ref{section:input} (also reported in the {\tt README.input} file
+Section~\ref{sec:input} (also reported in the {\tt README.input} file
 in {\tt \$TOPDIR/docs/}) and the examples in directory {\tt \$TOPDIR/tests/}, 
 create your own input file, that will be used for the following two steps (a-b).
 \renewcommand{\theenumi}{\alph{enumi}}
@@ -125,7 +126,7 @@ post-processing of the Wfs calculation. They are not necessary for
 the transport calculation, but they may be useful for a
 better understanding of the intrinsic electronic properties of the
 system. These codes require a separate input, to be generated
-following Sec.~\ref{section:input} or the file
+following Sec.~\ref{sec:input} or the file
 {\tt \$TOPDIR/docs/README.input} .
 
 %
@@ -187,7 +188,7 @@ following Sec.~\ref{section:input} or the file
 
 Using the hamiltonian matrices calculated in step (b) we can
 calculate both the {\em bulk} and the {\em two-terminal} transmittance.
-Input file may be generated following Sec.~\ref{section:input}
+Input file may be generated following Sec.~\ref{sec:input}
 or the file {\tt README.input} in {\tt \$TOPDIR/docs}. The main result of the 
 calculation is the quantum transmittance across the conductor region
 which is written on file {\tt \$SCRATCH/cond.dat}. Conductance is given
@@ -225,6 +226,8 @@ we define the following matrices (see Fig.~\ref{fig:matrix_naming}): \\
 
 %
 %
+\begin{table}[h]
+%
 \begin{tabular}{lllll}
 \texttt{H00\_L} &=& $N_L\times N_L$ on-site hamiltonian
 of the leads L & (from L-bulk calc.)\\
@@ -242,47 +245,87 @@ between lead L and conductor C & (from C-supercell calc.) \\
 between conductor C and lead R & (from C-supercell calc.)
 %
 %
-\end{tabular}
+\end{tabular} \\
+%
+\caption {Main Hamiltonian blocks neede for transport calculation 
+          \label{tab:hamiltonian_blocks} }
+\end{table}
 %
 %
-\\
-
+%
 \noindent
 In the general case we need to compute the electronic structure and
 WFs for three different regions L, C, R.
-This picture may be simplified as we will discuss below.
+Very often one is interested in a situation where the leads are composed
+of the same material. We wil discuss in more detail this case, the being 
+treatable in the same way except fo a more complicated geometry in the
+conductor region.
 
+First we note that the conductor calculation should contain part of the leads
+in the simulation cell, in order to treat the interface from frist principles.
+The amount of lead layers to be included should be converged upto the local 
+electronic structure of the bulk lead is reached at the edges of the supercell.
+This convergence can be controlled taking a look at the 
+hamiltonian matrix elements 
+on Wannier states located in the lead region
+({\it e.g.} nearest neighbour interactions).
+Note that this is a physical condition related to the need for a matching of different
+calculations and not to the peculiar use of WFs as a basis: nevertheless the smaller
+the WFs the more indipendend on the environment are the matrix elements, which leads
+to a faster convergence.
 
-\noindent \underline{NOTES}: (i) The definition of the coupling
-matrices HCI\_ {\bf MUST BE DONE CAREFULLY case by case},
-depending on the particular system definition. (ii) In order to
+As from Tab.~\ref{tab:hamiltonian_blocks}, the {\tt H00\_C} term can be obtained directly
+from the conductor supercell calculation. The on-site block ($\mathbf{R}=\mathbf{0}$)
+is automatically selected.
+The same is true in general for the lead-conductor coupling (consider for instance
+{\tt H\_CR}): here the rows of the matrix are related to (all) the WFs in the conductor
+reference cell while the columns usually refer to the some 
+of them in the nearest neighbor cell along transport direction (say {\it e.g.} the
+third lattice vector). The {\tt H\_CR} Hamiltonian we are interested in is therefore a 
+$N_C \times N_R$ submatrix of the $\mathbf{R}=(0,0,1)$ block.
+In order to understand which rows and columns should enter the submatrix, 
+we need to identify some WFs in the conductor with those obtained for bulk lead 
+calculation. 
+This assumption is strictly correlated with that about the local
+electronic structure at the edge of the conductor supercell: the more we reach
+the electronics of the leads, the more WFs will be similar to those of bulk leads.
+As before, the smaller the WFs, the more indipendent of the environment they are.
+In this way we can extract the lead-conductor coupling matrices
+directly from the supercell conductor calculation. Much care must be 
+taken in this step in order to avoid numerical noise. 
+See Sec.~\ref{sec:input} for the input file details.
+
+The missing Hamiltonians ({\tt H00\_x, H01\_x}, where {\tt x=L,R}) can be obtained from
+direct calculations for the bulk leads and are taken from the 
+$\mathbf{R}=(0,0,0)$ and $\mathbf{R}=(0,0,1)$ blocks respectively 
+(as from Tab.~\ref{tab:hamiltonian_blocks}).
+All these Hamiltonian matrix elements are related to a zero of the energy scale 
+set at the Fermi energy of the computed system 
+(the top of valence band for semiconductors). It is not therefore guaranteed the
+zero of the enrgy to be exactly the same when moving from the conductor to the leads
+(which comes from different calculations. )
+In order to
 match the hamiltonian matrices at the boundary, it is necessary to
-check that the diagonal elements of the H00 matrices were aligned.
-If not, a rigid shift may be applied. \\
+check that the corresponding diagonal elements (the only affected by a shift in the
+energy scale) 
+of {\tt H00\_L, H00\_C and H00\_R} matrices are aligned 
+(see the end of the {\tt wannier.x} output-file to 
+easily find these elements). If not, a rigid shift may be applied.
 
+Alternatively, the {\tt H00\_x} and {\tt H01\_x} matrices may be obtained from the 
+conductor supercell calculation too.
+We need to identify the WFs corresponding to some principal layer of the leads
+and extract the corresponding rows and columns. This procedure is not affected by
+any energy-offset problem, but larger supercells should be used in order to obtain
+environment (conductor) indipendent matrices. See the tests to check the 
+numerical performance of these schemes.
+%
+\\
 
-\noindent {\tt conductor.x} calculates both the {\em bulk} and the
-{\em two-terminal} transmittance for the systems.
-%
-%
-\begin{itemize}
-\item {\bf bulk} transmittance: the conductor and the leads are
-      the same and the whole system is periodic.
-      According to the 
-      We only need hamiltonian matrices are needed: that belonging to the
-      reference cell ( 0 0 0 three last number in the first line, see
-      step (b) ) and  that  belonging to the first
-      cell in the direction along which we calculate the transport ( e.g.
-      1 0 0 in the first line, in order to calculate the transport along
-      x-dirction).
+\noindent The transport code distributed within the \WANT package is 
+{\tt conductor.x} which calculates both the 
+{\em bulk} and the {\em two-terminal} transmittance for the systems.
+While in the former case we 
+only need the {\tt H00\_C} and the {\tt H\_CR} matrices, the whole complexity
+of input data described above is managed in the latter.
 
-\item In the case of {\bf two-terminal} transmittance we need, in principle, 
-      three sets of
-      calculations (two only if the leads are of the same material): bulk
-      calculations for the two infinite leads and a supercell calculation
-      for the conductor and the contacts (see PRB 69, 035108 (2004)).
-      The labels for the hamiltonian matrices used in the input of conductor.x 
-      refer to the scheme below.
-\end{itemize}
-%
-%
