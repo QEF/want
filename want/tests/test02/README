@@ -3,10 +3,10 @@
 @title@   FCC Transition Metals  (Co and Cu, NC and USPP)
 ==============================================================================
 
-  This test performs the calculation of the wannier functions for some
+  This test performs the calculation of the Wannier functions for some
   typical transition metal FCC bulk crystals, such as Cu and Co. No transport 
   calculation is done. Calculations are performed both with NC and US pseudopots 
-  for copper and only with US pseudopot for cobalt.
+  for Copper and only with US pseudopot for Cobalt.
   Particular interest is connected with the cutoff convergence (both wfc and rho)
   in the Co case where the augmentation charge is supposed to be quite hard.
 
@@ -42,9 +42,9 @@
 
   In every case the computed localization of Wannier functions is verified:
 
-      * Average invariant spread is small.
+      * Average invariant spread is small (in the range 1. -- 2. Bohr^2).
 
-      * Final average total spreads are small.
+      * Final average total spreads are small ( between 2. -- 3. Bohr^2).
 
       * Hamiltonian matrix elements are nearly real. See the end of wannier.out 
         file where these matrix elements are reported.
@@ -58,10 +58,10 @@
             the case)
 
         Interpolated bands don't fit exactly DFT bands because the kpoints convergence
-        is not fully achieved: it would require a further run with a (8 8 8) kpoints 
-        grid (in PWSCF notation) (use kgrid.x program in utility to get the grid). 
-        The minimization procedure will be complex and will require many iteration steps, 
-        but DFT bands will be well reproduced. 
+        is not fully achieved: it would require a further run with a (8 8 8) or 
+        (10 10 10 ) kpoints grid (use kgrid.x program in $TOPDIR/utility to get 
+        the grid).  The minimization procedure will be complex and will require many 
+        more iteration steps, but DFT bands will be well reproduced  
         (see Souza, Marzari and Vanderbilt, Phys. Rev. B 65, 035109, 2002)
         Even if states are frozen up to the Fermi level, bands are not perfectly 
         interpolated up to this energy because they are calculated along standard 
@@ -79,7 +79,5 @@
    Norm-conserving and Ultra-soft calculations (in the copper case) show some small
    differences which can be safely attributed to the pseudopotentials and their 
    pseudization types.
-
-
 
 

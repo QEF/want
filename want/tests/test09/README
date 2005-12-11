@@ -13,14 +13,15 @@
     starting_magnetization(1) = 0.5 
   in the DFT calculation input files, and then select the spin channel by setting 
     spin_component = "UP" or "DOWN"
-  in the input files related to the WanT package.
+  in the input files of the WanT calculations.
 
   Note that WanT datafiles will be overwritten passing from UP to DOWN component 
   if the same postfix is specified (prefix must be the same in order to read DFT 
   data from the right file). In order to avoid overwriting of datafiles _WanT_UP 
-  and _WanT_DW postfixes are used for the 2 different spins.
-  Moreover also properly setting postfix, output files dos.out and cond.out 
-  should be renamed manually in order to avoid overwriting.
+  and _WanT_DW postfixes are used for the two different spin channels.
+  Moreover also properly setting postfix, output files dos.dat and cond.dat 
+  should be renamed manually (here this is automatically done by the run.sh script) 
+  in order to avoid overwriting.
 
   In both spin component cases disentangle calculation is performed within an 
   energy window ranging from -12 eV to 0 eV. Six initial guess centers of atomic 
@@ -37,15 +38,14 @@ RESULT discussion
 
   Disentangle convergence is achieved in about 10 iteration. The final invariant 
   spread for spin UP is about 14.306 Bohr^2 (2.384 Bohr^2 on average), for 
-  spin DOWN is about 15.016 Bohr^2 (2.503 Bohr^2 on average): this component of 
-  the spread will remain unchanged during the Wannier localization.
+  spin DOWN is about 15.016 Bohr^2 (2.503 Bohr^2 on average).
 
   After about 150 iterations Wannier convergence is achieved.
   A total spread of about 14.985 Bohr^2 for spin UP is found (15.891 Bohr^2 for 
   spin DOWN), 2.497 Bohr^2 on average (2.648 Bohr^2 for spin DOWN).
 
-  The main outputs of the transport calculation are written in the dos*.out and
-  cond*.out files.
+  The main outputs of the transport calculation are written in the dos*.dat and
+  cond*.dat files.
   Transport calculations are performed considering only nearest neighbors 
   interactions (one atom per cell), therefore s band-width are slightly 
   different from the DFT ones: this is due to numerical effects because they 
@@ -54,11 +54,11 @@ RESULT discussion
      $TESTDIR/cond_UP.dat and $TESTDIR/dos_UP.dat
      $TESTDIR/cond_DW.dat and $TESTDIR/dos_DW.dat
 
-  Conductance exhibit a stepwise behaviour due to the bulk-like calculation. 
+  Conductance exhibits a stepwise behaviour due to the bulk-like calculation. 
   Conductance curves have almost the same shape for spin UP and spin DOWN, but
   they are slightly shifted one wrt the other.
   In both spin cases pronounced peaks are observable in the DOS plot, due to the 
-  Van Hove singularities. The peaks are not exacltly the same and they are in 
+  van Hove singularities. The peaks are not exacltly the same and they are in 
   different positions for spin UP and spin DOWN.
 
 

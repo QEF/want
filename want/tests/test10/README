@@ -11,7 +11,7 @@
   sampling Brillouin zone, and a cutoff of 20 Ry for wfc (while 200 Ry for rho). 
 
   The output of the calculations are the conductance (namely the transmittance) 
-  and dos for the bulk case (cond_bulk.dat and dos_bulk.dat) and for the general
+  and the DOS for the bulk case (cond_bulk.dat and dos_bulk.dat) and for the general
   geometry case (cond.dat and dos.dat). 
   A further geometry is considered: transport calculation is carried out coupling 
   conductor (8 atom per cell, 16 WFs) with leads (4 atoms, 8 WFs), extracting the 
@@ -42,26 +42,24 @@ RESULTS discussion
   achieved. A total spread of about 65.785 Bohr^2 for conductor is found 
   (30.747 Bohr^2 for leads), 4.111 Bohr^2 on average (3.843 Bohr^2 for leads).
 
-  The main outputs of the transport calculation are written in the dos*.out and
-  cond*.out files.
   Transport calculation results are plotted in files:
-     $TESTDIR/cond_bulk.dat and $TESTDIR/dos_bulk.dat
-     $TESTDIR/cond.dat and $TESTDIR/dos.dat
-     $TESTDIR/cond_auto.dat and $TESTDIR/dos_auto.dat
+     $TESTDIR/cond_bulk.dat and   $TESTDIR/dos_bulk.dat
+     $TESTDIR/cond.dat      and   $TESTDIR/dos.dat
+     $TESTDIR/cond_auto.dat and   $TESTDIR/dos_auto.dat
 
-  In the bulk-like calculation conductance exhibit a stepwise behaviour, with the
+  In the bulk-like calculation conductance exhibit a stepwise behavior, with the
   presence of a dip due to the lack of symmetry in the interactions simulated with 
-  8 atoms per cell. This stepwise behaviour results dramatically changed in the 
-  general geometry calculation (in particular near the Fermi energy level of the 
-  leads). This is due to numerical effects in matching the hamiltonian matrices of 
-  conductor and leads at the boundary (see the manual for further details). In the 
+  8 atoms per cell. This stepwise behavior results dramatically changed in the 
+  general geometry calculation (in particular near the Fermi energy).
+  This is due to numerical effects in matching the hamiltonian matrices of 
+  conductor and leads at the boundaries (see the manual for further details). In the 
   "auto" calcualtion the conductance curve is irregular only near the Fermi energy, 
   while it is well reproduced at lower energies. Interface principal layers, used 
   in matching conductor and leads and extracted from conductor supercell calculation, 
-  could be not completely equivalent. 
+  are not completely equivalent. 
   In every geometry considered, pronounced peaks are observable in the DOS plot, due 
-  to the Van Hove singularities. The peaks are not exacltly the same (with the same 
-  height) for all geometries. The DOS curve is affected by numerical effects rising 
+  to the van Hove singularities. The peaks are not exacltly the same (with the same 
+  height) for all geometries. The DOS curve is affected by numerical noise rising 
   from conductor-leads matching. 
 
   The difference between the bulk case and the general geometry (results from 
@@ -69,3 +67,10 @@ RESULTS discussion
   giving rise to a poor description of the so-called "principal layer" (you can try 
   to increase the number of atoms to larger values in the lead and conductor 
   calculations). 
+
+  In the present case, these numerical problems are magnificated
+  since we are out-of-convergence concerning cell dimensions and the number of atoms per 
+  cell. Anyway, great care must be taken in the matching procedure when performing
+  real transport calculations.
+
+

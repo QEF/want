@@ -3,18 +3,21 @@
 @title@   Isolated benzene molecule (both NC and USPP)
 ==============================================================================
 
-  This test performs the calculation of the wannier functions for the
+  This test performs the calculation of the Wannier functions for the
   isolated benzene molecule, both in the norm-conserving and ultra-soft
   pseudopotential case. The molecule is oriented in the xy plane. 
 
   Disentangle calculation is performed within an energy window ranging up to 
   2.0 eV. A conditioned minimization is carried out and the amplitude of the 
-  penalty functional is set to 20 (see the manual for further details). 
+  penalty functional is set to 20 (see the manual for further details about 
+  conditioned minimization). 
   Eighteen initial guess centers are considered: 12 of 1gauss-type with s-geometry, 
   localized at the bond midpoints and 6 s-type atomic orbitals,localized on the 
-  C atoms (see the manual for further details).The last number near each starting 
-  center coordinates is the value of the center weight in the penalty functional 
-  expression.
+  C atoms. The last number near each starting center coordinates is the value 
+  of the center weight in the penalty functional expression.
+  A value of 1.0 is standard, while a value of 0.0 would make the center not 
+  entering the expression for the penalty functional. This would result in no
+  constrain on that center.
   
 
   RESULTS discussion
@@ -23,7 +26,9 @@
   (about 90 for US pseudopots) and the final invariant spread (\Omega_I) is 
   about 66.457 Bohr^2 for NC pseudopots (66.794 Bohr^2 for US pseudopots), 
   3.692 Bohr^2 on average (3.711 Bohr^2 for US): this component of the spread
-  will remain unchanged during the Wannier localization.
+  will remain unchanged during the Wannier localization. Nota that these values 
+  are very sensitive to the energy window chosen in the disentanglement, but are
+  not modified by the conditioning penalty functional.
 
   After about 560 iterations Wannier convergence for NC pseudopots is achieved 
   (670 iterations in the US case).
@@ -32,17 +37,22 @@
 
   In both cases the computed localization of Wannier functions is verified:
 
-      * Average invariant spread is small.
+      * Average invariant spread is small (around 3.7 Bohr^2).
 
-      * Final average total spreads are small.
+      * Final average total spreads are small (around 5.7 Bohr^2). 
 
-   It can be verified that if a not conditioned minimization is performed the 
-   center positions are not exactly inidviduated and the localization procedure
-   fail.
+   It can be verified that if a not-conditioned minimization is performed the 
+   same final positions for WF centers are not recovered and the localization 
+   procedure basically fail. 
+   Total spread is lower, since we have no penalty functional, but 
+   some wannier functions (at least one) move to the vacuum region. This results
+   in having the other WFs to better fit in the molecular region. While the 
+   states out of the molecule have huge spreads, those near the molecule can
+   better localize themselves, since no constrain of orthonormality with the
+   missing functions is present. The balance is positive on the total spread
+   but is usually useless since localization is not found.
 
-   Norm-conserving and Ultra-soft calculations show some small differences 
-   which can be safely attributed to the pseudopotentials and their pseudization 
-   types.
+   Norm-conserving and Ultra-soft calculations work almost the same. 
 
 
 
