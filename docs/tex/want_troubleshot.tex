@@ -1,0 +1,61 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Copyright (C) 2005 WanT group                         %
+%  This file is distributed under the terms of the       %
+%  GNU General Public License.                           %
+%  See the file `License'  in the root directory of      %
+%  the present distribution,                             %
+%  or http://www.gnu.org/copyleft/gpl.txt                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\section{What to do whan things go wrong?}
+\label{section:troubleshot}
+%
+This section is not at all intended to be complete. Here we report a summary of the
+most frequent and well-known problems in the day-by-day practice with \WANT,
+and some tentative suggestions to solve them. 
+Please, report any better solution or explaination you find to the maintainer of this
+manual to make it more detailed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{When do things go really wrong ?}
+First it is necessary to understand which behaviors should be considered buggy and 
+which may be conversely related to some failure of the implemented algorithms.
+This section is devoted to guide the user to understand whether the code is
+properly running or not. \\
+%
+%
+\begin{itemize}
+\item   When the code stops, it is expected or to have reached the end
+        of the calculation (which is signed in the output file by a summary
+        of the timing) or to print
+        out an error message and give a fortran stop. Any different behavior
+        should be considered a bug and should be reported 
+        (obviously it may be related to machine dependent problems, 
+        indipendently of \WANT).
+
+\item   Since the code is still serial, no division of the memory among the
+        CPU is performed and crashes may result. In these cases, both an
+        error message during allocations or a more drastic error (even segmentation
+        fault) may occur. The largest amount of memory is used by 
+        {\tt disentangle.x} (which manage wave-functions), while {\tt wannier.x} 
+        does not require so much. Post-processing ({\tt bands.x, blc2wan.x}) 
+        do not have special requirement too, while {\tt plot.x} needs a sensible
+        amount of memory, about half of {\tt disentangle.x}.
+       
+\item   The iterative procedure in {\tt disentangle.x} is quite robust. 
+        Non-monotonic behaviors of the invariant spread are unexpected
+        and are probably related to algorith failures. Although, convergence
+        maybe very slow, especially when some parameters are not properly set
+        (too many empty states in the main energy window, strange numbers of 
+        requested WFs...) .
+
+\item   In the case of {\tt wannier.x}, convergence is not strightfarward.
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Troubleshotting (sort of)}
+
+

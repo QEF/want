@@ -100,7 +100,7 @@ dimwann       INTEGER
 win_min       REAL
               the lower limit [eV] of the energy window containing the states
               forming the starting subspace for Wannier functions
-              DEFAULT : 0.0
+              DEFAULT : -100000
 
 win_max       REAL
               the upper limit [eV] of the above described energy window

@@ -5,8 +5,10 @@
 
 
 -------------------------------------------------
-Date: XX Dec 2005    Version: WanT-2.0.0
+Date: 09 Dec 2005    Version: WanT-2.0.0
 -------------------------------------------------
+
+
 05 Dec 2005      README files in tests upgraded (BB).
 
 04 Dec 2005      Optional IERR argument passed to mat_sv routines to give to
