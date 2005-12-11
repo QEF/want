@@ -10,10 +10,10 @@
   interpolation on the Wannier function Hamiltonian. 
   
   Disentangle calculation is performed within an energy window ranging up to 
-  14.8 eV (with lower-bond of -13 eV in the US case).
+  14.8 eV (where the HOMO at the Gamma point is set to 5.08 eV).
   Eight initial guess centers are considered: 4 of them are of 1gauss type, 
   localized on the Si atoms with a hybridized sp3 geometry, and 4 are of 2gauss 
-  type (see the manual for further details). 
+  type, trying to mimic anti-bonding orbitals (see the manual for further details). 
 
 
   RESULTS discussion
@@ -30,36 +30,39 @@
   Wannier localization.
 
   After 5000 iteration Wannier convergence is not fully achieved but can be considered 
-  adequate.  A total spread of about 59.788 Bohr^2 is found (70.831 Bohr^2 for US pseudo),
-  with an average of about 7.473 Bohr^2 (8.854 Bohr^2 for US pseudo).
+  adequate.  A total spread of about 59.788 Bohr^2 is found (70.831 Bohr^2 for 
+  US pseudo), with an average of about 7.473 Bohr^2 (8.854 Bohr^2 for US pseudo).
   In some iteration steps the value of the spread can abruptly increase, but this is 
   due to the well-known behaviour of the complex logarithm used in the definition of 
   the spreads (see the manual for more details).
 
   Some points for verifying the computed localization of Wannier functions are:
 
-      * Average invariant spread is quite small (not very small, due to the 
-        presence of conduction states in required Wannier subspace).
+      * Average invariant spread is quite small (in this case not very small, 
+        due to the presence of conduction states in required Wannier subspace).
 
-      * Final average total spreads are reasonable (while values over 15 - 20 Bohr^2
+      * Final average total spreads are reasonable (here we see values in the 
+        reange 7 -- 9 Bohr^2, while values over 20 -- 50 Bohr^2
         should be definitely considered too large)
 
       * Since well-localized WFs are expected (by conjecture) to be almost real, the
         Hamiltonian matrix elements should be nearly real. See the end of wannier.out 
         file where these matrix elements are reported.
 
-      * The spatial decay of the hamiltonian on the WF basis H(R) is well behaved. 
-        Usually a nearly exponential decay wrt R is expected.
+      * The spatial decay of the hamiltonian on the WF basis H(R) is well behaved, 
+        Usually a nearly exponential decay wrt R is expected, as it is the case here.
 
       * The calculation of interpolated bands (computed by bands.x) can be used as 
         a further check too:
         a comparison with DFT band structure shows that valence bands are exactly
-        represented as expected while small discrepancies arise in the high energy region. 
-        The files to be plotted are: 
+        represented as expected, while small discrepancies arise in the high 
+        energy region. This is due to the disentanglement procedure which 
+        selects an optimal subspace (in the sense of WF localization) out of 
+        the starting Bloch manyfold.
+
+        Files to be plotted to this purpose are: 
             $TESTDIR/Reference/dft_bands.dat
             $TESTDIR/SCRATCH/silicon_WanT_intband.dat  (or silicon_US if the case)
-        This is due to the disentanglement procedure which selects an optimal subspace 
-        (in the sense of WF localization) out of the starting Bloch manyfold.
   
         The effect of disentanglement on the Wannier subspace can also be seen in the
         files:
@@ -69,7 +72,8 @@
   
 
    Norm-conserving and Ultra-soft calculations show some small differences which
-   can be safely attributed to the pseudopotentials and their pseudization types.
+   can be safely attributed to the pseudopotentials and their different 
+   pseudization types.
 
 
 
