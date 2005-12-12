@@ -790,7 +790,7 @@ of points is calculated in the run and is written in the output file.\\
               (analogous to the fmt used to specify pages to standard print utilities)\\
               {\sc default} = {\tt mandatory} \par
 
-\noindent\llap{\hbox to \descindent{\tt data\_type\hfil}}%
+\noindent\llap{\hbox to \descindent{\tt datatype\hfil}}%
 {\sc string} \\ {\tt ("modulus" $\mid$ "real" $\mid$ "imaginary") }\\
               specifies the type of data plotted:\\
                 {\tt "modulus"}:    plot the real space square modulus of the WFs. \\
@@ -839,4 +839,53 @@ of points is calculated in the run and is written in the output file.\\
               define whether the calculation is spin polarized and, if the case,
               which spin component is treated.\\
               {\sc default} = {\tt "none"} \par
+}\bigskip
+
+\subsubsection{blc2wan.x}
+\noindent Input file layout: \\
+
+%
+%
+\begin{tabular}{l}
+  {\tt \&INPUT } \\
+  ... \\
+  / \\
+\end{tabular}
+%
+%
+\\
+
+\begin{centering}
+\rule{2.2in}{0.01in} Namelist {\tt \&INPUT} \rule{2.2in}{0.01in}
+\end{centering}\\
+
+\newdimen\descindent \descindent = 8pc
+{\noindent \leftskip = \descindent \parskip = .5\baselineskip
+\llap{\hbox to \descindent{\tt prefix\hfil}}%
+{\sc string} \\ the first part of the name of all the file written by the code;
+              it should be equal to the value given in the main calculations.\\
+              {\sc default} = {\tt mandatory} \par
+
+\noindent\llap{\hbox to \descindent{\tt postfix\hfil}}%
+{\sc string} \\ the tail of the names of the above mentioned files. 
+              It should be equal to the value given in the main calculations.\\
+              {\sc default} = {\tt ""} \par
+
+\noindent\llap{\hbox to \descindent{\tt work\_dir\hfil}}%
+{\sc string} \\ the scratch directory where the massive data files will be written.\\
+              {\sc default} = {\tt "./"} \par
+
+\noindent\llap{\hbox to \descindent{\tt filein\hfil}}%
+{\sc string} \\ the name of the file containing the input operator in the Bloch 
+                representation.\\
+              {\sc default} = {\tt mandatory} \par
+
+\noindent\llap{\hbox to \descindent{\tt fileout\hfil}}%
+{\sc string} \\ the name of the file containing the computed operator on the 
+                Wannier basis.\\
+              {\sc default} = {\tt mandatory} \par
+
+\noindent\llap{\hbox to \descindent{\tt ascii\hfil}}%
+{\sc logical} \\ if {\tt .TRUE.} the output file is written in textual XML format.\\
+              {\sc default} = {\tt .FALSE.} \par
 }

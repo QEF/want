@@ -85,7 +85,7 @@ assume_ncpp   LOGICAL
 
 unitary_thr   REAL
               threshold for the check of matrix unitariery
-              DEFAULT: 1.0d-8
+              DEFAULT: 1.0d-6
 
 
 
@@ -100,20 +100,20 @@ dimwann       INTEGER
 win_min       REAL
               the lower limit [eV] of the energy window containing the states
               forming the starting subspace for Wannier functions
-              DEFAULT : -100000
+              DEFAULT : -20000000 (this is a large number which stands for -INF)
 
 win_max       REAL
               the upper limit [eV] of the above described energy window
-              DEFAULT : 0.0
+              DEFAULT : 20000000 (this is a large number which stands for +INF)
               
 froz_min      REAL
               the lower limit [eV] of the energy window containing 'frozen' states
               which will not enter the calculation of WFs
-              DEFAULT : -2.0000000  
+              DEFAULT : -60000000 (this is a large number which stands for -INF)
               
 froz_max      REAL
               upper limit [eV] of the frozen window above described
-              DEFAULT : -1.0000000
+              DEFAULT : -50000000 (this is a large number which stands for -INF)
 
 alpha_dis     REAL
               mixing parameter for the disentangle iterative procedure 
@@ -481,10 +481,10 @@ datatype      STRING
               DEFAULT: "modulus"
 
 output_fmt    STRING
-              ( "plt" | "txt" | "cube" )
+              ( "plt" | "txt" | "cube" | "xsf" )
               Define the format of the output file. PLT is binary and smaller than
-              CUBE and TXT. While CUBE deals also with non-orthorombic lattices, TXT
-              is suitable to be converted to further format.
+              CUBE, XSF (read by XCRYSDEN) and TXT. While CUBE and XSF deals also with 
+              non-orthorombic lattices, TXT is suitable to be converted to further format.
               DEFAULT: "plt"
 
 r1min, r1max  REAL
@@ -535,23 +535,29 @@ INPUT file layout
    ...
 /
 
+<HAMILTONIAN_DATA>
+   <ham1 attr="" />
+   ...
+   <hamN attr=""/>
+</HAMILTONIAN_DATA>
+
 -----------------------------------
 
 ==============================================================================
 
 NAMELIST &INPUT_CONDUCTOR
 
-dimA        INTEGER
-            number of sites in the lead A
+dimL        INTEGER
+            number of sites in the L-lead 
             DEFAULT : 0
             
-dimB        INTEGER
-            number of sites in the lead B
+dimR        INTEGER
+            number of sites in the R-lead 
             DEFAULT : 0
 
 dimC        INTEGER
             number of sites in the conductor C
-            DEFAULT : 0
+            DEFAULT : mandatory 
 
 calculation_type    STRING
             ( "conductor" | "bulk" )
@@ -561,19 +567,21 @@ calculation_type    STRING
             "bulk": transport in a bulk system
             DEFAULT: "conductor"
 
-loverlap    LOGICAL
-            If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
-            is assumed (which is by definition the case of Wannier functions)
-            DEFAULT : .FALSE.
+transport_dir   INTEGER
+            transport direction according to crystal axis indexing
+            DEFAULT : mandatory
+
+conduct_formula   STRING
+            ( "landauer" | "generalized" ) "landauer": transport is computed using
+            the standard Landauer formula
+            "generalized": a generalized Landauer formula accounting for a specific 
+            correlation correction is used. This case is experimental.
+            DEFAULT : "landauer" 
 
 ne          INTEGER
             dimension of the energy grid for transmittance and spectral function
             calculation
             DEFAULT : 1000
-
-niterx      INTEGER
-            maximum number of iterations in the calculation of transfer matrices
-            DEFAULT : 200
 
 emin        REAL
             lower limit [eV] of the energy grid dimensioned by NE
@@ -583,17 +591,124 @@ emax        REAL
             upper limit [eV] of the energy grid dimensioned by NE
             DEFAULT : +10.0
 
-bias        REAL
-            bias voltage [eV] across the conductor region.
-            DEFAULT : 0.0
-
 delta       REAL
             small imaginary part used to get off the real axix in the calculation
             of Green's functions.
             DEFAULT : 1.0E-5
 
+nprint      INTEGER
+            every nprint energy step write to stdout.
+            DEFAULT : 20
+
+niterx      INTEGER
+            maximum number of iterations in the calculation of transfer matrices
+            DEFAULT : 200
+
+use_overlap    LOGICAL
+            If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
+            is assumed (which is by definition the case of Wannier functions)
+            DEFAULT : .FALSE.
+
+use_correlation   LOGICAL
+            If .TRUE. correlation correction are read from file and included in the 
+            calculation. See also the datafile_sgm variable.
+
+datafile_C  STRING
+            Name of the file containing the Wannier Hamiltonian blocks for the conductor 
+            region.
+            DEFAULT : mandatory 
+
+datafile_L  STRING
+            Name of the file containing the Wannier Hamiltonian blocks for the L-lead.
+            It is not required for bulk calculations.
+            DEFAULT : mandatory if not calculation_type == "bulk"
+
+datafile_R  STRING
+            As for datafile_L but for R-lead.
+            DEFAULT : mandatory if not calculation_type == "bulk"
+
+datafile_sgm STRING
+            Name of the file containing the correlation self-energy. It is required 
+            only when correlation is included in the calculation.
+            DEFAULT : mandatory if use_correlation == .TRUE.
+
+
+CARD <HAMILTONIAN_DATA>
+
+This card is mandatory and specifies the details about hamiltonian blocks to be 
+used in transport calculation. It includes a variable number of subtags (XML format)
+to be used in the order shown below. The name and the number of these subcards 
+depend on the calculation_type variable:
+
+       if ( calculation_type == "bulk")      --> two subcards are needed
+                                                 <H00_C>, <H_CR>
+       if ( calculation_type == "conductor") --> seven subcards are needed
+                                                 <H00_C>, <H_CR>, <H_LC>,
+                                                 <H00_L>, <H01_L>,
+                                                 <H00_R>, <H01_R>
+each subcard (tag) may contain a number of attribute according to the format 
+(XML compilant):
+
+<Hwhatever cols="" rows="" />
+
+cols (rows)   STRING 
+              The string describing which index should be considered to define 
+              the columns (rows) of the specific H submatrix. The format in the 
+              is quite standard, according e.g. to the default for printing programs:
+              "1-3,5,7-9" stands for "1,2,3,5,7,8,9", and so on. The string "ALL"
+              is allowed as well, being equivalent to "1-Nmax".
+              DEFAULT : "ALL"
+
 ==============================================================================
 
 
 
+==============================================================================
 
+                  ********* code: BLC2WAN.x  **********
+
+==============================================================================
+
+INPUT file layout
+-----------------------------------
+
+&INPUT
+   ...
+/
+
+-----------------------------------
+
+==============================================================================
+
+NAMELIST &INPUT
+
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file are written
+              DEFAULT: "./"
+
+filein        STRING
+              the name of the file containing the input operator in the Bloch
+              representation
+              DEFAULT: mandatory
+
+fileout       STRING
+              the name of the file containing the computed operator on the 
+              Wannier basis
+              DEFAULT: mandatory
+
+ascii         LOGICAL
+              if .TRUE. the output file is written in textual XML format.
+              DEFAULT: .FALSE.
+
+==============================================================================
