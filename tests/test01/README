@@ -42,7 +42,7 @@
         due to the presence of conduction states in required Wannier subspace).
 
       * Final average total spreads are reasonable (here we see values in the 
-        reange 7 -- 9 Bohr^2, while values over 20 -- 50 Bohr^2
+        range 7 -- 9 Bohr^2, while values over 20 -- 50 Bohr^2
         should be definitely considered too large)
 
       * Since well-localized WFs are expected (by conjecture) to be almost real, the
@@ -53,7 +53,7 @@
         Usually a nearly exponential decay wrt R is expected, as it is the case here.
 
       * The calculation of interpolated bands (computed by bands.x) can be used as 
-        a further check too:
+        a further check:
         a comparison with DFT band structure shows that valence bands are exactly
         represented as expected, while small discrepancies arise in the high 
         energy region. This is due to the disentanglement procedure which 
@@ -72,7 +72,7 @@
   
 
    Norm-conserving and Ultra-soft calculations show some small differences which
-   can be safely attributed to the pseudopotentials and their different 
+   are attributed to the pseudopotentials and their different 
    pseudization types.
 
 
