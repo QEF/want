@@ -22,7 +22,7 @@
   All calculations are done in the same hexagonal cell for both ZB and WZ.
 
   Only occupied states (valence band) are considered, therefore Wannier 
-  calculations is performed using 24 Wannier functions. Twenty-for initial 
+  calculations is performed using 24 Wannier functions. Twenty-four initial 
   guess centers of 1gauss type are set, localized at the bond midpoints 
   (see the manual for further details). 
 
@@ -51,8 +51,8 @@
   manyfold.
 
   The difference in spontaneous electronic polarization between the two structures 
-  is calculated both in the NC and US pseudopotentials case and it results very similar 
-  and in good agreement with previous results.
+  is calculated both in the NC and US pseudopotentials case and it is 
+  in good agreement with previous results.
   (see Zoroddu, Bernardini, Ruggerone, Fiorentini, Phys. Rev. B 64, 045208, 2001)
   
     * DeltaP = 0.095 C/m^2    for NCPP
