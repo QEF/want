@@ -8,7 +8,7 @@
      environment.conf file in this directory according to your system.
      You should provide the location of DFT calculation executables 
      (i.e. PWscf) and the directory that will be used for temporary files
-     (scratch). In the case of parallel machine you are also requested to 
+     (scratch). In the case of parallel architectures you are also requested to 
      specify some special commands to run the DFT within an MPI environment.
 
  * HOW TO run the tests
@@ -21,17 +21,17 @@
      completely performed. 
 
  * HOW TO check the tests
-     In each test directory you will find a further dir called "Reference"
-     containing all the reference output files previously produced. 
+     In each test directory you will find a directory called "Reference"
+     containing all the reference output files produced independently. 
      You are advised to check your output with a simple diff command:
         diff myreport.out Reference/myreport.out
-     In doing this remenber that NOT all the quantities are expected to be
+     In doing this, remenber that NOT all the quantities are expected to be
      the same. 
 
  * HOW TO understand the tests
-     In each test directory you will find a README file describing the 
-     physics of the tests and the results obtained in the calculation.
-     Moreover also some tricky and subtle questions about the input
+     In each test directory you will find a README file that describes the 
+     physics of the tests and the results obtained in the calculations.
+     Moreover, some tricky and subtle questions about the input
      data are eventually raised and discussed. 
 
      
