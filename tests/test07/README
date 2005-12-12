@@ -62,7 +62,7 @@
   corresponding dips in the conductance. 
   In order to correct this behavior we need to increase
   the number of atoms in the cell until interactions with the outermost atoms decay
-  within the nearest enighbour principal layer coupling.
+  within the nearest neighbor principal layer coupling.
 
 
 

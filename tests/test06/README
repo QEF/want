@@ -7,7 +7,7 @@
   Cobalt chains, using both NC and US pseudopotentials in the Gold case, only 
   US for Cobalt. 
   Calculations are done setting one atom in the unit cell, using a 
-  (1 1 4, 0 0 1) (according to PWSCF notation) Monkrost-Pack grid in the SCF 
+  (1 1 4, 0 0 1) (according to PWSCF notation) Monkhorst-Pack grid in the SCF 
   run and a (1 1 4, 0 0 0) grid in the NSCF run. 
   The wave-function and charge-density cutoff in the NCPP case has been chosen 
   to be 20 Ry in order to make the test running fast, but results are of course 
@@ -47,19 +47,19 @@
   between principal layers (one atom per cell): s band-width are thus slightly 
   different from the DFT ones. We are essentially setting to zero higher order
   interaction terms (further neighbours) which are for sure non-negligible 
-  due to the small adopted cell.
+  due to the small cell used.
   Transport calculation results are plotted in files:
      $TESTDIR/cond_Au.dat and $TESTDIR/dos_Au.dat
      $TESTDIR/cond_AuUS.dat and $TESTDIR/dos_AuUS.dat
      $TESTDIR/cond_CoUS.dat and $TESTDIR/dos_CoUS.dat
 
-  Conductance exhibit a stepwise behaviour which is a typical bulk-like feature.
-  Pronounced peaks are observable in the DOS plot, due to the 1D van Hove 
+  Conductance exhibits stepwise behaviour which is a typical bulk-like feature.
+  Pronounced peaks are present in the DOS plot, due to the 1D van Hove 
   singularities (1/SQRT(E) devergencies at the band edges).
  
   Note that the final conductance in the Au and AuUS cases are slightly different 
   probably due to the different convergence level between NC and USPP (the second 
-  case is more close to convergence, which is around 25 Ry for wfc and 200 Ry for rho 
+  case is closer to convergence, which is around 25 Ry for wfc and 200 Ry for rho 
   cutoff energies).
 
 
