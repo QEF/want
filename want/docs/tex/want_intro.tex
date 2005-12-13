@@ -747,7 +747,7 @@ unoccupied Bloch functions.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Conditioned localization and penalty functionals}
 \label{subsubsec:penalty} The above described formalism adopts a
-localization criterion which is somehow {\it global}: the
+localization criterion which is {\it global}: the
 functional we want to minimize is the total spread, while we are
 often interested in the localization of each Wannier function in
 the selected set. In this scenario it may happen that, in order to
@@ -758,11 +758,10 @@ this cases the final WF set is useless from our point of view.
 
 We therefore introduce the idea of {\it conditioned} localization adding some
 further {\it penalty} functional to the total spread.
-These penalty functionals may be use to drive the Wannier localization towards the
-achievement of some required feature.
-It maybe interesting {\it e.g.} to fix the problem of WFs moving in the vacuum region
-to add a {\it spring} potential driving the functions to have their centers
-as close as possible to the positions we like. The form of the penalty functional
+These penalty functionals may be used to drive the Wannier localization:
+It may be interesting {\it e.g.} to fix the problem of WFs moving in the vacuum region
+by adding a {\it spring potential} term making the functions to have their centers
+as close as possible to some target positions. The form of the penalty functional
 is therefore:
 %
 %
@@ -773,18 +772,18 @@ is therefore:
 \end{equation}
 %
 %
-where $A$ is the functional amplitude, $w_n$ a weight, and
+where $A$ is the functional amplitude, $w_n$ the weights, and
 $\mathbf{r}_{n0}$ is the chosen target position for the $n-$th WF.
-After some tedious algebra it is possible to write and explicit
+After some tedious algebra it is possible to write an explicit
 form for the derivative of this functional wrt $U^{(\mathbf{k})}$.
 This is then used to compute the penalty contribution to the
-gradient during the minimization of the functional. Setting to
+gradient during the minimization. Setting to
 zero some weights $w_n$ we are also able to selectively switch off
 the conditioning on some WFs. Obviously many different kinds of
-such penalty functionals may be written. We note that this
-procedure does not alter physical quantities such as the
-polarization, being independent of the particular unitary
-rotations chosen for the localization. The conditioned
+such penalty functionals can be considered. We note that this
+procedure does not alter the physical quantities such as the
+polarization, being invariant for unitary rotations $U^{(\mathbf{k})}$.
+The conditioned
 minimization of Eq.~(\ref{eq:penalty}) is implemented in \WANT;
 see Sec.~\ref{sec:input} for more details about how to setup the
 input file.
@@ -793,7 +792,7 @@ input file.
 \subsubsection{Real space hamiltonians}
 %
 In order to calculate the conductance according to the
-prescriptions outlined in Sec.~\ref{subsec:tran}, we need as an input
+prescriptions of Sec.~\ref{subsec:tran}, we need in input
 the matrix elements of the Hamiltonian calculated on a localized
 basis: in our case, it is the minimal basis of the
 maximally-localized WFs.
@@ -806,7 +805,7 @@ procedure.
 
 In the Bloch representation we have by definition
 $H_{mn}(\mathbf{k}) = \epsilon_{m\mathbf{k}} \delta_{m,n}$.
-Moving to the Wannier basis we have:
+Moving to the Wannier basis, first we have:
 %
 %
 \begin{equation}

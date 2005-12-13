@@ -24,7 +24,7 @@ the test suite is reported in the following.
      You should provide the location of the executables for DFT calculation
      (at present, tests are suited for the \PWSCF code) and the directory
      that will be used for temporary files ({\tt scratch}).
-     In the case of parallel machine you are also requested to
+     In the case of parallel machines you are also requested to
      specify some special commands to run the DFT codes within an
      MPI environment.
 
@@ -32,7 +32,7 @@ the test suite is reported in the following.
 \subsection*{HOW TO run the tests}
      After environment setting, you can directly start running tests. The
      script {\tt run.sh} in {\tt \$TOPDIR/tests/} (type {\tt ./run.sh} to get a
-     short manual) manages all operations on tests.
+     short manual) manages all operations on the tests.
      The script should be run with the following arguments: \\
 
      {\tt  ./run.sh -r <what>  [<test\_list>] } \\
@@ -40,7 +40,7 @@ the test suite is reported in the following.
      \noindent
      {\tt <test\_list>} is optional and is the list of the tests we want to
      perform. A missing list performs all tests.
-     Possible action to be performed ({\tt <what>}) are: \\
+     Possible actions ({\tt <what>}) to be performed are: \\
 
      %
      %
@@ -58,35 +58,35 @@ the test suite is reported in the following.
 \\
 
      \noindent
-     Tests can also be performed by
+     Tests can also be performed
      by cd-ing in the specific test directory and running the local script
      typing {\tt ./run.sh <flag>}.
      The list of possible {\tt <flag>}'s and a brief explanation is printed by
      executing {\tt ./run.sh} (typical flags with obvious meanings are
      {\tt scf, nscf, disentangle, wannier})
-     If you type {\tt ./run.sh all} inside a specific
+     If you type {\tt ./run.sh all}, inside a specific
      test directory, the test will be completely performed.
-     Note that some tests contain more than one \WANT calculation; each of them
-     has its specific {run\_\$suffix.sh} script.
+     Note that some tests contain more than one \WANT{} calculation; each of them
+     has its specific {\tt run\_\$suffix.sh} script.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{HOW TO check the tests}
 %
-     In each test directory you will find a further dir named {\t Reference}
+     In each test directory you will find the {\tt Reference} directory
      containing the distributed reference output files.
-     Each {\tt run.sh} script accept the flag {\tt check}: this makes the
-     print a short version of the {\tt diff} between the current output files and
+     Each {\tt run.sh} script accepts the flag {\tt check}: this
+     prints a short version of the {\tt diff} between the current output files and
      the reference ones.
-     If you need more detail (as in case of a clear failure), you can  advised
+     If you need more detail (as in the case of a clear failure), you are advised
      to directly check your output with a simple {\tt diff} command: \\
 
         {\tt diff myreport.out Reference/myreport.out } \\
 
      \noindent
-     In doing this remember that you will usually obtain a large amount of data:
-      since for instance the phases of the wave-functions are almost
-      randomized, the initial steps both in disentanglement and Wannier minimizations
-      may be very different.
+     Doing this, remember that you will usually obtain a large amount of data:
+     since for instance the phases of the wave-functions are almost
+     randomized, the initial steps both in disentanglement and Wannier minimizations
+     may be very different.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{HOW TO understand the tests}
