@@ -6,8 +6,8 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Part of the routine is based on a previous version 
-! by D. Vanderbilt, N. Marzari and I. Souza
+! Based on a previous version by D. Vanderbilt, N. Marzari and I. Souza
+! See the file README in the root directory for a full list of credits
 !
 !*********************************************
    MODULE sph_har_module

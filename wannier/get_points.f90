@@ -6,8 +6,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Based on a previous version by Nicola Marzari and David Vanderbilt
-!
 !************************************************************
    SUBROUTINE get_points( nkpts_in, nkpts_max, kpt_in, xval_in, kptname_in, &
                           kpt, xval, nkpts_tot )

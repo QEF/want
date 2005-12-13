@@ -6,8 +6,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Based on a previous version by I.Souza, N.Marzari and D.Vanderbilt
-!
 !********************************************************
    SUBROUTINE omega( dimwann, nkpts, Mkb, csheet, sheet,  &
                      rave, r2ave, rave2, Omega_D, Omega_OD )
