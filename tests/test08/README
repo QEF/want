@@ -4,17 +4,17 @@
 ==============================================================================
 
   This test performs the calculation for the bulk conductance of an Aluminum 
-  chain. It is different wrt test06 because of the entangled conduction band of   
-  Al (while e.g. the sd manyfold of Gold ).
+  chain. It is different from test06 because of the entangled conduction band of   
+  Al (as opposed to e.g. the sd manyfold of Gold).
   The calculation is done setting one atom in the unit cell, using a 
-  (1 1 40, 0 0 1) (according to PWSCF notation) Monkrost-Pack grid in the SCF 
+  (1 1 40, 0 0 1) (according to PWSCF notation) Monkhorst-Pack grid in the SCF 
   run and a (1 1 20, 0 0 0) grid in the NSCF run. The wave-function and charge-
-  density cutoff has been chosen to be 15 Ry which can be considered converged. 
+  density cutoff have been chosen to be both equal to 15 Ry.
 
-  The 1D Aluminum has an entangled sp bands which are extracted from a much larger 
-  manyfold using the disentangle.x code. The original DFT eigenvalues 
-  (re-written in (file $TESTDIR/SCRATCH/al_WanT_dftband.dat) are 
-  accordingly slightly changed. After the Wannier minimization, the interpolated 
+  The 1D Aluminum has entangled sp bands that are extracted from a much larger 
+  manyfold using the disentangle.x code. As a consequence, the original DFT eigenvalues 
+  (re-written in file $TESTDIR/SCRATCH/al_WanT_dftband.dat) are 
+  slightly changed. After the Wannier minimization, the interpolated 
   band structure (file $TESTDIR/SCRATCH/al_WanT_intband.dat) should fit well
   the eigenvalues calculated in the Wannier subsapce as written by disentangle.x 
   (file $TESTDIR/SCRATCH/al_WanT_wanband.dat).
@@ -32,7 +32,7 @@
 
   RESULTS discussion
 
-  After 500 iterations Disentangle convergence is not fully achieved but
+  After 500 iterations  the convergence iof the disentangleprocedure is not fully achieved but
   can be considered adequate. The final invariant spread is about 25.724 Bohr^2
   (6.431 Bohr^2 on average): this component of the spread will remain unchanged 
   during the Wannier localization.
@@ -49,7 +49,7 @@
      $TESTDIR/cond.dat 
      $TESTDIR/dos.dat
 
-  Conductance exhibit a stepwise behaviour due to the bulk-like calculation.
+   The conductance spectrum exhibits the typical stepwise behavior.
 
 
 
