@@ -747,6 +747,49 @@ continuous subspace that in general will contain both occupied and
 unoccupied Bloch functions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Conditioned localization and penalty functionals}
+The above described formalism adopts a localization criterion which is 
+somehow {\it global}: the functional we want to minimize is the total spread, 
+while we are often interested in the localization of 
+each Wannier function in the selected set.
+In this scenario it may happen that, in order to gain 
+localization in the total spread one or more WFs may move their centers out of the
+system ({\it e.g.} in the vacuum) and therefore make the remaining functions 
+lleave to better localize. In this cases the final WF set is useless from our point of
+view.
+
+We therefore introduce the idea of {\it conditioned} localization adding some 
+further {\it penalty} functional to the total spread. 
+These penalty functionals may be use to drive the Wannier localization towards the
+achievement of some required feature.
+It maybe interesting {\it e.g.} to fix the problem of WFs moving in the vacuum region
+to add a {\it spring} potential driving the functions to have their centers 
+as close as possible to the positions we like. The form of the penalty functional 
+is therefore:
+%
+%
+\begin{equation}
+\label{eq:penalty}
+   \Omega_P = A \, \sum_{n} \, w_n\, \left[ \, \langle \mathbf{r} \rangle_n 
+                            - \mathbf{r}_{n0} \, \right]^2 ,
+\end{equation}
+%
+%
+where $A$ is the functional amplitude, $w_n$ a weight, and $\mathbf{r}_{n0}$ 
+is the chosen target position for the $n-$th WF. 
+After some tedious algebra it is possible to write and explicit form for the 
+derivative of this functional wrt $U^{(\mathbf{k})}$. This is then used to compute
+the penalty contribution to the gradient during the minimization of the functional.
+Setting to zero some weights $w_n$ we are also able to selectively switch off the 
+conditioning on some WFs. 
+Obviously many different kinds of such penalty functionals may be written.
+We note that this procedure does not alter physical quantities such as the 
+polarization, which is infact independent of the particular unitary rotations chosen
+for the localization. 
+The conditioned minimization fo Eq.~(\ref{eq:penalty}) is implemented in \WANT; 
+see Sec.~\ref{sec:input} for more details about how to setup the input file.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Real space hamiltonians}
 %
 In order to calculate the conductance according to the
