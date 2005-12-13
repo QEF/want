@@ -13,8 +13,8 @@
   The output of the calculations are the conductance (namely the transmittance) 
   and the DOS for the bulk case (cond_bulk.dat and dos_bulk.dat) and for the general
   geometry case (cond.dat and dos.dat). 
-  A further geometry is considered: transport calculation is carried out coupling 
-  conductor (8 atom per cell, 16 WFs) with leads (4 atoms, 8 WFs), extracting the 
+  Afterwards, a different geometry is considered: transport calculation is carried out coupling 
+  the conductor (8 atom per cell, 16 WFs) with the leads (4 atoms, 8 WFs), extracting the 
   coupling matrices directly from the supercell conductor calculation (see the 
   manual for further details). Calculated conductance and dos are in the output 
   files cond_auto.dat and dos_auto.dat. 
@@ -49,16 +49,16 @@ RESULTS discussion
 
   In the bulk-like calculation conductance exhibit a stepwise behavior, with the
   presence of a dip due to the lack of symmetry in the interactions simulated with 
-  8 atoms per cell. This stepwise behavior results dramatically changed in the 
+  8 atoms per cell. This stepwise behavior results are dramatically changed in the 
   general geometry calculation (in particular near the Fermi energy).
   This is due to numerical effects in matching the hamiltonian matrices of 
   conductor and leads at the boundaries (see the manual for further details). In the 
-  "auto" calcualtion the conductance curve is irregular only near the Fermi energy, 
+  "auto" calculation the conductance curve is irregular only near the Fermi energy, 
   while it is well reproduced at lower energies. Interface principal layers, used 
   in matching conductor and leads and extracted from conductor supercell calculation, 
   are not completely equivalent. 
   In every geometry considered, pronounced peaks are observable in the DOS plot, due 
-  to the van Hove singularities. The peaks are not exacltly the same (with the same 
+  to the van Hove singularities. The peaks are not exactly the same (with the same 
   height) for all geometries. The DOS curve is affected by numerical noise rising 
   from conductor-leads matching. 
 
@@ -68,7 +68,7 @@ RESULTS discussion
   to increase the number of atoms to larger values in the lead and conductor 
   calculations). 
 
-  In the present case, these numerical problems are magnificated
+  In the present case, these numerical problems are magnified
   since we are out-of-convergence concerning cell dimensions and the number of atoms per 
   cell. Anyway, great care must be taken in the matching procedure when performing
   real transport calculations.

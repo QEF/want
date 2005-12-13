@@ -19,11 +19,11 @@
   if the same postfix is specified (prefix must be the same in order to read DFT 
   data from the right file). In order to avoid overwriting of datafiles _WanT_UP 
   and _WanT_DW postfixes are used for the two different spin channels.
-  Moreover also properly setting postfix, output files dos.dat and cond.dat 
+  Moreover also with the proper setting for postfix, the output files dos.dat and cond.dat 
   should be renamed manually (here this is automatically done by the run.sh script) 
   in order to avoid overwriting.
 
-  In both spin component cases disentangle calculation is performed within an 
+  In both spin component cases the disentangle calculation is performed within an 
   energy window ranging from -12 eV to 0 eV. Six initial guess centers of atomic 
   type are considered: 5 d-type and 1 s-type orbitals localized on Ni atom (see 
   the manual for further details). 
@@ -54,12 +54,12 @@ RESULT discussion
      $TESTDIR/cond_UP.dat and $TESTDIR/dos_UP.dat
      $TESTDIR/cond_DW.dat and $TESTDIR/dos_DW.dat
 
-  Conductance exhibits a stepwise behaviour due to the bulk-like calculation. 
+  Conductance spectrum exhibits the typical stepwise behavior.
   Conductance curves have almost the same shape for spin UP and spin DOWN, but
   they are slightly shifted one wrt the other.
   In both spin cases pronounced peaks are observable in the DOS plot, due to the 
   van Hove singularities. The peaks are not exacltly the same and they are in 
-  different positions for spin UP and spin DOWN.
+  different positions for spin UP and spin DOWN electrons.
 
 
 
