@@ -10,7 +10,7 @@
 \thispagestyle{empty}
 \section{How to setup input files}\label{sec:input}
 
-\noindent According to the methodological scheme of Sec.~\ref{sec:run}, 
+\noindent According to the methodological scheme of Sec.~\ref{sec:run},
 it is necessary to use separate input files at
 the different step of the \WANT\ procedure.\\
 
@@ -18,8 +18,8 @@ the different step of the \WANT\ procedure.\\
 followed by other fields with more massive data {\tt CARDS}. Namelists are
 begin with the flag {\tt \&NAMELIST } and end with the
 "$/$'' bar. The order of variables within a namelist is
-arbitrary. Most variables have default values mandatory. 
-If a variable is not explicitly defined in the input file, 
+arbitrary. Most variables have default values mandatory.
+If a variable is not explicitly defined in the input file,
 its default value is assumed. Other variables are mandatory and must be
 always supplied.
 In the following we report the list and the description
@@ -69,19 +69,19 @@ be written.\\  {\sc default} = {\tt "./" }\par
 {\sc default} = {\tt "./"} \par
 
 \noindent\llap{\hbox to \descindent{\tt psfile(i)\hfil}}%
-{\sc string} \\ files containing $i$-th pseudopotential, where $i=1, N_{\text{type}}$. 
+{\sc string} \\ files containing $i$-th pseudopotential, where $i=1, N_{\text{type}}$.
 PP numbering must follow the ordering defined in the input of {\tt pw.x} . \\
 {\sc default} =  {\tt ""} \par
 \par
 
 \noindent\llap{\hbox to \descindent{\tt single\_file\hfil}}%
 {\sc logical} \\ if {\tt .TRUE.} a single output file is produced, otherwise
-  the output is a directory with few files.\\ 
+  the output is a directory with few files.\\
 {\sc default} = {\tt .FALSE. }\par
 
 \noindent\llap{\hbox to \descindent{\tt ascii\hfil}}%
 {\sc logical}  \\ if {\tt .TRUE.} output files are textual, otherwise
-they are partly binary.\\ 
+they are partly binary.\\
 {\sc default} = {\tt .FALSE.} \par}\bigskip
 
 
@@ -110,7 +110,7 @@ they are partly binary.\\
 {\tt  WANNIER\_CENTERS } {\tt ( "crystal" $\mid$ "angstrom" $\mid$ "bohr" ) }\\
   $\langle${\tt type}$_1\rangle \qquad    \langle${\tt specific\_fmt}$\rangle$ \\
   ... \\
-  $\langle${\tt type}$_N\rangle \qquad    \langle${\tt specific\_fmt}$\rangle$ 
+  $\langle${\tt type}$_N\rangle \qquad    \langle${\tt specific\_fmt}$\rangle$
 \end{tabular}
 %
 %
@@ -129,55 +129,55 @@ the code.\\ {\sc default} = {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt postfix\hfil}}%
 {\sc string} \\ the tail of the names of the above mentioned files (useful {\it e.g.} to
-distinguish among different calculations having a common part).\\ 
+distinguish among different calculations having a common part).\\
 {\sc default} = {\tt ""} \par
 
 \noindent\llap{\hbox to \descindent{\tt work\_dir\hfil}}%
-{\sc string} \\ the scratch directory where the massive data-files will be written.\\ 
+{\sc string} \\ the scratch directory where the massive data-files will be written.\\
 {\sc default} = {\tt "$./$" }\par
 
 \noindent\llap{\hbox to \descindent{\tt title\hfil}}%
-{\sc string} \\ the title of the calculation.\\ 
+{\sc string} \\ the title of the calculation.\\
 {\sc default} = {\tt "Wannier Transport Calculation"} \par
 
 \noindent\llap{\hbox to \descindent{\tt restart\_mode\hfil}}%
 {\sc string} \\ {\tt ( "from\_scratch" $\mid$ "restart" ) }\\
 define whether to restart a previous calculation;
 at the moment the {\tt "restart"} choice implies to give the value
-{\tt "from\_file"} to the input 
+{\tt "from\_file"} to the input
 variables {\tt overlaps, projections,
 start\_mode\_dis} and {\tt start\_mode\_wan}
-(see below for thier meanings).\\ {\sc default} = {\tt "from\_scratch"} \par
+(see below for their meanings).\\ {\sc default} = {\tt "from\_scratch"} \par
 
 \noindent\llap{\hbox to \descindent{\tt verbosity\hfil}}%
 {\sc string} \\ {\tt ( "low" $\mid$ "medium" $\mid$ "high" ) }
-\\the level of detail of the textual output files.\\ 
+\\the level of detail of the textual output files.\\
 {\sc default} = {\tt "medium"} \par
 
 \noindent\llap{\hbox to \descindent{\tt overlaps\hfil}}%
 {\sc string} \\ {\tt ( "from\_scratch" $\mid$ "from\_file" ) }\\
 determine how to get overlap integrals:\\
-{\tt "from\_scratch"}:  overlaps are calculated from wfcs\\
+{\tt "from\_scratch"}:  overlaps are calculated from wfs\\
 {\tt "from\_file"}:     overlaps are read from a previous data file.
 In this second case the dimensions of the problem should be the same as in the
-original calculation.\\ 
+original calculation.\\
 {\sc default} = {\tt "from\_scratch"} \par
 
 \noindent\llap{\hbox to \descindent{\tt projections\hfil}}%
 {\sc string} \\ {\tt ( "from\_scratch" $\mid$ "from\_file" ) }\\
 determine how to get projections integrals:
-the meaning of the options is as for {\tt overlaps} variable.\\ 
+the meaning of the options is as for {\tt overlaps} variable.\\
 {\sc default} = {\tt "from\_scratch"} \par
 
 \noindent\llap{\hbox to \descindent{\tt assume\_ncpp\hfil}}%
 {\sc logical} \\ if {\tt .TRUE.} avoids the reading of pseudopotential files
 assuming that the DFT calculation has been performed using norm-conserving
-pseudopotentials (no knowledge of them is required in the \WANT\ calculation 
-in this case).\\ 
+pseudopotentials (no knowledge of them is required in the \WANT\ calculation
+in this case).\\
 {\sc default} = {\tt .FALSE.} \par
 
 \noindent\llap{\hbox to \descindent{\tt unitary\_thr\hfil}}%
-{\sc real} \\ threshold for the check of matrix unitariery.\\ 
+{\sc real} \\ threshold for the check of matrix unity.\\
 {\sc default} = {\tt 1.0d-6} \par
 }\bigskip
 
@@ -188,54 +188,54 @@ in this case).\\
 \newdimen\descindent \descindent = 8pc
 {\noindent \leftskip = \descindent \parskip = .5\baselineskip
 \llap{\hbox to \descindent{\tt dimwann\hfil}}%
-{\sc integer} \\ the number of Wannier functions, {\it i.e.} the dimension of the 
+{\sc integer} \\ the number of Wannier functions, {\it i.e.} the dimension of the
 Wannier subspace.
 \\ {\sc default} = {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt win\_min\hfil}}%
 {\sc real} \\ the lower limit [eV] of the energy window containing the Bloch states
-forming the Wannier subspace).\\ 
+forming the Wannier subspace).\\
 {\sc default} = {\tt $-\infty$} \par
 
 \noindent\llap{\hbox to \descindent{\tt win\_max\hfil}}%
-{\sc real} \\ the upper limit [eV] of the energy window described above.\\ 
+{\sc real} \\ the upper limit [eV] of the energy window described above.\\
 {\sc default} = {\tt $+\infty$} \par
 
 \noindent\llap{\hbox to \descindent{\tt froz\_min\hfil}}%
-{\sc real} \\ the lower limit [eV] of the energy window containing {\it frozen} 
+{\sc real} \\ the lower limit [eV] of the energy window containing {\it frozen}
 Bloch states: they will be taken as they are in the Wannier subspace and do not enter
 the disentanglement procedure. \\
 {\sc default} = {\tt $-\infty$} \par
 
 \noindent\llap{\hbox to \descindent{\tt froz\_max\hfil}}%
-{\sc real} \\ upper limit [eV] of the frozen window described above.\\ 
+{\sc real} \\ upper limit [eV] of the frozen window described above.\\
 {\sc default} = {\tt $-\infty$} \par
 
 \noindent\llap{\hbox to \descindent{\tt alpha\_dis\hfil}}%
-{\sc real} \\ mixing parameter for the disentangle iterative procedure.\\ 
+{\sc real} \\ mixing parameter for the disentangle iterative procedure.\\
 {\sc default} = {\tt 0.5} \par
 
 \noindent\llap{\hbox to \descindent{\tt maxiter\_dis\hfil}}%
-{\sc integer} \\  maximum number of iterations during the disentangle procedure.\\ 
+{\sc integer} \\  maximum number of iterations during the disentangle procedure.\\
 {\sc default} = {\tt 1000} \par
 
 \noindent\llap{\hbox to \descindent{\tt nprint\_dis\hfil}}%
-{\sc integer} \\  every {\tt nprint\_dis} iterations in disentangle minimization write to 
+{\sc integer} \\  every {\tt nprint\_dis} iterations in disentangle minimization write to
 stdout.\\ {\sc default} = {\tt 10} \par
 
 \noindent\llap{\hbox to \descindent{\tt nsave\_dis\hfil}}%
-{\sc integer} \\  every {\tt nsave\_dis} iterations save subspace data to disk.\\ 
+{\sc integer} \\  every {\tt nsave\_dis} iterations save subspace data to disk.\\
 {\sc default} = {\tt 10} \par
 
 \noindent\llap{\hbox to \descindent{\tt use\_blimit\hfil}}%
-{\sc logical} \\   if {\tt .TRUE.}, $\mathbf{b}$-vectors are set to zero 
+{\sc logical} \\   if {\tt .TRUE.}, $\mathbf{b}$-vectors are set to zero
 when calculating overlap augmentations.
 This essentially means we are doing a sort of thermodynamic limit
 even if this is not consistent with the actual kpt grid. The {\tt .TRUE.} value
 should be considered for debug purposes.\\ {\sc default} = {\tt .FALSE.} \par
 
 \noindent\llap{\hbox to \descindent{\tt disentangle\_thr\hfil}}%
-{\sc real} \\  threshold for convergence of the iterative disentangle procedure.\\ 
+{\sc real} \\  threshold for convergence of the iterative disentangle procedure.\\
 {\sc default} = {\tt 1.0d-8} \par
 
 \noindent\llap{\hbox to \descindent{\tt subspace\_init\hfil}}%
@@ -257,7 +257,7 @@ Determine how the trial subspace is chosen\\
 \noindent\llap{\hbox to \descindent{\tt spin\_component\hfil}}%
 {\sc string} \\  {\tt ( "up" $\mid$ "down" $\mid$ "none")}\\
 defines whether the calculation is spin polarized and if the case
-which spin component is to be treated.\\ 
+which spin component is to be treated.\\
 {\sc default} = {\tt "none"} \par
 }\bigskip
 
@@ -276,11 +276,11 @@ which spin component is to be treated.\\
 {\sc default} = {\tt 0.5} \par
 
 \noindent\llap{\hbox to \descindent{\tt alpha1\_wan\hfil}}%
-{\sc real} \\ mixing parameter during the conjugate-gradient minimization steps. \\ 
+{\sc real} \\ mixing parameter during the conjugate-gradient minimization steps. \\
 {\sc default} = {\tt 0.5} \par
 
 \noindent\llap{\hbox to \descindent{\tt maxiter0\_wan\hfil}}%
-{\sc integer} \\ maximum number of steps for the steepest descent 
+{\sc integer} \\ maximum number of steps for the steepest descent
 minimization (first part).\\ {\sc default} = {\tt 500} \par
 
 \noindent\llap{\hbox to \descindent{\tt maxiter1\_wan\hfil}}%
@@ -288,20 +288,20 @@ minimization (first part).\\ {\sc default} = {\tt 500} \par
 (second part).\\ {\sc default} = {\tt 500 }\par
 
 \noindent\llap{\hbox to \descindent{\tt nprint\_wan\hfil}}%
-{\sc integer} \\ every {\tt nprint\_wan} iterations in wannier minimization write to stdout.\\ 
+{\sc integer} \\ every {\tt nprint\_wan} iterations in wannier minimization write to stdout.\\
 {\sc default} = {\tt 10 }\par
 
 \noindent\llap{\hbox to \descindent{\tt nsave\_wan\hfil}}%
-{\sc integer} \\ every {\tt nsave\_wan} iterations save subspace data to disk.\\ 
+{\sc integer} \\ every {\tt nsave\_wan} iterations save subspace data to disk.\\
 {\sc default} = {\tt 10 }\par
 
 \noindent\llap{\hbox to \descindent{\tt ncg\hfil}}%
-{\sc integer} \\ every {\tt ncg} iterations in the second minimization part, 
+{\sc integer} \\ every {\tt ncg} iterations in the second minimization part,
 do a steepest-descent step.\\ {\sc default} = {\tt 3 }\par
 
 \noindent\llap{\hbox to \descindent{\tt localization\_init\hfil}}%
-{\sc $\quad$ string} \\  
-{\tt ( "no\_guess" $\mid$ "randomized" $\mid$ "center\_projections" 
+{\sc $\quad$ string} \\
+{\tt ( "no\_guess" $\mid$ "randomized" $\mid$ "center\_projections"
 $\mid$ "from\_file" )}\\
  Determine how the Wannier localization is started\\
 {\tt "no\_guess"} : disentangle states are used as starting point
@@ -326,7 +326,7 @@ specifies whether to order the computed Wannier functions and
 
 \noindent\llap{\hbox to \descindent{\tt a\_condmin\hfil}}%
 {\sc real} \\ the amplitude of the conditioned minimization functional. If set to zero
-              ordinary minimization is performed.\\ 
+              ordinary minimization is performed.\\
 {\sc default} = {\tt 0.0} \par
 
 \noindent\llap{\hbox to \descindent{\tt niter\_condmin\hfil}}%
@@ -338,7 +338,7 @@ specifies whether to order the computed Wannier functions and
 
 \noindent\llap{\hbox to \descindent{\tt dump\_condmin\hfil}}%
 {\sc real} \\ the dumping factor for {\tt a\_condmin} during the conditioned minimization.
-              If the dumping factor is specified, after {\tt niter\_condmin} 
+              If the dumping factor is specified, after {\tt niter\_condmin}
               iterations {\tt a\_condmin}
               is dumped according to {\tt a\_condmin = a\_condmin $*$ dump\_condmin}
               at each iteration.\\
@@ -439,7 +439,7 @@ $\begin{array}{lllll}
 
 \noindent\llap{\hbox to \descindent{\tt rloc\hfil}}%
 {\sc real} \\ specifies the spread of the gaussian used for the radial part of the
-trial WF. Units are Bohr for both {\tt"bohr"} and {\tt"crystal"} and Angstrom for {\tt "angstrom"} 
+trial WF. Units are Bohr for both {\tt"bohr"} and {\tt"crystal"} and Angstrom for {\tt "angstrom"}
 specifier.\par
 
 \noindent\llap{\hbox to \descindent{\tt weight\hfil}}%
@@ -472,7 +472,7 @@ at the positions selected by the user. This is useful to mimic some antibonding 
 \bigskip
 
 \noindent {\tt type == "atomic}"\\
-\noindent Atomic (pseudo)-orbitals from pseudopotential data-files are used as trial functions. 
+\noindent Atomic (pseudo)-orbitals from pseudopotential data-files are used as trial functions.
 They are specified by the atomic index and the required angular momentum quantum-numbers.\\
 
 \newdimen\descindent \descindent = 8pc
@@ -491,7 +491,7 @@ They are specified by the atomic index and the required angular momentum quantum
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Input for electronic transport calculations}
 \noindent {\bf Step 3 : conductor.x}\\
-\noindent Both bulk and two-terminal calculations use similar input. 
+\noindent Both bulk and two-terminal calculations use similar input.
 Labels follow the scheme of Sec.~\ref{sec:run}.\\
 
 \noindent Input file layout: \\
@@ -525,17 +525,17 @@ Labels follow the scheme of Sec.~\ref{sec:run}.\\
 \\ {\sc default} = {\tt 0} \par
 
 \noindent\llap{\hbox to \descindent{\tt dimR\hfil}}%
-{\sc integer} \\ number of sites in the R-lead. \\ 
+{\sc integer} \\ number of sites in the R-lead. \\
 {\sc default} = {\tt 0} \par
 
 \noindent\llap{\hbox to \descindent{\tt dimC\hfil}}%
-{\sc integer} \\ number of sites in the conductor region. \\ 
+{\sc integer} \\ number of sites in the conductor region. \\
 {\sc default} = {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt calculation\_type\hfil}}%
 {\sc string} \\ {\tt ( "conductor" $\mid$ "bulk" ) }
             determines the kind of calculation to be performed:\\
-            {\tt "conductor"}:  ordinary transport calculation for a 
+            {\tt "conductor"}:  ordinary transport calculation for a
                     leads$\mid$conductor$\mid$lead junction\\
             {\tt "bulk"}: transport in a bulk system.\\
             {\sc default}: {\tt "conductor"} \par
@@ -547,14 +547,14 @@ Labels follow the scheme of Sec.~\ref{sec:run}.\\
 \noindent\llap{\hbox to \descindent{\tt conduct\_formula\hfil}}%
 {\sc string} \\ {\tt ( "landauer" $\mid$ "generalized" ) }
             {\tt "landauer"}:  transport is computed using the standard Landauer formula \\
-            {\tt "generalized"}: a generalized Landauer formula accounting for a 
+            {\tt "generalized"}: a generalized Landauer formula accounting for a
                  specific correlation correction is used. This case is experiemntal, see
                  Ref.~\cite{ferr+05prl, ferr+05prb} for more details. \\
             {\sc default}: {\tt "landauer"} \par
 
 \noindent\llap{\hbox to \descindent{\tt ne\hfil}}%
 {\sc integer} \\ dimension of the energy grid for transmittance and spectral function
-            calculation.\\ 
+            calculation.\\
 {\sc default} = {\tt 1000}\par
 
 \noindent\llap{\hbox to \descindent{\tt emin\hfil}}%
@@ -567,7 +567,7 @@ Labels follow the scheme of Sec.~\ref{sec:run}.\\
 
 \noindent\llap{\hbox to \descindent{\tt delta\hfil}}%
 {\sc real} \\ small imaginary part used to get off the real axis in the calculation
-            of Green's functions. \\ 
+            of Green's functions. \\
 {\sc default} = {\tt 1.0e-5} \par
 
 \noindent\llap{\hbox to \descindent{\tt nprint\hfil}}%
@@ -575,12 +575,12 @@ Labels follow the scheme of Sec.~\ref{sec:run}.\\
 {\sc default} = {\tt 20} \par
 
 \noindent\llap{\hbox to \descindent{\tt niterx\hfil}}%
-{\sc integer} \\ maximum number of iterations in the calculation of transfer 
-                 matrices. \\ 
+{\sc integer} \\ maximum number of iterations in the calculation of transfer
+                 matrices. \\
 {\sc default} = { \tt 200} \par
 
 \noindent\llap{\hbox to \descindent{\tt use\_overlap\hfil}}%
-{\sc logical} \\ If {\tt .TRUE.} reads the overlap matrices from file, 
+{\sc logical} \\ If {\tt .TRUE.} reads the overlap matrices from file,
 otherwise basis orthonormality
             is assumed (which is by definition the case of Wannier functions). \\
             {\sc default} : {\tt .FALSE.} \par
@@ -605,7 +605,7 @@ otherwise basis orthonormality
             {\sc default}: {\tt "mandatory"} if not {\tt calculation\_type == "bulk"} \par
 
 \noindent\llap{\hbox to \descindent{\tt datafile\_sgm \hfil}}%
-{\sc string} \\ Name of the file containing the correlation self-energy. It is required only 
+{\sc string} \\ Name of the file containing the correlation self-energy. It is required only
             when correlation is included in the calculation. \\
             {\sc default}: {\tt "mandatory"} if {\tt use\_correlation == .TRUE.} \par
 }
@@ -616,7 +616,7 @@ otherwise basis orthonormality
 \end{centering}\\
 
 \noindent The card {\tt <HAMILTONIAN\_DATA>} is mandatory and specifies
-the details about hamiltonian blocks to be used in transport calculation. 
+the details about hamiltonian blocks to be used in transport calculation.
 It includes a variable number of subtags (XML format)
 to be used the order shown below. The name and the number of these subcards
 depend on the {\tt calculation\_type} variable:
@@ -625,29 +625,29 @@ depend on the {\tt calculation\_type} variable:
 %
 \begin{displaymath}
 \begin{array}{lll}
-\texttt{if ( calculation\_type = "bulk" )}         & \rightarrow & 
+\texttt{if ( calculation\_type = "bulk" )}         & \rightarrow &
                                                      \textrm{two subcards are needed}\\
-\texttt{}                                          & \texttt{}   & 
+\texttt{}                                          & \texttt{}   &
                                                      \texttt{<H00\_C>},\texttt{<H\_CR>}\\
 \texttt{}                                          & \texttt{}   & \textbf{}\\
-\texttt{if ( calculation\_type = "conductor" )}    & \rightarrow & 
+\texttt{if ( calculation\_type = "conductor" )}    & \rightarrow &
                                                      \textrm{seven subcards are needed}\\
 
-\texttt{}                                          & \texttt{}   & 
+\texttt{}                                          & \texttt{}   &
                                                      \texttt{<H00\_C>},
                                                      \texttt{<H\_CR>},\texttt{<H\_LC>},\\
-\texttt{}                                          & \texttt{}   & 
+\texttt{}                                          & \texttt{}   &
                                                      \texttt{<H00\_L>},\texttt{<H01\_L>},\\
-\texttt{}                                          & \texttt{}   & 
+\texttt{}                                          & \texttt{}   &
                                                      \texttt{<H00\_R>}, \texttt{<H01\_R>}\\
 \end{array}
 \end{displaymath}
 %
 %
 
-\noindent Names of the subcards refer to Fig.~\ref{fig:matrix_naming} in 
-Sec.~\ref{subsec:tran}. 
-Each subcard (tag) may contain a number of attribute, according to the 
+\noindent Names of the subcards refer to Fig.~\ref{fig:matrix_naming} in
+Sec.~\ref{subsec:tran}.
+Each subcard (tag) may contain a number of attribute, according to the
 format (XML compliant):
 %
 %
@@ -663,7 +663,7 @@ format (XML compliant):
 {\noindent \leftskip = \descindent \parskip = .5\baselineskip
 \llap{\hbox to \descindent{\tt cols (rows) \hfil}}%
 {\sc string} \\
-the string describing which index should be considered to define the 
+the string describing which index should be considered to define the
 columns (rows) of the specific {\tt H} submatrix.
 The format in the string is quite standard, according {\it e.g.} to the default
 for printing programs: \\
@@ -706,7 +706,7 @@ The string {\tt "ALL"} is allowed as well, being equivalent to
 {\sc default} = {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt postfix\hfil}}%
-{\sc string} \\ the tail of the names of the above mentioned files (useful 
+{\sc string} \\ the tail of the names of the above mentioned files (useful
     {\it e.g.} to distinguish among different calculations having a common part);
     it should be equal to the value given in the main calculations.\\
     {\sc default} = {\tt ""} \par
@@ -721,23 +721,23 @@ The string {\tt "ALL"} is allowed as well, being equivalent to
               {\sc default} =  {\tt "medium"} \par
 
 \noindent\llap{\hbox to \descindent{\tt nkpts\_in\hfil}}%
-{\sc integer} \\ number of edge $\mathbf{k}$-points defining the directions 
-on which bands will be calculated.\\ 
+{\sc integer} \\ number of edge $\mathbf{k}$-points defining the directions
+on which bands will be calculated.\\
 {\sc default}: {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt nkpts\_max\hfil}}%
-{\sc integer} \\ maximum number of interpolated $\mathbf{k}$-points. The actucal number
-of points is calculated in the run and is written in the output file.\\ 
+{\sc integer} \\ maximum number of interpolated $\mathbf{k}$-points. The actual number
+of points is calculated in the run and is written in the output file.\\
 {\sc default} = {\tt 100} \par
 
 \noindent\llap{\hbox to \descindent{\tt spin\_component\hfil}}%
 {\sc string} \\  {\tt ( "up" $\mid$ "down" $\mid$ "none" ) }\\
               define whether the calculation is spin polarized and, if the case,
-              which spin component is treated.\\ 
+              which spin component is treated.\\
 {\sc default} = {\tt "none"} \par
 }\bigskip
 
-\noindent After the {\tt \&INPUT} namelist, a description line for each of the 
+\noindent After the {\tt \&INPUT} namelist, a description line for each of the
 {\tt nspts\_in} points must be provided. The format is as follows:\\
 
 \noindent $\qquad$ \texttt{label} $\quad$ {\tt $k_1$ $k_2$ $k_3$ } \\
@@ -750,7 +750,7 @@ of points is calculated in the run and is written in the output file.\\
 \noindent\llap{\hbox to \descindent{\tt $k_1$ $k_2$ $k_3$\hfil}}%
 {\sc real} \\ components of the $\mathbf{k}$-point vector in units of crystal reciprocal
               lattice \\
-              ( {\it i.e.} $ \mathbf{k} = k_1 * \mathbf{b}_1 + k_2 * \mathbf{b}_2 + 
+              ( {\it i.e.} $ \mathbf{k} = k_1 * \mathbf{b}_1 + k_2 * \mathbf{b}_2 +
               k_3 * \mathbf{b}_3 $). \par
 }\bigskip
 
@@ -780,7 +780,7 @@ of points is calculated in the run and is written in the output file.\\
               {\sc default} = {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt postfix\hfil}}%
-{\sc string} \\ the tail of the names of the above mentioned files. 
+{\sc string} \\ the tail of the names of the above mentioned files.
               It should be equal to the value given in the main calculations.\\
               {\sc default} = {\tt ""} \par
 
@@ -789,8 +789,8 @@ of points is calculated in the run and is written in the output file.\\
               {\sc default} = {\tt "./"} \par
 
 \noindent\llap{\hbox to \descindent{\tt wann\hfil}}%
-{\sc string} \\ specifies the indeces of the Wannier functions to be plotted.
-              It is a string of format {\it e.g.} {\tt "1-3,5,7-9"} 
+{\sc string} \\ specifies the indexes of the Wannier functions to be plotted.
+              It is a string of format {\it e.g.} {\tt "1-3,5,7-9"}
               (analogous to the fmt used to specify pages to standard print utilities)\\
               {\sc default} = {\tt mandatory} \par
 
@@ -800,22 +800,22 @@ of points is calculated in the run and is written in the output file.\\
                 {\tt "modulus"}:    plot the real space square modulus of the WFs. \\
                 {\tt "real"}:       plot the real part (in real space) of the WFs. \\
                 {\tt "imaginary"}:  plot the imaginary part (in real space) of the WFs
-                              this choice shouldbe intended as a check because WFs
+                              this choice should be intended as a check because WFs
                               are expected to be more or less {\it real}.\\
               {\sc default} = {\tt "modulus"} \par
 
 \noindent\llap{\hbox to \descindent{\tt output\_fmt\hfil}}%
 {\sc string} \\ {\tt ( "plt" $\mid$ "txt" $\mid$ "cube" $\mid$ "xsf" ) }\\
-              Define the format of the output files to be plotted. 
-              {\tt "plt"} (read by {\sc gOpenMol}) is binary and smaller than 
+              Define the format of the output files to be plotted.
+              {\tt "plt"} (read by {\sc gOpenMol}) is binary and smaller than
               {\tt "cube"}, {\tt "xsf"} (read by {\sc xcrysden}) and
-              {\tt "txt"}. While {\tt "cube"} and {\tt "xsf"} deal also 
-              with non-orthorombic lattices, {\tt "txt"} is suitable to be converted 
+              {\tt "txt"}. While {\tt "cube"} and {\tt "xsf"} deal also
+              with non-orthorombic lattices, {\tt "txt"} is suitable to be converted
               to further format.\\
               {\sc default} = {\tt "plt"} \par
 
 \noindent\llap{\hbox to \descindent{\tt r1min, r1max\hfil}}%
-{\sc real} \\ the starting and ending points of the plotting cell along the 
+{\sc real} \\ the starting and ending points of the plotting cell along the
               first direct lattice vector $\mathbf{a}_1$.
               Units of $\mathbf{a}_1$.\\
               {\sc default} = {\tt -0.5, 0.5} \par
@@ -829,12 +829,12 @@ of points is calculated in the run and is written in the output file.\\
               {\sc default} = {\tt -0.5, 0.5} \par
 
 \noindent\llap{\hbox to \descindent{\tt assume\_ncpp\hfil}}%
-{\sc logical} \\ if using norm-conserving pseudopot which are not readable 
+{\sc logical} \\ if using norm-conserving pseudopototentials which are not readable
                by \WANT\ set this value to .TRUE. in order to avoid their reading.\\
               {\sc default} = {\tt .FALSE.} \par
 
 \noindent\llap{\hbox to \descindent{\tt locate\_wf\hfil}}%
-{\sc logical} \\ if {\tt .TRUE.} moves the WFs in a unit cell centered around the 
+{\sc logical} \\ if {\tt .TRUE.} moves the WFs in a unit cell centered around the
     midpoint of the plotting cell. Useful to plot purposes.\\
               {\sc default} = {\tt .TRUE.} \par
 
@@ -871,7 +871,7 @@ of points is calculated in the run and is written in the output file.\\
               {\sc default} = {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt postfix\hfil}}%
-{\sc string} \\ the tail of the names of the above mentioned files. 
+{\sc string} \\ the tail of the names of the above mentioned files.
               It should be equal to the value given in the main calculations.\\
               {\sc default} = {\tt ""} \par
 
@@ -880,12 +880,12 @@ of points is calculated in the run and is written in the output file.\\
               {\sc default} = {\tt "./"} \par
 
 \noindent\llap{\hbox to \descindent{\tt filein\hfil}}%
-{\sc string} \\ the name of the file containing the input operator in the Bloch 
+{\sc string} \\ the name of the file containing the input operator in the Bloch
                 representation.\\
               {\sc default} = {\tt mandatory} \par
 
 \noindent\llap{\hbox to \descindent{\tt fileout\hfil}}%
-{\sc string} \\ the name of the file containing the computed operator on the 
+{\sc string} \\ the name of the file containing the computed operator on the
                 Wannier basis.\\
               {\sc default} = {\tt mandatory} \par
 

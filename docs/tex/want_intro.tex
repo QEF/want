@@ -53,7 +53,7 @@ properties of nanostructures.
 Let us consider a system composed of a conductor, $C$,
 connected to two semi-infinite leads, $R$ and $L$, as in Fig.
 \ref{fig:LCR}. A fundamental result in the theory of electronic
-transport is that the zero-temperature conductance through a region of 
+transport is that the zero-temperature conductance through a region of
 non-interacting
 electrons (the $C$ region in Fig. \ref{fig:LCR}) is related to the
 scattering properties of the region itself via the Landauer
@@ -66,7 +66,7 @@ formula~\cite{Landauer}:
 %
 %
 where ${\mathcal T}$ is the transmission function, ${\mathcal
-C}$ is the conductance and $E_f$ the Fermi energy. 
+C}$ is the conductance and $E_f$ the Fermi energy.
 The former represents the probability that
 an electron injected at one end of the conductor will transmit to
 the other end. In principle, we can compute the transmission
@@ -87,7 +87,7 @@ can be sometimes simpler to compute.
 
 Let us consider a physical system represented by an
 Hamiltonian $H$. The Green's functions of the system can be
-defined as: 
+defined as:
 %
 %
 \begin{equation}
@@ -96,19 +96,19 @@ defined as:
 \end{equation}
 %
 %
-where $I$ is ht eidentity operator and 
-$i\eta>0$ is an infinitesimal imaginary part added to the
-energy to incorporate the boundary conditions into the equation.
-The solution with $+$ sign is the retarded Green's function $G^r$,
-while the solution with $-$ sign is called advanced Green's
-function $G^a$. The transmission function can then be expressed in
-terms of the Green's functions of the conductor and the couplings
-of the conductor to the leads in a simple manner using the Fisher
-and Lee formula~\cite{fish-lee81prb}:
+where $I$ is the identity operator and $i\eta>0$ is an
+infinitesimal imaginary part added to the energy to incorporate
+the boundary conditions into the equation. The solution with $+$
+sign is the retarded Green's function $G^r$, while the solution
+with $-$ sign is called advanced Green's function $G^a$. The
+transmission function can then be expressed in terms of the
+Green's functions of the conductor and the couplings of the
+conductor to the leads in a simple manner using the Fisher and Lee
+formula~\cite{fish-lee81prb}:
 %
 %
 \begin{equation}
-{\mathcal T}(\omega) = {\rm Tr} \left[ 
+{\mathcal T}(\omega) = {\rm Tr} \left[
             \Gamma_L G_C^r \Gamma_R G_C^a \right].
 \label{eq:T}
 \end{equation}
@@ -118,20 +118,20 @@ Here $G_C^{\{r,a\}}$ are the retarded and advanced
 Green's functions of the conductor, and $\Gamma_{\{L,R\}}$ are
 functions that describe the coupling of the conductor to the leads.
 
-In the following we are going to restrict the discussion
-to discrete systems that we can describe by ordinary matrix
-algebra. More precisely, we are going to work with matrices
-representing a physical system in the basis of localized
-electronic orbitals centered on the atoms constituting the system.
-It includes in particular the tight-binding model.
-For a discrete media, the Green's function defined in Eq.~(\ref{eq:GF_def}) 
-is then the inverse of the $(\omega - H)$ matrix.
-To simplify the notation, we drop
-the exponentis $\{a,r\}$ referring to advanced and retarded
-functions and include the $\pm i\eta$ factor in $\omega$. For an open
-system, consisting of a conductor and two semi-infinite leads (see
-Fig. \ref{fig:LCR}), the above Green's function can be partitioned
-into sub-matrices that correspond to the individual subsystems:
+In the following we are going to restrict the discussion to
+discrete systems that we can describe by ordinary matrix algebra.
+More precisely, we are going to work with matrices representing a
+physical system in the basis of localized electronic orbitals
+centered on the atoms constituting the system. It includes in
+particular the tight-binding model. For a discrete media, the
+Green's function defined in Eq.~(\ref{eq:GF_def}) is then the
+inverse of the $(\omega - H)$ matrix. To simplify the notation, we
+drop the exponents $\{a,r\}$ referring to advanced and retarded
+functions and include the $\pm i\eta$ factor in $\omega$. For an
+open system, consisting of a conductor and two semi-infinite leads
+(see Fig. \ref{fig:LCR}), the above Green's function can be
+partitioned into sub-matrices that correspond to the individual
+subsystems:
 %
 %
 \begin{equation}
@@ -165,7 +165,7 @@ obtain an explicit expression for $G_C$\cite{datt95book}:
 %
 %
 \begin{equation}
-   G_C(\omega) = (\omega -H_C -\Sigma_L(\omega) -\Sigma_R(\omega))^{-1} 
+   G_C(\omega) = (\omega -H_C -\Sigma_L(\omega) -\Sigma_R(\omega))^{-1}
    \label{gconduct}
 \end{equation}
 %
@@ -188,7 +188,7 @@ $\Gamma_{\{L,R\}}(\omega)$ can then be obtained as~\cite{datt95book}:
 %
 \begin{equation}
    \Gamma_{\{L,R\}} = {\rm i} \left[ \Sigma_{\{L,R\}}^r(\omega) -
-                      \Sigma_{\{L,R\}}^a(\omega) \right], 
+                      \Sigma_{\{L,R\}}^a(\omega) \right],
    \label{eq:gamma}
 \end{equation}
 %
@@ -221,7 +221,7 @@ principal layers approach.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Transmission through a bulk system.} 
+\subsubsection{Transmission through a bulk system.}
 \label{ss:bulk}
 %
 Within the principal layer approach, the matrix elements
@@ -305,7 +305,7 @@ and
 \delta$ with $\delta$ arbitrarily small. Usually, no more than 5 or
 6 iterations are required to converge the above sum.
 
-If we compare Eq.~(\ref{eq:GT}) with Eq.~(\ref{gconduct}), 
+If we compare Eq.~(\ref{eq:GT}) with Eq.~(\ref{gconduct}),
 in the hypothesis of leads and conductors being
 of the same material (bulk conductivity), we can identify one
 principal layer of the bulk system with the conductor $C$, so that
@@ -360,7 +360,7 @@ G_{RL} & G_{RC} & G_{R}\\
 \end{array}
 \right) \\ &=& \left(
 \begin{array}{ccc}
-\omega -H^L_{00} - H^L_{01 \, \dagger} \overline T & -H_{LC} & 0\\
+\omega -H^L_{00} - (H^L_{01})^\dagger \overline T & -H_{LC} & 0\\
 -H_{CL} & \omega -H_{C} & -H_{CR}\\
 0 & -H_{RC} & \omega -H^R_{00} - H^R_{01} T \\
 \end{array}
@@ -386,11 +386,10 @@ identify~\cite{buon99prb}:
 %
 \begin{equation}
   \begin{array}{ccl}
-  \Sigma_L(\omega) & = & H_{LC}^{\dagger} \, \Big(
-                   \omega -H_{00}^L \,-H_{01}^{L\, \dagger}
-                   \, \overline T_L \Big)^{-1} \, H_{LC},\\ 
-  \Sigma_R(\omega) & = & H_{CR} \, \Big(\omega
-                  -H_{00}^R-H_{01}^R \,T_R \Big)^{-1} \, H_{CR}^\dagger.
+  \Sigma_L(\omega) & = & H_{LC}^\dagger \, (\omega -H_{00}^L-(H_{01}^L)^\dagger
+                   \overline T_L)^{-1} \, H_{LC},\\
+  \Sigma_R(\omega) & = & H_{CR} \, (\omega
+                  -H_{00}^R-H_{01}^R T_R)^{-1} \, H_{CR}^\dagger.
   \end{array}
 \end{equation}
 %
@@ -404,7 +403,7 @@ system via the spectral density of states:
 %
 %
 \begin{equation}
-   N(\omega)= -\frac{1}{\pi} {\rm Im}\, {\rm Tr} \, G_C(\omega) .
+   N(\omega)= -\frac{1}{\pi} {\rm Im}[{\rm Tr}(G_C(\omega))].
 \end{equation}
 %
 %
@@ -419,9 +418,9 @@ the layer expansion the system is described by an infinite set of
 $k_\bot$ while $k_\|$ are still good quantum numbers for the
 problem. The above procedure effectively reduces the
 three-dimensional system to a set of non-interacting
-linear-chains, one for each $k_\|$~\cite{lee-joan81prb,lee-joan81prb1}. 
+linear-chains, one for each $k_\|$~\cite{lee-joan81prb,lee-joan81prb1}.
 We can then use the usual $k$-point summation techniques to evaluate the
-quantum conductance: 
+quantum conductance:
 %
 %
 \begin{equation}
@@ -430,7 +429,7 @@ quantum conductance:
 %
 %
 where $w_{k_\|}$ are the relative weights of the different $k_\|$
-in the irreducible wedge of the surface Brillouin 
+in the irreducible wedge of the surface Brillouin
 zone~\cite{Baldereschi:1}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -440,22 +439,20 @@ zone~\cite{Baldereschi:1}.
 %
 \subsubsection{Definition of the problem}
 %
-Bloch orbitals cannot be used directly to evaluate
-electronic transport with the method outlined in Sec.~\ref{subsec:tran}. 
-As we have pointed out, quantum conductance
-is computed starting from the knowledge of the lattice Green's
-function, whose calculation relies on a localized orbital
-representation. Bloch
-orbitals, that are intrinsically delocalized, have to be
-transformed into {\em localized} functions in order to construct
-the sparse, short-ranged matrix elements of the Hamiltonian. The
-core of our proposed methodology is to use m{\em
-aximally-localized Wannier functions} (WFs) for the system
-considered. These are the most natural choice for a set of
-localized orbitals that still span the same Hilbert space of the
-Hamiltonian eigenfunctions: they allow to bridge plane-wave
-electronic structure and lattice Green's function calculations in
-a coherent fashion.
+Bloch orbitals cannot be used directly to evaluate electronic
+transport with the method outlined in Sec.~\ref{subsec:tran}. As
+we have pointed out, quantum conductance is computed starting from
+the knowledge of the lattice Green's function, whose calculation
+relies on a localized orbital representation. Bloch orbitals, that
+are intrinsically delocalized, have to be transformed into {\em
+localized} functions in order to construct the sparse,
+short-ranged matrix elements of the Hamiltonian. The core of our
+proposed methodology is to use {\em maximally-localized Wannier
+functions} (WFs) for the system considered. These are the most
+natural choice for a set of localized orbitals that still span the
+same Hilbert space of the Hamiltonian eigenfunctions: they allow
+to bridge plane-wave electronic structure and lattice Green's
+function calculations in a coherent fashion.
 
 A Wannier function $w_{n{\bf R}}({\bf r})$, labeled by
 the Bravais lattice vector {\bf R}, is usually defined via a
@@ -480,9 +477,9 @@ images of each other. Note that, as WFs are
 energies, they do not represent stationary states, but still span
 the original Hilbert space.
 
-The {\em ab-initio} eigenstates are well-defined,
-modulus an arbitrary ${\bf k}$-dependent phase factor; thus, the
-definition above does not lead to a unique set of Wannier
+The {\em ab-initio} eigenstates are well-defined, modulo an
+arbitrary ${\bf k}$-dependent phase factor; thus, the definition
+above does not lead to a unique set of Wannier
 functions~\cite{kohn,kohn1}, since the electronic structure
 problem is invariant for the transformation $\psi_{n{\bf k}}
 \rightarrow e^{\phi_n({\bf k})} \psi_{n{\bf k}} $. Besides this
@@ -571,7 +568,7 @@ WFs}, according to Eq.~(\ref{eq:MLWF}).
 If we restrict to the case of {\bf k}-point mesh
 calculations, we can use finite differences in reciprocal space to
 evaluate the derivatives of Eq.~(\ref{minimo}). For this purpose we
-rewrite the expectation values $\langle \mathbf{r} \rangle$ and 
+rewrite the expectation values $\langle \mathbf{r} \rangle$ and
 $\langle r^2 \rangle $ as proposed by Blount~\cite{blount}:
 %
 %
@@ -584,14 +581,14 @@ $\langle r^2 \rangle $ as proposed by Blount~\cite{blount}:
 \nonumber
 \langle {\bf 0}n | r^2 | {\bf 0}n \rangle\ &=& \frac{1}{N} \sum_{
 {\bf k}} e^{+i{\bf k}\cdot{\bf R}} \langle u_{ {\bf k}n }|
-\nabla^2_{\bf k} | u_{ {\bf k}n }  \rangle, 
+\nabla^2_{\bf k} | u_{ {\bf k}n }  \rangle,
 \end{eqnarray}
 %
 %
 where $| u_{ n{\bf k} }  \rangle = e^{-i{\bf k}\cdot{\bf
 r}} | \psi_{ n{\bf k} }  \rangle$ is the periodic part of the Bloch
 function. Making the assumption that the BZ has been discretized
-into a uniform {\bf k}-point mesh, and letting $ \mathbf{b} $ being 
+into a uniform {\bf k}-point mesh, and letting $ \mathbf{b} $ being
 the vectors
 that connect a mesh point to its near neighbors, we can define the
 overlap matrix between Bloch orbitals as:
@@ -599,9 +596,9 @@ overlap matrix between Bloch orbitals as:
 %
 \begin{equation}
    \label{overlap}
-   M^{ ( \mathbf{k},\mathbf{b}) }_{ mn } = \langle u_{ m\mathbf{k} }| 
-        u_{ n\mathbf{k}+\mathbf{b} }  \rangle = 
-        \langle \psi_{ m \mathbf{k} } | e^{-i\mathbf{k}\mathbf{b}} | 
+   M^{ ( \mathbf{k},\mathbf{b}) }_{ mn } = \langle u_{ m\mathbf{k} }|
+        u_{ n\mathbf{k}+\mathbf{b} }  \rangle =
+        \langle \psi_{ m \mathbf{k} } | e^{-i\mathbf{k}\mathbf{b}} |
         \psi_{ n \mathbf{k}+\mathbf{b}} \rangle .
 \end{equation}
 %
@@ -616,12 +613,12 @@ to be used in the localization procedure:
 \begin{eqnarray}
 \label{position2}
    \langle \mathbf{r} \rangle_{n} &=& -\frac{1}{N}
-          \sum_{ \mathbf{k},\mathbf{b} } 
-           w_b \, \mathbf{b} \, \text{Im} 
+          \sum_{ \mathbf{k},\mathbf{b} }
+           w_b \, \mathbf{b} \, \text{Im}
           \, \text{Ln} M^{ ({\bf k}, {\bf b})}_{ nn } \\ \nonumber
    \langle r^2 \rangle_n &=&  \frac{1}{N} \sum_{ {\bf k,b} } w_b
    \left[ \left( 1- |M^{ ({\bf k}, {\bf b}}_{ nn }|^2 \right) +
-          \left( \text{Im}\, \text{Ln} M^{ ({\bf k}, {\bf b})}_{ nn } \right)^2 
+          \left( \text{Im}\, \text{Ln} M^{ ({\bf k}, {\bf b})}_{ nn } \right)^2
    \right]
 \end{eqnarray}
 %
@@ -650,7 +647,7 @@ gradient of the spread functional:
    G^{({\bf k})}=\frac{\delta \Omega}{dW^{({\bf k})}}= 4 \sum_{ {\bf
    b} } w_b \left( \frac {R^{{\bf k,b})} -R^{({\bf
    k,b}) \, \dagger}}{2} - \frac {T^{({\bf k,b})}+T^{({\bf
-   k,b}) \, \dagger}}{2i} \right)  
+   k,b}) \, \dagger}}{2i} \right)
 \end{equation}
 %
 %
@@ -670,11 +667,11 @@ function of the overlap matrices $M^{ ({\bf k,b}) }$.  The
 minimization of the spread functional $\Omega$ is obtained via
 steepest descent or conjugate gradient schemes.
 The procedure does not require the updating of wavefunctions, but only
-of the overlap and unitary matrixes. This is the most demanding task 
+of the overlap and unitary matrixes. This is the most demanding task
 (scaling as $N^3$) for each iteration in Wannier localization.
 
 Wannier functions obtained with the above procedure
-should be almost real, except for an overall phase factor. 
+should be almost real, except for an overall phase factor.
 This conjecture can also be used as a check of the convergence of the
 localization procedure.
 It is important to
@@ -737,7 +734,7 @@ In practice, first we select a desired number of bands
 in an energy window; then we determine the optimally-connected
 subspace that can be extracted from that band structure; and
 finally proceed with a standard localization procedure inside
-the selected subspace. 
+the selected subspace.
 The resulting orbitals have the same good localization properties, and
 allow to apply our formalism to arbitrary systems, independently
 of the insulating or metallic nature of the band manifold. It
@@ -749,47 +746,48 @@ unoccupied Bloch functions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Conditioned localization and penalty functionals}
-\label{subsubsec:penalty}
-The above described formalism adopts a localization criterion which is 
-somehow {\it global}: the functional we want to minimize is the total spread, 
-while we are often interested in the localization of 
-each Wannier function in the selected set.
-In this scenario it may happen that, in order to gain 
-localization in the total spread one or more WFs may move their centers out of the
-system ({\it e.g.} in the vacuum) and therefore make the remaining functions 
-lleave to better localize. In this cases the final WF set is useless from our point of
-view.
+\label{subsubsec:penalty} The above described formalism adopts a
+localization criterion which is somehow {\it global}: the
+functional we want to minimize is the total spread, while we are
+often interested in the localization of each Wannier function in
+the selected set. In this scenario it may happen that, in order to
+gain localization in the total spread one or more WFs may move
+their centers out of the system ({\it e.g.} in the vacuum) and
+therefore enhance the localization of the  remaining functions. In
+this cases the final WF set is useless from our point of view.
 
-We therefore introduce the idea of {\it conditioned} localization adding some 
-further {\it penalty} functional to the total spread. 
+We therefore introduce the idea of {\it conditioned} localization adding some
+further {\it penalty} functional to the total spread.
 These penalty functionals may be use to drive the Wannier localization towards the
 achievement of some required feature.
 It maybe interesting {\it e.g.} to fix the problem of WFs moving in the vacuum region
-to add a {\it spring} potential driving the functions to have their centers 
-as close as possible to the positions we like. The form of the penalty functional 
+to add a {\it spring} potential driving the functions to have their centers
+as close as possible to the positions we like. The form of the penalty functional
 is therefore:
 %
 %
 \begin{equation}
 \label{eq:penalty}
-   \Omega_P = A \, \sum_{n} \, w_n\, \left[ \, \langle \mathbf{r} \rangle_n 
+   \Omega_P = A \, \sum_{n} \, w_n\, \left[ \, \langle \mathbf{r} \rangle_n
                             - \mathbf{r}_{n0} \, \right]^2 ,
 \end{equation}
 %
 %
-where $A$ is the functional amplitude, $w_n$ a weight, and $\mathbf{r}_{n0}$ 
-is the chosen target position for the $n-$th WF. 
-After some tedious algebra it is possible to write and explicit form for the 
-derivative of this functional wrt $U^{(\mathbf{k})}$. This is then used to compute
-the penalty contribution to the gradient during the minimization of the functional.
-Setting to zero some weights $w_n$ we are also able to selectively switch off the 
-conditioning on some WFs. 
-Obviously many different kinds of such penalty functionals may be written.
-We note that this procedure does not alter physical quantities such as the 
-polarization, which is infact independent of the particular unitary rotations chosen
-for the localization. 
-The conditioned minimization fo Eq.~(\ref{eq:penalty}) is implemented in \WANT; 
-see Sec.~\ref{sec:input} for more details about how to setup the input file.
+where $A$ is the functional amplitude, $w_n$ a weight, and
+$\mathbf{r}_{n0}$ is the chosen target position for the $n-$th WF.
+After some tedious algebra it is possible to write and explicit
+form for the derivative of this functional wrt $U^{(\mathbf{k})}$.
+This is then used to compute the penalty contribution to the
+gradient during the minimization of the functional. Setting to
+zero some weights $w_n$ we are also able to selectively switch off
+the conditioning on some WFs. Obviously many different kinds of
+such penalty functionals may be written. We note that this
+procedure does not alter physical quantities such as the
+polarization, being independent of the particular unitary
+rotations chosen for the localization. The conditioned
+minimization of Eq.~(\ref{eq:penalty}) is implemented in \WANT;
+see Sec.~\ref{sec:input} for more details about how to setup the
+input file.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Real space hamiltonians}
@@ -798,17 +796,17 @@ In order to calculate the conductance according to the
 prescriptions outlined in Sec.~\ref{subsec:tran}, we need as an input
 the matrix elements of the Hamiltonian calculated on a localized
 basis: in our case, it is the minimal basis of the
-maximally-localized WFs. 
+maximally-localized WFs.
 Assuming a BZ
 sampling fine enough to eliminate the interaction with the
-WF periodic images, we can simply compute the WF Hamiltonians 
+WF periodic images, we can simply compute the WF Hamiltonians
 $H_{ij}(\mathbf{R}) = \langle w_{i{\bf 0}} | H | w_{j{\bf R}} \rangle$,
 from the unitary rotations $U^{({\bf k})}$ obtained in the localization
 procedure.
 
-In the Bloch representation we have by definition 
+In the Bloch representation we have by definition
 $H_{mn}(\mathbf{k}) = \epsilon_{m\mathbf{k}} \delta_{m,n}$.
-Moving to the Wannier basis we have: 
+Moving to the Wannier basis we have:
 %
 %
 \begin{equation}
@@ -824,10 +822,8 @@ corresponding set of Bravais lattice vectors $\{ \mathbf{R} \}$:
 %
 \begin{equation}
     H_{ij}({\bf R})=\frac{1}{N_{kp}} \sum_{\bf k}
-    e^{-i{\bf k}\cdot {\bf R}} \, H^{(rot)}_{ij}({\bf k}) 
+    e^{-i{\bf k}\cdot {\bf R}} \, H^{(rot)}_{ij}({\bf k})
 \label{hrrot}
 \end{equation}
 %
 %
-
-
