@@ -360,7 +360,7 @@ G_{RL} & G_{RC} & G_{R}\\
 \end{array}
 \right) \\ &=& \left(
 \begin{array}{ccc}
-\omega -H^L_{00} - (H^L_{01})^\dagger \overline T & -H_{LC} & 0\\
+\omega -H^L_{00} - H^L_{01 \, \dagger} \overline T & -H_{LC} & 0\\
 -H_{CL} & \omega -H_{C} & -H_{CR}\\
 0 & -H_{RC} & \omega -H^R_{00} - H^R_{01} T \\
 \end{array}
@@ -386,10 +386,11 @@ identify~\cite{buon99prb}:
 %
 \begin{equation}
   \begin{array}{ccl}
-  \Sigma_L(\omega) & = & H_{LC}^\dagger \, (\omega -H_{00}^L-(H_{01}^L)^\dagger
-                   \overline T_L)^{-1} \, H_{LC},\\ 
-  \Sigma_R(\omega) & = & H_{CR} \, (\omega
-                  -H_{00}^R-H_{01}^R T_R)^{-1} \, H_{CR}^\dagger.
+  \Sigma_L(\omega) & = & H_{LC}^{\dagger} \, \Big(
+                   \omega -H_{00}^L \,-H_{01}^{L\, \dagger}
+                   \, \overline T_L \Big)^{-1} \, H_{LC},\\ 
+  \Sigma_R(\omega) & = & H_{CR} \, \Big(\omega
+                  -H_{00}^R-H_{01}^R \,T_R \Big)^{-1} \, H_{CR}^\dagger.
   \end{array}
 \end{equation}
 %
@@ -403,7 +404,7 @@ system via the spectral density of states:
 %
 %
 \begin{equation}
-   N(\omega)= -\frac{1}{\pi} {\rm Im}[{\rm Tr}(G_C(\omega))].
+   N(\omega)= -\frac{1}{\pi} {\rm Im}\, {\rm Tr} \, G_C(\omega) .
 \end{equation}
 %
 %
