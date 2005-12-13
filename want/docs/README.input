@@ -190,7 +190,7 @@ maxiter1_wan  INTEGER
               DEFAULT: 500
 
 nprint_wan    INTEGER
-              every nprint_dis iterations in wannier minimization write to stdout
+              every nprint_wan iterations in wannier minimization write to stdout
               DEFAULT: 10
 
 nsave_wan     INTEGER
