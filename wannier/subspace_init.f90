@@ -228,12 +228,12 @@
        WRITE( stdout,"(/,2x,'Subspace decomposition:')" )
        WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" )
        DO ik=1,nkpts
-             WRITE(stdout,"(6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
-                   ik, vkpt(:,ik), dimwin(ik)
-             CALL mat_mul(cu, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+            WRITE(stdout,"(1x,'!',6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
+                  ik, vkpt(:,ik), dimwin(ik)
+            CALL mat_mul(cu, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
                           dimwin(ik), dimwin(ik), dimwann )
-            WRITE(stdout,"(2x, 8f9.5)") ( REAL(cu(i,i)), i=1,dimwin(ik) )
-            WRITE( stdout,"()" )
+            WRITE(stdout,"(1x,'!',2x, 8f9.5)") ( REAL(cu(i,i)), i=1,dimwin(ik) )
+            WRITE(stdout,"(1x,'!')" )
        ENDDO
        WRITE( stdout,"(2/)" )
 

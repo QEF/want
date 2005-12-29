@@ -322,7 +322,7 @@
             WRITE( stdout,"(/,2x,'Subspace decomposition:')" ) 
             WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" ) 
             DO ik=1,nkpts
-                  WRITE( stdout,"(1x,'!',6x,'kpt =', i3,' ( ',3f6.3,' )    dimwin = ',i4)" ) &
+                  WRITE( stdout,"(1x,'!',6x,'kpt =', i3,' ( ',3f6.3,' )    dimwin = ',i4)") &
                         ik, vkpt(:,ik), dimwin(ik)
                   CALL mat_mul(z, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
                                dimwin(ik), dimwin(ik), dimwann )
