@@ -4,10 +4,14 @@
 =======================================================
 
 
+28 Dec 2005      Small changes in the output printed by summary routine. (AF)
+
+16 Dec 2005      Small changes in disentangle and wannier output fmts (check purpose). 
+                 (AF)
+
 -------------------------------------------------
 Date: 13 Dec 2005    Version: WanT-2.0.0
 -------------------------------------------------
-
 
 13 Dec 2005      README.doc file updated; small corrections in the manual.(BB)
                  manual updates. (AF) (AC)
