@@ -159,12 +159,12 @@
           WRITE( unit,"( /, ' <WANNIER_FUNCTIONS>')" )
           WRITE( unit,"(2x,'Input parameters for Wannier func. calculation')")
           WRITE( unit,"(4x,'Number of Wannier functions required = ', i4 )" ) dimwann
-          WRITE( unit,"(4x,'CG minim: Mixing parameter (alpha0_wan)= ', f6.3 )" ) alpha0_wan
-          WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) maxiter0_wan
+          WRITE( unit,"(4x,'SD minim: Mixing parameter (alpha0_wan)= ', f6.3 )" ) alpha0_wan
+          WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) maxiter0_wan
           WRITE( unit,"(4x,'Minimization convergence threshold = ', f15.9 )") wannier_thr
-          WRITE( unit,"(4x,'SD minim: Mixing parameter (alpha1_wan) = ', f6.3 )" ) alpha1_wan
-          WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) maxiter1_wan
-          WRITE( unit,"(4x,'Every ',i3,' iteration perform a CG minimization (ncg)')" ) ncg
+          WRITE( unit,"(4x,'CG minim: Mixing parameter (alpha1_wan) = ', f6.3 )" ) alpha1_wan
+          WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) maxiter1_wan
+          WRITE( unit,"(4x,'Every ',i3,' iteration perform a SD step')" ) ncg
           WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_wan
           WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_wan
           WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(localization_init)
@@ -381,12 +381,12 @@
           WRITE( unit, " (  ' <WINDOWS>')" )
           WRITE( unit," (2x, 'Definition of energy windows: (energies in eV)' ) " )
           IF ( win_min < 10000.0 .AND. win_max > 10000.0 ) THEN
-              WRITE( unit, " (4x, 'outer window: E  = (  -\inf ,  \inf  )' )" ) 
+              WRITE( unit, " (4x, 'outer window: E  = (  -inf ,  inf  )' )" ) 
           ELSEIF ( win_min < 10000.0 ) THEN
-              WRITE( unit, " (4x, 'outer window: E  = (  -\inf , ',f9.4, ' )' )" ) &
+              WRITE( unit, " (4x, 'outer window: E  = (  -inf , ',f9.4, ' )' )" ) &
                                    win_max
           ELSEIF ( win_max > 10000.0 ) THEN
-              WRITE( unit, " (4x, 'outer window: E  = ( ', f9.4, ' ,  \inf  )' )" ) &
+              WRITE( unit, " (4x, 'outer window: E  = ( ', f9.4, ' ,  inf  )' )" ) &
                                    win_min
           ELSE  
              ! std case
@@ -414,7 +414,7 @@
                WRITE(unit," (/,4x,'inner window: NOT used --> NO FROZEN STATES' )" )
           ELSE
                IF ( froz_min < 10000.0 ) THEN
-                   WRITE(unit," (/,4x,'inner window: E  = (  -\inf , ',f8.4, &
+                   WRITE(unit," (/,4x,'inner window: E  = (  -inf , ',f8.4, &
                       & ' ) --> FROZEN STATES' )" ) froz_max
                ELSE
                    WRITE(unit," (/,4x,'inner window: E  = (', f8.4, ' , ',f8.4, &
