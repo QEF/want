@@ -15,4 +15,11 @@
 
 * coherent units everywhere (bohr and bohr^-1)
 
+* log file (changes in the timing routine)
+
+* interface to the new iotk fmt in espresso (__NEWPUNCH)
+
+* eigenvalue problem in wannier localization
+
+* symmetries in wfc management
 

@@ -48,14 +48,16 @@ MODULE ions_module
       !     atm_symb( j )  = name of the type of the j-th atomic specie
       !
       INTEGER,   ALLOCATABLE :: ityp(:)
-      LOGICAL                :: uspp_calculation = .FALSE. ! whether we are using uspp
-      REAL(dbl), ALLOCATABLE :: zv(:)         !  pseudo atomic charge
-      REAL(dbl), ALLOCATABLE :: tau(:,:)      !  atomic positions (alat units)
-      REAL(dbl), ALLOCATABLE :: tau_srt(:,:)  !  tau sorted by specie (alat)
-      INTEGER,   ALLOCATABLE :: ind_srt( : )  !  index of tau sorted by specie
-      CHARACTER(LEN=3), ALLOCATABLE :: atm_symb(:) !  DIM: nsp
-      CHARACTER(LEN=3), ALLOCATABLE :: symb(:)!  DIM: nat
-      CHARACTER(LEN=nstrx), ALLOCATABLE :: psfile(:)!  DIM: nsp
+      LOGICAL                :: uspp_calculation = .FALSE. 
+      REAL(dbl)              :: ion_charge = ZERO      !  total ionic charge
+      REAL(dbl), ALLOCATABLE :: zv(:)                  !  pseudo atomic charge
+      REAL(dbl), ALLOCATABLE :: tau(:,:)               !  atomic positions (alat)
+      REAL(dbl), ALLOCATABLE :: tau_srt(:,:)           !  tau sorted by specie (alat)
+      INTEGER,   ALLOCATABLE :: ind_srt( : )           !  index of tau sorted by sp.
+
+      CHARACTER(3),     ALLOCATABLE :: atm_symb(:)     !  DIM: nsp
+      CHARACTER(3),     ALLOCATABLE :: symb(:)         !  DIM: nat
+      CHARACTER(nstrx), ALLOCATABLE :: psfile(:)       !  DIM: nsp
 
       LOGICAL :: alloc = .FALSE.
 
@@ -63,9 +65,10 @@ MODULE ions_module
 ! end of declaration scope
 !
 
-   PUBLIC :: nsp, na, nax, nat, zv
+   PUBLIC :: nsp, na, nax, nat
    PUBLIC :: tau
    PUBLIC :: tau_srt, ind_srt
+   PUBLIC :: zv, ion_charge
    PUBLIC :: ityp, atm_symb, symb
    PUBLIC :: uspp_calculation
    PUBLIC :: psfile
