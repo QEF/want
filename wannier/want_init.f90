@@ -13,8 +13,27 @@ CONTAINS
 !*********************************************************
 SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
    !*********************************************************
+   ! 
+   ! This subroutine performs all the allocations and 
+   ! initializations required in the WanT code.
+   ! Input data are assumed to be already read.
+   ! The logical flag in input manage the tasks to be performed.
+   !
+   ! Interface:
+   ! SUBROUTINE want_init()
+   !
+   ! Tasks performed:
+   ! * init lattice data
+   ! * init want input data (if required by WANT_INPUT = .TRUE.)
+   ! * init windows data    (if required by WINDOWS = .TRUE.)
+   ! * init ions data    
+   ! * init kpoints data    (if required by KPOINTS = .TRUE.)
+   ! * init bshells data    (if required by BSHELLS = .TRUE.)
+   ! * init pseudo data     (if required by PSEUDO=.TRUE.)
+   !
+
    USE kinds
-   USE constants,  ONLY : CZERO, RYD
+   USE constants,  ONLY : ZERO, CZERO, RYD, EPS_m6
    USE parameters, ONLY : nstrx
    USE timing_module, ONLY : timing
    USE io_module,  ONLY : stdout, dft_unit, ioname
@@ -22,11 +41,11 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
    USE iotk_module
    USE parser_base_module, ONLY : change_case
 
-   USE control_module, ONLY : use_uspp
+   USE control_module, ONLY : use_uspp, do_polarization
    USE trial_center_module, ONLY : trial_center_convert
    USE trial_center_data_module, ONLY : trial, dimwann
    USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec
-   USE ions_module,  ONLY : ions_read_ext, ions_init, tau
+   USE ions_module,  ONLY : ions_read_ext, ions_init, tau, nat, zv, ityp, ion_charge
    USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin, spin_component
    USE kpoints_module,  ONLY : nkpts, nkpts_tot, iks, ike, &
                                kpoints_read_ext, kpoints_init
@@ -34,47 +53,39 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
    USE us_module,   ONLY : okvan
    USE uspp_param,  ONLY : tvanp
    USE ions_module, ONLY : uspp_calculation
+   
    IMPLICIT NONE
 
+   !
+   ! input variables
+   !
    LOGICAL, OPTIONAL, INTENT(in) :: want_input
    LOGICAL, OPTIONAL, INTENT(in) :: windows
    LOGICAL, OPTIONAL, INTENT(in) :: kpoints
    LOGICAL, OPTIONAL, INTENT(in) :: bshells
    LOGICAL, OPTIONAL, INTENT(in) :: pseudo
 
-! <INFO>
-! This subroutine performs all the allocations and 
-! initializations required in the WanT code.
-! Input data are assumed to be already read.
-! The logical flag in input manage the tasks to be performed.
-!
-! Interface:
-! SUBROUTINE want_init()
-!
-! Tasks performed:
-! * init lattice data
-! * init want input data (if required by WANT_INPUT = .TRUE.)
-! * init windows data    (if required by WINDOWS = .TRUE.)
-! * init ions data    
-! * init kpoints data    (if required by KPOINTS = .TRUE.)
-! * init bshells data    (if required by BSHELLS = .TRUE.)
-! * init pseudo data     (if required by PSEUDO=.TRUE.)
-!
-! </INFO>
-
+   !
+   ! local variables
+   !
    CHARACTER(9)              :: subname="want_init"
    CHARACTER(nstrx)          :: filename 
    LOGICAL                   :: lfound
    LOGICAL                   :: want_input_, windows_, kpoints_, bshells_, pseudo_
    INTEGER                   :: ia, iwann
+   !   
+   ! end of declarations
+   !    
    
-
-! ... end of declarations
-
-   CALL timing('want_init',OPR='start')
+!
+!------------------------------
+! main body
+!------------------------------
+!
+    CALL timing('want_init',OPR='start')
 
 !   
-! ... setting up   
+! setting up   
 !   
     want_input_ = .FALSE.
     IF ( PRESENT(want_input) ) want_input_ = want_input
@@ -85,7 +96,7 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
     bshells_ = kpoints_
     IF ( PRESENT(bshells) ) bshells_ = bshells
     pseudo_ = .FALSE.
-    IF ( PRESENT(pseudo) ) pseudo_ = pseudo
+    IF ( PRESENT(pseudo) ) pseudo_ = pseudo 
 
     IF ( bshells_ .AND. .NOT. kpoints_ ) CALL errore(subname,'bshells need kpoints',1)
 
@@ -187,6 +198,7 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
         CALL windows_init( eig(:,:), dimwann )
     ENDIF
 
+
 !
 ! ... closing the main data file 
 !
@@ -198,14 +210,32 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
 
 !
 ! ... read pseudopotentials (according to Espresso fmts)
-!     use ASSUME_NCPP = .TRUE. to skip this section (meaningful only if all PPs are NCPP)
 !
-   IF ( pseudo_ ) THEN
+   IF ( pseudo_  ) THEN
       CALL readpp()
       okvan = ANY( tvanp(:) )
       uspp_calculation = okvan
       use_uspp = okvan
+  
+      !
+      ! compute ionic charge
+      ion_charge = ZERO
+      !
+      DO ia = 1, nat 
+          ion_charge = ion_charge + zv( ityp(ia) ) 
+      ENDDO
    ENDIF
+
+
+!
+! ... polarization
+!
+    do_polarization = .FALSE.
+    !
+    IF ( windows_ .AND. pseudo_ ) THEN
+         IF ( ABS(ion_charge - REAL(2*dimwann,dbl)) < EPS_m6 ) &
+              do_polarization = .TRUE.
+    ENDIF
 
 
    CALL timing('want_init',OPR='stop')

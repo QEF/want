@@ -3,6 +3,11 @@
             WanT code:  Log of Changes 
 =======================================================
 
+10 Jan 2006      IOTK updated to today's CVS version (development head). (AF)
+
+02 Jan 2006      Polarization calculation added to wannier.x : related data added.
+                 bug fix in disentangle.x and wannier.x: assume_ncpp was not
+                 properly working. Stdout of get_points.f90 routine updated. (AF)
 
 28 Dec 2005      Small changes in the output printed by summary routine. (AF)
 

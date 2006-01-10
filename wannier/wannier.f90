@@ -18,7 +18,7 @@
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
-                                 unitary_thr, do_condmin, &
+                                 unitary_thr, do_condmin, read_pseudo, do_polarization, &
                                  localization_init_mode => localization_init
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
@@ -80,7 +80,7 @@
       !
       ! ... Global data init
       !
-      CALL want_init(WANT_INPUT=.TRUE., PSEUDO=.TRUE.)
+      CALL want_init(WANT_INPUT=.TRUE., PSEUDO=read_pseudo)
 
 
       !
@@ -154,6 +154,8 @@
       Omega_tot = Omega_I + Omega_D + Omega_OD 
       !
       CALL localization_print(stdout,FMT="extended")
+      !
+      IF ( do_polarization ) CALL polarization( dimwann, rave )
 
       Omega0 = Omega_tot
       Omega_var = Omega_tot - Omega_old
@@ -424,6 +426,9 @@
       WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
 
       CALL localization_print(stdout, FMT="extended")
+      !
+      IF ( do_polarization ) CALL polarization( dimwann, rave )
+      !
       CALL timing_upto_now(stdout)
 
 

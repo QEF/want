@@ -102,8 +102,10 @@
                            i, kpt_in(:,i), kptname_in(i)
        ENDDO
        WRITE(stdout, "(/,2x,'Number of kpts in each segment')" )
+       !
+       knum(1) = knum(1) +1
        DO i=1,nkpts_in-1
-          WRITE(stdout, "(6x, 'line', i4, ':   ',i5 ) ') " ) i, knum(i)
+          WRITE(stdout, "(6x, 'line', i4, ':   ',i5 ) ') " ) i, knum(i)-1
        ENDDO
        WRITE(stdout, "(2/,2x,'Generated kpts  [cart. coord. Bohr^-1]')" )
        DO i=1,nkpts_tot

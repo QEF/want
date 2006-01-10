@@ -39,6 +39,7 @@
 
    LOGICAL                   :: do_overlaps
    LOGICAL                   :: do_projections
+   LOGICAL                   :: do_polarization
    LOGICAL                   :: do_condmin
 
    LOGICAL                   :: read_pseudo 
@@ -69,6 +70,7 @@
 
    PUBLIC :: do_overlaps
    PUBLIC :: do_projections
+   PUBLIC :: do_polarization
    PUBLIC :: do_condmin
 
    PUBLIC :: read_pseudo

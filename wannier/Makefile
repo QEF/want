@@ -49,6 +49,7 @@ overlap.o \
 overlap_module.o \
 overlap_setmap.o \
 overlap_update.o \
+polarization.o \
 projection.o \
 projection_frozen.o \
 pseudo_types.o \
