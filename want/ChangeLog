@@ -3,6 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
+13 Jan 2006      kpt interpolation added in transport calculation. (AF & BB)
+
 10 Jan 2006      IOTK updated to today's CVS version (development head). (AF)
 
 02 Jan 2006      Polarization calculation added to wannier.x : related data added.

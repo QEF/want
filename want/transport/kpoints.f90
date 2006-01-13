@@ -114,8 +114,11 @@ CONTAINS
   
       !
       ! set the dimensions of the kpt_par mesh
+      ! if nk_par /= 0 they are from input. otherwise use nr_par
       !
-      nk_par(1:2) = nr_par(1:2)
+      IF ( ALL( nk_par(:) == 0 ) ) nk_par(1:2) = nr_par(1:2)
+      IF ( ANY( nk_par(:) < nr_par(:) ) ) CALL errore(subname,'nk mesh too small',71)
+      !
       nkpts_par = PRODUCT(nk_par)
   
       !

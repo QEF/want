@@ -84,6 +84,10 @@
        ! effective bias between the leads
        ! not fully implemented at the moment
 
+   INTEGER :: nk(2) =  0
+       ! dimension of the 2D kpt mesh on which the input 
+       ! Hamiltonian will be interpolated
+
    INTEGER :: nprint = 20 
        ! every nprint energy step write to stdout
 
@@ -109,15 +113,15 @@
    CHARACTER(nstrx) :: datafile_sgm = ' '
        ! the name of the file containing correlation self-energy
 
-   NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type, &
-                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, &
+   NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
+                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, nk, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, use_correlation 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx
-   PUBLIC :: ne, emin, emax, nprint, delta, bias, use_overlap, use_correlation, datafile_sgm
-   PUBLIC :: datafile_L, datafile_C, datafile_R, transport_dir    
+   PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, use_correlation 
+   PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: INPUT_CONDUCTOR
 
 
