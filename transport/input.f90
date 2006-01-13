@@ -21,6 +21,7 @@
 ! SUBROUTINE input_manager()
 ! SUBROUTINE setup_control()
 ! SUBROUTINE setup_hamiltonian()
+! SUBROUTINE setup_kpoints()
 ! SUBROUTINE setup_egrid()
 ! 
 
@@ -52,6 +53,7 @@ CONTAINS
       CALL setup_control()
       CALL setup_egrid()
       CALL setup_hamiltonian()
+      CALL setup_kpoints()
 
       !
       ! reading further input data
@@ -144,6 +146,18 @@ CONTAINS
       dimx            = MAX ( dimL, dimC, dimR )
 
    END SUBROUTINE setup_hamiltonian
+
+
+!**********************************************************
+   SUBROUTINE setup_kpoints()
+   !**********************************************************
+      USE T_kpoints_module,         ONLY :     nk_par
+      USE T_input_parameters_module,ONLY :     nk
+      IMPLICIT NONE
+      
+      nk_par(1:2)  = nk(1:2)
+
+   END SUBROUTINE setup_kpoints
 
 END MODULE T_input_module
 
