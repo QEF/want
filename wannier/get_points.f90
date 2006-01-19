@@ -12,11 +12,13 @@
    !***********************************************************
    !
    ! Determines the k-points for calculating the band structure
-   ! kpt_in are in cartesian coordinates (bohr^-1)
+   ! kpt_in are in cartesian coordinates (Bohr^-1)
    !
    USE kinds
-   USE constants, ONLY : ZERO, EPS_m6
-   USE io_module, ONLY : stdout
+   USE lattice_module,    ONLY : bvec
+   USE constants,         ONLY : ZERO, EPS_m6
+   USE io_module,         ONLY : stdout
+   USE converters_module, ONLY : cart2cry
    IMPLICIT NONE
 
    !
@@ -33,10 +35,10 @@
    !
    ! few local variables
    !
-   INTEGER   :: i, j, n
+   INTEGER   :: i, j, n, ierr
    INTEGER   :: knum(nkpts_in-1)
-   REAL(dbl) :: length0, length(nkpts_in-1)
-   REAL(dbl) :: vec(3)
+   REAL(dbl) :: length0, length(nkpts_in-1), vec(3)
+   REAL(dbl), ALLOCATABLE :: tmp(:,:)
    !
    ! end of declariations
    !
@@ -60,7 +62,8 @@
        DO i = 1, nkpts_in - 1
            n = INT( nkpts_max * length(i) / length0 )
            knum(i) = n
-           IF ( n ==  0 ) CALL errore('get_points', 'nint=0', n )
+           !
+           IF ( n ==  0 ) CALL errore('get_points', 'nint=0', n+1 )
  
            DO j = 1, n-1
                nkpts_tot = nkpts_tot + 1
@@ -111,6 +114,24 @@
        DO i=1,nkpts_tot
           WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, kpt(:,i)
        ENDDO
+
+       !
+       ! convert to crystal and write to stdout
+       ! 
+       ALLOCATE( tmp(3,nkpts_tot), STAT=ierr )
+          IF (ierr/=0) CALL errore('get_points', 'allocating tmp', ABS(ierr) )
+          !
+       tmp(:,:) = kpt(:,:)
+       !
+       CALL cart2cry(tmp, bvec)
+       !
+       WRITE(stdout, "(2/,2x,'Generated kpts  [crystal coord.]')" )
+       DO i=1,nkpts_tot
+          WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, tmp(:,i)
+       ENDDO
+       !
+       DEALLOCATE( tmp, STAT=ierr )
+          IF (ierr/=0) CALL errore('get_points', 'deallocating tmp', ABS(ierr) )
 
    END SUBROUTINE get_points
                     

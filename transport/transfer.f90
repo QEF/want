@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************
-   SUBROUTINE transfer( dim, niterx, tot, tott, c00, c01 )
+   SUBROUTINE transfer( dim, niterx, tot, tott, c00, c01, niter )
    !***********************************************************************
    !
    !...  Iterative construction of the transfer matrix
@@ -27,6 +27,7 @@
       ! I/O variables
       !
       INTEGER,      INTENT(in) :: dim, niterx
+      INTEGER,      INTENT(out) :: niter
       COMPLEX(dbl), INTENT(in) :: c00(dim,dim)
       COMPLEX(dbl), INTENT(in) :: c01(dim,dim)
       COMPLEX(dbl), INTENT(inout) :: tot(dim,dim)
@@ -185,11 +186,25 @@
               lconverged = .TRUE.
               EXIT
          ENDIF
+         niter = m
 
       ENDDO convergence_loop
 
-      IF ( .NOT. lconverged ) &
-          CALL errore('transfer', 'bad t-matrix convergence', 10 )
+      ! 
+      ! if not converged, print a WARNING but do not crash
+      ! 
+      IF ( .NOT. lconverged ) THEN 
+          !
+          ! de-comment here if you want to allow for a hard crash
+          ! CALL errore('transfer', 'bad t-matrix convergence', 10 )
+          !
+          tot  = CZERO
+          tott = CZERO
+          !
+          WRITE(stdout, "(2x, 'WARNING: t-matrix not converged', i4)" ) niterx
+          WRITE(stdout, "(2x, '         energy descarted')" )
+          !
+      ENDIF
 
 !
 ! ... local cleaning

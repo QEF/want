@@ -45,7 +45,8 @@
    !
    COMPLEX(dbl)     :: ene
    CHARACTER(nstrx) :: filename
-   INTEGER          :: i, ie, ik, ierr, ncount
+   INTEGER          :: i, ie, ik, ierr, ncount, niter
+   REAL(dbl)        :: avg_iter
    !   
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
@@ -134,9 +135,8 @@
       !
       ene =  egrid(ie)  + delta * CI
            IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
-!                WRITE( stdout,"(2x,'Energy step = ',i5) ") ncount
+!               WRITE( stdout,"(2x,'Energy step = ',i5) ") ncount
                 WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") ncount, egrid(ie)
-                CALL timing_upto_now(stdout)
            ENDIF
 
       dos(:,ie) = ZERO
@@ -147,8 +147,10 @@
       !
       IF ( use_correlation ) &
           CALL correlation_sgmread(sgm_unit, ie, sgm_corr)
- 
-
+      !
+      ! initialization of the average number of iteration 
+      !
+      avg_iter = 0.0
       !
       ! parallel kpt loop
       !
@@ -177,14 +179,16 @@
           ! construct leads self-energies 
           ! 
           ! ene + bias
-          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R )
+          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R,niter )
+          avg_iter = avg_iter + REAL(niter)
           CALL green( dimR, totR, tottR, aux00_R, aux01_R, ene+bias, gR, 1 )
           !
           CALL mat_mul(work, aux_CR, 'N', gR, 'N', dimC, dimR, dimR)
           CALL mat_mul(sgm_R, work, 'N', aux_RC, 'N', dimC, dimC, dimR)
  
           ! ene
-          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L )
+          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L,niter )
+          avg_iter = avg_iter + REAL(niter)
           CALL green( dimL, totL, tottL, aux00_L, aux01_L, ene, gL, -1 )
           !
           CALL mat_mul(work, aux_CL, 'N', gL, 'N', dimC, dimL, dimL)
@@ -226,6 +230,12 @@
           conduct(:,ie) = conduct(:,ie) + wk_par(ik) * cond_aux(:)
       
       ENDDO kpt_loop 
+          avg_iter = avg_iter/REAL(2*nkpts_par)
+          IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
+             WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3)") avg_iter
+             WRITE(stdout,"()") 
+             CALL timing_upto_now(stdout)
+          ENDIF
    ENDDO energy_loop
 
    !
