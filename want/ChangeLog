@@ -3,7 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
-13 Jan 2006      kpt interpolation added in transport calculation. (AF & BB)
+18 Jan 2006      conductor.x output improved (avg # of iterations to get lead self-energies);
+                 bands output updated (kpt in cryst coord.). (AF & BB) 
+
+13 Jan 2006      Kpt interpolation added in transport calculation. (AF & BB)
 
 10 Jan 2006      IOTK updated to today's CVS version (development head). (AF)
 
