@@ -1,0 +1,19 @@
+
+
+  &INPUT_CONDUCTOR
+    dimC = 20
+    calculation_type = 'bulk'
+    ne = 1000
+    emin = -7.0
+    emax =  2.5
+    datafile_C = "al5_WanT.ham"
+    transport_dir = 3
+  /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C />
+   <H_CR  />
+
+</HAMILTONIAN_DATA>
+

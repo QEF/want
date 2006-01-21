@@ -3,36 +3,33 @@ a=3.0 ang
    &CONTROL
       calculation = 'scf',
       restart_mode='from_scratch',
-      prefix='al',
-      nstep=50,
-      tstress = .FALSE.,
-      tprnfor = .TRUE.,
+      prefix='al5',
       pseudo_dir = './',
-      etot_conv_thr=1.0e-4,
-      forc_conv_thr=1.0e-3,
    /
    &SYSTEM
-      ibrav=8, 
-      celldm(1)=20.0,
-      celldm(2)=1.0,
-      celldm(3)=0.28346,
-      nat=1, 
+      ibrav=6, 
+      celldm(1)=12.0
+      celldm(3)=1.875,
+      nat=5, 
       ntyp=1,
       ecutwfc=15.0,
       occupations='smearing',
-      smearing='gaussian',
+      smearing='methfessel-paxton',
       degauss=0.01,
-      nbnd=20
+      nbnd=50
    /
    &ELECTRONS
-      electron_maxstep = 50,
-      mixing_mode = 'plain',
       mixing_beta = 0.3,
       conv_thr =  1.0d-8,
    /
 ATOMIC_SPECIES
   Al  26.98154  Al.pz-vbc.UPF
-ATOMIC_POSITIONS {angstrom}
+ATOMIC_POSITIONS {crystal}
 Al    0.000    0.000   0.000
+Al    0.000    0.000   0.200
+Al    0.000    0.000   0.400
+Al    0.000    0.000   0.600
+Al    0.000    0.000   0.800
 K_POINTS {automatic}
-   1 1 40    0  0  1
+   1 1 3    0  0  0
+

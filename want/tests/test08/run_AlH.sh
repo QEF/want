@@ -1,6 +1,6 @@
 #! /bin/bash 
 #
-# Alluminum Chain NCPP
+# Alluminum Chain NCPP with H impurity
 # 
 #================================================================
 #
@@ -19,9 +19,9 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
- bands           interpolates the band structure using WFs
- conductor       evaluate the transmittance, for the bulk case
- want            perform DISENTANGLE, WANNIER, BANDS, CONDUCTOR all together 
+ conductor       evaluate the transmittance
+ bulk            evaluate the bulk transmittance as a reference
+ want            perform DISENTANGLE, WANNIER, CONDUCTOR all together 
  all             perform all the above described steps
 
  check           check results with the reference outputs
@@ -37,7 +37,8 @@ MANUAL=" Usage
 . $UTILITY_BIN/basedef.sh
 TEST_HOME=$(pwd)
 TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
-PSEUDO_NAME=Al.pz-vbc.UPF
+PSEUDO_LIST='Al.pz-vbc.UPF H.pz-vbc.UPF'
+SUFFIX="_AlH"
 
 #
 # evaluate the starting choice about what is to run 
@@ -47,8 +48,8 @@ NSCF=
 PWEXPORT=
 DISENTANGLE=
 WANNIER=
-BANDS=
 CONDUCTOR=
+BULK=
 CHECK=
 CLEAN=
 
@@ -62,13 +63,13 @@ case $INPUT in
    (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
-   (bands)          BANDS=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
-   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; BANDS=".TRUE."; 
-                    CONDUCTOR=".TRUE." ;;
+   (bulk)           BULK=".TRUE." ;;
+   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
+                    CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BANDS=".TRUE." ; CONDUCTOR=".TRUE." ;;
+                    CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
    (check)          CHECK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -80,7 +81,9 @@ esac
 if [ -z "$CLEAN" ] ; then
    test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
    cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME/../pseudo/$PSEUDO_NAME .
+   for item in $PSEUDO_LIST ; do
+       ln -sf $TEST_HOME/../pseudo/$item
+   done
    if [ ! -e $TEST_HOME/SCRATCH ] ; then
        cd $TEST_HOME
        ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
@@ -102,7 +105,8 @@ fi
 #
 if [ "$SCF" = ".TRUE." ] ; then  
    echo $ECHO_N "running SCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
+               < $TEST_HOME/scf$SUFFIX.in > $TEST_HOME/scf$SUFFIX.out
    if [ $? = 0 ] ; then 
       echo "$ECHO_T done" 
    else
@@ -115,7 +119,8 @@ fi
 #
 if [ "$NSCF" = ".TRUE." ] ; then  
    echo $ECHO_N "running NSCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
+   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
+                 < $TEST_HOME/nscf$SUFFIX.in > $TEST_HOME/nscf$SUFFIX.out
    if [ $? = 0 ] ; then 
       echo "$ECHO_T done" 
    else
@@ -129,7 +134,7 @@ fi
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
    echo "running PWEXPORT calculation..." 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
+              <  $TEST_HOME/pwexport$SUFFIX.in > $TEST_HOME/pwexport$SUFFIX.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
@@ -142,7 +147,7 @@ fi
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
    echo $ECHO_N "running DISENTANGLE calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want.in > $TEST_HOME/disentangle.out
+   $WANT_BIN/disentangle.x < $TEST_HOME/want$SUFFIX.in > $TEST_HOME/disentangle$SUFFIX.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
    else
@@ -155,38 +160,39 @@ fi
 #
 if [ "$WANNIER" = ".TRUE." ] ; then  
    echo $ECHO_N "running WANNIER calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want.in > $TEST_HOME/wannier.out
+   $WANT_BIN/wannier.x < $TEST_HOME/want$SUFFIX.in > $TEST_HOME/wannier$SUFFIX.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
 fi
-
-#
-# running BANDS
-#
-if [ "$BANDS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BANDS calculation... $ECHO_C" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands.in > $TEST_HOME/bands.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
 
 #
 # running CONDUCTOR
 #
 if [ "$CONDUCTOR" = ".TRUE." ] ; then  
    echo $ECHO_N "running CONDUCTOR calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor$SUFFIX.in > $TEST_HOME/conductor$SUFFIX.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      test -e dos.dat && mv dos.dat $TEST_HOME/dos.dat
-      test -e cond.dat && mv cond.dat $TEST_HOME/cond.dat
+      test -e dos.dat && mv dos.dat $TEST_HOME/dos$SUFFIX.dat
+      test -e cond.dat && mv cond.dat $TEST_HOME/cond$SUFFIX.dat
+   else
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
+   fi
+fi
+
+#
+# running BULK
+#
+if [ "$BULK" = ".TRUE." ] ; then  
+   echo $ECHO_N "running BULK calculation... $ECHO_C" 
+   $WANT_BIN/conductor.x < $TEST_HOME/conductor${SUFFIX}_bulk.in > $TEST_HOME/conductor${SUFFIXi}_bulk.out
+   if [ ! -e CRASH ] ; then 
+      echo "$ECHO_T done" 
+      test -e dos.dat && mv dos.dat $TEST_HOME/dos${SUFFIX}_bulk.dat
+      test -e cond.dat && mv cond.dat $TEST_HOME/cond${SUFFIX}_bulk.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
@@ -199,7 +205,7 @@ if [ "$CHECK" = ".TRUE." ] ; then
    echo "running CHECK..."
    #
    cd $TEST_HOME
-   list="disentangle.out wannier.out"
+   list="disentangle$SUFFIX.out wannier$SUFFIX.out"
    #
    for file in $list
    do
@@ -224,12 +230,4 @@ fi
 #
 # exiting
 exit 0
-
-
-
-
-
-
-
-
 

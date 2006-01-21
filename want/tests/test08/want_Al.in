@@ -1,23 +1,20 @@
 
 &CONTROL
-   prefix = 'al'
+   prefix = 'al1'
    postfix = '_WanT'
    work_dir = './'
-   unitary_thr = 5.0e-7
 /
 
 &SUBSPACE
    dimwann = 4     
-   win_min = -20.0
    win_max = 10.0  
-   maxiter_dis = 500
+   froz_max = 1.5
+   maxiter_dis = 1000
 /
 
 &LOCALIZATION
-   maxiter0_wan = 200, 
-   alpha0_wan = 0.5
-   maxiter1_wan = 1500, 
-   alpha1_wan = 0.5
+   maxiter0_wan = 100, 
+   maxiter1_wan = 5000, 
    ncg = 5      
 /
 

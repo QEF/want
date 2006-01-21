@@ -4,10 +4,9 @@
     dimC = 4
     calculation_type = 'bulk'
     ne = 1000
-    niterx = 200
-    emin = -10.0
-    emax =  10.0
-    datafile_C = "al_WanT.ham"
+    emin = -7.0
+    emax =  2.5
+    datafile_C = "al1_WanT.ham"
     transport_dir = 3
   /
 
