@@ -1,0 +1,217 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <conductor>  v. 2.0.0  starts ...
+  Date 21Jan2006 at 17:58:51 
+
+  Arch. / Op.Sys: LINUX
+        Compiler: INTEL
+
+
+
+  <INPUT>
+       Calculation Type    :     bulk
+       Conductance Formula :     landauer
+       Transport Direction :      3
+       Use Overlap         :     FALSE
+       Use Correlation     :     FALSE
+       Max iteration number:      200
+
+       Print info each  20 energy step
+
+       Conductor data read from file  :     alh_WanT.ham
+  </INPUT>
+
+
+  <ENERGY_GRID>
+       Dimension   :       1000
+       Min Energy  :       -7.00000
+       Max Energy  :        2.50000
+       Energy Step :        0.00951
+       Delta       :        0.00001
+  </ENERGY_GRID>
+
+
+  <K-POINTS>
+       nkpts_par =    1
+       nrtot_par =    1
+       Parallel kpoints grid:      nk = (  1  1  1 )
+       k point    1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+
+       Parallel R vector grid:      nr = (  1  1  1 )
+       R vector   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+  </K-POINTS>
+
+
+  Computing E(     1 ) =  -7.00000 eV
+                              Total time spent up to now :     0.39 secs
+
+  Computing E(    20 ) =  -6.81932 eV
+                              Total time spent up to now :     0.41 secs
+
+  Computing E(    40 ) =  -6.62913 eV
+                              Total time spent up to now :     0.43 secs
+
+  Computing E(    60 ) =  -6.43894 eV
+                              Total time spent up to now :     0.45 secs
+
+  Computing E(    80 ) =  -6.24875 eV
+                              Total time spent up to now :     0.47 secs
+
+  Computing E(   100 ) =  -6.05856 eV
+                              Total time spent up to now :     0.49 secs
+
+  Computing E(   120 ) =  -5.86837 eV
+                              Total time spent up to now :     0.51 secs
+
+  Computing E(   140 ) =  -5.67818 eV
+                              Total time spent up to now :     0.53 secs
+
+  Computing E(   160 ) =  -5.48799 eV
+                              Total time spent up to now :     0.55 secs
+
+  Computing E(   180 ) =  -5.29780 eV
+                              Total time spent up to now :     0.57 secs
+
+  Computing E(   200 ) =  -5.10761 eV
+                              Total time spent up to now :     0.59 secs
+
+  Computing E(   220 ) =  -4.91742 eV
+                              Total time spent up to now :     0.61 secs
+
+  Computing E(   240 ) =  -4.72723 eV
+                              Total time spent up to now :     0.63 secs
+
+  Computing E(   260 ) =  -4.53704 eV
+                              Total time spent up to now :     0.65 secs
+
+  Computing E(   280 ) =  -4.34685 eV
+                              Total time spent up to now :     0.67 secs
+
+  Computing E(   300 ) =  -4.15666 eV
+                              Total time spent up to now :     0.69 secs
+
+  Computing E(   320 ) =  -3.96647 eV
+                              Total time spent up to now :     0.71 secs
+
+  Computing E(   340 ) =  -3.77628 eV
+                              Total time spent up to now :     0.73 secs
+
+  Computing E(   360 ) =  -3.58609 eV
+                              Total time spent up to now :     0.75 secs
+
+  Computing E(   380 ) =  -3.39590 eV
+                              Total time spent up to now :     0.77 secs
+
+  Computing E(   400 ) =  -3.20571 eV
+                              Total time spent up to now :     0.79 secs
+
+  Computing E(   420 ) =  -3.01552 eV
+                              Total time spent up to now :     0.81 secs
+
+  Computing E(   440 ) =  -2.82533 eV
+                              Total time spent up to now :     0.83 secs
+
+  Computing E(   460 ) =  -2.63514 eV
+                              Total time spent up to now :     0.85 secs
+
+  Computing E(   480 ) =  -2.44494 eV
+                              Total time spent up to now :     0.87 secs
+
+  Computing E(   500 ) =  -2.25475 eV
+                              Total time spent up to now :     0.89 secs
+
+  Computing E(   520 ) =  -2.06456 eV
+                              Total time spent up to now :     0.91 secs
+
+  Computing E(   540 ) =  -1.87437 eV
+                              Total time spent up to now :     0.93 secs
+
+  Computing E(   560 ) =  -1.68418 eV
+                              Total time spent up to now :     0.95 secs
+
+  Computing E(   580 ) =  -1.49399 eV
+                              Total time spent up to now :     0.97 secs
+
+  Computing E(   600 ) =  -1.30380 eV
+                              Total time spent up to now :     0.99 secs
+
+  Computing E(   620 ) =  -1.11361 eV
+                              Total time spent up to now :     1.01 secs
+
+  Computing E(   640 ) =  -0.92342 eV
+                              Total time spent up to now :     1.02 secs
+
+  Computing E(   660 ) =  -0.73323 eV
+                              Total time spent up to now :     1.03 secs
+
+  Computing E(   680 ) =  -0.54304 eV
+                              Total time spent up to now :     1.05 secs
+
+  Computing E(   700 ) =  -0.35285 eV
+                              Total time spent up to now :     1.07 secs
+
+  Computing E(   720 ) =  -0.16266 eV
+                              Total time spent up to now :     1.09 secs
+
+  Computing E(   740 ) =   0.02753 eV
+                              Total time spent up to now :     1.11 secs
+
+  Computing E(   760 ) =   0.21772 eV
+                              Total time spent up to now :     1.12 secs
+
+  Computing E(   780 ) =   0.40791 eV
+                              Total time spent up to now :     1.14 secs
+
+  Computing E(   800 ) =   0.59810 eV
+                              Total time spent up to now :     1.16 secs
+
+  Computing E(   820 ) =   0.78829 eV
+                              Total time spent up to now :     1.18 secs
+
+  Computing E(   840 ) =   0.97848 eV
+                              Total time spent up to now :     1.20 secs
+
+  Computing E(   860 ) =   1.16867 eV
+                              Total time spent up to now :     1.22 secs
+
+  Computing E(   880 ) =   1.35886 eV
+                              Total time spent up to now :     1.24 secs
+
+  Computing E(   900 ) =   1.54905 eV
+                              Total time spent up to now :     1.26 secs
+
+  Computing E(   920 ) =   1.73924 eV
+                              Total time spent up to now :     1.28 secs
+
+  Computing E(   940 ) =   1.92943 eV
+                              Total time spent up to now :     1.30 secs
+
+  Computing E(   960 ) =   2.11962 eV
+                              Total time spent up to now :     1.32 secs
+
+  Computing E(   980 ) =   2.30981 eV
+                              Total time spent up to now :     1.34 secs
+
+  Computing E(  1000 ) =   2.50000 eV
+                              Total time spent up to now :     1.36 secs
+
+
+   <global routines>
+             clock number :     6
+
+                conductor :     1.00s CPU 
+ 
+              read_matrix :     0.29s CPU (       2 calls,   0.145 s avg)
+              fourier_par :     0.00s CPU (       2 calls,   0.000 s avg)
+                 transfer :     0.88s CPU (    2000 calls,   0.000 s avg)
+                    green :     0.03s CPU (    2000 calls,   0.000 s avg)
+            transmittance :     0.01s CPU (    1000 calls,   0.000 s avg)
+
+

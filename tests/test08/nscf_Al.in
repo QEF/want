@@ -1,32 +1,24 @@
 Al wire, 15 LDA NCPP
-a=3.0 ang
+a = 4.5 Bohr
    &CONTROL
       calculation = 'nscf',
       restart_mode='from_scratch',
-      prefix='al',
-      nstep=50,
-      tstress = .FALSE.,
-      tprnfor = .TRUE.,
-      pseudo_dir = './',
-      etot_conv_thr=1.0e-4,
-      forc_conv_thr=1.0e-3,
+      prefix='al1',
+      pseudo_dir = './'
    /
    &SYSTEM
-      ibrav=8, 
-      celldm(1)=20.0,
-      celldm(2)=1.0,
-      celldm(3)=0.28346,
+      ibrav=6, 
+      celldm(1)=12.0,
+      celldm(3)=0.375,
       nat=1, 
       ntyp=1,
       ecutwfc=15.0,
       occupations='smearing',
-      smearing='gaussian',
+      smearing='methfessel-paxton',
       degauss=0.01,
       nbnd=20
    /
    &ELECTRONS
-      electron_maxstep = 50,
-      mixing_mode = 'plain',
       mixing_beta = 0.3,
       conv_thr =  1.0d-8,
    /

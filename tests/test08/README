@@ -1,56 +1,53 @@
 
 ==============================================================================
-@title@   Aluminum Chain (within disentangle)
+@title@   Aluminum Chain + H impurity
 ==============================================================================
 
   This test performs the calculation for the bulk conductance of an Aluminum 
-  chain. It is different from test06 because of the entangled conduction band of   
-  Al (as opposed to e.g. the sd manyfold of Gold).
-  The calculation is done setting one atom in the unit cell, using a 
-  (1 1 40, 0 0 1) (according to PWSCF notation) Monkhorst-Pack grid in the SCF 
-  run and a (1 1 20, 0 0 0) grid in the NSCF run. The wave-function and charge-
-  density cutoff have been chosen to be both equal to 15 Ry.
+  chain together with the full calculation for the case of the same chain with
+  a Hydrogen impurity. 
+  The results of the test can be compared with those in example12 of the 
+  Espresso package (htp://www.pwscf.org). The same set of structural and other 
+  simulation parameters are used in the two calculations in order to be as much 
+  comparable as possible.
 
-  The 1D Aluminum has entangled sp bands that are extracted from a much larger 
-  manyfold using the disentangle.x code. As a consequence, the original DFT eigenvalues 
-  (re-written in file $TESTDIR/SCRATCH/al_WanT_dftband.dat) are 
-  slightly changed. After the Wannier minimization, the interpolated 
-  band structure (file $TESTDIR/SCRATCH/al_WanT_intband.dat) should fit well
-  the eigenvalues calculated in the Wannier subsapce as written by disentangle.x 
-  (file $TESTDIR/SCRATCH/al_WanT_wanband.dat).
+  The bulk chain is first treated with one atom (suffix _Al) in the unit cell, but also 
+  using a 5 atoms (suffix _Al5). While there is no difference in the two calculations 
+  at the Wannier function level, only the large cell gives properly converged results 
+  for the transmitance.
+  This is because the interaction in the wire is accounted up to the nearest neighbour
+  principal layers ( here 1 princ. layer == 1 cell). The difference between the
+  1-atom and 5-atom transmittance mainly concerns the position of band edges.
+  These behaviors have been also described in details in the README files of test06 
+  and test07.
+ 
+  The effect of a Hydrogen impurity in the Al chain is also studied. While example12 
+  in Espresso includes 5 Aluminum atoms in the conductor region, we need to include more 
+  atoms in the chain for the same reasons as before: our calculation is therefore performed 
+  using a cell with 10 Al atoms.
 
-  Disentangle calculation is performed within an energy window ranging from 
-  -20 eV to 10 eV. Four initial guess centers of 1gauss type are considered:
-  3 with p-type and 1 with s-type geometry, localized on the Al atom (see the 
-  manual for further details).
+  The WanT input files set the froz_max parameter (see the manual for it precise meaning) 
+  in order to exactly represent the lowest electronic states involved in the evaluation
+  of transport properties.
+  The "conditioned minimization" technique (using penalty functionals) is used in the
+  case of the Hydrogen impurity to improve the matching procedure needed in the
+  transmittance calculation.
 
-  Bulk-like conductance is calculated: leads and conductor are made of the same
-  material and conductance of the ideal and infinite structure is computed.
-  Quantum conductance calculation is performed according to the Landauer formula.
-  DOS is calculated as the trace of the conductor Green's function.
+  Results are reported in the following files:
+     $TESTDIR/cond_Al.dat           transmittance for 1-atom  Al chain
+     $TESTDIR/cond_Al5.dat          transmittance for 5-atoms Al chain
+     $TESTDIR/cond_AlH.dat          transmittance for Al chain with H impurity
+     $TESTDIR/cond_AlH_bulk.dat     transmittance for 1-atom Al chain obtained
+                                    from the Al-H calculation
 
-
-  RESULTS discussion
-
-  After 500 iterations  the convergence iof the disentangleprocedure is not fully achieved but
-  can be considered adequate. The final invariant spread is about 25.724 Bohr^2
-  (6.431 Bohr^2 on average): this component of the spread will remain unchanged 
-  during the Wannier localization.
+  Comparison with example12 results from Espresso takes place as follows:
   
-  After about 520 iterations, Wannier convergence is achieved.
-  A total spread of about 36.945 Bohr^2 (9.236 Bohr^2 on average) is found. 
+  $TESTDIR/cond_Al5.dat    -->  example12/trans.alwire
+  $TESTDIR/cond_AlH.dat    -->  example12/trans.alwireh
 
-  The main outputs of the transport calculation are written in the dos.dat and
-  cond.dat files.
-  Transport calculations are performed considering only nearest neighbors interactions
-  (one atom per cell), therefore s band-width are slightly different from the DFT ones:
-  this is due to numerical effects because they are under-converged.
-  Transport calculation results are plotted in files:
-     $TESTDIR/cond.dat 
-     $TESTDIR/dos.dat
-
-   The conductance spectrum exhibits the typical stepwise behavior.
-
+  Note that the different adopted units lead to a factor of 2 (espresso results should be 
+  divided by 2 to be made comaprable)
+  
 
 
 

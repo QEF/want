@@ -1,0 +1,8 @@
+&inputpp
+  prefix='al1'
+  outdir='./'
+  pseudo_dir = './'
+  psfile(1) = 'Al.pz-vbc.UPF'
+  single_file = .FALSE.
+  ascii = .FALSE.
+/
