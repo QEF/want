@@ -1,0 +1,51 @@
+
+&CONTROL
+   prefix = 'silicon_zb'
+   postfix = '_WanT'
+   work_dir = './'
+   verbosity = 'high'
+/
+
+&SUBSPACE
+   dimwann = 24      
+   maxiter_dis = 2500
+/
+
+&LOCALIZATION
+   maxiter0_wan = 1000, 
+   alpha0_wan = 0.5
+   maxiter1_wan = 50000, 
+   alpha1_wan = 0.5
+   ncg = 5      
+   wannier_thr = 1.0e-8
+/
+
+WANNIER_CENTERS 
+atomic 1  0   0   1.0
+atomic 1  1  -1   1.0
+atomic 2  0   0   1.0
+atomic 2  1  -1   1.0
+atomic 3  0   0   1.0
+atomic 3  1  -1   1.0
+atomic 4  0   0   1.0
+atomic 4  1  -1   1.0
+atomic 5  0   0   1.0
+atomic 5  1  -1   1.0
+atomic 6  0   0   1.0
+atomic 6  1  -1   1.0
+atomic 7  0   0   1.0
+atomic 7  1  -1   1.0
+atomic 8  0   0   1.0
+atomic 8  1  -1   1.0
+atomic 9  0   0   1.0
+atomic 9  1  -1   1.0
+atomic 10  0   0   1.0
+atomic 10  1  -1   1.0
+atomic 11  0   0   1.0
+atomic 11  1  -1   1.0
+atomic 12  0   0   1.0
+atomic 12  1  -1   1.0
+
+
+
+

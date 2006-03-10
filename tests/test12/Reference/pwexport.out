@@ -1,0 +1,12 @@
+
+     Program POST-PROC v.3.0    starts ...
+     Today is 18Jan2006 at 12:56:31 
+
+     Reading file silicon_zb.save ...      only dimensions
+     read complete
+
+     Reading file silicon_zb.save ...      all except wavefuctions
+     read complete
+
+     nbndx  =    24  nbnd   =    24  natomwfc =    48  npwx   =    4523
+     nelec  =  48.00  nkb   =    48  ngl    =    1889
