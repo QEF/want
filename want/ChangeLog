@@ -3,6 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
+10 Mar 2006      Test12 added to repository (bulk silicon in zincblende cell, valence only). (BB)
+
 18 Jan 2006      conductor.x output improved (avg # of iterations to get lead self-energies);
                  bands output updated (kpt in cryst coord.). (AF & BB) 
 
