@@ -21,7 +21,7 @@ INPUT file layout
   ...
 /
 
-WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" )
+WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" | "alat" )
 <type1>    <specific_fmt>
     ....
 <typeN>    <specific_fmt>
@@ -247,12 +247,14 @@ dump_condmin  REAL
 ==============================================================================
 
 CARD 
-WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" )
+WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" | "alat" )
 
 Aside the tag WANNIER_CENTERS, units for positions maybe specified:
 "crystal"  : relative coordinates on the basis of a1,a2,a3 lattice vector (default)
-"bohr"     : cartesian coordinates in bohr
 "angstrom" : cartesian coordinates in angstrom
+"bohr"     : cartesian coordinates in bohr
+"alat"     : cartesian coordinates in units of the first lattice vector module
+             (as in espresso)
 
 Next the card contains DIMWANN lines giving the trial centers for the WFs. 
 Depending on the <TYPE> flag at the beginning of the line, 
