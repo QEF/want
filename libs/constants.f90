@@ -67,6 +67,8 @@
 ! ...   Units conversion factors
         REAL(dbl), PARAMETER :: ELECTRONVOLT_SI  = 1.6021892D-19     ! J  
         REAL(dbl), PARAMETER :: UMA_SI           = 1.66057D-27       ! Kg
+        REAL(dbl), PARAMETER :: DEBYE_SI         = 3.33564D-30       ! Coulomb meter
+        REAL(dbl), PARAMETER :: DEBYE_AU         = 0.393427228       ! e * Bohr
         REAL(dbl), PARAMETER :: ANGSTROM_AU      = 1.889727D0        ! au
         REAL(dbl), PARAMETER :: AU_TO_OHMCMM1    = 46000.0D0         ! (ohm cm)^-1
         REAL(dbl), PARAMETER :: AU_KB            = 294210.0D0        ! Kbar
