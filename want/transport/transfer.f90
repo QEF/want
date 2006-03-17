@@ -71,7 +71,7 @@
       !
 
       !
-      ! Compute (enei * s00 - h00)^-1 and store it in t11 
+      ! Compute (ene * s00 - h00)^-1 and store it in t11 
       ! here c00 = h00 - ene * s00
       !
       t11(:,:) = CZERO
