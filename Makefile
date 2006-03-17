@@ -18,6 +18,7 @@ default:
 	@echo  "  Possible <target>'s are: "
 	@echo  "     wannier            compile Wannier function suite"
 	@echo  "     transport          compile transport executables"
+	@echo  "     utility            compile utility executables"
 	@echo  "     libwant            compile the want utility library"
 	@echo  "     libiotk            compile iotk library"
 	@echo 
@@ -30,7 +31,7 @@ default:
 #
 # MAIN target
 #
-all: wannier transport
+all: wannier transport utility
 
 # 
 # LIBS and MODULES
@@ -51,6 +52,9 @@ transport: libiotk libwant
 	if test -d transport ; then \
 	( cd transport ; $(MAKE) ) ; fi
 
+utility: libiotk libwant
+	if test -d utility ; then \
+	( cd utility ; $(MAKE) ) ; fi
 
 #
 # CLEAN UP
@@ -60,6 +64,7 @@ clean:
 	cd libs;      $(MAKE) clean;
 	cd wannier;   $(MAKE) clean;
 	cd transport; $(MAKE) clean;
+	cd utility;   $(MAKE) clean;
 	- /bin/rm -rf bin/*.x
 
 clean_test:
