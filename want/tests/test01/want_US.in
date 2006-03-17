@@ -7,16 +7,17 @@
 
 &SUBSPACE
     dimwann = 8       
-    win_max =  14.8    
+    win_max =  14.95
     maxiter_dis = 200
     subspace_init = 'center_projections'
 /
 
 &LOCALIZATION
-    maxiter0_wan  = 0
-    maxiter1_wan  = 5000
+    maxiter0_wan  = 100
+    maxiter1_wan  = 50000
+    alpha1_wan = 0.7
     ncg = 5      
-    wannier_thr = 1.e-8
+    wannier_thr = 1.e-7
 /
 
 WANNIER_CENTERS {crystal}
