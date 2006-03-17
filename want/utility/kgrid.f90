@@ -20,15 +20,16 @@
    ! OUTPUT:
    !   kpoint in crystal coords, according to the formula:
    !
-   ! xk_i(j) = (2*j + si)/2*ni 
+   ! xk_i(j) = (2*j + si)/2*ni  -(ni+1)/2
    ! i   lattice comp of the kpt (i=1,3)
    ! j   index of the kpt
    !
+   INTEGER, PARAMETER :: dbl = SELECTED_REAL_KIND(14,200)
    
    INTEGER            :: n(3)     ! dimensions of the mesh
    INTEGER            :: s(3)     ! shift
    !
-   REAL, ALLOCATABLE  :: vkpt(:,:), w(:)
+   REAL(dbl), ALLOCATABLE  :: vkpt(:,:), w(:)
    !
    INTEGER            :: i,j,k, ik
 
@@ -71,14 +72,21 @@
        !
        ik = ik + 1
        !
-       vkpt(1,ik) = REAL( 2*i + s(1) )/ REAL(2*n(1))
-       vkpt(2,ik) = REAL( 2*j + s(2) )/ REAL(2*n(2))
-       vkpt(3,ik) = REAL( 2*k + s(3) )/ REAL(2*n(3))
-       w(ik) =  2.0 / REAL(PRODUCT(n))
+       vkpt(1,ik) = REAL( 2*i -s(1) -n(1) , dbl )/ REAL(2*n(1), dbl)
+       vkpt(2,ik) = REAL( 2*j -s(2) -n(2) , dbl )/ REAL(2*n(2), dbl)
+       vkpt(3,ik) = REAL( 2*k -s(3) -n(3) , dbl )/ REAL(2*n(3), dbl)
+       w(ik) =  2.0_dbl / REAL(PRODUCT(n), dbl)
        !
    ENDDO
    ENDDO
    ENDDO
+   
+   !
+   ! global shift
+   !
+   vkpt(1,:) = vkpt(1,:) + REAL( 2*s(1)*(1-MOD(n(1),2)) +MOD(n(1),2), dbl) / REAL(2*n(1), dbl)
+   vkpt(2,:) = vkpt(2,:) + REAL( 2*s(2)*(1-MOD(n(2),2)) +MOD(n(2),2), dbl) / REAL(2*n(2), dbl)
+   vkpt(3,:) = vkpt(3,:) + REAL( 2*s(3)*(1-MOD(n(3),2)) +MOD(n(3),2), dbl) / REAL(2*n(3), dbl)
 
 
 !
@@ -86,7 +94,7 @@
 !
    WRITE(6, "(i6)") ik
    DO i=1,ik
-       WRITE(6,"(3f15.9,5x,f9.6)") vkpt(:,i), w(i)
+       WRITE(6,"(3f15.9,5x,f12.8)") vkpt(:,i), w(i)
    ENDDO
 
   
