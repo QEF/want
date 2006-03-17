@@ -6,6 +6,7 @@
 
 &SUBSPACE
    dimwann = 24
+   use_blimit = .TRUE.
 /
 
 &LOCALIZATION
