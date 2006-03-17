@@ -1,12 +1,12 @@
 
-     Program POST-PROC v.3.0    starts ...
-     Today is  3Dec2005 at  0:10:59 
+     Program POST-PROC v.2.1.5  starts ...
+     Today is 31Jan2006 at 15:20:46 
 
-     Reading file zincblend.save ...      only dimensions
+     Reading file zincblend.save ... 
      read complete
 
-     Reading file zincblend.save ...      all except wavefuctions
+     Reading file zincblend.save ... 
      read complete
 
      nbndx  =    24  nbnd   =    24  natomwfc =    48  npwx   =    6761
-     nelec  =  48.00  nkb   =    54  ngl    =    2701
+     nelec  =   48.00 nkb   =    54  ngl    =    2701

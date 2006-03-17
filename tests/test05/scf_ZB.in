@@ -11,8 +11,8 @@ NC - pbe
    /
    &SYSTEM
       ibrav=4, 
-      celldm(1)=5.8748
-      celldm(3)=4.8760724,
+      celldm(1)=5.88531
+      celldm(3)=4.832646
       nat=12,
       ntyp=2,
       ecutwfc=60.0,
@@ -22,7 +22,7 @@ NC - pbe
       electron_maxstep = 50,
       mixing_mode = 'plain',
       mixing_beta = 0.3,
-      conv_thr =  1.0d-6,
+      conv_thr =  1.0d-8,
    /   
 ATOMIC_SPECIES
  N   14.01   N.pbe-gp.UPF
@@ -41,5 +41,5 @@ Al      0.333333   -0.333333    0.833333
 N      -0.333333   -0.666667    0.791667
 N       0.333333   -0.333333    0.958333
 K_POINTS {automatic}
-10  10  4     1  1  1
+16  16  4     1  1  1
 

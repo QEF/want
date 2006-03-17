@@ -3,7 +3,7 @@
   prefix='zincblend'
   pseudo_dir = './'
   psfile(1) = 'N.pbe-gp.UPF'
-  psfile(2) = 'Al.pbe-n-van.UPF'
+  psfile(2) = 'Al.pbe-rrkj.UPF'
   single_file = .FALSE.
   ascii = .FALSE.
 /
