@@ -46,8 +46,8 @@ Calculations}\label{subsection:run_dft}
       symmetry is not (yet) allowed. The complete list of
       \textbf{k}-points should be specified in the {\tt K\_POINTS} card.
       The simple program
-      {\tt kgrid.f90} in {\tt \$TOPDIR/utility }can be used to generate non-symmetrized
-      Monkhorst-Pack grids.
+      {\tt kgrid.x} in {\tt \$TOPDIR/utility }can be used to generate non-symmetrized
+      Monkhorst-Pack grids (run it and follow the instructions).
       %
 \item From \PWSCF to the Wannier code.\\
       \noindent Use the post processing
@@ -95,7 +95,12 @@ create your own input file, that will be used for the following two steps (a-b).
       %
       Trial Wannier centers are not mandatory in this step (depending
       on the {\tt subspace\_init} flag).
-      The code produces a standard output with the main results,
+      To setup these centers, the program {\tt midpoint.x} in 
+      {\tt \$TOPDIR/utility } can be used to compute
+      the middle points of bonds for a periodic structure (the simple input file 
+      is described in the head of the source). 
+
+      {\tt disentangle.x} produces a standard output with the main results,
       and two internal files: {\tt \$prefix\_\$postfix.ovp} and
       {\tt \$prefix\_\$postfix.space} . The former keeps trace of the
       computed overlap and projection integrals (to be re-used in further

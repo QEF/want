@@ -107,7 +107,7 @@ they are partly binary.\\
    ... \\
   $/$ \\
   \\
-{\tt  WANNIER\_CENTERS } {\tt ( "crystal" $\mid$ "angstrom" $\mid$ "bohr" ) }\\
+{\tt  WANNIER\_CENTERS } {\tt ( "crystal" $\mid$ "angstrom" $\mid$ "bohr" $\mid$ "alat") }\\
   $\langle${\tt type}$_1\rangle \qquad    \langle${\tt specific\_fmt}$\rangle$ \\
   ... \\
   $\langle${\tt type}$_N\rangle \qquad    \langle${\tt specific\_fmt}$\rangle$
@@ -351,7 +351,7 @@ specifies whether to order the computed Wannier functions and
 \end{centering}\\
 
 \noindent {\tt WANNIER\_CENTERS}
-{\tt ( "crystal" $\mid$ "angstrom" $\mid$ "bohr" ) }\\
+{\tt ( "crystal" $\mid$ "angstrom" $\mid$ "bohr" $\mid$ "alat") }\\
 
 \noindent Aside the tag {\tt WANNIER\_CENTERS}, units for positions maybe specified:\\
 %
@@ -360,6 +360,8 @@ specifies whether to order the computed Wannier functions and
 \texttt{"crystal"}  & : relative coordinates on the basis of $\mathbf{a}_1,\mathbf{a}_2,\mathbf{a}_3$
                                 direct lattice vector (default)\\
 \texttt{"bohr"}     & : cartesian coordinates in Bohr\\
+\texttt{"alat"}     & : cartesian coordinates in units of the
+                        first lattice vector module\\
 \texttt{"angstrom"} & : cartesian coordinates in Angstrom
 \end{tabular}
 %
