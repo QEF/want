@@ -10,7 +10,7 @@ TOPDIR=`pwd`
 BINDIR=$TOPDIR/conf
 
 
-for DIR in iotk libs wannier transport
+for DIR in iotk libs wannier transport utility
 do
     # set inter-directory dependencies
     case $DIR in
@@ -18,6 +18,7 @@ do
         libs )      DEPENDS="../include ../iotk"         ;;
         wannier )   DEPENDS="../include ../iotk ../libs" ;;
         transport ) DEPENDS="../include ../iotk ../libs ../wannier " ;;
+        utility )   DEPENDS="../include ../iotk ../libs ../wannier " ;;
     esac
 
     # generate dependencies file
