@@ -30,9 +30,11 @@ sph_bes.o \
 sph_har.o \
 timing.o \
 util.o \
+warning.o \
 ylmr2.o \
 cptimer.o \
 fft_stick.o
+
 
 
 #
