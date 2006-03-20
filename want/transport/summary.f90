@@ -22,7 +22,7 @@
                                 datafile_sgm,                       &
                                 transport_dir, niterx, nprint,      & 
                                 use_overlap, use_correlation                       
-   USE T_egrid_module, ONLY : ne, emin, emax, delta, de
+   USE T_egrid_module, ONLY : ne, emin, emax, delta, sigma, de
    USE T_kpoints_module, ONLY : nkpts_par, nk_par, vkpt_par, wk_par, &
                                 kpoints_alloc => alloc
    USE T_kpoints_module, ONLY : nrtot_par, nr_par, vr_par, wr_par
@@ -74,6 +74,7 @@
    WRITE(unit,"(  7x,'Max Energy  :',5x,f10.5)") emax
    WRITE(unit,"(  7x,'Energy Step :',5x,f10.5)") de
    WRITE(unit,"(  7x,'Delta       :',5x,f10.5)") delta
+   WRITE(unit,"(  7x,'Sigma       :',5x,f10.5)") sigma
    WRITE( unit,"( 2x,'</ENERGY_GRID>',/)" )
 
    IF ( kpoints_alloc ) THEN

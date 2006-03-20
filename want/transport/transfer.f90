@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************
-   SUBROUTINE transfer( dim, niterx, tot, tott, c00, c01, niter )
+   SUBROUTINE transfer( dim, niterx, tot, tott, c00, c01, s00, sigma, niter )
    !***********************************************************************
    !
    !...  Iterative construction of the transfer matrix
@@ -17,7 +17,7 @@
    !
    USE kinds
    USE io_global_module, ONLY : stdout
-   USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7
+   USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7, EPS_m2, CI
    USE timing_module,    ONLY : timing
    USE util_module,      ONLY : mat_mul, mat_sv
    IMPLICIT NONE
@@ -30,8 +30,10 @@
       INTEGER,      INTENT(out) :: niter
       COMPLEX(dbl), INTENT(in) :: c00(dim,dim)
       COMPLEX(dbl), INTENT(in) :: c01(dim,dim)
+      REAL(dbl),    INTENT(in) :: s00(dim,dim)
       COMPLEX(dbl), INTENT(inout) :: tot(dim,dim)
       COMPLEX(dbl), INTENT(inout) :: tott(dim,dim)
+      REAL(dbl),    INTENT(in)    :: sigma
 
 
       !
@@ -75,7 +77,7 @@
       ! here c00 = h00 - ene * s00
       !
       t11(:,:) = CZERO
-      t12(:,:) = -c00(:,:)
+      t12(:,:) = -c00(:,:) + CI*sigma*s00(:,:)
 
       DO i = 1, dim
           t11(i,i) = CONE

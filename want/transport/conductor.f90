@@ -24,7 +24,7 @@
                                     dos_unit => aux1_unit, cond_unit => aux2_unit
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
                                     conduct_formula, niterx, nprint, bias, datafile_sgm 
-   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta
+   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta, sigma
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par , wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 
@@ -179,7 +179,7 @@
           ! construct leads self-energies 
           ! 
           ! ene + bias
-          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R,niter )
+          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R, s00_R(1,1,ik), sigma, niter )
           avg_iter = avg_iter + REAL(niter)
           CALL green( dimR, totR, tottR, aux00_R, aux01_R, ene+bias, gR, 1 )
           !
@@ -187,7 +187,7 @@
           CALL mat_mul(sgm_R, work, 'N', aux_RC, 'N', dimC, dimC, dimR)
  
           ! ene
-          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L,niter )
+          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L, s00_L(1,1,ik), sigma, niter )
           avg_iter = avg_iter + REAL(niter)
           CALL green( dimL, totL, tottL, aux00_L, aux01_L, ene, gL, -1 )
           !
@@ -204,7 +204,8 @@
           ! Construct the conductor green's function
           ! gC = work^-1  (retarded)
           !
-          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)
+          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik) + CI*sigma*s00_c(:,:,ik)
+!          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)
   
           gC(:,:) = CZERO
           DO i = 1, dimC
@@ -219,7 +220,7 @@
           DO i = 1, dimC
              dos(i,ie) = dos(i,ie) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
- 
+
           !
           ! evaluate the transmittance according to the Fisher-Lee formula
           ! or (in the correlated case) to the generalized expression as 

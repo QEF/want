@@ -10,7 +10,7 @@
    MODULE T_input_parameters_module
 !********************************************
    USE kinds,         ONLY : dbl
-   USE constants,     ONLY : ZERO, EPS_m2, EPS_m5 
+   USE constants,     ONLY : ZERO, EPS_m1, EPS_m2, EPS_m5, EPS_m4, EPS_m3 
    USE parameters,    ONLY : nstrx
    USE parser_module, ONLY : change_case
    IMPLICIT NONE
@@ -80,6 +80,9 @@
    REAL(dbl) :: delta =  EPS_m5
        ! i\delta broadening of green functions
 
+   REAL(dbl) :: sigma =  EPS_m3
+       ! broadening for leads self energy calculation
+
    REAL(dbl) :: bias =  ZERO
        ! effective bias between the leads
        ! not fully implemented at the moment
@@ -114,13 +117,13 @@
        ! the name of the file containing correlation self-energy
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
-                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, nk, &
+                 conduct_formula, niterx, ne, emin, emax, nprint, delta, sigma, bias, nk, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, use_correlation 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx
-   PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, use_correlation 
+   PUBLIC :: ne, emin, emax, nprint, delta, sigma, bias, nk, use_overlap, use_correlation 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: INPUT_CONDUCTOR
 
@@ -166,6 +169,8 @@ CONTAINS
       IF ( nprint <= 0) CALL errore(subname, ' nprint must be > 0 ', -nprint+1 )
       IF ( delta < ZERO ) CALL errore(subname,'Invalid DELTA',1)
       IF ( delta > EPS_m2 ) CALL errore(subname,'DELTA too large',1)
+      IF ( sigma < ZERO ) CALL errore(subname,'Invalid SIGMA',1)
+      IF ( sigma > EPS_m1 ) CALL errore(subname,'SIGMA too large',1)
 
       CALL change_case(calculation_type,'lower')
       allowed=.FALSE.

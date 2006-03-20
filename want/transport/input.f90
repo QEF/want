@@ -113,17 +113,20 @@ CONTAINS
    !**********************************************************
       USE T_egrid_module,           ONLY : ne,           &
                                            emin, emax,   &
-                                           delta
+                                           delta,        &
+                                           sigma
       USE T_input_parameters_module,ONLY : ne_     => ne,   &
                                            emin_   => emin, &
                                            emax_   => emax, &
-                                           delta_  => delta
+                                           delta_  => delta,&
+                                           sigma_  => sigma
       IMPLICIT NONE
 
       ne     = ne_
       emin   = emin_
       emax   = emax_
       delta  = delta_
+      sigma  = sigma_
 
    END SUBROUTINE setup_egrid
 
