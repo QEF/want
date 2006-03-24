@@ -141,7 +141,7 @@
               !                                              \int dr e^ibr Q_ij(r)
               CALL init_us_1()
               IF ( use_blimit ) &
-                 WRITE( stdout, '(2x, "WARNING: setting b = 0 in qb (overlap augment.)" )')
+                 CALL warning( "WARNING: setting b = 0 in qb (overlap augment.)" )
                  !
               WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5,2/ ) ') nkb
 

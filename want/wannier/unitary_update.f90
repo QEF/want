@@ -22,6 +22,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    USE timing_module,  ONLY : timing
    USE util_module,    ONLY : mat_mul, mat_hdiag, zmat_unitary
    USE control_module, ONLY : unitary_thr
+   USE parser_module,  ONLY : int2char
    IMPLICIT NONE
 
    !
@@ -93,7 +94,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
 #ifdef __CHECK_UNITARY
         IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
                                   SIDE='both', TOLL=unitary_thr )  )  &
-           WRITE (stdout,"(2x,'WARNING: U matrix NOT unitary (II) at ikpt = ',i4)")ik
+           CALL warning('U matrix NOT unitary (II) at ikpt = '//TRIM(int2char(ik)))
 #endif
    ENDDO
    

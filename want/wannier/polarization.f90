@@ -144,7 +144,8 @@
       IF ( nkpts == 1 ) lsupercell = .TRUE.
       
       IF ( lsupercell ) THEN
-          WRITE(stdout, "(/,2x, 'Dipole contributions: (cart. coord. in Debye = e*Bohr)')")
+          WRITE(stdout, "(/,2x, 'Dipole contributions: &
+                                &(cart. coord. in e*Bohr = 2.541766 Debye)')")
           !
           WRITE(stdout, "(4x,'Ionic dipole  =     ( ',3f12.6, ' )')") &
                           P_ion(:) / REAL(nspin, dbl) 

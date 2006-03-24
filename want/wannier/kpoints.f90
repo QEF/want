@@ -259,10 +259,17 @@ CONTAINS
        ! due to a different convention in Espresso
        wk(:) = wk(:) * nkpts_tot / ( TWO * nkpts )
        wksum = SUM(wk(:))
+       !
        DO ik = 1,nkpts
-          IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) &
-              CALL errore(subname,'Invalid kpt weight',ik)
+          !
+          IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) found = .TRUE.
        ENDDO
+       !
+       IF ( found ) THEN
+          !
+          CALL warning('Invalid kpt weights from DFT data. Recalculated')
+          wk(:) = ONE/REAL(nkpts, dbl)
+       ENDIF
 
        !
        ! ... kpoints are in cartesian units, in 2PI/alat

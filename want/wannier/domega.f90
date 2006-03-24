@@ -9,6 +9,17 @@
 !*****************************************************************
    SUBROUTINE domega( dimwann, nkpts, Mkb, csheet, sheet, rave, domg )
    !*****************************************************************
+   !
+   ! This routine compute the gradinet of the spread functional
+   ! respect to W  (U = e^iW):
+   !
+   ! dOmega/dW(k) = 4 * \Sum_b wb * (  A[R] - S[T] )
+   ! the detailed definitions of terms are given below
+   !
+   ! Note that the first term ( A[R] ) comes from the
+   ! gradiend of Omega_I+OD, while the second from that
+   ! of Omega_D
+   !
    USE kinds
    USE constants, ONLY : ZERO, ONE, TWO, CZERO, CI
    USE timing_module, ONLY : timing

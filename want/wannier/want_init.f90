@@ -121,7 +121,7 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
              CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
     ELSE
         !
-        ! this is because the Espresso convention which double the kpt
+        ! this is because of the Espresso convention which doubles the kpt
         ! number instead of adding a second spin component when nspin == 2
         !
         nkpts = nkpts_tot / 2 

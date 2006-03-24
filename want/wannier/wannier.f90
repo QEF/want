@@ -17,14 +17,16 @@
       USE constants, ONLY: CZERO, CONE, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
-      USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
+      USE control_module, ONLY : nprint_wan, nsave_wan,  &
                                  unitary_thr, do_condmin, read_pseudo, do_polarization, &
-                                 localization_init_mode => localization_init
+                                 localization_init_mode => localization_init, &
+                                 ordering_mode, do_ordering, do_collect_wf 
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
       USE files_module, ONLY : file_open, file_close
       USE version_module, ONLY : version_number
       USE util_module, ONLY: zmat_unitary, mat_mul, mat_svd, mat_hdiag
+      USE parser_module, ONLY: int2char
 
       USE want_init_module, ONLY : want_init
       USE summary_module, ONLY : summary
@@ -33,8 +35,9 @@
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                        ncg, wannier_thr, cu, rave, rave2, r2ave, &
                        Omega_I, Omega_D, Omega_OD, Omega_tot, &
+                       cu_best, Omega_tot_best, &
                        localization_allocate, localization_write, localization_print, &
-                       a_condmin, niter_condmin, dump_condmin
+                       a_condmin, niter_condmin, dump_condmin, xcell
       USE trial_center_data_module, ONLY : trial
       USE hamiltonian_module, ONLY : hamiltonian_write, hamiltonian_init
 
@@ -59,6 +62,7 @@
       COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
+      COMPLEX(dbl), ALLOCATABLE ::  Mkb_aux(:,:,:,:)
       !
       CHARACTER( LEN=nstrx )  :: filename
       !
@@ -114,6 +118,8 @@
          IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0', ABS(ierr) )
       ALLOCATE( Mkb0(dimwann,dimwann,nb,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0', ABS(ierr) )
+      ALLOCATE( Mkb_aux(dimwann,dimwann,nb,nkpts), STAT=ierr )
+         IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb_aux', ABS(ierr) )
       ALLOCATE( domg(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating domg', ABS(ierr) )
       ALLOCATE( domg_aux(dimwann,dimwann,nkpts), STAT=ierr )
@@ -139,19 +145,31 @@
       WRITE( stdout, "(2x,'=',21x,'Init localization procedure',20x,'=')" )
       WRITE( stdout, "(2x,70('='),/)" )
 
+      !
+      ! init many quantities, particularly the cU matrix
+      !
       CALL localization_init( localization_init_mode )
+      !
+      ! Mkb_aux will contain tha updated overlaps, while
+      ! Mkb keeps trace of thre starting overlaps
+      !
+      CALL overlap_update(dimwann, nkpts, cu, Mkb, Mkb_aux)
+
 
       sheet(:,:,:)   = ZERO
       csheet(:,:,:)  = CONE
 
-
       !
       ! ... Calculate the average positions of the WFs
       !
-      CALL omegai( Omega_I, dimwann, nkpts, Mkb )
-      CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2,  &
+      CALL omegai( Omega_I, dimwann, nkpts, Mkb_aux )
+      CALL omega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, r2ave, rave2,  &
                   Omega_D, Omega_OD )
+                  !
       Omega_tot = Omega_I + Omega_D + Omega_OD 
+      !
+      ! init Omega_tot_best if not reading it from file
+      IF ( TRIM(localization_init_mode) /= 'from_file' ) Omega_tot_best = Omega_tot
       !
       CALL localization_print(stdout,FMT="extended")
       !
@@ -193,10 +211,10 @@
            ncount = iter
 
            !
-           ! Store cu and Mkb
+           ! Store cu and Mkb_aux
            !
            cu0(:,:,:)    = cu(:,:,:)
-           Mkb0(:,:,:,:) = Mkb(:,:,:,:)
+           Mkb0(:,:,:,:) = Mkb_aux(:,:,:,:)
 
            !
            ! settings
@@ -219,13 +237,13 @@
            !
            ! compute the derivative of the functional
            !
-           CALL domega( dimwann, nkpts, Mkb, csheet, sheet, rave, domg)
+           CALL domega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, domg)
 
            !
            ! apply conditioned minimization if required
            !
            IF ( do_condmin ) THEN
-                CALL domega_aux( dimwann, nkpts, Mkb, rave, trial, a_condmin, domg_aux)
+                CALL domega_aux( dimwann, nkpts, Mkb_aux, rave, trial, a_condmin, domg_aux)
                 domg(:,:,:) = domg(:,:,:) + domg_aux(:,:,:)
            ENDIF
 
@@ -282,19 +300,19 @@
            ! compute the change in the unitary matrix dU = e^(i * dq)
            ! and update U
            !
-           CALL unitary_update( dimwann, nkpts, dq, cu, cdU ) 
+           CALL unitary_update( dimwann, nkpts, dq, cU, cdU ) 
 
 
            !
-           ! update the overlap Mkb, according to the new dCu
+           ! update the overlap Mkb_aux (from Mkb), according to the new cU
            !
-           CALL overlap_update(dimwann, nkpts, cdU, Mkb)
+           CALL overlap_update(dimwann, nkpts, cU, Mkb, Mkb_aux)
 
 
            !
            ! The functional is recalculated
            !
-           CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
+           CALL omega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, r2ave, rave2, &
                        Omega_D, Omega_OD )
            Omega_tot = Omega_I + Omega_D + Omega_OD
            !
@@ -309,8 +327,8 @@
                !
                ! recover cu and Mkb
                !
-               cu = cu0
-               Mkb = Mkb0
+               cu      = cu0
+               Mkb_aux = Mkb0
    
                !
                ! Take now optimal parabolic step
@@ -335,15 +353,15 @@
 
 
                !
-               ! update the overlap Mkb, according to the new dCu
+               ! update the overlap Mkb_aux (from Mkb), according to the new dCu
                !
-               CALL overlap_update( dimwann, nkpts, cdU, Mkb)
+               CALL overlap_update( dimwann, nkpts, cU, Mkb, Mkb_aux)
 
 
                !
                ! The functional is recalculated
                !  
-               CALL omega( dimwann, nkpts, Mkb, csheet, sheet, rave, r2ave, rave2, &
+               CALL omega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, r2ave, rave2, &
                            Omega_D, Omega_OD )
                Omega_tot = Omega_I + Omega_D + Omega_OD
            
@@ -358,7 +376,21 @@
            Omega_old = Omega_tot
            Omega0 = OmegaA
    
+
+           !
+           ! check against the iteration of best localization
+           !
+! XXX
+CALL timing('omega_best','start')
+           IF ( Omega_tot < Omega_tot_best ) THEN
+                !
+                Omega_tot_best   = Omega_tot
+                cU_best(:,:,:)   = cU(:,:,:)
+                !
+           ENDIF
+CALL timing('omega_best','stop')
    
+
            !
            ! write info to stdout
            !
@@ -370,7 +402,7 @@
                      WRITE( stdout,"(/,2x,'Iteration = ',i5) ") ncount
                 ENDIF
                 CALL localization_print(stdout, FMT="standard" )
-                WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f12.6) ") Omega_var
+                WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6) ") Omega_var
                 
                 CALL timing_upto_now(stdout)
            ENDIF
@@ -411,20 +443,45 @@
 
       WRITE( stdout, "(/,2x,70('='))" )
       IF ( ncount == maxiter0_wan + maxiter1_wan ) THEN
-          WRITE( stdout, "(2x,'=',18x,'Max number of iteration reached',18x,'=')")
+          WRITE( stdout, "(2x,'=',18x,'Max number of iteration reached',19x,'=')")
       ELSE
           WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
       ENDIF
       WRITE( stdout, "(2x,70('='),2/)" )
-      WRITE( stdout, "(2x,'Iteration # : ',i5)") ncount
+      WRITE( stdout, "(2x,'Iteration # : ',i5,/)") ncount
 
 
       !
-      ! ... ordering wannier centers
+      ! ordering wannier centers
       !
-      CALL ordering(dimwann,nkpts,rave,rave2,r2ave,cu, ordering_mode)
-      WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
+      IF ( do_ordering ) THEN
+           !
+           WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
+           CALL ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
+           !
+      ENDIF
 
+      !
+      ! collect WF
+      !
+      IF ( do_collect_wf ) THEN
+           !
+           WRITE( stdout, "(2x,'Collecting WFs')") 
+           WRITE( stdout, "(2x,'Selected cell extrema [cryst. coord]:')") 
+           WRITE( stdout,"(  3( 6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4, /),/ )" ) &
+                          (m, xcell(m), xcell(m) + ONE, m=1,3 ) 
+                          !
+           CALL collect_wf(dimwann, nkpts, rave, xcell, cU)
+           !
+           CALL overlap_update( dimwann, nkpts, cU, Mkb, Mkb_aux)
+           CALL omega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, r2ave, rave2, &
+                       Omega_D, Omega_OD )
+           !
+      ENDIF
+
+      !
+      ! final summary
+      !
       CALL localization_print(stdout, FMT="extended")
       !
       IF ( do_polarization ) CALL polarization( dimwann, rave )
@@ -439,7 +496,7 @@
           !
           IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik),  &
                                     SIDE='both', TOLL=unitary_thr )  )  &
-               WRITE (stdout, " (2x, 'WARNING: U matrix NOT unitary at ikpt = ',i4)")ik
+               CALL warning('WARNING: U matrix NOT unitary at ikpt = '//TRIM(int2char(ik)) )
       ENDDO
 
 
@@ -498,6 +555,8 @@
            IF( ierr /=0 ) CALL errore('wannier', 'deallocating cu0', ABS(ierr) )
       DEALLOCATE( Mkb0, STAT=ierr )
            IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb0', ABS(ierr) )
+      DEALLOCATE( Mkb_aux, STAT=ierr )
+           IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb_aux', ABS(ierr) )
       DEALLOCATE( domg, domg_aux, STAT=ierr )
            IF( ierr /=0 ) CALL errore('wannier', 'deallocating domg', ABS(ierr) )
       DEALLOCATE( dq0, STAT=ierr )

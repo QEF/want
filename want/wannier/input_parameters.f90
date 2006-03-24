@@ -134,7 +134,7 @@
    INTEGER :: nprint_dis = 10  
        ! every nprint iterations in disentangle minimizations write to stdout
 
-   INTEGER :: nsave_dis = 10  
+   INTEGER :: nsave_dis = 50  
        ! every nsave iterations in disentangle minimizations write subspace to disk
 
    REAL(dbl) :: disentangle_thr = 1.0d-8  
@@ -213,10 +213,10 @@
    INTEGER :: ncg = 3
        ! each ncg iterations in the second iteration part, do a CG minimization
 
-   INTEGER :: nprint_wan = 10  
+   INTEGER :: nprint_wan = 20  
        ! each nprint_wan iterations in wannier minimizations write to stdout
 
-   INTEGER :: nsave_wan = 10  
+   INTEGER :: nsave_wan = 200  
        ! each nsave_wan iterations in wannier minimizations save data to disk
 
    CHARACTER(nstrx) :: localization_init = "center_projections"
@@ -246,15 +246,24 @@
    CHARACTER(nstrx) :: ordering_mode_allowed(4)    
    DATA ordering_mode_allowed / "none", "spatial", "spread", "complete" /
 
+   LOGICAL :: collect_wf = .FALSE.
+       ! whether to collect all the WFs in a selected reference cell
+       ! see the xcell parameter
+
+   REAL :: xcell(3) = -0.5_dbl
+       ! the corner of the reference cell used to collect WFs (if collect_wf == .TRUE.)
+       ! crystal units are used
+
 
    NAMELIST / LOCALIZATION / wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, &
      maxiter1_wan, nprint_wan, nsave_wan, ncg, localization_init, &
-     ordering_mode, a_condmin, niter_condmin, dump_condmin
+     ordering_mode, a_condmin, niter_condmin, dump_condmin, collect_wf, xcell
 
 
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan
    PUBLIC :: nprint_wan, nsave_wan, ncg, localization_init
    PUBLIC :: ordering_mode, a_condmin, niter_condmin, dump_condmin
+   PUBLIC :: collect_wf, xcell
    PUBLIC :: LOCALIZATION
 
 

@@ -122,11 +122,13 @@ CONTAINS
           units = 'bohr'
       ELSEIF ( matches('ANGSTROM', input_line ) ) THEN
           units = 'angstrom'
+      ELSEIF ( matches('ALAT', input_line ) ) THEN
+          units = 'alat'
       ELSE
           IF ( TRIM( ADJUSTL( input_line ) ) /= 'WANNIER_CENTERS' ) THEN
                CALL errore( 'card_wannier_centers', &
-                          & ' unknow unit option for WANNIER_CENTERS: '&
-                          & //input_line, 1 )
+                          & 'Unknow units for WANNIER_CENTERS: '&
+                          & //TRIM(input_line), 1 )
           ENDIF
           units = 'crystal'
       ENDIF

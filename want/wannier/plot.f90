@@ -23,7 +23,6 @@
                                   aux_unit, aux1_unit 
    USE control_module,     ONLY : read_pseudo, use_uspp
    USE files_module,       ONLY : file_open, file_close, file_delete
-   USE parser_module
    USE want_init_module,   ONLY : want_init
    USE version_module,     ONLY : version_number
    USE util_module,        ONLY : mat_mul
@@ -56,16 +55,16 @@
    REAL(dbl)        :: r1min, r1max     ! plot cell dim along a1 (cry units)
    REAL(dbl)        :: r2min, r2max     ! the same but for a2
    REAL(dbl)        :: r3min, r3max     ! the same but for a3
-   CHARACTER( 20 )  :: datatype         ! ( "modulus" | "real" | "imaginary"  )
+   CHARACTER( 20 )  :: datatype         ! ( "modulus" "module" | "real" | "imaginary"  )
    CHARACTER( 20 )  :: output_fmt       ! ( "txt" | "plt" | "cube" | "xsf" )
    LOGICAL          :: assume_ncpp      ! If .TRUE. pp's are not read
-   LOGICAL          :: locate_wf        ! move the centers of WF in a unit cell centered
-                                        ! around the origin
+   LOGICAL          :: collect_wf       ! move the centers of WF in a unit cell centered
+                                        ! around the selected lotting cell
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
-                    datatype, assume_ncpp, output_fmt, locate_wf, &
+                    datatype, assume_ncpp, output_fmt, collect_wf, &
                     r1min, r1max, r2min, r2max, r3min, r3max, spin_component
 
    !
@@ -93,7 +92,7 @@
    REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
-   REAL(dbl)    :: arg
+   REAL(dbl)    :: arg, cost
    COMPLEX(dbl) :: phase
    CHARACTER(3), ALLOCATABLE :: symbtot(:)
 
@@ -120,7 +119,7 @@
       postfix                     = ' '
       work_dir                    = './'
       assume_ncpp                 = .FALSE.
-      locate_wf                   = .TRUE.
+      collect_wf                  = .TRUE.
       wann                        = ' '
       datatype                    = 'modulus'
       output_fmt                  = 'plt'
@@ -142,10 +141,12 @@
       IF ( LEN_TRIM( wann) == 0 ) CALL errore('plot', 'wann not supplied ', 1)
       !
       CALL change_case( datatype, 'lower')
-      IF ( TRIM(datatype) /= "modulus" .AND. TRIM(datatype) /= "real" .AND. &
-           TRIM(datatype) /= "imaginary"  ) &
+      IF ( TRIM(datatype) /= "modulus" .AND. TRIM(datatype) /= "module" .AND. &
+           TRIM(datatype) /= "real"    .AND. TRIM(datatype) /= "imaginary"  ) &
            CALL errore('plot','invalid DATATYPE = '//TRIM(datatype),2)
            !
+      IF ( TRIM(datatype) == "module" ) datatype = "modulus"
+
       CALL change_case(spin_component,'lower')
       IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
            TRIM(spin_component) /= "down" ) &
@@ -214,8 +215,10 @@
       !
       ! should be eliminated ASAP
       !
-      IF ( use_uspp ) & !  CALL errore('plot','USPP not yet implemented',1)
-             WRITE(stdout,"(/,2x,'WARNING: USPP not fully implemented',/)") 
+      IF ( use_uspp ) THEN
+             WRITE(stdout,"()")
+             CALL warning('USPP not fully implemented')
+      ENDIF
      
       !
       ! opening the file containing the PW-DFT data
@@ -302,7 +305,7 @@
       ENDDO
       WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
       WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
-      WRITE( stdout,"(/,2x,'Plotting Cell dimensions [cryst. coord]:')") 
+      WRITE( stdout,"(/,2x,'Plotting Cell extrema [cryst. coord]:')") 
       WRITE( stdout,"(  6x, ' r1 :  ', f8.4, ' --> ', f8.4 )" ) r1min, r1max
       WRITE( stdout,"(  6x, ' r2 :  ', f8.4, ' --> ', f8.4 )" ) r2min, r2max
       WRITE( stdout,"(  6x, ' r3 :  ', f8.4, ' --> ', f8.4 )" ) r3min, r3max
@@ -359,7 +362,7 @@
       ! rmin(i) and rmax(i)-1.0
       !
       rave_shift(:,:) = ZERO
-      IF ( locate_wf ) THEN
+      IF ( collect_wf ) THEN
          DO m=1,nplot
             DO i=1,3
                j = 0
@@ -384,8 +387,8 @@
                 iwann(m), rave_cry(:,iwann(m))
       ENDDO
       !
-      IF ( locate_wf ) THEN
-          WRITE( stdout,"(/,2x,'Locating WFs: ')")
+      IF ( collect_wf ) THEN
+          WRITE( stdout,"(/,2x,'Collecting WFs: ')")
           WRITE( stdout,"(2x,'Plotting Cell dimensions [cryst. coord]:')") 
           DO i=1,3
              WRITE( stdout,"(  6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4 )" ) &
@@ -469,8 +472,12 @@
 ! ... Main loop on wfcs
 !
 
-      cwann( :, :, :, : ) = CZERO
+      !
+      ! init real space WFs
+      !
+      cwann( :, :, :, :) = CZERO
     
+
       kpoint_loop: &
       DO ik = 1, nkpts
           ! 
@@ -508,6 +515,7 @@
               phase = CMPLX( COS(arg), SIN(arg), dbl )
 
 
+
               kwann( :, m ) = CZERO
               !
               DO ig = 1, npwk(ik)
@@ -537,31 +545,38 @@
           ! FFT call 
           ! 
           DO m=1,nplot
+
              CALL timing('cfft3d',OPR='start')
              CALL cfft3d( kwann(:,m), nfft(1), nfft(2), nfft(3),  &
                                       nfft(1), nfft(2), nfft(3),  1 )
              CALL timing('cfft3d',OPR='stop')
 
-             CALL timing('cwann_calc',OPR='start')
+
              !
              ! loop over FFT grid
              !
+             CALL timing('cwann_calc',OPR='start')
+             !
              DO nzz = nrzl, nrzh
                  nz = MOD( nzz + nnrz * nfft(3) , nfft(3) ) + 1
+                 !
                  DO nyy = nryl, nryh
                      ny = MOD( nyy + nnry * nfft(2) , nfft(2) ) + 1
+                     !
                      DO nxx = nrxl, nrxh
                          nx = MOD( nxx + nnrx * nfft(1) , nfft(1) ) + 1
-
+                         !
                          ir = nx + (ny-1) * nfft(1) + (nz-1) * nfft(1) * nfft(2)
-
+                         !
                          arg   = vkpt_cry(1,ik) * REAL(nxx, dbl) / REAL(nfft(1), dbl) + &
                                  vkpt_cry(2,ik) * REAL(nyy, dbl) / REAL(nfft(2), dbl) + &
                                  vkpt_cry(3,ik) * REAL(nzz, dbl) / REAL(nfft(3), dbl)
+                                 !
                          caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg), dbl ) * &
                                  kwann( ir, m ) 
-
+                                 !
                          cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux
+                         !
                      ENDDO
                  ENDDO
              ENDDO
@@ -579,17 +594,34 @@
       !
       DEALLOCATE( kwann, STAT=ierr)
          IF (ierr/=0) CALL errore('plot','deallocating kwann',ABS(ierr))
+         !
       CALL wfc_data_deallocate()
       CALL ggrids_deallocate()
+      !
       CALL file_close(dft_unit,PATH="/Eigenvectors/",ACTION="read")
 
 
       ! 
       ! Fix the global phase by setting the wannier to be real 
       ! at the point where it has max modulus
+      ! according to the first vector, normalize to 10.0 
+      ! this normalization is adopted for the sake of ease in 
+      ! working with std plotting programs (e.g. gOpenMol) 
       ! 
 
-      arg = ONE / ( SQRT( REAL(nkpts, dbl) * REAL( SIZE(cwann(:,:,:,1)), dbl) ) ) 
+      cost = ZERO
+      !
+      DO nzz = nrzl, nrzh
+      DO nyy = nryl, nryh
+      DO nxx=  nrxl, nrxh
+           cost = cost + REAL(cwann(nxx,nyy,nzz,1)*CONJG(cwann(nxx,nyy,nzz,1)), dbl)
+      ENDDO
+      ENDDO
+      ENDDO
+      !
+      cost =  10.0_dbl / SQRT(cost)
+
+      WRITE(stdout, " (2x,'WF maximum values (normalization is one):',/)")
       !
       DO m = 1, nplot
           !
@@ -599,7 +631,7 @@
           DO nzz = nrzl, nrzh
           DO nyy = nryl, nryh
           DO nxx=  nrxl, nrxh
-               cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * arg
+               cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * cost
                tmax = REAL (cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) ) )
                IF ( tmax > tmaxx ) THEN
                     tmaxx = tmax
@@ -610,11 +642,13 @@
           ENDDO
 
           ! set the phase and invert it
-          cmod = cmod / SQRT( cmod * CONJG(cmod) ) 
-          cmod = CONJG( cmod )   
+          WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6 ) " ) m, ABS(cmod)
+          !
+          cmod = CONJG( cmod ) / SQRT( cmod * CONJG(cmod) ) 
           !
           cwann(:,:,:,m) = cwann(:,:,:,m) * cmod
       ENDDO
+      WRITE(stdout, "(/)")
 
       
 !
@@ -762,8 +796,8 @@
               tau = tau / alat
               !
               CALL xsf_datagrid_3d ( rwann_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
-                                        nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
-                                        r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
+                                     nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
+                                     r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
 
           CASE DEFAULT
               CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),5)
