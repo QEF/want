@@ -76,6 +76,7 @@ CONTAINS
    REAL(dbl),            INTENT(in)    :: avec(3,3)
    TYPE( trial_center ), INTENT(inout) :: obj
    CHARACTER(10)    :: units
+   REAL(dbl)        :: alat_
    !
    ! ... Converting WANNIER centers to cartesian coord in Bohr
    !     AVEC is in Bohr
@@ -91,6 +92,12 @@ CONTAINS
            obj%decay = obj%decay / bohr
            obj%units='bohr'
       CASE ( 'BOHR' )
+      CASE ( 'ALAT' )
+           alat_ = SQRT( DOT_PRODUCT(avec(:,1), avec(:,1)) )
+           obj%x1 = obj%x1 * alat_ 
+           obj%x2 = obj%x2 * alat_ 
+           obj%decay = obj%decay * alat_ 
+           obj%units='bohr'
       CASE ( 'CRYSTAL' )
            CALL cry2cart(obj%x1, avec, obj%units)
            CALL cry2cart(obj%x2, avec, obj%units)

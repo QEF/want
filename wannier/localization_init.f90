@@ -25,8 +25,8 @@
    USE io_module, ONLY : stdout, ioname, wan_unit
    USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, mat_mul, mat_svd
-   USE localization_module, ONLY : localization_read, cu 
-   USE overlap_module, ONLY : Mkb, ca, dimwann, nkpts 
+   USE localization_module, ONLY : localization_read, cu, cu_best
+   USE overlap_module, ONLY : ca, dimwann, nkpts 
    USE control_module, ONLY : unitary_thr
    IMPLICIT NONE
 
@@ -132,6 +132,17 @@
 
    END SELECT
 
+
+   !
+   ! ... if the case init cU_best
+   !
+   IF ( TRIM(mode) /= 'from_file' ) THEN
+       !
+       cU_best(:,:,:) = cU(:,:,:)
+       !
+   ENDIF
+
+
    !
    ! ... check unitariery of Cu
    !
@@ -140,13 +151,6 @@
                  SIDE='both', TOLL=unitary_thr )  ) &
                  CALL errore(subname,'U matrix not unitary', ik)
    ENDDO
-
-
-   !
-   ! ... So now we have the U's that rotate the wavefunctions at each k-point.
-   !     the matrix elements M_ij have also to be updated
-   !
-   CALL overlap_update(dimwann, nkpts, cu, Mkb)
 
 
    CALL timing('localization_init', OPR='stop')

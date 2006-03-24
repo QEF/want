@@ -16,6 +16,7 @@ becmod.o \
 bshells_init.o \
 ccalbec.o \
 cleanup.o \
+collect_wf.o \
 control.o \
 converters.o \
 dft_interface.o \

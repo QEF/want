@@ -79,22 +79,24 @@ CONTAINS
       USE control_module,           ONLY : verbosity,         &
                                            unitary_thr,       &
                                            restart_mode,      &
+                                           ordering_mode,     &
                                            do_condmin,        &
                                            do_overlaps,       &
                                            do_projections,    &
+                                           do_collect_wf,     &
+                                           do_ordering,       &
                                            use_pseudo,        &
                                            read_pseudo,       &
                                            read_overlaps,     &
                                            read_projections,  &
                                            read_subspace,     &
                                            read_unitary,      &
-                                           ordering_mode,     &
                                            nprint_dis,        &
                                            nprint_wan,        &
                                            nsave_dis,         &
                                            nsave_wan,         &
-                                           subspace_init,     &
                                            use_blimit,        &
+                                           subspace_init,     &
                                            localization_init 
       USE input_parameters_module,  ONLY : verbosity_       => verbosity, &
                                            restart_mode_    => restart_mode, &
@@ -109,6 +111,7 @@ CONTAINS
                                            unitary_thr_     => unitary_thr, &
                                            a_condmin_       => a_condmin, &
                                            ordering_mode_   => ordering_mode, &
+                                           collect_wf_      => collect_wf, &
                                            use_blimit_      => use_blimit, &
                                            assume_ncpp_     => assume_ncpp
 
@@ -127,6 +130,10 @@ CONTAINS
 
       do_condmin = .TRUE.
       IF ( a_condmin_ <= ZERO ) do_condmin = .FALSE.
+
+      do_ordering   = .NOT. TRIM( ordering_mode ) == "none"
+
+      do_collect_wf = collect_wf_ .AND. .NOT. do_condmin
 
       subspace_init = subspace_init_
       localization_init = localization_init_
@@ -243,6 +250,7 @@ CONTAINS
                                            a_condmin,    &
                                            dump_condmin, &
                                            niter_condmin,&
+                                           xcell,        &
                                            ncg
       USE input_parameters_module,  ONLY : wannier_thr_     => wannier_thr, &
                                            alpha0_wan_      => alpha0_wan,  &
@@ -252,6 +260,7 @@ CONTAINS
                                            niter_condmin_   => niter_condmin,  &
                                            a_condmin_       => a_condmin,  &
                                            dump_condmin_    => dump_condmin,  &
+                                           xcell_           => xcell,  &
                                            ncg_             => ncg
       IMPLICIT NONE
       wannier_thr    =  wannier_thr_
@@ -264,6 +273,7 @@ CONTAINS
       IF ( niter_condmin_ <= 0 ) niter_condmin = maxiter0_wan_ + maxiter1_wan_
       dump_condmin   =  dump_condmin_
       a_condmin      =  a_condmin_
+      xcell(1:3)     =  xcell_(1:3)               
      
    END SUBROUTINE setup_localization
 

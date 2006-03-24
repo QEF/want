@@ -45,14 +45,17 @@
    INTEGER                     :: maxiter0_wan  ! maximun num of iterations (part1)
    INTEGER                     :: maxiter1_wan  ! maximun num of iterations (part2)
    INTEGER                     :: ncg           ! a CG step every ncg is performed in part2
-   REAL(dbl)                   :: a_condmin     ! amplitude of the functional for condmin
-   REAL(dbl)                   :: dump_condmin  ! dumping factor for cond minim amplitude
+   REAL(dbl)                   :: wannier_thr   ! convergence threshold
    REAL(dbl)                   :: alpha0_wan    ! mixing factor in part1
    REAL(dbl)                   :: alpha1_wan    ! mixing factor in part2
-   REAL(dbl)                   :: wannier_thr   ! convergence threshold
+   REAL(dbl)                   :: a_condmin     ! amplitude of the functional for condmin
+   REAL(dbl)                   :: dump_condmin  ! dumping factor for cond minim amplitude
+   REAL(dbl)                   :: xcell(3)      ! corner of the cell used to collect WFs 
+                                                ! (cryst. units)
 
    ! ... unitary rotation matrices
-   COMPLEX(dbl), ALLOCATABLE   :: cu(:,:,:)     ! dimwann, dimwann, nkpts
+   COMPLEX(dbl), ALLOCATABLE   :: cu(:,:,:)     ! the actual unitary rot. (dimwann**2,nkpts)
+   COMPLEX(dbl), ALLOCATABLE   :: cu_best(:,:,:)! the best rot. found during the minimiz.
    
    ! ... <r>, <r>^2, <r^2> and spreads of the single WFs
    REAL(dbl), ALLOCATABLE      :: rave(:,:)     ! 3 * dimwann,   <r>  (Bohr)
@@ -65,6 +68,8 @@
    REAL(dbl)                   :: Omega_OD      ! Off diagonal part
    REAL(dbl)                   :: Omega_D       ! Diagonal part
    REAL(dbl)                   :: Omega_tot     ! = Omega_I + Omega_D + Omega_OD
+   REAL(dbl)                   :: Omega_tot_best! the best Omega found during the minimiz.
+   INTEGER                     :: iter_best     ! counter of the bestlocalization iteration
    
    LOGICAL :: alloc = .FALSE.
 
@@ -75,9 +80,11 @@
    PUBLIC :: nkpts, dimwann
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg
    PUBLIC :: niter_condmin, a_condmin, dump_condmin
+   PUBLIC :: xcell
    PUBLIC :: cu
    PUBLIC :: rave, r2ave, rave2
    PUBLIC :: omega_I, omega_OD, omega_D, omega_tot
+   PUBLIC :: cu_best, omega_tot_best, iter_best
    PUBLIC :: alloc
 
    PUBLIC :: localization_allocate
@@ -104,6 +111,8 @@ CONTAINS
 
        ALLOCATE( cu(dimwann,dimwann,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(subname, ' allocating cu ',dimwann*dimwann*nkpts )
+       ALLOCATE( cu_best(dimwann,dimwann,nkpts), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, ' allocating cu_best',dimwann*dimwann*nkpts )
        ALLOCATE( rave(3,dimwann), STAT = ierr )
            IF( ierr /=0 ) CALL errore(subname, ' allocating rave ',3*dimwann )
        ALLOCATE( rave2(dimwann), STAT = ierr )
@@ -111,10 +120,12 @@ CONTAINS
        ALLOCATE( r2ave(dimwann), STAT = ierr )
            IF( ierr /=0 ) CALL errore(subname, ' allocating r2ave ',dimwann )
        
-       Omega_I   = ZERO
-       Omega_OD  = ZERO
-       Omega_D   = ZERO  
-       Omega_tot = ZERO
+       Omega_I        = ZERO
+       Omega_OD       = ZERO
+       Omega_D        = ZERO  
+       Omega_tot      = ZERO
+       Omega_tot_best = ZERO
+       iter_best      = ZERO
        alloc = .TRUE.
 
    END SUBROUTINE localization_allocate
@@ -130,6 +141,10 @@ CONTAINS
        IF ( ALLOCATED(cu) ) THEN 
             DEALLOCATE(cu, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating cu ',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(cu_best) ) THEN 
+            DEALLOCATE(cu_best, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating cu_best ',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(rave) ) THEN 
             DEALLOCATE(rave, STAT=ierr)
@@ -188,11 +203,16 @@ CONTAINS
 
       IF ( lxprint ) THEN
            WRITE( unit, "(  2x, 'Spread Operator decomposition (Bohr^2): ')")
-           WRITE( unit, "(  4x,'Omega I    =   ', f13.6 ) " ) Omega_I
-           WRITE( unit, "(  4x,'Omega D    =   ', f13.6 ) " ) Omega_D
-           WRITE( unit, "(  4x,'Omega OD   =   ', f13.6 ) " ) Omega_OD
-           WRITE( unit, "(  4x,'Omega Tot  =   ', f13.6 ) " ) Omega_tot
-           WRITE( unit, "(  4x,'Omega Avrg =   ', f13.6 ) " ) Omega_tot/REAL(dimwann, dbl)
+           WRITE( unit, "(  4x,'Omega I       =   ', f13.6 ) " ) Omega_I
+           WRITE( unit, "(  4x,'Omega D       =   ', f13.6 ) " ) Omega_D
+           WRITE( unit, "(  4x,'Omega OD      =   ', f13.6 ) " ) Omega_OD
+           WRITE( unit, "(  4x,'Omega Tot     =   ', f13.6 ) " ) Omega_tot
+           WRITE( unit, "(  4x,'Omega Avrg    =   ', f13.6 ) " ) Omega_tot/REAL(dimwann, dbl)
+           IF ( Omega_tot_best < Omega_tot ) THEN
+              WRITE( unit, "(  4x,'WARNING: better localization found at iter #: ')") &
+                            iter_best
+              WRITE( unit, "(  4x,'Omega Tot Min =   ', f13.6 ) " ) Omega_tot_best
+           ENDIF
            WRITE( unit, "()")
       ENDIF
 
@@ -218,9 +238,12 @@ CONTAINS
        CALL iotk_write_attr(attr,"Omega_D",Omega_D) 
        CALL iotk_write_attr(attr,"Omega_OD",Omega_OD) 
        CALL iotk_write_attr(attr,"Omega_tot",Omega_tot) 
+! XXX
+!       CALL iotk_write_attr(attr,"Omega_tot_best",Omega_tot_best) 
        CALL iotk_write_empty(unit,"SPREADS",ATTR=attr)
 
        CALL iotk_write_dat(unit,"CU",cu) 
+       CALL iotk_write_dat(unit,"CU_BEST_LOCALIZED",cu_best) 
        CALL iotk_write_dat(unit,"RAVE",rave,COLUMNS=3)
        CALL iotk_write_dat(unit,"RAVE2",rave2)
        CALL iotk_write_dat(unit,"R2AVE",r2ave)
@@ -286,11 +309,17 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_OD',ABS(ierr))
        CALL iotk_scan_attr(attr,'Omega_tot',Omega_tot,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_tot',ABS(ierr))
+! XXX
+!       CALL iotk_scan_attr(attr,'Omega_tot_best',Omega_tot_best,IERR=ierr)
+!       IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_tot_best',ABS(ierr))
 
        !
        ! ... major data
        CALL iotk_scan_dat(unit,'CU',cu,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find CU',ABS(ierr))
+! XXXX
+!       CALL iotk_scan_dat(unit,'CU_BEST_LOCALIZED',cu_best,IERR=ierr)
+!       IF (ierr/=0) CALL errore(subname,'Unable to find CU_BEST_LOCALIZED',ABS(ierr))
        CALL iotk_scan_dat(unit,'RAVE',rave,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find RAVE',ABS(ierr))
        CALL iotk_scan_dat(unit,'RAVE2',rave2,IERR=ierr)

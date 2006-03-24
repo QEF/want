@@ -7,13 +7,13 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
+SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
    !*********************************************************
    !
    ! This subroutine updates the overlaps integrals by a unitary
    ! transformation, according to the formula
    !
-   ! Mkb(k,b) =  U(k)^dag * Mkb(k,b) * U(k+b)
+   ! Mkb(k,b)_out =  U(k)^dag * Mkb(k,b)_in * U(k+b)
    !
    USE kinds, ONLY : dbl
    USE timing_module, ONLY : timing
@@ -27,7 +27,8 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
    !
    INTEGER,         INTENT(in)    :: dimwann, nkpts
    COMPLEX(dbl),    INTENT(in)    :: U(dimwann,dimwann,nkpts) 
-   COMPLEX(dbl),    INTENT(inout) :: Mkb(dimwann,dimwann,nb,nkpts) 
+   COMPLEX(dbl),    INTENT(in)    :: Mkb_in (dimwann,dimwann,nb,nkpts) 
+   COMPLEX(dbl),    INTENT(out)   :: Mkb_out(dimwann,dimwann,nb,nkpts) 
 
    !
    ! local variables
@@ -66,15 +67,15 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb)
          !
          ! aux1 = U(ik)^dag * Mkb * U(ikb)
          !
-         CALL mat_mul(aux, U(:,:,ik), 'C', Mkb(:,:,ib,ik), 'N', &
+         CALL mat_mul(aux, U(:,:,ik), 'C', Mkb_in(:,:,ib,ik), 'N', &
                       dimwann, dimwann, dimwann)
-         CALL mat_mul(Mkb(:,:,ib,ik), aux, 'N', U(:,:,ikb), 'N', & 
+         CALL mat_mul(Mkb_out(:,:,ib,ik), aux, 'N', U(:,:,ikb), 'N', & 
                       dimwann, dimwann, dimwann)
 
          !
          ! symmetrize
          !
-         Mkb(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb(:,:,ib,ik)))
+         Mkb_out(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_out(:,:,ib,ik)))
       ENDDO
    ENDDO
 

@@ -41,6 +41,8 @@
    LOGICAL                   :: do_projections
    LOGICAL                   :: do_polarization
    LOGICAL                   :: do_condmin
+   LOGICAL                   :: do_ordering
+   LOGICAL                   :: do_collect_wf
 
    LOGICAL                   :: read_pseudo 
    LOGICAL                   :: read_overlaps
@@ -72,6 +74,8 @@
    PUBLIC :: do_projections
    PUBLIC :: do_polarization
    PUBLIC :: do_condmin
+   PUBLIC :: do_ordering
+   PUBLIC :: do_collect_wf
 
    PUBLIC :: read_pseudo
    PUBLIC :: read_overlaps
