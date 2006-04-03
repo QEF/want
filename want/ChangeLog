@@ -3,6 +3,22 @@
             WanT code:  Log of Changes 
 =======================================================
 
+03 Apr 2006      __LINUX64 definitions added in iotk_config.h (AF)
+
+27 Feb 2006      Fmt fixes in summary.f90 (Total weight of B vectors), courtesy of 
+                 Laura Zoppi. (AF)
+
+26 Feb 2006      Fmt fixes in summary.f90. (AF)
+
+22 Feb 2006      Small updates in plot.f90: correct normalization of WFs imposed. (AF)
+
+31 Jan 2006      Bugs fixed in Test05. References updated in the test. 
+                 Output fmt changed in summary. (AF)
+
+28 Dec 2005      Small changes in the output printed by summary routine. (AF)
+
+16 Dec 2005      Small changes in disentangle and wannier output fmts (check purpose). (AF)
+
 
 -------------------------------------------------
 Date: 13 Dec 2005    Version: WanT-2.0.0
