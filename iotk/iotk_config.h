@@ -59,7 +59,7 @@
 #   define __IOTK_REAL2    8
 #   define __IOTK_REAL3    16
 #   define __IOTK_WORKAROUND5
-#elif defined(__LINUX)
+#elif defined(__LINUX) || defined(__LINUX64)
 #   if defined(__INTEL)
 #         define __IOTK_LOGICAL1 1
 #         define __IOTK_LOGICAL2 2
