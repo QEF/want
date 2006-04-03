@@ -3,6 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
+03 Apr 2006      __LINUX64 added (all the defs as for __LINUX) to iotk_config.h . (AF)
+
 20 Mar 2006      Smearing introduced in leads self-energy and conductor Green's function
                  calculation. (BB)
 
