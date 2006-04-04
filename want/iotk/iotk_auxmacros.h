@@ -36,7 +36,7 @@
 #  define __IOTK_HEADER_KIND selected_int_kind(8)
 #endif
 
-! Kind for header in binary files
+! Maximum number of arguments to the iotk tool
 #ifndef __IOTK_MAXARGS
 #  define __IOTK_MAXARGS 256
 #endif
@@ -60,7 +60,7 @@
 ! These are the default kinds, which depend on the options used
 ! during the library compilation
 ! Only default characters are implemented
-#define __IOTK_CHARACTER1 iotk_defkind_character
+#define __IOTK_CHARACTER1 iotk_character_defkind
 ! For logical, integer and real types, the c precompiler
 ! looks for defined kinds. If no kind is found, the default
 ! is used as __IOTK_type1
@@ -73,7 +73,7 @@
 # 74 "iotk_auxmacros.spp"
 #ifndef __IOTK_LOGICAL4
 # 76 "iotk_auxmacros.spp"
-#define __IOTK_LOGICAL1 iotk_defkind_LOGICAL
+#define __IOTK_LOGICAL1 iotk_LOGICAL_defkind
 # 79 "iotk_auxmacros.spp"
 #endif
 # 79 "iotk_auxmacros.spp"
@@ -91,7 +91,7 @@
 # 74 "iotk_auxmacros.spp"
 #ifndef __IOTK_INTEGER4
 # 76 "iotk_auxmacros.spp"
-#define __IOTK_INTEGER1 iotk_defkind_INTEGER
+#define __IOTK_INTEGER1 iotk_INTEGER_defkind
 # 79 "iotk_auxmacros.spp"
 #endif
 # 79 "iotk_auxmacros.spp"
@@ -109,7 +109,7 @@
 # 74 "iotk_auxmacros.spp"
 #ifndef __IOTK_REAL4
 # 76 "iotk_auxmacros.spp"
-#define __IOTK_REAL1 iotk_defkind_REAL
+#define __IOTK_REAL1 iotk_REAL_defkind
 # 79 "iotk_auxmacros.spp"
 #endif
 # 79 "iotk_auxmacros.spp"

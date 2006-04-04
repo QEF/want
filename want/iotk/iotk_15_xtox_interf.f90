@@ -49,7 +49,7 @@ interface iotk_atoi
 subroutine iotk_atoi1(i,a,check)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_integer1
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -60,7 +60,7 @@ end subroutine iotk_atoi1
 subroutine iotk_atoi2(i,a,check)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_integer2
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -71,7 +71,7 @@ end subroutine iotk_atoi2
 subroutine iotk_atoi3(i,a,check)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_integer3
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -82,7 +82,7 @@ end subroutine iotk_atoi3
 subroutine iotk_atoi4(i,a,check)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_integer4
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -97,7 +97,7 @@ interface iotk_itoa
 function iotk_itoa1(i,length)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_integer1
   integer(kind=this_kind),             intent(in)  :: i
   integer,                   optional, intent(out) :: length
   character(len=range(i)+2)                        :: iotk_itoa1
@@ -108,7 +108,7 @@ end function iotk_itoa1
 function iotk_itoa2(i,length)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_integer2
   integer(kind=this_kind),             intent(in)  :: i
   integer,                   optional, intent(out) :: length
   character(len=range(i)+2)                        :: iotk_itoa2
@@ -119,7 +119,7 @@ end function iotk_itoa2
 function iotk_itoa3(i,length)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_integer3
   integer(kind=this_kind),             intent(in)  :: i
   integer,                   optional, intent(out) :: length
   character(len=range(i)+2)                        :: iotk_itoa3
@@ -130,7 +130,7 @@ end function iotk_itoa3
 function iotk_itoa4(i,length)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_integer4
   integer(kind=this_kind),             intent(in)  :: i
   integer,                   optional, intent(out) :: length
   character(len=range(i)+2)                        :: iotk_itoa4
@@ -145,7 +145,7 @@ interface iotk_ltoa
 function iotk_ltoa1(l)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_logical1
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa1
 end function iotk_ltoa1
@@ -155,7 +155,7 @@ end function iotk_ltoa1
 function iotk_ltoa2(l)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_logical2
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa2
 end function iotk_ltoa2
@@ -165,7 +165,7 @@ end function iotk_ltoa2
 function iotk_ltoa3(l)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_logical3
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa3
 end function iotk_ltoa3
@@ -175,7 +175,7 @@ end function iotk_ltoa3
 function iotk_ltoa4(l)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_logical4
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa4
 end function iotk_ltoa4

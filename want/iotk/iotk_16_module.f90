@@ -67,11 +67,11 @@ module iotk_module
   public :: iotk_unit_get
   public :: iotk_free_unit
   public :: iotk_basefmt
-  public :: iotk_defkind_character
-  public :: iotk_defkind_logical
-  public :: iotk_defkind_integer
-  public :: iotk_defkind_real
-  public :: iotk_defkind_complex
+  public :: iotk_character_defkind
+  public :: iotk_logical_defkind
+  public :: iotk_integer_defkind
+  public :: iotk_real_defkind
+  public :: iotk_complex_defkind
   public :: iotk_maxrank
   public :: iotk_maxrank_hard
   public :: iotk_print_kinds
@@ -88,7 +88,6 @@ module iotk_module
   public :: iotk_error_print
   public :: iotk_error_pool_pending
   public :: iotk_tool
-  public :: iotk_output_unit
   public :: iotk_dummytype ! CHECK IF EVERY COMPILER ALLOW TO OMIT THIS TYPE
 end module iotk_module
 

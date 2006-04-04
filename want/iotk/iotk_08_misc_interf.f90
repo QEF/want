@@ -83,7 +83,7 @@ end interface
 
 interface iotk_set
 subroutine iotk_set_x(dummy,unitmin,unitmax,getline_buffer,error_warn_overflow, &
-                              linlen,indent,maxindent,error_unit,ierr)
+                              linlen,indent,maxindent,error_unit,output_unit,ierr)
   use iotk_base
   implicit none
   type(iotk_dummytype),optional  :: dummy
@@ -95,13 +95,14 @@ subroutine iotk_set_x(dummy,unitmin,unitmax,getline_buffer,error_warn_overflow, 
   integer, optional, intent(in)  :: indent
   integer, optional, intent(in)  :: maxindent
   integer, optional, intent(in)  :: error_unit
+  integer, optional, intent(in)  :: output_unit
   integer, optional, intent(out) :: ierr
 end subroutine iotk_set_x
 end interface
 
 interface iotk_get
 subroutine iotk_get_x(dummy,unitmin,unitmax,getline_buffer,error_warn_overflow, &
-                              linlen,indent,maxindent,error_unit)
+                              linlen,indent,maxindent,error_unit,output_unit)
   use iotk_base
   implicit none
   type(iotk_dummytype),optional  :: dummy
@@ -113,6 +114,7 @@ subroutine iotk_get_x(dummy,unitmin,unitmax,getline_buffer,error_warn_overflow, 
   integer, optional, intent(out) :: indent
   integer, optional, intent(out) :: maxindent
   integer, optional, intent(out) :: error_unit
+  integer, optional, intent(out) :: output_unit
 end subroutine iotk_get_x
 end interface
 

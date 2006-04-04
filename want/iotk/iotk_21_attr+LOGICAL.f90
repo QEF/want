@@ -39,8 +39,8 @@ subroutine iotk_private_pack_LOGICAL1(out,in,n,l)
     implicit none
     integer,                                    intent(in)  :: n,l
 # 92 "iotk_attr.spp"
-    LOGICAL (kind=__IOTK_LOGICAL1), intent(out) :: out(n)
-    LOGICAL (kind=__IOTK_LOGICAL1), intent(in)  :: in(n)
+    LOGICAL (kind=iotk_LOGICAL1), intent(out) :: out(n)
+    LOGICAL (kind=iotk_LOGICAL1), intent(in)  :: in(n)
 # 95 "iotk_attr.spp"
     out = in
 end subroutine iotk_private_pack_LOGICAL1
@@ -54,7 +54,7 @@ subroutine iotk_write_LOGICAL1(val,string,ierr)
   use iotk_str_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in) :: val(:)
 #ifdef __IOTK_WORKAROUND6
   character(len=*)              :: string
 #else
@@ -70,7 +70,7 @@ subroutine iotk_write_LOGICAL1(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 124 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
   do index=1,size(val)
@@ -79,7 +79,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 131 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       return
     end if
 # 152 "iotk_attr.spp"
@@ -96,7 +96,7 @@ subroutine iotk_read_LOGICAL1(val,string,index,ierr)
   use iotk_xtox_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(inout) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(inout) :: val(:)
   character(len=*), intent(in) :: string
   integer, intent(inout) :: index
   integer, intent(out) :: ierr
@@ -125,7 +125,7 @@ subroutine iotk_read_LOGICAL1(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 200 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 200 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -135,7 +135,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(.not.check) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 219 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 219 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Wrong string')
 # 219 "iotk_attr.spp"
@@ -158,7 +158,7 @@ subroutine iotk_write_attr_LOGICAL1_0(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val 
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val 
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -178,7 +178,7 @@ subroutine iotk_write_attr_LOGICAL1_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -193,7 +193,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -201,7 +201,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -226,13 +226,13 @@ subroutine iotk_scan_attr_LOGICAL1_0(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val 
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val 
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val 
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val 
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default 
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default 
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -242,7 +242,7 @@ subroutine iotk_scan_attr_LOGICAL1_0(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -257,7 +257,7 @@ subroutine iotk_scan_attr_LOGICAL1_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -270,7 +270,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -278,14 +278,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -296,7 +296,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -310,7 +310,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -318,7 +318,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -338,7 +338,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -398,7 +398,7 @@ subroutine iotk_write_attr_LOGICAL1_1(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val (:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val (:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -418,7 +418,7 @@ subroutine iotk_write_attr_LOGICAL1_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -433,7 +433,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -441,7 +441,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -466,13 +466,13 @@ subroutine iotk_scan_attr_LOGICAL1_1(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val (:)
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val (:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val (:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val (:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:)
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default (:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -482,7 +482,7 @@ subroutine iotk_scan_attr_LOGICAL1_1(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -497,7 +497,7 @@ subroutine iotk_scan_attr_LOGICAL1_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -510,7 +510,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -518,14 +518,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -536,7 +536,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -550,7 +550,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -558,7 +558,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -578,7 +578,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -638,7 +638,7 @@ subroutine iotk_write_attr_LOGICAL1_2(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val (:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -658,7 +658,7 @@ subroutine iotk_write_attr_LOGICAL1_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -673,7 +673,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -681,7 +681,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -706,13 +706,13 @@ subroutine iotk_scan_attr_LOGICAL1_2(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val (:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val (:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:)
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default (:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -722,7 +722,7 @@ subroutine iotk_scan_attr_LOGICAL1_2(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -737,7 +737,7 @@ subroutine iotk_scan_attr_LOGICAL1_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -750,7 +750,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -758,14 +758,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -776,7 +776,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -790,7 +790,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -798,7 +798,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -818,7 +818,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -895,7 +895,7 @@ subroutine iotk_write_attr_LOGICAL1_3(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val (:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -915,7 +915,7 @@ subroutine iotk_write_attr_LOGICAL1_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -930,7 +930,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -938,7 +938,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -963,13 +963,13 @@ subroutine iotk_scan_attr_LOGICAL1_3(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val (:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val (:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default (:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -979,7 +979,7 @@ subroutine iotk_scan_attr_LOGICAL1_3(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -994,7 +994,7 @@ subroutine iotk_scan_attr_LOGICAL1_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -1007,7 +1007,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -1015,14 +1015,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -1033,7 +1033,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -1047,7 +1047,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -1055,7 +1055,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -1075,7 +1075,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -1135,7 +1135,7 @@ subroutine iotk_write_attr_LOGICAL1_4(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val (:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -1155,7 +1155,7 @@ subroutine iotk_write_attr_LOGICAL1_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -1170,7 +1170,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -1178,7 +1178,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1203,13 +1203,13 @@ subroutine iotk_scan_attr_LOGICAL1_4(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val (:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val (:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default (:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -1219,7 +1219,7 @@ subroutine iotk_scan_attr_LOGICAL1_4(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -1234,7 +1234,7 @@ subroutine iotk_scan_attr_LOGICAL1_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -1247,7 +1247,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -1255,14 +1255,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -1273,7 +1273,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -1287,7 +1287,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -1295,7 +1295,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -1315,7 +1315,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -1375,7 +1375,7 @@ subroutine iotk_write_attr_LOGICAL1_5(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val (:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -1395,7 +1395,7 @@ subroutine iotk_write_attr_LOGICAL1_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -1410,7 +1410,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -1418,7 +1418,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1443,13 +1443,13 @@ subroutine iotk_scan_attr_LOGICAL1_5(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val (:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val (:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -1459,7 +1459,7 @@ subroutine iotk_scan_attr_LOGICAL1_5(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -1474,7 +1474,7 @@ subroutine iotk_scan_attr_LOGICAL1_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -1487,7 +1487,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -1495,14 +1495,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -1513,7 +1513,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -1527,7 +1527,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -1535,7 +1535,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -1555,7 +1555,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -1632,7 +1632,7 @@ subroutine iotk_write_attr_LOGICAL1_6(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val (:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -1652,7 +1652,7 @@ subroutine iotk_write_attr_LOGICAL1_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -1667,7 +1667,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -1675,7 +1675,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1700,13 +1700,13 @@ subroutine iotk_scan_attr_LOGICAL1_6(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val (:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val (:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -1716,7 +1716,7 @@ subroutine iotk_scan_attr_LOGICAL1_6(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -1731,7 +1731,7 @@ subroutine iotk_scan_attr_LOGICAL1_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -1744,7 +1744,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -1752,14 +1752,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -1770,7 +1770,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -1784,7 +1784,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -1792,7 +1792,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -1812,7 +1812,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -1872,7 +1872,7 @@ subroutine iotk_write_attr_LOGICAL1_7(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(in)  :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(in)  :: val (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -1892,7 +1892,7 @@ subroutine iotk_write_attr_LOGICAL1_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -1907,7 +1907,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -1915,7 +1915,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -1940,13 +1940,13 @@ subroutine iotk_scan_attr_LOGICAL1_7(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL1)                        :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1)                        :: val (:,:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL1), intent(out)           :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), intent(out)           :: val (:,:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL1), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -1956,7 +1956,7 @@ subroutine iotk_scan_attr_LOGICAL1_7(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL1), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL1), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -1971,7 +1971,7 @@ subroutine iotk_scan_attr_LOGICAL1_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -1984,7 +1984,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -1992,14 +1992,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -2010,7 +2010,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -2024,7 +2024,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -2032,7 +2032,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -2052,7 +2052,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -2122,8 +2122,8 @@ subroutine iotk_private_pack_LOGICAL2(out,in,n,l)
     implicit none
     integer,                                    intent(in)  :: n,l
 # 92 "iotk_attr.spp"
-    LOGICAL (kind=__IOTK_LOGICAL2), intent(out) :: out(n)
-    LOGICAL (kind=__IOTK_LOGICAL2), intent(in)  :: in(n)
+    LOGICAL (kind=iotk_LOGICAL2), intent(out) :: out(n)
+    LOGICAL (kind=iotk_LOGICAL2), intent(in)  :: in(n)
 # 95 "iotk_attr.spp"
     out = in
 end subroutine iotk_private_pack_LOGICAL2
@@ -2137,7 +2137,7 @@ subroutine iotk_write_LOGICAL2(val,string,ierr)
   use iotk_str_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in) :: val(:)
 #ifdef __IOTK_WORKAROUND6
   character(len=*)              :: string
 #else
@@ -2153,7 +2153,7 @@ subroutine iotk_write_LOGICAL2(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 124 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
   do index=1,size(val)
@@ -2162,7 +2162,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 131 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       return
     end if
 # 152 "iotk_attr.spp"
@@ -2179,7 +2179,7 @@ subroutine iotk_read_LOGICAL2(val,string,index,ierr)
   use iotk_xtox_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(inout) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(inout) :: val(:)
   character(len=*), intent(in) :: string
   integer, intent(inout) :: index
   integer, intent(out) :: ierr
@@ -2208,7 +2208,7 @@ subroutine iotk_read_LOGICAL2(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 200 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 200 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -2218,7 +2218,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(.not.check) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 219 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 219 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Wrong string')
 # 219 "iotk_attr.spp"
@@ -2241,7 +2241,7 @@ subroutine iotk_write_attr_LOGICAL2_0(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val 
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val 
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -2261,7 +2261,7 @@ subroutine iotk_write_attr_LOGICAL2_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -2276,7 +2276,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -2284,7 +2284,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -2309,13 +2309,13 @@ subroutine iotk_scan_attr_LOGICAL2_0(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val 
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val 
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val 
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val 
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default 
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default 
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -2325,7 +2325,7 @@ subroutine iotk_scan_attr_LOGICAL2_0(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -2340,7 +2340,7 @@ subroutine iotk_scan_attr_LOGICAL2_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -2353,7 +2353,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -2361,14 +2361,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -2379,7 +2379,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -2393,7 +2393,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -2401,7 +2401,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -2421,7 +2421,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -2481,7 +2481,7 @@ subroutine iotk_write_attr_LOGICAL2_1(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val (:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val (:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -2501,7 +2501,7 @@ subroutine iotk_write_attr_LOGICAL2_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -2516,7 +2516,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -2524,7 +2524,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -2549,13 +2549,13 @@ subroutine iotk_scan_attr_LOGICAL2_1(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val (:)
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val (:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val (:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val (:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:)
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default (:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -2565,7 +2565,7 @@ subroutine iotk_scan_attr_LOGICAL2_1(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -2580,7 +2580,7 @@ subroutine iotk_scan_attr_LOGICAL2_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -2593,7 +2593,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -2601,14 +2601,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -2619,7 +2619,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -2633,7 +2633,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -2641,7 +2641,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -2661,7 +2661,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -2721,7 +2721,7 @@ subroutine iotk_write_attr_LOGICAL2_2(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val (:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -2741,7 +2741,7 @@ subroutine iotk_write_attr_LOGICAL2_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -2756,7 +2756,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -2764,7 +2764,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -2789,13 +2789,13 @@ subroutine iotk_scan_attr_LOGICAL2_2(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val (:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val (:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:)
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default (:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -2805,7 +2805,7 @@ subroutine iotk_scan_attr_LOGICAL2_2(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -2820,7 +2820,7 @@ subroutine iotk_scan_attr_LOGICAL2_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -2833,7 +2833,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -2841,14 +2841,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -2859,7 +2859,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -2873,7 +2873,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -2881,7 +2881,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -2901,7 +2901,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -2978,7 +2978,7 @@ subroutine iotk_write_attr_LOGICAL2_3(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val (:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -2998,7 +2998,7 @@ subroutine iotk_write_attr_LOGICAL2_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -3013,7 +3013,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -3021,7 +3021,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3046,13 +3046,13 @@ subroutine iotk_scan_attr_LOGICAL2_3(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val (:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val (:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default (:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -3062,7 +3062,7 @@ subroutine iotk_scan_attr_LOGICAL2_3(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -3077,7 +3077,7 @@ subroutine iotk_scan_attr_LOGICAL2_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -3090,7 +3090,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -3098,14 +3098,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -3116,7 +3116,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -3130,7 +3130,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -3138,7 +3138,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -3158,7 +3158,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -3218,7 +3218,7 @@ subroutine iotk_write_attr_LOGICAL2_4(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val (:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -3238,7 +3238,7 @@ subroutine iotk_write_attr_LOGICAL2_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -3253,7 +3253,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -3261,7 +3261,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3286,13 +3286,13 @@ subroutine iotk_scan_attr_LOGICAL2_4(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val (:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val (:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default (:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -3302,7 +3302,7 @@ subroutine iotk_scan_attr_LOGICAL2_4(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -3317,7 +3317,7 @@ subroutine iotk_scan_attr_LOGICAL2_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -3330,7 +3330,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -3338,14 +3338,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -3356,7 +3356,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -3370,7 +3370,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -3378,7 +3378,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -3398,7 +3398,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -3458,7 +3458,7 @@ subroutine iotk_write_attr_LOGICAL2_5(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val (:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -3478,7 +3478,7 @@ subroutine iotk_write_attr_LOGICAL2_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -3493,7 +3493,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -3501,7 +3501,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3526,13 +3526,13 @@ subroutine iotk_scan_attr_LOGICAL2_5(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val (:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val (:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -3542,7 +3542,7 @@ subroutine iotk_scan_attr_LOGICAL2_5(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -3557,7 +3557,7 @@ subroutine iotk_scan_attr_LOGICAL2_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -3570,7 +3570,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -3578,14 +3578,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -3596,7 +3596,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -3610,7 +3610,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -3618,7 +3618,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -3638,7 +3638,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -3715,7 +3715,7 @@ subroutine iotk_write_attr_LOGICAL2_6(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val (:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -3735,7 +3735,7 @@ subroutine iotk_write_attr_LOGICAL2_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -3750,7 +3750,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -3758,7 +3758,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -3783,13 +3783,13 @@ subroutine iotk_scan_attr_LOGICAL2_6(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val (:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val (:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -3799,7 +3799,7 @@ subroutine iotk_scan_attr_LOGICAL2_6(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -3814,7 +3814,7 @@ subroutine iotk_scan_attr_LOGICAL2_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -3827,7 +3827,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -3835,14 +3835,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -3853,7 +3853,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -3867,7 +3867,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -3875,7 +3875,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -3895,7 +3895,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -3955,7 +3955,7 @@ subroutine iotk_write_attr_LOGICAL2_7(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(in)  :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(in)  :: val (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -3975,7 +3975,7 @@ subroutine iotk_write_attr_LOGICAL2_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -3990,7 +3990,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -3998,7 +3998,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4023,13 +4023,13 @@ subroutine iotk_scan_attr_LOGICAL2_7(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL2)                        :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2)                        :: val (:,:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL2), intent(out)           :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), intent(out)           :: val (:,:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL2), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -4039,7 +4039,7 @@ subroutine iotk_scan_attr_LOGICAL2_7(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL2), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL2), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -4054,7 +4054,7 @@ subroutine iotk_scan_attr_LOGICAL2_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -4067,7 +4067,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -4075,14 +4075,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -4093,7 +4093,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -4107,7 +4107,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -4115,7 +4115,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -4135,7 +4135,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -4205,8 +4205,8 @@ subroutine iotk_private_pack_LOGICAL3(out,in,n,l)
     implicit none
     integer,                                    intent(in)  :: n,l
 # 92 "iotk_attr.spp"
-    LOGICAL (kind=__IOTK_LOGICAL3), intent(out) :: out(n)
-    LOGICAL (kind=__IOTK_LOGICAL3), intent(in)  :: in(n)
+    LOGICAL (kind=iotk_LOGICAL3), intent(out) :: out(n)
+    LOGICAL (kind=iotk_LOGICAL3), intent(in)  :: in(n)
 # 95 "iotk_attr.spp"
     out = in
 end subroutine iotk_private_pack_LOGICAL3
@@ -4220,7 +4220,7 @@ subroutine iotk_write_LOGICAL3(val,string,ierr)
   use iotk_str_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in) :: val(:)
 #ifdef __IOTK_WORKAROUND6
   character(len=*)              :: string
 #else
@@ -4236,7 +4236,7 @@ subroutine iotk_write_LOGICAL3(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 124 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
   do index=1,size(val)
@@ -4245,7 +4245,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 131 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       return
     end if
 # 152 "iotk_attr.spp"
@@ -4262,7 +4262,7 @@ subroutine iotk_read_LOGICAL3(val,string,index,ierr)
   use iotk_xtox_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(inout) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(inout) :: val(:)
   character(len=*), intent(in) :: string
   integer, intent(inout) :: index
   integer, intent(out) :: ierr
@@ -4291,7 +4291,7 @@ subroutine iotk_read_LOGICAL3(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 200 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 200 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -4301,7 +4301,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(.not.check) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 219 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 219 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Wrong string')
 # 219 "iotk_attr.spp"
@@ -4324,7 +4324,7 @@ subroutine iotk_write_attr_LOGICAL3_0(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val 
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val 
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -4344,7 +4344,7 @@ subroutine iotk_write_attr_LOGICAL3_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -4359,7 +4359,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -4367,7 +4367,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4392,13 +4392,13 @@ subroutine iotk_scan_attr_LOGICAL3_0(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val 
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val 
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val 
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val 
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default 
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default 
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -4408,7 +4408,7 @@ subroutine iotk_scan_attr_LOGICAL3_0(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -4423,7 +4423,7 @@ subroutine iotk_scan_attr_LOGICAL3_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -4436,7 +4436,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -4444,14 +4444,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -4462,7 +4462,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -4476,7 +4476,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -4484,7 +4484,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -4504,7 +4504,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -4564,7 +4564,7 @@ subroutine iotk_write_attr_LOGICAL3_1(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val (:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val (:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -4584,7 +4584,7 @@ subroutine iotk_write_attr_LOGICAL3_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -4599,7 +4599,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -4607,7 +4607,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4632,13 +4632,13 @@ subroutine iotk_scan_attr_LOGICAL3_1(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val (:)
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val (:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val (:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val (:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:)
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default (:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -4648,7 +4648,7 @@ subroutine iotk_scan_attr_LOGICAL3_1(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -4663,7 +4663,7 @@ subroutine iotk_scan_attr_LOGICAL3_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -4676,7 +4676,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -4684,14 +4684,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -4702,7 +4702,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -4716,7 +4716,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -4724,7 +4724,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -4744,7 +4744,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -4804,7 +4804,7 @@ subroutine iotk_write_attr_LOGICAL3_2(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val (:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -4824,7 +4824,7 @@ subroutine iotk_write_attr_LOGICAL3_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -4839,7 +4839,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -4847,7 +4847,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -4872,13 +4872,13 @@ subroutine iotk_scan_attr_LOGICAL3_2(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val (:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val (:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:)
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default (:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -4888,7 +4888,7 @@ subroutine iotk_scan_attr_LOGICAL3_2(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -4903,7 +4903,7 @@ subroutine iotk_scan_attr_LOGICAL3_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -4916,7 +4916,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -4924,14 +4924,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -4942,7 +4942,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -4956,7 +4956,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -4964,7 +4964,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -4984,7 +4984,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -5061,7 +5061,7 @@ subroutine iotk_write_attr_LOGICAL3_3(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val (:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -5081,7 +5081,7 @@ subroutine iotk_write_attr_LOGICAL3_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -5096,7 +5096,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -5104,7 +5104,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5129,13 +5129,13 @@ subroutine iotk_scan_attr_LOGICAL3_3(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val (:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val (:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default (:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -5145,7 +5145,7 @@ subroutine iotk_scan_attr_LOGICAL3_3(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -5160,7 +5160,7 @@ subroutine iotk_scan_attr_LOGICAL3_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -5173,7 +5173,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -5181,14 +5181,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -5199,7 +5199,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -5213,7 +5213,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -5221,7 +5221,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -5241,7 +5241,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -5301,7 +5301,7 @@ subroutine iotk_write_attr_LOGICAL3_4(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val (:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -5321,7 +5321,7 @@ subroutine iotk_write_attr_LOGICAL3_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -5336,7 +5336,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -5344,7 +5344,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5369,13 +5369,13 @@ subroutine iotk_scan_attr_LOGICAL3_4(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val (:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val (:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default (:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -5385,7 +5385,7 @@ subroutine iotk_scan_attr_LOGICAL3_4(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -5400,7 +5400,7 @@ subroutine iotk_scan_attr_LOGICAL3_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -5413,7 +5413,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -5421,14 +5421,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -5439,7 +5439,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -5453,7 +5453,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -5461,7 +5461,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -5481,7 +5481,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -5541,7 +5541,7 @@ subroutine iotk_write_attr_LOGICAL3_5(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val (:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -5561,7 +5561,7 @@ subroutine iotk_write_attr_LOGICAL3_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -5576,7 +5576,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -5584,7 +5584,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5609,13 +5609,13 @@ subroutine iotk_scan_attr_LOGICAL3_5(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val (:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val (:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -5625,7 +5625,7 @@ subroutine iotk_scan_attr_LOGICAL3_5(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -5640,7 +5640,7 @@ subroutine iotk_scan_attr_LOGICAL3_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -5653,7 +5653,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -5661,14 +5661,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -5679,7 +5679,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -5693,7 +5693,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -5701,7 +5701,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -5721,7 +5721,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -5798,7 +5798,7 @@ subroutine iotk_write_attr_LOGICAL3_6(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val (:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -5818,7 +5818,7 @@ subroutine iotk_write_attr_LOGICAL3_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -5833,7 +5833,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -5841,7 +5841,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -5866,13 +5866,13 @@ subroutine iotk_scan_attr_LOGICAL3_6(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val (:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val (:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -5882,7 +5882,7 @@ subroutine iotk_scan_attr_LOGICAL3_6(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -5897,7 +5897,7 @@ subroutine iotk_scan_attr_LOGICAL3_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -5910,7 +5910,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -5918,14 +5918,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -5936,7 +5936,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -5950,7 +5950,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -5958,7 +5958,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -5978,7 +5978,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -6038,7 +6038,7 @@ subroutine iotk_write_attr_LOGICAL3_7(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(in)  :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(in)  :: val (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -6058,7 +6058,7 @@ subroutine iotk_write_attr_LOGICAL3_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -6073,7 +6073,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -6081,7 +6081,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -6106,13 +6106,13 @@ subroutine iotk_scan_attr_LOGICAL3_7(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL3)                        :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3)                        :: val (:,:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL3), intent(out)           :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), intent(out)           :: val (:,:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL3), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -6122,7 +6122,7 @@ subroutine iotk_scan_attr_LOGICAL3_7(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL3), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL3), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -6137,7 +6137,7 @@ subroutine iotk_scan_attr_LOGICAL3_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -6150,7 +6150,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -6158,14 +6158,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -6176,7 +6176,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -6190,7 +6190,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -6198,7 +6198,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -6218,7 +6218,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -6288,8 +6288,8 @@ subroutine iotk_private_pack_LOGICAL4(out,in,n,l)
     implicit none
     integer,                                    intent(in)  :: n,l
 # 92 "iotk_attr.spp"
-    LOGICAL (kind=__IOTK_LOGICAL4), intent(out) :: out(n)
-    LOGICAL (kind=__IOTK_LOGICAL4), intent(in)  :: in(n)
+    LOGICAL (kind=iotk_LOGICAL4), intent(out) :: out(n)
+    LOGICAL (kind=iotk_LOGICAL4), intent(in)  :: in(n)
 # 95 "iotk_attr.spp"
     out = in
 end subroutine iotk_private_pack_LOGICAL4
@@ -6303,7 +6303,7 @@ subroutine iotk_write_LOGICAL4(val,string,ierr)
   use iotk_str_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in) :: val(:)
 #ifdef __IOTK_WORKAROUND6
   character(len=*)              :: string
 #else
@@ -6319,7 +6319,7 @@ subroutine iotk_write_LOGICAL4(val,string,ierr)
   if(len(string)==0) then
     call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 124 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
     return
   end if
   do index=1,size(val)
@@ -6328,7 +6328,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_write",__FILE__,__LINE__)
 # 131 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
       return
     end if
 # 152 "iotk_attr.spp"
@@ -6345,7 +6345,7 @@ subroutine iotk_read_LOGICAL4(val,string,index,ierr)
   use iotk_xtox_interf
   use iotk_misc_interf
   implicit none
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(inout) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(inout) :: val(:)
   character(len=*), intent(in) :: string
   integer, intent(inout) :: index
   integer, intent(out) :: ierr
@@ -6374,7 +6374,7 @@ subroutine iotk_read_LOGICAL4(val,string,index,ierr)
     if(index>maxindex) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 200 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 200 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Too many data')
     end if
@@ -6384,7 +6384,7 @@ call iotk_error_msg(ierr,'Too many data')
     if(.not.check) then
       call iotk_error_issue(ierr,"iotk_read",__FILE__,__LINE__)
 # 219 "iotk_attr.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.17 ")
 # 219 "iotk_attr.spp"
 call iotk_error_msg(ierr,'Wrong string')
 # 219 "iotk_attr.spp"
@@ -6407,7 +6407,7 @@ subroutine iotk_write_attr_LOGICAL4_0(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val 
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val 
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -6427,7 +6427,7 @@ subroutine iotk_write_attr_LOGICAL4_0(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -6442,7 +6442,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -6450,7 +6450,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -6475,13 +6475,13 @@ subroutine iotk_scan_attr_LOGICAL4_0(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val 
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val 
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val 
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val 
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default 
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default 
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -6491,7 +6491,7 @@ subroutine iotk_scan_attr_LOGICAL4_0(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -6506,7 +6506,7 @@ subroutine iotk_scan_attr_LOGICAL4_0(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -6519,7 +6519,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -6527,14 +6527,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -6545,7 +6545,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -6559,7 +6559,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -6567,7 +6567,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -6587,7 +6587,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -6647,7 +6647,7 @@ subroutine iotk_write_attr_LOGICAL4_1(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val (:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val (:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -6667,7 +6667,7 @@ subroutine iotk_write_attr_LOGICAL4_1(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -6682,7 +6682,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -6690,7 +6690,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -6715,13 +6715,13 @@ subroutine iotk_scan_attr_LOGICAL4_1(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val (:)
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val (:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val (:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val (:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:)
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default (:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -6731,7 +6731,7 @@ subroutine iotk_scan_attr_LOGICAL4_1(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -6746,7 +6746,7 @@ subroutine iotk_scan_attr_LOGICAL4_1(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -6759,7 +6759,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -6767,14 +6767,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -6785,7 +6785,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -6799,7 +6799,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -6807,7 +6807,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -6827,7 +6827,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -6887,7 +6887,7 @@ subroutine iotk_write_attr_LOGICAL4_2(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val (:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -6907,7 +6907,7 @@ subroutine iotk_write_attr_LOGICAL4_2(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -6922,7 +6922,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -6930,7 +6930,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -6955,13 +6955,13 @@ subroutine iotk_scan_attr_LOGICAL4_2(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val (:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val (:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val (:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:)
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default (:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -6971,7 +6971,7 @@ subroutine iotk_scan_attr_LOGICAL4_2(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -6986,7 +6986,7 @@ subroutine iotk_scan_attr_LOGICAL4_2(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -6999,7 +6999,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -7007,14 +7007,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -7025,7 +7025,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -7039,7 +7039,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -7047,7 +7047,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -7067,7 +7067,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -7144,7 +7144,7 @@ subroutine iotk_write_attr_LOGICAL4_3(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val (:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -7164,7 +7164,7 @@ subroutine iotk_write_attr_LOGICAL4_3(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -7179,7 +7179,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -7187,7 +7187,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7212,13 +7212,13 @@ subroutine iotk_scan_attr_LOGICAL4_3(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val (:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val (:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default (:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -7228,7 +7228,7 @@ subroutine iotk_scan_attr_LOGICAL4_3(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -7243,7 +7243,7 @@ subroutine iotk_scan_attr_LOGICAL4_3(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -7256,7 +7256,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -7264,14 +7264,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -7282,7 +7282,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -7296,7 +7296,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -7304,7 +7304,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -7324,7 +7324,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -7384,7 +7384,7 @@ subroutine iotk_write_attr_LOGICAL4_4(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val (:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -7404,7 +7404,7 @@ subroutine iotk_write_attr_LOGICAL4_4(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -7419,7 +7419,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -7427,7 +7427,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7452,13 +7452,13 @@ subroutine iotk_scan_attr_LOGICAL4_4(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val (:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val (:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default (:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -7468,7 +7468,7 @@ subroutine iotk_scan_attr_LOGICAL4_4(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -7483,7 +7483,7 @@ subroutine iotk_scan_attr_LOGICAL4_4(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -7496,7 +7496,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -7504,14 +7504,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -7522,7 +7522,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -7536,7 +7536,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -7544,7 +7544,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -7564,7 +7564,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -7624,7 +7624,7 @@ subroutine iotk_write_attr_LOGICAL4_5(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val (:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -7644,7 +7644,7 @@ subroutine iotk_write_attr_LOGICAL4_5(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -7659,7 +7659,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -7667,7 +7667,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7692,13 +7692,13 @@ subroutine iotk_scan_attr_LOGICAL4_5(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val (:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val (:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -7708,7 +7708,7 @@ subroutine iotk_scan_attr_LOGICAL4_5(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -7723,7 +7723,7 @@ subroutine iotk_scan_attr_LOGICAL4_5(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -7736,7 +7736,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -7744,14 +7744,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -7762,7 +7762,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -7776,7 +7776,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -7784,7 +7784,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -7804,7 +7804,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -7881,7 +7881,7 @@ subroutine iotk_write_attr_LOGICAL4_6(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val (:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -7901,7 +7901,7 @@ subroutine iotk_write_attr_LOGICAL4_6(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -7916,7 +7916,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -7924,7 +7924,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -7949,13 +7949,13 @@ subroutine iotk_scan_attr_LOGICAL4_6(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val (:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val (:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -7965,7 +7965,7 @@ subroutine iotk_scan_attr_LOGICAL4_6(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -7980,7 +7980,7 @@ subroutine iotk_scan_attr_LOGICAL4_6(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -7993,7 +7993,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -8001,14 +8001,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -8019,7 +8019,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -8033,7 +8033,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -8041,7 +8041,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -8061,7 +8061,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"
@@ -8121,7 +8121,7 @@ subroutine iotk_write_attr_LOGICAL4_7(attr,name,val,dummy,first,ierr)
   implicit none
   character(*), intent(inout) :: attr
   character(*), intent(in)    :: name
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(in)  :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(in)  :: val (:,:,:,:,:,:,:)
   type(iotk_dummytype), optional :: dummy
   logical, optional, intent(in)  :: first
   integer, optional, intent(out) :: ierr
@@ -8141,7 +8141,7 @@ subroutine iotk_write_attr_LOGICAL4_7(attr,name,val,dummy,first,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 265 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 265 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 265 "iotk_attr.spp"
@@ -8156,7 +8156,7 @@ call iotk_error_write(ierrl,"name",name(1:namlen))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 289 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 293 "iotk_attr.spp"
@@ -8164,7 +8164,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(attlen+vallen+namlen+5>len(attr)) then
     call iotk_error_issue(ierrl,"iotk_write_attr",__FILE__,__LINE__)
 # 295 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 295 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute dummy argument is too short')
     goto 1
@@ -8189,13 +8189,13 @@ subroutine iotk_scan_attr_LOGICAL4_7(attr,name,val,dummy,found,default,eos,ierr)
   character(*),             intent(in)  :: attr
   character(*),             intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
-  LOGICAL(kind=__IOTK_LOGICAL4)                        :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4)                        :: val (:,:,:,:,:,:,:)
 #else
-  LOGICAL(kind=__IOTK_LOGICAL4), intent(out)           :: val (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), intent(out)           :: val (:,:,:,:,:,:,:)
 #endif
   type(iotk_dummytype), optional :: dummy
   logical,        optional, intent(out) :: found
-  LOGICAL(kind=__IOTK_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:,:,:)
+  LOGICAL(kind=iotk_LOGICAL4), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   logical,        optional, intent(in)  :: eos
   integer,        optional, intent(out) :: ierr
   integer :: ierrl
@@ -8205,7 +8205,7 @@ subroutine iotk_scan_attr_LOGICAL4_7(attr,name,val,dummy,found,default,eos,ierr)
   character(iotk_vallenx) :: valc
 # 337 "iotk_attr.spp"
   integer :: index
-  LOGICAL(kind=__IOTK_LOGICAL4), allocatable :: tmpval (:)
+  LOGICAL(kind=iotk_LOGICAL4), allocatable :: tmpval (:)
 # 340 "iotk_attr.spp"
   ierrl = 0
   attlen=iotk_strlen(attr)
@@ -8220,7 +8220,7 @@ subroutine iotk_scan_attr_LOGICAL4_7(attr,name,val,dummy,found,default,eos,ierr)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 351 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 351 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'')
 # 351 "iotk_attr.spp"
@@ -8233,7 +8233,7 @@ call iotk_error_write(ierrl,"attr",attr(equal+1:attlen))
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 358 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     equal = equal + pos
@@ -8241,14 +8241,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 364 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 369 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
     if(foundl) exit
@@ -8259,7 +8259,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 378 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
       goto 1
     end if
   else
@@ -8273,7 +8273,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 406 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
     goto 1
   end if
 # 412 "iotk_attr.spp"
@@ -8281,7 +8281,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
 # 414 "iotk_attr.spp"
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 414 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 414 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute size does not match')
 # 414 "iotk_attr.spp"
@@ -8301,7 +8301,7 @@ call iotk_error_write(ierrl,"size",size(tmpval))
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_attr",__FILE__,__LINE__)
 # 428 "iotk_attr.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.15 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.17 ")
 # 428 "iotk_attr.spp"
 call iotk_error_msg(ierrl,'Attribute not found')
 # 428 "iotk_attr.spp"

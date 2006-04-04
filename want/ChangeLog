@@ -3,15 +3,58 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+04 Apr 2006      IOTK updated to v1.1.0development (courtesy of Giovanni Bussi). (AF)
+
 03 Apr 2006      __LINUX64 added (all the defs as for __LINUX) to iotk_config.h . (AF)
 
-20 Mar 2006      Smearing introduced in leads self-energy and conductor Green's function
+20 Mar 2006      defaults for io changed in order to reduce overhead (nsave_dis = 50; 
+                 nsave_wan = 200); (AF)
+                 Smearing introduced in lead self-energy and conductor Green's function
                  calculation. (BB)
 
-10 Mar 2006      Test12 added to repository (bulk silicon in zincblende cell, valence only). (BB)
+18 Mar 2006      plot.f90: xsf fmt widely checked. (AF) 
 
-18 Jan 2006      conductor.x output improved (avg # of iterations to get lead self-energies);
-                 bands output updated (kpt in cryst coord.). (AF & BB) 
+17 Mar 2006      BZ for fcc crystals added to Test01/Reference (courtesy of 
+                 Andrea Benassi). (AF)
+
+13 Mar 2006      midpoint.f90 added to utility dir. Full Makefile included in the
+                 directory. Updates also in the upper layer makefiles and in the
+                 makedeps.sh script. (AF)
+
+10 Mar 2006      Test12 added to repository (bulk silicon in zincblende cell, 
+                 valence only). (BB)
+
+27 Feb 2006      Fmt bug fixed in summary.f90 (total weight), courtesy of Laura Zoppi.
+                 History trace is kept during minimization. cU_best and Omega_Tot_best
+                 added to localization_module (experimental). "module" flag 
+                 allowed for datatype in plot input namelist as an alias to 
+                 "modulus". (AF)
+
+24 Feb 2006      Test02 changed: nscf kpt meshes now are 6x6x6 instead of 4x4x4. 
+                 Test01 changed: the same as in test02, but also the plotted band 
+                 structures has been updated (courtesy of Andrea Benassi). (AF)
+
+22 Feb 2006      Small updates in plot.f90: correct normalization of WFs imposed. (AF)
+
+18 Feb 2006      Output fmt corrected in wannier.f90 . (AF)
+
+13 Feb 2006      Output fmt changed in the polarization section. Debye conversion 
+                 factor added to constants. (AF)
+
+01 Feb 2006      kgrid.f90 utility updated: kpts are shifted around the Gamma point. (AF)
+
+31 Jan 2006      Bugs fixed in Test05. References updated in the test. 
+                 Output fmt changed in summary. Warning subroutine added. (AF)
+
+21 Jan 2006      Summary output fmt changed (centers and atomic positions in 
+                 crystal units if verbosity s high). (AF)
+
+19 Jan 2006      Alat units allowed for wannier centers in the input file. 
+                 test08 changed and improved according to example12 of espresso. (AF)
+
+18 Jan 2006      conductor.x output improved (avg # of iterations to get lead 
+                 self-energies); bands output updated (kpt in cryst coord.). (AF & BB) 
 
 13 Jan 2006      Kpt interpolation added in transport calculation. (AF & BB)
 
@@ -23,8 +66,8 @@
 
 28 Dec 2005      Small changes in the output printed by summary routine. (AF)
 
-16 Dec 2005      Small changes in disentangle and wannier output fmts (check purpose). 
-                 (AF)
+16 Dec 2005      Small changes in disentangle and wannier output fmts (check purpose). (AF)
+
 
 -------------------------------------------------
 Date: 13 Dec 2005    Version: WanT-2.0.0
@@ -44,8 +87,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
                  possibility of a direct management of the error. Changes to
                  inversions in transport. References for test04 ans test05 updated. (AF)
 
-02 Dec 2005      Test04 (Guanine dipole moment) added; porting issues on MAC tackled. 
-                 (AF)
+02 Dec 2005      Test04 (Guanine dipole moment) added; porting issues on MAC 
+                 tackled. (AF)
 
 01 Dec 2005      README files in tests upgraded (BB). 
                  Changes in the fmt of output files in order to enhance check 
@@ -88,8 +131,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
                  Documentation updated. (AF)
                  Kpt implementation in transport completed. (AF & BB) 
 
-03 Nov 2005      Portability bugs fixed in fft routines and libs Makefile 
-                 (courtesy of MBN). (AF)
+03 Nov 2005      Portability bugs fixed in fft routines and libs Makefile;
+                 reported by MBN. (AF)
 
 28 Oct 2005      Bug fixed in kpoints.f90; phases deleted; cleanup in test03. (AF)
 
@@ -111,9 +154,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
 
 20 Oct 2005      Cleaning in green.f90 ; startup and cleanup modules made simple 
                  routines. Plot input added to test02. (AF)
-                 Data and input modules added to transport code 
-                 (control, hamiltonian, egrid, input_parameters, input); 
-                 cleanup routine added. (BB)
+                 Data and input modules added to transport code (control, hamiltonian, 
+                 egrid, input_parameters, input); cleanup routine added. (BB)
 
 19 Oct 2005      Global cleanup of unused variables; omegai.f90 intergace changed and
                  simplified; test05 refs updated. (AF)
