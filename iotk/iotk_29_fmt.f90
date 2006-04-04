@@ -40,50 +40,50 @@ function iotk_basefmt_x(type,ikind,ilen)
   logical, save :: first_call = .true.
 # 46 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER1
-  integer (__IOTK_INTEGER1) :: example_INTEGER1 = 0
+  integer (kind=iotk_integer1) :: example_integer1 = 0
   character(46), save :: save_basefmt_integer1 = ""
 #endif
 #ifdef __IOTK_REAL1
-  real (__IOTK_REAL1) :: example_REAL1 = 0.0
+  real (kind=iotk_real1) :: example_real1 = 0.0
   character(46), save :: save_basefmt_real1 = ""
 #endif
 # 46 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER2
-  integer (__IOTK_INTEGER2) :: example_INTEGER2 = 0
+  integer (kind=iotk_integer2) :: example_integer2 = 0
   character(46), save :: save_basefmt_integer2 = ""
 #endif
 #ifdef __IOTK_REAL2
-  real (__IOTK_REAL2) :: example_REAL2 = 0.0
+  real (kind=iotk_real2) :: example_real2 = 0.0
   character(46), save :: save_basefmt_real2 = ""
 #endif
 # 46 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER3
-  integer (__IOTK_INTEGER3) :: example_INTEGER3 = 0
+  integer (kind=iotk_integer3) :: example_integer3 = 0
   character(46), save :: save_basefmt_integer3 = ""
 #endif
 #ifdef __IOTK_REAL3
-  real (__IOTK_REAL3) :: example_REAL3 = 0.0
+  real (kind=iotk_real3) :: example_real3 = 0.0
   character(46), save :: save_basefmt_real3 = ""
 #endif
 # 46 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER4
-  integer (__IOTK_INTEGER4) :: example_INTEGER4 = 0
+  integer (kind=iotk_integer4) :: example_integer4 = 0
   character(46), save :: save_basefmt_integer4 = ""
 #endif
 #ifdef __IOTK_REAL4
-  real (__IOTK_REAL4) :: example_REAL4 = 0.0
+  real (kind=iotk_real4) :: example_real4 = 0.0
   character(46), save :: save_basefmt_real4 = ""
 #endif
 # 55 "iotk_fmt.spp"
   if(first_call) then
 # 57 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER1
-    baselen = range(example_INTEGER1) + 1
+    baselen = range(example_integer1) + 1
     save_basefmt_integer1 = "(i"//trim(iotk_itoa(baselen))//")"
 #endif
 #ifdef __IOTK_REAL1
-    ndig = precision(example_REAL1)+1
-    exp = range(example_REAL1)+1
+    ndig = precision(example_real1)+1
+    exp = range(example_real1)+1
     nexp = 1
     do
       if(exp < 10) exit
@@ -97,12 +97,12 @@ function iotk_basefmt_x(type,ikind,ilen)
 #endif
 # 57 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER2
-    baselen = range(example_INTEGER2) + 1
+    baselen = range(example_integer2) + 1
     save_basefmt_integer2 = "(i"//trim(iotk_itoa(baselen))//")"
 #endif
 #ifdef __IOTK_REAL2
-    ndig = precision(example_REAL2)+1
-    exp = range(example_REAL2)+1
+    ndig = precision(example_real2)+1
+    exp = range(example_real2)+1
     nexp = 1
     do
       if(exp < 10) exit
@@ -116,12 +116,12 @@ function iotk_basefmt_x(type,ikind,ilen)
 #endif
 # 57 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER3
-    baselen = range(example_INTEGER3) + 1
+    baselen = range(example_integer3) + 1
     save_basefmt_integer3 = "(i"//trim(iotk_itoa(baselen))//")"
 #endif
 #ifdef __IOTK_REAL3
-    ndig = precision(example_REAL3)+1
-    exp = range(example_REAL3)+1
+    ndig = precision(example_real3)+1
+    exp = range(example_real3)+1
     nexp = 1
     do
       if(exp < 10) exit
@@ -135,12 +135,12 @@ function iotk_basefmt_x(type,ikind,ilen)
 #endif
 # 57 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER4
-    baselen = range(example_INTEGER4) + 1
+    baselen = range(example_integer4) + 1
     save_basefmt_integer4 = "(i"//trim(iotk_itoa(baselen))//")"
 #endif
 #ifdef __IOTK_REAL4
-    ndig = precision(example_REAL4)+1
-    exp = range(example_REAL4)+1
+    ndig = precision(example_real4)+1
+    exp = range(example_real4)+1
     nexp = 1
     do
       if(exp < 10) exit
@@ -162,22 +162,22 @@ function iotk_basefmt_x(type,ikind,ilen)
     select case(ikind)
 # 84 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER1
-    case(__IOTK_INTEGER1)
+    case(iotk_integer1)
       iotk_basefmt_x = save_basefmt_integer1
 #endif
 # 84 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER2
-    case(__IOTK_INTEGER2)
+    case(iotk_integer2)
       iotk_basefmt_x = save_basefmt_integer2
 #endif
 # 84 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER3
-    case(__IOTK_INTEGER3)
+    case(iotk_integer3)
       iotk_basefmt_x = save_basefmt_integer3
 #endif
 # 84 "iotk_fmt.spp"
 #ifdef __IOTK_INTEGER4
-    case(__IOTK_INTEGER4)
+    case(iotk_integer4)
       iotk_basefmt_x = save_basefmt_integer4
 #endif
 # 89 "iotk_fmt.spp"
@@ -186,22 +186,22 @@ function iotk_basefmt_x(type,ikind,ilen)
     select case(ikind)
 # 93 "iotk_fmt.spp"
 #ifdef __IOTK_REAL1
-    case(__IOTK_REAL1)
+    case(iotk_real1)
       iotk_basefmt_x = save_basefmt_real1
 #endif
 # 93 "iotk_fmt.spp"
 #ifdef __IOTK_REAL2
-    case(__IOTK_REAL2)
+    case(iotk_real2)
       iotk_basefmt_x = save_basefmt_real2
 #endif
 # 93 "iotk_fmt.spp"
 #ifdef __IOTK_REAL3
-    case(__IOTK_REAL3)
+    case(iotk_real3)
       iotk_basefmt_x = save_basefmt_real3
 #endif
 # 93 "iotk_fmt.spp"
 #ifdef __IOTK_REAL4
-    case(__IOTK_REAL4)
+    case(iotk_real4)
       iotk_basefmt_x = save_basefmt_real4
 #endif
 # 98 "iotk_fmt.spp"
@@ -210,22 +210,22 @@ function iotk_basefmt_x(type,ikind,ilen)
     select case(ikind)
 # 102 "iotk_fmt.spp"
 #ifdef __IOTK_REAL1
-    case(__IOTK_REAL1)
+    case(iotk_real1)
       iotk_basefmt_x = "("//trim(save_basefmt_real1)//",',',"//trim(save_basefmt_real1)//")"
 #endif
 # 102 "iotk_fmt.spp"
 #ifdef __IOTK_REAL2
-    case(__IOTK_REAL2)
+    case(iotk_real2)
       iotk_basefmt_x = "("//trim(save_basefmt_real2)//",',',"//trim(save_basefmt_real2)//")"
 #endif
 # 102 "iotk_fmt.spp"
 #ifdef __IOTK_REAL3
-    case(__IOTK_REAL3)
+    case(iotk_real3)
       iotk_basefmt_x = "("//trim(save_basefmt_real3)//",',',"//trim(save_basefmt_real3)//")"
 #endif
 # 102 "iotk_fmt.spp"
 #ifdef __IOTK_REAL4
-    case(__IOTK_REAL4)
+    case(iotk_real4)
       iotk_basefmt_x = "("//trim(save_basefmt_real4)//",',',"//trim(save_basefmt_real4)//")"
 #endif
 # 107 "iotk_fmt.spp"

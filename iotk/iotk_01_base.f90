@@ -56,11 +56,96 @@ integer, parameter :: iotk_maxrank      = __IOTK_MAXRANK ! Controlled by cpp
 
 !------------------------------------------------------------------------------!
 ! Default kinds, depending on compilers and compilation options for the library source
-integer, parameter :: iotk_defkind_character = kind("a")
-integer, parameter :: iotk_defkind_logical   = kind(.true.)
-integer, parameter :: iotk_defkind_integer   = kind(1)
-integer, parameter :: iotk_defkind_real      = kind(1.0)
-integer, parameter :: iotk_defkind_complex   = kind(1.0)
+integer, parameter :: iotk_character_defkind = kind("a")
+integer, parameter :: iotk_logical_defkind   = kind(.true.)
+integer, parameter :: iotk_integer_defkind   = kind(1)
+integer, parameter :: iotk_real_defkind      = kind(1.0)
+integer, parameter :: iotk_complex_defkind   = kind(1.0)
+!------------------------------------------------------------------------------!
+
+!------------------------------------------------------------------------------!
+! Kinds for the multiple interfaces
+# 72 "iotk_base.spp"
+#ifdef __IOTK_LOGICAL1
+integer, parameter :: iotk_LOGICAL1 = __IOTK_LOGICAL1
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_LOGICAL2
+integer, parameter :: iotk_LOGICAL2 = __IOTK_LOGICAL2
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_LOGICAL3
+integer, parameter :: iotk_LOGICAL3 = __IOTK_LOGICAL3
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_LOGICAL4
+integer, parameter :: iotk_LOGICAL4 = __IOTK_LOGICAL4
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_INTEGER1
+integer, parameter :: iotk_INTEGER1 = __IOTK_INTEGER1
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_INTEGER2
+integer, parameter :: iotk_INTEGER2 = __IOTK_INTEGER2
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_INTEGER3
+integer, parameter :: iotk_INTEGER3 = __IOTK_INTEGER3
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_INTEGER4
+integer, parameter :: iotk_INTEGER4 = __IOTK_INTEGER4
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_REAL1
+integer, parameter :: iotk_REAL1 = __IOTK_REAL1
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_REAL2
+integer, parameter :: iotk_REAL2 = __IOTK_REAL2
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_REAL3
+integer, parameter :: iotk_REAL3 = __IOTK_REAL3
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_REAL4
+integer, parameter :: iotk_REAL4 = __IOTK_REAL4
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_COMPLEX1
+integer, parameter :: iotk_COMPLEX1 = __IOTK_COMPLEX1
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_COMPLEX2
+integer, parameter :: iotk_COMPLEX2 = __IOTK_COMPLEX2
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_COMPLEX3
+integer, parameter :: iotk_COMPLEX3 = __IOTK_COMPLEX3
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_COMPLEX4
+integer, parameter :: iotk_COMPLEX4 = __IOTK_COMPLEX4
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_CHARACTER1
+integer, parameter :: iotk_CHARACTER1 = __IOTK_CHARACTER1
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_CHARACTER2
+integer, parameter :: iotk_CHARACTER2 = __IOTK_CHARACTER2
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_CHARACTER3
+integer, parameter :: iotk_CHARACTER3 = __IOTK_CHARACTER3
+#endif
+# 72 "iotk_base.spp"
+#ifdef __IOTK_CHARACTER4
+integer, parameter :: iotk_CHARACTER4 = __IOTK_CHARACTER4
+#endif
+# 77 "iotk_base.spp"
 !------------------------------------------------------------------------------!
 
 !------------------------------------------------------------------------------!

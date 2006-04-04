@@ -59,7 +59,7 @@ subroutine iotk_atoi1(i,a,check)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_integer1
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -113,7 +113,7 @@ subroutine iotk_atoi2(i,a,check)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_integer2
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -167,7 +167,7 @@ subroutine iotk_atoi3(i,a,check)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_integer3
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -221,7 +221,7 @@ subroutine iotk_atoi4(i,a,check)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_integer4
   integer(kind=this_kind),           intent(out) :: i
   character(len=*),                  intent(in)  :: a
   logical,                 optional, intent(out) :: check
@@ -277,7 +277,7 @@ function iotk_itoa1(i,length)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_integer1
   integer(kind=this_kind),           intent(in)  :: i
   integer,                 optional, intent(out) :: length
   character(len=range(i)+2)                      :: iotk_itoa1
@@ -310,7 +310,7 @@ function iotk_itoa2(i,length)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_integer2
   integer(kind=this_kind),           intent(in)  :: i
   integer,                 optional, intent(out) :: length
   character(len=range(i)+2)                      :: iotk_itoa2
@@ -343,7 +343,7 @@ function iotk_itoa3(i,length)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_integer3
   integer(kind=this_kind),           intent(in)  :: i
   integer,                 optional, intent(out) :: length
   character(len=range(i)+2)                      :: iotk_itoa3
@@ -376,7 +376,7 @@ function iotk_itoa4(i,length)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_integer4
   integer(kind=this_kind),           intent(in)  :: i
   integer,                 optional, intent(out) :: length
   character(len=range(i)+2)                      :: iotk_itoa4
@@ -411,7 +411,7 @@ function iotk_ltoa1(l)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_integer1
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa1
   if(l) then
@@ -427,7 +427,7 @@ function iotk_ltoa2(l)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_integer2
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa2
   if(l) then
@@ -443,7 +443,7 @@ function iotk_ltoa3(l)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_integer3
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa3
   if(l) then
@@ -459,7 +459,7 @@ function iotk_ltoa4(l)
   use iotk_base
   use iotk_misc_interf
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_integer4
   logical(kind=this_kind), intent(in) :: l
   character                           :: iotk_ltoa4
   if(l) then

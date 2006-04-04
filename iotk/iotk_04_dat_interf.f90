@@ -42,7 +42,7 @@ interface iotk_write_dat
 subroutine iotk_write_dat_LOGICAL1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat 
@@ -59,7 +59,7 @@ end subroutine iotk_write_dat_LOGICAL1_0
 subroutine iotk_write_dat_LOGICAL1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -76,7 +76,7 @@ end subroutine iotk_write_dat_LOGICAL1_1
 subroutine iotk_write_dat_LOGICAL1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -93,7 +93,7 @@ end subroutine iotk_write_dat_LOGICAL1_2
 subroutine iotk_write_dat_LOGICAL1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -110,7 +110,7 @@ end subroutine iotk_write_dat_LOGICAL1_3
 subroutine iotk_write_dat_LOGICAL1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -127,7 +127,7 @@ end subroutine iotk_write_dat_LOGICAL1_4
 subroutine iotk_write_dat_LOGICAL1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -144,7 +144,7 @@ end subroutine iotk_write_dat_LOGICAL1_5
 subroutine iotk_write_dat_LOGICAL1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -161,7 +161,7 @@ end subroutine iotk_write_dat_LOGICAL1_6
 subroutine iotk_write_dat_LOGICAL1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -182,7 +182,7 @@ end subroutine iotk_write_dat_LOGICAL1_7
 subroutine iotk_write_dat_LOGICAL2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat 
@@ -199,7 +199,7 @@ end subroutine iotk_write_dat_LOGICAL2_0
 subroutine iotk_write_dat_LOGICAL2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -216,7 +216,7 @@ end subroutine iotk_write_dat_LOGICAL2_1
 subroutine iotk_write_dat_LOGICAL2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -233,7 +233,7 @@ end subroutine iotk_write_dat_LOGICAL2_2
 subroutine iotk_write_dat_LOGICAL2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -250,7 +250,7 @@ end subroutine iotk_write_dat_LOGICAL2_3
 subroutine iotk_write_dat_LOGICAL2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -267,7 +267,7 @@ end subroutine iotk_write_dat_LOGICAL2_4
 subroutine iotk_write_dat_LOGICAL2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -284,7 +284,7 @@ end subroutine iotk_write_dat_LOGICAL2_5
 subroutine iotk_write_dat_LOGICAL2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -301,7 +301,7 @@ end subroutine iotk_write_dat_LOGICAL2_6
 subroutine iotk_write_dat_LOGICAL2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -322,7 +322,7 @@ end subroutine iotk_write_dat_LOGICAL2_7
 subroutine iotk_write_dat_LOGICAL3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat 
@@ -339,7 +339,7 @@ end subroutine iotk_write_dat_LOGICAL3_0
 subroutine iotk_write_dat_LOGICAL3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -356,7 +356,7 @@ end subroutine iotk_write_dat_LOGICAL3_1
 subroutine iotk_write_dat_LOGICAL3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -373,7 +373,7 @@ end subroutine iotk_write_dat_LOGICAL3_2
 subroutine iotk_write_dat_LOGICAL3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -390,7 +390,7 @@ end subroutine iotk_write_dat_LOGICAL3_3
 subroutine iotk_write_dat_LOGICAL3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -407,7 +407,7 @@ end subroutine iotk_write_dat_LOGICAL3_4
 subroutine iotk_write_dat_LOGICAL3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -424,7 +424,7 @@ end subroutine iotk_write_dat_LOGICAL3_5
 subroutine iotk_write_dat_LOGICAL3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -441,7 +441,7 @@ end subroutine iotk_write_dat_LOGICAL3_6
 subroutine iotk_write_dat_LOGICAL3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -462,7 +462,7 @@ end subroutine iotk_write_dat_LOGICAL3_7
 subroutine iotk_write_dat_LOGICAL4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat 
@@ -479,7 +479,7 @@ end subroutine iotk_write_dat_LOGICAL4_0
 subroutine iotk_write_dat_LOGICAL4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -496,7 +496,7 @@ end subroutine iotk_write_dat_LOGICAL4_1
 subroutine iotk_write_dat_LOGICAL4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -513,7 +513,7 @@ end subroutine iotk_write_dat_LOGICAL4_2
 subroutine iotk_write_dat_LOGICAL4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -530,7 +530,7 @@ end subroutine iotk_write_dat_LOGICAL4_3
 subroutine iotk_write_dat_LOGICAL4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -547,7 +547,7 @@ end subroutine iotk_write_dat_LOGICAL4_4
 subroutine iotk_write_dat_LOGICAL4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -564,7 +564,7 @@ end subroutine iotk_write_dat_LOGICAL4_5
 subroutine iotk_write_dat_LOGICAL4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -581,7 +581,7 @@ end subroutine iotk_write_dat_LOGICAL4_6
 subroutine iotk_write_dat_LOGICAL4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   LOGICAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -602,7 +602,7 @@ end subroutine iotk_write_dat_LOGICAL4_7
 subroutine iotk_write_dat_INTEGER1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat 
@@ -619,7 +619,7 @@ end subroutine iotk_write_dat_INTEGER1_0
 subroutine iotk_write_dat_INTEGER1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:)
@@ -636,7 +636,7 @@ end subroutine iotk_write_dat_INTEGER1_1
 subroutine iotk_write_dat_INTEGER1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -653,7 +653,7 @@ end subroutine iotk_write_dat_INTEGER1_2
 subroutine iotk_write_dat_INTEGER1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -670,7 +670,7 @@ end subroutine iotk_write_dat_INTEGER1_3
 subroutine iotk_write_dat_INTEGER1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -687,7 +687,7 @@ end subroutine iotk_write_dat_INTEGER1_4
 subroutine iotk_write_dat_INTEGER1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -704,7 +704,7 @@ end subroutine iotk_write_dat_INTEGER1_5
 subroutine iotk_write_dat_INTEGER1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -721,7 +721,7 @@ end subroutine iotk_write_dat_INTEGER1_6
 subroutine iotk_write_dat_INTEGER1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -742,7 +742,7 @@ end subroutine iotk_write_dat_INTEGER1_7
 subroutine iotk_write_dat_INTEGER2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat 
@@ -759,7 +759,7 @@ end subroutine iotk_write_dat_INTEGER2_0
 subroutine iotk_write_dat_INTEGER2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:)
@@ -776,7 +776,7 @@ end subroutine iotk_write_dat_INTEGER2_1
 subroutine iotk_write_dat_INTEGER2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -793,7 +793,7 @@ end subroutine iotk_write_dat_INTEGER2_2
 subroutine iotk_write_dat_INTEGER2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -810,7 +810,7 @@ end subroutine iotk_write_dat_INTEGER2_3
 subroutine iotk_write_dat_INTEGER2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -827,7 +827,7 @@ end subroutine iotk_write_dat_INTEGER2_4
 subroutine iotk_write_dat_INTEGER2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -844,7 +844,7 @@ end subroutine iotk_write_dat_INTEGER2_5
 subroutine iotk_write_dat_INTEGER2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -861,7 +861,7 @@ end subroutine iotk_write_dat_INTEGER2_6
 subroutine iotk_write_dat_INTEGER2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -882,7 +882,7 @@ end subroutine iotk_write_dat_INTEGER2_7
 subroutine iotk_write_dat_INTEGER3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat 
@@ -899,7 +899,7 @@ end subroutine iotk_write_dat_INTEGER3_0
 subroutine iotk_write_dat_INTEGER3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:)
@@ -916,7 +916,7 @@ end subroutine iotk_write_dat_INTEGER3_1
 subroutine iotk_write_dat_INTEGER3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -933,7 +933,7 @@ end subroutine iotk_write_dat_INTEGER3_2
 subroutine iotk_write_dat_INTEGER3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -950,7 +950,7 @@ end subroutine iotk_write_dat_INTEGER3_3
 subroutine iotk_write_dat_INTEGER3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -967,7 +967,7 @@ end subroutine iotk_write_dat_INTEGER3_4
 subroutine iotk_write_dat_INTEGER3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -984,7 +984,7 @@ end subroutine iotk_write_dat_INTEGER3_5
 subroutine iotk_write_dat_INTEGER3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1001,7 +1001,7 @@ end subroutine iotk_write_dat_INTEGER3_6
 subroutine iotk_write_dat_INTEGER3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -1022,7 +1022,7 @@ end subroutine iotk_write_dat_INTEGER3_7
 subroutine iotk_write_dat_INTEGER4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat 
@@ -1039,7 +1039,7 @@ end subroutine iotk_write_dat_INTEGER4_0
 subroutine iotk_write_dat_INTEGER4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:)
@@ -1056,7 +1056,7 @@ end subroutine iotk_write_dat_INTEGER4_1
 subroutine iotk_write_dat_INTEGER4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -1073,7 +1073,7 @@ end subroutine iotk_write_dat_INTEGER4_2
 subroutine iotk_write_dat_INTEGER4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -1090,7 +1090,7 @@ end subroutine iotk_write_dat_INTEGER4_3
 subroutine iotk_write_dat_INTEGER4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -1107,7 +1107,7 @@ end subroutine iotk_write_dat_INTEGER4_4
 subroutine iotk_write_dat_INTEGER4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -1124,7 +1124,7 @@ end subroutine iotk_write_dat_INTEGER4_5
 subroutine iotk_write_dat_INTEGER4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1141,7 +1141,7 @@ end subroutine iotk_write_dat_INTEGER4_6
 subroutine iotk_write_dat_INTEGER4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   INTEGER(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -1162,7 +1162,7 @@ end subroutine iotk_write_dat_INTEGER4_7
 subroutine iotk_write_dat_REAL1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat 
@@ -1179,7 +1179,7 @@ end subroutine iotk_write_dat_REAL1_0
 subroutine iotk_write_dat_REAL1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -1196,7 +1196,7 @@ end subroutine iotk_write_dat_REAL1_1
 subroutine iotk_write_dat_REAL1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -1213,7 +1213,7 @@ end subroutine iotk_write_dat_REAL1_2
 subroutine iotk_write_dat_REAL1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -1230,7 +1230,7 @@ end subroutine iotk_write_dat_REAL1_3
 subroutine iotk_write_dat_REAL1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -1247,7 +1247,7 @@ end subroutine iotk_write_dat_REAL1_4
 subroutine iotk_write_dat_REAL1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -1264,7 +1264,7 @@ end subroutine iotk_write_dat_REAL1_5
 subroutine iotk_write_dat_REAL1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1281,7 +1281,7 @@ end subroutine iotk_write_dat_REAL1_6
 subroutine iotk_write_dat_REAL1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -1302,7 +1302,7 @@ end subroutine iotk_write_dat_REAL1_7
 subroutine iotk_write_dat_REAL2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat 
@@ -1319,7 +1319,7 @@ end subroutine iotk_write_dat_REAL2_0
 subroutine iotk_write_dat_REAL2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -1336,7 +1336,7 @@ end subroutine iotk_write_dat_REAL2_1
 subroutine iotk_write_dat_REAL2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -1353,7 +1353,7 @@ end subroutine iotk_write_dat_REAL2_2
 subroutine iotk_write_dat_REAL2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -1370,7 +1370,7 @@ end subroutine iotk_write_dat_REAL2_3
 subroutine iotk_write_dat_REAL2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -1387,7 +1387,7 @@ end subroutine iotk_write_dat_REAL2_4
 subroutine iotk_write_dat_REAL2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -1404,7 +1404,7 @@ end subroutine iotk_write_dat_REAL2_5
 subroutine iotk_write_dat_REAL2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1421,7 +1421,7 @@ end subroutine iotk_write_dat_REAL2_6
 subroutine iotk_write_dat_REAL2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -1442,7 +1442,7 @@ end subroutine iotk_write_dat_REAL2_7
 subroutine iotk_write_dat_REAL3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat 
@@ -1459,7 +1459,7 @@ end subroutine iotk_write_dat_REAL3_0
 subroutine iotk_write_dat_REAL3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -1476,7 +1476,7 @@ end subroutine iotk_write_dat_REAL3_1
 subroutine iotk_write_dat_REAL3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -1493,7 +1493,7 @@ end subroutine iotk_write_dat_REAL3_2
 subroutine iotk_write_dat_REAL3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -1510,7 +1510,7 @@ end subroutine iotk_write_dat_REAL3_3
 subroutine iotk_write_dat_REAL3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -1527,7 +1527,7 @@ end subroutine iotk_write_dat_REAL3_4
 subroutine iotk_write_dat_REAL3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -1544,7 +1544,7 @@ end subroutine iotk_write_dat_REAL3_5
 subroutine iotk_write_dat_REAL3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1561,7 +1561,7 @@ end subroutine iotk_write_dat_REAL3_6
 subroutine iotk_write_dat_REAL3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -1582,7 +1582,7 @@ end subroutine iotk_write_dat_REAL3_7
 subroutine iotk_write_dat_REAL4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat 
@@ -1599,7 +1599,7 @@ end subroutine iotk_write_dat_REAL4_0
 subroutine iotk_write_dat_REAL4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:)
@@ -1616,7 +1616,7 @@ end subroutine iotk_write_dat_REAL4_1
 subroutine iotk_write_dat_REAL4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -1633,7 +1633,7 @@ end subroutine iotk_write_dat_REAL4_2
 subroutine iotk_write_dat_REAL4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -1650,7 +1650,7 @@ end subroutine iotk_write_dat_REAL4_3
 subroutine iotk_write_dat_REAL4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -1667,7 +1667,7 @@ end subroutine iotk_write_dat_REAL4_4
 subroutine iotk_write_dat_REAL4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -1684,7 +1684,7 @@ end subroutine iotk_write_dat_REAL4_5
 subroutine iotk_write_dat_REAL4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1701,7 +1701,7 @@ end subroutine iotk_write_dat_REAL4_6
 subroutine iotk_write_dat_REAL4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   REAL(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -1722,7 +1722,7 @@ end subroutine iotk_write_dat_REAL4_7
 subroutine iotk_write_dat_COMPLEX1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat 
@@ -1739,7 +1739,7 @@ end subroutine iotk_write_dat_COMPLEX1_0
 subroutine iotk_write_dat_COMPLEX1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:)
@@ -1756,7 +1756,7 @@ end subroutine iotk_write_dat_COMPLEX1_1
 subroutine iotk_write_dat_COMPLEX1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -1773,7 +1773,7 @@ end subroutine iotk_write_dat_COMPLEX1_2
 subroutine iotk_write_dat_COMPLEX1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -1790,7 +1790,7 @@ end subroutine iotk_write_dat_COMPLEX1_3
 subroutine iotk_write_dat_COMPLEX1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -1807,7 +1807,7 @@ end subroutine iotk_write_dat_COMPLEX1_4
 subroutine iotk_write_dat_COMPLEX1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -1824,7 +1824,7 @@ end subroutine iotk_write_dat_COMPLEX1_5
 subroutine iotk_write_dat_COMPLEX1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1841,7 +1841,7 @@ end subroutine iotk_write_dat_COMPLEX1_6
 subroutine iotk_write_dat_COMPLEX1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -1862,7 +1862,7 @@ end subroutine iotk_write_dat_COMPLEX1_7
 subroutine iotk_write_dat_COMPLEX2_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat 
@@ -1879,7 +1879,7 @@ end subroutine iotk_write_dat_COMPLEX2_0
 subroutine iotk_write_dat_COMPLEX2_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:)
@@ -1896,7 +1896,7 @@ end subroutine iotk_write_dat_COMPLEX2_1
 subroutine iotk_write_dat_COMPLEX2_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -1913,7 +1913,7 @@ end subroutine iotk_write_dat_COMPLEX2_2
 subroutine iotk_write_dat_COMPLEX2_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -1930,7 +1930,7 @@ end subroutine iotk_write_dat_COMPLEX2_3
 subroutine iotk_write_dat_COMPLEX2_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -1947,7 +1947,7 @@ end subroutine iotk_write_dat_COMPLEX2_4
 subroutine iotk_write_dat_COMPLEX2_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -1964,7 +1964,7 @@ end subroutine iotk_write_dat_COMPLEX2_5
 subroutine iotk_write_dat_COMPLEX2_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -1981,7 +1981,7 @@ end subroutine iotk_write_dat_COMPLEX2_6
 subroutine iotk_write_dat_COMPLEX2_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -2002,7 +2002,7 @@ end subroutine iotk_write_dat_COMPLEX2_7
 subroutine iotk_write_dat_COMPLEX3_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat 
@@ -2019,7 +2019,7 @@ end subroutine iotk_write_dat_COMPLEX3_0
 subroutine iotk_write_dat_COMPLEX3_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:)
@@ -2036,7 +2036,7 @@ end subroutine iotk_write_dat_COMPLEX3_1
 subroutine iotk_write_dat_COMPLEX3_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -2053,7 +2053,7 @@ end subroutine iotk_write_dat_COMPLEX3_2
 subroutine iotk_write_dat_COMPLEX3_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -2070,7 +2070,7 @@ end subroutine iotk_write_dat_COMPLEX3_3
 subroutine iotk_write_dat_COMPLEX3_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -2087,7 +2087,7 @@ end subroutine iotk_write_dat_COMPLEX3_4
 subroutine iotk_write_dat_COMPLEX3_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -2104,7 +2104,7 @@ end subroutine iotk_write_dat_COMPLEX3_5
 subroutine iotk_write_dat_COMPLEX3_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -2121,7 +2121,7 @@ end subroutine iotk_write_dat_COMPLEX3_6
 subroutine iotk_write_dat_COMPLEX3_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -2142,7 +2142,7 @@ end subroutine iotk_write_dat_COMPLEX3_7
 subroutine iotk_write_dat_COMPLEX4_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat 
@@ -2159,7 +2159,7 @@ end subroutine iotk_write_dat_COMPLEX4_0
 subroutine iotk_write_dat_COMPLEX4_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:)
@@ -2176,7 +2176,7 @@ end subroutine iotk_write_dat_COMPLEX4_1
 subroutine iotk_write_dat_COMPLEX4_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:)
@@ -2193,7 +2193,7 @@ end subroutine iotk_write_dat_COMPLEX4_2
 subroutine iotk_write_dat_COMPLEX4_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:)
@@ -2210,7 +2210,7 @@ end subroutine iotk_write_dat_COMPLEX4_3
 subroutine iotk_write_dat_COMPLEX4_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:)
@@ -2227,7 +2227,7 @@ end subroutine iotk_write_dat_COMPLEX4_4
 subroutine iotk_write_dat_COMPLEX4_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:)
@@ -2244,7 +2244,7 @@ end subroutine iotk_write_dat_COMPLEX4_5
 subroutine iotk_write_dat_COMPLEX4_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -2261,7 +2261,7 @@ end subroutine iotk_write_dat_COMPLEX4_6
 subroutine iotk_write_dat_COMPLEX4_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   COMPLEX(kind=this_kind),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -2282,7 +2282,7 @@ end subroutine iotk_write_dat_COMPLEX4_7
 subroutine iotk_write_dat_CHARACTER1_0(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat 
@@ -2299,7 +2299,7 @@ end subroutine iotk_write_dat_CHARACTER1_0
 subroutine iotk_write_dat_CHARACTER1_1(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat (:)
@@ -2316,7 +2316,7 @@ end subroutine iotk_write_dat_CHARACTER1_1
 subroutine iotk_write_dat_CHARACTER1_2(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat (:,:)
@@ -2333,7 +2333,7 @@ end subroutine iotk_write_dat_CHARACTER1_2
 subroutine iotk_write_dat_CHARACTER1_3(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat (:,:,:)
@@ -2350,7 +2350,7 @@ end subroutine iotk_write_dat_CHARACTER1_3
 subroutine iotk_write_dat_CHARACTER1_4(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat (:,:,:,:)
@@ -2367,7 +2367,7 @@ end subroutine iotk_write_dat_CHARACTER1_4
 subroutine iotk_write_dat_CHARACTER1_5(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat (:,:,:,:,:)
@@ -2384,7 +2384,7 @@ end subroutine iotk_write_dat_CHARACTER1_5
 subroutine iotk_write_dat_CHARACTER1_6(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat (:,:,:,:,:,:)
@@ -2401,7 +2401,7 @@ end subroutine iotk_write_dat_CHARACTER1_6
 subroutine iotk_write_dat_CHARACTER1_7(unit,name,dat,dummy,attr,columns,sep,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
   CHARACTER(kind=this_kind,len=*),           intent(in)  :: dat (:,:,:,:,:,:,:)
@@ -2426,7 +2426,7 @@ interface iotk_scan_dat
 subroutine iotk_scan_dat_LOGICAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2450,7 +2450,7 @@ end subroutine iotk_scan_dat_LOGICAL1_0
 subroutine iotk_scan_dat_LOGICAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2474,7 +2474,7 @@ end subroutine iotk_scan_dat_LOGICAL1_1
 subroutine iotk_scan_dat_LOGICAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2498,7 +2498,7 @@ end subroutine iotk_scan_dat_LOGICAL1_2
 subroutine iotk_scan_dat_LOGICAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2522,7 +2522,7 @@ end subroutine iotk_scan_dat_LOGICAL1_3
 subroutine iotk_scan_dat_LOGICAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2546,7 +2546,7 @@ end subroutine iotk_scan_dat_LOGICAL1_4
 subroutine iotk_scan_dat_LOGICAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2570,7 +2570,7 @@ end subroutine iotk_scan_dat_LOGICAL1_5
 subroutine iotk_scan_dat_LOGICAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2594,7 +2594,7 @@ end subroutine iotk_scan_dat_LOGICAL1_6
 subroutine iotk_scan_dat_LOGICAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2622,7 +2622,7 @@ end subroutine iotk_scan_dat_LOGICAL1_7
 subroutine iotk_scan_dat_LOGICAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2646,7 +2646,7 @@ end subroutine iotk_scan_dat_LOGICAL2_0
 subroutine iotk_scan_dat_LOGICAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2670,7 +2670,7 @@ end subroutine iotk_scan_dat_LOGICAL2_1
 subroutine iotk_scan_dat_LOGICAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2694,7 +2694,7 @@ end subroutine iotk_scan_dat_LOGICAL2_2
 subroutine iotk_scan_dat_LOGICAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2718,7 +2718,7 @@ end subroutine iotk_scan_dat_LOGICAL2_3
 subroutine iotk_scan_dat_LOGICAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2742,7 +2742,7 @@ end subroutine iotk_scan_dat_LOGICAL2_4
 subroutine iotk_scan_dat_LOGICAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2766,7 +2766,7 @@ end subroutine iotk_scan_dat_LOGICAL2_5
 subroutine iotk_scan_dat_LOGICAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2790,7 +2790,7 @@ end subroutine iotk_scan_dat_LOGICAL2_6
 subroutine iotk_scan_dat_LOGICAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2818,7 +2818,7 @@ end subroutine iotk_scan_dat_LOGICAL2_7
 subroutine iotk_scan_dat_LOGICAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2842,7 +2842,7 @@ end subroutine iotk_scan_dat_LOGICAL3_0
 subroutine iotk_scan_dat_LOGICAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2866,7 +2866,7 @@ end subroutine iotk_scan_dat_LOGICAL3_1
 subroutine iotk_scan_dat_LOGICAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2890,7 +2890,7 @@ end subroutine iotk_scan_dat_LOGICAL3_2
 subroutine iotk_scan_dat_LOGICAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2914,7 +2914,7 @@ end subroutine iotk_scan_dat_LOGICAL3_3
 subroutine iotk_scan_dat_LOGICAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2938,7 +2938,7 @@ end subroutine iotk_scan_dat_LOGICAL3_4
 subroutine iotk_scan_dat_LOGICAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2962,7 +2962,7 @@ end subroutine iotk_scan_dat_LOGICAL3_5
 subroutine iotk_scan_dat_LOGICAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -2986,7 +2986,7 @@ end subroutine iotk_scan_dat_LOGICAL3_6
 subroutine iotk_scan_dat_LOGICAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3014,7 +3014,7 @@ end subroutine iotk_scan_dat_LOGICAL3_7
 subroutine iotk_scan_dat_LOGICAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3038,7 +3038,7 @@ end subroutine iotk_scan_dat_LOGICAL4_0
 subroutine iotk_scan_dat_LOGICAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3062,7 +3062,7 @@ end subroutine iotk_scan_dat_LOGICAL4_1
 subroutine iotk_scan_dat_LOGICAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3086,7 +3086,7 @@ end subroutine iotk_scan_dat_LOGICAL4_2
 subroutine iotk_scan_dat_LOGICAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3110,7 +3110,7 @@ end subroutine iotk_scan_dat_LOGICAL4_3
 subroutine iotk_scan_dat_LOGICAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3134,7 +3134,7 @@ end subroutine iotk_scan_dat_LOGICAL4_4
 subroutine iotk_scan_dat_LOGICAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3158,7 +3158,7 @@ end subroutine iotk_scan_dat_LOGICAL4_5
 subroutine iotk_scan_dat_LOGICAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3182,7 +3182,7 @@ end subroutine iotk_scan_dat_LOGICAL4_6
 subroutine iotk_scan_dat_LOGICAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3210,7 +3210,7 @@ end subroutine iotk_scan_dat_LOGICAL4_7
 subroutine iotk_scan_dat_INTEGER1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3234,7 +3234,7 @@ end subroutine iotk_scan_dat_INTEGER1_0
 subroutine iotk_scan_dat_INTEGER1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3258,7 +3258,7 @@ end subroutine iotk_scan_dat_INTEGER1_1
 subroutine iotk_scan_dat_INTEGER1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3282,7 +3282,7 @@ end subroutine iotk_scan_dat_INTEGER1_2
 subroutine iotk_scan_dat_INTEGER1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3306,7 +3306,7 @@ end subroutine iotk_scan_dat_INTEGER1_3
 subroutine iotk_scan_dat_INTEGER1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3330,7 +3330,7 @@ end subroutine iotk_scan_dat_INTEGER1_4
 subroutine iotk_scan_dat_INTEGER1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3354,7 +3354,7 @@ end subroutine iotk_scan_dat_INTEGER1_5
 subroutine iotk_scan_dat_INTEGER1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3378,7 +3378,7 @@ end subroutine iotk_scan_dat_INTEGER1_6
 subroutine iotk_scan_dat_INTEGER1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3406,7 +3406,7 @@ end subroutine iotk_scan_dat_INTEGER1_7
 subroutine iotk_scan_dat_INTEGER2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3430,7 +3430,7 @@ end subroutine iotk_scan_dat_INTEGER2_0
 subroutine iotk_scan_dat_INTEGER2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3454,7 +3454,7 @@ end subroutine iotk_scan_dat_INTEGER2_1
 subroutine iotk_scan_dat_INTEGER2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3478,7 +3478,7 @@ end subroutine iotk_scan_dat_INTEGER2_2
 subroutine iotk_scan_dat_INTEGER2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3502,7 +3502,7 @@ end subroutine iotk_scan_dat_INTEGER2_3
 subroutine iotk_scan_dat_INTEGER2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3526,7 +3526,7 @@ end subroutine iotk_scan_dat_INTEGER2_4
 subroutine iotk_scan_dat_INTEGER2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3550,7 +3550,7 @@ end subroutine iotk_scan_dat_INTEGER2_5
 subroutine iotk_scan_dat_INTEGER2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3574,7 +3574,7 @@ end subroutine iotk_scan_dat_INTEGER2_6
 subroutine iotk_scan_dat_INTEGER2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3602,7 +3602,7 @@ end subroutine iotk_scan_dat_INTEGER2_7
 subroutine iotk_scan_dat_INTEGER3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3626,7 +3626,7 @@ end subroutine iotk_scan_dat_INTEGER3_0
 subroutine iotk_scan_dat_INTEGER3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3650,7 +3650,7 @@ end subroutine iotk_scan_dat_INTEGER3_1
 subroutine iotk_scan_dat_INTEGER3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3674,7 +3674,7 @@ end subroutine iotk_scan_dat_INTEGER3_2
 subroutine iotk_scan_dat_INTEGER3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3698,7 +3698,7 @@ end subroutine iotk_scan_dat_INTEGER3_3
 subroutine iotk_scan_dat_INTEGER3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3722,7 +3722,7 @@ end subroutine iotk_scan_dat_INTEGER3_4
 subroutine iotk_scan_dat_INTEGER3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3746,7 +3746,7 @@ end subroutine iotk_scan_dat_INTEGER3_5
 subroutine iotk_scan_dat_INTEGER3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3770,7 +3770,7 @@ end subroutine iotk_scan_dat_INTEGER3_6
 subroutine iotk_scan_dat_INTEGER3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3798,7 +3798,7 @@ end subroutine iotk_scan_dat_INTEGER3_7
 subroutine iotk_scan_dat_INTEGER4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3822,7 +3822,7 @@ end subroutine iotk_scan_dat_INTEGER4_0
 subroutine iotk_scan_dat_INTEGER4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3846,7 +3846,7 @@ end subroutine iotk_scan_dat_INTEGER4_1
 subroutine iotk_scan_dat_INTEGER4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3870,7 +3870,7 @@ end subroutine iotk_scan_dat_INTEGER4_2
 subroutine iotk_scan_dat_INTEGER4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3894,7 +3894,7 @@ end subroutine iotk_scan_dat_INTEGER4_3
 subroutine iotk_scan_dat_INTEGER4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3918,7 +3918,7 @@ end subroutine iotk_scan_dat_INTEGER4_4
 subroutine iotk_scan_dat_INTEGER4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3942,7 +3942,7 @@ end subroutine iotk_scan_dat_INTEGER4_5
 subroutine iotk_scan_dat_INTEGER4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3966,7 +3966,7 @@ end subroutine iotk_scan_dat_INTEGER4_6
 subroutine iotk_scan_dat_INTEGER4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -3994,7 +3994,7 @@ end subroutine iotk_scan_dat_INTEGER4_7
 subroutine iotk_scan_dat_REAL1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4018,7 +4018,7 @@ end subroutine iotk_scan_dat_REAL1_0
 subroutine iotk_scan_dat_REAL1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4042,7 +4042,7 @@ end subroutine iotk_scan_dat_REAL1_1
 subroutine iotk_scan_dat_REAL1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4066,7 +4066,7 @@ end subroutine iotk_scan_dat_REAL1_2
 subroutine iotk_scan_dat_REAL1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4090,7 +4090,7 @@ end subroutine iotk_scan_dat_REAL1_3
 subroutine iotk_scan_dat_REAL1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4114,7 +4114,7 @@ end subroutine iotk_scan_dat_REAL1_4
 subroutine iotk_scan_dat_REAL1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4138,7 +4138,7 @@ end subroutine iotk_scan_dat_REAL1_5
 subroutine iotk_scan_dat_REAL1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4162,7 +4162,7 @@ end subroutine iotk_scan_dat_REAL1_6
 subroutine iotk_scan_dat_REAL1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4190,7 +4190,7 @@ end subroutine iotk_scan_dat_REAL1_7
 subroutine iotk_scan_dat_REAL2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4214,7 +4214,7 @@ end subroutine iotk_scan_dat_REAL2_0
 subroutine iotk_scan_dat_REAL2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4238,7 +4238,7 @@ end subroutine iotk_scan_dat_REAL2_1
 subroutine iotk_scan_dat_REAL2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4262,7 +4262,7 @@ end subroutine iotk_scan_dat_REAL2_2
 subroutine iotk_scan_dat_REAL2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4286,7 +4286,7 @@ end subroutine iotk_scan_dat_REAL2_3
 subroutine iotk_scan_dat_REAL2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4310,7 +4310,7 @@ end subroutine iotk_scan_dat_REAL2_4
 subroutine iotk_scan_dat_REAL2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4334,7 +4334,7 @@ end subroutine iotk_scan_dat_REAL2_5
 subroutine iotk_scan_dat_REAL2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4358,7 +4358,7 @@ end subroutine iotk_scan_dat_REAL2_6
 subroutine iotk_scan_dat_REAL2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4386,7 +4386,7 @@ end subroutine iotk_scan_dat_REAL2_7
 subroutine iotk_scan_dat_REAL3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4410,7 +4410,7 @@ end subroutine iotk_scan_dat_REAL3_0
 subroutine iotk_scan_dat_REAL3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4434,7 +4434,7 @@ end subroutine iotk_scan_dat_REAL3_1
 subroutine iotk_scan_dat_REAL3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4458,7 +4458,7 @@ end subroutine iotk_scan_dat_REAL3_2
 subroutine iotk_scan_dat_REAL3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4482,7 +4482,7 @@ end subroutine iotk_scan_dat_REAL3_3
 subroutine iotk_scan_dat_REAL3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4506,7 +4506,7 @@ end subroutine iotk_scan_dat_REAL3_4
 subroutine iotk_scan_dat_REAL3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4530,7 +4530,7 @@ end subroutine iotk_scan_dat_REAL3_5
 subroutine iotk_scan_dat_REAL3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4554,7 +4554,7 @@ end subroutine iotk_scan_dat_REAL3_6
 subroutine iotk_scan_dat_REAL3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4582,7 +4582,7 @@ end subroutine iotk_scan_dat_REAL3_7
 subroutine iotk_scan_dat_REAL4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4606,7 +4606,7 @@ end subroutine iotk_scan_dat_REAL4_0
 subroutine iotk_scan_dat_REAL4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4630,7 +4630,7 @@ end subroutine iotk_scan_dat_REAL4_1
 subroutine iotk_scan_dat_REAL4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4654,7 +4654,7 @@ end subroutine iotk_scan_dat_REAL4_2
 subroutine iotk_scan_dat_REAL4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4678,7 +4678,7 @@ end subroutine iotk_scan_dat_REAL4_3
 subroutine iotk_scan_dat_REAL4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4702,7 +4702,7 @@ end subroutine iotk_scan_dat_REAL4_4
 subroutine iotk_scan_dat_REAL4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4726,7 +4726,7 @@ end subroutine iotk_scan_dat_REAL4_5
 subroutine iotk_scan_dat_REAL4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4750,7 +4750,7 @@ end subroutine iotk_scan_dat_REAL4_6
 subroutine iotk_scan_dat_REAL4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4778,7 +4778,7 @@ end subroutine iotk_scan_dat_REAL4_7
 subroutine iotk_scan_dat_COMPLEX1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4802,7 +4802,7 @@ end subroutine iotk_scan_dat_COMPLEX1_0
 subroutine iotk_scan_dat_COMPLEX1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4826,7 +4826,7 @@ end subroutine iotk_scan_dat_COMPLEX1_1
 subroutine iotk_scan_dat_COMPLEX1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4850,7 +4850,7 @@ end subroutine iotk_scan_dat_COMPLEX1_2
 subroutine iotk_scan_dat_COMPLEX1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4874,7 +4874,7 @@ end subroutine iotk_scan_dat_COMPLEX1_3
 subroutine iotk_scan_dat_COMPLEX1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4898,7 +4898,7 @@ end subroutine iotk_scan_dat_COMPLEX1_4
 subroutine iotk_scan_dat_COMPLEX1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4922,7 +4922,7 @@ end subroutine iotk_scan_dat_COMPLEX1_5
 subroutine iotk_scan_dat_COMPLEX1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4946,7 +4946,7 @@ end subroutine iotk_scan_dat_COMPLEX1_6
 subroutine iotk_scan_dat_COMPLEX1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4974,7 +4974,7 @@ end subroutine iotk_scan_dat_COMPLEX1_7
 subroutine iotk_scan_dat_COMPLEX2_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -4998,7 +4998,7 @@ end subroutine iotk_scan_dat_COMPLEX2_0
 subroutine iotk_scan_dat_COMPLEX2_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5022,7 +5022,7 @@ end subroutine iotk_scan_dat_COMPLEX2_1
 subroutine iotk_scan_dat_COMPLEX2_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5046,7 +5046,7 @@ end subroutine iotk_scan_dat_COMPLEX2_2
 subroutine iotk_scan_dat_COMPLEX2_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5070,7 +5070,7 @@ end subroutine iotk_scan_dat_COMPLEX2_3
 subroutine iotk_scan_dat_COMPLEX2_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5094,7 +5094,7 @@ end subroutine iotk_scan_dat_COMPLEX2_4
 subroutine iotk_scan_dat_COMPLEX2_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5118,7 +5118,7 @@ end subroutine iotk_scan_dat_COMPLEX2_5
 subroutine iotk_scan_dat_COMPLEX2_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5142,7 +5142,7 @@ end subroutine iotk_scan_dat_COMPLEX2_6
 subroutine iotk_scan_dat_COMPLEX2_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5170,7 +5170,7 @@ end subroutine iotk_scan_dat_COMPLEX2_7
 subroutine iotk_scan_dat_COMPLEX3_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5194,7 +5194,7 @@ end subroutine iotk_scan_dat_COMPLEX3_0
 subroutine iotk_scan_dat_COMPLEX3_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5218,7 +5218,7 @@ end subroutine iotk_scan_dat_COMPLEX3_1
 subroutine iotk_scan_dat_COMPLEX3_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5242,7 +5242,7 @@ end subroutine iotk_scan_dat_COMPLEX3_2
 subroutine iotk_scan_dat_COMPLEX3_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5266,7 +5266,7 @@ end subroutine iotk_scan_dat_COMPLEX3_3
 subroutine iotk_scan_dat_COMPLEX3_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5290,7 +5290,7 @@ end subroutine iotk_scan_dat_COMPLEX3_4
 subroutine iotk_scan_dat_COMPLEX3_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5314,7 +5314,7 @@ end subroutine iotk_scan_dat_COMPLEX3_5
 subroutine iotk_scan_dat_COMPLEX3_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5338,7 +5338,7 @@ end subroutine iotk_scan_dat_COMPLEX3_6
 subroutine iotk_scan_dat_COMPLEX3_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5366,7 +5366,7 @@ end subroutine iotk_scan_dat_COMPLEX3_7
 subroutine iotk_scan_dat_COMPLEX4_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5390,7 +5390,7 @@ end subroutine iotk_scan_dat_COMPLEX4_0
 subroutine iotk_scan_dat_COMPLEX4_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5414,7 +5414,7 @@ end subroutine iotk_scan_dat_COMPLEX4_1
 subroutine iotk_scan_dat_COMPLEX4_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5438,7 +5438,7 @@ end subroutine iotk_scan_dat_COMPLEX4_2
 subroutine iotk_scan_dat_COMPLEX4_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5462,7 +5462,7 @@ end subroutine iotk_scan_dat_COMPLEX4_3
 subroutine iotk_scan_dat_COMPLEX4_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5486,7 +5486,7 @@ end subroutine iotk_scan_dat_COMPLEX4_4
 subroutine iotk_scan_dat_COMPLEX4_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5510,7 +5510,7 @@ end subroutine iotk_scan_dat_COMPLEX4_5
 subroutine iotk_scan_dat_COMPLEX4_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5534,7 +5534,7 @@ end subroutine iotk_scan_dat_COMPLEX4_6
 subroutine iotk_scan_dat_COMPLEX4_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5562,7 +5562,7 @@ end subroutine iotk_scan_dat_COMPLEX4_7
 subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5586,7 +5586,7 @@ end subroutine iotk_scan_dat_CHARACTER1_0
 subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5610,7 +5610,7 @@ end subroutine iotk_scan_dat_CHARACTER1_1
 subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5634,7 +5634,7 @@ end subroutine iotk_scan_dat_CHARACTER1_2
 subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5658,7 +5658,7 @@ end subroutine iotk_scan_dat_CHARACTER1_3
 subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5682,7 +5682,7 @@ end subroutine iotk_scan_dat_CHARACTER1_4
 subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5706,7 +5706,7 @@ end subroutine iotk_scan_dat_CHARACTER1_5
 subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5730,7 +5730,7 @@ end subroutine iotk_scan_dat_CHARACTER1_6
 subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                                   intent(in)  :: unit
   character(len=*),                          intent(in)  :: name
 #ifdef __IOTK_WORKAROUND6
@@ -5760,7 +5760,7 @@ interface iotk_scan_dat_aux
 subroutine iotk_scan_dat_aux_LOGICAL1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL1
+  integer, parameter :: this_kind = iotk_LOGICAL1
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   LOGICAL(kind=this_kind)              :: dat (:)
@@ -5778,7 +5778,7 @@ end subroutine iotk_scan_dat_aux_LOGICAL1
 subroutine iotk_scan_dat_aux_LOGICAL2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL2
+  integer, parameter :: this_kind = iotk_LOGICAL2
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   LOGICAL(kind=this_kind)              :: dat (:)
@@ -5796,7 +5796,7 @@ end subroutine iotk_scan_dat_aux_LOGICAL2
 subroutine iotk_scan_dat_aux_LOGICAL3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL3
+  integer, parameter :: this_kind = iotk_LOGICAL3
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   LOGICAL(kind=this_kind)              :: dat (:)
@@ -5814,7 +5814,7 @@ end subroutine iotk_scan_dat_aux_LOGICAL3
 subroutine iotk_scan_dat_aux_LOGICAL4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_LOGICAL4
+  integer, parameter :: this_kind = iotk_LOGICAL4
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   LOGICAL(kind=this_kind)              :: dat (:)
@@ -5832,7 +5832,7 @@ end subroutine iotk_scan_dat_aux_LOGICAL4
 subroutine iotk_scan_dat_aux_INTEGER1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER1
+  integer, parameter :: this_kind = iotk_INTEGER1
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   INTEGER(kind=this_kind)              :: dat (:)
@@ -5850,7 +5850,7 @@ end subroutine iotk_scan_dat_aux_INTEGER1
 subroutine iotk_scan_dat_aux_INTEGER2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER2
+  integer, parameter :: this_kind = iotk_INTEGER2
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   INTEGER(kind=this_kind)              :: dat (:)
@@ -5868,7 +5868,7 @@ end subroutine iotk_scan_dat_aux_INTEGER2
 subroutine iotk_scan_dat_aux_INTEGER3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER3
+  integer, parameter :: this_kind = iotk_INTEGER3
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   INTEGER(kind=this_kind)              :: dat (:)
@@ -5886,7 +5886,7 @@ end subroutine iotk_scan_dat_aux_INTEGER3
 subroutine iotk_scan_dat_aux_INTEGER4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_INTEGER4
+  integer, parameter :: this_kind = iotk_INTEGER4
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   INTEGER(kind=this_kind)              :: dat (:)
@@ -5904,7 +5904,7 @@ end subroutine iotk_scan_dat_aux_INTEGER4
 subroutine iotk_scan_dat_aux_REAL1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL1
+  integer, parameter :: this_kind = iotk_REAL1
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   REAL(kind=this_kind)              :: dat (:)
@@ -5922,7 +5922,7 @@ end subroutine iotk_scan_dat_aux_REAL1
 subroutine iotk_scan_dat_aux_REAL2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL2
+  integer, parameter :: this_kind = iotk_REAL2
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   REAL(kind=this_kind)              :: dat (:)
@@ -5940,7 +5940,7 @@ end subroutine iotk_scan_dat_aux_REAL2
 subroutine iotk_scan_dat_aux_REAL3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL3
+  integer, parameter :: this_kind = iotk_REAL3
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   REAL(kind=this_kind)              :: dat (:)
@@ -5958,7 +5958,7 @@ end subroutine iotk_scan_dat_aux_REAL3
 subroutine iotk_scan_dat_aux_REAL4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_REAL4
+  integer, parameter :: this_kind = iotk_REAL4
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   REAL(kind=this_kind)              :: dat (:)
@@ -5976,7 +5976,7 @@ end subroutine iotk_scan_dat_aux_REAL4
 subroutine iotk_scan_dat_aux_COMPLEX1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX1
+  integer, parameter :: this_kind = iotk_COMPLEX1
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   COMPLEX(kind=this_kind)              :: dat (:)
@@ -5994,7 +5994,7 @@ end subroutine iotk_scan_dat_aux_COMPLEX1
 subroutine iotk_scan_dat_aux_COMPLEX2(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX2
+  integer, parameter :: this_kind = iotk_COMPLEX2
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   COMPLEX(kind=this_kind)              :: dat (:)
@@ -6012,7 +6012,7 @@ end subroutine iotk_scan_dat_aux_COMPLEX2
 subroutine iotk_scan_dat_aux_COMPLEX3(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX3
+  integer, parameter :: this_kind = iotk_COMPLEX3
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   COMPLEX(kind=this_kind)              :: dat (:)
@@ -6030,7 +6030,7 @@ end subroutine iotk_scan_dat_aux_COMPLEX3
 subroutine iotk_scan_dat_aux_COMPLEX4(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_COMPLEX4
+  integer, parameter :: this_kind = iotk_COMPLEX4
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   COMPLEX(kind=this_kind)              :: dat (:)
@@ -6048,7 +6048,7 @@ end subroutine iotk_scan_dat_aux_COMPLEX4
 subroutine iotk_scan_dat_aux_CHARACTER1(unit,dat,rkind,rlen,fmt,ierr)
   use iotk_base
   implicit none
-  integer, parameter :: this_kind = __IOTK_CHARACTER1
+  integer, parameter :: this_kind = iotk_CHARACTER1
   integer,                         intent(in)  :: unit
 #ifdef __IOTK_WORKAROUND6
   CHARACTER(kind=this_kind,len=*)              :: dat (:)

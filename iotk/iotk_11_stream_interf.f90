@@ -39,11 +39,11 @@ interface iotk_stream_read
   subroutine iotk_stream_read_x(unit,header,setpos,getpos,ierr)
     use iotk_base
     implicit none
-    integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    integer,                            optional, intent(in)  :: setpos
-    integer,                            optional, intent(out) :: getpos
-    integer,                            optional, intent(out) :: ierr
+    integer,                                    intent(in)  :: unit
+    integer(iotk_header_kind),                  intent(out) :: header
+    integer,                          optional, intent(in)  :: setpos
+    integer,                          optional, intent(out) :: getpos
+    integer,                          optional, intent(out) :: ierr
   end subroutine iotk_stream_read_x
 # 55 "iotk_stream_interf.spp"
 #ifdef __IOTK_LOGICAL1
@@ -51,8 +51,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    LOGICAL(kind=__IOTK_LOGICAL1),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    LOGICAL(kind=iotk_LOGICAL1),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -65,8 +65,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    LOGICAL(kind=__IOTK_LOGICAL2),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    LOGICAL(kind=iotk_LOGICAL2),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -79,8 +79,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    LOGICAL(kind=__IOTK_LOGICAL3),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    LOGICAL(kind=iotk_LOGICAL3),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -93,8 +93,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    LOGICAL(kind=__IOTK_LOGICAL4),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    LOGICAL(kind=iotk_LOGICAL4),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -107,8 +107,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    INTEGER(kind=__IOTK_INTEGER1),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    INTEGER(kind=iotk_INTEGER1),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -121,8 +121,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    INTEGER(kind=__IOTK_INTEGER2),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    INTEGER(kind=iotk_INTEGER2),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -135,8 +135,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    INTEGER(kind=__IOTK_INTEGER3),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    INTEGER(kind=iotk_INTEGER3),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -149,8 +149,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    INTEGER(kind=__IOTK_INTEGER4),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    INTEGER(kind=iotk_INTEGER4),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -163,8 +163,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    REAL(kind=__IOTK_REAL1),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    REAL(kind=iotk_REAL1),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -177,8 +177,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    REAL(kind=__IOTK_REAL2),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    REAL(kind=iotk_REAL2),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -191,8 +191,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    REAL(kind=__IOTK_REAL3),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    REAL(kind=iotk_REAL3),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -205,8 +205,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    REAL(kind=__IOTK_REAL4),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    REAL(kind=iotk_REAL4),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -219,8 +219,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    COMPLEX(kind=__IOTK_COMPLEX1),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    COMPLEX(kind=iotk_COMPLEX1),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -233,8 +233,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    COMPLEX(kind=__IOTK_COMPLEX2),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    COMPLEX(kind=iotk_COMPLEX2),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -247,8 +247,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    COMPLEX(kind=__IOTK_COMPLEX3),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    COMPLEX(kind=iotk_COMPLEX3),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -261,8 +261,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    COMPLEX(kind=__IOTK_COMPLEX4),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    COMPLEX(kind=iotk_COMPLEX4),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -275,8 +275,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    CHARACTER(kind=__IOTK_CHARACTER1,len=*),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    CHARACTER(kind=iotk_CHARACTER1,len=*),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -289,8 +289,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    CHARACTER(kind=__IOTK_CHARACTER2,len=*),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    CHARACTER(kind=iotk_CHARACTER2,len=*),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -303,8 +303,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    CHARACTER(kind=__IOTK_CHARACTER3,len=*),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    CHARACTER(kind=iotk_CHARACTER3,len=*),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval
@@ -317,8 +317,8 @@ interface iotk_stream_read
     use iotk_base
     implicit none
     integer,                                      intent(in)  :: unit
-    integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-    CHARACTER(kind=__IOTK_CHARACTER4,len=*),      intent(out) :: val(:)
+    integer(iotk_header_kind),                    intent(out) :: header
+    CHARACTER(kind=iotk_CHARACTER4,len=*),      intent(out) :: val(:)
     integer,                            optional, intent(in)  :: setpos
     integer,                            optional, intent(out) :: getpos
     logical,                            optional, intent(in)  :: noval

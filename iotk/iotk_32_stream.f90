@@ -31,11 +31,11 @@ subroutine iotk_stream_read_x(unit,header,setpos,getpos,ierr)
   use iotk_base
   use iotk_stream_interf
   implicit none
-  integer,                                      intent(in)  :: unit
-  integer(__IOTK_HEADER_KIND),                  intent(out) :: header
-  integer,                            optional, intent(in)  :: setpos
-  integer,                            optional, intent(out) :: getpos
-  integer,                            optional, intent(out) :: ierr
+  integer,                                    intent(in)  :: unit
+  integer(iotk_header_kind),                  intent(out) :: header
+  integer,                          optional, intent(in)  :: setpos
+  integer,                          optional, intent(out) :: getpos
+  integer,                          optional, intent(out) :: ierr
   integer :: aa(1)
   call iotk_stream_read(unit,header,aa,setpos,getpos,.true.,ierr)
 end subroutine iotk_stream_read_x
@@ -51,16 +51,17 @@ subroutine iotk_stream_read_LOGICAL1(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  LOGICAL(kind=__IOTK_LOGICAL1),      intent(out) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL1),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -71,11 +72,11 @@ subroutine iotk_stream_read_LOGICAL1(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -84,22 +85,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -107,11 +108,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -119,27 +120,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -160,16 +163,17 @@ subroutine iotk_stream_read_LOGICAL2(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  LOGICAL(kind=__IOTK_LOGICAL2),      intent(out) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL2),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -180,11 +184,11 @@ subroutine iotk_stream_read_LOGICAL2(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -193,22 +197,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -216,11 +220,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -228,27 +232,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -269,16 +275,17 @@ subroutine iotk_stream_read_LOGICAL3(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  LOGICAL(kind=__IOTK_LOGICAL3),      intent(out) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL3),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -289,11 +296,11 @@ subroutine iotk_stream_read_LOGICAL3(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -302,22 +309,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -325,11 +332,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -337,27 +344,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -378,16 +387,17 @@ subroutine iotk_stream_read_LOGICAL4(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  LOGICAL(kind=__IOTK_LOGICAL4),      intent(out) :: val(:)
+  LOGICAL(kind=iotk_LOGICAL4),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -398,11 +408,11 @@ subroutine iotk_stream_read_LOGICAL4(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -411,22 +421,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -434,11 +444,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -446,27 +456,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -487,16 +499,17 @@ subroutine iotk_stream_read_INTEGER1(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  INTEGER(kind=__IOTK_INTEGER1),      intent(out) :: val(:)
+  INTEGER(kind=iotk_INTEGER1),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -507,11 +520,11 @@ subroutine iotk_stream_read_INTEGER1(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -520,22 +533,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -543,11 +556,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -555,27 +568,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -596,16 +611,17 @@ subroutine iotk_stream_read_INTEGER2(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  INTEGER(kind=__IOTK_INTEGER2),      intent(out) :: val(:)
+  INTEGER(kind=iotk_INTEGER2),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -616,11 +632,11 @@ subroutine iotk_stream_read_INTEGER2(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -629,22 +645,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -652,11 +668,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -664,27 +680,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -705,16 +723,17 @@ subroutine iotk_stream_read_INTEGER3(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  INTEGER(kind=__IOTK_INTEGER3),      intent(out) :: val(:)
+  INTEGER(kind=iotk_INTEGER3),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -725,11 +744,11 @@ subroutine iotk_stream_read_INTEGER3(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -738,22 +757,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -761,11 +780,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -773,27 +792,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -814,16 +835,17 @@ subroutine iotk_stream_read_INTEGER4(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  INTEGER(kind=__IOTK_INTEGER4),      intent(out) :: val(:)
+  INTEGER(kind=iotk_INTEGER4),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -834,11 +856,11 @@ subroutine iotk_stream_read_INTEGER4(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -847,22 +869,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -870,11 +892,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -882,27 +904,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -923,16 +947,17 @@ subroutine iotk_stream_read_REAL1(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  REAL(kind=__IOTK_REAL1),      intent(out) :: val(:)
+  REAL(kind=iotk_REAL1),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -943,11 +968,11 @@ subroutine iotk_stream_read_REAL1(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -956,22 +981,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -979,11 +1004,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -991,27 +1016,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1032,16 +1059,17 @@ subroutine iotk_stream_read_REAL2(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  REAL(kind=__IOTK_REAL2),      intent(out) :: val(:)
+  REAL(kind=iotk_REAL2),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1052,11 +1080,11 @@ subroutine iotk_stream_read_REAL2(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1065,22 +1093,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1088,11 +1116,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1100,27 +1128,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1141,16 +1171,17 @@ subroutine iotk_stream_read_REAL3(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  REAL(kind=__IOTK_REAL3),      intent(out) :: val(:)
+  REAL(kind=iotk_REAL3),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1161,11 +1192,11 @@ subroutine iotk_stream_read_REAL3(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1174,22 +1205,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1197,11 +1228,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1209,27 +1240,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1250,16 +1283,17 @@ subroutine iotk_stream_read_REAL4(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  REAL(kind=__IOTK_REAL4),      intent(out) :: val(:)
+  REAL(kind=iotk_REAL4),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1270,11 +1304,11 @@ subroutine iotk_stream_read_REAL4(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1283,22 +1317,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1306,11 +1340,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1318,27 +1352,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1359,16 +1395,17 @@ subroutine iotk_stream_read_COMPLEX1(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  COMPLEX(kind=__IOTK_COMPLEX1),      intent(out) :: val(:)
+  COMPLEX(kind=iotk_COMPLEX1),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1379,11 +1416,11 @@ subroutine iotk_stream_read_COMPLEX1(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1392,22 +1429,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1415,11 +1452,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1427,27 +1464,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1468,16 +1507,17 @@ subroutine iotk_stream_read_COMPLEX2(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  COMPLEX(kind=__IOTK_COMPLEX2),      intent(out) :: val(:)
+  COMPLEX(kind=iotk_COMPLEX2),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1488,11 +1528,11 @@ subroutine iotk_stream_read_COMPLEX2(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1501,22 +1541,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1524,11 +1564,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1536,27 +1576,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1577,16 +1619,17 @@ subroutine iotk_stream_read_COMPLEX3(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  COMPLEX(kind=__IOTK_COMPLEX3),      intent(out) :: val(:)
+  COMPLEX(kind=iotk_COMPLEX3),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1597,11 +1640,11 @@ subroutine iotk_stream_read_COMPLEX3(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1610,22 +1653,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1633,11 +1676,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1645,27 +1688,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1686,16 +1731,17 @@ subroutine iotk_stream_read_COMPLEX4(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  COMPLEX(kind=__IOTK_COMPLEX4),      intent(out) :: val(:)
+  COMPLEX(kind=iotk_COMPLEX4),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1706,11 +1752,11 @@ subroutine iotk_stream_read_COMPLEX4(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1719,22 +1765,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1742,11 +1788,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1754,27 +1800,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1795,16 +1843,17 @@ subroutine iotk_stream_read_CHARACTER1(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  CHARACTER(kind=__IOTK_CHARACTER1,len=*),      intent(out) :: val(:)
+  CHARACTER(kind=iotk_CHARACTER1,len=*),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1815,11 +1864,11 @@ subroutine iotk_stream_read_CHARACTER1(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1828,22 +1877,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1851,11 +1900,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1863,27 +1912,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -1904,16 +1955,17 @@ subroutine iotk_stream_read_CHARACTER2(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  CHARACTER(kind=__IOTK_CHARACTER2,len=*),      intent(out) :: val(:)
+  CHARACTER(kind=iotk_CHARACTER2,len=*),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -1924,11 +1976,11 @@ subroutine iotk_stream_read_CHARACTER2(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1937,22 +1989,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -1960,11 +2012,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -1972,27 +2024,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -2013,16 +2067,17 @@ subroutine iotk_stream_read_CHARACTER3(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  CHARACTER(kind=__IOTK_CHARACTER3,len=*),      intent(out) :: val(:)
+  CHARACTER(kind=iotk_CHARACTER3,len=*),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -2033,11 +2088,11 @@ subroutine iotk_stream_read_CHARACTER3(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -2046,22 +2101,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -2069,11 +2124,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -2081,27 +2136,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -2122,16 +2179,17 @@ subroutine iotk_stream_read_CHARACTER4(unit,header,val,setpos,getpos,noval,ierr)
   implicit none
   integer,                                      intent(in)  :: unit
   integer(iotk_header_kind),                    intent(out) :: header
-  CHARACTER(kind=__IOTK_CHARACTER4,len=*),      intent(out) :: val(:)
+  CHARACTER(kind=iotk_CHARACTER4,len=*),      intent(out) :: val(:)
   integer,                            optional, intent(in)  :: setpos
   integer,                            optional, intent(out) :: getpos
   logical,                            optional, intent(in)  :: noval
   integer,                            optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec,rec1
+  integer :: iostat,lpos
 #endif
   logical :: lnoval
-  integer :: lpos,ierrl,iostat
+  integer :: ierrl
   lnoval = .false.
   if(present(noval)) lnoval = noval
   ierrl = 0
@@ -2142,11 +2200,11 @@ subroutine iotk_stream_read_CHARACTER4(unit,header,val,setpos,getpos,noval,ierr)
     inquire(unit,pos=lpos,iostat=iostat)
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 79 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 80 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 79 "iotk_stream.spp"
+# 80 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -2155,22 +2213,22 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 86 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 87 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 86 "iotk_stream.spp"
+# 87 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,iostat=iostat) header
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 91 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 92 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 91 "iotk_stream.spp"
+# 92 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
@@ -2178,11 +2236,11 @@ call iotk_error_write(ierrl,"iostat",iostat)
     read(unit,iostat=iostat) val
     if(iostat/=0) then
       call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 97 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 98 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 97 "iotk_stream.spp"
+# 98 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
       goto 1
     end if
@@ -2190,27 +2248,29 @@ call iotk_error_write(ierrl,"iostat",iostat)
   read(unit,pos=lpos+iotk_record_length+rec,iostat=iostat) rec1
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 103 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 104 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 103 "iotk_stream.spp"
+# 104 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   if(rec1/=rec) then
     call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 107 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 107 "iotk_stream.spp"
+# 108 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 108 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
     goto 1
   end if
 #else
+  header = 0
+  getpos = 0
   call iotk_error_issue(ierrl,"iotk_stream_read",__FILE__,__LINE__)
-# 111 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 111 "iotk_stream.spp"
+# 114 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 114 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
@@ -2221,9 +2281,9 @@ call iotk_error_msg(ierrl,'Streams are not implemented')
   end if
 end subroutine iotk_stream_read_CHARACTER4
 #endif
-# 123 "iotk_stream.spp"
+# 126 "iotk_stream.spp"
 
-# 125 "iotk_stream.spp"
+# 128 "iotk_stream.spp"
 subroutine iotk_stream_backspace_x(unit,ierr)
   use iotk_base
   use iotk_error_interf
@@ -2232,48 +2292,49 @@ subroutine iotk_stream_backspace_x(unit,ierr)
   integer, optional, intent(out) :: ierr
 #ifdef __IOTK_STREAMS
   integer(iotk_record_kind) :: rec
+  integer :: pos,iostat
 #endif
-  integer :: pos,iostat,ierrl
+  integer :: ierrl
   ierrl=0
 #ifdef __IOTK_STREAMS
   inquire(unit,pos=pos,iostat=iostat)
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_backspace",__FILE__,__LINE__)
-# 139 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 139 "iotk_stream.spp"
+# 143 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 143 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 139 "iotk_stream.spp"
+# 143 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,pos=pos-iotk_record_length,iostat=iostat) rec
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_backspace",__FILE__,__LINE__)
-# 144 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 144 "iotk_stream.spp"
+# 148 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 148 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 144 "iotk_stream.spp"
+# 148 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
   read(unit,pos=pos-2*iotk_record_length-rec,iostat=iostat)
   if(iostat/=0) then
     call iotk_error_issue(ierrl,"iotk_stream_backspace",__FILE__,__LINE__)
-# 149 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 149 "iotk_stream.spp"
+# 153 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 153 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'""')
-# 149 "iotk_stream.spp"
+# 153 "iotk_stream.spp"
 call iotk_error_write(ierrl,"iostat",iostat)
     goto 1
   end if
 #else
   call iotk_error_issue(ierrl,"iotk_stream_backspace",__FILE__,__LINE__)
-# 153 "iotk_stream.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.4 ")
-# 153 "iotk_stream.spp"
+# 157 "iotk_stream.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.8 ")
+# 157 "iotk_stream.spp"
 call iotk_error_msg(ierrl,'Streams are not implemented')
 #endif
 1 continue
