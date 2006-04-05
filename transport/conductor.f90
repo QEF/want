@@ -135,8 +135,8 @@
       !
       ene =  egrid(ie)  + delta * CI
            IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
-!               WRITE( stdout,"(2x,'Energy step = ',i5) ") ncount
-                WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") ncount, egrid(ie)
+                WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") &
+                              ncount, egrid(ie)
            ENDIF
 
       dos(:,ie) = ZERO
@@ -179,17 +179,23 @@
           ! construct leads self-energies 
           ! 
           ! ene + bias
-          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R, s00_R(1,1,ik), sigma, niter )
+          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R, s00_R(1,1,ik), &
+                         sigma, niter )
           avg_iter = avg_iter + REAL(niter)
+          !
           CALL green( dimR, totR, tottR, aux00_R, aux01_R, ene+bias, gR, 1 )
+          !
           !
           CALL mat_mul(work, aux_CR, 'N', gR, 'N', dimC, dimR, dimR)
           CALL mat_mul(sgm_R, work, 'N', aux_RC, 'N', dimC, dimC, dimR)
  
           ! ene
-          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L, s00_L(1,1,ik), sigma, niter )
+          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L, s00_L(1,1,ik), &
+                         sigma, niter )
           avg_iter = avg_iter + REAL(niter)
+          !
           CALL green( dimL, totL, tottL, aux00_L, aux01_L, ene, gL, -1 )
+          !
           !
           CALL mat_mul(work, aux_CL, 'N', gL, 'N', dimC, dimL, dimL)
           CALL mat_mul(sgm_L, work, 'N', aux_LC, 'N', dimC, dimC, dimL) 
@@ -204,7 +210,8 @@
           ! Construct the conductor green's function
           ! gC = work^-1  (retarded)
           !
-          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik) + CI*sigma*s00_c(:,:,ik)
+          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) &
+                                -sgm_corr(:,:,ik) + CI*sigma*s00_c(:,:,ik)
 !          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)
   
           gC(:,:) = CZERO
@@ -233,8 +240,8 @@
       ENDDO kpt_loop 
           avg_iter = avg_iter/REAL(2*nkpts_par)
           IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
-             WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3)") avg_iter
-             WRITE(stdout,"()") 
+             WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
+                   avg_iter
              CALL timing_upto_now(stdout)
           ENDIF
    ENDDO energy_loop
