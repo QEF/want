@@ -6,9 +6,9 @@
    datatype = 'modulus'
    collect_wf = .TRUE.
    wann = '9-12'
-   r1min = -2.0
-   r1max =  2.0
-   r2min = -2.0
-   r2max =  2.0
+   r1min = -1.0
+   r1max =  1.0
+   r2min = -1.0
+   r2max =  1.0
  /
 
