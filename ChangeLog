@@ -5,7 +5,8 @@
 
 
 05 Apr 2006      configure update from today's CVS version of Q-Espresso: related
-                 changes done. Makefile system updated. (AF)
+                 changes done. Makefile system updated. Bug fixed in subroutine
+                 localization_print (fmt problem). (AF)
 
 04 Apr 2006      IOTK updated to v1.1.0development (courtesy of Giovanni Bussi). 
                  iotk.x executable (txt/binary conversions within iotk) 
