@@ -40,7 +40,8 @@ all: conductor.x
 
 
 conductor.x: conductor.o $(BIN_DEPS)
-	$(LD) -o $@ conductor.o $(OBJS) $(WANNIER_OBJS) $(LDFLAGS)
+	$(LD) $(LDFLAGS) -o $@ conductor.o \
+	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../transport/$@ . )
 
 clean:
