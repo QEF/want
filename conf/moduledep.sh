@@ -41,6 +41,7 @@ sed 's/f90:/o /
 awk '{print "s/@" tolower($3) "@/" $1 "/" }' | # create substitution line
 sort | uniq > moduledep.tmp2                   # remove duplicates
 
+
 # replace module names with file names
 # by applying the file of substitution patterns just created
 sed -f moduledep.tmp2 moduledep.tmp1 |
