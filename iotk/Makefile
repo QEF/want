@@ -48,15 +48,29 @@ iotk_35_unit.o \
 iotk_36_write.o \
 iotk_37_xtox.o 
 
+BIN=\
+iotk.x
+
+
 #----------------------------------------------------
     
-all : libiotk.a
+all : libiotk.a $(BIN)
    
+#
+# Lib
+#
 libiotk.a : $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
+
+#
+# Executable
+#
+iotk.x: iotk.o $(OBJS)
+	$(LD) -o $@ iotk.o $(OBJS) $(LDFLAGS)
+	- ( cd ../bin ; ln -sf ../iotk/iotk . )
     
 clean:
-	rm -rf *.o *.a *core *.F90 *.mod *.d work.pc work.pcl
+	rm -rf *.x *.o *.a *core *.F90 *.mod *.d work.pc work.pcl
 
 # dependencies
 include make.depend
