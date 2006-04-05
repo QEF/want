@@ -196,12 +196,12 @@ CONTAINS
        DO iwann = 1, dimwann
            WRITE( unit, " ( 4x, 'Center ', i3, 1x, '= ( ',3f13.6,' )  Omega = ',f13.6 )" ) &
               iwann,( rave(i,iwann), i=1,3 ), r2ave(iwann) - rave2(iwann)
-      ENDDO
-      WRITE( unit, " (2x, '! Center Sum', 1x, '= ( ',3f13.6,' )  Omega = ',f13.6,/ )" ) &
-                      ( SUM(rave(i,1:dimwann)) ,i=1,3),  &
-                        SUM(r2ave(1:dimwann)) - SUM(rave2(1:dimwann))
+       ENDDO
+       WRITE( unit, " (2x, '! Center Sum', 1x, '= ( ',3f13.6,' )  Omega = ',f13.6,/ )" ) &
+                       ( SUM(rave(i,1:dimwann)) ,i=1,3),  &
+                         SUM(r2ave(1:dimwann)) - SUM(rave2(1:dimwann))
 
-      IF ( lxprint ) THEN
+       IF ( lxprint ) THEN
            WRITE( unit, "(  2x, 'Spread Operator decomposition (Bohr^2): ')")
            WRITE( unit, "(  4x,'Omega I       =   ', f13.6 ) " ) Omega_I
            WRITE( unit, "(  4x,'Omega D       =   ', f13.6 ) " ) Omega_D
@@ -209,12 +209,12 @@ CONTAINS
            WRITE( unit, "(  4x,'Omega Tot     =   ', f13.6 ) " ) Omega_tot
            WRITE( unit, "(  4x,'Omega Avrg    =   ', f13.6 ) " ) Omega_tot/REAL(dimwann, dbl)
            IF ( Omega_tot_best < Omega_tot ) THEN
-              WRITE( unit, "(  4x,'WARNING: better localization found at iter #: ')") &
+              WRITE( unit, "(/,4x,'WARNING: better localization found at iter #: ',i6)") &
                             iter_best
               WRITE( unit, "(  4x,'Omega Tot Min =   ', f13.6 ) " ) Omega_tot_best
            ENDIF
            WRITE( unit, "()")
-      ENDIF
+       ENDIF
 
    END SUBROUTINE localization_print
  
