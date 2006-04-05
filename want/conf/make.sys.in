@@ -16,20 +16,28 @@
 
 @SET_MAKE@
 CC             = @cc@
+MPICC          = @mpicc@
 CFLAGS         = @cflags@ $(DFLAGS) $(IFLAGS)
 CPP            = @cpp@
 CPPFLAGS       = @cppflags@ $(DFLAGS) $(IFLAGS)
-F77            = @f77@
 F90            = @f90@
-FFLAGS         = @fflags@
+MPIF90         = @mpif90@
 F90FLAGS       = @f90flags@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
-FFLAGS_NOOPT   = @fflags_noopt@
 F90FLAGS_NOOPT = @f90flags_noopt@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
+F77            = @f77@
+MPIF77         = @mpif77@
+FFLAGS         = @fflags@
+FFLAGS_NOOPT   = @fflags_noopt@
 LD             = @ld@
-LDFLAGS        = @ldflags@ $(LIBOBJS) $(LIBS)
+LDFLAGS        = @ldflags@
 AR             = @ar@
 ARFLAGS        = @arflags@
 RANLIB         = @ranlib@
+BLAS_LIBS      = @blas_libs@
+LAPACK_LIBS    = @lapack_libs@
+FFT_LIBS       = @fft_libs@
+MPI_LIBS       = @mpi_libs@
+MASS_LIBS      = @mass_libs@
 
 # -----------------------------
 # application-specific settings
@@ -41,9 +49,9 @@ FDFLAGS        = @fdflags@
 IFLAGS         = -I../include @ifftw@
 MODFLAGS       = @imod@. @imod@../iotk @imod@../libs @imod@../wannier @imod@../transport
 
-LIBOBJS        = ../iotk/libiotk.a ../libs/libwant.a
+LIBOBJS        = ../flib/ptools.a ../flib/flib.a ../clib/clib.a ../iotk/src/libiotk.a
 # LIBS must contain the location of all needed external libraries
-LIBS           = @libs@
+LIBS           = $(LAPACK_LIBS) $(BLAS_LIBS) $(FFT_LIBS) $(MPI_LIBS) $(MASS_LIBS)
 # MYLIB can be one of the following (depending on LIBS):
 # blas       : compile the local copy of blas routines
 # lapack     : compile the local copy of lapack routines
