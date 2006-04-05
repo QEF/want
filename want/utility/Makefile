@@ -70,7 +70,8 @@ all: midpoint.x kgrid.x gcube2plt.x
 
 
 midpoint.x: midpoint.o $(BIN_DEPS)
-	$(LD) -o $@ midpoint.o $(OBJS) $(WANNIER_OBJS) $(LDFLAGS)
+	$(LD) $(LDFLAGS) -o $@ midpoint.o \
+	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
 kgrid.x: kgrid.o 
