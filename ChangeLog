@@ -4,6 +4,10 @@
 =======================================================
 
 
+06 Apr 2006      Smearing implementation upgraded; fancy bug fixed in transfer.f90 . 
+                 locate.f90 added to libs; gzero_maker.f90 added to transport; related
+                 changes performed. (AF & BB)
+
 05 Apr 2006      configure update from today's CVS version of Q-Espresso: related
                  changes done. Makefile system updated. Bug fixed in subroutine
                  localization_print (fmt problem). (AF)

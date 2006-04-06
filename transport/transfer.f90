@@ -17,7 +17,7 @@
    !
    USE kinds
    USE io_global_module, ONLY : stdout
-   USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7, EPS_m2, CI
+   USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7, CI
    USE timing_module,    ONLY : timing
    USE util_module,      ONLY : mat_mul, mat_sv
    IMPLICIT NONE

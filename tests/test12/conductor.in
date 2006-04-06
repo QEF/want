@@ -2,14 +2,15 @@
 &INPUT_CONDUCTOR
    dimC = 24
    calculation_type = 'bulk'
-   niterx = 1000
 !   nk(1)= 16
 !   nk(2)= 16
-   ne = 1000
-   emin = -10.0
-   emax = 5.0
+   ne = 500
+   emin = -5.0
+   emax = 1.0
    datafile_C = "silicon_zb_WanT.ham"
    transport_dir = 3
+   sigma=0.1
+   delta = 1.0e-5
 /
 
 <HAMILTONIAN_DATA>
