@@ -28,7 +28,7 @@
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par , wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 
-                                    s00_L, s01_L, s00_R, s01_R, s00_c, &
+                                    s00_L, s01_L, s00_R, s01_R, s00_C, &
                                     h_LC, h_CR, s_LC, s_CR
    USE T_workspace_module,   ONLY : aux00_L, aux01_L, aux00_R, aux01_R, aux00_C, &
                                     aux_LC, aux_CL, aux_CR, aux_RC,    &
@@ -47,6 +47,8 @@
    CHARACTER(nstrx) :: filename
    INTEGER          :: i, ie, ik, ierr, ncount, niter
    REAL(dbl)        :: avg_iter
+
+
    !   
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
@@ -166,7 +168,7 @@
           aux00_R(:,:)  = h00_R(:,:,ik)  -ene * s00_R(:,:,ik)
           aux01_R(:,:)  = h01_R(:,:,ik)  -ene * s01_R(:,:,ik)
           !
-          aux00_C(:,:)  = h00_C(:,:,ik)  -ene * s00_c(:,:,ik)
+          aux00_C(:,:)  = h00_C(:,:,ik)  -ene * s00_C(:,:,ik)
           !
           aux_LC(:,:) = h_LC(:,:,ik) -ene * s_LC(:,:,ik) 
           aux_CR(:,:) = h_CR(:,:,ik) -ene * s_CR(:,:,ik)
@@ -212,7 +214,6 @@
           !
           work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) &
                                 -sgm_corr(:,:,ik) + CI*sigma*s00_c(:,:,ik)
-!          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)
   
           gC(:,:) = CZERO
           DO i = 1, dimC
@@ -227,7 +228,6 @@
           DO i = 1, dimC
              dos(i,ie) = dos(i,ie) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
-
           !
           ! evaluate the transmittance according to the Fisher-Lee formula
           ! or (in the correlated case) to the generalized expression as 
@@ -238,12 +238,14 @@
           conduct(:,ie) = conduct(:,ie) + wk_par(ik) * cond_aux(:)
       
       ENDDO kpt_loop 
-          avg_iter = avg_iter/REAL(2*nkpts_par)
-          IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
-             WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
-                   avg_iter
-             CALL timing_upto_now(stdout)
-          ENDIF
+
+      avg_iter = avg_iter/REAL(2*nkpts_par)
+      IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
+           WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
+                 avg_iter
+           CALL timing_upto_now(stdout)
+      ENDIF
+
    ENDDO energy_loop
 
    !

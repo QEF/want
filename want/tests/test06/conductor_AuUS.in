@@ -7,6 +7,7 @@
     emax =   5.0 
     datafile_C = "gold_US_WanT.ham"
     transport_dir = 3
+    sigma = 0.1
   /
 
 <HAMILTONIAN_DATA>

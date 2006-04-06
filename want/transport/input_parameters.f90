@@ -80,7 +80,7 @@
    REAL(dbl) :: delta =  EPS_m5
        ! i\delta broadening of green functions
 
-   REAL(dbl) :: sigma =  EPS_m3
+   REAL(dbl) :: sigma =  EPS_m1
        ! broadening for leads self energy calculation
 
    REAL(dbl) :: bias =  ZERO
