@@ -9,8 +9,7 @@
    emax = 1.0
    datafile_C = "silicon_zb_WanT.ham"
    transport_dir = 3
-   sigma=0.1
-   delta = 1.0e-5
+   delta = 0.1
 /
 
 <HAMILTONIAN_DATA>

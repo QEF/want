@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************************
-   SUBROUTINE green( dim, tot, tott, c00, c01, ene, g, igreen)
+   SUBROUTINE green( dim, tot, tott, c00, c01, g, igreen)
    !***********************************************************************************
    !
    !  Construct green's functions
@@ -18,9 +18,9 @@
    !  igreen =  0  bulk
    !
    USE kinds
-   USE constants, ONLY : CZERO, CONE
+   USE constants,     ONLY : CZERO, CONE
    USE timing_module, ONLY : timing
-   USE util_module,      ONLY : mat_mul, mat_sv
+   USE util_module,   ONLY : mat_mul, mat_sv
    IMPLICIT NONE
 
    !
@@ -37,7 +37,6 @@
    ! local variables
    !
    INTEGER                   :: i, ierr
-   COMPLEX(dbl)              :: ene
    COMPLEX(dbl), ALLOCATABLE :: eh0(:,:), s1(:,:), s2(:,:)
 
 !
