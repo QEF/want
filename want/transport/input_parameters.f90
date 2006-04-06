@@ -168,9 +168,10 @@ CONTAINS
       IF ( niterx <= 0 ) CALL errore(subname,'Invalid NITERX',1)
       IF ( nprint <= 0) CALL errore(subname, ' nprint must be > 0 ', -nprint+1 )
       IF ( delta < ZERO ) CALL errore(subname,'Invalid DELTA',1)
-      IF ( delta > EPS_m2 ) CALL errore(subname,'DELTA too large',1)
+
+      IF ( delta > 3.0_dbl* EPS_m1 ) CALL errore(subname,'DELTA too large',1)
       IF ( sigma < ZERO ) CALL errore(subname,'Invalid SIGMA',1)
-      IF ( sigma > EPS_m1 ) CALL errore(subname,'SIGMA too large',1)
+      IF ( sigma > 3.0_dbl* EPS_m1 ) CALL errore(subname,'SIGMA too large',1)
 
       CALL change_case(calculation_type,'lower')
       allowed=.FALSE.

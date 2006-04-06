@@ -53,7 +53,7 @@
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
-     
+
 
 !
 !------------------------------
@@ -135,7 +135,7 @@
       !
       ! grids and misc
       !
-      ene =  egrid(ie)  + delta * CI
+      ene =  egrid(ie)  + delta * CI 
            IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
                 WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") &
                               ncount, egrid(ie)
@@ -152,7 +152,7 @@
       !
       ! initialization of the average number of iteration 
       !
-      avg_iter = 0.0
+      avg_iter = ZERO
       !
       ! parallel kpt loop
       !
@@ -170,8 +170,8 @@
           !
           aux00_C(:,:)  = h00_C(:,:,ik)  -ene * s00_C(:,:,ik)
           !
-          aux_LC(:,:) = h_LC(:,:,ik) -ene * s_LC(:,:,ik) 
-          aux_CR(:,:) = h_CR(:,:,ik) -ene * s_CR(:,:,ik)
+          aux_LC(:,:) = h_LC(:,:,ik) -ene * s_LC(:,:,ik)  
+          aux_CR(:,:) = h_CR(:,:,ik) -ene * s_CR(:,:,ik) 
           !
           aux_CL(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene)*s_LC(:,:,ik) ))
           aux_RC(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene)*s_CR(:,:,ik) ))
@@ -181,22 +181,20 @@
           ! construct leads self-energies 
           ! 
           ! ene + bias
-          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R, s00_R(1,1,ik), &
-                         sigma, niter )
+          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimR, totR, tottR, aux00_R, aux01_R, ene+bias, gR, 1 )
+          CALL green( dimR, totR, tottR, aux00_R, aux01_R, gR, 1 )
           !
           !
           CALL mat_mul(work, aux_CR, 'N', gR, 'N', dimC, dimR, dimR)
           CALL mat_mul(sgm_R, work, 'N', aux_RC, 'N', dimC, dimC, dimR)
  
           ! ene
-          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L, s00_L(1,1,ik), &
-                         sigma, niter )
+          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimL, totL, tottL, aux00_L, aux01_L, ene, gL, -1 )
+          CALL green( dimR, totR, tottR, aux00_L, aux01_L,  gL, -1 )
           !
           !
           CALL mat_mul(work, aux_CL, 'N', gL, 'N', dimC, dimL, dimL)
@@ -212,8 +210,7 @@
           ! Construct the conductor green's function
           ! gC = work^-1  (retarded)
           !
-          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) &
-                                -sgm_corr(:,:,ik) + CI*sigma*s00_c(:,:,ik)
+          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)  
   
           gC(:,:) = CZERO
           DO i = 1, dimC
