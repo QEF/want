@@ -1,12 +1,12 @@
-AC_INIT(ESPRESSO, 3.0, , espresso)
+AC_INIT(WANT, 2.0, , want)
 
 # -----------------------------
 # application-specific settings
 
 # default choices
 # set each variable to 0 (false) or 1 (true)
-use_parallel=1
-use_shared=1
+use_parallel=0
+use_shared=0
 
 # -----------------------------
 
