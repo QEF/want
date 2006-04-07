@@ -4,6 +4,9 @@
 =======================================================
 
 
+07 Apr 2006      Search for parallel environment switched off in configure.ac, 
+                 configure regenerated from autoconf. (AF)
+
 06 Apr 2006      Smearing implementation upgraded; fancy bug fixed in transfer.f90 . 
                  locate.f90 added to libs; gzero_maker.f90 added to transport; related
                  changes performed. (AF & BB)
