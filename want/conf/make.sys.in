@@ -9,10 +9,10 @@
 	@f90rule@
 
 .f.o:
-	$(F77) $(FFLAGS) -c $<
+	$(MPIF77) $(FFLAGS) -c $<
 
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(MPICC) $(CFLAGS) -c $<
 
 @SET_MAKE@
 CC             = @cc@
