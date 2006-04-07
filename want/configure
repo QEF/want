@@ -50,6 +50,7 @@ CFLAGS=$*
 test -e ./conf/make.sys && cp ./conf/make.sys .
 test -e config.log      && mv config.log    ./conf/
 test -e config.status   && mv config.status ./conf/
+test -e configure.msg   && mv configure.msg ./conf/
 #
 
 exit 0
