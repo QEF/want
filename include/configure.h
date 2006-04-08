@@ -7,51 +7,48 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 
-#ifdef __MYARCHITECTURE 
-#   undefine __MYARCHITECTURE
-#endif
-#ifdef __MYCOMPILER
-#   undefine __MYCOMPILER
-#endif
-
 !
 ! Architectures / Operating systems
 !
 
+#ifdef __AIX
+#    define __MYARCHITECTURE "IBM rs/6000" 
+#endif
+
 #ifdef __LINUX
-#    define __MYARCHITECTURE "LINUX"
+#    define __MYARCHITECTURE "Intel/Amd 32-bit, Linux"
 #endif
 
 #ifdef __LINUX64
-#    define __MYARCHITECTURE "LINUX 64bit" 
-#endif
-
-#ifdef __AIX
-#    define __MYARCHITECTURE "IBM AIX" 
-#endif
-
-#ifdef __SGI
-#    define __MYARCHITECTURE "SGI" 
-#endif
-
-#ifdef __SGI64
-#    define __MYARCHITECTURE "SGI 64bit" 
-#endif
-
-#ifdef __ALPHA
-#    define __MYARCHITECTURE "ALPHA" 
-#endif
-
-#ifdef __SUN
-#    define __MYARCHITECTURE "SUN" 
-#endif
-
-#ifdef __X1
-#    define __MYARCHITECTURE "CRAY X1" 
+#    define __MYARCHITECTURE "Intel/Amd/Alpha 64-bit, Linux" 
 #endif
 
 #ifdef __MAC
-#    define __MYARCHITECTURE "MAC" 
+#    define __MYARCHITECTURE "Mac powerPC, OS-X" 
+#endif
+
+#ifdef __HP
+#    define __MYARCHITECTURE "HP-compaq PA-RISC" 
+#endif
+
+#ifdef __ALTIX
+#    define __MYARCHITECTURE "SGI Altix 350/3000, Linux"
+#endif
+
+#ifdef __ORIGIN
+#    define __MYARCHITECTURE "SGI Origin 2k/3k"
+#endif
+
+#ifdef __ALPHA
+#    define __MYARCHITECTURE "HP-compaq alpha" 
+#endif
+
+#ifdef __FUJ64
+#    define __MYARCHITECTURE "Fujitsu VPP5000 (vector mach)" 
+#endif
+
+#ifdef __SX6
+#    define __MYARCHITECTURE "Nec sx-6 (vector mach)" 
 #endif
 
 
