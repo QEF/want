@@ -4,6 +4,8 @@
 =======================================================
 
 
+08 Apr 2006      Architecture/Op.Sys updates in configure.h . (AF)
+
 07 Apr 2006      Search for parallel environment switched off in configure.ac, 
                  configure regenerated from autoconf. (AF)
 
