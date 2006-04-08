@@ -1,4 +1,4 @@
-#! /bin/bash  
+#! /bin/sh
 #
 # This script is a simple wrapper calling the autoconf configuration
 # script (configure) in conf/
