@@ -420,7 +420,7 @@ ia64:pgf* | amd64:pgf* )
 	try_dflags="$try_dflags -D__PGI"
 	;;
 ia32:ifort* )
-        try_fflags="-O2 -tpp6 -assume byterecl"
+        try_fflags="-O2 -tpp7 -assume byterecl"
 	try_f90flags="\$(FFLAGS) -nomodule"
 	try_fflags_noopt="-O0 -assume byterecl"
 	try_f90flags_noopt="\$(FFLAGS_NOOPT) -nomodule"
@@ -431,7 +431,7 @@ ia32:ifort* )
 	have_cpp=1
 	;;
 ia32:ifc* )
-        try_fflags="-Vaxlib -O2 -tpp6"
+        try_fflags="-Vaxlib -O2 -tpp7"
 	try_f90flags="\$(FFLAGS) -nomodule"
 	try_fflags_noopt="-O0"
 	try_f90flags_noopt="\$(FFLAGS_NOOPT) -nomodule"
@@ -1315,10 +1315,10 @@ echo setting RANLIB... $ranlib
 echo setting MYLIB... $mylib
 
 # generate dependencies
-if test -x $topdir/makedeps.sh
+if test -x $topdir/conf/makedeps.sh
 then
 	echo checking dependencies...
-	( cd $topdir ; ./makedeps.sh )
+	( cd $topdir ; ./conf/makedeps.sh )
 fi
 
 # configure output messages
