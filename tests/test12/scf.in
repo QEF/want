@@ -4,7 +4,6 @@ Si bulk zincblende
       calculation = 'scf',
       restart_mode='from_scratch',
       prefix='silicon_zb',
-      tstress = .FALSE.,
       tprnfor = .TRUE.,
       pseudo_dir = './',
    /
@@ -14,7 +13,8 @@ Si bulk zincblende
       celldm(3)=4.8992,    
       nat=12, 
       ntyp=1,
-      ecutwfc=30.0,
+      ecutwfc=25.0,
+      occupations = 'fixed'
    /
    &ELECTRONS
       mixing_mode = 'plain',

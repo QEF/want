@@ -177,7 +177,7 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
 !
     IF ( kpoints_ ) THEN
         CALL kpoints_read_ext(dft_unit, "Kmesh", lfound)
-        IF ( .NOT. lfound ) CALL errore(subname,'Tag '//'Kmesh'//' not found',2)
+        IF ( .NOT. lfound ) CALL errore(subname,'Tag Kmesh not found',2)
         CALL kpoints_init()
     ENDIF
 

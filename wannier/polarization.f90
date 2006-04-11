@@ -43,8 +43,6 @@
    !
    ! local variables
    !
-   CHARACTER(12) :: subname = 'polarization'
-
    INTEGER       :: i, m, ierr
    LOGICAL       :: lsupercell
    REAL(dbl)     :: P_ion(3), P_el(3), delta_P(3), const_SI

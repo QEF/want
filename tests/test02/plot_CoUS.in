@@ -3,12 +3,12 @@
    prefix = 'cobalt_US'
    postfix = '_WanT'
    work_dir = './'
-   output_fmt = 'xsf'
-   wann = '1-6'
-   r1min =  -1.5
-   r1max =   1.5
-   r2min =  -1.5
-   r2max =   1.5
-   r3min =  -1.5
-   r3max =   1.5
+   output_fmt = 'cube'
+   wann = '1,4'
+   r1min =  -1.0
+   r1max =   1.0
+   r2min =  -1.0
+   r2max =   1.0
+   r3min =  -1.0
+   r3max =   1.0
  /

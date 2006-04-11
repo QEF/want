@@ -3,9 +3,8 @@
    prefix = 'copper'
    postfix = '_WanT'
    work_dir = './'
-!   output_fmt = 'xsf'
    output_fmt = 'cube'
-   wann = '1-6'
+   wann = '1,4'
    r1min =  -1.0
    r1max =   1.0
    r2min =  -1.0

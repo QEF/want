@@ -5,7 +5,7 @@
    output_fmt = 'xsf'
    datatype = 'modulus'
    collect_wf = .TRUE.
-   wann = '9-12'
+   wann = '1'
    r1min = -1.0
    r1max =  1.0
    r2min = -1.0

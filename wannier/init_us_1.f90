@@ -40,7 +40,10 @@ SUBROUTINE init_us_1
   USE us_module,       ONLY : okvan, nqxq, dq, nqx, tab, qrad
   USE uspp,            ONLY : nhtol, nhtoj, nhtolm, dvan, qq, qb, indv, ap, aainit
   USE uspp_param,      ONLY : lmaxq, dion, betar, qfunc, qfcoef, rinner, nbeta, &
-                              kkbeta, nqf, nqlc, lll, jjj, lmaxkb, nh, tvanp, nhm
+                              kkbeta, nqf, nqlc, lll, jjj, lmaxkb, nh, tvanp
+#ifdef __PARA
+  USE uspp_param,      ONLY : nhm
+#endif
   USE control_module,  ONLY : use_blimit
   !
   ! added for WFs

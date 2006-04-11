@@ -4,7 +4,7 @@
    postfix = '_WanT_UP'
    work_dir = './'
    datatype = 'modulus'
-   wann = '1-6'
+   wann = '1,4'
    r3min = -1.0
    r3max =  1.0
    spin_component = 'UP'
