@@ -41,8 +41,8 @@
    USE parser_module 
    USE timing_module
    !
-   USE lattice_module,     ONLY : avec, bvec, alat
-   USE ions_module,        ONLY : symb, atm_symb, ityp, tau, nat, nsp
+   USE lattice_module,     ONLY : avec, alat
+   USE ions_module,        ONLY : atm_symb, ityp, tau, nat, nsp
       
    IMPLICIT NONE
 
@@ -59,10 +59,10 @@
    !
    ! local variables
    !
-   INTEGER :: ia, ib, ipair
-   INTEGER :: m, n, i, j, k, ierr
-   INTEGER :: npair, nmid, natom_tot
-   REAL    :: aux, conv
+   INTEGER   :: ia, ib, ipair
+   INTEGER   :: m, n, i, j, k, ierr
+   INTEGER   :: npair, nmid, natom_tot
+   REAL(dbl) :: aux, conv
    !
    INTEGER,      ALLOCATABLE :: map(:,:), ityp_tot(:), bond_type(:)
    REAL(dbl),    ALLOCATABLE :: tau_tot(:,:), midcoord(:,:)

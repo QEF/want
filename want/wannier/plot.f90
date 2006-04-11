@@ -810,7 +810,7 @@
           ! ... write a XYZ file for the atomic positions, when the case
           !
           IF ( TRIM( output_fmt ) == "txt" .OR. TRIM( output_fmt ) == "plt" ) THEN
-              WRITE( stdout,"(18x,'atomic positions on file: ',a)") TRIM(filename)//".xyz"
+              WRITE( stdout,"(9x,'atomic positions on file: ',a)") TRIM(filename)//".xyz"
               OPEN ( aux1_unit, FILE=TRIM(filename)//".xyz", FORM='formatted', &
                                 STATUS='unknown', IOSTAT=ierr )
               IF (ierr/=0) CALL errore('plot','opening file '//TRIM(filename)//".xyz",1)

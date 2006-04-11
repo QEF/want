@@ -21,8 +21,11 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    USE io_module,      ONLY : stdout
    USE timing_module,  ONLY : timing
    USE util_module,    ONLY : mat_mul, mat_hdiag, zmat_unitary
-   USE control_module, ONLY : unitary_thr
    USE parser_module,  ONLY : int2char
+
+#ifdef __CHECK_UNITARY
+   USE control_module, ONLY : unitary_thr
+#endif
    IMPLICIT NONE
 
    !

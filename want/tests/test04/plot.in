@@ -6,5 +6,5 @@
    output_fmt = 'plt'
    datatype = 'modulus'
    collect_wf = .FALSE.
-   wann = '20-28'
+   wann = '25-28'
  /

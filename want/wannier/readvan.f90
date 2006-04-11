@@ -69,7 +69,8 @@ subroutine readvan (is, iunps)
   ! beta function counter
   ! beta function counter
   ! mesh points counter
-  character (len=20) :: line, xctit
+  character (len=20) :: line
+  ! xctit
   ! The title of the pseudopotential
   ! Name of the xctype
   !
@@ -290,15 +291,15 @@ subroutine readvan (is, iunps)
      lchi (nb, is) = nnlz (nb) / 10 - i * 10
   enddo
 100 call errore ('readvan', 'error reading pseudo file', abs (ios) )
-  !
-  !    Here we write on output information on the pseudopotential
-  !
-  if (exfact.eq.0.) xctit = '      ceperley-alder'
-  if (exfact.eq. - 1.) xctit = '              wigner'
-  if (exfact.eq. - 2.) xctit = '     hedin-lundqvist'
-  if (exfact.eq. - 3.) xctit = ' gunnarson-lundqvist'
-
-  if (exfact.gt.0.) xctit = '      slater x-alpha'
+!  !
+!  !    Here we write on output information on the pseudopotential
+!  !
+!  if (exfact.eq.0.) xctit = '      ceperley-alder'
+!  if (exfact.eq. - 1.) xctit = '              wigner'
+!  if (exfact.eq. - 2.) xctit = '     hedin-lundqvist'
+!  if (exfact.eq. - 3.) xctit = ' gunnarson-lundqvist'
+!
+!  if (exfact.gt.0.) xctit = '      slater x-alpha'
   !      WRITE( stdout,200) is
 !200 format (/4x,60('=')/4x,'|  pseudopotential report', &
 !       &        ' for atomic species:',i3,11x,'|')

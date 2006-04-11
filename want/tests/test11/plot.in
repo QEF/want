@@ -5,8 +5,11 @@
    work_dir = './'
    datatype = 'modulus'
    output_fmt = 'plt'
-   wann = '1-6,24-27'
-   r3min = 0.0
-   r3max = 1.0
-   
+   wann = '24-27'
+   r1min = -0.25
+   r1max =  0.25
+   r2min = -0.25
+   r2max =  0.25
+   r3min =  0.3
+   r3max =  0.6
  /

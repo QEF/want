@@ -7,16 +7,17 @@
 /
 
 &SUBSPACE
-   dimwann = 24      
-   maxiter_dis = 2500
+   dimwann = 30
+   froz_max = 6.5
+   maxiter_dis = 500
 /
 
 &LOCALIZATION
-   maxiter0_wan = 1000, 
-   alpha0_wan = 0.5
-   maxiter1_wan = 50000, 
+   maxiter0_wan = 100, 
+   alpha0_wan = 0.3
+   maxiter1_wan = 5000, 
    alpha1_wan = 0.5
-   ncg = 5      
+   ncg = 9      
    wannier_thr = 1.0e-8
 /
 
@@ -45,7 +46,10 @@ WANNIER_CENTERS {crystal}
 1gauss        0.333333333    0.166666667    0.979166666      0  0   0.8   1.0
 1gauss        0.833333333    0.166666667    0.979166666      0  0   0.8   1.0
 1gauss        0.833333334    0.666666667    0.979166666      0  0   0.8   1.0
-
-
-
+atomic  1  0   0   0.0
+atomic  2  0   0   0.0
+atomic  3  0   0   0.0
+atomic  4  0   0   0.0
+atomic  5  0   0   0.0
+atomic  6  0   0   0.0
 

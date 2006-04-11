@@ -217,6 +217,7 @@ CONTAINS
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
        INTEGER            :: lnkpts
+       LOGICAL            :: lfound
        REAL(dbl),ALLOCATABLE :: lwk(:), lvkpt(:,:)
        CHARACTER(nstrx)   :: attr
        CHARACTER(16)      :: subname='kpoints_read_ext'
@@ -260,12 +261,13 @@ CONTAINS
        wk(:) = wk(:) * nkpts_tot / ( TWO * nkpts )
        wksum = SUM(wk(:))
        !
+       lfound = .FALSE.
        DO ik = 1,nkpts
           !
-          IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) found = .TRUE.
+          IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) lfound = .TRUE.
        ENDDO
        !
-       IF ( found ) THEN
+       IF ( lfound ) THEN
           !
           CALL warning('Invalid kpt weights from DFT data. Recalculated')
           wk(:) = ONE/REAL(nkpts, dbl)
