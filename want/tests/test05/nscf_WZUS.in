@@ -18,6 +18,7 @@ US - pbe
       ecutrho=200.0,
       occupations='fixed',
       nbnd = 24
+      nosym = .TRUE.
    /
    &ELECTRONS
       electron_maxstep = 50,

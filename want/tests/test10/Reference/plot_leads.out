@@ -8,9 +8,9 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date  1Dec2005 at 19:28:22 
+  Date 12Apr2006 at  1: 6:27 
 
-  Arch. / Op.Sys: LINUX
+  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
         Compiler: INTEL
 
 
@@ -50,15 +50,14 @@
   nkpts =    4
   Monkhorst-Pack grid:      nk = (  4  1  1 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
-    k point   2:   (   0.15168  0.00000  0.00000 ),   weight =   0.2500
-    k point   3:   (   0.30337  0.00000  0.00000 ),   weight =   0.2500
-    k point   4:   (   0.45505  0.00000  0.00000 ),   weight =   0.2500
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
+    k point   2:   (   0.15168  0.00000  0.00000 ),   weight =   0.2500000
+    k point   3:   (   0.30337  0.00000  0.00000 ),   weight =   0.2500000
+    k point   4:   (   0.45505  0.00000  0.00000 ),   weight =   0.2500000
  </K-POINTS>
 
 
   WARNING: USPP not fully implemented
-
 
   Reading density G-grid from file: chain4.export/index.xml
   Reading Wfc grids from file: chain4.export/index.xml
@@ -84,7 +83,7 @@
   Data type  :   modulus
   Output fmt :   plt
 
-  Plotting Cell dimensions [cryst. coord]:
+  Plotting Cell extrema [cryst. coord]:
        r1 :   -0.5000 -->   0.5000
        r2 :   -0.5000 -->   0.5000
        r3 :   -0.5000 -->   0.5000
@@ -98,13 +97,13 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (     1.152731    -0.000012     0.000002 )
+    Wf(   1 ) = (     1.152731    -0.000010     0.000002 )
     Wf(   2 ) = (     1.152751     0.000000    -0.000001 )
         in crystal coord
-    Wf(   1 ) = (     0.111314    -0.000001     0.000000 )
+    Wf(   1 ) = (     0.111314     0.000000     0.000000 )
     Wf(   2 ) = (     0.111316     0.000000     0.000000 )
 
-  Locating WFs: 
+  Collecting WFs: 
   Plotting Cell dimensions [cryst. coord]:
        r1 :   -0.5000 -->   0.5000
        r2 :   -0.5000 -->   0.5000
@@ -112,7 +111,7 @@
 
   New center positions [cryst. coord]:
         in crystal coord
-    Wf(   1 ) = (     0.111314    -0.000001     0.000000 )
+    Wf(   1 ) = (     0.111314     0.000000     0.000000 )
     Wf(   2 ) = (     0.111316     0.000000     0.000000 )
 
 
@@ -124,20 +123,26 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :     2.43 secs
+                              Total time spent up to now :     1.24 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :     4.22 secs
+                              Total time spent up to now :     2.15 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :     6.08 secs
+                              Total time spent up to now :     3.05 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :     7.92 secs
+                              Total time spent up to now :     3.95 secs
+
+
+  WF maximum values (normalization is one):
+
+    Wf(   1 )   -->     0.441067
+    Wf(   2 )   -->     0.239845
 
 
   writing WF(   1) plot on file: ./LEADS//chain4_WanT_WFM001.cube
-                  atomic positions on file: ./LEADS//chain4_WanT_WFM001.xyz
+         atomic positions on file: ./LEADS//chain4_WanT_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -149,7 +154,7 @@ Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM001.crd'
  plot output - cube format
 Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.740001,-6.165001,-6.165001
 Min value: 0.000000
-Max value: 0.007581
+Max value: 0.194540
 Job done ...
 **********************************************************
   deleting tmp files: ./LEADS//chain4_WanT_WFM001.cube
@@ -157,7 +162,7 @@ Job done ...
 
 
   writing WF(   2) plot on file: ./LEADS//chain4_WanT_WFM002.cube
-                  atomic positions on file: ./LEADS//chain4_WanT_WFM002.xyz
+         atomic positions on file: ./LEADS//chain4_WanT_WFM002.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -169,7 +174,7 @@ Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM002.crd'
  plot output - cube format
 Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.740001,-6.165001,-6.165001
 Min value: 0.000000
-Max value: 0.002242
+Max value: 0.057525
 Job done ...
 **********************************************************
   deleting tmp files: ./LEADS//chain4_WanT_WFM002.cube
@@ -182,14 +187,14 @@ Job done ...
    <global routines>
              clock number :     8
 
-                     plot :    16.00s CPU 
+                     plot :     8.00s CPU 
  
-                want_init :     0.06s CPU
-          ggrids_read_ext :     0.30s CPU
-           wfc_data_kread :     0.18s CPU (       4 calls,   0.045 s avg)
-               kwann_calc :     4.03s CPU (       8 calls,   0.504 s avg)
-                   cfft3d :     1.90s CPU (       8 calls,   0.237 s avg)
-               cwann_calc :     1.18s CPU (       8 calls,   0.147 s avg)
-                 gcubeplt :     4.28s CPU (       2 calls,   2.142 s avg)
+                want_init :     0.05s CPU
+          ggrids_read_ext :     0.19s CPU
+           wfc_data_kread :     0.10s CPU (       4 calls,   0.025 s avg)
+               kwann_calc :     2.60s CPU (       8 calls,   0.325 s avg)
+                   cfft3d :     0.43s CPU (       8 calls,   0.054 s avg)
+               cwann_calc :     0.46s CPU (       8 calls,   0.058 s avg)
+                 gcubeplt :     2.52s CPU (       2 calls,   1.262 s avg)
 
 

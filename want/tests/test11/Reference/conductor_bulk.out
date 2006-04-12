@@ -8,9 +8,9 @@
 
 
   Program <conductor>  v. 2.0.0  starts ...
-  Date  1Dec2005 at 20:23: 6 
+  Date 12Apr2006 at  2:11:27 
 
-  Arch. / Op.Sys: LINUX
+  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
         Compiler: INTEL
 
 
@@ -35,6 +35,7 @@
        Max Energy  :        5.00000
        Energy Step :        0.01502
        Delta       :        0.00001
+       Sigma       :        0.10000
   </ENERGY_GRID>
 
 
@@ -50,168 +51,270 @@
 
 
   Computing E(     1 ) = -10.00000 eV
-                              Total time spent up to now :     1.12 secs
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     0.74 secs
 
   Computing E(    20 ) =  -9.71471 eV
-                              Total time spent up to now :     1.13 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.74 secs
 
   Computing E(    40 ) =  -9.41441 eV
-                              Total time spent up to now :     1.16 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.75 secs
 
   Computing E(    60 ) =  -9.11411 eV
-                              Total time spent up to now :     1.17 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.76 secs
 
   Computing E(    80 ) =  -8.81381 eV
-                              Total time spent up to now :     1.19 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.77 secs
 
   Computing E(   100 ) =  -8.51351 eV
-                              Total time spent up to now :     1.22 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.78 secs
 
   Computing E(   120 ) =  -8.21321 eV
-                              Total time spent up to now :     1.23 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.79 secs
 
   Computing E(   140 ) =  -7.91291 eV
-                              Total time spent up to now :     1.25 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.80 secs
 
   Computing E(   160 ) =  -7.61261 eV
-                              Total time spent up to now :     1.28 secs
+  T matrix converged after avg. # of iterations    4.000
+
+                              Total time spent up to now :     0.81 secs
 
   Computing E(   180 ) =  -7.31231 eV
-                              Total time spent up to now :     1.29 secs
+  T matrix converged after avg. # of iterations    4.000
+
+                              Total time spent up to now :     0.82 secs
 
   Computing E(   200 ) =  -7.01201 eV
-                              Total time spent up to now :     1.34 secs
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     0.84 secs
 
   Computing E(   220 ) =  -6.71171 eV
-                              Total time spent up to now :     1.40 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     0.88 secs
 
   Computing E(   240 ) =  -6.41141 eV
-                              Total time spent up to now :     1.48 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     0.91 secs
 
   Computing E(   260 ) =  -6.11111 eV
-                              Total time spent up to now :     1.55 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.95 secs
 
   Computing E(   280 ) =  -5.81081 eV
-                              Total time spent up to now :     1.63 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.98 secs
 
   Computing E(   300 ) =  -5.51051 eV
-                              Total time spent up to now :     1.70 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.02 secs
 
   Computing E(   320 ) =  -5.21021 eV
-                              Total time spent up to now :     1.79 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.06 secs
 
   Computing E(   340 ) =  -4.90991 eV
-                              Total time spent up to now :     1.86 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.09 secs
 
   Computing E(   360 ) =  -4.60961 eV
-                              Total time spent up to now :     1.94 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.13 secs
 
   Computing E(   380 ) =  -4.30931 eV
-                              Total time spent up to now :     2.01 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.17 secs
 
   Computing E(   400 ) =  -4.00901 eV
-                              Total time spent up to now :     2.09 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.20 secs
 
   Computing E(   420 ) =  -3.70871 eV
-                              Total time spent up to now :     2.16 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.24 secs
 
   Computing E(   440 ) =  -3.40841 eV
-                              Total time spent up to now :     2.24 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.28 secs
 
   Computing E(   460 ) =  -3.10811 eV
-                              Total time spent up to now :     2.31 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.31 secs
 
   Computing E(   480 ) =  -2.80781 eV
-                              Total time spent up to now :     2.39 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.35 secs
 
   Computing E(   500 ) =  -2.50751 eV
-                              Total time spent up to now :     2.46 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.39 secs
 
   Computing E(   520 ) =  -2.20721 eV
-                              Total time spent up to now :     2.53 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.42 secs
 
   Computing E(   540 ) =  -1.90691 eV
-                              Total time spent up to now :     2.61 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.46 secs
 
   Computing E(   560 ) =  -1.60661 eV
-                              Total time spent up to now :     2.69 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.50 secs
 
   Computing E(   580 ) =  -1.30631 eV
-                              Total time spent up to now :     2.76 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.53 secs
 
   Computing E(   600 ) =  -1.00601 eV
-                              Total time spent up to now :     2.85 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.57 secs
 
   Computing E(   620 ) =  -0.70571 eV
-                              Total time spent up to now :     2.91 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     1.60 secs
 
   Computing E(   640 ) =  -0.40541 eV
-                              Total time spent up to now :     2.98 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     1.64 secs
 
   Computing E(   660 ) =  -0.10511 eV
-                              Total time spent up to now :     3.06 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     1.67 secs
 
   Computing E(   680 ) =   0.19520 eV
-                              Total time spent up to now :     3.13 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     1.71 secs
 
   Computing E(   700 ) =   0.49550 eV
-                              Total time spent up to now :     3.21 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.74 secs
 
   Computing E(   720 ) =   0.79580 eV
-                              Total time spent up to now :     3.28 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.78 secs
 
   Computing E(   740 ) =   1.09610 eV
-                              Total time spent up to now :     3.36 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.82 secs
 
   Computing E(   760 ) =   1.39640 eV
-                              Total time spent up to now :     3.43 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.85 secs
 
   Computing E(   780 ) =   1.69670 eV
-                              Total time spent up to now :     3.50 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.89 secs
 
   Computing E(   800 ) =   1.99700 eV
-                              Total time spent up to now :     3.60 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.93 secs
 
   Computing E(   820 ) =   2.29730 eV
-                              Total time spent up to now :     3.68 secs
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     1.96 secs
 
   Computing E(   840 ) =   2.59760 eV
-                              Total time spent up to now :     3.75 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     2.00 secs
 
   Computing E(   860 ) =   2.89790 eV
-                              Total time spent up to now :     3.82 secs
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     2.03 secs
 
   Computing E(   880 ) =   3.19820 eV
-                              Total time spent up to now :     3.90 secs
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     2.07 secs
 
   Computing E(   900 ) =   3.49850 eV
-                              Total time spent up to now :     3.94 secs
+  T matrix converged after avg. # of iterations    4.000
+
+                              Total time spent up to now :     2.09 secs
 
   Computing E(   920 ) =   3.79880 eV
-                              Total time spent up to now :     3.96 secs
+  T matrix converged after avg. # of iterations    4.000
+
+                              Total time spent up to now :     2.10 secs
 
   Computing E(   940 ) =   4.09910 eV
-                              Total time spent up to now :     3.99 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     2.11 secs
 
   Computing E(   960 ) =   4.39940 eV
-                              Total time spent up to now :     4.00 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     2.12 secs
 
   Computing E(   980 ) =   4.69970 eV
-                              Total time spent up to now :     4.02 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     2.13 secs
 
   Computing E(  1000 ) =   5.00000 eV
-                              Total time spent up to now :     4.05 secs
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     2.14 secs
 
 
    <global routines>
              clock number :     6
 
-                conductor :     4.00s CPU 
+                conductor :     2.00s CPU 
  
-              read_matrix :     0.85s CPU (       2 calls,   0.427 s avg)
+              read_matrix :     0.53s CPU (       2 calls,   0.267 s avg)
               fourier_par :     0.00s CPU (       2 calls,   0.000 s avg)
-                 transfer :     2.63s CPU (    2000 calls,   0.001 s avg)
-                    green :     0.11s CPU (    2000 calls,   0.000 s avg)
-            transmittance :     0.03s CPU (    1000 calls,   0.000 s avg)
+                 transfer :     1.30s CPU (    2000 calls,   0.001 s avg)
+                    green :     0.04s CPU (    2000 calls,   0.000 s avg)
+            transmittance :     0.02s CPU (    1000 calls,   0.000 s avg)
 
 

@@ -8,9 +8,9 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date  1Dec2005 at 19:19:49 
+  Date 12Apr2006 at  0:10:16 
 
-  Arch. / Op.Sys: LINUX
+  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
         Compiler: INTEL
 
 
@@ -50,14 +50,14 @@
   nkpts =    8
   Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250
-    k point   2:   (   0.00000  0.00000  0.16625 ),   weight =   0.1250
-    k point   3:   (   0.00000  0.00000  0.33249 ),   weight =   0.1250
-    k point   4:   (   0.00000  0.00000  0.49874 ),   weight =   0.1250
-    k point   5:   (   0.00000  0.00000  0.66498 ),   weight =   0.1250
-    k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250
-    k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250
-    k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250000
+    k point   2:   (   0.00000  0.00000  0.16625 ),   weight =   0.1250000
+    k point   3:   (   0.00000  0.00000  0.33249 ),   weight =   0.1250000
+    k point   4:   (   0.00000  0.00000  0.49874 ),   weight =   0.1250000
+    k point   5:   (   0.00000  0.00000  0.66498 ),   weight =   0.1250000
+    k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250000
+    k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250000
+    k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250000
  </K-POINTS>
 
 
@@ -78,24 +78,23 @@
   ======================================================================
 
 
-  nplot =    4 Wannier func.s to be plotted
+  nplot =    3 Wannier func.s to be plotted
      wf (   1 ) =    1
      wf (   2 ) =    2
-     wf (   3 ) =    3
-     wf (   4 ) =    6
+     wf (   3 ) =    6
 
   Data type  :   modulus
   Output fmt :   plt
 
-  Plotting Cell dimensions [cryst. coord]:
+  Plotting Cell extrema [cryst. coord]:
        r1 :   -0.5000 -->   0.5000
        r2 :   -0.5000 -->   0.5000
-       r3 :   -1.5000 -->   1.5000
+       r3 :   -1.0000 -->   1.0000
 
   Grid dimensions:
       nrx :       -48 -->       48
       nry :       -48 -->       48
-      nrz :       -36 -->       36
+      nrz :       -24 -->       24
 
 
   Centers for the required Wannier functions:
@@ -103,15 +102,13 @@
         in cartesian coord (Bohr)
     Wf(   1 ) = (     0.000000     0.000000     3.306929 )
     Wf(   2 ) = (     0.000000     0.000000     0.944866 )
-    Wf(   3 ) = (     0.000000     0.000000     0.944866 )
     Wf(   6 ) = (     0.000000     0.000000     0.944862 )
         in crystal coord
     Wf(   1 ) = (     0.000000     0.000000     0.699980 )
     Wf(   2 ) = (     0.000000     0.000000     0.200000 )
-    Wf(   3 ) = (     0.000000     0.000000     0.200000 )
     Wf(   6 ) = (     0.000000     0.000000     0.200000 )
 
-  Locating WFs: 
+  Collecting WFs: 
   Plotting Cell dimensions [cryst. coord]:
        r1 :   -0.5000 -->   0.5000
        r2 :   -0.5000 -->   0.5000
@@ -121,43 +118,48 @@
         in crystal coord
     Wf(   1 ) = (     0.000000     0.000000    -0.300020 )
     Wf(   2 ) = (     0.000000     0.000000     0.200000 )
-    Wf(   3 ) = (     0.000000     0.000000     0.200000 )
     Wf(   6 ) = (     0.000000     0.000000     0.200000 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
      Au   tau(   1 ) = (   0.0000000   0.0000000  -3.7794566 )
      Au   tau(   2 ) = (   0.0000000   0.0000000   0.9448634 )
-     Au   tau(   3 ) = (   0.0000000   0.0000000   5.6691834 )
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :     4.93 secs
+                              Total time spent up to now :     2.09 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :     9.30 secs
+                              Total time spent up to now :     3.92 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :    13.08 secs
+                              Total time spent up to now :     5.44 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :    15.76 secs
+                              Total time spent up to now :     6.42 secs
 
     Wfc Fourier Transf. for k-point    5
-                              Total time spent up to now :    18.46 secs
+                              Total time spent up to now :     7.40 secs
 
     Wfc Fourier Transf. for k-point    6
-                              Total time spent up to now :    21.16 secs
+                              Total time spent up to now :     8.38 secs
 
     Wfc Fourier Transf. for k-point    7
-                              Total time spent up to now :    24.89 secs
+                              Total time spent up to now :     9.89 secs
 
     Wfc Fourier Transf. for k-point    8
-                              Total time spent up to now :    29.27 secs
+                              Total time spent up to now :    11.73 secs
+
+
+  WF maximum values (normalization is one):
+
+    Wf(   1 )   -->     0.184461
+    Wf(   2 )   -->     0.411568
+    Wf(   3 )   -->     0.408239
 
 
   writing WF(   1) plot on file: .//gold_WanT_WFM001.cube
-                  atomic positions on file: .//gold_WanT_WFM001.xyz
+         atomic positions on file: .//gold_WanT_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -167,9 +169,9 @@ Coordinate file (in CHARMM 'crd' format): './/gold_WanT_WFM001.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
 Min value: 0.000000
-Max value: 0.000834
+Max value: 0.034026
 Job done ...
 **********************************************************
   deleting tmp files: .//gold_WanT_WFM001.cube
@@ -177,7 +179,7 @@ Job done ...
 
 
   writing WF(   2) plot on file: .//gold_WanT_WFM002.cube
-                  atomic positions on file: .//gold_WanT_WFM002.xyz
+         atomic positions on file: .//gold_WanT_WFM002.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -187,37 +189,17 @@ Coordinate file (in CHARMM 'crd' format): './/gold_WanT_WFM002.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
 Min value: 0.000000
-Max value: 0.004150
+Max value: 0.169390
 Job done ...
 **********************************************************
   deleting tmp files: .//gold_WanT_WFM002.cube
                       .//gold_WanT_WFM002.crd
 
 
-  writing WF(   3) plot on file: .//gold_WanT_WFM003.cube
-                  atomic positions on file: .//gold_WanT_WFM003.xyz
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/gold_WanT_WFM003.cube'
-Output file (plot file):  './/gold_WanT_WFM003.plt'
-Coordinate file (in CHARMM 'crd' format): './/gold_WanT_WFM003.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
-Min value: 0.000000
-Max value: 0.004102
-Job done ...
-**********************************************************
-  deleting tmp files: .//gold_WanT_WFM003.cube
-                      .//gold_WanT_WFM003.crd
-
-
   writing WF(   6) plot on file: .//gold_WanT_WFM006.cube
-                  atomic positions on file: .//gold_WanT_WFM006.xyz
+         atomic positions on file: .//gold_WanT_WFM006.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -227,9 +209,9 @@ Coordinate file (in CHARMM 'crd' format): './/gold_WanT_WFM006.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 3, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-3.750003
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
 Min value: 0.000000
-Max value: 0.004083
+Max value: 0.166660
 Job done ...
 **********************************************************
   deleting tmp files: .//gold_WanT_WFM006.cube
@@ -242,14 +224,14 @@ Job done ...
    <global routines>
              clock number :     8
 
-                     plot :    50.00s CPU 
+                     plot :    16.00s CPU 
  
                 want_init :     0.02s CPU
-          ggrids_read_ext :     0.10s CPU
-           wfc_data_kread :     0.37s CPU (       8 calls,   0.046 s avg)
-               kwann_calc :    19.62s CPU (      32 calls,   0.613 s avg)
-                   cfft3d :     3.07s CPU (      32 calls,   0.096 s avg)
-               cwann_calc :     5.59s CPU (      32 calls,   0.175 s avg)
-                 gcubeplt :     9.97s CPU (       4 calls,   2.492 s avg)
+          ggrids_read_ext :     0.06s CPU
+           wfc_data_kread :     0.19s CPU (       8 calls,   0.024 s avg)
+               kwann_calc :     9.61s CPU (      24 calls,   0.400 s avg)
+                   cfft3d :     0.55s CPU (      24 calls,   0.023 s avg)
+               cwann_calc :     1.09s CPU (      24 calls,   0.045 s avg)
+                 gcubeplt :     2.97s CPU (       3 calls,   0.991 s avg)
 
 

@@ -8,9 +8,9 @@
 
 
   Program <disentangle>  v. 2.0.0  starts ...
-  Date  1Dec2005 at 19:25:24 
+  Date 12Apr2006 at  0:46:46 
 
-  Arch. / Op.Sys: LINUX
+  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
         Compiler: INTEL
 
 
@@ -35,14 +35,14 @@
  <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    6
-    CG minim: Mixing parameter (alpha0_wan)=  0.500
-    CG minim: Max iteration number =   100
+    SD minim: Mixing parameter (alpha0_wan)=  0.500
+    SD minim: Max iteration number =     100
     Minimization convergence threshold =     0.000001000
-    SD minim: Mixing parameter (alpha1_wan) =  0.500
-    SD minim: Max iteration number =  1500
-    Every   5 iteration perform a CG minimization (ncg)
-    Print info each  10 iterations
-    Save data each   10 iterations
+    CG minim: Mixing parameter (alpha1_wan) =  0.500
+    CG minim: Max iteration number =    1500
+    Every   5 iteration perform a SD step
+    Print info each  20 iterations
+    Save data each  200 iterations
     Starting minimization guess = center_projections
     Ordering mode = none
     Verbosity = medium
@@ -55,11 +55,11 @@
   Input parameters for subspace definition
     Spin component = up
     Mixing parameter (alpha_dis)=  0.500
-    Max iteration number =  1000
+    Max iteration number =    1000
     Starting minimization guess = center_projections
     Disentangle convergence threshold =     0.000000010
     Print info each  10 iterations
-    Save data each   10 iterations
+    Save data each   50 iterations
  </DISENTANGLE>
 
  <TRIAL_CENTERS>
@@ -131,33 +131,33 @@
   nkpts =    4
   Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
-    k point   2:   (   0.00000  0.00000  0.33249 ),   weight =   0.2500
-    k point   3:   (   0.00000  0.00000  0.66498 ),   weight =   0.2500
-    k point   4:   (   0.00000  0.00000  0.99747 ),   weight =   0.2500
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
+    k point   2:   (   0.00000  0.00000  0.33249 ),   weight =   0.2500000
+    k point   3:   (   0.00000  0.00000  0.66498 ),   weight =   0.2500000
+    k point   4:   (   0.00000  0.00000  0.99747 ),   weight =   0.2500000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
-    b ( 2) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0661
-    b ( 3) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0661
-    b ( 4) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
-    b ( 5) =    (   0.00000  0.00000  0.33249 ),   weight =   4.5228
-    b ( 6) =    (   0.00000  0.00000 -0.33249 ),   weight =   4.5228
+    b ( 1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0660592
+    b ( 2) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0660592
+    b ( 3) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0660592
+    b ( 4) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0660592
+    b ( 5) =    (   0.00000  0.00000  0.33249 ),   weight =   4.5228154
+    b ( 6) =    (   0.00000  0.00000 -0.33249 ),   weight =   4.5228154
 
-  Total weight =  29.3099
+  Total weight =      29.3098676
  </B-SHELL>
 
  <WINDOWS>
   Definition of energy windows: (energies in eV)
-    outer window: E  = (  -\inf ,    0.0000 )
+    outer window: E  = (  -inf ,    0.0000 )
     Max number of bands within the energy window =     9
 
   Electronic Structure from DFT calculation:
     nkpts =   4,     nbnd =  10,
     nspin =   2
-    Fermi energy =   -4.318855224 eV
+    Fermi energy =   -4.318855220 eV
  !
  !    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =    9
  !                                       imin =    1  imax =    9
@@ -212,23 +212,23 @@
 
     Overlaps or Projections calculation for k-point:    1
     npw =   2911,    dimwin =    9
-                              Total time spent up to now :     6.98 secs
+                              Total time spent up to now :     2.72 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =   2851,    dimwin =    6
-                              Total time spent up to now :     7.31 secs
+                              Total time spent up to now :     2.79 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =   2846,    dimwin =    6
-                              Total time spent up to now :     7.62 secs
+                              Total time spent up to now :     2.86 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =   2851,    dimwin =    6
-                              Total time spent up to now :     7.86 secs
+                              Total time spent up to now :     2.93 secs
 
 
   Overlaps and projections written on file: nichain_WanT_UP.ovp
-                              Total time spent up to now :     7.96 secs
+                              Total time spent up to now :     2.96 secs
 
 
   ======================================================================
@@ -257,7 +257,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      14.306535         4.006235
    Avrg Omega_I                     :       2.384422         0.667706
 
-                              Total time spent up to now :     7.97 secs
+                              Total time spent up to now :     2.97 secs
 
 
   Subspace data written on file: nichain_WanT_UP.space
@@ -266,23 +266,23 @@
    <global routines>
              clock number :    21
 
-              disentangle :     8.00s CPU 
+              disentangle :     2.00s CPU 
  
-                want_init :     0.27s CPU
+                want_init :     0.13s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :     7.67s CPU
-          ggrids_read_ext :     0.11s CPU
-              struct_fact :     0.01s CPU
-                init_us_1 :     6.11s CPU
-           wfc_data_kread :     0.56s CPU (      16 calls,   0.035 s avg)
-                init_us_2 :     0.31s CPU (      20 calls,   0.016 s avg)
-                  ccalbec :     0.06s CPU (      16 calls,   0.004 s avg)
-                  overlap :     0.22s CPU (      12 calls,   0.018 s avg)
-           overlap_setmap :     0.15s CPU (      12 calls,   0.012 s avg)
+              wfc_manager :     2.83s CPU
+          ggrids_read_ext :     0.07s CPU
+              struct_fact :     0.00s CPU
+                init_us_1 :     2.42s CPU
+           wfc_data_kread :     0.13s CPU (      16 calls,   0.008 s avg)
+                init_us_2 :     0.04s CPU (      20 calls,   0.002 s avg)
+                  ccalbec :     0.02s CPU (      16 calls,   0.001 s avg)
+                  overlap :     0.06s CPU (      12 calls,   0.005 s avg)
+           overlap_setmap :     0.03s CPU (      12 calls,   0.003 s avg)
           overlap_augment :     0.00s CPU (      12 calls,   0.000 s avg)
-                    s_psi :     0.03s CPU (       4 calls,   0.007 s avg)
-               projection :     0.12s CPU (       4 calls,   0.029 s avg)
-       trial_center_setup :     0.10s CPU (      24 calls,   0.004 s avg)
+                    s_psi :     0.00s CPU (       4 calls,   0.001 s avg)
+               projection :     0.03s CPU (       4 calls,   0.008 s avg)
+       trial_center_setup :     0.02s CPU (      24 calls,   0.001 s avg)
                iterations :     0.01s CPU
              subapce_init :     0.00s CPU
                    omegai :     0.00s CPU (      10 calls,   0.000 s avg)

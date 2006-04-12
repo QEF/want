@@ -1,12 +1,8 @@
 
-     Program POST-PROC v.3.0    starts ...
-     Today is 30Nov2005 at 21:45: 1 
-
-     Reading file chain4.save ...      only dimensions
-     read complete
-
-     Reading file chain4.save ...      all except wavefuctions
-     read complete
+     Program POST-PROC v.3.1    starts ...
+     Today is 12Apr2006 at  1: 5:28 
 
      nbndx  =    40  nbnd   =    40  natomwfc =    16  npwx   =    8539
      nelec  =  16.00  nkb   =    32  ngl    =    7151
+
+     negative rho (up, down):  0.443E-02 0.000E+00
