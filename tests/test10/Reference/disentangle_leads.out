@@ -8,9 +8,9 @@
 
 
   Program <disentangle>  v. 2.0.0  starts ...
-  Date  1Dec2005 at 19:27:11 
+  Date 12Apr2006 at  1: 5:50 
 
-  Arch. / Op.Sys: LINUX
+  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
         Compiler: INTEL
 
 
@@ -35,14 +35,14 @@
  <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =    8
-    CG minim: Mixing parameter (alpha0_wan)=  0.500
-    CG minim: Max iteration number =   200
+    SD minim: Mixing parameter (alpha0_wan)=  0.500
+    SD minim: Max iteration number =     200
     Minimization convergence threshold =     0.000001000
-    SD minim: Mixing parameter (alpha1_wan) =  0.500
-    SD minim: Max iteration number =  4000
-    Every   3 iteration perform a CG minimization (ncg)
-    Print info each  10 iterations
-    Save data each   10 iterations
+    CG minim: Mixing parameter (alpha1_wan) =  0.500
+    CG minim: Max iteration number =    4000
+    Every   3 iteration perform a SD step
+    Print info each  20 iterations
+    Save data each  200 iterations
     Starting minimization guess = center_projections
     Ordering mode = none
     Verbosity = high
@@ -55,11 +55,11 @@
   Input parameters for subspace definition
     Spin component = none
     Mixing parameter (alpha_dis)=  0.500
-    Max iteration number =  1000
+    Max iteration number =    1000
     Starting minimization guess = center_projections
     Disentangle convergence threshold =     0.000000010
     Print info each  10 iterations
-    Save data each   10 iterations
+    Save data each   50 iterations
  </DISENTANGLE>
 
  <TRIAL_CENTERS>
@@ -128,33 +128,39 @@
      C    tau(   2 ) = (   2.3054663   0.0000000   0.0000000 )
      C    tau(   3 ) = (   5.1778515   0.0000000   0.0000000 )
      C    tau(   4 ) = (   7.4833178   0.0000000   0.0000000 )
+
+  Atomic positions: (crystal coord.)
+     C    tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     C    tau(   2 ) = (   0.0214981   0.0000000   0.0000000 )
+     C    tau(   3 ) = (   0.0482826   0.0000000   0.0000000 )
+     C    tau(   4 ) = (   0.0697807   0.0000000   0.0000000 )
  </IONS>
 
  <K-POINTS>
   nkpts =    4
   Monkhorst-Pack grid:      nk = (  4  1  1 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500
-    k point   2:   (   0.15168  0.00000  0.00000 ),   weight =   0.2500
-    k point   3:   (   0.30337  0.00000  0.00000 ),   weight =   0.2500
-    k point   4:   (   0.45505  0.00000  0.00000 ),   weight =   0.2500
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
+    k point   2:   (   0.15168  0.00000  0.00000 ),   weight =   0.2500000
+    k point   3:   (   0.30337  0.00000  0.00000 ),   weight =   0.2500000
+    k point   4:   (   0.45505  0.00000  0.00000 ),   weight =   0.2500000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (  -0.15168  0.00000  0.00000 ),   weight =  21.7315
-    b ( 2) =    (   0.15168  0.00000  0.00000 ),   weight =  21.7315
-    b ( 3) =    (   0.00000  0.26966  0.00000 ),   weight =   6.8760
-    b ( 4) =    (   0.00000 -0.26966  0.00000 ),   weight =   6.8760
-    b ( 5) =    (   0.00000  0.00000  0.26966 ),   weight =   6.8760
-    b ( 6) =    (   0.00000  0.00000 -0.26966 ),   weight =   6.8760
+    b ( 1) =    (  -0.15168  0.00000  0.00000 ),   weight =  21.7314859
+    b ( 2) =    (   0.15168  0.00000  0.00000 ),   weight =  21.7314859
+    b ( 3) =    (   0.00000  0.26966  0.00000 ),   weight =   6.8759780
+    b ( 4) =    (   0.00000 -0.26966  0.00000 ),   weight =   6.8759780
+    b ( 5) =    (   0.00000  0.00000  0.26966 ),   weight =   6.8759780
+    b ( 6) =    (   0.00000  0.00000 -0.26966 ),   weight =   6.8759780
 
-  Total weight =  70.9669
+  Total weight =      70.9668838
  </B-SHELL>
 
  <WINDOWS>
   Definition of energy windows: (energies in eV)
-    outer window: E  = (  -\inf ,   -4.1251 )
+    outer window: E  = (  -inf ,   -4.1251 )
     Max number of bands within the energy window =     8
 
   Electronic Structure from DFT calculation:
@@ -227,23 +233,23 @@
 
     Overlaps or Projections calculation for k-point:    1
     npw =   8539,    dimwin =    8
-                              Total time spent up to now :     2.77 secs
+                              Total time spent up to now :     0.97 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =   8491,    dimwin =    8
-                              Total time spent up to now :     3.90 secs
+                              Total time spent up to now :     1.22 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =   8478,    dimwin =    8
-                              Total time spent up to now :     5.05 secs
+                              Total time spent up to now :     1.47 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =   8491,    dimwin =    8
-                              Total time spent up to now :     5.98 secs
+                              Total time spent up to now :     1.72 secs
 
 
   Overlaps and projections written on file: chain4_WanT.ovp
-                              Total time spent up to now :     6.14 secs
+                              Total time spent up to now :     1.76 secs
 
 
   ======================================================================
@@ -257,18 +263,18 @@
   Subspace decomposition:
   Norms of the projected Bloch functions
 
-      kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-
-      kpt =  2 (  0.152 0.000 0.000 )    dimwin =    8
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-
-      kpt =  3 (  0.303 0.000 0.000 )    dimwin =    8
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-
-      kpt =  4 (  0.455 0.000 0.000 )    dimwin =    8
-    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
-
+ !      kpt =  1 (  0.000 0.000 0.000 )    dimwin =    8
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+ !
+ !      kpt =  2 (  0.152 0.000 0.000 )    dimwin =    8
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+ !
+ !      kpt =  3 (  0.303 0.000 0.000 )    dimwin =    8
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+ !
+ !      kpt =  4 (  0.455 0.000 0.000 )    dimwin =    8
+ !    1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000
+ !
 
 
 
@@ -283,7 +289,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      25.024124         7.007463
    Avrg Omega_I                     :       3.128016         0.875933
 
-                              Total time spent up to now :     6.15 secs
+                              Total time spent up to now :     1.76 secs
 
 
   Subspace decomposition:
@@ -309,23 +315,23 @@
    <global routines>
              clock number :    21
 
-              disentangle :     6.00s CPU 
+              disentangle :     1.00s CPU 
  
-                want_init :     0.09s CPU
+                want_init :     0.06s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :     6.04s CPU
-          ggrids_read_ext :     0.38s CPU
-              struct_fact :     0.22s CPU
-                init_us_1 :     0.87s CPU
-           wfc_data_kread :     1.48s CPU (      16 calls,   0.093 s avg)
-                init_us_2 :     0.91s CPU (      20 calls,   0.046 s avg)
-                  ccalbec :     0.27s CPU (      16 calls,   0.017 s avg)
-                  overlap :     1.20s CPU (      12 calls,   0.100 s avg)
-           overlap_setmap :     0.69s CPU (      12 calls,   0.057 s avg)
+              wfc_manager :     1.70s CPU
+          ggrids_read_ext :     0.20s CPU
+              struct_fact :     0.04s CPU
+                init_us_1 :     0.40s CPU
+           wfc_data_kread :     0.38s CPU (      16 calls,   0.024 s avg)
+                init_us_2 :     0.16s CPU (      20 calls,   0.008 s avg)
+                  ccalbec :     0.13s CPU (      16 calls,   0.008 s avg)
+                  overlap :     0.19s CPU (      12 calls,   0.016 s avg)
+           overlap_setmap :     0.11s CPU (      12 calls,   0.009 s avg)
           overlap_augment :     0.00s CPU (      12 calls,   0.000 s avg)
-                    s_psi :     0.11s CPU (       4 calls,   0.029 s avg)
-               projection :     0.39s CPU (       4 calls,   0.098 s avg)
-       trial_center_setup :     0.32s CPU (      32 calls,   0.010 s avg)
+                    s_psi :     0.03s CPU (       4 calls,   0.006 s avg)
+               projection :     0.12s CPU (       4 calls,   0.029 s avg)
+       trial_center_setup :     0.09s CPU (      32 calls,   0.003 s avg)
                iterations :     0.00s CPU
              subapce_init :     0.00s CPU
                    omegai :     0.00s CPU (       2 calls,   0.000 s avg)

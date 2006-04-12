@@ -4,6 +4,8 @@
 =======================================================
 
 
+12 Apr 2006      Test05 slightly modified (nosym in nscf calcs); reference updated. (AF)
+
 10 Apr 2006      Bug fixed in configure: dependencies were not computed. 
                  Test time requirements have been soften. (AF)
 

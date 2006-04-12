@@ -8,9 +8,9 @@
 
 
   Program <plot>  v. 2.0.0  starts ...
-  Date  1Dec2005 at 18:33: 0 
+  Date 11Apr2006 at 17:38:42 
 
-  Arch. / Op.Sys: LINUX
+  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
         Compiler: INTEL
 
 
@@ -50,12 +50,11 @@
   nkpts =    1
   Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000000
  </K-POINTS>
 
 
   WARNING: USPP not fully implemented
-
 
   Reading density G-grid from file: benzene_US.export/index.xml
   Reading Wfc grids from file: benzene_US.export/index.xml
@@ -74,18 +73,16 @@
   ======================================================================
 
 
-  nplot =    6 Wannier func.s to be plotted
+  nplot =    4 Wannier func.s to be plotted
      wf (   1 ) =    1
      wf (   2 ) =    2
-     wf (   3 ) =    7
-     wf (   4 ) =    8
-     wf (   5 ) =   14
-     wf (   6 ) =   15
+     wf (   3 ) =   14
+     wf (   4 ) =   15
 
   Data type  :   modulus
   Output fmt :   plt
 
-  Plotting Cell dimensions [cryst. coord]:
+  Plotting Cell extrema [cryst. coord]:
        r1 :   -0.5000 -->   0.5000
        r2 :   -0.5000 -->   0.5000
        r3 :   -0.5000 -->   0.5000
@@ -101,15 +98,11 @@
         in cartesian coord (Bohr)
     Wf(   1 ) = (    -5.380084     2.480914     3.236093 )
     Wf(   2 ) = (    -3.517164     5.689008     3.217241 )
-    Wf(   7 ) = (     2.037826     2.477168     3.166943 )
-    Wf(   8 ) = (     0.332193     1.326444     3.154114 )
     Wf(  14 ) = (    -0.380403     4.702350     3.163612 )
     Wf(  15 ) = (     0.898302     2.477535     3.150619 )
         in crystal coord
     Wf(   1 ) = (    -0.269004     0.124046     0.161805 )
     Wf(   2 ) = (    -0.175858     0.284450     0.160862 )
-    Wf(   7 ) = (     0.101891     0.123858     0.158347 )
-    Wf(   8 ) = (     0.016610     0.066322     0.157706 )
     Wf(  14 ) = (    -0.019020     0.235118     0.158181 )
     Wf(  15 ) = (     0.044915     0.123877     0.157531 )
 
@@ -130,11 +123,19 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :    42.53 secs
+                              Total time spent up to now :    17.49 secs
+
+
+  WF maximum values (normalization is one):
+
+    Wf(   1 )   -->     0.334059
+    Wf(   2 )   -->     0.343288
+    Wf(   3 )   -->     0.260950
+    Wf(   4 )   -->     0.265091
 
 
   writing WF(   1) plot on file: .//benzene_US_WanT_WFM001.cube
-                  atomic positions on file: .//benzene_US_WanT_WFM001.xyz
+         atomic positions on file: .//benzene_US_WanT_WFM001.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -146,7 +147,7 @@ Coordinate file (in CHARMM 'crd' format): './/benzene_US_WanT_WFM001.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.001051
+Max value: 0.111600
 Job done ...
 **********************************************************
   deleting tmp files: .//benzene_US_WanT_WFM001.cube
@@ -154,7 +155,7 @@ Job done ...
 
 
   writing WF(   2) plot on file: .//benzene_US_WanT_WFM002.cube
-                  atomic positions on file: .//benzene_US_WanT_WFM002.xyz
+         atomic positions on file: .//benzene_US_WanT_WFM002.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -166,55 +167,15 @@ Coordinate file (in CHARMM 'crd' format): './/benzene_US_WanT_WFM002.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.001109
+Max value: 0.117850
 Job done ...
 **********************************************************
   deleting tmp files: .//benzene_US_WanT_WFM002.cube
                       .//benzene_US_WanT_WFM002.crd
 
 
-  writing WF(   7) plot on file: .//benzene_US_WanT_WFM007.cube
-                  atomic positions on file: .//benzene_US_WanT_WFM007.xyz
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/benzene_US_WanT_WFM007.cube'
-Output file (plot file):  './/benzene_US_WanT_WFM007.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_US_WanT_WFM007.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.001101
-Job done ...
-**********************************************************
-  deleting tmp files: .//benzene_US_WanT_WFM007.cube
-                      .//benzene_US_WanT_WFM007.crd
-
-
-  writing WF(   8) plot on file: .//benzene_US_WanT_WFM008.cube
-                  atomic positions on file: .//benzene_US_WanT_WFM008.xyz
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/benzene_US_WanT_WFM008.cube'
-Output file (plot file):  './/benzene_US_WanT_WFM008.plt'
-Coordinate file (in CHARMM 'crd' format): './/benzene_US_WanT_WFM008.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
-Min value: 0.000000
-Max value: 0.001395
-Job done ...
-**********************************************************
-  deleting tmp files: .//benzene_US_WanT_WFM008.cube
-                      .//benzene_US_WanT_WFM008.crd
-
-
   writing WF(  14) plot on file: .//benzene_US_WanT_WFM014.cube
-                  atomic positions on file: .//benzene_US_WanT_WFM014.xyz
+         atomic positions on file: .//benzene_US_WanT_WFM014.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -226,7 +187,7 @@ Coordinate file (in CHARMM 'crd' format): './/benzene_US_WanT_WFM014.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.000641
+Max value: 0.068095
 Job done ...
 **********************************************************
   deleting tmp files: .//benzene_US_WanT_WFM014.cube
@@ -234,7 +195,7 @@ Job done ...
 
 
   writing WF(  15) plot on file: .//benzene_US_WanT_WFM015.cube
-                  atomic positions on file: .//benzene_US_WanT_WFM015.xyz
+         atomic positions on file: .//benzene_US_WanT_WFM015.xyz
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
@@ -246,7 +207,7 @@ Coordinate file (in CHARMM 'crd' format): './/benzene_US_WanT_WFM015.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.000662
+Max value: 0.070273
 Job done ...
 **********************************************************
   deleting tmp files: .//benzene_US_WanT_WFM015.cube
@@ -259,14 +220,14 @@ Job done ...
    <global routines>
              clock number :     8
 
-                     plot :  1m24.00s CPU 
+                     plot :    30.00s CPU 
  
-                want_init :     0.08s CPU
-          ggrids_read_ext :     0.43s CPU
-           wfc_data_kread :     0.16s CPU
-               kwann_calc :    37.27s CPU (       6 calls,   6.212 s avg)
-                   cfft3d :     2.90s CPU (       6 calls,   0.484 s avg)
-               cwann_calc :     1.12s CPU (       6 calls,   0.187 s avg)
-                 gcubeplt :    19.68s CPU (       6 calls,   3.280 s avg)
+                want_init :     0.06s CPU
+          ggrids_read_ext :     0.27s CPU
+           wfc_data_kread :     0.08s CPU
+               kwann_calc :    16.19s CPU (       4 calls,   4.047 s avg)
+                   cfft3d :     0.43s CPU (       4 calls,   0.106 s avg)
+               cwann_calc :     0.30s CPU (       4 calls,   0.076 s avg)
+                 gcubeplt :     7.78s CPU (       4 calls,   1.946 s avg)
 
 

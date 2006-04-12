@@ -1,12 +1,6 @@
 
-     Program POST-PROC v.2.1.5  starts ...
-     Today is 19Jan2006 at 13:46:13 
-
-     Reading file al5.save ... 
-     read complete
-
-     Reading file al5.save ... 
-     read complete
+     Program POST-PROC v.3.1    starts ...
+     Today is 12Apr2006 at  0:28: 6 
 
      nbndx  =    50  nbnd   =    50  natomwfc =    20  npwx   =    3235
-     nelec  =   15.00 nkb   =    20  ngl    =    1594
+     nelec  =  15.00  nkb   =    20  ngl    =    1594

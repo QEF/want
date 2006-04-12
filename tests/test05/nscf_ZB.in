@@ -7,7 +7,6 @@ NC - pbe
       prefix='zincblend',
       nstep=2000,
       tprnfor = .true.,
-      verbosity = 'high'
    /
    &SYSTEM
       ibrav=4, 
@@ -18,6 +17,7 @@ NC - pbe
       ecutwfc=60.0,
       occupations='fixed',
       nbnd = 24
+      nosym = .TRUE.
    /
    &ELECTRONS
       electron_maxstep = 50,

@@ -6,7 +6,6 @@ NC - pbe
       prefix='wurtzite',
       nstep=2000,
       tprnfor = .true.,
-      verbosity = 'high'
       pseudo_dir = './',
    /
    &SYSTEM
@@ -18,6 +17,7 @@ NC - pbe
       ecutwfc=60.0,
       occupations='fixed',
       nbnd = 24
+      nosym = .TRUE.
    /
    &ELECTRONS
       electron_maxstep = 50,

@@ -1,12 +1,8 @@
 
-     Program POST-PROC v.3.0    starts ...
-     Today is 30Nov2005 at 20:51:17 
-
-     Reading file gold_US.save ...      only dimensions
-     read complete
-
-     Reading file gold_US.save ...      all except wavefuctions
-     read complete
+     Program POST-PROC v.3.1    starts ...
+     Today is 12Apr2006 at  0:23: 7 
 
      nbndx  =    20  nbnd   =    20  natomwfc =    18  npwx   =    8007
      nelec  =  22.00  nkb   =    36  ngl    =    9453
+
+     negative rho (up, down):  0.181E-02 0.000E+00

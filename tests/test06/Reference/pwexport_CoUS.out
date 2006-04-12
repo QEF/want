@@ -1,14 +1,10 @@
 
-     Program POST-PROC v.3.0    starts ...
-     Today is 30Nov2005 at 20:40:31 
-
-     Reading file cobalt_US.save ...      only dimensions
-     read complete
-
-     Reading file cobalt_US.save ...      all except wavefuctions
-     read complete
+     Program POST-PROC v.3.1    starts ...
+     Today is 12Apr2006 at  0:17: 3 
 
      nbndx  =    10  nbnd   =    10  natomwfc =     6  npwx   =    6495
      nelec  =   9.00  nkb   =    18  ngl    =   10279
 
      Check: negative/imaginary core charge=   -0.000009    0.000000
+
+     negative rho (up, down):  0.235E-01 0.000E+00

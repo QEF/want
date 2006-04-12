@@ -8,9 +8,9 @@
 
 
   Program <disentangle>  v. 2.0.0  starts ...
-  Date  1Dec2005 at 18:30:37 
+  Date 11Apr2006 at 17:33: 6 
 
-  Arch. / Op.Sys: LINUX
+  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
         Compiler: INTEL
 
 
@@ -35,14 +35,14 @@
  <WANNIER_FUNCTIONS>
   Input parameters for Wannier func. calculation
     Number of Wannier functions required =   18
-    CG minim: Mixing parameter (alpha0_wan)=  0.250
-    CG minim: Max iteration number =   200
+    SD minim: Mixing parameter (alpha0_wan)=  0.250
+    SD minim: Max iteration number =     200
     Minimization convergence threshold =     0.000001000
-    SD minim: Mixing parameter (alpha1_wan) =  0.250
-    SD minim: Max iteration number =  4000
-    Every   5 iteration perform a CG minimization (ncg)
-    Print info each  10 iterations
-    Save data each   10 iterations
+    CG minim: Mixing parameter (alpha1_wan) =  0.250
+    CG minim: Max iteration number =    4000
+    Every   5 iteration perform a SD step
+    Print info each  20 iterations
+    Save data each  200 iterations
     Starting minimization guess = center_projections
     Ordering mode = none
     Verbosity = high
@@ -55,11 +55,11 @@
   Input parameters for subspace definition
     Spin component = none
     Mixing parameter (alpha_dis)=  0.500
-    Max iteration number =  5000
+    Max iteration number =    5000
     Starting minimization guess = center_projections
     Disentangle convergence threshold =     0.000000010
     Print info each  10 iterations
-    Save data each   10 iterations
+    Save data each   50 iterations
  </DISENTANGLE>
 
  <TRIAL_CENTERS>
@@ -140,30 +140,44 @@
      C    tau(  10 ) = (  -2.9895479   0.1889727   3.0934829 )
      H    tau(  11 ) = (  -4.0118902  -1.5779219   3.0972624 )
      C    tau(  12 ) = (  -4.3123567   2.4812114   3.1142699 )
+
+  Atomic positions: (crystal coord.)
+     H    tau(   1 ) = (  -0.0158832   0.0062030   0.0078329 )
+     C    tau(   2 ) = (  -0.0074691   0.0119289   0.0077715 )
+     H    tau(   3 ) = (  -0.0100203   0.0163461   0.0078093 )
+     C    tau(   4 ) = (  -0.0008551   0.0119242   0.0077148 )
+     H    tau(   5 ) = (   0.0016960   0.0163414   0.0077054 )
+     C    tau(   6 ) = (   0.0024472   0.0061936   0.0076628 )
+     H    tau(   7 ) = (   0.0075495   0.0061936   0.0076156 )
+     C    tau(   8 ) = (  -0.0008598   0.0004677   0.0076770 )
+     H    tau(   9 ) = (   0.0016866  -0.0039495   0.0076345 )
+     C    tau(  10 ) = (  -0.0074739   0.0004724   0.0077337 )
+     H    tau(  11 ) = (  -0.0100297  -0.0039448   0.0077432 )
+     C    tau(  12 ) = (  -0.0107809   0.0062030   0.0077857 )
  </IONS>
 
  <K-POINTS>
   nkpts =    1
   Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0661
-    b ( 2) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0661
-    b ( 3) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0661
-    b ( 4) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0661
-    b ( 5) =    (   0.00000  0.00000  0.31416 ),   weight =   5.0661
-    b ( 6) =    (   0.00000  0.00000 -0.31416 ),   weight =   5.0661
+    b ( 1) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0660592
+    b ( 2) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0660592
+    b ( 3) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0660592
+    b ( 4) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0660592
+    b ( 5) =    (   0.00000  0.00000  0.31416 ),   weight =   5.0660592
+    b ( 6) =    (   0.00000  0.00000 -0.31416 ),   weight =   5.0660592
 
-  Total weight =  30.3964
+  Total weight =      30.3963551
  </B-SHELL>
 
  <WINDOWS>
   Definition of energy windows: (energies in eV)
-    outer window: E  = (  -\inf ,    2.0000 )
+    outer window: E  = (  -inf ,    2.0000 )
     Max number of bands within the energy window =    25
 
   Electronic Structure from DFT calculation:
@@ -206,11 +220,11 @@
   Initializing atomic wfc
     Overlaps or Projections calculation for k-point:    1
     npw =  28017,    dimwin =   25
-                              Total time spent up to now :    11.73 secs
+                              Total time spent up to now :     1.82 secs
 
 
   Overlaps and projections written on file: benzene_WanT.ovp
-                              Total time spent up to now :    11.93 secs
+                              Total time spent up to now :     1.88 secs
 
 
   ======================================================================
@@ -224,12 +238,12 @@
   Subspace decomposition:
   Norms of the projected Bloch functions
 
-      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   25
-    0.97942  0.98518  0.98534  0.95923  0.98060  0.96414  0.99718  0.99939
-    0.95300  0.95353  0.99288  0.97901  0.96777  1.00000  1.00000  1.00000
-    1.00000  0.05177  0.24342  0.06368  0.06395  0.51613  0.03606  0.23403
-    0.09429
-
+ !      kpt =  1 (  0.000 0.000 0.000 )    dimwin =   25
+ !    0.97942  0.98518  0.98534  0.95923  0.98060  0.96414  0.99718  0.99939
+ !    0.95300  0.95353  0.99288  0.97901  0.96777  1.00000  1.00000  1.00000
+ !    1.00000  0.05177  0.24342  0.06368  0.06395  0.51613  0.03606  0.23403
+ !    0.09429
+ !
 
 
 
@@ -244,7 +258,7 @@
   Iteration =     9     Omega_I =   66.580180      Error =      0.00044811
   Iteration =    10     Omega_I =   66.557430      Error =      0.00034182
 
-                              Total time spent up to now :    11.98 secs
+                              Total time spent up to now :     1.90 secs
 
   Iteration =    11     Omega_I =   66.539432      Error =      0.00027048
   Iteration =    12     Omega_I =   66.524795      Error =      0.00022002
@@ -257,7 +271,7 @@
   Iteration =    19     Omega_I =   66.472169      Error =      0.00006046
   Iteration =    20     Omega_I =   66.468885      Error =      0.00004940
 
-                              Total time spent up to now :    12.07 secs
+                              Total time spent up to now :     1.93 secs
 
   Iteration =    21     Omega_I =   66.466219      Error =      0.00004011
   Iteration =    22     Omega_I =   66.464067      Error =      0.00003238
@@ -270,7 +284,7 @@
   Iteration =    29     Omega_I =   66.457330      Error =      0.00000642
   Iteration =    30     Omega_I =   66.456996      Error =      0.00000503
 
-                              Total time spent up to now :    12.14 secs
+                              Total time spent up to now :     1.95 secs
 
   Iteration =    31     Omega_I =   66.456734      Error =      0.00000394
   Iteration =    32     Omega_I =   66.456530      Error =      0.00000308
@@ -283,7 +297,7 @@
   Iteration =    39     Omega_I =   66.455935      Error =      0.00000053
   Iteration =    40     Omega_I =   66.455908      Error =      0.00000041
 
-                              Total time spent up to now :    12.22 secs
+                              Total time spent up to now :     1.97 secs
 
   Iteration =    41     Omega_I =   66.455887      Error =      0.00000032
   Iteration =    42     Omega_I =   66.455870      Error =      0.00000025
@@ -296,7 +310,7 @@
   Iteration =    49     Omega_I =   66.455824      Error =      0.00000004
   Iteration =    50     Omega_I =   66.455822      Error =      0.00000003
 
-                              Total time spent up to now :    12.29 secs
+                              Total time spent up to now :     1.99 secs
 
   Iteration =    51     Omega_I =   66.455820      Error =      0.00000002
   Iteration =    52     Omega_I =   66.455819      Error =      0.00000002
@@ -313,7 +327,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      66.455817        18.609509
    Avrg Omega_I                     :       3.691990         1.033862
 
-                              Total time spent up to now :    12.35 secs
+                              Total time spent up to now :     2.03 secs
 
 
   Subspace decomposition:
@@ -333,25 +347,25 @@
    <global routines>
              clock number :    19
 
-              disentangle :    12.00s CPU 
+              disentangle :     2.00s CPU 
  
-                want_init :     0.08s CPU
+                want_init :     0.02s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :    11.84s CPU
-          ggrids_read_ext :     0.31s CPU
-              struct_fact :     0.64s CPU
-                init_at_1 :     0.06s CPU
-           wfc_data_kread :     1.83s CPU (       4 calls,   0.457 s avg)
-                  overlap :     7.62s CPU (       3 calls,   2.539 s avg)
-           overlap_setmap :     0.14s CPU (       3 calls,   0.046 s avg)
-                    s_psi :     0.03s CPU
-               projection :     1.13s CPU
-       trial_center_setup :     0.48s CPU (      18 calls,   0.027 s avg)
-               atomic_wfc :     0.05s CPU (       6 calls,   0.009 s avg)
-               iterations :     0.42s CPU
+              wfc_manager :     1.85s CPU
+          ggrids_read_ext :     0.16s CPU
+              struct_fact :     0.05s CPU
+                init_at_1 :     0.03s CPU
+           wfc_data_kread :     0.71s CPU (       4 calls,   0.178 s avg)
+                  overlap :     0.59s CPU (       3 calls,   0.196 s avg)
+           overlap_setmap :     0.03s CPU (       3 calls,   0.011 s avg)
+                    s_psi :     0.01s CPU
+               projection :     0.22s CPU
+       trial_center_setup :     0.14s CPU (      18 calls,   0.008 s avg)
+               atomic_wfc :     0.01s CPU (       6 calls,   0.002 s avg)
+               iterations :     0.15s CPU
              subapce_init :     0.00s CPU
                    omegai :     0.00s CPU (      56 calls,   0.000 s avg)
-                  zmatrix :     0.04s CPU (      55 calls,   0.001 s avg)
-                mat_hdiag :     0.07s CPU (      57 calls,   0.001 s avg)
+                  zmatrix :     0.02s CPU (      55 calls,   0.000 s avg)
+                mat_hdiag :     0.09s CPU (      57 calls,   0.002 s avg)
 
 

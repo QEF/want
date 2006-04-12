@@ -1,12 +1,8 @@
 
-     Program POST-PROC v.3.0    starts ...
-     Today is  2Dec2005 at 19:46:47 
-
-     Reading file guanine.save ...      only dimensions
-     read complete
-
-     Reading file guanine.save ...      all except wavefuctions
-     read complete
+     Program POST-PROC v.3.1    starts ...
+     Today is 11Apr2006 at 17:55:37 
 
      nbndx  =    28  nbnd   =    28  natomwfc =    49  npwx   =   37107
      nelec  =  56.00  nkb   =    93  ngl    =   38788
+
+     negative rho (up, down):  0.472E-01 0.000E+00

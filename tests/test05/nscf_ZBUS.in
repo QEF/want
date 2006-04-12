@@ -7,7 +7,6 @@ US - pbe
       prefix='zincblend_US',
       nstep=2000,
       tprnfor = .true.,
-      verbosity = 'high'
    /
    &SYSTEM
       ibrav=4, 
@@ -19,6 +18,7 @@ US - pbe
       ecutrho=200.0,
       occupations='fixed',
       nbnd = 24
+      nosym = .TRUE.
    /
    &ELECTRONS
       electron_maxstep = 50,

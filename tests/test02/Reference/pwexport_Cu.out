@@ -1,12 +1,6 @@
 
-     Program POST-PROC v.3.0    starts ...
-     Today is 30Nov2005 at 15:27:26 
+     Program POST-PROC v.3.1    starts ...
+     Today is 11Apr2006 at 17:18:42 
 
-     Reading file copper.save ...      only dimensions
-     read complete
-
-     Reading file copper.save ...      all except wavefuctions
-     read complete
-
-     nbndx  =    20  nbnd   =    20  natomwfc =     9  npwx   =    2148
+     nbndx  =    20  nbnd   =    20  natomwfc =     9  npwx   =    2138
      nelec  =  11.00  nkb   =     8  ngl    =     214
