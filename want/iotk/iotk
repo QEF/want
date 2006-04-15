@@ -7,8 +7,11 @@
 #   then the iotk.x command will be executed as ${IOTK_EXE} .
 # else, if the IOTK_ROOTDIR environment variable is defined,
 #   then the iotk.x command will be executed as ${IOTK_ROOTDIR}/bin/iotk.x .
-# else,
-#   it will be executed as iotk.x (i.e. it has to be in the PATH)
+# else, the execution path is searched for an executable "iotk.x"
+#   then the iotk.x command will be executed as iotk.x
+# else, the directory is guessed based on the location of THIS ($0) script
+#   then the iotk.x command will be executed properly
+# else, an error message is issued
 # end if
 
 # When a single instance of iotk library is available on a given machine,
@@ -21,20 +24,45 @@
 #   alias iotk_g95 "iotk --iotk-exe ${HOME}/g95/S3DE/iotk/bin/iotk.x"
 #   alias iotk_ifort "iotk --iotk-exe ${HOME}/ifort/S3DE/iotk/bin/iotk.x"
 
-# search for the executable
+EXEC=
+# first, check --iotk-exe command line option
 if test "$1" = --iotk-exe
 then
   shift
   EXEC="$1"
   shift
+# second, try IOTK_EXE environment variable
 elif test -n "${IOTK_EXE}"
 then
   EXEC="${IOTK_EXE}"
+# third, try IOTK_ROOTDIR environment variable
 elif test -n "${IOTK_ROOTDIR}"
 then
   EXEC="${IOTK_ROOTDIR}/bin/iotk.x"
 else
-  EXEC="iotk.x"
+# fourth, try to execute using the path
+  echo "--do-nothing" | iotk.x 2> /dev/null
+  if [ $? = 0 ]
+  then
+    EXEC=iotk.x
+# last resort, guess using $0
+# (thanks to Andrea Ferretti)
+  else
+    #
+    # WARNING: here is a small change in order to 
+    #          be consistent with WanT layout (AF)
+    #
+    EXEC=`echo $0 | sed 's/\(.*\)\/.*/\1/'`/iotk.x
+    echo "--do-nothing" | ${EXEC} 2> /dev/null
+    if [ $? = 0 ]
+    then
+      echo "iotk: using ${EXEC} executable" 1>&2
+    else
+# very last: surrend
+      echo "iotk: I cannot find the iotk.x executable" 1>&2
+      exit 1
+    fi
+  fi
 fi
 
 # transfer of command-line arguments to standard input

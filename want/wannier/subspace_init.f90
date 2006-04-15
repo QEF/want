@@ -151,6 +151,7 @@
                 !
                 CALL mat_mul( cu, u, 'N', vt, 'N', dimwin(ik), dimwann, dimwann )
                 lamp(  1:dimwin(ik), 1:dimwann , ik) = cu( 1:dimwin(ik), 1:dimwann )
+
            ENDIF
         ENDDO
 
@@ -200,7 +201,7 @@
         WRITE(stdout,"()")
 
    END SELECT
-        
+
    !
    ! Finally check that the states in the columns of the final matrix lamp are orthonormal
    ! at every k-point, i.e. that the matrix is unitary in the sense that
@@ -246,6 +247,4 @@
    RETURN
 
 END SUBROUTINE subspace_init
-
-
 

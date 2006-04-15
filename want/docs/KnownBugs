@@ -23,10 +23,14 @@
   it is possible to comment the checks (at the end of Libs/subspace_init.f90
   and Libs/localization_init.f90) to run the calculation anyway.
 
-* In transport calculations, spikes lowering the conductance 
-  of some units may appear. They are very often due to a 
-  slight numerical misalignment of the electronic structure
-  in the lead-conductor-lead system.
+* G95: at least ultil Apr 2006, G95 with debug options
+  (-g -fbounds-check -ftrace=full) is known to miscompile the 
+  internal lapack & blas libraries distributed with WanT.
+  Older versions of the compiler (last check Sep 2005) get
+  a broken test08 (NaN apper without any reason). Fixed in newer
+  version of the compiler.
+
+
 
 
 

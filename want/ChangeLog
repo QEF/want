@@ -4,7 +4,13 @@
 =======================================================
 
 
+15 Apr 2006      bug in old releases (around Sep 2005) of g95 found; fixed in current compiler
+                 version. Cleanup in projection_frozen.f90; comments added in omega.f90 . 
+
 12 Apr 2006      Test05 slightly modified (nosym in nscf calcs); reference updated. (AF)
+
+11 Apr 2006      IOTK updated to todays CVS version (few feat. added, particularly in the
+                 iotk script; eg manual pages can be called by the script). (AF)
 
 10 Apr 2006      Bug fixed in configure: dependencies were not computed. 
                  Test time requirements have been soften. (AF)

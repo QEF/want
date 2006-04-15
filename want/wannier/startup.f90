@@ -84,9 +84,6 @@
 #ifdef __MYCOMPILER
    WRITE(stdout, "(2x,'      Compiler: ',a)" ) __MYCOMPILER
 #endif
-#if defined __MYARCHITECTURE || defined __MYCOMPILER
-   WRITE(stdout, "()" )
-#endif
 
 END SUBROUTINE startup
 
