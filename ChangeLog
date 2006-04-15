@@ -4,8 +4,9 @@
 =======================================================
 
 
-15 Apr 2006      bug in old releases (around Sep 2005) of g95 found; fixed in current compiler
+15 Apr 2006      Bug in old releases (around Sep 2005) of g95 found; fixed in current compiler
                  version. Cleanup in projection_frozen.f90; comments added in omega.f90 . 
+                 Output FMT changes and updated in summary.f90 . (AF)
 
 12 Apr 2006      Test05 slightly modified (nosym in nscf calcs); reference updated. (AF)
 
