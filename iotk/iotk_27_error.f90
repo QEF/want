@@ -347,6 +347,7 @@ subroutine iotk_error_scan_character_e(error,name,val)
 #endif
   integer :: i1,i2,i3
   logical :: eos,found
+  i2 = 0
   val=""
   found = .false.
   if(.not.associated(error%str)) return

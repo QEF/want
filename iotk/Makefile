@@ -67,7 +67,8 @@ libiotk.a : $(OBJS)
 #
 iotk.x: iotk.o $(OBJS)
 	$(LD) -o $@ iotk.o $(OBJS) $(LDFLAGS)
-	- ( cd ../bin ; ln -sf ../iotk/iotk . )
+	- ( cd ../bin ; ln -sf ../iotk/iotk . ; \
+	                ln -sf ../iotk/iotk.x . )
     
 clean:
 	rm -rf *.x *.o *.a *core *.F90 *.mod *.d work.pc work.pcl

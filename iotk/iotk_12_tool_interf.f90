@@ -31,6 +31,7 @@ public :: iotk_tool
 public :: iotk_tool_convert
 public :: iotk_tool_dump
 public :: iotk_tool_info
+public :: iotk_tool_man
 
 interface iotk_tool
 subroutine iotk_tool_x(args)
@@ -62,5 +63,13 @@ subroutine iotk_tool_info_x(args,ierr)
   integer,          optional, intent(out) :: ierr
 end subroutine iotk_tool_info_x
 end interface iotk_tool_info
+
+interface iotk_tool_man
+subroutine iotk_tool_man_x(args,ierr)
+  implicit none
+  character(len=*),           intent(in)  :: args(:)
+  integer,          optional, intent(out) :: ierr
+end subroutine iotk_tool_man_x
+end interface iotk_tool_man
 
 end module iotk_tool_interf
