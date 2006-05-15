@@ -1,0 +1,6 @@
+&inputpp
+  prefix='graphene'
+  outdir='./'
+  pseudo_dir = './'
+  psfile(1) = 'C.blyp-mt.UPF'
+/

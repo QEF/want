@@ -1,0 +1,14 @@
+
+ &INPUT
+   prefix = 'graphene'
+   postfix = '_WanT'
+   work_dir = './'
+   output_fmt = 'xsf'
+   datatype = 'modulus'
+   collect_wf = .TRUE.
+   wann = '1-5'
+   r1min = -1.0 
+   r1max =  1.0 
+   r2min = -1.0 
+   r2max =  1.0 
+ /

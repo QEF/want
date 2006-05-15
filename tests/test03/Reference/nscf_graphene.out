@@ -1,0 +1,394 @@
+
+     Program PWSCF     v.3.0    starts ...
+     Today is 11May2006 at 22:15: 1 
+
+     Ultrasoft (Vanderbilt) Pseudopotentials
+
+     Current dimensions of program pwscf are:
+
+     ntypx = 10   npk = 40000  lmax =  3
+     nchix =  6  ndmx =  2000  nbrx = 14  nqfx =  8
+     warning: symmetry operation #  2 not allowed.   fractional translation:
+       0.3333334 -0.3333332  0.0000000  in crystal coordinates
+     warning: symmetry operation #  4 not allowed.   fractional translation:
+       0.3333334 -0.3333332  0.0000000  in crystal coordinates
+     warning: symmetry operation #  5 not allowed.   fractional translation:
+       0.3333334 -0.3333334  0.0000000  in crystal coordinates
+     warning: symmetry operation #  6 not allowed.   fractional translation:
+       0.3333332 -0.3333334  0.0000000  in crystal coordinates
+     warning: symmetry operation # 11 not allowed.   fractional translation:
+       0.3333334 -0.3333334  0.0000000  in crystal coordinates
+     warning: symmetry operation # 12 not allowed.   fractional translation:
+       0.3333332 -0.3333334  0.0000000  in crystal coordinates
+     warning: symmetry operation # 13 not allowed.   fractional translation:
+       0.3333334 -0.3333332  0.0000000  in crystal coordinates
+     warning: symmetry operation # 15 not allowed.   fractional translation:
+       0.3333334 -0.3333332  0.0000000  in crystal coordinates
+     warning: symmetry operation # 19 not allowed.   fractional translation:
+       0.3333332 -0.3333334  0.0000000  in crystal coordinates
+     warning: symmetry operation # 20 not allowed.   fractional translation:
+       0.3333334 -0.3333334  0.0000000  in crystal coordinates
+     warning: symmetry operation # 21 not allowed.   fractional translation:
+       0.3333332 -0.3333334  0.0000000  in crystal coordinates
+     warning: symmetry operation # 22 not allowed.   fractional translation:
+       0.3333334 -0.3333334  0.0000000  in crystal coordinates
+
+
+     bravais-lattice index     =            4
+     lattice parameter (a_0)   =       4.5823  a.u.
+     unit-cell volume          =     666.6300 (a.u.)^3
+     number of atoms/cell      =            2
+     number of atomic types    =            1
+     kinetic-energy cutoff     =      40.0000  Ry
+     charge density cutoff     =     160.0000  Ry
+     convergence threshold     =      1.0E-08
+     beta                      =       0.3000
+     number of iterations used =            8  plain     mixing
+     Exchange-correlation      =  SLA  LYP  B88  BLYP (1313)
+     celldm(1)=   4.582348  celldm(2)=   0.000000  celldm(3)=   8.000000
+     celldm(4)=   0.000000  celldm(5)=   0.000000  celldm(6)=   0.000000
+
+     crystal axes: (cart. coord. in units of a_0)
+               a(1) = (  1.000000  0.000000  0.000000 )  
+               a(2) = ( -0.500000  0.866025  0.000000 )  
+               a(3) = (  0.000000  0.000000  8.000000 )  
+
+     reciprocal axes: (cart. coord. in units 2 pi/a_0)
+               b(1) = (  1.000000  0.577350 -0.000000 )  
+               b(2) = (  0.000000  1.154701  0.000000 )  
+               b(3) = (  0.000000 -0.000000  0.125000 )  
+
+
+     PSEUDO 1 is C          zval =  4.0   lmax= 0   lloc= 0
+     (in numerical form:   279 grid points, xmin =  0.00, dx = 0.0000)
+
+     atomic species   valence    mass     pseudopotential
+        C              4.00    12.01100     C ( 1.00)
+
+     12 Sym.Ops. (no inversion)
+
+
+   Cartesian axes
+
+     site n.     atom                  positions (a_0 units)
+         1           C   tau(  1) = (   0.0000000   0.0000000   0.0000000  )
+         2           C   tau(  2) = (   0.5000000   0.2886750   0.0000000  )
+
+     number of k points=   36  gaussian broad. (ryd)=  0.0100     ngauss =   0
+                       cart. coord. in units 2pi/a_0
+        k(    1) = (  -0.5000000  -0.8660254   0.0000000), wk =   0.0555556
+        k(    2) = (  -0.3333333  -0.7698004   0.0000000), wk =   0.0555556
+        k(    3) = (  -0.1666667  -0.6735753   0.0000000), wk =   0.0555556
+        k(    4) = (   0.0000000  -0.5773503   0.0000000), wk =   0.0555556
+        k(    5) = (   0.1666667  -0.4811252   0.0000000), wk =   0.0555556
+        k(    6) = (   0.3333333  -0.3849002   0.0000000), wk =   0.0555556
+        k(    7) = (  -0.5000000  -0.6735753   0.0000000), wk =   0.0555556
+        k(    8) = (  -0.3333333  -0.5773503   0.0000000), wk =   0.0555556
+        k(    9) = (  -0.1666667  -0.4811252   0.0000000), wk =   0.0555556
+        k(   10) = (   0.0000000  -0.3849002   0.0000000), wk =   0.0555556
+        k(   11) = (   0.1666667  -0.2886751   0.0000000), wk =   0.0555556
+        k(   12) = (   0.3333333  -0.1924501   0.0000000), wk =   0.0555556
+        k(   13) = (  -0.5000000  -0.4811252   0.0000000), wk =   0.0555556
+        k(   14) = (  -0.3333333  -0.3849002   0.0000000), wk =   0.0555556
+        k(   15) = (  -0.1666667  -0.2886751   0.0000000), wk =   0.0555556
+        k(   16) = (   0.0000000  -0.1924501   0.0000000), wk =   0.0555556
+        k(   17) = (   0.1666667  -0.0962250   0.0000000), wk =   0.0555556
+        k(   18) = (   0.3333333  -0.0000000   0.0000000), wk =   0.0555556
+        k(   19) = (  -0.5000000  -0.2886751   0.0000000), wk =   0.0555556
+        k(   20) = (  -0.3333333  -0.1924501   0.0000000), wk =   0.0555556
+        k(   21) = (  -0.1666667  -0.0962250   0.0000000), wk =   0.0555556
+        k(   22) = (   0.0000000   0.0000000   0.0000000), wk =   0.0555556
+        k(   23) = (   0.1666667   0.0962250   0.0000000), wk =   0.0555556
+        k(   24) = (   0.3333333   0.1924501   0.0000000), wk =   0.0555556
+        k(   25) = (  -0.5000000  -0.0962250   0.0000000), wk =   0.0555556
+        k(   26) = (  -0.3333333   0.0000000   0.0000000), wk =   0.0555556
+        k(   27) = (  -0.1666667   0.0962250   0.0000000), wk =   0.0555556
+        k(   28) = (   0.0000000   0.1924501   0.0000000), wk =   0.0555556
+        k(   29) = (   0.1666667   0.2886751   0.0000000), wk =   0.0555556
+        k(   30) = (   0.3333333   0.3849002   0.0000000), wk =   0.0555556
+        k(   31) = (  -0.5000000   0.0962250   0.0000000), wk =   0.0555556
+        k(   32) = (  -0.3333333   0.1924501   0.0000000), wk =   0.0555556
+        k(   33) = (  -0.1666667   0.2886751   0.0000000), wk =   0.0555556
+        k(   34) = (   0.0000000   0.3849002   0.0000000), wk =   0.0555556
+        k(   35) = (   0.1666667   0.4811252   0.0000000), wk =   0.0555556
+        k(   36) = (   0.3333333   0.5773503   0.0000000), wk =   0.0555556
+
+     G cutoff =   85.1013  (  22761 G-vectors)     FFT grid: ( 20, 20,150)
+
+     nbndx  =    40  nbnd   =    10  natomwfc =     8  npwx   =    2878
+     nelec  =   8.00  nkb   =     2  ngl    =    1057
+
+     The potential is recalculated from file         graphene.rho
+     Starting wfc are atomic +   2 random wfc
+
+     total cpu time spent up to now is      9.08 secs
+
+     Band Structure Calculation
+     Davidson diagonalization with overlap
+     WARNING:     4 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     4 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     2 eigenvalues not converged
+     WARNING:     2 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     2 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     2 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     4 eigenvalues not converged
+     WARNING:     4 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     2 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     3 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     WARNING:     1 eigenvalues not converged
+     ethr =  1.25E-10,  avg # of iterations = 32.6
+
+     total cpu time spent up to now is    157.15 secs
+
+     End of band structure calculation
+
+          k =-0.5000-0.8660 0.0000     band energies (ev):
+
+   -16.3461 -15.3525  -8.3988  -4.1311   0.0181   6.1496   9.2494   9.4465
+    10.2389  10.3552
+
+          k =-0.3333-0.7698 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.1667-0.6736 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4642   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k = 0.0000-0.5774 0.0000     band energies (ev):
+
+   -16.3461 -15.3525  -8.3988  -4.1311   0.0181   6.1496   9.2494   9.4465
+    10.2389  10.3552
+
+          k = 0.1667-0.4811 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4642   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k = 0.3333-0.3849 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.5000-0.6736 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.3333-0.5774 0.0000     band energies (ev):
+
+   -14.6237 -14.6227 -12.6287  -1.6693  -1.6692   8.8760  11.3133  11.3133
+    11.8305  13.1575
+
+          k =-0.1667-0.4811 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4642   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k = 0.0000-0.3849 0.0000     band energies (ev):
+
+   -19.1207 -11.6147  -7.7370  -6.5338   3.4676   4.8168   5.7308   5.8810
+     6.4725   6.9053
+
+          k = 0.1667-0.2887 0.0000     band energies (ev):
+
+   -19.7787  -9.6991  -8.3544  -7.2754   3.9070   4.7673   4.9398   5.0535
+     5.9517   6.4419
+
+          k = 0.3333-0.1925 0.0000     band energies (ev):
+
+   -19.1207 -11.6147  -7.7370  -6.5338   3.4676   4.8168   5.7308   5.8810
+     6.4725   6.9053
+
+          k =-0.5000-0.4811 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.3333-0.3849 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.1667-0.2887 0.0000     band energies (ev):
+
+   -19.7787  -9.6991  -8.3544  -7.2754   3.9070   4.7673   4.9398   5.0535
+     5.9517   6.4419
+
+          k = 0.0000-0.1925 0.0000     band energies (ev):
+
+   -21.1110  -8.8571  -7.2224  -6.0623   2.0679   2.9099   3.0514   4.0995
+     4.5696   6.3436
+
+          k = 0.1667-0.0962 0.0000     band energies (ev):
+
+   -21.1110  -8.8571  -7.2224  -6.0623   2.0679   2.9099   3.0514   4.0995
+     4.5696   6.3436
+
+          k = 0.3333-0.0000 0.0000     band energies (ev):
+
+   -19.7787  -9.6991  -8.3544  -7.2754   3.9070   4.7673   4.9398   5.0535
+     5.9517   6.4419
+
+          k =-0.5000-0.2887 0.0000     band energies (ev):
+
+   -16.3461 -15.3525  -8.3988  -4.1311   0.0181   6.1496   9.2494   9.4465
+    10.2389  10.3552
+
+          k =-0.3333-0.1925 0.0000     band energies (ev):
+
+   -19.1207 -11.6147  -7.7370  -6.5338   3.4676   4.8168   5.7308   5.8810
+     6.4725   6.9053
+
+          k =-0.1667-0.0962 0.0000     band energies (ev):
+
+   -21.1110  -8.8571  -7.2224  -6.0623   2.0679   2.9099   3.0514   4.0995
+     4.5696   6.3436
+
+          k = 0.0000 0.0000 0.0000     band energies (ev):
+
+   -21.7846  -9.6712  -4.8484  -4.8484   1.1475   1.9755   2.1074   3.1675
+     3.6344   5.4198
+
+          k = 0.1667 0.0962 0.0000     band energies (ev):
+
+   -21.1110  -8.8571  -7.2224  -6.0623   2.0679   2.9099   3.0514   4.0995
+     4.5696   6.3436
+
+          k = 0.3333 0.1925 0.0000     band energies (ev):
+
+   -19.1207 -11.6147  -7.7370  -6.5338   3.4676   4.8168   5.7308   5.8810
+     6.4725   6.9053
+
+          k =-0.5000-0.0962 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.3333 0.0000 0.0000     band energies (ev):
+
+   -19.7787  -9.6991  -8.3544  -7.2754   3.9070   4.7673   4.9398   5.0535
+     5.9517   6.4419
+
+          k =-0.1667 0.0962 0.0000     band energies (ev):
+
+   -21.1110  -8.8571  -7.2224  -6.0623   2.0679   2.9099   3.0514   4.0995
+     4.5696   6.3436
+
+          k = 0.0000 0.1925 0.0000     band energies (ev):
+
+   -21.1110  -8.8571  -7.2224  -6.0623   2.0679   2.9099   3.0514   4.0995
+     4.5696   6.3436
+
+          k = 0.1667 0.2887 0.0000     band energies (ev):
+
+   -19.7787  -9.6991  -8.3544  -7.2754   3.9070   4.7673   4.9398   5.0535
+     5.9517   6.4419
+
+          k = 0.3333 0.3849 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.5000 0.0962 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4641   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k =-0.3333 0.1925 0.0000     band energies (ev):
+
+   -19.1207 -11.6147  -7.7370  -6.5338   3.4676   4.8168   5.7308   5.8810
+     6.4725   6.9053
+
+          k =-0.1667 0.2887 0.0000     band energies (ev):
+
+   -19.7787  -9.6991  -8.3544  -7.2754   3.9070   4.7673   4.9398   5.0535
+     5.9517   6.4419
+
+          k = 0.0000 0.3849 0.0000     band energies (ev):
+
+   -19.1207 -11.6147  -7.7370  -6.5338   3.4676   4.8168   5.7308   5.8810
+     6.4725   6.9053
+
+          k = 0.1667 0.4811 0.0000     band energies (ev):
+
+   -17.2132 -13.4286 -10.0369  -4.4642   0.9569   7.5374   8.3591   8.7067
+     8.8490   9.5260
+
+          k = 0.3333 0.5774 0.0000     band energies (ev):
+
+   -14.6237 -14.6227 -12.6287  -1.6693  -1.6692   8.8760  11.3133  11.3133
+    11.8305  13.1575
+
+     the Fermi energy is    -1.6693 ev
+
+     Writing output data file    graphene.save
+
+     PWSCF        :  2m40.93s CPU time
+
+     init_run     :     9.05s CPU
+     electrons    :   148.07s CPU
+
+     electrons    :   148.07s CPU
+     c_bands      :   148.07s CPU
+     sum_band     :     3.76s CPU
+     v_of_rho     :     0.24s CPU
+
+     c_bands      :   148.07s CPU
+     init_us_2    :     0.10s CPU (     108 calls,   0.001 s avg)
+     cegterg      :   147.10s CPU (      75 calls,   1.961 s avg)
+
+     sum_band     :     3.76s CPU
+
+     wfcrot       :     7.91s CPU (      36 calls,   0.220 s avg)
+     cegterg      :   147.10s CPU (      75 calls,   1.961 s avg)
+     h_psi        :   140.94s CPU (    1284 calls,   0.110 s avg)
+     g_psi        :     1.18s CPU (    1173 calls,   0.001 s avg)
+     overlap      :     4.28s CPU (    1173 calls,   0.004 s avg)
+     cdiaghg      :     1.37s CPU (    1209 calls,   0.001 s avg)
+     update       :     3.74s CPU (    1173 calls,   0.003 s avg)
+     last         :     1.50s CPU (     221 calls,   0.007 s avg)
+
+     h_psi        :   140.94s CPU (    1284 calls,   0.110 s avg)
+     init         :     0.56s CPU (    1284 calls,   0.000 s avg)
+     firstfft     :    53.64s CPU (    6602 calls,   0.008 s avg)
+     secondfft    :    54.56s CPU (    6602 calls,   0.008 s avg)
+     add_vuspsi   :     0.36s CPU (    1284 calls,   0.000 s avg)
+
+     General routines
+     ccalbec      :     0.52s CPU (    1284 calls,   0.000 s avg)
+     cft3         :     0.11s CPU (      11 calls,   0.010 s avg)
+     cft3s        :   100.11s CPU (   13564 calls,   0.007 s avg)
+     davcio       :     1.53s CPU (     183 calls,   0.008 s avg)
+

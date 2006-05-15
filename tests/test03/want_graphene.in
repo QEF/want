@@ -1,0 +1,30 @@
+
+&CONTROL
+   prefix = 'graphene'
+   postfix = '_WanT'
+   work_dir = './'
+   verbosity = 'high'
+/
+
+&SUBSPACE
+   dimwann = 5
+   froz_max = 0.33   ! = Ef + 2.0 eV
+   maxiter_dis = 5000
+/
+
+&LOCALIZATION
+   a_condmin = 20.0
+   alpha0_wan = 0.25
+   alpha1_wan = 0.25
+   maxiter0_wan = 200
+   maxiter1_wan = 4000
+   ncg = 5    
+/
+
+WANNIER_CENTERS {alat}
+1gauss  0.250000000    0.144337500    0.000000000     0 0   0.8      1.0
+1gauss  0.750000000    0.144337500    0.000000000     0 0   0.8      1.0
+1gauss  0.500000000    0.577350202    0.000000000     0 0   0.8      1.0
+atomic   1   1 0   1.0 
+atomic   2   1 0   1.0
+
