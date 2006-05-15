@@ -4,8 +4,11 @@
 =======================================================
 
 
-15 Apr 2006      Bug in old releases (around Sep 2005) of g95 found; fixed in current compiler
-                 version. Cleanup in projection_frozen.f90; comments added in omega.f90 . 
+15 May 2006      Test03 updated: graphene case added (suggested by Pierre Darancet). (AF)
+
+15 Apr 2006      Bug in old releases (around Sep 2005) of g95 found; fixed in current 
+                 compiler version. Cleanup in projection_frozen.f90; 
+                 comments added in omega.f90 . 
                  Output FMT changes and updated in summary.f90 . (AF)
 
 12 Apr 2006      Test05 slightly modified (nosym in nscf calcs); reference updated. (AF)
@@ -18,7 +21,8 @@
 
 08 Apr 2006      Architecture/Op.Sys updates in configure.h . Bug fixed in 
                  kpoints.f90: the warning related to kpt weights was given unproperly. 
-                 Test suite updated (time needs contained); cleanup by G95 debug options. (AF)
+                 Test suite updated (time needs contained); 
+                 cleanup by G95 debug options. (AF)
 
 07 Apr 2006      Search for parallel environment switched off in configure.ac, 
                  configure regenerated from autoconf. (AF)
