@@ -13,18 +13,18 @@
 /
 
 &LOCALIZATION
-   maxiter0_wan = 1
-   maxiter1_wan = 2000
-   alpha1_wan = 0.5
-   ncg = 9    
-   ordering_mode = 'none'
+   maxiter0_wan = 10000
+   maxiter1_wan = 100000
+   alpha1_wan = 0.3
+   ncg = 5    
+   wannier_thr = 1.0e-7
 /
 
-WANNIER_CENTERS {crystal}
- 1gauss    0.0050   0.0050   0.0050   0  0   1.0
- 1gauss    0.0000   0.0000   0.0000   2  2   1.0
- 1gauss    0.0000   0.0000   0.0000   2  1   1.0
- 1gauss    0.0000   0.0000   0.0000   2  0   1.0
- 1gauss    0.0000   0.0000   0.0000   2 -1   1.0
- 1gauss    0.0000   0.0000   0.0000   2 -2   1.0
+WANNIER_CENTERS 
+ atomic    1   0  0   1.0
+ atomic    1   2  2   1.0
+ atomic    1   2  1   1.0
+ atomic    1   2  0   1.0
+ atomic    1   2 -1   1.0
+ atomic    1   2 -2   1.0
 

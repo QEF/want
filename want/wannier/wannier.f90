@@ -18,7 +18,7 @@
       USE parameters, ONLY : nstrx
       USE input_module, ONLY : input_manager
       USE control_module, ONLY : ordering_mode, nprint_wan, nsave_wan,  &
-                                 unitary_thr, do_condmin, &
+                                 unitary_thr, do_condmin, read_pseudo, &
                                  localization_init_mode => localization_init
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
       USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
@@ -80,7 +80,7 @@
       !
       ! ... Global data init
       !
-      CALL want_init(WANT_INPUT=.TRUE., PSEUDO=.TRUE.)
+      CALL want_init(WANT_INPUT=.TRUE., PSEUDO=read_pseudo)
 
 
       !
@@ -409,7 +409,7 @@
 
       WRITE( stdout, "(/,2x,70('='))" )
       IF ( ncount == maxiter0_wan + maxiter1_wan ) THEN
-          WRITE( stdout, "(2x,'=',18x,'Max number of iteration reached',18x,'=')")
+          WRITE( stdout, "(2x,'=',18x,'Max number of iteration reached',19x,'=')")
       ELSE
           WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
       ENDIF

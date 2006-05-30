@@ -93,7 +93,7 @@
    REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
-   REAL(dbl)    :: arg
+   REAL(dbl)    :: arg, cost
    COMPLEX(dbl) :: phase
    CHARACTER(3), ALLOCATABLE :: symbtot(:)
 
@@ -469,8 +469,12 @@
 ! ... Main loop on wfcs
 !
 
-      cwann( :, :, :, : ) = CZERO
+      !
+      ! init real space WFs
+      !
+      cwann( :, :, :, :) = CZERO
     
+
       kpoint_loop: &
       DO ik = 1, nkpts
           ! 
@@ -537,14 +541,17 @@
           ! FFT call 
           ! 
           DO m=1,nplot
+
              CALL timing('cfft3d',OPR='start')
              CALL cfft3d( kwann(:,m), nfft(1), nfft(2), nfft(3),  &
                                       nfft(1), nfft(2), nfft(3),  1 )
              CALL timing('cfft3d',OPR='stop')
 
-             CALL timing('cwann_calc',OPR='start')
+
              !
              ! loop over FFT grid
+             !
+             CALL timing('cwann_calc',OPR='start')
              !
              DO nzz = nrzl, nrzh
                  nz = MOD( nzz + nnrz * nfft(3) , nfft(3) ) + 1
@@ -562,6 +569,7 @@
                                  kwann( ir, m ) 
 
                          cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux
+                         !
                      ENDDO
                  ENDDO
              ENDDO
@@ -581,16 +589,28 @@
          IF (ierr/=0) CALL errore('plot','deallocating kwann',ABS(ierr))
       CALL wfc_data_deallocate()
       CALL ggrids_deallocate()
+      !
       CALL file_close(dft_unit,PATH="/Eigenvectors/",ACTION="read")
 
 
       ! 
       ! Fix the global phase by setting the wannier to be real 
       ! at the point where it has max modulus
+      ! normalize to 1.0 the first vector
       ! 
 
-      arg = ONE / ( SQRT( REAL(nkpts, dbl) * REAL( SIZE(cwann(:,:,:,1)), dbl) ) ) 
+      cost = ZERO
       !
+      DO nzz = nrzl, nrzh
+      DO nyy = nryl, nryh
+      DO nxx=  nrxl, nrxh
+          cost = cost + REAL(cwann(nxx,nyy,nzz,1)*CONJG(cwann(nxx,nyy,nzz,1)), dbl)
+      ENDDO
+      ENDDO
+      ENDDO
+      !
+      cost =  ONE / SQRT(cost) 
+
       DO m = 1, nplot
           !
           tmaxx = ZERO
@@ -599,7 +619,7 @@
           DO nzz = nrzl, nrzh
           DO nyy = nryl, nryh
           DO nxx=  nrxl, nrxh
-               cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * arg
+               cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * cost
                tmax = REAL (cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) ) )
                IF ( tmax > tmaxx ) THEN
                     tmaxx = tmax
@@ -756,14 +776,15 @@
               !
               ! tau is temporarily converted to bohr 
               ! avec and tau passed in bohr, but converted to Ang in the routine
+              ! r0 in bohr
               !
               tau = tau * alat
               CALL xsf_struct ( avec, nat, tau, symb, aux_unit )
               tau = tau / alat
               !
               CALL xsf_datagrid_3d ( rwann_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
-                                        nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
-                                        r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
+                                     nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
+                                     r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
 
           CASE DEFAULT
               CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),5)

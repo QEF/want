@@ -160,10 +160,10 @@
           WRITE( unit,"(2x,'Input parameters for Wannier func. calculation')")
           WRITE( unit,"(4x,'Number of Wannier functions required = ', i4 )" ) dimwann
           WRITE( unit,"(4x,'SD minim: Mixing parameter (alpha0_wan)= ', f6.3 )" ) alpha0_wan
-          WRITE( unit,"(4x,'SD minim: Max iteration number = ', i5 )" ) maxiter0_wan
+          WRITE( unit,"(4x,'SD minim: Max iteration number = ', i7 )" ) maxiter0_wan
           WRITE( unit,"(4x,'Minimization convergence threshold = ', f15.9 )") wannier_thr
           WRITE( unit,"(4x,'CG minim: Mixing parameter (alpha1_wan) = ', f6.3 )" ) alpha1_wan
-          WRITE( unit,"(4x,'CG minim: Max iteration number = ', i5 )" ) maxiter1_wan
+          WRITE( unit,"(4x,'CG minim: Max iteration number = ', i7 )" ) maxiter1_wan
           WRITE( unit,"(4x,'Every ',i3,' iteration perform a SD step')" ) ncg
           WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_wan
           WRITE( unit,"(4x,'Save data each  ', i3,' iterations' )" ) nsave_wan
@@ -179,7 +179,7 @@
           WRITE(unit, " (2x,'Input parameters for subspace definition')")
           WRITE( unit,"(4x,'Spin component = ', a )" ) TRIM(spin_component)
           WRITE( unit,"(4x,'Mixing parameter (alpha_dis)= ', f6.3 )" ) alpha_dis
-          WRITE( unit,"(4x,'Max iteration number = ', i5 )" ) maxiter_dis
+          WRITE( unit,"(4x,'Max iteration number = ', i7 )" ) maxiter_dis
           WRITE( unit,"(4x,'Starting minimization guess = ', a )" ) TRIM(subspace_init)
           WRITE( unit,"(4x,'Disentangle convergence threshold = ', f15.9 )") disentangle_thr
           WRITE( unit,"(4x,'Print info each ', i3,' iterations' )" ) nprint_dis
@@ -371,7 +371,7 @@
                              i, ( vb(j,i), j=1,3 ), wb(i)
           ENDDO
           !
-          WRITE (unit, "(/,2x, 'Total weight = ' , f8.4) ") wbtot
+          WRITE (unit, "(/,2x, 'Total weight = ' , f15.7) ") wbtot
           WRITE( unit, " (  ' </B-SHELL>',/)" )
       ENDIF
       !

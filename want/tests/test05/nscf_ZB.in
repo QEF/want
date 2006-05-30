@@ -2,7 +2,7 @@
 AlN zincblend
 NC - pbe
    &CONTROL
-      calculation = 'scf',
+      calculation = 'nscf',
       restart_mode='from_scratch',
       prefix='zincblend',
       nstep=2000,

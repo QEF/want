@@ -24,7 +24,7 @@
        USE input_module,     ONLY: input_manager
        USE want_init_module, ONLY: want_init
        USE control_module,   ONLY: subspace_init_mode => subspace_init, verbosity, &
-                                   unitary_thr, nprint_dis, nsave_dis
+                                   unitary_thr, nprint_dis, nsave_dis, read_pseudo
        USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
        USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist
        USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, &
@@ -72,7 +72,7 @@
        !
        ! ...  Global data init
        !
-       CALL want_init(WANT_INPUT=.TRUE., PSEUDO=.TRUE.)
+       CALL want_init(WANT_INPUT=.TRUE., PSEUDO=read_pseudo)
 
        !
        ! ...  Summary of the input and DFT data

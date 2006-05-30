@@ -6,5 +6,7 @@
    datatype = 'modulus'
    locate_wf = .TRUE.
    wann = '9-12'
+!   r1min = -2.5
+!   r1max =  2.5
  /
 

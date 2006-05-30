@@ -3,7 +3,7 @@
    prefix = 'cobalt_US'
    postfix = '_WanT'
    work_dir = './'
-   datatype = 'real'
+   datatype = 'modulus'
    output_fmt = 'xsf'
    wann = '1-6'
    r1min =  -1.5
