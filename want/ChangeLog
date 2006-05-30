@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+30 May 2006      version number increased to v2.0.1 . (AF & BB)
+
 03 Apr 2006      __LINUX64 definitions added in iotk_config.h (AF)
 
 27 Feb 2006      Fmt fixes in summary.f90 (Total weight of B vectors), courtesy of 
