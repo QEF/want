@@ -346,14 +346,14 @@ CONTAINS
 
        WRITE(unit, 100 ) TRIM(name), obj%nwfc, obj%nwfc_used, &
                          obj%nbnd, obj%nkpts
-       100 FORMAT( /,2x, A,' Wfc descriptor:', / , &  
-                     2x, 'Number of wfc (allocated, init)    : ', 2I5, /,& 
-                     2x, 'Physical dimensions (nbnd, nkpts)  : ', 2I5 )
+       100 FORMAT( /, 2x, a,' Wfc descriptor:', / , &  
+                    & 2x, 'Number of wfc (allocated, init)    : ', 2i5, /, & 
+                    & 2x, 'Physical dimensions (nbnd, nkpts)  : ', 2i5 )
 
        IF ( obj%nwfc_used > 0 ) THEN 
            WRITE(unit, 200)
-           200 FORMAT( 2x, 3x,'Wfc #', 7x, 'ibnd', 5x, 'kpt' , 5x, 'npw', 5x, 'label',/,&
-                       2x,  50('-'))
+           200 FORMAT(  2x, 3x,'Wfc #', 7x, 'ibnd', 5x, 'kpt' , 5x, 'npw', 5x, 'label',/, &
+                     &  2x,  50('-'))
        
            DO i=1,obj%nwfc
               IF ( obj%used(i) ) &
