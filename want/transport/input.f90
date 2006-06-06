@@ -23,6 +23,7 @@
 ! SUBROUTINE setup_hamiltonian()
 ! SUBROUTINE setup_kpoints()
 ! SUBROUTINE setup_egrid()
+! SUBROUTINE setup_smearing()
 ! 
 
 
@@ -52,6 +53,7 @@ CONTAINS
       !
       CALL setup_control()
       CALL setup_egrid()
+      CALL setup_smearing()
       CALL setup_hamiltonian()
       CALL setup_kpoints()
 
@@ -112,23 +114,39 @@ CONTAINS
    SUBROUTINE setup_egrid()
    !**********************************************************
       USE T_egrid_module,           ONLY : ne,           &
-                                           emin, emax,   &
-                                           delta,        &
-                                           sigma
+                                           emin, emax   
       USE T_input_parameters_module,ONLY : ne_     => ne,   &
                                            emin_   => emin, &
-                                           emax_   => emax, &
-                                           delta_  => delta,&
-                                           sigma_  => sigma
+                                           emax_   => emax 
       IMPLICIT NONE
 
       ne     = ne_
       emin   = emin_
       emax   = emax_
-      delta  = delta_
-      sigma  = sigma_
 
    END SUBROUTINE setup_egrid
+
+
+!**********************************************************
+   SUBROUTINE setup_smearing()
+   !**********************************************************
+      USE T_smearing_module,        ONLY : delta,         &
+                                           smearing_type, &
+                                           delta_ratio, xmax
+
+      USE T_input_parameters_module,ONLY : delta_         => delta,         &
+                                           smearing_type_ => smearing_type, &
+                                           delta_ratio_   => delta_ratio,   &
+                                           xmax_          => xmax
+
+      IMPLICIT NONE
+
+      delta         = delta_
+      smearing_type = smearing_type_
+      delta_ratio   = delta_ratio_
+      xmax          = xmax_
+
+   END SUBROUTINE setup_smearing
 
 
 !**********************************************************

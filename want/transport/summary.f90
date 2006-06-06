@@ -14,18 +14,19 @@
    ! Print out all the informnatins obtained from the 
    ! input and initialization routines.
    !
-   USE kinds, ONLY : dbl
-   USE constants,  ONLY : ZERO
-   USE parser_module, ONLY: log2char
-   USE T_control_module, ONLY : calculation_type, conduct_formula,  &
-                                datafile_C, datafile_L, datafile_R, &
-                                datafile_sgm,                       &
-                                transport_dir, niterx, nprint,      & 
-                                use_overlap, use_correlation                       
-   USE T_egrid_module, ONLY : ne, emin, emax, delta, sigma, de
-   USE T_kpoints_module, ONLY : nkpts_par, nk_par, vkpt_par, wk_par, &
-                                kpoints_alloc => alloc
-   USE T_kpoints_module, ONLY : nrtot_par, nr_par, vr_par, wr_par
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : ZERO
+   USE parser_module,     ONLY : log2char
+   USE T_control_module,  ONLY : calculation_type, conduct_formula,  &
+                                 datafile_C, datafile_L, datafile_R, &
+                                 datafile_sgm,                       &
+                                 transport_dir, niterx, nprint,      & 
+                                 use_overlap, use_correlation                       
+   USE T_egrid_module,    ONLY : ne, emin, emax, de
+   USE T_smearing_module, ONLY : delta, smearing_type, nx_smear => nx, xmax
+   USE T_kpoints_module,  ONLY : nkpts_par, nk_par, vkpt_par, wk_par, &
+                                 kpoints_alloc => alloc
+   USE T_kpoints_module,  ONLY : nrtot_par, nr_par, vr_par, wr_par
    IMPLICIT NONE
 
    !
@@ -69,12 +70,14 @@
    WRITE( unit,"( 2x,'</INPUT>',/)" )
 
    WRITE( unit,"( /,2x,'<ENERGY_GRID>')" )
-   WRITE(unit,"(  7x,'Dimension   :',5x,i6)") ne
-   WRITE(unit,"(  7x,'Min Energy  :',5x,f10.5)") emin
-   WRITE(unit,"(  7x,'Max Energy  :',5x,f10.5)") emax
-   WRITE(unit,"(  7x,'Energy Step :',5x,f10.5)") de
-   WRITE(unit,"(  7x,'Delta       :',5x,f10.5)") delta
-   WRITE(unit,"(  7x,'Sigma       :',5x,f10.5)") sigma
+   WRITE(unit,"(  7x,'Dimension     :',5x,i6)")    ne
+   WRITE(unit,"(  7x,'Min Energy    :',5x,f10.5)") emin
+   WRITE(unit,"(  7x,'Max Energy    :',5x,f10.5)") emax
+   WRITE(unit,"(  7x,'Energy Step   :',5x,f10.5)") de
+   WRITE(unit,"(  7x,'Delta         :',5x,f10.5)") delta
+   WRITE(unit,"(  7x,'Smearing Type :',5x,a)")     TRIM(smearing_type)
+   WRITE(unit,"(  7x,'Smearing grid Dimension :',5x,i6)")    nx_smear
+   WRITE(unit,"(  7x,'Smearing grid Extrema   :',5x,f10.5)") xmax
    WRITE( unit,"( 2x,'</ENERGY_GRID>',/)" )
 
    IF ( kpoints_alloc ) THEN

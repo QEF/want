@@ -96,14 +96,15 @@ if [ -z "$CLEAN" ] ; then
    for item in $PSEUDO_LIST ; do
       ln -sf $TEST_HOME/../pseudo/$item .
    done
-   if [ ! -e $TEST_HOME/SCRATCH ] ; then
-       cd $TEST_HOME
-       ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   fi
-   if [ ! -e $TMPDIR/$TEST_NAME/HOME ] ; then
-       cd $TMPDIR/$TEST_NAME
-       ln -sf $TEST_HOME ./HOME
-   fi
+   #
+   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
+   cd $TEST_HOME
+   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
+   #
+   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
+   cd $TMPDIR/$TEST_NAME
+   ln -sf $TEST_HOME ./HOME
+   #
    test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
 
    cd $TMPDIR/$TEST_NAME

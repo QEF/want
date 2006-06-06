@@ -11,7 +11,9 @@ cleanup.o \
 control.o \
 correlation.o \
 egrid.o \
+smearing.o \
 green.o \
+gzero_maker.o \
 hamiltonian.o \
 hamiltonian_init.o \
 input.o \

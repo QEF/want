@@ -7,7 +7,7 @@
 /
 
 &SUBSPACE
-   dimwann = 30
+   dimwann = 24
    froz_max = 6.5
    maxiter_dis = 500
 /
@@ -18,7 +18,7 @@
    maxiter1_wan = 5000, 
    alpha1_wan = 0.5
    ncg = 9      
-   wannier_thr = 1.0e-8
+   wannier_thr = 1.0e-6
 /
 
 WANNIER_CENTERS {crystal}

@@ -20,6 +20,7 @@
    USE timing_module,        ONLY : timing_deallocate, timing_alloc => alloc 
    USE T_workspace_module,   ONLY : workspace_deallocate, work_alloc => alloc
    USE T_egrid_module,       ONLY : egrid_deallocate, egrid_alloc => alloc
+   USE T_smearing_module,    ONLY : smearing_deallocate, smearing_alloc => alloc
    USE T_hamiltonian_module, ONLY : hamiltonian_deallocate, ham_alloc => alloc
    USE T_correlation_module, ONLY : correlation_deallocate, corr_alloc => alloc
    USE T_kpoints_module,     ONLY : kpoints_deallocate, kpoints_alloc => alloc
@@ -27,6 +28,7 @@
       
       IF ( work_alloc )     CALL workspace_deallocate()
       IF ( egrid_alloc )    CALL egrid_deallocate()
+      IF ( smearing_alloc ) CALL smearing_deallocate()
       IF ( timing_alloc )   CALL timing_deallocate()
       IF ( ham_alloc )      CALL hamiltonian_deallocate()
       IF ( corr_alloc )     CALL correlation_deallocate()

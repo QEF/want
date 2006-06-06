@@ -3,10 +3,12 @@
     dimC = 6
     calculation_type = 'bulk'
     ne = 1000  
-    emin = -10.0
+    emin = -5.0
     emax =   5.0 
     datafile_C = "gold_WanT.ham"
     transport_dir = 3
+    delta = 0.03
+    smearing_type = "mp"
   /
 
 <HAMILTONIAN_DATA>
