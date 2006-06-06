@@ -20,8 +20,6 @@
    INTEGER                :: ne        ! dimension of the energy grid
    REAL(dbl)              :: emin      !
    REAL(dbl)              :: emax      ! egrid extrema 
-   REAL(dbl)              :: delta     ! i\delta for GFs
-   REAL(dbl)              :: sigma     ! broadening for leads self energy calculation
    !
    REAL(dbl):: de
    REAL(dbl), ALLOCATABLE :: egrid(:)  ! grid values
@@ -33,8 +31,6 @@
 !
 
    PUBLIC :: ne, emin, emax
-   PUBLIC :: delta
-   PUBLIC :: sigma
    PUBLIC :: egrid
    PUBLIC :: alloc
    !

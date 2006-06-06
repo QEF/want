@@ -16,6 +16,7 @@ indexx.o \
 invmat.o \
 io_global.o \
 kind.o \
+locate.o \
 mp.o \
 mp_global.o \
 parallel_include.o \

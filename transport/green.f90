@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************************
-   SUBROUTINE green( dim, tot, tott, c00, c01, g, igreen)
+   SUBROUTINE green( dim, tot, tott, c00, c01, s00, g, igreen)
    !***********************************************************************************
    !
    !  Construct green's functions
@@ -18,9 +18,10 @@
    !  igreen =  0  bulk
    !
    USE kinds
-   USE constants,     ONLY : CZERO, CONE
-   USE timing_module, ONLY : timing
-   USE util_module,   ONLY : mat_mul, mat_sv
+   USE constants,         ONLY : CZERO, CONE, CI
+   USE timing_module,     ONLY : timing
+   USE util_module,       ONLY : mat_mul, mat_sv
+   USE T_smearing_module, ONLY : delta
    IMPLICIT NONE
 
    !
@@ -31,6 +32,7 @@
    COMPLEX(dbl), INTENT(in)    :: tot(dim,dim), tott(dim,dim)
    COMPLEX(dbl), INTENT(in)    :: c00(dim,dim)
    COMPLEX(dbl), INTENT(in)    :: c01(dim,dim)
+   COMPLEX(dbl), INTENT(in)    :: s00(dim,dim)
    COMPLEX(dbl), INTENT(out)   :: g(dim, dim)
 
    !
@@ -38,6 +40,7 @@
    !
    INTEGER                   :: i, ierr
    COMPLEX(dbl), ALLOCATABLE :: eh0(:,:), s1(:,:), s2(:,:)
+   COMPLEX(dbl)              :: g0inv(dim,dim)
 
 !
 !----------------------------------------
@@ -46,10 +49,10 @@
 !
    CALL timing('green',OPR='start')
 
-
    ALLOCATE( eh0(dim,dim), s1(dim,dim), s2(dim,dim), STAT=ierr)
       IF (ierr/=0) CALL errore('green','allocating eh0,s1,s2',ABS(ierr))
 
+   CALL gzero_maker(dim, -c00, s00, g0inv, 'inverse')
 
    SELECT CASE ( igreen )
 
@@ -59,7 +62,7 @@
       !
 
       CALL mat_mul(s1, c01, 'N', tot, 'N', dim, dim, dim)
-      eh0(:,:) = -c00(:,:) -s1(:,:)
+      eh0(:,:) = g0inv(:,:) -s1(:,:)
     
    CASE( -1 )
       !
@@ -67,7 +70,7 @@
       !
 
       CALL mat_mul(s1, c01, 'C', tott, 'N', dim, dim, dim)
-      eh0(:,:) = -c00(:,:) -s1(:,:)
+      eh0(:,:) = g0inv(:,:) -s1(:,:)
     
    CASE ( 0 )
       !
@@ -77,7 +80,7 @@
       CALL mat_mul(s1, c01, 'N', tot, 'N', dim, dim, dim)
       CALL mat_mul(s2, c01, 'C', tott, 'N', dim, dim, dim)
       !
-      eh0(:,:) = -c00(:,:) -s1(:,:) -s2(:,:)
+      eh0(:,:) = g0inv(:,:) -s1(:,:) -s2(:,:)
     
    CASE DEFAULT 
       CALL errore('green','invalid igreen', ABS(igreen))
@@ -94,8 +97,6 @@
    ENDDO
    !
    CALL mat_sv(dim, dim, eh0, g)
-
-
 !
 ! ... local cleaning
 !

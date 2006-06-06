@@ -23,8 +23,9 @@
    USE io_module,            ONLY : stdout, stdin, sgm_unit => aux_unit,   &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
-                                    conduct_formula, niterx, nprint, datafile_sgm 
-   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, delta, sigma
+                                    conduct_formula, niterx, nprint, bias, datafile_sgm 
+   USE T_egrid_module,       ONLY : egrid_init, ne, egrid
+   USE T_smearing_module,    ONLY : delta, smearing_type, smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par , wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 
@@ -45,7 +46,7 @@
    !
    COMPLEX(dbl)     :: ene
    CHARACTER(nstrx) :: filename
-   INTEGER          :: i, ie, ik, ierr, ncount, niter
+   INTEGER          :: i, j, ie, ik, ierr, ncount, niter
    REAL(dbl)        :: avg_iter
 
 
@@ -53,7 +54,6 @@
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
-
 
 !
 !------------------------------
@@ -77,13 +77,14 @@
    CALL egrid_init()
 
    !
+   ! smearing functions
+   !
+   CALL smearing_init()
+
+   !
    ! initialize kpoints and R vectors
    !
    CALL kpoints_init()
-
-   !
-   ! summarize the first part of the initializaton
-   !
 
 
    !
@@ -91,7 +92,7 @@
    !
    CALL hamiltonian_init( use_overlap, calculation_type )
    !
-   ! write input data on output file
+   ! write input data on the output file
    !
    CALL summary( stdout )
    !
@@ -121,29 +122,25 @@
       IF( ierr /=0 ) CALL errore('conductor','allocating cond_aux', ABS(ierr) )
    ALLOCATE ( work(dimx,dimx), STAT=ierr )
       IF( ierr /=0 ) CALL errore('conductor','allocating work', ABS(ierr) )
-
-
 !
 ! main loop over frequency
 ! 
    WRITE(stdout,"()")
-
    energy_loop: &
    DO ie = 1, ne
       ncount = ie
-
       !
       ! grids and misc
       !
-      ene =  egrid(ie)  + delta * CI 
-           IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
-                WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") &
-                              ncount, egrid(ie)
-           ENDIF
+      ene =  egrid(ie)   
+
+      IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
+           WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") &
+                         ncount, egrid(ie)
+      ENDIF
 
       dos(:,ie) = ZERO
       conduct(:,ie) = ZERO
-
       !
       ! get correlaiton self-energy if the case
       !
@@ -158,9 +155,9 @@
       !
       kpt_loop: &
       DO ik = 1, nkpts_par
-
           !
           ! init
+          !
           !
           aux00_L(:,:)  = h00_L(:,:,ik)  -ene * s00_L(:,:,ik)
           aux01_L(:,:)  = h01_L(:,:,ik)  -ene * s01_L(:,:,ik)
@@ -176,25 +173,24 @@
           aux_CL(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene)*s_LC(:,:,ik) ))
           aux_RC(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene)*s_CR(:,:,ik) ))
  
- 
           ! 
           ! construct leads self-energies 
           ! 
           ! ene + bias
-          CALL transfer( dimR, niterx, totR, tottR, aux00_R, aux01_R, niter )
+          CALL transfer( dimR, s00_R(:,:,ik),  niterx, totR, tottR, aux00_R, aux01_R, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimR, totR, tottR, aux00_R, aux01_R, gR, 1 )
+          CALL green( dimR, totR, tottR, aux00_R, aux01_R, s00_R(:,:,ik), gR, 1 )
           !
           !
           CALL mat_mul(work, aux_CR, 'N', gR, 'N', dimC, dimR, dimR)
           CALL mat_mul(sgm_R, work, 'N', aux_RC, 'N', dimC, dimC, dimR)
  
           ! ene
-          CALL transfer( dimL, niterx, totL, tottL, aux00_L, aux01_L, niter )
+          CALL transfer( dimL, s00_L(:,:,ik), niterx, totL, tottL, aux00_L, aux01_L, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimR, totR, tottR, aux00_L, aux01_L,  gL, -1 )
+          CALL green( dimL, totL, tottL, aux00_L, aux01_L,  s00_L(:,:,ik), gL, -1 )
           !
           !
           CALL mat_mul(work, aux_CL, 'N', gL, 'N', dimC, dimL, dimL)
@@ -210,7 +206,10 @@
           ! Construct the conductor green's function
           ! gC = work^-1  (retarded)
           !
-          work(1:dimC,1:dimC) = -aux00_C(:,:) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)  
+          work = CZERO
+          !
+          CALL gzero_maker ( dimC, -aux00_C, s00_C(:,:,ik), work(1:dimC,1:dimC), 'inverse')
+          work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)  
   
           gC(:,:) = CZERO
           DO i = 1, dimC
@@ -218,7 +217,6 @@
           ENDDO
  
           CALL mat_sv(dimC, dimC, work, gC)
- 
           !
           ! Compute density of states for the conductor layer
           !
@@ -288,7 +286,6 @@
         IF( ierr /=0 ) CALL errore('conductor','deallocating cond_aux', ABS(ierr) )
    DEALLOCATE ( work, STAT=ierr )
         IF( ierr /=0 ) CALL errore('conductor','deallocating work', ABS(ierr) )
-
    CALL cleanup()
 
 END PROGRAM conductor

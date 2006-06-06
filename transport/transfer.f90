@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************
-   SUBROUTINE transfer( dim, niterx, tot, tott, c00, c01, niter )
+   SUBROUTINE transfer( dim, S, niterx, tot, tott, c00, c01, niter )
    !***********************************************************************
    !
    !...  Iterative construction of the transfer matrix
@@ -16,10 +16,11 @@
    !     and ibid. v.15, 851 (1985)
    !
    USE kinds
-   USE io_global_module, ONLY : stdout
-   USE constants,        ONLY : CZERO, CONE, ZERO, EPS_m7, CI
-   USE timing_module,    ONLY : timing
-   USE util_module,      ONLY : mat_mul, mat_sv
+   USE io_global_module,  ONLY : stdout
+   USE constants,         ONLY : CZERO, CONE, ZERO, EPS_m7, CI
+   USE timing_module,     ONLY : timing
+   USE util_module,       ONLY : mat_mul, mat_sv
+   USE T_smearing_module, ONLY : delta
    IMPLICIT NONE
 
 
@@ -30,8 +31,10 @@
       INTEGER,      INTENT(out)   :: niter
       COMPLEX(dbl), INTENT(in)    :: c00(dim,dim)
       COMPLEX(dbl), INTENT(in)    :: c01(dim,dim)
+      COMPLEX(dbl), INTENT(in)    :: S(dim,dim)
       COMPLEX(dbl), INTENT(inout) :: tot(dim,dim)
       COMPLEX(dbl), INTENT(inout) :: tott(dim,dim)
+
 
 
       !
@@ -46,7 +49,6 @@
       COMPLEX(dbl), ALLOCATABLE :: tsumt(:,:)
       COMPLEX(dbl), ALLOCATABLE :: t11(:,:), t12(:,:)
       COMPLEX(dbl), ALLOCATABLE :: s1(:,:), s2(:,:)
-
 
 !
 !----------------------------------------
@@ -65,7 +67,6 @@
       ALLOCATE( s1(dim, dim), s2(dim, dim), STAT=ierr)
          IF (ierr/=0) CALL errore('transfer','allocating s1, s2',ABS(ierr))
 
-
       !
       ! Construction of the transfer matrix
       !
@@ -75,7 +76,7 @@
       ! here c00 = h00 - ene * s00
       !
       t11(:,:) = CZERO
-      t12(:,:) = -c00(:,:) 
+      t12(:,:) = -c00(:,:) +CI*delta*S(:,:) 
 
       DO i = 1, dim
           t11(i,i) = CONE

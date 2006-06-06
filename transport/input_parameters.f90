@@ -80,8 +80,20 @@
    REAL(dbl) :: delta =  EPS_m5
        ! i\delta broadening of green functions
 
-   REAL(dbl) :: sigma =  EPS_m1
-       ! broadening for leads self energy calculation
+   CHARACTER(30) :: smearing_type = 'lorentzian'
+       ! type of smearing technique
+
+   CHARACTER(30) :: smearing_type_allowed(8)
+   DATA smearing_type_allowed / 'lorentzian',  'gaussian', 'fermi-dirac', 'fd',         &
+                            'methfessel-paxton', 'mp', 'marzari-vanderbilt', 'mv' /
+       ! the allowed values for smearing_type
+       
+   REAL(dbl) :: delta_ratio =  5.0_dbl * EPS_m3
+       ! ratio between ddelta (used for convolution with the pole) and
+       ! smearing delta
+
+   REAL(dbl) :: xmax = 25.0    
+        ! grid extrema  (-xmax, xmax)
 
    REAL(dbl) :: bias =  ZERO
        ! effective bias between the leads
@@ -117,13 +129,15 @@
        ! the name of the file containing correlation self-energy
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
-                 conduct_formula, niterx, ne, emin, emax, nprint, delta, sigma, bias, nk, &
+                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, nk, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
-                 transport_dir, use_overlap, use_correlation 
+                 transport_dir, use_overlap, use_correlation, smearing_type, &
+                 delta_ratio, xmax 
 
 
-   PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx
-   PUBLIC :: ne, emin, emax, nprint, delta, sigma, bias, nk, use_overlap, use_correlation 
+   PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
+   PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, use_correlation, &
+             delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: INPUT_CONDUCTOR
 
@@ -170,8 +184,6 @@ CONTAINS
       IF ( delta < ZERO ) CALL errore(subname,'Invalid DELTA',1)
 
       IF ( delta > 3.0_dbl* EPS_m1 ) CALL errore(subname,'DELTA too large',1)
-      IF ( sigma < ZERO ) CALL errore(subname,'Invalid SIGMA',1)
-      IF ( sigma > 3.0_dbl* EPS_m1 ) CALL errore(subname,'SIGMA too large',1)
 
       CALL change_case(calculation_type,'lower')
       allowed=.FALSE.
@@ -189,6 +201,13 @@ CONTAINS
       IF (.NOT. allowed) &
           CALL errore(subname,'Invalid conduct_formula ='//TRIM(conduct_formula),10)
 
+      CALL change_case(smearing_type,'lower')
+      allowed=.FALSE.
+      DO i=1,SIZE(smearing_type_allowed)
+          IF ( TRIM(smearing_type) == smearing_type_allowed(i) ) allowed=.TRUE. 
+      ENDDO
+      IF (.NOT. allowed) &
+          CALL errore(subname,'Invalid smearing_type ='//TRIM(smearing_type),10)
 
       IF ( TRIM(calculation_type) == 'conductor' ) THEN
            IF ( dimL <= 0) CALL errore(subname,'Invalid dimL',1)
@@ -212,6 +231,10 @@ CONTAINS
                 CALL errore(subname,'datafile_R should not be specified',1)
       ENDIF
 
+
+      IF ( xmax < 10.0_dbl )      CALL errore(subname,'xmax too small',1)
+      IF ( delta_ratio < ZERO )   CALL errore(subname,'delta_ratio is negative',1)
+      IF ( delta_ratio > EPS_m1 ) CALL errore(subname,'delta_ratio too large',1)
 
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. .NOT. use_correlation ) &
            CALL errore(subname,'invalid conduct formula',1)

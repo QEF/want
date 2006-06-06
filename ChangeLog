@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+06 Jun 2006      smearing implementation completed in transport: conductor.f90, 
+                 transfer.f90, green.f90, gzero_maker.f90 accordingly changed;
+                 smearing.f90 module added. (BB)
 
 30 May 2006      wfc_info.f90: fmt strings newlined with &, to workaround a possible 
                  ifort 9.0 bug. (AF)

@@ -644,8 +644,8 @@ END SUBROUTINE dmat_mul
    ENDDO
    ENDDO
 
-   CALL ZHPEVX( 'v', 'a', 'u', n, ap(1), ZERO, ZERO, 0, 0, -ONE, i, w(1), &
-                 z(1,1), SIZE(z,1), work(1), rwork(1), iwork(1), ifail(1), info )
+   CALL ZHPEVX( 'v', 'a', 'u', n, ap, ZERO, ZERO, 0, 0, -ONE, i, w, &
+                 z, SIZE(z,1), work, rwork, iwork, ifail, info )
 
    IF ( info < 0 ) CALL errore('zmat_hdiag', 'zhpevx: info illegal value', -info )
    IF ( info > 0 ) &

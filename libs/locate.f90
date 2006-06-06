@@ -6,28 +6,36 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Taken from Numerical Recipies
+! Adapted from Numerical Recipies
 !
 !=-----------------------------------------------------=
-      SUBROUTINE locate( xx, n, x, j )
+   SUBROUTINE locate( xx, n, x, j )
 !=-----------------------------------------------------=
-      USE kinds, ONLY : dbl
-      IMPLICIT NONE
+   USE kinds, ONLY : dbl
+   IMPLICIT NONE
 
-      INTEGER j,n
-      REAL(dbl) :: x,xx(n)
-      INTEGER jl,jm,ju
-      jl=0
-      ju=n+1
-10    if(ju-jl.gt.1)then
-        jm=(ju+jl)/2
-        if((xx(n).gt.xx(1)).eqv.(x.gt.xx(jm)))then
+   INTEGER,   INTENT(in)  :: n
+   REAL(dbl), INTENT(in)  :: x,xx(n)
+   INTEGER,   INTENT(out) :: j
+   !
+   INTEGER   :: jl,jm,ju
+
+   jl=0
+   ju=n+1
+   !
+10 if(ju-jl > 1) then
+       !
+       jm=(ju+jl)/2
+       ! 
+       if( (xx(n) > xx(1)) .eqv. (x > xx(jm))) then
           jl=jm
-        else
+       else
           ju=jm
-        endif
-      goto 10
-      endif
-      j=jl
-      return
-      END
+       endif
+       !
+   goto 10
+   endif
+
+   j=jl
+   return
+END SUBROUTINE locate

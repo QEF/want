@@ -159,14 +159,15 @@ if [ -z "$CLEAN" ] ; then
    test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
    cd $TMPDIR/$TEST_NAME
    ln -sf $TEST_HOME/../pseudo/$PSEUDO_NAME .
-   if [ ! -e $TEST_HOME/SCRATCH ] ; then
-       cd $TEST_HOME
-       ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   fi
-   if [ ! -e $TMPDIR/$TEST_NAME/HOME ] ; then
-       cd $TMPDIR/$TEST_NAME
-       ln -sf $TEST_HOME ./HOME
-   fi
+   #
+   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
+   cd $TEST_HOME
+   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
+   #
+   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
+   cd $TMPDIR/$TEST_NAME
+   ln -sf $TEST_HOME ./HOME
+   #
    test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
    test -e $TMPDIR/$TEST_NAME/COND/CRASH && rm $TMPDIR/$TEST_NAME/COND/CRASH
    test -e $TMPDIR/$TEST_NAME/LEADS/CRASH && rm $TMPDIR/$TEST_NAME/LEADS/CRASH

@@ -1,6 +1,6 @@
 
 &INPUT_CONDUCTOR
-   dimC = 30
+   dimC = 24
    calculation_type = 'bulk'
    ne = 1000
    emin = -10.0
@@ -8,6 +8,7 @@
    datafile_C = "silicon_zb_WanT.ham"
    transport_dir = 3
    delta = 0.1
+   smearing_type = "gaussian"
 /
 
 <HAMILTONIAN_DATA>
