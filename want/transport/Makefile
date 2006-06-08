@@ -29,6 +29,7 @@ workspace.o
 WANNIER_OBJS= \
 ../wannier/io_module.o \
 ../wannier/startup.o \
+../wannier/smearing.o \
 ../wannier/version.o
 
 
