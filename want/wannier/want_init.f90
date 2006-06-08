@@ -11,7 +11,7 @@ MODULE want_init_module
 CONTAINS
 
 !*********************************************************
-SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
+SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseudo)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -60,6 +60,8 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
    ! input variables
    !
    LOGICAL, OPTIONAL, INTENT(in) :: want_input
+   LOGICAL, OPTIONAL, INTENT(in) :: lattice
+   LOGICAL, OPTIONAL, INTENT(in) :: ions
    LOGICAL, OPTIONAL, INTENT(in) :: windows
    LOGICAL, OPTIONAL, INTENT(in) :: kpoints
    LOGICAL, OPTIONAL, INTENT(in) :: bshells
@@ -71,7 +73,8 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
    CHARACTER(9)              :: subname="want_init"
    CHARACTER(nstrx)          :: filename 
    LOGICAL                   :: lfound
-   LOGICAL                   :: want_input_, windows_, kpoints_, bshells_, pseudo_
+   LOGICAL                   :: want_input_, read_lattice_, read_ions_, read_windows_, &
+                                             read_kpoints_, read_bshells_, read_pseudo_
    INTEGER                   :: ia, iwann
    !   
    ! end of declarations
@@ -87,18 +90,23 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
 !   
 ! setting up   
 !   
-    want_input_ = .FALSE.
+    want_input_      = .FALSE.
+    read_lattice_    = .TRUE.
+    read_ions_       = .TRUE.
+    read_kpoints_    = .TRUE.
+    read_windows_    = .TRUE.
+    read_bshells_    =  read_kpoints_
+    read_pseudo_     = .FALSE.
     IF ( PRESENT(want_input) ) want_input_ = want_input
-    windows_ = .TRUE.
-    IF ( PRESENT(windows) ) windows_ = windows
-    kpoints_ = .TRUE.
-    IF ( PRESENT(kpoints) ) kpoints_ = kpoints
-    bshells_ = kpoints_
-    IF ( PRESENT(bshells) ) bshells_ = bshells
-    pseudo_ = .FALSE.
-    IF ( PRESENT(pseudo) ) pseudo_ = pseudo 
+    IF ( PRESENT(lattice) )  read_lattice_ = lattice
+    IF ( PRESENT(ions) )        read_ions_ = ions
+    IF ( PRESENT(windows) )  read_windows_ = windows
+    IF ( PRESENT(kpoints) )  read_kpoints_ = kpoints
+    IF ( PRESENT(bshells) )  read_bshells_ = bshells
+    IF ( PRESENT(pseudo) )    read_pseudo_ = pseudo 
 
-    IF ( bshells_ .AND. .NOT. kpoints_ ) CALL errore(subname,'bshells need kpoints',1)
+    IF ( read_ions_    .AND. .NOT. read_lattice_ ) CALL errore(subname,'ions needs lattice',1)
+    IF ( read_bshells_ .AND. .NOT. read_kpoints_ ) CALL errore(subname,'bshells needs kpoints',1)
 
 !
 ! ... opening the file containing the PW-DFT data
@@ -111,71 +119,87 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
 !
 ! ... managing the spin components
 !
-    CALL dft_interface_read_spin(dft_unit,nkpts_tot,nspin)
-    !
-    IF ( nspin == 1 ) THEN
-        nkpts = nkpts_tot
-        iks = 1
-        ike = nkpts
-        IF ( TRIM(spin_component) /= 'none' ) & 
-             CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
-    ELSE
+    IF ( read_kpoints_ .OR. read_windows_ )  THEN
+        CALL dft_interface_read_spin(dft_unit,nkpts_tot,nspin)
         !
         ! this is because of the Espresso convention which doubles the kpt
         ! number instead of adding a second spin component when nspin == 2
         !
-        nkpts = nkpts_tot / 2 
-        SELECT CASE ( TRIM(spin_component) )
-        CASE ( 'up' )
+        IF ( nspin == 1 ) THEN
+            nkpts = nkpts_tot
+        ELSE
+            nkpts = nkpts_tot / 2 
+        ENDIF
+        !
+        iks = 1
+        ike = nkpts
+    ENDIF 
+
+    IF ( read_windows_ ) THEN
+        IF ( nspin == 1) THEN
             iks = 1
             ike = nkpts
-        CASE ( 'down' )
-            iks = nkpts+1
-            ike = 2*nkpts
-        CASE DEFAULT
-            CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
-        END SELECT
+            IF ( TRIM(spin_component) /= 'none' ) & 
+                 CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
+        ELSE
+            SELECT CASE ( TRIM(spin_component) )
+            CASE ( 'up' )
+                iks = 1
+                ike = nkpts
+            CASE ( 'down' )
+                iks = nkpts+1
+                ike = 2*nkpts
+            CASE DEFAULT
+                CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
+            END SELECT
+        ENDIF
     ENDIF
     
 
 !
 ! ... read lattice data
 !
-    CALL lattice_read_ext(dft_unit,"Cell",lfound)
-    IF ( .NOT. lfound ) CALL errore(subname,'Tag Cell not found',1)
-    !
-    ! ...  allocations and initializations
-    CALL lattice_init()
-    !
-    ! ... want_input if required
-    IF ( want_input_ ) THEN 
-        DO iwann=1,dimwann
-            CALL trial_center_convert( avec, trial(iwann) )
-        ENDDO 
+    IF ( read_lattice_ ) THEN
+        CALL lattice_read_ext(dft_unit,"Cell",lfound)
+        IF ( .NOT. lfound ) CALL errore(subname,'Tag Cell not found',1)
+        !
+        ! ...  allocations and initializations
+        CALL lattice_init()
+        !
+        ! ... want_input if required
+        IF ( want_input_ ) THEN 
+            DO iwann=1,dimwann
+                CALL trial_center_convert( avec, trial(iwann) )
+            ENDDO 
+        ENDIF
     ENDIF
 
 
 !
 ! ... read ions data
 !
-    CALL ions_read_ext(dft_unit, "Atoms", lfound)
-    IF ( .NOT. lfound ) CALL errore(subname,'Tag Atoms not found',2)
-    CALL ions_init()
-    !
-    ! set the centers in the atomic wfc if the case
-    !
-    DO iwann = 1, dimwann
-         IF ( TRIM(trial(iwann)%type) == 'atomic' ) THEN
-               ia = trial(iwann)%iatom
-               trial(iwann)%x1(:) = tau(:, ia ) * alat
-         ENDIF
-    ENDDO
+    IF ( read_ions_ ) THEN
+        CALL ions_read_ext(dft_unit, "Atoms", lfound)
+        IF ( .NOT. lfound ) CALL errore(subname,'Tag Atoms not found',2)
+        CALL ions_init()
+        !
+        ! set the centers in the atomic wfc if the case
+        !
+        IF ( want_input_ ) THEN
+            DO iwann = 1, dimwann
+                 IF ( TRIM(trial(iwann)%type) == 'atomic' ) THEN
+                      ia = trial(iwann)%iatom
+                      trial(iwann)%x1(:) = tau(:, ia ) * alat
+                 ENDIF
+            ENDDO
+        ENDIF
+    ENDIF
 
 
 !
 ! ... read kpoints data
 !
-    IF ( kpoints_ ) THEN
+    IF ( read_kpoints_ ) THEN
         CALL kpoints_read_ext(dft_unit, "Kmesh", lfound)
         IF ( .NOT. lfound ) CALL errore(subname,'Tag Kmesh not found',2)
         CALL kpoints_init()
@@ -183,14 +207,14 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
 
     !
     ! ... b-vectors initializations
-    IF ( bshells_ ) THEN 
+    IF ( read_bshells_ ) THEN 
         CALL bshells_init( )
     ENDIF
 
 !
 ! ... eigenvalues data read
 !
-    IF ( windows_ ) THEN
+    IF ( read_windows_ ) THEN
         CALL windows_read_ext(dft_unit,'Eigenvalues',lfound)
            IF ( .NOT. lfound ) CALL errore('want_init','Unable to find Eigenvalues',6)
         !
@@ -211,7 +235,7 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
 !
 ! ... read pseudopotentials (according to Espresso fmts)
 !
-   IF ( pseudo_  ) THEN
+   IF ( read_pseudo_  ) THEN
       CALL readpp()
       okvan = ANY( tvanp(:) )
       uspp_calculation = okvan
@@ -232,7 +256,7 @@ SUBROUTINE want_init(want_input, windows, kpoints, bshells, pseudo)
 !
     do_polarization = .FALSE.
     !
-    IF ( windows_ .AND. pseudo_ ) THEN
+    IF ( read_windows_ .AND. read_pseudo_ ) THEN
          IF ( ABS(ion_charge - REAL(2*dimwann,dbl)) < EPS_m6 ) &
               do_polarization = .TRUE.
     ENDIF
