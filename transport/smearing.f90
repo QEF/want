@@ -9,10 +9,11 @@
 !*********************************************
    MODULE T_smearing_module
 !*********************************************
-   USE kinds,         ONLY : dbl
-   USE constants,     ONLY : ZERO, ONE, TWO, PI, SQRTPI, SQRT2, CZERO, CONE, CI, EPS_m1
-   USE timing_module, ONLY : timing
-   USE fft_scalar,    ONLY : cft_1z
+   USE kinds,           ONLY : dbl
+   USE constants,       ONLY : ZERO, ONE, TWO, PI, SQRTPI, SQRT2, CZERO, CONE, CI, EPS_m1
+   USE timing_module,   ONLY : timing
+   USE fft_scalar,      ONLY : cft_1z
+   USE smearing_module, ONLY : smearing_func
    IMPLICIT NONE
    PRIVATE 
    SAVE
@@ -146,59 +147,13 @@ CONTAINS
        auxs_in(:)  = CZERO
        auxs_out(:) = CZERO
 
-       SELECT CASE (TRIM(smearing_type))
+       cost = ONE / delta 
        !
-       CASE ( "lorentzian" )   
-            !
-            cost = ONE / (delta*PI) 
-            !
-            DO i= is_start, is_end
-                x          = fft_grid(i)
-                auxs_in(i) = cost * ONE/( ONE + x**2 )  
-            ENDDO
-    
-       CASE ( "gaussian" )
-            !
-            cost = ONE / (delta*SQRTPI)
-            !
-            DO i= is_start, is_end
-                x          = fft_grid(i)
-                auxs_in(i) = cost * EXP( -x**2 )
-            ENDDO
-            
-       CASE ( "fermi-dirac", "fd" )
-            !
-            cost = ONE / (delta*TWO) 
-            !
-            DO i= is_start, is_end
-                x          = fft_grid(i)
-                auxs_in(i) = cost * ONE / ( ONE + COSH(x) )
-            ENDDO
-
-       CASE ( "methfessel-paxton", "mp" )
-            !
-            ! Only N=1 is implemented at the moment
-            !
-            cost = ONE / (delta*SQRTPI) 
-            !
-            DO i= is_start, is_end
-                x          = fft_grid(i)
-                auxs_in(i) = cost * EXP( -x**2 ) * ( 3.0_dbl/2.0_dbl - x**2 )
-            ENDDO
-
-       CASE ( "marzari-vanderbilt", "mv" )
-            !
-            cost = ONE / (delta*SQRTPI) 
-            !
-            DO i= is_start, is_end
-                x          = fft_grid(i)
-                auxs_in(i) = cost * EXP( -(x- ONE/SQRT2 )**2 ) * ( TWO - SQRT2 * x )
-            ENDDO
-
-       CASE DEFAULT
-            CALL errore(subname, 'invalid smearing_type = '//TRIM(smearing_type),1)
+       DO i= is_start, is_end
+           x          = fft_grid(i)
+           auxs_in(i) = cost * smearing_func( x, TRIM(smearing_type) )
+       ENDDO
        
-       END SELECT
        !
        ! define the input pole function
        !
