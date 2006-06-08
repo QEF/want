@@ -1,0 +1,10 @@
+
+ &INPUT
+   prefix = 'gold_US'
+   postfix = '_WanT'
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 400
+   delta = 0.05
+   smearing_type = 'gaussian'
+ /
