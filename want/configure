@@ -11,8 +11,8 @@ MANUAL=" Usage
 
  -h, --help           print this manual    
  -d, --deps           generate f90 dependencies            
- <conf_flags>         these falgs will be passed to the autoconf
-                      configure
+ <conf_flags>         these flags will be passed to 
+                      the autoconf configure
 
  After configuration, the make.sys file will created in the
  WanT home (current) directory
@@ -40,6 +40,10 @@ esac
 # run the autoconf configure with the
 # given cong_flags 
 #
+
+test -e ./conf/make.sys       && rm ./conf/make.sys
+test -e ./conf/configure.msg  && rm ./conf/configure.msg
+
 CFLAGS=$*
 ./conf/configure $CFLAGS
 
@@ -47,7 +51,7 @@ CFLAGS=$*
 # copy make.sys in the home dir
 # and final clean up
 #
-test -e ./conf/make.sys && cp ./conf/make.sys .
+test -e ./conf/make.sys && mv ./conf/make.sys .
 test -e config.log      && mv config.log    ./conf/
 test -e config.status   && mv config.status ./conf/
 test -e configure.msg   && mv configure.msg ./conf/
