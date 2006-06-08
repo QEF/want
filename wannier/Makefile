@@ -41,6 +41,7 @@ kpoints.o \
 lattice.o \
 localization.o \
 localization_init.o \
+monkpack.o \
 omega.o \
 omegai.o \
 ordering.o \
@@ -65,6 +66,7 @@ read_pseudo.o \
 readvan.o \
 recips.o \
 setqf.o \
+smearing.o \
 s_psi.o \
 struct_fact_data.o \
 struct_fact.o \
@@ -91,6 +93,7 @@ BIN= \
 disentangle.x \
 wannier.x \
 bands.x \
+dos.x \
 plot.x \
 blc2wan.x
 
@@ -117,6 +120,10 @@ plot.x:        plot.o $(BIN_DEPS)
 
 bands.x:       bands.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ bands.o $(OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+
+dos.x:         dos.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ dos.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
 blc2wan.x:     blc2wan.o $(BIN_DEPS)
