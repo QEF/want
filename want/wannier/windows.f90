@@ -342,6 +342,8 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
        CALL iotk_scan_attr(attr,'nspin',nspin,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NSPIN',ABS(ierr))
+       CALL iotk_scan_attr(attr,'spin_component',spin_component,IERR=ierr)
+       IF (ierr/=0) CALL errore(subname,'Unable to find attr SPIN_COMPONENT',ABS(ierr))
        CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr EFERMI',ABS(ierr))
        CALL iotk_scan_attr(attr,'dimwinx',dimwinx,IERR=ierr)
