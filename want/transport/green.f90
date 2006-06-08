@@ -21,7 +21,6 @@
    USE constants,         ONLY : CZERO, CONE, CI
    USE timing_module,     ONLY : timing
    USE util_module,       ONLY : mat_mul, mat_sv
-   USE T_smearing_module, ONLY : delta
    IMPLICIT NONE
 
    !
