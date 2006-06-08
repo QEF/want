@@ -3,12 +3,22 @@
             WanT code:  Log of Changes 
 =======================================================
 
-06 Jun 2006      smearing implementation completed in transport: conductor.f90, 
+
+08 Jun 2006      spin_component var no longer in bands input. want_init updated; 
+                 dos.f90 postproc added to $HOME/wannier dir. 
+                 smearing.f90 added to wannier (basic smearing defs),
+                 taken from transport/smearing.f90 (changed); monkpack.f90 routine added to
+                 wannier, get_monkpack.f90 changed; test06 updated (dos calculation added);
+                 documentation updated. Cleanup of unused variables performed. (AF)
+
+06 Jun 2006      Smearing implementation completed in transport: conductor.f90, 
                  transfer.f90, green.f90, gzero_maker.f90 accordingly changed;
                  smearing.f90 module added. (BB)
 
 30 May 2006      wfc_info.f90: fmt strings newlined with &, to workaround a possible 
                  ifort 9.0 bug. (AF)
+
+21 May 2006      configure script in WanT home updated. (AF)
 
 15 May 2006      Test03 updated: graphene case added (suggested by Pierre Darancet). (AF)
 
