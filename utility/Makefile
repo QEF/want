@@ -30,6 +30,7 @@ WANNIER_OBJS= \
 ../wannier/kpoints.o \
 ../wannier/lattice.o \
 ../wannier/localization.o \
+../wannier/monkpack.o \
 ../wannier/overlap_module.o \
 ../wannier/pseudo_types.o \
 ../wannier/pwcom.o \
@@ -66,7 +67,7 @@ BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 #
 # main targets
 #
-all: midpoint.x kgrid.x gcube2plt.x
+all: midpoint.x kgrid.x #gcube2plt.x
 
 
 midpoint.x: midpoint.o $(BIN_DEPS)
