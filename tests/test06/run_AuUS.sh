@@ -20,6 +20,7 @@ MANUAL=" Usage
                  the wannier minimization
  wannier         perform the above cited minimization
  bands           interpolates the band structure using WFs
+ dos             compute DOS using WFs
  plot            compute WFs on real space for plotting
  conductor       evaluate the transmittance, for the bulk case
  want            perform DISENTANGLE, WANNIER, BANDS, PLOT, CONDUCTOR all together 
@@ -49,6 +50,7 @@ PWEXPORT=
 DISENTANGLE=
 WANNIER=
 BANDS=
+DOS=
 PLOT=
 CONDUCTOR=
 CHECK=
@@ -65,13 +67,14 @@ case $INPUT in
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
    (bands)          BANDS=".TRUE." ;;
+   (dos)            DOS=".TRUE." ;;
    (plot)           PLOT=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ; PLOT=".TRUE."; CONDUCTOR=".TRUE." ;;
+                    BANDS=".TRUE." ; DOS=".TRUE." ; PLOT=".TRUE."; CONDUCTOR=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; PLOT=".TRUE." ;
-                    BANDS=".TRUE." ; CONDUCTOR=".TRUE." ;;
+                    BANDS=".TRUE." ; DOS=".TRUE." ; CONDUCTOR=".TRUE." ;;
    (check)          CHECK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -182,6 +185,19 @@ if [ "$BANDS" = ".TRUE." ] ; then
    $WANT_BIN/bands.x < $TEST_HOME/bands_AuUS.in > $TEST_HOME/bands_AuUS.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
+   else
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
+   fi
+fi
+
+#
+# running DOS
+#
+if [ "$DOS" = ".TRUE." ] ; then
+   echo $ECHO_N "running DOS calculation... $ECHO_C"
+   $WANT_BIN/dos.x < $TEST_HOME/dos_AuUS.in > $TEST_HOME/dos_AuUS.out
+   if [ ! -e CRASH ] ; then
+      echo "$ECHO_T done"
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
