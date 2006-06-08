@@ -13,7 +13,7 @@
    USE kinds, ONLY : dbl
    USE lattice_module, ONLY : avec, bvec, lattice_alloc => alloc
    USE kpoints_module, ONLY : nkpts, nk, vkpt, wk,  &
-                              nrtot, nr, vr, ivr,  wr,  kpoints_alloc 
+                              nrtot, nr, ivr,  wr,  kpoints_alloc 
    USE subspace_module, ONLY : dimwann, wan_eig, efermi, subspace_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx

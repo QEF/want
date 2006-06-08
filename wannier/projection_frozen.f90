@@ -44,7 +44,7 @@
    COMPLEX(dbl), ALLOCATABLE :: pq(:,:)
    COMPLEX(dbl), ALLOCATABLE :: qpq(:,:)
    ! 
-   INTEGER :: ik, j, l, n
+   INTEGER :: ik, l, n
    INTEGER :: il, iu, ierr
    !
    ! end of declariations

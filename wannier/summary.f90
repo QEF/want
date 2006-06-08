@@ -45,7 +45,6 @@
                                  a_nlcc, b_nlcc, alpha_nlcc
    USE atom_module,       ONLY : mesh, xmin, dx, numeric, nlcc
    USE uspp_param,        ONLY : nqf, rinner, nqlc, nbeta, iver, lll, psd, tvanp
-   USE spin_orb_module,   ONLY : lspinorb
    USE funct_module
    
    IMPLICIT NONE

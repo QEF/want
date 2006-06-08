@@ -15,7 +15,7 @@
    USE parameters, ONLY : nstrx
    USE wfc_info_module
    USE windows_module, ONLY : nbnd, nkpts, dimwinx, imin, imax
-   USE kpoints_module, ONLY : iks, ike
+   USE kpoints_module, ONLY : iks
    USE iotk_module
    USE timing_module, ONLY: timing
    IMPLICIT NONE
@@ -191,7 +191,7 @@ CONTAINS
 
        !
        ! here we considere the doubling of kpoints when nspin == 2
-       ! by using iks and ike
+       ! by using iks
        !
        CALL iotk_scan_begin(unit,'Kpoint'//TRIM(iotk_index(iks +ik -1)),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to find Kpoint (vectors)',iks +ik -1)
