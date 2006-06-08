@@ -31,8 +31,7 @@
    USE converters_module,    ONLY : cry2cart
    USE lattice_module,       ONLY : bvec
    USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
-   USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read, &
-                                    spin_component
+   USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read
    USE subspace_module,      ONLY : subspace_read
    USE hamiltonian_module,   ONLY : dimwann, rham, wan_eig, &
                                     hamiltonian_read, hamiltonian_init
@@ -61,7 +60,7 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, nkpts_in, nkpts_max, spin_component
+   NAMELIST /INPUT/ prefix, postfix, work_dir, nkpts_in, nkpts_max
    !
    ! end of declariations
    !   
@@ -82,7 +81,6 @@
       work_dir                    = './' 
       nkpts_in                    = 0
       nkpts_max                   = 100
-      spin_component              = 'none'
       
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('bands','Unable to read namelist INPUT',ABS(ierr))
@@ -93,10 +91,6 @@
       IF ( nkpts_in > nkpts_inx ) CALL errore('bands', 'nkpts_in too large',  nkpts_in)
       IF ( nkpts_in <= 0 )  CALL errore('bands', 'Invalid nkpts_in', ABS(nkpts_in)+1)
       IF ( nkpts_max <= 0 ) CALL errore('bands', 'Invalid nkpts_max', ABS(nkpts_max)+1)
-      CALL change_case(spin_component,'lower')
-      IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
-           TRIM(spin_component) /= "down" ) &
-           CALL errore('bands', 'Invalid spin_component = '//TRIM(spin_component), 3)
 
 
       !
