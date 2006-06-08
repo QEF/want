@@ -14,7 +14,7 @@
    USE parameters,           ONLY : nstrx
    USE T_egrid_module,       ONLY : ne, egrid, egrid_alloc => alloc
    USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, vr_par, kpoints_alloc => alloc
-   USE T_hamiltonian_module, ONLY : dimL, dimC, dimR, dimx
+   USE T_hamiltonian_module, ONLY : dimC
    USE T_control_module,     ONLY : transport_dir
    USE timing_module,        ONLY : timing
    USE iotk_module
@@ -39,7 +39,7 @@
 ! end delcarations
 !
 
-   PUBLIC :: dimL, dimC, dimR, dimx     
+   PUBLIC :: dimC
    PUBLIC :: nkpts_par
    !
    PUBLIC :: ncols, nrows
