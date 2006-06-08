@@ -10,7 +10,7 @@
 SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    !*********************************************************
    USE kinds
-   USE constants,  ONLY : EPS_m6, ONE, TWO
+   USE constants,  ONLY : EPS_m6, ZERO, ONE, TWO
    USE converters_module, ONLY : cart2cry
    IMPLICIT NONE
 
@@ -36,11 +36,10 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
 ! ... local variables
 
    CHARACTER(12)             :: subname="get_monkpack"
-   REAL(dbl)                 :: u(3)
    REAL(dbl), ALLOCATABLE    :: kpt_loc(:,:), kpt_gen(:,:)
    LOGICAL                   :: found
    INTEGER                   :: ik,ierrl
-   INTEGER                   :: i,j,k
+   INTEGER                   :: i
 
 !
 ! ... end of declarations
@@ -118,25 +117,8 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    !
    IF ( ierr == 0 ) THEN
 
-       ik = 0
-       kpt_gen(:,:) = 0
-
-       DO i=1,nk(1)
-          u(1) = REAL( s(1) + 2*i ) / (TWO * nk(1))       
-
-          DO j=1,nk(2)
-             u(2) = REAL( s(2) + 2*j ) / (TWO * nk(2))       
-
-             DO k=1,nk(3)
-                u(3) = REAL( s(3) + 2*k ) / (TWO * nk(3))  
-        
-                ik = ik+1
-                kpt_gen(:,ik) = u(:) 
-             ENDDO
-          ENDDO
-       ENDDO
-
-       IF ( ik /= nkpts ) CALL errore(subname,'unexpected ik /= nkpts',2)
+       kpt_gen(:,:) = ZERO
+       CALL monkpack( nk, s, kpt_gen )
 
        !
        ! now take the indexes as before in the (0,1] interval
