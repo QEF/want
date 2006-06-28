@@ -89,8 +89,10 @@
       ! move all atomic positions and all wannier centers in the unit
       ! cell centered in the origin
       !
-      tau_cry(:,:) =  MOD( tau_cry(:,:), ONE )
-      rave_cry(:,:) = MOD( rave_cry(:,:), ONE )
+!      tau_cry(:,:) =  MOD( tau_cry(:,:), ONE )
+!      rave_cry(:,:) = MOD( rave_cry(:,:), ONE )
+      tau_cry(:,:) =  tau_cry(:,:)  -REAL( NINT( tau_cry(:,:)  ) )
+      rave_cry(:,:) = rave_cry(:,:) -REAL( NINT( rave_cry(:,:) ) )
 
 !
 ! ionic polarization
@@ -100,8 +102,6 @@
       DO i = 1, nat
            P_ion(:) = P_ion(:) + zv( ityp(i) ) * tau_cry(:,i)
       ENDDO
-! XXX
-!      P_ion(:) = MOD( P_ion, ONE ) 
 
 !
 ! electronic polarization
@@ -111,16 +111,11 @@
       DO m = 1, dimwann
            P_el(:) = P_el(:) + rave_cry(:,m)
       ENDDO
-! XXX
-!      P_el(:) = MOD( P_el, ONE ) 
-
       !
       ! ionic + electronic polarization. the TWO factor appear considering
       ! that each band, i.e. each WF carries two electrons. In spin polirized
       ! cases, only the final result must be divided by two (i.e. by nspin)
       !
-! XXX
-!      delta_P = MOD( P_ion(:) - TWO * P_el(:), ONE )
       delta_P = P_ion(:) - TWO * P_el(:)
 
       !
