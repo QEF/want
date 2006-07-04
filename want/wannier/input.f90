@@ -185,16 +185,35 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_io()
    !**********************************************************
-      USE io_module,                ONLY : prefix, postfix, work_dir, title
-      USE input_parameters_module,  ONLY : prefix_    => prefix,       &
-                                           postfix_   => postfix,      &
-                                           work_dir_  => work_dir,     &
-                                           title_     => title
+      USE io_module,                ONLY : prefix, postfix, work_dir, title, &
+                                           dftdata_fmt, wantdata_fmt
+      USE input_parameters_module,  ONLY : prefix_       => prefix,       &
+                                           wantdata_fmt_ => wantdata_fmt, &
+                                           postfix_      => postfix,      &
+                                           work_dir_     => work_dir,     &
+                                           title_        => title,        &
+                                           dimwann_      => dimwann,      &
+                                           dftdata_fmt_  => dftdata_fmt
       IMPLICIT NONE
       prefix   = prefix_
       postfix  = postfix_
       work_dir = work_dir_
       title    = title_
+      dftdata_fmt  = TRIM(dftdata_fmt_)
+      !
+      ! set a special default
+      !
+      IF ( LEN_TRIM( wantdata_fmt_ ) == 0 ) THEN
+           !
+           IF ( dimwann_ < 100 ) THEN
+                wantdata_fmt = 'textual'
+           ELSE
+                wantdata_fmt = 'binary'
+           ENDIF
+      ELSE
+           wantdata_fmt = TRIM(wantdata_fmt_)
+      ENDIF
+
    END SUBROUTINE setup_io
 
 

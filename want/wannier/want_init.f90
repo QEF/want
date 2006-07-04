@@ -23,37 +23,34 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
    ! SUBROUTINE want_init()
    !
    ! Tasks performed:
-   ! * init lattice data
+   ! * init IO data         ( always )
    ! * init want input data (if required by WANT_INPUT = .TRUE.)
-   ! * init windows data    (if required by WINDOWS = .TRUE.)
-   ! * init ions data    
-   ! * init kpoints data    (if required by KPOINTS = .TRUE.)
-   ! * init bshells data    (if required by BSHELLS = .TRUE.)
-   ! * init pseudo data     (if required by PSEUDO=.TRUE.)
+   ! * init lattice data    (if required by LATTICE    = .TRUE.)
+   ! * init windows data    (if required by WINDOWS    = .TRUE.)
+   ! * init ions data       (if required by IONS       = .TRUE.)
+   ! * init kpoints data    (if required by KPOINTS    = .TRUE.)
+   ! * init bshells data    (if required by BSHELLS    = .TRUE.)
+   ! * init pseudo data     (if required by PSEUDO     = .TRUE.)
    !
 
    USE kinds
-   USE constants,  ONLY : ZERO, CZERO, RYD, EPS_m6
-   USE parameters, ONLY : nstrx
-   USE timing_module, ONLY : timing
-   USE io_module,  ONLY : stdout, dft_unit, ioname
-   USE files_module, ONLY : file_open, file_close
-   USE iotk_module
-   USE parser_base_module, ONLY : change_case
-
-   USE control_module, ONLY : use_uspp, do_polarization
-   USE trial_center_module, ONLY : trial_center_convert
+   USE constants,                ONLY : ZERO, EPS_m6
+   USE parameters,               ONLY : nstrx
+   USE timing_module,            ONLY : timing
+   USE io_module,                ONLY : stdout, dft_unit, io_init, io_name, dftdata_fmt
+   USE files_module,             ONLY : file_open, file_close
+   !
+   USE control_module,           ONLY : use_uspp, do_polarization
+   USE trial_center_module,      ONLY : trial_center_convert
    USE trial_center_data_module, ONLY : trial, dimwann
-   USE lattice_module,  ONLY : lattice_read_ext, lattice_init, alat, avec
-   USE ions_module,  ONLY : ions_read_ext, ions_init, tau, nat, zv, ityp, ion_charge
-   USE windows_module,  ONLY : windows_read_ext, windows_init, eig, nspin, spin_component
-   USE kpoints_module,  ONLY : nkpts, nkpts_tot, iks, ike, &
-                               kpoints_read_ext, kpoints_init
-   USE dft_interface_module, ONLY : dft_interface_read_spin
-   USE us_module,   ONLY : okvan
-   USE uspp_param,  ONLY : tvanp
-   USE ions_module, ONLY : uspp_calculation
-   
+   USE lattice_module,           ONLY : lattice_read_ext, lattice_init, alat, avec
+   USE ions_module,              ONLY : ions_read_ext, ions_init, tau, nat, zv, ityp, ion_charge
+   USE windows_module,           ONLY : windows_read_ext, windows_init, eig
+   USE kpoints_module,           ONLY : kpoints_read_ext, kpoints_init
+   USE us_module,                ONLY : okvan
+   USE uspp_param,               ONLY : tvanp
+   USE ions_module,              ONLY : uspp_calculation
+   ! 
    IMPLICIT NONE
 
    !
@@ -72,7 +69,6 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
    !
    CHARACTER(9)              :: subname="want_init"
    CHARACTER(nstrx)          :: filename 
-   LOGICAL                   :: lfound
    LOGICAL                   :: want_input_, read_lattice_, read_ions_, read_windows_, &
                                              read_kpoints_, read_bshells_, read_pseudo_
    INTEGER                   :: ia, iwann
@@ -109,59 +105,23 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
     IF ( read_bshells_ .AND. .NOT. read_kpoints_ ) CALL errore(subname,'bshells needs kpoints',1)
 
 !
+! ... init IO
+!
+    CALL io_init()
+
+
+!
 ! ... opening the file containing the PW-DFT data
 !
-    CALL ioname('export',filename,LPOSTFIX=.FALSE.)
+    CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
     CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
-                             FORM='formatted')
-
-
-!
-! ... managing the spin components
-!
-    IF ( read_kpoints_ .OR. read_windows_ )  THEN
-        CALL dft_interface_read_spin(dft_unit,nkpts_tot,nspin)
-        !
-        ! this is because of the Espresso convention which doubles the kpt
-        ! number instead of adding a second spin component when nspin == 2
-        !
-        IF ( nspin == 1 ) THEN
-            nkpts = nkpts_tot
-        ELSE
-            nkpts = nkpts_tot / 2 
-        ENDIF
-        !
-        iks = 1
-        ike = nkpts
-    ENDIF 
-
-    IF ( read_windows_ ) THEN
-        IF ( nspin == 1) THEN
-            iks = 1
-            ike = nkpts
-            IF ( TRIM(spin_component) /= 'none' ) & 
-                 CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
-        ELSE
-            SELECT CASE ( TRIM(spin_component) )
-            CASE ( 'up' )
-                iks = 1
-                ike = nkpts
-            CASE ( 'down' )
-                iks = nkpts+1
-                ike = 2*nkpts
-            CASE DEFAULT
-                CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
-            END SELECT
-        ENDIF
-    ENDIF
-    
+                            FORM='formatted')
 
 !
 ! ... read lattice data
 !
     IF ( read_lattice_ ) THEN
-        CALL lattice_read_ext(dft_unit,"Cell",lfound)
-        IF ( .NOT. lfound ) CALL errore(subname,'Tag Cell not found',1)
+        CALL lattice_read_ext(dftdata_fmt)
         !
         ! ...  allocations and initializations
         CALL lattice_init()
@@ -179,20 +139,29 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 ! ... read ions data
 !
     IF ( read_ions_ ) THEN
-        CALL ions_read_ext(dft_unit, "Atoms", lfound)
-        IF ( .NOT. lfound ) CALL errore(subname,'Tag Atoms not found',2)
+        !
+        CALL ions_read_ext( dftdata_fmt )
+        !
+        ! tau are read in bohr and converted here to alat
+        tau(:,:) = tau(:,:) / alat
+        !
         CALL ions_init()
         !
         ! set the centers in the atomic wfc if the case
         !
         IF ( want_input_ ) THEN
             DO iwann = 1, dimwann
-                 IF ( TRIM(trial(iwann)%type) == 'atomic' ) THEN
-                      ia = trial(iwann)%iatom
-                      trial(iwann)%x1(:) = tau(:, ia ) * alat
-                 ENDIF
+                !
+                IF ( TRIM(trial(iwann)%type) == 'atomic' ) THEN
+                     !
+                     ia = trial(iwann)%iatom
+                     trial(iwann)%x1(:) = tau(:, ia ) * alat
+                     !
+                ENDIF
+                !
             ENDDO
         ENDIF
+        !
     ENDIF
 
 
@@ -200,26 +169,34 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 ! ... read kpoints data
 !
     IF ( read_kpoints_ ) THEN
-        CALL kpoints_read_ext(dft_unit, "Kmesh", lfound)
-        IF ( .NOT. lfound ) CALL errore(subname,'Tag Kmesh not found',2)
+        !
+        CALL kpoints_read_ext( dftdata_fmt )
+        !
         CALL kpoints_init()
+        !
     ENDIF
 
     !
-    ! ... b-vectors initializations
+    ! b-vectors initializations
+    !
     IF ( read_bshells_ ) THEN 
+        !
         CALL bshells_init( )
+        !
     ENDIF
+
 
 !
 ! ... eigenvalues data read
 !
     IF ( read_windows_ ) THEN
-        CALL windows_read_ext(dft_unit,'Eigenvalues',lfound)
-           IF ( .NOT. lfound ) CALL errore('want_init','Unable to find Eigenvalues',6)
         !
-        ! ... init windows
+        CALL windows_read_ext( dftdata_fmt )
+        !
+        ! init windows
+        !
         CALL windows_init( eig(:,:), dimwann )
+        !
     ENDIF
 
 
@@ -228,15 +205,17 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 !
    CALL file_close(dft_unit,PATH="/",ACTION="read")
 
-   CALL ioname('export',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
-   WRITE( stdout,"(/,'  PW-DFT data read from file: ',a)") TRIM(filename)   
+   CALL io_name('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
+   WRITE( stdout,"(2x,'DFT-data read from file : ',a)") TRIM(filename)   
     
 
 !
 ! ... read pseudopotentials (according to Espresso fmts)
 !
    IF ( read_pseudo_  ) THEN
+      !
       CALL readpp()
+      !
       okvan = ANY( tvanp(:) )
       uspp_calculation = okvan
       use_uspp = okvan
@@ -246,8 +225,11 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
       ion_charge = ZERO
       !
       DO ia = 1, nat 
+          !
           ion_charge = ion_charge + zv( ityp(ia) ) 
+          !
       ENDDO
+      !
    ENDIF
 
 

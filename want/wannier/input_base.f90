@@ -209,6 +209,10 @@ CONTAINS
            list(iwann)%alloc = .TRUE.
 
        ENDDO
+       !
+       ! just to avoid warning for unused variables
+       IF ( 1 == 0 ) WRITE(0, *) adum
+       !
   END SUBROUTINE card_wannier_centers
 
 END MODULE input_base_module
