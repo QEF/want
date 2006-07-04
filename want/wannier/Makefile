@@ -19,7 +19,6 @@ cleanup.o \
 collect_wf.o \
 control.o \
 converters.o \
-dft_interface.o \
 domega_aux.o \
 domega.o \
 functionals.o \

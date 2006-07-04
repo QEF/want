@@ -15,9 +15,10 @@
    USE constants,         ONLY : ONE, TWO, TPI, EPS_m6
    USE parameters,        ONLY : nstrx, nnx
    USE lattice_module,    ONLY : alat, avec, bvec, lattice_alloc => alloc
-   USE iotk_module
    USE converters_module, ONLY : cart2cry
-
+   USE qexml_module
+   USE qexpt_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -42,10 +43,6 @@
   ! ... usual kpt data (k vectors)
   INTEGER                 :: nkpts         ! kpt number (NOT doubled when nspin=2)
   !
-  ! ... added to manage collinear spin from Espresso
-  !     when nspin == 2, ik = 1, nkpts are for isp=1,
-  !     while ik=nkpts+1, 2*nkpts are for isp=2
-  INTEGER                 :: nkpts_tot     ! the total number of kpoint (including spin)
   INTEGER                 :: iks           ! the starting ik (at the current spin)
   INTEGER                 :: ike           ! the ending ik (at the current spin)
   !
@@ -84,7 +81,6 @@
 !
 
   PUBLIC :: nkpts
-  PUBLIC :: nkpts_tot
   PUBLIC :: iks, ike
   PUBLIC :: nk, s
   PUBLIC :: vkpt
@@ -210,59 +206,75 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE kpoints_read_ext( unit, name, found )
+   SUBROUTINE kpoints_read_ext( filefmt )
    !**********************************************************
     IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
-       CHARACTER(*),      INTENT(in) :: name
-       LOGICAL,           INTENT(out):: found
-       INTEGER            :: lnkpts
-       LOGICAL            :: lfound
-       REAL(dbl),ALLOCATABLE :: lwk(:), lvkpt(:,:)
-       CHARACTER(nstrx)   :: attr
+       CHARACTER(*),      INTENT(in) :: filefmt
+       !
        CHARACTER(16)      :: subname='kpoints_read_ext'
-       INTEGER            :: ik, ierr
+       INTEGER            :: nspin, ik, ierr
+       LOGICAL            :: lsda, lfound
        
        IF ( kpoints_alloc ) CALL kpoints_deallocate()
-       IF ( nkpts <=0 .OR. nkpts_tot <=0 ) CALL errore(subname,'nkpts should be set',2) 
-       IF ( iks <=0 .OR. ike <=0 ) CALL errore(subname,'iks or ike not set',3) 
-       IF ( iks > ike ) CALL errore(subname,'iks > ike',4) 
-       IF ( ike - iks + 1 /= nkpts ) CALL errore(subname,'Invalid ike or iks',5)
-
-       CALL iotk_scan_begin(unit,TRIM(name),ATTR=attr,FOUND=found,IERR=ierr)
-       IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-       found = .TRUE.
-
-       CALL iotk_scan_attr(attr,'nk',lnkpts,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find NK',ABS(ierr))
-       IF ( lnkpts <= 0) CALL errore(subname,'Invalid lnkpts',ABS(lnkpts)+1)
        !
-       ! checking the spin polarized case
        !
-       IF ( lnkpts /= nkpts_tot ) CALL errore(subname,'invalid nkpts_tot',5)
+       SELECT CASE ( TRIM(filefmt) )
        !
-       ! local variables
-       ALLOCATE( lwk(nkpts_tot), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating lwk',ABS(ierr))
-       ALLOCATE( lvkpt(3,nkpts_tot), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating lvkpt',ABS(ierr))
-
-     
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_spin( LSDA=lsda, IERR=ierr )
+            IF ( ierr/=0) CALL errore(subname,'getting spin dimensions',ABS(ierr))
+            !
+            nspin = 1
+            IF ( lsda ) nspin = 2
+            !
+            CALL qexml_read_bz( NUM_K_POINTS=nkpts, IERR=ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_spin( NSPIN=nspin, IERR=ierr )
+            IF ( ierr/=0) CALL errore(subname,'getting spin dimensions',ABS(ierr))
+            !
+            CALL qexpt_read_bz( NUM_K_POINTS=nkpts, IERR=ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
+       !
+       IF ( ierr/=0 )   CALL errore(subname,'getting bz dimensions',ABS(ierr))
+       IF ( nkpts <=0 ) CALL errore(subname,'invalid nkpts',1)  
+       IF ( nspin <=0 ) CALL errore(subname,'invalid nspin',2)  
+       IF ( nspin > 2 ) CALL errore(subname,'invalid nspin',3)  
+       !
+       !
        CALL kpoints_allocate( )
-
-       CALL iotk_scan_dat(unit,'weights',lwk(:),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'reading tag weights',ABS(ierr))
+      
        !
-       ! passing to internal values
-       wk(:) = lwk(iks:ike)
+       ! massive data reading
+       !
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_bz( XK=vkpt, WK=wk, IERR=ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_bz( XK=vkpt, WK=wk, IERR=ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 2)
+       END SELECT
+
        !
        ! due to a different convention in Espresso
-       wk(:) = wk(:) * nkpts_tot / ( TWO * nkpts )
+       wk(:) = wk(:) * REAL( nspin, dbl) / TWO 
        wksum = SUM(wk(:))
        !
        lfound = .FALSE.
-       DO ik = 1,nkpts
+       DO ik = 1, nkpts
           !
           IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) lfound = .TRUE.
        ENDDO
@@ -274,24 +286,8 @@ CONTAINS
        ENDIF
 
        !
-       ! ... kpoints are in cartesian units, in 2PI/alat
-       !
-       CALL iotk_scan_dat(unit,'k',lvkpt(:,:),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'reading tag k',ABS(ierr))
-       !
-       ! passing to the internal variable 
-       vkpt(:,:) = lvkpt(:,iks:ike)
-       !
        ! convert them to bohr^-1 cartesian units 
        vkpt(:,:) = vkpt(:,:) * TPI/alat
-
-       !
-       ! cleanup
-       DEALLOCATE( lwk, lvkpt, STAT=ierr)
-         IF(ierr/=0) CALL errore(subname,'deallocating lwk, lvkpt', ABS(ierr))
-
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr)) 
 
    END SUBROUTINE kpoints_read_ext
 
