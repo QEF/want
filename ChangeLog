@@ -4,6 +4,18 @@
 =======================================================
 
 
+04 Jul 2006      dos calculation added to test02 (copper examples). (AF)    
+
+01 Jul 2006      IO revision completed; the is interfaced to the espresso internal iotk fmt
+                 (qexml), both for v3.1 and v3.1.1 (patched). (AF)
+
+15 Jun 2006      IO improvement further implemented. (AF)
+
+10 Jun 2006      Libs qexml.f90 and qexpt.f90 added to libs: they manage the dftdata
+                 reading from the different iotk fmts in espresso. Variables
+                 dftdata_fmt and wantdata_fmt added to input_parameters.f90 ;
+                 important revision of IO procedure started. (AF)
+
 08 Jun 2006      spin_component var no longer in bands input. want_init updated; 
                  dos.f90 postproc added to $HOME/wannier dir. 
                  smearing.f90 added to wannier (basic smearing defs),
