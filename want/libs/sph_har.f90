@@ -130,12 +130,15 @@ CONTAINS
      sph1m1 = SQRT(  1.5_dbl / TPI )
      sph10  = SQRT(  1.5_dbl / TPI )
      sph11  = SQRT(  1.5_dbl / TPI )
-     
+     ! 
      sph2m2 = SQRT( 15.0_dbl / 8.0_dbl / TPI )
      sph2m1 = SQRT( 15.0_dbl / 2.0_dbl / TPI )
      sph20  = SQRT(  5.0_dbl / 8.0_dbl / TPI )
      sph21  = SQRT( 15.0_dbl / 2.0_dbl / TPI )
      sph22  = SQRT( 15.0_dbl / 8.0_dbl / TPI )
+     !
+     dist_pl  = ZERO
+     dist_cos = ZERO
    
      DO ig =1, ndim
          !

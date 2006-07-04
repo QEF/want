@@ -155,6 +155,8 @@ subroutine set_rndm_seed(iseed)
   dummy = rndm()
   irand = - iseed
 
+  if ( 1 == 0 ) WRITE(0, *) dummy
+
   return
 end subroutine set_rndm_seed
 

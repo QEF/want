@@ -41,7 +41,10 @@
       CHARACTER(LEN=*)    :: a, b
       INTEGER, INTENT(IN) :: n
 
-      INTEGER :: ip, nproc, mpime, ierr
+      INTEGER :: ip, nproc, mpime
+#if defined __MPI
+      INTEGER :: ierr
+#endif
 
 ! ... declare function
 
@@ -96,7 +99,7 @@
       IF( n > 0 ) THEN
         STOP 'CRASH'
       ELSE IF( n == 0 ) THEN
-        WRITE(6,*) ' ERROR DEBUG ', a, b
+        WRITE(6,*) ' ERROR DEBUG ', a, '  ', b
       END IF
  
     RETURN

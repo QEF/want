@@ -253,7 +253,7 @@ CONTAINS
          
          SELECT CASE (TRIM(action_))
          CASE("READ")
-               CALL iotk_open_read(unit,FILE=TRIM(filename),BINARY=binary,IERR=ierr)
+               CALL iotk_open_read(unit,FILE=TRIM(filename),IERR=ierr)
          CASE("WRITE")
             IF ( PRESENT(root) ) THEN
                CALL iotk_open_write(unit,FILE=TRIM(filename),BINARY=binary, &
