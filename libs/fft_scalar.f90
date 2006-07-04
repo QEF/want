@@ -100,8 +100,6 @@
 
 #endif
 
-        REAL (dbl) :: scale
-
 
 
 !=----------------------------------------------------------------------=!
@@ -131,7 +129,7 @@
      INTEGER, INTENT(IN) :: nsl, nz, ldc
      COMPLEX (dbl) :: c(:), cout(:) 
      REAL(dbl)  :: tscale
-     INTEGER    :: i, j, idir, ip, isign
+     INTEGER    :: i, idir, ip, isign
      INTEGER, SAVE :: zdims( 3, ndims ) = -1
      INTEGER, SAVE :: icurrent = 1
 
@@ -280,7 +278,10 @@
      INTEGER, INTENT(IN) :: sgn, ldx, ldy, nx, ny, nzl
      INTEGER, OPTIONAL, INTENT(IN) :: pl2ix(:)
      COMPLEX (dbl) :: r( : )
-     INTEGER :: i, k, j, idir, ip, isign, kk
+     INTEGER :: i, k, j, idir, ip, isign
+#if defined __AIX
+     INTEGER :: kk
+#endif
      REAL(dbl) :: tscale
      INTEGER, SAVE :: icurrent = 1
      INTEGER, SAVE :: dims( 4, ndims) = -1
@@ -495,7 +496,7 @@
 
      INTEGER, INTENT(IN) :: nr1, nr2, nr3, nr1x, nr2x, nr3x, sgn 
      COMPLEX (dbl) :: f(:)
-     INTEGER :: i, k, j, idir, ip, isign
+     INTEGER :: i, idir, ip, isign
      REAL(dbl) :: tscale
      INTEGER, SAVE :: icurrent = 1
      INTEGER, SAVE :: dims(3,ndims) = -1
@@ -668,12 +669,16 @@ subroutine cfft3ds (f, nr1, nr2, nr3, nrx1, nrx2, nrx3, sign, do_fft_x, do_fft_y
   !
   integer :: m, incx1, incx2
   INTEGER :: i, k, j, idir, ip, isign, ii, jj
+#if defined __AIX
   REAL(dbl) :: tscale
+#endif
   INTEGER, SAVE :: icurrent = 1
   INTEGER, SAVE :: dims(3,ndims) = -1
 
 
+#if defined __AIX
   tscale = 1.d0
+#endif
   isign = - sign   !  here we follow ESSL convention
 
   !
@@ -900,11 +905,15 @@ subroutine cfft3ds (f, nr1, nr2, nr3, nrx1, nrx2, nrx3, sign, do_fft_x, do_fft_y
 !     with imin3 .le. n3 .le. imax3
 !
       implicit none
-      integer :: k,n1,n2,n3,n1x,n2x,n3x,imin3,imax3,sgn
       complex(kind=8) :: f(:)
+      integer :: n1, n2, n3, n1x, n2x, n3x, imin3, imax3,sgn
+      !
+#if defined __AIX
+      integer :: k
+      real(dbl) :: tscale
+#endif
 
       integer isign, nplanes, nstart
-      real(dbl) :: tscale
 
       integer :: ip, i
       integer, save :: icurrent = 1
@@ -931,7 +940,10 @@ subroutine cfft3ds (f, nr1, nr2, nr3, nrx1, nrx2, nrx3, sign, do_fft_x, do_fft_y
 
 
       isign = -sgn
+
+#if defined __AIX
       tscale = 1.d0
+#endif
 
       if ( isign > 0 ) then
          call errore('cft_b','not implemented',isign)
