@@ -23,6 +23,8 @@ parallel_include.o \
 parameters.o \
 parser_base.o \
 parser.o \
+qexml.o \
+qexpt.o \
 rranf.o \
 shmem_include.o \
 simpsn.o \
@@ -33,6 +35,7 @@ timing.o \
 util.o \
 warning.o \
 ylmr2.o \
+c_mkdir.o \
 cptimer.o \
 fft_stick.o
 
