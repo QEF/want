@@ -10,9 +10,10 @@
 MODULE lattice_module
    !*********************************************************
    USE kinds
-   USE constants, ONLY : ZERO
+   USE constants, ONLY : ZERO, TPI
    USE parameters, ONLY : nstrx
-   USE iotk_module
+   USE qexml_module
+   USE qexpt_module
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -56,7 +57,6 @@ CONTAINS
 !*********************************************************
    SUBROUTINE lattice_init()
    !*********************************************************
-    USE constants, ONLY: PI, ZERO, ONE, TPI
     USE io_module, ONLY: stdout
     IMPLICIT NONE
 
@@ -73,43 +73,38 @@ CONTAINS
    END SUBROUTINE lattice_init
 
 !*********************************************************
-   SUBROUTINE lattice_read_ext(unit, name, found)
+   SUBROUTINE lattice_read_ext(filefmt)
    !*********************************************************
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
-       CHARACTER(*),      INTENT(in) :: name
-       LOGICAL,           INTENT(out):: found
-       CHARACTER(nstrx)   :: attr
+       CHARACTER(*)       :: filefmt
        CHARACTER(16)      :: subname="lattice_read_ext"
        INTEGER            :: ierr
 
-       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
-       IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-       found = .TRUE.
+       ierr = 0
+       !
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+           !
+           CALL qexml_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
+                                            A3=avec(:,3), IERR=ierr)
+           !
+       CASE ( 'pw_export' )
+           !
+           CALL qexpt_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
+                                            A3=avec(:,3), IERR=ierr)
+           !
+       CASE DEFAULT
+           !
+           CALL errore(subname,'invalid fmt ='//TRIM(filefmt),1)
+       END SELECT
+       !
+       IF (ierr/=0) CALL errore(subname,'reading lattice',ABS(ierr))
+       !
+       ! impose the normalization
+       !
+       tpiba = TPI / alat
 
-       CALL iotk_scan_empty(unit,"Data",ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find Data',ABS(ierr))
-       CALL iotk_scan_attr(attr,"alat",alat,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find alat',ABS(ierr))
-       CALL iotk_scan_attr(attr,"tpiba",tpiba,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find tpiba',ABS(ierr))
-
-       CALL iotk_scan_empty(unit,"a1",ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find a1',ABS(ierr))
-       CALL iotk_scan_attr(attr,"xyz",avec(:,1),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find xyz in a1',ABS(ierr))
-       CALL iotk_scan_empty(unit,"a2",ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find a2',ABS(ierr))
-       CALL iotk_scan_attr(attr,"xyz",avec(:,2),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find xyz in a2',ABS(ierr))
-       CALL iotk_scan_empty(unit,"a3",ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find a3',ABS(ierr))
-       CALL iotk_scan_attr(attr,"xyz",avec(:,3),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find xyz in a3',ABS(ierr))
-
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
    END SUBROUTINE lattice_read_ext
 
 END MODULE lattice_module

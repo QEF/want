@@ -11,11 +11,13 @@
    MODULE windows_module
 !*********************************************
    USE kinds, ONLY : dbl
-   USE constants, ONLY : RYD
+   USE constants, ONLY : RYD, TWO
    USE parameters, ONLY : nstrx
    USE parser_module, ONLY : change_case
-   USE kpoints_module, ONLY : iks, ike, nkpts, nkpts_tot, kpoints_alloc
+   USE kpoints_module, ONLY : iks, ike, nkpts, kpoints_alloc
    USE iotk_module
+   USE qexml_module 
+   USE qexpt_module 
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -31,7 +33,7 @@
 ! SUBROUTINE windows_init(eig, dimwann)
 ! SUBROUTINE windows_write(unit,name)
 ! SUBROUTINE windows_read(unit,name,found)
-! SUBROUTINE windows_read_ext(unit,name,found)
+! SUBROUTINE windows_read_ext(filefmt)
 
 !
 ! declarations of common variables
@@ -40,6 +42,7 @@
    INTEGER                     :: nbnd               ! number of DFT bands
    INTEGER                     :: nspin              ! number of spin channels
    INTEGER                     :: dimwinx            ! MAX (dimwin(:)) over kpts
+   INTEGER                     :: ispin              ! index of the spin component
    CHARACTER(10)               :: spin_component = 'none' ! 'up', 'down', 'none'
    !
    ! ... starting states within the energy window
@@ -51,6 +54,7 @@
    INTEGER,      ALLOCATABLE   :: imax(:)            ! dim: nkpts
    REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: nbnd, nkpts
    REAL(dbl)                   :: efermi             ! Fermi energy (from DFT)
+   REAL(dbl)                   :: nelec              ! total number of electrons
    LOGICAL                     :: lcompspace=.TRUE.  ! whether COMPLEMENT space is NOT null
    !
    LOGICAL                     :: alloc=.FALSE.      
@@ -67,9 +71,9 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, nbnd, nspin, spin_component, dimwinx
+   PUBLIC :: nkpts, nbnd, nspin, ispin, spin_component, dimwinx
    PUBLIC :: win_min, win_max, froz_min, froz_max
-   PUBLIC :: dimwin, imin, imax, eig, efermi, lcompspace
+   PUBLIC :: dimwin, imin, imax, eig, efermi, nelec, lcompspace
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
    PUBLIC :: alloc
 
@@ -394,62 +398,122 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE windows_read_ext(unit,name,found)
+   SUBROUTINE windows_read_ext( filefmt )
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
-       CHARACTER(*),      INTENT(in) :: name
-       LOGICAL,           INTENT(out):: found
+       CHARACTER(*),      INTENT(in) :: filefmt
        CHARACTER(16)      :: subname="windows_read_ext"
-       CHARACTER(nstrx)   :: attr, str
-       LOGICAL            :: lfound
-       INTEGER            :: idum, lindex, ik, ierr
+       CHARACTER(nstrx)   :: str
+       INTEGER            :: lnkpts, ierr
+       REAL(dbl), ALLOCATABLE :: leig(:,:,:)
 
-       CALL iotk_scan_begin(unit,TRIM(name),ATTR=attr,FOUND=found,IERR=ierr)
-       IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-       found = .TRUE.
 
-       CALL iotk_scan_attr(attr,'nspin',nspin,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find NSPIN',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nk',idum,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find NK',ABS(ierr))
-       IF ( nkpts_tot /= idum ) CALL errore(subname,'nkpts_tot /= nk',ABS(idum)+1)
+       IF ( alloc ) CALL windows_deallocate()
+       !
+       !
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, NSPIN=nspin, IERR=ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, NSPIN=nspin, IERR=ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
+       !
+       IF ( ierr/=0) CALL errore(subname,'getting bands dimensions',ABS(ierr))
+       !
+       IF ( nkpts /= lnkpts ) CALL errore(subname,'invalid nkpts on read',2)
+       !
 
-       CALL iotk_scan_attr(attr,'nbnd',nbnd,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',ABS(ierr))
-       CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find efermi',ABS(ierr))
-       CALL iotk_scan_attr(attr,'units',str,FOUND=lfound, IERR=ierr)
-       IF (ierr>0)  CALL errore(subname,'Wrong fmt in units',ABS(ierr))
-       IF ( lfound ) THEN
-           CALL change_case(str,'UPPER')
-           IF (TRIM(str) /= 'RYDBERG' .AND. TRIM(str) /= 'RY' .AND. &
-               TRIM(str) /= 'RYD')&
-               CALL errore(subname,'Wrong units in Energies',5)
-       ENDIF
- 
        !
        ! ... allocating windows
        CALL windows_allocate()
+       !
+       ALLOCATE( leig( nbnd, nkpts, nspin), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname, 'allocating LEIG', ABS(ierr))
    
-       !
-       ! take into account spin polarization by using the
-       ! predefined iks, ike
-       !
-       lindex = 0
-       DO ik= iks, ike
-           lindex = lindex + 1
-           CALL iotk_scan_dat(unit,'e'//TRIM(iotk_index(ik)),eig(:,lindex),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to find EIGVAL',ik)
-       ENDDO
-       IF ( lindex /= nkpts ) CALL errore(subname,'problems with spin and kpt ?',5)
-       ! conversion to eV
-       eig(:,:) = RYD * eig(:,:)
-       efermi   = RYD * efermi
 
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag Eigenvalues',ABS(ierr))
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_bands( EF=efermi, NELEC=nelec, EIG_S=leig, ENERGY_UNITS=str, IERR=ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_bands( EF=efermi, NELEC=nelec, EIG_S=leig, ENERGY_UNITS=str, IERR=ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
+       !
+       ! check energy units
+       !
+       CALL change_case(str,'lower')
+       !
+       SELECT CASE ( TRIM(str) )
+       CASE ( 'rydberg', 'ryd', 'ry' )
+           !
+           leig(:,:,:) = leig(:,:,:) * RYD
+           efermi      = efermi * RYD
+           !
+       CASE ( 'hartree', 'ha')
+           !
+           leig(:,:,:) = leig(:,:,:) * TWO * RYD
+           efermi      = efermi * TWO * RYD
+           !
+       CASE ( 'elettronvolt', 'elettron-volt', 'ev')
+           !
+           ! doi nothing
+           !
+       CASE DEFAULT
+           CALL errore(subname,'Wrong units in Energies',5)
+       END SELECT
+ 
+       !
+       !
+       ! setting the auxiliary quantities IKE, IKS
+       ! define EIG
+       !
+       IF ( nspin == 1) THEN
+            !
+            iks = 1
+            ike = nkpts
+            ispin = 1
+            eig(:,:) = leig(:,:, 1)
+            !
+            IF ( TRIM(spin_component) /= 'none' ) &
+                 CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
+       ELSE
+            SELECT CASE ( TRIM(spin_component) )
+            CASE ( 'up' )
+                !
+                iks = 1
+                ike = nkpts
+                ispin = 1
+                eig(:,:) = leig(:,:, 1)
+                !
+            CASE ( 'down' )
+                iks = nkpts+1
+                ike = 2*nkpts
+                ispin = 2
+                eig(:,:) = leig(:,:, 2)
+                !
+            CASE DEFAULT
+                CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
+            END SELECT
+       ENDIF
+       !
+       DEALLOCATE( leig, STAT=ierr)
+       IF (ierr/=0) CALL errore(subname, 'deallocating LEIG', ABS(ierr))
+
    END SUBROUTINE windows_read_ext
 
 END MODULE windows_module

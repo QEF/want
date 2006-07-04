@@ -12,11 +12,12 @@
 !*********************************************************
 MODULE ions_module
    !*********************************************************
-   USE kinds,      ONLY : dbl
-   USE constants,  ONLY : ZERO, BOHR => bohr_radius_angs
-   USE parameters, ONLY : ntypx, natx, nstrx
-   USE io_module,  ONLY : pseudo_dir
-   USE iotk_module
+   USE kinds,          ONLY : dbl
+   USE constants,      ONLY : ZERO, BOHR => bohr_radius_angs
+   USE parameters,     ONLY : ntypx, natx, nstrx
+   USE io_module,      ONLY : pseudo_dir, prefix, work_dir
+   USE qexml_module
+   USE qexpt_module
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -28,7 +29,7 @@ MODULE ions_module
 ! SUBROUTINE ions_allocate( nat_, nsp_ )
 ! SUBROUTINE ions_deallocate()
 ! SUBROUTINE ions_init()
-! SUBROUTINE ions_read_ext( unit, name, lfound)
+! SUBROUTINE ions_read_ext( filefmt )
 ! SUBROUTINE ions_tau_sort( tausrt, isrt, tau_, isp, na_ )
 !
 ! </INFO>
@@ -166,68 +167,80 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE ions_read_ext(unit, name, found)
+   SUBROUTINE ions_read_ext( filefmt )
    !*********************************************************
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
-       CHARACTER(*),      INTENT(in) :: name
-       LOGICAL,           INTENT(out):: found
-       CHARACTER(nstrx)   :: attr
-       CHARACTER(13)       :: subname="ions_read_ext"
-       INTEGER            :: ia, is, ierr
+       CHARACTER(*),      INTENT(in) :: filefmt
+       !
+       CHARACTER(13)        :: subname="ions_read_ext"
+       INTEGER, ALLOCATABLE :: ityp(:)
+       INTEGER              :: i, ierr
 
-       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
-       IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-       found = .TRUE.
 
-       CALL iotk_scan_empty(unit,'Data',ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find Data',ABS(ierr))
-       CALL iotk_scan_attr(attr,"natoms",nat,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find nat',ABS(ierr))
-       CALL iotk_scan_attr(attr,"nspecies",nsp,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find nsp',ABS(ierr))
-
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
+       !
+       IF ( ierr/=0) CALL errore(subname,'getting ion dimensions',ABS(ierr))
+       !
+       !
        CALL ions_allocate( nat, nsp ) 
        !
        ! some simple initializations
        zv(:) = ZERO
 
-       CALL iotk_scan_begin(unit,'Positions',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find Positions',ABS(ierr))
-       DO ia=1,nat
-           CALL iotk_scan_empty(unit,'atom'//TRIM(iotk_index(ia)), ATTR=attr, IERR=ierr)
-             IF (ierr/=0) &
-             CALL errore(subname,'Unable to find atom'//TRIM(iotk_index(ia)),ABS(ierr))
-           CALL iotk_scan_attr(attr, 'type', symb(ia), IERR=ierr)
-             IF (ierr/=0) CALL errore(subname,'reading attr TYPE',ia)
-           CALL iotk_scan_attr(attr, 'xyz', tau(:,ia), IERR=ierr)
-             IF (ierr/=0) CALL errore(subname,'reading attr XYZ',ia)
-       ENDDO
-       CALL iotk_scan_end(unit,'Positions',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to end Positions',ABS(ierr))
-
-       CALL iotk_scan_begin(unit,'Types',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find Types',ABS(ierr))
-       CALL iotk_scan_empty(unit, 'Data', ATTR=attr, IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find Data',ABS(ierr))
-       CALL iotk_scan_attr(attr, 'pseudo_dir', pseudo_dir, IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_DIR',ABS(ierr))
        !
-       DO is=1,nsp
-           CALL iotk_scan_empty(unit,'specie'//TRIM(iotk_index(is)), ATTR=attr, IERR=ierr)
-               IF (ierr/=0) &
-               CALL errore(subname,'Unable to find specie'//TRIM(iotk_index(is)),ABS(ierr))
-           CALL iotk_scan_attr(attr, 'type', atm_symb(is), IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'reading attr TYPE',is)
-           CALL iotk_scan_attr(attr, 'pseudo_file', psfile(is), IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'reading attr PSEUDO_FILE',is)
-       ENDDO
-       CALL iotk_scan_end(unit,'Types',IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to end Types',ABS(ierr))
+       ! read massive data
+       ! NOTE: atomic positions are read in bohr
+       !
+       !
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            ALLOCATE( ityp(nat), STAT=ierr )
+            IF ( ierr/=0) CALL errore(subname,'allocating ityp', ABS(ierr))
+            !
+            CALL qexml_read_ions( ATM=atm_symb, ITYP=ityp,                        &
+                                  PSFILE=psfile, TAU=tau,  IERR=ierr )
+            !
+            IF (ierr/=0) CALL errore(subname,'reading qexml file' , ABS(ierr))
+            !
+            ! pseudo pot are in the .save directory
+            !
+            pseudo_dir = TRIM(work_dir)// "/" // TRIM(prefix) // ".save/" 
+            !
+            ! conversions
+            DO i = 1, nat
+                 symb( i ) = atm_symb( ityp (i) )
+            ENDDO
+            !
+            DEALLOCATE( ityp, STAT=ierr )
+            IF ( ierr/=0) CALL errore(subname,'deallocating ityp', ABS(ierr))
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_ions( ATM=atm_symb, SYMB=symb, PSEUDO_DIR=pseudo_dir, &
+                                  PSFILE=psfile, TAU=tau,  IERR=ierr )
+            !
+            IF (ierr/=0) CALL errore(subname,'reading qexpt file' , ABS(ierr))
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
 
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
    END SUBROUTINE ions_read_ext
 
 

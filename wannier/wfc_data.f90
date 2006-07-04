@@ -10,14 +10,16 @@
 !*********************************************
    MODULE wfc_data_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : CZERO, ZERO
-   USE parameters, ONLY : nstrx
+   !
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : CZERO, ZERO
+   USE parameters,        ONLY : nstrx
+   USE windows_module,    ONLY : nbnd, nkpts, dimwinx, imin, imax, ispin
+   USE timing_module,     ONLY : timing
    USE wfc_info_module
-   USE windows_module, ONLY : nbnd, nkpts, dimwinx, imin, imax
-   USE kpoints_module, ONLY : iks
-   USE iotk_module
-   USE timing_module, ONLY: timing
+   USE qexml_module
+   USE qexpt_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -75,55 +77,111 @@ CONTAINS
 !
 
 !**********************************************************
-   SUBROUTINE wfc_data_grids_read(unit)
+   SUBROUTINE wfc_data_grids_read( filefmt )
    !**********************************************************
    IMPLICIT NONE
-       INTEGER, INTENT(in) :: unit
+       CHARACTER(*), INTENT(IN) :: filefmt
        CHARACTER(19)       :: subname="wfc_data_grids_read"
-       CHARACTER(nstrx)    :: attr
        INTEGER             :: ik, ierr 
 
-       !
-       ! ... reads wfc grids
-       !
-       CALL iotk_scan_begin(unit,'Wfc_grids',ATTR=attr,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find Wfc_grids',ABS(ierr))
-       CALL iotk_scan_attr(attr,'npwx',npwkx,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find npwkx',ABS(ierr))
 
+       !
+       ! few checks
+       !
+       IF ( dimwinx <= 0 )   CALL errore(subname,'dimwinx <= 0', ABS(dimwinx)+1)
+       IF ( nkpts <= 0 )     CALL errore(subname,'nkpts <= 0',   ABS(nkpts)+1)
+       IF ( nbnd <= 0 )      CALL errore(subname,'nbnd <= 0',    ABS(nbnd)+1)
+       !
+       ALLOCATE( npwk(nkpts), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating npwk',ABS(ierr))
+
+       !
+       !
+       ! ... reads dimensions for grids
+       !
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            ! here we do a loop over kpts to work around a
+            ! bug from the parallel execution of espresso 3.1 (MAX_NPW is wrong)
+            !
+            DO ik = 1, nkpts
+                !
+                CALL qexml_read_gk( ik, NPWK=npwk(ik), IERR=ierr )
+                IF ( ierr/=0) CALL errore(subname,'getting npwk',ik)
+                !
+            ENDDO
+            !
+            npwkx = MAXVAL( npwk( 1: nkpts ) )
+            !
+       CASE ( 'pw_export' )
+            !
+            DO ik = 1, nkpts
+                !
+                CALL qexpt_read_gk( ik, NPWKX=npwkx, NPWK=npwk(ik), IERR=ierr )
+                IF ( ierr/=0) CALL errore(subname,'getting npwk',ik)
+                !
+            ENDDO
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
+       !
+       IF ( ierr/=0) CALL errore(subname,'getting grids dimensions',ABS(ierr))
+       !
+
+       !
+       ! Allocations
+       !
+
+       IF ( npwkx <= 0 )     CALL errore(subname,'npwkx <= 0',   ABS(npwkx)+1)
        !
        ! WARNING: nasty redefinition
        npwkx = npwkx + 1
-
-       IF ( npwkx <= 0 )  CALL errore(subname,'npwkx <= 0',ABS(npwkx)+1)
-       IF ( dimwinx <= 0 )CALL errore(subname,'dimwinx <= 0',ABS(dimwinx)+1)
-       IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
-       IF ( nbnd <= 0 ) CALL errore(subname,'nbnd <= 0',ABS(nbnd)+1)
-
-       ALLOCATE( npwk(nkpts), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating npwk',nkpts)
+       !
        ALLOCATE( igsort(npwkx,nkpts), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating igsort',npwkx*nkpts)
- 
+       IF (ierr/=0) CALL errore(subname,'allocating igsort',ABS(ierr))
+
+       !
        ! init
        igsort(:,:) = 0
 
-       DO ik = 1,nkpts
-           CALL iotk_scan_begin(unit,'Kpoint'//TRIM(iotk_index(ik)),ATTR=attr,IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to find Kpoint (grids)',ik)
-           CALL iotk_scan_attr(attr,'npw',npwk(ik),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to find npwk',ik)
-           IF ( npwk(ik) <= 0 ) CALL errore(subname,'Invalid npwk',ABS(npwk)+1)
-           CALL iotk_scan_dat(unit,'index',igsort(1:npwk(ik),ik),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to find dat index',ik)
-           CALL iotk_scan_end(unit,'Kpoint'//TRIM(iotk_index(ik)),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to end tag Kpoint',ik)
-       ENDDO
+       !
+       ! read massive data
+       !
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            DO ik = 1, nkpts
+                !
+                CALL qexml_read_gk( ik, NPWK=npwk(ik), INDEX=igsort( 1:npwk(ik), ik), &
+                                    IERR=ierr )
+                IF ( ierr/=0) CALL errore(subname,'getting igsort',ik)
+                !
+            ENDDO
+            !
+       CASE ( 'pw_export' )
+            !
+            DO ik = 1, nkpts
+                !
+                CALL qexpt_read_gk( ik, NPWK=npwk(ik), INDEX=igsort( 1:npwk(ik), ik), &
+                                    IERR=ierr )
+                IF ( ierr/=0) CALL errore(subname,'getting igsort',ik)
+                !
+            ENDDO
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
+       !
        IF ( npwkx /= MAXVAL(npwk(:)) +1 ) CALL errore(subname,'Invalid npwkx II',5)
-       CALL iotk_scan_end(unit,'Wfc_grids',IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag Wfc_grids',ABS(ierr))
-
+       !
        alloc = .TRUE.
+       !
    END SUBROUTINE wfc_data_grids_read
 
 
@@ -153,7 +211,7 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE wfc_data_kread(unit,ik,label,wfc,lwfc,iband_min,iband_max)
+   SUBROUTINE wfc_data_kread( filefmt, ik, label, wfc, lwfc, iband_min, iband_max )
    !*********************************************************
    !
    ! read wfc of a selected kpt from file to the type LWFC. 
@@ -163,16 +221,14 @@ CONTAINS
    ! at the time
    !
    IMPLICIT NONE
-       INTEGER,         INTENT(in)    :: unit
        INTEGER,         INTENT(in)    :: ik
-       CHARACTER(*),    INTENT(in)    :: label
+       CHARACTER(*),    INTENT(in)    :: label, filefmt
        COMPLEX(dbl),    INTENT(inout) :: wfc(:,:)
        TYPE(wfc_info),  INTENT(inout) :: lwfc
        INTEGER, OPTIONAL, INTENT(in)  :: iband_min,iband_max
 
        CHARACTER(14)      :: subname="wfc_data_kread"
-       CHARACTER(nstrx)   :: attr, name
-       INTEGER            :: ib, ibs, ibe, lindex, idum, ierr
+       INTEGER            :: ib, ibs, ibe, lindex, ierr
 
        CALL timing(subname,OPR='start')
 
@@ -190,33 +246,42 @@ CONTAINS
        IF ( ibe > imax(ik) ) CALL errore(subname,'Invalid iband_max',3)
 
        !
-       ! here we considere the doubling of kpoints when nspin == 2
-       ! by using iks
+       ! setting the wfc descriptor
        !
-       CALL iotk_scan_begin(unit,'Kpoint'//TRIM(iotk_index(iks +ik -1)),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find Kpoint (vectors)',iks +ik -1)
-       CALL iotk_scan_empty(unit,'Info',ATTR=attr,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find Info',iks+ik-1)
-       CALL iotk_scan_attr(attr,'nbnd',idum,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find nbnd',iks+ik-1)
-       IF ( idum /= nbnd ) CALL errore(subname,'Invalid nbnd',6)
-           
-       DO ib=ibs,ibe
-            name = 'Wfc'//TRIM(iotk_index(ib))
-            CALL wfc_info_add(npwk(ik), ib, ik, TRIM(label), lwfc, INDEX=lindex )
+       CALL wfc_info_add(npwk(ik), ibs, ik, TRIM(label), lwfc, INDEX=lindex )
+       !
+       DO ib = ibs+1, ibe
             !
-            CALL iotk_scan_dat(unit,TRIM(name), wfc(1:npwk(ik),lindex),IERR=ierr)
-            IF (ierr/=0 ) CALL errore(subname,'reading '//TRIM(name),iks+ik-1)
+            CALL wfc_info_add(npwk(ik), ib, ik, TRIM(label), lwfc )
             !
-            wfc(npwk(ik)+1:,lindex) = CZERO
        ENDDO
+  
        !
-       ! also here recorrect for the spin
-       CALL iotk_scan_end(unit,'Kpoint'//TRIM(iotk_index(iks+ik-1)),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag Kpoint (vectors)',iks+ik-1)
-
+       ! ... actual reading
+       !
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_wfc( ibs, ibe, ik, ispin, NPWK=npwk(ik), IGK=igsort(:,ik), &
+                                 WF=wfc(:, lindex: ), IERR=ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_wfc( ibs, ibe, ik, ispin, IGK=igsort(:,ik), &
+                                 WF=wfc(:, lindex: ), IERR=ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+            !
+       END SELECT
+       !
+       IF ( ierr/=0) CALL errore(subname,'reading wfcs',ABS(ierr))
+       !
+       !
        CALL timing(subname,OPR='stop')
-       RETURN
+       ! 
    END SUBROUTINE wfc_data_kread
 
 
