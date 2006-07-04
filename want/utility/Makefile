@@ -16,7 +16,6 @@ WANNIER_OBJS= \
 ../wannier/cleanup.o \
 ../wannier/control.o \
 ../wannier/converters.o \
-../wannier/dft_interface.o \
 ../wannier/functionals.o \
 ../wannier/get_monkpack.o \
 ../wannier/get_rgrid.o \
