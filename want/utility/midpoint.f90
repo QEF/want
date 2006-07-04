@@ -253,6 +253,7 @@
       !
       ! write results
       !
+      conv = ONE
       SELECT CASE ( TRIM(output_fmt) )
       CASE ( 'angstrom' )
          conv = bohr
