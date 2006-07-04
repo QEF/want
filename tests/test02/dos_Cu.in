@@ -1,0 +1,10 @@
+
+ &INPUT
+   prefix = 'copper'
+   postfix = '_WanT'
+   nk(1) = 15
+   nk(2) = 15
+   nk(3) = 15
+   delta = 0.05
+   smearing_type = 'gaussian'
+ /
