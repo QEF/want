@@ -20,7 +20,7 @@
    USE kinds
    USE constants,            ONLY : CZERO, ZERO, ONE, TWO
    USE parameters,           ONLY : nstrx
-   USE io_module,            ONLY : stdout, stdin, ioname, ham_unit, aux_unit, space_unit
+   USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, aux_unit, space_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE files_module,         ONLY : file_open, file_close
    USE timing_module,        ONLY : timing, timing_overview, global_list
@@ -118,27 +118,27 @@
       !
       ! Read Subspace data
       !
-      CALL ioname('space',filename)
-      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+      CALL io_name('space',filename)
+      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore('dos',"unable to find WINDOWS",1)
           CALL subspace_read(space_unit,"SUBSPACE",lfound)
           IF ( .NOT. lfound ) CALL errore('dos',"unable to find SUBSPACE",1)
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
-      CALL ioname('space',filename,LPATH=.FALSE.)
+      CALL io_name('space',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Space data read from file: ',a)") TRIM(filename)
 
       !
       ! Read hamiltonian data
       !
-      CALL ioname('hamiltonian',filename)
-      CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+      CALL io_name('hamiltonian',filename)
+      CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="read")
           CALL hamiltonian_read(ham_unit,"HAMILTONIAN",lfound)
           IF ( .NOT. lfound ) CALL errore('dos',"unable to find HAMILTONIAN",1)
       CALL file_close(ham_unit,PATH="/",ACTION="read")
 
-      CALL ioname('hamiltonian',filename,LPATH=.FALSE.)
+      CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a)") TRIM(filename)
 
       !

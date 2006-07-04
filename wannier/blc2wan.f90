@@ -16,7 +16,7 @@
    USE kinds
    USE constants,            ONLY: ZERO, CZERO
    USE parameters,           ONLY : nstrx
-   USE io_module,            ONLY : stdout, stdin, ioname, space_unit, wan_unit, &
+   USE io_module,            ONLY : stdout, stdin, io_name, space_unit, wan_unit, &
                                     in_unit => aux1_unit, out_unit => aux2_unit, &
                                     work_dir, prefix, postfix
    USE iotk_module
@@ -97,28 +97,28 @@
       !
       ! Read Subspace data
       !
-      CALL ioname('space',filename)
-      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+      CALL io_name('space',filename)
+      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore('bands',"unable to find WINDOWS",1)
           CALL subspace_read(space_unit,"SUBSPACE",lfound)
           IF ( .NOT. lfound ) CALL errore('blc2wan',"unable to find SUBSPACE",1)
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
-      CALL ioname('space',filename,LPATH=.FALSE.)
+      CALL io_name('space',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Space data read from file: ',a)") TRIM(filename)
 
 
       !
       ! Read wannier data
       !
-      CALL ioname('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+      CALL io_name('wannier',filename)
+      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
           CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
           IF ( .NOT. lfound ) CALL errore('blc2wan',"unable to find WANNIER_LOCALIZATION",1)
       CALL file_close(wan_unit,PATH="/",ACTION="read")
 
-      CALL ioname('space',filename,LPATH=.FALSE.)
+      CALL io_name('space',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Wannier data read from file: ',a)") TRIM(filename)
 
 

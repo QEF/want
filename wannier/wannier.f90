@@ -22,7 +22,7 @@
                                  localization_init_mode => localization_init, &
                                  ordering_mode, do_ordering, do_collect_wf 
       USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
-      USE io_module, ONLY : stdout, wan_unit, ham_unit, ioname
+      USE io_module, ONLY : stdout, wan_unit, ham_unit, io_name, wantdata_form
       USE files_module, ONLY : file_open, file_close
       USE version_module, ONLY : version_number
       USE util_module, ONLY: zmat_unitary, mat_mul, mat_svd, mat_hdiag
@@ -82,7 +82,7 @@
       CALL input_manager()
 
       !
-      ! ... Global data init
+      ! ... Read DFT_DATA file and init global data
       !
       CALL want_init(WANT_INPUT=.TRUE., PSEUDO=read_pseudo)
 
@@ -176,6 +176,7 @@
       IF ( do_polarization ) CALL polarization( dimwann, rave )
 
       Omega0 = Omega_tot
+      Omega_old = ZERO
       Omega_var = Omega_tot - Omega_old
       Omega_old = Omega_tot
 
@@ -190,6 +191,7 @@
 
       aux1 = ONE / ( FOUR * wbtot )
       dq0(:,:,:) = CZERO
+      gcnorm0    = ONE
 
 
 
@@ -412,10 +414,13 @@ CALL timing('omega_best','stop')
            ! write data to disk
            !
            IF ( MOD( ncount, nsave_wan ) == 0 ) THEN
-                CALL ioname('wannier',filename)
+                !
+                CALL io_name('wannier',filename)
                 CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write", &
-                               FORM="formatted")
+                               FORM=TRIM(wantdata_form))
+                     !
                      CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
+                     !
                 CALL file_close(wan_unit,PATH="/",ACTION="write")
            ENDIF
                 
@@ -504,12 +509,14 @@ CALL timing('omega_best','stop')
       ! ... Write the final unitary transformations and all other data referring
       !     to the Wannier localization procedure to a file
       !
-      CALL ioname('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+      CALL io_name('wannier',filename)
+      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form) )
+           !
            CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
+           !
       CALL file_close(wan_unit,PATH="/",ACTION="write")
 
-      CALL ioname('wannier',filename,LPATH=.FALSE.)
+      CALL io_name('wannier',filename,LPATH=.FALSE.)
       WRITE( stdout,"(/,2x,'Unitary transf. matrixes written on file: ',a)") &
                     TRIM(filename)
       WRITE(stdout,"(2x,70('='))")
@@ -522,13 +529,13 @@ CALL timing('omega_best','stop')
       CALL hamiltonian_init()
       CALL hamiltonian_calc(dimwann, nkpts, cu)
 
-      CALL ioname('hamiltonian',filename)
+      CALL io_name('hamiltonian',filename)
       CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="write", &
-                              FORM='formatted')
+                              FORM=TRIM(wantdata_form))
             CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
       CALL file_close(ham_unit,PATH="/",ACTION="write")
 
-      CALL ioname('hamiltonian',filename,LPATH=.FALSE.)
+      CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
       WRITE( stdout,"(/,'  Hamiltonian on WF basis written on file : ',a)") TRIM(filename)
 
 !
