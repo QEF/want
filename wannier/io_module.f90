@@ -10,10 +10,12 @@
 !*********************************************
    MODULE io_module
 !*********************************************
-   USE parameters, ONLY : nstrx
-   USE iotk_module
+   USE parameters,       ONLY : nstrx
    USE io_global_module, ONLY : stdout, stdin, ionode, ionode_id, &
                                 io_global_start, io_global_getionode
+   USE qexml_module,     ONLY : qexml_init
+   USE qexpt_module,     ONLY : qexpt_init
+   USE iotk_module
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -22,14 +24,13 @@
 ! Contains basic data concerning IO
 ! 
 ! contains:
-! SUBROUTINE  ioname(data,filename[,lpostfix][,lpath])
+! SUBROUTINE  io_name(data,filename[,lpostfix][,lpath])
 ! SUBROUTINE  read_iodata(unit,name,prefix,postfix,work_dir,title,found)
 ! SUBROUTINE  write_iodata(unit,name,prefix,postfix,work_dir,title)
 !
-! DATA in ioname routine should be:
+! DATA in io_name routine should be:
 ! 
 ! * 'dft_data'
-! * 'export'
 ! * 'space'
 ! * 'wannier'
 ! * 'hamiltonian'
@@ -52,13 +53,12 @@
       save_unit = 60                ! restart file unit
 
 
-   CHARACTER(4), PARAMETER    ::  suffix_dft_data=".dft"
-   CHARACTER(17),PARAMETER    ::  suffix_export=".export/index.xml"
    CHARACTER(7), PARAMETER    ::  suffix_space=".space"
    CHARACTER(4), PARAMETER    ::  suffix_ovp=".ovp"
    CHARACTER(4), PARAMETER    ::  suffix_wannier=".wan"
    CHARACTER(4), PARAMETER    ::  suffix_hamiltonian=".ham"
    CHARACTER(5), PARAMETER    ::  suffix_save=".save"
+   CHARACTER(nstrx)           ::  suffix_dft_data=" "
    
    CHARACTER(nstrx)           :: prefix
    CHARACTER(nstrx)           :: postfix
@@ -66,6 +66,10 @@
    CHARACTER(nstrx)           :: title
    CHARACTER(nstrx)           :: pseudo_dir
          
+   CHARACTER(nstrx)           :: dftdata_fmt = ' '
+   CHARACTER(nstrx)           :: wantdata_fmt = 'formatted'
+   CHARACTER(nstrx)           :: wantdata_form
+   LOGICAL                    :: wantdata_binary
 !
 ! end delcarations
 !
@@ -75,13 +79,14 @@
    PUBLIC ::  ionode, ionode_id
 
    PUBLIC ::  stdin, stdout 
+   PUBLIC ::  dftdata_fmt, wantdata_fmt, wantdata_form, wantdata_binary
    PUBLIC ::  dft_unit, pseudo_unit 
    PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit 
    PUBLIC ::  aux_unit, aux1_unit, aux2_unit, aux3_unit, aux4_unit
    PUBLIC ::  save_unit
 
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
-   PUBLIC ::  ioname
+   PUBLIC ::  io_init, io_name
    PUBLIC ::  read_iodata
    PUBLIC ::  write_iodata
 
@@ -91,9 +96,120 @@
 !
 ! subroutines
 !
+!**********************************************************
+   SUBROUTINE get_dftdata_fmt(prefix_,work_dir_, dftdata_fmt_)
+   !**********************************************************
+      !
+      ! get the fmt of the dftdata file (use the names)
+      !
+      IMPLICIT NONE
+      CHARACTER(*),  INTENT(IN)  ::  prefix_, work_dir_
+      CHARACTER(*),  INTENT(OUT) ::  dftdata_fmt_
+      !
+      CHARACTER(nstrx) :: filename
+      CHARACTER(nstrx) :: fmt_searched(2)
+      CHARACTER(nstrx) :: fmt_filename(2)
+      LOGICAL          :: lexist, lexist1
+      INTEGER          :: i
+      !
+      ! Setting fmts to be searched
+      !
+      DATA fmt_searched /'qexml', 'pw_export'  /
+      DATA fmt_filename /'.save/data-file.xml', '.export/index.xml'  /
+      !
+      lexist = .FALSE.
+      !
+      DO i = 1, SIZE( fmt_searched )
+           !
+           filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // TRIM( fmt_filename( i ) )
+           INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
+           !
+           IF ( lexist .AND. TRIM( fmt_searched(i) ) == 'qexml'  )  THEN
+                !
+                ! check olso the existence of evc.dat or evc1.dat
+                ! this means that file produced by espresso are usable by WanT
+                !
+                filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc.dat"
+                INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
+                filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc1.dat"
+                INQUIRE ( FILE=TRIM(filename), EXIST=lexist1 )
+                !            
+                lexist = lexist .OR. lexist1
+                !
+           ENDIF
+           !
+           IF ( lexist ) EXIT
+      ENDDO
+      !
+      IF ( .NOT. lexist ) THEN
+           dftdata_fmt_ = ""
+      ELSE
+           dftdata_fmt_ = TRIM( fmt_searched( i ) )
+           !
+           WRITE( stdout , "(2x, 'DFT-data fmt automaticaly detected : ',a )" ) &
+                  TRIM( dftdata_fmt_)
+           !
+      ENDIF
+      !
+   END SUBROUTINE get_dftdata_fmt
+      
 
 !**********************************************************
-   SUBROUTINE ioname(data,filename,lpostfix,lpath)
+   SUBROUTINE io_init()
+   !**********************************************************
+   !
+   ! init some data related to IO and taken from input
+   !
+   IMPLICIT NONE
+      !
+      ionode = .TRUE.
+      ionode_id = 0
+      !
+      SELECT CASE ( TRIM(wantdata_fmt) ) 
+      !
+      CASE ( 'textual' )
+           !
+           wantdata_form   = 'formatted'
+           wantdata_binary = .FALSE.
+           !
+      CASE ( 'binary' )
+           !
+           wantdata_form   = 'unformatted'
+           wantdata_binary = .TRUE.
+           !
+      END SELECT
+      
+      !
+      IF ( LEN_TRIM( dftdata_fmt ) == 0 ) THEN 
+           !
+           CALL get_dftdata_fmt ( prefix, work_dir, dftdata_fmt )
+      ENDIF
+      !
+      !
+      SELECT CASE ( TRIM(dftdata_fmt) )
+      !
+      CASE ( 'qexml' )
+           !
+           suffix_dft_data = ".save/data-file.xml"
+           !
+           CALL qexml_init( dft_unit, aux_unit )
+           !
+      CASE ( 'pw_export' )
+           !
+           suffix_dft_data = ".export/index.xml"
+           !
+           CALL qexpt_init( dft_unit )
+           !
+      CASE DEFAULT
+           !
+           CALL errore('io_init','invalid dftdata_fmt = '//TRIM(dftdata_fmt),1)
+      END SELECT
+      !
+   END SUBROUTINE io_init
+
+
+!**********************************************************
+   SUBROUTINE io_name(data,filename,lpostfix,lpath)
    !**********************************************************
       IMPLICIT NONE
       CHARACTER(*),       INTENT(in)  :: data
@@ -124,13 +240,12 @@
       IF ( length /= 0 ) THEN
          IF ( path_(length:length) /= "/"  ) path_ = TRIM(path_)//"/"
       ENDIF
+
           
 
       SELECT CASE( TRIM(data) )
       CASE ( "dft_data" ) 
            suffix_ = TRIM(suffix_dft_data)
-      CASE ( "export" ) 
-           suffix_ = TRIM(suffix_export)
       CASE ( "space" ) 
            suffix_ = TRIM(suffix_space)
       CASE ( "overlap_projection" ) 
@@ -142,12 +257,12 @@
       CASE ( "save" )
            suffix_ = TRIM(suffix_save)
       CASE DEFAULT
-           CALL errore('ioname','Unknown DATA type in input',1)
+           CALL errore('io_name','Unknown DATA type in input',1)
       END SELECT
 
       filename = TRIM(path_)//TRIM(prefix)//TRIM(postfix_)//TRIM(suffix_)
 
-  END SUBROUTINE ioname
+  END SUBROUTINE io_name
    
 
 !**********************************************************
@@ -197,6 +312,8 @@
       CALL iotk_write_empty(unit,name,ATTR=attr)
 
    END SUBROUTINE write_iodata
+
+
 
 END MODULE io_module
 

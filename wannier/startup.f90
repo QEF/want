@@ -79,11 +79,13 @@
    ! architecture / compilation details
    !
 #ifdef __MYARCHITECTURE
-   WRITE(stdout, "(2x,'Arch. / Op.Sys: ',a)" ) __MYARCHITECTURE 
+   WRITE( stdout, "(2x,'Arch. / Op.Sys: ',a)" ) __MYARCHITECTURE 
 #endif
 #ifdef __MYCOMPILER
-   WRITE(stdout, "(2x,'      Compiler: ',a)" ) __MYCOMPILER
+   WRITE( stdout, "(2x,'      Compiler: ',a)" ) __MYCOMPILER
 #endif
+   !
+   WRITE( stdout, "(/)")
 
 END SUBROUTINE startup
 

@@ -86,6 +86,22 @@
    DATA projections_allowed / 'from_scratch',  'from_file' /
        ! the allowed values for projections
 
+   CHARACTER(nstrx) :: dftdata_fmt = ' '
+       ! ( 'qexml' | 'pw_export' )
+       ! the format of DFT data
+
+   CHARACTER(nstrx) :: dftdata_fmt_allowed(2)
+   DATA dftdata_fmt_allowed / 'qexml',  'pw_export' /
+       ! the allowed values for dftdata_fmt
+
+   CHARACTER(nstrx) :: wantdata_fmt = ' '
+       ! ( 'binary' | 'textual' )
+       ! the format of newly created WanT data
+
+   CHARACTER(nstrx) :: wantdata_fmt_allowed(2)
+   DATA wantdata_fmt_allowed / 'binary',  'textual' /
+       ! the allowed values for wantdata_fmt
+
    LOGICAL :: assume_ncpp = .FALSE.
        ! if .TRUE. this variable avoids the reading of pseudopotential files
        ! assuming the DFT calculation has been performed within norm-conserving
@@ -95,12 +111,13 @@
        ! threshold for the check of matrix unitariery
 
    NAMELIST / CONTROL /  title, prefix, postfix, restart_mode, work_dir, verbosity, &
-                         overlaps, projections, assume_ncpp, unitary_thr
-
+                         overlaps, projections, assume_ncpp, unitary_thr, &
+                         dftdata_fmt, wantdata_fmt
 
    PUBLIC :: title, prefix, postfix, work_dir
    PUBLIC :: overlaps, projections, restart_mode
    PUBLIC :: verbosity, assume_ncpp, unitary_thr
+   PUBLIC :: dftdata_fmt, wantdata_fmt
    PUBLIC :: CONTROL
 
 
@@ -277,6 +294,39 @@
 
 CONTAINS
 
+
+!**********************************************************
+   SUBROUTINE string_check( string, string_allowed, ierr)
+   !**********************************************************
+   !
+   ! Check that the input string is one of the allowed values,
+   ! do not take care of the case.
+   ! The input string is made lower case in output.
+   !
+   IMPLICIT NONE
+      !
+      CHARACTER(*),  INTENT(INOUT)  :: string
+      CHARACTER(*),  INTENT(IN)     :: string_allowed(:)
+      INTEGER,       INTENT(OUT)    :: ierr
+      !
+      LOGICAL :: allowed
+      INTEGER :: i
+      !
+      ierr = 0
+      !
+      CALL change_case( string, 'lower')
+      !
+      allowed=.FALSE.
+      !
+      DO i=1, SIZE( string_allowed )
+          IF ( TRIM(string) == TRIM(string_allowed(i)) ) allowed=.TRUE. 
+      ENDDO
+      !
+      IF (.NOT. allowed) ierr = 1
+      !
+   END SUBROUTINE string_check
+
+
 !**********************************************************
    SUBROUTINE read_namelist_control(unit)
    !**********************************************************
@@ -287,8 +337,7 @@ CONTAINS
       INTEGER, INTENT(in)   :: unit
 
       CHARACTER(21) :: subname='read_namelist_control'
-      LOGICAL :: allowed
-      INTEGER :: i, ios
+      INTEGER :: ios, ierr
 
       READ(unit, CONTROL, IOSTAT=ios )
          IF (ios/=0) CALL errore(subname,'reading CONTROL namelist',ABS(ios))
@@ -298,35 +347,32 @@ CONTAINS
       !
       IF ( unitary_thr <= 0 ) CALL errore(subname, ' unitary_thr must be positive ', 1 )
 
-      CALL change_case(restart_mode,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(restart_mode_allowed)
-          IF ( TRIM(restart_mode) == restart_mode_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) &
-          CALL errore(subname,'Invalid restart_mode "'//TRIM(restart_mode)//'"',10)
+      CALL string_check( restart_mode, restart_mode_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid restart_mode = '//TRIM(restart_mode),10)
+      !
+      CALL string_check( verbosity, verbosity_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid verbosity = '//TRIM(verbosity),10)
+      !
+      CALL string_check( overlaps, overlaps_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid overlaps = '//TRIM(overlaps),10)
+      !
+      CALL string_check( projections, projections_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid projections = '//TRIM(projections),10)
+      !
+      IF ( LEN_TRIM( dftdata_fmt ) /= 0 ) THEN
+          !
+          CALL string_check( dftdata_fmt, dftdata_fmt_allowed, ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,'Invalid dftdata_fmt = '//TRIM(dftdata_fmt),10)
+          !
+      ENDIF
+      !
+      IF ( LEN_TRIM( wantdata_fmt ) /= 0 ) THEN
+          !
+          CALL string_check( wantdata_fmt, wantdata_fmt_allowed, ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,'Invalid wantdata_fmt = '//TRIM(wantdata_fmt),10)
+          !
+      ENDIF
 
-      CALL change_case(verbosity,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(verbosity_allowed)
-          IF ( TRIM(verbosity) == verbosity_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) CALL errore(subname,'Invalid verbosity "'//TRIM(verbosity)//'"',10)
-
-      CALL change_case(overlaps,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(overlaps_allowed)
-          IF ( TRIM(overlaps) == overlaps_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) CALL errore(subname,'Invalid overlaps "'//TRIM(overlaps)//'"',11)
-
-      CALL change_case(projections,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(projections_allowed)
-          IF ( TRIM(projections) == projections_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) &
-          CALL errore(subname,'Invalid projections "'//TRIM(projections)//'"',12)
 
    END SUBROUTINE read_namelist_control
 
@@ -341,8 +387,7 @@ CONTAINS
       INTEGER, INTENT(in)   :: unit
 
       CHARACTER(22) :: subname='read_namelist_subspace'
-      LOGICAL :: allowed
-      INTEGER :: i, ios
+      INTEGER :: ios, ierr
 
       READ(unit, SUBSPACE, IOSTAT=ios )
          IF (ios/=0) CALL errore(subname,'reading SUBSPACE namelist',ABS(ios))
@@ -359,22 +404,12 @@ CONTAINS
       IF ( disentangle_thr <= 0.0 ) CALL errore(subname, 'disentangle_thr should be > 0',1)
       IF ( nprint_dis <= 0) CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
       IF ( nsave_dis <= 0 ) CALL errore(subname, ' nsave_dis must be > 0 ', -nsave_dis+1 )
-
-      CALL change_case(subspace_init,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(subspace_init_allowed)
-          IF ( TRIM(subspace_init) == subspace_init_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) &
-         CALL errore(subname,'Invalid subspace_init "'//TRIM(subspace_init)//'"',2)
-
-      CALL change_case(spin_component,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(spin_component_allowed)
-          IF ( TRIM(spin_component) == spin_component_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) CALL errore(subname, &
-             'Invalid spin_component "'//TRIM(spin_component)//'"',10)
+      !
+      CALL string_check( subspace_init, subspace_init_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid subspace_init = '//TRIM(subspace_init),10)
+      !
+      CALL string_check( spin_component, spin_component_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid spin_component = '//TRIM(spin_component),10)
 
    END SUBROUTINE read_namelist_subspace
 
@@ -389,8 +424,7 @@ CONTAINS
       INTEGER, INTENT(in)   :: unit
 
       CHARACTER(26) :: subname='read_namelist_localization'
-      LOGICAL :: allowed
-      INTEGER :: i, ios
+      INTEGER :: ios, ierr
 
       READ(unit, LOCALIZATION, IOSTAT=ios )
          IF (ios/=0) CALL errore(subname,'reading LOCALIZATION namelist',ABS(ios))
@@ -410,22 +444,12 @@ CONTAINS
       IF ( nprint_wan <= 0 ) CALL errore(subname, ' nprint_wan must be > 0 ', -nprint_wan+1 )
       IF ( nsave_wan <= 0 ) CALL errore(subname, ' nsave_wan must be > 0 ', -nsave_wan+1 )
       IF ( ncg <= 0 ) CALL errore(subname, 'ncg should be >0',1)
-
-      CALL change_case(localization_init,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(localization_init_allowed)
-          IF ( TRIM(localization_init) == localization_init_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) &
-         CALL errore(subname,'Invalid localization_init "'//TRIM(localization_init)//'"',2)
-
-      CALL change_case(ordering_mode,'lower')
-      allowed=.FALSE.
-      DO i=1,SIZE(ordering_mode_allowed)
-          IF ( TRIM(ordering_mode) == ordering_mode_allowed(i) ) allowed=.TRUE. 
-      ENDDO
-      IF (.NOT. allowed) &
-           CALL errore(subname,'Invalid ordering_mode "'//TRIM(ordering_mode)//'"',30)
+      !
+      CALL string_check( localization_init, localization_init_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid spin_component = '//TRIM(localization_init),10)
+      !
+      CALL string_check( ordering_mode, ordering_mode_allowed, ierr ) 
+      IF ( ierr/=0 ) CALL errore(subname,'Invalid spin_component = '//TRIM(ordering_mode),10)
 
    END SUBROUTINE read_namelist_localization
 

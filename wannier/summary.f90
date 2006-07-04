@@ -19,7 +19,7 @@
    USE parameters,        ONLY : nstrx
    USE constants,         ONLY : PI, TPI, BOHR => bohr_radius_angs
    USE parser_module,     ONLY : log2char
-   USE io_module,         ONLY : title, prefix, postfix, work_dir
+   USE io_module,         ONLY : title, prefix, postfix, work_dir, dftdata_fmt, wantdata_fmt
    USE converters_module, ONLY : cart2cry
    USE control_module,    ONLY : ordering_mode, verbosity, restart_mode, & 
                                  use_pseudo, use_uspp, use_blimit, &
@@ -154,10 +154,12 @@
           ELSE
              WRITE(unit,"(7x,'              work_dir :',5x,/,10x,a)") TRIM(work_dir)
           ENDIF
+          WRITE(unit,"(   7x,'           dftdata_fmt :',5x,   a)") TRIM(dftdata_fmt)
           WRITE(unit,"(   )")
-          WRITE(unit,"(   7x,'           unitary_thr :',5x,e12.4)") unitary_thr
+          WRITE(unit,"(   7x,'          wantdata_fmt :',5x,   a)") TRIM(wantdata_fmt)
           WRITE(unit,"(   7x,'             verbosity :',5x,   a)") TRIM(verbosity)
           WRITE(unit,"(   7x,'          restart_mode :',5x,   a)") TRIM(restart_mode)
+          WRITE(unit,"(   7x,'           unitary_thr :',5x,e12.4)") unitary_thr
           WRITE(unit,"(   7x,'        Calc. overlaps :',5x,   a)") log2char(do_overlaps)
           WRITE(unit,"(   7x,'     Calc. projections :',5x,   a)") log2char(do_projections)
           WRITE(unit,"(   )")
@@ -180,7 +182,7 @@
              WRITE(unit,"(7x,'               win_max :',5x,f8.4)") win_max
           IF ( froz_min > -10000.0 ) &
              WRITE(unit,"(7x,'              froz_min :',5x,f8.4)") froz_min
-          IF ( froz_max <  10000.0 ) &
+          IF ( froz_max <  10000.0 .AND. froz_max > -10000.0 ) &
              WRITE(unit,"(7x,'              froz_max :',5x,f8.4)") froz_max
              !
           WRITE(unit,"(   7x,'             alpha_dis :',5x,f8.4)") alpha_dis
@@ -411,7 +413,7 @@
           
 
           DO ik=1,nkpts
-             WRITE(unit, " (4x, 'k point', i4, ':   ( ',3f9.5,' ),   weight = ', f11.7 )") &
+             WRITE(unit, " (4x, 'k (', i4, ') =    ( ',3f9.5,' ),   weight = ', f11.7 )") &
              ik, ( vkpt(i,ik), i=1,3 ), wk(ik)
           ENDDO
           WRITE(unit, " (  ' </K-POINTS>',/)" )
@@ -422,8 +424,8 @@
           !
           WRITE (unit, "(2x, 'List of the ' , i2, ' b-vectors : (Bohr^-1) ') ") nb
           DO i = 1, nb
-              WRITE(unit, " (4x, 'b (', i2, ') =    ( ',3f9.5, ' ),   weight = ',f11.7 )")&
-                             i, ( vb(j,i), j=1,3 ), wb(i)
+             WRITE(unit, " (4x, 'b (', i4, ') =    ( ',3f9.5, ' ),   weight = ',f11.7 )")&
+                            i, ( vb(j,i), j=1,3 ), wb(i)
           ENDDO
           !
           WRITE(unit, " (/,2x, 'Total weight = ' , f15.7) ") wbtot
