@@ -25,7 +25,7 @@
    USE parameters,     ONLY : nstrx
    USE constants,      ONLY : CZERO, ZERO
    USE iotk_module
-   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, ioname
+   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, io_name, dftdata_fmt
    USE timing_module,  ONLY : timing, timing_upto_now
    USE files_module,   ONLY : file_open, file_close
    
@@ -83,20 +83,20 @@
           !
           ! ... opening the file containing the PW-DFT data
           !
-          CALL ioname('export',filename,LPOSTFIX=.FALSE.)
-          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
-                                  FORM='formatted')
-          CALL ioname('export',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
+          CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read" )
+          !
+          CALL io_name('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
 
           !
           ! ... Read grids
           WRITE( stdout,"(/,2x,'Reading density G-grid from file: ',a)") TRIM(filename)
-          CALL ggrids_read_ext(dft_unit)
+          CALL ggrids_read_ext( dftdata_fmt )
 
           !
           ! ... Read wfcs
           WRITE( stdout,"(  2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
-          CALL wfc_data_grids_read(dft_unit)
+          CALL wfc_data_grids_read( dftdata_fmt )
 
           !
           ! ... closing the main data file
@@ -109,12 +109,16 @@
           WRITE(stdout,"(2/,10x,'Energy cut-off for wfcs =  ',5x,F7.2,' (Ry)' )") ecutwfc
           WRITE(stdout, "(25x,'for rho  =  ', 5x, F7.2, ' (Ry)' )")  ecutrho
           WRITE(stdout, "(6x,'Total number of PW for rho  =  ',i9)") npw_rho
-          WRITE(stdout, "(6x,'  Max number of PW for wfc  =  ',i9)") npwkx
-          WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))+1
+          !
+          ! here we use npwkx -1 due to a previous redefinition respect
+          ! to DFT data
+          !
+          WRITE(stdout, "(6x,'  Max number of PW for wfc  =  ',i9)") npwkx -1
+          WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))
           WRITE(stdout, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
           WRITE(stdout, "()")
 
-    
+
           !
           ! ... if pseudo are used do the required allocations
           !
@@ -188,8 +192,8 @@
 
           !
           ! ... re-open the main data file
-          CALL ioname('export',filename,LPOSTFIX=.FALSE.)
-          CALL file_open(dft_unit,TRIM(filename),PATH="/Eigenvectors/",ACTION="read", &
+          CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
                                   FORM='formatted')
 
 
@@ -208,7 +212,7 @@
              WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point: ',i4)") ik
              WRITE(stdout,"( 4x,'npw = ',i6,',', 4x,'dimwin = ',i4)") npwk(ik), dimwin(ik)
 
-             CALL wfc_data_kread(dft_unit, ik, "IK", evc, evc_info)
+             CALL wfc_data_kread( dftdata_fmt, ik, "IK", evc, evc_info)
 
              IF ( use_uspp ) THEN
                  !
@@ -242,7 +246,7 @@
                     ib = nnpos(inn)
                     ikb = nnlist( ib , ik)
                     !
-                    CALL wfc_data_kread(dft_unit, ikb, "IKB", evc, evc_info)
+                    CALL wfc_data_kread( dftdata_fmt, ikb, "IKB", evc, evc_info)
                     !
                     IF( use_uspp ) THEN
                           !
@@ -323,7 +327,7 @@
 
           !
           ! ... re-closing the main data file
-          CALL file_close(dft_unit,PATH="/Eigenvectors/",ACTION="read")
+          CALL file_close(dft_unit,PATH="/",ACTION="read")
 
 
           !
@@ -350,14 +354,14 @@
 ! ... Here read overlap or projections (or both) if needed
 !
       IF ( read_overlaps .OR. read_projections ) THEN
-          CALL ioname('overlap_projection',filename)
+          CALL io_name('overlap_projection',filename)
           CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
               CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION", lfound, &  
                    LOVERLAP=read_overlaps, LPROJECTION=read_projections)
               IF ( .NOT. lfound ) CALL errore(subname,'reading ovp and proj',1)
           CALL file_close(ovp_unit,PATH="/",ACTION="read")
 
-          CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
+          CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
           WRITE(stdout, "(/)")
           IF ( read_overlaps ) &
              WRITE( stdout,"(2x,'Overlaps read from file: ',a)") TRIM(filename)
@@ -372,12 +376,12 @@
 !
       IF ( .NOT. (read_overlaps .AND. read_projections)  ) THEN
 
-          CALL ioname('overlap_projection',filename)
+          CALL io_name('overlap_projection',filename)
           CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
                CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
           CALL file_close(ovp_unit,PATH="/",ACTION="write")
 
-          CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
+          CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
           WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") &
                  TRIM(filename)
       ENDIF
