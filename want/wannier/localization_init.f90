@@ -22,7 +22,7 @@
    USE parameters, ONLY : nstrx
    USE constants, ONLY : CZERO, CONE
    USE timing_module, ONLY : timing
-   USE io_module, ONLY : stdout, ioname, wan_unit
+   USE io_module, ONLY : stdout, io_name, wan_unit
    USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, mat_mul, mat_svd
    USE localization_module, ONLY : localization_read, cu, cu_best
@@ -67,14 +67,15 @@
    CASE ( 'from_file' )
 
         WRITE( stdout,"(/,'  Initial unitary rotations : from_file')")
-            CALL ioname('wannier',filename)
-            CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read", &
-                           FORM="formatted")
+            CALL io_name('wannier',filename)
+            CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
+            !
             CALL localization_read(wan_unit,"WANNIER_LOCALIZATION", lfound)
             IF ( .NOT. lfound ) CALL errore(subname,'searching tag "WANNIER_LOCALIZATION"',1)
+            !
         CALL file_close(wan_unit,PATH="/",ACTION="read")
         !
-        CALL ioname('wannier',filename,LPATH=.FALSE.)
+        CALL io_name('wannier',filename,LPATH=.FALSE.)
         WRITE( stdout,"(2x,'Unitary matrices read from file: ',a,/)") TRIM(filename)
         
    CASE ( 'center_projections' )

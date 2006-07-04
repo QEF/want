@@ -48,18 +48,32 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
 
 !------------------------------------------------
 
-   IF ( TRIM(ordering_mode) == 'none' ) THEN
-      RETURN
-   ELSEIF ( TRIM(ordering_mode) == 'spatial' ) THEN
-      lspatial = .TRUE.
-   ELSEIF ( TRIM(ordering_mode) == 'spread' ) THEN
-      lspread = .TRUE.
-   ELSEIF ( TRIM(ordering_mode) == 'complete' ) THEN
-      lspatial = .TRUE.
-      lspread = .TRUE.
-   ELSE 
-      CALL errore( 'ordering', 'invalid ORDERING_MODE = '//TRIM(ordering_mode), 1 )
-   ENDIF
+   lspatial = .FALSE.
+   lspread  = .FALSE.
+   !
+   SELECT CASE ( TRIM(ordering_mode) )
+   !
+   CASE ( 'none' )
+       !
+       RETURN
+       !
+   CASE ( 'spatial' ) 
+       !
+       lspatial = .TRUE.
+       !
+   CASE ( 'spread' ) 
+       !
+       lspread = .TRUE.
+       !
+   CASE ( 'complete' )
+       !
+       lspatial = .TRUE.
+       lspread = .TRUE.
+       !
+   CASE DEFAULT
+       !
+       CALL errore( 'ordering', 'invalid ORDERING_MODE = '//TRIM(ordering_mode), 1 )
+   END SELECT
 
    ALLOCATE(index(dimwann), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating INDEX',ABS(ierr))

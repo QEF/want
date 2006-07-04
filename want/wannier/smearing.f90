@@ -63,6 +63,10 @@ CONTAINS
 ! main body
 !-------------------
 !
+       !
+       ! dummy init
+       smearing_func = ONE
+       !
        SELECT CASE (TRIM(smearing_type))
        !
        CASE ( "lorentzian" )   

@@ -49,23 +49,33 @@
 !------------------------------
 !
 
+       IF ( nkpts_in <= 1 ) CALL errore('get_points', 'more than 1 kpt is needed', 1 )
+
        nkpts_tot = 0
        length0 = 0
+       !
        DO i = 1, nkpts_in - 1
+           !
            vec(:) = kpt_in(:,i+1) - kpt_in(:,i)
            length(i) = SQRT( DOT_PRODUCT( vec, vec) )
+           !
            IF ( length(i) < EPS_m6 ) CALL errore('get_points', 'length(i) too small', i )
+           !
        ENDDO
+       !
        length0 = SUM(length(:))
 
-
+       n = 0 
+       !
        DO i = 1, nkpts_in - 1
+           !
            n = INT( nkpts_max * length(i) / length0 )
            knum(i) = n
            !
            IF ( n ==  0 ) CALL errore('get_points', 'nint=0', n+1 )
  
            DO j = 1, n-1
+               !
                nkpts_tot = nkpts_tot + 1
                !
                IF ( nkpts_tot+1 > nkpts_max ) &
@@ -82,14 +92,18 @@
                kpt(:,nkpts_tot) = kpt_in(:,i) + ( kpt_in(:,i+1) - kpt_in(:,i) ) * &
                                                   REAL(j-1, dbl) / REAL(n, dbl)  
            ENDDO
+           !
        ENDDO
        
        !
        ! Last point
        !
-       nkpts_tot = nkpts_tot + 1
+       nkpts_tot         = nkpts_tot + 1
+       !
        xval(nkpts_tot)   = xval(nkpts_tot-1) + length(nkpts_in-1) / REAL(n, dbl)
+       !
        kpt(:,nkpts_tot)  = kpt_in(:,nkpts_in)
+       !
        xval_in(nkpts_in) = xval(nkpts_tot) 
 
        !
@@ -100,19 +114,29 @@
                       nkpts_tot, nkpts_max
 
        WRITE(stdout, "(2/,2x,'Generating kpts [cart. coord. Bohr^-1]')" )
+       !
        DO i=1,nkpts_in
+           !
            WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ',3x,a2) ") &
                            i, kpt_in(:,i), kptname_in(i)
        ENDDO
+       !
        WRITE(stdout, "(/,2x,'Number of kpts in each segment')" )
        !
        knum(1) = knum(1) +1
+       !
        DO i=1,nkpts_in-1
-          WRITE(stdout, "(6x, 'line', i4, ':   ',i5 ) ') " ) i, knum(i)-1
+           !
+           WRITE(stdout, "(6x, 'line', i4, ':   ',i5 ) ') " ) i, knum(i)-1
+           !
        ENDDO
+       !
        WRITE(stdout, "(2/,2x,'Generated kpts  [cart. coord. Bohr^-1]')" )
+       !
        DO i=1,nkpts_tot
-          WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, kpt(:,i)
+           !
+           WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, kpt(:,i)
+           !
        ENDDO
 
        !
@@ -126,8 +150,11 @@
        CALL cart2cry(tmp, bvec)
        !
        WRITE(stdout, "(2/,2x,'Generated kpts  [crystal coord.]')" )
+       !
        DO i=1,nkpts_tot
-          WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, tmp(:,i)
+           !
+           WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, tmp(:,i)
+           !
        ENDDO
        !
        DEALLOCATE( tmp, STAT=ierr )

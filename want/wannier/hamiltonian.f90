@@ -14,7 +14,7 @@
    USE lattice_module, ONLY : avec, bvec, lattice_alloc => alloc
    USE kpoints_module, ONLY : nkpts, nk, vkpt, wk,  &
                               nrtot, nr, ivr,  wr,  kpoints_alloc 
-   USE subspace_module, ONLY : dimwann, wan_eig, efermi, subspace_alloc => alloc
+   USE subspace_module, ONLY : dimwann, wan_eig, subspace_alloc => alloc
    USE iotk_module
    USE parameters, ONLY : nstrx
    USE converters_module, ONLY : cry2cart, cart2cry
@@ -52,7 +52,7 @@
 
    PUBLIC :: nkpts, dimwann
    PUBLIC :: nrtot
-   PUBLIC :: wan_eig, efermi
+   PUBLIC :: wan_eig
    PUBLIC :: rham
    PUBLIC :: kham
    PUBLIC :: alloc

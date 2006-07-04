@@ -10,14 +10,17 @@
 !*********************************************
    MODULE ggrids_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE parameters, ONLY : nstrx
-   USE windows_module, ONLY : nkpts
-   USE lattice_module, ONLY : lattice_alloc => alloc, bvec, tpiba 
-   USE iotk_module
-   USE timing_module, ONLY : timing
-   USE parser_module, ONLY : change_case
+   !
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : TWO, RYD
+   USE parameters,        ONLY : nstrx
+   USE windows_module,    ONLY : nkpts
+   USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba 
+   USE timing_module,     ONLY : timing
+   USE parser_module,     ONLY : change_case
    USE converters_module, ONLY : cry2cart
+   USE qexml_module
+   USE qexpt_module
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -28,7 +31,7 @@
 ! routines in this module:
 ! SUBROUTINE ggrids_allocate()
 ! SUBROUTINE ggrids_deallocate()
-! SUBROUTINE ggrids_read_ext(unit)
+! SUBROUTINE ggrids_read_ext( filefmt )
 ! SUBROUTINE ggrids_gk_indexes( igv, igsort, npwk, nr1, nr2, nr3, gk2fft, fft2gk )
 ! SUBROUTINE ggrids_gv_indexes( igv, ngm, nr1, nr2, nr3, gv2fft, fft2gv )
 
@@ -112,82 +115,114 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE ggrids_read_ext(unit)
+   SUBROUTINE ggrids_read_ext( filefmt )
    !*********************************************************
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
+       CHARACTER(*), INTENT(IN) :: filefmt      
+       ! 
        REAL(dbl)          :: tmp(3,3)
-       CHARACTER(nstrx)   :: attr
        CHARACTER(nstrx)   :: str
        CHARACTER(15)      :: subname="ggrids_read_ext"
        INTEGER            :: i, ierr
 
+       !
        CALL timing(subname,OPR='start')
        !
-       ! ... Various parameters
+       IF ( alloc ) CALL ggrids_deallocate()
        !
-       CALL iotk_scan_begin(unit,'Other_parameters',IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find Other_parameters',ABS(ierr))
        !
-       CALL iotk_scan_empty(unit,"Cutoff",ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find Cutoff',ABS(ierr))
-       CALL iotk_scan_attr(attr,"wfc",ecutwfc,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find ecutwfc',ABS(ierr))
-       CALL iotk_scan_attr(attr,"rho",ecutrho,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find ecutrho',ABS(ierr))
-       CALL iotk_scan_attr(attr,"units",str,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find units',ABS(ierr))
-       CALL change_case(str,'UPPER')
-       IF ( TRIM(str) /= 'RYDBERG' .AND. TRIM(str) /= 'RY' .AND. TRIM(str) /= 'RYD') &
-            CALL errore(subname,'Cutoff units not in Rydberg',3)
-
-       CALL iotk_scan_empty(unit,"Space_grid",ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find Space_grid',ABS(ierr))
-       CALL iotk_scan_attr(attr,"nr1",nfft(1),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find nr1',ABS(ierr))
-       CALL iotk_scan_attr(attr,"nr2",nfft(2),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find nr2',ABS(ierr))
-       CALL iotk_scan_attr(attr,"nr3",nfft(3),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find nr3',ABS(ierr))
+       SELECT CASE ( TRIM(filefmt) )
        !
-       CALL iotk_scan_end(unit,'Other_parameters',IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag Other_parameters',ABS(ierr))
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=str, &
+                                        NR1=nfft(1), NR2=nfft(2), NR3=nfft(3),              &
+                                        NGM=npw_rho, IERR=ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=str, &
+                                        NR1=nfft(1), NR2=nfft(2), NR3=nfft(3),              &
+                                        NGM=npw_rho, IERR=ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+       END SELECT
+       !
+       IF ( ierr/=0) CALL errore(subname,'getting bands dimensions',ABS(ierr))
+       !
 
        !
-       ! ... Main G grid (density)
+       ! ... allocaing ggrids
        !
-       CALL iotk_scan_begin(unit,'Main_grid',ATTR=attr,IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to find Main_grid',ABS(ierr))
-       !
-       CALL iotk_scan_attr(attr,"npw",npw_rho,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find npw_rho',ABS(ierr))
-
-       CALL ggrids_allocate() 
+       CALL ggrids_allocate( )
 
        !
-       ! this is the call giving problems with INTEL compiler
-       ! maybe e question in the internal management of memory
+       ! read massive data
        !
-       CALL iotk_scan_dat(unit,"g",igv(:,:),IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'unable to find igv',ABS(ierr))
+       SELECT CASE ( TRIM(filefmt) )
+       !
+       CASE ( 'qexml' )
+            !
+            CALL qexml_read_planewaves( IGV = igv, IERR = ierr )
+            !
+       CASE ( 'pw_export' )
+            !
+            CALL qexpt_read_planewaves( IGV = igv, IERR = ierr )
+            !
+       CASE DEFAULT
+            !
+            CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 2)
+       END SELECT
+       !
+       IF ( ierr/=0) CALL errore(subname,'getting massive data',ABS(ierr))
+       
+       !
+       ! check energy units (move them to Ryd)
+       !
+       CALL change_case(str,'lower')
+       !
+       SELECT CASE ( TRIM(str) )
+       CASE ( 'rydberg', 'ryd', 'ry' )
+           !
+           ! doing nothing
+           !
+       CASE ( 'hartree', 'ha')
+           !
+           ecutwfc = ecutwfc * TWO 
+           ecutrho = ecutrho * TWO 
+           !
+       CASE ( 'elettronvolt', 'elettron-volt', 'ev')
+           !
+           ecutwfc = ecutwfc / RYD
+           ecutrho = ecutrho / RYD
+           !
+       CASE DEFAULT
+           CALL errore(subname,'Wrong units in Energies',5)
+       END SELECT
+
 
        !
-       CALL iotk_scan_end(unit,'Main_grid',IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag Main_grid',ABS(ierr))
-
-       !
-       ! ... init, units are in tpiba (2pi/alat) according to Espresso units
+       ! ... move units in tpiba (2pi/alat) according to Espresso units
        !
        IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice quantities not allocated',4)
+
+       !
+       ! compute g and gg in units of tpiba and tpiba2
+       !
        g(:,:) = REAL( igv(:,:), dbl )
+       !
        tmp(:,:) =  bvec(:,:) / tpiba
        CALL cry2cart(g, tmp )
+       !
        DO i=1,SIZE(igv,2)
            gg(i) = g(1,i)**2 + g(2,i)**2 + g(3,i)**2
        ENDDO
-
+       !
+       !
        CALL timing(subname,OPR='stop')
-       RETURN
+       ! 
    END SUBROUTINE ggrids_read_ext
 
 
@@ -212,6 +247,10 @@ CONTAINS
    DO np = 1, npwk
       igk = igsort( np )
 
+      nx = -100000
+      ny = -100000
+      nz = -100000
+      !
       IF ( igv(1,igk) >= 0 ) nx = igv(1,igk) + 1
       IF ( igv(1,igk) <  0 ) nx = igv(1,igk) + 1 + nr1
       IF ( igv(2,igk) >= 0 ) ny = igv(2,igk) + 1
@@ -243,6 +282,10 @@ END SUBROUTINE ggrids_gk_indexes
 
    DO ig = 1, ngm
 
+      nx = -100000
+      ny = -100000
+      nz = -100000
+      !
       IF ( igv(1,ig) >= 0 ) nx = igv(1,ig) + 1
       IF ( igv(1,ig) <  0 ) nx = igv(1,ig) + 1 + nr1
       IF ( igv(2,ig) >= 0 ) ny = igv(2,ig) + 1

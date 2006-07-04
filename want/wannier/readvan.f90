@@ -333,6 +333,11 @@ subroutine readvan (is, iunps)
   !      WRITE( stdout,1300)
 
 !1300 format (4x,60('='))
+  !
+  ! avoid warning
+  !
+  IF ( 1 == 2 ) WRITE(0,*) rc, etotpseu, ddd, dummy, eloc, eee, ee, irel, &
+                           idmy, iptype, npf, rcloc, ru, wwnl
   return
 end subroutine readvan
 
