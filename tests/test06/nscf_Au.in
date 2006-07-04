@@ -9,6 +9,7 @@ Infinite Gold Chain
       tstress = .false.,
       tprnfor = .true.,
       pseudo_dir = './',
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=8, 

@@ -9,6 +9,7 @@ Infinite Nichel Chain USPP, Spin Polarization
       tstress = .false.,
       tprnfor = .true.,
       pseudo_dir = './',
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=8, 
