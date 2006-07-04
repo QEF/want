@@ -144,6 +144,9 @@
                 !
                 ! numerically evaluate the function
                 !
+                g1 = CZERO
+                g2 = CZERO
+                !
                 SELECT CASE (TRIM(calc))
                 CASE ( "direct" )
                     ! calculate the gzero function
