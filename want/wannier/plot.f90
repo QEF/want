@@ -19,7 +19,7 @@
    USE fft_scalar,         ONLY : cfft3d
    USE timing_module,      ONLY : timing, timing_upto_now, timing_overview, global_list
    USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
-   USE io_module,          ONLY : ioname, space_unit, wan_unit, dft_unit, &
+   USE io_module,          ONLY : io_name, dftdata_fmt, space_unit, wan_unit, dft_unit, &
                                   aux_unit, aux1_unit 
    USE control_module,     ONLY : read_pseudo, use_uspp
    USE files_module,       ONLY : file_open, file_close, file_delete
@@ -34,7 +34,7 @@
    USE lattice_module,     ONLY : avec, bvec, alat
    USE ions_module,        ONLY : symb, tau, nat
    USE kpoints_module,     ONLY : nkpts, vkpt
-   USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, &
+   USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext,&
                                   spin_component
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
    USE localization_module,ONLY : cu, rave, localization_read
@@ -181,30 +181,42 @@
                       PSEUDO=read_pseudo)
 
       !
+      ! opening the file containing the PW-DFT data
+      ! to get iks, ike
+      !
+      CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+      CALL file_open(dft_unit,TRIM(filename),PATH="/", ACTION="read")
+         !
+         CALL windows_read_ext( dftdata_fmt )
+         !
+      CALL file_close( dft_unit, PATH="/", ACTION="read" )
+      
+
+      !
       ! Read Subspace data
       !
-      CALL ioname('space',filename)
-      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+      CALL io_name('space',filename)
+      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore('plot',"unable to find WINDOWS",1)
           CALL subspace_read(space_unit,"SUBSPACE",lfound)
           IF ( .NOT. lfound ) CALL errore('plot',"unable to find SUBSPACE",1)
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
-      CALL ioname('space',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Subspace data read from file: ',a)") TRIM(filename)
+      CALL io_name('space',filename,LPATH=.FALSE.)
+      WRITE( stdout,"(/,2x,'Subspace data read from file: ',a)") TRIM(filename)
 
       !
       ! Read unitary matrices U(k) that rotate the bloch states
       !
-      CALL ioname('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+      CALL io_name('wannier',filename)
+      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
           CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
           IF ( .NOT. lfound ) CALL errore('plot','searching WANNIER_LOCALIZATION',1)
       CALL file_close(wan_unit,PATH="/",ACTION="read")
 
-      CALL ioname('wannier',filename,LPATH=.FALSE.)
-      WRITE( stdout,"('  Wannier data read from file: ',a,/)") TRIM(filename)
+      CALL io_name('wannier',filename,LPATH=.FALSE.)
+      WRITE( stdout,"('  Wannier data read from file: ',a)") TRIM(filename)
 
      
       !
@@ -223,19 +235,19 @@
       !
       ! opening the file containing the PW-DFT data
       !
-      CALL ioname('export',filename,LPOSTFIX=.FALSE.)
-      CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
-                              FORM='formatted')
-      CALL ioname('export',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
+      CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+      CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read")
+      !
+      CALL io_name('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
 
       !
       ! ... Read grids
       WRITE( stdout,"(/,2x,'Reading density G-grid from file: ',a)") TRIM(filename)
-      CALL ggrids_read_ext(dft_unit)
+      CALL ggrids_read_ext( dftdata_fmt )
       !
       ! ... Read wfcs
       WRITE( stdout,"(  2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
-      CALL wfc_data_grids_read(dft_unit)
+      CALL wfc_data_grids_read( dftdata_fmt )
       !
       ! ... closing the main data file
       CALL file_close(dft_unit,PATH="/",ACTION="read")
@@ -463,9 +475,8 @@
       !
       ! re-opening the file containing the PW-DFT data
       !
-      CALL ioname('export',filename,LPOSTFIX=.FALSE.)
-      CALL file_open(dft_unit,TRIM(filename),PATH="/Eigenvectors/", &
-                              ACTION="read", FORM='formatted')
+      CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+      CALL file_open(dft_unit,TRIM(filename),PATH="/", ACTION="read")
       
      
 !
@@ -486,7 +497,7 @@
           !
           ! getting wfc 
           !
-          CALL wfc_data_kread(dft_unit, ik, "IK", evc, evc_info)
+          CALL wfc_data_kread( dftdata_fmt, ik, "IK", evc, evc_info)
 
           !
           ! built the right transformation to rotate the original wfcs.
@@ -598,7 +609,7 @@
       CALL wfc_data_deallocate()
       CALL ggrids_deallocate()
       !
-      CALL file_close(dft_unit,PATH="/Eigenvectors/",ACTION="read")
+      CALL file_close(dft_unit,PATH="/",ACTION="read")
 
 
       ! 

@@ -18,7 +18,7 @@
                                    ZERO, ONE, CZERO, CONE, EPS_m8
        USE parameters,       ONLY: nstrx
        USE version_module,   ONLY: version_number
-       USE io_module,        ONLY: stdout, ioname, space_unit
+       USE io_module,        ONLY: stdout, io_name, space_unit, wantdata_form
        USE files_module,     ONLY: file_open, file_close
        USE timing_module,    ONLY: timing, timing_upto_now, timing_overview, global_list
        USE input_module,     ONLY: input_manager
@@ -65,12 +65,12 @@
        CALL startup(version_number,'disentangle')
 
        !      
-       ! ...  Read input parameters from DFT_DATA file
+       ! ...  Read input parameters 
        !
        CALL input_manager()
 
        !
-       ! ...  Global data init
+       ! ...  Read DFT_DATA file and init global data
        !
        CALL want_init(WANT_INPUT=.TRUE., PSEUDO=read_pseudo)
 
@@ -184,11 +184,14 @@
                 ! write data to disk
                 !
                 IF ( MOD(ncount, nsave_dis) == 0 )  THEN
-                    CALL ioname('space',filename)
+                    !
+                    CALL io_name('space',filename)
                     CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write", &
-                                   FORM="formatted")
+                                   FORM=TRIM(wantdata_form) )
+                       !
                        CALL windows_write(space_unit,"WINDOWS")
                        CALL subspace_write(space_unit,"SUBSPACE")
+                       !
                     CALL file_close(space_unit,PATH="/",ACTION="write")
                 ENDIF
 
@@ -471,13 +474,15 @@
        !
        ! ...  actual writing procedures
        ! 
-       CALL ioname('space',filename)
-       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+       CALL io_name('space',filename)
+       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form))
+            !
             CALL windows_write(space_unit,"WINDOWS")
             CALL subspace_write(space_unit,"SUBSPACE")
+            !
        CALL file_close(space_unit,PATH="/",ACTION="write")
 
-       CALL ioname('space',filename,LPATH=.FALSE.)
+       CALL io_name('space',filename,LPATH=.FALSE.)
        WRITE( stdout,"(/,2x,'Subspace data written on file: ',a)") TRIM(filename)
 
 
