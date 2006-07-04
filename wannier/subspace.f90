@@ -12,7 +12,7 @@
 !*********************************************
    USE kinds, ONLY : dbl
    USE windows_module, ONLY : nbnd, dimwin, dimwinx, lcompspace, &
-                              efermi, windows_allocate, &
+                              windows_allocate, &
                               windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, kpoints_alloc
    USE iotk_module
@@ -70,7 +70,7 @@
    PUBLIC :: nkpts, dimwinx
    PUBLIC :: dimwann
    PUBLIC :: maxiter_dis, alpha_dis, disentangle_thr
-   PUBLIC :: wan_eig, efermi
+   PUBLIC :: wan_eig
    PUBLIC :: lamp, camp, eamp, comp_eamp
    PUBLIC :: mtrx_in, mtrx_out
    PUBLIC :: alloc

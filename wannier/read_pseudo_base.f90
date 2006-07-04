@@ -211,6 +211,10 @@ subroutine read_pseudo_header (upf, iunps)
      read (iunps, * ) upf%els (nw), upf%lchi (nw), upf%oc (nw)  
   enddo
 
+  !
+  ! avoid warning
+  !
+  IF ( 1 == 2 ) WRITE(0,*) dummy
   return  
 
 100  call errore ('read_pseudo_header', 'Reading pseudo file', abs (ios))
@@ -414,7 +418,10 @@ subroutine read_pseudo_nl (upf, iunps)
      upf%qfcoef = 0.0d0
   endif
 
-
+  !
+  ! avoid warning
+  !
+  IF ( 1 == 0 ) WRITE(0,*) dummy, idum
   return  
 
 100 call errore ('read_pseudo_nl', 'Reading pseudo file', abs (ios) )  
@@ -443,6 +450,10 @@ subroutine read_pseudo_pswfc (upf, iunps)
      read (iunps, *, err=100, iostat=ios) ( upf%chi(ir,nb), ir=1,upf%mesh )
   enddo
 
+  !
+  ! avoid warning
+  !
+  IF ( 1 == 0 ) WRITE(0,*) dummy
   return  
 
 100 call errore ('read_pseudo_pswfc', 'Reading pseudo file', abs(ios))

@@ -13,7 +13,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE constants,  ONLY : CZERO
    USE parameters, ONLY : nstrx
    USE timing_module, ONLY : timing
-   USE io_module,  ONLY : stdout, ovp_unit, space_unit, ioname
+   USE io_module,  ONLY : stdout, ovp_unit, space_unit, io_name
    USE files_module, ONLY : file_open, file_close
    USE util_module,  ONLY : mat_mul
    USE subspace_module, ONLY : eamp, subspace_read
@@ -64,27 +64,31 @@ SUBROUTINE overlap_extract(dimwann)
 !
 ! ... reading subspace and windows data
 !
-   CALL ioname('space',filename)
-   CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+   CALL io_name('space',filename)
+   CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
+        !
         CALL windows_read(space_unit,"WINDOWS",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1) 
         CALL subspace_read(space_unit,"SUBSPACE",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1) 
+        !
    CALL file_close(space_unit,PATH="/",ACTION="read")
 
-   CALL ioname('space',filename,LPATH=.FALSE.)
+   CALL io_name('space',filename,LPATH=.FALSE.)
    WRITE( stdout,"(/,'  Subspace data read from file: ',a)") TRIM(filename)   
     
 !
 ! ... reading overlap and projections
 !
-   CALL ioname('overlap_projection',filename)
-   CALL file_open(ovp_unit,TRIM(filename),PATH="/", ACTION="read",FORM="formatted")
+   CALL io_name('overlap_projection',filename)
+   CALL file_open(ovp_unit,TRIM(filename),PATH="/", ACTION="read")
+        !
         CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find OVERLAP_PROJECTION",1) 
+        !
    CALL file_close(ovp_unit,PATH="/", ACTION="read")        
 
-   CALL ioname('overlap_projection',filename,LPATH=.FALSE.)
+   CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
    WRITE( stdout,"('  Overlap and projections read from file: ',a)") TRIM(filename)   
 
 !

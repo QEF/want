@@ -182,6 +182,8 @@ CONTAINS
        fmt_ = "standard"
        IF ( PRESENT(fmt) ) fmt_ = fmt
 
+       lxprint = .FALSE.
+       !
        SELECT CASE ( TRIM(fmt_) )
        CASE ( "standard", "STANDARD" )
             lxprint = .FALSE.

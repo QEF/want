@@ -29,6 +29,13 @@ subroutine readpp
   integer :: iexch_, icorr_, igcx_, igcc_
   external pseudo_type
   !
+  !
+  ! simple init
+  iexch_ = 0
+  icorr_ = 0
+  igcx_  = 0
+  igcc_  = 0
+  !
   iunps = pseudo_unit
   l = len_trim (pseudo_dir)
   do nt = 1, ntyp

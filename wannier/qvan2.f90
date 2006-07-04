@@ -65,7 +65,7 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
   ! auxiliary variables for intepolation
   ! auxiliary variable
   !
-  LOGICAL :: ltest
+  LOGICAL :: ltest = .FALSE.
   !
   !     compute the indices which correspond to ih,jh
   !
@@ -93,6 +93,7 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
      !
      !     extraction of angular momentum l from lp:
      !
+     l = 0
      if (lp.eq.1) then
         l = 1
      elseif ( (lp.ge.2) .and. (lp.le.4) ) then
@@ -110,8 +111,11 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
      else
         call errore (' qvan ', ' lp > 49 ', lp)
      endif
+     !
      sig = (-CI) ** (l - 1)
      sig = sig * ap (lp, ivl, jvl)
+     work = ZERO
+     !
      do ig = 1, ngy
         !
         ! calculate quantites depending on the module of G only when needed

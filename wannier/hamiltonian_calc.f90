@@ -16,15 +16,16 @@
    ! Calculates the matrix elements of the hamiltonian on the
    ! Wannier basis
    ! 
-   USE kinds
-   USE constants, ONLY: ZERO, CZERO, CI, TPI
-   USE parameters, ONLY : nstrx
-   USE io_module, ONLY : stdout, ham_unit
-   USE timing_module, ONLY : timing
-   USE parser_module, ONLY : int2char
+   USE kinds,                ONLY : dbl 
+   USE constants,            ONLY : ZERO, CZERO, CI, TPI
+   USE parameters,           ONLY : nstrx
+   USE io_module,            ONLY : stdout, ham_unit
+   USE timing_module,        ONLY : timing
+   USE parser_module,        ONLY : int2char
    USE control_module,       ONLY : verbosity
    USE kpoints_module,       ONLY : vkpt, nrtot, vr, ivr
-   USE hamiltonian_module,   ONLY : wan_eig, efermi, rham, kham, ham_alloc => alloc 
+   USE windows_module,       ONLY : efermi
+   USE hamiltonian_module,   ONLY : wan_eig, rham, kham, ham_alloc => alloc 
 
 #ifdef __CHECK_HAMILTONIAN
    USE io_module, ONLY : work_dir, prefix, postfix 

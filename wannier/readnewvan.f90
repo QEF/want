@@ -182,6 +182,11 @@ subroutine readnewvan (is, iunps)
   endif
 
   close (iunps)
+  !
+  !avoid warning
+  !
+  IF ( 1 == 0 ) WRITE(0,*) adum, etotps, ndum, rdum, rel
+  !
   return
 end subroutine readnewvan
 

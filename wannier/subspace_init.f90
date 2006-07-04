@@ -22,7 +22,7 @@
    USE constants, ONLY : CZERO, CONE, EPS_m8
    USE parameters, ONLY : nstrx
    USE timing_module, ONLY : timing
-   USE io_module, ONLY : stdout, ioname, space_unit
+   USE io_module, ONLY : stdout, io_name, wantdata_form, space_unit
    USE files_module, ONLY : file_open, file_close
    USE util_module, ONLY : zmat_unitary, mat_mul, mat_svd
    !
@@ -74,14 +74,14 @@
    CASE ( 'from_file' )
 
         WRITE( stdout,"(/,'  Initial trial subspace: from_file')")
-            CALL ioname('space',filename)
+            CALL io_name('space',filename)
             CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", &
-                           FORM="formatted")
+                           FORM=TRIM(wantdata_form))
             CALL subspace_read(space_unit,"SUBSPACE", lfound)
             IF ( .NOT. lfound ) CALL errore(subname,'searching tag "SUBSPACE"',1)
         CALL file_close(space_unit,PATH="/",ACTION="read")
         !
-        CALL ioname('space',filename,LPATH=.FALSE.)
+        CALL io_name('space',filename,LPATH=.FALSE.)
         WRITE( stdout,"(2x,'Subspace data read from file: ',a,/)") TRIM(filename)
         
    CASE ( 'randomized' )
