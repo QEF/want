@@ -2,7 +2,7 @@
 =======================================================
             WanT code:  Log of Changes 
 =======================================================
-
+05 Jul 2006      bug fixed in polarization.f90 (BB)
 
 04 Jul 2006      dos calculation added to test02 (copper examples). (AF)    
 
