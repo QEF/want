@@ -85,15 +85,6 @@
       rave_cry = rave 
       CALL cart2cry( rave_cry, avec)
      
-      !
-      ! move all atomic positions and all wannier centers in the unit
-      ! cell centered in the origin
-      !
-!      tau_cry(:,:) =  MOD( tau_cry(:,:), ONE )
-!      rave_cry(:,:) = MOD( rave_cry(:,:), ONE )
-      tau_cry(:,:) =  tau_cry(:,:)  -REAL( NINT( tau_cry(:,:)  ) )
-      rave_cry(:,:) = rave_cry(:,:) -REAL( NINT( rave_cry(:,:) ) )
-
 !
 ! ionic polarization
 !
@@ -103,6 +94,12 @@
            P_ion(:) = P_ion(:) + zv( ityp(i) ) * tau_cry(:,i)
       ENDDO
 
+      !
+      ! move all atomic positions in the unit cell centered in the origin
+      !
+
+      P_ion(:) = P_ion(:) - REAL(NINT(P_ion(:)))
+
 !
 ! electronic polarization
 !
@@ -111,6 +108,13 @@
       DO m = 1, dimwann
            P_el(:) = P_el(:) + rave_cry(:,m)
       ENDDO
+
+      !
+      ! move all wannier centers in the unit cell centered in the origin
+      !
+
+      P_el(:) = P_el(:) - REAL(NINT(P_el(:)))
+
       !
       ! ionic + electronic polarization. the TWO factor appear considering
       ! that each band, i.e. each WF carries two electrons. In spin polirized
