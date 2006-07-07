@@ -31,8 +31,9 @@ hamiltonian.o \
 init_at_1.o \
 init_us_1.o \
 init_us_2.o \
-input_base.o \
 input.o \
+input_base.o \
+input_manager.o \
 input_parameters.o \
 io_module.o \
 ions.o \
@@ -73,13 +74,16 @@ subspace.o \
 subspace_init.o \
 summary.o \
 startup.o \
+shutdown.o \
 trial_center_data.o \
 trial_center.o \
 unitary_update.o \
 upf_to_internal.o \
 uspp.o \
 version.o \
+want_dftread.o \
 want_init.o \
+want_interfaces.o \
 wfc_data.o \
 wfc_info.o \
 wfc_manager.o \

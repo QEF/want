@@ -70,6 +70,8 @@
    CHARACTER(nstrx)           :: wantdata_fmt = 'formatted'
    CHARACTER(nstrx)           :: wantdata_form
    LOGICAL                    :: wantdata_binary
+
+   LOGICAL                    :: alloc = .FALSE.
 !
 ! end delcarations
 !
@@ -86,7 +88,7 @@
    PUBLIC ::  save_unit
 
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
-   PUBLIC ::  io_init, io_name
+   PUBLIC ::  io_init, alloc, io_name
    PUBLIC ::  read_iodata
    PUBLIC ::  write_iodata
 
@@ -204,6 +206,8 @@
            !
            CALL errore('io_init','invalid dftdata_fmt = '//TRIM(dftdata_fmt),1)
       END SELECT
+      !
+      alloc = .TRUE.
       !
    END SUBROUTINE io_init
 

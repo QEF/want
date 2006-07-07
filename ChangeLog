@@ -2,12 +2,19 @@
 =======================================================
             WanT code:  Log of Changes 
 =======================================================
+
+
+07 Jul 2006      qexml.f90 changed: bug fixed; WanT is compatible with espresso-3.1.1 qexml;
+                 shutdown routine added (MPI init & finalize are now used); 
+                 want_dftread added, want_init changed, input_manager extracted from input module.
+                 programs accordingly changed.
+
 05 Jul 2006      bug fixed in polarization.f90 (BB)
 
 04 Jul 2006      dos calculation added to test02 (copper examples). (AF)    
 
-01 Jul 2006      IO revision completed; the is interfaced to the espresso internal iotk fmt
-                 (qexml), both for v3.1 and v3.1.1 (patched). (AF)
+01 Jul 2006      IO revision completed; the is interfaced to the espresso internal iotk fmt,
+                 qexml, both for v3.1 and v3.1.1 (patched). (AF)
 
 15 Jun 2006      IO improvement further implemented. (AF)
 

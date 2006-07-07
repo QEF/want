@@ -18,15 +18,11 @@
    ! and compute the Density of states (DOS)
    !
    USE kinds
-   USE constants,            ONLY : CZERO, ZERO, ONE, TWO
    USE parameters,           ONLY : nstrx
+   USE constants,            ONLY : CZERO, ZERO, ONE, TWO
    USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, aux_unit, space_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE files_module,         ONLY : file_open, file_close
-   USE timing_module,        ONLY : timing, timing_overview, global_list
-   USE parser_module
-   USE want_init_module,     ONLY : want_init
-   USE summary_module,       ONLY : summary
    USE version_module,       ONLY : version_number
    USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart
@@ -36,6 +32,9 @@
    USE subspace_module,      ONLY : subspace_read
    USE smearing_module,      ONLY : smearing_func
    USE hamiltonian_module,   ONLY : dimwann, rham, hamiltonian_read, hamiltonian_init
+   USE parser_module
+   USE want_interfaces_module
+   !
    IMPLICIT NONE 
 
    !
@@ -113,7 +112,8 @@
 !
 ! ... Getting previous WanT data
 !
-      CALL want_init( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE. )
+      CALL want_init    ( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
 
       !
       ! Read Subspace data
@@ -284,12 +284,6 @@
 !
 
       !
-      ! Finalize timing
-      !
-      CALL timing('dos',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='dos')
-
-      !
       ! Clean local memory
       !
       DEALLOCATE( vkpt_int, wk, STAT=ierr)
@@ -307,6 +301,11 @@
       ! Clean global memory
       !
       CALL cleanup()
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'dos' )
 
 END PROGRAM dos_prog
 
