@@ -7,7 +7,7 @@
 07 Jul 2006      qexml.f90 changed: bug fixed; WanT is compatible with espresso-3.1.1 qexml;
                  shutdown routine added (MPI init & finalize are now used); 
                  want_dftread added, want_init changed, input_manager extracted from input module.
-                 programs accordingly changed.
+                 programs accordingly changed; want_interfaces.f90 added. (AF)
 
 05 Jul 2006      bug fixed in polarization.f90 (BB)
 
