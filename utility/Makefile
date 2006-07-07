@@ -42,11 +42,12 @@ WANNIER_OBJS= \
 ../wannier/readvan.o \
 ../wannier/recips.o \
 ../wannier/setqf.o \
-../wannier/summary.o \
+../wannier/shutdown.o \
 ../wannier/startup.o \
 ../wannier/struct_fact.o \
 ../wannier/struct_fact_data.o \
 ../wannier/subspace.o \
+../wannier/summary.o \
 ../wannier/trial_center.o \
 ../wannier/trial_center_data.o \
 ../wannier/upf_to_internal.o \

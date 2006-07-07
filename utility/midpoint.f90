@@ -36,13 +36,12 @@
    USE io_module,          ONLY : prefix, work_dir, stdin, stdout
    USE version_module,     ONLY : version_number
    USE converters_module,  ONLY : cry2cart, cart2cry
-   USE want_init_module,   ONLY : want_init
-   USE summary_module,     ONLY : summary
+   USE lattice_module,     ONLY : avec, alat
+   USE ions_module,        ONLY : atm_symb, ityp, tau, nat, nsp
+   USE want_interfaces_module
    USE parser_module 
    USE timing_module
    !
-   USE lattice_module,     ONLY : avec, alat
-   USE ions_module,        ONLY : atm_symb, ityp, tau, nat, nsp
       
    IMPLICIT NONE
 
@@ -290,20 +289,22 @@
 
       WRITE( stdout, "(/,2x,70('='))" )
 
-      !
-      ! Finalize timing
-      !
-      CALL timing('midpoint',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='midpoint')
-
-      CALL cleanup 
-
       DEALLOCATE( length, start, end, map, STAT=ierr )
       IF (ierr/=0) CALL errore('midpoint','deallocating length--map', ABS(ierr))
       DEALLOCATE( tau_tot, ityp_tot, STAT=ierr )
       IF (ierr/=0) CALL errore('midpoint','deallocating tau_tot--ityp_tot', ABS(ierr))
       DEALLOCATE( midcoord, bond_type, STAT=ierr )
       IF (ierr/=0) CALL errore('midpoint','deallocating midcoord--bond_type', ABS(ierr))
+
+      !
+      ! global cleanup
+      !
+      CALL cleanup 
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'midpoint' )
 
 END PROGRAM midpoint
 
