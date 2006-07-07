@@ -1562,6 +1562,21 @@ CONTAINS
 
       ierr = 0
       !
+      ! read some dimensions
+      !
+      IF ( PRESENT( npwkx )  ) THEN
+          !
+          CALL iotk_scan_begin( iunpun, "PLANE_WAVES", IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+          CALL iotk_scan_dat( iunpun, "MAX_NPW", npwkx_, IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+          CALL iotk_scan_end( iunpun, "PLANE_WAVES", IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+      ENDIF
+      !
       !
       CALL iotk_scan_begin( iunpun, "BAND_STRUCTURE", IERR=ierr )
       IF (ierr/=0) RETURN
@@ -1569,8 +1584,11 @@ CONTAINS
       CALL iotk_scan_begin( iunpun, "EIGENVALUES_AND_EIGENVECTORS", IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat( iunpun, "MAX_NPW", npwkx_, IERR=ierr )
-      IF (ierr/=0) RETURN
+!
+! temp swictched off
+!
+!      CALL iotk_scan_dat( iunpun, "MAX_NPW", npwkx_, IERR=ierr )
+!      IF (ierr/=0) RETURN
       !
       CALL iotk_scan_begin( iunpun, "K-POINT" //TRIM(iotk_index(ik)), IERR=ierr )
       IF (ierr/=0) RETURN
