@@ -14,38 +14,36 @@
    !=====================================================
 
       USE kinds
-      USE constants, ONLY: CZERO, CONE, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
-      USE parameters, ONLY : nstrx
-      USE input_module, ONLY : input_manager
-      USE control_module, ONLY : nprint_wan, nsave_wan,  &
-                                 unitary_thr, do_condmin, read_pseudo, do_polarization, &
-                                 localization_init_mode => localization_init, &
-                                 ordering_mode, do_ordering, do_collect_wf 
-      USE timing_module, ONLY : timing, timing_upto_now, timing_overview, global_list
-      USE io_module, ONLY : stdout, wan_unit, ham_unit, io_name, wantdata_form
-      USE files_module, ONLY : file_open, file_close
-      USE version_module, ONLY : version_number
-      USE util_module, ONLY: zmat_unitary, mat_mul, mat_svd, mat_hdiag
-      USE parser_module, ONLY: int2char
-
-      USE want_init_module, ONLY : want_init
-      USE summary_module, ONLY : summary
-      USE kpoints_module, ONLY: nkpts, nb, wbtot
-      USE overlap_module,  ONLY : dimwann, Mkb
+      USE constants,           ONLY : CZERO, CONE, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
+      USE parameters,          ONLY : nstrx
+      USE control_module,      ONLY : nprint_wan, nsave_wan,  &
+                                      unitary_thr, do_condmin, read_pseudo, do_polarization, &
+                                      localization_init_mode => localization_init, &
+                                      ordering_mode, do_ordering, do_collect_wf 
+      USE timing_module,       ONLY : timing, timing_upto_now
+      USE io_module,           ONLY : stdout, wan_unit, ham_unit, io_name, wantdata_form
+      USE files_module,        ONLY : file_open, file_close
+      USE version_module,      ONLY : version_number
+      USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag
+      USE kpoints_module,      ONLY : nkpts, nb, wbtot
+      USE overlap_module,      ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
-                       ncg, wannier_thr, cu, rave, rave2, r2ave, &
-                       Omega_I, Omega_D, Omega_OD, Omega_tot, &
-                       cu_best, Omega_tot_best, &
-                       localization_allocate, localization_write, localization_print, &
-                       a_condmin, niter_condmin, dump_condmin, xcell
+                                      ncg, wannier_thr, cu, rave, rave2, r2ave, &
+                                      Omega_I, Omega_D, Omega_OD, Omega_tot, &
+                                      cu_best, Omega_tot_best, &
+                                      localization_allocate, localization_write, localization_print, &
+                                      a_condmin, niter_condmin, dump_condmin, xcell
       USE trial_center_data_module, ONLY : trial
-      USE hamiltonian_module, ONLY : hamiltonian_write, hamiltonian_init
-
-!
-! ... 
-!
+      USE hamiltonian_module,  ONLY : hamiltonian_write, hamiltonian_init
+      !
+      USE parser_module
+      USE want_interfaces_module
+      !
       IMPLICIT NONE
 
+      !
+      ! ... local variables
+      !
       INTEGER :: ik, m, n, ierr
       INTEGER :: ncgfix, ncount, iter
       LOGICAL :: lcg, do_conjgrad
@@ -84,7 +82,8 @@
       !
       ! ... Read DFT_DATA file and init global data
       !
-      CALL want_init(WANT_INPUT=.TRUE., PSEUDO=read_pseudo)
+      CALL want_dftread ( PSEUDO=read_pseudo )
+      CALL want_init    ( WANT_INPUT=.TRUE., PSEUDO=read_pseudo )
 
 
       !
@@ -546,12 +545,6 @@ CALL timing('omega_best','stop')
       WRITE(stdout,"(2/,2x,70('='))")
 
       !
-      ! ... Finalize timing
-      !
-      CALL timing('wannier',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='wannier')
-     
-      !
       ! ... Deallocate local arrays
       !
       DEALLOCATE( csheet, STAT=ierr )
@@ -573,7 +566,15 @@ CALL timing('omega_best','stop')
       DEALLOCATE( cdu, STAT=ierr )
            IF( ierr /=0 ) CALL errore('wannier', 'deallocating cdu', ABS(ierr) )
 
-      CALL cleanup
+      !
+      ! global cleanup
+      !
+      CALL cleanup( )
+
+      !
+      !  finalize
+      !
+      CALL shutdown( 'wannier' )   
 
 END PROGRAM wannier
 

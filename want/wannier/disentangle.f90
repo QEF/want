@@ -14,44 +14,39 @@
    !=====================================================
 
        USE kinds,            ONLY: dbl
-       USE constants,        ONLY: PI, RYD, har => au, bohr => bohr_radius_angs, &
-                                   ZERO, ONE, CZERO, CONE, EPS_m8
        USE parameters,       ONLY: nstrx
+       USE constants,        ONLY: bohr => BOHR_RADIUS_ANGS, ZERO, ONE, CZERO, CONE
        USE version_module,   ONLY: version_number
        USE io_module,        ONLY: stdout, io_name, space_unit, wantdata_form
        USE files_module,     ONLY: file_open, file_close
-       USE timing_module,    ONLY: timing, timing_upto_now, timing_overview, global_list
-       USE input_module,     ONLY: input_manager
-       USE want_init_module, ONLY: want_init
+       USE timing_module,    ONLY: timing, timing_upto_now
        USE control_module,   ONLY: subspace_init_mode => subspace_init, verbosity, &
                                    unitary_thr, nprint_dis, nsave_dis, read_pseudo
        USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
        USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist
-       USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, &
-                                   dimfroz, indxnfroz
+       USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, dimfroz, indxnfroz
        USE windows_module,   ONLY: windows_allocate, windows_write
        USE subspace_module,  ONLY: dimwann, wan_eig, lamp, camp, eamp, comp_eamp, &
                                    mtrx_in, mtrx_out
        USE subspace_module,  ONLY: disentangle_thr, maxiter_dis, alpha_dis, &
                                    subspace_allocate, subspace_write
        USE overlap_module,   ONLY: Mkb, overlap_allocate
-       USE summary_module,   ONLY: summary
-
+       USE want_interfaces_module
+       !
        IMPLICIT NONE
 
 !
 ! ... local variables
 !
-       REAL(dbl) :: omega_i, omega_i_save, omega_i_err
-
-       REAL(dbl), ALLOCATABLE :: w(:)
+       REAL(dbl),    ALLOCATABLE :: w(:)
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
        COMPLEX(dbl), ALLOCATABLE :: z(:,:)
        COMPLEX(dbl), ALLOCATABLE :: Akb_aux(:,:,:,:), Mkb_aux(:,:,:,:)
-       CHARACTER(LEN=nstrx) :: filename 
-
-       INTEGER :: i, j, l, m, ierr
-       INTEGER :: ik, ib, ikb, iter, ncount
+       CHARACTER(LEN=nstrx)      :: filename 
+       !
+       REAL(dbl)  :: omega_i, omega_i_save, omega_i_err
+       INTEGER    :: i, j, l, m, ierr
+       INTEGER    :: ik, ib, ikb, iter, ncount
 
 !      
 ! ...  end of declarations
@@ -72,7 +67,8 @@
        !
        ! ...  Read DFT_DATA file and init global data
        !
-       CALL want_init(WANT_INPUT=.TRUE., PSEUDO=read_pseudo)
+       CALL want_dftread ( PSEUDO=read_pseudo )
+       CALL want_init    ( WANT_INPUT=.TRUE., PSEUDO=read_pseudo )
 
        !
        ! ...  Summary of the input and DFT data
@@ -494,12 +490,6 @@
        WRITE( stdout,"(2x, 70('='))")
 
        !
-       ! ...  Finalize timing
-       !
-       CALL timing('disentangle',OPR='stop')
-       CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='disentangle')
-
-       !
        ! ...  Deallocate local arrays
        !
        DEALLOCATE( ham, STAT=ierr )
@@ -509,7 +499,15 @@
        DEALLOCATE( Mkb_aux, Akb_aux, STAT=ierr )
            IF( ierr /=0 ) CALL errore('disentangle', 'deallocating Mkb_ Akb_aux', ABS(ierr) )
 
+       !
+       ! global cleanup
+       !
        CALL cleanup()
+
+       !
+       ! finalize
+       !
+       CALL shutdown( 'disentangle' )
 
 END PROGRAM disentangle
 

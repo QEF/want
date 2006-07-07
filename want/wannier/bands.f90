@@ -22,10 +22,6 @@
    USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, space_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE files_module,         ONLY : file_open, file_close
-   USE timing_module,        ONLY : timing, timing_overview, global_list
-   USE parser_module
-   USE want_init_module,     ONLY : want_init
-   USE summary_module,       ONLY : summary
    USE version_module,       ONLY : version_number
    USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart
@@ -33,8 +29,10 @@
    USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
    USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read
    USE subspace_module,      ONLY : subspace_read
-   USE hamiltonian_module,   ONLY : dimwann, rham, wan_eig, &
-                                    hamiltonian_read, hamiltonian_init
+   USE hamiltonian_module,   ONLY : dimwann, rham, wan_eig, hamiltonian_read, hamiltonian_init
+   USE parser_module
+   USE want_interfaces_module
+   !
    IMPLICIT NONE 
 
    !
@@ -114,12 +112,14 @@
 !
 ! ... Getting previous WanT data
 !
-      CALL want_init( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE.  )
+      CALL want_init    ( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
 
       !
       ! Read Subspace data
       !
       CALL io_name('space',filename)
+
       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore('bands',"unable to find WINDOWS",1)
@@ -269,12 +269,6 @@
 !
 
       !
-      ! Finalize timing
-      !
-      CALL timing('bands',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='bands')
-
-      !
       ! Clean local memory
       !
       DEALLOCATE( kptname_in, STAT=ierr)
@@ -298,6 +292,11 @@
       ! Clean global memory
       !
       CALL cleanup()
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'bands' )
 
 END PROGRAM bands
 

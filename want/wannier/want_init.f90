@@ -6,12 +6,9 @@
 ! in the root directory of the present distribution, 
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
-
-MODULE want_init_module
-CONTAINS
-
+!
 !*********************************************************
-SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseudo)
+SUBROUTINE want_init_x(want_input, lattice, ions, windows, kpoints, bshells, pseudo)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -23,7 +20,6 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
    ! SUBROUTINE want_init()
    !
    ! Tasks performed:
-   ! * init IO data         ( always )
    ! * init want input data (if required by WANT_INPUT = .TRUE.)
    ! * init lattice data    (if required by LATTICE    = .TRUE.)
    ! * init windows data    (if required by WINDOWS    = .TRUE.)
@@ -32,24 +28,20 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
    ! * init bshells data    (if required by BSHELLS    = .TRUE.)
    ! * init pseudo data     (if required by PSEUDO     = .TRUE.)
    !
-
+   !
    USE kinds
    USE constants,                ONLY : ZERO, EPS_m6
    USE parameters,               ONLY : nstrx
    USE timing_module,            ONLY : timing
-   USE io_module,                ONLY : stdout, dft_unit, io_init, io_name, dftdata_fmt
-   USE files_module,             ONLY : file_open, file_close
    !
-   USE control_module,           ONLY : use_uspp, do_polarization
+   USE io_module,                ONLY : io_init, io_alloc => alloc
+   USE control_module,           ONLY : do_polarization
    USE trial_center_module,      ONLY : trial_center_convert
    USE trial_center_data_module, ONLY : trial, dimwann
-   USE lattice_module,           ONLY : lattice_read_ext, lattice_init, alat, avec
-   USE ions_module,              ONLY : ions_read_ext, ions_init, tau, nat, zv, ityp, ion_charge
-   USE windows_module,           ONLY : windows_read_ext, windows_init, eig
-   USE kpoints_module,           ONLY : kpoints_read_ext, kpoints_init
-   USE us_module,                ONLY : okvan
-   USE uspp_param,               ONLY : tvanp
-   USE ions_module,              ONLY : uspp_calculation
+   USE lattice_module,           ONLY : lattice_init, alat, avec
+   USE ions_module,              ONLY : ions_init, tau, nat, zv, ityp, ion_charge
+   USE windows_module,           ONLY : windows_init, eig
+   USE kpoints_module,           ONLY : kpoints_init
    ! 
    IMPLICIT NONE
 
@@ -68,9 +60,8 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
    ! local variables
    !
    CHARACTER(9)              :: subname="want_init"
-   CHARACTER(nstrx)          :: filename 
-   LOGICAL                   :: want_input_, read_lattice_, read_ions_, read_windows_, &
-                                             read_kpoints_, read_bshells_, read_pseudo_
+   LOGICAL                   :: want_input_, init_lattice_, init_ions_, init_windows_, &
+                                             init_kpoints_, init_bshells_, init_pseudo_
    INTEGER                   :: ia, iwann
    !   
    ! end of declarations
@@ -87,60 +78,52 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 ! setting up   
 !   
     want_input_      = .FALSE.
-    read_lattice_    = .TRUE.
-    read_ions_       = .TRUE.
-    read_kpoints_    = .TRUE.
-    read_windows_    = .TRUE.
-    read_bshells_    =  read_kpoints_
-    read_pseudo_     = .FALSE.
+    init_lattice_    = .TRUE.
+    init_ions_       = .TRUE.
+    init_kpoints_    = .TRUE.
+    init_windows_    = .TRUE.
+    init_bshells_    =  init_kpoints_
+    init_pseudo_     = .FALSE.
     IF ( PRESENT(want_input) ) want_input_ = want_input
-    IF ( PRESENT(lattice) )  read_lattice_ = lattice
-    IF ( PRESENT(ions) )        read_ions_ = ions
-    IF ( PRESENT(windows) )  read_windows_ = windows
-    IF ( PRESENT(kpoints) )  read_kpoints_ = kpoints
-    IF ( PRESENT(bshells) )  read_bshells_ = bshells
-    IF ( PRESENT(pseudo) )    read_pseudo_ = pseudo 
+    IF ( PRESENT(lattice) )  init_lattice_ = lattice
+    IF ( PRESENT(ions) )        init_ions_ = ions
+    IF ( PRESENT(windows) )  init_windows_ = windows
+    IF ( PRESENT(kpoints) )  init_kpoints_ = kpoints
+    IF ( PRESENT(bshells) )  init_bshells_ = bshells
+    IF ( PRESENT(pseudo) )    init_pseudo_ = pseudo 
 
-    IF ( read_ions_    .AND. .NOT. read_lattice_ ) CALL errore(subname,'ions needs lattice',1)
-    IF ( read_bshells_ .AND. .NOT. read_kpoints_ ) CALL errore(subname,'bshells needs kpoints',1)
-
-!
-! ... init IO
-!
-    CALL io_init()
+    IF ( init_ions_    .AND. .NOT. init_lattice_ ) CALL errore(subname,'ions needs lattice',1)
+    IF ( init_bshells_ .AND. .NOT. init_kpoints_ ) CALL errore(subname,'bshells needs kpoints',1)
 
 
 !
-! ... opening the file containing the PW-DFT data
+! ... if the case init IO
 !
-    CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
-    CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
-                            FORM='formatted')
+    IF ( .NOT. io_alloc ) CALL io_init ( )
+
 
 !
-! ... read lattice data
+! ... lattice data
 !
-    IF ( read_lattice_ ) THEN
-        CALL lattice_read_ext(dftdata_fmt)
+    IF ( init_lattice_ ) THEN
         !
-        ! ...  allocations and initializations
         CALL lattice_init()
         !
         ! ... want_input if required
         IF ( want_input_ ) THEN 
+            !
             DO iwann=1,dimwann
                 CALL trial_center_convert( avec, trial(iwann) )
             ENDDO 
+            !
         ENDIF
     ENDIF
 
 
 !
-! ... read ions data
+! ... ion data
 !
-    IF ( read_ions_ ) THEN
-        !
-        CALL ions_read_ext( dftdata_fmt )
+    IF ( init_ions_ ) THEN
         !
         ! tau are read in bohr and converted here to alat
         tau(:,:) = tau(:,:) / alat
@@ -150,6 +133,7 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
         ! set the centers in the atomic wfc if the case
         !
         IF ( want_input_ ) THEN
+            !
             DO iwann = 1, dimwann
                 !
                 IF ( TRIM(trial(iwann)%type) == 'atomic' ) THEN
@@ -166,11 +150,9 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 
 
 !
-! ... read kpoints data
+! ... kpoint data
 !
-    IF ( read_kpoints_ ) THEN
-        !
-        CALL kpoints_read_ext( dftdata_fmt )
+    IF ( init_kpoints_ ) THEN
         !
         CALL kpoints_init()
         !
@@ -179,7 +161,7 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
     !
     ! b-vectors initializations
     !
-    IF ( read_bshells_ ) THEN 
+    IF ( init_bshells_ ) THEN 
         !
         CALL bshells_init( )
         !
@@ -187,13 +169,9 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 
 
 !
-! ... eigenvalues data read
+! ... eigenvalue data
 !
-    IF ( read_windows_ ) THEN
-        !
-        CALL windows_read_ext( dftdata_fmt )
-        !
-        ! init windows
+    IF ( init_windows_ ) THEN
         !
         CALL windows_init( eig(:,:), dimwann )
         !
@@ -201,25 +179,9 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 
 
 !
-! ... closing the main data file 
+! ... pseudopotentials
 !
-   CALL file_close(dft_unit,PATH="/",ACTION="read")
-
-   CALL io_name('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
-   WRITE( stdout,"(2x,'DFT-data read from file : ',a)") TRIM(filename)   
-    
-
-!
-! ... read pseudopotentials (according to Espresso fmts)
-!
-   IF ( read_pseudo_  ) THEN
-      !
-      CALL readpp()
-      !
-      okvan = ANY( tvanp(:) )
-      uspp_calculation = okvan
-      use_uspp = okvan
-  
+   IF ( init_pseudo_  ) THEN
       !
       ! compute ionic charge
       ion_charge = ZERO
@@ -238,7 +200,7 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 !
     do_polarization = .FALSE.
     !
-    IF ( read_windows_ .AND. read_pseudo_ ) THEN
+    IF ( init_windows_ .AND. init_pseudo_ ) THEN
          IF ( ABS(ion_charge - REAL(2*dimwann,dbl)) < EPS_m6 ) &
               do_polarization = .TRUE.
     ENDIF
@@ -246,7 +208,5 @@ SUBROUTINE want_init(want_input, lattice, ions, windows, kpoints, bshells, pseud
 
    CALL timing('want_init',OPR='stop')
 
-END SUBROUTINE want_init
+END SUBROUTINE want_init_x
 
-
-END MODULE want_init_module

@@ -9,8 +9,7 @@
 !********************************************
    MODULE input_module
 !********************************************
-   USE kinds, ONLY : dbl
-   USE io_module, ONLY : stdin, stdout
+   USE kinds,     ONLY : dbl
    USE constants, ONLY : ZERO
    IMPLICIT NONE
    PRIVATE
@@ -18,7 +17,6 @@
 ! This module handles the reading of input data
 !
 ! routines in this module:
-! SUBROUTINE input_manager()
 ! SUBROUTINE setup_control()
 ! SUBROUTINE setup_io()
 ! SUBROUTINE setup_windows()
@@ -27,7 +25,11 @@
 ! 
 
 
-   PUBLIC :: input_manager
+   PUBLIC :: setup_control
+   PUBLIC :: setup_io
+   PUBLIC :: setup_windows
+   PUBLIC :: setup_subspace
+   PUBLIC :: setup_localization
 
 
 CONTAINS
@@ -35,43 +37,6 @@ CONTAINS
 !
 ! subroutines
 !
-
-
-!**********************************************************
-   SUBROUTINE input_manager()
-   !**********************************************************
-      USE input_parameters_module,  ONLY : read_namelist_control, &
-                                           read_namelist_subspace, &
-                                           read_namelist_localization
-      USE trial_center_data_module, ONLY : trial_center_data_allocate
-      USE input_base_module,        ONLY : read_cards, &
-                                           card_wannier_centers
-      IMPLICIT NONE
-
-      !
-      ! reading and checking namelists
-      !
-      CALL read_namelist_control(stdin)
-      CALL read_namelist_subspace(stdin)
-      CALL read_namelist_localization(stdin)
-
-      !
-      ! scattering data in their own modules
-      !
-      CALL setup_control()
-      CALL setup_io()
-      CALL setup_windows()
-      CALL setup_subspace()
-      CALL setup_localization()
-
-      !
-      ! reading cards
-      !
-      CALL trial_center_data_allocate()
-      CALL read_cards(stdin)
-
-   END SUBROUTINE input_manager
-
 
 !**********************************************************
    SUBROUTINE setup_control()
@@ -186,7 +151,8 @@ CONTAINS
    SUBROUTINE setup_io()
    !**********************************************************
       USE io_module,                ONLY : prefix, postfix, work_dir, title, &
-                                           dftdata_fmt, wantdata_fmt
+                                           dftdata_fmt, wantdata_fmt,        &
+                                           io_init
       USE input_parameters_module,  ONLY : prefix_       => prefix,       &
                                            wantdata_fmt_ => wantdata_fmt, &
                                            postfix_      => postfix,      &
@@ -213,6 +179,11 @@ CONTAINS
       ELSE
            wantdata_fmt = TRIM(wantdata_fmt_)
       ENDIF
+
+      !
+      ! init io
+      !
+      CALL io_init ( )
 
    END SUBROUTINE setup_io
 

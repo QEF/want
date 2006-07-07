@@ -21,9 +21,7 @@
                                     work_dir, prefix, postfix
    USE iotk_module
    USE files_module
-   USE timing_module,        ONLY : timing, timing_overview, global_list
-   USE want_init_module,     ONLY : want_init
-   USE summary_module,       ONLY : summary
+   USE want_interfaces_module
    USE version_module,       ONLY : version_number
    USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx, windows_read
    USE kpoints_module,       ONLY : nrtot, nkpts, ivr, vr
@@ -92,7 +90,8 @@
 ! ... Getting previous WanT data
 !
 
-      CALL want_init( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE. )
+      CALL want_init    ( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
 
       !
       ! Read Subspace data
@@ -386,12 +385,6 @@
 !
 
       !
-      ! Finalize timing
-      !
-      CALL timing('blc2wan',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='blc2wan')
-
-      !
       ! Clean local memory
       !
       DEALLOCATE( opr_in, opr_out, oprk, STAT=ierr)
@@ -413,6 +406,11 @@
       ! Clean global memory
       !
       CALL cleanup()
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'blc2wan' )
 
 END PROGRAM blc2wan
 

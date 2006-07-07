@@ -15,17 +15,17 @@
    !  for the k-derivatives
    ! 
    USE kinds
-   USE constants, ONLY : ZERO, CZERO, ONE, TWO, EPS_m10, EPS_m6
-   USE util_module, ONLY : mat_svd, mat_sv, mat_rank
-   USE timing_module, ONLY : timing
-   USE summary_module, ONLY: summary 
-   USE io_module, ONLY: stdout
-
-   USE parameters,     ONLY : nnx
-   USE lattice_module, ONLY : bvec, lattice_alloc => alloc
-   USE kpoints_module, ONLY : vkpt, nkpts, nb, vb, wb, wbtot, &
-                              nnlist, nncell, nnrev, nnpos, &
-                              kpoints_alloc, bshells_allocate 
+   USE want_interfaces_module
+   USE constants,       ONLY : ZERO, CZERO, ONE, TWO, EPS_m10, EPS_m6
+   USE util_module,     ONLY : mat_svd, mat_sv, mat_rank
+   USE timing_module,   ONLY : timing
+   USE io_module,       ONLY : stdout
+   !
+   USE parameters,      ONLY : nnx
+   USE lattice_module,  ONLY : bvec, lattice_alloc => alloc
+   USE kpoints_module,  ONLY : vkpt, nkpts, nb, vb, wb, wbtot, &
+                               nnlist, nncell, nnrev, nnpos, &
+                               kpoints_alloc, bshells_allocate 
    IMPLICIT NONE
 
    !

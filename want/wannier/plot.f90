@@ -17,19 +17,16 @@
                                   bohr => bohr_radius_angs, EPS_m6, EPS_m4
    USE parameters,         ONLY : ntypx, natx, nstrx
    USE fft_scalar,         ONLY : cfft3d
-   USE timing_module,      ONLY : timing, timing_upto_now, timing_overview, global_list
+   USE timing_module,      ONLY : timing, timing_upto_now
    USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
    USE io_module,          ONLY : io_name, dftdata_fmt, space_unit, wan_unit, dft_unit, &
                                   aux_unit, aux1_unit 
    USE control_module,     ONLY : read_pseudo, use_uspp
    USE files_module,       ONLY : file_open, file_close, file_delete
-   USE want_init_module,   ONLY : want_init
    USE version_module,     ONLY : version_number
    USE util_module,        ONLY : mat_mul
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE atomic_module,      ONLY : atomic_name2num, atomic_num2name
-   USE summary_module,     ONLY : summary
-   USE parser_module
    !
    USE lattice_module,     ONLY : avec, bvec, alat
    USE ions_module,        ONLY : symb, tau, nat
@@ -44,7 +41,9 @@
    USE wfc_info_module
    USE wfc_data_module,    ONLY : npwkx, npwk, igsort, evc, evc_info, &
                                   wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate
-      
+   USE parser_module
+   USE want_interfaces_module
+   !
    IMPLICIT NONE
 
    !
@@ -177,20 +176,10 @@
 !
 ! ... Getting previous WanT data
 !
-      CALL want_init( WANT_INPUT = .FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE., &
-                      PSEUDO=read_pseudo)
-
-      !
-      ! opening the file containing the PW-DFT data
-      ! to get iks, ike
-      !
-      CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
-      CALL file_open(dft_unit,TRIM(filename),PATH="/", ACTION="read")
-         !
-         CALL windows_read_ext( dftdata_fmt )
-         !
-      CALL file_close( dft_unit, PATH="/", ACTION="read" )
-      
+      CALL want_dftread ( WINDOWS=.TRUE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE., &
+                          PSEUDO=read_pseudo)
+      CALL want_init    ( WANT_INPUT = .FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE., &
+                          PSEUDO=read_pseudo)
 
       !
       ! Read Subspace data
@@ -856,13 +845,6 @@
       WRITE( stdout, "(/,2x,70('='))" )
 
 
-
-!
-! ... Finalize timing
-!
-      CALL timing('plot',OPR='stop')
-      CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='plot')
-
 !
 ! ... Clean up memory
 !
@@ -887,7 +869,15 @@
       DEALLOCATE( rwann_out, STAT=ierr )
          IF( ierr /=0 ) CALL errore('plot', 'deallocating rwann_out', ABS(ierr) )
 
+      !
+      ! global cleanup
+      !
       CALL cleanup 
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'plot' )
 
 END PROGRAM plot
 
