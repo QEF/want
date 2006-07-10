@@ -8206,12 +8206,12 @@ if test "$ranlib" = "" ; then ranlib=echo ; fi
 echo setting RANLIB... $ranlib
 echo setting MYLIB... $mylib
 
-# generate dependencies
-if test -x $topdir/conf/makedeps.sh
-then
-	echo checking dependencies...
-	( cd $topdir ; ./conf/makedeps.sh )
-fi
+## generate dependencies
+#if test -x $topdir/conf/makedeps.sh
+#then
+#	echo checking dependencies...
+#	( cd $topdir ; ./conf/makedeps.sh )
+#fi
 
 # configure output messages
 blas_line="BLAS_LIBS=$blas_libs"
