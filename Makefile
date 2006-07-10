@@ -72,7 +72,8 @@ clean_test:
 	( cd tests ; ./run.sh -r clean ) ; fi
 
 wash : clean clean_test
-	- /bin/rm -rf make.sys configure.msg */make.depend \
+	- /bin/rm -rf make.sys conf/configure.msg */make.depend \
 		conf/config.log conf/config.status \
-	        */dum1 */dum2 bin/*.x 
+		conf/configure.h include/configure.h \
+		*/dum1 */dum2 bin/*.x 
 
