@@ -32,8 +32,9 @@ if [ "$auxdir" != "configure" ] ; then cd $auxdir ; fi
 # detect the simplest cases 
 #
 case $1 in 
-  ("-d" | "--deps" )      ./conf/makedeps.sh ; exit 0 ;;
-  ("-h" | "--help" )      echo "$MANUAL"     ; exit 0 ;;
+  ("-d" | "--deps" )      echo checking dependencies... ; 
+                          ./conf/makedeps.sh ; exit 0   ;;
+  ("-h" | "--help" )      echo "$MANUAL"     ; exit 0   ;;
 esac
 
 #
@@ -58,6 +59,14 @@ test -e config.log          && mv config.log         ./conf/
 test -e config.status       && mv config.status      ./conf/
 test -e configure.msg       && mv configure.msg      ./conf/
 #
+
+#
+# run the dependency script
+# (needs eg configure.h)
+#
+echo
+echo checking dependencies...
+./conf/makedeps.sh
 
 exit 0
 
