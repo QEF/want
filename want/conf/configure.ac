@@ -1352,6 +1352,8 @@ else
 fi
 
 # export settings to generated files
+AC_SUBST(host)
+AC_SUBST(arch)
 AC_SUBST(cc)
 AC_SUBST(mpicc)
 AC_SUBST(cflags)
@@ -1391,6 +1393,7 @@ AC_SUBST(parallel_report)
 
 AC_CONFIG_FILES(make.sys)
 AC_CONFIG_FILES(configure.msg)
+AC_CONFIG_FILES(configure.h)
 
 AC_OUTPUT
 
