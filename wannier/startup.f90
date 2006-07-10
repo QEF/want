@@ -78,11 +78,18 @@
    !
    ! architecture / compilation details
    !
-#ifdef __MYARCHITECTURE
-   WRITE( stdout, "(2x,'Arch. / Op.Sys: ',a)" ) __MYARCHITECTURE 
-#endif
-#ifdef __MYCOMPILER
-   WRITE( stdout, "(2x,'      Compiler: ',a)" ) __MYCOMPILER
+#ifdef __HAVE_CONFIG_INFO
+   WRITE( stdout, "(2x,'         HOST:',4x,a)" ) __CONF_HOST
+   WRITE( stdout, "(2x,'         ARCH:',4x,a)" ) __CONF_ARCH
+   WRITE( stdout, "(2x,'   C COMPILER:',4x,a)" ) __CONF_MPICC
+   WRITE( stdout, "(2x,' CPP COMPILER:',4x,a)" ) __CONF_CPP
+   WRITE( stdout, "(2x,' F90 COMPILER:',4x,a)" ) __CONF_MPIF90
+   WRITE( stdout, "(2x,' F77 COMPILER:',4x,a)" ) __CONF_MPIF77
+   WRITE( stdout, "(2x,'       DFLAGS:',4x,a)" ) __CONF_DFLAGS
+   WRITE( stdout, "(2x,'    BLAS LIBS:',4x,a)" ) __CONF_BLAS_LIBS
+   WRITE( stdout, "(2x,'  LAPACK LIBS:',4x,a)" ) __CONF_LAPACK_LIBS
+   WRITE( stdout, "(2x,'     FFT LIBS:',4x,a)" ) __CONF_FFT_LIBS
+   WRITE( stdout, "(2x,'    MASS LIBS:',4x,a)" ) __CONF_MASS_LIBS
 #endif
    !
    WRITE( stdout, "(/)")
