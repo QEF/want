@@ -153,7 +153,7 @@ fi
 if [ "$PWEXPORT" = ".TRUE." ] ; then  
    echo "running PWEXPORT calculation..." 
    $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport${SUFFIX}.in > $TEST_HOME/pwexporti${SUFFIX}.out
+              <  $TEST_HOME/pwexport${SUFFIX}.in > $TEST_HOME/pwexport${SUFFIX}.out
    if [ $? = 0 ] ; then 
       echo "done" 
    else
