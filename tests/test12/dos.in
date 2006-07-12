@@ -1,0 +1,17 @@
+
+ &INPUT
+   prefix = 'silicon_zb'
+   postfix = '_WanT'
+   fileout = 'dos.dat'
+   nk(1) = 10
+   nk(2) = 10
+   nk(3) = 20
+   ne    = 1000
+   emin  = -10.0
+   emax  =   5.0
+   delta =   0.05
+   use_nn(3)     = .TRUE.
+   smearing_type = 'gaussian'
+ /
+
+
