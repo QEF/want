@@ -210,8 +210,8 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       #
-      test -e dos.dat && mv dos.dat $TEST_HOME/dos_CoUS.dat
-      test -e cond.dat && mv cond.dat $TEST_HOME/cond_CoUS.dat
+      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond_CoUS.dat
+      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond_CoUS.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi

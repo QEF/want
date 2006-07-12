@@ -210,6 +210,7 @@ if [ "$DOS" = ".TRUE." ] ; then
    $WANT_BIN/dos.x < $TEST_HOME/dos_Cu.in > $TEST_HOME/dos_Cu.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
+      test -e dos_Cu.dat  &&  mv dos_Cu.dat  $TEST_HOME/dos_Cu.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi

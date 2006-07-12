@@ -198,6 +198,7 @@ if [ "$DOS" = ".TRUE." ] ; then
    $WANT_BIN/dos.x < $TEST_HOME/dos_AuUS.in > $TEST_HOME/dos_AuUS.out
    if [ ! -e CRASH ] ; then
       echo "$ECHO_T done"
+      test -e dos_AuUS.dat && mv dos_AuUS.dat $TEST_HOME/dos_AuUS.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
@@ -226,8 +227,8 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       #
-      test -e dos.dat && mv dos.dat $TEST_HOME/dos_AuUS.dat
-      test -e cond.dat && mv cond.dat $TEST_HOME/cond_AuUS.dat
+      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond_AuUS.dat
+      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond_AuUS.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
