@@ -102,8 +102,8 @@
    s00_R(:,:,:)  = CZERO
    s01_R(:,:,:)  = CZERO
    s00_C(:,:,:)  = CZERO
-   s_LC(:,:,:) = CZERO
-   s_CR(:,:,:) = CZERO
+   s_LC(:,:,:)   = CZERO
+   s_CR(:,:,:)   = CZERO
 
    DO i = 1, dimL
        s00_L(i,i,:) = CONE
@@ -127,18 +127,18 @@
    ! read basic quantities
    !
    CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, aux, dimx, dimx)
-   CALL fourier_par(h00_C, dimC, dimC, aux, dimx, dimx)   
+   CALL fourier_par( h00_C, dimC, dimC, aux, dimx, dimx)   
    !
    CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, aux, dimx, dimx)
-   CALL fourier_par(h_CR, dimC, dimR, aux, dimx, dimx)   
+   CALL fourier_par( h_CR, dimC, dimR, aux, dimx, dimx)   
 
    IF ( use_overlap ) THEN
        !
        CALL read_matrix( datafile_C, 'S00_C', dimC, dimC, aux, dimx, dimx)
-       CALL fourier_par (s00_C, dimC, dimC, aux, dimx, dimx)   
+       CALL fourier_par( s00_C, dimC, dimC, aux, dimx, dimx)   
        !
        CALL read_matrix( datafile_C, 'S_CR', dimC, dimR, aux, dimx, dimx)
-       CALL fourier_par (s_CR, dimC, dimR, aux, dimx, dimx)   
+       CALL fourier_par( s_CR, dimC, dimR, aux, dimx, dimx)   
    ENDIF
 
    !
@@ -151,36 +151,36 @@
        ! read the missing data
        !
        CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, aux, dimx, dimx)
-       CALL fourier_par (h_LC, dimL, dimC, aux, dimx, dimx)   
+       CALL fourier_par( h_LC, dimL, dimC, aux, dimx, dimx)   
        !
        CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, aux, dimx, dimx)
-       CALL fourier_par (h00_L, dimL, dimL, aux, dimx, dimx)   
+       CALL fourier_par( h00_L, dimL, dimL, aux, dimx, dimx)   
        !
        CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, aux, dimx, dimx)
-       CALL fourier_par (h01_L, dimL, dimL, aux, dimx, dimx)   
+       CALL fourier_par( h01_L, dimL, dimL, aux, dimx, dimx)   
        !
        CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, aux, dimx, dimx)
-       CALL fourier_par (h00_R, dimR, dimR, aux, dimx, dimx)   
+       CALL fourier_par( h00_R, dimR, dimR, aux, dimx, dimx)   
        !
        CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, aux, dimx, dimx)
-       CALL fourier_par (h01_R, dimR, dimR, aux, dimx, dimx)   
+       CALL fourier_par( h01_R, dimR, dimR, aux, dimx, dimx)   
        !
        IF ( use_overlap ) THEN
            !
            CALL read_matrix( datafile_C, 'S_LC', dimL, dimC, aux, dimx, dimx)
-           CALL fourier_par (s_LC, dimL, dimC, aux, dimx, dimx)   
+           CALL fourier_par( s_LC, dimL, dimC, aux, dimx, dimx)   
            !
            CALL read_matrix( datafile_L, 'S00_L',  dimL, dimL, aux, dimx, dimx)
-           CALL fourier_par (s00_L, dimL, dimL, aux, dimx, dimx)   
+           CALL fourier_par( s00_L, dimL, dimL, aux, dimx, dimx)   
            !
            CALL read_matrix( datafile_L, 'S01_L',  dimL, dimL, aux, dimx, dimx)
-           CALL fourier_par (s01_L, dimL, dimL, aux, dimx, dimx)   
+           CALL fourier_par( s01_L, dimL, dimL, aux, dimx, dimx)   
            !
            CALL read_matrix( datafile_R, 'S00_R',  dimR, dimR, aux, dimx, dimx)
-           CALL fourier_par (s00_R, dimR, dimR, aux, dimx, dimx)   
+           CALL fourier_par( s00_R, dimR, dimR, aux, dimx, dimx)   
            !
            CALL read_matrix( datafile_R, 'S01_R',  dimR, dimR, aux, dimx, dimx)
-           CALL fourier_par (s01_R, dimR, dimR, aux, dimx, dimx)   
+           CALL fourier_par( s01_R, dimR, dimR, aux, dimx, dimx)   
        ENDIF
 
    CASE ( "bulk" )
@@ -198,7 +198,7 @@
            s00_R(:,:,:) = s00_C(:,:,:)
            s01_L(:,:,:) = s_CR(:,:,:)
            s01_R(:,:,:) = s_CR(:,:,:)
-           s_LC(:,:,:)= s_CR(:,:,:)
+           s_LC(:,:,:)  = s_CR(:,:,:)
        ENDIF
 
    CASE DEFAULT

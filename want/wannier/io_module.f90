@@ -148,7 +148,7 @@
       ELSE
            dftdata_fmt_ = TRIM( fmt_searched( i ) )
            !
-           WRITE( stdout , "(2x, 'DFT-data fmt automaticaly detected : ',a )" ) &
+           WRITE( stdout , "(2x, 'DFT-data fmt automaticaly detected: ',a )" ) &
                   TRIM( dftdata_fmt_)
            !
       ENDIF

@@ -85,7 +85,7 @@
 
    CHARACTER(30) :: smearing_type_allowed(8)
    DATA smearing_type_allowed / 'lorentzian',  'gaussian', 'fermi-dirac', 'fd',         &
-                            'methfessel-paxton', 'mp', 'marzari-vanderbilt', 'mv' /
+                                'methfessel-paxton', 'mp', 'marzari-vanderbilt', 'mv' /
        ! the allowed values for smearing_type
        
    REAL(dbl) :: delta_ratio =  5.0_dbl * EPS_m3
