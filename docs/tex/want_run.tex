@@ -127,7 +127,7 @@ create your own input file, that will be used for the following two steps (a-b).
 
 \noindent
 Further physical information may be obtained as external
-post-processing of the Wfs calculation. They are not necessary for
+post-processing of the WFs calculation. They are not necessary for
 the transport calculation, but they may be useful for a
 better understanding of the intrinsic electronic properties of the
 system. These codes require a separate input, to be generated
@@ -159,6 +159,15 @@ following Sec.~\ref{sec:input} or the file
       The code produces three files {\tt \$prefix\_\$postfix\_dftband.dat,
       \$prefix\_\$postfix\_wanband.dat} and {\tt \$prefix\_\$postfix\_intband.dat}
       which can be used for a direct visualization.
+      %
+
+\item {\tt dos.x}: the code computes the {\it density of states} (DOS) 
+      of the system interpolating the band structure by means of WFs, as
+      for {\tt bands.x}. Since the DOS is a quantity integrated (or better summed)
+      over the BZ, a uniform mesh of $\mathbf{k}$ points (supplied by the user)
+      is adopted.
+      Once a self-consistent calculation is performed (and WFs computed), this code can be 
+      used to obtain accurate DOS. 
       %
 
 \item {\tt plot.x}: this is an utility to plot WFs in real space.

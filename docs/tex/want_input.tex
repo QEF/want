@@ -169,6 +169,19 @@ determine how to get projections integrals:
 the meaning of the options is as for {\tt overlaps} variable.\\
 {\sc default} = {\tt "from\_scratch"} \par
 
+\noindent\llap{\hbox to \descindent{\tt dftdata\_fmt\hfil}}%
+{\sc string} \\ {\tt ( "qexml" $\mid$ "pw\_export" ) }\\
+Specified the format of the DFT datafile. If not specified (suggested option)
+it is auto-detected by the code; preference is given to {\tt "qexml"}. \\
+{\sc default} = auto-detected \par
+
+\noindent\llap{\hbox to \descindent{\tt wantdata\_fmt\hfil}}%
+{\sc string} \\ {\tt ( "binary" $\mid$ "textual" ) }\\
+Specified the format of the \WANT{} internal datafiles. If not specified (suggested option)
+files are binary for {\tt dimwann >= 100}, textual otherwise. Reading
+does not care of that anyway (thanks to the {\tt iotk} library).  \\
+{\sc default} = auto-detected \par
+
 \noindent\llap{\hbox to \descindent{\tt assume\_ncpp\hfil}}%
 {\sc logical} \\ if {\tt .TRUE.} avoids the reading of pseudopotential files
 assuming that the DFT calculation has been performed using norm-conserving
@@ -343,6 +356,16 @@ specifies whether to order the computed Wannier functions and
               is dumped according to {\tt a\_condmin = a\_condmin $*$ dump\_condmin}
               at each iteration.\\
 {\sc default} = {\tt 0.0} \par
+
+\noindent\llap{\hbox to \descindent{\tt collect\_wf\hfil}}%
+{\sc logical} \\ If {\tt .TRUE.}, collect all the WFs in the same reference cell, 
+                 specified by {\tt xcell} (see below). \\
+{\sc default} = {\tt .FALSE.} \par
+
+\noindent\llap{\hbox to \descindent{\tt xcell(3)\hfil}}%
+{\sc real} \\ The lower corners of the reference cell used to collect WFs, when
+              {\tt collect\_wf} is {\tt .TRUE.} \\
+{\sc default} = {\tt -0.5, -0.5, -0.5} \par
 }
 \bigskip
 
@@ -568,9 +591,26 @@ Labels follow the scheme of Sec.~\ref{sec:run}.\\
 {\sc default} = {\tt +10.0} \par
 
 \noindent\llap{\hbox to \descindent{\tt delta\hfil}}%
-{\sc real} \\ small imaginary part used to get off the real axis in the calculation
-            of Green's functions. \\
+{\sc real} \\ the smearing parameter used in the calculation. eV units are used. \\
 {\sc default} = {\tt 1.0e-5} \par
+
+\noindent\llap{\hbox to \descindent{\tt delta\_ratio\hfil}}%
+{\sc real} \\ ratio between {\tt ddelta} (internal width parameter) used to compute 
+            convolutions with poles, and the smearing {\tt delta} parameter. 
+            It describes ``how much'' {\tt ddelta} is smaller than {\tt delta}. \\
+{\sc default} = {\tt 5.0e-3} \par
+
+\noindent\llap{\hbox to \descindent{\tt smearing\_type\hfil}}%
+{\sc string} \\ {\tt ( "lorentzian" $\mid$ "gaussian" $\mid$ "fermi-dirac", "fd" $\mid$  \\
+                "methfessel-paxton", "mp" $\mid$ "marzari-vanderbilt", "mv") } \\
+                the shape of the used smearing function. {\tt "lorentzian"} is the std
+                choice when using Green function techniques. \\
+{\sc default} = {\tt "lorentzian"} \par
+
+\noindent\llap{\hbox to \descindent{\tt nk(2)\hfil}}%
+{\sc integer} \\ dimension of the 2D \textbf{k}-point mesh used to interpolate the 
+                 input Hamiltonian.
+{\sc default} = values from the \WANT{} datafiles \par
 
 \noindent\llap{\hbox to \descindent{\tt nprint\hfil}}%
 {\sc integer} \\ every {\tt nprint} energy step write to stdout .\\
@@ -610,8 +650,8 @@ otherwise basis orthonormality
 {\sc string} \\ Name of the file containing the correlation self-energy. It is required only
             when correlation is included in the calculation. \\
             {\sc default}: {\tt "mandatory"} if {\tt use\_correlation == .TRUE.} \par
-}
 \bigskip
+}
 
 \begin{centering}
 \rule{2.0in}{0.01in} Card {\tt <HAMILTONIAN\_DATA>} \rule{2.0in}{0.01in}
@@ -678,7 +718,9 @@ The string {\tt "ALL"} is allowed as well, being equivalent to
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Input for post-processing calculations}
+%---------------------------------------------
 \subsubsection{bands.x}
+%---------------------------------------------
 \noindent Input file layout: \\
 
 %
@@ -751,7 +793,91 @@ of points is calculated in the run and is written in the output file.\\
               k_3 * \mathbf{b}_3 $). \par
 }\bigskip
 
+
+%---------------------------------------------
+\subsubsection{dos.x}
+%---------------------------------------------
+\noindent Input file layout: \\
+
+%
+%
+\begin{tabular}{l}
+ {\tt \&INPUT} \\
+   ... \\
+   / \\
+  \\
+\end{tabular}
+%
+%
+\\
+
+\begin{centering}
+\rule{2.2in}{0.01in} Namelist {\tt \&INPUT} \rule{2.2in}{0.01in}
+\end{centering}\\
+
+\newdimen\descindent \descindent = 8pc
+{\noindent \leftskip = \descindent \parskip = .5\baselineskip
+\llap{\hbox to \descindent{\tt prefix\hfil}}%
+{\sc string} \\ the first part of the name of all the files written by the code;
+              it should be equal to the value given in the main calculations.\\
+{\sc default} = {\tt mandatory} \par
+
+\noindent\llap{\hbox to \descindent{\tt postfix\hfil}}%
+{\sc string} \\ the tail of the names of the above mentioned files (useful
+    {\it e.g.} to distinguish among different calculations having a common part);
+    it should be equal to the value given in the main calculations.\\
+    {\sc default} = {\tt ""} \par
+
+\noindent\llap{\hbox to \descindent{\tt work\_dir\hfil}}%
+{\sc string} \\ the scratch directory where the massive data files will be written.\\
+              {\sc default} = {\tt "./"} \par
+
+\noindent\llap{\hbox to \descindent{\tt fileout\hfil}}%
+{\sc string} \\ The file used to write the computed DOS. \\
+              {\sc default} = {\tt "./\$prefix\$postfix\_dos.dat" } \par
+
+\noindent\llap{\hbox to \descindent{\tt nk(3)\hfil}}%
+{\sc integer} \\ The 3D \textbf{k}-point mesh used to compute the DOS. \\
+{\sc default} = {\tt mandatory} \par
+
+\noindent\llap{\hbox to \descindent{\tt s(3)\hfil}}%
+{\sc integer} \\ The shift vector used to generate the Monkhorst-Pack \textbf{k}-point mesh. \\
+{\sc default} = 0, 0, 0 \par
+
+\noindent\llap{\hbox to \descindent{\tt delta\hfil}}%
+{\sc real} \\ the smearing parameter [eV] used in the calculation of the DOS. \\
+{\sc default} = {\tt 0.1} \par
+
+\noindent\llap{\hbox to \descindent{\tt smearing\_type\hfil}}%
+{\sc string} \\ {\tt ( "lorentzian" $\mid$ "gaussian" $\mid$ "fermi-dirac", "fd" $\mid$  \\
+                "methfessel-paxton", "mp" $\mid$ "marzari-vanderbilt", "mv") } \\
+                the shape of the used smearing function. \\
+{\sc default} = {\tt "gaussian"} \par
+
+\noindent\llap{\hbox to \descindent{\tt ne\hfil}}%
+{\sc integer} \\ dimension of the energy grid used for DOS calculation. \\
+{\sc default} = {\tt 1000}\par
+
+\noindent\llap{\hbox to \descindent{\tt emin\hfil}}%
+{\sc real} \\ lower limit [eV] of the energy grid. \\
+{\sc default} = {\tt -10.0} \par
+
+\noindent\llap{\hbox to \descindent{\tt emax\hfil}}%
+{\sc real} \\ upper limit [eV] of the energy grid. \\
+{\sc default} = {\tt +10.0} \par
+
+\noindent\llap{\hbox to \descindent{\tt use\_nn(3)\hfil}}%
+{\sc logical} \\ if {\tt .TRUE.} along direction $i$, only nearest neighbor
+                 Hamiltonians along $i$ are used to compute the DOS. Useful to compare with 
+                 transport calculations. \\
+{\sc default} = {\tt .FALSE., .FALSE., .FALSE.} \par
+
+}\bigskip
+
+
+%---------------------------------------------
 \subsubsection{plot.x}
+%---------------------------------------------
 \noindent Input file layout: \\
 
 %
@@ -830,7 +956,7 @@ of points is calculated in the run and is written in the output file.\\
                by \WANT\ set this value to .TRUE. in order to avoid their reading.\\
               {\sc default} = {\tt .FALSE.} \par
 
-\noindent\llap{\hbox to \descindent{\tt locate\_wf\hfil}}%
+\noindent\llap{\hbox to \descindent{\tt collect\_wf\hfil}}%
 {\sc logical} \\ if {\tt .TRUE.} moves the WFs in a unit cell centered around the
     midpoint of the plotting cell. Useful to plot purposes.\\
               {\sc default} = {\tt .TRUE.} \par
