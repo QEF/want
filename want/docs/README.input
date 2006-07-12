@@ -2,7 +2,7 @@
 
 ==============================================================================
     
-              ********* codes: DISENTANGLE.x WANNIER.x  **********
+              ********* codes: disentangle.x wannier.x  **********
     
 ==============================================================================
 
@@ -76,6 +76,19 @@ projections   STRING
               determine how to get projection integrals.
               Meanings as before.
               DEFAULT: "from_scratch"
+
+dftdata_fmt   STRING
+              ( "qexml" | "pw_export", "qexpt" )
+              Specified the format of the DFT datafile. If not specified (suggested option) it
+              is auto-dected by the code; preference is given to "qexml". 
+              DEFAULT: auto-detected
+
+wantdata_fmt  STRING
+              ( "binary" | "textual" )
+              Specified the format of the WanT internal datafiles. If not specified 
+              (suggested option) files are binary for dimwann >= 100, textual otherwise.
+              Reading does not care of that anyway (thanks to the iotk library).
+              DEFAULT: auto-detected
 
 assume_ncpp   LOGICAL
               if .TRUE. avoids the reading of pseudopotential files
@@ -242,6 +255,15 @@ dump_condmin  REAL
                  a_condmin = a_condmin * dump_condmin     
               at each iteration.
               DEFAULT: 0.0
+
+collect_wf    LOGICAL
+              if .TRUE., collect all WFs in the same reference cell, specified by xcell (see below).
+              DEFAULT: .FALSE.
+
+xcell(3)      REAL
+              the lower corners of the rewference cell used to collect WFs, 
+              when collect_wf == .TRUE.
+              DEFAULT: -0.5, -0.5, -0.5
               
 
 ==============================================================================
@@ -361,7 +383,7 @@ specified by the atomic index and the required angular momentum quantum numbers.
 
 ==============================================================================
 
-                  ********* code: BANDS.x  **********
+                  ********* code: bands.x  **********
 
 ==============================================================================
 
@@ -438,7 +460,85 @@ kpt_label    kx  ky  kz
 
 ==============================================================================
 
-                  ********* code: PLOT.x  **********
+                  ********* code: dos.x  **********
+
+==============================================================================
+
+INPUT file layout
+-----------------------------------
+
+&INPUT
+   ...
+/
+
+-----------------------------------
+
+==============================================================================
+
+NAMELIST &INPUT
+
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
+
+fileout       STRING
+              the file used to write the computed DOS.
+              DEFAULT: "./$prefix$suffix_dos.dat"
+
+nk(3)         INTEGER
+              the 3D k-points mesh used to computed the DOS.
+              DEFAULT: mandatory.
+
+s(3)          INTEGER
+              the shift vector used to generate the Monkhorst-Pack k-point mesh.
+              DEFAULT: 0, 0, 0
+
+ne            INTEGER
+              dimension of the energy grid for DOS calculation.
+              DEFAULT : 1000
+
+emin          REAL
+              lower limit [eV] of the energy grid.
+              DEFAULT : -10.0
+
+emax          REAL
+              upper limit [eV] of the energy grid.
+              DEFAULT : +10.0
+
+delta         REAL
+              the smearing parameter [eV] used in the calculation of the DOS.
+              DEFAULT : 0.1
+
+smearing_type STRING
+              ( "lorantzian" | "gaussian" | "fermi-dirac", "fd" | "methfessel-paxton", "mp" |
+                "marzari-vanderbilt", "mv" )
+              the shape of the used smearing function.
+              DEFAULT : "gaussian"
+
+use_nn(3)     LOGICAL
+              if .TRUE. along direction i, only nearest neighbors Hamiltonians along i
+              are used to compute the DOS. Useful to compare with transport calculation.
+              DEFAULT : .FALSE., .FALSE., .FLASE.
+
+
+==============================================================================
+
+
+
+==============================================================================
+
+                  ********* code: plot.x  **********
 
 ==============================================================================
 
@@ -507,7 +607,7 @@ assume_ncpp   LOGICAL
               .TRUE. in order to avoid PP reading.
               DEFAULT: .FALSE.
 
-locate_wf     LOGICAL
+collect_wf    LOGICAL
               if .TRUE. move the WFs in a unit cell centerd around the midpoint of the 
               plotting cell. Useful to plot purposes.
               DEFAULT: .TRUE.
@@ -526,7 +626,7 @@ spin_component    STRING
 
 ==============================================================================
 
-                  ********* code: CONDUCTOR.x  **********
+                  ********* code: conductor.x  **********
 
 ==============================================================================
 
@@ -598,6 +698,23 @@ delta       REAL
             of Green's functions.
             DEFAULT : 1.0E-5
 
+delta_ratio REAL
+            ratio between ddelta (internal width parameter) used to compute convolutions with 
+            poles, and the smearing delta parameter. 
+            It describes "how much" ddelta is smaller than delta.
+            DEFAULT : 5.0E-3
+
+smearing_type  STRING
+            ( "lorantzian" | "gaussian" | "fermi-dirac", "fd" | "methfessel-paxton", "mp" |
+              "marzari-vanderbilt", "mv" )
+            the shape of the smearing function used. "lorentzian" is the std choice when
+            using Green function techniques.
+            DEFAULT : "lorentzian"
+
+nk(2)       INTEGER
+            dimension of the 2D kpt mesh used to interpolate the input Hamiltonian.
+            DEFAULT : values from the WanT datafiles.
+
 nprint      INTEGER
             every nprint energy step write to stdout.
             DEFAULT : 20
@@ -667,7 +784,7 @@ cols (rows)   STRING
 
 ==============================================================================
 
-                  ********* code: BLC2WAN.x  **********
+                  ********* code: blc2wan.x  **********
 
 ==============================================================================
 
