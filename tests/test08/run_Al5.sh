@@ -189,8 +189,8 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    $WANT_BIN/conductor.x < $TEST_HOME/conductor$SUFFIX.in > $TEST_HOME/conductor$SUFFIX.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      test -e dos.dat && mv dos.dat $TEST_HOME/dos$SUFFIX.dat
-      test -e cond.dat && mv cond.dat $TEST_HOME/cond$SUFFIX.dat
+      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond$SUFFIX.dat
+      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond$SUFFIX.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi

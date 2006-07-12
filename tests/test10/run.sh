@@ -357,8 +357,8 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    $WANT_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      test -e dos.dat && mv dos.dat $TEST_HOME
-      test -e cond.dat && mv cond.dat $TEST_HOME
+      test -e doscond.dat && mv doscond.dat $TEST_HOME
+      test -e cond.dat    && mv cond.dat    $TEST_HOME
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
@@ -373,8 +373,8 @@ if [ "$CONDUCTOR_BULK" = ".TRUE." ] ; then
    $WANT_BIN/conductor.x < $TEST_HOME/conductor_bulk.in > $TEST_HOME/conductor_bulk.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      test -e dos.dat && mv dos.dat  $TEST_HOME/dos_bulk.dat
-      test -e cond.dat && mv cond.dat $TEST_HOME/cond_bulk.dat
+      test -e doscond.dat && mv doscond.dat  $TEST_HOME/doscond_bulk.dat
+      test -e cond.dat    && mv cond.dat     $TEST_HOME/cond_bulk.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
@@ -389,8 +389,8 @@ if [ "$CONDUCTOR_AUTO" = ".TRUE." ] ; then
    $WANT_BIN/conductor.x < $TEST_HOME/conductor_auto.in > $TEST_HOME/conductor_auto.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      test -e dos.dat && mv dos.dat  $TEST_HOME/dos_auto.dat
-      test -e cond.dat && mv cond.dat $TEST_HOME/cond_auto.dat
+      test -e doscond.dat && mv doscond.dat  $TEST_HOME/doscond_auto.dat
+      test -e cond.dat    && mv cond.dat     $TEST_HOME/cond_auto.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi

@@ -2,6 +2,7 @@
  &INPUT
    prefix = 'copper_US'
    postfix = '_WanT'
+   fileout = 'dos_CuUS.dat'
    nk(1) = 15
    nk(2) = 15
    nk(3) = 15
