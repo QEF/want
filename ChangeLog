@@ -4,6 +4,9 @@
 =======================================================
 
 
+12 Jul 2006      "dos.dat" file produced by conductor.x renamed in "doscond.dat"; tests
+                 changed accordingly. Documentation updated. (AF)
+
 10 Jul 2006      configure.h fingerprints added to startup.f90; some bug fixed. (AF)
 
 09 Jul 2006      configure.h (generated during configuration) added; (AF)
