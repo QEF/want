@@ -19,7 +19,8 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
- bands           interpolates the band structure using WFs
+ bands           interpolate the band structure using WFs
+ dos             compute DOS using WFs
  plot            compute WFs on real space for plotting
  conductor       evaluate the bulk transmittance 
  want            perform DISENTANGLE, WANNIER, BANDS, PLOT, CONDUCTOR all together 
@@ -48,7 +49,8 @@ NSCF=
 PWEXPORT=
 DISENTANGLE=
 WANNIER=
-#BANDS=
+BANDS=
+DOS=
 PLOT=
 CONDUCTOR=
 CHECK=
@@ -65,14 +67,15 @@ case $INPUT in
    (disentangle)    DISENTANGLE=".TRUE." ;;
    (wannier)        WANNIER=".TRUE." ;;
    (bands)          BANDS=".TRUE." ;;
+   (dos)            DOS=".TRUE." ;;
    (plot)           PLOT=".TRUE." ;;
    (conductor)      CONDUCTOR=".TRUE." ;;
    (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BANDS=".TRUE."; 
+                    BANDS=".TRUE."; DOS=".TRUE.";
                     CONDUCTOR=".TRUE." ;  PLOT=".TRUE." ;;
    (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
                     DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BANDS=".TRUE." ; 
+                    BANDS=".TRUE."; DOS=".TRUE.";
                     CONDUCTOR=".TRUE." ; PLOT=".TRUE." ;;
    (check)          CHECK=".TRUE." ;;
    (clean)          CLEAN=".TRUE." ;;
@@ -189,6 +192,19 @@ if [ "$BANDS" = ".TRUE." ] ; then
    fi
 fi
 
+#
+# running DOS
+#
+if [ "$DOS" = ".TRUE." ] ; then  
+   echo $ECHO_N "running DOS calculation... $ECHO_C" 
+   $WANT_BIN/dos.x < $TEST_HOME/dos.in > $TEST_HOME/dos.out
+   if [ ! -e CRASH ] ; then 
+      echo "$ECHO_T done" 
+      test -e dos.dat && mv dos.dat $TEST_HOME/dos.dat
+   else
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
+   fi
+fi
 
 #
 # running PLOT
@@ -212,8 +228,8 @@ if [ "$CONDUCTOR" = ".TRUE." ] ; then
    $WANT_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
-      test -e dos.dat && mv dos.dat $TEST_HOME/dos.dat
-      test -e cond.dat && mv cond.dat $TEST_HOME/cond.dat
+      test -e doscond.dat &&  mv doscond.dat  $TEST_HOME
+      test -e cond.dat    &&  mv cond.dat     $TEST_HOME
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
