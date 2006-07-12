@@ -26,7 +26,7 @@
                                     conduct_formula, niterx, nprint, datafile_sgm 
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid
    USE T_smearing_module,    ONLY : smearing_init
-   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par , wk_par
+   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 
                                     s00_L, s01_L, s00_R, s01_R, s00_C, &
@@ -260,7 +260,7 @@
    ENDDO
    CLOSE( cond_unit )
 
-   filename = 'dos.dat'
+   filename = 'doscond.dat'
    OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
    DO ie = 1, ne
        WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,ie) )

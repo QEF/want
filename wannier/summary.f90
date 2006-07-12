@@ -109,10 +109,10 @@
 !
 ! <MAIN & INPUT> section
 !
-   WRITE(unit,"()")      
+   !
+   WRITE(unit,"()" )
    IF ( linput_ ) THEN
-       WRITE(unit,"()")      
-       WRITE(unit,"(2x,70('='))" )
+       WRITE(unit,"(/,2x,70('='))" )
        WRITE(unit,"(2x,'=',27x,'INPUT Summary',28x,'=')" )
        WRITE(unit,"(2x,70('='),/)" )
        WRITE(unit,"( ' <CONTROL>')" )

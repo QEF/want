@@ -12,8 +12,7 @@
      character(LEN=1), PARAMETER   :: version_major= __VERSION_MAJOR
      character(LEN=1), PARAMETER   :: version_minor= __VERSION_MINOR
      character(LEN=1), PARAMETER   :: version_patch= __VERSION_PATCH
-     character(LEN=10),PARAMETER   :: version_number=  version_name//"-"//   &
-                                                       version_major//"."//  &
+     character(LEN=10),PARAMETER   :: version_number=  version_major//"."//  &
                                                        version_minor//"."//  &
                                                        version_patch
    END MODULE version_module

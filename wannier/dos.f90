@@ -19,14 +19,14 @@
    !
    USE kinds
    USE parameters,           ONLY : nstrx
-   USE constants,            ONLY : CZERO, ZERO, ONE, TWO
+   USE constants,            ONLY : CZERO, ZERO, ONE, TWO, TPI
    USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, aux_unit, space_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE files_module,         ONLY : file_open, file_close
    USE version_module,       ONLY : version_number
    USE util_module,          ONLY : mat_hdiag
-   USE converters_module,    ONLY : cry2cart
-   USE lattice_module,       ONLY : bvec
+   USE converters_module,    ONLY : cry2cart, cart2cry
+   USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
    USE windows_module,       ONLY : windows_read, nspin
    USE subspace_module,      ONLY : subspace_read
@@ -38,7 +38,7 @@
    IMPLICIT NONE 
 
    !
-   ! local variables
+   ! input variables
    !
    INTEGER      :: nk(3)         ! kpt generators
    INTEGER      :: s(3)          ! kpt shifts
@@ -46,25 +46,35 @@
    REAL(dbl)    :: emin          ! egrid extrema
    REAL(dbl)    :: emax
    REAL(dbl)    :: delta         ! smearing parameter
-   CHARACTER(nstrx)          :: smearing_type
+   CHARACTER(nstrx) :: smearing_type
+   CHARACTER(nstrx) :: fileout   ! output filename
+   LOGICAL      :: use_nn(3)     ! use nearest neighb. in direction i, i=1,3
+                                 ! DEBUG purposes only
+   !
+   ! loval variables
    !
    INTEGER      :: nkpts_int     ! Number of interpolated k-points
+   INTEGER      :: nrtot_nn
    REAL(dbl)    :: arg, cost
    COMPLEX(dbl) :: phase
+   !
+   INTEGER,      ALLOCATABLE :: r_index(:)
    COMPLEX(dbl), ALLOCATABLE :: ham(:,:)  
    COMPLEX(dbl), ALLOCATABLE :: z(:,:)        
-   !
    REAL(dbl),    ALLOCATABLE :: egrid(:), dos(:)
-   REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), wk(:)
+   REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), wk(:), vr_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: eig_int(:,:)  ! interpolated band structure   
    CHARACTER(nstrx)          :: filename
-   INTEGER :: i, j, ie, ik, ir
-   INTEGER :: ierr
-   LOGICAL :: lfound
+   !
+   INTEGER      :: i, j, ie, ik, ir, ir_eff
+   INTEGER      :: ierr
+   LOGICAL      :: lfound
+
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, nk, s, delta, smearing_type, emin, emax, ne
+   NAMELIST /INPUT/ prefix, postfix, work_dir, nk, s, delta, smearing_type, fileout, &
+                    emin, emax, ne, use_nn
    !
    ! end of declariations
    !   
@@ -83,6 +93,7 @@
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
+      fileout                     = TRIM(prefix)//TRIM(postfix)//'_dos.dat'
       delta                       = 0.1    ! eV
       nk(:)                       = -1
       s(:)                        =  0
@@ -90,6 +101,7 @@
       emax                        =  10.0
       ne                          =  1000
       smearing_type               = 'gaussian'
+      use_nn(1:3)                 = .FALSE.
       
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('dos','Unable to read namelist INPUT',ABS(ierr))
@@ -120,22 +132,27 @@
       !
       CALL io_name('space',filename)
       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
+          !
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore('dos',"unable to find WINDOWS",1)
+          !
           CALL subspace_read(space_unit,"SUBSPACE",lfound)
           IF ( .NOT. lfound ) CALL errore('dos',"unable to find SUBSPACE",1)
+          !
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
       CALL io_name('space',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Space data read from file: ',a)") TRIM(filename)
+      WRITE( stdout,"(/,2x,'Space data read from file: ',a)") TRIM(filename)
 
       !
       ! Read hamiltonian data
       !
       CALL io_name('hamiltonian',filename)
       CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="read")
+          !
           CALL hamiltonian_read(ham_unit,"HAMILTONIAN",lfound)
           IF ( .NOT. lfound ) CALL errore('dos',"unable to find HAMILTONIAN",1)
+          !
       CALL file_close(ham_unit,PATH="/",ACTION="read")
 
       CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
@@ -175,13 +192,13 @@
 
       !
       ! generate monkhorst-pack grid, using nk(:) and s(:)
-      ! kpts are in crystal coords
+      ! kpts gen are in crystal coords
       !
       CALL monkpack( nk, s, vkpt_int )
       !
       wk(1:nkpts_int) = TWO / REAL( nspin * nkpts_int ,dbl)
       !
-      ! convert kpts to internal cartesian representation (bohr^-1)
+      ! mv kpts in cartesian coords (bohr^-1)
       CALL cry2cart( vkpt_int, bvec )
 
 
@@ -197,10 +214,10 @@
       WRITE( stdout, "( 5x,    '    s : ',3i4)" ) s(:)
       WRITE( stdout, "( 5x,    'nktot : ',i6)" ) nkpts_int
       !
-      WRITE( stdout, "(2/2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1) ',/)" )
+      WRITE( stdout, "(2/2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1)',/)" )
       !
       DO ik=1,nkpts_int
-           WRITE( stdout, " (4x, 'k point', i4, ':   ( ',3f9.5,' ),   weight = ', f11.7 )") &
+           WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   weight = ', f11.7 )") &
            ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
       ENDDO
       WRITE( stdout, "()" )
@@ -217,34 +234,72 @@
           IF( ierr /=0 ) CALL errore('dos','allocating eig_int', ABS(ierr) )
 
       !
+      ! if chosen from input, select only R corresponding to nearest-neighb
+      ! along some (crystal) directions
+      ! nn_index will point only to the selected nrtot_nn vectors
+      !
+      ALLOCATE( vr_cry(3, nrtot), STAT=ierr )
+          IF( ierr /=0 ) CALL errore('dos','allocating vr_cry', ABS(ierr) )
+      ALLOCATE( r_index(nrtot), STAT=ierr )
+          IF( ierr /=0 ) CALL errore('dos','allocating r_index', ABS(ierr) )
+
+      !
+      ! move vr_int to crystal coords
+      !
+      vr_cry(:,:) = vr(:,:)
+      CALL cart2cry( vr_cry, avec )
+      !
+      nrtot_nn = 0
+      !
+      DO ir = 1, nrtot
+          !
+          IF (  ( .NOT. use_nn(1)  .OR.  ABS(NINT(vr_cry(1,ir))) <= 1 ) .AND. &
+                ( .NOT. use_nn(2)  .OR.  ABS(NINT(vr_cry(2,ir))) <= 1 ) .AND. &
+                ( .NOT. use_nn(3)  .OR.  ABS(NINT(vr_cry(3,ir))) <= 1 )       )  THEN
+                !
+                nrtot_nn = nrtot_nn + 1
+                !
+                r_index( nrtot_nn ) = ir
+                !
+          ENDIF
+          !
+      ENDDO
+
+      !
       ! Interpolate H_ij(k') at those k-points by fourier interpolation
       ! H_ij(k') ~ sum_R e^{ik'R} H_ij(R), where the sum over R is over a 
       ! finite grid (truncation)
       ! 
-
       DO ik = 1, nkpts_int
-           DO j = 1, dimwann
-           DO i = 1, dimwann
-                ham(i,j) = CZERO
-                DO ir = 1, nrtot
-                    arg = DOT_PRODUCT( vkpt_int(:,ik), vr(:,ir) )
-                    phase = CMPLX( COS(arg), SIN(arg), dbl ) * wr(ir)
-                    ham(i,j) = ham(i,j) + phase * rham(i,j,ir) 
-                ENDDO
-           ENDDO
-           ENDDO
- 
-           !
-           ! Diagonalize the hamiltonian at the present k-point
-           !
-           CALL mat_hdiag( z, eig_int(:,ik), ham(:,:), dimwann)
+          !
+          ham(:,:) = CZERO
+          !
+          DO ir = 1, nrtot_nn
+               !
+               ir_eff = r_index( ir ) 
+               !
+               arg =   DOT_PRODUCT( vkpt_int(:,ik), vr(:, ir_eff ) )
+               phase = CMPLX( COS(arg), SIN(arg), dbl ) * wr(ir_eff)
+               ! 
+               DO j = 1, dimwann
+               DO i = 1, dimwann
+                    ham(i,j) = ham(i,j) + phase * rham(i,j,ir_eff) 
+               ENDDO
+               ENDDO
+               !
+          ENDDO
+
+          !
+          ! Diagonalize the hamiltonian at the present k-point
+          !
+          CALL mat_hdiag( z, eig_int(:,ik), ham(:,:), dimwann)
       ENDDO 
 
 
       !
       ! compute DOS
-      !
-      cost = ONE / delta
+      ! the TWO factor is included to avoid spin (internal coherence repsect transport)
+      cost = ONE / ( TWO * delta )
 
       energy_loop:&
       DO ie = 1, ne
@@ -263,11 +318,10 @@
       ENDDO energy_loop
        
 
-
 ! 
 ! ... Write final interpolated band structure to file
 ! 
-      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_dos.dat'
+      filename=TRIM(fileout)
       !
       OPEN( aux_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
       IF (ierr/=0) CALL errore('dos','opening '//TRIM(filename),ABS(ierr))
@@ -278,6 +332,8 @@
       ENDDO
       !
       CLOSE( ham_unit )
+      !
+      WRITE( stdout, "(/,2x,'Results written on file:',a)" ) TRIM(fileout)
 
 !
 ! ... Shutdown
@@ -296,6 +352,8 @@
           IF( ierr /=0 ) CALL errore('dos', 'deallocating z', ABS(ierr))
       DEALLOCATE( egrid, dos, STAT=ierr )
           IF( ierr /=0 ) CALL errore('dos', 'deallocating egrid, dos', ABS(ierr))
+      DEALLOCATE( vr_cry, r_index, STAT=ierr )
+          IF( ierr /=0 ) CALL errore('dos', 'deallocating vr_cry, r_index', ABS(ierr) )
 
       !
       ! Clean global memory
@@ -308,9 +366,4 @@
       CALL shutdown( 'dos' )
 
 END PROGRAM dos_prog
-
-
-
-
-
 

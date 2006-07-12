@@ -146,7 +146,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
    CALL file_close(dft_unit,PATH="/",ACTION="read")
 
    CALL io_name('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
-   WRITE( stdout,"(2x,'DFT-data read from file : ',a)") TRIM(filename)   
+   WRITE( stdout,"(2x,'DFT-data read from file: ',a)") TRIM(filename)   
     
 
 !
