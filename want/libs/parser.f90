@@ -32,6 +32,35 @@ MODULE parser_module
   USE parser_base_module
   USE io_global_module, ONLY : stdout
   IMPLICIT NONE
+  PRIVATE
+  !
+  !
+  ! make public the objs of interest
+  !
+  ! from parser_base_module
+  !
+  PUBLIC :: int2char
+  PUBLIC :: char2int
+  PUBLIC :: log2char
+  PUBLIC :: log2int
+  PUBLIC :: upper_case
+  PUBLIC :: lower_case
+  PUBLIC :: change_case
+  PUBLIC :: parser_replica
+  PUBLIC :: parser_path
+  PUBLIC :: parser_version
+  !
+  ! from this module
+  !
+  PUBLIC :: int_to_char
+  PUBLIC :: delete_if_present
+  PUBLIC :: field_count
+  PUBLIC :: read_line
+  PUBLIC :: field_compare
+  PUBLIC :: con_cam
+  PUBLIC :: matches
+  PUBLIC :: capital
+  !
   !
   !
   CONTAINS

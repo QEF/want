@@ -15,7 +15,7 @@
 #include"libc.h"
 
 
-double FC_FUNC_(elapsed_seconds,ELAPSED_SECONDS)()
+double __FC_FUNC_(elapsed_seconds,ELAPSED_SECONDS)()
 {
   static time_t tstart, tend;
   static int first = 1;
@@ -30,7 +30,7 @@ double FC_FUNC_(elapsed_seconds,ELAPSED_SECONDS)()
 }
 
 
-double FC_FUNC(cclock,CCLOCK)()
+double __FC_FUNC(cclock,CCLOCK)()
 /* Restituisce i secondi trascorsi dalla chiamata al timer rest */
 {
 

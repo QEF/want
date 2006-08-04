@@ -8,7 +8,7 @@
 ! based on the error.f90 file from Quantum-Espresso
 !
 !*****************************************
-   SUBROUTINE warning(msg)
+   SUBROUTINE warning( ounit, msg)
    !*****************************************
    !
    !  this routine a warning message
@@ -19,6 +19,7 @@
    !
    ! input variables
    !
+   INTEGER                       :: ounit
    CHARACTER(LEN=*), INTENT(in)  :: msg
 
    !
@@ -43,7 +44,7 @@
 ! print the warning message
 !
       DO ip = 0, nproc-1
-          IF( mpime == 0 ) WRITE (6,"(2x,'WARNING: ',a)") TRIM(msg) 
+          IF( mpime == 0 ) WRITE ( ounit,"(2x,'WARNING: ',a)") TRIM(msg) 
       ENDDO
 
 END SUBROUTINE warning
