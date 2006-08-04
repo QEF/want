@@ -4,6 +4,24 @@
 =======================================================
 
 
+04 Aug 2006      Makefile in libs bug-fixed (wrong compilation of dlamch.f90 under certain
+                 circumstances). Courtesy of Matias Nunes. (AF)
+
+22 Jul 2006      Symmetry module added to wannier/ ; qexpt.f90 updated including also
+                 the missing qexpt_read_symmetry routine. (AF)
+
+18 Jul 2006      Output fmt in transport changed; ierr is given back in transfer.f90; warnings
+                 and errors better treated in trasport; warning.f90 interface slightly changed; (AF)
+
+14 Jul 2006      wS-H instead of H-wS used through the transport code; shutdown added in
+                 conductor.f90; cleanup of auxiliary variables in tranport; default for
+                 niterx lowered to 20 (instead of 200); documentation updated;
+                 define_lead.f90 routine added (to make the smearing technique 
+                 fully consistent). (AF)
+
+13 Jul 2006      dos.f90 output changed; summary interface changed (and related upgrades
+                 performed); input_from_file procedure adapted from espresso. (AF)
+
 12 Jul 2006      "dos.dat" file produced by conductor.x renamed in "doscond.dat"; tests
                  changed accordingly. Documentation updated. (AF)
 
