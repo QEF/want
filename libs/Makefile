@@ -13,6 +13,7 @@ error.o \
 fft_scalar.o \
 files.o \
 indexx.o \
+input_from_file.o \
 invmat.o \
 io_global.o \
 kind.o \
@@ -82,7 +83,7 @@ lapack_mkl : lapack_mkl.o
 	touch $@
 
 dlamch.o : dlamch.f
-	$(F77) $(F77FLAGS_NOOPT) -c $<
+	$(F77) $(FFLAGS_NOOPT) -c $<
 
 
 #

@@ -30,7 +30,8 @@ MODULE qexpt_module
   !
   PUBLIC :: qexpt_init,  qexpt_openfile, qexpt_closefile
   !
-  PUBLIC :: qexpt_read_cell, qexpt_read_ions, qexpt_read_spin, qexpt_read_bz, &
+  PUBLIC :: qexpt_read_cell, qexpt_read_ions, qexpt_read_symmetry,            &
+            qexpt_read_spin, qexpt_read_bz,                                   &
             qexpt_read_bands, qexpt_read_planewaves, qexpt_read_gk,           &
             qexpt_read_wfc
   !
@@ -308,6 +309,54 @@ CONTAINS
       DEALLOCATE( tau_ )
      
     END SUBROUTINE qexpt_read_ions
+
+
+    !------------------------------------------------------------------------
+    SUBROUTINE qexpt_read_symmetry( nsym, invsym, s, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,          OPTIONAL, INTENT(OUT) :: nsym
+      LOGICAL,          OPTIONAL, INTENT(OUT) :: invsym
+      INTEGER,          OPTIONAL, INTENT(OUT) :: s(:,:,:)
+      INTEGER,                    INTENT(OUT) :: ierr
+      !
+      INTEGER             :: nsym_
+      LOGICAL             :: invsym_
+      INTEGER             :: s_(3,3,48)
+      !
+      INTEGER             :: i
+
+      !
+      ierr=0
+      !
+      !
+      CALL iotk_scan_begin( iunpun, "Symmetry", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_empty( iunpun, "symmops", ATTR=attr, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_attr( attr, "nsym", nsym_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr( attr, "invsym", invsym_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      DO i = 1, nsym_
+           !
+           CALL iotk_scan_dat( iunpun, "sym"//TRIM( iotk_index(i)), s_(:,:,i), IERR=ierr )
+           IF (ierr/=0) RETURN
+           !
+      ENDDO
+      !
+      CALL iotk_scan_end( iunpun, "Symmetry", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      !
+      IF ( PRESENT( nsym ) )       nsym      = nsym_
+      IF ( PRESENT( invsym ) )     invsym    = invsym_
+      IF ( PRESENT( s ) )          s( 1:3, 1:3, 1:nsym_)  = s_( :, :, 1:nsym_)
+      !
+    END SUBROUTINE qexpt_read_symmetry
 
 
     !------------------------------------------------------------------------
