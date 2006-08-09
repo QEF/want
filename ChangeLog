@@ -4,6 +4,9 @@
 =======================================================
 
 
+09 Aug 2006      Bug fix in utility/Makefile: LDFLAGS and CFLAGS added during loading.
+                 Adviced by Matias Nunez. (AF)
+
 04 Aug 2006      Makefile in libs bug-fixed (wrong compilation of dlamch.f90 under certain
                  circumstances). Courtesy of Matias Nunes. (AF)
 
