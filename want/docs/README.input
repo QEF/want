@@ -721,7 +721,7 @@ nprint      INTEGER
 
 niterx      INTEGER
             maximum number of iterations in the calculation of transfer matrices
-            DEFAULT : 200
+            DEFAULT : 20
 
 use_overlap    LOGICAL
             If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
