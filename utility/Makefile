@@ -76,11 +76,11 @@ midpoint.x: midpoint.o $(BIN_DEPS)
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
 kgrid.x: kgrid.o 
-	$(LD) -o $@ kgrid.o 
+	$(LD) $(LDFLAGS) -o $@ kgrid.o 
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
 gcube2plt.x: 
-	$(CC) -o $@ gcube2plt.c
+	$(CC) $(CFLAGS) -o $@ gcube2plt.c
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
 clean:
