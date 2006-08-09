@@ -38,6 +38,7 @@
    !
    IF ( ionode ) THEN
         !
+        WRITE( stdout, "(2x, 70('='))" )
         CALL timing_overview( UNIT=stdout, LIST=global_list, MAIN_NAME=TRIM(main_name))
         !
    ENDIF

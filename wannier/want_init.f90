@@ -8,7 +8,7 @@
 ! 
 !
 !*********************************************************
-SUBROUTINE want_init_x(want_input, lattice, ions, windows, kpoints, bshells, pseudo)
+SUBROUTINE want_init_x(input, lattice, ions, windows, kpoints, bshells, pseudo)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -48,7 +48,7 @@ SUBROUTINE want_init_x(want_input, lattice, ions, windows, kpoints, bshells, pse
    !
    ! input variables
    !
-   LOGICAL, OPTIONAL, INTENT(in) :: want_input
+   LOGICAL, OPTIONAL, INTENT(in) :: input
    LOGICAL, OPTIONAL, INTENT(in) :: lattice
    LOGICAL, OPTIONAL, INTENT(in) :: ions
    LOGICAL, OPTIONAL, INTENT(in) :: windows
@@ -60,8 +60,8 @@ SUBROUTINE want_init_x(want_input, lattice, ions, windows, kpoints, bshells, pse
    ! local variables
    !
    CHARACTER(9)              :: subname="want_init"
-   LOGICAL                   :: want_input_, init_lattice_, init_ions_, init_windows_, &
-                                             init_kpoints_, init_bshells_, init_pseudo_
+   LOGICAL                   :: input_, init_lattice_, init_ions_, init_windows_, &
+                                        init_kpoints_, init_bshells_, init_pseudo_
    INTEGER                   :: ia, iwann
    !   
    ! end of declarations
@@ -77,14 +77,14 @@ SUBROUTINE want_init_x(want_input, lattice, ions, windows, kpoints, bshells, pse
 !   
 ! setting up   
 !   
-    want_input_      = .FALSE.
+    input_           = .FALSE.
     init_lattice_    = .TRUE.
     init_ions_       = .TRUE.
     init_kpoints_    = .TRUE.
     init_windows_    = .TRUE.
     init_bshells_    =  init_kpoints_
     init_pseudo_     = .FALSE.
-    IF ( PRESENT(want_input) ) want_input_ = want_input
+    IF ( PRESENT(input) )           input_ = input
     IF ( PRESENT(lattice) )  init_lattice_ = lattice
     IF ( PRESENT(ions) )        init_ions_ = ions
     IF ( PRESENT(windows) )  init_windows_ = windows
@@ -109,8 +109,8 @@ SUBROUTINE want_init_x(want_input, lattice, ions, windows, kpoints, bshells, pse
         !
         CALL lattice_init()
         !
-        ! ... want_input if required
-        IF ( want_input_ ) THEN 
+        ! ... want input if required
+        IF ( input_ ) THEN 
             !
             DO iwann=1,dimwann
                 CALL trial_center_convert( avec, trial(iwann) )
@@ -132,7 +132,7 @@ SUBROUTINE want_init_x(want_input, lattice, ions, windows, kpoints, bshells, pse
         !
         ! set the centers in the atomic wfc if the case
         !
-        IF ( want_input_ ) THEN
+        IF ( input_ ) THEN
             !
             DO iwann = 1, dimwann
                 !

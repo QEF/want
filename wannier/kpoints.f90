@@ -11,9 +11,11 @@
 !*********************************************
    MODULE kpoints_module
 !*********************************************
+   !
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : ONE, TWO, TPI, EPS_m6
    USE parameters,        ONLY : nstrx, nnx
+   USE io_module,         ONLY : stdout
    USE lattice_module,    ONLY : alat, avec, bvec, lattice_alloc => alloc
    USE converters_module, ONLY : cart2cry
    USE qexml_module
@@ -159,7 +161,7 @@ CONTAINS
       ALLOCATE( wr( nrtot ), STAT=ierr )
          IF ( ierr /= 0) CALL errore(subname,'allocating wr',ABS(ierr))
          !
-      CALL get_Rgrid(nr, nrtot, wr, vr, avec )
+      CALL get_rgrid(nr, nrtot, wr, vr, avec )
 
       !
       ! compute ivr, crystal compononet of vr
@@ -281,7 +283,7 @@ CONTAINS
        !
        IF ( lfound ) THEN
           !
-          CALL warning('Invalid kpt weights from DFT data. Recalculated')
+          CALL warning( stdout, 'Invalid kpt weights from DFT data. Recalculated')
           wk(:) = ONE/REAL(nkpts, dbl)
        ENDIF
 

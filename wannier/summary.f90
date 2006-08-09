@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !**********************************************************
-   SUBROUTINE summary_x(unit, linput, llattice, latoms, lpseudo, lkpoints, leig)
+   SUBROUTINE summary_x(unit, input, lattice, ions, windows, kpoints, bshells, pseudo )
    !**********************************************************
    !
    ! Print out all the informnatins obtained from the 
@@ -20,9 +20,10 @@
    ! *  input data
    ! *  DFT data
    !    - lattice
-   !    - atoms
-   !    - kpoints
-   !    - eigenvalues
+   !    - ions
+   !    - kpoints and bshells
+   !    - windows (eigenvalues)
+   !    - pseudo
    !
    USE kinds,             ONLY : dbl
    USE parameters,        ONLY : nstrx
@@ -63,23 +64,25 @@
    ! input variables
    !
    INTEGER,           INTENT(in) :: unit
-   LOGICAL, OPTIONAL, INTENT(in) :: linput     ! if TRUE summ input
-   LOGICAL, OPTIONAL, INTENT(in) :: llattice   ! if TRUE summ lattice
-   LOGICAL, OPTIONAL, INTENT(in) :: latoms     ! if TRUE summ atoms
-   LOGICAL, OPTIONAL, INTENT(in) :: lpseudo    ! if TRUE summ pseudos
-   LOGICAL, OPTIONAL, INTENT(in) :: lkpoints   ! if TRUE summ kpoints
-   LOGICAL, OPTIONAL, INTENT(in) :: leig       ! if TRUE summ eigenvalues
+   LOGICAL, OPTIONAL, INTENT(in) :: input     ! if TRUE summ input
+   LOGICAL, OPTIONAL, INTENT(in) :: lattice   ! if TRUE summ lattice
+   LOGICAL, OPTIONAL, INTENT(in) :: ions      ! if TRUE summ ions
+   LOGICAL, OPTIONAL, INTENT(in) :: windows   ! if TRUE summ eigenvalues (windows)
+   LOGICAL, OPTIONAL, INTENT(in) :: kpoints   ! if TRUE summ kpoints
+   LOGICAL, OPTIONAL, INTENT(in) :: bshells   ! if TRUE summ bshells
+   LOGICAL, OPTIONAL, INTENT(in) :: pseudo    ! if TRUE summ pseudos
 
    !
    ! local variables
    !
-   LOGICAL                :: linput_
-   LOGICAL                :: llattice_
-   LOGICAL                :: latoms_
-   LOGICAL                :: lpseudo_
-   LOGICAL                :: lkpoints_
-   LOGICAL                :: leig_
-   LOGICAL                :: ldft_
+   LOGICAL                :: linput
+   LOGICAL                :: llattice
+   LOGICAL                :: lions
+   LOGICAL                :: lwindows
+   LOGICAL                :: lkpoints
+   LOGICAL                :: lbshells
+   LOGICAL                :: lpseudo
+   LOGICAL                :: ldft
 
    INTEGER                :: ik, ia, ib
    INTEGER                :: i, j, is, nt, l
@@ -92,26 +95,29 @@
 !
 ! set defaults and switches
 !
-   linput_   = .TRUE.
-   llattice_ = .TRUE. 
-   latoms_   = .TRUE. 
-   lpseudo_  = .TRUE. 
-   lkpoints_ = .TRUE. 
-   leig_     = .TRUE. 
-   IF ( PRESENT(linput) )   linput_   = linput
-   IF ( PRESENT(llattice) ) llattice_ = llattice
-   IF ( PRESENT(latoms) )   latoms_   = latoms
-   IF ( PRESENT(lpseudo) )  lpseudo_  = lpseudo
-   IF ( PRESENT(lkpoints) ) lkpoints_ = lkpoints
-   IF ( PRESENT(leig) )     leig_     = leig
-   ldft_ = llattice_ .OR. latoms_ .OR. lpseudo_ .OR. lkpoints_ .OR. leig_
+   linput    = .TRUE.
+   llattice  = .TRUE. 
+   lions     = .TRUE. 
+   lwindows  = .TRUE. 
+   lkpoints  = .TRUE. 
+   lpseudo   = .TRUE. 
+   IF ( PRESENT(input) )    linput    = input
+   IF ( PRESENT(lattice) )  llattice  = lattice
+   IF ( PRESENT(ions) )     lions     = ions
+   IF ( PRESENT(windows) )  lwindows  = windows
+   IF ( PRESENT(kpoints) )  lkpoints  = kpoints
+   lbshells  = lkpoints
+   IF ( PRESENT(bshells) )  lbshells  = bshells
+   IF ( PRESENT(pseudo) )   lpseudo   = pseudo
+   !
+   ldft  = llattice  .OR. lions .OR. lwindows .OR. lpseudo .OR. lkpoints .OR. lbshells
 
 !
 ! <MAIN & INPUT> section
 !
    !
    WRITE(unit,"()" )
-   IF ( linput_ ) THEN
+   IF ( linput  ) THEN
        WRITE(unit,"(/,2x,70('='))" )
        WRITE(unit,"(2x,'=',27x,'INPUT Summary',28x,'=')" )
        WRITE(unit,"(2x,70('='),/)" )
@@ -221,7 +227,7 @@
 !
 ! <DFT> section
 !
-   IF ( ldft_ ) THEN 
+   IF ( ldft ) THEN 
        WRITE(unit, " (2x,70('='))" )
        WRITE(unit, " (2x,'=',30x,'DFT data',30x,'=')" )
        WRITE(unit, " (2x,70('='),/)" )
@@ -229,7 +235,7 @@
 
    !
    ! ... Lattice
-   IF ( lattice_alloc .AND. llattice_ ) THEN
+   IF ( lattice_alloc .AND. llattice  ) THEN
        WRITE(unit, " (  ' <LATTICE>')" )
        WRITE(unit, " (2x,'Alat  = ', F15.7, ' (Bohr)' )" ) alat
        WRITE(unit, " (2x,'Alat  = ', F15.7, ' (Ang )' )" ) alat * BOHR
@@ -259,14 +265,14 @@
 
    !
    ! ... ions
-   IF ( ions_alloc .AND. latoms_ ) THEN 
+   IF ( ions_alloc .AND. lions ) THEN 
        WRITE(unit, " (  ' <IONS>')" )
        WRITE(unit, " (2x,'Number of chemical species =', i3 ) " ) nsp
 
-       IF ( lpseudo_ ) THEN
+       IF ( lpseudo ) THEN
            !
            IF ( .NOT. use_pseudo )  THEN
-               CALL warning('Pseudopots not read, assumed to be norm cons.')
+               CALL warning( unit, 'Pseudopots not read, assumed to be norm cons.')
            ELSEIF ( use_uspp ) THEN
                WRITE(unit, " (2x,'Calculation is done within US pseudopot.',/)") 
            ENDIF
@@ -373,15 +379,13 @@
        
    !
    ! ... kpoints
-   IF ( kpoints_alloc .AND. lkpoints_ ) THEN 
+   IF ( kpoints_alloc .AND. lkpoints  ) THEN 
        WRITE(unit, " (  ' <K-POINTS>')" )
        WRITE(unit, "(2x, 'nkpts = ',i4 ) " ) nkpts
        WRITE(unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i3,' ),', &
-                    & 6x,'shift = (',3i3,' )' ) " ) & 
-                      nk(:), s(:) 
-       WRITE(unit, "(2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
-       
-
+                                         & 6x,'shift = (',3i3,' )' ) " ) nk(:), s(:) 
+       WRITE(unit, "(/,2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
+       !
        DO ik=1,nkpts
           WRITE(unit, " (4x, 'k (', i4, ') =    ( ',3f9.5,' ),   weight = ', f11.7 )") &
           ik, ( vkpt(i,ik), i=1,3 ), wk(ik)
@@ -389,7 +393,7 @@
        WRITE(unit, " (  ' </K-POINTS>',/)" )
    ENDIF
 
-   IF ( bshells_alloc .AND. lkpoints_ ) THEN
+   IF ( bshells_alloc .AND. lbshells ) THEN
        WRITE(unit, " (  ' <B-SHELL>')" )
        !
        WRITE (unit, "(2x, 'List of the ' , i2, ' b-vectors : (Bohr^-1) ') ") nb
@@ -403,7 +407,7 @@
    ENDIF
    !
    ! ... eigs and windows
-   IF ( windows_alloc .AND. leig_ ) THEN 
+   IF ( windows_alloc .AND. lwindows ) THEN 
        IF ( .NOT. kpoints_alloc ) CALL errore('summary','Unexpectedly kpts NOT alloc',1)
        WRITE(unit, " (  ' <WINDOWS>')" )
        WRITE(unit," (2x, 'Definition of energy windows: (energies in eV)' ) " )

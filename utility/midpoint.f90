@@ -89,6 +89,9 @@
       toll                        = 0.10
       
 
+      CALL input_from_file ( stdin, ierr )
+      IF ( ierr /= 0 )  CALL errore('midpoint','error in input from file',ABS(ierr))
+      !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('midpoint','Unable to read namelist INPUT',ABS(ierr))
 
@@ -105,14 +108,14 @@
 !
 ! Getting DFT data
 !
-      CALL want_init( WANT_INPUT= .FALSE., WINDOWS=.FALSE., KPOINTS=.FALSE., &
-                      BSHELLS=.FALSE.,     PSEUDO=.FALSE. )
+      CALL want_init( INPUT= .FALSE.,  WINDOWS=.FALSE., KPOINTS=.FALSE., &
+                      BSHELLS=.FALSE., PSEUDO=.FALSE. )
 
       !
       ! Print data to output
       !
-      CALL summary( stdout, LINPUT=.FALSE.,  LLATTICE=.TRUE., LATOMS=.TRUE., &
-                            LPSEUDO=.FALSE., LKPOINTS=.FALSE.,LEIG=.FALSE. )
+      CALL summary( stdout, INPUT=.FALSE.,  LATTICE=.TRUE.,  IONS=.TRUE., &
+                            PSEUDO=.FALSE., KPOINTS=.FALSE., WINDOWS=.FALSE. )
 
 
       !
@@ -287,7 +290,7 @@
 ! closing the run
 !
 
-      WRITE( stdout, "(/,2x,70('='))" )
+      WRITE( stdout, "()" )
 
       DEALLOCATE( length, start, end, map, STAT=ierr )
       IF (ierr/=0) CALL errore('midpoint','deallocating length--map', ABS(ierr))

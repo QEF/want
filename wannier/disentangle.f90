@@ -68,7 +68,7 @@
        ! ...  Read DFT_DATA file and init global data
        !
        CALL want_dftread ( PSEUDO=read_pseudo )
-       CALL want_init    ( WANT_INPUT=.TRUE., PSEUDO=read_pseudo )
+       CALL want_init    ( INPUT=.TRUE., PSEUDO=read_pseudo )
 
        !
        ! ...  Summary of the input and DFT data
@@ -487,7 +487,6 @@
 ! ...  Shut down
 !--------------------------------------
 !
-       WRITE( stdout,"(2x, 70('='))")
 
        !
        ! ...  Deallocate local arrays
