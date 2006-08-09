@@ -80,6 +80,9 @@
       nkpts_in                    = 0
       nkpts_max                   = 100
       
+      CALL input_from_file ( stdin, ierr )
+      IF ( ierr /= 0 )  CALL errore('bands','error in input from file',ABS(ierr))
+      !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('bands','Unable to read namelist INPUT',ABS(ierr))
 
@@ -113,7 +116,7 @@
 ! ... Getting previous WanT data
 !
       CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE.  )
-      CALL want_init    ( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., BSHELLS=.FALSE. )
 
       !
       ! Read Subspace data
@@ -145,7 +148,7 @@
       !
       ! Print data to output
       !
-      CALL summary( stdout, LINPUT=.FALSE., LATOMS=.FALSE., LEIG=.FALSE. )
+      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., WINDOWS=.FALSE. )
 
 
 

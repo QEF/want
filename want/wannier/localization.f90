@@ -10,12 +10,12 @@
 !*********************************************
    MODULE localization_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : ZERO
-   USE kpoints_module, ONLY : nkpts, kpoints_alloc
+   USE kinds,           ONLY : dbl
+   USE parameters,      ONLY : nstrx
+   USE constants,       ONLY : ZERO
+   USE kpoints_module,  ONLY : nkpts, kpoints_alloc
    USE subspace_module, ONLY : dimwann, subspace_alloc => alloc
    USE iotk_module
-   USE parameters, ONLY : nstrx
    IMPLICIT NONE
    PRIVATE
    SAVE

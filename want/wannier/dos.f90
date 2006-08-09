@@ -26,6 +26,7 @@
    USE version_module,       ONLY : version_number
    USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart, cart2cry
+   USE parser_module,        ONLY : log2char
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
    USE windows_module,       ONLY : windows_read, nspin
@@ -103,6 +104,9 @@
       smearing_type               = 'gaussian'
       use_nn(1:3)                 = .FALSE.
       
+      CALL input_from_file ( stdin, ierr )
+      IF ( ierr /= 0 )  CALL errore('dos','error in input from file',ABS(ierr))
+      !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('dos','Unable to read namelist INPUT',ABS(ierr))
 
@@ -124,8 +128,8 @@
 !
 ! ... Getting previous WanT data
 !
-      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE. )
-      CALL want_init    ( WANT_INPUT=.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE.,  IONS=.TRUE., KPOINTS=.TRUE. )
+      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., BSHELLS=.FALSE. )
 
       !
       ! Read Subspace data
@@ -158,10 +162,31 @@
       CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a)") TRIM(filename)
 
+
+      !
+      ! input summary
+      !
+      WRITE( stdout, "(2/,2x,70('='))" )
+      WRITE( stdout, "(2x,'=',27x,'INPUT Summary',28x,'=')" )
+      WRITE( stdout, "(2x,70('='),/)" )
+      !
+      WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
+      WRITE( stdout, "(   7x,'                  type :',5x,   a)") TRIM(smearing_type)
+      WRITE( stdout, "(   7x,'                 delta :',3x, f9.5, ' eV')" ) delta
+      WRITE( stdout, "(   7x,'                    nk :',3x,3i4 )") nk(:)
+      WRITE( stdout, "(   7x,'                     s :',3x,3i4 )") s(:)
+      WRITE( stdout, "(   7x,'                 nktot :',5x,i6  )") nkpts_int
+      !
+      IF ( ANY( use_nn(:) ) ) THEN
+          WRITE( stdout, "(   7x,'             use_nn(1) :',5x,   a)") TRIM( log2char(use_nn(1)) )
+          WRITE( stdout, "(   7x,'             use_nn(2) :',5x,   a)") TRIM( log2char(use_nn(2)) )
+          WRITE( stdout, "(   7x,'             use_nn(3) :',5x,   a)") TRIM( log2char(use_nn(3)) )
+      ENDIF
+      
       !
       ! Print data to output
       !
-      CALL summary( stdout, LINPUT=.FALSE., LATOMS=.FALSE., LEIG=.FALSE. )
+      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., KPOINTS=.FALSE., WINDOWS=.FALSE. )
 
 !
 ! ... Main task 
@@ -201,20 +226,13 @@
       ! mv kpts in cartesian coords (bohr^-1)
       CALL cry2cart( vkpt_int, bvec )
 
-
       !
-      ! short summary
+      ! kpt summary
       !
-      WRITE( stdout, "(/2x, 'broadening parameters: ',/)" )
-      WRITE( stdout, "( 5x,    'delta : ',f9.5, ' eV')" ) delta
-      WRITE( stdout, "( 5x,    ' type : ',2x,a)" ) TRIM(smearing_type)
-      !
-      WRITE( stdout, "(/2x, 'kpt mesh, interpolation on: ',/)" )
-      WRITE( stdout, "( 5x,    '   nk : ',3i4)" ) nk(:)
-      WRITE( stdout, "( 5x,    '    s : ',3i4)" ) s(:)
-      WRITE( stdout, "( 5x,    'nktot : ',i6)" ) nkpts_int
-      !
-      WRITE( stdout, "(2/2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1)',/)" )
+      WRITE( stdout, "(2x, 'nktot = ',i5 ) " ) nkpts_int
+      WRITE( stdout, "(2x, 'Monkhorst-Pack grid:      nk = (',3i4,' ),', &
+                                         & 6x,'shift = (',3i4,' )' ) " ) nk(:), s(:)
+      WRITE( stdout, "(2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1)',/)" )
       !
       DO ik=1,nkpts_int
            WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   weight = ', f11.7 )") &
@@ -333,7 +351,7 @@
       !
       CLOSE( ham_unit )
       !
-      WRITE( stdout, "(/,2x,'Results written on file:',a)" ) TRIM(fileout)
+      WRITE( stdout, "(/,2x,'Results written on file:',4x,a)" ) TRIM(fileout)
 
 !
 ! ... Shutdown

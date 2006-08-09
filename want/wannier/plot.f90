@@ -130,7 +130,9 @@
       r3min                       = -0.5
       r3max                       =  0.5
       
-
+      CALL input_from_file ( stdin, ierr )
+      IF ( ierr /= 0 )  CALL errore('plot','error in input from file',ABS(ierr))
+      !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('plot','Unable to read namelist INPUT',ABS(ierr))
 
@@ -178,7 +180,7 @@
 !
       CALL want_dftread ( WINDOWS=.TRUE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE., &
                           PSEUDO=read_pseudo)
-      CALL want_init    ( WANT_INPUT = .FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE., &
+      CALL want_init    ( INPUT =.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE., &
                           PSEUDO=read_pseudo)
 
       !
@@ -211,14 +213,14 @@
       !
       ! Print data to output
       !
-      CALL summary( stdout, LINPUT=.FALSE., LATOMS=.FALSE., LEIG=.FALSE. )
+      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., WINDOWS=.FALSE. )
 
       !
       ! should be eliminated ASAP
       !
       IF ( use_uspp ) THEN
              WRITE(stdout,"()")
-             CALL warning('USPP not fully implemented')
+             CALL warning( stdout, 'USPP not fully implemented')
       ENDIF
      
       !
@@ -841,8 +843,8 @@
           ENDIF
 
       ENDDO
-
-      WRITE( stdout, "(/,2x,70('='))" )
+      !
+      WRITE( stdout, "()" )
 
 
 !

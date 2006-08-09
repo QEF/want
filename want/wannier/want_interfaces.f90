@@ -34,14 +34,15 @@
 
    INTERFACE summary
       !
-      SUBROUTINE summary_x ( unit, linput, llattice, latoms, lpseudo, lkpoints, leig )
+      SUBROUTINE summary_x ( unit, input, lattice, ions, windows, kpoints, bshells, pseudo)
          INTEGER,           INTENT(in) :: unit
-         LOGICAL, OPTIONAL, INTENT(in) :: linput   
-         LOGICAL, OPTIONAL, INTENT(in) :: llattice 
-         LOGICAL, OPTIONAL, INTENT(in) :: latoms   
-         LOGICAL, OPTIONAL, INTENT(in) :: lpseudo   
-         LOGICAL, OPTIONAL, INTENT(in) :: lkpoints   
-         LOGICAL, OPTIONAL, INTENT(in) :: leig       
+         LOGICAL, OPTIONAL, INTENT(in) :: input   
+         LOGICAL, OPTIONAL, INTENT(in) :: lattice 
+         LOGICAL, OPTIONAL, INTENT(in) :: ions   
+         LOGICAL, OPTIONAL, INTENT(in) :: windows
+         LOGICAL, OPTIONAL, INTENT(in) :: kpoints   
+         LOGICAL, OPTIONAL, INTENT(in) :: bshells   
+         LOGICAL, OPTIONAL, INTENT(in) :: pseudo   
       END SUBROUTINE summary_x
       !
    END INTERFACE
@@ -49,8 +50,8 @@
 
    INTERFACE want_init
       !
-      SUBROUTINE want_init_x (want_input, lattice, ions, windows, kpoints, bshells, pseudo)
-         LOGICAL, OPTIONAL, INTENT(in) :: want_input
+      SUBROUTINE want_init_x (input, lattice, ions, windows, kpoints, bshells, pseudo)
+         LOGICAL, OPTIONAL, INTENT(in) :: input
          LOGICAL, OPTIONAL, INTENT(in) :: lattice
          LOGICAL, OPTIONAL, INTENT(in) :: ions
          LOGICAL, OPTIONAL, INTENT(in) :: windows
