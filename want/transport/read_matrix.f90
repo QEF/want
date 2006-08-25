@@ -147,8 +147,7 @@
 !
 ! reading form iotk-formatted .ham file produced by wannier
 !
-   CALL file_open( aux_unit, TRIM(file), PATH="/HAMILTONIAN/", &
-                   ACTION="read", FORM="formatted" )
+   CALL file_open( aux_unit, TRIM(file), PATH="/HAMILTONIAN/", ACTION="read" )
    !
    CALL iotk_scan_empty(aux_unit, "DATA", ATTR=attr, IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching DATA', ABS(ierr) )
