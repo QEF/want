@@ -67,7 +67,7 @@
    CHARACTER(nstrx)           :: pseudo_dir
          
    CHARACTER(nstrx)           :: dftdata_fmt = ' '
-   CHARACTER(nstrx)           :: wantdata_fmt = 'formatted'
+   CHARACTER(nstrx)           :: wantdata_fmt
    CHARACTER(nstrx)           :: wantdata_form
    LOGICAL                    :: wantdata_binary
 
