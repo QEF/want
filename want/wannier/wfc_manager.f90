@@ -25,7 +25,7 @@
    USE parameters,     ONLY : nstrx
    USE constants,      ONLY : CZERO, ZERO
    USE iotk_module
-   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, io_name, dftdata_fmt
+   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, io_name, dftdata_fmt, wantdata_form
    USE timing_module,  ONLY : timing, timing_upto_now
    USE files_module,   ONLY : file_open, file_close
    
@@ -355,10 +355,13 @@
 !
       IF ( read_overlaps .OR. read_projections ) THEN
           CALL io_name('overlap_projection',filename)
-          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="read",FORM="formatted")
+          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="read")
+              !
               CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION", lfound, &  
                    LOVERLAP=read_overlaps, LPROJECTION=read_projections)
+                   !
               IF ( .NOT. lfound ) CALL errore(subname,'reading ovp and proj',1)
+              !
           CALL file_close(ovp_unit,PATH="/",ACTION="read")
 
           CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
@@ -377,8 +380,10 @@
       IF ( .NOT. (read_overlaps .AND. read_projections)  ) THEN
 
           CALL io_name('overlap_projection',filename)
-          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM="formatted")
+          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form))
+               !
                CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
+               !
           CALL file_close(ovp_unit,PATH="/",ACTION="write")
 
           CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
