@@ -42,6 +42,14 @@ CONTAINS
    !**********************************************************
       USE T_input_parameters_module,  ONLY : read_namelist_input_conductor
       IMPLICIT NONE
+      !
+      INTEGER :: ierr
+
+      !
+      ! attach input from file if the case
+      !
+      CALL input_from_file ( stdin, ierr )
+      IF ( ierr /= 0 )  CALL errore('input_manager','error in input from file',ABS(ierr))
 
       !
       ! reading and checking namelists
