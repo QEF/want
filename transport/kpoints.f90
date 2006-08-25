@@ -76,7 +76,7 @@ CONTAINS
       !
       ! read data from datafile_C (wannier ham file)
       !
-      CALL file_open(aux_unit,TRIM(datafile_C),PATH="/",ACTION="read",FORM="formatted")
+      CALL file_open(aux_unit,TRIM(datafile_C),PATH="/",ACTION="read")
       !
       CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
       IF (ierr/=0) CALL errore(subname, 'searching for HAMILTONIAN', ABS(ierr) )
