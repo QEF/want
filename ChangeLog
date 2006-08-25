@@ -4,6 +4,9 @@
 =======================================================
 
 
+25 Aug 2006      "formatted" attribute no longer specified in iotk file_open (transport)
+                 and in iotk writing of ovp. (AF) 
+
 09 Aug 2006      Bug fix in utility/Makefile: LDFLAGS and CFLAGS added during loading.
                  Adviced by Matias Nunez. (AF)
 
