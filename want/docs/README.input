@@ -531,6 +531,10 @@ use_nn(3)     LOGICAL
               are used to compute the DOS. Useful to compare with transport calculation.
               DEFAULT : .FALSE., .FALSE., .FLASE.
 
+projdos       LOGICAL
+              if .TRUE. computes and writes WF projected-DOS.
+              DEFAULT : .FALSE.
+
 
 ==============================================================================
 
