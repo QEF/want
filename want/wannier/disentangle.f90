@@ -360,13 +360,15 @@
            ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
            !      the original ("window space") energy eigenvectors
            !
- 
            eamp(:,:,ik) = CZERO
+           !
            DO j = 1, dimwann
            DO i = 1, dimwin(ik)
+               !
                DO l = 1, dimwann
                     eamp(i,j,ik) = eamp(i,j,ik) + z(l,j)*lamp(i,l,ik)
-               END DO
+               ENDDO
+               !
            ENDDO
            ENDDO
  
