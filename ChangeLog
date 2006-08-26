@@ -4,6 +4,8 @@
 =======================================================
 
 
+26 Aug 2006      WF projected DOS calculation added in dos.x . (AF)
+
 25 Aug 2006      "formatted" attribute no longer specified in iotk file_open (transport)
                  and in iotk writing of ovp. (AF) 
 

@@ -26,7 +26,7 @@
    USE version_module,       ONLY : version_number
    USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart, cart2cry
-   USE parser_module,        ONLY : log2char
+   USE parser_module,        ONLY : log2char, int2char
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
    USE windows_module,       ONLY : windows_read, nspin
@@ -49,6 +49,7 @@
    REAL(dbl)    :: delta         ! smearing parameter
    CHARACTER(nstrx) :: smearing_type
    CHARACTER(nstrx) :: fileout   ! output filename
+   LOGICAL      :: projdos       ! whether to write WF projected DOS
    LOGICAL      :: use_nn(3)     ! use nearest neighb. in direction i, i=1,3
                                  ! DEBUG purposes only
    !
@@ -56,16 +57,17 @@
    !
    INTEGER      :: nkpts_int     ! Number of interpolated k-points
    INTEGER      :: nrtot_nn
-   REAL(dbl)    :: arg, cost
-   COMPLEX(dbl) :: phase
+   REAL(dbl)    :: arg, cost, aux
+   COMPLEX(dbl) :: phase, caux
    !
    INTEGER,      ALLOCATABLE :: r_index(:)
    COMPLEX(dbl), ALLOCATABLE :: ham(:,:)  
    COMPLEX(dbl), ALLOCATABLE :: z(:,:)        
-   REAL(dbl),    ALLOCATABLE :: egrid(:), dos(:)
+   REAL(dbl),    ALLOCATABLE :: egrid(:), dos(:), pdos(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), wk(:), vr_cry(:,:)
-   REAL(dbl),    ALLOCATABLE :: eig_int(:,:)  ! interpolated band structure   
+   REAL(dbl),    ALLOCATABLE :: eig_int(:)  ! interpolated band structure   
    CHARACTER(nstrx)          :: filename
+   CHARACTER(4)              :: ctmp
    !
    INTEGER      :: i, j, ie, ik, ir, ir_eff
    INTEGER      :: ierr
@@ -75,7 +77,7 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, nk, s, delta, smearing_type, fileout, &
-                    emin, emax, ne, use_nn
+                    emin, emax, ne, use_nn, projdos
    !
    ! end of declariations
    !   
@@ -103,6 +105,7 @@
       ne                          =  1000
       smearing_type               = 'gaussian'
       use_nn(1:3)                 = .FALSE.
+      projdos                     = .FALSE.
       
       CALL input_from_file ( stdin, ierr )
       IF ( ierr /= 0 )  CALL errore('dos','error in input from file',ABS(ierr))
@@ -207,6 +210,8 @@
           IF( ierr /=0 ) CALL errore('dos', 'allocating egrid', ABS(ierr) )
       ALLOCATE( dos( ne ), STAT=ierr )
           IF( ierr /=0 ) CALL errore('dos', 'allocating dos', ABS(ierr) )
+      ALLOCATE( pdos( ne, dimwann ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore('dos', 'allocating pdos', ABS(ierr) )
 
       !
       ! setting egrid
@@ -248,7 +253,7 @@
           IF( ierr /=0 ) CALL errore('dos','allocating ham', ABS(ierr) )
       ALLOCATE( z( dimwann, dimwann ), STAT=ierr )
           IF( ierr /=0 ) CALL errore('dos', 'allocating z', ABS(ierr) )
-      ALLOCATE( eig_int( dimwann, nkpts_int ), STAT=ierr )
+      ALLOCATE( eig_int( dimwann ), STAT=ierr )
           IF( ierr /=0 ) CALL errore('dos','allocating eig_int', ABS(ierr) )
 
       !
@@ -284,10 +289,24 @@
       ENDDO
 
       !
+      ! DOS normalization costant
+      ! the factor TWO is included to avoid spin doubling
+      ! (internal coherence repsect to transport)
+      !
+      cost = ONE / ( TWO * delta )
+
+      !
       ! Interpolate H_ij(k') at those k-points by fourier interpolation
       ! H_ij(k') ~ sum_R e^{ik'R} H_ij(R), where the sum over R is over a 
       ! finite grid (truncation)
+      !
+      ! add each contribution to the DOS directly, to save memeory when
+      ! WF pDOS are requested.
+      !
+      dos  ( 1: ne ) = ZERO
+      pdos ( 1: ne, 1: dimwann ) = ZERO
       ! 
+      kpt_loop: &
       DO ik = 1, nkpts_int
           !
           ham(:,:) = CZERO
@@ -310,49 +329,105 @@
           !
           ! Diagonalize the hamiltonian at the present k-point
           !
-          CALL mat_hdiag( z, eig_int(:,ik), ham(:,:), dimwann)
-      ENDDO 
+          CALL mat_hdiag( z, eig_int(:), ham(:,:), dimwann)
 
+          !
+          ! compute DOS and pDOS
+          !
+          energy_loop1: &
+          DO ie = 1, ne
+              !
+              DO i = 1, dimwann 
+                  !
+                  arg = ( egrid( ie ) - eig_int( i ) ) / delta
+                  aux = smearing_func( arg, smearing_type )
+                  !
+                  dos ( ie )    = dos(ie) + cost * wk(ik) * aux
+                  !
+              ENDDO
+              !
+          ENDDO energy_loop1
 
-      !
-      ! compute DOS
-      ! the TWO factor is included to avoid spin (internal coherence repsect transport)
-      cost = ONE / ( TWO * delta )
+          !
+          ! compute pDOS if requested
+          !
+          IF ( projdos ) THEN  
+              !
+              energy_loop2: &
+              DO ie = 1, ne
+                  !
+                  DO i = 1, dimwann 
+                      !
+                      ! compute the smearing function
+                      !
+                      arg = ( egrid( ie ) - eig_int( i ) ) / delta
+                      aux = smearing_func( arg, smearing_type )
 
-      energy_loop:&
-      DO ie = 1, ne
-            !
-            dos ( ie ) = ZERO 
-            !
-            DO ik=1, nkpts_int
-            DO i =1, dimwann 
-                 !
-                 arg = ( egrid(ie) - eig_int(i,ik) ) / delta
-                 dos (ie) = dos(ie) + cost * wk(ik) * smearing_func( arg, smearing_type )
-                 !
-            ENDDO
-            ENDDO
-            !
-      ENDDO energy_loop
-       
+                      !
+                      ! ensure the normalization of eigenvectors in z
+                      !
+                      caux = CZERO
+                      DO j = 1, dimwann
+                           caux = caux + z(j,i) * CONJG(z(j,i))
+                      ENDDO
+                      z(:,i) = z(:,i) / REAL( caux, dbl)
+                      !
+                      DO j = 1, dimwann
+                          !
+                          pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik) * aux * &
+                                          REAL( z(j,i) * CONJG(z(j,i)) , dbl )
+                      ENDDO
+                      !
+                  ENDDO
+                  !
+              ENDDO energy_loop2
+              !
+          ENDIF
+          !       
+      ENDDO kpt_loop 
+
 
 ! 
 ! ... Write final interpolated band structure to file
 ! 
       filename=TRIM(fileout)
       !
-      OPEN( aux_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
+      OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
       IF (ierr/=0) CALL errore('dos','opening '//TRIM(filename),ABS(ierr))
+         !
+         WRITE( aux_unit, *) "# E (eV)   ldos(E)"
+         DO ie = 1, ne
+             WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie), dos(ie)
+         ENDDO
+         !
+      CLOSE( aux_unit )
       !
-      WRITE( aux_unit, *) "# E (eV)   ldos(E)"
-      DO ie = 1, ne
-          WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie), dos(ie)
-      ENDDO
-      !
-      CLOSE( ham_unit )
-      !
-      WRITE( stdout, "(/,2x,'Results written on file:',4x,a)" ) TRIM(fileout)
+      WRITE( stdout, "(/,2x,'Total DOS written on file:',4x,a)" ) TRIM(fileout)
 
+      !
+      ! write pDOS if the case
+      !
+      IF ( projdos ) THEN
+          !
+          DO i = 1, dimwann
+              !
+              WRITE( ctmp , "(i4.4)" ) i
+              filename=TRIM(prefix)//TRIM(postfix)//'_dos-'//ctmp//'.dat'
+              !
+              OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+              IF (ierr/=0) CALL errore('dos','opening '//TRIM(filename),ABS(ierr))
+              !
+              WRITE( aux_unit, *) "# E (eV)   ldos(E)"
+              DO ie = 1, ne
+                  WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie), pdos( ie, i)
+              ENDDO
+              !
+              CLOSE( aux_unit )
+              !
+          ENDDO
+          !
+      ENDIF
+              
 !
 ! ... Shutdown
 !
@@ -368,8 +443,8 @@
           IF( ierr /=0 ) CALL errore('dos', 'deallocating ham', ABS(ierr) )
       DEALLOCATE( z, STAT=ierr )
           IF( ierr /=0 ) CALL errore('dos', 'deallocating z', ABS(ierr))
-      DEALLOCATE( egrid, dos, STAT=ierr )
-          IF( ierr /=0 ) CALL errore('dos', 'deallocating egrid, dos', ABS(ierr))
+      DEALLOCATE( egrid, dos, pdos, STAT=ierr )
+          IF( ierr /=0 ) CALL errore('dos', 'deallocating egrid, dos, pdos', ABS(ierr))
       DEALLOCATE( vr_cry, r_index, STAT=ierr )
           IF( ierr /=0 ) CALL errore('dos', 'deallocating vr_cry, r_index', ABS(ierr) )
 
