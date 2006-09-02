@@ -4,6 +4,11 @@
 *************************************
 
 * plot.x: USPP features not fully implemented.
+* log file (changes in the timing routine)
+* direct calculation of the current
+
+* tests:  check script
+* tests:  run script 
 
 * disentangle + wannier: 
      - wfc stored in a k-indip array (waste small mem but
@@ -11,9 +16,6 @@
      - scalar products in projections and overlaps by BLAS
                
 * eigenchannel in transport calculation
-* direct calculation of current
-
-* log file (changes in the timing routine)
 
 * eigenvalue problem in wannier localization
 
