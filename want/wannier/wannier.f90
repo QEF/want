@@ -500,7 +500,7 @@ CALL timing('omega_best','stop')
           !
           IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik),  &
                                     SIDE='both', TOLL=unitary_thr )  )  &
-               CALL warning(stdout, 'WARNING: U matrix NOT unitary at ikpt = '//TRIM(int2char(ik)) )
+               CALL warning(stdout, 'U matrix NOT unitary at ikpt = '//TRIM(int2char(ik)) )
       ENDDO
 
 
