@@ -54,6 +54,7 @@ WANNIER_OBJS= \
 ../wannier/uspp.o \
 ../wannier/version.o \
 ../wannier/want_init.o \
+../wannier/want_dftread.o \
 ../wannier/wfc_data.o \
 ../wannier/wfc_info.o \
 ../wannier/hamiltonian.o \
