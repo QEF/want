@@ -5,7 +5,9 @@
 
 
 06 Sep 2006      bug fixed in modpoint.f90 ; iutility/Makefile coherently updated. 
-                 other bugs fixed in calls to the warning routine. (AF) 
+                 other bugs fixed in calls to the warning routine. 
+                 IO routines for NQ ETSF NetCDF fmt (courtesy of V. Olevano, M. Verstraete) 
+                 added to libs. (AF) 
 
 02 Sep 2006      configure wrapper updated.  (AF)
 
