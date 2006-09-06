@@ -108,8 +108,10 @@
 !
 ! Getting DFT data
 !
-      CALL want_init( INPUT= .FALSE.,  WINDOWS=.FALSE., KPOINTS=.FALSE., &
-                      BSHELLS=.FALSE., PSEUDO=.FALSE. )
+      CALL want_dftread ( LATTICE=.TRUE.,  IONS=.TRUE.,    WINDOWS=.FALSE., KPOINTS=.FALSE.)
+      CALL want_init    ( INPUT=  .FALSE., LATTICE=.TRUE., IONS=.TRUE., &
+                          WINDOWS=.FALSE., KPOINTS=.FALSE., &
+                          BSHELLS=.FALSE., PSEUDO =.FALSE. )
 
       !
       ! Print data to output
