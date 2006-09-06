@@ -4,6 +4,10 @@
 =======================================================
 
 
+06 Sep 2006      bug fixed in modpoint.f90 ; iutility/Makefile coherently updated. (AF) 
+
+02 Sep 2006      configure wrapper updated.  (AF)
+
 26 Aug 2006      WF projected DOS calculation added in dos.x . (AF)
 
 25 Aug 2006      "formatted" attribute no longer specified in iotk file_open (transport)
