@@ -11,6 +11,7 @@
    froz_max = 11.6181
    dimwann = 6
    maxiter_dis = 400
+   use_blimit = .TRUE.
 /
 
 &LOCALIZATION

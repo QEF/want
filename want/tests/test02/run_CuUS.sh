@@ -166,20 +166,6 @@ if [ "$DFT_BANDS" = ".TRUE." ] ; then
 fi
 
 #
-# running DOS
-#
-if [ "$DOS" = ".TRUE." ] ; then
-   echo $ECHO_N "running DOS calculation... $ECHO_C"
-   $WANT_BIN/dos.x < $TEST_HOME/dos_CuUS.in > $TEST_HOME/dos_CuUS.out
-   if [ ! -e CRASH ] ; then
-      echo "$ECHO_T done"
-      test -e dos_CuUS.dat  &&  mv dos_CuUS.dat  $TEST_HOME/dos_CuUS.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-   
-#
 # running DISENTANGLE
 #
 if [ "$DISENTANGLE" = ".TRUE." ] ; then  
@@ -213,6 +199,20 @@ if [ "$BANDS" = ".TRUE." ] ; then
    $WANT_BIN/bands.x < $TEST_HOME/bands_CuUS.in > $TEST_HOME/bands_CuUS.out
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
+   else
+      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
+   fi
+fi
+
+#
+# running DOS
+#
+if [ "$DOS" = ".TRUE." ] ; then
+   echo $ECHO_N "running DOS calculation... $ECHO_C"
+   $WANT_BIN/dos.x < $TEST_HOME/dos_CuUS.in > $TEST_HOME/dos_CuUS.out
+   if [ ! -e CRASH ] ; then
+      echo "$ECHO_T done"
+      test -e dos_CuUS.dat  &&  mv dos_CuUS.dat  $TEST_HOME/dos_CuUS.dat
    else
       echo "$ECHO_T problems found" ; cat CRASH ; exit 1
    fi
