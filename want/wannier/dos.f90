@@ -51,7 +51,7 @@
    CHARACTER(nstrx) :: fileout   ! output filename
    LOGICAL      :: projdos       ! whether to write WF projected DOS
    LOGICAL      :: use_nn(3)     ! use nearest neighb. in direction i, i=1,3
-                                 ! DEBUG purposes only
+                                 ! DEBUG and transport purposes
    !
    ! loval variables
    !
@@ -96,7 +96,7 @@
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
-      fileout                     = TRIM(prefix)//TRIM(postfix)//'_dos.dat'
+      fileout                     = ' '
       delta                       = 0.1    ! eV
       nk(:)                       = -1
       s(:)                        =  0
@@ -112,6 +112,9 @@
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('dos','Unable to read namelist INPUT',ABS(ierr))
+
+      IF ( LEN_TRIM(fileout) == 0 ) &
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dos.dat'
 
       !
       ! Some checks 
