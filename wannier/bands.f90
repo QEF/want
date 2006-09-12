@@ -24,8 +24,8 @@
    USE files_module,         ONLY : file_open, file_close
    USE version_module,       ONLY : version_number
    USE util_module,          ONLY : mat_hdiag
-   USE converters_module,    ONLY : cry2cart
-   USE lattice_module,       ONLY : bvec
+   USE converters_module,    ONLY : cry2cart, cart2cry
+   USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
    USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi, windows_read
    USE subspace_module,      ONLY : subspace_read
@@ -41,24 +41,30 @@
    INTEGER :: nkpts_in     ! Number of k-points generating the line (edges)
    INTEGER :: nkpts_max    ! maximum number of interpolated points
    INTEGER :: nkpts_tot    ! actual number of point in the line
+   CHARACTER(nstrx) :: fileout   ! output filename
+   LOGICAL :: use_nn(3)    ! use nearest neighb. in direction i, i=1,3
+                           ! DEBUG and transport purposes
+
    !
+   INTEGER      :: nrtot_nn
    REAL(dbl)    :: arg
    COMPLEX(dbl) :: phase
+   INTEGER,      ALLOCATABLE :: r_index(:)
    COMPLEX(dbl), ALLOCATABLE :: ham(:,:)  
    COMPLEX(dbl), ALLOCATABLE :: z(:,:)        
    !
    REAL(dbl),    ALLOCATABLE :: kpt_in(:,:), xval_in(:) 
-   REAL(dbl),    ALLOCATABLE :: kpt(:,:),    xval(:) 
+   REAL(dbl),    ALLOCATABLE :: kpt(:,:),    xval(:),  vr_cry(:,:) 
    REAL(dbl),    ALLOCATABLE :: eig_int(:,:)  ! interpolated band structure   
    CHARACTER(2), ALLOCATABLE :: kptname_in(:)    
    CHARACTER(nstrx)          :: filename
-   INTEGER :: i, j, ik, ir
+   INTEGER :: i, j, ik, ir, ir_eff
    INTEGER :: ierr
    LOGICAL :: lfound
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, nkpts_in, nkpts_max
+   NAMELIST /INPUT/ prefix, postfix, work_dir, fileout, nkpts_in, nkpts_max, use_nn
    !
    ! end of declariations
    !   
@@ -77,14 +83,19 @@
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
+      fileout                     = ' '
       nkpts_in                    = 0
       nkpts_max                   = 100
+      use_nn(1:3)                 = .FALSE.
       
       CALL input_from_file ( stdin, ierr )
       IF ( ierr /= 0 )  CALL errore('bands','error in input from file',ABS(ierr))
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('bands','Unable to read namelist INPUT',ABS(ierr))
+
+      IF ( LEN_TRIM(fileout) == 0 ) &
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_bands.dat'
 
       !
       ! Some checks 
@@ -131,7 +142,7 @@
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
       CALL io_name('space',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Space data read from file: ',a)") TRIM(filename)
+      WRITE( stdout,"(/,2x,'Space data read from file: ',a)") TRIM(filename)
 
       !
       ! Read hamiltonian data
@@ -144,6 +155,24 @@
 
       CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
       WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a)") TRIM(filename)
+
+      !
+      ! input summary
+      !
+      WRITE( stdout, "(2/,2x,70('='))" )
+      WRITE( stdout, "(2x,'=',27x,'INPUT Summary',28x,'=')" )
+      WRITE( stdout, "(2x,70('='),/)" )
+      !
+      WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
+      WRITE( stdout, "(   7x,'             nkpts_in  :',3x,3i4 )") nkpts_in
+      WRITE( stdout, "(   7x,'             nkpts_max :',3x,3i4 )") nkpts_max
+      !
+      IF ( ANY( use_nn(:) ) ) THEN
+          WRITE( stdout, "(   7x,'             use_nn(1) :',5x,   a)") TRIM( log2char(use_nn(1)) )
+          WRITE( stdout, "(   7x,'             use_nn(2) :',5x,   a)") TRIM( log2char(use_nn(2)) )
+          WRITE( stdout, "(   7x,'             use_nn(3) :',5x,   a)") TRIM( log2char(use_nn(3)) )
+      ENDIF
+
 
       !
       ! Print data to output
@@ -173,6 +202,10 @@
           IF( ierr /=0 ) CALL errore('bands', 'allocating xval_in', ABS(ierr) )
       ALLOCATE( kpt(3, nkpts_max), STAT=ierr )
           IF( ierr /=0 ) CALL errore('bands', 'allocating kpt', ABS(ierr) )
+      ALLOCATE( vr_cry(3, nrtot), STAT=ierr )
+          IF( ierr /=0 ) CALL errore('bands', 'allocating vr_cry', ABS(ierr) )
+      ALLOCATE( r_index(nrtot), STAT=ierr )
+          IF( ierr /=0 ) CALL errore('bands', 'allocating r_index', ABS(ierr) )
  
       !
       ! convert kpts to internal cartesian representation (bohr^-1)
@@ -184,35 +217,68 @@
       ALLOCATE( eig_int( dimwann, nkpts_tot ), STAT=ierr )
           IF( ierr /=0 ) CALL errore('bands','allocating eig_int', ABS(ierr) )
 
+
+      !
+      ! find the real space R -vectors to be used (according to use_nn)
+      !
+      vr_cry(:,:) = vr(:,:)
+      CALL cart2cry( vr_cry, avec )
+      !
+      nrtot_nn = 0
+      !
+      DO ir = 1, nrtot
+          !
+          IF (  ( .NOT. use_nn(1)  .OR.  ABS(NINT(vr_cry(1,ir))) <= 1 ) .AND. &
+                ( .NOT. use_nn(2)  .OR.  ABS(NINT(vr_cry(2,ir))) <= 1 ) .AND. &
+                ( .NOT. use_nn(3)  .OR.  ABS(NINT(vr_cry(3,ir))) <= 1 )       )  THEN
+                !
+                nrtot_nn = nrtot_nn + 1
+                !
+                r_index( nrtot_nn ) = ir
+                !
+          ENDIF
+          !
+      ENDDO
+
       !
       ! Interpolate H_ij(k') at those k-points by fourier interpolation
       ! H_ij(k') ~ sum_R e^{ik'R} H_ij(R), where the sum over R is over a 
       ! finite grid (truncation)
       ! 
-
+      !
+      kpt_loop: &
       DO ik = 1, nkpts_tot
-           DO j = 1, dimwann
-           DO i = 1, dimwann
-                ham(i,j) = CZERO
-                DO ir = 1, nrtot
-                    arg = DOT_PRODUCT( kpt(:,ik), vr(:,ir) )
-                    phase = CMPLX( COS(arg), SIN(arg), dbl ) * wr(ir)
-                    ham(i,j) = ham(i,j) + phase * rham(i,j,ir) 
-                ENDDO
-           ENDDO
-           ENDDO
+          !
+          ham(:,:) = CZERO
+          !
+          DO ir = 1, nrtot_nn
+               !
+               ir_eff = r_index( ir )
+               !
+               arg =   DOT_PRODUCT( kpt(:,ik), vr(:, ir_eff ) )
+               phase = CMPLX( COS(arg), SIN(arg), dbl ) * wr(ir_eff)
+               !
+               DO j = 1, dimwann
+               DO i = 1, dimwann
+                    ham(i,j) = ham(i,j) + phase * rham(i,j,ir_eff)
+               ENDDO
+               ENDDO
+               !
+          ENDDO
  
            !
            ! Diagonalize the hamiltonian at the present k-point
            !
            CALL mat_hdiag( z, eig_int(:,ik), ham(:,:), dimwann)
-      ENDDO 
+           !
+      ENDDO kpt_loop
 
 
 ! 
 ! ... Write final interpolated band structure to file
 ! 
-      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_intband.dat'
+      filename=TRIM(fileout)
+      !
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
       IF (ierr/=0) CALL errore('bands','opening '//TRIM(filename),ABS(ierr))
       !
@@ -290,6 +356,10 @@
           IF( ierr /=0 ) CALL errore('bands', 'deallocating eig_int', ABS(ierr) )
       DEALLOCATE( z, STAT=ierr )
           IF( ierr /=0 ) CALL errore('bands', 'deallocating z', ABS(ierr))
+      DEALLOCATE( vr_cry, STAT=ierr )
+          IF( ierr /=0 ) CALL errore('bands', 'deallocating vr_cry', ABS(ierr))
+      DEALLOCATE( r_index, STAT=ierr )
+          IF( ierr /=0 ) CALL errore('bands', 'deallocating r_index', ABS(ierr))
 
       !
       ! Clean global memory
