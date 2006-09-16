@@ -4,6 +4,7 @@
    postfix = '_WanT'
    work_dir = './'
    verbosity = 'high'
+   wantdata_fmt = 'binary'
 /
 
 &SUBSPACE
