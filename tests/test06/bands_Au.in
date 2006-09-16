@@ -2,6 +2,8 @@
  &INPUT
    prefix = 'gold'
    postfix = '_WanT'
+!   fileout = 'gold_WanT_bands_NN.dat'
+!   use_nn(3) = .TRUE.
    work_dir = './'
    nkpts_in  = 2
    nkpts_max = 100

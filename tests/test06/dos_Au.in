@@ -9,4 +9,5 @@
    use_nn( 3 ) = .TRUE.  
    delta = 0.05
    smearing_type = 'gaussian'
+   projdos = .TRUE.
  /
