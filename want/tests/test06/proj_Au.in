@@ -1,4 +1,4 @@
 &inputpp
   prefix='gold'
-  outdir='./'
+  outdir='./SCRATCH'
 /

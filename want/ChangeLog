@@ -4,6 +4,14 @@
 =======================================================
 
 
+25 Sep 2006      work_dir manage fixed in bands.x and dos.x . (AF)
+
+22 Sep 2006      Script lib for running test added to HOME/script dir; test06 partly
+                 updated. (AF) 
+
+17 Sep 2006      Bug fixed in the energy window summary (win_min wasn't dispalyed 
+                 correctly). (AF)
+
 12 Sep 2006      use_nn variable added to bands.f90 ; few changes also in dos.f90. (AF) 
 
 06 Sep 2006      bug fixed in modpoint.f90 ; iutility/Makefile coherently updated. 
