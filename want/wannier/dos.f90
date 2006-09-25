@@ -415,7 +415,8 @@
           DO i = 1, dimwann
               !
               WRITE( ctmp , "(i4.4)" ) i
-              filename=TRIM(prefix)//TRIM(postfix)//'_dos-'//ctmp//'.dat'
+              filename= TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)// &
+                        '_dos-'//ctmp//'.dat'
               !
               OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
               IF (ierr/=0) CALL errore('dos','opening '//TRIM(filename),ABS(ierr))

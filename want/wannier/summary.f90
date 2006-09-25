@@ -411,9 +411,9 @@
        IF ( .NOT. kpoints_alloc ) CALL errore('summary','Unexpectedly kpts NOT alloc',1)
        WRITE(unit, " (  ' <WINDOWS>')" )
        WRITE(unit," (2x, 'Definition of energy windows: (energies in eV)' ) " )
-       IF ( win_min < 10000.0 .AND. win_max > 10000.0 ) THEN
+       IF ( win_min < -10000.0 .AND. win_max > 10000.0 ) THEN
            WRITE(unit, " (4x, 'outer window: E  = (  -inf ,  inf  )' )" ) 
-       ELSEIF ( win_min < 10000.0 ) THEN
+       ELSEIF ( win_min < -10000.0 ) THEN
            WRITE(unit, " (4x, 'outer window: E  = (  -inf , ',f9.4, ' )' )" ) &
                                win_max
        ELSEIF ( win_max > 10000.0 ) THEN

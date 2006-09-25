@@ -303,7 +303,7 @@
       ! these eigenvalues (and also the following ones) are not aligned 
       ! to the fermi level. We impose the alignment manually...
       !
-      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
+      filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
       IF (ierr/=0) CALL errore('bands','opening '//TRIM(filename),ABS(ierr))
       !
@@ -316,7 +316,7 @@
       ENDDO
       CLOSE( ham_unit )
 
-      filename=TRIM(work_dir)//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
+      filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
       IF (ierr/=0) CALL errore('bands','opening '//TRIM(filename),ABS(ierr))
       !
