@@ -268,6 +268,9 @@ CONTAINS
             !
        CASE ( 'pw_export' )
             !
+WRITE(0,*) 'SHAPE wfc', SHAPE(wfc)
+WRITE(0,*) 'lindex', lindex
+
             CALL qexpt_read_wfc( ibs, ibe, ik, ispin, IGK=igsort(:,ik), &
                                  WF=wfc(:, lindex: ), IERR=ierr )
             !
