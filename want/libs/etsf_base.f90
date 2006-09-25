@@ -68,7 +68,8 @@ subroutine write_wfn_etsf(filename,fnlen,title,generating_code_and_version, &
   gw_corrections,kb_formfactor_sign,kb_formfactors,kb_formfactor_derivative)
   ! or put the arguments of variables you wish to write
   
-  use netcdf
+! XXXXX
+!  use netcdf
   implicit none
   
   ! input variables
@@ -336,7 +337,8 @@ function test_wfn_etsf(filename,fnlen,number_of_symmetry_operations,&
   k_dependent_gvectors,k_dependent_number_of_states, &
   number_of_electrons)
 
-  use netcdf
+! XXXX
+!  use netcdf
   implicit none
   integer :: test_wfn_etsf
 
@@ -575,7 +577,8 @@ subroutine read_wfn_etsf(filename,fnlen,&
   occupations,eigenvalues,coefficients_of_wavefunctions,&
   gw_corrections,kb_formfactor_sign,kb_formfactors,kb_formfactor_derivative)
 
-  use netcdf
+! XXXX
+!  use netcdf
   implicit none
 
   ! input variables
@@ -984,7 +987,8 @@ subroutine write_denpot_etsf(filename,fnlen,title,generating_code_and_version,&
   number_of_grid_points_vector1,number_of_grid_points_vector2,number_of_grid_points_vector3,&
   primitive_vectors,denpot,denpottype)
   
-  use netcdf
+! XXXX
+!  use netcdf
   implicit none
   
   ! input variables
@@ -1099,7 +1103,8 @@ function test_denpot_etsf(filename,fnlen,&
   number_of_grid_points_vector2, number_of_grid_points_vector3,denpottype)
   
 
-  use netcdf
+! XXXX
+!  use netcdf
   implicit none
   integer :: test_denpot_etsf
 
@@ -1249,7 +1254,8 @@ subroutine read_denpot_etsf(filename,fnlen,title,&
   number_of_grid_points_vector1,number_of_grid_points_vector2,number_of_grid_points_vector3,&
   primitive_vectors,denpot,denpottype)
 
-  use netcdf
+! XXXX
+!  use netcdf
   implicit none
 
   ! input variables
@@ -1419,7 +1425,8 @@ end subroutine read_denpot_etsf
 subroutine write_primitive_vectors(ncid,&
            number_of_cartesian_directions,number_of_vectors,&
            primitive_vectors)
-use netcdf
+! XXXX
+! use netcdf
 implicit none
 
 !arguments
@@ -1445,7 +1452,8 @@ end subroutine write_primitive_vectors
 subroutine defput_primitive_vectors(ncid,ncddimid, nvdimid,&
            number_of_cartesian_directions,number_of_vectors,&
            primitive_vectors)
-use netcdf
+! XXX
+! use netcdf
 implicit none
 
 !arguments
@@ -1468,7 +1476,8 @@ end subroutine defput_primitive_vectors
 
 
 subroutine write_space_group(ncid,space_group)
-use netcdf
+! XXXX
+!use netcdf
 implicit none
 
 !arguments
@@ -1483,7 +1492,8 @@ call defput_space_group(ncid,space_group)
 end subroutine write_space_group
 
 subroutine defput_space_group(ncid,space_group)
-use netcdf
+! XXX
+! use netcdf
 implicit none
 
 !arguments
@@ -1506,7 +1516,8 @@ end subroutine defput_space_group
 subroutine write_atomic_numbers(ncid,&
            number_of_atom_species,&
            atomic_numbers)
-use netcdf
+! XXX
+! use netcdf
 implicit none
 
 !arguments
@@ -1531,7 +1542,7 @@ end subroutine write_atomic_numbers
 subroutine defput_atomic_numbers(ncid,natdimid,&
            number_of_atom_species,&
            atomic_numbers)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1555,7 +1566,7 @@ end subroutine defput_atomic_numbers
 subroutine write_valence_charges(ncid,&
            number_of_atom_species,&
            valence_charges)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1580,7 +1591,7 @@ end subroutine write_valence_charges
 subroutine defput_valence_charges(ncid,natdimid,&
            number_of_atom_species,&
            valence_charges)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1603,7 +1614,7 @@ end subroutine defput_valence_charges
 subroutine write_atom_species_names(ncid,&
            character_string_length,number_of_atom_species,&
            atom_species_names)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1629,7 +1640,7 @@ end subroutine write_atom_species_names
 subroutine defput_atom_species_names(ncid,csldimid, natdimid,&
            number_of_atom_species,&
            atom_species_names)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1652,7 +1663,7 @@ end subroutine defput_atom_species_names
 subroutine write_chemical_symbols(ncid,&
            symbol_length,number_of_atom_species,&
            chemical_symbols)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1678,7 +1689,7 @@ end subroutine write_chemical_symbols
 subroutine defput_chemical_symbols(ncid,sldimid, natdimid,&
            number_of_atom_species,&
            chemical_symbols)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1701,7 +1712,7 @@ end subroutine defput_chemical_symbols
 subroutine write_pseudopotential_types(ncid,&
            character_string_length,number_of_atom_species,&
            pseudopotential_types)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1727,7 +1738,7 @@ end subroutine write_pseudopotential_types
 subroutine defput_pseudopotential_types(ncid,csldimid, natdimid,&
            number_of_atom_species,&
            pseudopotential_types)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1750,7 +1761,7 @@ end subroutine defput_pseudopotential_types
 subroutine write_atom_species(ncid,&
            number_of_atoms,&
            atom_species)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1775,7 +1786,7 @@ end subroutine write_atom_species
 subroutine defput_atom_species(ncid,nadimid,&
            number_of_atoms,&
            atom_species)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1798,7 +1809,7 @@ end subroutine defput_atom_species
 subroutine write_reduced_atom_positions(ncid,&
            number_of_reduced_dimensions,number_of_atoms,&
            reduced_atom_positions)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1824,7 +1835,7 @@ end subroutine write_reduced_atom_positions
 subroutine defput_reduced_atom_positions(ncid,nrddimid, nadimid,&
            number_of_reduced_dimensions,number_of_atoms,&
            reduced_atom_positions)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1845,7 +1856,7 @@ end subroutine defput_reduced_atom_positions
 
 
 subroutine write_number_of_electrons(ncid,number_of_electrons)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1860,7 +1871,7 @@ call defput_number_of_electrons(ncid,number_of_electrons)
 end subroutine write_number_of_electrons
 
 subroutine defput_number_of_electrons(ncid,number_of_electrons)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1882,7 +1893,7 @@ end subroutine defput_number_of_electrons
 subroutine write_reduced_symmetry_operations(ncid,&
            number_of_reduced_dimensions,number_of_symmetry_operations,&
            reduced_symmetry_matrices,reduced_symmetry_translations)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1911,7 +1922,7 @@ end subroutine write_reduced_symmetry_operations
 subroutine defput_reduced_symmetry_operations(ncid,nrddimid, nsodimid,&
            number_of_reduced_dimensions,number_of_symmetry_operations,&
            reduced_symmetry_matrices,reduced_symmetry_translations)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1947,7 +1958,7 @@ end subroutine defput_reduced_symmetry_operations
 subroutine write_reduced_coordinates_of_kpoints(ncid,&
            number_of_reduced_dimensions,number_of_kpoints,&
            reduced_coordinates_of_kpoints)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1973,7 +1984,7 @@ end subroutine write_reduced_coordinates_of_kpoints
 subroutine defput_reduced_coordinates_of_kpoints(ncid,nrddimid, nkdimid,&
            number_of_reduced_dimensions,number_of_kpoints,&
            reduced_coordinates_of_kpoints)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -1997,7 +2008,7 @@ end subroutine defput_reduced_coordinates_of_kpoints
 subroutine write_kpoint_weights(ncid,&
            number_of_kpoints,&
            kpoint_weights)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2022,7 +2033,7 @@ end subroutine write_kpoint_weights
 subroutine defput_kpoint_weights(ncid,nkdimid,&
            number_of_kpoints,&
            kpoint_weights)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2045,7 +2056,7 @@ end subroutine defput_kpoint_weights
 subroutine write_monkhorst_pack_folding(ncid,&
            number_of_vectors,&
            monkhorst_pack_folding)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2070,7 +2081,7 @@ end subroutine write_monkhorst_pack_folding
 subroutine defput_monkhorst_pack_folding(ncid,nvdimid,&
            number_of_vectors,&
            monkhorst_pack_folding)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2093,7 +2104,7 @@ end subroutine defput_monkhorst_pack_folding
 subroutine write_kpoint_grid_vectors(ncid,&
            number_of_reduced_dimensions,number_of_vectors,&
            kpoint_grid_vectors)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2119,7 +2130,7 @@ end subroutine write_kpoint_grid_vectors
 subroutine defput_kpoint_grid_vectors(ncid,nrddimid, nvdimid,&
            number_of_reduced_dimensions,number_of_vectors,&
            kpoint_grid_vectors)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2142,7 +2153,7 @@ end subroutine defput_kpoint_grid_vectors
 subroutine write_kpoint_grid_shift(ncid,&
            number_of_reduced_dimensions,&
            kpoint_grid_shift)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2167,7 +2178,7 @@ end subroutine write_kpoint_grid_shift
 subroutine defput_kpoint_grid_shift(ncid,nrddimid,&
            number_of_reduced_dimensions,&
            kpoint_grid_shift)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2188,7 +2199,7 @@ end subroutine defput_kpoint_grid_shift
 
 
 subroutine write_basis_set(ncid,character_string_length,basis_set)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2209,7 +2220,7 @@ call defput_basis_set(ncid,csldimid,basis_set)
 end subroutine write_basis_set
 
 subroutine defput_basis_set(ncid,csldimid,basis_set)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2232,7 +2243,7 @@ end subroutine defput_basis_set
 subroutine write_number_of_coefficients(ncid,&
            number_of_kpoints,&
            k_dependent_gvectors,number_of_coefficients)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2258,7 +2269,7 @@ end subroutine write_number_of_coefficients
 subroutine defput_number_of_coefficients(ncid,nkdimid,&
            number_of_kpoints,&
            k_dependent_gvectors,number_of_coefficients)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2290,7 +2301,7 @@ end subroutine defput_number_of_coefficients
 subroutine write_gvectors(ncid,&
            number_of_vectors,max_number_of_coefficients,number_of_kpoints,&
            k_dependent_gvectors,gvectors,gvectors_k)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2319,7 +2330,7 @@ end subroutine write_gvectors
 subroutine defput_gvectors(ncid,nvdimid, mngdimid, nkdimid,&
            number_of_vectors,max_number_of_coefficients,number_of_kpoints,&
            k_dependent_gvectors,gvectors,gvectors_k)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2354,7 +2365,7 @@ end subroutine defput_gvectors
 subroutine write_number_of_states(ncid,&
            number_of_kpoints,&
            k_dependent_number_of_states,number_of_states)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2380,7 +2391,7 @@ end subroutine write_number_of_states
 subroutine defput_number_of_states(ncid,nkdimid,&
            number_of_kpoints,&
            k_dependent_number_of_states,number_of_states)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2410,7 +2421,7 @@ end subroutine defput_number_of_states
   
 
 subroutine write_kinetic_energy_cutoff(ncid,kinetic_energy_cutoff)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2425,7 +2436,7 @@ call defput_kinetic_energy_cutoff(ncid,kinetic_energy_cutoff)
 end subroutine write_kinetic_energy_cutoff
   
 subroutine defput_kinetic_energy_cutoff(ncid,kinetic_energy_cutoff)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2447,7 +2458,7 @@ end subroutine defput_kinetic_energy_cutoff
 
 
 subroutine write_total_energy(ncid,total_energy)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2462,7 +2473,7 @@ call defput_total_energy(ncid,total_energy)
 end subroutine write_total_energy
 
 subroutine defput_total_energy(ncid,total_energy)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2483,7 +2494,7 @@ end subroutine defput_total_energy
 
 
 subroutine write_fermi_energy(ncid,fermi_energy)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2498,7 +2509,7 @@ call defput_fermi_energy(ncid,fermi_energy)
 end subroutine write_fermi_energy
 
 subroutine defput_fermi_energy(ncid,fermi_energy)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2519,7 +2530,7 @@ end subroutine defput_fermi_energy
 
 
 subroutine write_max_residual(ncid,max_residual)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2534,7 +2545,7 @@ call defput_max_residual(ncid,max_residual)
 end subroutine write_max_residual
 
 subroutine defput_max_residual(ncid,max_residual)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2554,7 +2565,7 @@ end subroutine defput_max_residual
 
 
 subroutine write_exchange_functional(ncid,character_string_length,exchange_functional)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2575,7 +2586,7 @@ call defput_exchange_functional(ncid,csldimid,exchange_functional)
 end subroutine write_exchange_functional
 
 subroutine defput_exchange_functional(ncid,csldimid,exchange_functional)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2595,7 +2606,7 @@ end subroutine defput_exchange_functional
 
 
 subroutine write_correlation_functional(ncid,character_string_length,correlation_functional)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2616,7 +2627,7 @@ call defput_correlation_functional(ncid,csldimid,correlation_functional)
 end subroutine write_correlation_functional
 
 subroutine defput_correlation_functional(ncid,csldimid,correlation_functional)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2638,7 +2649,7 @@ end subroutine defput_correlation_functional
 subroutine write_occupations(ncid,&
            max_number_of_states,number_of_kpoints,number_of_spins,&
            occupations)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2666,7 +2677,7 @@ end subroutine write_occupations
 subroutine defput_occupations(ncid,mnsdimid, nkdimid, nscdimid,&
            max_number_of_states,number_of_kpoints,number_of_spins,&
            occupations)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2688,7 +2699,7 @@ end subroutine defput_occupations
 
 
 subroutine write_smearing_width(ncid,smearing_width)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2704,7 +2715,7 @@ call defput_smearing_width(ncid,smearing_width)
 end subroutine write_smearing_width
 
 subroutine defput_smearing_width(ncid,smearing_width)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2724,7 +2735,7 @@ end subroutine defput_smearing_width
 
 
 subroutine write_smearing_scheme(ncid,character_string_length,smearing_scheme)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2745,7 +2756,7 @@ call defput_smearing_scheme(ncid,csldimid,smearing_scheme)
 end subroutine write_smearing_scheme
 
 subroutine defput_smearing_scheme(ncid,csldimid,smearing_scheme)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2767,7 +2778,7 @@ end subroutine defput_smearing_scheme
 subroutine write_eigenvalues(ncid,&
            max_number_of_states,number_of_kpoints,number_of_spins,&
            eigenvalues)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2794,7 +2805,7 @@ end subroutine write_eigenvalues
 subroutine defput_eigenvalues(ncid,mnsdimid, nkdimid, nscdimid,&
            max_number_of_states,number_of_kpoints,number_of_spins,&
            eigenvalues)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2818,7 +2829,7 @@ end subroutine defput_eigenvalues
 subroutine write_gw_corrections(ncid,&
            real_or_complex,max_number_of_states,number_of_kpoints,number_of_spins,&
            gw_corrections)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2846,7 +2857,7 @@ end subroutine write_gw_corrections
 subroutine defput_gw_corrections(ncid,cdimid, mnsdimid, nkdimid, nscdimid,&
            real_or_complex,max_number_of_states,number_of_kpoints,number_of_spins,&
            gw_corrections)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2870,7 +2881,7 @@ end subroutine defput_gw_corrections
 subroutine write_kb_formfactor_sign(ncid,&
            max_number_of_projectors,max_number_of_angular_momenta,number_of_atom_species,&
            kb_formfactor_sign)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2898,7 +2909,7 @@ end subroutine write_kb_formfactor_sign
 subroutine defput_kb_formfactor_sign(ncid,mnpdimid, mnamdimid, natdimid,&
            max_number_of_projectors,max_number_of_angular_momenta,number_of_atom_species,&
            kb_formfactor_sign)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2924,7 +2935,7 @@ subroutine write_kb_formfactors(ncid,&
            max_number_of_coefficients,number_of_kpoints,max_number_of_projectors,&
            max_number_of_angular_momenta,number_of_atom_species,&
            kb_formfactors)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2957,7 +2968,7 @@ subroutine defput_kb_formfactors(ncid,mngdimid, nkdimid, mnpdimid, mnamdimid, na
            max_number_of_coefficients,number_of_kpoints,max_number_of_projectors,&
            max_number_of_angular_momenta,number_of_atom_species,&
            kb_formfactors)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -2984,7 +2995,7 @@ subroutine write_kb_formfactor_derivative(ncid,&
            max_number_of_coefficients,number_of_kpoints,max_number_of_projectors,&
            max_number_of_angular_momenta,number_of_atom_species,&
            kb_formfactor_derivative)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -3019,7 +3030,7 @@ subroutine defput_kb_formfactor_derivative(ncid,mngdimid, nkdimid, mnpdimid, mna
            max_number_of_coefficients,number_of_kpoints,max_number_of_projectors,&
            max_number_of_angular_momenta,number_of_atom_species,&
            kb_formfactor_derivative)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -3048,7 +3059,7 @@ subroutine write_coefficients_of_wavefunctions(ncid,&
                   real_or_complex,max_number_of_coefficients,number_of_spinor_components,&
                   max_number_of_states,number_of_kpoints,number_of_spins,&
                   coefficients_of_wavefunctions)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -3084,7 +3095,7 @@ subroutine defput_coefficients_of_wavefunctions(ncid,cdimid, mngdimid, nsrcdimid
                   real_or_complex,max_number_of_coefficients,number_of_spinor_components,&
                   max_number_of_states,number_of_kpoints,number_of_spins,&
                   coefficients_of_wavefunctions)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -3114,7 +3125,7 @@ subroutine write_denpot(ncid,&
          real_or_complex,number_of_grid_points_vector1,&
          number_of_grid_points_vector2,number_of_grid_points_vector3,number_of_components,&
          denpot,denpotname)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -3148,7 +3159,7 @@ subroutine defput_denpot(ncid,cdimid, ng1dimid, ng2dimid, ng3dimid, ncdimid,&
          real_or_complex,number_of_grid_points_vector1,&
          number_of_grid_points_vector2,number_of_grid_points_vector3,number_of_components,&
          denpot,denpotname)
-use netcdf
+!use netcdf
 implicit none
 
 !arguments
@@ -3184,7 +3195,7 @@ end subroutine defput_denpot
 !------------------------------------------------------------------------
 subroutine inqordef_dimid(ncid,dimname,dimval,dimid)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,dimval
@@ -3210,7 +3221,7 @@ end subroutine inqordef_dimid
 subroutine read_primitive_vectors(ncid,NCD,NV,&
      primitive_vectors)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,NCD,NV
@@ -3227,7 +3238,7 @@ end subroutine read_primitive_vectors
 
 subroutine read_number_of_grid_points_vector1(ncid,number_of_grid_points_vector1)
 
- use netcdf
+ !use netcdf
  implicit none
 
  integer, intent(in) :: ncid
@@ -3244,7 +3255,7 @@ end subroutine read_number_of_grid_points_vector1
 
 subroutine read_number_of_grid_points_vector2(ncid,number_of_grid_points_vector2)
 
- use netcdf
+ !!use netcdf
  implicit none
 
  integer, intent(in) :: ncid
@@ -3261,7 +3272,7 @@ end subroutine read_number_of_grid_points_vector2
 
 subroutine read_number_of_grid_points_vector3(ncid,number_of_grid_points_vector3)
 
- use netcdf
+ !use netcdf
  implicit none
 
  integer, intent(in) :: ncid
@@ -3278,7 +3289,7 @@ end subroutine read_number_of_grid_points_vector3
 
 subroutine read_denpottype(ncid,denpottype)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid
@@ -3317,7 +3328,7 @@ end subroutine read_denpottype
 subroutine read_denpot(ncid,rc,ngv1,ngv2,ngv3,nc,&
            denpot)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,rc,ngv1,ngv2,ngv3,nc)
@@ -3369,7 +3380,7 @@ end subroutine read_denpot
 
 subroutine read_space_group(ncid,space_group)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid
@@ -3386,7 +3397,7 @@ end subroutine read_space_group
 subroutine read_atom_species(ncid,na,&
            atom_species)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,na
@@ -3403,7 +3414,7 @@ end subroutine read_atom_species
 subroutine read_reduced_atom_positions(ncid,NRD,na,&
            reduced_atom_positions)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,NRD,na
@@ -3420,7 +3431,7 @@ end subroutine read_reduced_atom_positions
 subroutine read_reduced_symmetry_matrices(ncid,NRD,nsym,&
            reduced_symmetry_matrices)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,NRD,nsym
@@ -3437,7 +3448,7 @@ end subroutine read_reduced_symmetry_matrices
 subroutine read_reduced_symmetry_translations(ncid,NRD,nsym,&
            reduced_symmetry_translations)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,NRD,nsym
@@ -3454,7 +3465,7 @@ end subroutine read_reduced_symmetry_translations
 subroutine read_reduced_coordinates_of_kpoints(ncid,NRD,nk,&
            reduced_coordinates_of_kpoints)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,NRD,nk
@@ -3471,7 +3482,7 @@ end subroutine read_reduced_coordinates_of_kpoints
 subroutine read_kpoint_weights(ncid,nk,&
            kpoint_weights)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,nk
@@ -3487,7 +3498,7 @@ end subroutine read_kpoint_weights
 
 subroutine read_k_dependent_gvectors(ncid,k_dependent_gvectors)
 
-  use netcdf
+  !use netcdf
   implicit none
 
   integer, intent(in) :: ncid
@@ -3507,7 +3518,7 @@ end subroutine read_k_dependent_gvectors
 
 subroutine read_k_dependent_number_of_states(ncid,k_dependent_number_of_states)
 
-  use netcdf
+  !use netcdf
   implicit none
 
   integer, intent(in) :: ncid
@@ -3528,7 +3539,7 @@ end subroutine read_k_dependent_number_of_states
 subroutine read_reduced_coordinates_of_plane_waves(ncid,NV,ng,&
            reduced_coordinates_of_plane_waves)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,NV,ng
@@ -3544,7 +3555,7 @@ end subroutine read_reduced_coordinates_of_plane_waves
 
 subroutine read_fermi_energy(ncid,fermi_energy)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid
@@ -3561,7 +3572,7 @@ end subroutine read_fermi_energy
 subroutine read_occupations(ncid,nb,nk,NS,&
            occupations)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,nb,nk,NS
@@ -3578,7 +3589,7 @@ end subroutine read_occupations
 subroutine read_eigenvalues(ncid,nb,nk,NS,&
            eigenvalues)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,nb,nk,NS
@@ -3595,7 +3606,7 @@ end subroutine read_eigenvalues
 subroutine read_gw_corrections(ncid,RC,nb,nk,NS,&
            gw_corrections)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,RC,nb,nk,NS
@@ -3615,7 +3626,7 @@ end subroutine read_gw_corrections
 subroutine read_kb_formfactor_sign(ncid,mnp,mnam,nas,&
            kb_formfactor_sign)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,mnp,mnam,nas
@@ -3635,7 +3646,7 @@ end subroutine read_kb_formfactor_sign
 subroutine read_kb_formfactors(ncid,nw,nk,mnp,mnam,nas,&
            kb_formfactors)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,nw,nk,mnp,mnam,nas
@@ -3655,7 +3666,7 @@ end subroutine read_kb_formfactors
 subroutine read_kb_formfactor_derivative(ncid,nw,nk,mnp,mnam,nas,&
            kb_formfactor_derivative)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,nw,nk,mnp,mnam,nas
@@ -3675,7 +3686,7 @@ end subroutine read_kb_formfactor_derivative
 subroutine read_coefficients_of_wavefunctions(ncid,RC,nw,NSR,nb,nk,NS,&
            coefficients_of_wavefunctions)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid,RC,nw,NSR,nb,nk,NS
@@ -3694,7 +3705,7 @@ end subroutine read_coefficients_of_wavefunctions
 !------------------------------------------------------------------------
 subroutine read_number_of_electrons(ncid,number_of_electrons)
 
- use netcdf
+ !use netcdf
  implicit none
  
  integer, intent(in) :: ncid
@@ -3837,7 +3848,7 @@ end subroutine read_number_of_components
 !
 subroutine read_dim(ncid,dimname,dimval)
 
-use netcdf
+!use netcdf
 implicit none
 
 integer, intent(in) :: ncid
@@ -3858,7 +3869,7 @@ end subroutine read_dim
 !   error handling routine
 !===========================================================================
 subroutine handle_etsf_netcdf_err(status)
-  use netcdf
+  !use netcdf
   implicit none
   integer, intent(in) :: status
   if(status /= nf90_noerr) then

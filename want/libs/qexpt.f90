@@ -790,6 +790,13 @@ CONTAINS
       IF ( ierr /=0 ) RETURN
       CALL iotk_scan_attr( attr, 'igwx', igwx_, IERR=ierr)
       IF ( ierr /=0 ) RETURN
+
+WRITE(0,*) 'igwx', igwx_
+WRITE(0,*) 'ngw', ngw_
+WRITE(0,*) 'SHAPE wf', SHAPE(wf)
+WRITE(0,*) 'ibnds', ibnds
+WRITE(0,*) 'ibnde', ibnde
+
       !
       IF ( PRESENT( wf ) ) THEN
           !
