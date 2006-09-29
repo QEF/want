@@ -749,7 +749,7 @@ CONTAINS
       COMPLEX(dbl),  OPTIONAL, INTENT(OUT) :: wf(:,:), wf_kindip(:,:)
       INTEGER,                 INTENT(OUT) :: ierr
       !
-      INTEGER :: ngw_, igwx_, ig, ib, ik_eff, nspin, nkpts
+      INTEGER :: ngw_, igwx_, ig, ib, ik_eff, nspin, nkpts, lindex
       COMPLEX(dbl),  ALLOCATABLE :: wf_(:)
 
       ierr = 0
@@ -790,20 +790,18 @@ CONTAINS
       IF ( ierr /=0 ) RETURN
       CALL iotk_scan_attr( attr, 'igwx', igwx_, IERR=ierr)
       IF ( ierr /=0 ) RETURN
-
-WRITE(0,*) 'igwx', igwx_
-WRITE(0,*) 'ngw', ngw_
-WRITE(0,*) 'SHAPE wf', SHAPE(wf)
-WRITE(0,*) 'ibnds', ibnds
-WRITE(0,*) 'ibnde', ibnde
-
+      !
+      !
+      lindex = 0
       !
       IF ( PRESENT( wf ) ) THEN
           !
           DO ib = ibnds, ibnde
               !
+              lindex = lindex + 1
+              !
               CALL iotk_scan_dat( iunpun,  'Wfc'//TRIM(iotk_index( ib )) , &
-                                  wf( 1:igwx_, ib ), IERR=ierr)
+                                  wf( 1:igwx_, lindex ), IERR=ierr)
               IF ( ierr /=0 ) RETURN
               !
           ENDDO
@@ -827,18 +825,22 @@ WRITE(0,*) 'ibnde', ibnde
           ENDIF
           !
           !
+          lindex = 0
+          !
           DO ib = ibnds, ibnde
+              !
+              lindex = lindex + 1
               !
               CALL iotk_scan_dat( iunpun, "Wfc"//TRIM(iotk_index( ib ) ), wf_(1:igwx_), IERR=ierr )
               IF (ierr/=0) RETURN
               !
               ! use the igk map to do the transformation
               !
-              wf_kindip(:, ib) = 0.0_dbl
+              wf_kindip(:, lindex) = 0.0_dbl
               !
               DO ig = 1, igwx_
                   !
-                  wf_kindip( igk( ig ), ib ) = wf_( ig )
+                  wf_kindip( igk( ig ), lindex ) = wf_( ig )
                   !
               ENDDO
               !
