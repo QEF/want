@@ -4,6 +4,9 @@
 =======================================================
 
 
+29 Sep 2006      Bug fixed in qexpt and qexml libs when reading wfc with ibnds /= 1 .
+                 Signalation courtesy of Matias Nunez. (AF)
+
 25 Sep 2006      work_dir manage fixed in bands.x and dos.x . (AF)
 
 22 Sep 2006      Script lib for running test added to HOME/script dir; test06 partly
