@@ -5,7 +5,7 @@
     ne = 1000
     emin = -10.0
     emax =  5.0 
-    datafile_C = "cobalt_US_WanT.ham"
+    datafile_C = "./SCRATCH/cobalt_US_WanT.ham"
     transport_dir = 3
   /
 
