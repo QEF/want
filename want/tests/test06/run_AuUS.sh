@@ -1,4 +1,4 @@
-#! /bin/bash 
+#! /bin/bash
 #
 # Au Chain USPP
 #
@@ -19,11 +19,11 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
- bands           interpolates the band structure using WFs
+ bands           interpolate the band structure using WFs
  dos             compute DOS using WFs
  plot            compute WFs on real space for plotting
  conductor       evaluate the transmittance, for the bulk case
- want            perform DISENTANGLE, WANNIER, BANDS, PLOT, CONDUCTOR all together 
+ want            perform DISENTANGLE, WANNIER, BANDS, DOS, PLOT, CONDUCTOR all together 
  all             perform all the above described steps
 
  check           check results with the reference outputs
@@ -34,12 +34,15 @@ MANUAL=" Usage
 #
 
 #
-# source common enviroment, to be set before running the script
+# source common enviroment
 . ../environment.conf
-. $UTILITY_BIN/basedef.sh
-TEST_HOME=$(pwd)
-TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
-PSEUDO_NAME=Au.pw91-d-van.UPF
+#
+# source low level macros for test
+. ../../script/libtest.sh
+
+#
+# macros
+SUFFIX="_AuUS"
 
 #
 # evaluate the starting choice about what is to run 
@@ -60,23 +63,23 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (scf)            SCF=".TRUE." ;;
-   (nscf)           NSCF=".TRUE." ;;
-   (pwexport)       PWEXPORT=".TRUE." ;;
-   (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
-   (disentangle)    DISENTANGLE=".TRUE." ;;
-   (wannier)        WANNIER=".TRUE." ;;
-   (bands)          BANDS=".TRUE." ;;
-   (dos)            DOS=".TRUE." ;;
-   (plot)           PLOT=".TRUE." ;;
-   (conductor)      CONDUCTOR=".TRUE." ;;
-   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ; DOS=".TRUE." ; PLOT=".TRUE."; CONDUCTOR=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
-                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; PLOT=".TRUE." ;
-                    BANDS=".TRUE." ; DOS=".TRUE." ; CONDUCTOR=".TRUE." ;;
-   (check)          CHECK=".TRUE." ;;
-   (clean)          CLEAN=".TRUE." ;;
+   (scf)            SCF=yes ;;
+   (nscf)           NSCF=yes ;;
+   (pwexport)       PWEXPORT=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;;
+   (disentangle)    DISENTANGLE=yes ;;
+   (wannier)        WANNIER=yes ;;
+   (bands)          BANDS=yes ;;
+   (dos)            DOS=yes ;;
+   (plot)           PLOT=yes ;;
+   (conductor)      CONDUCTOR=yes ;;
+   (want)           DISENTANGLE=yes ; WANNIER=yes ;
+                    BANDS=yes ; DOS=yes ; PLOT=yes; CONDUCTOR=yes ;;
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
+                    DISENTANGLE=yes ; WANNIER=yes ; PLOT=yes ;
+                    BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
+   (check)          CHECK=yes ;;
+   (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
@@ -85,26 +88,14 @@ esac
 #
 if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
 
+
 #
-# preliminaries
+# initialize 
 #
 if [ -z "$CLEAN" ] ; then
-   test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME/../pseudo/$PSEUDO_NAME .
-   #
-   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH 
-   cd $TEST_HOME
-   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   #
-   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME ./HOME
-   #
-   test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
-
-   cd $TMPDIR/$TEST_NAME
+   test_init 
 fi
+#
 
 
 #-----------------------------------------------------------------------------
@@ -112,166 +103,99 @@ fi
 #
 # running DFT SCF
 #
-if [ "$SCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running SCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-                 < $TEST_HOME/scf_AuUS.in > $TEST_HOME/scf_AuUS.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1    
-   fi
+if [ "$SCF" = yes ] ; then  
+   run_dft  NAME=SCF  SUFFIX=$SUFFIX
 fi
 
 #
 # running DFT NSCF
 #
-if [ "$NSCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-                 < $TEST_HOME/nscf_AuUS.in > $TEST_HOME/nscf_AuUS.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1    
-   fi
+if [ "$NSCF" = yes ] ; then  
+   run_dft  NAME=NSCF  SUFFIX=$SUFFIX
 fi
    
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation... " 
-   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport_AuUS.in > $TEST_HOME/pwexport_AuUS.out
-   if [ $? = 0 ] ; then 
-      echo "done" 
-   else
-      echo "problems found" ; exit 1
-   fi
+if [ "$PWEXPORT" = yes ] ; then  
+   run_export  SUFFIX=$SUFFIX
 fi
 
 #
 # running DISENTANGLE
 #
-if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want_AuUS.in > $TEST_HOME/disentangle_AuUS.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+if [ "$DISENTANGLE" = yes ] ; then  
+   run_disentangle  SUFFIX=$SUFFIX
 fi
 
 #
 # running WANNIER
 #
-if [ "$WANNIER" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want_AuUS.in > $TEST_HOME/wannier_AuUS.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+if [ "$WANNIER" = yes ] ; then  
+   run_wannier  SUFFIX=$SUFFIX
 fi
 
 #
 # running BANDS
 #
-if [ "$BANDS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BANDS calculation... $ECHO_C" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands_AuUS.in > $TEST_HOME/bands_AuUS.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+if [ "$BANDS" = yes ] ; then  
+   run_bands  SUFFIX=$SUFFIX
 fi
 
 #
 # running DOS
 #
-if [ "$DOS" = ".TRUE." ] ; then
-   echo $ECHO_N "running DOS calculation... $ECHO_C"
-   $WANT_BIN/dos.x < $TEST_HOME/dos_AuUS.in > $TEST_HOME/dos_AuUS.out
-   if [ ! -e CRASH ] ; then
-      echo "$ECHO_T done"
-      test -e dos_AuUS.dat && mv dos_AuUS.dat $TEST_HOME/dos_AuUS.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+if [ "$DOS" = yes ] ; then  
+   run_dos  SUFFIX=$SUFFIX
 fi
 
 #
 # running PLOT
 #
-if [ "$PLOT" = ".TRUE." ] ; then
-   echo $ECHO_N "running PLOT calculation... $ECHO_C"
-   $WANT_BIN/plot.x < $TEST_HOME/plot_AuUS.in > $TEST_HOME/plot_AuUS.out
-   if [ ! -e CRASH ] ; then
-      echo "$ECHO_T done"
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+if [ "$PLOT" = yes ] ; then  
+   run_plot  SUFFIX=$SUFFIX
 fi
 
 #
 # running CONDUCTOR
 #
-if [ "$CONDUCTOR" = ".TRUE." ] ; then  
+if [ "$CONDUCTOR" = yes ] ; then  
    #
-   echo $ECHO_N "running CONDUCTOR calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor_AuUS.in > $TEST_HOME/conductor_AuUS.out
+   run_conductor SUFFIX=$SUFFIX
+   #
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
       #
-      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond_AuUS.dat
-      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond_AuUS.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
+      test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond$SUFFIX.dat
+      test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond$SUFFIX.dat
    fi
 fi
 
 #
 # running CHECK
 #
-if [ "$CHECK" = ".TRUE." ] ; then
-   echo "running CHECK..."
+if [ "$CHECK" = yes ] ; then
+   echo "running CHECK... "
    #
    cd $TEST_HOME
-   list="disentangle_AuUS.out wannier_AuUS.out"
+   list="disentangle$SUFFIX.out wannier$SUFFIX.out"
    #
    for file in $list
    do
-      $UTILITY_BIN/check.sh $file
+      ../../script/check.sh $file
    done
 fi
-
 
 
 #
 # eventually clean
 #
-if [ "$CLEAN" = ".TRUE." ] ; then  
-   cd $TEST_HOME
-      rm -rf *.out *.dat 2> /dev/null
-      test -e SCRATCH && rm SCRATCH
-   cd $TMPDIR
-      test -d $TEST_NAME && rm -rf $TEST_NAME
-   exit 0
+if [ "$CLEAN" = yes ] ; then  
+   run_clean
 fi
 
 #
 # exiting
 exit 0
-
-
-
-
-
-
-
 
 

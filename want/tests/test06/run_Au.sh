@@ -1,4 +1,4 @@
-#! /bin/bash 
+#! /bin/bash
 #
 # Au Chain NCPP
 #
@@ -63,23 +63,23 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (scf)            SCF=".TRUE." ;;
-   (nscf)           NSCF=".TRUE." ;;
-   (pwexport)       PWEXPORT=".TRUE." ;;
-   (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
-   (disentangle)    DISENTANGLE=".TRUE." ;;
-   (wannier)        WANNIER=".TRUE." ;;
-   (bands)          BANDS=".TRUE." ;;
-   (dos)            DOS=".TRUE." ;;
-   (plot)           PLOT=".TRUE." ;;
-   (conductor)      CONDUCTOR=".TRUE." ;;
-   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ; DOS=".TRUE." ; PLOT=".TRUE."; CONDUCTOR=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
-                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; PLOT=".TRUE." ;
-                    BANDS=".TRUE." ; DOS=".TRUE." ; CONDUCTOR=".TRUE." ;;
-   (check)          CHECK=".TRUE." ;;
-   (clean)          CLEAN=".TRUE." ;;
+   (scf)            SCF=yes ;;
+   (nscf)           NSCF=yes ;;
+   (pwexport)       PWEXPORT=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;;
+   (disentangle)    DISENTANGLE=yes ;;
+   (wannier)        WANNIER=yes ;;
+   (bands)          BANDS=yes ;;
+   (dos)            DOS=yes ;;
+   (plot)           PLOT=yes ;;
+   (conductor)      CONDUCTOR=yes ;;
+   (want)           DISENTANGLE=yes ; WANNIER=yes ;
+                    BANDS=yes ; DOS=yes ; PLOT=yes; CONDUCTOR=yes ;;
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
+                    DISENTANGLE=yes ; WANNIER=yes ; PLOT=yes ;
+                    BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
+   (check)          CHECK=yes ;;
+   (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
@@ -103,65 +103,65 @@ fi
 #
 # running DFT SCF
 #
-if [ "$SCF" = ".TRUE." ] ; then  
-   run_dft  NAME=SCF INPUT=scf$SUFFIX.in  OUTPUT=scf$SUFFIX.out
+if [ "$SCF" = yes ] ; then  
+   run_dft  NAME=SCF  SUFFIX=$SUFFIX
 fi
 
 #
 # running DFT NSCF
 #
-if [ "$NSCF" = ".TRUE." ] ; then  
-   run_dft  NAME=NSCF INPUT=nscf$SUFFIX.in  OUTPUT=nscf$SUFFIX.out
+if [ "$NSCF" = yes ] ; then  
+   run_dft  NAME=NSCF  SUFFIX=$SUFFIX
 fi
    
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   run_export  INPUT=pwexport$SUFFIX.in  OUTPUT=pwexport$SUFFIX.out
+if [ "$PWEXPORT" = yes ] ; then  
+   run_export  SUFFIX=$SUFFIX
 fi
 
 #
 # running DISENTANGLE
 #
-if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   run_disentangle  INPUT=want$SUFFIX.in  OUTPUT=disentangle$SUFFIX.out
+if [ "$DISENTANGLE" = yes ] ; then  
+   run_disentangle  SUFFIX=$SUFFIX
 fi
 
 #
 # running WANNIER
 #
-if [ "$WANNIER" = ".TRUE." ] ; then  
-   run_wannier  INPUT=want$SUFFIX.in  OUTPUT=wannier$SUFFIX.out
+if [ "$WANNIER" = yes ] ; then  
+   run_wannier  SUFFIX=$SUFFIX
 fi
 
 #
 # running BANDS
 #
-if [ "$BANDS" = ".TRUE." ] ; then  
-   run_bands  INPUT=bands$SUFFIX.in  OUTPUT=bands$SUFFIX.out
+if [ "$BANDS" = yes ] ; then  
+   run_bands  SUFFIX=$SUFFIX
 fi
 
 #
 # running DOS
 #
-if [ "$DOS" = ".TRUE." ] ; then  
-   run_dos  INPUT=dos$SUFFIX.in  OUTPUT=dos$SUFFIX.out
+if [ "$DOS" = yes ] ; then  
+   run_dos  SUFFIX=$SUFFIX
 fi
 
 #
 # running PLOT
 #
-if [ "$PLOT" = ".TRUE." ] ; then  
-   run_plot  INPUT=plot$SUFFIX.in  OUTPUT=plot$SUFFIX.out
+if [ "$PLOT" = yes ] ; then  
+   run_plot  SUFFIX=$SUFFIX
 fi
 
 #
 # running CONDUCTOR
 #
-if [ "$CONDUCTOR" = ".TRUE." ] ; then  
+if [ "$CONDUCTOR" = yes ] ; then  
    #
-   run_conductor INPUT=conductor$SUFFIX.in OUTPUT=conductor$SUFFIX.out
+   run_conductor SUFFIX=$SUFFIX
    #
    if [ ! -e CRASH ] ; then 
       echo "$ECHO_T done" 
@@ -174,7 +174,7 @@ fi
 #
 # running CHECK
 #
-if [ "$CHECK" = ".TRUE." ] ; then
+if [ "$CHECK" = yes ] ; then
    echo "running CHECK... "
    #
    cd $TEST_HOME
@@ -190,19 +190,12 @@ fi
 #
 # eventually clean
 #
-if [ "$CLEAN" = ".TRUE." ] ; then  
+if [ "$CLEAN" = yes ] ; then  
    run_clean
 fi
 
 #
 # exiting
 exit 0
-
-
-
-
-
-
-
 
 
