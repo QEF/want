@@ -2126,7 +2126,7 @@ CONTAINS
       COMPLEX(dbl),  OPTIONAL, INTENT(OUT) :: wf(:,:), wf_kindip(:,:)
       INTEGER,                 INTENT(OUT) :: ierr
       !
-      INTEGER :: ngw_, igwx_, ig, ib
+      INTEGER :: ngw_, igwx_, ig, ib, lindex
       COMPLEX(dbl),  ALLOCATABLE :: wf_(:)
 
       ierr = 0
@@ -2157,10 +2157,14 @@ CONTAINS
       !
       IF ( PRESENT( wf_kindip )  )  THEN
           !
+          lindex = 0
+          !
           DO ib = ibnds, ibnde
               !
+              lindex = lindex + 1
+              !
               CALL iotk_scan_dat( iunpun, "evc"//TRIM(iotk_index(ib)), &
-                                  wf_kindip( 1:igwx_, ib ), IERR=ierr )
+                                  wf_kindip( 1:igwx_, lindex ), IERR=ierr )
               IF (ierr/=0) RETURN
               !
           ENDDO
@@ -2183,7 +2187,11 @@ CONTAINS
           ENDIF
           !
           !
+          lindex = 0
+          !
           DO ib = ibnds, ibnde
+              !
+              lindex = lindex + 1
               !
               CALL iotk_scan_dat( iunpun, "evc"//TRIM(iotk_index( ib ) ), wf_(1:igwx_), IERR=ierr )
               IF (ierr/=0) RETURN
@@ -2192,7 +2200,7 @@ CONTAINS
               !
               DO ig = 1, npwk
                   !
-                  wf( ig, ib ) = wf_( igk( ig )  )
+                  wf( ig, lindex ) = wf_( igk( ig )  )
                   !
               ENDDO
               !
