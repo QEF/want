@@ -103,73 +103,53 @@ fi
 #
 # running DFT SCF
 #
-if [ "$SCF" = yes ] ; then  
-   run_dft  NAME=SCF  SUFFIX=$SUFFIX
-fi
+run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 
 #
 # running DFT NSCF
 #
-if [ "$NSCF" = yes ] ; then  
-   run_dft  NAME=NSCF  SUFFIX=$SUFFIX
-fi
+run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
    
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT" = yes ] ; then  
-   run_export  SUFFIX=$SUFFIX
-fi
+run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 
 #
 # running DISENTANGLE
 #
-if [ "$DISENTANGLE" = yes ] ; then  
-   run_disentangle  SUFFIX=$SUFFIX
-fi
+run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
 
 #
 # running WANNIER
 #
-if [ "$WANNIER" = yes ] ; then  
-   run_wannier  SUFFIX=$SUFFIX
-fi
+run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 
 #
 # running BANDS
 #
-if [ "$BANDS" = yes ] ; then  
-   run_bands  SUFFIX=$SUFFIX
-fi
+run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
 
 #
 # running DOS
 #
-if [ "$DOS" = yes ] ; then  
-   run_dos  SUFFIX=$SUFFIX
-fi
+run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 
 #
 # running PLOT
 #
-if [ "$PLOT" = yes ] ; then  
-   run_plot  SUFFIX=$SUFFIX
-fi
+run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
 
 #
 # running CONDUCTOR
 #
-if [ "$CONDUCTOR" = yes ] ; then  
-   #
-   run_conductor SUFFIX=$SUFFIX
-   #
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      #
-      test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond$SUFFIX.dat
-      test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond$SUFFIX.dat
-   fi
+run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
+
+if [ "$CONDUCTOR" = yes -a ! -e CRASH ] ; then  
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond$SUFFIX.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond$SUFFIX.dat
 fi
+
 
 #
 # running CHECK
@@ -190,9 +170,8 @@ fi
 #
 # eventually clean
 #
-if [ "$CLEAN" = yes ] ; then  
-   run_clean
-fi
+run_clean  RUN=$CLEAN
+
 
 #
 # exiting
