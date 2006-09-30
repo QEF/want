@@ -53,7 +53,18 @@ test_init () {
 run_clean () {
 #----------------------
 #
+   local RUN=
 
+   for arg
+   do
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+   done
+
+   [[ "$RUN" != "yes" ]]  && return
+
+   #
+   # actual clean up
+   #
    cd $TEST_HOME
       rm -rf *.out *.dat 2> /dev/null
       test -e SCRATCH && rm SCRATCH
@@ -129,6 +140,7 @@ run_dft () {
 #
    local NAME=DFT
    local EXEC=$DFT_BIN/pw.x
+   local RUN=yes
    local INPUT=
    local OUTPUT=
    local SUFFIX=
@@ -140,7 +152,10 @@ run_dft () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
+
+   [[ "$RUN" != "yes" ]]  && return
    
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
@@ -158,6 +173,7 @@ run_export () {
  
    local NAME=EXPORT
    local EXEC=$DFT_BIN/pw_export.x
+   local RUN=yes
    local SUFFIX=
    local INPUT=
    local OUTPUT=
@@ -168,7 +184,10 @@ run_export () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
+
+   [[ "$RUN" != "yes" ]]  && return
 
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/pwexport$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/pwexport$SUFFIX.out ; fi
@@ -198,6 +217,7 @@ run_disentangle () {
 #
    local NAME=DISENTANGLE
    local EXEC=$WANT_BIN/disentangle.x
+   local RUN=yes
    local INPUT=
    local OUTPUT=
    local SUFFIX=
@@ -208,7 +228,10 @@ run_disentangle () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
+
+   [[ "$RUN" != "yes" ]]  && return
    
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/want$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/disentangle$SUFFIX.out ; fi
@@ -224,6 +247,7 @@ run_wannier () {
 #
    local NAME=WANNIER
    local EXEC=$WANT_BIN/wannier.x
+   local RUN=yes
    local INPUT=
    local OUTPUT=
    local SUFFIX=
@@ -234,8 +258,11 @@ run_wannier () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
    
+   [[ "$RUN" != "yes" ]]  && return
+
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/want$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/wannier$SUFFIX.out ; fi
 
@@ -250,6 +277,7 @@ run_bands () {
 #
    local NAME=BANDS
    local EXEC=$WANT_BIN/bands.x
+   local RUN=yes
    local INPUT=
    local OUTPUT=
    local SUFFIX=
@@ -261,8 +289,11 @@ run_bands () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
    
+   [[ "$RUN" != "yes" ]]  && return
+
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
@@ -278,6 +309,7 @@ run_dos () {
 #
    local NAME=DOS
    local EXEC=$WANT_BIN/dos.x
+   local RUN=yes
    local INPUT=
    local OUTPUT=
    local SUFFIX=
@@ -289,8 +321,11 @@ run_dos () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
    
+   [[ "$RUN" != "yes" ]]  && return
+
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
@@ -306,6 +341,7 @@ run_plot () {
 #
    local NAME=PLOT
    local EXEC=$WANT_BIN/plot.x
+   local RUN=yes
    local INPUT=
    local OUTPUT=
    local SUFFIX=
@@ -317,8 +353,11 @@ run_plot () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
    
+   [[ "$RUN" != "yes" ]]  && return
+
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
@@ -334,6 +373,7 @@ run_conductor () {
 #
    local NAME=CONDUCTOR
    local EXEC=$WANT_BIN/conductor.x
+   local RUN=yes
    local INPUT=
    local OUTPUT=
    local SUFFIX=
@@ -345,8 +385,11 @@ run_conductor () {
          [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
    done
    
+   [[ "$RUN" != "yes" ]]  && return
+
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
