@@ -2,10 +2,14 @@
     calculation='nscf'
     pseudo_dir = './',
     prefix='silicon'
+    wf_collect = .TRUE.
  /
  &system    
     ibrav=  2, celldm(1) =10.599478, nat=  2, ntyp= 1,
     ecutwfc =30.0,  nbnd = 16
+    nr1 = 32
+    nr2 = 32
+    nr3 = 32
  /
  &electrons
     mixing_mode = 'plain'

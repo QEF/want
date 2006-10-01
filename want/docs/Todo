@@ -10,6 +10,10 @@
 * tests:  check script
 * tests:  run script 
 
+* Symmetries in wfc management
+
+* Wannier and Transport parallelization
+
 * disentangle + wannier: 
      - wfc stored in a k-indip array (waste small mem but
        increase performance)
@@ -19,7 +23,4 @@
 
 * eigenvalue problem in wannier localization
 
-* symmetries in wfc management
-
-* Wannier and Transport parallelization
 
