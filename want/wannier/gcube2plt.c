@@ -282,6 +282,7 @@ which can be read by gOpenMol or SCARECROW.
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
+#include "libc.h"
 
 #define BUFF_LEN        256
 #define BOHR_RADIUS     0.52917715  /* conversion constant */
@@ -376,36 +377,8 @@ int  WriteCoordinateFile(void);
 /* externals */
 extern char *Number2Name(int);
 
-#if defined __T3E | defined __ABSOFT
-#  define GCUBE2PLT GCUBE2PLT
-#endif
-#if defined __SGI | defined __FUJITSU | defined __SX4 | defined __INTEL | defined __LAHEY | defined __SX6 | defined SUN | defined __ALTIX
-#  define GCUBE2PLT gcube2plt_
-#endif
-#if defined __G95 
-#  define GCUBE2PLT gcube2plt_
-#endif
-#if defined __PGI
-#  if defined __GNU_LINK
-#     define GCUBE2PLT gcube2plt__
-#  else
-#     define GCUBE2PLT gcube2plt_
-#  endif
-#endif
-#if defined __AIX | defined __HP | defined __MAC 
-#  define GCUBE2PLT gcube2plt
-#endif
-#if defined __ALPHA 
-#  if defined __LINUX
-#    define GCUBE2PLT gcube2plt_
-#  else
-#    define GCUBE2PLT gcube2plt_
-#  endif
-#endif
-
-
 /**************************************************************************/
-long int GCUBE2PLT( const char * filename, const int * length )
+long int __FC_FUNC(gcube2plt,GCUBE2PLT) ( const char * filename, const int * length )
 /**************************************************************************/
 {
     int i;

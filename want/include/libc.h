@@ -19,7 +19,7 @@
 #  define __FC_FUNC_(name,NAME) NAME
 #endif
 
-#if defined __SGI || defined __FUJITSU || defined __SX4 || defined __INTEL || defined __LAHEY || defined __SX6 || defined __SUN || defined __ALTIX
+#if defined __SGI || defined __FUJITSU || defined __SX4 || defined __INTEL || defined __LAHEY || defined __SX6 || defined __SUN || defined __ALTIX   || defined __ORIGIN
 #  define __FC_FUNC(name,NAME) name ## _
 #  define __FC_FUNC_(name,NAME) name ## _
 #endif
