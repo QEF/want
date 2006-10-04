@@ -211,11 +211,13 @@
            !
            CALL qexpt_init( dft_unit, dirname )
            !
-!           CALL qexpt_read_header( FORMAT_VERSION=dftdata_fmt_version, IERR=ierr)
+           CALL qexpt_read_header( FORMAT_VERSION=dftdata_fmt_version, IERR=ierr)
            !
-           IF ( ierr < 0 ) THEN 
+           IF ( ierr /= 0 ) THEN 
+                !
                 dftdata_fmt_version = "0.0.0" 
                 read_symmetry = .FALSE.
+                !
            ENDIF
            !
       CASE DEFAULT
