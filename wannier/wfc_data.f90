@@ -85,6 +85,8 @@ CONTAINS
        INTEGER             :: ik, ierr 
 
 
+       CALL timing("wfc_data_grids_read", OPR="START")
+       !
        !
        ! few checks
        !
@@ -98,13 +100,12 @@ CONTAINS
        !
        !
        ! ... reads dimensions for grids
+       !     npwkx is obtained from the loop and not read because of 
+       !     problems with the formats and thier back readability
        !
        SELECT CASE ( TRIM(filefmt) )
        !
        CASE ( 'qexml' )
-            !
-            ! here we do a loop over kpts to work around a
-            ! bug from the parallel execution of espresso 3.1 (MAX_NPW is wrong)
             !
             DO ik = 1, nkpts
                 !
@@ -119,10 +120,12 @@ CONTAINS
             !
             DO ik = 1, nkpts
                 !
-                CALL qexpt_read_gk( ik, NPWKX=npwkx, NPWK=npwk(ik), IERR=ierr )
+                CALL qexpt_read_gk( ik, NPWK=npwk(ik), IERR=ierr )
                 IF ( ierr/=0) CALL errore(subname,'getting npwk',ik)
                 !
             ENDDO
+            !
+            npwkx = MAXVAL( npwk( 1: nkpts ) )
             !
        CASE DEFAULT
             !
@@ -138,7 +141,8 @@ CONTAINS
 
        IF ( npwkx <= 0 )     CALL errore(subname,'npwkx <= 0',   ABS(npwkx)+1)
        !
-       ! WARNING: nasty redefinition
+       ! WARNING: nasty redefinition to have one component of the array free
+       !
        npwkx = npwkx + 1
        !
        ALLOCATE( igsort(npwkx,nkpts), STAT=ierr )
@@ -181,6 +185,8 @@ CONTAINS
        IF ( npwkx /= MAXVAL(npwk(:)) +1 ) CALL errore(subname,'Invalid npwkx II',5)
        !
        alloc = .TRUE.
+       !
+       CALL timing("wfc_data_grids_read", OPR="STOP")
        !
    END SUBROUTINE wfc_data_grids_read
 

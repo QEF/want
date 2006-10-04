@@ -34,12 +34,14 @@
 
    INTERFACE summary
       !
-      SUBROUTINE summary_x ( unit, input, lattice, ions, windows, kpoints, bshells, pseudo)
+      SUBROUTINE summary_x ( unit, input, lattice, ions, windows, symmetry, &
+                             kpoints, bshells, pseudo)
          INTEGER,           INTENT(in) :: unit
          LOGICAL, OPTIONAL, INTENT(in) :: input   
          LOGICAL, OPTIONAL, INTENT(in) :: lattice 
          LOGICAL, OPTIONAL, INTENT(in) :: ions   
          LOGICAL, OPTIONAL, INTENT(in) :: windows
+         LOGICAL, OPTIONAL, INTENT(in) :: symmetry
          LOGICAL, OPTIONAL, INTENT(in) :: kpoints   
          LOGICAL, OPTIONAL, INTENT(in) :: bshells   
          LOGICAL, OPTIONAL, INTENT(in) :: pseudo   
@@ -50,7 +52,8 @@
 
    INTERFACE want_init
       !
-      SUBROUTINE want_init_x (input, lattice, ions, windows, kpoints, bshells, pseudo)
+      SUBROUTINE want_init_x (input, lattice, ions, windows, &
+                              kpoints, bshells, pseudo)
          LOGICAL, OPTIONAL, INTENT(in) :: input
          LOGICAL, OPTIONAL, INTENT(in) :: lattice
          LOGICAL, OPTIONAL, INTENT(in) :: ions
@@ -65,10 +68,11 @@
 
    INTERFACE want_dftread
       !
-      SUBROUTINE want_dftread_x (lattice, ions, windows, kpoints, pseudo)
+      SUBROUTINE want_dftread_x (lattice, ions, windows, symmetry, kpoints, pseudo)
          LOGICAL, OPTIONAL, INTENT(in) :: lattice
          LOGICAL, OPTIONAL, INTENT(in) :: ions
          LOGICAL, OPTIONAL, INTENT(in) :: windows
+         LOGICAL, OPTIONAL, INTENT(in) :: symmetry
          LOGICAL, OPTIONAL, INTENT(in) :: kpoints
          LOGICAL, OPTIONAL, INTENT(in) :: pseudo
       END SUBROUTINE want_dftread_x

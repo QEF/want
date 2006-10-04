@@ -23,16 +23,22 @@ MODULE qexpt_module
   PRIVATE
   SAVE
   !
+  ! definitions for the fmt
+  !
+  CHARACTER(5), PARAMETER :: fmt_name = "QEXPT"
+  CHARACTER(5), PARAMETER :: fmt_version = "1.1.0"
+  !
   ! internal data to be set
   !
+  CHARACTER(256)   :: datadir
   INTEGER          :: iunpun
   !
   ! end of declarations
   !
   PUBLIC :: qexpt_init,  qexpt_openfile, qexpt_closefile
   !
-  PUBLIC :: qexpt_read_cell, qexpt_read_ions, qexpt_read_symmetry,            &
-            qexpt_read_spin, qexpt_read_bz,                                   &
+  PUBLIC :: qexpt_read_header, qexpt_read_cell, qexpt_read_ions,              &
+            qexpt_read_symmetry, qexpt_read_spin, qexpt_read_bz,              &
             qexpt_read_bands, qexpt_read_planewaves, qexpt_read_gk,           &
             qexpt_read_wfc
   !
@@ -46,15 +52,17 @@ CONTAINS
 !-------------------------------------------
 !
     !------------------------------------------------------------------------
-    SUBROUTINE qexpt_init( iunpun_ )
+    SUBROUTINE qexpt_init( iunpun_, datadir_ )
       !------------------------------------------------------------------------
       !
       ! just init module data
       !
       IMPLICIT NONE
       INTEGER,           INTENT(IN) :: iunpun_
+      CHARACTER(*),      INTENT(IN) :: datadir_
       !
       iunpun  = iunpun_
+      datadir = TRIM(datadir_)
       !
     END SUBROUTINE qexpt_init
 
@@ -123,6 +131,53 @@ CONTAINS
 ! ... read subroutines
 !-------------------------------------------
 !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE qexpt_read_header( creator_name, creator_version, &
+                                  format_name, format_version, ierr )
+      !------------------------------------------------------------------------
+      !
+      IMPLICIT NONE
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: creator_name, creator_version
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: format_name, format_version
+      INTEGER,           OPTIONAL, INTENT(OUT) :: ierr
+
+      CHARACTER(256) :: creator_name_, creator_version_
+      CHARACTER(256) :: format_name_,     format_version_
+
+      ierr = 0
+      !
+      !
+      CALL iotk_scan_begin( iunpun, "Header", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_empty( iunpun, "format", ATTR=attr, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_attr(attr, "name", format_name_, IERR=ierr)
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr(attr, "version", format_version_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_empty( iunpun, "creator", ATTR=attr, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_attr(attr, "name", creator_name_, IERR=ierr)
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr(attr, "version", creator_version_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_end( iunpun, "Header", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      !
+      IF ( PRESENT(creator_name) )     creator_name    = TRIM(creator_name_)
+      IF ( PRESENT(creator_version) )  creator_version = TRIM(creator_version_)
+      IF ( PRESENT(format_name) )      format_name     = TRIM(format_name_)
+      IF ( PRESENT(format_version) )   format_version  = TRIM(format_version_)
+      !
+    END SUBROUTINE qexpt_read_header
+    !
     !
     !------------------------------------------------------------------------
     SUBROUTINE qexpt_read_cell( alat, a1, a2, a3, b1, b2, b3, ierr )
@@ -313,19 +368,23 @@ CONTAINS
 
 
     !------------------------------------------------------------------------
-    SUBROUTINE qexpt_read_symmetry( nsym, invsym, s, ierr )
+    SUBROUTINE qexpt_read_symmetry( nsym, invsym, s, trasl, sname, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,          OPTIONAL, INTENT(OUT) :: nsym
       LOGICAL,          OPTIONAL, INTENT(OUT) :: invsym
       INTEGER,          OPTIONAL, INTENT(OUT) :: s(:,:,:)
+      REAL(dbl),        OPTIONAL, INTENT(OUT) :: trasl(:,:)
+      CHARACTER(*),     OPTIONAL, INTENT(OUT) :: sname(:)
       INTEGER,                    INTENT(OUT) :: ierr
       !
-      INTEGER             :: nsym_
-      LOGICAL             :: invsym_
-      INTEGER             :: s_(3,3,48)
+      INTEGER        :: nsym_
+      LOGICAL        :: invsym_
+      INTEGER        :: s_(3,3,48)
+      REAL(dbl)      :: trasl_(3, 48)
+      CHARACTER(256) :: sname_(48)
       !
-      INTEGER             :: i
+      INTEGER        :: i
 
       !
       ierr=0
@@ -344,7 +403,14 @@ CONTAINS
       !
       DO i = 1, nsym_
            !
+           CALL iotk_scan_dat( iunpun, "sname"//TRIM( iotk_index(i)), sname_(i), IERR=ierr )
+           IF (ierr/=0) RETURN
+           !
            CALL iotk_scan_dat( iunpun, "sym"//TRIM( iotk_index(i)), s_(:,:,i), IERR=ierr )
+           IF (ierr/=0) RETURN
+           !
+           CALL iotk_scan_dat( iunpun, "trasl"//TRIM( iotk_index(i)), &
+                                        trasl_(:,i), IERR=ierr )
            IF (ierr/=0) RETURN
            !
       ENDDO
@@ -355,7 +421,9 @@ CONTAINS
       !
       IF ( PRESENT( nsym ) )       nsym      = nsym_
       IF ( PRESENT( invsym ) )     invsym    = invsym_
-      IF ( PRESENT( s ) )          s( 1:3, 1:3, 1:nsym_)  = s_( :, :, 1:nsym_)
+      IF ( PRESENT( sname ) )      sname( 1:nsym_)        = sname_ ( 1:nsym)
+      IF ( PRESENT( s ) )          s( 1:3, 1:3, 1:nsym_)  = s_ ( :, :, 1:nsym_)
+      IF ( PRESENT( trasl ) )      trasl(  1:3, 1:nsym_)  = trasl_( :, 1:nsym_)
       !
     END SUBROUTINE qexpt_read_symmetry
 
@@ -455,19 +523,16 @@ CONTAINS
       INTEGER,      OPTIONAL, INTENT(OUT) :: igk(:,:), index(:)
       INTEGER,                INTENT(OUT) :: ierr
       !
+      CHARACTER(256) :: filename
+      INTEGER :: iungk
       INTEGER :: npwk_, npwkx_
       !
       
       ierr = 0
+      CALL iotk_free_unit( iungk )
+      filename = TRIM(datadir) // '/' // 'grid' //TRIM( iotk_index(ik) )
       !
-      CALL iotk_scan_begin( iunpun ,'Wfc_grids', ATTR=attr, IERR=ierr)
-      IF (ierr/=0)  RETURN
-      !
-      CALL iotk_scan_attr( attr, 'npwx', npwkx_, IERR=ierr)
-      IF (ierr/=0)  RETURN
-      ! 
-      ! 
-      CALL iotk_scan_begin( iunpun ,'Kpoint' // TRIM(iotk_index(ik)), ATTR=attr, IERR=ierr)
+      CALL iotk_open_read ( iungk, FILE = TRIM(filename), ATTR=attr, IERR=ierr )
       IF (ierr/=0)  RETURN
       !
       CALL iotk_scan_attr( attr, 'npw', npwk_, IERR=ierr)
@@ -475,22 +540,19 @@ CONTAINS
       !
       IF ( PRESENT( index ) ) THEN
           !
-          CALL iotk_scan_dat( iunpun, 'index', index(1:npwk_), IERR=ierr)
+          CALL iotk_scan_dat( iungk, 'index', index(1:npwk_), IERR=ierr)
           IF (ierr/=0)  RETURN
           !
       ENDIF
       !
       IF ( PRESENT( igk ) ) THEN
           !
-          CALL iotk_scan_dat( iunpun, 'grid', igk(1:3, 1:npwk_), IERR=ierr)
+          CALL iotk_scan_dat( iungk, 'grid', igk(1:3, 1:npwk_), IERR=ierr)
           IF (ierr/=0)  RETURN
           !
       ENDIF
       !
-      CALL iotk_scan_end( iunpun, 'Kpoint' // TRIM(iotk_index(ik)), IERR=ierr)
-      IF (ierr/=0)  RETURN
-      !
-      CALL iotk_scan_end( iunpun ,'Wfc_grids', IERR=ierr)
+      CALL iotk_close_read ( iungk, IERR=ierr )
       IF (ierr/=0)  RETURN
       !
       !
@@ -733,8 +795,8 @@ CONTAINS
       DEALLOCATE( eig_s_ )
       !
     END SUBROUTINE qexpt_read_bands
-
-
+    !
+    !
     !------------------------------------------------------------------------
     SUBROUTINE qexpt_read_wfc( ibnds, ibnde, ik, ispin, igk, ngw, igwx, wf, wf_kindip, ierr )
       !------------------------------------------------------------------------
@@ -749,41 +811,52 @@ CONTAINS
       COMPLEX(dbl),  OPTIONAL, INTENT(OUT) :: wf(:,:), wf_kindip(:,:)
       INTEGER,                 INTENT(OUT) :: ierr
       !
-      INTEGER :: ngw_, igwx_, ig, ib, ik_eff, nspin, nkpts, lindex
+      !
+      ! data to be saved for performance purposes
+      !
+      INTEGER,  SAVE :: nspin, nkpts
+      LOGICAL,  SAVE :: first_call = .TRUE.
+      !
+      INTEGER        :: ngw_, igwx_, ig, ib, ik_eff, lindex
+      INTEGER        :: iungk
+      CHARACTER(256) :: filename
       COMPLEX(dbl),  ALLOCATABLE :: wf_(:)
 
       ierr = 0
       !
-      ! read some aux dimensions
       !
-      CALL iotk_scan_begin( iunpun, 'Eigenvalues', ATTR=attr, IERR=ierr)
-      IF ( ierr /=0 ) RETURN
+      ! at the first call read some aux dimensions
       !
-      CALL iotk_scan_attr( attr, 'nspin', nspin, IERR=ierr)
-      IF ( ierr /=0 ) RETURN
-      CALL iotk_scan_attr( attr, 'nk',  nkpts, IERR=ierr)
-      IF ( ierr /=0 ) RETURN
-      !
-      CALL iotk_scan_end( iunpun, 'Eigenvalues', IERR=ierr)
-      IF ( ierr /=0 ) RETURN
-      !
-      !
-      IF ( ispin > nspin ) THEN
-           ierr = 2
-           RETURN
+      IF ( first_call ) THEN
+           !
+           CALL iotk_scan_begin( iunpun, 'Eigenvalues', ATTR=attr, IERR=ierr)
+           IF ( ierr /=0 ) RETURN
+           !
+           CALL iotk_scan_attr( attr, 'nspin', nspin, IERR=ierr)
+           IF ( ierr /=0 ) RETURN
+           CALL iotk_scan_attr( attr, 'nk',  nkpts, IERR=ierr)
+           IF ( ierr /=0 ) RETURN
+           !
+           CALL iotk_scan_end( iunpun, 'Eigenvalues', IERR=ierr)
+           IF ( ierr /=0 ) RETURN
+           !
+           first_call = .FALSE.
+           !
       ENDIF
+      !
       !
       ik_eff = ik + ( ispin -1 ) * nkpts / nspin
       !
       ! read the main data
       !
-      CALL iotk_scan_begin( iunpun, 'Eigenvectors', IERR=ierr)
-      IF ( ierr /=0 ) RETURN
+      CALL iotk_free_unit( iungk )
+      filename = TRIM(datadir) // '/' // 'wfc' //TRIM( iotk_index(ik) )
       !
-      CALL iotk_scan_begin( iunpun, 'Kpoint'//TRIM(iotk_index( ik_eff) ),IERR=ierr)
-      IF ( ierr /=0 ) RETURN
+      CALL iotk_open_read ( iungk, FILE = TRIM(filename), IERR=ierr )
+      IF (ierr/=0)  RETURN
       !
-      CALL iotk_scan_empty( iunpun, 'Info', ATTR=attr, IERR=ierr)
+      !
+      CALL iotk_scan_empty( iungk, 'Info', ATTR=attr, IERR=ierr)
       IF ( ierr /=0 ) RETURN
       !
       CALL iotk_scan_attr( attr, 'ngw',  ngw_, IERR=ierr)
@@ -800,7 +873,7 @@ CONTAINS
               !
               lindex = lindex + 1
               !
-              CALL iotk_scan_dat( iunpun,  'Wfc'//TRIM(iotk_index( ib )) , &
+              CALL iotk_scan_dat( iungk,  'Wfc'//TRIM(iotk_index( ib )) , &
                                   wf( 1:igwx_, lindex ), IERR=ierr)
               IF ( ierr /=0 ) RETURN
               !
@@ -831,7 +904,8 @@ CONTAINS
               !
               lindex = lindex + 1
               !
-              CALL iotk_scan_dat( iunpun, "Wfc"//TRIM(iotk_index( ib ) ), wf_(1:igwx_), IERR=ierr )
+              CALL iotk_scan_dat( iungk, "Wfc"//TRIM(iotk_index( ib ) ), &
+                                           wf_(1:igwx_), IERR=ierr )
               IF (ierr/=0) RETURN
               !
               ! use the igk map to do the transformation
@@ -852,11 +926,8 @@ CONTAINS
       ENDIF
       !
       !
-      CALL iotk_scan_end( iunpun, 'Kpoint'//TRIM(iotk_index( ik_eff ) ),IERR=ierr)
-      IF ( ierr /=0 ) RETURN
-      !
-      CALL iotk_scan_end( iunpun, 'Eigenvectors', IERR=ierr)
-      IF ( ierr /=0 ) RETURN
+      CALL iotk_close_read ( iungk, IERR=ierr )
+      IF (ierr/=0)  RETURN
       !
       !
       IF ( PRESENT( ngw ) )     ngw    = ngw_

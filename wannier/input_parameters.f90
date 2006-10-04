@@ -188,12 +188,16 @@
    LOGICAL :: use_blimit = .FALSE.
        ! if .TRUE. sets b = 0 in the calculation of overlap augmentation
 
+   LOGICAL :: use_symmetry = .TRUE.
+       ! if .TRUE. reads and uses symmetry making kpt sums
+
    NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, spin_component, &
                          alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &
-                         subspace_init, use_blimit
+                         subspace_init, use_blimit, use_symmetry
 
 
-   PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component, use_blimit
+   PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component
+   PUBLIC :: use_blimit, use_symmetry
    PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, subspace_init
    PUBLIC :: SUBSPACE
    

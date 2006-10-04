@@ -21,7 +21,8 @@
        USE files_module,     ONLY: file_open, file_close
        USE timing_module,    ONLY: timing, timing_upto_now
        USE control_module,   ONLY: subspace_init_mode => subspace_init, verbosity, &
-                                   unitary_thr, nprint_dis, nsave_dis, read_pseudo
+                                   unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
+                                   read_symmetry
        USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
        USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist
        USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, dimfroz, indxnfroz
@@ -67,7 +68,7 @@
        !
        ! ...  Read DFT_DATA file and init global data
        !
-       CALL want_dftread ( PSEUDO=read_pseudo )
+       CALL want_dftread ( PSEUDO=read_pseudo, SYMMETRY=read_symmetry )
        CALL want_init    ( INPUT=.TRUE., PSEUDO=read_pseudo )
 
        !

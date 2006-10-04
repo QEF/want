@@ -4,6 +4,7 @@
     prefix = 'silicon'
     postfix = '_WanT'
     work_dir = './'
+    dftdata_fmt = 'pw_export'
 /
 
 &SUBSPACE

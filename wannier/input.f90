@@ -51,11 +51,13 @@ CONTAINS
                                            do_collect_wf,     &
                                            do_ordering,       &
                                            use_pseudo,        &
+                                           use_symmetry,      &
                                            read_pseudo,       &
                                            read_overlaps,     &
                                            read_projections,  &
                                            read_subspace,     &
                                            read_unitary,      &
+                                           read_symmetry,     &
                                            nprint_dis,        &
                                            nprint_wan,        &
                                            nsave_dis,         &
@@ -78,20 +80,24 @@ CONTAINS
                                            ordering_mode_   => ordering_mode, &
                                            collect_wf_      => collect_wf, &
                                            use_blimit_      => use_blimit, &
+                                           use_symmetry_    => use_symmetry, &
                                            assume_ncpp_     => assume_ncpp
 
       IMPLICIT NONE
 
-      verbosity = verbosity_
-      unitary_thr = unitary_thr_
-      ordering_mode = ordering_mode_
-      nprint_dis = nprint_dis_
-      nsave_dis = nsave_dis_
-      nprint_wan = nprint_wan_
-      nsave_wan = nsave_wan_
-      use_blimit = use_blimit_
-      read_pseudo = .NOT. assume_ncpp_
-      use_pseudo  = .NOT. assume_ncpp_
+      verbosity        = verbosity_
+      unitary_thr      = unitary_thr_
+      ordering_mode    = ordering_mode_
+      nprint_dis       = nprint_dis_
+      nsave_dis        = nsave_dis_
+      nprint_wan       = nprint_wan_
+      nsave_wan        = nsave_wan_
+      use_blimit       = use_blimit_
+      use_pseudo       = .NOT. assume_ncpp_
+      read_pseudo      = .NOT. assume_ncpp_
+      use_symmetry     = use_symmetry_
+      read_symmetry    = use_symmetry_
+      
 
       do_condmin = .TRUE.
       IF ( a_condmin_ <= ZERO ) do_condmin = .FALSE.

@@ -7,7 +7,8 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !**********************************************************
-   SUBROUTINE summary_x(unit, input, lattice, ions, windows, kpoints, bshells, pseudo )
+   SUBROUTINE summary_x(unit, input,   lattice, ions, windows, symmetry, &
+                              kpoints, bshells, pseudo )
    !**********************************************************
    !
    ! Print out all the informnatins obtained from the 
@@ -21,6 +22,7 @@
    ! *  DFT data
    !    - lattice
    !    - ions
+   !    - symmetry
    !    - kpoints and bshells
    !    - windows (eigenvalues)
    !    - pseudo
@@ -41,11 +43,13 @@
    USE trial_center_data_module, ONLY : trial
    USE lattice_module,    ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
+   USE symmetry_module,   ONLY : symmetry_alloc => alloc, nsym, srot, strasl, sname, &
+                                 symmetry_write
    USE kpoints_module,    ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, &
                                  bshells_alloc, nb, vb, wb, wbtot
-   USE windows_module,    ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, imin, imax,&
-                                 dimfroz, lfrozen, dimwinx, nspin, spin_component, &
-                                 win_min, win_max, froz_min, froz_max
+   USE windows_module,    ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, &
+                                 imin, imax, dimfroz, lfrozen, dimwinx, nspin, &
+                                 spin_component, win_min, win_max, froz_min, froz_max
    USE subspace_module,   ONLY : dimwann, disentangle_thr, alpha_dis, maxiter_dis
    USE localization_module, ONLY : alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg, &
                                  wannier_thr, a_condmin, niter_condmin, dump_condmin, xcell
@@ -68,6 +72,7 @@
    LOGICAL, OPTIONAL, INTENT(in) :: lattice   ! if TRUE summ lattice
    LOGICAL, OPTIONAL, INTENT(in) :: ions      ! if TRUE summ ions
    LOGICAL, OPTIONAL, INTENT(in) :: windows   ! if TRUE summ eigenvalues (windows)
+   LOGICAL, OPTIONAL, INTENT(in) :: symmetry  ! if TRUE summ symmetries
    LOGICAL, OPTIONAL, INTENT(in) :: kpoints   ! if TRUE summ kpoints
    LOGICAL, OPTIONAL, INTENT(in) :: bshells   ! if TRUE summ bshells
    LOGICAL, OPTIONAL, INTENT(in) :: pseudo    ! if TRUE summ pseudos
@@ -79,13 +84,14 @@
    LOGICAL                :: llattice
    LOGICAL                :: lions
    LOGICAL                :: lwindows
+   LOGICAL                :: lsymmetry
    LOGICAL                :: lkpoints
    LOGICAL                :: lbshells
    LOGICAL                :: lpseudo
    LOGICAL                :: ldft
 
    INTEGER                :: ik, ia, ib
-   INTEGER                :: i, j, is, nt, l
+   INTEGER                :: i, j, is, nt, l, isym
    REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:), tau_cry(:,:)
    INTEGER                :: ierr
    CHARACTER(5)           :: ps
@@ -99,12 +105,14 @@
    llattice  = .TRUE. 
    lions     = .TRUE. 
    lwindows  = .TRUE. 
+   lsymmetry = .TRUE. 
    lkpoints  = .TRUE. 
    lpseudo   = .TRUE. 
    IF ( PRESENT(input) )    linput    = input
    IF ( PRESENT(lattice) )  llattice  = lattice
    IF ( PRESENT(ions) )     lions     = ions
    IF ( PRESENT(windows) )  lwindows  = windows
+   IF ( PRESENT(symmetry) ) lsymmetry = symmetry
    IF ( PRESENT(kpoints) )  lkpoints  = kpoints
    lbshells  = lkpoints
    IF ( PRESENT(bshells) )  lbshells  = bshells
@@ -377,6 +385,23 @@
        WRITE(unit, " (  ' </IONS>',/)" )
    ENDIF
        
+   !
+   ! ... symmetry
+   IF ( symmetry_alloc .AND. lsymmetry ) THEN 
+       !
+       WRITE(unit, " (  ' <SYMMETRY>')" )
+       WRITE(unit, " (2x,'Number of symmetry operations =', i3 ) " ) nsym
+       !
+       DO isym = 1, nsym
+          !
+          CALL symmetry_write( unit, isym, srot(:,:,isym), strasl(:,isym), TRIM(sname(isym)) )
+          !
+       ENDDO
+       !
+       WRITE(unit, " (  ' </SYMMETRY>',/)" )
+       !
+   ENDIF
+
    !
    ! ... kpoints
    IF ( kpoints_alloc .AND. lkpoints  ) THEN 

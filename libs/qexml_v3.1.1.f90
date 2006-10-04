@@ -21,11 +21,6 @@ MODULE qexml_module
   PRIVATE
   SAVE
   !
-  ! definitions for the fmt
-  !
-  CHARACTER(5), PARAMETER :: fmt_name = "QEXML"
-  CHARACTER(5), PARAMETER :: fmt_version = "1.2.0"
-  !
   ! some default for kinds
   !
   INTEGER,   PARAMETER :: dbl = SELECTED_REAL_KIND( 14, 200 )
@@ -33,26 +28,22 @@ MODULE qexml_module
   !
   ! internal data to be set
   !
-  CHARACTER(256)   :: datadir
   INTEGER          :: iunpun, rhounit
   LOGICAL          :: rho_binary
   !
   ! end of declarations
   !
-  PUBLIC :: fmt_name, fmt_version
   PUBLIC :: iunpun, rhounit, rho_binary
   !
   PUBLIC :: qexml_init,  qexml_openfile, qexml_closefile
   !
-  PUBLIC :: qexml_write_header, qexml_write_cell, qexml_write_ions,   &
-            qexml_write_symmetry, qexml_write_planewaves,             &
-            qexml_write_spin, qexml_write_xc,                         &
+  PUBLIC :: qexml_write_cell, qexml_write_ions, qexml_write_symmetry, &
+            qexml_write_planewaves, qexml_write_spin, qexml_write_xc, &
             qexml_write_occ, qexml_write_bz, qexml_write_phonon,      &
             qexml_write_rho, qexml_write_wfc
   !
-  PUBLIC :: qexml_read_header, qexml_read_cell, qexml_read_ions,      &
-            qexml_read_symmetry, qexml_read_planewaves,               &
-            qexml_read_spin,  qexml_read_xc,                          &
+  PUBLIC :: qexml_read_cell, qexml_read_ions, qexml_read_symmetry ,   &
+            qexml_read_planewaves,  qexml_read_spin,  qexml_read_xc,  &
             qexml_read_occ,  qexml_read_bz,  qexml_read_phonon,       &
             qexml_read_bands, qexml_read_gk, qexml_read_wfc
 !            qexml_read_rho
@@ -68,7 +59,7 @@ CONTAINS
 !-------------------------------------------
 !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_init( iunpun_, datadir_, rhounit_, rho_binary_ )
+    SUBROUTINE qexml_init( iunpun_, rhounit_, rho_binary_ )
       !------------------------------------------------------------------------
       !
       ! just init module data
@@ -76,12 +67,10 @@ CONTAINS
       IMPLICIT NONE
       INTEGER,           INTENT(IN) :: iunpun_
       INTEGER,           INTENT(IN) :: rhounit_
-      CHARACTER(*),      INTENT(IN) :: datadir_    
       LOGICAL, OPTIONAL, INTENT(IN) :: rho_binary_
       !
       iunpun  = iunpun_
       rhounit = rhounit_
-      datadir = TRIM(datadir_)
       !
       rho_binary = .TRUE.
       IF ( PRESENT(rho_binary_) ) rho_binary = rho_binary_
@@ -107,13 +96,11 @@ CONTAINS
       SELECT CASE ( TRIM(action) )
       CASE ( "read", "READ" )
           !
-          CALL iotk_open_read ( iunpun, FILE = TRIM(filename), &
-                                BINARY=binary, IERR=ierr )
+          CALL iotk_open_read ( iunpun, FILE = TRIM(filename), BINARY=binary, IERR=ierr )
           !
       CASE ( "write", "WRITE" )
           !
-          CALL iotk_open_write( iunpun, FILE = TRIM(filename), &
-                                BINARY=binary, IERR=ierr )
+          CALL iotk_open_write( iunpun, FILE = TRIM(filename), BINARY=binary, IERR=ierr )
           !
       CASE DEFAULT
           ierr = 1
@@ -316,29 +303,6 @@ CONTAINS
 ! ... writing subroutines
 !-------------------------------------------
 !
-    !
-    !------------------------------------------------------------------------
-    SUBROUTINE qexml_write_header( creator_name, creator_version )
-      !------------------------------------------------------------------------
-      !
-      IMPLICIT NONE
-      CHARACTER(LEN=*), INTENT(IN) :: creator_name, creator_version
-
-
-      CALL iotk_write_begin( iunpun, "HEADER" )
-      !
-      CALL iotk_write_attr(attr, "NAME",TRIM(fmt_name), FIRST=.TRUE.)
-      CALL iotk_write_attr(attr, "VERSION",TRIM(fmt_version) )
-      CALL iotk_write_empty( iunpun, "FORMAT", ATTR=attr )
-      !
-      CALL iotk_write_attr(attr, "NAME",TRIM(creator_name), FIRST=.TRUE.)
-      CALL iotk_write_attr(attr, "VERSION",TRIM(creator_version) )
-      CALL iotk_write_empty( iunpun, "CREATOR", ATTR=attr )
-      !
-      CALL iotk_write_end( iunpun, "HEADER" )
-      !
-    END SUBROUTINE qexml_write_header
-    !
     !
     !------------------------------------------------------------------------
     SUBROUTINE qexml_write_cell( ibrav, symm_type, &
@@ -568,7 +532,7 @@ CONTAINS
       CALL iotk_write_dat( iunpun, "RHO_CUTOFF", &
                            ecutwfc * dual / e2, ATTR = attr )
       !
-      CALL iotk_write_dat( iunpun, "MAX_NUMBER_OF_GK-VECTORS", npwx )
+      CALL iotk_write_dat( iunpun, "MAX_NPW", npwx )
       !
       CALL iotk_write_dat( iunpun, "GAMMA_ONLY", gamma_only )
       !
@@ -590,7 +554,7 @@ CONTAINS
          !
          ! ... write the G-vectors
          !
-         CALL iotk_link( iunpun, "G-VECTORS", &
+         CALL iotk_link( iunpun, "G-VECTORS_FILE", &
                          "gvectors.dat", CREATE = .TRUE., BINARY = .TRUE. )
          !
          CALL iotk_write_begin( iunpun, "G-VECTORS", ATTR = attr )
@@ -1191,53 +1155,6 @@ CONTAINS
 !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_header( creator_name, creator_version, &
-                                  format_name, format_version, ierr )
-      !------------------------------------------------------------------------
-      !
-      IMPLICIT NONE
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: creator_name, creator_version
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: format_name, format_version
-      INTEGER,           OPTIONAL, INTENT(OUT) :: ierr
-
-      CHARACTER(256) :: creator_name_, creator_version_
-      CHARACTER(256) :: format_name_,     format_version_
-
-      ierr = 0
-      !
-      !
-      CALL iotk_scan_begin( iunpun, "HEADER", IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_empty( iunpun, "FORMAT", ATTR=attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_attr(attr, "NAME", format_name_, IERR=ierr)
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr(attr, "VERSION", format_version_, IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_empty( iunpun, "CREATOR", ATTR=attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_attr(attr, "NAME", creator_name_, IERR=ierr)
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr(attr, "VERSION", creator_version_, IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_end( iunpun, "HEADER", IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
-      !
-      IF ( PRESENT(creator_name) )     creator_name    = TRIM(creator_name_)
-      IF ( PRESENT(creator_version) )  creator_version = TRIM(creator_version_)
-      IF ( PRESENT(format_name) )      format_name     = TRIM(format_name_)
-      IF ( PRESENT(format_version) )   format_version  = TRIM(format_version_)
-      !
-    END SUBROUTINE qexml_read_header
-    !
-    !
-    !------------------------------------------------------------------------
     SUBROUTINE qexml_read_cell( bravais_latt, symm_type, celldm, alat, &
                                 a1, a2, a3, b1, b2, b3, alat_units, a_units, b_units, ierr )
       !------------------------------------------------------------------------
@@ -1286,12 +1203,9 @@ CONTAINS
       !
       CALL iotk_scan_begin( iunpun, "DIRECT_LATTICE_VECTORS", IERR=ierr )
       IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_empty( iunpun, "UNITS_FOR_DIRECT_LATTICE_VECTORS", ATTR=attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr( attr, "UNITS", a_units_, IERR=ierr )
-      IF (ierr/=0) RETURN
       CALL iotk_scan_dat(   iunpun, "a1", a1_(:), ATTR=attr, IERR=ierr )
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr(  attr, "UNITS", a_units_, IERR=ierr )
       IF (ierr/=0) RETURN
       CALL iotk_scan_dat(   iunpun, "a2", a2_(:), IERR=ierr )
       IF (ierr/=0) RETURN
@@ -1302,11 +1216,9 @@ CONTAINS
       !
       CALL iotk_scan_begin( iunpun, "RECIPROCAL_LATTICE_VECTORS", IERR=ierr )
       IF (ierr/=0) RETURN
-      CALL iotk_scan_empty( iunpun, "UNITS_FOR_RECIPROCAL_LATTICE_VECTORS", ATTR=attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr( attr, "UNITS", b_units_, IERR=ierr )
-      IF (ierr/=0) RETURN
       CALL iotk_scan_dat(   iunpun, "b1", b1_(:), ATTR=attr, IERR=ierr )
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr(  attr, "UNITS", b_units_, IERR=ierr )
       IF (ierr/=0) RETURN
       CALL iotk_scan_dat(   iunpun, "b2", b2_(:), IERR=ierr )
       IF (ierr/=0) RETURN
@@ -1337,8 +1249,7 @@ CONTAINS
 
     !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_ions( nsp, nat, atm, ityp, psfile, amass, amass_units, &
-                                tau, tau_units, if_pos, ierr )
+    SUBROUTINE qexml_read_ions( nsp, nat, atm, ityp, psfile, amass, tau, tau_units, if_pos, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,          OPTIONAL, INTENT(OUT) :: nsp, nat
@@ -1346,14 +1257,13 @@ CONTAINS
       CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: atm(:)
       CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: psfile(:)
       REAL(dbl),        OPTIONAL, INTENT(OUT) :: amass(:)
-      CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: amass_units
       REAL(dbl),        OPTIONAL, INTENT(OUT) :: tau(:,:)
       INTEGER,          OPTIONAL, INTENT(OUT) :: if_pos(:,:)
       CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: tau_units
       INTEGER,                    INTENT(OUT) :: ierr
       !
       INTEGER                     :: nat_, nsp_
-      CHARACTER(256)              :: tau_units_, amass_units_
+      CHARACTER(256)              :: tau_units_
       INTEGER,        ALLOCATABLE :: ityp_(:)
       CHARACTER(3),   ALLOCATABLE :: atm_(:)       
       CHARACTER(256), ALLOCATABLE :: psfile_(:)       
@@ -1374,11 +1284,6 @@ CONTAINS
       IF (ierr/=0) RETURN
       !
       CALL iotk_scan_dat( iunpun, "NUMBER_OF_SPECIES", nsp_ )
-      IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_empty( iunpun, "UNITS_FOR_ATOMIC_MASSES", ATTR=attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr( attr, "UNITS", amass_units_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
       IF ( PRESENT(nat) )   nat = nat_
@@ -1431,7 +1336,6 @@ CONTAINS
       IF ( PRESENT(nat) )         nat    = nat_
       IF ( PRESENT(atm) )         atm(1:nsp_)    = atm_
       IF ( PRESENT(amass) )       amass(1:nsp_)  = amass_
-      IF ( PRESENT(amass_units) ) amass_units    = TRIM(amass_units_)
       IF ( PRESENT(psfile) )      psfile(1:nsp_) = psfile_(1:nsp_)
       IF ( PRESENT(ityp) )        ityp(1:nat_)   = ityp_
       IF ( PRESENT(tau_units) )   tau_units      = TRIM(tau_units_)
@@ -1449,28 +1353,24 @@ CONTAINS
 
 
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_symmetry( nsym, invsym, trasl, s, sname, s_units, t_rev, &
-                                    irt, nat, ierr )
+    SUBROUTINE qexml_read_symmetry( nsym, invsym, ftau, s, sname, s_units, t_rev, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,          OPTIONAL, INTENT(OUT) :: nsym
       LOGICAL,          OPTIONAL, INTENT(OUT) :: invsym
       INTEGER,          OPTIONAL, INTENT(OUT) :: s(:,:,:)
-      REAL(dbl),        OPTIONAL, INTENT(OUT) :: trasl(:,:)
+      REAL(dbl),        OPTIONAL, INTENT(OUT) :: ftau(:,:)
       CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: sname(:)
       CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: s_units
       INTEGER,          OPTIONAL, INTENT(OUT) :: t_rev(:)
-      INTEGER,          OPTIONAL, INTENT(OUT) :: irt(:,:), nat
       INTEGER,                    INTENT(OUT) :: ierr
       !
-      INTEGER              :: nsym_
-      CHARACTER(256)       :: sname_(48), s_units_
-      LOGICAL              :: invsym_
-      INTEGER              :: s_(3,3,48)
-      REAL(dbl)            :: trasl_(3,48)
-      INTEGER              :: t_rev_(48)
-      INTEGER              :: nat_
-      INTEGER, ALLOCATABLE :: irt_(:,:)
+      INTEGER             :: nsym_
+      CHARACTER(256)      :: sname_(48), s_units_
+      LOGICAL             :: invsym_
+      INTEGER             :: s_(3,3,48)
+      REAL(dbl)           :: ftau_(3,48)
+      INTEGER             :: t_rev_(48)
       !      
       INTEGER             :: i
 
@@ -1486,40 +1386,29 @@ CONTAINS
       !
       CALL iotk_scan_dat( iunpun, "INVERSION_SYMMETRY", invsym_, IERR=ierr )
       IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_dat( iunpun, "NUMBER_OF_ATOMS", nat_, IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
-      ALLOCATE( irt_(48, nat_) )
-      !
-      CALL iotk_scan_empty( iunpun, "UNITS_FOR_SYMMETRIES", ATTR=attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr( attr, "UNITS", s_units_, IERR=ierr )
-      IF (ierr/=0) RETURN
       ! 
       DO i = 1, nsym_
           !
-          CALL iotk_scan_begin( iunpun, "SYMM"//TRIM( iotk_index( i ) ), IERR=ierr )
+          CALL iotk_scan_empty( iunpun, "SYMM"//TRIM( iotk_index( i ) ), ATTR=attr, IERR=ierr )
           IF (ierr/=0) RETURN
           !
-          CALL iotk_scan_empty( iunpun, "INFO", ATTR=attr, IERR=ierr )
+          IF ( i == 1 ) THEN
+               !
+               CALL iotk_scan_attr( attr, "UNITS", s_units_, IERR=ierr )
+               IF (ierr/=0) RETURN
+               !
+          ENDIF
+          !
+          CALL iotk_scan_attr( attr, "ROT", s_(:,:,i), IERR=ierr )
           IF (ierr/=0) RETURN
           !
-          CALL iotk_scan_attr( attr, "NAME", sname_(i), IERR=ierr )
-          IF (ierr/=0) RETURN
           CALL iotk_scan_attr( attr, "T_REV", t_rev_(i), IERR=ierr )
           IF (ierr/=0) RETURN
           !
-          CALL iotk_scan_dat( iunpun, "ROTATION", s_(:,:,i), IERR=ierr )
+          CALL iotk_scan_attr( attr, "FRAC_TRANS", ftau_(:,i), IERR=ierr )
           IF (ierr/=0) RETURN
           !
-          CALL iotk_scan_dat( iunpun, "FRACTIONAL_TRANSLATION", trasl_(:,i), IERR=ierr )
-          IF (ierr/=0) RETURN
-          !
-          CALL iotk_scan_dat( iunpun, "EQUIVALENT_IONS", irt_(i,:), IERR=ierr )
-          IF (ierr/=0) RETURN
-          !
-          CALL iotk_scan_end( iunpun, "SYMM"//TRIM( iotk_index( i ) ), IERR=ierr )
+          CALL iotk_scan_attr( attr, "NAME", sname_(i), IERR=ierr )
           IF (ierr/=0) RETURN
           !
       ENDDO
@@ -1530,19 +1419,15 @@ CONTAINS
       !
       IF ( PRESENT(nsym) )        nsym          = nsym_
       IF ( PRESENT(invsym) )      invsym        = invsym_
-      IF ( PRESENT(nat) )         nat           = nat_
-      IF ( PRESENT(trasl) )       trasl(1:3, 1:nsym_)   = trasl_(1:3, 1:nsym_)
+      IF ( PRESENT(ftau) )        ftau(1:3, 1:nsym_)    = ftau_(1:3, 1:nsym_)
       IF ( PRESENT(s) )           s(1:3, 1:3, 1:nsym_)  = s_(1:3, 1:3, 1:nsym_)
-      IF ( PRESENT(irt) )         irt(1:nsym_, 1:nat_)  = irt_(1:nsym_, 1:nat_)
       IF ( PRESENT(sname) )  THEN     
           DO i = 1, nsym_
-                                  sname( i )            = TRIM( sname_( i ) )
+                                  sname( i )    = TRIM( sname_( i ) )
           ENDDO
       ENDIF       
       IF ( PRESENT(s_units) )     s_units               = TRIM( s_units_ )
       IF ( PRESENT(t_rev) )       t_rev( 1:nsym_ )      = t_rev_( 1:nsym_ )
-      !
-      DEALLOCATE( irt_ )
       !
     END SUBROUTINE qexml_read_symmetry
 
@@ -1574,18 +1459,16 @@ CONTAINS
       CALL iotk_scan_begin( iunpun, "PLANE_WAVES", IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_empty( iunpun, "UNITS_FOR_CUTOFF", ATTR=attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr( attr, "UNITS", cutoff_units_, IERR=ierr )
+      CALL iotk_scan_dat( iunpun, "WFC_CUTOFF", ecutwfc_, ATTR = attr, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat( iunpun, "WFC_CUTOFF", ecutwfc_, IERR=ierr )
+      CALL iotk_scan_attr( attr, "UNITS", cutoff_units_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
       CALL iotk_scan_dat( iunpun, "RHO_CUTOFF", ecutrho_ , IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat( iunpun, "MAX_NUMBER_OF_GK-VECTORS", npwx_, IERR=ierr )
+      CALL iotk_scan_dat( iunpun, "MAX_NPW", npwx_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
       CALL iotk_scan_dat( iunpun, "GAMMA_ONLY", gamma_only_, IERR=ierr )
@@ -1620,13 +1503,13 @@ CONTAINS
       !
       IF ( PRESENT( igv ) ) THEN
           !
-          CALL iotk_scan_begin( iunpun, "G-VECTORS", IERR=ierr )
+          CALL iotk_scan_begin( iunpun, "G-VECTORS_FILE", IERR=ierr )
           IF (ierr/=0) RETURN
           !
           CALL iotk_scan_dat( iunpun, "g", igv(1:3,1:ngm_), IERR=ierr )
           IF (ierr/=0) RETURN
           !
-          CALL iotk_scan_end( iunpun, "G-VECTORS", IERR=ierr )          
+          CALL iotk_scan_end( iunpun, "G-VECTORS_FILE", IERR=ierr )          
           IF (ierr/=0) RETURN
           !
       ENDIF
@@ -1678,7 +1561,21 @@ CONTAINS
       INTEGER :: npwk_, npwkx_
 
       ierr = 0
-
+      !
+      ! read some dimensions
+      !
+      IF ( PRESENT( npwkx )  ) THEN
+          !
+          CALL iotk_scan_begin( iunpun, "PLANE_WAVES", IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+          CALL iotk_scan_dat( iunpun, "MAX_NPW", npwkx_, IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+          CALL iotk_scan_end( iunpun, "PLANE_WAVES", IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+      ENDIF
       !
       !
       CALL iotk_scan_begin( iunpun, "BAND_STRUCTURE", IERR=ierr )
@@ -1687,8 +1584,11 @@ CONTAINS
       CALL iotk_scan_begin( iunpun, "EIGENVALUES_AND_EIGENVECTORS", IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat( iunpun, "MAX_NUMBER_OF_GK-VECTORS", npwkx_, IERR=ierr )
-      IF (ierr/=0) RETURN
+!
+! temp swictched off
+!
+!      CALL iotk_scan_dat( iunpun, "MAX_NPW", npwkx_, IERR=ierr )
+!      IF (ierr/=0) RETURN
       !
       CALL iotk_scan_begin( iunpun, "K-POINT" //TRIM(iotk_index(ik)), IERR=ierr )
       IF (ierr/=0) RETURN
@@ -1789,23 +1689,20 @@ CONTAINS
 
     !------------------------------------------------------------------------
     SUBROUTINE qexml_read_xc( dft, lda_plus_u,  &
-                              Hubbard_lmax, Hubbard_l, nsp, Hubbard_U, Hubbard_alpha, ierr )
+                              Hubbard_lmax, Hubbard_l, Hubbard_U, Hubbard_alpha, ierr )
       !------------------------------------------------------------------------
       !
       CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: dft
       LOGICAL,          OPTIONAL, INTENT(OUT) :: lda_plus_u
       INTEGER,          OPTIONAL, INTENT(OUT) :: Hubbard_lmax
       INTEGER,          OPTIONAL, INTENT(OUT) :: Hubbard_l(:)
-      INTEGER,          OPTIONAL, INTENT(OUT) :: nsp
       REAL(dbl),        OPTIONAL, INTENT(OUT) :: Hubbard_U(:), Hubbard_alpha(:)
       INTEGER,                    INTENT(OUT) :: ierr
       !
       CHARACTER(256) :: dft_
       LOGICAL        :: lda_plus_u_
-      INTEGER        :: Hubbard_lmax_, nsp_
-      INTEGER,    ALLOCATABLE :: Hubbard_l_(:)
-      REAL(dbl),  ALLOCATABLE :: Hubbard_U_(:)
-      REAL(dbl),  ALLOCATABLE :: Hubbard_alpha_(:)
+      INTEGER        :: Hubbard_lmax_
+      INTEGER,  ALLOCATABLE :: Hubbard_l_(:)
       ! 
       ierr = 0
       !
@@ -1821,24 +1718,27 @@ CONTAINS
       !
       IF ( lda_plus_u_ ) THEN
          !
-         CALL iotk_scan_dat( iunpun, "NUMBER_OF_SPECIES", nsp_, IERR=ierr )
-         IF ( ierr/=0 ) RETURN
-         !
          CALL iotk_scan_dat( iunpun, "HUBBARD_LMAX", Hubbard_lmax_, IERR=ierr )
          IF ( ierr/=0 ) RETURN
          !
          ALLOCATE( Hubbard_l_(1:Hubbard_lmax_) )
-         ALLOCATE( Hubbard_U_(nsp_) )
-         ALLOCATE( Hubbard_alpha_(nsp_) )
          !
          CALL iotk_scan_dat( iunpun, "HUBBARD_L", Hubbard_l_, IERR=ierr )
          IF ( ierr/=0 ) RETURN
          !
-         CALL iotk_scan_dat( iunpun, "HUBBARD_U", Hubbard_U_, IERR=ierr )
-         IF ( ierr/=0 ) RETURN
+         IF ( PRESENT( Hubbard_U ) ) THEN
+             !
+             CALL iotk_scan_dat( iunpun, "HUBBARD_U", Hubbard_U, IERR=ierr )
+             IF ( ierr/=0 ) RETURN
+             !
+         ENDIF
          !
-         CALL iotk_scan_dat( iunpun, "HUBBARD_ALPHA", Hubbard_alpha_, IERR=ierr )
-         IF ( ierr/=0 ) RETURN
+         IF ( PRESENT( Hubbard_alpha ) ) THEN
+             !
+             CALL iotk_scan_dat( iunpun, "HUBBARD_ALPHA", Hubbard_alpha, IERR=ierr )
+             IF ( ierr/=0 ) RETURN
+             !
+         ENDIF
          !
       ENDIF
       !
@@ -1851,15 +1751,10 @@ CONTAINS
       !
       IF ( lda_plus_u_ )  THEN
          !
-         IF ( PRESENT( nsp ) )             nsp                   = nsp_
-         IF ( PRESENT( Hubbard_lmax ) )    Hubbard_lmax          = Hubbard_lmax_
+         IF ( PRESENT( Hubbard_lmax ) )    Hubbard_lmax                 = Hubbard_lmax_
          IF ( PRESENT( Hubbard_l ) )       Hubbard_l(1:Hubbard_lmax_)   = Hubbard_l_(:)
-         IF ( PRESENT( Hubbard_U ) )       Hubbard_U(1:nsp_)     = Hubbard_U_(1:nsp_)
-         IF ( PRESENT( Hubbard_alpha ) )   Hubbard_alpha(1:nsp_) = Hubbard_alpha_(1:nsp_)
          !
          DEALLOCATE( Hubbard_l_ )
-         DEALLOCATE( Hubbard_U_ )
-         DEALLOCATE( Hubbard_alpha_ )
          !
       ENDIF 
 
