@@ -4,5 +4,4 @@
   pseudo_dir='./'
   psfile(1)='Si.pbe-n-van.UPF'
   single_file= .FALSE.
-  ascii = .TRUE.
 /
