@@ -13,8 +13,9 @@
    USE parameters,       ONLY : nstrx
    USE io_global_module, ONLY : stdout, stdin, ionode, ionode_id, &
                                 io_global_start, io_global_getionode
-   USE qexml_module,     ONLY : qexml_init
-   USE qexpt_module,     ONLY : qexpt_init
+   USE control_module,   ONLY : read_symmetry
+   USE qexml_module,     ONLY : qexml_init, qexml_read_header
+   USE qexpt_module,     ONLY : qexpt_init, qexpt_read_header
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -67,6 +68,7 @@
    CHARACTER(nstrx)           :: pseudo_dir
          
    CHARACTER(nstrx)           :: dftdata_fmt = ' '
+   CHARACTER(nstrx)           :: dftdata_fmt_version
    CHARACTER(nstrx)           :: wantdata_fmt
    CHARACTER(nstrx)           :: wantdata_form
    LOGICAL                    :: wantdata_binary
@@ -163,6 +165,8 @@
    ! init some data related to IO and taken from input
    !
    IMPLICIT NONE
+      INTEGER           :: ierr
+      CHARACTER(nstrx)  :: dirname
       !
       ionode = .TRUE.
       ionode_id = 0
@@ -193,14 +197,26 @@
       CASE ( 'qexml' )
            !
            suffix_dft_data = ".save/data-file.xml"
+           dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.save/'
            !
-           CALL qexml_init( dft_unit, aux_unit )
+           CALL qexml_init( dft_unit, dirname, aux_unit )
+           !
+           CALL qexml_read_header( FORMAT_VERSION=dftdata_fmt_version, IERR=ierr)
+           IF ( ierr/=0) CALL errore('io_init','no Header in dftdata file',1)
            !
       CASE ( 'pw_export' )
            !
            suffix_dft_data = ".export/index.xml"
+           dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.export/'
            !
-           CALL qexpt_init( dft_unit )
+           CALL qexpt_init( dft_unit, dirname )
+           !
+!           CALL qexpt_read_header( FORMAT_VERSION=dftdata_fmt_version, IERR=ierr)
+           !
+           IF ( ierr < 0 ) THEN 
+                dftdata_fmt_version = "0.0.0" 
+                read_symmetry = .FALSE.
+           ENDIF
            !
       CASE DEFAULT
            !

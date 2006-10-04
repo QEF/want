@@ -36,6 +36,7 @@
    LOGICAL                   :: use_uspp
    LOGICAL                   :: use_atomwfc 
    LOGICAL                   :: use_blimit 
+   LOGICAL                   :: use_symmetry
 
    LOGICAL                   :: do_overlaps
    LOGICAL                   :: do_projections
@@ -49,6 +50,7 @@
    LOGICAL                   :: read_projections
    LOGICAL                   :: read_subspace
    LOGICAL                   :: read_unitary
+   LOGICAL                   :: read_symmetry
  
 !
 ! end delcarations
@@ -69,6 +71,7 @@
    PUBLIC :: use_atomwfc
    PUBLIC :: use_uspp
    PUBLIC :: use_blimit
+   PUBLIC :: use_symmetry
 
    PUBLIC :: do_overlaps
    PUBLIC :: do_projections
@@ -82,6 +85,7 @@
    PUBLIC :: read_projections
    PUBLIC :: read_subspace
    PUBLIC :: read_unitary
+   PUBLIC :: read_symmetry
 
 
 END MODULE control_module

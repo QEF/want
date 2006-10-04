@@ -4,6 +4,10 @@
 =======================================================
 
 
+03 Oct 2006      I/O of symmetry data implemented. Bug fixed and performance issues
+                 tackled in qexpt.f90. qexml.f90 further implemented, according to
+                 v1.2.0 . (AF) 
+
 29 Sep 2006      Bug fixed in qexpt and qexml libs when reading wfc with ibnds /= 1 .
                  Signalation courtesy of Matias Nunez. (AF)
 

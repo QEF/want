@@ -8,7 +8,7 @@
 ! 
 !
 !*********************************************************
-SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
+SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -23,6 +23,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
    ! * read lattice data    (if required by LATTICE    = .TRUE.)
    ! * read windows data    (if required by WINDOWS    = .TRUE.)
    ! * read ions data       (if required by IONS       = .TRUE.)
+   ! * read symmetry data   (if required by SYMMETRY   = .TRUE.)
    ! * read kpoints data    (if required by KPOINTS    = .TRUE.)
    ! * read pseudo data     (if required by PSEUDO     = .TRUE.)
    !
@@ -38,6 +39,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
    USE ions_module,              ONLY : ions_read_ext
    USE kpoints_module,           ONLY : kpoints_read_ext
    USE windows_module,           ONLY : windows_read_ext
+   USE symmetry_module,          ONLY : symmetry_read_ext
    !
    USE control_module,           ONLY : use_uspp
    USE us_module,                ONLY : okvan
@@ -52,6 +54,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
    LOGICAL, OPTIONAL, INTENT(in) :: lattice
    LOGICAL, OPTIONAL, INTENT(in) :: ions
    LOGICAL, OPTIONAL, INTENT(in) :: windows
+   LOGICAL, OPTIONAL, INTENT(in) :: symmetry
    LOGICAL, OPTIONAL, INTENT(in) :: kpoints
    LOGICAL, OPTIONAL, INTENT(in) :: pseudo
 
@@ -59,8 +62,8 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
    ! local variables
    !
    CHARACTER(nstrx)          :: filename 
-   LOGICAL                   :: read_lattice_, read_ions_, read_windows_, &
-                                read_kpoints_, read_pseudo_
+   LOGICAL                   :: read_lattice_,  read_ions_, read_windows_, &
+                                read_symmetry_, read_kpoints_, read_pseudo_
    !   
    ! end of declarations
    !    
@@ -77,14 +80,16 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
 !   
     read_lattice_    = .TRUE.
     read_ions_       = .TRUE.
-    read_kpoints_    = .TRUE.
     read_windows_    = .TRUE.
+    read_symmetry_   = .FALSE.
+    read_kpoints_    = .TRUE.
     read_pseudo_     = .FALSE.
-    IF ( PRESENT(lattice) )  read_lattice_ = lattice
-    IF ( PRESENT(ions) )        read_ions_ = ions
-    IF ( PRESENT(windows) )  read_windows_ = windows
-    IF ( PRESENT(kpoints) )  read_kpoints_ = kpoints
-    IF ( PRESENT(pseudo) )    read_pseudo_ = pseudo 
+    IF ( PRESENT(lattice) )   read_lattice_ = lattice
+    IF ( PRESENT(ions) )         read_ions_ = ions
+    IF ( PRESENT(windows) )   read_windows_ = windows
+    IF ( PRESENT(symmetry) ) read_symmetry_ = symmetry
+    IF ( PRESENT(kpoints) )   read_kpoints_ = kpoints
+    IF ( PRESENT(pseudo) )     read_pseudo_ = pseudo 
 
 
 !
@@ -116,6 +121,16 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, kpoints, pseudo)
     IF ( read_ions_ ) THEN
         !
         CALL ions_read_ext( dftdata_fmt )
+        !
+    ENDIF
+
+
+!
+! ... read symmetry data
+!
+    IF ( read_symmetry_ ) THEN
+        !
+        CALL symmetry_read_ext( dftdata_fmt )
         !
     ENDIF
 
