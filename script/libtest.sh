@@ -109,7 +109,7 @@ run () {
    if [ "$INPUT_TYPE" = "from_stdin" ] ; then
       #
       if [ "$PARALLEL" = "yes" ] ; then
-         $PARA_PREFIX $EXEC $PARA_SUFFIX < $INPUT > $OUTPUT
+         $PARA_PREFIX $EXEC $PARA_POSTFIX < $INPUT > $OUTPUT
       else
          $EXEC < $INPUT > $OUTPUT
       fi
@@ -118,7 +118,7 @@ run () {
    if [ "$INPUT_TYPE" = "from_file" ] ; then
       #
       if [ "$PARALLEL" = "yes" ] ; then
-         $PARA_PREFIX $EXEC $PARA_SUFFIX -input $INPUT > $OUTPUT
+         $PARA_PREFIX $EXEC $PARA_POSTFIX -input $INPUT > $OUTPUT
       else
          $EXEC -input $INPUT > $OUTPUT
       fi
@@ -195,9 +195,9 @@ run_export () {
    echo "running $NAME calculation..."
    
    if [ "$INPUT_TYPE" = "from_stdin" ] ; then
-       $PARA_PREFIX $EXEC $PARA_SUFFIX < $INPUT > $OUTPUT
+       $PARA_PREFIX $EXEC $PARA_POSTFIX < $INPUT > $OUTPUT
    elif [ "$INPUT_TYPE" = "from_file" ] ; then
-       $PARA_PREFIX $EXEC $PARA_SUFFIX -input $INPUT > $OUTPUT
+       $PARA_PREFIX $EXEC $PARA_POSTFIX -input $INPUT > $OUTPUT
    else
        echo "$ECHO_T Invalid INPUT_TYPE = $INPUT_TYPE" ; exit 1 
    fi
