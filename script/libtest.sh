@@ -68,6 +68,7 @@ run_clean () {
    cd $TEST_HOME
       rm -rf *.out *.dat 2> /dev/null
       test -e SCRATCH && rm SCRATCH
+      test -e CRASH   && rm CRASH
 
    cd $TMPDIR
       test -d $TEST_NAME && rm -rf $TEST_NAME
