@@ -215,8 +215,9 @@ CONTAINS
       !
       ! Compatibility
       ! 
-      INQUIRE(unit,OPENED=tmp)
-      IF ( tmp ) CALL errore(subname,"Unit already connected",1)
+! XXX
+      INQUIRE(unit, OPENED=tmp)
+      IF ( tmp ) CALL errore(subname,"Unit already connected",ABS(unit))
       
       IF ( fmt_iotk .AND. .NOT. PRESENT(action) ) &
            CALL errore(subname,"Action must be specified when using IOTK",1)

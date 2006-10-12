@@ -18,6 +18,7 @@ invmat.o \
 io_global.o \
 kind.o \
 locate.o \
+log_module.o \
 mp.o \
 mp_global.o \
 parallel_include.o \
@@ -35,10 +36,7 @@ sph_har.o \
 timing.o \
 util.o \
 warning.o \
-ylmr2.o \
-c_mkdir.o \
-cptimer.o \
-fft_stick.o
+ylmr2.o
 
 
 
