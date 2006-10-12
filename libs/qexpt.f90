@@ -75,21 +75,26 @@ CONTAINS
       !
       IMPLICIT NONE
       !
-      CHARACTER(*),  INTENT(IN)  :: filename
-      CHARACTER(*),  INTENT(IN)  :: action      ! ("read"|"write")
-      LOGICAL,       INTENT(IN)  :: binary
-      INTEGER,       INTENT(OUT) :: ierr
+      CHARACTER(*),       INTENT(IN)  :: filename
+      CHARACTER(*),       INTENT(IN)  :: action      ! ("read"|"write")
+      LOGICAL, OPTIONAL,  INTENT(IN)  :: binary
+      INTEGER,            INTENT(OUT) :: ierr
       !
+      LOGICAL  :: binary_ 
+     
       ierr = 0
+      binary_ = .FALSE.
+      IF ( PRESENT(binary) ) binary_ = binary
+     
       !
       SELECT CASE ( TRIM(action) )
       CASE ( "read", "READ" )
           !
-          CALL iotk_open_read ( iunpun, FILE = TRIM(filename), BINARY=binary, IERR=ierr )
+          CALL iotk_open_read ( iunpun, FILE = TRIM(filename), IERR=ierr )
           !
       CASE ( "write", "WRITE" )
           !
-          CALL iotk_open_write( iunpun, FILE = TRIM(filename), BINARY=binary, IERR=ierr )
+          CALL iotk_open_write( iunpun, FILE = TRIM(filename), BINARY=binary_, IERR=ierr )
           !
       CASE DEFAULT
           ierr = 1
@@ -818,7 +823,7 @@ CONTAINS
       LOGICAL,  SAVE :: first_call = .TRUE.
       !
       INTEGER        :: ngw_, igwx_, ig, ib, ik_eff, lindex
-      INTEGER        :: iungk
+      INTEGER        :: iunwfc
       CHARACTER(256) :: filename
       COMPLEX(dbl),  ALLOCATABLE :: wf_(:)
 
@@ -849,14 +854,14 @@ CONTAINS
       !
       ! read the main data
       !
-      CALL iotk_free_unit( iungk )
+      CALL iotk_free_unit( iunwfc )
       filename = TRIM(datadir) // '/' // 'wfc' //TRIM( iotk_index(ik) )
       !
-      CALL iotk_open_read ( iungk, FILE = TRIM(filename), IERR=ierr )
+      CALL iotk_open_read ( iunwfc, FILE = TRIM(filename), IERR=ierr )
       IF (ierr/=0)  RETURN
       !
       !
-      CALL iotk_scan_empty( iungk, 'Info', ATTR=attr, IERR=ierr)
+      CALL iotk_scan_empty( iunwfc, 'Info', ATTR=attr, IERR=ierr)
       IF ( ierr /=0 ) RETURN
       !
       CALL iotk_scan_attr( attr, 'ngw',  ngw_, IERR=ierr)
@@ -873,7 +878,7 @@ CONTAINS
               !
               lindex = lindex + 1
               !
-              CALL iotk_scan_dat( iungk,  'Wfc'//TRIM(iotk_index( ib )) , &
+              CALL iotk_scan_dat( iunwfc,  'Wfc'//TRIM(iotk_index( ib )) , &
                                   wf( 1:igwx_, lindex ), IERR=ierr)
               IF ( ierr /=0 ) RETURN
               !
@@ -904,7 +909,7 @@ CONTAINS
               !
               lindex = lindex + 1
               !
-              CALL iotk_scan_dat( iungk, "Wfc"//TRIM(iotk_index( ib ) ), &
+              CALL iotk_scan_dat( iunwfc, "Wfc"//TRIM(iotk_index( ib ) ), &
                                            wf_(1:igwx_), IERR=ierr )
               IF (ierr/=0) RETURN
               !
@@ -926,7 +931,7 @@ CONTAINS
       ENDIF
       !
       !
-      CALL iotk_close_read ( iungk, IERR=ierr )
+      CALL iotk_close_read ( iunwfc, IERR=ierr )
       IF (ierr/=0)  RETURN
       !
       !
