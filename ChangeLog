@@ -4,6 +4,13 @@
 =======================================================
 
 
+12 Oct 2006      log stuff added in wannier/ src; qexml is working with the new changes 
+                 of the 1.2.0 version; more sophisticated check on fmt is done in
+                 io_init; summary fmt updated; bug fixed in libtest.sh; (AF)
+
+09 Oct 2006      ctools dir added; memstat.c routine taken from Q-Espresso; 
+                 log_module.f90 added to libs. (AF)
+
 03 Oct 2006      I/O of symmetry data implemented. Bug fixed and performance issues
                  tackled in qexpt.f90. qexml.f90 further implemented, according to
                  v1.2.0 . (AF) 

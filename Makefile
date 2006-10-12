@@ -21,6 +21,7 @@ default:
 	@echo  "     utility            compile utility executables"
 	@echo  "     libwant            compile the want utility library"
 	@echo  "     libiotk            compile iotk library"
+	@echo  "     libctools          compile ctools library"
 	@echo 
 	@echo  "     all                all the above executables "
 	@echo  "     clean              remove executables and objects"
@@ -40,19 +41,23 @@ libiotk:
 	if test -d iotk ; then \
 	( cd iotk ; $(MAKE) ) ; fi
 
+libctools:
+	if test -d ctools ; then \
+	( cd ctools ; $(MAKE) ) ; fi
+
 libwant: libiotk
 	if test -d libs ; then \
 	( cd libs ; $(MAKE) ) ; fi
 
-wannier: libiotk libwant
+wannier: libiotk libctools libwant
 	if test -d wannier ; then \
 	( cd wannier ; $(MAKE) ) ; fi
 
-transport: libiotk libwant
+transport: libiotk libctools libwant
 	if test -d transport ; then \
 	( cd transport ; $(MAKE) ) ; fi
 
-utility: libiotk libwant
+utility: libiotk libctools libwant
 	if test -d utility ; then \
 	( cd utility ; $(MAKE) ) ; fi
 
@@ -61,6 +66,7 @@ utility: libiotk libwant
 #
 clean:
 	cd iotk;      $(MAKE) clean;
+	cd ctools;    $(MAKE) clean;
 	cd libs;      $(MAKE) clean;
 	cd wannier;   $(MAKE) clean;
 	cd transport; $(MAKE) clean;

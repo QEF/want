@@ -15,43 +15,43 @@
 
 
 #if defined __T3E || defined __ABSOFT
-#  define __FC_FUNC(name,NAME) NAME
-#  define __FC_FUNC_(name,NAME) NAME
+#  define FC_FUNC(name,NAME) NAME
+#  define FC_FUNC_(name,NAME) NAME
 #endif
 
 #if defined __SGI || defined __FUJITSU || defined __SX4 || defined __INTEL || defined __LAHEY || defined __SX6 || defined __SUN || defined __ALTIX   || defined __ORIGIN
-#  define __FC_FUNC(name,NAME) name ## _
-#  define __FC_FUNC_(name,NAME) name ## _
+#  define FC_FUNC(name,NAME) name ## _
+#  define FC_FUNC_(name,NAME) name ## _
 #endif
 
 #if defined __PGI
 #  if defined __GNU_LINK
-#    define __FC_FUNC(name,NAME) name ## _
-#    define __FC_FUNC_(name,NAME) name ## __
+#    define FC_FUNC(name,NAME) name ## _
+#    define FC_FUNC_(name,NAME) name ## __
 #  else
-#    define __FC_FUNC(name,NAME) name ## _
-#    define __FC_FUNC_(name,NAME) name ## _
+#    define FC_FUNC(name,NAME) name ## _
+#    define FC_FUNC_(name,NAME) name ## _
 #  endif
 #endif
 
 #if defined __G95
-#  define __FC_FUNC(name,NAME) name ## _
-#  define __FC_FUNC_(name,NAME) name ## __
+#  define FC_FUNC(name,NAME) name ## _
+#  define FC_FUNC_(name,NAME) name ## __
 #endif
 
 #if defined __AIX || defined __HP || defined __MAC
-#  define __FC_FUNC(name,NAME) name
-#  define __FC_FUNC_(name,NAME) name
+#  define FC_FUNC(name,NAME) name
+#  define FC_FUNC_(name,NAME) name
 #endif
 
 #if defined __ALPHA && !defined __LINUX64
-#  define __FC_FUNC(name,NAME) name ## _
-#  define __FC_FUNC_(name,NAME) name ## _
+#  define FC_FUNC(name,NAME) name ## _
+#  define FC_FUNC_(name,NAME) name ## _
 #endif
 
 #if defined __ALPHA && defined __LINUX64
-#  define __FC_FUNC(name,NAME) name ## _
-#  define __FC_FUNC_(name,NAME) name ## __
+#  define FC_FUNC(name,NAME) name ## _
+#  define FC_FUNC_(name,NAME) name ## __
 #endif
 
 

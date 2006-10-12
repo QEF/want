@@ -4,23 +4,20 @@
 *************************************
 
 * plot.x: USPP features not fully implemented.
-* log file (changes in the timing routine)
-* direct calculation of the current
 
-* tests:  check script
-* tests:  run script 
+* tests:  check.sh script
+* tests:  run.sh script 
 
 * Symmetries in wfc management
 
 * Wannier and Transport parallelization
+* One step minimization (Thygesen like)
 
 * disentangle + wannier: 
-     - wfc stored in a k-indip array (waste small mem but
-       increase performance)
      - scalar products in projections and overlaps by BLAS
                
+* direct calculation of the current
 * eigenchannel in transport calculation
-
 * eigenvalue problem in wannier localization
 
 

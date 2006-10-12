@@ -100,6 +100,9 @@ unitary_thr   REAL
               threshold for the check of matrix unitariery
               DEFAULT: 1.0d-6
 
+debug_level   INTEGER
+              level of debug report; values <= 0 switch the debug_mode off
+              DEFAULT: 0
 
 
 ==============================================================================
@@ -150,6 +153,12 @@ use_blimit    LOGICAL
               even if this is not consistent with the actual kpt grid. The .TRUE. value
               should be considered for debug purposes.
               DEFAULT: .FALSE.
+
+use_symmetry  LOGICAL
+              if .TRUE., read and use symmetry operation to reduce the workload
+              due to summations over k and b vectors.
+              NOTE: at the moment, data is only read and not used.
+              DEFAULT: .TRUE.
 
 disentangle_thr    REAL
               threshold for convergence of the iterative disentangle procedure
