@@ -20,6 +20,7 @@
    USE constants,        ONLY : ZERO, ONE, CI 
    USE io_module,        ONLY : stdout
    USE timing_module,    ONLY : timing
+   USE log_module,       ONLY : log_push, log_pop
    USE kpoints_module,   ONLY : nb, vb, wb
    IMPLICIT NONE
 
@@ -51,6 +52,7 @@
 !------------------------------
 !
    CALL timing('omega',OPR='start')
+   CALL log_push('omega')
 
 
 !
@@ -162,6 +164,7 @@
       IF (ierr/=0) CALL errore('omega','deallocating aux', ABS(ierr))
 
    CALL timing('omega',OPR='stop')
+   CALL log_pop('omega')
    !
 END SUBROUTINE omega
 

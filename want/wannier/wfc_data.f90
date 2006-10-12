@@ -14,8 +14,9 @@
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : CZERO, ZERO
    USE parameters,        ONLY : nstrx
-   USE windows_module,    ONLY : nbnd, nkpts, dimwinx, imin, imax, ispin
+   USE windows_module,    ONLY : nbnd, nkpts, dimwinx, imin, imax, ispin, nspin
    USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
    USE wfc_info_module
    USE qexml_module
    USE qexpt_module
@@ -85,7 +86,8 @@ CONTAINS
        INTEGER             :: ik, ierr 
 
 
-       CALL timing("wfc_data_grids_read", OPR="START")
+       CALL timing ( subname, OPR="START")
+       CALL log_push( subname )
        !
        !
        ! few checks
@@ -161,8 +163,8 @@ CONTAINS
             !
             DO ik = 1, nkpts
                 !
-                CALL qexml_read_gk( ik, NPWK=npwk(ik), INDEX=igsort( 1:npwk(ik), ik), &
-                                    IERR=ierr )
+                CALL qexml_read_gk( ik, NPWK=npwk(ik), &
+                                    INDEX=igsort( 1:npwk(ik), ik), IERR=ierr )
                 IF ( ierr/=0) CALL errore(subname,'getting igsort',ik)
                 !
             ENDDO
@@ -171,8 +173,8 @@ CONTAINS
             !
             DO ik = 1, nkpts
                 !
-                CALL qexpt_read_gk( ik, NPWK=npwk(ik), INDEX=igsort( 1:npwk(ik), ik), &
-                                    IERR=ierr )
+                CALL qexpt_read_gk( ik, NPWK=npwk(ik), &
+                                    INDEX=igsort( 1:npwk(ik), ik), IERR=ierr )
                 IF ( ierr/=0) CALL errore(subname,'getting igsort',ik)
                 !
             ENDDO
@@ -186,7 +188,8 @@ CONTAINS
        !
        alloc = .TRUE.
        !
-       CALL timing("wfc_data_grids_read", OPR="STOP")
+       CALL timing ( subname, OPR="STOP")
+       CALL log_pop( subname )
        !
    END SUBROUTINE wfc_data_grids_read
 
@@ -198,6 +201,8 @@ CONTAINS
        CHARACTER(19)      :: subname="wfc_data_deallocate"
        INTEGER            :: ierr
 
+       CALL log_push( subname )
+       !
        IF ( ALLOCATED(npwk) ) THEN
             DEALLOCATE(npwk, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating npwk ',ABS(ierr))
@@ -211,8 +216,11 @@ CONTAINS
             IF (ierr/=0)  CALL errore(subname,' deallocating evc ',ABS(ierr))
        ENDIF
        IF ( evc_info%alloc ) CALL wfc_info_deallocate(evc_info)
+       !
        alloc = .FALSE.
-
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE wfc_data_deallocate
 
 
@@ -236,7 +244,9 @@ CONTAINS
        CHARACTER(14)      :: subname="wfc_data_kread"
        INTEGER            :: ib, ibs, ibe, lindex, ierr
 
-       CALL timing(subname,OPR='start')
+       !
+       CALL timing ( subname,OPR='start')
+       CALL log_push( subname )
 
        !
        ! lwfc is supposed to be already allocated
@@ -269,8 +279,17 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_wfc( ibs, ibe, ik, ispin, NPWK=npwk(ik), IGK=igsort(:,ik), &
-                                 WF=wfc(:, lindex: ), IERR=ierr )
+            IF ( nspin == 2 ) THEN
+               !
+               CALL qexml_read_wfc( ibs, ibe, ik, ISPIN= ispin, NPWK=npwk(ik), &
+                                    IGK=igsort(:,ik), WF=wfc(:, lindex: ), IERR=ierr )
+               !
+            ELSE
+               !
+               CALL qexml_read_wfc( ibs, ibe, ik, NPWK=npwk(ik), &
+                                    IGK=igsort(:,ik), WF=wfc(:, lindex: ), IERR=ierr )
+               !
+            ENDIF
             !
        CASE ( 'pw_export' )
             !
@@ -287,6 +306,7 @@ CONTAINS
        !
        !
        CALL timing(subname,OPR='stop')
+       CALL log_pop( subname )
        ! 
    END SUBROUTINE wfc_data_kread
 

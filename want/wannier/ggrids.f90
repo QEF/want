@@ -6,7 +6,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-
 !*********************************************
    MODULE ggrids_module
 !*********************************************
@@ -17,6 +16,7 @@
    USE windows_module,    ONLY : nkpts
    USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba 
    USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
    USE parser_module,     ONLY : change_case
    USE converters_module, ONLY : cry2cart
    USE qexml_module
@@ -76,6 +76,8 @@ CONTAINS
        CHARACTER(18)      :: subname="ggrids_allocate"
        INTEGER            :: ierr 
 
+       CALL log_push( subname )
+       !
        IF ( npw_rho <= 0 ) CALL errore(subname,'npw_rho <= 0',ABS(npw_rho)+1)
        IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
 
@@ -86,7 +88,9 @@ CONTAINS
        ALLOCATE( gg(npw_rho), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating gg',npw_rho)
        alloc = .TRUE.
-      
+       ! 
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE ggrids_allocate
 
 
@@ -97,6 +101,8 @@ CONTAINS
        CHARACTER(20)      :: subname="ggrids_deallocate"
        INTEGER            :: ierr
 
+       CALL log_push ( subname )
+       !
        IF ( ALLOCATED(igv) ) THEN
             DEALLOCATE(igv, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating igv ',ABS(ierr))
@@ -110,7 +116,9 @@ CONTAINS
             IF (ierr/=0)  CALL errore(subname,' deallocating gg ',ABS(ierr))
        ENDIF
        alloc = .FALSE.
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE ggrids_deallocate
 
 
@@ -126,7 +134,9 @@ CONTAINS
        INTEGER            :: i, ierr
 
        !
-       CALL timing(subname,OPR='start')
+       CALL timing ( subname,OPR='start')
+       CALL log_push ( subname )
+       !
        !
        IF ( alloc ) CALL ggrids_deallocate()
        !
@@ -221,7 +231,9 @@ CONTAINS
        ENDDO
        !
        !
-       CALL timing(subname,OPR='stop')
+       CALL timing ( subname,OPR='stop')
+       CALL log_pop ( subname )
+       !
        ! 
    END SUBROUTINE ggrids_read_ext
 
@@ -241,6 +253,8 @@ CONTAINS
    INTEGER, OPTIONAL, INTENT(OUT) :: gk2fft(:)
    INTEGER :: igk, np, nx, ny, nz, npoint
 
+   CALL log_push( 'ggrids_gk_indexes' )
+   !
    IF ( PRESENT(gk2fft) ) gk2fft = 0
    IF ( PRESENT(fft2gk) ) fft2gk = 0
 
@@ -264,6 +278,9 @@ CONTAINS
       IF( PRESENT( fft2gk ) ) fft2gk(npoint) = np  ! index
 
    ENDDO
+   !
+   CALL log_pop( 'ggrids_gk_indexes' )
+   !
 END SUBROUTINE ggrids_gk_indexes
 
 
@@ -277,6 +294,8 @@ END SUBROUTINE ggrids_gk_indexes
    INTEGER, OPTIONAL, INTENT(OUT) :: gv2fft(:)
    INTEGER :: ig, nx, ny, nz, npoint
 
+   CALL log_push( 'ggrids_gv_indexes' )
+   !
    IF ( PRESENT(gv2fft) ) gv2fft = 0
    IF ( PRESENT(fft2gv) ) fft2gv = 0
 
@@ -298,7 +317,10 @@ END SUBROUTINE ggrids_gk_indexes
       IF( PRESENT( gv2fft ) ) gv2fft(ig) = npoint  ! index
       IF( PRESENT( fft2gv ) ) fft2gv(npoint) = ig  ! index
 
-    ENDDO
+   ENDDO
+   !
+   CALL log_pop( 'ggrids_gv_indexes' )
+   !
 END SUBROUTINE ggrids_gv_indexes
 
 END MODULE ggrids_module

@@ -24,29 +24,33 @@ SUBROUTINE s_psi( lda, n, m, ik, psi, spsi )
   ! output:
   !     spsi  S*psi
   !
-  USE kinds,      ONLY : dbl
-  USE constants,  ONLY : ZERO, CZERO
-  USE us_module,  ONLY : okvan
-  USE uspp,       ONLY : nkb, vkb, vkb_ik, qq
-  USE becmod,     ONLY : becp
-  USE uspp_param, ONLY : nh, tvanp
-  USE ions_module,ONLY : nat, ntyp => nsp, ityp
+  USE kinds,         ONLY : dbl
+  USE constants,     ONLY : ZERO, CZERO
+  USE us_module,     ONLY : okvan
+  USE uspp,          ONLY : nkb, vkb, vkb_ik, qq
+  USE becmod,        ONLY : becp
+  USE uspp_param,    ONLY : nh, tvanp
+  USE ions_module,   ONLY : nat, ntyp => nsp, ityp
+  USE log_module,    ONLY : log_push, log_pop
   USE timing_module
   IMPLICIT NONE
-
   !
-  ! ... First the dummy variables
+  ! I/O variables
   !
   INTEGER,           INTENT(in) :: lda, n, m, ik
   COMPLEX(KIND=dbl), INTENT(in) :: psi(lda,m)
   COMPLEX(KIND=dbl), INTENT(out):: spsi(lda,m)
+  
+  !
   !
   CALL timing( 's_psi', OPR='start' )  
+  CALL log_push( 's_psi' )  
      !
      CALL s_psi_k()
      !
   !
   CALL timing( 's_psi',OPR='stop' )
+  CALL log_pop( 's_psi' )  
   !
   RETURN
   !

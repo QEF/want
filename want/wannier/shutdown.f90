@@ -15,6 +15,7 @@
    !
    USE io_module,     ONLY : stdout, ionode
    USE timing_module, ONLY : global_list, timing, timing_deallocate, timing_overview
+   USE log_module,    ONLY : log_deallocate, log_alloc => alloc, log_pop
    USE mp,            ONLY : mp_end
    !
    IMPLICIT NONE
@@ -42,8 +43,16 @@
         CALL timing_overview( UNIT=stdout, LIST=global_list, MAIN_NAME=TRIM(main_name))
         !
    ENDIF
-
+   !
    CALL timing_deallocate()
+
+
+   !
+   ! eventually shutdown log writing
+   !
+   CALL log_pop ( )
+   IF ( log_alloc ) CALL log_deallocate()
+        
 
    !
    ! shutdown the MPI

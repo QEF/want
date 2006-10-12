@@ -9,61 +9,66 @@
 !*********************************************************
 SUBROUTINE overlap_extract(dimwann)
    !*********************************************************
+   !
+   ! This subroutine extract the overlap integrals from the already
+   ! calculated overlaps written in the disentangle procedure
+   !
+   ! The disentangle overlaps < u_mk | u_nk+b > are calculated
+   ! for the bare DFT wavefunctions. Here the overlap related to
+   ! the wfcs obtained by disentangle are computed. 
+   ! The main task is essentially a moltiplication of the 
+   ! old overlaps by the matrix defining the new subspace.
+   !
+   ! The same procedure is done here in order to extract the 
+   ! projection onto the guessed Wannier functions already
+   ! calculated in disentangle as well.
+   !
    USE kinds
-   USE constants,  ONLY : CZERO
-   USE parameters, ONLY : nstrx
-   USE timing_module, ONLY : timing
-   USE io_module,  ONLY : stdout, ovp_unit, space_unit, io_name
-   USE files_module, ONLY : file_open, file_close
-   USE util_module,  ONLY : mat_mul
+   USE constants,       ONLY : CZERO
+   USE parameters,      ONLY : nstrx
+   USE io_module,       ONLY : stdout, ovp_unit, space_unit, io_name
+   USE timing_module,   ONLY : timing
+   USE log_module,      ONLY : log_push, log_pop
+   USE files_module,    ONLY : file_open, file_close
+   USE util_module,     ONLY : mat_mul
    USE subspace_module, ONLY : eamp, subspace_read
    USE windows_module,  ONLY : dimwinx, dimwin, windows_read
    USE kpoints_module,  ONLY : nkpts, nb, nnlist 
    USE overlap_module,  ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
    IMPLICIT NONE
 
-! <INFO>
-! This subroutine extract the overlap integrals from the already
-! calculated overlaps written in the disentangle procedure
-!
-! The disentangle overlaps < u_mk | u_nk+b > are calculated
-! for the bare DFT wavefunctions. Here the overlap related to
-! the wfcs obtained by disentangle are computed. 
-! The main task is essentially a moltiplication of the 
-! old overlaps by the matrix defining the new subspace.
-!
-! The same procedure is done here in order to extract the 
-! projection onto the guessed Wannier functions already
-! calculated in disentangle as well.
-!
-! </INFO>
-
-   INTEGER,  INTENT(in)      :: dimwann
+   !
+   ! I/O variables
+   !
+   INTEGER,       INTENT(IN) :: dimwann
+   !
+   ! local variables
+   !
    CHARACTER(15)             :: subname="overlap_extract"
-
+   !
    COMPLEX(dbl), ALLOCATABLE :: Mkb_tmp(:,:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: ca_tmp(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
-
+   !
    LOGICAL                   :: lfound
    CHARACTER(nstrx)          :: filename 
    INTEGER                   :: ik, ikb, inn
    INTEGER                   :: ierr
    ! 
-   ! ... end of declarations
+   ! end of declarations
    ! 
 
 !
 !-----------------------------
-! routine Main body
+! main body
 !-----------------------------
 !
-
    CALL timing('overlap_extract',OPR='start')
+   CALL log_push('overlap_extract')
 
-!
-! ... reading subspace and windows data
-!
+   !
+   ! reading subspace and windows data
+   !
    CALL io_name('space',filename)
    CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
         !
@@ -77,9 +82,9 @@ SUBROUTINE overlap_extract(dimwann)
    CALL io_name('space',filename,LPATH=.FALSE.)
    WRITE( stdout,"(/,'  Subspace data read from file: ',a)") TRIM(filename)   
     
-!
-! ... reading overlap and projections
-!
+   !
+   ! reading overlap and projections
+   !
    CALL io_name('overlap_projection',filename)
    CALL file_open(ovp_unit,TRIM(filename),PATH="/", ACTION="read")
         !
@@ -91,9 +96,9 @@ SUBROUTINE overlap_extract(dimwann)
    CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
    WRITE( stdout,"('  Overlap and projections read from file: ',a)") TRIM(filename)   
 
-!
-! ... here allocate the temporary variables for the extracted CM and CA 
-!
+   !
+   ! here allocate the temporary variables for the extracted CM and CA 
+   !
    ALLOCATE( Mkb_tmp(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
       IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
@@ -144,9 +149,9 @@ SUBROUTINE overlap_extract(dimwann)
    ENDDO
 
 
-!
-! ... finally redefine the CM iand CA variables 
-!
+   !
+   ! finally redefine the CM iand CA variables 
+   !
    CALL overlap_deallocate()
    dimwinx = dimwann
    CALL overlap_allocate()
@@ -154,14 +159,16 @@ SUBROUTINE overlap_extract(dimwann)
    Mkb(:,:,:,:) = Mkb_tmp(:,:,:,:)
    ca(:,:,:) =   ca_tmp(:,:,:)
 
-!
-! ... cleaning
+   !
+   ! cleaning
+   !
    DEALLOCATE( Mkb_tmp, ca_tmp, STAT=ierr) 
       IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp, ca_tmp",ABS(ierr))
    DEALLOCATE( aux, STAT=ierr ) 
       IF (ierr/=0) CALL errore(subname,"deallocating aux",ABS(ierr))
 
    CALL timing('overlap_extract',OPR='stop')
+   CALL log_pop('overlap_extract')
 
 END SUBROUTINE overlap_extract
 

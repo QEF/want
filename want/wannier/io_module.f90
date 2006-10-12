@@ -6,42 +6,43 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! <INFO>
 !*********************************************
    MODULE io_module
 !*********************************************
    USE parameters,       ONLY : nstrx
    USE io_global_module, ONLY : stdout, stdin, ionode, ionode_id, &
                                 io_global_start, io_global_getionode
-   USE control_module,   ONLY : read_symmetry
-   USE qexml_module,     ONLY : qexml_init, qexml_read_header
-   USE qexpt_module,     ONLY : qexpt_init, qexpt_read_header
+   USE control_module,   ONLY : read_symmetry, use_debug_mode, debug_level
+   USE log_module,       ONLY : log_init, log_push
+   USE qexml_module
+   USE qexpt_module
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
    SAVE
-
-!
-! Contains basic data concerning IO
-! 
-! contains:
-! SUBROUTINE  io_name(data,filename[,lpostfix][,lpath])
-! SUBROUTINE  read_iodata(unit,name,prefix,postfix,work_dir,title,found)
-! SUBROUTINE  write_iodata(unit,name,prefix,postfix,work_dir,title)
-!
-! DATA in io_name routine should be:
-! 
-! * 'dft_data'
-! * 'space'
-! * 'wannier'
-! * 'hamiltonian'
-! * 'save'
-!
-! </INFO>
-!
+   !
+   ! Contains basic data concerning IO
+   ! 
+   ! contains:
+   ! SUBROUTINE  io_init()
+   ! SUBROUTINE  io_name(data,filename[,lpostfix][,lpath])
+   ! SUBROUTINE  io_read_data(unit,name,prefix,postfix,work_dir,title,found)
+   ! SUBROUTINE  io_write_data(unit,name,prefix,postfix,work_dir,title)
+   !
+   ! DATA in io_name routine should be:
+   ! 
+   ! * 'dft_data'
+   ! * 'overlap_projection'
+   ! * 'space'
+   ! * 'wannier'
+   ! * 'hamiltonian'
+   ! * 'save'
+   ! * 'log'
+   !
    INTEGER, PARAMETER         ::   &
        dft_unit = 10,              &! input file (DFT data) unit
     pseudo_unit = 11,              &! input pseudopotential data unit
+       log_unit = 12,              &! input pseudopotential data unit
        ovp_unit = 20,              &! overlap and projections unit
      space_unit = 21,              &! space unit
        wan_unit = 22,              &! wannier stuff unit
@@ -59,6 +60,7 @@
    CHARACTER(4), PARAMETER    ::  suffix_wannier=".wan"
    CHARACTER(4), PARAMETER    ::  suffix_hamiltonian=".ham"
    CHARACTER(5), PARAMETER    ::  suffix_save=".save"
+   CHARACTER(4), PARAMETER    ::  suffix_log=".log"
    CHARACTER(nstrx)           ::  suffix_dft_data=" "
    
    CHARACTER(nstrx)           :: prefix
@@ -83,16 +85,19 @@
    PUBLIC ::  ionode, ionode_id
 
    PUBLIC ::  stdin, stdout 
-   PUBLIC ::  dftdata_fmt, wantdata_fmt, wantdata_form, wantdata_binary
+   PUBLIC ::  dftdata_fmt, dftdata_fmt_version
+   PUBLIC ::  wantdata_fmt, wantdata_form, wantdata_binary
    PUBLIC ::  dft_unit, pseudo_unit 
    PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit 
    PUBLIC ::  aux_unit, aux1_unit, aux2_unit, aux3_unit, aux4_unit
    PUBLIC ::  save_unit
 
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
-   PUBLIC ::  io_init, alloc, io_name
-   PUBLIC ::  read_iodata
-   PUBLIC ::  write_iodata
+   PUBLIC ::  alloc
+   PUBLIC ::  io_init
+   PUBLIC ::  io_name
+   PUBLIC ::  io_read_data
+   PUBLIC ::  io_write_data
 
 
    CONTAINS
@@ -110,11 +115,11 @@
       CHARACTER(*),  INTENT(IN)  ::  prefix_, work_dir_
       CHARACTER(*),  INTENT(OUT) ::  dftdata_fmt_
       !
-      CHARACTER(nstrx) :: filename
+      CHARACTER(nstrx) :: filename, version
       CHARACTER(nstrx) :: fmt_searched(2)
       CHARACTER(nstrx) :: fmt_filename(2)
       LOGICAL          :: lexist, lexist1
-      INTEGER          :: i
+      INTEGER          :: i, ierr
       !
       ! Setting fmts to be searched
       !
@@ -139,6 +144,25 @@
                 INQUIRE ( FILE=TRIM(filename), EXIST=lexist1 )
                 !            
                 lexist = lexist .OR. lexist1
+                !
+                !
+                ! check  the version of the format.
+                ! At the moment, if the header section exist, 
+                ! the fmt is supported whatever version
+                !
+                filename = TRIM(work_dir_) //'/'// TRIM(prefix_) // '.save/data-file.xml'
+                !
+                CALL qexml_openfile( filename, "read", IERR=ierr )
+                IF ( ierr /= 0 ) CALL errore('get_dftdata_fmt','opening dftdata file',ABS(ierr))
+                !
+                CALL qexml_read_header( FORMAT_VERSION=version, IERR=ierr )
+                !
+                IF ( ierr /= 0 )  lexist = .FALSE.
+                !
+                ! any check on the version should be placed here
+                !
+                CALL qexml_closefile ( "read", IERR=ierr )
+                IF ( ierr /= 0 ) CALL errore('get_dftdata_fmt','closing dftdata file',ABS(ierr))
                 !
            ENDIF
            !
@@ -166,7 +190,7 @@
    !
    IMPLICIT NONE
       INTEGER           :: ierr
-      CHARACTER(nstrx)  :: dirname
+      CHARACTER(nstrx)  :: dirname, logfile, filename
       !
       ionode = .TRUE.
       ionode_id = 0
@@ -186,6 +210,15 @@
       END SELECT
       
       !
+      ! init libs for all fmts
+      !
+      dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.save/'
+      CALL qexml_init( dft_unit, dirname, aux_unit )
+      !
+      dirname  = TRIM(work_dir) // '/' // TRIM(prefix) // '.export/'
+      CALL qexpt_init( dft_unit, dirname )
+      !
+      !
       IF ( LEN_TRIM( dftdata_fmt ) == 0 ) THEN 
            !
            CALL get_dftdata_fmt ( prefix, work_dir, dftdata_fmt )
@@ -198,18 +231,25 @@
            !
            suffix_dft_data = ".save/data-file.xml"
            dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.save/'
+           filename = TRIM( dirname) // "data-file.xml"
            !
-           CALL qexml_init( dft_unit, dirname, aux_unit )
+           CALL qexml_openfile( filename, "read", IERR=ierr )
+           IF ( ierr/=0) CALL errore('io_init','opening dftdata file',ABS(ierr))
            !
            CALL qexml_read_header( FORMAT_VERSION=dftdata_fmt_version, IERR=ierr)
            IF ( ierr/=0) CALL errore('io_init','no Header in dftdata file',1)
            !
+           CALL qexml_closefile ( "read", IERR=ierr )
+           IF ( ierr/=0) CALL errore('io_init','closing dftdata file',ABS(ierr))
+           !
       CASE ( 'pw_export' )
            !
            suffix_dft_data = ".export/index.xml"
-           dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.export/'
+           dirname  = TRIM(work_dir) // '/' // TRIM(prefix) // '.export/'
+           filename = TRIM( dirname) // "index.xml"
            !
-           CALL qexpt_init( dft_unit, dirname )
+           CALL qexpt_openfile( filename, "read", IERR=ierr )
+           IF ( ierr/=0) CALL errore('io_init','opening dftdata file',ABS(ierr))
            !
            CALL qexpt_read_header( FORMAT_VERSION=dftdata_fmt_version, IERR=ierr)
            !
@@ -220,10 +260,20 @@
                 !
            ENDIF
            !
+           CALL qexpt_closefile ( "read", IERR=ierr )
+           IF ( ierr/=0) CALL errore('io_init','closing dftdata file',ABS(ierr))
+           !
       CASE DEFAULT
            !
            CALL errore('io_init','invalid dftdata_fmt = '//TRIM(dftdata_fmt),1)
       END SELECT
+      !
+      !
+      ! init writing to logfile if required
+      !
+      CALL io_name ( "log", logfile )
+      CALL log_init( log_unit, use_debug_mode, logfile, debug_level )
+      CALL log_push( "main" )
       !
       alloc = .TRUE.
       !
@@ -278,6 +328,8 @@
            suffix_ = TRIM(suffix_hamiltonian)
       CASE ( "save" )
            suffix_ = TRIM(suffix_save)
+      CASE ( "log" )
+           suffix_ = TRIM(suffix_log)
       CASE DEFAULT
            CALL errore('io_name','Unknown DATA type in input',1)
       END SELECT
@@ -288,7 +340,7 @@
    
 
 !**********************************************************
-   SUBROUTINE read_iodata(unit,name,prefix_,postfix_,work_dir_,title_,found)
+   SUBROUTINE io_read_data(unit,name,prefix_,postfix_,work_dir_,title_,found)
    !**********************************************************
       IMPLICIT NONE
       INTEGER,         INTENT(in)   :: unit
@@ -296,7 +348,7 @@
       LOGICAL,         INTENT(out)  :: found
       CHARACTER(*),    INTENT(out)  :: prefix_, postfix_, work_dir_, title_ 
 
-      CHARACTER(11)                 :: sub_name='read_iodata'
+      CHARACTER(12)                 :: sub_name='io_read_data'
       CHARACTER(nstrx)              :: attr
       INTEGER                       :: ierr
 
@@ -314,11 +366,11 @@
       CALL iotk_scan_attr(attr,'title',title_,IERR=ierr)
          IF (ierr /= 0) CALL errore(sub_name,'Wrong input format in TITLE',ABS(ierr))
 
-   END SUBROUTINE read_iodata
+   END SUBROUTINE io_read_data
 
 
 !**********************************************************
-   SUBROUTINE write_iodata(unit,name,prefix_,postfix_,work_dir_,title_)
+   SUBROUTINE io_write_data(unit,name,prefix_,postfix_,work_dir_,title_)
    !**********************************************************
       IMPLICIT NONE
       INTEGER,         INTENT(in)   :: unit
@@ -333,7 +385,7 @@
       CALL iotk_write_attr(attr,"title",TRIM(title_))
       CALL iotk_write_empty(unit,name,ATTR=attr)
 
-   END SUBROUTINE write_iodata
+   END SUBROUTINE io_write_data
 
 
 

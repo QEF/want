@@ -14,18 +14,18 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !   Calculates beta functions (Kleinman-Bylander projectors), with
   !   structure factor, for all atoms, in reciprocal space
   !
-  USE kinds,          ONLY : dbl
-  USE constants,      ONLY : TPI, CZERO, CI
-  USE ions_module,    ONLY : nat, ntyp => nsp, ityp, tau
-  USE lattice_module, ONLY : tpiba
+  USE kinds,                   ONLY : dbl
+  USE constants,               ONLY : TPI, CZERO, CI
+  USE log_module,              ONLY : log_push, log_pop
+  USE ions_module,             ONLY : nat, ntyp => nsp, ityp, tau
+  USE lattice_module,          ONLY : tpiba
   USE struct_fact_data_module, ONLY : eigts1, eigts2, eigts3
-  USE ggrids_module,  ONLY : g, igv
-  USE wfc_data_module,ONLY : npwkx
-
-
-  USE us_module,  ONLY : dq, tab
-  USE uspp,       ONLY : nkb, nhtol, nhtolm, indv
-  USE uspp_param, ONLY : lmaxkb, nbeta, nhm, nh
+  USE ggrids_module,           ONLY : g, igv
+  USE wfc_data_module,         ONLY : npwkx
+  !
+  USE us_module,               ONLY : dq, tab
+  USE uspp,                    ONLY : nkb, nhtol, nhtolm, indv
+  USE uspp_param,              ONLY : lmaxkb, nbeta, nhm, nh
   USE timing_module
   !
   IMPLICIT NONE
@@ -46,8 +46,11 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   COMPLEX(dbl), ALLOCATABLE :: sk(:)
   !
   !
+  
+  !
   IF (lmaxkb < 0) RETURN
   CALL timing ('init_us_2', OPR='start')
+  CALL log_push ('init_us_2')
 
   ALLOCATE (vkb1( npw_,nhm))    
   ALLOCATE (  sk( npw_))    
@@ -136,8 +139,9 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   DEALLOCATE (qg)
   DEALLOCATE (sk)
   DEALLOCATE (vkb1)
-
+  !
   CALL timing ('init_us_2',OPR='stop')
-  RETURN
+  CALL log_pop ('init_us_2')
+  !
 END SUBROUTINE init_us_2
 

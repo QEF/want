@@ -10,9 +10,11 @@
 !*********************************************
    MODULE trial_center_data_module
 !*********************************************
-   USE kinds,           ONLY : dbl
+   !
+   USE kinds,                  ONLY : dbl
+   USE log_module,             ONLY : log_push, log_pop
+   USE subspace_module,        ONLY : dimwann
    USE trial_center_module
-   USE subspace_module, ONLY : dimwann
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -53,11 +55,16 @@ CONTAINS
       CHARACTER(26)  :: subname='trial_center_data_allocate'
       INTEGER        :: ierr
 
+      CALL log_push( subname )
+      !
       IF ( alloc ) CALL errore(subname,'trial_centers already allocated',1)
       IF ( dimwann <= 0 ) CALL errore(subname,'invalid dimwann',-dimwann+1)
       ALLOCATE( trial(dimwann), STAT=ierr )
          IF (ierr/=0)  CALL errore(subname,'allocating trial_centers',ABS(ierr))
       alloc = .TRUE.
+      !
+      CALL log_pop( subname )
+      !
    END SUBROUTINE trial_center_data_allocate
 
 
@@ -68,10 +75,14 @@ CONTAINS
       CHARACTER(28)  :: subname='trial_center_data_deallocate'
       INTEGER        :: ierr
 
+      CALL log_push( subname )
+      !
       IF ( .NOT. alloc ) CALL errore(subname,'trial_centers not yet allocated',1)
       DEALLOCATE( trial, STAT=ierr )
          IF (ierr/=0)  CALL errore(subname,'deallocating trial_centers',ABS(ierr))
-      RETURN
+      
+      CALL log_pop( subname )
+      !
    END SUBROUTINE trial_center_data_deallocate
 
 

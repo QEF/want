@@ -110,13 +110,16 @@
    REAL(dbl) :: unitary_thr = 1.0d-6  
        ! threshold for the check of matrix unitariery
 
+   INTEGER :: debug_level = 0
+       ! level of debug report; values <= 0 switch the debug_mode off
+
    NAMELIST / CONTROL /  title, prefix, postfix, restart_mode, work_dir, verbosity, &
                          overlaps, projections, assume_ncpp, unitary_thr, &
-                         dftdata_fmt, wantdata_fmt
+                         dftdata_fmt, wantdata_fmt, debug_level
 
    PUBLIC :: title, prefix, postfix, work_dir
    PUBLIC :: overlaps, projections, restart_mode
-   PUBLIC :: verbosity, assume_ncpp, unitary_thr
+   PUBLIC :: verbosity, assume_ncpp, unitary_thr, debug_level
    PUBLIC :: dftdata_fmt, wantdata_fmt
    PUBLIC :: CONTROL
 

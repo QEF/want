@@ -18,6 +18,7 @@
        USE constants,        ONLY: bohr => BOHR_RADIUS_ANGS, ZERO, ONE, CZERO, CONE
        USE version_module,   ONLY: version_number
        USE io_module,        ONLY: stdout, io_name, space_unit, wantdata_form
+       USE log_module,       ONLY: log_push, log_pop
        USE files_module,     ONLY: file_open, file_close
        USE timing_module,    ONLY: timing, timing_upto_now
        USE control_module,   ONLY: subspace_init_mode => subspace_init, verbosity, &
@@ -58,7 +59,7 @@
 ! ...  Startup
 !--------------------------------------------
 !
-       CALL startup(version_number,'disentangle')
+       CALL startup(version_number,"disentangle")
 
        !      
        ! ...  Read input parameters 
@@ -133,7 +134,8 @@
        iteration_loop : &
        DO iter = 0, maxiter_dis
            ncount = iter
-
+           !
+           CALL log_push( "iteration" )
 
            DO ik = 1, nkpts
                !
@@ -195,7 +197,12 @@
                 !
                 ! convergence condition
                 !
-                IF ( ABS( omega_i_err ) < disentangle_thr ) EXIT iteration_loop
+                IF ( ABS( omega_i_err ) < disentangle_thr ) THEN
+                     !
+                     CALL log_pop ( 'iteration' )
+                     EXIT iteration_loop
+                     !
+                ENDIF
            ENDIF
            !     
            omega_i_save = omega_i
@@ -208,10 +215,14 @@
            ! 
            ! Construct the new z-matrix mtrx_out at the relevant k-points
            ! 
+           CALL log_push( 'zmatrix' )
+           !
            DO ik = 1, nkpts
                 CALL zmatrix( ik, dimwann, dimwin, dimwinx, Akb_aux(1,1,1,ik), &
                               mtrx_out(1,1,ik), dimfroz(ik), indxnfroz(1,ik) )
            ENDDO
+           !
+           CALL log_pop ( 'zmatrix' )
 
            !
            ! Compute the current z-matrix at each relevant k-point 
@@ -243,6 +254,8 @@
            !
            ! update the subspace (lamp) using zmatrix
            !
+           CALL log_push( 'lamp' )
+           !
            DO ik = 1, nkpts
                ! 
                ! Diagonalize z matrix mtrx_in at all relevant k-points
@@ -273,8 +286,11 @@
                    ENDDO
                ENDIF
            ENDDO
+           !
+           CALL log_pop ( 'lamp' )
 
-
+           CALL log_pop ( 'iteration')
+           !
        ENDDO iteration_loop
        !
        ! ... End of iter loop

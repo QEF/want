@@ -10,14 +10,16 @@
 !*********************************************
    MODULE hamiltonian_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE lattice_module, ONLY : avec, bvec, lattice_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, nk, vkpt, wk,  &
-                              nrtot, nr, ivr,  wr,  kpoints_alloc 
-   USE subspace_module, ONLY : dimwann, wan_eig, subspace_alloc => alloc
-   USE iotk_module
-   USE parameters, ONLY : nstrx
+   !
+   USE kinds,             ONLY : dbl
+   USE parameters,        ONLY : nstrx
+   USE log_module,        ONLY : log_push, log_pop
+   USE lattice_module,    ONLY : avec, bvec, lattice_alloc => alloc
+   USE kpoints_module,    ONLY : nkpts, nk, vkpt, wk,  &
+                                 nrtot, nr, ivr,  wr,  kpoints_alloc 
+   USE subspace_module,   ONLY : dimwann, wan_eig, subspace_alloc => alloc
    USE converters_module, ONLY : cry2cart, cart2cry
+   USE iotk_module
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -75,6 +77,8 @@ CONTAINS
        CHARACTER(16)      :: subname="hamiltonian_init"
        INTEGER            :: ierr 
 
+       CALL log_push ( subname )
+       !
        IF ( .NOT. lattice_alloc )   CALL errore(subname,'lattice NOT alloc',1)
        IF ( .NOT. kpoints_alloc )   CALL errore(subname,'kpoints NOT alloc',1)
        IF ( .NOT. subspace_alloc )  CALL errore(subname,'subspace NOT alloc',1)
@@ -93,7 +97,9 @@ CONTAINS
            IF( ierr /=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
 
        alloc = .TRUE.
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE hamiltonian_init
 
 
@@ -104,6 +110,8 @@ CONTAINS
        CHARACTER(22)      :: subname="hamiltonian_deallocate"
        INTEGER            :: ierr 
       
+       CALL log_push ( subname )
+       !
        IF ( ALLOCATED(rham) ) THEN 
             DEALLOCATE(rham, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,'deallocating rham ',ABS(ierr))
@@ -112,6 +120,9 @@ CONTAINS
             DEALLOCATE(kham, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,'deallocating kham ',ABS(ierr))
        ENDIF
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE hamiltonian_deallocate
 
 
@@ -127,6 +138,9 @@ CONTAINS
        INTEGER            :: ik, ir, ierr
 
        IF ( .NOT. alloc ) RETURN
+       !
+       CALL log_push ( subname )
+       !
        IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1)
        IF ( .NOT. subspace_alloc ) CALL errore(subname,'subspace NOT alloc',1)
 
@@ -180,6 +194,9 @@ CONTAINS
        CALL iotk_write_end(unit,"RHAM")
 
        CALL iotk_write_end(unit,TRIM(name))
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE hamiltonian_write
 
 
@@ -195,6 +212,8 @@ CONTAINS
        INTEGER            :: nkpts_, nrtot_, dimwann_
        INTEGER            :: ik, ir, ierr
 
+       CALL log_push ( subname )
+       !
        IF ( alloc ) CALL hamiltonian_deallocate()
        CALL hamiltonian_init()
 
@@ -236,6 +255,9 @@ CONTAINS
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE hamiltonian_read
 
 END MODULE hamiltonian_module

@@ -10,10 +10,12 @@
 !*********************************************
    MODULE trial_center_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE constants, ONLY: bohr => bohr_radius_angs
-   USE converters_module, ONLY : cry2cart
-   USE parser_module, ONLY : change_case
+   !
+   USE kinds,               ONLY : dbl
+   USE constants,           ONLY : bohr => bohr_radius_angs
+   USE converters_module,   ONLY : cry2cart
+   USE parser_module,       ONLY : change_case
+   USE log_module,          ONLY : log_push, log_pop
    IMPLICIT NONE
    PRIVATE
 
@@ -72,17 +74,21 @@ CONTAINS
 !****************************************************
    SUBROUTINE trial_center_convert(avec, obj)
    !****************************************************
-   IMPLICIT NONE
-   REAL(dbl),            INTENT(in)    :: avec(3,3)
-   TYPE( trial_center ), INTENT(inout) :: obj
-   CHARACTER(10)    :: units
-   REAL(dbl)        :: alat_
    !
    ! ... Converting WANNIER centers to cartesian coord in Bohr
    !     AVEC is in Bohr
    !     DECAY should be in Bohr and is converted here if is the case
    !     if units == crystal it is supposed to be already in Bohr
    !
+   IMPLICIT NONE
+      REAL(dbl),            INTENT(in)    :: avec(3,3)
+      TYPE( trial_center ), INTENT(inout) :: obj
+      CHARACTER(10)    :: units
+      REAL(dbl)        :: alat_
+
+
+      CALL log_push ( 'trial_center_convert' )
+      !
       units=TRIM(obj%units)
       CALL change_case(units,'UPPER')
       SELECT CASE ( TRIM(units) )
@@ -105,7 +111,9 @@ CONTAINS
           CALL errore('trial_center_convert','Invalid units : '  &
                                  //TRIM(obj%units),1 )
       END SELECT
-
+      !
+      CALL log_pop ( 'trial_center_convert' )
+      !
    END SUBROUTINE trial_center_convert
 
 
@@ -151,6 +159,7 @@ CONTAINS
       IF ( npwk == 0 ) RETURN
 
       CALL timing('trial_center_setup',OPR='start')
+      CALL log_push( 'trial_center_setup' )
 
       !
       ! spherical harmonics indexes
@@ -399,6 +408,8 @@ CONTAINS
       
       
       CALL timing('trial_center_setup',OPR='stop')
+      CALL log_pop( 'trial_center_setup' )
+      !
    END SUBROUTINE trial_center_setup
 
 

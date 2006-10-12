@@ -16,6 +16,7 @@ MODULE ions_module
    USE constants,      ONLY : ZERO, BOHR => bohr_radius_angs
    USE parameters,     ONLY : ntypx, natx, nstrx
    USE io_module,      ONLY : pseudo_dir, prefix, work_dir
+   USE log_module,     ONLY : log_push, log_pop
    USE qexml_module
    USE qexpt_module
    IMPLICIT NONE
@@ -89,6 +90,8 @@ CONTAINS
       CHARACTER(13)  :: subname='ions_allocate'
       INTEGER :: ierr
 
+      CALL log_push( subname )
+      !
       IF ( nat_ <= 0) CALL errore(subname,'Invalid nat_',ABS(nat_)+1)
       IF ( nsp_ <= 0) CALL errore(subname,'Invalid nsp_',ABS(nsp_)+1)
       IF ( nat_ > natx ) CALL errore(subname,'Nat too large',nat_)
@@ -116,6 +119,9 @@ CONTAINS
          IF(ierr/=0) CALL errore(subname,'allocating psfile',nsp)
 
       alloc = .TRUE.
+      !
+      CALL log_pop ( subname )
+      !
   END SUBROUTINE ions_allocate
 
 !**********************************************************
@@ -125,6 +131,8 @@ CONTAINS
       CHARACTER(15)  :: subname='ions_deallocate'
       INTEGER :: ierr
 
+      CALL log_push( subname )
+      !
       IF ( ALLOCATED( na ) ) THEN
           DEALLOCATE( na, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating na',ABS(ierr))
@@ -161,8 +169,11 @@ CONTAINS
           DEALLOCATE( psfile, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating psfile',ABS(ierr))
       ENDIF
-
+      !
       alloc = .FALSE.
+      !
+      CALL log_pop ( subname )
+      !
   END SUBROUTINE ions_deallocate
 
 
@@ -176,7 +187,8 @@ CONTAINS
        INTEGER, ALLOCATABLE :: ityp(:)
        INTEGER              :: i, ierr
 
-
+       CALL log_push( subname )
+       !
        SELECT CASE ( TRIM(filefmt) )
        !
        CASE ( 'qexml' )
@@ -240,7 +252,9 @@ CONTAINS
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
        END SELECT
-
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE ions_read_ext
 
 
@@ -256,6 +270,8 @@ CONTAINS
        CHARACTER(9)       :: subname="ions_init"
        INTEGER            :: ia, i
  
+       CALL log_push( subname )
+       !
        IF ( .NOT. alloc ) CALL errore(subname,'IONS not allocated',1)
 
        !
@@ -278,7 +294,9 @@ CONTAINS
        ! sorting atoms by species
        !
        CALL ions_sort_tau(tau_srt, ind_srt, tau, ityp, na )
-
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE ions_init
 
 
@@ -296,24 +314,32 @@ CONTAINS
       INTEGER :: ina( SIZE(na_) ), na_tmp( SIZE(na_) )
       INTEGER :: nsp_, is, ia
 
+      CALL log_push( 'ions_sort_tau' )
+      !
       nsp_ = SIZE(na_)
       IF ( nsp_ /= nsp) CALL errore('ions_sort_tau','Invalid nsp',ABS(nsp-nsp_))
 
       ! ... compute the index of the first atom in each specie
       ina( 1 ) = 0
       DO is = 2, nsp_
+        !
         ina( is ) = ina( is - 1 ) + na_( is - 1 )
-      END DO
+        !
+      ENDDO
 
       ! ... sort the position according to atomic specie
       na_tmp  = 0
       DO ia = 1, nat
+        !
         is  =  isp( ia )
         na_tmp( is ) = na_tmp( is ) + 1
         tausrt( :, na_tmp(is) + ina(is) ) = tau_(:, ia )
         isrt  (    na_tmp(is) + ina(is) ) = ia
-      END DO
-      RETURN
+        !
+      ENDDO
+      !
+      CALL log_pop( 'ions_sort_tau' )
+      !
     END SUBROUTINE ions_sort_tau
 
 

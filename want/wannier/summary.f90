@@ -31,14 +31,17 @@
    USE parameters,        ONLY : nstrx
    USE constants,         ONLY : PI, TPI, BOHR => bohr_radius_angs
    USE parser_module,     ONLY : log2char
-   USE io_module,         ONLY : title, prefix, postfix, work_dir, dftdata_fmt, wantdata_fmt
+   USE io_module,         ONLY : title, prefix, postfix, work_dir, dftdata_fmt, &
+                                 dftdata_fmt_version, wantdata_fmt
+   USE log_module,        ONLY : log_push, log_pop
    USE converters_module, ONLY : cart2cry
    USE control_module,    ONLY : ordering_mode, verbosity, restart_mode, & 
                                  use_pseudo, use_uspp, use_blimit, &
                                  do_overlaps, do_projections, do_collect_wf, &
                                  read_subspace, read_unitary, read_pseudo, &
                                  unitary_thr, subspace_init, localization_init, &
-                                 nprint_dis, nprint_wan, nsave_dis, nsave_wan
+                                 nprint_dis, nprint_wan, nsave_dis, nsave_wan, &
+                                 use_debug_mode, debug_level
    USE control_module,    ONLY : do_condmin
    USE trial_center_data_module, ONLY : trial
    USE lattice_module,    ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
@@ -97,10 +100,16 @@
    CHARACTER(5)           :: ps
    CHARACTER(2)           :: str
 
-
 !
-! set defaults and switches
+!------------------------------
+! main body
+!------------------------------
 !
+   CALL log_push( 'summary' )
+   
+   !
+   ! set defaults and switches
+   !
    linput    = .TRUE.
    llattice  = .TRUE. 
    lions     = .TRUE. 
@@ -138,7 +147,8 @@
        ELSE
           WRITE(unit,"(7x,'              work_dir :',5x,/,10x,a)") TRIM(work_dir)
        ENDIF
-       WRITE(unit,"(   7x,'           dftdata_fmt :',5x,   a)") TRIM(dftdata_fmt)
+       WRITE(unit,"(   7x,'           dftdata_fmt :',5x,   a)") TRIM(dftdata_fmt) //  &
+                                                                "  v" // TRIM( dftdata_fmt_version)
        WRITE(unit,"(   )")
        WRITE(unit,"(   7x,'          wantdata_fmt :',5x,   a)") TRIM(wantdata_fmt)
        WRITE(unit,"(   7x,'             verbosity :',5x,   a)") TRIM(verbosity)
@@ -151,6 +161,11 @@
        WRITE(unit,"(   7x,'  Read init unit. mat. :',5x,   a)") log2char(read_unitary)
        WRITE(unit,"(   7x,'       Read pseudopot. :',5x,   a)") log2char(read_pseudo)
        WRITE(unit,"(   7x,'    Use penalty funct. :',5x,   a)") log2char(do_condmin)
+       WRITE(unit,"(   )")
+       WRITE(unit,"(   7x,'        Use debug mode :',5x,   a)") log2char(use_debug_mode)
+       IF ( use_debug_mode ) THEN
+          WRITE(unit,"(7x,'           debug_level :',5x,  i3)") debug_level
+       ENDIF
        WRITE(unit,"( ' <CONTROL>',/)" )
 
 
@@ -485,5 +500,8 @@
        WRITE(unit, " (  ' </WINDOWS>',/)" )
    ENDIF
 
+   !
+   CALL log_pop( 'summary' )
+   !
 END SUBROUTINE summary_x
 

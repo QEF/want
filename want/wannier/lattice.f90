@@ -10,8 +10,9 @@
 MODULE lattice_module
    !*********************************************************
    USE kinds
-   USE constants, ONLY : ZERO, TPI
+   USE constants,  ONLY : ZERO, TPI
    USE parameters, ONLY : nstrx
+   USE log_module, ONLY : log_push, log_pop
    USE qexml_module
    USE qexpt_module
    IMPLICIT NONE
@@ -60,17 +61,20 @@ CONTAINS
     USE io_module, ONLY: stdout
     IMPLICIT NONE
 
-    !
-    ! avec and bvec are in units of bohr and bohr^-1 respectively
-    ! omega in bohr^3, alat and tpiba in bohr and bohr^-1
-    !
-    CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3), omega)
-    bvec = bvec * TPI
-
-    alloc = .TRUE.
-
-    RETURN
+       CALL log_push ( "lattice_init" )
+       !
+       ! avec and bvec are in units of bohr and bohr^-1 respectively
+       ! omega in bohr^3, alat and tpiba in bohr and bohr^-1
+       !
+       CALL recips( avec(:,1), avec(:,2), avec(:,3), bvec(:,1), bvec(:,2), bvec(:,3), omega)
+       bvec = bvec * TPI
+       !
+       alloc = .TRUE.
+       !
+       CALL log_pop ( "lattice_init" )
+       !
    END SUBROUTINE lattice_init
+
 
 !*********************************************************
    SUBROUTINE lattice_read_ext(filefmt)
@@ -80,6 +84,7 @@ CONTAINS
        CHARACTER(16)      :: subname="lattice_read_ext"
        INTEGER            :: ierr
 
+       CALL log_push ( subname )
        ierr = 0
        !
        SELECT CASE ( TRIM(filefmt) )
@@ -104,7 +109,9 @@ CONTAINS
        ! impose the normalization
        !
        tpiba = TPI / alat
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE lattice_read_ext
 
 END MODULE lattice_module

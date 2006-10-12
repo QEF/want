@@ -28,6 +28,7 @@
                               ELECTRONVOLT_SI, BOHR_RADIUS_SI
    USE io_module,      ONLY : stdout
    USE timing_module,  ONLY : timing
+   USE log_module,     ONLY : log_push, log_pop
    USE windows_module, ONLY : nspin, nkpts, windows_alloc => alloc
    USE ions_module,    ONLY : ityp, zv, nat, tau, ion_charge, ions_alloc => alloc
    USE lattice_module, ONLY : alat, omega, avec, lattice_alloc => alloc
@@ -58,6 +59,7 @@
 !------------------------------
 !
       CALL timing('polarization',OPR='start')
+      CALL log_push('polarization')
 
       !
       ! checks
@@ -171,5 +173,7 @@
       IF (ierr/=0) CALL errore('polarization', 'deallocating tau_cry, rave_cry', ABS(ierr))
 
       CALL timing('polarization',OPR='stop')
+      CALL log_pop('polarization')
+      !
 END SUBROUTINE polarization
 

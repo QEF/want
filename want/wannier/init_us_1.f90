@@ -33,6 +33,7 @@ SUBROUTINE init_us_1
   USE kinds,           ONLY : dbl
   USE parameters,      ONLY : lmaxx, nbrx, lqmax
   USE constants,       ONLY : FPI, ZERO, CZERO, ONE, CONE, SQRT2_constant => SQRT2, EPS_m8
+  USE log_module,      ONLY : log_push, log_pop
   USE atom_module,     ONLY : r, rab
   USE ions_module,     ONLY : ntyp => nsp
   USE lattice_module,  ONLY : omega, tpiba
@@ -75,6 +76,7 @@ SUBROUTINE init_us_1
   COMPLEX(kind=dbl), ALLOCATABLE :: qgm(:)
 
   CALL timing('init_us_1',OPR='start')
+  CALL log_push('init_us_1')
   !
   !    Initialization of the variables
   !
@@ -331,6 +333,7 @@ SUBROUTINE init_us_1
   deallocate (bkmod)
 
   CALL timing('init_us_1',OPR='stop')
-  RETURN
+  CALL log_pop('init_us_1')
+  !
 END SUBROUTINE init_us_1
 

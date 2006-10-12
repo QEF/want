@@ -21,9 +21,10 @@
    ! of Omega_D
    !
    USE kinds
-   USE constants, ONLY : ZERO, ONE, TWO, CZERO, CI
-   USE timing_module, ONLY : timing
-   USE kpoints_module, ONLY : nb, vb, wb
+   USE constants,          ONLY : ZERO, ONE, TWO, CZERO, CI
+   USE timing_module,      ONLY : timing
+   USE log_module,         ONLY : log_push, log_pop
+   USE kpoints_module,     ONLY : nb, vb, wb
    IMPLICIT NONE 
 
    !  
@@ -55,6 +56,7 @@
 !----------------------------------------
 !
    CALL timing('domega',OPR='start')
+   CALL log_push('domega')
       
 
    ALLOCATE( qkb(dimwann), STAT=ierr )
@@ -135,5 +137,7 @@
        IF( ierr /=0 ) CALL errore('domega', 'deallocating aux1, aux2', ABS(ierr) )
 
    CALL timing('domega',OPR='stop')
+   CALL log_pop('domega')
+   !
 END SUBROUTINE domega
 

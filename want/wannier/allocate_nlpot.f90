@@ -28,6 +28,7 @@ subroutine allocate_nlpot
   USE kinds,           ONLY : dbl
   USE constants,       ONLY : ZERO, ONE
   USE parameters,      ONLY : nbrx, nchix
+  USE log_module,      ONLY : log_push, log_pop
   USE ions_module,     ONLY : nat, ntyp => nsp, ityp
   USE lattice_module,  ONLY : tpiba
   USE windows_module,  ONLY : nspin
@@ -49,8 +50,10 @@ subroutine allocate_nlpot
   integer :: nt, na, ib, ierr  
   ! counters on atom type, atoms, beta functions, ierr
   !
-
   REAL(dbl) :: gcutm, xqq(3)
+
+
+  CALL log_push ( 'allocate_nlpot' )
   !
   ! defining gcutm, xqq
   !
@@ -131,6 +134,7 @@ subroutine allocate_nlpot
   ALLOCATE (tab_at( nqx , nchix , ntyp), STAT=ierr)
       IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab_at',ABS(ierr))
 
-  RETURN
-end subroutine allocate_nlpot
+  CALL log_pop ( 'allocate_nlpot' )
+  !  
+END SUBROUTINE allocate_nlpot
 

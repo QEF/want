@@ -17,6 +17,7 @@
    USE kinds
    USE constants,         ONLY : ZERO, TPI
    USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
    USE converters_module, ONLY : cart2cry, cry2cart
    USE lattice_module,    ONLY : avec, bvec
    USE kpoints_module,    ONLY : vkpt
@@ -50,6 +51,7 @@
 !------------------------------
 !
       CALL timing('collect_wf',OPR='start')
+      CALL log_push('collect_wf')
 
       !
       ! aux data
@@ -129,6 +131,8 @@ WRITE(6, *)
       IF (ierr/=0) CALL errore('locate_wf', 'deallocating rave_shift', ABS(ierr))
 
       CALL timing('collect_wf',OPR='stop')
+      CALL log_pop('collect_wf')
+      !
    END SUBROUTINE collect_wf
 
 

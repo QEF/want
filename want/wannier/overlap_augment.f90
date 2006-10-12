@@ -9,6 +9,7 @@
 !***************************************************************
 SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    !***************************************************************
+   !
    !    This routine add the augmentation part due to USPP to the
    !    overlap matrix.
    !    Requires the products of psi with all beta functions
@@ -37,6 +38,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    USE uspp_param,      ONLY : nh, tvanp
    USE ions_module,     ONLY : nat, ntyp => nsp, ityp, tau
    USE becmod,          ONLY : becp
+   USE log_module,      ONLY : log_push, log_pop
    USE timing_module
    IMPLICIT NONE
    !
@@ -61,6 +63,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
 
    IF ( nkb == 0 .OR. .NOT. okvan ) RETURN
    CALL timing( 'overlap_augment', OPR='start' )  
+   CALL log_push( 'overlap_augment' )  
    !
    !
    ijkb0 = 0
@@ -100,6 +103,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    ENDDO
    !
    CALL timing( 'overlap_augment',OPR='stop' )
+   CALL log_pop( 'overlap_augment' )
    !
    RETURN
    !

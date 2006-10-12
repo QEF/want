@@ -10,23 +10,25 @@
 !*********************************************
    MODULE struct_fact_data_module
 !*********************************************
-   USE kinds, ONLY : dbl
+   !
+   USE kinds,             ONLY : dbl
+   USE log_module,        ONLY : log_push, log_pop
    USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, ityp, tau
    USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba
    USE ggrids_module,     ONLY : ggrids_alloc => alloc, npw => npw_rho, nr => nfft, g
    IMPLICIT NONE
    PRIVATE
    SAVE
-
-! This module handles data related to structure factors,
-! i.e. the quantities  
-!                      eigts(G) = e^(-i G*tau_s)
-!                  strf(G,ityp) = \sum_{ia \in ityp)} e^(-i G*tau_s(ia) )
-!
-! routines in this module:
-! SUBROUTINE struct_fact_data_allocate()
-! SUBROUTINE struct_fact_data_deallocate()
-! SUBROUTINE struct_fact_data_init()
+   !
+   ! This module handles data related to structure factors,
+   ! i.e. the quantities  
+   !                      eigts(G) = e^(-i G*tau_s)
+   !                  strf(G,ityp) = \sum_{ia \in ityp)} e^(-i G*tau_s(ia) )
+   !
+   ! routines in this module:
+   ! SUBROUTINE struct_fact_data_allocate()
+   ! SUBROUTINE struct_fact_data_deallocate()
+   ! SUBROUTINE struct_fact_data_init()
 
 !
 ! declarations of common variables
@@ -64,6 +66,8 @@ CONTAINS
        CHARACTER(25)      :: subname="struct_fact_data_allocate"
        INTEGER            :: ierr 
 
+       CALL log_push ( subname )
+       !
        IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice not alloc',1) 
        IF ( .NOT. ions_alloc )    CALL errore(subname,'ions not alloc',1) 
        IF ( .NOT. ggrids_alloc )  CALL errore(subname,'ggrids not alloc',1) 
@@ -84,6 +88,8 @@ CONTAINS
           IF (ierr/=0) CALL errore(subname,'allocating eigts3',ABS(ierr))
 
        alloc = .TRUE.
+       !
+       CALL log_pop ( subname )
       
    END SUBROUTINE struct_fact_data_allocate
 
@@ -95,6 +101,8 @@ CONTAINS
        CHARACTER(27)      :: subname="struct_fact_data_deallocate"
        INTEGER            :: ierr
 
+       CALL log_push ( subname )
+       !
        IF ( ALLOCATED(strf) ) THEN
             DEALLOCATE(strf, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating strf ',ABS(ierr))
@@ -112,7 +120,9 @@ CONTAINS
             IF (ierr/=0)  CALL errore(subname,' deallocating eigts3 ',ABS(ierr))
        ENDIF
        alloc = .FALSE.
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE struct_fact_data_deallocate
 
 
@@ -126,6 +136,8 @@ CONTAINS
        CHARACTER(21)      :: subname="struct_fact_data_init"
        REAL(dbl)          :: bg_(3,3)
 
+       CALL log_push ( subname )
+       !
        IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice not alloc',1) 
        IF ( .NOT. ions_alloc )    CALL errore(subname,'ions not alloc',1) 
        IF ( .NOT. ggrids_alloc )  CALL errore(subname,'ggrids not alloc',1) 
@@ -139,6 +151,8 @@ CONTAINS
        CALL struct_fact( nat, tau, nsp, ityp, npw, g, bg_, &
                          nr(1), nr(2), nr(3), strf, eigts1, eigts2, eigts3)
 
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE struct_fact_data_init
 
 END MODULE struct_fact_data_module

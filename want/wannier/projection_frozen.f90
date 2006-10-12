@@ -18,9 +18,10 @@
    !
    USE kinds
    USE constants,        ONLY : ZERO, CONE, CZERO, ONE, EPS_m8
-   USE timing_module,    ONLY : timing
-   USE util_module,      ONLY : mat_hdiag, zmat_unitary, mat_mul
    USE io_module,        ONLY : stdout
+   USE timing_module,    ONLY : timing
+   USE log_module,       ONLY : log_push, log_pop
+   USE util_module,      ONLY : mat_hdiag, zmat_unitary, mat_mul
    USE control_module,   ONLY : unitary_thr
    IMPLICIT NONE
 
@@ -56,6 +57,7 @@
 !------------------------------
 !
    CALL timing(subname,OPR='start')
+   CALL log_push(subname)
  
 !
 ! local workspace
@@ -154,6 +156,7 @@
       IF (ierr/=0) CALL errore(subname,'deallocating qpq',ABS(ierr))
 
    CALL timing(subname,OPR='stop')
+   CALL log_pop(subname)
    !
 END SUBROUTINE projection_frozen
 

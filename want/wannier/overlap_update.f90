@@ -15,10 +15,11 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
    !
    ! Mkb(k,b)_out =  U(k)^dag * Mkb(k,b)_in * U(k+b)
    !
-   USE kinds, ONLY : dbl
-   USE timing_module, ONLY : timing
-   USE util_module,  ONLY : mat_mul
-   USE kpoints_module,  ONLY : nb, nnpos, nnrev, nnlist 
+   USE kinds,             ONLY : dbl
+   USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
+   USE util_module,       ONLY : mat_mul
+   USE kpoints_module,    ONLY : nb, nnpos, nnrev, nnlist 
    IMPLICIT NONE
 
    
@@ -36,16 +37,17 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
    COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
    INTEGER                   :: ik, ikb, ib, inn, ierr
    ! 
-   ! ... end of declarations
+   ! end of declarations
    ! 
 
 !
 !-----------------------------
-! routine Main body
+! main body
 !-----------------------------
 !
-
    CALL timing('overlap_update',OPR='start')
+   CALL log_push('overlap_update')
+
 
    ALLOCATE( aux(dimwann,dimwann), STAT=ierr ) 
       IF (ierr/=0) CALL errore("overlap_update","allocating aux",ABS(ierr))
@@ -86,7 +88,8 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
       IF (ierr/=0) CALL errore("overlap_update","deallocating aux",ABS(ierr))
 
    CALL timing('overlap_update',OPR='stop')
-
+   CALL log_pop('overlap_update')
+   !
 END SUBROUTINE overlap_update
 
 

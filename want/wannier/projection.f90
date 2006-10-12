@@ -18,32 +18,33 @@
    !      The scalr product is directly done in reciprocal space, providing an
    !      analytical form for the FT of the gaussian orbitals.
    !
-   USE kinds,           ONLY : dbl
-   USE constants,       ONLY : CZERO
-   USE timing_module,   ONLY : timing
-   USE sph_har_module,  ONLY : sph_har_index 
-   USE trial_center_module, ONLY : trial_center, trial_center_setup
-
-   USE lattice_module,  ONLY : tpiba
-   USE kpoints_module,  ONLY : vkpt
+   USE kinds,                ONLY : dbl
+   USE constants,            ONLY : CZERO
+   USE log_module,           ONLY : log_push, log_pop
+   USE timing_module,        ONLY : timing
+   USE sph_har_module,       ONLY : sph_har_index 
+   USE trial_center_module,  ONLY : trial_center, trial_center_setup
+   !
+   USE lattice_module,       ONLY : tpiba
+   USE kpoints_module,       ONLY : vkpt
+   USE wfc_data_module,      ONLY : igsort
+   USE ggrids_module,        ONLY : g
    USE wfc_info_module
-   USE wfc_data_module, ONLY : igsort
-   USE ggrids_module,   ONLY : g
 
    IMPLICIT NONE
-
-   ! ... arguments
-   TYPE(wfc_info), INTENT(in) :: evc_info
-   COMPLEX(dbl),   INTENT(in) :: evc( evc_info%npwx, evc_info%nwfc )
-
-   INTEGER,  INTENT(in) :: ik, dimw, imin
-   INTEGER,  INTENT(in) :: dimwinx
-   INTEGER,  INTENT(in) :: dimwann
+   !
+   ! I/O variables
+   !
+   TYPE(wfc_info),     INTENT(in) :: evc_info
+   COMPLEX(dbl),       INTENT(in) :: evc( evc_info%npwx, evc_info%nwfc )
+   INTEGER,            INTENT(in) :: ik, dimw, imin
+   INTEGER,            INTENT(in) :: dimwinx
+   INTEGER,            INTENT(in) :: dimwann
    TYPE(trial_center), INTENT(in) :: trial(dimwann)
    COMPLEX(dbl),    INTENT(inout) :: ca(dimwinx,dimwann)
-
-   ! ... local variables
-
+   !
+   ! local variables
+   !
    INTEGER :: npwk
    INTEGER :: lmax
    INTEGER :: iwann, ib, ig, ind 
@@ -51,14 +52,17 @@
    INTEGER,      ALLOCATABLE :: ylm_info(:,:)
    REAL(dbl),    ALLOCATABLE :: ylm(:,:), vkg(:,:), vkgg(:)
    COMPLEX(dbl), ALLOCATABLE :: trial_vect(:)
-
+   !
+   ! End of declaration
+   !
 
 !
-! ...  End of declaration
+!------------------------------
+! main body
+!------------------------------
 !
-
-
       CALL timing('projection',OPR='start')
+      CALL log_push('projection')
 
       ind = wfc_info_getindex(imin, ik, "SPSI_IK", evc_info)
       npwk = evc_info%npw(ind)
@@ -108,15 +112,16 @@
           !
           ! ... bands 
           DO ib = 1, dimw
-
+             !
              ind = wfc_info_getindex(imin +ib -1, ik, "SPSI_IK", evc_info)
-
+             !
              ca(ib,iwann) = CZERO    
+             !
              DO ig = 1, npwk
                  ca(ib,iwann) = ca(ib,iwann) +  &
                         CONJG( evc(ig,ind) ) * trial_vect(ig)
              ENDDO
-
+             !
           ENDDO 
       ENDDO    
 
@@ -135,7 +140,7 @@
           IF (ierr/=0) CALL errore('projection','deallocating ylm', ABS(ierr) )
 
       CALL timing('projection',OPR='stop')
-
-   RETURN
+      CALL log_pop('projection')
+   
    END SUBROUTINE projection
 

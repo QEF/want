@@ -18,10 +18,11 @@
    ! Mkb_upd = Lamp(ik)^dag * Mkb0 * Lamp(ikb)
    !
    USE kinds
-   USE constants, ONLY : ZERO
-   USE timing_module
+   USE constants,      ONLY : ZERO
    USE kpoints_module, ONLY : nb, wb, wbtot
-
+   USE log_module,     ONLY : log_push, log_pop
+   USE timing_module,  ONLY : timing
+   !
    IMPLICIT NONE
  
    !
@@ -36,10 +37,17 @@
    !
    INTEGER :: m, n 
    INTEGER :: ik, ib
+   !
+   ! end of declariations
+   !
 
-!----------------------------------------------------------------
-
+!
+!------------------------------
+! main body
+!------------------------------
+!
    CALL timing('omegai',OPR='start') 
+   CALL log_push('omegai')
   
    Omega_I = ZERO
    !
@@ -61,6 +69,7 @@
    Omega_I = Omega_I / REAL(nkpts, dbl) + REAL(dimwann, dbl) * wbtot
 
    CALL timing('omegai',OPR='stop') 
+   CALL log_pop ('omegai')
     
 END SUBROUTINE omegai
 

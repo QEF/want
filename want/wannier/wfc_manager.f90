@@ -26,6 +26,7 @@
    USE constants,      ONLY : CZERO, ZERO
    USE iotk_module
    USE io_module,      ONLY : stdout, dft_unit, ovp_unit, io_name, dftdata_fmt, wantdata_form
+   USE log_module,     ONLY : log_push, log_pop
    USE timing_module,  ONLY : timing, timing_upto_now
    USE files_module,   ONLY : file_open, file_close
    
@@ -47,11 +48,11 @@
    USE struct_fact_data_module, ONLY : struct_fact_data_init
    USE uspp,           ONLY : nkb, vkb, vkb_ik
    USE becmod,         ONLY : becp
-
-   !
-   ! few local variables
    !
    IMPLICIT NONE
+      !
+      ! local variables
+      !
       CHARACTER(11)             :: subname="wfc_manager"
       CHARACTER(nstrx)          :: filename
       REAL(dbl)                 :: xk(3)
@@ -60,9 +61,17 @@
       INTEGER                   :: ib, ikb, ik, inn
       INTEGER                   :: indin, indout, index
       INTEGER                   :: ierr
+      !
+      ! End of declaration
+      !
 
-
+!
+!------------------------------
+! main body
+!------------------------------
+!
       CALL timing('wfc_manager',OPR='start')
+      CALL log_push('wfc_manager')
 
 !
 ! Some checks
@@ -393,7 +402,8 @@
 
       CALL timing_upto_now(stdout)
       CALL timing('wfc_manager',OPR='stop')
-      RETURN
+      !
+      CALL log_pop ( 'wfc_manager' ) 
 
    END SUBROUTINE wfc_manager
 

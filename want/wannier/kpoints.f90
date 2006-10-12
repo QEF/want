@@ -16,6 +16,7 @@
    USE constants,         ONLY : ONE, TWO, TPI, EPS_m6
    USE parameters,        ONLY : nstrx, nnx
    USE io_module,         ONLY : stdout
+   USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : alat, avec, bvec, lattice_alloc => alloc
    USE converters_module, ONLY : cart2cry
    USE qexml_module
@@ -34,7 +35,6 @@
 ! SUBROUTINE kpoints_init()
 ! SUBROUTINE bshells_allocate()
 ! SUBROUTINE bshells_deallocate()
-! SUBROUTINE bshells_init()
 ! SUBROUTINE kpoints_read_ext( unit, name, found )
 
 !
@@ -118,6 +118,7 @@ CONTAINS
       INTEGER   :: ierr
       CHARACTER(16)     :: subname="kpoints_allocate"
 
+      CALL log_push ( subname )
       !
       ! kpt data
       !
@@ -128,6 +129,9 @@ CONTAINS
          IF (ierr/=0) CALL errore(subname,'allocating wk',nkpts)
 
       kpoints_alloc = .TRUE.
+      !
+      CALL log_pop( subname )
+      !
    END SUBROUTINE kpoints_allocate
 
 
@@ -139,6 +143,8 @@ CONTAINS
       CHARACTER(12)     :: subname="kpoints_init"
       REAL(dbl), ALLOCATABLE :: vr_cry(:,:)
 
+      CALL log_push ( subname )
+      !
       IF ( .NOT. lattice_alloc ) CALL errore(subname,'lattice NOT alloc',1) 
       IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1) 
 
@@ -177,6 +183,8 @@ CONTAINS
       DEALLOCATE( vr_cry, STAT=ierr )
          IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
       
+      CALL log_pop ( subname )
+      !
    END SUBROUTINE kpoints_init
 
 
@@ -187,6 +195,8 @@ CONTAINS
       INTEGER   :: ierr
       CHARACTER(16)     :: subname="bshells_allocate"
 
+      CALL log_push ( subname )
+      !
       IF ( nkpts <= 0)  CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
       IF ( nb <= 0 .OR. nb > nnx )  CALL errore(subname,'Invalid NB',ABS(nb)+1)
 
@@ -204,6 +214,9 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname, ' allocating wb ', ABS(ierr) )
 
       bshells_alloc = .TRUE.
+      !
+      CALL log_pop ( subname )
+      !
    END SUBROUTINE bshells_allocate
 
 
@@ -217,6 +230,8 @@ CONTAINS
        INTEGER            :: nspin, ik, ierr
        LOGICAL            :: lsda, lfound
        
+       CALL log_push ( subname )
+       !
        IF ( kpoints_alloc ) CALL kpoints_deallocate()
        !
        !
@@ -290,7 +305,9 @@ CONTAINS
        !
        ! convert them to bohr^-1 cartesian units 
        vkpt(:,:) = vkpt(:,:) * TPI/alat
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE kpoints_read_ext
 
 
@@ -298,31 +315,37 @@ CONTAINS
    SUBROUTINE kpoints_deallocate()
    !**********************************************************
    IMPLICIT NONE
-    INTEGER   :: ierr
-
-    IF ( ALLOCATED( vkpt ) ) THEN
-       DEALLOCATE( vkpt, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating vkpt',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( wk ) ) THEN
-       DEALLOCATE( wk, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wk',ABS(ierr))
-    ENDIF
-    !
-    IF ( ALLOCATED( ivr ) ) THEN
-       DEALLOCATE( ivr, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating ivr',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( vr ) ) THEN
-       DEALLOCATE( vr, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating vr',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( wr ) ) THEN
-       DEALLOCATE( wr, STAT=ierr )
-       IF (ierr/=0) CALL errore('kpoints_deallocate','deallocating wr',ABS(ierr))
-    ENDIF
-    !
-    kpoints_alloc = .FALSE.
+       INTEGER          :: ierr
+       CHARACTER(18)    :: subname='kpoints_deallocate'
+   
+       CALL log_push( subname )
+       !
+       IF ( ALLOCATED( vkpt ) ) THEN
+          DEALLOCATE( vkpt, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating vkpt',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( wk ) ) THEN
+          DEALLOCATE( wk, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating wk',ABS(ierr))
+       ENDIF
+       !
+       IF ( ALLOCATED( ivr ) ) THEN
+          DEALLOCATE( ivr, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating ivr',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( vr ) ) THEN
+          DEALLOCATE( vr, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating vr',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( wr ) ) THEN
+          DEALLOCATE( wr, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating wr',ABS(ierr))
+       ENDIF
+       !
+       kpoints_alloc = .FALSE.
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE kpoints_deallocate
 
 
@@ -330,34 +353,40 @@ CONTAINS
    SUBROUTINE bshells_deallocate()
    !**********************************************************
    IMPLICIT NONE
-    INTEGER   :: ierr
-
-    IF ( ALLOCATED( nnlist ) ) THEN
-       DEALLOCATE( nnlist, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnlist',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( nncell ) ) THEN
-       DEALLOCATE( nncell, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nncell',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( nnrev ) ) THEN
-       DEALLOCATE( nnrev, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnrev',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( vb ) ) THEN
-       DEALLOCATE( vb, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating vb',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( nnpos ) ) THEN
-       DEALLOCATE( nnpos, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating nnpos',ABS(ierr))
-    ENDIF
-    IF ( ALLOCATED( wb ) ) THEN
-       DEALLOCATE( wb, STAT=ierr )
-       IF (ierr/=0) CALL errore('bshells_deallocate','deallocating wb',ABS(ierr))
-    ENDIF
-
-    bshells_alloc = .FALSE.
+       INTEGER   :: ierr
+       CHARACTER(18)    :: subname='bshells_deallocate'
+   
+       CALL log_push( subname )
+       !
+       IF ( ALLOCATED( nnlist ) ) THEN
+          DEALLOCATE( nnlist, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating nnlist',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( nncell ) ) THEN
+          DEALLOCATE( nncell, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating nncell',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( nnrev ) ) THEN
+          DEALLOCATE( nnrev, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating nnrev',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( vb ) ) THEN
+          DEALLOCATE( vb, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating vb',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( nnpos ) ) THEN
+          DEALLOCATE( nnpos, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating nnpos',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( wb ) ) THEN
+          DEALLOCATE( wb, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating wb',ABS(ierr))
+       ENDIF
+       !
+       bshells_alloc = .FALSE.
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE bshells_deallocate
 
 END MODULE kpoints_module

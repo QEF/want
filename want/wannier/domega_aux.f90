@@ -23,9 +23,10 @@
    ! 
    !
    USE kinds
-   USE constants, ONLY : ZERO, ONE, CZERO, CI, TWO
-   USE timing_module, ONLY : timing
-   USE kpoints_module, ONLY : nb, vb, wb
+   USE constants,          ONLY : ZERO, ONE, CZERO, CI, TWO
+   USE timing_module,      ONLY : timing
+   USE log_module,         ONLY : log_push, log_pop
+   USE kpoints_module,     ONLY : nb, vb, wb
    USE trial_center_module
    IMPLICIT NONE 
 
@@ -57,6 +58,8 @@
 !----------------------------------------
 !
    CALL timing('domega_aux',OPR='start')
+   CALL log_push('domega_aux')
+
 
    ALLOCATE( qb(dimwann), STAT=ierr )
         IF( ierr /=0 ) CALL errore('domega_aux', 'allocating qb', ABS(ierr) )
@@ -133,5 +136,7 @@
        IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating aux2', ABS(ierr) )
 
    CALL timing('domega_aux',OPR='stop')
+   CALL log_pop('domega_aux')
+   !
 END SUBROUTINE domega_aux
 

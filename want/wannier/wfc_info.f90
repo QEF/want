@@ -11,21 +11,22 @@
    MODULE wfc_info_module
 !*********************************************
    USE parameters, ONLY : nstrx
+   USE log_module, ONLY : log_push, log_pop
    IMPLICIT NONE
    PRIVATE
-
-! This module define the types handling the description 
-! of WFC data
-!
-! routines in this module:
-! SUBROUTINE wfc_info_allocate(npwx,nbnd,nkpts,nwfc,obj)
-! SUBROUTINE wfc_info_deallocate(obj)
-! SUBROUTINE wfc_info_getfreeindex(index,obj)
-! INTEGER FUNCTION wfc_info_getindex(ibnd,ik,label,obj)
-! SUBROUTINE wfc_info_add(npw,ibnd,ik,label,obj[,index])
-! SUBROUTINE wfc_info_delete(obj[,ibnd][,ik][,label][,index])
-! SUBROUTINE wfc_info_print(unit,obj)
-!
+   !
+   ! This module define the types handling the description 
+   ! of WFC data
+   !
+   ! routines in this module:
+   ! SUBROUTINE wfc_info_allocate(npwx,nbnd,nkpts,nwfc,obj)
+   ! SUBROUTINE wfc_info_deallocate(obj)
+   ! SUBROUTINE wfc_info_getfreeindex(index,obj)
+   ! INTEGER FUNCTION wfc_info_getindex(ibnd,ik,label,obj)
+   ! SUBROUTINE wfc_info_add(npw,ibnd,ik,label,obj[,index])
+   ! SUBROUTINE wfc_info_delete(obj[,ibnd][,ik][,label][,index])
+   ! SUBROUTINE wfc_info_print(unit,obj)
+   !
 
    !
    ! ... the TYPE
@@ -72,6 +73,8 @@ CONTAINS
        CHARACTER(17)      :: subname="wfc_info_allocate"
        INTEGER            :: ierr 
 
+       CALL log_push ( subname )
+       !
        IF ( npwx <= 0 )  CALL errore(subname,'npwx <= 0',ABS(npwx)+1)
        IF ( nwfc <= 0 )  CALL errore(subname,'nwfc <= 0',ABS(nwfc)+1)
        IF ( nbnd <= 0 )  CALL errore(subname,'nbnd <= 0',ABS(nbnd)+1)
@@ -99,6 +102,9 @@ CONTAINS
        obj%ibnd(:) = 0
        obj%ik(:) = 0
        obj%alloc = .TRUE.
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE wfc_info_allocate
 
 
@@ -110,6 +116,8 @@ CONTAINS
        CHARACTER(19)      :: subname="wfc_info_deallocate"
        INTEGER            :: ierr
 
+       CALL log_push ( subname )
+       !
        IF ( .NOT. obj%alloc ) CALL errore(subname,'obj NOT allocated',1) 
        DEALLOCATE( obj%npw, STAT=ierr)
            IF(ierr/=0) CALL errore(subname,'deallocating npw',ABS(ierr))
@@ -132,6 +140,9 @@ CONTAINS
        NULLIFY(obj%ibnd)
        NULLIFY(obj%ik)
        obj%alloc = .FALSE.
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE wfc_info_deallocate
 
 
@@ -152,6 +163,9 @@ CONTAINS
        CHARACTER(17)   :: subname="wfc_info_getindex"
        INTEGER         :: i      
 
+
+       CALL log_push ( subname )
+       !
        IF ( .NOT. obj%alloc) CALL errore(subname,'descriptor not allocated',1)
 
        wfc_info_getindex = 0
@@ -162,7 +176,9 @@ CONTAINS
                  EXIT
             ENDIF
        ENDDO
-   RETURN
+       !
+       CALL log_pop ( subname )
+       !
    END FUNCTION wfc_info_getindex
 
 
@@ -177,6 +193,9 @@ CONTAINS
        TYPE(wfc_info),  INTENT(in)    :: obj
        INTEGER            :: i
 
+       
+       CALL log_push ( 'wfc_info_getfreeindex' )
+       !
        index = 0
        DO i=1,obj%nwfc
            IF ( .NOT. obj%used(i) ) THEN
@@ -184,7 +203,9 @@ CONTAINS
               EXIT
            ENDIF
        ENDDO
-   RETURN
+       !
+       CALL log_pop ( 'wfc_info_getfreeindex' )
+       !
    END SUBROUTINE wfc_info_getfreeindex
 
 
@@ -204,6 +225,8 @@ CONTAINS
        CHARACTER(12)      :: subname="wfc_info_add"
        INTEGER            :: lindex
 
+       CALL log_push ( subname )
+       !
        IF ( .NOT. obj%alloc ) CALL errore(subname,'obj NOT allocated',1) 
        IF ( npw > obj%npwx ) CALL errore(subname,'npw too large',npw)
 
@@ -217,7 +240,9 @@ CONTAINS
        obj%label(lindex) = TRIM(label)
        obj%ibnd(lindex) = ibnd
        obj%ik(lindex)   = ik
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE wfc_info_add
 
 
@@ -233,6 +258,8 @@ CONTAINS
        TYPE(wfc_info),  INTENT(inout) :: obj
        CHARACTER(20)      :: subname="wfc_info_delete_base"
 
+       CALL log_push ( subname )
+       !
        IF ( .NOT. obj%used(index) ) CALL errore(subname,'index wfc not used',1)
        obj%nwfc_used = obj%nwfc_used - 1
        obj%used(index) = .FALSE.
@@ -240,6 +267,9 @@ CONTAINS
        obj%npw(index) = 0
        obj%ibnd(index) = 0
        obj%ik(index) = 0
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE wfc_info_delete_base
 
 
@@ -260,6 +290,8 @@ CONTAINS
        INTEGER, ALLOCATABLE :: list(:)
        INTEGER  :: i, ierr, nlist
 
+       CALL log_push ( subname )
+       !
        IF ( .NOT. obj%alloc ) CALL errore(subname,'obj NOT yet allocated',1)
        IF ( .NOT. ( PRESENT(ibnd) .OR. PRESENT(ik) .OR. PRESENT(label) .OR. PRESENT(index)) ) &
             CALL errore(subname,'no field specified for matching',1)
@@ -268,9 +300,13 @@ CONTAINS
 
        ! 
        ! these are some singular cases
-       IF ( obj%nwfc_used == 0 ) RETURN
+       IF ( obj%nwfc_used == 0 ) THEN
+            CALL log_pop ( subname )
+            RETURN
+       ENDIF
        IF ( PRESENT(index) ) THEN 
             CALL wfc_info_delete_base(index,obj)
+            CALL log_pop ( subname )
             RETURN
        ENDIF
 
@@ -321,7 +357,9 @@ CONTAINS
        DO i=1,nlist
           IF ( list(i) /= 0 ) CALL wfc_info_delete_base(list(i), obj)
        ENDDO 
-       RETURN
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE wfc_info_delete
 
 
@@ -343,6 +381,8 @@ CONTAINS
            WRITE(unit,"(/,2x,A,' Wfc descriptor NOT allocated')") TRIM(name)
            RETURN
        ENDIF
+       !
+       CALL log_push ( 'wfc_info_print' )
 
        WRITE(unit, 100 ) TRIM(name), obj%nwfc, obj%nwfc_used, &
                          obj%nbnd, obj%nkpts
@@ -363,7 +403,9 @@ CONTAINS
        ENDIF
 
        WRITE(unit,"()")
-
+       !
+       CALL log_pop ( 'wfc_info_print' )
+       !
    END SUBROUTINE wfc_info_print
 
 END MODULE wfc_info_module

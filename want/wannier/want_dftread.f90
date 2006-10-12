@@ -31,6 +31,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
    USE kinds
    USE parameters,               ONLY : nstrx
    USE timing_module,            ONLY : timing
+   USE log_module,               ONLY : log_push, log_pop
    USE io_module,                ONLY : stdout, dft_unit, io_name, dftdata_fmt, &
                                         io_init, io_alloc => alloc
    USE files_module,             ONLY : file_open, file_close
@@ -74,6 +75,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
 !------------------------------
 !
     CALL timing('want_dftread',OPR='start')
+    CALL log_push('want_dftread')
 
 !   
 ! setting up   
@@ -102,8 +104,8 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
 ! ... opening the file containing the PW-DFT data
 !
     CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
-    CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
-                            FORM='formatted')
+    CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read")
+
 
 !
 ! ... read lattice data
@@ -179,6 +181,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
 
 
    CALL timing('want_dftread',OPR='stop')
+   CALL log_pop('want_dftread')
 
 END SUBROUTINE want_dftread_x
 

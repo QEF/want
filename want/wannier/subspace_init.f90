@@ -18,13 +18,14 @@
    !      * 'upper_states'   select the dimwann upper bands
    !      * 'center_projections'  uses the CA matrix to extract a subspace
    !
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : CZERO, CONE, EPS_m8
-   USE parameters, ONLY : nstrx
-   USE timing_module, ONLY : timing
-   USE io_module, ONLY : stdout, io_name, wantdata_form, space_unit
-   USE files_module, ONLY : file_open, file_close
-   USE util_module, ONLY : zmat_unitary, mat_mul, mat_svd
+   USE kinds,           ONLY : dbl
+   USE constants,       ONLY : CZERO, CONE, EPS_m8
+   USE parameters,      ONLY : nstrx
+   USE timing_module,   ONLY : timing
+   USE io_module,       ONLY : stdout, io_name, wantdata_form, space_unit
+   USE log_module,      ONLY : log_push, log_pop
+   USE files_module,    ONLY : file_open, file_close
+   USE util_module,     ONLY : zmat_unitary, mat_mul, mat_svd
    !
    USE windows_module,  ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
    USE kpoints_module,  ONLY : vkpt
@@ -33,9 +34,10 @@
    USE overlap_module,  ONLY : ca 
    IMPLICIT NONE
 
+   !
+   ! input variables
+   !
    CHARACTER(*),    INTENT(in)  :: mode      
-
-
    !
    ! local variables
    !
@@ -47,12 +49,14 @@
    LOGICAL                      :: lfound
    INTEGER                      :: i, j, l, ik, ierr
 
-
 !
-!---------------------------------------------------------------------
+!------------------------------
+! main body
+!------------------------------
+!
 
-
-   CALL timing('subapce_init', OPR='start')
+   CALL timing( subname , OPR='start')
+   CALL log_push( subname )
 
    !
    ! few checks
@@ -243,8 +247,8 @@
    ENDIF
 
 
-   CALL timing('subapce_init', OPR='stop')
-   RETURN
+   CALL timing( subname , OPR='stop')
+   CALL log_pop( subname )
 
 END SUBROUTINE subspace_init
 

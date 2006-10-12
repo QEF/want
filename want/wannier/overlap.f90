@@ -13,8 +13,9 @@
    USE kinds
    USE constants,      ONLY : CZERO
    USE timing_module,  ONLY : timing
-   USE wfc_info_module 
+   USE log_module,     ONLY : log_push, log_pop
    USE ggrids_module,  ONLY : nfft
+   USE wfc_info_module 
 
    IMPLICIT NONE
       !
@@ -51,6 +52,7 @@
 !------------------------------
 !
       CALL timing('overlap',OPR='start')
+      CALL log_push('overlap')
 
       !
       ! the maximun number of PW for wfcs
@@ -146,7 +148,7 @@
          IF (ierr/=0) CALL errore('overlap','deallocating map',ABS(ierr))
 
       CALL timing('overlap',OPR='stop')
-
-      RETURN
+      CALL log_pop('overlap')
+      !
    END SUBROUTINE overlap
 
