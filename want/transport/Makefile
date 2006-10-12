@@ -34,7 +34,7 @@ WANNIER_OBJS= \
 ../wannier/version.o
 
 
-EXTERNAL_LIBS= ../iotk/libiotk.a ../libs/libwant.a
+EXTERNAL_LIBS= ../iotk/libiotk.a ../ctools/libctools.a ../libs/libwant.a
 BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 
 #
