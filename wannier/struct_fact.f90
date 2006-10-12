@@ -14,9 +14,10 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
   !   calculate the structure factors for each type of atoms in the unit
   !   cell
   !
-  USE kinds,     ONLY : dbl
-  USE constants, ONLY : PI, TPI, ZERO, CZERO
+  USE kinds,         ONLY : dbl
+  USE constants,     ONLY : PI, TPI, ZERO, CZERO
   USE timing_module, ONLY : timing
+  USE log_module,    ONLY : log_push, log_pop
   IMPLICIT NONE
   !
   !   Here the dummy variables
@@ -61,6 +62,7 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
   ! scalar product of bg and tau
 
   CALL timing('struct_fact',OPR='start')
+  CALL log_push('struct_fact')
 
   strf(:,:) = CZERO
   DO nt = 1, ntyp
@@ -96,6 +98,7 @@ SUBROUTINE struct_fact (nat, tau, ntyp, ityp, ngm, g, bg, nr1, nr2, &
   ENDDO
 
   CALL timing('struct_fact',OPR='stop')
-  RETURN
+  CALL log_pop('struct_fact')
+  !
 END SUBROUTINE struct_fact
 

@@ -12,9 +12,10 @@ SUBROUTINE init_at_1()
   ! This routine computes a table with the radial Fourier transform 
   ! of the atomic wavefunctions.
   !
-  USE parameters, ONLY : nchix
-  USE constants,  ONLY : ZERO, FPI
-  USE kinds,      ONLY : dbl
+  USE kinds,           ONLY : dbl
+  USE parameters,      ONLY : nchix
+  USE constants,       ONLY : ZERO, FPI
+  USE log_module,      ONLY : log_push, log_pop
   USE atom_module,     ONLY : nchi, lchi, chi, oc, r, rab, msh
   USE lattice_module,  ONLY : omega
   USE ions_module,     ONLY : ntyp => nsp
@@ -25,11 +26,13 @@ SUBROUTINE init_at_1()
   !
   INTEGER :: nt, nb, iq, ir, l, startq, lastq, ndm, ierr
   !
-  REAL(dbl), allocatable :: aux (:), vchi (:)
+  REAL(dbl), ALLOCATABLE :: aux (:), vchi (:)
   REAL(dbl) :: vqint, pref, q
 
 
   CALL timing ('init_at_1', OPR='start')
+  CALL log_push ('init_at_1')
+
   ndm = MAXVAL (msh(1:ntyp))
 
   ALLOCATE (aux(ndm),vchi(ndm), STAT=ierr)
@@ -71,6 +74,7 @@ SUBROUTINE init_at_1()
      IF (ierr/=0) CALL errore('init_at_1','deallocating aux, vchi', ABS(ierr))
 
   CALL timing ('init_at_1', OPR='stop')
+  CALL log_pop ('init_at_1')
 
 END SUBROUTINE init_at_1
 

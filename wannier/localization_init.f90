@@ -18,22 +18,23 @@
    !      * 'randomized' Cu's are random unitary matrixes
    !      * 'from_file'  read info from file (used in restart)
    !
-   USE kinds, ONLY : dbl
-   USE parameters, ONLY : nstrx
-   USE constants, ONLY : CZERO, CONE
-   USE timing_module, ONLY : timing
-   USE io_module, ONLY : stdout, io_name, wan_unit
-   USE files_module, ONLY : file_open, file_close
-   USE util_module, ONLY : zmat_unitary, mat_mul, mat_svd
+   USE kinds,               ONLY : dbl
+   USE parameters,          ONLY : nstrx
+   USE constants,           ONLY : CZERO, CONE
+   USE io_module,           ONLY : stdout, io_name, wan_unit
+   USE timing_module,       ONLY : timing
+   USE log_module,          ONLY : log_push, log_pop
+   USE files_module,        ONLY : file_open, file_close
+   USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd
    USE localization_module, ONLY : localization_read, cu, cu_best
-   USE overlap_module, ONLY : ca, dimwann, nkpts 
-   USE control_module, ONLY : unitary_thr
+   USE overlap_module,      ONLY : ca, dimwann, nkpts 
+   USE control_module,      ONLY : unitary_thr
    IMPLICIT NONE
 
    !
    ! input variables
    !
-   CHARACTER(*),    INTENT(in)  :: mode      
+   CHARACTER(*),    INTENT(IN)  :: mode      
 
    !
    ! local variables
@@ -44,18 +45,23 @@
    COMPLEX(dbl),    ALLOCATABLE :: cv1(:,:), cv2(:,:)
    LOGICAL                      :: lfound
    INTEGER                      :: i, ik, ierr
-
+   !
+   ! end of declarations
+   !
 
 !
-!---------------------------------------------------------------------
-
-
+!------------------------------
+! main body
+!------------------------------
+!
    CALL timing('localization_init', OPR='start')
+   CALL log_push('localization_init')
+
 
    !
    ! few checks
+   !
    IF ( dimwann <=0 ) CALL errore(subname,'invalid dimwann',-dimwann+1)
-
 
    !
    ! here set CU
@@ -135,7 +141,7 @@
 
 
    !
-   ! ... if the case init cU_best
+   ! if the case init cU_best
    !
    IF ( TRIM(mode) /= 'from_file' ) THEN
        !
@@ -145,7 +151,7 @@
 
 
    !
-   ! ... check unitariery of Cu
+   ! check unitariery of Cu
    !
    DO ik=1,nkpts
       IF ( .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
@@ -155,8 +161,8 @@
 
 
    CALL timing('localization_init', OPR='stop')
-   RETURN
-
+   CALL log_pop('localization_init')
+   !
 END SUBROUTINE localization_init
 
 

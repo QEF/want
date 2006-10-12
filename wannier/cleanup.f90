@@ -17,9 +17,9 @@
    !
    USE kpoints_module,      ONLY : kpoints_deallocate, kpoints_alloc 
    USE kpoints_module,      ONLY : bshells_deallocate, bshells_alloc
-   USE windows_module,      ONLY : windows_deallocate, windows_alloc => alloc 
    USE ions_module,         ONLY : ions_deallocate, ions_alloc => alloc    
    USE symmetry_module,     ONLY : symmetry_deallocate, symm_alloc => alloc
+   USE windows_module,      ONLY : windows_deallocate, windows_alloc => alloc 
    USE subspace_module,     ONLY : subspace_deallocate, subspace_alloc => alloc 
    USE overlap_module,      ONLY : overlap_deallocate, overlap_alloc => alloc 
    USE ggrids_module,       ONLY : ggrids_deallocate, ggrids_alloc => alloc 
@@ -45,7 +45,7 @@
       IF ( wfc_data_alloc ) CALL wfc_data_deallocate()
       IF ( loc_alloc )      CALL localization_deallocate()
       IF ( trial_alloc )    CALL trial_center_data_deallocate()
-      IF ( ham_alloc)       CALL hamiltonian_deallocate()
+      IF ( ham_alloc )      CALL hamiltonian_deallocate()
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
                             CALL us_deallocate()
                             CALL uspp_deallocate()

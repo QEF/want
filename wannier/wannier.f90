@@ -20,8 +20,9 @@
                                       unitary_thr, do_condmin, read_pseudo, do_polarization, &
                                       localization_init_mode => localization_init, &
                                       ordering_mode, do_ordering, do_collect_wf 
-      USE timing_module,       ONLY : timing, timing_upto_now
       USE io_module,           ONLY : stdout, wan_unit, ham_unit, io_name, wantdata_form
+      USE timing_module,       ONLY : timing, timing_upto_now
+      USE log_module,          ONLY : log_push, log_pop
       USE files_module,        ONLY : file_open, file_close
       USE version_module,      ONLY : version_number
       USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag
@@ -42,15 +43,15 @@
       IMPLICIT NONE
 
       !
-      ! ... local variables
+      ! local variables
       !
-      INTEGER :: ik, m, n, ierr
-      INTEGER :: ncgfix, ncount, iter
-      LOGICAL :: lcg, do_conjgrad
-      REAL(dbl) :: Omega_old, Omega_var, Omega0, OmegaA
-      REAL(dbl) :: gcnorm1, gcnorm0, gcnorm_aux
-      REAL(dbl) :: aux1, aux2, eqb, eqa, alpha, alphamin
-
+      INTEGER     :: ik, m, n, ierr
+      INTEGER     :: ncgfix, ncount, iter
+      LOGICAL     :: lcg, do_conjgrad
+      REAL(dbl)   :: Omega_old, Omega_var, Omega0, OmegaA
+      REAL(dbl)   :: gcnorm1, gcnorm0, gcnorm_aux
+      REAL(dbl)   :: aux1, aux2, eqb, eqa, alpha, alphamin
+      !
       REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  domg(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
@@ -62,9 +63,9 @@
       COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
       COMPLEX(dbl), ALLOCATABLE ::  Mkb_aux(:,:,:,:)
       !
-      CHARACTER( LEN=nstrx )  :: filename
+      CHARACTER( LEN=nstrx )    :: filename
       !
-      ! ... end of declarations
+      ! end of declarations
       !
 
 !
@@ -130,7 +131,6 @@
       ALLOCATE( cdU(dimwann,dimwann,nkpts), STAT=ierr )
          IF( ierr /=0 ) CALL errore('wannier', 'allocating cdU', ABS(ierr) )
 
- 
 
 !
 !--------------------------------------------
@@ -209,7 +209,9 @@
 
       iteration_loop : &
       DO iter = 1, maxiter0_wan + maxiter1_wan
+
            ncount = iter
+           CALL log_push( "itaration" )
 
            !
            ! Store cu and Mkb_aux
@@ -422,12 +424,14 @@ CALL timing('omega_best','stop')
                      !
                 CALL file_close(wan_unit,PATH="/",ACTION="write")
            ENDIF
-                
+           !
+           !     
+           CALL log_pop( "itaration" )
            !
            ! convergence condition
            !
            IF ( ABS( Omega_var ) < wannier_thr ) EXIT iteration_loop
-
+           !
       ENDDO iteration_loop
       !
       ! ... End of iter loop

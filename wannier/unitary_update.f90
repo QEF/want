@@ -20,6 +20,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    USE constants,      ONLY : CZERO
    USE io_module,      ONLY : stdout
    USE timing_module,  ONLY : timing
+   USE log_module,     ONLY : log_push, log_pop
    USE util_module,    ONLY : mat_mul, mat_hdiag, zmat_unitary
    USE parser_module,  ONLY : int2char
 
@@ -53,6 +54,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
 !-----------------------------
 !
    CALL timing('unitary_update',OPR='start')
+   CALL log_push('unitary_update')
 
 
    ALLOCATE( w(dimwann), z(dimwann, dimwann), STAT=ierr )
@@ -114,5 +116,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
 
 
    CALL timing('unitary_update',OPR='stop')
+   CALL log_pop('unitary_update')
+   !
 END SUBROUTINE unitary_update
 

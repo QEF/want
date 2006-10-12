@@ -10,13 +10,14 @@
 !*********************************************
    MODULE overlap_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : CZERO
-   USE windows_module, ONLY : dimwinx, dimwin, windows_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, nb, nnlist, kpoints_alloc
+   USE kinds,            ONLY : dbl
+   USE constants,        ONLY : CZERO
+   USE parameters,       ONLY : nstrx
+   USE log_module,       ONLY : log_push, log_pop
+   USE windows_module,   ONLY : dimwinx, dimwin, windows_alloc => alloc
+   USE kpoints_module,   ONLY : nkpts, nb, nnlist, kpoints_alloc
    USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
    USE iotk_module
-   USE parameters, ONLY : nstrx
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -67,6 +68,8 @@ CONTAINS
        CHARACTER(16)      :: subname="overlap_allocate"
        INTEGER            :: ierr 
 
+       CALL log_push( subname )
+       !
        IF ( dimwinx <= 0 ) CALL errore(subname,'Invalid DIMWINX',1)
        IF ( nkpts <= 0   ) CALL errore(subname,'Invalid NKPTS',1)
        IF ( dimwann <= 0 ) CALL errore(subname,'Invalid DIMWANN',1)
@@ -79,7 +82,9 @@ CONTAINS
            IF ( ierr/=0 ) CALL errore(subname,' allocating ca ', ABS(ierr) )
 
        alloc = .TRUE. 
-      
+       !
+       CALL log_pop( subname )
+       ! 
    END SUBROUTINE overlap_allocate
 
 
@@ -90,6 +95,8 @@ CONTAINS
        CHARACTER(18)      :: subname="overlap_deallocate"
        INTEGER            :: ierr 
 
+       CALL log_push( subname )
+       !
        IF ( ALLOCATED(Mkb) ) THEN
             DEALLOCATE(Mkb, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating Mkb ',ABS(ierr))
@@ -98,8 +105,11 @@ CONTAINS
             DEALLOCATE(ca, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating ca ',ABS(ierr))
        ENDIF
+       !
        alloc = .FALSE.
-
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE overlap_deallocate
 
 
@@ -113,6 +123,8 @@ CONTAINS
        INTEGER            :: iwann, ib, ik, ikb
 
        IF ( .NOT. alloc ) RETURN
+       CALL log_push ( 'overlap_write' )
+       !
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.)
        CALL iotk_write_attr(attr,"dimwann",dimwann)
@@ -162,6 +174,9 @@ CONTAINS
        CALL iotk_write_end(unit,'PROJECTIONS')
          
        CALL iotk_write_end(unit,TRIM(name))
+       !
+       CALL log_pop ( 'overlap_write' )
+       !
    END SUBROUTINE overlap_write
 
 
@@ -186,6 +201,7 @@ CONTAINS
        INTEGER            :: ik, iwann, dimwin_, dimwin_k, dimwin_kb, ib, nneigh_
        INTEGER            :: ierr
 
+       CALL log_push( subname )
        !
        ! define the default
        !
@@ -303,6 +319,9 @@ CONTAINS
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE overlap_read
 
 END MODULE overlap_module

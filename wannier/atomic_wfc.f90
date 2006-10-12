@@ -17,6 +17,8 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   !
   USE kinds,           ONLY : dbl
   USE constants,       ONLY : ZERO, CI
+  USE timing_module,   ONLY : timing
+  USE log_module,      ONLY : log_push, log_pop
   USE atom_module,     ONLY : nchi, lchi, oc
   USE ions_module,     ONLY : ityp, tau
   USE lattice_module,  ONLY : alat
@@ -25,7 +27,6 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   USE ggrids_module,   ONLY : igv
   USE struct_fact_data_module, &
                        ONLY : eigts1, eigts2, eigts3
-  USE timing_module
   IMPLICIT NONE
 
   !
@@ -50,8 +51,9 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
 ! Main body
 !--------------------------
 !
-
   CALL timing ('atomic_wfc',OPR='start')
+  CALL log_push ('atomic_wfc')
+
 
   ALLOCATE ( chiq(npw), STAT=ierr)
      IF (ierr/=0) CALL errore('atomic_wfc','allocating data',ABS(ierr))
@@ -118,5 +120,7 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
      IF (ierr/=0) CALL errore('atomic_wfc','deallocating data',ABS(ierr))
 
   CALL timing ('atomic_wfc',OPR='stop')
+  CALL log_pop ('atomic_wfc')
+  !
 END SUBROUTINE atomic_wfc
 

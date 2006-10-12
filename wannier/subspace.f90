@@ -10,13 +10,14 @@
 !*********************************************
    MODULE subspace_module
 !*********************************************
-   USE kinds, ONLY : dbl
+   USE kinds,          ONLY : dbl
+   USE parameters,     ONLY : nstrx
+   USE log_module,     ONLY : log_push, log_pop
    USE windows_module, ONLY : nbnd, dimwin, dimwinx, lcompspace, &
                               windows_allocate, &
                               windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, kpoints_alloc
    USE iotk_module
-   USE parameters, ONLY : nstrx
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -93,6 +94,8 @@ CONTAINS
        CHARACTER(17)      :: subname="subspace_allocate"
        INTEGER            :: ierr 
       
+       CALL log_push( subname )
+       !
        IF ( dimwinx <= 0 .OR. nkpts <= 0 ) &
            CALL errore(subname,' Invalid DIMWINX or NKPTS ',1)
        IF ( dimwann <= 0 ) CALL errore(subname,' Invalid DIMWANN ',ABS(dimwann)+1)
@@ -113,8 +116,11 @@ CONTAINS
            IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_in ',dimwinx**2 *nkpts )
        ALLOCATE( mtrx_out(dimwinx,dimwinx,nkpts), STAT = ierr )
            IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_out ',dimwinx**2 *nkpts )
+       !
        alloc = .TRUE.
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE subspace_allocate
 
 
@@ -125,6 +131,8 @@ CONTAINS
        CHARACTER(19)      :: subname="subspace_deallocate"
        INTEGER            :: ierr 
       
+       CALL log_push( subname )
+       !
        IF ( ALLOCATED(wan_eig) ) THEN 
             DEALLOCATE(wan_eig, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating wan_eig ',ABS(ierr))
@@ -153,7 +161,11 @@ CONTAINS
             DEALLOCATE(mtrx_out, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating mtrx_out ',ABS(ierr))
        ENDIF
+       !
        alloc = .FALSE.
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE subspace_deallocate
 
 
@@ -168,6 +180,8 @@ CONTAINS
        CHARACTER(14)      :: subname="subspace_write"
 
        IF ( .NOT. alloc ) RETURN
+       CALL log_push( subname )
+       !
        IF ( .NOT. windows_alloc ) CALL errore(subname,'windows module not alloc',1)
 
        CALL iotk_write_begin(unit,TRIM(name))
@@ -187,6 +201,9 @@ CONTAINS
        IF ( lcompspace ) CALL iotk_write_dat(unit,"COMP_EAMP",comp_eamp)
 
        CALL iotk_write_end(unit,TRIM(name))
+       !
+       CALL log_pop( subname )
+       !
    END SUBROUTINE subspace_write
 
 !**********************************************************
@@ -202,6 +219,8 @@ CONTAINS
        INTEGER            :: nkpts_, dimwinx_
        INTEGER            :: ik, ierr
 
+       CALL log_push( subname )
+       !
        IF ( alloc ) CALL subspace_deallocate()
 
        CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
@@ -253,6 +272,9 @@ CONTAINS
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE subspace_read
 
 END MODULE subspace_module

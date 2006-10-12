@@ -14,12 +14,10 @@ SUBROUTINE ccalbec( nkb, npwx, npw, nbnd, bec, vkb, psi )
   !    This subroutine computes the dot product of the beta functions
   !    and the wavefunctions, and save them in the array bec.
   !
-  USE kinds, ONLY : dbl
-  USE constants, ONLY : ZERO, ONE
+  USE kinds,        ONLY : dbl
+  USE constants,    ONLY : ZERO, ONE
+  USE log_module,   ONLY : log_push, log_pop
   USE timing_module
-
-!  USE wvfct, ONLY : gamma_only
-!  USE gvect, ONLY : gstart
   !
   IMPLICIT NONE
   !
@@ -39,6 +37,7 @@ SUBROUTINE ccalbec( nkb, npwx, npw, nbnd, bec, vkb, psi )
   IF ( nkb == 0 ) RETURN
   !
   CALL timing( 'ccalbec', OPR='start' )
+  CALL log_push( 'ccalbec' )
   !
 ! Also GAMMA_ONLY is avoided
 !  IF ( gamma_only ) THEN
@@ -57,7 +56,6 @@ SUBROUTINE ccalbec( nkb, npwx, npw, nbnd, bec, vkb, psi )
 !  END IF
   !
   CALL timing( 'ccalbec', OPR='stop' )
-  !
-  RETURN
+  CALL log_pop( 'ccalbec' )
   !
 END SUBROUTINE ccalbec

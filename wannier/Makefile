@@ -90,8 +90,7 @@ wfc_info.o \
 wfc_manager.o \
 windows.o \
 xsf.o \
-zmatrix.o \
-gcube2plt.o 
+zmatrix.o
 
 BIN= \
 disentangle.x \
@@ -101,7 +100,7 @@ dos.x \
 plot.x \
 blc2wan.x
 
-EXTERNAL_LIBS= ../iotk/libiotk.a ../libs/libwant.a 
+EXTERNAL_LIBS= ../iotk/libiotk.a ../ctools/libctools.a ../libs/libwant.a 
 BIN_DEPS=      $(OBJS) $(EXTERNAL_LIBS)
 
 #

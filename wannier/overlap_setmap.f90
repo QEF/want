@@ -9,25 +9,24 @@
 !*********************************************************
 SUBROUTINE overlap_setmap(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
    !*********************************************************
+   !
+   ! This subroutine set the map between the G coefficients of the
+   ! calculated wfc and the vectors entering the overlap scalar
+   ! product eventually accounting for the e^{iGr} phase
+   ! (giving an overall permutation of the G indexes)
+   !
+   ! The routine may be optimized eliminating some IF in the
+   ! loops whether necessary
+   !
    USE kinds
    USE ggrids_module, ONLY : igv, ggrids_gk_indexes, ggrids_gv_indexes
-   USE timing_module
-   
+   USE timing_module, ONLY : timing
+   USE log_module,    ONLY : log_push, log_pop
+   !   
    IMPLICIT NONE
-
-! <INFO>
-! This subroutine set the map between the G coefficients of the
-! calculated wfc and the vectors entering the overlap scalar
-! product eventually accounting for the e^{iGr} phase
-! (giving an overall permutation of the G indexes)
-!
-! The routine may be optimized eliminating some IF in the
-! loops whether necessary
-! 
-! </INFO>
    
    !
-   ! ... input variables
+   ! input variables
    !
    INTEGER,  INTENT(in)      :: npwk                ! max pw number for wfc among kpts
    INTEGER,  INTENT(in)      :: npwx_g              ! total number of G for wfcs
@@ -39,7 +38,7 @@ SUBROUTINE overlap_setmap(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
                                                     ! eventually including the permutation
                                                     ! due to the inclusion of the e^iGr phase
    !
-   ! ... local variables
+   ! local variables
    !
    CHARACTER(14)    :: subname="overlap_setmap"
    INTEGER          :: ix,  iy,  iz
@@ -48,11 +47,18 @@ SUBROUTINE overlap_setmap(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
    INTEGER          :: itmp, ipoint, ipoint_new
    INTEGER          :: ig, ierr
    INTEGER, ALLOCATABLE :: fft2gv(:), gk2fft(:)
+   !
+   ! end of declarations
+   !
 
 !
-! ... end of declarations
-
+!-----------------------------
+! main body
+!-----------------------------
+!
    CALL timing('overlap_setmap',OPR='start')
+   CALL log_push('overlap_setmap')
+
 
    ALLOCATE( gk2fft(npwk), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating gk2fft', ABS(ierr) )
@@ -121,7 +127,8 @@ SUBROUTINE overlap_setmap(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
       IF (ierr/=0) CALL errore(subname,'deallocating fft2gv', ABS(ierr) )
 
    CALL timing('overlap_setmap',OPR='stop')
-
+   CALL log_pop('overlap_setmap')
+   !
 END SUBROUTINE overlap_setmap
 
 

@@ -20,6 +20,7 @@
    USE util_module,     ONLY : mat_svd, mat_sv, mat_rank
    USE timing_module,   ONLY : timing
    USE io_module,       ONLY : stdout
+   USE log_module,      ONLY : log_push, log_pop
    !
    USE parameters,      ONLY : nnx
    USE lattice_module,  ONLY : bvec, lattice_alloc => alloc
@@ -57,6 +58,7 @@
 !------------------------------
 !
    CALL timing('bshells_init',OPR='start')
+   CALL log_push('bshells_init')
 
    IF ( .NOT. lattice_alloc ) CALL errore('bshells_init', 'lattice NOT alloc', 1 )
    IF ( .NOT. kpoints_alloc ) CALL errore('bshells_init', 'kpoints NOT alloc', 1 )
@@ -378,6 +380,8 @@
    ENDDO
 
    CALL timing('bshells_init',OPR='stop')
+   CALL log_pop('bshells_init')
+   !
 END SUBROUTINE bshells_init
 
 

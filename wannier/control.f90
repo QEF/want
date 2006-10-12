@@ -30,6 +30,7 @@
    INTEGER                   :: nsave_dis
    INTEGER                   :: nprint_wan
    INTEGER                   :: nsave_wan
+   INTEGER                   :: debug_level
    REAL(dbl)                 :: unitary_thr
 
    LOGICAL                   :: use_pseudo 
@@ -37,6 +38,7 @@
    LOGICAL                   :: use_atomwfc 
    LOGICAL                   :: use_blimit 
    LOGICAL                   :: use_symmetry
+   LOGICAL                   :: use_debug_mode
 
    LOGICAL                   :: do_overlaps
    LOGICAL                   :: do_projections
@@ -66,12 +68,14 @@
    PUBLIC :: nprint_wan
    PUBLIC :: nsave_wan
    PUBLIC :: unitary_thr
+   PUBLIC :: debug_level
 
    PUBLIC :: use_pseudo
    PUBLIC :: use_atomwfc
    PUBLIC :: use_uspp
    PUBLIC :: use_blimit
    PUBLIC :: use_symmetry
+   PUBLIC :: use_debug_mode
 
    PUBLIC :: do_overlaps
    PUBLIC :: do_projections

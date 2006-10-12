@@ -21,6 +21,7 @@
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, ham_unit
    USE timing_module,        ONLY : timing
+   USE log_module,           ONLY : log_push, log_pop
    USE parser_module,        ONLY : int2char
    USE control_module,       ONLY : verbosity
    USE kpoints_module,       ONLY : vkpt, nrtot, vr, ivr
@@ -30,9 +31,7 @@
 #ifdef __CHECK_HAMILTONIAN
    USE io_module, ONLY : work_dir, prefix, postfix 
 #endif
-
-
-
+   
    IMPLICIT NONE 
    !
    ! input variables
@@ -63,7 +62,9 @@
 ! main body
 !------------------------------
 !
-      CALL timing('hamiltonian_calc',OPR='start')
+      CALL timing(subname,OPR='start')
+      CALL log_push(subname)
+      !
       IF ( .NOT. ham_alloc ) CALL errore(subname,'hamiltonian data NOT alloc',1)
 
       !
@@ -190,6 +191,8 @@
           ENDIF
       ENDDO
 
-      CALL timing('hamiltonian_calc',OPR='stop')
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
+      !
 END SUBROUTINE hamiltonian_calc
 

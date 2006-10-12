@@ -52,6 +52,8 @@ CONTAINS
                                            do_ordering,       &
                                            use_pseudo,        &
                                            use_symmetry,      &
+                                           use_debug_mode,    &
+                                           debug_level,       &
                                            read_pseudo,       &
                                            read_overlaps,     &
                                            read_projections,  &
@@ -81,6 +83,7 @@ CONTAINS
                                            collect_wf_      => collect_wf, &
                                            use_blimit_      => use_blimit, &
                                            use_symmetry_    => use_symmetry, &
+                                           debug_level_     => debug_level, &
                                            assume_ncpp_     => assume_ncpp
 
       IMPLICIT NONE
@@ -97,7 +100,10 @@ CONTAINS
       read_pseudo      = .NOT. assume_ncpp_
       use_symmetry     = use_symmetry_
       read_symmetry    = use_symmetry_
-      
+
+      debug_level      = debug_level_
+      use_debug_mode   = .FALSE.
+      IF ( debug_level_ > 0 )  use_debug_mode   = .TRUE.
 
       do_condmin = .TRUE.
       IF ( a_condmin_ <= ZERO ) do_condmin = .FALSE.

@@ -10,10 +10,11 @@
 !*********************************************
    MODULE windows_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : RYD, TWO
-   USE parameters, ONLY : nstrx
-   USE parser_module, ONLY : change_case
+   USE kinds,          ONLY : dbl
+   USE constants,      ONLY : RYD, TWO, ZERO
+   USE parameters,     ONLY : nstrx
+   USE log_module,     ONLY : log_push, log_pop
+   USE parser_module,  ONLY : change_case
    USE kpoints_module, ONLY : iks, ike, nkpts, kpoints_alloc
    USE iotk_module
    USE qexml_module 
@@ -93,15 +94,19 @@ CONTAINS
 !**********************************************************
    SUBROUTINE windows_init( eig_, dimwann )
    !**********************************************************
+   !
+   ! nbnd and nkpts are supposed to be already setted
+   !
    IMPLICIT NONE
        REAL(dbl), INTENT(in) :: eig_(:,:)
        INTEGER,   INTENT(in) :: dimwann
        CHARACTER(12)         :: subname="windows_init"
        INTEGER               :: kifroz_max, kifroz_min, idum
        INTEGER               :: i, ik, ierr
-       !
-       ! nbnd and nkpts are supposed to be already setted
 
+       !
+       CALL log_push( subname )
+       !
        IF ( .NOT. alloc ) CALL errore(subname,'windows module not allocated',1)
        IF ( nkpts <= 0) CALL errore(subname,'Invalid nkpts',ABS(nkpts)+1)
        IF ( nbnd <= 0) CALL errore(subname,'Invalid nbnd',ABS(nbnd)+1)
@@ -210,7 +215,9 @@ CONTAINS
               CALL errore(subname, 'wrong number of non-frozen states', ik)
 
        ENDDO kpoints_frozen_loop   
-
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE windows_init
 
 
@@ -221,6 +228,8 @@ CONTAINS
        CHARACTER(16)      :: subname="windows_allocate"
        INTEGER            :: ierr
 
+       CALL log_push ( subname )
+       !
        IF ( nbnd <= 0 .OR. nkpts <= 0 ) &
            CALL errore(subname,' Invalid NBND or NKPTS ',1)
        IF ( nspin /= 1 .AND. nspin /=2 ) CALL errore(subname,'Invalid NSPIN',ABS(nspin)+1)
@@ -235,6 +244,9 @@ CONTAINS
            IF ( ierr/=0 ) CALL errore(subname,' allocating eig ',nbnd*nkpts)
 
        alloc = .TRUE.
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE windows_allocate
 
 
@@ -245,6 +257,8 @@ CONTAINS
        CHARACTER(18)      :: subname="windows_deallocate"
        INTEGER            :: ierr
 
+       CALL log_push ( subname )
+       !
        IF ( ALLOCATED(dimwin) ) THEN
             DEALLOCATE(dimwin, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating dimwin ',ABS(ierr))
@@ -277,7 +291,11 @@ CONTAINS
             DEALLOCATE(frozen, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating frozen ',ABS(ierr))
        ENDIF
+       !
        alloc = .FALSE.
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE windows_deallocate
 
 
@@ -291,7 +309,10 @@ CONTAINS
        CHARACTER(13)      :: subname="windows_write"
        INTEGER            :: ierr
 
+
        IF ( .NOT. alloc ) RETURN
+       !
+       CALL log_push ( subname )
        
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
@@ -316,6 +337,9 @@ CONTAINS
        CALL iotk_write_dat(unit,"FROZEN",frozen)
 
        CALL iotk_write_end(unit,TRIM(name))
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE windows_write
    
 
@@ -331,6 +355,8 @@ CONTAINS
        INTEGER            :: nkpts_
        INTEGER            :: ierr
 
+       CALL log_push ( subname )
+       !
        IF ( alloc ) CALL windows_deallocate()
     
        CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
@@ -394,6 +420,9 @@ CONTAINS
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+       !
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE windows_read
 
 
@@ -403,11 +432,13 @@ CONTAINS
    IMPLICIT NONE
        CHARACTER(*),      INTENT(in) :: filefmt
        CHARACTER(16)      :: subname="windows_read_ext"
-       CHARACTER(nstrx)   :: str
-       INTEGER            :: lnkpts, ierr
+       CHARACTER(nstrx)   :: str, str1
+       INTEGER            :: lnkpts, ierr, ik
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
 
 
+       CALL log_push ( subname )
+       !
        IF ( alloc ) CALL windows_deallocate()
        !
        !
@@ -415,11 +446,15 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, NSPIN=nspin, IERR=ierr )
+            CALL qexml_read_bands_info( NBND=nbnd, NUM_K_POINTS=lnkpts, &
+                                        NSPIN=nspin, EF=efermi, &
+                                        NELEC=nelec, IERR=ierr )
             !
        CASE ( 'pw_export' )
             !
-            CALL qexpt_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, NSPIN=nspin, IERR=ierr )
+            CALL qexpt_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, &
+                                   NSPIN=nspin, EF=efermi, &
+                                   NELEC=nelec, IERR=ierr )
             !
        CASE DEFAULT
             !
@@ -437,22 +472,81 @@ CONTAINS
        !
        ALLOCATE( leig( nbnd, nkpts, nspin), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating LEIG', ABS(ierr))
-   
+       !
+       leig (:,:,:) = ZERO
 
+       !
+       !
+       ! setting the auxiliary quantities IKE, IKS, ISPIN
+       !
+       IF ( nspin == 1) THEN
+            !
+            iks = 1
+            ike = nkpts
+            ispin = 1
+            !
+            IF ( TRIM(spin_component) /= 'none' ) &
+                 CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
+       ELSE
+            SELECT CASE ( TRIM(spin_component) )
+            CASE ( 'up' )
+                !
+                iks = 1
+                ike = nkpts
+                ispin = 1
+                !
+            CASE ( 'down' )
+                iks = nkpts+1
+                ike = 2*nkpts
+                ispin = 2
+                !
+            CASE DEFAULT
+                CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
+            END SELECT
+       ENDIF
+
+       !
+       ! read data
+       !
        SELECT CASE ( TRIM(filefmt) )
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_bands( EF=efermi, NELEC=nelec, EIG_S=leig, ENERGY_UNITS=str, IERR=ierr )
+            !
+            IF ( nspin == 1 ) THEN
+                !
+                DO ik = 1, nkpts
+                   ! 
+                   CALL qexml_read_bands( IK=ik, EIG=leig(1:nbnd, ik, 1), &
+                                          ENERGY_UNITS=str, IERR=ierr )
+                   !
+                   IF ( ierr/=0 ) CALL errore(subname,'reading bands',ik)
+                   !
+                ENDDO
+                !
+            ELSE
+                !
+                DO ik = 1, nkpts
+                   ! 
+                   CALL qexml_read_bands( IK=ik, ISPIN=ispin, EIG=leig(1:nbnd, ik, ispin), &
+                                          ENERGY_UNITS=str, IERR=ierr )
+                   !
+                   IF ( ierr/=0 ) CALL errore(subname,'reading bands',ik)
+                   !
+                ENDDO
+                !
+            ENDIF
+            !
             !
        CASE ( 'pw_export' )
             !
-            CALL qexpt_read_bands( EF=efermi, NELEC=nelec, EIG_S=leig, ENERGY_UNITS=str, IERR=ierr )
+            CALL qexpt_read_bands( EIG_S=leig, ENERGY_UNITS=str, IERR=ierr )
             !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
        END SELECT
+
        !
        ! check energy units
        !
@@ -471,49 +565,25 @@ CONTAINS
            !
        CASE ( 'elettronvolt', 'elettron-volt', 'ev')
            !
-           ! doi nothing
+           ! do nothing
            !
        CASE DEFAULT
            CALL errore(subname,'Wrong units in Energies',5)
        END SELECT
  
+
        !
-       !
-       ! setting the auxiliary quantities IKE, IKS
        ! define EIG
        !
-       IF ( nspin == 1) THEN
-            !
-            iks = 1
-            ike = nkpts
-            ispin = 1
-            eig(:,:) = leig(:,:, 1)
-            !
-            IF ( TRIM(spin_component) /= 'none' ) &
-                 CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
-       ELSE
-            SELECT CASE ( TRIM(spin_component) )
-            CASE ( 'up' )
-                !
-                iks = 1
-                ike = nkpts
-                ispin = 1
-                eig(:,:) = leig(:,:, 1)
-                !
-            CASE ( 'down' )
-                iks = nkpts+1
-                ike = 2*nkpts
-                ispin = 2
-                eig(:,:) = leig(:,:, 2)
-                !
-            CASE DEFAULT
-                CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
-            END SELECT
-       ENDIF
+       eig(:,:) = leig(:,:, ispin)
        !
+
        DEALLOCATE( leig, STAT=ierr)
        IF (ierr/=0) CALL errore(subname, 'deallocating LEIG', ABS(ierr))
 
+       CALL log_pop ( subname )
+       !
    END SUBROUTINE windows_read_ext
 
 END MODULE windows_module
+

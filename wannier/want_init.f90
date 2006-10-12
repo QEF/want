@@ -33,6 +33,7 @@ SUBROUTINE want_init_x(input, lattice, ions, windows, kpoints, bshells, pseudo)
    USE constants,                ONLY : ZERO, EPS_m6
    USE parameters,               ONLY : nstrx
    USE timing_module,            ONLY : timing
+   USE log_module,               ONLY : log_push, log_pop
    !
    USE io_module,                ONLY : io_init, io_alloc => alloc
    USE control_module,           ONLY : do_polarization
@@ -73,6 +74,7 @@ SUBROUTINE want_init_x(input, lattice, ions, windows, kpoints, bshells, pseudo)
 !------------------------------
 !
     CALL timing('want_init',OPR='start')
+    CALL log_push('want_init')
 
 !   
 ! setting up   
@@ -206,7 +208,8 @@ SUBROUTINE want_init_x(input, lattice, ions, windows, kpoints, bshells, pseudo)
     ENDIF
 
 
-   CALL timing('want_init',OPR='stop')
+    CALL timing('want_init',OPR='stop')
+    CALL log_pop('want_init')
 
 END SUBROUTINE want_init_x
 
