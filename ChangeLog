@@ -16,7 +16,7 @@
                  v1.2.0 . (AF) 
 
 29 Sep 2006      Bug fixed in qexpt and qexml libs when reading wfc with ibnds /= 1 .
-                 Signalation courtesy of Matias Nunez. (AF)
+                 Reported by Matias Nunez. (AF)
 
 25 Sep 2006      work_dir manage fixed in bands.x and dos.x . (AF)
 
