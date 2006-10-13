@@ -406,9 +406,12 @@ CONTAINS
       CALL iotk_scan_attr( attr, "invsym", invsym_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
+      !
       DO i = 1, nsym_
            !
-           CALL iotk_scan_dat( iunpun, "sname"//TRIM( iotk_index(i)), sname_(i), IERR=ierr )
+           CALL iotk_scan_empty( iunpun, "info"//TRIM( iotk_index(i)), ATTR=attr, IERR=ierr )
+           IF (ierr/=0) RETURN
+           CALL iotk_scan_attr( attr, "name", sname_(i), IERR=ierr )
            IF (ierr/=0) RETURN
            !
            CALL iotk_scan_dat( iunpun, "sym"//TRIM( iotk_index(i)), s_(:,:,i), IERR=ierr )
