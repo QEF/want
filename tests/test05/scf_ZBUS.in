@@ -5,10 +5,10 @@ US - pbe
       calculation = 'scf',
       restart_mode='from_scratch',
       prefix='zincblend_US',
+      pseudo_dir='./'
       nstep=2000,
       tprnfor = .true.,
       verbosity = 'high'
-      pseudo_dir = './'
    /
    &SYSTEM
       ibrav=4, 
