@@ -873,9 +873,9 @@ CONTAINS
       IF ( ierr /=0 ) RETURN
       !
       !
-      lindex = 0
-      !
       IF ( PRESENT( wf ) ) THEN
+          !
+          lindex = 0
           !
           DO ib = ibnds, ibnde
               !
