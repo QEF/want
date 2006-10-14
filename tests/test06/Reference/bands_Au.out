@@ -7,16 +7,37 @@
   ======================================================================
 
 
-  Program <bands>  v. 2.0.0  starts ...
-  Date 12Apr2006 at  0:10:16 
+  Program <bands>  v. 2.1.0  starts ...
+  Date 14Oct2006 at  6:17: 4 
 
-  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
-        Compiler: INTEL
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
 
 
-  PW-DFT data read from file: gold.export/index.xml
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: gold.save/data-file.xml
+
   Space data read from file: gold_WanT.space
   Hamiltonian data read from file: gold_WanT.ham
+
+
+  ======================================================================
+  =                           INPUT Summary                            =
+  ======================================================================
+
+                      fileout :     ./SCRATCH/gold_WanT_bands.dat
+                    nkpts_in  :      2
+                    nkpts_max :    100
+
 
   ======================================================================
   =                              DFT data                              =
@@ -48,15 +69,16 @@
  <K-POINTS>
   nkpts =    8
   Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
+
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250000
-    k point   2:   (   0.00000  0.00000  0.16625 ),   weight =   0.1250000
-    k point   3:   (   0.00000  0.00000  0.33249 ),   weight =   0.1250000
-    k point   4:   (   0.00000  0.00000  0.49874 ),   weight =   0.1250000
-    k point   5:   (   0.00000  0.00000  0.66498 ),   weight =   0.1250000
-    k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250000
-    k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250000
-    k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250000
+    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.1250000
+    k (   2) =    (   0.00000  0.00000  0.16625 ),   weight =   0.1250000
+    k (   3) =    (   0.00000  0.00000  0.33249 ),   weight =   0.1250000
+    k (   4) =    (   0.00000  0.00000  0.49874 ),   weight =   0.1250000
+    k (   5) =    (   0.00000  0.00000  0.66498 ),   weight =   0.1250000
+    k (   6) =    (   0.00000  0.00000  0.83123 ),   weight =   0.1250000
+    k (   7) =    (   0.00000  0.00000  0.99747 ),   weight =   0.1250000
+    k (   8) =    (   0.00000  0.00000  1.16372 ),   weight =   0.1250000
  </K-POINTS>
 
 
@@ -282,11 +304,14 @@
       k point  99:   (   0.00000  0.00000  0.49000 ) 
       k point 100:   (   0.00000  0.00000  0.50000 ) 
 
+  ======================================================================
+
    <global routines>
-             clock number :     2
+             clock number :     3
 
                     bands :     0.00s CPU 
- 
-                want_init :     0.01s CPU
+
+             want_dftread :     0.28s CPU
+                want_init :     0.12s CPU
 
 

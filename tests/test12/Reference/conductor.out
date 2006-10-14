@@ -7,13 +7,26 @@
   ======================================================================
 
 
-  Program <conductor>  v. 2.0.0  starts ...
-  Date 12Apr2006 at  4:31:54 
+  Program <conductor>  v. 2.1.0  starts ...
+  Date 14Oct2006 at 11: 6:11 
 
-  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
-        Compiler: INTEL
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
 
 
+
+  ======================================================================
+  =                           INPUT Summary                            =
+  ======================================================================
 
   <INPUT>
        Calculation Type    :     bulk
@@ -30,361 +43,367 @@
 
 
   <ENERGY_GRID>
-       Dimension   :       1000
-       Min Energy  :      -10.00000
-       Max Energy  :        5.00000
-       Energy Step :        0.01502
-       Delta       :        0.10000
-       Sigma       :        0.10000
+       Dimension     :       1000
+       Min Energy    :      -10.00000
+       Max Energy    :        5.00000
+       Energy Step   :        0.01502
+       Delta         :        0.05000
+       Smearing Type :     gaussian
+       Smearing grid Dimension :      19998
+       Smearing grid Extrema   :       25.00000
   </ENERGY_GRID>
 
 
   <K-POINTS>
        nkpts_par =   36
        nrtot_par =   36
+
        Parallel kpoints grid:      nk = (  6  6  1 )
-       k point    1:   (  -0.33333 -0.33333  0.00000 ),   weight =   0.0278
-       k point    2:   (  -0.16667 -0.33333  0.00000 ),   weight =   0.0278
-       k point    3:   (   0.00000 -0.33333  0.00000 ),   weight =   0.0278
-       k point    4:   (   0.16667 -0.33333  0.00000 ),   weight =   0.0278
-       k point    5:   (   0.33333 -0.33333  0.00000 ),   weight =   0.0278
-       k point    6:   (   0.50000 -0.33333  0.00000 ),   weight =   0.0278
-       k point    7:   (  -0.33333 -0.16667  0.00000 ),   weight =   0.0278
-       k point    8:   (  -0.16667 -0.16667  0.00000 ),   weight =   0.0278
-       k point    9:   (   0.00000 -0.16667  0.00000 ),   weight =   0.0278
-       k point   10:   (   0.16667 -0.16667  0.00000 ),   weight =   0.0278
-       k point   11:   (   0.33333 -0.16667  0.00000 ),   weight =   0.0278
-       k point   12:   (   0.50000 -0.16667  0.00000 ),   weight =   0.0278
-       k point   13:   (  -0.33333  0.00000  0.00000 ),   weight =   0.0278
-       k point   14:   (  -0.16667  0.00000  0.00000 ),   weight =   0.0278
-       k point   15:   (   0.00000  0.00000  0.00000 ),   weight =   0.0278
-       k point   16:   (   0.16667  0.00000  0.00000 ),   weight =   0.0278
-       k point   17:   (   0.33333  0.00000  0.00000 ),   weight =   0.0278
-       k point   18:   (   0.50000  0.00000  0.00000 ),   weight =   0.0278
-       k point   19:   (  -0.33333  0.16667  0.00000 ),   weight =   0.0278
-       k point   20:   (  -0.16667  0.16667  0.00000 ),   weight =   0.0278
-       k point   21:   (   0.00000  0.16667  0.00000 ),   weight =   0.0278
-       k point   22:   (   0.16667  0.16667  0.00000 ),   weight =   0.0278
-       k point   23:   (   0.33333  0.16667  0.00000 ),   weight =   0.0278
-       k point   24:   (   0.50000  0.16667  0.00000 ),   weight =   0.0278
-       k point   25:   (  -0.33333  0.33333  0.00000 ),   weight =   0.0278
-       k point   26:   (  -0.16667  0.33333  0.00000 ),   weight =   0.0278
-       k point   27:   (   0.00000  0.33333  0.00000 ),   weight =   0.0278
-       k point   28:   (   0.16667  0.33333  0.00000 ),   weight =   0.0278
-       k point   29:   (   0.33333  0.33333  0.00000 ),   weight =   0.0278
-       k point   30:   (   0.50000  0.33333  0.00000 ),   weight =   0.0278
-       k point   31:   (  -0.33333  0.50000  0.00000 ),   weight =   0.0278
-       k point   32:   (  -0.16667  0.50000  0.00000 ),   weight =   0.0278
-       k point   33:   (   0.00000  0.50000  0.00000 ),   weight =   0.0278
-       k point   34:   (   0.16667  0.50000  0.00000 ),   weight =   0.0278
-       k point   35:   (   0.33333  0.50000  0.00000 ),   weight =   0.0278
-       k point   36:   (   0.50000  0.50000  0.00000 ),   weight =   0.0278
+       k (   1) =    (  -0.33333 -0.33333  0.00000 ),   weight =   0.0278
+       k (   2) =    (  -0.16667 -0.33333  0.00000 ),   weight =   0.0278
+       k (   3) =    (   0.00000 -0.33333  0.00000 ),   weight =   0.0278
+       k (   4) =    (   0.16667 -0.33333  0.00000 ),   weight =   0.0278
+       k (   5) =    (   0.33333 -0.33333  0.00000 ),   weight =   0.0278
+       k (   6) =    (   0.50000 -0.33333  0.00000 ),   weight =   0.0278
+       k (   7) =    (  -0.33333 -0.16667  0.00000 ),   weight =   0.0278
+       k (   8) =    (  -0.16667 -0.16667  0.00000 ),   weight =   0.0278
+       k (   9) =    (   0.00000 -0.16667  0.00000 ),   weight =   0.0278
+       k (  10) =    (   0.16667 -0.16667  0.00000 ),   weight =   0.0278
+       k (  11) =    (   0.33333 -0.16667  0.00000 ),   weight =   0.0278
+       k (  12) =    (   0.50000 -0.16667  0.00000 ),   weight =   0.0278
+       k (  13) =    (  -0.33333  0.00000  0.00000 ),   weight =   0.0278
+       k (  14) =    (  -0.16667  0.00000  0.00000 ),   weight =   0.0278
+       k (  15) =    (   0.00000  0.00000  0.00000 ),   weight =   0.0278
+       k (  16) =    (   0.16667  0.00000  0.00000 ),   weight =   0.0278
+       k (  17) =    (   0.33333  0.00000  0.00000 ),   weight =   0.0278
+       k (  18) =    (   0.50000  0.00000  0.00000 ),   weight =   0.0278
+       k (  19) =    (  -0.33333  0.16667  0.00000 ),   weight =   0.0278
+       k (  20) =    (  -0.16667  0.16667  0.00000 ),   weight =   0.0278
+       k (  21) =    (   0.00000  0.16667  0.00000 ),   weight =   0.0278
+       k (  22) =    (   0.16667  0.16667  0.00000 ),   weight =   0.0278
+       k (  23) =    (   0.33333  0.16667  0.00000 ),   weight =   0.0278
+       k (  24) =    (   0.50000  0.16667  0.00000 ),   weight =   0.0278
+       k (  25) =    (  -0.33333  0.33333  0.00000 ),   weight =   0.0278
+       k (  26) =    (  -0.16667  0.33333  0.00000 ),   weight =   0.0278
+       k (  27) =    (   0.00000  0.33333  0.00000 ),   weight =   0.0278
+       k (  28) =    (   0.16667  0.33333  0.00000 ),   weight =   0.0278
+       k (  29) =    (   0.33333  0.33333  0.00000 ),   weight =   0.0278
+       k (  30) =    (   0.50000  0.33333  0.00000 ),   weight =   0.0278
+       k (  31) =    (  -0.33333  0.50000  0.00000 ),   weight =   0.0278
+       k (  32) =    (  -0.16667  0.50000  0.00000 ),   weight =   0.0278
+       k (  33) =    (   0.00000  0.50000  0.00000 ),   weight =   0.0278
+       k (  34) =    (   0.16667  0.50000  0.00000 ),   weight =   0.0278
+       k (  35) =    (   0.33333  0.50000  0.00000 ),   weight =   0.0278
+       k (  36) =    (   0.50000  0.50000  0.00000 ),   weight =   0.0278
 
        Parallel R vector grid:      nr = (  6  6  1 )
-       R vector   1:   (  -2.00000 -2.00000  0.00000 ),   weight =   1.0000
-       R vector   2:   (  -1.00000 -2.00000  0.00000 ),   weight =   1.0000
-       R vector   3:   (   0.00000 -2.00000  0.00000 ),   weight =   1.0000
-       R vector   4:   (   1.00000 -2.00000  0.00000 ),   weight =   1.0000
-       R vector   5:   (   2.00000 -2.00000  0.00000 ),   weight =   1.0000
-       R vector   6:   (   3.00000 -2.00000  0.00000 ),   weight =   1.0000
-       R vector   7:   (  -2.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R vector   8:   (  -1.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R vector   9:   (   0.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R vector  10:   (   1.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R vector  11:   (   2.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R vector  12:   (   3.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R vector  13:   (  -2.00000  0.00000  0.00000 ),   weight =   1.0000
-       R vector  14:   (  -1.00000  0.00000  0.00000 ),   weight =   1.0000
-       R vector  15:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000
-       R vector  16:   (   1.00000  0.00000  0.00000 ),   weight =   1.0000
-       R vector  17:   (   2.00000  0.00000  0.00000 ),   weight =   1.0000
-       R vector  18:   (   3.00000  0.00000  0.00000 ),   weight =   1.0000
-       R vector  19:   (  -2.00000  1.00000  0.00000 ),   weight =   1.0000
-       R vector  20:   (  -1.00000  1.00000  0.00000 ),   weight =   1.0000
-       R vector  21:   (   0.00000  1.00000  0.00000 ),   weight =   1.0000
-       R vector  22:   (   1.00000  1.00000  0.00000 ),   weight =   1.0000
-       R vector  23:   (   2.00000  1.00000  0.00000 ),   weight =   1.0000
-       R vector  24:   (   3.00000  1.00000  0.00000 ),   weight =   1.0000
-       R vector  25:   (  -2.00000  2.00000  0.00000 ),   weight =   1.0000
-       R vector  26:   (  -1.00000  2.00000  0.00000 ),   weight =   1.0000
-       R vector  27:   (   0.00000  2.00000  0.00000 ),   weight =   1.0000
-       R vector  28:   (   1.00000  2.00000  0.00000 ),   weight =   1.0000
-       R vector  29:   (   2.00000  2.00000  0.00000 ),   weight =   1.0000
-       R vector  30:   (   3.00000  2.00000  0.00000 ),   weight =   1.0000
-       R vector  31:   (  -2.00000  3.00000  0.00000 ),   weight =   1.0000
-       R vector  32:   (  -1.00000  3.00000  0.00000 ),   weight =   1.0000
-       R vector  33:   (   0.00000  3.00000  0.00000 ),   weight =   1.0000
-       R vector  34:   (   1.00000  3.00000  0.00000 ),   weight =   1.0000
-       R vector  35:   (   2.00000  3.00000  0.00000 ),   weight =   1.0000
-       R vector  36:   (   3.00000  3.00000  0.00000 ),   weight =   1.0000
+       R (   1) =    (  -2.00000 -2.00000  0.00000 ),   weight =   1.0000
+       R (   2) =    (  -1.00000 -2.00000  0.00000 ),   weight =   1.0000
+       R (   3) =    (   0.00000 -2.00000  0.00000 ),   weight =   1.0000
+       R (   4) =    (   1.00000 -2.00000  0.00000 ),   weight =   1.0000
+       R (   5) =    (   2.00000 -2.00000  0.00000 ),   weight =   1.0000
+       R (   6) =    (   3.00000 -2.00000  0.00000 ),   weight =   1.0000
+       R (   7) =    (  -2.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   8) =    (  -1.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   9) =    (   0.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (  10) =    (   1.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (  11) =    (   2.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (  12) =    (   3.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (  13) =    (  -2.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  14) =    (  -1.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  15) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  16) =    (   1.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  17) =    (   2.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  18) =    (   3.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  19) =    (  -2.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  20) =    (  -1.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  21) =    (   0.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  22) =    (   1.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  23) =    (   2.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  24) =    (   3.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  25) =    (  -2.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  26) =    (  -1.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  27) =    (   0.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  28) =    (   1.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  29) =    (   2.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  30) =    (   3.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  31) =    (  -2.00000  3.00000  0.00000 ),   weight =   1.0000
+       R (  32) =    (  -1.00000  3.00000  0.00000 ),   weight =   1.0000
+       R (  33) =    (   0.00000  3.00000  0.00000 ),   weight =   1.0000
+       R (  34) =    (   1.00000  3.00000  0.00000 ),   weight =   1.0000
+       R (  35) =    (   2.00000  3.00000  0.00000 ),   weight =   1.0000
+       R (  36) =    (   3.00000  3.00000  0.00000 ),   weight =   1.0000
   </K-POINTS>
 
 
   Computing E(     1 ) = -10.00000 eV
-  T matrix converged after avg. # of iterations    8.083
+  T matrix converged after avg. # of iterations    2.917
 
-                              Total time spent up to now :     6.23 secs
+                              Total time spent up to now :     5.45 secs
 
   Computing E(    20 ) =  -9.71471 eV
-  T matrix converged after avg. # of iterations    8.000
+  T matrix converged after avg. # of iterations    3.806
 
-                              Total time spent up to now :    16.92 secs
+                              Total time spent up to now :    11.27 secs
 
   Computing E(    40 ) =  -9.41441 eV
-  T matrix converged after avg. # of iterations    7.972
+  T matrix converged after avg. # of iterations    4.028
 
-                              Total time spent up to now :    28.13 secs
+                              Total time spent up to now :    17.97 secs
 
   Computing E(    60 ) =  -9.11411 eV
-  T matrix converged after avg. # of iterations    8.000
+  T matrix converged after avg. # of iterations    3.778
 
-                              Total time spent up to now :    39.33 secs
+                              Total time spent up to now :    24.61 secs
 
   Computing E(    80 ) =  -8.81381 eV
-  T matrix converged after avg. # of iterations    8.000
+  T matrix converged after avg. # of iterations    4.083
 
-                              Total time spent up to now :    50.56 secs
+                              Total time spent up to now :    31.15 secs
 
   Computing E(   100 ) =  -8.51351 eV
-  T matrix converged after avg. # of iterations    8.000
+  T matrix converged after avg. # of iterations    3.250
 
-                              Total time spent up to now :    61.78 secs
+                              Total time spent up to now :    37.58 secs
 
   Computing E(   120 ) =  -8.21321 eV
-  T matrix converged after avg. # of iterations    7.972
+  T matrix converged after avg. # of iterations    3.000
 
-                              Total time spent up to now :    73.03 secs
+                              Total time spent up to now :    43.66 secs
 
   Computing E(   140 ) =  -7.91291 eV
-  T matrix converged after avg. # of iterations    7.972
+  T matrix converged after avg. # of iterations    2.833
 
-                              Total time spent up to now :    84.21 secs
+                              Total time spent up to now :    49.55 secs
 
   Computing E(   160 ) =  -7.61261 eV
-  T matrix converged after avg. # of iterations    7.917
+  T matrix converged after avg. # of iterations    2.833
 
-                              Total time spent up to now :    95.44 secs
+                              Total time spent up to now :    55.35 secs
 
   Computing E(   180 ) =  -7.31231 eV
-  T matrix converged after avg. # of iterations    7.694
+  T matrix converged after avg. # of iterations    3.194
 
-                              Total time spent up to now :   106.50 secs
+                              Total time spent up to now :    61.26 secs
 
   Computing E(   200 ) =  -7.01201 eV
-  T matrix converged after avg. # of iterations    7.361
+  T matrix converged after avg. # of iterations    3.556
 
-                              Total time spent up to now :   117.25 secs
+                              Total time spent up to now :    67.41 secs
 
   Computing E(   220 ) =  -6.71171 eV
-  T matrix converged after avg. # of iterations    7.194
+  T matrix converged after avg. # of iterations    4.667
 
-                              Total time spent up to now :   127.70 secs
+                              Total time spent up to now :    74.18 secs
 
   Computing E(   240 ) =  -6.41141 eV
-  T matrix converged after avg. # of iterations    7.250
+  T matrix converged after avg. # of iterations    4.694
 
-                              Total time spent up to now :   138.15 secs
+                              Total time spent up to now :    81.45 secs
 
   Computing E(   260 ) =  -6.11111 eV
-  T matrix converged after avg. # of iterations    7.167
+  T matrix converged after avg. # of iterations    4.389
 
-                              Total time spent up to now :   148.54 secs
+                              Total time spent up to now :    88.59 secs
 
   Computing E(   280 ) =  -5.81081 eV
-  T matrix converged after avg. # of iterations    7.139
+  T matrix converged after avg. # of iterations    4.306
 
-                              Total time spent up to now :   158.85 secs
+                              Total time spent up to now :    95.58 secs
 
   Computing E(   300 ) =  -5.51051 eV
-  T matrix converged after avg. # of iterations    7.083
+  T matrix converged after avg. # of iterations    3.639
 
-                              Total time spent up to now :   169.09 secs
+                              Total time spent up to now :   102.42 secs
 
   Computing E(   320 ) =  -5.21021 eV
-  T matrix converged after avg. # of iterations    7.111
+  T matrix converged after avg. # of iterations    3.306
 
-                              Total time spent up to now :   179.42 secs
+                              Total time spent up to now :   108.79 secs
 
   Computing E(   340 ) =  -4.90991 eV
-  T matrix converged after avg. # of iterations    6.833
+  T matrix converged after avg. # of iterations    3.306
 
-                              Total time spent up to now :   189.50 secs
+                              Total time spent up to now :   114.98 secs
 
   Computing E(   360 ) =  -4.60961 eV
-  T matrix converged after avg. # of iterations    6.583
+  T matrix converged after avg. # of iterations    3.361
 
-                              Total time spent up to now :   199.30 secs
+                              Total time spent up to now :   121.17 secs
 
   Computing E(   380 ) =  -4.30931 eV
-  T matrix converged after avg. # of iterations    6.750
+  T matrix converged after avg. # of iterations    3.472
 
-                              Total time spent up to now :   209.09 secs
+                              Total time spent up to now :   127.34 secs
 
   Computing E(   400 ) =  -4.00901 eV
-  T matrix converged after avg. # of iterations    6.556
+  T matrix converged after avg. # of iterations    4.333
 
-                              Total time spent up to now :   218.93 secs
+                              Total time spent up to now :   134.06 secs
 
   Computing E(   420 ) =  -3.70871 eV
-  T matrix converged after avg. # of iterations    6.528
+  T matrix converged after avg. # of iterations    4.694
 
-                              Total time spent up to now :   228.58 secs
+                              Total time spent up to now :   141.19 secs
 
   Computing E(   440 ) =  -3.40841 eV
-  T matrix converged after avg. # of iterations    6.667
+  T matrix converged after avg. # of iterations    5.111
 
-                              Total time spent up to now :   238.28 secs
+                              Total time spent up to now :   148.64 secs
 
   Computing E(   460 ) =  -3.10811 eV
-  T matrix converged after avg. # of iterations    6.611
+  T matrix converged after avg. # of iterations    5.194
 
-                              Total time spent up to now :   248.09 secs
+                              Total time spent up to now :   156.22 secs
 
   Computing E(   480 ) =  -2.80781 eV
-  T matrix converged after avg. # of iterations    6.583
+  T matrix converged after avg. # of iterations    5.250
 
-                              Total time spent up to now :   257.84 secs
+                              Total time spent up to now :   163.84 secs
 
   Computing E(   500 ) =  -2.50751 eV
-  T matrix converged after avg. # of iterations    6.444
+  T matrix converged after avg. # of iterations    5.306
 
-                              Total time spent up to now :   267.45 secs
+                              Total time spent up to now :   171.51 secs
 
   Computing E(   520 ) =  -2.20721 eV
-  T matrix converged after avg. # of iterations    6.611
+  T matrix converged after avg. # of iterations    5.139
 
-                              Total time spent up to now :   277.07 secs
+                              Total time spent up to now :   179.10 secs
 
   Computing E(   540 ) =  -1.90691 eV
-  T matrix converged after avg. # of iterations    6.833
+  T matrix converged after avg. # of iterations    4.944
 
-                              Total time spent up to now :   286.87 secs
+                              Total time spent up to now :   186.55 secs
 
   Computing E(   560 ) =  -1.60661 eV
-  T matrix converged after avg. # of iterations    6.889
+  T matrix converged after avg. # of iterations    4.972
 
-                              Total time spent up to now :   296.81 secs
+                              Total time spent up to now :   193.98 secs
 
   Computing E(   580 ) =  -1.30631 eV
-  T matrix converged after avg. # of iterations    7.194
+  T matrix converged after avg. # of iterations    4.222
 
-                              Total time spent up to now :   306.97 secs
+                              Total time spent up to now :   201.09 secs
 
   Computing E(   600 ) =  -1.00601 eV
-  T matrix converged after avg. # of iterations    7.222
+  T matrix converged after avg. # of iterations    3.222
 
-                              Total time spent up to now :   317.35 secs
+                              Total time spent up to now :   207.55 secs
 
   Computing E(   620 ) =  -0.70571 eV
-  T matrix converged after avg. # of iterations    7.250
+  T matrix converged after avg. # of iterations    2.556
 
-                              Total time spent up to now :   327.77 secs
+                              Total time spent up to now :   213.22 secs
 
   Computing E(   640 ) =  -0.40541 eV
-  T matrix converged after avg. # of iterations    6.972
+  T matrix converged after avg. # of iterations    1.806
 
-                              Total time spent up to now :   338.09 secs
+                              Total time spent up to now :   218.49 secs
 
   Computing E(   660 ) =  -0.10511 eV
-  T matrix converged after avg. # of iterations    6.694
+  T matrix converged after avg. # of iterations    1.278
 
-                              Total time spent up to now :   348.04 secs
+                              Total time spent up to now :   223.13 secs
 
   Computing E(   680 ) =   0.19520 eV
-  T matrix converged after avg. # of iterations    6.694
+  T matrix converged after avg. # of iterations    1.028
 
-                              Total time spent up to now :   357.86 secs
+                              Total time spent up to now :   227.58 secs
 
   Computing E(   700 ) =   0.49550 eV
-  T matrix converged after avg. # of iterations    6.972
+  T matrix converged after avg. # of iterations    1.028
 
-                              Total time spent up to now :   367.77 secs
+                              Total time spent up to now :   231.91 secs
 
   Computing E(   720 ) =   0.79580 eV
-  T matrix converged after avg. # of iterations    7.472
+  T matrix converged after avg. # of iterations    1.028
 
-                              Total time spent up to now :   378.18 secs
+                              Total time spent up to now :   236.22 secs
 
   Computing E(   740 ) =   1.09610 eV
-  T matrix converged after avg. # of iterations    8.028
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   389.16 secs
+                              Total time spent up to now :   240.51 secs
 
   Computing E(   760 ) =   1.39640 eV
-  T matrix converged after avg. # of iterations    8.306
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   400.59 secs
+                              Total time spent up to now :   244.80 secs
 
   Computing E(   780 ) =   1.69670 eV
-  T matrix converged after avg. # of iterations    8.556
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   412.31 secs
+                              Total time spent up to now :   249.09 secs
 
   Computing E(   800 ) =   1.99700 eV
-  T matrix converged after avg. # of iterations    8.667
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   424.21 secs
+                              Total time spent up to now :   253.38 secs
 
   Computing E(   820 ) =   2.29730 eV
-  T matrix converged after avg. # of iterations    8.694
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   436.22 secs
+                              Total time spent up to now :   257.67 secs
 
   Computing E(   840 ) =   2.59760 eV
-  T matrix converged after avg. # of iterations    8.694
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   448.23 secs
+                              Total time spent up to now :   261.95 secs
 
   Computing E(   860 ) =   2.89790 eV
-  T matrix converged after avg. # of iterations    8.472
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   460.15 secs
+                              Total time spent up to now :   266.24 secs
 
   Computing E(   880 ) =   3.19820 eV
-  T matrix converged after avg. # of iterations    8.250
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   471.81 secs
+                              Total time spent up to now :   270.27 secs
 
   Computing E(   900 ) =   3.49850 eV
-  T matrix converged after avg. # of iterations    8.139
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   483.26 secs
+                              Total time spent up to now :   274.24 secs
 
   Computing E(   920 ) =   3.79880 eV
-  T matrix converged after avg. # of iterations    8.111
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   494.63 secs
+                              Total time spent up to now :   278.11 secs
 
   Computing E(   940 ) =   4.09910 eV
-  T matrix converged after avg. # of iterations    8.167
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   506.02 secs
+                              Total time spent up to now :   281.97 secs
 
   Computing E(   960 ) =   4.39940 eV
-  T matrix converged after avg. # of iterations    8.250
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   517.47 secs
+                              Total time spent up to now :   285.83 secs
 
   Computing E(   980 ) =   4.69970 eV
-  T matrix converged after avg. # of iterations    8.278
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   528.97 secs
+                              Total time spent up to now :   289.69 secs
 
   Computing E(  1000 ) =   5.00000 eV
-  T matrix converged after avg. # of iterations    8.472
+  T matrix converged after avg. # of iterations    1.000
 
-                              Total time spent up to now :   540.55 secs
+                              Total time spent up to now :   293.55 secs
 
 
    <global routines>
-             clock number :     6
+             clock number :     9
 
-                conductor :  9m 0.00s CPU 
- 
-              read_matrix :     4.34s CPU (       2 calls,   2.172 s avg)
-              fourier_par :     0.01s CPU (       2 calls,   0.006 s avg)
-                 transfer :   491.56s CPU (   72000 calls,   0.007 s avg)
-                    green :    16.51s CPU (   72000 calls,   0.000 s avg)
-            transmittance :     8.97s CPU (   36000 calls,   0.000 s avg)
+                conductor :  4m53.00s CPU 
+
+            smearing_init :     0.26s CPU
+                   cft_1z :     0.23s CPU (       2 calls,   0.117 s avg)
+              read_matrix :     3.51s CPU (       2 calls,   1.754 s avg)
+              fourier_par :     0.03s CPU (       2 calls,   0.014 s avg)
+                 transfer :   170.10s CPU (   72000 calls,   0.002 s avg)
+                    green :    60.87s CPU (   72000 calls,   0.001 s avg)
+              gzero_maker :    66.65s CPU (  108000 calls,   0.001 s avg)
+            transmittance :     5.74s CPU (   36000 calls,   0.000 s avg)
 
 

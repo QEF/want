@@ -1,6 +1,6 @@
 
-     Program PWSCF     v.3.1    starts ...
-     Today is 11Apr2006 at 17:36:40 
+     Program PWSCF     v.3.2cvs starts ...
+     Today is 14Oct2006 at  0:23:28 
 
      Ultrasoft (Vanderbilt) Pseudopotentials
 
@@ -62,18 +62,18 @@
    Cartesian axes
 
      site n.     atom                  positions (a_0 units)
-         1           H   tau(  1) = (  -0.3176631   0.1240606   0.1566584  )
-         2           C   tau(  2) = (  -0.1493829   0.2385780   0.1554300  )
-         3           H   tau(  3) = (  -0.2004055   0.3269227   0.1561859  )
-         4           C   tau(  4) = (  -0.0171020   0.2384835   0.1542962  )
-         5           H   tau(  5) = (   0.0339206   0.3268283   0.1541072  )
-         6           C   tau(  6) = (   0.0489439   0.1238716   0.1532568  )
-         7           H   tau(  7) = (   0.1509892   0.1238716   0.1523120  )
-         8           C   tau(  8) = (  -0.0171965   0.0093541   0.1535403  )
+         1           H   tau(  1) = (  -0.3176630   0.1240605   0.1566583  )
+         2           C   tau(  2) = (  -0.1493829   0.2385779   0.1554300  )
+         3           H   tau(  3) = (  -0.2004055   0.3269226   0.1561859  )
+         4           C   tau(  4) = (  -0.0171020   0.2384834   0.1542961  )
+         5           H   tau(  5) = (   0.0339206   0.3268281   0.1541072  )
+         6           C   tau(  6) = (   0.0489439   0.1238715   0.1532568  )
+         7           H   tau(  7) = (   0.1509891   0.1238715   0.1523119  )
+         8           C   tau(  8) = (  -0.0171965   0.0093541   0.1535402  )
          9           H   tau(  9) = (   0.0337316  -0.0789906   0.1526899  )
-        10           C   tau( 10) = (  -0.1494774   0.0094486   0.1546741  )
-        11           H   tau( 11) = (  -0.2005945  -0.0788961   0.1548631  )
-        12           C   tau( 12) = (  -0.2156178   0.1240606   0.1557135  )
+        10           C   tau( 10) = (  -0.1494773   0.0094486   0.1546741  )
+        11           H   tau( 11) = (  -0.2005944  -0.0788961   0.1548631  )
+        12           C   tau( 12) = (  -0.2156178   0.1240605   0.1557134  )
 
      number of k points=    1  gaussian broad. (ryd)=  0.0100     ngauss =   0
                        cart. coord. in units 2pi/a_0
@@ -85,13 +85,14 @@
      nbndx  =   160  nbnd   =    40  natomwfc =    30  npwx   =   12053
      nelec  =  30.00  nkb   =    54  ngl    =    1691
 
-     The potential is recalculated from file:
+     The potential is recalculated from file :
      benzene_US.save/charge-density.xml
+
 
      negative rho (up, down):  0.556E-02 0.000E+00
      Starting wfc are atomic +  10 random wfc
 
-     total cpu time spent up to now is     29.34 secs
+     total cpu time spent up to now is     17.48 secs
 
      Band Structure Calculation
      Davidson diagonalization with overlap
@@ -103,61 +104,60 @@
      WARNING:     1 eigenvalues not converged
      ethr =  3.33E-11,  avg # of iterations =120.0
 
-     total cpu time spent up to now is     83.55 secs
+     total cpu time spent up to now is    120.58 secs
 
      End of band structure calculation
 
           k = 0.0000 0.0000 0.0000     band energies (ev):
 
-   -20.7347 -17.9771 -17.9731 -14.3464 -14.3456 -12.3539 -10.7292 -10.3123
-    -9.6704  -9.6649  -8.5088  -7.6582  -7.6542  -5.7835  -5.7792  -0.6883
+   -20.7345 -17.9769 -17.9730 -14.3462 -14.3455 -12.3537 -10.7291 -10.3122
+    -9.6703  -9.6648  -8.5087  -7.6582  -7.6541  -5.7834  -5.7791  -0.6883
     -0.6795  -0.4384   0.7384   0.8058   0.8651   0.8838   0.9670   1.2475
-     1.7816   2.1928   2.1959   2.2109   2.2142   2.2248   2.2473   2.2874
-     2.3120   2.4324   2.5169   2.9682   3.0251   3.4246   3.4645   3.4924
+     1.7816   2.1928   2.1959   2.2109   2.2141   2.2248   2.2473   2.2874
+     2.3120   2.4323   2.5169   2.9682   3.0251   3.4246   3.4645   3.4924
 
      the Fermi energy is    -2.4283 ev
 
      Writing output data file benzene_US.save
  
-     PWSCF        :  1m33.13s CPU time
+     PWSCF        :  2m 8.16s CPU time
 
-     init_run     :    29.29s CPU
-     electrons    :    54.21s CPU
+     init_run     :    17.42s CPU
+     electrons    :   103.10s CPU
  
-     electrons    :    54.21s CPU
-     c_bands      :    54.21s CPU
-     sum_band     :     4.77s CPU
-     v_of_rho     :     2.36s CPU
-     newd         :     3.75s CPU
+     electrons    :   103.10s CPU
+     c_bands      :   103.10s CPU
+     sum_band     :     7.14s CPU
+     v_of_rho     :     3.88s CPU
+     newd         :     6.36s CPU
  
-     c_bands      :    54.21s CPU
-     init_us_2    :     0.04s CPU (       3 calls,   0.012 s avg)
-     cegterg      :    54.18s CPU (       6 calls,   9.030 s avg)
+     c_bands      :   103.10s CPU
+     init_us_2    :     0.08s CPU (       3 calls,   0.027 s avg)
+     cegterg      :   103.00s CPU (       6 calls,  17.167 s avg)
  
-     sum_band     :     4.77s CPU
+     sum_band     :     7.14s CPU
      becsum       :     0.00s CPU
-     addusdens    :     3.83s CPU
+     addusdens    :     4.88s CPU
  
-     wfcrot       :     1.27s CPU
-     cegterg      :    54.18s CPU (       6 calls,   9.030 s avg)
-     h_psi        :    34.02s CPU (     127 calls,   0.268 s avg)
-     g_psi        :     0.17s CPU (     120 calls,   0.001 s avg)
-     overlap      :     7.96s CPU (     120 calls,   0.066 s avg)
-     cdiaghg      :     2.66s CPU (     121 calls,   0.022 s avg)
-     update       :     4.94s CPU (     120 calls,   0.041 s avg)
-     last         :     2.68s CPU (      11 calls,   0.243 s avg)
+     wfcrot       :     2.63s CPU
+     cegterg      :   103.00s CPU (       6 calls,  17.167 s avg)
+     h_psi        :    75.96s CPU (     127 calls,   0.598 s avg)
+     g_psi        :     0.72s CPU (     120 calls,   0.006 s avg)
+     diaghg       :     2.31s CPU (     121 calls,   0.019 s avg)
+     update       :     8.23s CPU (     120 calls,   0.069 s avg)
+     last         :     3.76s CPU (      11 calls,   0.342 s avg)
  
-     h_psi        :    34.02s CPU (     127 calls,   0.268 s avg)
-     init         :     0.21s CPU (     127 calls,   0.002 s avg)
-     firstfft     :    13.47s CPU (    1228 calls,   0.011 s avg)
-     secondfft    :    13.59s CPU (    1228 calls,   0.011 s avg)
-     add_vuspsi   :     1.94s CPU (     127 calls,   0.015 s avg)
-     s_psi        :     1.79s CPU (     127 calls,   0.014 s avg)
+     h_psi        :    75.96s CPU (     127 calls,   0.598 s avg)
+     init         :     0.51s CPU (     127 calls,   0.004 s avg)
+     firstfft     :    31.15s CPU (    1228 calls,   0.025 s avg)
+     secondfft    :    31.46s CPU (    1228 calls,   0.026 s avg)
+     add_vuspsi   :     3.07s CPU (     127 calls,   0.024 s avg)
+     s_psi        :     3.56s CPU (     127 calls,   0.028 s avg)
  
      General routines
-     ccalbec      :     2.13s CPU (     128 calls,   0.017 s avg)
-     cft3         :     1.57s CPU (      15 calls,   0.105 s avg)
-     cft3s        :    25.10s CPU (    2498 calls,   0.010 s avg)
-     interpolate  :     0.28s CPU (       2 calls,   0.139 s avg)
-     davcio       :     0.01s CPU
+     ccalbec      :     3.03s CPU (     128 calls,   0.024 s avg)
+     cft3         :     3.94s CPU (      14 calls,   0.281 s avg)
+     cft3s        :    56.34s CPU (    2498 calls,   0.023 s avg)
+     interpolate  :     0.83s CPU (       2 calls,   0.415 s avg)
+     davcio       :     0.00s CPU
  

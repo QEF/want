@@ -7,60 +7,76 @@
   ======================================================================
 
 
-  Program <disentangle>  v. 2.0.0  starts ...
-  Date 11Apr2006 at 17:56:34 
+  Program <disentangle>  v. 2.1.0  starts ...
+  Date 14Oct2006 at  0:48:17 
 
-  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
-        Compiler: INTEL
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
 
 
-  PW-DFT data read from file: guanine.export/index.xml
+  DFT-data fmt automaticaly detected: pw_export
+  DFT-data read from file: guanine.export/index.xml
+
 
   ======================================================================
-  =                                Main                                =
+  =                           INPUT Summary                            =
   ======================================================================
 
-            Calculation Title :     Wannier Transport Calculation
-                       Prefix :     guanine
-                      Postfix :     _WanT
-            Working directory :     ./
+ <CONTROL>
+            Calculation title :     Wannier Transport Calculation
+                       prefix :     guanine
+                      postfix :     _WanT
+                     work_dir :     ./
+                  dftdata_fmt :     pw_export  v1.1.0
 
-                 Restart Mode :     from_scratch
-                Overlap Calc. :     TRUE 
-             Projection Calc. :     TRUE 
-          Read Start Subspace :     FALSE
-       Read Start Unitary mat :     FALSE
-           Conditioned minim. :     FALSE
+                 wantdata_fmt :     textual
+                    verbosity :     medium
+                 restart_mode :     from_scratch
+                  unitary_thr :       0.1000E-05
+               Calc. overlaps :     TRUE 
+            Calc. projections :     TRUE 
 
- <WANNIER_FUNCTIONS>
-  Input parameters for Wannier func. calculation
-    Number of Wannier functions required =   28
-    SD minim: Mixing parameter (alpha0_wan)=  0.500
-    SD minim: Max iteration number =     100
-    Minimization convergence threshold =     0.000001000
-    CG minim: Mixing parameter (alpha1_wan) =  0.500
-    CG minim: Max iteration number =    2000
-    Every   5 iteration perform a SD step
-    Print info each  20 iterations
-    Save data each  200 iterations
-    Starting minimization guess = center_projections
-    Ordering mode = none
-    Verbosity = medium
-    Unitariery check threshold =     0.000001000
-    Conditioned minim. amplitude =     0.000000000
-    Conditioned minim.  iter num =  2100
- </WANNIER_FUNCTIONS>
+           Read init subspace :     FALSE
+         Read init unit. mat. :     FALSE
+              Read pseudopot. :     TRUE 
+           Use penalty funct. :     FALSE
 
- <DISENTANGLE>
-  Input parameters for subspace definition
-    Spin component = none
-    Mixing parameter (alpha_dis)=  0.500
-    Max iteration number =    1000
-    Starting minimization guess = center_projections
-    Disentangle convergence threshold =     0.000000010
-    Print info each  10 iterations
-    Save data each   50 iterations
- </DISENTANGLE>
+               Use debug mode :     FALSE
+ <CONTROL>
+
+ <SUBSPACE>
+                      dimwann :           28
+                subspace_init :     center_projections
+               spin_component :     none
+              disentangle_thr :       0.1000E-07
+                    alpha_dis :       0.5000
+                  maxiter_dis :         1000
+                   nprint_dis :           10
+                    nsave_dis :           50
+ </SUBSPACE>
+
+ <LOCALIZATION>
+            localization_init :     center_projections
+                ordering_mode :     none
+                   collect_wf :     FALSE
+                  wannier_thr :       0.1000E-05
+                   alpha0_wan :       0.5000
+                   alpha1_wan :       0.5000
+                 maxiter0_wan :          100
+                 maxiter1_wan :         2000
+                          ncg :            5
+                   nprint_wan :           20
+                    nsave_wan :          200
+ </LOCALIZATION>
 
  <TRIAL_CENTERS>
   Trial centers: (cart. coord. in Bohr)
@@ -176,39 +192,51 @@
 
 
   Atomic positions: (cart. coord. in Bohr)
-     N    tau(   1 ) = ( -10.5079593   3.1424310  -4.7490771 )
-     C    tau(   2 ) = ( -10.0894566   2.7570043  -2.1818455 )
-     N    tau(   3 ) = (  -7.6670679   2.7116570  -1.5984189 )
-     C    tau(   4 ) = (  -6.4202139   3.0834906  -3.8806166 )
-     C    tau(   5 ) = (  -3.7585177   3.2204710  -4.4510498 )
-     O    tau(   6 ) = (  -1.8664971   3.0472044  -3.0756774 )
-     N    tau(   7 ) = (  -3.4172319   3.6331413  -7.1098914 )
-     C    tau(   8 ) = (  -5.2922419   3.8743431  -8.9084051 )
-     N    tau(   9 ) = (  -4.5370119   4.2613412 -11.3389663 )
-     N    tau(  10 ) = (  -7.7449799   3.7475288  -8.3729797 )
-     C    tau(  11 ) = (  -8.1651526   3.3569105  -5.8742677 )
-     H    tau(  12 ) = ( -12.2026253   3.2505531  -5.6555482 )
-     H    tau(  13 ) = ( -11.6625648   2.5271011  -0.8670483 )
-     H    tau(  14 ) = (  -1.5644136   3.7529201  -7.6719397 )
-     H    tau(  15 ) = (  -5.9103159   4.4380607 -12.6615540 )
-     H    tau(  16 ) = (  -2.6825951   4.3723738 -11.8488120 )
+     N    tau(   1 ) = ( -10.5079551   3.1424297  -4.7490752 )
+     C    tau(   2 ) = ( -10.0894526   2.7570032  -2.1818447 )
+     N    tau(   3 ) = (  -7.6670649   2.7116559  -1.5984183 )
+     C    tau(   4 ) = (  -6.4202113   3.0834894  -3.8806151 )
+     C    tau(   5 ) = (  -3.7585162   3.2204697  -4.4510481 )
+     O    tau(   6 ) = (  -1.8664963   3.0472031  -3.0756762 )
+     N    tau(   7 ) = (  -3.4172305   3.6331398  -7.1098886 )
+     C    tau(   8 ) = (  -5.2922397   3.8743415  -8.9084016 )
+     N    tau(   9 ) = (  -4.5370101   4.2613395 -11.3389618 )
+     N    tau(  10 ) = (  -7.7449768   3.7475273  -8.3729764 )
+     C    tau(  11 ) = (  -8.1651493   3.3569092  -5.8742654 )
+     H    tau(  12 ) = ( -12.2026205   3.2505518  -5.6555459 )
+     H    tau(  13 ) = ( -11.6625602   2.5271001  -0.8670479 )
+     H    tau(  14 ) = (  -1.5644130   3.7529186  -7.6719366 )
+     H    tau(  15 ) = (  -5.9103135   4.4380589 -12.6615490 )
+     H    tau(  16 ) = (  -2.6825941   4.3723721 -11.8488073 )
  </IONS>
+
+ <SYMMETRY>
+  Number of symmetry operations =  1
+
+      isym =  1                                          identity
+
+ cryst.   s( 1) = (     1          0          0      )    f =(  0.0000000 )
+                  (     0          1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+ </SYMMETRY>
 
  <K-POINTS>
   nkpts =    1
   Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
+
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   1.0000000
+    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (  -0.20944  0.00000  0.00000 ),   weight =  11.3986332
-    b ( 2) =    (   0.20944  0.00000  0.00000 ),   weight =  11.3986332
-    b ( 3) =    (   0.00000  0.32221  0.00000 ),   weight =   4.8159225
-    b ( 4) =    (   0.00000 -0.32221  0.00000 ),   weight =   4.8159225
-    b ( 5) =    (   0.00000  0.00000 -0.20944 ),   weight =  11.3986332
-    b ( 6) =    (   0.00000  0.00000  0.20944 ),   weight =  11.3986332
+    b (   1) =    (  -0.20944  0.00000  0.00000 ),   weight =  11.3986332
+    b (   2) =    (   0.20944 -0.00000 -0.00000 ),   weight =  11.3986332
+    b (   3) =    (   0.00000  0.32221  0.00000 ),   weight =   4.8159225
+    b (   4) =    (  -0.00000 -0.32221 -0.00000 ),   weight =   4.8159225
+    b (   5) =    (   0.00000  0.00000 -0.20944 ),   weight =  11.3986332
+    b (   6) =    (  -0.00000 -0.00000  0.20944 ),   weight =  11.3986332
 
   Total weight =      55.2263777
  </B-SHELL>
@@ -221,15 +249,15 @@
   Electronic Structure from DFT calculation:
     nkpts =   1,     nbnd =  28,
     nspin =   1
-    Fermi energy =   -4.737333864 eV
+    Fermi energy =   -4.737198744 eV
  !
  !    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =   28
  !                                       imin =    1  imax =   28
  !   Eigenvalues:
- !   -25.7904 -25.1407 -24.7130 -22.5610 -22.2690 -21.4491 -18.4287 -16.3600
- !   -16.0606 -15.0161 -14.5787 -13.2129 -13.1564 -12.5207 -11.5286 -11.3001
- !   -10.9136 -10.1273 -10.0884  -9.4280  -9.0951  -7.3042  -7.1614  -6.5612
- !    -6.4627  -5.8204  -5.4467  -4.7373
+ !   -25.7903 -25.1406 -24.7129 -22.5609 -22.2689 -21.4490 -18.4286 -16.3599
+ !   -16.0605 -15.0160 -14.5786 -13.2128 -13.1563 -12.5206 -11.5285 -11.3000
+ !   -10.9135 -10.1272 -10.0883  -9.4279  -9.0950  -7.3041  -7.1613  -6.5610
+ !    -6.4626  -5.8203  -5.4465  -4.7372
 
     inner window: NOT used --> NO FROZEN STATES
  </WINDOWS>
@@ -247,8 +275,8 @@
           Energy cut-off for wfcs =         25.00 (Ry)
                          for rho  =        200.00 (Ry)
       Total number of PW for rho  =     838167
-        Max number of PW for wfc  =      37108
-      Total number of PW for wfcs =      37108
+        Max number of PW for wfc  =      37107
+      Total number of PW for wfcs =      37107
         FFT grid components (rho) =  (   144   90  144 )
 
 
@@ -260,11 +288,11 @@
 
     Overlaps or Projections calculation for k-point:    1
     npw =  37107,    dimwin =   28
-                              Total time spent up to now :     8.50 secs
+                              Total time spent up to now :    25.51 secs
 
 
   Overlaps and projections written on file: guanine_WanT.ovp
-                              Total time spent up to now :     8.58 secs
+                              Total time spent up to now :    25.58 secs
 
 
   ======================================================================
@@ -274,7 +302,7 @@
 
   Initial trial subspace: projected localized orbitals
 
-  Iteration =     1     Omega_I =   61.261479      Error =      0.00000000
+  Iteration =     1     Omega_I =   61.261032      Error =      0.00000000
 
 
   ======================================================================
@@ -282,39 +310,42 @@
   ======================================================================
 
   Iteration # :     1
-  Final Omega_I (Bohr^2, Angstrom^2):      61.261479        17.154948
-   Avrg Omega_I                     :       2.187910         0.612677
+  Final Omega_I (Bohr^2, Angstrom^2):      61.261032        17.154822
+   Avrg Omega_I                     :       2.187894         0.612672
 
-                              Total time spent up to now :     8.59 secs
+                              Total time spent up to now :    25.62 secs
 
 
   Subspace data written on file: guanine_WanT.space
+
   ======================================================================
 
    <global routines>
-             clock number :    21
+             clock number :    23
 
-              disentangle :     8.00s CPU 
- 
-                want_init :     0.15s CPU
-             bshells_init :     0.00s CPU
-              wfc_manager :     8.43s CPU
-          ggrids_read_ext :     0.60s CPU
-              struct_fact :     0.28s CPU
-                init_us_1 :     3.30s CPU
-           wfc_data_kread :     1.01s CPU (       4 calls,   0.252 s avg)
-                init_us_2 :     0.47s CPU (       5 calls,   0.095 s avg)
-                  ccalbec :     0.86s CPU (       4 calls,   0.214 s avg)
-                  overlap :     1.03s CPU (       3 calls,   0.342 s avg)
-           overlap_setmap :     0.10s CPU (       3 calls,   0.032 s avg)
-          overlap_augment :     0.01s CPU (       3 calls,   0.004 s avg)
-                    s_psi :     0.19s CPU
-               projection :     0.58s CPU
-       trial_center_setup :     0.42s CPU (      28 calls,   0.015 s avg)
-               iterations :     0.01s CPU
-             subapce_init :     0.00s CPU
+              disentangle :    25.00s CPU 
+
+             want_dftread :     0.52s CPU
+                want_init :     0.25s CPU
+             bshells_init :     0.10s CPU
+              wfc_manager :    24.66s CPU
+          ggrids_read_ext :     0.91s CPU
+      wfc_data_grids_read :     0.02s CPU
+              struct_fact :     2.87s CPU
+                init_us_1 :     7.36s CPU
+           wfc_data_kread :     1.55s CPU (       4 calls,   0.387 s avg)
+                init_us_2 :     1.61s CPU (       5 calls,   0.322 s avg)
+                  ccalbec :     1.16s CPU (       4 calls,   0.291 s avg)
+                  overlap :     6.87s CPU (       3 calls,   2.289 s avg)
+           overlap_setmap :     0.36s CPU (       3 calls,   0.121 s avg)
+          overlap_augment :     0.03s CPU (       3 calls,   0.010 s avg)
+                    s_psi :     0.29s CPU
+               projection :     1.92s CPU
+       trial_center_setup :     1.31s CPU (      28 calls,   0.047 s avg)
+               iterations :     0.04s CPU
+            subspace_init :     0.03s CPU
                    omegai :     0.00s CPU (       2 calls,   0.000 s avg)
                   zmatrix :     0.00s CPU
-                mat_hdiag :     0.00s CPU (       2 calls,   0.002 s avg)
+                mat_hdiag :     0.00s CPU (       2 calls,   0.001 s avg)
 
 

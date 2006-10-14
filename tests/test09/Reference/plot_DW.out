@@ -1,3 +1,31 @@
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './/nichain_WanT_DW_WFM001.cube'
+Output file (plot file):  './/nichain_WanT_DW_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.022014
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './/nichain_WanT_DW_WFM004.cube'
+Output file (plot file):  './/nichain_WanT_DW_WFM004.plt'
+Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM004.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
+Min value: 0.000000
+Max value: 0.013260
+Job done ...
+**********************************************************
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -7,14 +35,25 @@
   ======================================================================
 
 
-  Program <plot>  v. 2.0.0  starts ...
-  Date 12Apr2006 at  0:46:58 
+  Program <plot>  v. 2.1.0  starts ...
+  Date 14Oct2006 at  7:18:47 
 
-  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
-        Compiler: INTEL
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
 
 
-  PW-DFT data read from file: nichain.export/index.xml
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: nichain.save/data-file.xml
+
   Subspace data read from file: nichain_WanT_DW.space
   Wannier data read from file: nichain_WanT_DW.wan
 
@@ -49,18 +88,19 @@
  <K-POINTS>
   nkpts =    4
   Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k point   2:   (   0.00000  0.00000  0.33249 ),   weight =   0.2500000
-    k point   3:   (   0.00000  0.00000  0.66498 ),   weight =   0.2500000
-    k point   4:   (   0.00000  0.00000  0.99747 ),   weight =   0.2500000
+    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
+    k (   2) =    (   0.00000  0.00000  0.33249 ),   weight =   0.2500000
+    k (   3) =    (   0.00000  0.00000  0.66498 ),   weight =   0.2500000
+    k (   4) =    (   0.00000  0.00000  0.99747 ),   weight =   0.2500000
  </K-POINTS>
 
 
   WARNING: USPP not fully implemented
 
-  Reading density G-grid from file: nichain.export/index.xml
-  Reading Wfc grids from file: nichain.export/index.xml
+  Reading density G-grid from file: nichain.save/data-file.xml
+  Reading Wfc grids from file: nichain.save/data-file.xml
 
 
           Energy cut-off for wfcs =         20.00 (Ry)
@@ -97,11 +137,11 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (     0.000000     0.000000     0.000017 )
-    Wf(   4 ) = (     0.000000     0.000000     2.362155 )
+    Wf(   1 ) = (     0.000000    -0.000000     0.000017 )
+    Wf(   4 ) = (    -0.000000     0.000000     2.362155 )
         in crystal coord
-    Wf(   1 ) = (     0.000000     0.000000     0.000004 )
-    Wf(   4 ) = (     0.000000     0.000000     0.499999 )
+    Wf(   1 ) = (     0.000000    -0.000000     0.000004 )
+    Wf(   4 ) = (    -0.000000     0.000000     0.499999 )
 
   Collecting WFs: 
   Plotting Cell dimensions [cryst. coord]:
@@ -111,8 +151,8 @@
 
   New center positions [cryst. coord]:
         in crystal coord
-    Wf(   1 ) = (     0.000000     0.000000     0.000004 )
-    Wf(   4 ) = (     0.000000     0.000000     0.499999 )
+    Wf(   1 ) = (     0.000000    -0.000000     0.000004 )
+    Wf(   4 ) = (    -0.000000     0.000000     0.499999 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -121,16 +161,16 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :     0.70 secs
+                              Total time spent up to now :     1.29 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :     0.98 secs
+                              Total time spent up to now :     1.67 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :     1.25 secs
+                              Total time spent up to now :     2.04 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :     1.52 secs
+                              Total time spent up to now :     2.43 secs
 
 
   WF maximum values (normalization is one):
@@ -141,58 +181,33 @@
 
   writing WF(   1) plot on file: .//nichain_WanT_DW_WFM001.cube
          atomic positions on file: .//nichain_WanT_DW_WFM001.xyz
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/nichain_WanT_DW_WFM001.cube'
-Output file (plot file):  './/nichain_WanT_DW_WFM001.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM001.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.022014
-Job done ...
-**********************************************************
   deleting tmp files: .//nichain_WanT_DW_WFM001.cube
                       .//nichain_WanT_DW_WFM001.crd
 
 
   writing WF(   4) plot on file: .//nichain_WanT_DW_WFM004.cube
          atomic positions on file: .//nichain_WanT_DW_WFM004.xyz
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/nichain_WanT_DW_WFM004.cube'
-Output file (plot file):  './/nichain_WanT_DW_WFM004.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_DW_WFM004.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
-Min value: 0.000000
-Max value: 0.013260
-Job done ...
-**********************************************************
   deleting tmp files: .//nichain_WanT_DW_WFM004.cube
                       .//nichain_WanT_DW_WFM004.crd
+
 
 
 
   ======================================================================
 
    <global routines>
-             clock number :     8
+             clock number :    10
 
-                     plot :     4.00s CPU 
- 
-                want_init :     0.13s CPU
-          ggrids_read_ext :     0.06s CPU
-           wfc_data_kread :     0.03s CPU (       4 calls,   0.007 s avg)
-               kwann_calc :     0.67s CPU (       8 calls,   0.083 s avg)
-                   cfft3d :     0.18s CPU (       8 calls,   0.022 s avg)
-               cwann_calc :     0.35s CPU (       8 calls,   0.044 s avg)
-                 gcubeplt :     2.01s CPU (       2 calls,   1.004 s avg)
+                     plot :     6.00s CPU 
+
+             want_dftread :     0.64s CPU
+                want_init :     0.00s CPU
+          ggrids_read_ext :     0.14s CPU
+      wfc_data_grids_read :     0.01s CPU
+           wfc_data_kread :     0.04s CPU (       4 calls,   0.009 s avg)
+               kwann_calc :     0.19s CPU (       8 calls,   0.024 s avg)
+                   cfft3d :     0.24s CPU (       8 calls,   0.030 s avg)
+               cwann_calc :     1.02s CPU (       8 calls,   0.128 s avg)
+                 gcubeplt :     1.64s CPU (       2 calls,   0.821 s avg)
 
 
