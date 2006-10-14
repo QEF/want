@@ -8,6 +8,7 @@ US - pbe
       nstep=2000,
       tprnfor = .true.,
       wf_collect = .TRUE.
+      pseudo_dir = './'
    /
    &SYSTEM
       ibrav=4, 
