@@ -405,13 +405,17 @@
    IF ( symmetry_alloc .AND. lsymmetry ) THEN 
        !
        WRITE(unit, " (  ' <SYMMETRY>')" )
-       WRITE(unit, " (2x,'Number of symmetry operations =', i3 ) " ) nsym
+       WRITE(unit, " (2x,'Number of symmetry operations =', i3,/ ) " ) nsym
        !
-       DO isym = 1, nsym
+       IF ( TRIM(verbosity) == "high" ) THEN
           !
-          CALL symmetry_write( unit, isym, srot(:,:,isym), strasl(:,isym), TRIM(sname(isym)) )
+          DO isym = 1, nsym
+             !
+             CALL symmetry_write( unit, isym, srot(:,:,isym), strasl(:,isym), TRIM(sname(isym)) )
+             !
+          ENDDO
           !
-       ENDDO
+       ENDIF
        !
        WRITE(unit, " (  ' </SYMMETRY>',/)" )
        !
