@@ -7,14 +7,25 @@
   ======================================================================
 
 
-  Program <plot>  v. 2.0.0  starts ...
-  Date 12Apr2006 at  3:27:39 
+  Program <plot>  v. 2.1.0  starts ...
+  Date 14Oct2006 at 10:57:52 
 
-  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
-        Compiler: INTEL
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
 
 
-  PW-DFT data read from file: silicon_zb.export/index.xml
+  DFT-data fmt automaticaly detected: pw_export
+  DFT-data read from file: silicon_zb.export/index.xml
+
   Subspace data read from file: silicon_zb_WanT.space
   Wannier data read from file: silicon_zb_WanT.wan
 
@@ -41,87 +52,160 @@
 
    Reciprocal lattice vectors:
                 in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.8659  0.4999  0.0000 )     (   1.0000  0.5774  0.0000 )
+    b(1) = (  0.8659  0.4999 -0.0000 )     (   1.0000  0.5774 -0.0000 )
     b(2) = (  0.0000  0.9998  0.0000 )     (   0.0000  1.1547  0.0000 )
-    b(3) = (  0.0000  0.0000  0.1767 )     (   0.0000  0.0000  0.2041 )
+    b(3) = (  0.0000 -0.0000  0.1767 )     (   0.0000 -0.0000  0.2041 )
  </LATTICE>
 
  <K-POINTS>
-  nkpts =   72
-  Monkhorst-Pack grid:      nk = (  6  6  2 ),      shift = (  0  0  0 )
+  nkpts =  144
+  Monkhorst-Pack grid:      nk = (  6  6  4 ),      shift = (  0  0  0 )
+
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (  -0.43293 -0.74987 -0.08837 ),   weight =   0.0138889
-    k point   2:   (  -0.28862 -0.66655 -0.08837 ),   weight =   0.0138889
-    k point   3:   (  -0.14431 -0.58323 -0.08837 ),   weight =   0.0138889
-    k point   4:   (   0.00000 -0.49991 -0.08837 ),   weight =   0.0138889
-    k point   5:   (   0.14431 -0.41659 -0.08837 ),   weight =   0.0138889
-    k point   6:   (   0.28862 -0.33327 -0.08837 ),   weight =   0.0138889
-    k point   7:   (  -0.43293 -0.58323 -0.08837 ),   weight =   0.0138889
-    k point   8:   (  -0.28862 -0.49991 -0.08837 ),   weight =   0.0138889
-    k point   9:   (  -0.14431 -0.41659 -0.08837 ),   weight =   0.0138889
-    k point  10:   (   0.00000 -0.33327 -0.08837 ),   weight =   0.0138889
-    k point  11:   (   0.14431 -0.24996 -0.08837 ),   weight =   0.0138889
-    k point  12:   (   0.28862 -0.16664 -0.08837 ),   weight =   0.0138889
-    k point  13:   (  -0.43293 -0.41659 -0.08837 ),   weight =   0.0138889
-    k point  14:   (  -0.28862 -0.33327 -0.08837 ),   weight =   0.0138889
-    k point  15:   (  -0.14431 -0.24996 -0.08837 ),   weight =   0.0138889
-    k point  16:   (   0.00000 -0.16664 -0.08837 ),   weight =   0.0138889
-    k point  17:   (   0.14431 -0.08332 -0.08837 ),   weight =   0.0138889
-    k point  18:   (   0.28862  0.00000 -0.08837 ),   weight =   0.0138889
-    k point  19:   (  -0.43293 -0.24996 -0.08837 ),   weight =   0.0138889
-    k point  20:   (  -0.28862 -0.16664 -0.08837 ),   weight =   0.0138889
-    k point  21:   (  -0.14431 -0.08332 -0.08837 ),   weight =   0.0138889
-    k point  22:   (   0.00000  0.00000 -0.08837 ),   weight =   0.0138889
-    k point  23:   (   0.14431  0.08332 -0.08837 ),   weight =   0.0138889
-    k point  24:   (   0.28862  0.16664 -0.08837 ),   weight =   0.0138889
-    k point  25:   (  -0.43293 -0.08332 -0.08837 ),   weight =   0.0138889
-    k point  26:   (  -0.28862  0.00000 -0.08837 ),   weight =   0.0138889
-    k point  27:   (  -0.14431  0.08332 -0.08837 ),   weight =   0.0138889
-    k point  28:   (   0.00000  0.16664 -0.08837 ),   weight =   0.0138889
-    k point  29:   (   0.14431  0.24996 -0.08837 ),   weight =   0.0138889
-    k point  30:   (   0.28862  0.33327 -0.08837 ),   weight =   0.0138889
-    k point  31:   (  -0.43293  0.08332 -0.08837 ),   weight =   0.0138889
-    k point  32:   (  -0.28862  0.16664 -0.08837 ),   weight =   0.0138889
-    k point  33:   (  -0.14431  0.24996 -0.08837 ),   weight =   0.0138889
-    k point  34:   (   0.00000  0.33327 -0.08837 ),   weight =   0.0138889
-    k point  35:   (   0.14431  0.41659 -0.08837 ),   weight =   0.0138889
-    k point  36:   (   0.28862  0.49991 -0.08837 ),   weight =   0.0138889
-    k point  37:   (  -0.43293 -0.74987  0.00000 ),   weight =   0.0138889
-    k point  38:   (  -0.28862 -0.66655  0.00000 ),   weight =   0.0138889
-    k point  39:   (  -0.14431 -0.58323  0.00000 ),   weight =   0.0138889
-    k point  40:   (   0.00000 -0.49991  0.00000 ),   weight =   0.0138889
-    k point  41:   (   0.14431 -0.41659  0.00000 ),   weight =   0.0138889
-    k point  42:   (   0.28862 -0.33327  0.00000 ),   weight =   0.0138889
-    k point  43:   (  -0.43293 -0.58323  0.00000 ),   weight =   0.0138889
-    k point  44:   (  -0.28862 -0.49991  0.00000 ),   weight =   0.0138889
-    k point  45:   (  -0.14431 -0.41659  0.00000 ),   weight =   0.0138889
-    k point  46:   (   0.00000 -0.33327  0.00000 ),   weight =   0.0138889
-    k point  47:   (   0.14431 -0.24996  0.00000 ),   weight =   0.0138889
-    k point  48:   (   0.28862 -0.16664  0.00000 ),   weight =   0.0138889
-    k point  49:   (  -0.43293 -0.41659  0.00000 ),   weight =   0.0138889
-    k point  50:   (  -0.28862 -0.33327  0.00000 ),   weight =   0.0138889
-    k point  51:   (  -0.14431 -0.24996  0.00000 ),   weight =   0.0138889
-    k point  52:   (   0.00000 -0.16664  0.00000 ),   weight =   0.0138889
-    k point  53:   (   0.14431 -0.08332  0.00000 ),   weight =   0.0138889
-    k point  54:   (   0.28862  0.00000  0.00000 ),   weight =   0.0138889
-    k point  55:   (  -0.43293 -0.24996  0.00000 ),   weight =   0.0138889
-    k point  56:   (  -0.28862 -0.16664  0.00000 ),   weight =   0.0138889
-    k point  57:   (  -0.14431 -0.08332  0.00000 ),   weight =   0.0138889
-    k point  58:   (   0.00000  0.00000  0.00000 ),   weight =   0.0138889
-    k point  59:   (   0.14431  0.08332  0.00000 ),   weight =   0.0138889
-    k point  60:   (   0.28862  0.16664  0.00000 ),   weight =   0.0138889
-    k point  61:   (  -0.43293 -0.08332  0.00000 ),   weight =   0.0138889
-    k point  62:   (  -0.28862  0.00000  0.00000 ),   weight =   0.0138889
-    k point  63:   (  -0.14431  0.08332  0.00000 ),   weight =   0.0138889
-    k point  64:   (   0.00000  0.16664  0.00000 ),   weight =   0.0138889
-    k point  65:   (   0.14431  0.24996  0.00000 ),   weight =   0.0138889
-    k point  66:   (   0.28862  0.33327  0.00000 ),   weight =   0.0138889
-    k point  67:   (  -0.43293  0.08332  0.00000 ),   weight =   0.0138889
-    k point  68:   (  -0.28862  0.16664  0.00000 ),   weight =   0.0138889
-    k point  69:   (  -0.14431  0.24996  0.00000 ),   weight =   0.0138889
-    k point  70:   (   0.00000  0.33327  0.00000 ),   weight =   0.0138889
-    k point  71:   (   0.14431  0.41659  0.00000 ),   weight =   0.0138889
-    k point  72:   (   0.28862  0.49991  0.00000 ),   weight =   0.0138889
+    k (   1) =    (  -0.43293 -0.74987 -0.08837 ),   weight =   0.0069444
+    k (   2) =    (  -0.28862 -0.66655 -0.08837 ),   weight =   0.0069444
+    k (   3) =    (  -0.14431 -0.58323 -0.08837 ),   weight =   0.0069444
+    k (   4) =    (   0.00000 -0.49991 -0.08837 ),   weight =   0.0069444
+    k (   5) =    (   0.14431 -0.41659 -0.08837 ),   weight =   0.0069444
+    k (   6) =    (   0.28862 -0.33327 -0.08837 ),   weight =   0.0069444
+    k (   7) =    (  -0.43293 -0.58323 -0.08837 ),   weight =   0.0069444
+    k (   8) =    (  -0.28862 -0.49991 -0.08837 ),   weight =   0.0069444
+    k (   9) =    (  -0.14431 -0.41659 -0.08837 ),   weight =   0.0069444
+    k (  10) =    (   0.00000 -0.33327 -0.08837 ),   weight =   0.0069444
+    k (  11) =    (   0.14431 -0.24996 -0.08837 ),   weight =   0.0069444
+    k (  12) =    (   0.28862 -0.16664 -0.08837 ),   weight =   0.0069444
+    k (  13) =    (  -0.43293 -0.41659 -0.08837 ),   weight =   0.0069444
+    k (  14) =    (  -0.28862 -0.33327 -0.08837 ),   weight =   0.0069444
+    k (  15) =    (  -0.14431 -0.24996 -0.08837 ),   weight =   0.0069444
+    k (  16) =    (   0.00000 -0.16664 -0.08837 ),   weight =   0.0069444
+    k (  17) =    (   0.14431 -0.08332 -0.08837 ),   weight =   0.0069444
+    k (  18) =    (   0.28862 -0.00000 -0.08837 ),   weight =   0.0069444
+    k (  19) =    (  -0.43293 -0.24996 -0.08837 ),   weight =   0.0069444
+    k (  20) =    (  -0.28862 -0.16664 -0.08837 ),   weight =   0.0069444
+    k (  21) =    (  -0.14431 -0.08332 -0.08837 ),   weight =   0.0069444
+    k (  22) =    (   0.00000  0.00000 -0.08837 ),   weight =   0.0069444
+    k (  23) =    (   0.14431  0.08332 -0.08837 ),   weight =   0.0069444
+    k (  24) =    (   0.28862  0.16664 -0.08837 ),   weight =   0.0069444
+    k (  25) =    (  -0.43293 -0.08332 -0.08837 ),   weight =   0.0069444
+    k (  26) =    (  -0.28862  0.00000 -0.08837 ),   weight =   0.0069444
+    k (  27) =    (  -0.14431  0.08332 -0.08837 ),   weight =   0.0069444
+    k (  28) =    (   0.00000  0.16664 -0.08837 ),   weight =   0.0069444
+    k (  29) =    (   0.14431  0.24996 -0.08837 ),   weight =   0.0069444
+    k (  30) =    (   0.28862  0.33327 -0.08837 ),   weight =   0.0069444
+    k (  31) =    (  -0.43293  0.08332 -0.08837 ),   weight =   0.0069444
+    k (  32) =    (  -0.28862  0.16664 -0.08837 ),   weight =   0.0069444
+    k (  33) =    (  -0.14431  0.24996 -0.08837 ),   weight =   0.0069444
+    k (  34) =    (   0.00000  0.33327 -0.08837 ),   weight =   0.0069444
+    k (  35) =    (   0.14431  0.41659 -0.08837 ),   weight =   0.0069444
+    k (  36) =    (   0.28862  0.49991 -0.08837 ),   weight =   0.0069444
+    k (  37) =    (  -0.43293 -0.74987 -0.04418 ),   weight =   0.0069444
+    k (  38) =    (  -0.28862 -0.66655 -0.04418 ),   weight =   0.0069444
+    k (  39) =    (  -0.14431 -0.58323 -0.04418 ),   weight =   0.0069444
+    k (  40) =    (   0.00000 -0.49991 -0.04418 ),   weight =   0.0069444
+    k (  41) =    (   0.14431 -0.41659 -0.04418 ),   weight =   0.0069444
+    k (  42) =    (   0.28862 -0.33327 -0.04418 ),   weight =   0.0069444
+    k (  43) =    (  -0.43293 -0.58323 -0.04418 ),   weight =   0.0069444
+    k (  44) =    (  -0.28862 -0.49991 -0.04418 ),   weight =   0.0069444
+    k (  45) =    (  -0.14431 -0.41659 -0.04418 ),   weight =   0.0069444
+    k (  46) =    (   0.00000 -0.33327 -0.04418 ),   weight =   0.0069444
+    k (  47) =    (   0.14431 -0.24996 -0.04418 ),   weight =   0.0069444
+    k (  48) =    (   0.28862 -0.16664 -0.04418 ),   weight =   0.0069444
+    k (  49) =    (  -0.43293 -0.41659 -0.04418 ),   weight =   0.0069444
+    k (  50) =    (  -0.28862 -0.33327 -0.04418 ),   weight =   0.0069444
+    k (  51) =    (  -0.14431 -0.24996 -0.04418 ),   weight =   0.0069444
+    k (  52) =    (   0.00000 -0.16664 -0.04418 ),   weight =   0.0069444
+    k (  53) =    (   0.14431 -0.08332 -0.04418 ),   weight =   0.0069444
+    k (  54) =    (   0.28862 -0.00000 -0.04418 ),   weight =   0.0069444
+    k (  55) =    (  -0.43293 -0.24996 -0.04418 ),   weight =   0.0069444
+    k (  56) =    (  -0.28862 -0.16664 -0.04418 ),   weight =   0.0069444
+    k (  57) =    (  -0.14431 -0.08332 -0.04418 ),   weight =   0.0069444
+    k (  58) =    (   0.00000  0.00000 -0.04418 ),   weight =   0.0069444
+    k (  59) =    (   0.14431  0.08332 -0.04418 ),   weight =   0.0069444
+    k (  60) =    (   0.28862  0.16664 -0.04418 ),   weight =   0.0069444
+    k (  61) =    (  -0.43293 -0.08332 -0.04418 ),   weight =   0.0069444
+    k (  62) =    (  -0.28862  0.00000 -0.04418 ),   weight =   0.0069444
+    k (  63) =    (  -0.14431  0.08332 -0.04418 ),   weight =   0.0069444
+    k (  64) =    (   0.00000  0.16664 -0.04418 ),   weight =   0.0069444
+    k (  65) =    (   0.14431  0.24996 -0.04418 ),   weight =   0.0069444
+    k (  66) =    (   0.28862  0.33327 -0.04418 ),   weight =   0.0069444
+    k (  67) =    (  -0.43293  0.08332 -0.04418 ),   weight =   0.0069444
+    k (  68) =    (  -0.28862  0.16664 -0.04418 ),   weight =   0.0069444
+    k (  69) =    (  -0.14431  0.24996 -0.04418 ),   weight =   0.0069444
+    k (  70) =    (   0.00000  0.33327 -0.04418 ),   weight =   0.0069444
+    k (  71) =    (   0.14431  0.41659 -0.04418 ),   weight =   0.0069444
+    k (  72) =    (   0.28862  0.49991 -0.04418 ),   weight =   0.0069444
+    k (  73) =    (  -0.43293 -0.74987  0.00000 ),   weight =   0.0069444
+    k (  74) =    (  -0.28862 -0.66655  0.00000 ),   weight =   0.0069444
+    k (  75) =    (  -0.14431 -0.58323  0.00000 ),   weight =   0.0069444
+    k (  76) =    (   0.00000 -0.49991  0.00000 ),   weight =   0.0069444
+    k (  77) =    (   0.14431 -0.41659  0.00000 ),   weight =   0.0069444
+    k (  78) =    (   0.28862 -0.33327  0.00000 ),   weight =   0.0069444
+    k (  79) =    (  -0.43293 -0.58323  0.00000 ),   weight =   0.0069444
+    k (  80) =    (  -0.28862 -0.49991  0.00000 ),   weight =   0.0069444
+    k (  81) =    (  -0.14431 -0.41659  0.00000 ),   weight =   0.0069444
+    k (  82) =    (   0.00000 -0.33327  0.00000 ),   weight =   0.0069444
+    k (  83) =    (   0.14431 -0.24996  0.00000 ),   weight =   0.0069444
+    k (  84) =    (   0.28862 -0.16664  0.00000 ),   weight =   0.0069444
+    k (  85) =    (  -0.43293 -0.41659  0.00000 ),   weight =   0.0069444
+    k (  86) =    (  -0.28862 -0.33327  0.00000 ),   weight =   0.0069444
+    k (  87) =    (  -0.14431 -0.24996  0.00000 ),   weight =   0.0069444
+    k (  88) =    (   0.00000 -0.16664  0.00000 ),   weight =   0.0069444
+    k (  89) =    (   0.14431 -0.08332  0.00000 ),   weight =   0.0069444
+    k (  90) =    (   0.28862 -0.00000  0.00000 ),   weight =   0.0069444
+    k (  91) =    (  -0.43293 -0.24996  0.00000 ),   weight =   0.0069444
+    k (  92) =    (  -0.28862 -0.16664  0.00000 ),   weight =   0.0069444
+    k (  93) =    (  -0.14431 -0.08332  0.00000 ),   weight =   0.0069444
+    k (  94) =    (   0.00000  0.00000  0.00000 ),   weight =   0.0069444
+    k (  95) =    (   0.14431  0.08332  0.00000 ),   weight =   0.0069444
+    k (  96) =    (   0.28862  0.16664  0.00000 ),   weight =   0.0069444
+    k (  97) =    (  -0.43293 -0.08332  0.00000 ),   weight =   0.0069444
+    k (  98) =    (  -0.28862  0.00000  0.00000 ),   weight =   0.0069444
+    k (  99) =    (  -0.14431  0.08332  0.00000 ),   weight =   0.0069444
+    k ( 100) =    (   0.00000  0.16664  0.00000 ),   weight =   0.0069444
+    k ( 101) =    (   0.14431  0.24996  0.00000 ),   weight =   0.0069444
+    k ( 102) =    (   0.28862  0.33327  0.00000 ),   weight =   0.0069444
+    k ( 103) =    (  -0.43293  0.08332  0.00000 ),   weight =   0.0069444
+    k ( 104) =    (  -0.28862  0.16664  0.00000 ),   weight =   0.0069444
+    k ( 105) =    (  -0.14431  0.24996  0.00000 ),   weight =   0.0069444
+    k ( 106) =    (   0.00000  0.33327  0.00000 ),   weight =   0.0069444
+    k ( 107) =    (   0.14431  0.41659  0.00000 ),   weight =   0.0069444
+    k ( 108) =    (   0.28862  0.49991  0.00000 ),   weight =   0.0069444
+    k ( 109) =    (  -0.43293 -0.74987  0.04418 ),   weight =   0.0069444
+    k ( 110) =    (  -0.28862 -0.66655  0.04418 ),   weight =   0.0069444
+    k ( 111) =    (  -0.14431 -0.58323  0.04418 ),   weight =   0.0069444
+    k ( 112) =    (   0.00000 -0.49991  0.04418 ),   weight =   0.0069444
+    k ( 113) =    (   0.14431 -0.41659  0.04418 ),   weight =   0.0069444
+    k ( 114) =    (   0.28862 -0.33327  0.04418 ),   weight =   0.0069444
+    k ( 115) =    (  -0.43293 -0.58323  0.04418 ),   weight =   0.0069444
+    k ( 116) =    (  -0.28862 -0.49991  0.04418 ),   weight =   0.0069444
+    k ( 117) =    (  -0.14431 -0.41659  0.04418 ),   weight =   0.0069444
+    k ( 118) =    (   0.00000 -0.33327  0.04418 ),   weight =   0.0069444
+    k ( 119) =    (   0.14431 -0.24996  0.04418 ),   weight =   0.0069444
+    k ( 120) =    (   0.28862 -0.16664  0.04418 ),   weight =   0.0069444
+    k ( 121) =    (  -0.43293 -0.41659  0.04418 ),   weight =   0.0069444
+    k ( 122) =    (  -0.28862 -0.33327  0.04418 ),   weight =   0.0069444
+    k ( 123) =    (  -0.14431 -0.24996  0.04418 ),   weight =   0.0069444
+    k ( 124) =    (   0.00000 -0.16664  0.04418 ),   weight =   0.0069444
+    k ( 125) =    (   0.14431 -0.08332  0.04418 ),   weight =   0.0069444
+    k ( 126) =    (   0.28862 -0.00000  0.04418 ),   weight =   0.0069444
+    k ( 127) =    (  -0.43293 -0.24996  0.04418 ),   weight =   0.0069444
+    k ( 128) =    (  -0.28862 -0.16664  0.04418 ),   weight =   0.0069444
+    k ( 129) =    (  -0.14431 -0.08332  0.04418 ),   weight =   0.0069444
+    k ( 130) =    (   0.00000  0.00000  0.04418 ),   weight =   0.0069444
+    k ( 131) =    (   0.14431  0.08332  0.04418 ),   weight =   0.0069444
+    k ( 132) =    (   0.28862  0.16664  0.04418 ),   weight =   0.0069444
+    k ( 133) =    (  -0.43293 -0.08332  0.04418 ),   weight =   0.0069444
+    k ( 134) =    (  -0.28862  0.00000  0.04418 ),   weight =   0.0069444
+    k ( 135) =    (  -0.14431  0.08332  0.04418 ),   weight =   0.0069444
+    k ( 136) =    (   0.00000  0.16664  0.04418 ),   weight =   0.0069444
+    k ( 137) =    (   0.14431  0.24996  0.04418 ),   weight =   0.0069444
+    k ( 138) =    (   0.28862  0.33327  0.04418 ),   weight =   0.0069444
+    k ( 139) =    (  -0.43293  0.08332  0.04418 ),   weight =   0.0069444
+    k ( 140) =    (  -0.28862  0.16664  0.04418 ),   weight =   0.0069444
+    k ( 141) =    (  -0.14431  0.24996  0.04418 ),   weight =   0.0069444
+    k ( 142) =    (   0.00000  0.33327  0.04418 ),   weight =   0.0069444
+    k ( 143) =    (   0.14431  0.41659  0.04418 ),   weight =   0.0069444
+    k ( 144) =    (   0.28862  0.49991  0.04418 ),   weight =   0.0069444
  </K-POINTS>
 
 
@@ -169,23 +253,23 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -0.086456     3.383205     4.792911 )
-    Wf(   2 ) = (    -0.177963     1.837115    -1.243245 )
-    Wf(   3 ) = (    -0.472046     0.520037    -2.721958 )
-    Wf(   4 ) = (     1.390469    -0.404320     0.133300 )
-    Wf(   5 ) = (     0.195929    -0.918092     1.378108 )
-    Wf(   6 ) = (    -0.596846     0.183021     2.370201 )
-    Wf(   7 ) = (     1.028685    -0.260254     2.551326 )
-    Wf(   8 ) = (    -1.960792     1.725016    -4.291450 )
+    Wf(   1 ) = (    -0.000000    -0.000000     2.221940 )
+    Wf(   2 ) = (     1.814125    -1.047386     5.184527 )
+    Wf(   3 ) = (     3.628250    -2.094771     8.147114 )
+    Wf(   4 ) = (     5.442375    -1.047386     5.184527 )
+    Wf(   5 ) = (     3.628250     0.000000    11.109701 )
+    Wf(   6 ) = (     3.628250     2.094771    14.072288 )
+    Wf(   7 ) = (     1.814125     3.142157    11.109701 )
+    Wf(   8 ) = (     5.442375     3.142157    11.109701 )
         in crystal coord
-    Wf(   1 ) = (     0.257264     0.538357     0.134818 )
-    Wf(   2 ) = (     0.121642     0.292333    -0.034971 )
-    Wf(   3 ) = (    -0.023676     0.082752    -0.076565 )
-    Wf(   4 ) = (     0.159448    -0.064338     0.003750 )
-    Wf(   5 ) = (    -0.046046    -0.146093     0.038764 )
-    Wf(   6 ) = (    -0.067688     0.029124     0.066670 )
-    Wf(   7 ) = (     0.121054    -0.041413     0.071765 )
-    Wf(   8 ) = (    -0.132964     0.274495    -0.120712 )
+    Wf(   1 ) = (    -0.000000    -0.000000     0.062500 )
+    Wf(   2 ) = (     0.166667    -0.166667     0.145833 )
+    Wf(   3 ) = (     0.333333    -0.333333     0.229167 )
+    Wf(   4 ) = (     0.666667    -0.166667     0.145833 )
+    Wf(   5 ) = (     0.500000     0.000000     0.312500 )
+    Wf(   6 ) = (     0.666667     0.333333     0.395833 )
+    Wf(   7 ) = (     0.500000     0.500000     0.312500 )
+    Wf(   8 ) = (     1.000000     0.500000     0.312500 )
 
   Collecting WFs: 
   Plotting Cell dimensions [cryst. coord]:
@@ -195,14 +279,14 @@
 
   New center positions [cryst. coord]:
         in crystal coord
-    Wf(   1 ) = (     0.257264    -0.461643     0.134818 )
-    Wf(   2 ) = (     0.121642     0.292333    -0.034971 )
-    Wf(   3 ) = (    -0.023676     0.082752    -0.076565 )
-    Wf(   4 ) = (     0.159448    -0.064338     0.003750 )
-    Wf(   5 ) = (    -0.046046    -0.146093     0.038764 )
-    Wf(   6 ) = (    -0.067688     0.029124     0.066670 )
-    Wf(   7 ) = (     0.121054    -0.041413     0.071765 )
-    Wf(   8 ) = (    -0.132964     0.274495    -0.120712 )
+    Wf(   1 ) = (    -0.000000    -0.000000     0.062500 )
+    Wf(   2 ) = (     0.166667    -0.166667     0.145833 )
+    Wf(   3 ) = (     0.333333    -0.333333     0.229167 )
+    Wf(   4 ) = (    -0.333333    -0.166667     0.145833 )
+    Wf(   5 ) = (     0.500000     0.000000     0.312500 )
+    Wf(   6 ) = (    -0.333333     0.333333     0.395833 )
+    Wf(   7 ) = (     0.500000     0.500000     0.312500 )
+    Wf(   8 ) = (    -0.000000     0.500000     0.312500 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -213,7 +297,7 @@
      Si   tau(   5 ) = (  -3.6282500  -2.0947711   5.9251741 )
      Si   tau(   6 ) = (  -7.2565000   4.1895422   5.9251741 )
      Si   tau(   7 ) = (   3.6282500  -2.0947711   5.9251741 )
-     Si   tau(   8 ) = (   0.0000000   4.1895422   5.9251741 )
+     Si   tau(   8 ) = (  -0.0000000   4.1895422   5.9251741 )
      Si   tau(   9 ) = (   0.0000000  -4.1895422  11.8503483 )
      Si   tau(  10 ) = (  -3.6282500   2.0947711  11.8503483 )
      Si   tau(  11 ) = (   7.2565000  -4.1895422  11.8503483 )
@@ -225,7 +309,7 @@
      Si   tau(  17 ) = (  -3.6282500  -2.0947711 -11.8503483 )
      Si   tau(  18 ) = (  -7.2565000   4.1895422 -11.8503483 )
      Si   tau(  19 ) = (   3.6282500  -2.0947711 -11.8503483 )
-     Si   tau(  20 ) = (   0.0000000   4.1895422 -11.8503483 )
+     Si   tau(  20 ) = (  -0.0000000   4.1895422 -11.8503483 )
      Si   tau(  21 ) = (   0.0000000  -4.1895422  -5.9251741 )
      Si   tau(  22 ) = (  -3.6282500   2.0947711  -5.9251741 )
      Si   tau(  23 ) = (   7.2565000  -4.1895422  -5.9251741 )
@@ -237,7 +321,7 @@
      Si   tau(  29 ) = (  -3.6282500  -2.0947711  10.3690547 )
      Si   tau(  30 ) = (  -7.2565000   4.1895422  10.3690547 )
      Si   tau(  31 ) = (   3.6282500  -2.0947711  10.3690547 )
-     Si   tau(  32 ) = (   0.0000000   4.1895422  10.3690547 )
+     Si   tau(  32 ) = (  -0.0000000   4.1895422  10.3690547 )
      Si   tau(  33 ) = (   0.0000000  -4.1895422  16.2942289 )
      Si   tau(  34 ) = (  -3.6282500   2.0947711  16.2942289 )
      Si   tau(  35 ) = (   7.2565000  -4.1895422  16.2942289 )
@@ -249,7 +333,7 @@
      Si   tau(  41 ) = (  -3.6282500  -2.0947711  -7.4064677 )
      Si   tau(  42 ) = (  -7.2565000   4.1895422  -7.4064677 )
      Si   tau(  43 ) = (   3.6282500  -2.0947711  -7.4064677 )
-     Si   tau(  44 ) = (   0.0000000   4.1895422  -7.4064677 )
+     Si   tau(  44 ) = (  -0.0000000   4.1895422  -7.4064677 )
      Si   tau(  45 ) = (   0.0000000  -4.1895422  -1.4812935 )
      Si   tau(  46 ) = (  -3.6282500   2.0947711  -1.4812935 )
      Si   tau(  47 ) = (   7.2565000  -4.1895422  -1.4812935 )
@@ -257,232 +341,448 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :    88.95 secs
+                              Total time spent up to now :    92.63 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :   142.05 secs
+                              Total time spent up to now :    95.45 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :   195.15 secs
+                              Total time spent up to now :    98.33 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :   248.37 secs
+                              Total time spent up to now :   101.13 secs
 
     Wfc Fourier Transf. for k-point    5
-                              Total time spent up to now :   301.47 secs
+                              Total time spent up to now :   103.94 secs
 
     Wfc Fourier Transf. for k-point    6
-                              Total time spent up to now :   354.58 secs
+                              Total time spent up to now :   106.73 secs
 
     Wfc Fourier Transf. for k-point    7
-                              Total time spent up to now :   407.68 secs
+                              Total time spent up to now :   109.55 secs
 
     Wfc Fourier Transf. for k-point    8
-                              Total time spent up to now :   460.41 secs
+                              Total time spent up to now :   112.33 secs
 
     Wfc Fourier Transf. for k-point    9
-                              Total time spent up to now :   513.51 secs
+                              Total time spent up to now :   115.14 secs
 
     Wfc Fourier Transf. for k-point   10
-                              Total time spent up to now :   566.58 secs
+                              Total time spent up to now :   117.95 secs
 
     Wfc Fourier Transf. for k-point   11
-                              Total time spent up to now :   619.34 secs
+                              Total time spent up to now :   120.74 secs
 
     Wfc Fourier Transf. for k-point   12
-                              Total time spent up to now :   672.42 secs
+                              Total time spent up to now :   123.60 secs
 
     Wfc Fourier Transf. for k-point   13
-                              Total time spent up to now :   725.52 secs
+                              Total time spent up to now :   126.42 secs
 
     Wfc Fourier Transf. for k-point   14
-                              Total time spent up to now :   778.62 secs
+                              Total time spent up to now :   129.28 secs
 
     Wfc Fourier Transf. for k-point   15
-                              Total time spent up to now :   831.38 secs
+                              Total time spent up to now :   132.12 secs
 
     Wfc Fourier Transf. for k-point   16
-                              Total time spent up to now :   884.33 secs
+                              Total time spent up to now :   134.90 secs
 
     Wfc Fourier Transf. for k-point   17
-                              Total time spent up to now :   937.28 secs
+                              Total time spent up to now :   137.70 secs
 
     Wfc Fourier Transf. for k-point   18
-                              Total time spent up to now :   990.04 secs
+                              Total time spent up to now :   140.53 secs
 
     Wfc Fourier Transf. for k-point   19
-                              Total time spent up to now :  1043.26 secs
+                              Total time spent up to now :   143.34 secs
 
     Wfc Fourier Transf. for k-point   20
-                              Total time spent up to now :  1096.33 secs
+                              Total time spent up to now :   146.14 secs
 
     Wfc Fourier Transf. for k-point   21
-                              Total time spent up to now :  1149.28 secs
+                              Total time spent up to now :   149.00 secs
 
     Wfc Fourier Transf. for k-point   22
-                              Total time spent up to now :  1202.13 secs
+                              Total time spent up to now :   151.76 secs
 
     Wfc Fourier Transf. for k-point   23
-                              Total time spent up to now :  1255.08 secs
+                              Total time spent up to now :   154.54 secs
 
     Wfc Fourier Transf. for k-point   24
-                              Total time spent up to now :  1308.15 secs
+                              Total time spent up to now :   157.34 secs
 
     Wfc Fourier Transf. for k-point   25
-                              Total time spent up to now :  1361.25 secs
+                              Total time spent up to now :   160.14 secs
 
     Wfc Fourier Transf. for k-point   26
-                              Total time spent up to now :  1414.02 secs
+                              Total time spent up to now :   162.97 secs
 
     Wfc Fourier Transf. for k-point   27
-                              Total time spent up to now :  1466.96 secs
+                              Total time spent up to now :   165.78 secs
 
     Wfc Fourier Transf. for k-point   28
-                              Total time spent up to now :  1519.91 secs
+                              Total time spent up to now :   168.56 secs
 
     Wfc Fourier Transf. for k-point   29
-                              Total time spent up to now :  1572.67 secs
+                              Total time spent up to now :   171.38 secs
 
     Wfc Fourier Transf. for k-point   30
-                              Total time spent up to now :  1625.77 secs
+                              Total time spent up to now :   174.18 secs
 
     Wfc Fourier Transf. for k-point   31
-                              Total time spent up to now :  1678.87 secs
+                              Total time spent up to now :   177.06 secs
 
     Wfc Fourier Transf. for k-point   32
-                              Total time spent up to now :  1731.94 secs
+                              Total time spent up to now :   179.86 secs
 
     Wfc Fourier Transf. for k-point   33
-                              Total time spent up to now :  1784.71 secs
+                              Total time spent up to now :   182.66 secs
 
     Wfc Fourier Transf. for k-point   34
-                              Total time spent up to now :  1837.78 secs
+                              Total time spent up to now :   185.44 secs
 
     Wfc Fourier Transf. for k-point   35
-                              Total time spent up to now :  1890.88 secs
+                              Total time spent up to now :   188.32 secs
 
     Wfc Fourier Transf. for k-point   36
-                              Total time spent up to now :  1943.62 secs
+                              Total time spent up to now :   191.17 secs
 
     Wfc Fourier Transf. for k-point   37
-                              Total time spent up to now :  1996.97 secs
+                              Total time spent up to now :   193.98 secs
 
     Wfc Fourier Transf. for k-point   38
-                              Total time spent up to now :  2050.10 secs
+                              Total time spent up to now :   196.79 secs
 
     Wfc Fourier Transf. for k-point   39
-                              Total time spent up to now :  2103.24 secs
+                              Total time spent up to now :   199.59 secs
 
     Wfc Fourier Transf. for k-point   40
-                              Total time spent up to now :  2156.59 secs
+                              Total time spent up to now :   202.42 secs
 
     Wfc Fourier Transf. for k-point   41
-                              Total time spent up to now :  2209.72 secs
+                              Total time spent up to now :   205.23 secs
 
     Wfc Fourier Transf. for k-point   42
-                              Total time spent up to now :  2262.86 secs
+                              Total time spent up to now :   208.04 secs
 
     Wfc Fourier Transf. for k-point   43
-                              Total time spent up to now :  2315.99 secs
+                              Total time spent up to now :   210.86 secs
 
     Wfc Fourier Transf. for k-point   44
-                              Total time spent up to now :  2368.73 secs
+                              Total time spent up to now :   213.65 secs
 
     Wfc Fourier Transf. for k-point   45
-                              Total time spent up to now :  2421.86 secs
+                              Total time spent up to now :   216.46 secs
 
     Wfc Fourier Transf. for k-point   46
-                              Total time spent up to now :  2475.12 secs
+                              Total time spent up to now :   219.26 secs
 
     Wfc Fourier Transf. for k-point   47
-                              Total time spent up to now :  2527.60 secs
+                              Total time spent up to now :   222.10 secs
 
     Wfc Fourier Transf. for k-point   48
-                              Total time spent up to now :  2580.86 secs
+                              Total time spent up to now :   224.95 secs
 
     Wfc Fourier Transf. for k-point   49
-                              Total time spent up to now :  2634.00 secs
+                              Total time spent up to now :   227.77 secs
 
     Wfc Fourier Transf. for k-point   50
-                              Total time spent up to now :  2687.13 secs
+                              Total time spent up to now :   230.61 secs
 
     Wfc Fourier Transf. for k-point   51
-                              Total time spent up to now :  2739.62 secs
+                              Total time spent up to now :   233.39 secs
 
     Wfc Fourier Transf. for k-point   52
-                              Total time spent up to now :  2792.50 secs
+                              Total time spent up to now :   236.21 secs
 
     Wfc Fourier Transf. for k-point   53
-                              Total time spent up to now :  2845.38 secs
+                              Total time spent up to now :   239.01 secs
 
     Wfc Fourier Transf. for k-point   54
-                              Total time spent up to now :  2897.87 secs
+                              Total time spent up to now :   241.83 secs
 
     Wfc Fourier Transf. for k-point   55
-                              Total time spent up to now :  2951.22 secs
+                              Total time spent up to now :   244.63 secs
 
     Wfc Fourier Transf. for k-point   56
-                              Total time spent up to now :  3004.48 secs
+                              Total time spent up to now :   247.43 secs
 
     Wfc Fourier Transf. for k-point   57
-                              Total time spent up to now :  3057.36 secs
+                              Total time spent up to now :   250.22 secs
 
     Wfc Fourier Transf. for k-point   58
-                              Total time spent up to now :  3109.72 secs
+                              Total time spent up to now :   252.97 secs
 
     Wfc Fourier Transf. for k-point   59
-                              Total time spent up to now :  3162.60 secs
+                              Total time spent up to now :   255.84 secs
 
     Wfc Fourier Transf. for k-point   60
-                              Total time spent up to now :  3215.86 secs
+                              Total time spent up to now :   258.66 secs
 
     Wfc Fourier Transf. for k-point   61
-                              Total time spent up to now :  3268.99 secs
+                              Total time spent up to now :   261.45 secs
 
     Wfc Fourier Transf. for k-point   62
-                              Total time spent up to now :  3321.48 secs
+                              Total time spent up to now :   264.23 secs
 
     Wfc Fourier Transf. for k-point   63
-                              Total time spent up to now :  3374.37 secs
+                              Total time spent up to now :   267.02 secs
 
     Wfc Fourier Transf. for k-point   64
-                              Total time spent up to now :  3427.25 secs
+                              Total time spent up to now :   269.79 secs
 
     Wfc Fourier Transf. for k-point   65
-                              Total time spent up to now :  3479.74 secs
+                              Total time spent up to now :   272.59 secs
 
     Wfc Fourier Transf. for k-point   66
-                              Total time spent up to now :  3532.87 secs
+                              Total time spent up to now :   275.41 secs
 
     Wfc Fourier Transf. for k-point   67
-                              Total time spent up to now :  3586.00 secs
+                              Total time spent up to now :   278.24 secs
 
     Wfc Fourier Transf. for k-point   68
-                              Total time spent up to now :  3639.26 secs
+                              Total time spent up to now :   281.08 secs
 
     Wfc Fourier Transf. for k-point   69
-                              Total time spent up to now :  3691.75 secs
+                              Total time spent up to now :   283.89 secs
 
     Wfc Fourier Transf. for k-point   70
-                              Total time spent up to now :  3745.00 secs
+                              Total time spent up to now :   286.68 secs
 
     Wfc Fourier Transf. for k-point   71
-                              Total time spent up to now :  3798.13 secs
+                              Total time spent up to now :   289.49 secs
 
     Wfc Fourier Transf. for k-point   72
-                              Total time spent up to now :  3850.87 secs
+                              Total time spent up to now :   292.29 secs
+
+    Wfc Fourier Transf. for k-point   73
+                              Total time spent up to now :   295.06 secs
+
+    Wfc Fourier Transf. for k-point   74
+                              Total time spent up to now :   297.86 secs
+
+    Wfc Fourier Transf. for k-point   75
+                              Total time spent up to now :   300.66 secs
+
+    Wfc Fourier Transf. for k-point   76
+                              Total time spent up to now :   303.42 secs
+
+    Wfc Fourier Transf. for k-point   77
+                              Total time spent up to now :   306.18 secs
+
+    Wfc Fourier Transf. for k-point   78
+                              Total time spent up to now :   309.02 secs
+
+    Wfc Fourier Transf. for k-point   79
+                              Total time spent up to now :   311.82 secs
+
+    Wfc Fourier Transf. for k-point   80
+                              Total time spent up to now :   314.63 secs
+
+    Wfc Fourier Transf. for k-point   81
+                              Total time spent up to now :   317.40 secs
+
+    Wfc Fourier Transf. for k-point   82
+                              Total time spent up to now :   320.19 secs
+
+    Wfc Fourier Transf. for k-point   83
+                              Total time spent up to now :   322.98 secs
+
+    Wfc Fourier Transf. for k-point   84
+                              Total time spent up to now :   325.77 secs
+
+    Wfc Fourier Transf. for k-point   85
+                              Total time spent up to now :   328.57 secs
+
+    Wfc Fourier Transf. for k-point   86
+                              Total time spent up to now :   331.37 secs
+
+    Wfc Fourier Transf. for k-point   87
+                              Total time spent up to now :   334.13 secs
+
+    Wfc Fourier Transf. for k-point   88
+                              Total time spent up to now :   336.94 secs
+
+    Wfc Fourier Transf. for k-point   89
+                              Total time spent up to now :   339.72 secs
+
+    Wfc Fourier Transf. for k-point   90
+                              Total time spent up to now :   342.54 secs
+
+    Wfc Fourier Transf. for k-point   91
+                              Total time spent up to now :   345.32 secs
+
+    Wfc Fourier Transf. for k-point   92
+                              Total time spent up to now :   348.11 secs
+
+    Wfc Fourier Transf. for k-point   93
+                              Total time spent up to now :   350.88 secs
+
+    Wfc Fourier Transf. for k-point   94
+                              Total time spent up to now :   353.52 secs
+
+    Wfc Fourier Transf. for k-point   95
+                              Total time spent up to now :   356.29 secs
+
+    Wfc Fourier Transf. for k-point   96
+                              Total time spent up to now :   359.07 secs
+
+    Wfc Fourier Transf. for k-point   97
+                              Total time spent up to now :   361.88 secs
+
+    Wfc Fourier Transf. for k-point   98
+                              Total time spent up to now :   364.67 secs
+
+    Wfc Fourier Transf. for k-point   99
+                              Total time spent up to now :   367.55 secs
+
+    Wfc Fourier Transf. for k-point  100
+                              Total time spent up to now :   370.31 secs
+
+    Wfc Fourier Transf. for k-point  101
+                              Total time spent up to now :   373.06 secs
+
+    Wfc Fourier Transf. for k-point  102
+                              Total time spent up to now :   375.84 secs
+
+    Wfc Fourier Transf. for k-point  103
+                              Total time spent up to now :   378.64 secs
+
+    Wfc Fourier Transf. for k-point  104
+                              Total time spent up to now :   381.42 secs
+
+    Wfc Fourier Transf. for k-point  105
+                              Total time spent up to now :   384.16 secs
+
+    Wfc Fourier Transf. for k-point  106
+                              Total time spent up to now :   386.96 secs
+
+    Wfc Fourier Transf. for k-point  107
+                              Total time spent up to now :   389.80 secs
+
+    Wfc Fourier Transf. for k-point  108
+                              Total time spent up to now :   392.59 secs
+
+    Wfc Fourier Transf. for k-point  109
+                              Total time spent up to now :   395.36 secs
+
+    Wfc Fourier Transf. for k-point  110
+                              Total time spent up to now :   398.13 secs
+
+    Wfc Fourier Transf. for k-point  111
+                              Total time spent up to now :   400.90 secs
+
+    Wfc Fourier Transf. for k-point  112
+                              Total time spent up to now :   403.65 secs
+
+    Wfc Fourier Transf. for k-point  113
+                              Total time spent up to now :   406.43 secs
+
+    Wfc Fourier Transf. for k-point  114
+                              Total time spent up to now :   409.19 secs
+
+    Wfc Fourier Transf. for k-point  115
+                              Total time spent up to now :   411.95 secs
+
+    Wfc Fourier Transf. for k-point  116
+                              Total time spent up to now :   414.70 secs
+
+    Wfc Fourier Transf. for k-point  117
+                              Total time spent up to now :   417.47 secs
+
+    Wfc Fourier Transf. for k-point  118
+                              Total time spent up to now :   420.20 secs
+
+    Wfc Fourier Transf. for k-point  119
+                              Total time spent up to now :   422.96 secs
+
+    Wfc Fourier Transf. for k-point  120
+                              Total time spent up to now :   425.72 secs
+
+    Wfc Fourier Transf. for k-point  121
+                              Total time spent up to now :   428.49 secs
+
+    Wfc Fourier Transf. for k-point  122
+                              Total time spent up to now :   431.22 secs
+
+    Wfc Fourier Transf. for k-point  123
+                              Total time spent up to now :   433.97 secs
+
+    Wfc Fourier Transf. for k-point  124
+                              Total time spent up to now :   436.71 secs
+
+    Wfc Fourier Transf. for k-point  125
+                              Total time spent up to now :   439.47 secs
+
+    Wfc Fourier Transf. for k-point  126
+                              Total time spent up to now :   442.23 secs
+
+    Wfc Fourier Transf. for k-point  127
+                              Total time spent up to now :   444.98 secs
+
+    Wfc Fourier Transf. for k-point  128
+                              Total time spent up to now :   447.73 secs
+
+    Wfc Fourier Transf. for k-point  129
+                              Total time spent up to now :   450.49 secs
+
+    Wfc Fourier Transf. for k-point  130
+                              Total time spent up to now :   453.18 secs
+
+    Wfc Fourier Transf. for k-point  131
+                              Total time spent up to now :   455.90 secs
+
+    Wfc Fourier Transf. for k-point  132
+                              Total time spent up to now :   458.68 secs
+
+    Wfc Fourier Transf. for k-point  133
+                              Total time spent up to now :   461.43 secs
+
+    Wfc Fourier Transf. for k-point  134
+                              Total time spent up to now :   464.20 secs
+
+    Wfc Fourier Transf. for k-point  135
+                              Total time spent up to now :   466.97 secs
+
+    Wfc Fourier Transf. for k-point  136
+                              Total time spent up to now :   469.72 secs
+
+    Wfc Fourier Transf. for k-point  137
+                              Total time spent up to now :   472.51 secs
+
+    Wfc Fourier Transf. for k-point  138
+                              Total time spent up to now :   475.35 secs
+
+    Wfc Fourier Transf. for k-point  139
+                              Total time spent up to now :   478.09 secs
+
+    Wfc Fourier Transf. for k-point  140
+                              Total time spent up to now :   480.82 secs
+
+    Wfc Fourier Transf. for k-point  141
+                              Total time spent up to now :   483.59 secs
+
+    Wfc Fourier Transf. for k-point  142
+                              Total time spent up to now :   486.32 secs
+
+    Wfc Fourier Transf. for k-point  143
+                              Total time spent up to now :   489.09 secs
+
+    Wfc Fourier Transf. for k-point  144
+                              Total time spent up to now :   491.83 secs
 
 
   WF maximum values (normalization is one):
 
-    Wf(   1 )   -->     0.091331
-    Wf(   2 )   -->     0.100222
-    Wf(   3 )   -->     0.088051
-    Wf(   4 )   -->     0.092318
-    Wf(   5 )   -->     0.082823
-    Wf(   6 )   -->     0.077932
-    Wf(   7 )   -->     0.093725
-    Wf(   8 )   -->     0.091403
+    Wf(   1 )   -->     0.314280
+    Wf(   2 )   -->     0.314218
+    Wf(   3 )   -->     0.314280
+    Wf(   4 )   -->     0.314218
+    Wf(   5 )   -->     0.314218
+    Wf(   6 )   -->     0.314280
+    Wf(   7 )   -->     0.314218
+    Wf(   8 )   -->     0.314218
 
 
   writing WF(   1) plot on file: .//silicon_zb_WanT_WFM001.xsf
@@ -494,18 +794,21 @@
   writing WF(   7) plot on file: .//silicon_zb_WanT_WFM007.xsf
   writing WF(   8) plot on file: .//silicon_zb_WanT_WFM008.xsf
 
+
   ======================================================================
 
    <global routines>
-             clock number :     7
+             clock number :     9
 
-                     plot :     1h 4m CPU 
- 
-                want_init :     0.07s CPU
-          ggrids_read_ext :     0.02s CPU
-           wfc_data_kread :     4.15s CPU (      72 calls,   0.058 s avg)
-               kwann_calc :     1h 3m CPU (     576 calls,   6.585 s avg)
-                   cfft3d :     2.80s CPU (     576 calls,   0.005 s avg)
-               cwann_calc :    14.90s CPU (     576 calls,   0.026 s avg)
+                     plot :  8m18.00s CPU 
+
+             want_dftread :     5.14s CPU
+                want_init :     0.12s CPU
+          ggrids_read_ext :     0.77s CPU
+      wfc_data_grids_read :     0.70s CPU
+           wfc_data_kread :    13.98s CPU (     144 calls,   0.097 s avg)
+               kwann_calc :   276.14s CPU (    1152 calls,   0.240 s avg)
+                   cfft3d :     9.97s CPU (    1152 calls,   0.009 s avg)
+               cwann_calc :   101.98s CPU (    1152 calls,   0.089 s avg)
 
 

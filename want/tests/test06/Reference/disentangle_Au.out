@@ -7,60 +7,78 @@
   ======================================================================
 
 
-  Program <disentangle>  v. 2.0.0  starts ...
-  Date 12Apr2006 at  0:10:14 
+  Program <disentangle>  v. 2.1.0  starts ...
+  Date 14Oct2006 at  6:16:58 
 
-  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
-        Compiler: INTEL
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
 
 
-  PW-DFT data read from file: gold.export/index.xml
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: gold.save/data-file.xml
+
 
   ======================================================================
-  =                                Main                                =
+  =                           INPUT Summary                            =
   ======================================================================
 
-            Calculation Title :     Wannier Transport Calculation
-                       Prefix :     gold
-                      Postfix :     _WanT
-            Working directory :     ./
+ <CONTROL>
+            Calculation title :     Wannier Transport Calculation
+                       prefix :     gold
+                      postfix :     _WanT
+                     work_dir :     ./SCRATCH/
+                  dftdata_fmt :     qexml  v1.2.0
 
-                 Restart Mode :     from_scratch
-                Overlap Calc. :     TRUE 
-             Projection Calc. :     TRUE 
-          Read Start Subspace :     FALSE
-       Read Start Unitary mat :     FALSE
-           Conditioned minim. :     FALSE
+                 wantdata_fmt :     textual
+                    verbosity :     high
+                 restart_mode :     from_scratch
+                  unitary_thr :       0.1000E-05
+               Calc. overlaps :     TRUE 
+            Calc. projections :     TRUE 
 
- <WANNIER_FUNCTIONS>
-  Input parameters for Wannier func. calculation
-    Number of Wannier functions required =    6
-    SD minim: Mixing parameter (alpha0_wan)=  0.500
-    SD minim: Max iteration number =     100
-    Minimization convergence threshold =     0.000001000
-    CG minim: Mixing parameter (alpha1_wan) =  0.500
-    CG minim: Max iteration number =    1500
-    Every   5 iteration perform a SD step
-    Print info each  20 iterations
-    Save data each  200 iterations
-    Starting minimization guess = center_projections
-    Ordering mode = none
-    Verbosity = high
-    Unitariery check threshold =     0.000001000
-    Conditioned minim. amplitude =     0.000000000
-    Conditioned minim.  iter num =  1600
- </WANNIER_FUNCTIONS>
+           Read init subspace :     FALSE
+         Read init unit. mat. :     FALSE
+              Read pseudopot. :     TRUE 
+           Use penalty funct. :     FALSE
 
- <DISENTANGLE>
-  Input parameters for subspace definition
-    Spin component = none
-    Mixing parameter (alpha_dis)=  0.500
-    Max iteration number =    1000
-    Starting minimization guess = center_projections
-    Disentangle convergence threshold =     0.000000010
-    Print info each  10 iterations
-    Save data each   50 iterations
- </DISENTANGLE>
+               Use debug mode :     FALSE
+ <CONTROL>
+
+ <SUBSPACE>
+                      dimwann :            6
+                subspace_init :     center_projections
+               spin_component :     none
+              disentangle_thr :       0.1000E-07
+                      win_max :       2.0000
+                     froz_max :      -2.0000
+                    alpha_dis :       0.5000
+                  maxiter_dis :         1000
+                   nprint_dis :           10
+                    nsave_dis :           50
+ </SUBSPACE>
+
+ <LOCALIZATION>
+            localization_init :     center_projections
+                ordering_mode :     none
+                   collect_wf :     FALSE
+                  wannier_thr :       0.1000E-05
+                   alpha0_wan :       0.5000
+                   alpha1_wan :       0.5000
+                 maxiter0_wan :          100
+                 maxiter1_wan :         1500
+                          ncg :            5
+                   nprint_wan :           20
+                    nsave_wan :          200
+ </LOCALIZATION>
 
  <TRIAL_CENTERS>
   Trial centers: (cart. coord. in Bohr)
@@ -112,34 +130,95 @@
      (in numerical form:   331 grid points, xmin =  0.00, dx = 0.0000)
 
   Atomic positions: (cart. coord. in Bohr)
-     Au   tau(   1 ) = (   0.0000000   0.0000000   0.9448634 )
+     Au   tau(   1 ) = (   0.0000000   0.0000000   0.9448631 )
 
   Atomic positions: (crystal coord.)
      Au   tau(   1 ) = (   0.0000000   0.0000000   0.0100000 )
  </IONS>
 
+ <SYMMETRY>
+  Number of symmetry operations =  8
+
+      isym =  1                                          identity
+
+ cryst.   s( 1) = (     1          0          0      )    f =(  0.0000000 )
+                  (     0          1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  2             180 deg rotation - cart. axis [0,0,1]
+
+ cryst.   s( 2) = (    -1          0          0      )    f =(  0.0000000 )
+                  (     0         -1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  3             90 deg rotation - cart. axis [0,0,-1]
+
+ cryst.   s( 3) = (     0         -1          0      )    f =(  0.0000000 )
+                  (     1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  4              90 deg rotation - cart. axis [0,0,1]
+
+ cryst.   s( 4) = (     0          1          0      )    f =(  0.0000000 )
+                  (    -1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  5        inv. 180 deg rotation - cart. axis [0,1,0]
+
+ cryst.   s( 5) = (     1          0          0      )    f =(  0.0000000 )
+                  (     0         -1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  6        inv. 180 deg rotation - cart. axis [1,0,0]
+
+ cryst.   s( 6) = (    -1          0          0      )    f =(  0.0000000 )
+                  (     0          1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  7        inv. 180 deg rotation - cart. axis [1,1,0]
+
+ cryst.   s( 7) = (     0         -1          0      )    f =(  0.0000000 )
+                  (    -1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  8       inv. 180 deg rotation - cart. axis [1,-1,0]
+
+ cryst.   s( 8) = (     0          1          0      )    f =(  0.0000000 )
+                  (     1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+ </SYMMETRY>
+
  <K-POINTS>
   nkpts =    8
   Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
+
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.1250000
-    k point   2:   (   0.00000  0.00000  0.16625 ),   weight =   0.1250000
-    k point   3:   (   0.00000  0.00000  0.33249 ),   weight =   0.1250000
-    k point   4:   (   0.00000  0.00000  0.49874 ),   weight =   0.1250000
-    k point   5:   (   0.00000  0.00000  0.66498 ),   weight =   0.1250000
-    k point   6:   (   0.00000  0.00000  0.83123 ),   weight =   0.1250000
-    k point   7:   (   0.00000  0.00000  0.99747 ),   weight =   0.1250000
-    k point   8:   (   0.00000  0.00000  1.16372 ),   weight =   0.1250000
+    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.1250000
+    k (   2) =    (   0.00000  0.00000  0.16625 ),   weight =   0.1250000
+    k (   3) =    (   0.00000  0.00000  0.33249 ),   weight =   0.1250000
+    k (   4) =    (   0.00000  0.00000  0.49874 ),   weight =   0.1250000
+    k (   5) =    (   0.00000  0.00000  0.66498 ),   weight =   0.1250000
+    k (   6) =    (   0.00000  0.00000  0.83123 ),   weight =   0.1250000
+    k (   7) =    (   0.00000  0.00000  0.99747 ),   weight =   0.1250000
+    k (   8) =    (   0.00000  0.00000  1.16372 ),   weight =   0.1250000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0660592
-    b ( 2) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0660592
-    b ( 3) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0660592
-    b ( 4) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0660592
-    b ( 5) =    (   0.00000  0.00000  0.16625 ),   weight =  18.0912616
-    b ( 6) =    (   0.00000  0.00000 -0.16625 ),   weight =  18.0912616
+    b (   1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0660592
+    b (   2) =    (   0.31416 -0.00000 -0.00000 ),   weight =   5.0660592
+    b (   3) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0660592
+    b (   4) =    (  -0.00000  0.31416 -0.00000 ),   weight =   5.0660592
+    b (   5) =    (   0.00000  0.00000  0.16625 ),   weight =  18.0912617
+    b (   6) =    (  -0.00000 -0.00000 -0.16625 ),   weight =  18.0912617
 
   Total weight =      56.4467600
  </B-SHELL>
@@ -152,7 +231,7 @@
   Electronic Structure from DFT calculation:
     nkpts =   8,     nbnd =  10,
     nspin =   1
-    Fermi energy =   -4.903059370 eV
+    Fermi energy =   -4.903059373 eV
  !
  !    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =    9
  !                                       imin =    1  imax =    9
@@ -219,15 +298,15 @@
   =                      Overlaps and Projections                      =
   ======================================================================
 
-  Reading density G-grid from file: gold.export/index.xml
-  Reading Wfc grids from file: gold.export/index.xml
+  Reading density G-grid from file: gold.save/data-file.xml
+  Reading Wfc grids from file: gold.save/data-file.xml
 
 
           Energy cut-off for wfcs =         50.00 (Ry)
                          for rho  =        200.00 (Ry)
       Total number of PW for rho  =      90341
-        Max number of PW for wfc  =      11304
-      Total number of PW for wfcs =      17461
+        Max number of PW for wfc  =      11303
+      Total number of PW for wfcs =      17460
         FFT grid components (rho) =  (    96   96   24 )
 
 
@@ -236,39 +315,39 @@
   Initializing atomic wfc
     Overlaps or Projections calculation for k-point:    1
     npw =  11303,    dimwin =    9
-                              Total time spent up to now :     0.35 secs
+                              Total time spent up to now :     1.87 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =  11299,    dimwin =    9
-                              Total time spent up to now :     0.52 secs
+                              Total time spent up to now :     2.32 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =  11287,    dimwin =    8
-                              Total time spent up to now :     0.66 secs
+                              Total time spent up to now :     2.62 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =  11254,    dimwin =    6
-                              Total time spent up to now :     0.78 secs
+                              Total time spent up to now :     2.88 secs
 
     Overlaps or Projections calculation for k-point:    5
     npw =  11226,    dimwin =    6
-                              Total time spent up to now :     0.90 secs
+                              Total time spent up to now :     3.13 secs
 
     Overlaps or Projections calculation for k-point:    6
     npw =  11254,    dimwin =    6
-                              Total time spent up to now :     1.02 secs
+                              Total time spent up to now :     3.41 secs
 
     Overlaps or Projections calculation for k-point:    7
     npw =  11287,    dimwin =    8
-                              Total time spent up to now :     1.18 secs
+                              Total time spent up to now :     3.78 secs
 
     Overlaps or Projections calculation for k-point:    8
     npw =  11299,    dimwin =    9
-                              Total time spent up to now :     1.35 secs
+                              Total time spent up to now :     4.21 secs
 
 
   Overlaps and projections written on file: gold_WanT.ovp
-                              Total time spent up to now :     1.43 secs
+                              Total time spent up to now :     4.32 secs
 
 
   ======================================================================
@@ -324,7 +403,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      22.209376         6.219254
    Avrg Omega_I                     :       3.701563         1.036542
 
-                              Total time spent up to now :     1.43 secs
+                              Total time spent up to now :     4.32 secs
 
 
   Subspace decomposition:
@@ -360,28 +439,31 @@
 
 
   Subspace data written on file: gold_WanT.space
+
   ======================================================================
 
    <global routines>
-             clock number :    20
+             clock number :    22
 
-              disentangle :     1.00s CPU 
- 
-                want_init :     0.02s CPU
+              disentangle :     4.00s CPU 
+
+             want_dftread :     0.56s CPU
+                want_init :     0.00s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :     1.40s CPU
-          ggrids_read_ext :     0.07s CPU
-              struct_fact :     0.00s CPU
-                init_at_1 :     0.05s CPU
-           wfc_data_kread :     0.77s CPU (      32 calls,   0.024 s avg)
-                  overlap :     0.31s CPU (      24 calls,   0.013 s avg)
-           overlap_setmap :     0.11s CPU (      24 calls,   0.004 s avg)
-                    s_psi :     0.00s CPU (       8 calls,   0.000 s avg)
-               projection :     0.09s CPU (       8 calls,   0.011 s avg)
-       trial_center_setup :     0.03s CPU (      48 calls,   0.001 s avg)
-               atomic_wfc :     0.02s CPU (      48 calls,   0.000 s avg)
+              wfc_manager :     3.65s CPU
+          ggrids_read_ext :     0.15s CPU
+      wfc_data_grids_read :     0.06s CPU
+              struct_fact :     0.02s CPU
+                init_at_1 :     0.33s CPU
+           wfc_data_kread :     1.23s CPU (      32 calls,   0.038 s avg)
+                  overlap :     1.15s CPU (      24 calls,   0.048 s avg)
+           overlap_setmap :     0.25s CPU (      24 calls,   0.010 s avg)
+                    s_psi :     0.02s CPU (       8 calls,   0.002 s avg)
+               projection :     0.35s CPU (       8 calls,   0.044 s avg)
+       trial_center_setup :     0.10s CPU (      48 calls,   0.002 s avg)
+               atomic_wfc :     0.09s CPU (      48 calls,   0.002 s avg)
                iterations :     0.00s CPU
-             subapce_init :     0.00s CPU
+            subspace_init :     0.00s CPU
         projection_frozen :     0.00s CPU
                    omegai :     0.00s CPU (       2 calls,   0.000 s avg)
                   zmatrix :     0.00s CPU

@@ -1,12 +1,6 @@
 
-     Program POST-PROC v.3.0    starts ...
-     Today is 11May2006 at 23:24: 7 
-
-     Reading file graphene.save ...      only dimensions
-     read complete
-
-     Reading file graphene.save ...      all except wavefuctions
-     read complete
+     Program POST-PROC v.3.2cvs starts ...
+     Today is 14Oct2006 at  0:10:15 
 
      nbndx  =    10  nbnd   =    10  natomwfc =     8  npwx   =    2878
      nelec  =   8.00  nkb   =     2  ngl    =    1057

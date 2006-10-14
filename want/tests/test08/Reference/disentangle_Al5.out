@@ -7,60 +7,81 @@
   ======================================================================
 
 
-  Program <disentangle>  v. 2.0.0  starts ...
-  Date 12Apr2006 at  0:28: 7 
+  Program <disentangle>  v. 2.1.0  starts ...
+  Date 14Oct2006 at  6:47:26 
 
-  Arch. / Op.Sys: Intel/Amd/Alpha 64-bit, Linux
-        Compiler: INTEL
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
 
 
-  PW-DFT data read from file: al5.export/index.xml
+  DFT-data fmt automaticaly detected: pw_export
+  DFT-data read from file: al5.export/index.xml
+
 
   ======================================================================
-  =                                Main                                =
+  =                           INPUT Summary                            =
   ======================================================================
 
-            Calculation Title :     Wannier Transport Calculation
-                       Prefix :     al5
-                      Postfix :     _WanT
-            Working directory :     ./
+ <CONTROL>
+            Calculation title :     Wannier Transport Calculation
+                       prefix :     al5
+                      postfix :     _WanT
+                     work_dir :     ./
+                  dftdata_fmt :     pw_export  v1.1.0
 
-                 Restart Mode :     from_scratch
-                Overlap Calc. :     TRUE 
-             Projection Calc. :     TRUE 
-          Read Start Subspace :     FALSE
-       Read Start Unitary mat :     FALSE
-           Conditioned minim. :     TRUE 
+                 wantdata_fmt :     textual
+                    verbosity :     medium
+                 restart_mode :     from_scratch
+                  unitary_thr :       0.1000E-05
+               Calc. overlaps :     TRUE 
+            Calc. projections :     TRUE 
 
- <WANNIER_FUNCTIONS>
-  Input parameters for Wannier func. calculation
-    Number of Wannier functions required =   20
-    SD minim: Mixing parameter (alpha0_wan)=  0.500
-    SD minim: Max iteration number =     100
-    Minimization convergence threshold =     0.000001000
-    CG minim: Mixing parameter (alpha1_wan) =  0.500
-    CG minim: Max iteration number =    5000
-    Every   5 iteration perform a SD step
-    Print info each  20 iterations
-    Save data each  200 iterations
-    Starting minimization guess = center_projections
-    Ordering mode = none
-    Verbosity = medium
-    Unitariery check threshold =     0.000001000
-    Conditioned minim. amplitude =    20.000000000
-    Conditioned minim.  iter num =  5100
- </WANNIER_FUNCTIONS>
+           Read init subspace :     FALSE
+         Read init unit. mat. :     FALSE
+              Read pseudopot. :     TRUE 
+           Use penalty funct. :     TRUE 
 
- <DISENTANGLE>
-  Input parameters for subspace definition
-    Spin component = none
-    Mixing parameter (alpha_dis)=  0.500
-    Max iteration number =    1000
-    Starting minimization guess = center_projections
-    Disentangle convergence threshold =     0.000000010
-    Print info each  10 iterations
-    Save data each   50 iterations
- </DISENTANGLE>
+               Use debug mode :     FALSE
+ <CONTROL>
+
+ <SUBSPACE>
+                      dimwann :           20
+                subspace_init :     center_projections
+               spin_component :     none
+              disentangle_thr :       0.1000E-07
+                      win_max :      10.0000
+                     froz_max :       1.5000
+                    alpha_dis :       0.5000
+                  maxiter_dis :         1000
+                   nprint_dis :           10
+                    nsave_dis :           50
+ </SUBSPACE>
+
+ <LOCALIZATION>
+            localization_init :     center_projections
+                ordering_mode :     none
+                   collect_wf :     FALSE
+                  wannier_thr :       0.1000E-05
+                   alpha0_wan :       0.5000
+                   alpha1_wan :       0.5000
+                 maxiter0_wan :          100
+                 maxiter1_wan :         5000
+                          ncg :            5
+                   nprint_wan :           20
+                    nsave_wan :          200
+                    a_condmin :      20.0000
+                 dump_condmin :       0.0000
+                niter_condmin :         5100
+ </LOCALIZATION>
 
  <TRIAL_CENTERS>
   Trial centers: (cart. coord. in Bohr)
@@ -133,24 +154,141 @@
      Al   tau(   5 ) = (   0.0000000   0.0000000  18.0000000 )
  </IONS>
 
+ <SYMMETRY>
+  Number of symmetry operations = 16
+
+      isym =  1                                          identity
+
+ cryst.   s( 1) = (     1          0          0      )    f =(  0.0000000 )
+                  (     0          1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  2             180 deg rotation - cart. axis [0,0,1]
+
+ cryst.   s( 2) = (    -1          0          0      )    f =(  0.0000000 )
+                  (     0         -1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  3             180 deg rotation - cart. axis [0,1,0]
+
+ cryst.   s( 3) = (    -1          0          0      )    f =(  0.0000000 )
+                  (     0          1          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+
+      isym =  4             180 deg rotation - cart. axis [1,0,0]
+
+ cryst.   s( 4) = (     1          0          0      )    f =(  0.0000000 )
+                  (     0         -1          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+
+      isym =  5             180 deg rotation - cart. axis [1,1,0]
+
+ cryst.   s( 5) = (     0          1          0      )    f =(  0.0000000 )
+                  (     1          0          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+
+      isym =  6            180 deg rotation - cart. axis [1,-1,0]
+
+ cryst.   s( 6) = (     0         -1          0      )    f =(  0.0000000 )
+                  (    -1          0          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+
+      isym =  7             90 deg rotation - cart. axis [0,0,-1]
+
+ cryst.   s( 7) = (     0         -1          0      )    f =(  0.0000000 )
+                  (     1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  8              90 deg rotation - cart. axis [0,0,1]
+
+ cryst.   s( 8) = (     0          1          0      )    f =(  0.0000000 )
+                  (    -1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym =  9                                         inversion
+
+ cryst.   s( 9) = (    -1          0          0      )    f =(  0.0000000 )
+                  (     0         -1          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+
+      isym = 10        inv. 180 deg rotation - cart. axis [0,0,1]
+
+ cryst.   s(10) = (     1          0          0      )    f =(  0.0000000 )
+                  (     0          1          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+
+      isym = 11        inv. 180 deg rotation - cart. axis [0,1,0]
+
+ cryst.   s(11) = (     1          0          0      )    f =(  0.0000000 )
+                  (     0         -1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym = 12        inv. 180 deg rotation - cart. axis [1,0,0]
+
+ cryst.   s(12) = (    -1          0          0      )    f =(  0.0000000 )
+                  (     0          1          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym = 13        inv. 180 deg rotation - cart. axis [1,1,0]
+
+ cryst.   s(13) = (     0         -1          0      )    f =(  0.0000000 )
+                  (    -1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym = 14       inv. 180 deg rotation - cart. axis [1,-1,0]
+
+ cryst.   s(14) = (     0          1          0      )    f =(  0.0000000 )
+                  (     1          0          0      )       (  0.0000000 )
+                  (     0          0          1      )       (  0.0000000 )
+
+
+      isym = 15       inv.  90 deg rotation - cart. axis [0,0,-1]
+
+ cryst.   s(15) = (     0          1          0      )    f =(  0.0000000 )
+                  (    -1          0          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+
+      isym = 16        inv.  90 deg rotation - cart. axis [0,0,1]
+
+ cryst.   s(16) = (     0         -1          0      )    f =(  0.0000000 )
+                  (     1          0          0      )       (  0.0000000 )
+                  (     0          0         -1      )       (  0.0000000 )
+
+ </SYMMETRY>
+
  <K-POINTS>
   nkpts =    4
   Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+
   K-point calculation: (cart. coord. in Bohr^-1)
-    k point   1:   (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k point   2:   (   0.00000  0.00000  0.06981 ),   weight =   0.2500000
-    k point   3:   (   0.00000  0.00000  0.13963 ),   weight =   0.2500000
-    k point   4:   (   0.00000  0.00000  0.20944 ),   weight =   0.2500000
+    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
+    k (   2) =    (   0.00000  0.00000  0.06981 ),   weight =   0.2500000
+    k (   3) =    (   0.00000  0.00000  0.13963 ),   weight =   0.2500000
+    k (   4) =    (   0.00000  0.00000  0.20944 ),   weight =   0.2500000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b ( 1) =    (  -0.52360  0.00000  0.00000 ),   weight =   1.8237813
-    b ( 2) =    (   0.52360  0.00000  0.00000 ),   weight =   1.8237813
-    b ( 3) =    (   0.00000 -0.52360  0.00000 ),   weight =   1.8237813
-    b ( 4) =    (   0.00000  0.52360  0.00000 ),   weight =   1.8237813
-    b ( 5) =    (   0.00000  0.00000  0.06981 ),   weight = 102.5876990
-    b ( 6) =    (   0.00000  0.00000 -0.06981 ),   weight = 102.5876990
+    b (   1) =    (  -0.52360  0.00000  0.00000 ),   weight =   1.8237813
+    b (   2) =    (   0.52360 -0.00000 -0.00000 ),   weight =   1.8237813
+    b (   3) =    (   0.00000 -0.52360  0.00000 ),   weight =   1.8237813
+    b (   4) =    (  -0.00000  0.52360 -0.00000 ),   weight =   1.8237813
+    b (   5) =    (   0.00000  0.00000  0.06981 ),   weight = 102.5876990
+    b (   6) =    (  -0.00000 -0.00000 -0.06981 ),   weight = 102.5876990
 
   Total weight =     212.4705231
  </B-SHELL>
@@ -229,31 +367,31 @@
           Energy cut-off for wfcs =         15.00 (Ry)
                          for rho  =         60.00 (Ry)
       Total number of PW for rho  =      25439
-        Max number of PW for wfc  =       3236
-      Total number of PW for wfcs =       3637
+        Max number of PW for wfc  =       3235
+      Total number of PW for wfcs =       3636
         FFT grid components (rho) =  (    30   30   60 )
 
 
   Initializing global dft data
     Overlaps or Projections calculation for k-point:    1
     npw =   3235,    dimwin =   50
-                              Total time spent up to now :     0.78 secs
+                              Total time spent up to now :     1.38 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =   3192,    dimwin =   50
-                              Total time spent up to now :     1.51 secs
+                              Total time spent up to now :     2.38 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =   3220,    dimwin =   50
-                              Total time spent up to now :     2.24 secs
+                              Total time spent up to now :     3.33 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =   3192,    dimwin =   50
-                              Total time spent up to now :     2.97 secs
+                              Total time spent up to now :     4.29 secs
 
 
   Overlaps and projections written on file: al5_WanT.ovp
-                              Total time spent up to now :     3.80 secs
+                              Total time spent up to now :     5.37 secs
 
 
   ======================================================================
@@ -264,57 +402,57 @@
   Initial trial subspace: projected localized orbitals
   There are frozen states
 
-  Iteration =     1     Omega_I =  285.945571      Error =      0.39481914
-  Iteration =     2     Omega_I =  198.359449      Error =      0.44155256
-  Iteration =     3     Omega_I =  176.780959      Error =      0.12206343
-  Iteration =     4     Omega_I =  166.062824      Error =      0.06454265
-  Iteration =     5     Omega_I =  158.446313      Error =      0.04806998
-  Iteration =     6     Omega_I =  152.707610      Error =      0.03757968
-  Iteration =     7     Omega_I =  148.275206      Error =      0.02989309
-  Iteration =     8     Omega_I =  144.802252      Error =      0.02398412
-  Iteration =     9     Omega_I =  142.054732      Error =      0.01934128
-  Iteration =    10     Omega_I =  139.865911      Error =      0.01564942
+  Iteration =     1     Omega_I =  285.953313      Error =      0.39480133
+  Iteration =     2     Omega_I =  198.361907      Error =      0.44157373
+  Iteration =     3     Omega_I =  176.780104      Error =      0.12208276
+  Iteration =     4     Omega_I =  166.062047      Error =      0.06454248
+  Iteration =     5     Omega_I =  158.445677      Error =      0.04806929
+  Iteration =     6     Omega_I =  152.707096      Error =      0.03757901
+  Iteration =     7     Omega_I =  148.274792      Error =      0.02989250
+  Iteration =     8     Omega_I =  144.801919      Error =      0.02398361
+  Iteration =     9     Omega_I =  142.054465      Error =      0.01934085
+  Iteration =    10     Omega_I =  139.865696      Error =      0.01564907
 
-                              Total time spent up to now :     3.98 secs
+                              Total time spent up to now :     5.54 secs
 
-  Iteration =    11     Omega_I =  138.112992      Error =      0.01269192
-  Iteration =    12     Omega_I =  136.703453      Error =      0.01031092
-  Iteration =    13     Omega_I =  135.566405      Error =      0.00838739
-  Iteration =    14     Omega_I =  134.646823      Error =      0.00682958
-  Iteration =    15     Omega_I =  133.901573      Error =      0.00556565
-  Iteration =    16     Omega_I =  133.296572      Error =      0.00453876
-  Iteration =    17     Omega_I =  132.804722      Error =      0.00370356
-  Iteration =    18     Omega_I =  132.404375      Error =      0.00302367
-  Iteration =    19     Omega_I =  132.078165      Error =      0.00246983
-  Iteration =    20     Omega_I =  131.812119      Error =      0.00201837
+  Iteration =    11     Omega_I =  138.112819      Error =      0.01269163
+  Iteration =    12     Omega_I =  136.703314      Error =      0.01031069
+  Iteration =    13     Omega_I =  135.566292      Error =      0.00838720
+  Iteration =    14     Omega_I =  134.646732      Error =      0.00682943
+  Iteration =    15     Omega_I =  133.901500      Error =      0.00556553
+  Iteration =    16     Omega_I =  133.296512      Error =      0.00453866
+  Iteration =    17     Omega_I =  132.804674      Error =      0.00370347
+  Iteration =    18     Omega_I =  132.404335      Error =      0.00302361
+  Iteration =    19     Omega_I =  132.078132      Error =      0.00246977
+  Iteration =    20     Omega_I =  131.812093      Error =      0.00201832
 
-                              Total time spent up to now :     4.14 secs
+                              Total time spent up to now :     5.68 secs
 
-  Iteration =    21     Omega_I =  131.594968      Error =      0.00165015
-  Iteration =    22     Omega_I =  131.417596      Error =      0.00134968
-  Iteration =    23     Omega_I =  131.272624      Error =      0.00110436
-  Iteration =    24     Omega_I =  131.154064      Error =      0.00090398
-  Iteration =    25     Omega_I =  131.057052      Error =      0.00074022
-  Iteration =    26     Omega_I =  130.977635      Error =      0.00060635
-  Iteration =    27     Omega_I =  130.912591      Error =      0.00049685
-  Iteration =    28     Omega_I =  130.859298      Error =      0.00040726
-  Iteration =    29     Omega_I =  130.815616      Error =      0.00033392
-  Iteration =    30     Omega_I =  130.779799      Error =      0.00027387
+  Iteration =    21     Omega_I =  131.594946      Error =      0.00165012
+  Iteration =    22     Omega_I =  131.417579      Error =      0.00134965
+  Iteration =    23     Omega_I =  131.272610      Error =      0.00110434
+  Iteration =    24     Omega_I =  131.154052      Error =      0.00090396
+  Iteration =    25     Omega_I =  131.057043      Error =      0.00074021
+  Iteration =    26     Omega_I =  130.977627      Error =      0.00060633
+  Iteration =    27     Omega_I =  130.912584      Error =      0.00049684
+  Iteration =    28     Omega_I =  130.859292      Error =      0.00040725
+  Iteration =    29     Omega_I =  130.815611      Error =      0.00033391
+  Iteration =    30     Omega_I =  130.779796      Error =      0.00027386
 
-                              Total time spent up to now :     4.30 secs
+                              Total time spent up to now :     5.82 secs
 
-  Iteration =    31     Omega_I =  130.750422      Error =      0.00022468
-  Iteration =    32     Omega_I =  130.726319      Error =      0.00018438
-  Iteration =    33     Omega_I =  130.706538      Error =      0.00015134
-  Iteration =    34     Omega_I =  130.690299      Error =      0.00012425
-  Iteration =    35     Omega_I =  130.676965      Error =      0.00010204
-  Iteration =    36     Omega_I =  130.666013      Error =      0.00008382
-  Iteration =    37     Omega_I =  130.657016      Error =      0.00006886
-  Iteration =    38     Omega_I =  130.649623      Error =      0.00005659
+  Iteration =    31     Omega_I =  130.750419      Error =      0.00022468
+  Iteration =    32     Omega_I =  130.726317      Error =      0.00018437
+  Iteration =    33     Omega_I =  130.706536      Error =      0.00015134
+  Iteration =    34     Omega_I =  130.690298      Error =      0.00012425
+  Iteration =    35     Omega_I =  130.676964      Error =      0.00010204
+  Iteration =    36     Omega_I =  130.666012      Error =      0.00008381
+  Iteration =    37     Omega_I =  130.657015      Error =      0.00006886
+  Iteration =    38     Omega_I =  130.649622      Error =      0.00005659
   Iteration =    39     Omega_I =  130.643546      Error =      0.00004651
-  Iteration =    40     Omega_I =  130.638551      Error =      0.00003824
+  Iteration =    40     Omega_I =  130.638550      Error =      0.00003824
 
-                              Total time spent up to now :     4.46 secs
+                              Total time spent up to now :     5.96 secs
 
   Iteration =    41     Omega_I =  130.634443      Error =      0.00003144
   Iteration =    42     Omega_I =  130.631065      Error =      0.00002586
@@ -324,10 +462,10 @@
   Iteration =    46     Omega_I =  130.622569      Error =      0.00001186
   Iteration =    47     Omega_I =  130.621294      Error =      0.00000976
   Iteration =    48     Omega_I =  130.620243      Error =      0.00000804
-  Iteration =    49     Omega_I =  130.619378      Error =      0.00000663
+  Iteration =    49     Omega_I =  130.619378      Error =      0.00000662
   Iteration =    50     Omega_I =  130.618665      Error =      0.00000546
 
-                              Total time spent up to now :     4.61 secs
+                              Total time spent up to now :     6.09 secs
 
   Iteration =    51     Omega_I =  130.618077      Error =      0.00000450
   Iteration =    52     Omega_I =  130.617592      Error =      0.00000371
@@ -340,7 +478,7 @@
   Iteration =    59     Omega_I =  130.615899      Error =      0.00000097
   Iteration =    60     Omega_I =  130.615794      Error =      0.00000081
 
-                              Total time spent up to now :     4.95 secs
+                              Total time spent up to now :     6.34 secs
 
   Iteration =    61     Omega_I =  130.615706      Error =      0.00000067
   Iteration =    62     Omega_I =  130.615634      Error =      0.00000055
@@ -353,7 +491,7 @@
   Iteration =    69     Omega_I =  130.615377      Error =      0.00000015
   Iteration =    70     Omega_I =  130.615360      Error =      0.00000013
 
-                              Total time spent up to now :     5.10 secs
+                              Total time spent up to now :     6.48 secs
 
   Iteration =    71     Omega_I =  130.615346      Error =      0.00000011
   Iteration =    72     Omega_I =  130.615334      Error =      0.00000009
@@ -366,7 +504,7 @@
   Iteration =    79     Omega_I =  130.615291      Error =      0.00000003
   Iteration =    80     Omega_I =  130.615288      Error =      0.00000002
 
-                              Total time spent up to now :     5.26 secs
+                              Total time spent up to now :     6.62 secs
 
   Iteration =    81     Omega_I =  130.615285      Error =      0.00000002
   Iteration =    82     Omega_I =  130.615283      Error =      0.00000002
@@ -384,33 +522,36 @@
   Final Omega_I (Bohr^2, Angstrom^2):     130.615277        36.575974
    Avrg Omega_I                     :       6.530764         1.828799
 
-                              Total time spent up to now :     5.35 secs
+                              Total time spent up to now :     6.70 secs
 
 
   Subspace data written on file: al5_WanT.space
+
   ======================================================================
 
    <global routines>
-             clock number :    18
+             clock number :    20
 
-              disentangle :     5.00s CPU 
- 
-                want_init :     0.02s CPU
+              disentangle :     6.00s CPU 
+
+             want_dftread :     0.31s CPU
+                want_init :     0.00s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :     3.78s CPU
-          ggrids_read_ext :     0.02s CPU
-              struct_fact :     0.00s CPU
-           wfc_data_kread :     0.71s CPU (      16 calls,   0.044 s avg)
-                  overlap :     1.73s CPU (      12 calls,   0.144 s avg)
-           overlap_setmap :     0.02s CPU (      12 calls,   0.001 s avg)
-                    s_psi :     0.01s CPU (       4 calls,   0.001 s avg)
-               projection :     0.46s CPU (       4 calls,   0.116 s avg)
-       trial_center_setup :     0.09s CPU (      80 calls,   0.001 s avg)
-               iterations :     1.55s CPU
-             subapce_init :     0.02s CPU
+              wfc_manager :     5.03s CPU
+          ggrids_read_ext :     0.05s CPU
+      wfc_data_grids_read :     0.01s CPU
+              struct_fact :     0.02s CPU
+           wfc_data_kread :     0.97s CPU (      16 calls,   0.061 s avg)
+                  overlap :     2.57s CPU (      12 calls,   0.214 s avg)
+           overlap_setmap :     0.03s CPU (      12 calls,   0.003 s avg)
+                    s_psi :     0.01s CPU (       4 calls,   0.003 s avg)
+               projection :     0.29s CPU (       4 calls,   0.072 s avg)
+       trial_center_setup :     0.14s CPU (      80 calls,   0.002 s avg)
+               iterations :     1.33s CPU
+            subspace_init :     0.02s CPU
         projection_frozen :     0.01s CPU
-                   omegai :     0.00s CPU (      87 calls,   0.000 s avg)
-                  zmatrix :     0.19s CPU (     344 calls,   0.001 s avg)
-                mat_hdiag :     0.86s CPU (     352 calls,   0.002 s avg)
+                   omegai :     0.01s CPU (      87 calls,   0.000 s avg)
+                  zmatrix :     0.39s CPU (     344 calls,   0.001 s avg)
+                mat_hdiag :     0.36s CPU (     352 calls,   0.001 s avg)
 
 
