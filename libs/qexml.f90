@@ -1516,7 +1516,7 @@ CONTAINS
 
 
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_wfc( ibnds, ibnde, ik, ispin, ipol, npwk, igk, ngw, igwx, &
+    SUBROUTINE qexml_read_wfc( ibnds, ibnde, ik, ispin, ipol, igk, ngw, igwx, &
                                wf, wf_kindip, ierr )
       !------------------------------------------------------------------------
       !
@@ -1526,7 +1526,7 @@ CONTAINS
       !
       INTEGER,                 INTENT(IN)  :: ibnds, ibnde, ik
       INTEGER,       OPTIONAL, INTENT(IN)  :: ispin, ipol
-      INTEGER,       OPTIONAL, INTENT(IN)  :: npwk, igk(:)
+      INTEGER,       OPTIONAL, INTENT(IN)  :: igk(:)
       INTEGER,       OPTIONAL, INTENT(OUT) :: ngw, igwx
       COMPLEX(dbl),  OPTIONAL, INTENT(OUT) :: wf(:,:), wf_kindip(:,:)
       INTEGER,                 INTENT(OUT) :: ierr
@@ -1580,7 +1580,7 @@ CONTAINS
       IF (ierr/=0) RETURN
       !
       !
-      IF ( PRESENT( wf_kindip )  )  THEN
+      IF ( PRESENT( wf )  )  THEN
           !
           lindex = 0
           !
@@ -1589,24 +1589,24 @@ CONTAINS
               lindex = lindex + 1
               !
               CALL iotk_scan_dat( iunaux, "evc"//TRIM(iotk_index(ib)), &
-                                  wf_kindip( 1:igwx_, lindex ), IERR=ierr )
+                                  wf( 1:igwx_, lindex ), IERR=ierr )
               IF (ierr/=0) RETURN
               !
           ENDDO
           !
       ENDIF
       !
-      IF ( PRESENT( wf )  )  THEN
+      IF ( PRESENT( wf_kindip )  )  THEN
           !
           ALLOCATE( wf_(igwx_ ), STAT=ierr )
           IF (ierr/=0) RETURN
           !
-          IF ( .NOT. PRESENT( igk ) .OR. .NOT. PRESENT( npwk ) ) THEN
+          IF ( .NOT. PRESENT( igk ) ) THEN
               ierr = 3
               RETURN
           ENDIF
           !
-          IF ( MAXVAL( igk( 1:npwk ) ) > igwx_ ) THEN 
+          IF ( MAXVAL( igk( 1: igwx_ ) ) > SIZE( wf_kindip, 1)  ) THEN
               ierr = 4
               RETURN
           ENDIF
@@ -1624,9 +1624,11 @@ CONTAINS
               !
               ! use the igk map to do the transformation
               !
-              DO ig = 1, npwk
+              wf_kindip(:, lindex) = 0.0_dbl
+              !
+              DO ig = 1, igwx_
                   !
-                  wf( ig, lindex ) = wf_( igk( ig )  )
+                  wf_kindip( igk( ig ), lindex ) = wf_( ig )
                   !
               ENDDO
               !
