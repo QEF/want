@@ -6,9 +6,9 @@ NC - pbe
       restart_mode='from_scratch',
       prefix='zincblend',
       nstep=2000,
+      pseudo_dir='./'
       tprnfor = .true.,
       verbosity = 'high'
-      pseudo_dir = './'
    /
    &SYSTEM
       ibrav=4, 

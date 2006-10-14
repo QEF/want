@@ -5,9 +5,9 @@ US - pbe
       calculation = 'scf',
       restart_mode='from_scratch',
       prefix='wurtzite_US',
+      pseudo_dir='./'
       nstep=2000,
       tprnfor = .true.,
-      pseudo_dir = './'
    /
    &SYSTEM
       ibrav=4, 
