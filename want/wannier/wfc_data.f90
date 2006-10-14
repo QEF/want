@@ -281,13 +281,13 @@ CONTAINS
             !
             IF ( nspin == 2 ) THEN
                !
-               CALL qexml_read_wfc( ibs, ibe, ik, ISPIN= ispin, NPWK=npwk(ik), &
-                                    IGK=igsort(:,ik), WF=wfc(:, lindex: ), IERR=ierr )
+               CALL qexml_read_wfc( ibs, ibe, ik, ISPIN= ispin, IGK=igsort(:,ik), &
+                                    WF=wfc(:, lindex: ), IERR=ierr )
                !
             ELSE
                !
-               CALL qexml_read_wfc( ibs, ibe, ik, NPWK=npwk(ik), &
-                                    IGK=igsort(:,ik), WF=wfc(:, lindex: ), IERR=ierr )
+               CALL qexml_read_wfc( ibs, ibe, ik, IGK=igsort(:,ik), &
+                                    WF=wfc(:, lindex: ), IERR=ierr )
                !
             ENDIF
             !

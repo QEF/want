@@ -4,6 +4,8 @@
 =======================================================
 
 
+14 Oct 2006      Test references updated (except test05). AF
+
 12 Oct 2006      log stuff added in wannier/ src; qexml is working with the new changes 
                  of the 1.2.0 version; more sophisticated check on fmt is done in
                  io_init; summary fmt updated; bug fixed in libtest.sh; (AF)
