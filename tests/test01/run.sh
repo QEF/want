@@ -15,7 +15,7 @@ MANUAL=" Usage
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
  pwexport        export DFT data to WanT package using IOTK fmt
- band            compute Silicon bands 
+ dft_bands       compute Silicon bands 
  dft             perform SCF, NSCF, PWEXPORT all together
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
@@ -32,12 +32,16 @@ MANUAL=" Usage
 #
 
 #
-# source common enviroment, to be set before running the script
+# source common enviroment
 . ../environment.conf
-. $UTILITY_BIN/basedef.sh
-TEST_HOME=$(pwd)
-TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
-PSEUDO_NAME=Si.vbc.UPF
+#
+# source low level macros for test
+. ../../script/libtest.sh
+
+#
+# macros
+SUFFIX=
+
 
 #
 # evaluate the starting choice about what is to run 
@@ -45,7 +49,7 @@ PSEUDO_NAME=Si.vbc.UPF
 SCF=
 NSCF=
 PWEXPORT=
-BAND=
+DFT_BANDS=
 DISENTANGLE=
 WANNIER=
 BANDS=
@@ -56,44 +60,32 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (scf)            SCF=".TRUE." ;;
-   (nscf)           NSCF=".TRUE." ;;
-   (pwexport)       PWEXPORT=".TRUE." ;;
-   (band)           BAND=".TRUE." ;;
-   (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;; 
-   (disentangle)    DISENTANGLE=".TRUE." ;;
-   (wannier)        WANNIER=".TRUE." ;;
-   (bands      )    BANDS=".TRUE." ;;
-   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    BANDS=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
-                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    BANDS=".TRUE." ;; 
-   (check)          CHECK=".TRUE." ;;
-   (clean)          CLEAN=".TRUE." ;;
+   (scf)            SCF=yes ;;
+   (nscf)           NSCF=yes ;;
+   (pwexport)       PWEXPORT=yes ;;
+   (dft_bands)      DFT_BANDS=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;; 
+   (disentangle)    DISENTANGLE=yes ;;
+   (wannier)        WANNIER=yes ;;
+   (bands)          BANDS=yes ;;
+   (want)           DISENTANGLE=yes ; WANNIER=yes ;
+                    BANDS=yes ;;
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
+                    DISENTANGLE=yes ; WANNIER=yes ; 
+                    BANDS=yes ;; 
+   (check)          CHECK=yes ;;
+   (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
+
 #
-# preliminaries
+# initialize
 #
 if [ -z "$CLEAN" ] ; then
-   test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME/../pseudo/$PSEUDO_NAME .
-   #
-   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
-   cd $TEST_HOME
-   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   #
-   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME ./HOME
-   #
-   test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
-
-   cd $TMPDIR/$TEST_NAME
+   test_init
 fi
+#
 
 
 #-----------------------------------------------------------------------------
@@ -101,108 +93,53 @@ fi
 #
 # running DFT SCF
 #
-if [ "$SCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running SCF calculation... $ECHO_C"
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1 
-   fi
-fi
+run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 
 #
 # running DFT NSCF
 #
-if [ "$NSCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1 
-   fi
-fi
-   
+run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
+
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation... " 
-   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
-   if [ $? = 0 ] ; then 
-      echo "done" 
-   else
-      echo "problems found" ; exit 1 
-   fi
-fi
+run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 
 #
-# running DFT BAND
+# running DFT BANDS
 #
-if [ "$BAND" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DFT_BAND calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-               < $TEST_HOME/nscf_band.in > $TEST_HOME/nscf_band.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1 
-   fi
-fi
-   
+run_dft  NAME=DFT_BANDS  INPUT=nscf_band$SUFFIX.in  \
+         OUTPUT=nscf_band$SUFFIX.out  RUN=$DFT_BANDS
+
+
 #
 # running DISENTANGLE
 #
-if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want.in > $TEST_HOME/disentangle.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1 
-   fi
-fi
+run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
 
 #
 # running WANNIER
 #
-if [ "$WANNIER" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want.in > $TEST_HOME/wannier.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1 
-   fi
-fi
+run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 
 #
 # running BANDS
 #
-if [ "$BANDS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BANDS calculation... $ECHO_C" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands.in > $TEST_HOME/bands.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1 
-   fi
-fi
+run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
+
 
 #
 # running CHECK
 #
-if [ "$CHECK" = ".TRUE." ] ; then  
+if [ "$CHECK" = yes ] ; then  
    echo "running CHECK... " 
    #
    cd $TEST_HOME
-   list="disentangle.out wannier.out"
+   list="disentangle$SUFFIX.out wannier$SUFFIX.out"
    #
    for file in $list
    do
-      $UTILITY_BIN/check.sh $file
+      ../../script/check.sh $file
    done
 fi
 
@@ -210,24 +147,10 @@ fi
 #
 # eventually clean
 #
-if [ "$CLEAN" = ".TRUE." ] ; then  
-   cd $TEST_HOME
-      rm -rf *.dat *.out 2> /dev/null
-      test -e SCRATCH && rm SCRATCH
-   cd $TMPDIR
-      test -d $TEST_NAME && rm -rf $TEST_NAME
-   exit 0
-fi
+run_clean  RUN=$CLEAN
+
 
 #
 # exiting
 exit 0
-
-
-
-
-
-
-
-
 
