@@ -5,7 +5,8 @@ Silicon USPP
     restart_mode='from_scratch',
     prefix='silicon_US',
     tprnfor = .true.
-    pseudo_dir = './',
+    pseudo_dir = '../pseudo/',
+    outdir = './SCRATCH'
  /
  &system    
     ibrav=  2, celldm(1) =10.599478, nat=  2, ntyp= 1,

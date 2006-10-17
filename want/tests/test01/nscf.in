@@ -1,7 +1,9 @@
  &control
     calculation='nscf'
-    pseudo_dir = './',
+    pseudo_dir = '../pseudo/',
+    outdir = './SCRATCH/'
     prefix='silicon'
+    
     wf_collect = .TRUE.
  /
  &system    

@@ -1,9 +1,10 @@
 Silicon USPP
 
  &control
-    calculation='nscf'
-    pseudo_dir = './',
     prefix='silicon_US'
+    calculation='nscf'
+    pseudo_dir = '../pseudo/',
+    outdir = './SCRATCH/'
  /
  &system    
     ibrav=  2, celldm(1) =10.599478, nat=  2, ntyp= 1,

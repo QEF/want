@@ -2,7 +2,7 @@
  &INPUT
    prefix = 'silicon'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH'
    nkpts_in   = 7
    nkpts_max  = 500
  /
