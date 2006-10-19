@@ -383,7 +383,7 @@
            ALLOCATE( tau_cry(3,nat), STAT=ierr )
            IF (ierr/=0) CALL errore('summary','allocating tau_cry',ABS(ierr))
            !
-           tau_cry(:,:) = tau(:,:)
+           tau_cry(:,:) = tau(:,:) * alat
            CALL cart2cry(tau_cry, avec)
            !
            WRITE(unit, " (/,2x,'Atomic positions: (crystal coord.)' ) " )
