@@ -17,7 +17,7 @@ source $LOCAL_DIR/../../script/basedef.sh
 case $INPUT_TYPE in
  ("from_stdin")       INPUT_REDIRECT="<" ;;
  ("from_file")        INPUT_REDIRECT="-input" ;;
- (*)                  echo "invalid INPUT_TYPE = $INPUT_TYPE" ; exit 1 ;;
+ (*)                  INPUT_REDIRECT="$INPUT_TYPE" ;;
 esac
 
 # few basic definitions
