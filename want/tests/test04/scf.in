@@ -7,7 +7,9 @@ US Pseudopotentials
       prefix='guanine',
       nstep=2000,
       tprnfor = .true.,
-      pseudo_dir = './',
+      pseudo_dir = '../pseudo/',
+      outdir = './SCRATCH'
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=8, 
