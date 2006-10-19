@@ -2,7 +2,7 @@
  &INPUT
    prefix = 'guanine'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH'
    output_fmt = 'plt'
    datatype = 'modulus'
    collect_wf = .FALSE.
