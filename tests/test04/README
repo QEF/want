@@ -4,7 +4,7 @@
 @title@   Guanine dipole moment
 ==============================================================================
 
-  The dipole moment of guanine molecule is computed.
+  The dipole moment of Guanine molecule is computed.
   DFT calculation is performed within ultrasoft pseudopotentials in a supercell 
   approach and with a cutoff of 25 Ry for wfc and 200 Ry for rho.
   The localization of the Wannier functions is carried out, in order to compute 
