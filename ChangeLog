@@ -3,8 +3,12 @@
             WanT code:  Log of Changes 
 =======================================================
 
+19 Oct 2006      Bug fixed in summary.f90: ions positions were badly written in crystal 
+                 coords (when required with verbosity = 'high'). (AF)
 
-14 Oct 2006      Test references updated (except test05). AF
+17 Oct 2006      Script and references in test01 re-updated. (AF)
+
+14 Oct 2006      Test references updated (except test05). (AF)
 
 12 Oct 2006      log stuff added in wannier/ src; qexml is working with the new changes 
                  of the 1.2.0 version; more sophisticated check on fmt is done in
