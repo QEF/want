@@ -74,34 +74,52 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    ! verify if the zero component is present, eventually set s = 0.
    !
    s(:) = 1
+   !
    DO ik=1,nkpts
+       !
        DO i=1,3
+           !
            kpt_loc(i,ik) = MOD( kpt_loc(i,ik), ONE )
-           IF ( kpt_loc (i,ik) < -EPS_m6 ) kpt_loc(i,ik) = kpt_loc(i,ik)+ONE
+           !
+           IF ( kpt_loc (i,ik) < -EPS_m6 ) kpt_loc(i,ik) = kpt_loc(i,ik) + ONE
+           !
            IF ( ABS( kpt_loc(i,ik) ) < EPS_m6 ) THEN 
                 s(i) = 0
                 kpt_loc(i,ik) = ONE
            ENDIF
+           !
        ENDDO
+       !
    ENDDO
 
    ! 
    ! shift the grid to the origin if needed,
    ! invert the components in order to search for the 
    ! maximum in each direction, and determine the nk value.
+   !
    DO i=1,3
        !
        ! save kpt_loc for later user
        kpt_gen(i,:) = kpt_loc(i,:)
-
+       !
        IF ( s(i) == 1 )  kpt_gen(i,:) = kpt_gen(i,:) - MINVAL(kpt_gen(i,:))
-
-
+       !
+       !
        DO ik=1,nkpts
-            kpt_gen(i,ik) = ONE / kpt_gen(i,ik)
+            !
+            IF ( ABS( kpt_gen(i,ik) ) > EPS_m6 ) THEN
+               !
+               kpt_gen(i,ik) = ONE / kpt_gen(i,ik)
+               !
+            ELSE
+               !
+               kpt_gen(i,ik) = ZERO
+               !
+            ENDIF
        ENDDO
-
-       nk(i) = MAXVAL( NINT(kpt_gen(i,:) ) )
+       !
+       nk(i) = MAXVAL( NINT( kpt_gen(i,:) ) )
+       !
    ENDDO
 
    !
