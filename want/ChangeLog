@@ -3,6 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+20 Oct 2006      Bug fixed in get_monkpack.f90 : NaN was given when treating shifted
+                 grids. Buf fixed also in the output fmt of summary.f90 . (AF & BB)
+
 19 Oct 2006      Bug fixed in summary.f90: ions positions were badly written in crystal 
                  coords (when required with verbosity = 'high'). (AF)
 
