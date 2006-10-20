@@ -176,18 +176,18 @@
        WRITE(unit,"(   7x,'       disentangle_thr :',5x,e12.4)") disentangle_thr
        !
        IF ( win_min > -10000.0 ) &
-          WRITE(unit,"(7x,'               win_min :',5x,f8.4)") win_min
+          WRITE(unit,"(7x,'               win_min :',1x,f12.4)") win_min
        IF ( win_max <  10000.0 ) &
-          WRITE(unit,"(7x,'               win_max :',5x,f8.4)") win_max
+          WRITE(unit,"(7x,'               win_max :',1x,f12.4)") win_max
        IF ( froz_min > -10000.0 ) &
-          WRITE(unit,"(7x,'              froz_min :',5x,f8.4)") froz_min
+          WRITE(unit,"(7x,'              froz_min :',1x,f12.4)") froz_min
        IF ( froz_max <  10000.0 .AND. froz_max > -10000.0 ) &
-          WRITE(unit,"(7x,'              froz_max :',5x,f8.4)") froz_max
+          WRITE(unit,"(7x,'              froz_max :',1x,f12.4)") froz_max
           !
-       WRITE(unit,"(   7x,'             alpha_dis :',5x,f8.4)") alpha_dis
-       WRITE(unit,"(   7x,'           maxiter_dis :',5x,  i8)") maxiter_dis
-       WRITE(unit,"(   7x,'            nprint_dis :',5x,  i8)") nprint_dis
-       WRITE(unit,"(   7x,'             nsave_dis :',5x,  i8)") nsave_dis
+       WRITE(unit,"(   7x,'             alpha_dis :',1x,f12.4)") alpha_dis
+       WRITE(unit,"(   7x,'           maxiter_dis :',5x,   i8)") maxiter_dis
+       WRITE(unit,"(   7x,'            nprint_dis :',5x,   i8)") nprint_dis
+       WRITE(unit,"(   7x,'             nsave_dis :',5x,   i8)") nsave_dis
        IF ( use_blimit ) &
           WRITE(unit,"(/,7x,'WARNING     use_blimit :',5x, a)") log2char(use_blimit)
        WRITE(unit, " ( ' </SUBSPACE>',/)" )
@@ -198,21 +198,21 @@
        WRITE(unit,"(   7x,'         ordering_mode :',5x,   a)") TRIM(ordering_mode)
        WRITE(unit,"(   7x,'            collect_wf :',5x,   a)") log2char(do_collect_wf)
        IF ( do_collect_wf ) THEN
-          WRITE(unit,"(7x,'              xcell(1) :',5x,f8.4)") xcell(1)
-          WRITE(unit,"(7x,'              xcell(2) :',5x,f8.4)") xcell(2)
-          WRITE(unit,"(7x,'              xcell(3) :',5x,f8.4)") xcell(3)
+          WRITE(unit,"(7x,'              xcell(1) :',1x,f12.4)") xcell(1)
+          WRITE(unit,"(7x,'              xcell(2) :',1x,f12.4)") xcell(2)
+          WRITE(unit,"(7x,'              xcell(3) :',1x,f12.4)") xcell(3)
        ENDIF
        WRITE(unit,"(   7x,'           wannier_thr :',5x,e12.4)") wannier_thr
-       WRITE(unit,"(   7x,'            alpha0_wan :',5x,f8.4)") alpha0_wan
-       WRITE(unit,"(   7x,'            alpha1_wan :',5x,f8.4)") alpha1_wan
+       WRITE(unit,"(   7x,'            alpha0_wan :',1x,f12.4)") alpha0_wan
+       WRITE(unit,"(   7x,'            alpha1_wan :',1x,f12.4)") alpha1_wan
        WRITE(unit,"(   7x,'          maxiter0_wan :',5x,  i8)") maxiter0_wan
        WRITE(unit,"(   7x,'          maxiter1_wan :',5x,  i8)") maxiter1_wan
        WRITE(unit,"(   7x,'                   ncg :',5x,  i8)") ncg
        WRITE(unit,"(   7x,'            nprint_wan :',5x,  i8)") nprint_wan
        WRITE(unit,"(   7x,'             nsave_wan :',5x,  i8)") nsave_wan
        IF ( do_condmin ) THEN
-          WRITE(unit,"(7x,'             a_condmin :',5x,f8.4)") a_condmin
-          WRITE(unit,"(7x,'          dump_condmin :',5x,f8.4)") dump_condmin
+          WRITE(unit,"(7x,'             a_condmin :',1x,f12.4)") a_condmin
+          WRITE(unit,"(7x,'          dump_condmin :',1x,f12.4)") dump_condmin
           WRITE(unit,"(7x,'         niter_condmin :',5x,  i8)") niter_condmin
        ENDIF
        WRITE(unit,"( ' </LOCALIZATION>',/)" )
