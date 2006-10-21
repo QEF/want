@@ -15,6 +15,7 @@ MANUAL=" Usage
  scf             DFT self-consistent calculation
  pwexport        export DFT data to WanT package in IOTK fmt
  dft             perform SCF, NSCF and PWEXPORT all together
+ dipole          compute dipole using DFT postproc
  disentangle     select the optimal subspace on which perform the wannier minimization 
  wannier         perform the above cited minimization 
  plot            compute WFs on real space for plotting
@@ -44,6 +45,7 @@ SUFFIX=""
 
 SCF=
 PWEXPORT=
+DIPOLE=
 DISENTANGLE=
 WANNIER=
 PLOT=
@@ -56,13 +58,14 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in 
    (scf)            SCF=yes ;;
    (pwexport)       PWEXPORT=yes ;;
-   (dft)            SCF=yes; PWEXPORT=yes ;;
+   (dipole)         DIPOLE=yes ;;
+   (dft)            SCF=yes; PWEXPORT=yes ; DIPOLE=yes ;;
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (plot)           PLOT=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
                     PLOT=yes ;;
-   (all)            SCF=yes ; PWEXPORT=yes ; 
+   (all)            SCF=yes ; PWEXPORT=yes ; DIPOLE=yes ;
                     DISENTANGLE=yes ; WANNIER=yes ; 
                     PLOT=yes ;;
    (check)          CHECK=yes ;;
@@ -94,14 +97,22 @@ fi
 run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 
 #
-# running DFT NSCF
-#
-run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
-
-#
 # running DFT PWEXPORT
 #
 run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
+
+#
+# running DIPOLE
+#
+# compute dipole running pp.x and dipole.x form the Espresso suite
+#
+if [ "$DIPOLE" = "yes" ] ; then
+   #
+   run  NAME="DIPOLE_PP" EXEC=$DFT_BIN/pp.x INPUT=pp$SUFFIX.in OUTPUT=pp$SUFFIX.out \
+                         PARALLEL=yes
+   run  NAME="DIPOLE"    EXEC=$DFT_BIN/dipole.x INPUT=dipole$SUFFIX.in \
+                         OUTPUT=dipole$SUFFIX.out PARALLEL=yes
+fi
 
 #
 # running DISENTANGLE
