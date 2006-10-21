@@ -1,6 +1,7 @@
  &INPUT
    prefix = 'copper_US'
    postfix = '_WanT'
+   work_dir = './SCRATCH'
    nkpts_in  = 6
    nkpts_max = 80
  /

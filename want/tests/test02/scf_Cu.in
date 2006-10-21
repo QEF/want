@@ -5,7 +5,8 @@ copper FCC bulk pw91
     restart_mode='from_scratch',
     prefix='copper',
     tprnfor = .FALSE.
-    pseudo_dir = './'
+    pseudo_dir = '../pseudo/'
+    outdir = './SCRATCH'
  /
  &SYSTEM
       ibrav=2,
