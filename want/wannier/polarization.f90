@@ -97,10 +97,9 @@
       ENDDO
 
       !
-      ! move all atomic positions in the unit cell centered in the origin
+      ! clean the ionic contribution respect to spurious contributions
       !
-
-      P_ion(:) = P_ion(:) - REAL(NINT(P_ion(:)))
+      P_ion(:) = P_ion(:) - REAL( NINT( P_ion(:) ), dbl )
 
 !
 ! electronic polarization
@@ -112,17 +111,22 @@
       ENDDO
 
       !
-      ! move all wannier centers in the unit cell centered in the origin
+      ! clean the electronic contribution respect to spurious contributions
       !
-
-      P_el(:) = P_el(:) - REAL(NINT(P_el(:)))
+      P_el(:) = P_el(:) - REAL( NINT( P_el(:) ), dbl )
 
       !
       ! ionic + electronic polarization. the TWO factor appear considering
-      ! that each band, i.e. each WF carries two electrons. In spin polirized
+      ! that each band, i.e. each WF carries two electrons. In spin polarized
       ! cases, only the final result must be divided by two (i.e. by nspin)
       !
-      delta_P = P_ion(:) - TWO * P_el(:)
+      delta_P(:) = P_ion(:) - TWO * P_el(:)
+      delta_P(:) = delta_P(:) - REAL( NINT( delta_P(:) ), dbl )
+      !
+      ! note that the line before makes unnecessary all the previous
+      ! REAL ( NINT (xxx) ). They are left there as a trace, 
+      ! to be removed sooner or later.
+      !
 
       !
       ! stdout writing
