@@ -2,7 +2,7 @@
 &CONTROL
    prefix = 'copper_US'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH'
 /
 
 &SUBSPACE

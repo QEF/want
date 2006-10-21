@@ -5,7 +5,8 @@ Cobalt FCC bulk PBE USPP
     restart_mode='from_scratch',
     prefix='cobalt_US',
     tprnfor = .FALSE.
-    pseudo_dir = './'
+    pseudo_dir = '../pseudo/'
+    outdir = './SCRATCH'
  /
  &SYSTEM
       ibrav=2,

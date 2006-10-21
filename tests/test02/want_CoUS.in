@@ -3,7 +3,7 @@
    prefix = 'cobalt_US'
    postfix = '_WanT'
    verbosity = 'high'
-   work_dir = './'
+   work_dir = './SCRATCH'
 /
 
 &SUBSPACE
