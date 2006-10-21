@@ -1,0 +1,14 @@
+
+     Program POST-PROC v.3.2cvs starts ...
+     Today is 21Oct2006 at 15:38: 3 
+     Reading header from file  ./SCRATCH/guanine_charge.txt
+     Reading data from file  ./SCRATCH/guanine_charge.txt
+     Origin translated by:  -0.2153  0.1156 -0.2083 (alat units)
+
+     Charge density inside the Wigner-Seitz cell:   56.00000000
+     Dipole moment:
+     Elect-13.1756  5.2434-28.4080 au,  -33.4893 13.3274-72.2062 Debye
+     Ionic 12.1717 -4.8598 25.8098 au,   30.9376-12.3524 65.6022 Debye
+     Total -1.0039  0.3836 -2.5982 au,   -2.5517  0.9749 -6.6040 Debye
+
+    Makov-Payne correction only for cubic lattices

@@ -1,0 +1,13 @@
+
+     Program POST-PROC v.3.2cvs starts ...
+     Today is 21Oct2006 at 15:37:31 
+
+     nbndx  =    28  nbnd   =    28  natomwfc =    49  npwx   =   37107
+     nelec  =  56.00  nkb   =    93  ngl    =   38788
+
+     negative rho (up, down):  0.472E-01 0.000E+00
+
+     Calling punch_plot, plot_num =   0
+     Writing data to file  ./SCRATCH/guanine_charge.txt
+     from chdens : info #        -1
+     output format not set, exiting
