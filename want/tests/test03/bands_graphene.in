@@ -1,6 +1,7 @@
  &INPUT
    prefix = 'graphene'
    postfix = '_WanT'
+   work_dir = './SCRATCH/'
    nkpts_in  = 4
    nkpts_max = 200
  /

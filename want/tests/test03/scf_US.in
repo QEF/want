@@ -8,7 +8,8 @@ USPP calculation
       nstep=100,
       tstress = .false.,
       tprnfor = .true.,
-      pseudo_dir = './',
+      pseudo_dir = '../pseudo/',
+      outdir = './SCRATCH/'
    /
    &SYSTEM
       ibrav=8,

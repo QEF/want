@@ -2,7 +2,7 @@
 &CONTROL
    prefix = 'benzene'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH/'
    verbosity = 'high'
 /
 
