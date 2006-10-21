@@ -2,7 +2,7 @@
  &INPUT
    prefix = 'graphene'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH'
    output_fmt = 'xsf'
    datatype = 'modulus'
    collect_wf = .TRUE.

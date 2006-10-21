@@ -2,7 +2,7 @@
 &CONTROL
    prefix = 'graphene'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH/'
    verbosity = 'high'
 /
 

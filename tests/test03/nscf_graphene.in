@@ -8,7 +8,9 @@ graphene sheet
       nstep=100,
       tstress = .false.,
       tprnfor = .true.,
-      pseudo_dir = './',
+      pseudo_dir = '../pseudo/',
+      outdir = './SCRATCH/'
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=4,
