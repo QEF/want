@@ -1,0 +1,11 @@
+
+&INPUTPP
+  prefix='guanine'
+  outdir = './SCRATCH'
+  plot_num = 0
+  filplot = './SCRATCH/guanine_charge.txt'
+/
+
+&PLOT
+/
+
