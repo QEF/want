@@ -16,7 +16,7 @@
 
 &LOCALIZATION
     maxiter0_wan = 100, 
-    maxiter1_wan = 10000, 
+    maxiter1_wan = 6400, 
     alpha1_wan = 0.7
     ncg = 5                         
     wannier_thr = 1.e-8

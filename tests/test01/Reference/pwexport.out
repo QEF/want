@@ -1,6 +1,47 @@
 
      Program POST-PROC v.3.2cvs starts ...
-     Today is 14Oct2006 at 13:35:52 
+     Today is 17Oct2006 at 11:18: 8 
 
-     nbndx  =    16  nbnd   =    16  natomwfc =     8  npwx   =     869
-     nelec  =   8.00  nkb   =     8  ngl    =     117
+     Parallel version (MPI)
+
+     Number of processors in use:      16
+     K-points division:     npool     =    2
+     R & G space division:  proc/pool =    8
+
+     Planes per process (thick) : nr3 = 32 npp =   4 ncplane = 1024
+
+ Proc/  planes cols    G   planes cols    G    columns  G
+ Pool       (dense grid)      (smooth grid)   (wavefct grid)
+  1      4     58    827    4     58    827   21    172
+  2      4     58    828    4     58    828   20    170
+  3      4     58    828    4     58    828   20    170
+  4      4     58    828    4     58    828   20    170
+  5      4     57    826    4     57    826   20    170
+  6      4     58    826    4     58    826   20    170
+  7      4     58    826    4     58    826   21    170
+  8      4     58    826    4     58    826   21    171
+  0     32    463   6615   32    463   6615  163   1363
+
+
+     nbndx  =    16  nbnd   =    16  natomwfc =     8  npwx   =     113
+     nelec  =   8.00  nkb   =     8  ngl    =     113
+Job  /cineca/scripts/lsf/mpirun_rsh -np 16 ch441-n6 ch441-n6 ch441-n3 ch441-n3 ch469-n3 ch469-n3 ch469-n4 ch469-n4 ch469-n5 ch469-n5 ch470-n3 ch470-n3 ch470-n1 ch470-n1 ch470-n4 ch470-n4 /xd1/userinfm/cne0fm2k/espresso/bin/pw_export.x "-npool" "2" "-input" "/xd1/userinfm/cne0fm2k/want/tests/test01/pwexport.in"
+
+TID   HOST_NAME   COMMAND_LINE            STATUS            TERMINATION_TIME
+===== ========== ================  =======================  ===================
+00000 ch470-n4   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00001 ch470-n4   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00002 ch470-n1   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00003 ch470-n1   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00004 ch470-n3   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00005 ch470-n3   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00006 ch469-n5   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00007 ch469-n5   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00008 ch469-n4   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00009 ch469-n4   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00010 ch469-n3   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00011 ch469-n3   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00012 ch441-n3   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00013 ch441-n3   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00014 ch441-n6   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
+00015 ch441-n6   /bin/sh -c cd /x  Done                     10/17/2006 11:18:34
