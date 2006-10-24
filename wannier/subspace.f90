@@ -12,6 +12,7 @@
 !*********************************************
    USE kinds,          ONLY : dbl
    USE parameters,     ONLY : nstrx
+   USE timing_module,  ONLY : timing
    USE log_module,     ONLY : log_push, log_pop
    USE windows_module, ONLY : nbnd, dimwin, dimwinx, lcompspace, &
                               windows_allocate, &
@@ -180,6 +181,7 @@ CONTAINS
        CHARACTER(14)      :: subname="subspace_write"
 
        IF ( .NOT. alloc ) RETURN
+       CALL timing( subname, OPR='start' )
        CALL log_push( subname )
        !
        IF ( .NOT. windows_alloc ) CALL errore(subname,'windows module not alloc',1)
@@ -202,6 +204,7 @@ CONTAINS
 
        CALL iotk_write_end(unit,TRIM(name))
        !
+       CALL timing( subname, OPR='stop' )
        CALL log_pop( subname )
        !
    END SUBROUTINE subspace_write
@@ -219,6 +222,7 @@ CONTAINS
        INTEGER            :: nkpts_, dimwinx_
        INTEGER            :: ik, ierr
 
+       CALL timing( subname, OPR='start' )
        CALL log_push( subname )
        !
        IF ( alloc ) CALL subspace_deallocate()
@@ -273,6 +277,7 @@ CONTAINS
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
        !
+       CALL timing( subname, OPR='stop' )
        CALL log_pop ( subname )
        !
    END SUBROUTINE subspace_read

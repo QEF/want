@@ -13,6 +13,7 @@
    USE kinds,          ONLY : dbl
    USE constants,      ONLY : RYD, TWO, ZERO
    USE parameters,     ONLY : nstrx
+   USE timing_module,  ONLY : timing
    USE log_module,     ONLY : log_push, log_pop
    USE parser_module,  ONLY : change_case
    USE kpoints_module, ONLY : iks, ike, nkpts, kpoints_alloc
@@ -105,6 +106,7 @@ CONTAINS
        INTEGER               :: i, ik, ierr
 
        !
+       CALL timing( subname, OPR='start' )
        CALL log_push( subname )
        !
        IF ( .NOT. alloc ) CALL errore(subname,'windows module not allocated',1)
@@ -216,6 +218,7 @@ CONTAINS
 
        ENDDO kpoints_frozen_loop   
        !
+       CALL timing ( subname, OPR='stop' )
        CALL log_pop ( subname )
        !
    END SUBROUTINE windows_init
@@ -312,6 +315,7 @@ CONTAINS
 
        IF ( .NOT. alloc ) RETURN
        !
+       CALL timing( subname, OPR='start')
        CALL log_push ( subname )
        
        CALL iotk_write_begin(unit,TRIM(name))
@@ -338,6 +342,7 @@ CONTAINS
 
        CALL iotk_write_end(unit,TRIM(name))
        !
+       CALL timing( subname, OPR='stop')
        CALL log_pop ( subname )
        !
    END SUBROUTINE windows_write
@@ -355,6 +360,7 @@ CONTAINS
        INTEGER            :: nkpts_
        INTEGER            :: ierr
 
+       CALL timing( subname, OPR='start')
        CALL log_push ( subname )
        !
        IF ( alloc ) CALL windows_deallocate()
@@ -421,6 +427,7 @@ CONTAINS
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
        !
+       CALL timing( subname, OPR='stop')
        CALL log_pop ( subname )
        !
    END SUBROUTINE windows_read
@@ -437,6 +444,7 @@ CONTAINS
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
 
 
+       CALL timing ( subname, OPR='start' )
        CALL log_push ( subname )
        !
        IF ( alloc ) CALL windows_deallocate()
@@ -581,6 +589,7 @@ CONTAINS
        DEALLOCATE( leig, STAT=ierr)
        IF (ierr/=0) CALL errore(subname, 'deallocating LEIG', ABS(ierr))
 
+       CALL timing ( subname, OPR='stop' )
        CALL log_pop ( subname )
        !
    END SUBROUTINE windows_read_ext
