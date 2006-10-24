@@ -7,6 +7,5 @@
   single_file = .FALSE.
   ascii = .FALSE.
 /
-EOF
 
 
