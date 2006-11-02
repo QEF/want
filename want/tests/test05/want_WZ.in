@@ -2,6 +2,7 @@
 &CONTROL
    prefix = 'wurtzite'
    postfix = '_WanT'
+   work_dir = './SCRATCH/'
 /
 
 &SUBSPACE

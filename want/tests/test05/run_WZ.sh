@@ -30,12 +30,12 @@ MANUAL=" Usage
 #
 
 #
-# source common enviroment, to be set before running the script
+# source common enviroment
 . ../environment.conf
-. $UTILITY_BIN/basedef.sh
-TEST_HOME=$(pwd)
-TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
-PSEUDO_LIST="Al.pbe-rrkj.UPF N.pbe-gp.UPF"
+#
+# source low level macros for test
+. ../../script/libtest.sh
+
 SUFFIX="_WZ"
 
 #
@@ -54,20 +54,20 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (scf)            SCF=".TRUE." ;;
-   (nscf)           NSCF=".TRUE." ;;
-   (pwexport)       PWEXPORT=".TRUE." ;;
-   (dft)            SCF=".TRUE."; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
-   (disentangle)    DISENTANGLE=".TRUE." ;;
-   (wannier)        WANNIER=".TRUE." ;;
-   (plot)           PLOT=".TRUE." ;;
-   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    PLOT=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
-                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    PLOT=".TRUE." ;;
-   (check)          CHECK=".TRUE." ;;
-   (clean)          CLEAN=".TRUE." ;;
+   (scf)            SCF=yes ;;
+   (nscf)           NSCF=yes ;;
+   (pwexport)       PWEXPORT=yes ;;
+   (dft)            SCF=yes; NSCF=yes ; PWEXPORT=yes ;;
+   (disentangle)    DISENTANGLE=yes ;;
+   (wannier)        WANNIER=yes ;;
+   (plot)           PLOT=yes ;;
+   (want)           DISENTANGLE=yes ; WANNIER=yes ;
+                    PLOT=yes ;;
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
+                    DISENTANGLE=yes ; WANNIER=yes ; 
+                    PLOT=yes ;;
+   (check)          CHECK=yes ;;
+   (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
@@ -76,28 +76,14 @@ esac
 #
 if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
 
+
 #
-# preliminaries
+# initialize
 #
 if [ -z "$CLEAN" ] ; then
-   test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
-   cd $TMPDIR/$TEST_NAME
-   for item in $PSEUDO_LIST ; do
-       ln -sf $TEST_HOME/../pseudo/$item
-   done
-   #
-   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
-   cd $TEST_HOME
-   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   #
-   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME ./HOME
-   #
-   test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
-
-   cd $TMPDIR/$TEST_NAME
+   test_init
 fi
+#
 
 
 #-----------------------------------------------------------------------------
@@ -105,88 +91,39 @@ fi
 #
 # running DFT SCF
 #
-if [ "$SCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running SCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX  \
-               < $TEST_HOME/scf$SUFFIX.in > $TEST_HOME/scf$SUFFIX.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
-   
+run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
+
 #
 # running DFT NSCF
 #
-if [ "$NSCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX  \
-               < $TEST_HOME/nscf$SUFFIX.in > $TEST_HOME/nscf$SUFFIX.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
+run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
 
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation..." 
-   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport$SUFFIX.in > $TEST_HOME/pwexport$SUFFIX.out
-   if [ $? = 0 ] ; then 
-      echo "done" 
-   else
-      echo "problems found" ; exit 1
-   fi
-fi
+run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
+
 
 #
 # running DISENTANGLE
 #
-if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want$SUFFIX.in > $TEST_HOME/disentangle$SUFFIX.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
 
 #
 # running WANNIER
 #
-if [ "$WANNIER" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want$SUFFIX.in > $TEST_HOME/wannier$SUFFIX.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 
 #
 # running PLOT
 #
-if [ "$PLOT" = ".TRUE." ] ; then
-   echo $ECHO_N "running PLOT calculation... $ECHO_C"
-   $WANT_BIN/plot.x < $TEST_HOME/plot$SUFFIX.in > $TEST_HOME/plot$SUFFIX.out
-   if [ ! -e CRASH ] ; then
-      echo "$ECHO_T done"
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
+
 
 #
 # running CHECK
 #
-if [ "$CHECK" = ".TRUE." ] ; then
+if [ "$CHECK" = yes ] ; then
    echo "running CHECK..."
    #
    cd $TEST_HOME
@@ -194,7 +131,7 @@ if [ "$CHECK" = ".TRUE." ] ; then
    #
    for file in $list
    do
-      $UTILITY_BIN/check.sh $file
+      ../../script/check.sh $file
    done
 fi
 
@@ -202,17 +139,10 @@ fi
 #
 # eventually clean
 #
-if [ "$CLEAN" = ".TRUE." ] ; then  
-   cd $TEST_HOME
-      rm -rf *.dat *.out 2> /dev/null
-      test -e SCRATCH && rm SCRATCH
-   cd $TMPDIR
-      test -d $TEST_NAME && rm -rf $TEST_NAME
-   exit 0
-fi
+run_clean  RUN=$CLEAN
+
 
 #
 # exiting
 exit 0
-
 
