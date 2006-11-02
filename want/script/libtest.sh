@@ -308,8 +308,8 @@ run_bands () {
    [[ "$RUN" != "yes" ]]  && return
 
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
-   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
-   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/bands$SUFFIX.in  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/bands$SUFFIX.out ; fi
 
    run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
 }
@@ -340,8 +340,8 @@ run_dos () {
    [[ "$RUN" != "yes" ]]  && return
 
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
-   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
-   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/dos$SUFFIX.in  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/dos$SUFFIX.out ; fi
 
    run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
 }
@@ -372,8 +372,8 @@ run_plot () {
    [[ "$RUN" != "yes" ]]  && return
 
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
-   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
-   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/plot$SUFFIX.in  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/plot$SUFFIX.out ; fi
 
    run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
 }
@@ -404,8 +404,8 @@ run_conductor () {
    [[ "$RUN" != "yes" ]]  && return
 
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
-   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
-   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/conductor$SUFFIX.in  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/conductor$SUFFIX.out ; fi
 
    run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
 }
