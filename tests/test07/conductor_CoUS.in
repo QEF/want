@@ -6,7 +6,7 @@
     emin = -10.0
     emax =  5.0 
     transport_dir=3
-    datafile_C="cobalt_US_WanT.ham"
+    datafile_C="./SCRATCH/cobalt_US_WanT.ham"
   /
 
 <HAMILTONIAN_DATA>

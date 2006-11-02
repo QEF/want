@@ -2,7 +2,7 @@
  &INPUT
    prefix = 'gold_US'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH/'
    nkpts_in  = 2
    nkpts_max = 100
  /
