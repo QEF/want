@@ -8,7 +8,9 @@ Infinite Cobalt Chain USPP
       nstep=100,
       tstress = .FALSE.,
       tprnfor = .TRUE.,
-      pseudo_dir = './',
+      pseudo_dir = '../pseudo/',
+      outdir = './SCRATCH/'
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=8, 

@@ -8,7 +8,8 @@ Infinite Gold Chain NCPP
       nstep=100,
       tstress = .FALSE.,
       tprnfor = .TRUE.,
-      pseudo_dir = './',
+      pseudo_dir = '../pseudo/',
+      outdir = './SCRATCH/'
    /
    &SYSTEM
       ibrav=8, 
