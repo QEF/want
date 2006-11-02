@@ -1,6 +1,6 @@
 #! /bin/bash 
 #
-# Alluminum Chain NCPP with H impurity
+# Aluminum Chain NCPP with H impurity
 # 
 #================================================================
 #
@@ -32,12 +32,12 @@ MANUAL=" Usage
 #
 
 #
-# source common enviroment, to be set before running the script
+# source common enviroment
 . ../environment.conf
-. $UTILITY_BIN/basedef.sh
-TEST_HOME=$(pwd)
-TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
-PSEUDO_LIST='Al.pz-vbc.UPF H.pz-vbc.UPF'
+#
+# source low level macros for test
+. ../../script/libtest.sh
+
 SUFFIX="_AlH"
 
 #
@@ -57,46 +57,37 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (scf)            SCF=".TRUE." ;;
-   (nscf)           NSCF=".TRUE." ;;
-   (pwexport)       PWEXPORT=".TRUE." ;;
-   (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
-   (disentangle)    DISENTANGLE=".TRUE." ;;
-   (wannier)        WANNIER=".TRUE." ;;
-   (conductor)      CONDUCTOR=".TRUE." ;;
-   (bulk)           BULK=".TRUE." ;;
-   (want)           DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ;
-                    CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
-                    DISENTANGLE=".TRUE." ; WANNIER=".TRUE." ; 
-                    CONDUCTOR=".TRUE." ; BULK=".TRUE." ;;
-   (check)          CHECK=".TRUE." ;;
-   (clean)          CLEAN=".TRUE." ;;
+   (scf)            SCF=yes ;;
+   (nscf)           NSCF=yes ;;
+   (pwexport)       PWEXPORT=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;;
+   (disentangle)    DISENTANGLE=yes ;;
+   (wannier)        WANNIER=yes ;;
+   (conductor)      CONDUCTOR=yes ;;
+   (bulk)           BULK=yes ;;
+   (want)           DISENTANGLE=yes ; WANNIER=yes ;
+                    CONDUCTOR=yes ; BULK=yes ;;
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
+                    DISENTANGLE=yes ; WANNIER=yes ; 
+                    CONDUCTOR=yes ; BULK=yes ;;
+   (check)          CHECK=yes ;;
+   (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
 #
-# preliminaries
+# switches
+#
+if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
+
+
+#
+# initialize
 #
 if [ -z "$CLEAN" ] ; then
-   test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
-   cd $TMPDIR/$TEST_NAME
-   for item in $PSEUDO_LIST ; do
-       ln -sf $TEST_HOME/../pseudo/$item
-   done
-   #
-   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
-   cd $TEST_HOME
-   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   #
-   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME ./HOME
-   #
-   test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
-
-   cd $TMPDIR/$TEST_NAME
+   test_init
 fi
+#
 
 
 #-----------------------------------------------------------------------------
@@ -104,106 +95,55 @@ fi
 #
 # running DFT SCF
 #
-if [ "$SCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running SCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-               < $TEST_HOME/scf$SUFFIX.in > $TEST_HOME/scf$SUFFIX.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
+run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 
 #
 # running DFT NSCF
 #
-if [ "$NSCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX \
-                 < $TEST_HOME/nscf$SUFFIX.in > $TEST_HOME/nscf$SUFFIX.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
-   
+run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
+
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation..." 
-   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport$SUFFIX.in > $TEST_HOME/pwexport$SUFFIX.out
-   if [ $? = 0 ] ; then 
-      echo "done" 
-   else
-      echo "problems found" ; exit 1
-   fi
-fi
+run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
+
 
 #
 # running DISENTANGLE
 #
-if [ "$DISENTANGLE" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want$SUFFIX.in > $TEST_HOME/disentangle$SUFFIX.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
 
 #
 # running WANNIER
 #
-if [ "$WANNIER" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want$SUFFIX.in > $TEST_HOME/wannier$SUFFIX.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
+
 
 #
 # running CONDUCTOR
 #
-if [ "$CONDUCTOR" = ".TRUE." ] ; then  
-   echo $ECHO_N "running CONDUCTOR calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor$SUFFIX.in > $TEST_HOME/conductor$SUFFIX.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond$SUFFIX.dat
-      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond$SUFFIX.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
+
+if [ "$CONDUCTOR" = yes -a ! -e CRASH ] ; then
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond$SUFFIX.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond$SUFFIX.dat
 fi
 
 #
 # running BULK
 #
-if [ "$BULK" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BULK calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x <   \
-          $TEST_HOME/conductor${SUFFIX}_bulk.in > $TEST_HOME/conductor${SUFFIXi}_bulk.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond${SUFFIX}_bulk.dat
-      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond${SUFFIX}_bulk.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+run_conductor SUFFIX=${SUFFIX}_bulk  RUN=$CONDUCTOR
+
+if [ "$CONDUCTOR" = yes -a ! -e CRASH ] ; then
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_bulk.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_bulk.dat
 fi
+
 
 #
 # running CHECK
 #
-if [ "$CHECK" = ".TRUE." ] ; then
+if [ "$CHECK" = yes ] ; then
    echo "running CHECK..."
    #
    cd $TEST_HOME
@@ -211,25 +151,20 @@ if [ "$CHECK" = ".TRUE." ] ; then
    #
    for file in $list
    do
-      $UTILITY_BIN/check.sh $file
+      ../../script/check.sh $file
    done
 fi
-
 
 
 #
 # eventually clean
 #
-if [ "$CLEAN" = ".TRUE." ] ; then  
-   cd $TEST_HOME
-      rm -rf *.dat *.out 2> /dev/null
-      test -e SCRATCH && rm SCRATCH
-   cd $TMPDIR
-      test -d $TEST_NAME && rm -rf $TEST_NAME
-   exit 0
-fi
+run_clean  RUN=$CLEAN
+
 
 #
 # exiting
 exit 0
+
+
 

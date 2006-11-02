@@ -2,7 +2,7 @@
 &CONTROL
    prefix = 'al5'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH/'
 /
 
 &SUBSPACE

@@ -1,8 +1,6 @@
 &inputpp
   prefix='al1'
-  outdir='./'
-  pseudo_dir = './'
+  outdir='./SCRATCH/'
+  pseudo_dir = '../pseudo/'
   psfile(1) = 'Al.pz-vbc.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
 /
