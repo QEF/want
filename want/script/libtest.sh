@@ -31,12 +31,20 @@ test_init () {
 #----------------------
 #
    
-   test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME
    #
+   # exit if TMPDIR dies not exist
+   test -d $TMPDIR || exit 1 
+
+   #
+   # if the case, create local test dir
+   test -d $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME
+   #
+   # create SCRATCH link
    test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
    cd $TEST_HOME
    ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
    #
+   # create HOME link
    test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
    cd $TMPDIR/$TEST_NAME
    ln -sf $TEST_HOME ./HOME
@@ -104,7 +112,11 @@ run () {
    if [ -z "$INPUT" ]  ; then echo "empty INPUT card"  ; exit 1 ; fi 
    if [ -z "$OUTPUT" ] ; then echo "empty OUTPUT card" ; exit 1 ; fi 
    
-   echo $ECHO_N "running $NAME calculation... $ECHO_C"
+   if [ ! -z $NAME ] ; then
+      #
+      echo $ECHO_N "running $NAME calculation... $ECHO_C"
+      #
+   fi
 
    #
    if [ "$INPUT_TYPE" = "from_stdin" ] ; then
@@ -126,7 +138,7 @@ run () {
    fi
    #
    if [ $? = 0 ] ; then
-      echo "$ECHO_T done"
+      if [ ! -z $NAME ] ; then echo "$ECHO_T done" ; fi
    else
       echo "$ECHO_T problems found" ; exit 1
    fi
