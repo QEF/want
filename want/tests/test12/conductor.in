@@ -1,11 +1,11 @@
 
 &INPUT_CONDUCTOR
    calculation_type = 'bulk'
-   dimC = 24
+   dimC = 48
    ne   = 1000
    emin = -10.0
    emax =   5.0
-   datafile_C = "silicon_zb_WanT.ham"
+   datafile_C = "./SCRATCH/si111_WanT.ham"
    transport_dir = 3
    delta = 0.05
    smearing_type = "gaussian"
