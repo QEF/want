@@ -4,7 +4,8 @@ a=3.0 ang
       calculation = 'scf',
       restart_mode='from_scratch',
       prefix='al5',
-      pseudo_dir = './',
+      pseudo_dir = '../pseudo/',
+      outdir = './SCRATCH/'
    /
    &SYSTEM
       ibrav=6, 

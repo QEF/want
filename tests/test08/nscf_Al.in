@@ -4,7 +4,9 @@ a = 4.5 Bohr
       calculation = 'nscf',
       restart_mode='from_scratch',
       prefix='al1',
-      pseudo_dir = './'
+      pseudo_dir = '../pseudo/'
+      outdir = './SCRATCH/'
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=6, 
