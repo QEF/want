@@ -1,7 +1,8 @@
 
 &INPUTPP
   prefix='zincblend_US'
-  pseudo_dir = './'
+  pseudo_dir = '../pseudo/'
+  outdir = './SCRATCH/'
   psfile(1) = 'N.pbe-van_bm.UPF'
   psfile(2) = 'Al.pbe-n-van.UPF'
   single_file = .FALSE.

@@ -5,8 +5,8 @@ NC - pbe
       calculation = 'scf',
       restart_mode='from_scratch',
       prefix='zincblend',
-      nstep=2000,
-      pseudo_dir='./'
+      pseudo_dir='../pseudo/'
+      outdir='./SCRATCH/'
       tprnfor = .true.,
       verbosity = 'high'
    /

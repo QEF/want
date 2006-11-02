@@ -2,6 +2,7 @@
 &CONTROL
    prefix = 'zincblend_US'
    postfix = '_WanT'
+   work_dir = './SCRATCH/'
 /
 
 &SUBSPACE

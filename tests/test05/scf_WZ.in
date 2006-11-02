@@ -7,7 +7,8 @@ NC - pbe
       nstep=2000,
       tprnfor = .true.,
       verbosity = 'high'
-      pseudo_dir = './',
+      pseudo_dir = '../pseudo',
+      outdir = './SCRATCH'
    /
    &SYSTEM
       ibrav=4, 
