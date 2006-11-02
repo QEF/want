@@ -16,6 +16,7 @@ MANUAL=" Usage
  nscf            DFT non-self-consistent calculation
  pwexport        export DFT data to WanT package in IOTK fmt
  dft             perform SCF, NSCF, PWEXPORT all together
+ proj            compute atomic projected DOS
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
@@ -50,6 +51,7 @@ SUFFIX="_AuUS"
 SCF=
 NSCF=
 PWEXPORT=
+PROJ=
 DISENTANGLE=
 WANNIER=
 BANDS=
@@ -66,7 +68,8 @@ case $INPUT in
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
    (pwexport)       PWEXPORT=yes ;;
-   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;;
+   (proj)           PROJ=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=yes ;;
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (bands)          BANDS=yes ;;
@@ -75,7 +78,7 @@ case $INPUT in
    (conductor)      CONDUCTOR=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
                     BANDS=yes ; DOS=yes ; PLOT=yes; CONDUCTOR=yes ;;
-   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=yes ;
                     DISENTANGLE=yes ; WANNIER=yes ; PLOT=yes ;
                     BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
    (check)          CHECK=yes ;;
@@ -114,6 +117,15 @@ run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
 # running DFT PWEXPORT
 #
 run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
+
+#
+# running DFT PWEXPORT
+#
+if [ "$PROJ" = "yes" ] ; then
+   #
+   run  NAME="PROJ"  EXEC=$DFT_BIN/projwfc.x  INPUT=proj$SUFFIX.in \
+        OUTPUT=proj$SUFFIX.out PARALLEL=yes
+fi
 
 #
 # running DISENTANGLE
