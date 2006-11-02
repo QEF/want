@@ -2,7 +2,7 @@
 &CONTROL
    prefix = 'nichain'
    postfix = '_WanT_DW'
-   work_dir = './'
+   work_dir = './SCRATCH/'
 /
 
 &SUBSPACE

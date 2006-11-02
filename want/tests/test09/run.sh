@@ -1,4 +1,4 @@
-#! /bin/bash 
+#! /bin/bash
 #
 # spin polarized Ni chain
 # 
@@ -15,7 +15,8 @@ MANUAL=" Usage
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
  pwexport        export DFT data to WanT package in IOTK fmt
- dft             perform SCF, NSCF, PWEXPORT all together
+ proj            compute atomic projected DOS
+ dft             perform all DFT calculations together
  disentangle_up  select the optimal subspace on which perform
                  the wannier minimization for SPINUP states
  disentangle_dw  the same for SPINDW states
@@ -41,12 +42,15 @@ MANUAL=" Usage
 #
 
 #
-# source common enviroment, to be set before running the script
+# source common enviroment
 . ../environment.conf
-. $UTILITY_BIN/basedef.sh
-TEST_HOME=$(pwd)
-TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
-PSEUDO_NAME=Ni.pz-nd-rrkjus.UPF
+#
+# source low level macros for test
+. ../../script/libtest.sh
+
+#
+# macros
+SUFFIX=
 
 #
 # evaluate the starting choice about what is to run 
@@ -54,6 +58,7 @@ PSEUDO_NAME=Ni.pz-nd-rrkjus.UPF
 SCF=
 NSCF=
 PWEXPORT=
+PROJ=
 DISENTANGLE_UP=
 DISENTANGLE_DW=
 WANNIER_UP=
@@ -71,70 +76,55 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (scf)            SCF=".TRUE." ;;
-   (nscf)           NSCF=".TRUE." ;;
-   (pwexport)       PWEXPORT=".TRUE." ;;
-   (dft)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ;;
-   (disentangle_up) DISENTANGLE_UP=".TRUE." ;;
-   (disentangle_dw) DISENTANGLE_DW=".TRUE." ;;
-   (wannier_up)     WANNIER_UP=".TRUE." ;;
-   (wannier_dw)     WANNIER_DW=".TRUE." ;;
-   (bands_up)       BANDS_UP=".TRUE." ;;
-   (bands_dw)       BANDS_DW=".TRUE." ;;
-   (plot_up)        PLOT_UP=".TRUE." ;;
-   (plot_dw)        PLOT_DW=".TRUE." ;;
-   (want_up)        DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
-                    BANDS_UP=".TRUE." ; PLOT_UP=".TRUE." ;;
-   (want_dw)        DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
-                    BANDS_DW=".TRUE." ; PLOT_DW=".TRUE." ;;
-   (conductor_up)   CONDUCTOR_UP=".TRUE." ;;
-   (conductor_dw)   CONDUCTOR_DW=".TRUE." ;;
-   (conductor)      CONDUCTOR_UP=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
-   (want)           DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ;
-                    BANDS_UP=".TRUE." ;
-                    DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ;
-                    BANDS_DW=".TRUE." ; PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;
-                    CONDUCTOR_UP=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
-   (all)            SCF=".TRUE." ; NSCF=".TRUE." ; PWEXPORT=".TRUE." ; 
-                    DISENTANGLE_UP=".TRUE." ; WANNIER_UP=".TRUE." ; 
-                    BANDS_UP=".TRUE." ; CONDUCTOR_UP=".TRUE." ;
-                    DISENTANGLE_DW=".TRUE." ; WANNIER_DW=".TRUE." ; 
-                    PLOT_UP=".TRUE." ; PLOT_DW=".TRUE." ;
-                    BANDS_DW=".TRUE." ; CONDUCTOR_DW=".TRUE." ;;
-   (check)          CHECK=".TRUE." ;;
-   (clean)          CLEAN=".TRUE." ;;
+   (scf)            SCF=yes ;;
+   (nscf)           NSCF=yes ;;
+   (pwexport)       PWEXPORT=yes ;;
+   (proj)           PROJ=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=yes ;;
+   (disentangle_up) DISENTANGLE_UP=yes ;;
+   (disentangle_dw) DISENTANGLE_DW=yes ;;
+   (wannier_up)     WANNIER_UP=yes ;;
+   (wannier_dw)     WANNIER_DW=yes ;;
+   (bands_up)       BANDS_UP=yes ;;
+   (bands_dw)       BANDS_DW=yes ;;
+   (plot_up)        PLOT_UP=yes ;;
+   (plot_dw)        PLOT_DW=yes ;;
+   (want_up)        DISENTANGLE_UP=yes ; WANNIER_UP=yes ;
+                    BANDS_UP=yes ; PLOT_UP=yes ;;
+   (want_dw)        DISENTANGLE_DW=yes ; WANNIER_DW=yes ;
+                    BANDS_DW=yes ; PLOT_DW=yes ;;
+   (conductor_up)   CONDUCTOR_UP=yes ;;
+   (conductor_dw)   CONDUCTOR_DW=yes ;;
+   (conductor)      CONDUCTOR_UP=yes ; CONDUCTOR_DW=yes ;;
+   (want)           DISENTANGLE_UP=yes ; WANNIER_UP=yes ;
+                    BANDS_UP=yes ;
+                    DISENTANGLE_DW=yes ; WANNIER_DW=yes ;
+                    BANDS_DW=yes ; PLOT_UP=yes ; PLOT_DW=yes ;
+                    CONDUCTOR_UP=yes ; CONDUCTOR_DW=yes ;;
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=yes ;
+                    DISENTANGLE_UP=yes ; WANNIER_UP=yes ; 
+                    BANDS_UP=yes ; CONDUCTOR_UP=yes ;
+                    DISENTANGLE_DW=yes ; WANNIER_DW=yes ; 
+                    PLOT_UP=yes ; PLOT_DW=yes ;
+                    BANDS_DW=yes ; CONDUCTOR_DW=yes ;;
+   (check)          CHECK=yes ;;
+   (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
 #
 # switches
 #
-if [ "$PLOT_SWITCH" = "no" ] ; then 
-   PLOT_UP=".FALSE." 
-   PLOT_DW=".FALSE." 
-fi
+if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
 
 
 #
-# preliminaries
+# initialize
 #
 if [ -z "$CLEAN" ] ; then
-   test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME/../pseudo/$PSEUDO_NAME .
-   #
-   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
-   cd $TEST_HOME
-   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   #
-   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME ./HOME
-   #
-   test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
-
-   cd $TMPDIR/$TEST_NAME
+   test_init
 fi
+#
 
 
 #-----------------------------------------------------------------------------
@@ -142,193 +132,83 @@ fi
 #
 # running DFT SCF
 #
-if [ "$SCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running SCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf.in > $TEST_HOME/scf.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
+run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 
 #
 # running DFT NSCF
 #
-if [ "$NSCF" = ".TRUE." ] ; then  
-   echo $ECHO_N "running NSCF calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf.in > $TEST_HOME/nscf.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
-   
+run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
+
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT" = ".TRUE." ] ; then  
-   echo "running PWEXPORT calculation... " 
-   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport.in > $TEST_HOME/pwexport.out
-   if [ $? = 0 ] ; then 
-      echo "done" 
-   else
-      echo "problems found" ; exit 1
-   fi
-fi
+run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 
 #
-# running DISENTANGLE_UP
+# running DFT PROJ
 #
-if [ "$DISENTANGLE_UP" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE_UP calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want_UP.in > $TEST_HOME/disentangle_UP.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running DISENTANGLE_DW
-#
-if [ "$DISENTANGLE_DW" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE_DW calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want_DW.in > $TEST_HOME/disentangle_DW.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running WANNIER_UP
-#
-if [ "$WANNIER_UP" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER_UP calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want_UP.in > $TEST_HOME/wannier_UP.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running WANNIER_DW
-#
-if [ "$WANNIER_DW" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER_DW calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want_DW.in > $TEST_HOME/wannier_DW.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running BANDS_UP
-#
-if [ "$BANDS_UP" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BANDS_UP calculation... $ECHO_C" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands_UP.in > $TEST_HOME/bands_UP.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running BANDS_DW
-#
-if [ "$BANDS_DW" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BANDS_DW calculation... $ECHO_C" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands_DW.in > $TEST_HOME/bands_DW.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running PLOT_UP
-#
-if [ "$PLOT_UP" = ".TRUE." ] ; then
-   echo $ECHO_N "running PLOT_UP calculation... $ECHO_C"
-   $WANT_BIN/plot.x < $TEST_HOME/plot_UP.in > $TEST_HOME/plot_UP.out
-   if [ ! -e CRASH ] ; then
-      echo "$ECHO_T done"
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running PLOT_DW
-#
-if [ "$PLOT_DW" = ".TRUE." ] ; then
-   echo $ECHO_N "running PLOT_DW calculation... $ECHO_C"
-   $WANT_BIN/plot.x < $TEST_HOME/plot_DW.in > $TEST_HOME/plot_DW.out
-   if [ ! -e CRASH ] ; then
-      echo "$ECHO_T done"
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-#
-# running CONDUCTOR_UP
-#
-if [ "$CONDUCTOR_UP" = ".TRUE." ] ; then  
+if [ "$PROJ" = "yes" ] ; then
    #
-   echo $ECHO_N "running CONDUCTOR_UP calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor_UP.in > $TEST_HOME/conductor_UP.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond_UP.dat
-      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond_UP.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+   run  NAME="PROJ"  EXEC=$DFT_BIN/projwfc.x  INPUT=proj$SUFFIX.in \
+        OUTPUT=proj$SUFFIX.out PARALLEL=yes
 fi
 
 
 #
-# running CONDUCTOR_DW
+# running DISENTANGLE
 #
-if [ "$CONDUCTOR_DW" = ".TRUE." ] ; then  
-   #
-   echo $ECHO_N "running CONDUCTOR_DW calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor_DW.in > $TEST_HOME/conductor_DW.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      test -e doscond.dat && mv doscond.dat $TEST_HOME/doscond_DW.dat
-      test -e cond.dat    && mv cond.dat    $TEST_HOME/cond_DW.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+run_disentangle  NAME=DISENTANGLE_UP  SUFFIX=${SUFFIX}_UP  RUN=$DISENTANGLE_UP
+run_disentangle  NAME=DISENTANGLE_DW  SUFFIX=${SUFFIX}_DW  RUN=$DISENTANGLE_DW
+
+#
+# running WANNIER
+#
+run_wannier  NAME=WANNIER_UP  SUFFIX=${SUFFIX}_UP  RUN=$WANNIER_UP
+run_wannier  NAME=WANNIER_DW  SUFFIX=${SUFFIX}_UP  RUN=$WANNIER_DW
+
+#
+# running BANDS
+#
+run_bands  NAME=BANDS_UP  SUFFIX=${SUFFIX}_UP  RUN=$BANDS_UP
+run_bands  NAME=BANDS_DW  SUFFIX=${SUFFIX}_DW  RUN=$BANDS_DW
+
+#
+# running PLOT
+#
+run_plot  NAME=PLOT_UP  SUFFIX=${SUFFIX}_UP  RUN=$PLOT_UP
+run_plot  NAME=PLOT_DW  SUFFIX=${SUFFIX}_DW  RUN=$PLOT_DW
+
+#
+# running CONDUCTOR
+#
+run_conductor NAME=CONDUCTOR_UP SUFFIX=${SUFFIX}_UP  RUN=$CONDUCTOR_UP
+
+if [ "$CONDUCTOR_UP" = yes -a ! -e CRASH ] ; then
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_UP.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_UP.dat
 fi
+
+run_conductor NAME=CONDUCTOR_DW SUFFIX=${SUFFIX}_DW  RUN=$CONDUCTOR_DW
+
+if [ "$CONDUCTOR_DW" = yes -a ! -e CRASH ] ; then
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_DW.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_DW.dat
+fi
+
 
 #
 # running CHECK
 #
-if [ "$CHECK" = ".TRUE." ] ; then
+if [ "$CHECK" = yes ] ; then
    echo "running CHECK..."
    #
    cd $TEST_HOME
-   list="disentangle_UP.out wannier_UP.out 
-         disentangle_DW.out wannier_DW.out"
+   list="disentangle${SUFFIX}_UP.out wannier${SUFFIX}_UP.out 
+         disentangle${SUFFIX}_DW.out wannier${SUFFIX}_DW.out"
    #
    for file in $list
    do
-      $UTILITY_BIN/check.sh $file
+      ../../script/check.sh $file
    done
 fi
 
@@ -336,24 +216,10 @@ fi
 #
 # eventually clean
 #
-if [ "$CLEAN" = ".TRUE." ] ; then  
-   cd $TEST_HOME
-      rm -rf *.out *.dat 2> /dev/null
-      test -e SCRATCH && rm SCRATCH
-   cd $TMPDIR
-      test -d $TEST_NAME && rm -rf $TEST_NAME
-   exit 0
-fi
+run_clean  RUN=$CLEAN
+
 
 #
 # exiting
 exit 0
-
-
-
-
-
-
-
-
 
