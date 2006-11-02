@@ -119,7 +119,7 @@ run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
 run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 
 #
-# running DFT PWEXPORT
+# running DFT PROJ
 #
 if [ "$PROJ" = "yes" ] ; then
    #
