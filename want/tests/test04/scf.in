@@ -2,7 +2,7 @@ Guanine Single molecule
 US Pseudopotentials
 
    &CONTROL
-      calculation = 'scf',
+      calculation = 'relax',
       restart_mode='from_scratch',
       prefix='guanine',
       nstep=2000,
@@ -13,8 +13,8 @@ US Pseudopotentials
    /
    &SYSTEM
       ibrav=8, 
-      celldm(1)=30.0,
-      celldm(2)=0.65,
+      celldm(1)=42.0,
+      celldm(2)=1.0,
       celldm(3)=1.0,
       nat=16,
       ntyp=4,
@@ -27,6 +27,8 @@ US Pseudopotentials
       mixing_mode = 'plain',
       mixing_beta = 0.3,
       conv_thr =  1.0d-8,
+   /
+   &IONS
    /
 ATOMIC_SPECIES
  C   12.01   C.pbe-van_bm.UPF
