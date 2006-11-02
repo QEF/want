@@ -6,7 +6,7 @@
    ne = 1000
    emin = -10.0
    emax = 5.0
-   datafile_C = "nichain_WanT_DW.ham"
+   datafile_C = "./SCRATCH/nichain_WanT_DW.ham"
    transport_dir = 3
 /
 

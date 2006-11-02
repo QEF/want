@@ -1,8 +1,6 @@
 &inputpp
   prefix='nichain'
-  outdir='./'
-  pseudo_dir = './'
+  outdir='./SCRATCH/'
+  pseudo_dir = '../pseudo/'
   psfile(1) = 'Ni.pz-nd-rrkjus.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
 /

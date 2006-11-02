@@ -2,7 +2,7 @@
  &INPUT
    prefix = 'nichain'
    postfix = '_WanT_UP'
-   work_dir = './'
+   work_dir = './SCRATCH/'
    nkpts_in  = 2
    nkpts_max = 100
  /
