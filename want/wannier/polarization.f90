@@ -137,11 +137,18 @@
       WRITE(stdout, "(4x,' Elec charge  =     ( ',3f12.6, ' )' )") &
                      P_el(:)  / ion_charge
 
+! XXX
+WRITE(0,*) "P_ion, cry", P_ion(:)
+
       CALL cry2cart( P_ion, avec) 
       CALL cry2cart( P_el,  avec) 
       CALL cry2cart( delta_P,  avec) 
 
+! XXX
+WRITE(0,*) "P_ion, cart, e * bohr", P_ion(:)
+
       const_SI = ELECTRONVOLT_SI / BOHR_RADIUS_SI**2
+WRITE(0,*) " au 2 SI ", const_SI
 
       lsupercell = .FALSE.
       IF ( nkpts == 1 ) lsupercell = .TRUE.
