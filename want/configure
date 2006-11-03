@@ -47,12 +47,13 @@ esac
 #
 if [ "$configure" = "yes" ] ; then
 
-   test -e ./make.sys            && rm ./make.sys
-   test -e ./conf/make.sys       && rm ./conf/make.sys
-   test -e ./conf/configure.msg  && rm ./conf/configure.msg
-   test -e ./include/configure.h && rm ./include/configure.h
-   test -e ./include/ctools.h    && rm ./include/ctools.h
-   test -e ./include/fft_defs.h  && rm ./include/fft_defs.h
+   test -e ./make.sys               && rm ./make.sys
+   test -e ./conf/make.sys          && rm ./conf/make.sys
+   test -e ./conf/configure.msg     && rm ./conf/configure.msg
+   test -e ./include/configure.h    && rm ./include/configure.h
+   test -e ./include/iotk_config.h  && rm ./include/iotk_config.h
+   test -e ./include/ctools.h       && rm ./include/ctools.h
+   test -e ./include/fft_defs.h     && rm ./include/fft_defs.h
 
    CFLAGS=$*
    ./conf/configure $CFLAGS
