@@ -8,8 +8,6 @@
 ! Taken form the file allocate_nlpot.f90 of Espresso package
 ! and further modified by AF (2004)
 ! 
-#include "machine.h"
-!
 !-----------------------------------------------------------------------
 subroutine allocate_nlpot
   !-----------------------------------------------------------------------

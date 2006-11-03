@@ -5,7 +5,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-!
 !-----------------------------------------------------------------------
 subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
   !-----------------------------------------------------------------------
@@ -19,7 +18,6 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
   !     q(g,l,k) = sum_lm (-i)^l ap(lm,l,k) yr_lm(g^) qrad(g,l,l,k)
   !
   !
-#include "machine.h"
   USE kinds, ONLY: dbl
   USE constants, ONLY : ZERO, CZERO, ONE, TWO, THREE, CI, EPS_m6
   USE us_module, ONLY: dq, qrad

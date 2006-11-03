@@ -5,8 +5,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-#include "machine.h"
-!
 !----------------------------------------------------------------------------
 SUBROUTINE s_psi( lda, n, m, ik, psi, spsi )
   !----------------------------------------------------------------------------
