@@ -42,7 +42,7 @@ iotk_integer_kinds=$IOTK_INTEGER_KINDS
 iotk_logical_kinds=$IOTK_LOGICAL_KINDS
 iotk_real_kinds=$IOTK_REAL_KINDS
 iotk_fc=$IOTK_FC
-
+#
 
 # command-line arguments
 for arg in $*
@@ -589,6 +589,7 @@ have_fft=0
 have_fftw=0
 have_fftw_h=0
 have_mpi=0
+internal_libs=
 
 # check for blas
 # supported vendor replacements:
@@ -977,18 +978,21 @@ then
             # note that some compilers do not like to have multiple symbols
 
 	    lapack_libs="$lapack_libs ../flib/lapack_atlas.a"
+            internal_libs="$internal_libs lapack_atlas.a"
 
         elif test "$have_essl" -ne 0 ; then
 
         # ibm doesn't complain if there are multiple symbols so add everything
  
 	    lapack_libs="$lapack_libs ../flib/lapack.a"
+            internal_libs="$internal_libs lapack.a"
 
         else
 
 	# nothing found, use built-in library
 
  	    lapack_libs="../flib/lapack.a"
+            internal_libs="$internal_libs lapack.a"
 
         fi
     fi
@@ -1000,6 +1004,7 @@ fi
 if test "$have_blas" -eq 0 -a "blas_libs" = ""
 then
     blas_libs="../flib/blas.a"
+    internal_libs="$internal_libs blas.a"
 fi
 
 echo setting BLAS_LIBS... $blas_libs
@@ -1328,6 +1333,7 @@ AC_SUBST(fft_libs)
 AC_SUBST(mpi_libs)
 AC_SUBST(mass_libs)
 AC_SUBST(pgplot_libs)
+AC_SUBST(internal_libs)
 AC_SUBST(ar)
 AC_SUBST(arflags)
 AC_SUBST(arflags_dynamic)
@@ -1376,5 +1382,6 @@ fi
 
 
 # final messages
+echo
 sed '/@delete@/d' configure.msg
 echo configure: success
