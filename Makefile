@@ -65,12 +65,12 @@ utility: libiotk libctools libwant
 # CLEAN UP
 #
 clean:
-	cd iotk;      $(MAKE) clean;
-	cd ctools;    $(MAKE) clean;
-	cd libs;      $(MAKE) clean;
-	cd wannier;   $(MAKE) clean;
-	cd transport; $(MAKE) clean;
-	cd utility;   $(MAKE) clean;
+	if test -d iotk ;      then ( cd iotk;      $(MAKE) clean ) ; fi
+	if test -d ctools ;    then ( cd ctools;    $(MAKE) clean ) ; fi
+	if test -d libs ;      then ( cd libs;      $(MAKE) clean ) ; fi
+	if test -d wannier ;   then ( cd wannier;   $(MAKE) clean ) ; fi
+	if test -d transport ; then ( cd transport; $(MAKE) clean ) ; fi
+	if test -d utility ;   then ( cd utility;   $(MAKE) clean ) ; fi
 	- /bin/rm -rf bin/*.x
 
 clean_test:
@@ -78,8 +78,8 @@ clean_test:
 	( cd tests ; ./run.sh -r clean ) ; fi
 
 wash : clean clean_test
-	- /bin/rm -rf make.sys conf/configure.msg */make.depend \
+	- /bin/rm -rf make.sys conf/configure.msg \
 		conf/config.log conf/config.status \
 		conf/configure.h include/configure.h \
-		*/dum1 */dum2 bin/*.x 
+		*/dum1 */dum2 
 

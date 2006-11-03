@@ -43,42 +43,24 @@ ylmr2.o
 #
 # main targets
 #
-all : libwant.a $(MYLIB)
+all : libwant.a blas.a lapack_atlas.a lapack.a
 
 
 libwant.a : $(OBJS) 
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
 
-#
-# add special libs to solve portability problems
-# with proprietary libs or to self-contain the code
-#
-blas_and_lapack : blas lapack
-	touch $@
+blas.a : blas.o
+	$(AR) $(ARFLAGS) $@ $?
+	$(RANLIB) $@
 
-blas : blas.o dlamch.o
-	$(AR) $(ARFLAGS) libwant.a $?
-	$(RANLIB) libwant.a
-	touch $@
+lapack_atlas.a : lapack_atlas.o dlamch.o
+	$(AR) $(ARFLAGS) $@ $?
+	$(RANLIB) $@
 
-lapack : lapack.o lapack2.o dlamch.o
-	$(AR) $(ARFLAGS) libwant.a $?
-	$(RANLIB) libwant.a
-	touch $@
-
-lapack_ibm : lapack_ibm.o dlamch.o
-	$(AR) $(ARFLAGS) libwant.a $?
-	$(RANLIB) libwant.a
-	touch $@
-
-lapack_t3e : lapack_t3e.o 
-	$(AR) $(ARFLAGS) libwant.a $?
-	touch $@
-
-lapack_mkl : lapack_mkl.o 
-	$(AR) $(ARFLAGS) libwant.a $?
-	touch $@
+lapack.a : lapack_atlas.o lapack_all.o dlamch.o
+	$(AR) $(ARFLAGS) $@ $?
+	$(RANLIB) $@
 
 dlamch.o : dlamch.f
 	$(F77) $(FFLAGS_NOOPT) -c $<
@@ -88,9 +70,7 @@ dlamch.o : dlamch.f
 # cleaning
 # 
 clean: 
-	- /bin/rm -f *.o *.a *core *.F90 *.mod work.pc work.pcl \
-		blas_and_lapack blas lapack lapack_ibm lapack_t3e \
-		lapack_mkl 
+	- /bin/rm -f *.o *.a *core *.F90 *.mod work.pc work.pcl
 	        
 
 # dependencies

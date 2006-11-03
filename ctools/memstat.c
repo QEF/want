@@ -14,7 +14,7 @@
   Auhor: Carlo Cavazzoni.
 */
 
-void FC_FUNC(memstat,MEMSTAT)(int *kilobytes)
+void F77_FUNC(memstat,MEMSTAT)(int *kilobytes)
 {
 #if defined(HAVE_MALLINFO)
 #include <malloc.h>
