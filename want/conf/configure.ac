@@ -37,6 +37,11 @@ arflags=$ARFLAGS
 arflags_dynamic=$ARFLAGS_DYNAMIC
 includefftw=$INCLUDEFFTW
 pgplot_libs=$PGPLOT_LIBS
+#
+iotk_integer_kinds=$IOTK_INTEGER_KINDS
+iotk_logical_kinds=$IOTK_LOGICAL_KINDS
+iotk_real_kinds=$IOTK_REAL_KINDS
+iotk_fc=$IOTK_FC
 
 
 # command-line arguments
@@ -1342,6 +1347,33 @@ AC_CONFIG_FILES(make.sys)
 AC_CONFIG_FILES(configure.msg)
 
 AC_OUTPUT
+
+#----------------------
+# configure iotk
+#
+# generate dependencies
+if test -x $topdir/conf/configure_iotk
+then
+        echo
+        echo configuring iotk...
+        #
+        if test "$iotk_integer_kinds" = "" ; then iotk_integer_kinds=ALL ; fi
+        if test "$iotk_logical_kinds" = "" ; then iotk_logical_kinds=ALL ; fi
+        if test "$iotk_real_kinds" = ""    ; then iotk_real_kinds=ALL    ; fi
+        if test "$iotk_fc" = ""            ; then iotk_fc=$f90           ; fi
+        echo setting IOTK_INTEGER_KINDS... $iotk_integer_kinds
+        echo setting IOTK_LOGICAL_KINDS... $iotk_logical_kinds
+        echo setting IOTK_REAL_KINDS... $iotk_real_kinds
+        echo setting IOTK_FC... $iotk_fc
+        echo
+        #
+        ( cd $topdir ; ./conf/configure_iotk  IOTK_INTEGER_KINDS=$iotk_integer_kinds \
+                                              IOTK_LOGICAL_KINDS=$iotk_logical_kinds \
+                                              IOTK_REAL_KINDS=$iotk_real_kinds \
+                                              FC=$iotk_fc )
+fi
+
+
 
 # final messages
 sed '/@delete@/d' configure.msg
