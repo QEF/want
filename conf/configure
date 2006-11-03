@@ -1346,6 +1346,11 @@ arflags=$ARFLAGS
 arflags_dynamic=$ARFLAGS_DYNAMIC
 includefftw=$INCLUDEFFTW
 pgplot_libs=$PGPLOT_LIBS
+#
+iotk_integer_kinds=$IOTK_INTEGER_KINDS
+iotk_logical_kinds=$IOTK_LOGICAL_KINDS
+iotk_real_kinds=$IOTK_REAL_KINDS
+iotk_fc=$IOTK_FC
 
 
 # command-line arguments
@@ -1610,7 +1615,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:1613:" \
+echo "$as_me:1618:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -2038,7 +2043,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:2041:" \
+echo "$as_me:2046:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4064,7 +4069,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4067:" \
+echo "$as_me:4072:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4563,7 +4568,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4566: \"$ac_link\") >&5
+(eval echo $as_me:4571: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4641,7 +4646,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4644: \"$ac_link\") >&5
+(eval echo $as_me:4649: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -9047,7 +9052,6 @@ fi
 
 
 
-
           ac_config_headers="$ac_config_headers include/ctools.h:include/ctools.h.in"
 
           ac_config_files="$ac_config_files include/fft_defs.h:include/fft_defs.h.in"
@@ -10215,6 +10219,33 @@ if test "$no_create" != yes; then
   # would make configure fail if this is the last instruction.
   $ac_cs_success || { (exit 1); exit 1; }
 fi
+
+
+#----------------------
+# configure iotk
+#
+# generate dependencies
+if test -x $topdir/conf/configure_iotk
+then
+        echo
+        echo configuring iotk...
+        #
+        if test "$iotk_integer_kinds" = "" ; then iotk_integer_kinds=ALL ; fi
+        if test "$iotk_logical_kinds" = "" ; then iotk_logical_kinds=ALL ; fi
+        if test "$iotk_real_kinds" = ""    ; then iotk_real_kinds=ALL    ; fi
+        if test "$iotk_fc" = ""            ; then iotk_fc=$f90           ; fi
+        echo setting IOTK_INTEGER_KINDS... $iotk_integer_kinds
+        echo setting IOTK_LOGICAL_KINDS... $iotk_logical_kinds
+        echo setting IOTK_REAL_KINDS... $iotk_real_kinds
+        echo setting IOTK_FC... $iotk_fc
+        echo
+        #
+        ( cd $topdir ; ./conf/configure_iotk  IOTK_INTEGER_KINDS=$iotk_integer_kinds \
+                                              IOTK_LOGICAL_KINDS=$iotk_logical_kinds \
+                                              IOTK_REAL_KINDS=$iotk_real_kinds \
+                                              FC=$iotk_fc )
+fi
+
 
 
 # final messages
