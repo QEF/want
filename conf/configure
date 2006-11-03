@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP SIZEOF_INT_P SET_MAKE FLIBS ranlib host arch cc cflags dflags fdflags cpp cppflags f90 mpif90 f90flags f77 fflags fflags_noopt pre_fdflags imod iflags includefftw ld ldflags blas_libs lapack_libs fft_libs mpi_libs mass_libs pgplot_libs ar arflags arflags_dynamic f90rule blas_line lapack_line fft_line mpi_line mass_line parallel_report LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP SIZEOF_INT_P SET_MAKE FLIBS ranlib host arch cc cflags dflags fdflags cpp cppflags f90 mpif90 f90flags f77 fflags fflags_noopt pre_fdflags imod iflags includefftw ld ldflags blas_libs lapack_libs fft_libs mpi_libs mass_libs pgplot_libs internal_libs ar arflags arflags_dynamic f90rule blas_line lapack_line fft_line mpi_line mass_line parallel_report LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1351,7 +1351,7 @@ iotk_integer_kinds=$IOTK_INTEGER_KINDS
 iotk_logical_kinds=$IOTK_LOGICAL_KINDS
 iotk_real_kinds=$IOTK_REAL_KINDS
 iotk_fc=$IOTK_FC
-
+#
 
 # command-line arguments
 for arg in $*
@@ -5350,6 +5350,7 @@ have_fft=0
 have_fftw=0
 have_fftw_h=0
 have_mpi=0
+internal_libs=
 
 # check for blas
 # supported vendor replacements:
@@ -7376,18 +7377,21 @@ fi
             # note that some compilers do not like to have multiple symbols
 
 	    lapack_libs="$lapack_libs ../flib/lapack_atlas.a"
+            internal_libs="$internal_libs lapack_atlas.a"
 
         elif test "$have_essl" -ne 0 ; then
 
         # ibm doesn't complain if there are multiple symbols so add everything
 
 	    lapack_libs="$lapack_libs ../flib/lapack.a"
+            internal_libs="$internal_libs lapack.a"
 
         else
 
 	# nothing found, use built-in library
 
  	    lapack_libs="../flib/lapack.a"
+            internal_libs="$internal_libs lapack.a"
 
         fi
     fi
@@ -7399,6 +7403,7 @@ fi
 if test "$have_blas" -eq 0 -a "blas_libs" = ""
 then
     blas_libs="../flib/blas.a"
+    internal_libs="$internal_libs blas.a"
 fi
 
 echo setting BLAS_LIBS... $blas_libs
@@ -9052,6 +9057,7 @@ fi
 
 
 
+
           ac_config_headers="$ac_config_headers include/ctools.h:include/ctools.h.in"
 
           ac_config_files="$ac_config_files include/fft_defs.h:include/fft_defs.h.in"
@@ -9722,6 +9728,7 @@ s,@fft_libs@,$fft_libs,;t t
 s,@mpi_libs@,$mpi_libs,;t t
 s,@mass_libs@,$mass_libs,;t t
 s,@pgplot_libs@,$pgplot_libs,;t t
+s,@internal_libs@,$internal_libs,;t t
 s,@ar@,$ar,;t t
 s,@arflags@,$arflags,;t t
 s,@arflags_dynamic@,$arflags_dynamic,;t t
@@ -10249,5 +10256,6 @@ fi
 
 
 # final messages
+echo
 sed '/@delete@/d' configure.msg
 echo configure: success
