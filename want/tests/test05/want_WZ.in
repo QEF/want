@@ -11,7 +11,7 @@
 
 &LOCALIZATION
    maxiter0_wan = 100
-   maxiter1_wan = 500
+   maxiter1_wan = 300
 /
 
 WANNIER_CENTERS {crystal}

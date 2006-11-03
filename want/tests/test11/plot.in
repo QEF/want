@@ -2,7 +2,7 @@
  &INPUT
    prefix = 'pt_h2_pt'
    postfix = '_WanT'
-   work_dir = './'
+   work_dir = './SCRATCH/'
    datatype = 'modulus'
    output_fmt = 'plt'
    wann = '24-27'

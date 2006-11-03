@@ -7,9 +7,9 @@ Pt H2 Pt
       nstep=50,
       tstress = .FALSE.,
       tprnfor = .TRUE.,
-      pseudo_dir = './',
-      etot_conv_thr=1.0e-4,
-      forc_conv_thr=1.0e-3,
+      pseudo_dir = '../pseudo/',
+      outdir = './SCRATCH/'
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=8, 

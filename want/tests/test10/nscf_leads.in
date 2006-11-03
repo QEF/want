@@ -3,13 +3,12 @@ Carbon dimer chain; USPP
  &CONTROL
     calculation = 'nscf'
     restart_mode='from_scratch',
-    outdir='./LEADS/'
     prefix='chain4',
     tstress = .false.
     tprnfor = .true.
-    pseudo_dir = './'
-    etot_conv_thr=1.0e-4,
-    forc_conv_thr=1.0e-3
+    pseudo_dir = '../pseudo/'
+    outdir='./SCRATCH/LEADS/'
+    wf_collect = .TRUE.
  /
  &SYSTEM    
       ibrav=8,

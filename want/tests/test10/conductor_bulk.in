@@ -5,7 +5,7 @@
    ne = 1000
    emin = -20.0
    emax = 0.0
-   datafile_C = "COND/chain8_WanT.ham"
+   datafile_C = "./SCRATCH/COND/chain8_WanT.ham"
    transport_dir = 1
 /
 
