@@ -16,7 +16,7 @@
 ! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 !
 !------------------------------------------------------------------------------!
-! CONFIGURATION FILE FOR IOTK 1.1.0development
+! CONFIGURATION FILE FOR IOTK 1.0.1
 !------------------------------------------------------------------------------!
 ! The following lines map some commonly defined system macro to the internal
 ! iotk macros.
@@ -26,54 +26,46 @@
 #ifndef __IOTK_CONFIG_H
 #define __IOTK_CONFIG_H
 
-! Uncomment the following line to enable stream read of unformatted files.
-! It will work only if fortran 2003 streams are available.
-!#define __IOTK_STREAMS
+! Generic options valid for quantum-espresso
+! WanT uses ranks up to four and default integer/logicals only
 
-#define __IOTK_MAXRANK 4
+#define __IOTK_MAXRANK  4
 
-#if defined(__AIX)
-#   define __IOTK_RECORD_KIND 4
-#   define __IOTK_RECORD_LENGTH 4
-#   define __IOTK_REAL1    4
-#   define __IOTK_REAL2    8
-#elif defined(__MAC)
-#   define __IOTK_REAL1    4
-#   define __IOTK_REAL2    8
+! some compilers do not like the following
+!    #define __IOTK_REAL1 selected_real_kind(6,30)
+!    #define __IOTK_REAL2 selected_real_kind(14,200)
+! so we use explicit kinds
+#if defined(__NAG)
+#   define __IOTK_REAL1 1
+#   define __IOTK_REAL2 2
+#elif defined(__SX6)
+#   define __IOTK_REAL2 8
+#else
+#   define __IOTK_REAL1 4
+#   define __IOTK_REAL2 8
+#endif
+! Machine-dependent options
+! Only for compilers that require some special tricks
+
+#if defined(__XLF)
 #   define __IOTK_WORKAROUND5
-#elif defined(__LINUX) || defined (__LINUX64)
-#   if defined(__INTEL)
-#         define __IOTK_REAL1    4
-#         define __IOTK_REAL2    8
-#         define __IOTK_WORKAROUND1
-#         define __IOTK_WORKAROUND3
-#         define __IOTK_WORKAROUND5
-#   elif defined(__G95)
-#         define __IOTK_RECORD_KIND 4
-#         define __IOTK_RECORD_LENGTH 4
-#         define __IOTK_REAL1    4
-#         define __IOTK_REAL2    8
-#   elif defined(__PGI)
-#         define __IOTK_REAL1    4
-#         define __IOTK_REAL2    8
-#         define __IOTK_WORKAROUND2
-#         define __IOTK_WORKAROUND4
-#   elif defined(__NAG)
-#         define __IOTK_REAL1 1
-#         define __IOTK_REAL2 2
-#         define __IOTK_WORKAROUND4
-#   endif
+#elif defined(__INTEL)
+#   define __IOTK_WORKAROUND1
+#   define __IOTK_WORKAROUND3
+#   define __IOTK_WORKAROUND5
+#elif defined(__PGI)
+#   define __IOTK_WORKAROUND2
+#   define __IOTK_WORKAROUND4
+#elif defined(__NAG)
+#   define __IOTK_WORKAROUND4
 #elif defined(__ALPHA)
-#   define __IOTK_REAL1    4
-#   define __IOTK_REAL2    8
 #   define __IOTK_WORKAROUND1
 #   define __IOTK_WORKAROUND6
-#elif defined(__SGI)
-#   define __IOTK_REAL1    4
-#   define __IOTK_REAL2    8
+#elif defined(__SX6)
+#   define __IOTK_WORKAROUND5
 #endif
 
-#ifdef __PARA
+#if defined(__PARA)
 #  define __IOTK_MPI_ABORT
 #endif
 
