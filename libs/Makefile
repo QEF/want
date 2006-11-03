@@ -43,7 +43,7 @@ ylmr2.o
 #
 # main targets
 #
-all : libwant.a blas.a lapack_atlas.a lapack.a
+all : libwant.a $(INTERNAL_LIBS)
 
 
 libwant.a : $(OBJS) 
