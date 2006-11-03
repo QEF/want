@@ -6,12 +6,13 @@
 
 03 Nov 2006      configure script for iotk included in the main configure stuff. (AF)
 
-02 Nov 2006      test12 modified: Si bulk in orthorombic instead of hexagonal cell;
-                 calculation of 48 WFs. (BB)
+02 Nov 2006      Test script updated according to libtest.sh ; test05 littly changed. (AF)
+                 Test12 modified: Si bulk in orthorombic instead of hexagonal cell; (BB)
                  configure syncronized to Quantum-ESPRESSO CVS: changes to include/
                  libs/ conf/ . (AF)
 
-21 Oct 2006      References in test01 updated. bug fixed in the polarization routine. (AF)
+21 Oct 2006      References in test01 updated. bug fixed in the polarization routine. 
+                 calculation of dipole moment using DFT chagre density added in test04. (AF)
 
 20 Oct 2006      Bug fixed in get_monkpack.f90 : NaN was given when treating shifted
                  grids. Buf fixed also in the output fmt of summary.f90 . (AF & BB)
