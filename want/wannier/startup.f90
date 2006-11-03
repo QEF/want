@@ -82,10 +82,10 @@
 #ifdef __HAVE_CONFIG_INFO
    WRITE( stdout, "(2x,'         HOST :',4x,a)" ) TRIM( ADJUSTL( __CONF_HOST        ))
    WRITE( stdout, "(2x,'         ARCH :',4x,a)" ) TRIM( ADJUSTL( __CONF_ARCH        ))
-   WRITE( stdout, "(2x,'           CC :',4x,a)" ) TRIM( ADJUSTL( __CONF_MPICC       ))
+   WRITE( stdout, "(2x,'           CC :',4x,a)" ) TRIM( ADJUSTL( __CONF_CC          ))
    WRITE( stdout, "(2x,'          CPP :',4x,a)" ) TRIM( ADJUSTL( __CONF_CPP         ))
    WRITE( stdout, "(2x,'          F90 :',4x,a)" ) TRIM( ADJUSTL( __CONF_MPIF90      ))
-   WRITE( stdout, "(2x,'          F77 :',4x,a)" ) TRIM( ADJUSTL( __CONF_MPIF77      ))
+   WRITE( stdout, "(2x,'          F77 :',4x,a)" ) TRIM( ADJUSTL( __CONF_F77         ))
    WRITE( stdout, "(2x,'       DFLAGS :',4x,a)" ) TRIM( ADJUSTL( __CONF_DFLAGS      ))
    WRITE( stdout, "(2x,'    BLAS LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_BLAS_LIBS   ))
    WRITE( stdout, "(2x,'  LAPACK LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_LAPACK_LIBS ))

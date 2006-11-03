@@ -5,8 +5,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-#include "machine.h"
-!
 !----------------------------------------------------------------------
 subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !----------------------------------------------------------------------
