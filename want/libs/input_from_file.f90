@@ -7,16 +7,17 @@
 !
 ! Slightly modified by Andrea Ferretti
 !
-#include "machine.h"
+#if defined(__ABSOFT)
+#  define getenv getenv_
+#  define getarg getarg_
+#  define iargc  iargc_
+#endif
 !
 !----------------------------------------------------------------------------
 SUBROUTINE input_from_file( iunit, ierr)
   !
   ! This subroutine checks program arguments and, if input file is present,
   ! attach input unit IUNIT to the specified file
-  !
-  ! use the macro defined in machine.h to
-  ! take care of name redefinitions of c-funcitons
   !
   IMPLICIT NONE
   !

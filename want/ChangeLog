@@ -5,6 +5,8 @@
 
 02 Nov 2006      test12 modified: Si bulk in orthorombic instead of hexagonal cell;
                  calculation of 48 WFs. (BB)
+                 configure syncronized to Quantum-ESPRESSO CVS: changes to include/
+                 libs/ conf/ . (AF)
 
 21 Oct 2006      References in test01 updated. bug fixed in the polarization routine. (AF)
 

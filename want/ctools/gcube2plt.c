@@ -378,7 +378,7 @@ int  WriteCoordinateFile(void);
 extern char *Number2Name(int);
 
 /**************************************************************************/
-long int FC_FUNC(gcube2plt,GCUBE2PLT) ( const char * filename, const int * length )
+long int F77_FUNC(gcube2plt,GCUBE2PLT) ( const char * filename, const int * length )
 /**************************************************************************/
 {
     int i;
