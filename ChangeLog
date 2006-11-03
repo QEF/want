@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+03 Nov 2006      configure script for iotk included in the main configure stuff. (AF)
+
 02 Nov 2006      test12 modified: Si bulk in orthorombic instead of hexagonal cell;
                  calculation of 48 WFs. (BB)
                  configure syncronized to Quantum-ESPRESSO CVS: changes to include/

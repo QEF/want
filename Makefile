@@ -78,8 +78,9 @@ clean_test:
 	( cd tests ; ./run.sh -r clean ) ; fi
 
 wash : clean clean_test
-	- /bin/rm -rf make.sys conf/configure.msg \
-		conf/config.log conf/config.status \
-		conf/configure.h include/configure.h \
+	- /bin/rm -rf make.sys ./conf/configure.msg \
+		./conf/config.log ./conf/config.status \
+		./include/configure.h ./include/fft_defs.h \
+	        ./include/ctools.h ./include/iotk_config.h \
 		*/dum1 */dum2 
 
