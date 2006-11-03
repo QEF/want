@@ -1,9 +1,7 @@
-&inputpp
+
+&INPUTPP
   prefix='chain8'
-  outdir='./COND/'
-  ascii = .FALSE.
-  pseudo_dir = './'
+  outdir='./SCRATCH/COND/'
+  pseudo_dir = '../pseudo/'
   psfile(1) = 'C.pbe-van_bm.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
 /

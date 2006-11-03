@@ -2,7 +2,7 @@
  &INPUT
    prefix = 'chain4'
    postfix = '_WanT'
-   work_dir = './LEADS/'
+   work_dir = './SCRATCH/LEADS/'
    datatype = 'modulus'
    output_fmt = 'plt'
    wann = '1-2'

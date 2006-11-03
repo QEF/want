@@ -50,12 +50,11 @@ MANUAL=" Usage
 #
 
 #
-# source common enviroment, to be set before running the script
+# source common enviroment
 . ../environment.conf
-. $UTILITY_BIN/basedef.sh
-TEST_HOME=$(pwd)
-TEST_NAME=$(echo $TEST_HOME | awk -v FS=\/ '{print $NF}' )
-PSEUDO_NAME=C.pbe-van_bm.UPF
+#
+# source low level macros for test
+. ../../script/libtest.sh
 
 #
 # evaluate the starting choice about what is to run 
@@ -83,324 +82,157 @@ CHECK=
 CLEAN=
 
 
-
-
 if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in
-   ( scf_cond )          SCF_COND=".TRUE." ;;
-   ( nscf_cond )         NSCF_COND=".TRUE." ;;
-   ( pwexport_cond )     PWEXPORT_COND=".TRUE." ;;
-   ( dft_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;;
-   ( disentangle_cond )  DISENTANGLE_COND=".TRUE." ;;
-   ( wannier_cond )      WANNIER_COND=".TRUE." ;;
-   ( bands_cond )        BANDS_COND=".TRUE." ;;
-   ( plot_cond )         PLOT_COND=".TRUE." ;;
-   ( want_cond )         DISENTANGLE_COND=".TRUE." ; 
-                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE.";;
-   ( all_cond )          SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
-                         DISENTANGLE_COND=".TRUE." ;
-                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE.";;
+   ( scf_cond )          SCF_COND=yes ;;
+   ( nscf_cond )         NSCF_COND=yes ;;
+   ( pwexport_cond )     PWEXPORT_COND=yes ;;
+   ( dft_cond )          SCF_COND=yes ; NSCF_COND=yes ; PWEXPORT_COND=yes ;;
+   ( disentangle_cond )  DISENTANGLE_COND=yes ;;
+   ( wannier_cond )      WANNIER_COND=yes ;;
+   ( bands_cond )        BANDS_COND=yes ;;
+   ( plot_cond )         PLOT_COND=yes ;;
+   ( want_cond )         DISENTANGLE_COND=yes ; 
+                         WANNIER_COND=yes ; BANDS_COND=yes ; PLOT_COND=yes;;
+   ( all_cond )          SCF_COND=yes ; NSCF_COND=yes ; PWEXPORT_COND=yes ;
+                         DISENTANGLE_COND=yes ;
+                         WANNIER_COND=yes ; BANDS_COND=yes ; PLOT_COND=yes;;
 
-   ( scf_leads )         SCF_LEADS=".TRUE." ;;
-   ( nscf_leads )        NSCF_LEADS=".TRUE." ;;
-   ( pwexport_leads )    PWEXPORT_LEADS=".TRUE." ;;
-   ( dft_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; 
-                         PWEXPORT_LEADS=".TRUE." ;;
-   ( disentangle_leads ) DISENTANGLE_LEADS=".TRUE." ;;
-   ( wannier_leads )     WANNIER_LEADS=".TRUE." ;;
-   ( bands_leads )       BANDS_LEADS=".TRUE." ;;
-   ( plot_leads )        PLOT_LEADS=".TRUE." ;;
-   ( want_leads )        DISENTANGLE_LEADS=".TRUE." ; 
-                         WANNIER_LEADS=".TRUE." ; BANDS_LEADS=".TRUE." ; 
-                         PLOT_LEADS=".TRUE.";;
-   ( all_leads )         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE." ;
-                         DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
-                         BANDS_LEADS=".TRUE." ;  PLOT_COND=".TRUE." ;;
+   ( scf_leads )         SCF_LEADS=yes ;;
+   ( nscf_leads )        NSCF_LEADS=yes ;;
+   ( pwexport_leads )    PWEXPORT_LEADS=yes ;;
+   ( dft_leads )         SCF_LEADS=yes ; NSCF_LEADS=yes ; 
+                         PWEXPORT_LEADS=yes ;;
+   ( disentangle_leads ) DISENTANGLE_LEADS=yes ;;
+   ( wannier_leads )     WANNIER_LEADS=yes ;;
+   ( bands_leads )       BANDS_LEADS=yes ;;
+   ( plot_leads )        PLOT_LEADS=yes ;;
+   ( want_leads )        DISENTANGLE_LEADS=yes ; 
+                         WANNIER_LEADS=yes ; BANDS_LEADS=yes ; 
+                         PLOT_LEADS=yes;;
+   ( all_leads )         SCF_LEADS=yes ; NSCF_LEADS=yes ; PWEXPORT_LEADS=yes ;
+                         DISENTANGLE_LEADS=yes ; WANNIER_LEADS=yes ; 
+                         BANDS_LEADS=yes ;  PLOT_COND=yes ;;
 
-   ( dft )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ;
-                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE.";;
-   ( conductor )         CONDUCTOR=".TRUE." ;;
-   ( conductor_bulk )    CONDUCTOR_BULK=".TRUE." ;;
-   ( conductor_auto )    CONDUCTOR_AUTO=".TRUE." ;;
-   ( want )              DISENTANGLE_COND=".TRUE." ;
-                         WANNIER_COND=".TRUE." ; BANDS_COND=".TRUE." ; PLOT_COND=".TRUE." ;
-                         DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
-                         BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE."; 
-                         CONDUCTOR=".TRUE." ; CONDUCTOR_BULK=".TRUE." ; 
-                         CONDUCTOR_AUTO=".TRUE." ;;
-   ( all )               SCF_COND=".TRUE." ; NSCF_COND=".TRUE." ; PWEXPORT_COND=".TRUE." ; 
-                         DISENTANGLE_COND=".TRUE." ; WANNIER_COND=".TRUE." ;  
-                         BANDS_COND=".TRUE." ;  PLOT_COND=".TRUE." ;
-                         SCF_LEADS=".TRUE." ; NSCF_LEADS=".TRUE." ; PWEXPORT_LEADS=".TRUE."; 
-                         DISENTANGLE_LEADS=".TRUE." ; WANNIER_LEADS=".TRUE." ; 
-                         BANDS_LEADS=".TRUE." ;  PLOT_LEADS=".TRUE." ;
-                         CONDUCTOR=".TRUE." ; CONDUCTOR_BULK=".TRUE." ; 
-                         CONDUCTOR_AUTO=".TRUE." ;;
+   ( dft )               SCF_COND=yes ; NSCF_COND=yes ; PWEXPORT_COND=yes ;
+                         SCF_LEADS=yes ; NSCF_LEADS=yes ; PWEXPORT_LEADS=yes;;
+   ( conductor )         CONDUCTOR=yes ;;
+   ( conductor_bulk )    CONDUCTOR_BULK=yes ;;
+   ( conductor_auto )    CONDUCTOR_AUTO=yes ;;
+   ( want )              DISENTANGLE_COND=yes ;
+                         WANNIER_COND=yes ; BANDS_COND=yes ; PLOT_COND=yes ;
+                         DISENTANGLE_LEADS=yes ; WANNIER_LEADS=yes ; 
+                         BANDS_LEADS=yes ;  PLOT_LEADS=yes; 
+                         CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; 
+                         CONDUCTOR_AUTO=yes ;;
+   ( all )               SCF_COND=yes ; NSCF_COND=yes ; PWEXPORT_COND=yes ; 
+                         DISENTANGLE_COND=yes ; WANNIER_COND=yes ;  
+                         BANDS_COND=yes ;  PLOT_COND=yes ;
+                         SCF_LEADS=yes ; NSCF_LEADS=yes ; PWEXPORT_LEADS=yes; 
+                         DISENTANGLE_LEADS=yes ; WANNIER_LEADS=yes ; 
+                         BANDS_LEADS=yes ;  PLOT_LEADS=yes ;
+                         CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; 
+                         CONDUCTOR_AUTO=yes ;;
 
-   ( check )             CHECK=".TRUE." ;;
-   ( clean )             CLEAN=".TRUE." ;;
+   ( check )             CHECK=yes ;;
+   ( clean )             CLEAN=yes ;;
    (*)                   echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;  
 esac
+
 
 #
 # switches
 #
-if [ "$PLOT_SWITCH" = "no" ] ; then 
-    PLOT_COND=".FALSE." 
-    PLOT_LEADS=".FALSE." 
-fi
+if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
+
 
 #
-# preliminaries
+# initialize
 #
 if [ -z "$CLEAN" ] ; then
-   test -e $TMPDIR/$TEST_NAME || mkdir $TMPDIR/$TEST_NAME 
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME/../pseudo/$PSEUDO_NAME .
-   #
-   test -e $TEST_HOME/SCRATCH && rm $TEST_HOME/SCRATCH
-   cd $TEST_HOME
-   ln -sf $TMPDIR/$TEST_NAME ./SCRATCH
-   #
-   test -e $TMPDIR/$TEST_NAME/HOME && rm $TMPDIR/$TEST_NAME/HOME
-   cd $TMPDIR/$TEST_NAME
-   ln -sf $TEST_HOME ./HOME
-   #
-   test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
-   test -e $TMPDIR/$TEST_NAME/COND/CRASH && rm $TMPDIR/$TEST_NAME/COND/CRASH
-   test -e $TMPDIR/$TEST_NAME/LEADS/CRASH && rm $TMPDIR/$TEST_NAME/LEADS/CRASH
-   #
-   # 2 sub scratch directories
-   test -e $TMPDIR/$TEST_NAME/COND || mkdir $TMPDIR/$TEST_NAME/COND
-   test -e $TMPDIR/$TEST_NAME/LEADS || mkdir $TMPDIR/$TEST_NAME/LEADS
-
-   cd $TMPDIR/$TEST_NAME
+   test_init
 fi
+#
+
 
 #-----------------------------------------------------------------------------
 
 #
 # running DFT SCF
 #
-if [ "$SCF_COND" = ".TRUE." ] ; then  
-   echo $ECHO_N "running SCF_COND calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_cond.in > $TEST_HOME/scf_cond.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
-#
-if [ "$SCF_LEADS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running SCF_LEADS calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/scf_leads.in > $TEST_HOME/scf_leads.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
-
+run_dft  NAME=SCF_COND    SUFFIX=   RUN=$SCF_COND
+run_dft  NAME=SCF_LEADS   SUFFIX=   RUN=$SCF_LEADS
 
 #
 # running DFT NSCF
 #
-if [ "$NSCF_COND" = ".TRUE." ] ; then  
-   echo $ECHO_N "running NSCF_COND calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX  < $TEST_HOME/nscf_cond.in > $TEST_HOME/nscf_cond.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
-#
-if [ "$NSCF_LEADS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running NSCF_LEADS calculation... $ECHO_C" 
-   $PARA_PREFIX  $DFT_BIN/pw.x $PARA_POSTFIX < $TEST_HOME/nscf_leads.in > $TEST_HOME/nscf_leads.out
-   if [ $? = 0 ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; exit 1
-   fi
-fi
-   
+run_dft  NAME=NSCF_COND   SUFFIX=   RUN=$NSCF_COND
+run_dft  NAME=NSCF_LEADS  SUFFIX=   RUN=$NSCF_LEADS
+
 #
 # running DFT PWEXPORT
 #
-if [ "$PWEXPORT_COND" = ".TRUE." ] ; then  
-   echo "running PWEXPORT_COND calculation..." 
-   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX \
-              <  $TEST_HOME/pwexport_cond.in > $TEST_HOME/pwexport_cond.out
-   if [ $? = 0 ] ; then 
-      echo "done" 
-   else
-      echo "problems found" ; exit 1
-   fi
-fi
-#
-if [ "$PWEXPORT_LEADS" = ".TRUE." ] ; then  
-   echo "running PWEXPORT_LEADS calculation..." 
-   $PARA_PREFIX  $DFT_BIN/pw_export.x $PARA_POSTFIX  \
-              <  $TEST_HOME/pwexport_leads.in > $TEST_HOME/pwexport_leads.out
-   if [ $? = 0 ] ; then 
-      echo "done" 
-   else
-      echo "problems found" ; exit 1
-   fi
-fi
+run_export  NAME=PWEXPORT_COND   SUFFIX="_cond"   RUN=$PWEXPORT_COND
+run_export  NAME=PWEXPORT_LEADS  SUFFIX="_leads"  RUN=$PWEXPORT_LEADS
+
 
 #
 # running DISENTANGLE
 #
-if [ "$DISENTANGLE_COND" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE_COND calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want_cond.in > $TEST_HOME/disentangle_cond.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-if [ "$DISENTANGLE_LEADS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running DISENTANGLE_LEADS calculation... $ECHO_C" 
-   $WANT_BIN/disentangle.x < $TEST_HOME/want_leads.in > $TEST_HOME/disentangle_leads.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_disentangle  NAME=DISENTANGLE_COND   SUFFIX="_cond"   RUN=$DISENTANGLE_COND
+run_disentangle  NAME=DISENTANGLE_LEADS  SUFFIX="_leads"  RUN=$DISENTANGLE_LEADS
 
 #
 # running WANNIER
 #
-if [ "$WANNIER_COND" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER_COND calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want_cond.in > $TEST_HOME/wannier_cond.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1 
-   fi
-fi
-if [ "$WANNIER_LEADS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running WANNIER_LEADS calculation... $ECHO_C" 
-   $WANT_BIN/wannier.x < $TEST_HOME/want_leads.in > $TEST_HOME/wannier_leads.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_wannier  NAME=WANNIER_COND    SUFFIX="_cond"   RUN=$WANNIER_COND
+run_wannier  NAME=WANNIER_LEADS   SUFFIX="_leads"  RUN=$WANNIER_LEADS
 
 #
 # running BANDS
 #
-if [ "$BANDS_COND" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BANDS_COND calculation... $ECHO_C" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands_cond.in  \
-                           > $TEST_HOME/bands_cond.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-if [ "$BANDS_LEADS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running BANDS_LEADS calculation... $ECHO_C" 
-   $WANT_BIN/bands.x < $TEST_HOME/bands_leads.in  \
-                           > $TEST_HOME/bands_leads.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_bands  NAME=BANDS_COND    SUFFIX="_cond"   RUN=$BANDS_COND
+run_bands  NAME=BANDS_LEADS   SUFFIX="_leads"  RUN=$BANDS_LEADS
 
 #
 # running PLOT
 #
-if [ "$PLOT_COND" = ".TRUE." ] ; then  
-   echo $ECHO_N "running PLOT_COND calculation... $ECHO_C" 
-   $WANT_BIN/plot.x < $TEST_HOME/plot_cond.in  \
-                           > $TEST_HOME/plot_cond.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
-if [ "$PLOT_LEADS" = ".TRUE." ] ; then  
-   echo $ECHO_N "running PLOT_LEADS calculation... $ECHO_C" 
-   $WANT_BIN/plot.x < $TEST_HOME/plot_leads.in  \
-                           > $TEST_HOME/plot_leads.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_plot  NAME=PLOT_COND    SUFFIX="_cond"   RUN=$PLOT_COND
+run_plot  NAME=PLOT_LEADS   SUFFIX="_leads"  RUN=$PLOT_LEADS
 
 
 #
 # running CONDUCTOR
 #
-if [ "$CONDUCTOR" = ".TRUE." ] ; then  
-   #
-   echo $ECHO_N "running CODNDUCTOR calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor.in > $TEST_HOME/conductor.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      test -e doscond.dat && mv doscond.dat $TEST_HOME
-      test -e cond.dat    && mv cond.dat    $TEST_HOME
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
-
+run_conductor NAME=CONDUCTOR  SUFFIX=""  RUN=$CONDUCTOR
 
 #
 # running CONDUCTOR_BULK 
 #
-if [ "$CONDUCTOR_BULK" = ".TRUE." ] ; then  
-   echo $ECHO_N "running CONDUCTOR_BULK calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor_bulk.in > $TEST_HOME/conductor_bulk.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      test -e doscond.dat && mv doscond.dat  $TEST_HOME/doscond_bulk.dat
-      test -e cond.dat    && mv cond.dat     $TEST_HOME/cond_bulk.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
-fi
+run_conductor NAME=CONDUCTOR_BULK  SUFFIX="_bulk"  RUN=$CONDUCTOR_BULK
 
+if [ "$CONDUCTOR_BULK" = yes -a ! -e CRASH ] ; then
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond_bulk.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond_bulk.dat
+fi
 
 #
 # running CONDUCTOR_AUTO
 #
-if [ "$CONDUCTOR_AUTO" = ".TRUE." ] ; then  
-   echo $ECHO_N "running CONDUCTOR_AUTO calculation... $ECHO_C" 
-   $WANT_BIN/conductor.x < $TEST_HOME/conductor_auto.in > $TEST_HOME/conductor_auto.out
-   if [ ! -e CRASH ] ; then 
-      echo "$ECHO_T done" 
-      test -e doscond.dat && mv doscond.dat  $TEST_HOME/doscond_auto.dat
-      test -e cond.dat    && mv cond.dat     $TEST_HOME/cond_auto.dat
-   else
-      echo "$ECHO_T problems found" ; cat CRASH ; exit 1
-   fi
+run_conductor NAME=CONDUCTOR_AUTO  SUFFIX="_auto"  RUN=$CONDUCTOR_AUTO
+
+if [ "$CONDUCTOR_AUTO" = yes -a ! -e CRASH ] ; then
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond_auto.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond_auto.dat
 fi
 
 
 #
 # running CHECK
 #
-if [ "$CHECK" = ".TRUE." ] ; then
+if [ "$CHECK" = yes ] ; then
    echo "running CHECK..."
    #
    cd $TEST_HOME
@@ -409,23 +241,15 @@ if [ "$CHECK" = ".TRUE." ] ; then
    #
    for file in $list
    do
-      $UTILITY_BIN/check.sh $file
+      ../../script/check.sh $file
    done
 fi
-
-
 
 #
 # eventually clean
 #
-if [ "$CLEAN" = ".TRUE." ] ; then  
-   cd $TEST_HOME
-      rm -rf *.dat *.out 2> /dev/null
-      test -e SCRATCH && rm SCRATCH
-   cd $TMPDIR
-      test -d $TEST_NAME && rm -rf $TEST_NAME
-   exit 0
-fi
+run_clean  RUN=$CLEAN
+
 
 #
 # exiting
