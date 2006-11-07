@@ -97,26 +97,26 @@ CONTAINS
       
        CALL log_push( subname )
        !
-       IF ( dimwinx <= 0 .OR. nkpts <= 0 ) &
-           CALL errore(subname,' Invalid DIMWINX or NKPTS ',1)
-       IF ( dimwann <= 0 ) CALL errore(subname,' Invalid DIMWANN ',ABS(dimwann)+1)
+       IF ( dimwinx <= 0 ) CALL errore(subname,'Invalid dimwinx',2)
+       IF ( nkpts <= 0 )   CALL errore(subname,'Invalid nkpts',3)
+       IF ( dimwann <= 0 ) CALL errore(subname,'Invalid dimwann', ABS(dimwann)+1)
 
        ALLOCATE( wan_eig(dimwann,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating wan_eig ',dimwann*nkpts)
+           IF ( ierr/=0 ) CALL errore(subname,'allocating wan_eig', ABS(ierr) )
 
        ALLOCATE( lamp(dimwinx,dimwann,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating lamp ', dimwinx*dimwann*nkpts )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating lamp', ABS(ierr) )
        ALLOCATE( camp(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating camp ', dimwinx**2 *nkpts )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating camp', ABS(ierr) )
        ALLOCATE( eamp(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating eamp ', dimwinx**2 *nkpts )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating eamp', ABS(ierr) )
        ALLOCATE( comp_eamp(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating comp_eamp', dimwinx**2 *nkpts)
+           IF( ierr /=0 ) CALL errore(subname, 'allocating comp_eamp', ABS(ierr) )
 
        ALLOCATE( mtrx_in(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_in ',dimwinx**2 *nkpts )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating mtrx_in', ABS(ierr) )
        ALLOCATE( mtrx_out(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating mtrx_out ',dimwinx**2 *nkpts )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating mtrx_out', ABS(ierr) )
        !
        alloc = .TRUE.
        !
@@ -260,6 +260,7 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find tag DIMWIN',ABS(ierr))
 
        CALL subspace_allocate()
+       !
        CALL iotk_scan_dat(unit,'WAN_EIGENVALUES',wan_eig,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find EIGENVALUES',ABS(ierr))
        DO ik=1,nkpts

@@ -110,8 +110,8 @@ CONTAINS
        CALL log_push( subname )
        !
        IF ( .NOT. alloc ) CALL errore(subname,'windows module not allocated',1)
-       IF ( nkpts <= 0) CALL errore(subname,'Invalid nkpts',ABS(nkpts)+1)
-       IF ( nbnd <= 0) CALL errore(subname,'Invalid nbnd',ABS(nbnd)+1)
+       IF ( nkpts <= 0)   CALL errore(subname,'Invalid nkpts',ABS(nkpts)+1)
+       IF ( nbnd <= 0)    CALL errore(subname,'Invalid nbnd',ABS(nbnd)+1)
        IF ( SIZE(eig_,1) /= nbnd ) CALL errore(subname,'Invalid EIG size1',ABS(nbnd)+1)
        IF ( SIZE(eig_,2) /= nkpts ) CALL errore(subname,'Invalid EIG size2',ABS(nkpts)+1)
       
