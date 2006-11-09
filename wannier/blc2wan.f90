@@ -368,7 +368,6 @@
       !
 
 
-
 !
 ! ... print the localization measure 
 !
@@ -377,11 +376,15 @@
       WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of Opr(R) [eV]')")
       !
       DO ir = 1, nrtot
-          WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") &
-                         ivr(:,ir), vrr(ir), SQRT(  norms(ir) / REAL(dimwann*nomega, dbl) )
+          !
+          IF ( ALL( ivr(:,ir) >= 0 .AND. ivr(:,ir) <= 3)  ) THEN
+              !
+              WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") &
+                            ivr(:,ir), vrr(ir), SQRT(  norms(ir) / REAL(dimwann*nomega, dbl) )
+          ENDIF
+          !
       ENDDO
       
-
 
 !
 ! ... Shutdown
