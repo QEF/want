@@ -1001,7 +1001,7 @@ fi
 # no blas library found: use the built-in blas
 # (blas_libs is used in the above tests so it is safe to set it here)
 
-if test "$have_blas" -eq 0 -a "blas_libs" = ""
+if test "$have_blas" -eq 0 -a "$blas_libs" = ""
 then
     blas_libs="../libs/blas.a"
     internal_libs="$internal_libs blas.a"
