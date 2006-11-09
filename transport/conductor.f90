@@ -91,21 +91,24 @@
    ! Set up the layer hamiltonians
    !
    CALL hamiltonian_init( use_overlap, calculation_type )
+
    !
    ! write input data on the output file
    !
    CALL summary( stdout )
+
    !
    ! setup correlation data, if the case
    !
    CALL correlation_allocate()
+   !
    sgm_corr(:,:,:) = CZERO
    !
    IF ( use_correlation ) THEN 
        !
-       CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", &
-                       FORM="formatted")
+       CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read" ) 
        CALL correlation_init( sgm_unit )
+       !
    ENDIF   
 
 
