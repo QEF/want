@@ -4,6 +4,9 @@
 =======================================================
 
 
+11 Nov 2006      configure fixed; internal lapack and atlas libs updated according to 
+                 the philosophy of quantum-espresso. (AF)
+
 03 Nov 2006      configure script for iotk included in the main configure stuff. (AF)
 
 02 Nov 2006      Test script updated according to libtest.sh ; test05 littly changed. (AF)
