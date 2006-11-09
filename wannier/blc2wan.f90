@@ -165,7 +165,7 @@
 ! ... Init operator data from filein
 !     filein is left opened as well as fileout
 !
-      filename=TRIM(work_dir)//"/"//TRIM(filein)
+      filename = TRIM(filein)
       CALL iotk_open_read(in_unit, TRIM(filename), IERR=ierr)
          IF (ierr/=0)  CALL errore('blc2wan','opening '//TRIM(filename),ABS(ierr))
       !
@@ -207,7 +207,7 @@
       !
       ! fileout is initializated
       !
-      filename=TRIM(work_dir)//"/"//TRIM(fileout)
+      filename = TRIM(fileout)
       CALL iotk_open_write(out_unit, TRIM(filename), BINARY=.NOT. ascii)
 
       CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.)
