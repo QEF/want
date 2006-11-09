@@ -153,6 +153,10 @@ if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
 #
 if [ -z "$CLEAN" ] ; then
    test_init
+   #
+   test -d ./SCRATCH/COND  || mkdir ./SCRATCH/COND
+   test -d ./SCRATCH/LEADS || mkdir ./SCRATCH/LEADS
+   #
 fi
 #
 
