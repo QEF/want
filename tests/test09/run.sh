@@ -96,10 +96,9 @@ case $INPUT in
    (conductor_up)   CONDUCTOR_UP=yes ;;
    (conductor_dw)   CONDUCTOR_DW=yes ;;
    (conductor)      CONDUCTOR_UP=yes ; CONDUCTOR_DW=yes ;;
-   (want)           DISENTANGLE_UP=yes ; WANNIER_UP=yes ;
-                    BANDS_UP=yes ;
-                    DISENTANGLE_DW=yes ; WANNIER_DW=yes ;
-                    BANDS_DW=yes ; PLOT_UP=yes ; PLOT_DW=yes ;
+   (want)           DISENTANGLE_UP=yes ; WANNIER_UP=yes ; BANDS_UP=yes ;
+                    DISENTANGLE_DW=yes ; WANNIER_DW=yes ; BANDS_DW=yes ; 
+                    PLOT_UP=yes ; PLOT_DW=yes ;
                     CONDUCTOR_UP=yes ; CONDUCTOR_DW=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=yes ;
                     DISENTANGLE_UP=yes ; WANNIER_UP=yes ; 
@@ -164,7 +163,7 @@ run_disentangle  NAME=DISENTANGLE_DW  SUFFIX=${SUFFIX}_DW  RUN=$DISENTANGLE_DW
 # running WANNIER
 #
 run_wannier  NAME=WANNIER_UP  SUFFIX=${SUFFIX}_UP  RUN=$WANNIER_UP
-run_wannier  NAME=WANNIER_DW  SUFFIX=${SUFFIX}_UP  RUN=$WANNIER_DW
+run_wannier  NAME=WANNIER_DW  SUFFIX=${SUFFIX}_DW  RUN=$WANNIER_DW
 
 #
 # running BANDS
