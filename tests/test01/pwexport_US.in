@@ -1,6 +1,6 @@
 &inputpp
   prefix='silicon_US'
-  outdir='./SCRATCH'
+  outdir='./SCRATCH/'
   pseudo_dir='../pseudo/'
   psfile(1)='Si.pbe-n-van.UPF'
   single_file= .FALSE.
