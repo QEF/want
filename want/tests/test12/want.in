@@ -3,25 +3,20 @@
    prefix = 'si111'
    postfix = '_WanT'
    work_dir = './SCRATCH/'
-   verbosity='high'
-   restart_mode= 'restart'
+   restart_mode= 'from_scratch'
 /
 
 &SUBSPACE
    froz_max = 7.8
    dimwann = 48
    maxiter_dis = 5000
-   subspace_init= 'from_file'
 /
 
 &LOCALIZATION
+   a_condmin = 20.0
    maxiter0_wan = 500
    maxiter1_wan = 20000
-   alpha0_wan = 0.5
-   alpha1_wan = 0.5
    ncg = 5
-   ordering_mode = 'none'
-   a_condmin = 20.0
    wannier_thr = 1d-8
 /
 
