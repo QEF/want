@@ -11,9 +11,9 @@ Carbon dimer chain; USPP
  /
  &SYSTEM    
       ibrav=8,
-      celldm(1)=20.711406,
-      celldm(2)=1.125,
-      celldm(3)=1.125,
+      celldm(1)=20.0
+      celldm(2)=0.6
+      celldm(3)=0.6
       nat=8,
       ntyp=1,
       ecutwfc=20.0,
