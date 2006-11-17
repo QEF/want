@@ -212,6 +212,11 @@ run_plot  NAME=PLOT_LEADS   SUFFIX="_leads"  RUN=$PLOT_LEADS
 #
 run_conductor NAME=CONDUCTOR  SUFFIX=""  RUN=$CONDUCTOR
 
+if [ "$CONDUCTOR" = yes -a ! -e CRASH ] ; then
+    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond_save.dat
+    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond_save.dat
+fi
+
 #
 # running CONDUCTOR_BULK 
 #
