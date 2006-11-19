@@ -4,6 +4,8 @@
 =======================================================
 
 
+19 Nov 2006      Slight fix in qexml_read_occ routine (qexml.f90). (AF)
+
 17 Nov 2006      test10 made less computationally expensive. 
                  indexx.f90 removed since no longer used. (AF)
 
