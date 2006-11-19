@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2005 Quantum-ESPRESSO group
+! Copyright (C) 2006 WanT Group
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
@@ -10,10 +10,11 @@ MODULE qexml_module
   !----------------------------------------------------------------------------
   !
   ! This module contains some common subroutines used to read and write
-  ! in XML format the data produced by Quantum-ESPRESSO package
+  ! in XML format the data produced by Quantum-ESPRESSO package.
   !
-  ! written by Andrea Ferretti (2006)
-  ! using large part of implementation by Carlo Sbraccia (2005)
+  ! Written by Andrea Ferretti (2006).
+  ! Part of the implementation is taken from xml_io_base.f90
+  ! (written by Carlo Sbraccia) in the Quantum-ESPRESSO distribution.
   !
   USE iotk_module
   IMPLICIT NONE
