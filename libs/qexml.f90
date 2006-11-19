@@ -1129,13 +1129,13 @@ CONTAINS
 
     !------------------------------------------------------------------------
     SUBROUTINE qexml_read_occ( lgauss, ngauss, degauss, degauss_units, ltetra, ntetra, &
-                               tetra, tfixed_occ, occupations, ierr )
+                               tetra, tfixed_occ, input_occ, ierr )
       !------------------------------------------------------------------------
       !
       LOGICAL,      OPTIONAL, INTENT(OUT) :: lgauss, ltetra, tfixed_occ
       INTEGER,      OPTIONAL, INTENT(OUT) :: ngauss, ntetra
       INTEGER,      OPTIONAL, INTENT(OUT) :: tetra(:,:)
-      REAL(dbl),    OPTIONAL, INTENT(OUT) :: degauss, occupations(:,:)
+      REAL(dbl),    OPTIONAL, INTENT(OUT) :: degauss, input_occ(:,:)
       CHARACTER(*), OPTIONAL, INTENT(OUT) :: degauss_units
       INTEGER,                INTENT(OUT) :: ierr
       !
@@ -1192,14 +1192,14 @@ CONTAINS
       CALL iotk_scan_dat( iunpun, "FIXED_OCCUPATIONS", tfixed_occ_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      IF ( tfixed_occ_  .AND. PRESENT( occupations ) ) THEN
+      IF ( tfixed_occ_  .AND. PRESENT( input_occ ) ) THEN
          !
-         CALL iotk_scan_dat( iunpun, "INPUT_OCC_UP", occupations(:,1), IERR=ierr )
+         CALL iotk_scan_dat( iunpun, "INPUT_OCC_UP", input_occ(:,1), IERR=ierr )
          IF (ierr/=0) RETURN
          !
-         IF ( SIZE(occupations, 2) >= 2  ) THEN
+         IF ( SIZE(input_occ, 2) >= 2  ) THEN
             !
-            CALL iotk_scan_dat( iunpun, "INPUT_OCC_DOWN", occupations(:,2), &
+            CALL iotk_scan_dat( iunpun, "INPUT_OCC_DOWN", input_occ(:,2), &
                                 FOUND=lfound, IERR=ierr )
             IF (ierr/=0) RETURN
             !
