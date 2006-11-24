@@ -53,6 +53,7 @@
    INTEGER                   :: ncols, nrows
    INTEGER,      ALLOCATABLE :: icols(:), irows(:)
    CHARACTER(nstrx)          :: cols, rows
+   CHARACTER(nstrx)          :: filein 
 
    !
    ! end of declarations
@@ -74,6 +75,10 @@
 
    CALL iotk_scan_empty(stdin, TRIM(name), ATTR=attr, IERR=ierr)
    IF (ierr/=0) CALL errore('read_matrix', 'searching for '//TRIM(name), ABS(ierr) )
+   !
+   CALL iotk_scan_attr(attr, 'filein', filein, FOUND=found, IERR=ierr)
+   IF (ierr/=0) CALL errore('read_matrix', 'searching for file', ABS(ierr) )
+   IF( .NOT. found ) filein = TRIM(file)
    !
    CALL iotk_scan_attr(attr, 'cols', cols, FOUND=found, IERR=ierr)
    IF (ierr/=0) CALL errore('read_matrix', 'searching for cols', ABS(ierr) )
@@ -147,7 +152,7 @@
 !
 ! reading form iotk-formatted .ham file produced by wannier
 !
-   CALL file_open( aux_unit, TRIM(file), PATH="/HAMILTONIAN/", ACTION="read" )
+   CALL file_open( aux_unit, TRIM(filein), PATH="/HAMILTONIAN/", ACTION="read" )
    !
    CALL iotk_scan_empty(aux_unit, "DATA", ATTR=attr, IERR=ierr)
       IF (ierr/=0) CALL errore('read_matrix', 'searching DATA', ABS(ierr) )

@@ -117,7 +117,7 @@ CONTAINS
       ! if nk_par /= 0 they are from input. otherwise use nr_par
       !
       IF ( ALL( nk_par(:) == 0 ) ) nk_par(1:2) = nr_par(1:2)
-      IF ( ANY( nk_par(:) < nr_par(:) ) ) CALL errore(subname,'nk mesh too small',71)
+      IF ( ANY( nk_par(:) < 1 ) ) CALL errore(subname,'nk mesh too small',71)
       !
       nkpts_par = PRODUCT(nk_par)
   

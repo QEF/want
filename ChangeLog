@@ -3,6 +3,11 @@
             WanT code:  Log of Changes 
 =======================================================
 
+24 Nov 2006      Check on the kpoints number used in the interpolation in transport 
+                 calculations changed: is possible to use fewer kpoints than those
+                 in the nscf calculation; call to iotk added to read_matrix.f90 in 
+                 transport: possibility of extracting the hamiltonian elements from a file
+                 different from that in the input namelist. (BB)
 
 19 Nov 2006      Slight fix in qexml_read_occ routine (qexml.f90). (AF)
 
