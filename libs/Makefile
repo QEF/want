@@ -12,6 +12,7 @@ erf.o \
 error.o \
 fft_scalar.o \
 files.o \
+flush_unit.o \
 input_from_file.o \
 invmat.o \
 io_global.o \
