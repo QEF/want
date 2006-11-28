@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+28 Nov 2006      Trial centers weight of the conditioned minimization added in 
+                 summary.f90; prefix and work_dir added to INPUT_CONDUCTOR namelist. (BB)
+
 24 Nov 2006      Check on the kpoints number used in the interpolation in transport 
                  calculations changed: is possible to use fewer kpoints than those
                  in the nscf calculation; call to iotk added to read_matrix.f90 in 
