@@ -21,7 +21,8 @@
    USE util_module,          ONLY : mat_mul, mat_sv
    USE T_input_module,       ONLY : input_manager
    USE io_module,            ONLY : stdout, stdin, sgm_unit => aux_unit,   &
-                                    dos_unit => aux1_unit, cond_unit => aux2_unit
+                                    dos_unit => aux1_unit, cond_unit => aux2_unit, &
+                                    work_dir, prefix
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
                                     conduct_formula, niterx, nprint, datafile_sgm 
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid
@@ -256,14 +257,14 @@
 ! ... write DOS and CONDUCT data on files
 !
 
-   filename = 'cond.dat'
+   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'_cond.dat'
    OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
    DO ie = 1, ne
        WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,ie) )
    ENDDO
    CLOSE( cond_unit )
 
-   filename = 'doscond.dat'
+   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'_doscond.dat'
    OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
    DO ie = 1, ne
        WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,ie) )

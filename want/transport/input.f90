@@ -10,7 +10,8 @@
    MODULE T_input_module
 !********************************************
    USE kinds, ONLY : dbl
-   USE io_module, ONLY : stdin, stdout
+   USE io_module, ONLY : stdin, stdout, work_dir, prefix
+   USE io_module, ONLY : work_dir, prefix
    USE constants, ONLY : ZERO
    IMPLICIT NONE
    PRIVATE
@@ -98,7 +99,9 @@ CONTAINS
                                            datafile_L_        => datafile_L, &
                                            datafile_C_        => datafile_C, &
                                            datafile_R_        => datafile_R, &
-                                           datafile_sgm_      => datafile_sgm
+                                           datafile_sgm_      => datafile_sgm, &
+                                           work_dir_          => work_dir, &
+                                           prefix_            => prefix
 
       IMPLICIT NONE
 
@@ -114,6 +117,8 @@ CONTAINS
       datafile_C          = datafile_C_
       datafile_R          = datafile_R_
       transport_dir       = transport_dir_
+      work_dir            = work_dir_
+      prefix              = prefix_
 
    END SUBROUTINE setup_control
       

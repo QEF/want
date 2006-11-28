@@ -27,6 +27,7 @@
    USE T_kpoints_module,  ONLY : nkpts_par, nk_par, vkpt_par, wk_par, &
                                  kpoints_alloc => alloc
    USE T_kpoints_module,  ONLY : nrtot_par, nr_par, vr_par, wr_par
+   USE io_module,         ONLY : work_dir, prefix
    IMPLICIT NONE
 
    !
@@ -54,6 +55,12 @@
    !
    WRITE(unit,"( 2x,'<INPUT>')" )
    WRITE(unit,"( 7x,'Calculation Type    :',5x,a)") TRIM(calculation_type)
+   WRITE(unit,"(   7x,'prefix              :',5x,   a)") TRIM(prefix)
+   IF ( LEN_TRIM(work_dir) <= 65 ) THEN
+      WRITE(unit,"(7x,'work_dir            :',5x,   a)") TRIM(work_dir)
+   ELSE
+      WRITE(unit,"(7x,'work_dir :',5x,/,10x,a)") TRIM(work_dir)
+   ENDIF
    WRITE(unit,"( 7x,'Conductance Formula :',5x,a)") TRIM(conduct_formula)
    WRITE(unit,"( 7x,'Transport Direction :',5x,i2)") transport_dir
    WRITE(unit,"( 7x,'Use Overlap         :',5x,a)") log2char(use_overlap)

@@ -116,6 +116,10 @@
    LOGICAL :: use_correlation = .FALSE.
        ! wheter to include correlation corrections
 
+   CHARACTER(nstrx) :: work_dir   = './'
+   CHARACTER(nstrx) :: prefix     = 't'
+       ! working directory and prefix to be added to the output data file
+
    CHARACTER(nstrx) :: datafile_L = ' '
        ! the name of the file containing L lead data
 
@@ -132,13 +136,15 @@
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, nk, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, use_correlation, smearing_type, &
-                 delta_ratio, xmax 
+                 delta_ratio, xmax, &
+                 work_dir, prefix 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
    PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, use_correlation, &
              delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
+   PUBLIC :: work_dir, prefix    
    PUBLIC :: INPUT_CONDUCTOR
 
 
