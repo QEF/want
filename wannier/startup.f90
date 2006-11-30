@@ -80,6 +80,7 @@
    ! architecture / compilation details
    !
 #ifdef __HAVE_CONFIG_INFO
+   WRITE( stdout, "(2x,'        BUILT :',4x,a)" ) TRIM( ADJUSTL( __CONF_BUILT_DATE  ))
    WRITE( stdout, "(2x,'         HOST :',4x,a)" ) TRIM( ADJUSTL( __CONF_HOST        ))
    WRITE( stdout, "(2x,'         ARCH :',4x,a)" ) TRIM( ADJUSTL( __CONF_ARCH        ))
    WRITE( stdout, "(2x,'           CC :',4x,a)" ) TRIM( ADJUSTL( __CONF_CC          ))

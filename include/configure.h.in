@@ -13,6 +13,7 @@
 
 #define  __HAVE_CONFIG_INFO
 
+#define   __CONF_BUILT_DATE     "@built_date@"
 #define   __CONF_HOST           "@host@"
 #define   __CONF_ARCH           "@arch@"
 
