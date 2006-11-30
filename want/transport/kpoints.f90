@@ -18,7 +18,7 @@
 ! Contains parallel kpt-and R-vectors data
 ! all vectors (vkpt_par, vr_par) in crystal units
 ! 
-    INTEGER                   :: nkpts_par       ! number of paralle  kpts
+    INTEGER                   :: nkpts_par       ! number of parallel  kpts
     INTEGER                   :: nk_par(2)       ! 2D kpt mesh generator
     REAL(dbl),    ALLOCATABLE :: vkpt_par(:,:)   ! 2D kpt-vectors
     REAL(dbl),    ALLOCATABLE :: wk_par(:)       ! weights of the 2D kpts
