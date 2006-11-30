@@ -22,9 +22,9 @@
    USE T_input_module,       ONLY : input_manager
    USE io_module,            ONLY : stdout, stdin, sgm_unit => aux_unit,   &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
-                                    work_dir, prefix
+                                    work_dir, prefix, aux_unit
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
-                                    conduct_formula, niterx, nprint, datafile_sgm 
+                                    conduct_formula, niterx, nprint, datafile_sgm, k_res 
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
@@ -49,10 +49,11 @@
    CHARACTER(nstrx) :: filename
    INTEGER          :: i, ie, ik, ierr, ncount, niter
    REAL(dbl)        :: avg_iter
+   CHARACTER(4)     :: ctmp
 
 
    !   
-   REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
+   REAL(dbl),    ALLOCATABLE :: dos(:,:,:), conduct(:,:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
 
@@ -118,9 +119,9 @@
    !
    CALL workspace_allocate()
 
-   ALLOCATE ( dos(dimC,ne), STAT=ierr )
+   ALLOCATE ( dos(dimC,nkpts_par,ne), STAT=ierr )
       IF( ierr /=0 ) CALL errore('conductor','allocating dos', ABS(ierr) )
-   ALLOCATE ( conduct(dimC,ne), STAT=ierr )
+   ALLOCATE ( conduct(dimC,nkpts_par,ne), STAT=ierr )
       IF( ierr /=0 ) CALL errore('conductor','allocating conduct', ABS(ierr) )
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
       IF( ierr /=0 ) CALL errore('conductor','allocating cond_aux', ABS(ierr) )
@@ -130,6 +131,8 @@
 ! main loop over frequency
 ! 
    WRITE(stdout,"()")
+      dos(:,:,:)     = ZERO
+      conduct(:,:,:) = ZERO
    energy_loop: &
    DO ie = 1, ne
       ncount = ie
@@ -143,8 +146,6 @@
                          ncount, egrid(ie)
       ENDIF
 
-      dos(:,ie) = ZERO
-      conduct(:,ie) = ZERO
       !
       ! get correlaiton self-energy if the case
       !
@@ -225,7 +226,7 @@
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimC
-             dos(i,ie) = dos(i,ie) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
+             dos(i,ik,ie) = - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
           !
           ! evaluate the transmittance according to the Fisher-Lee formula
@@ -234,7 +235,7 @@
           !
           CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr(1,1,ik), &
                              TRIM(conduct_formula), cond_aux )
-          conduct(:,ie) = conduct(:,ie) + wk_par(ik) * cond_aux(:)
+          conduct(:,ik,ie) =  wk_par(ik) * cond_aux(:)
       
       ENDDO kpt_loop 
 
@@ -260,16 +261,45 @@
    filename = TRIM(work_dir)//'/'//TRIM(prefix)//'_cond.dat'
    OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
    DO ie = 1, ne
-       WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,ie) )
+       WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,:,ie) )
    ENDDO
    CLOSE( cond_unit )
 
    filename = TRIM(work_dir)//'/'//TRIM(prefix)//'_doscond.dat'
    OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
    DO ie = 1, ne
-       WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,ie) )
+       WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,:,ie) )
    ENDDO
    CLOSE( dos_unit )
+
+!
+!  write kpoints-resolved dos and transmittance data on files
+!
+
+   IF ( k_res ) THEN
+      DO ik = 1, nkpts_par
+         WRITE( ctmp , "(i4.4)" ) ik
+         filename= TRIM(work_dir)//'/'//TRIM(prefix)//'_cond-'//ctmp//'.dat'
+         OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+         IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
+            WRITE( aux_unit, *) "# E (eV)   cond(E)"
+            DO ie = 1, ne
+               WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( conduct(:,ik,ie) )
+            ENDDO
+            CLOSE( aux_unit )         
+      ENDDO
+      DO ik = 1, nkpts_par
+         WRITE( ctmp , "(i4.4)" ) ik
+         filename= TRIM(work_dir)//'/'//TRIM(prefix)//'_doscond-'//ctmp//'.dat'
+         OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+         IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
+            WRITE( aux_unit, *) "# E (eV)   doscond(E)"
+            DO ie = 1, ne
+               WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( dos(:,ik,ie) )
+            ENDDO
+            CLOSE( aux_unit )         
+      ENDDO
+   ENDIF
    
 
 !

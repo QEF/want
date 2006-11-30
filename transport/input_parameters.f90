@@ -115,6 +115,8 @@
 
    LOGICAL :: use_correlation = .FALSE.
        ! wheter to include correlation corrections
+   LOGICAL :: k_res = .FALSE.
+       ! wheter to write kpoints-resolved dos an transmittance in output data files 
 
    CHARACTER(nstrx) :: work_dir   = './'
    CHARACTER(nstrx) :: prefix     = 't'
@@ -137,7 +139,7 @@
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, use_correlation, smearing_type, &
                  delta_ratio, xmax, &
-                 work_dir, prefix 
+                 work_dir, prefix, k_res 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
@@ -145,6 +147,7 @@
              delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: work_dir, prefix    
+   PUBLIC :: k_res   
    PUBLIC :: INPUT_CONDUCTOR
 
 

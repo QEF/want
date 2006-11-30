@@ -87,7 +87,8 @@ CONTAINS
                                            datafile_L,        &
                                            datafile_C,        &
                                            datafile_R,        &
-                                           datafile_sgm
+                                           datafile_sgm,      &
+                                           k_res 
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
                                            conduct_formula_   => conduct_formula, &
                                            use_overlap_       => use_overlap, &
@@ -101,7 +102,8 @@ CONTAINS
                                            datafile_R_        => datafile_R, &
                                            datafile_sgm_      => datafile_sgm, &
                                            work_dir_          => work_dir, &
-                                           prefix_            => prefix
+                                           prefix_            => prefix, &
+                                           k_res_             => k_res
 
       IMPLICIT NONE
 
@@ -119,6 +121,7 @@ CONTAINS
       transport_dir       = transport_dir_
       work_dir            = work_dir_
       prefix              = prefix_
+      k_res               = k_res_
 
    END SUBROUTINE setup_control
       
