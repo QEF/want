@@ -2,6 +2,9 @@
 =======================================================
             WanT code:  Log of Changes 
 =======================================================
+30 Nov 2006      k_res variable added to INPUT_CONDUCTOR namelist: if set to 
+                 .true., kpoints-resolved dos and transmittance are written
+                 on output data files. (BB)
 
 28 Nov 2006      Trial centers weight of the conditioned minimization added in 
                  summary.f90; prefix and work_dir added to INPUT_CONDUCTOR namelist. (BB)
