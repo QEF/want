@@ -34,6 +34,8 @@
    INTEGER                   :: nprint
    !
    REAL(dbl)                 :: bias
+   !
+   LOGICAL                   :: k_res
 
 !
 ! end delcarations
@@ -54,6 +56,8 @@
    PUBLIC :: nprint
    !
    PUBLIC :: bias
+   !
+   PUBLIC :: k_res
 
 END MODULE T_control_module
 

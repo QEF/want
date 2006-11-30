@@ -21,7 +21,7 @@
                                  datafile_C, datafile_L, datafile_R, &
                                  datafile_sgm,                       &
                                  transport_dir, niterx, nprint,      & 
-                                 use_overlap, use_correlation                       
+                                 use_overlap, use_correlation, k_res                       
    USE T_egrid_module,    ONLY : ne, emin, emax, de
    USE T_smearing_module, ONLY : delta, smearing_type, nx_smear => nx, xmax
    USE T_kpoints_module,  ONLY : nkpts_par, nk_par, vkpt_par, wk_par, &
@@ -65,6 +65,7 @@
    WRITE(unit,"( 7x,'Transport Direction :',5x,i2)") transport_dir
    WRITE(unit,"( 7x,'Use Overlap         :',5x,a)") log2char(use_overlap)
    WRITE(unit,"( 7x,'Use Correlation     :',5x,a)") log2char(use_correlation)
+   WRITE(unit,"( 7x,'Kpoints resolve     :',5x,a)") log2char(k_res)
    WRITE(unit,"( 7x,'Max iteration number:',5x,i4)") niterx
    WRITE(unit,"( )")
    WRITE(unit,"( 7x,'Print info each ', i3,' energy step' )" ) nprint
