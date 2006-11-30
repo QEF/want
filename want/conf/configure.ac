@@ -68,6 +68,10 @@ AC_CANONICAL_BUILD
 if test "$host" = "" ; then host=$build ; fi
 cross_compiling=yes
 
+# date
+built_date=`date "+%c"`
+echo seting built date... $built_date
+
 # identify architecture
 if test "$arch" = ""
 then
@@ -1307,6 +1311,7 @@ else
 fi
 
 # export settings to generated files
+AC_SUBST(built_date)
 AC_SUBST(host)
 AC_SUBST(arch)
 AC_SUBST(cc)
