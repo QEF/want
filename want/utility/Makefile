@@ -69,7 +69,7 @@ BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 #
 # main targets
 #
-all: midpoint.x kgrid.x #gcube2plt.x
+all: midpoint.x kgrid.x sumpdos gcube2plt.x
 
 
 midpoint.x: midpoint.o $(BIN_DEPS)
@@ -83,6 +83,10 @@ kgrid.x: kgrid.o
 
 gcube2plt.x: 
 	$(CC) $(CFLAGS) -o $@ gcube2plt.c
+	- ( cd ../bin ; ln -sf ../utility/$@ . )
+
+sumpdos: sumpdos.o
+	$(LD) $(LDFLAGS) -o $@ sumpdos.o
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
 clean:
