@@ -21,13 +21,13 @@
                                  datafile_C, datafile_L, datafile_R, &
                                  datafile_sgm,                       &
                                  transport_dir, niterx, nprint,      & 
-                                 use_overlap, use_correlation, k_res                       
+                                 use_overlap, use_correlation, write_kdata
    USE T_egrid_module,    ONLY : ne, emin, emax, de
    USE T_smearing_module, ONLY : delta, smearing_type, nx_smear => nx, xmax
    USE T_kpoints_module,  ONLY : nkpts_par, nk_par, vkpt_par, wk_par, &
                                  kpoints_alloc => alloc
    USE T_kpoints_module,  ONLY : nrtot_par, nr_par, vr_par, wr_par
-   USE io_module,         ONLY : work_dir, prefix
+   USE io_module,         ONLY : work_dir, prefix, postfix
    IMPLICIT NONE
 
    !
@@ -56,6 +56,7 @@
    WRITE(unit,"( 2x,'<INPUT>')" )
    WRITE(unit,"( 7x,'Calculation Type    :',5x,a)") TRIM(calculation_type)
    WRITE(unit,"(   7x,'prefix              :',5x,   a)") TRIM(prefix)
+   WRITE(unit,"(   7x,'postfix             :',5x,   a)") TRIM(postfix)
    IF ( LEN_TRIM(work_dir) <= 65 ) THEN
       WRITE(unit,"(7x,'work_dir            :',5x,   a)") TRIM(work_dir)
    ELSE
@@ -65,7 +66,7 @@
    WRITE(unit,"( 7x,'Transport Direction :',5x,i2)") transport_dir
    WRITE(unit,"( 7x,'Use Overlap         :',5x,a)") log2char(use_overlap)
    WRITE(unit,"( 7x,'Use Correlation     :',5x,a)") log2char(use_correlation)
-   WRITE(unit,"( 7x,'Kpoints resolve     :',5x,a)") log2char(k_res)
+   WRITE(unit,"( 7x,'Write k-data        :',5x,a)") log2char(write_kdata)
    WRITE(unit,"( 7x,'Max iteration number:',5x,i4)") niterx
    WRITE(unit,"( )")
    WRITE(unit,"( 7x,'Print info each ', i3,' energy step' )" ) nprint

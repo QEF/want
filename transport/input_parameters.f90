@@ -115,12 +115,17 @@
 
    LOGICAL :: use_correlation = .FALSE.
        ! wheter to include correlation corrections
-   LOGICAL :: k_res = .FALSE.
-       ! wheter to write kpoints-resolved dos an transmittance in output data files 
+   LOGICAL :: write_kdata = .FALSE.
+       ! wheter to write kpoint-resolved dos an transmittance to output
 
    CHARACTER(nstrx) :: work_dir   = './'
-   CHARACTER(nstrx) :: prefix     = 't'
-       ! working directory and prefix to be added to the output data file
+       ! working directory where to write datafiles
+
+   CHARACTER(nstrx) :: prefix     = ' '
+       ! prefix used for the names of files
+
+   CHARACTER(nstrx) :: postfix     = ' '
+       ! postfix used for the names of files
 
    CHARACTER(nstrx) :: datafile_L = ' '
        ! the name of the file containing L lead data
@@ -139,15 +144,14 @@
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, use_correlation, smearing_type, &
                  delta_ratio, xmax, &
-                 work_dir, prefix, k_res 
+                 work_dir, prefix, postfix, write_kdata 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
    PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, use_correlation, &
              delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
-   PUBLIC :: work_dir, prefix    
-   PUBLIC :: k_res   
+   PUBLIC :: work_dir, prefix, postfix, write_kdata
    PUBLIC :: INPUT_CONDUCTOR
 
 
