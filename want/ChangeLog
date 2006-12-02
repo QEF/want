@@ -4,9 +4,11 @@
 =======================================================
 
 
+02 Dec 2006      postfix var added to transport namelist. prefix, postfix, workdir vars
+                 added to input files for transport calculations in tests. run*.sh
+                 scripts updated coherently. sumpdos.f90 tool added to utility/ . (AF)
 
-
-30 Nov 2006      k_res variable added to INPUT_CONDUCTOR namelist: if set to 
+30 Nov 2006      write_kdata variable added to INPUT_CONDUCTOR namelist: if set to 
                  .TRUE., kpoint-resolved dos and transmittance are written
                  on output data files. (BB)
                  BUILT_DATE is added to configure.ac and set in configure.h . (AF)
