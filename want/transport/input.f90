@@ -9,10 +9,11 @@
 !********************************************
    MODULE T_input_module
 !********************************************
-   USE kinds, ONLY : dbl
-   USE io_module, ONLY : stdin, stdout, work_dir, prefix
-   USE io_module, ONLY : work_dir, prefix
+   !
+   USE kinds,     ONLY : dbl
+   USE io_module, ONLY : stdin
    USE constants, ONLY : ZERO
+   !
    IMPLICIT NONE
    PRIVATE
 !
@@ -61,6 +62,7 @@ CONTAINS
       ! scattering data in their own modules
       !
       CALL setup_control()
+      CALL setup_io()
       CALL setup_egrid()
       CALL setup_smearing()
       CALL setup_hamiltonian()
@@ -88,7 +90,7 @@ CONTAINS
                                            datafile_C,        &
                                            datafile_R,        &
                                            datafile_sgm,      &
-                                           k_res 
+                                           write_kdata 
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
                                            conduct_formula_   => conduct_formula, &
                                            use_overlap_       => use_overlap, &
@@ -101,9 +103,7 @@ CONTAINS
                                            datafile_C_        => datafile_C, &
                                            datafile_R_        => datafile_R, &
                                            datafile_sgm_      => datafile_sgm, &
-                                           work_dir_          => work_dir, &
-                                           prefix_            => prefix, &
-                                           k_res_             => k_res
+                                           write_kdata_       => write_kdata
 
       IMPLICIT NONE
 
@@ -119,12 +119,28 @@ CONTAINS
       datafile_C          = datafile_C_
       datafile_R          = datafile_R_
       transport_dir       = transport_dir_
-      work_dir            = work_dir_
-      prefix              = prefix_
-      k_res               = k_res_
+      write_kdata         = write_kdata_
 
    END SUBROUTINE setup_control
       
+
+!**********************************************************
+   SUBROUTINE setup_io()
+   !**********************************************************
+      USE io_module,                ONLY : work_dir, &
+                                           prefix, &
+                                           postfix
+      USE T_input_parameters_module,ONLY : work_dir_          => work_dir, &
+                                           prefix_            => prefix, &
+                                           postfix_           => postfix
+      IMPLICIT NONE
+
+      work_dir            = work_dir_
+      prefix              = prefix_
+      postfix             = postfix_
+
+   END SUBROUTINE setup_io
+
 
 !**********************************************************
    SUBROUTINE setup_egrid()

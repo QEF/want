@@ -28,14 +28,13 @@
    !
    LOGICAL                   :: use_overlap
    LOGICAL                   :: use_correlation
+   LOGICAL                   :: write_kdata
    !
    INTEGER                   :: niterx
    !
    INTEGER                   :: nprint
    !
    REAL(dbl)                 :: bias
-   !
-   LOGICAL                   :: k_res
 
 !
 ! end delcarations
@@ -50,14 +49,13 @@
    !
    PUBLIC :: use_overlap
    PUBLIC :: use_correlation
+   PUBLIC :: write_kdata
    !
    PUBLIC :: niterx
    !
    PUBLIC :: nprint
    !
    PUBLIC :: bias
-   !
-   PUBLIC :: k_res
 
 END MODULE T_control_module
 

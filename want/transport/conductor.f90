@@ -22,9 +22,9 @@
    USE T_input_module,       ONLY : input_manager
    USE io_module,            ONLY : stdout, stdin, sgm_unit => aux_unit,   &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
-                                    work_dir, prefix, aux_unit
+                                    work_dir, prefix, postfix, aux_unit
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
-                                    conduct_formula, niterx, nprint, datafile_sgm, k_res 
+                                    conduct_formula, niterx, nprint, datafile_sgm, write_kdata
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
@@ -258,14 +258,14 @@
 ! ... write DOS and CONDUCT data on files
 !
 
-   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'_cond.dat'
+   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
    OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
    DO ie = 1, ne
        WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,:,ie) )
    ENDDO
    CLOSE( cond_unit )
 
-   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'_doscond.dat'
+   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
    OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
    DO ie = 1, ne
        WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,:,ie) )
@@ -276,10 +276,11 @@
 !  write kpoints-resolved dos and transmittance data on files
 !
 
-   IF ( k_res ) THEN
+   IF ( write_kdata ) THEN
       DO ik = 1, nkpts_par
          WRITE( ctmp , "(i4.4)" ) ik
-         filename= TRIM(work_dir)//'/'//TRIM(prefix)//'_cond-'//ctmp//'.dat'
+         filename= TRIM(work_dir)//'/'//TRIM(prefix)// &
+                                        '_cond-'//ctmp//TRIM(postfix)//'.dat'
          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
          IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
             WRITE( aux_unit, *) "# E (eV)   cond(E)"
@@ -290,7 +291,8 @@
       ENDDO
       DO ik = 1, nkpts_par
          WRITE( ctmp , "(i4.4)" ) ik
-         filename= TRIM(work_dir)//'/'//TRIM(prefix)//'_doscond-'//ctmp//'.dat'
+         filename= TRIM(work_dir)//'/'//TRIM(prefix)// &
+                                       '_doscond-'//ctmp//TRIM(postfix)//'.dat'
          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
          IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
             WRITE( aux_unit, *) "# E (eV)   doscond(E)"
