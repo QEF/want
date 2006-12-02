@@ -1,5 +1,6 @@
 
 &INPUT_CONDUCTOR
+   postfix = '_auto'
    dimL = 8
    dimC = 16
    dimR = 8

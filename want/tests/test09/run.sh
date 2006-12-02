@@ -181,18 +181,7 @@ run_plot  NAME=PLOT_DW  SUFFIX=${SUFFIX}_DW  RUN=$PLOT_DW
 # running CONDUCTOR
 #
 run_conductor NAME=CONDUCTOR_UP SUFFIX=${SUFFIX}_UP  RUN=$CONDUCTOR_UP
-
-if [ "$CONDUCTOR_UP" = yes -a ! -e CRASH ] ; then
-    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_UP.dat
-    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_UP.dat
-fi
-
 run_conductor NAME=CONDUCTOR_DW SUFFIX=${SUFFIX}_DW  RUN=$CONDUCTOR_DW
-
-if [ "$CONDUCTOR_DW" = yes -a ! -e CRASH ] ; then
-    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_DW.dat
-    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_DW.dat
-fi
 
 
 #

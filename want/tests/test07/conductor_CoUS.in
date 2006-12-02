@@ -1,5 +1,6 @@
 
   &INPUT_CONDUCTOR
+    postfix = '_CoUS'
     dimC = 12
     calculation_type = 'bulk'
     ne = 1000  
