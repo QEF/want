@@ -754,9 +754,8 @@ use_correlation   LOGICAL
             If .TRUE. correlation correction are read from file and included in the 
             calculation. See also the datafile_sgm variable.
 
-k_res       LOGICAL
-            If .TRUE. kpoints-resolved transmittance and dos are written to output data
-            files.
+write_kdata LOGICAL
+            If .TRUE. kpoint-resolved transmittance and dos are written.
             DEFAULT : .FALSE.
 
 datafile_C  STRING
