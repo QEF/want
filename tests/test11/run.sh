@@ -131,18 +131,11 @@ run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
 # running CONDUCTOR
 #
 run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
-#
-if [ "$CONDUCTOR" = yes -a ! -e CRASH ] ; then
-    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_save.dat
-    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_save.dat
-fi
 
-run_conductor NAME=CONDUCTOR_BULK  SUFFIX=${SUFFIX}_bulk  RUN=$CONDUCTOR_BULK
 #
-if [ "$CONDUCTOR_BULK" = yes -a ! -e CRASH ] ; then
-    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_bulk.dat
-    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_bulk.dat
-fi
+# running CONDUCTOR_BULK
+#
+run_conductor NAME=CONDUCTOR_BULK  SUFFIX=${SUFFIX}_bulk  RUN=$CONDUCTOR_BULK
 
 
 #

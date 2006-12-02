@@ -124,20 +124,10 @@ run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 #
 run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
 
-if [ "$CONDUCTOR" = yes -a ! -e CRASH ] ; then
-    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond$SUFFIX.dat
-    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond$SUFFIX.dat
-fi
-
 #
 # running BULK
 #
 run_conductor SUFFIX=${SUFFIX}_bulk  RUN=$CONDUCTOR
-
-if [ "$CONDUCTOR" = yes -a ! -e CRASH ] ; then
-    test -e doscond.dat  &&  mv doscond.dat  $TEST_HOME/doscond${SUFFIX}_bulk.dat
-    test -e cond.dat     &&  mv cond.dat     $TEST_HOME/cond${SUFFIX}_bulk.dat
-fi
 
 
 #

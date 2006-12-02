@@ -1,6 +1,7 @@
 
 
   &INPUT_CONDUCTOR
+    postfix = '_AlH'
     dimL = 4
     dimC = 41
     dimR = 4

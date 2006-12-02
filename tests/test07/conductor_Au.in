@@ -1,5 +1,6 @@
 
   &INPUT_CONDUCTOR
+    postfix = '_Au'
     dimC = 12
     calculation_type = 'bulk'
     ne = 1000  
