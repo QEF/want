@@ -4,12 +4,21 @@
 ****************************************
 
 
+* XLF90: runtime, the compiler complains when reading namelists with
+  arrays written with blanks:
+    var( 3 ) = xxx        does not work
+    var(3) = xxx          works
+  #
+  STATUS: unsolved
+
 * G95: at least ultil Apr 2006, G95 with debug options
   (-g -fbounds-check -ftrace=full) is known to miscompile the 
   internal lapack & blas libraries distributed with WanT.
   Older versions of the compiler (last check Sep 2005) get
   a broken test08 (NaN apper without any reason). Fixed in newer
   version of the compiler.
+  #
+  STATUS: unsolved
 
 * INTEL ifort 8.1 (and previous versions) 
   IOTK library is not properly working on large integer arrays.
