@@ -7,8 +7,9 @@
    nk(1) = 1
    nk(2) = 1
    nk(3) = 400
-   use_nn( 3 ) = .TRUE.  
+   use_nn(3) = .TRUE.
    delta = 0.05
    smearing_type = 'gaussian'
    projdos = .TRUE.
  /
+
