@@ -202,8 +202,7 @@
           !
           ! ... re-open the main data file
           CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
-          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", &
-                                  FORM='formatted')
+          CALL file_open( dft_unit, TRIM(filename), PATH="/", ACTION="read" )
 
 
           !
@@ -336,7 +335,7 @@
 
           !
           ! ... re-closing the main data file
-          CALL file_close(dft_unit,PATH="/",ACTION="read")
+          CALL file_close( dft_unit, PATH="/", ACTION="read")
 
 
           !
