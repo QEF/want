@@ -13,7 +13,7 @@
 ! NEC ASL, CXML libraries (3d only, no parallel execution)             !
 ! Written by Carlo Cavazzoni, modified by P. Giannozzi, contributions  !
 ! by Martin Hilgemans, Guido Roma, Pascal Thibaudeau, Stephane Lefranc,!
-! Nicolas Lacorne - Last update June 2006                              !
+! Nicolas Lacorne, Andrea Ferretti - Last update Dec 2006              !
 !----------------------------------------------------------------------!
 
 
@@ -287,14 +287,19 @@
         PRIVATE
         PUBLIC :: cft_1z, cft_2xy, cft_b, cfft3d, cfft3ds
         PUBLIC :: good_fft_dimension, allowed, good_fft_order
+        PUBLIC :: good_fft_order_1dz
 
 ! ...   Local Parameter
 
-        !   ndims   Number of different FFT tables that the module 
-        !           could keep into memory without reinitialization
-        !   nfftx   Max allowed fft dimension
+        !   ndims        Number of different FFT tables that the module 
+        !                could keep into memory without reinitialization
+        !   nfftx        Max allowed fft dimension (2D and 3D)
+        !   nfftx_1dz    Max allowed fft dimension (1D)
 
-        INTEGER, PARAMETER :: ndims = 3, nfftx = 2049
+        INTEGER, PARAMETER :: ndims = 3
+        INTEGER, PARAMETER :: nfftx = 2049         ! ( 2^11 +1 )
+        INTEGER, PARAMETER :: nfftx_1dz =  262145  ! ( 2^18 +1 )
+
 
         !   Workspace that is statically allocated is defined here
         !   in order to avoid multiple copies of the same workspace
@@ -304,15 +309,15 @@
 
         !   ESSL IBM library: see the ESSL manual for DCFT
 
-        INTEGER, PARAMETER :: lwork = 20000 + ( 2*nfftx + 256 ) * 64 + 3*nfftx
-        REAL (dbl) :: work( lwork ) 
+        INTEGER, PARAMETER     :: lwork = 20000 + ( 2*nfftx + 256 ) * 64 + 3*nfftx
+        REAL(dbl), ALLOCATABLE :: work(:)
 
 #elif defined __SCSL || defined __SUN
 
         !   SGI scientific library scsl and SUN sunperf
 
-        INTEGER, PARAMETER :: lwork = 2 * nfftx
-        COMPLEX (dbl) :: work(lwork) 
+        INTEGER, PARAMETER        :: lwork = 2 * nfftx
+        COMPLEX(dbl), ALLOCATABLE :: work(:)
 
 #elif defined __FFTW3
 
@@ -359,6 +364,8 @@
      LOGICAL :: done
 
      ! ...   Machine-Dependent parameters, work arrays and tables of factors
+
+      
      
      !   ltabl   Dimension of the tables of factors calculated at the
      !           initialization stage
@@ -377,7 +384,8 @@
 
      !   ESSL IBM library: see the ESSL manual for DCFT
 
-     INTEGER, PARAMETER :: ltabl = 20000 + 3 * nfftx
+
+     INTEGER, PARAMETER :: ltabl = 20000 + 3 * nfftx_1dz
      REAL (dbl), SAVE :: fw_tablez( ltabl, ndims )
      REAL (dbl), SAVE :: bw_tablez( ltabl, ndims )
 
@@ -385,7 +393,7 @@
 
      !   SGI scientific library scsl
 
-     INTEGER, PARAMETER :: ltabl = 2 * nfftx + 256
+     INTEGER, PARAMETER :: ltabl = 2 * nfftx_1dz + 256
      REAL (dbl), SAVE :: tablez (ltabl, ndims)
      REAL (dbl)       :: DUMMY
      INTEGER, SAVE :: isys(0:1) = (/ 1, 1 /)
@@ -394,14 +402,14 @@
 
      !   SGI scientific library complib
 
-     INTEGER, PARAMETER :: ltabl = 4 * nfftx
+     INTEGER, PARAMETER :: ltabl = 4 * nfftx_1dz
      REAL (dbl), SAVE :: tablez (ltabl, ndims)
 
 #elif defined __SUN
 
      !   SUN sunperf library
 
-     INTEGER, PARAMETER :: ltabl = 4 * nfftx + 15
+     INTEGER, PARAMETER :: ltabl = 4 * nfftx_1dz + 15
      REAL (dbl), SAVE :: tablez (ltabl, ndims)
 
 #elif defined __FFTMKL8
@@ -412,8 +420,17 @@
      integer Status
 #endif
 
+
 #if defined __HPM
-            CALL f_hpmstart( 30 + ABS(isign), 'cft_1z' )
+     CALL f_hpmstart( 30 + ABS(isign), 'cft_1z' )
+#endif
+
+
+!
+! allocate workspace, if any
+!
+#if defined __ESSL || defined __SCSL || defined __SUN
+     ALLOCATE( work(lwork) )
 #endif
 
 
@@ -467,11 +484,15 @@
 
 #elif defined __ESSL
 
+       !
+       ! here we set lwork = 0 to make 
+       ! the routine allocate the memory by its own
+       !
        tscale = 1.0d0 / nz
        CALL DCFT ( 1, c(1), 1, ldz, cout(1), 1, ldz, nz, nsl,  1, &
-          tscale, fw_tablez(1, icurrent), ltabl, work(1), lwork)
+          tscale, fw_tablez(1, icurrent), ltabl, work(1), 0)
        CALL DCFT ( 1, c(1), 1, ldz, cout(1), 1, ldz, nz, nsl, -1, &
-          1.0d0, bw_tablez(1, icurrent), ltabl, work(1), lwork)
+          1.0d0, bw_tablez(1, icurrent), ltabl, work(1), 0)
 
 #elif defined __COMPLIB
 
@@ -590,17 +611,20 @@
 
      ! essl uses a different convention for forward/backward transforms
      ! wrt most other implementations: notice the sign of "idir"
+     !
+     ! here we set lwork = 0 to make 
+     ! the routine allocate the memory by its own
 
      IF( isign < 0 ) THEN
         idir   =+1
         tscale = 1.0d0 / nz
         CALL DCFT (0, c(1), 1, ldz, cout(1), 1, ldz, nz, nsl, idir, &
-             tscale, fw_tablez(1, ip), ltabl, work, lwork)
+             tscale, fw_tablez(1, ip), ltabl, work, 0)
      ELSE IF( isign > 0 ) THEN
         idir   =-1
         tscale = 1.0d0
         CALL DCFT (0, c(1), 1, ldz, cout(1), 1, ldz, nz, nsl, idir, &
-             tscale, bw_tablez(1, ip), ltabl, work, lwork)
+             tscale, bw_tablez(1, ip), ltabl, work, 0)
      END IF
 
 #elif defined __SUN
@@ -634,9 +658,12 @@
 
 #endif
 
+    IF ( ALLOCATED( work) )  DEALLOCATE( work )
+
 #if defined __HPM
             CALL f_hpmstop( 30 + ABS(isign) )
 #endif
+
      RETURN
    END SUBROUTINE cft_1z
 
@@ -724,6 +751,13 @@
 
 #if defined __HPM
       CALL f_hpmstart( 40 + ABS(isign), 'cft_2xy' )
+#endif
+
+!
+! allocate workspace, if any
+!
+#if defined __ESSL || defined __SCSL || defined __SUN
+     ALLOCATE( work(lwork) )
 #endif
 
 #if defined __SCSL
@@ -1219,6 +1253,8 @@
 
 #endif
 
+    IF ( ALLOCATED( work) )  DEALLOCATE( work )
+
 #if defined __HPM
             CALL f_hpmstop( 40 + ABS(isign)  )
 #endif
@@ -1333,6 +1369,13 @@
 
 #if defined __HPM
             CALL f_hpmstart( 50 + ABS(isign), 'cfft3d' )
+#endif
+
+!
+! allocate workspace, if any
+!
+#if defined __ESSL || defined __SCSL || defined __SUN
+     ALLOCATE( work(lwork) )
 #endif
 
 #if defined __SX6
@@ -1598,6 +1641,8 @@
 
 #endif
 
+    IF ( ALLOCATED( work) )  DEALLOCATE( work )
+
 #if defined __HPM
             CALL f_hpmstop( 50 + ABS(isign) )
 #endif
@@ -1670,6 +1715,14 @@ SUBROUTINE cfft3ds (f, nx, ny, nz, ldx, ldy, ldz, isign, &
   INTEGER Status
 
 #endif
+
+!
+! allocate workspace, if any
+!
+#if defined __ESSL || defined __SCSL || defined __SUN
+     ALLOCATE( work(lwork) )
+#endif
+
 
   tscale = 1.d0
 
@@ -1992,6 +2045,9 @@ SUBROUTINE cfft3ds (f, nx, ny, nz, ldx, ldy, ldz, isign, &
         call DSCAL (2 * ldx * ldy * nz, 1.0d0/(nx * ny * nz), f(1), 1)
 
      END IF
+
+     IF ( ALLOCATED( work ) ) DEALLOCATE( work)
+
      RETURN
    END SUBROUTINE cfft3ds
 
@@ -2066,6 +2122,14 @@ SUBROUTINE cfft3ds (f, nx, ny, nz, ldx, ldy, ldz, isign, &
 
 
 #endif
+
+!
+! allocate workspace, if any
+!
+#if defined __ESSL || defined __SCSL || defined __SUN
+     ALLOCATE( work(lwork) )
+#endif
+
 
       isign = -sgn
       tscale = 1.d0
@@ -2274,6 +2338,9 @@ SUBROUTINE cfft3ds (f, nx, ny, nz, ldx, ldy, ldz, isign, &
       END DO
 
 #endif
+
+     IF ( ALLOCATED( work ) ) DEALLOCATE( work )
+
      RETURN
    END SUBROUTINE cft_b
 
@@ -2290,7 +2357,7 @@ SUBROUTINE cfft3ds (f, nx, ny, nz, ldx, ldy, ldz, isign, &
 !
 
 !
-integer function good_fft_dimension (n)
+INTEGER function good_fft_dimension (n)
   !
   ! Determines the optimal maximum dimensions of fft arrays
   ! Useful on some machines to avoid memory conflicts
@@ -2315,13 +2382,13 @@ integer function good_fft_dimension (n)
 #endif
   !
   good_fft_dimension = nx
-  return
-end function good_fft_dimension
+  RETURN
+END FUNCTION good_fft_dimension
 
 
 !=----------------------------------------------------------------------=!
 
-function allowed (nr)
+FUNCTION allowed (nr)
 
 
   ! find if the fft dimension is a good one
@@ -2384,11 +2451,11 @@ function allowed (nr)
   endif
 
   return
-end function allowed
+END FUNCTION ALLOWED
 
 !=----------------------------------------------------------------------=!
 
-   INTEGER FUNCTION good_fft_order( nr, np )
+   INTEGER FUNCTION good_fft_order( nr, np, nfft_max )
 
 !    
 !    This function find a "good" fft order value grather or equal to "nr"
@@ -2397,6 +2464,8 @@ end function allowed
 !            
 !    np  (optional input) if present restrict the search of the order
 !        in the ensamble of multiples of np
+!
+!    nfft_max (optional_input) if present overwrites the global nfftx
 !            
 !    Output: the same if n is a good number
 !         the closest higher number that is good
@@ -2406,21 +2475,27 @@ end function allowed
 
      IMPLICIT NONE
      INTEGER, INTENT(IN) :: nr
-     INTEGER, OPTIONAL, INTENT(IN) :: np
-     INTEGER :: new
+     INTEGER, OPTIONAL, INTENT(IN) :: np, nfft_max
+     INTEGER :: new, nfftxx
+
+     !
+     ! set the local max-allowed-values
+     !
+     nfftxx = nfftx 
+     IF ( PRESENT( nfft_max ) ) nfftxx = nfft_max
 
      new = nr
      IF( PRESENT( np ) ) THEN
-       DO WHILE( ( ( .NOT. allowed( new ) ) .OR. ( MOD( new, np ) /= 0 ) ) .AND. ( new <= nfftx ) )
+       DO WHILE( ( ( .NOT. allowed( new ) ) .OR. ( MOD( new, np ) /= 0 ) ) .AND. ( new <= nfftxx ) )
          new = new + 1
        END DO
      ELSE
-       DO WHILE( ( .NOT. allowed( new ) ) .AND. ( new <= nfftx ) )
+       DO WHILE( ( .NOT. allowed( new ) ) .AND. ( new <= nfftxx ) )
          new = new + 1
        END DO
      END IF
 
-     IF( new > nfftx ) &
+     IF( new > nfftxx ) &
        CALL errore( ' good_fft_order ', ' fft order too large ', new )
 
      good_fft_order = new
@@ -2430,5 +2505,50 @@ end function allowed
 
 
 !=----------------------------------------------------------------------=!
+
+   INTEGER FUNCTION good_fft_order_1dz( nr, np, nfft_max )
+
+!    
+!    This function find a "good" fft order value grather or equal to "nr"
+!    the check about the max fft dimension is done using the nfftx_1d parameter
+!
+!    nr  (input) tentative order n of a fft
+!            
+!    np  (optional input) if present restrict the search of the order
+!        in the ensamble of multiples of np
+!
+!    nfft_max (optional_input) if present overwrites the global nfftx
+!            
+!    Output: the same if n is a good number
+!         the closest higher number that is good
+!         an fft order is not good if not implemented (as on IBM with ESSL)
+!         or implemented but with awful performances (most other cases)
+!
+
+     IMPLICIT NONE
+     INTEGER, INTENT(IN) :: nr
+     INTEGER, OPTIONAL, INTENT(IN) :: np, nfft_max
+     INTEGER :: nfftxx
+
+     !
+     ! set the local max-allowed-values
+     !
+     nfftxx = nfftx_1dz 
+     IF ( PRESENT( nfft_max ) ) nfftxx = nfft_max
+
+     !
+     ! call to the 3D routine
+     !
+     IF ( PRESENT (np) ) THEN
+         good_fft_order_1dz = good_fft_order ( nr, np, NFFT_MAX = nfftxx ) 
+     ELSE 
+         good_fft_order_1dz = good_fft_order ( nr, NFFT_MAX = nfftxx ) 
+     ENDIF
+
+   END FUNCTION good_fft_order_1dz
+
+
+!=----------------------------------------------------------------------=!
    END MODULE fft_scalar
 !=----------------------------------------------------------------------=!
+
