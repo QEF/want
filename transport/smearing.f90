@@ -12,7 +12,7 @@
    USE kinds,           ONLY : dbl
    USE constants,       ONLY : ZERO, ONE, TWO, PI, SQRTPI, SQRT2, CZERO, CONE, CI, EPS_m1
    USE timing_module,   ONLY : timing
-   USE fft_scalar,      ONLY : cft_1z
+   USE fft_scalar,      ONLY : cft_1z, good_fft_order_1dz
    USE smearing_module, ONLY : smearing_func
    IMPLICIT NONE
    PRIVATE 
@@ -116,6 +116,11 @@ CONTAINS
        Tmax   = xmax + TWO * eps_sx
        !
        nfft   = 1+ INT ( ( Tmax / xmax ) * nx )
+       !
+       ! find a "good" fft dimension (machine dependent)
+       !
+       nfft = good_fft_order_1dz( nfft ) 
+       !
        !
        ALLOCATE( fft_grid( nfft ), STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'allocating fft_grid',ABS(ierr))
