@@ -4,6 +4,10 @@
 =======================================================
 
 
+05 Dec 2006      check on the 1D fft grid added in transport (ESSL were complainig);
+                 fft_scalar.f90 module updated to account for 1D stuff; workaround
+                 for xlf bug (namelist reading, see KnownBugs) added to test06 input files. (AF)
+
 02 Dec 2006      postfix var added to transport namelist. prefix, postfix, workdir vars
                  added to input files for transport calculations in tests. run*.sh
                  scripts updated coherently. sumpdos.f90 tool added to utility/ . (AF)
