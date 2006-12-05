@@ -429,8 +429,13 @@
 !
 ! allocate workspace, if any
 !
-#if defined __ESSL || defined __SCSL || defined __SUN
-     ALLOCATE( work(lwork) )
+#if defined __ESSL
+     !
+     ! workspace no longer used
+     ALLOCATE( work( 1 ) )
+#endif
+#if defined __SCSL
+     ALLOCATE( work( 2 * nz ) )
 #endif
 
 
