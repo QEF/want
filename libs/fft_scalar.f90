@@ -663,7 +663,9 @@
 
 #endif
 
+#if defined __ESSL || defined __SCSL || defined __SUN
     IF ( ALLOCATED( work) )  DEALLOCATE( work )
+#endif
 
 #if defined __HPM
             CALL f_hpmstop( 30 + ABS(isign) )
@@ -1258,7 +1260,9 @@
 
 #endif
 
+#if defined __ESSL || defined __SCSL || defined __SUN
     IF ( ALLOCATED( work) )  DEALLOCATE( work )
+#endif
 
 #if defined __HPM
             CALL f_hpmstop( 40 + ABS(isign)  )
@@ -1646,7 +1650,9 @@
 
 #endif
 
+#if defined __ESSL || defined __SCSL || defined __SUN
     IF ( ALLOCATED( work) )  DEALLOCATE( work )
+#endif
 
 #if defined __HPM
             CALL f_hpmstop( 50 + ABS(isign) )
@@ -2051,7 +2057,9 @@ SUBROUTINE cfft3ds (f, nx, ny, nz, ldx, ldy, ldz, isign, &
 
      END IF
 
+#if defined __ESSL || defined __SCSL || defined __SUN
      IF ( ALLOCATED( work ) ) DEALLOCATE( work)
+#endif
 
      RETURN
    END SUBROUTINE cfft3ds
@@ -2344,7 +2352,9 @@ SUBROUTINE cfft3ds (f, nx, ny, nz, ldx, ldy, ldz, isign, &
 
 #endif
 
+#if defined __ESSL || defined __SCSL || defined __SUN
      IF ( ALLOCATED( work ) ) DEALLOCATE( work )
+#endif
 
      RETURN
    END SUBROUTINE cft_b
