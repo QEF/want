@@ -175,8 +175,11 @@
                 ! timing
                 !
                 IF ( MOD(ncount, nprint_dis) == 0 )  THEN
+                    !
                     WRITE(stdout, "()")
-                    CALL timing_upto_now(stdout) 
+                    CALL timing_upto_now( stdout ) 
+                    CALL flush_unit ( stdout )
+                    !
                 ENDIF
 
                 !
@@ -192,6 +195,7 @@
                        CALL subspace_write(space_unit,"SUBSPACE")
                        !
                     CALL file_close(space_unit,PATH="/",ACTION="write")
+                    !
                 ENDIF
 
                 !
@@ -326,7 +330,9 @@
        WRITE( stdout,"(2x,' Avrg Omega_I                     :', f15.6,2x,f15.6)") &
                       omega_i/REAL(dimwann, dbl), omega_i*bohr**2/REAL(dimwann, dbl)
        WRITE( stdout,"()" ) 
+       !
        CALL timing_upto_now(stdout) 
+       CALL flush_unit(stdout) 
 
      
        !
@@ -335,6 +341,7 @@
        !     in practice we write the dimwann diagonal elements of lamp^{dag}*lamp
        !
        IF ( TRIM(verbosity) == "high" ) THEN
+            !
             WRITE( stdout,"(/,2x,'Subspace decomposition:')" ) 
             WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" ) 
             DO ik=1,nkpts
@@ -346,6 +353,7 @@
                   WRITE( stdout,"(1x,'!')" ) 
             ENDDO
             WRITE( stdout,"()" ) 
+            !
        ENDIF
 
 

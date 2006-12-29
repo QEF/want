@@ -133,6 +133,7 @@
    WRITE(stdout,"()")
       dos(:,:,:)     = ZERO
       conduct(:,:,:) = ZERO
+
    energy_loop: &
    DO ie = 1, ne
       ncount = ie
@@ -239,11 +240,17 @@
       
       ENDDO kpt_loop 
 
+
       avg_iter = avg_iter/REAL(2*nkpts_par)
+      !
       IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
+           !
            WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
                  avg_iter
+           !
            CALL timing_upto_now(stdout)
+           CALL flush_unit(stdout)
+           ! 
       ENDIF
 
    ENDDO energy_loop

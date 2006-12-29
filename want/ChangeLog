@@ -4,6 +4,8 @@
 =======================================================
 
 
+29 Dec 2006      flush_unit calls added todisentangle.x, wannier.x, conductor.x . (AF)
+
 05 Dec 2006      check on the 1D fft grid added in transport (ESSL were complainig);
                  fft_scalar.f90 module updated to account for 1D stuff; workaround
                  for xlf bug (namelist reading, see KnownBugs) added to test06 input files. (AF)

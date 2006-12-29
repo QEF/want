@@ -103,7 +103,9 @@
       !
       CALL overlap_extract(dimwann)
       WRITE(stdout,"(/,2x,'Overlaps and projections setup completed')")
+      !
       CALL timing_upto_now(stdout)
+      CALL flush_unit(stdout)
 
 
       !
@@ -398,6 +400,7 @@ CALL timing('omega_best','stop')
            ! write info to stdout
            !
            IF ( MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1 ) THEN
+                !
                 IF ( do_condmin ) THEN 
                      WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
                             & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
@@ -408,6 +411,8 @@ CALL timing('omega_best','stop')
                 WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6) ") Omega_var
                 
                 CALL timing_upto_now(stdout)
+                CALL flush_unit(stdout)
+                !
            ENDIF
    
    
@@ -495,6 +500,7 @@ CALL timing('omega_best','stop')
       IF ( do_polarization ) CALL polarization( dimwann, rave )
       !
       CALL timing_upto_now(stdout)
+      CALL flush_unit(stdout)
 
 
       !
