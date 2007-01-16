@@ -33,12 +33,22 @@ if [ "$auxdir" != "configure" ] ; then cd $auxdir ; fi
 #
 makedeps=
 configure=
+help=
+
 #
 case $1 in
-  ("-d" | "--deps" )      makedeps="yes"  ;;
-  ("-h" | "--help" )      echo "$MANUAL"  ; exit 0 ;;
-  (*)                     configure="yes" ; makedeps="yes" ;;
+  ("-d" | "--deps" )      makedeps=yes  ;;
+  ("-c" | "--conf" )      configure=yes  ;;
+  ("-h" | "--help" )      help=yes ;;
+  (*)                     configure=yes ;;
 esac
+
+#
+# print manual
+#
+if [ "$help" = "yes" ] ; then
+   echo "$MANUAL"  ; exit 0 
+fi
 
 
 #
