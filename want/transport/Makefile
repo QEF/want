@@ -10,6 +10,7 @@ OBJS= \
 cleanup.o \
 control.o \
 correlation.o \
+define_smear_ham.o \
 egrid.o \
 smearing.o \
 green.o \
@@ -29,8 +30,9 @@ workspace.o
 WANNIER_OBJS= \
 ../wannier/control.o \
 ../wannier/io_module.o \
-../wannier/startup.o \
+../wannier/shutdown.o \
 ../wannier/smearing.o \
+../wannier/startup.o \
 ../wannier/version.o
 
 

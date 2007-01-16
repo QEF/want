@@ -8,12 +8,18 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************
-   SUBROUTINE transfer( dim, S, niterx, tot, tott, c00, c01, niter )
+   SUBROUTINE transfer( hdim, niterx, tot, tott, c00, c01, niter, ierr )
    !***********************************************************************
    !
    !...  Iterative construction of the transfer matrix
    !     as Lopez-Sancho and Rubio, J.Phys.F:Met.Phys., v.14, 1205 (1984)
    !     and ibid. v.15, 851 (1985)
+   !
+   ! these are "effective quantities", see define_smear_ham.f90
+   !     c00 = ene * S00 - H00_eff       
+   !     c01 = ene * S01 - H01_eff 
+   !
+   ! where "eff" means including the smearing
    !
    USE kinds
    USE io_global_module,  ONLY : stdout
@@ -27,20 +33,19 @@
       !
       ! I/O variables
       !
-      INTEGER,      INTENT(in)    :: dim, niterx
-      INTEGER,      INTENT(out)   :: niter
-      COMPLEX(dbl), INTENT(in)    :: c00(dim,dim)
-      COMPLEX(dbl), INTENT(in)    :: c01(dim,dim)
-      COMPLEX(dbl), INTENT(in)    :: S(dim,dim)
-      COMPLEX(dbl), INTENT(inout) :: tot(dim,dim)
-      COMPLEX(dbl), INTENT(inout) :: tott(dim,dim)
+      INTEGER,      INTENT(in)    :: hdim, niterx
+      COMPLEX(dbl), INTENT(in)    :: c00(hdim,hdim)
+      COMPLEX(dbl), INTENT(in)    :: c01(hdim,hdim)
+      COMPLEX(dbl), INTENT(inout) :: tot(hdim,hdim)
+      COMPLEX(dbl), INTENT(inout) :: tott(hdim,hdim)
+      INTEGER,      INTENT(out)   :: niter, ierr
 
 
 
       !
       ! local variables
       !
-      INTEGER      :: i, j, m, ierr
+      INTEGER      :: i, j, m, ierrl
       REAL(dbl)    :: conver, conver2
       LOGICAL      :: lconverged
       COMPLEX(dbl), ALLOCATABLE :: tau(:,:,:)
@@ -49,6 +54,7 @@
       COMPLEX(dbl), ALLOCATABLE :: tsumt(:,:)
       COMPLEX(dbl), ALLOCATABLE :: t11(:,:), t12(:,:)
       COMPLEX(dbl), ALLOCATABLE :: s1(:,:), s2(:,:)
+      CHARACTER(8)              :: subname = 'transfer'
 
 !
 !----------------------------------------
@@ -56,40 +62,38 @@
 !----------------------------------------
 !
       CALL timing('transfer',OPR='start')
+      !
+      ierr = 0
+      !
+      ALLOCATE( tau(hdim, hdim, 2), taut(hdim, hdim, 2), STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'allocating tau, taut',ABS(ierrl))
+      ALLOCATE( tsum(hdim, hdim), tsumt(hdim, hdim), STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'allocating tsum, tsumt',ABS(ierrl))
+      ALLOCATE( t11(hdim, hdim), t12(hdim, hdim), STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'allocating t11, t12',ABS(ierrl))
+      ALLOCATE( s1(hdim, hdim), s2(hdim, hdim), STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'allocating s1, s2',ABS(ierrl))
 
-
-      ALLOCATE( tau(dim, dim, 2), taut(dim, dim, 2), STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','allocating tau, taut',ABS(ierr))
-      ALLOCATE( tsum(dim, dim), tsumt(dim, dim), STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','allocating tsum, tsumt',ABS(ierr))
-      ALLOCATE( t11(dim, dim), t12(dim, dim), STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','allocating t11, t12',ABS(ierr))
-      ALLOCATE( s1(dim, dim), s2(dim, dim), STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','allocating s1, s2',ABS(ierr))
 
       !
-      ! Construction of the transfer matrix
-      !
-
-      !
-      ! Compute (ene * s00 - h00)^-1 and store it in t11 
-      ! here c00 = h00 - ene * s00
+      ! Compute (ene * s00 - h00 + "smear")^-1 and store it in t11 
+      ! see the routine header for the definition of "smear"
       !
       t11(:,:) = CZERO
-      t12(:,:) = -c00(:,:) +CI*delta*S(:,:) 
+      t12(:,:) = c00(:,:)
 
-      DO i = 1, dim
+      DO i = 1, hdim
           t11(i,i) = CONE
       ENDDO
 
-      CALL mat_sv(dim, dim, t12, t11)
+      CALL mat_sv(hdim, hdim, t12, t11)
 
       !
-      ! Compute intermediate t-matrices (defined as tau(dim,dim,niter)
+      ! Compute intermediate t-matrices (defined as tau(hdim,hdim,niter)
       ! and taut(...))
 
-      CALL mat_mul(tau(:,:,1), t11, 'N', c01, 'C', dim, dim, dim)
-      CALL mat_mul(taut(:,:,1), t11, 'N', c01, 'N', dim, dim, dim)
+      CALL mat_mul(tau(:,:,1),  t11, 'N', c01, 'C', hdim, hdim, hdim)
+      CALL mat_mul(taut(:,:,1), t11, 'N', c01, 'N', hdim, hdim, hdim)
 
       !
       ! Initialize T
@@ -112,8 +116,8 @@
       convergence_loop: &
       DO m = 1, niterx
 
-         CALL mat_mul(t11, tau(:,:,1), 'N', taut(:,:,1), 'N', dim, dim, dim)
-         CALL mat_mul(t12, taut(:,:,1), 'N', tau(:,:,1), 'N', dim, dim, dim)  
+         CALL mat_mul(t11, tau(:,:,1),  'N', taut(:,:,1), 'N', hdim, hdim, hdim)
+         CALL mat_mul(t12, taut(:,:,1), 'N', tau(:,:,1),  'N', hdim, hdim, hdim)  
 
 
          s1(:,:) = -( t11(:,:) + t12(:,:) )
@@ -122,12 +126,12 @@
          !
          ! invert the matrix
          !
-         DO i=1,dim
+         DO i=1,hdim
              s1(i,i) = CONE + s1(i,i)
              s2(i,i) = CONE
          ENDDO
          !
-         CALL mat_sv(dim, dim, s1, s2, IERR=ierr)
+         CALL mat_sv(hdim, hdim, s1, s2, IERR=ierr)
          !
          ! exit the main loop, 
          ! set all the matrices to be computed to zero
@@ -139,30 +143,30 @@
               tott = CZERO
               !
               WRITE(stdout, "(2x, 'WARNING: singular matrix at iteration', i4)" ) m
-              WRITE(stdout, "(2x, '         energy descarted')" )
               !
               lconverged = .TRUE.
               EXIT convergence_loop
+              !
          ENDIF
 
 
-         CALL mat_mul(t11, tau(:,:,1), 'N', tau(:,:,1), 'N', dim, dim, dim)
-         CALL mat_mul(t12, taut(:,:,1), 'N', taut(:,:,1), 'N', dim, dim, dim) 
-         CALL mat_mul(tau(:,:,2), s2, 'N', t11, 'N', dim, dim, dim)
-         CALL mat_mul(taut(:,:,2), s2, 'N', t12, 'N', dim, dim, dim)
+         CALL mat_mul(t11, tau(:,:,1),  'N', tau(:,:,1),  'N', hdim, hdim, hdim)
+         CALL mat_mul(t12, taut(:,:,1), 'N', taut(:,:,1), 'N', hdim, hdim, hdim) 
+         CALL mat_mul(tau(:,:,2), s2,   'N', t11, 'N', hdim, hdim, hdim)
+         CALL mat_mul(taut(:,:,2), s2,  'N', t12, 'N', hdim, hdim, hdim)
 
          !
          ! Put the transfer matrices together
          !
-         CALL mat_mul(t11, tsum, 'N', tau(:,:,2), 'N', dim, dim, dim)
-         CALL mat_mul(s1, tsum, 'N', taut(:,:,2), 'N', dim, dim, dim)
+         CALL mat_mul(t11, tsum,  'N', tau(:,:,2),  'N', hdim, hdim, hdim)
+         CALL mat_mul(s1, tsum,   'N', taut(:,:,2), 'N', hdim, hdim, hdim)
   
          tot = tot + t11
          tsum = s1
 
 
-         CALL mat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', dim, dim, dim)
-         CALL mat_mul(s1, tsumt, 'N', tau(:,:,2), 'N', dim, dim, dim)
+         CALL mat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', hdim, hdim, hdim)
+         CALL mat_mul(s1, tsumt,  'N', tau(:,:,2),  'N', hdim, hdim, hdim)
 
          tott  = tott + t11
          tsumt = s1
@@ -177,8 +181,8 @@
          conver = ZERO
          conver2 = ZERO
 
-         DO j = 1, dim
-         DO i = 1, dim
+         DO j = 1, hdim
+         DO i = 1, hdim
               conver = conver +   REAL( tau(i,j,2) * CONJG( tau(i,j,2) )) 
               conver2 = conver2 + REAL( taut(i,j,2) * CONJG( taut(i,j,2) )) 
          ENDDO
@@ -197,27 +201,28 @@
       IF ( .NOT. lconverged ) THEN 
           !
           ! de-comment here if you want to allow for a hard crash
-          ! CALL errore('transfer', 'bad t-matrix convergence', 10 )
+          ! CALL errore(subname, 'bad t-matrix convergence', 10 )
+          !
+          ierr = niterx
           !
           tot  = CZERO
           tott = CZERO
           !
-          WRITE(stdout, "(2x, 'WARNING: t-matrix not converged', i4)" ) niterx
-          WRITE(stdout, "(2x, '         energy descarted')" )
+          WRITE(stdout, "(2x, 'WARNING: t-matrix not converged after', i4, ' iterations')" ) niterx
           !
       ENDIF
 
 !
 ! ... local cleaning
 !
-      DEALLOCATE( tau, taut, STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','deallocating tau, taut',ABS(ierr))
-      DEALLOCATE( tsum, tsumt, STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','deallocating tsum, tsumt',ABS(ierr))
-      DEALLOCATE( t11, t12, STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','deallocating t11, t12',ABS(ierr))
-      DEALLOCATE( s1, s2, STAT=ierr)
-         IF (ierr/=0) CALL errore('transfer','deallocating s1, s2',ABS(ierr))
+      DEALLOCATE( tau, taut, STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'deallocating tau, taut',ABS(ierrl))
+      DEALLOCATE( tsum, tsumt, STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'deallocating tsum, tsumt',ABS(ierrl))
+      DEALLOCATE( t11, t12, STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'deallocating t11, t12',ABS(ierrl))
+      DEALLOCATE( s1, s2, STAT=ierrl)
+         IF (ierrl/=0) CALL errore(subname,'deallocating s1, s2',ABS(ierrl))
 
       CALL timing('transfer',OPR='stop')
 

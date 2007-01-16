@@ -106,9 +106,12 @@
    INTEGER :: nprint = 20 
        ! every nprint energy step write to stdout
 
-   INTEGER :: niterx = 200
+   INTEGER :: niterx = 50
        ! max number of iterations in the calculation of
        ! lead self-energies
+
+   INTEGER :: nkpts_smear = 8
+       ! number of k points used for numerical smearing
 
    LOGICAL :: use_overlap = .FALSE.
        ! wheter to include overlaps (non-orthogonal bases)
@@ -143,13 +146,12 @@
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, nk, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, use_correlation, smearing_type, &
-                 delta_ratio, xmax, &
+                 delta_ratio, xmax, nkpts_smear, &
                  work_dir, prefix, postfix, write_kdata 
-
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
    PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, use_correlation, &
-             delta_ratio, xmax 
+             delta_ratio, xmax, nkpts_smear 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: work_dir, prefix, postfix, write_kdata
    PUBLIC :: INPUT_CONDUCTOR
@@ -248,6 +250,7 @@ CONTAINS
       IF ( xmax < 10.0_dbl )      CALL errore(subname,'xmax too small',1)
       IF ( delta_ratio < ZERO )   CALL errore(subname,'delta_ratio is negative',1)
       IF ( delta_ratio > EPS_m1 ) CALL errore(subname,'delta_ratio too large',1)
+      IF ( nkpts_smear <=1  )     CALL errore(subname,'nkpts_smear too small',1)
 
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. .NOT. use_correlation ) &
            CALL errore(subname,'invalid conduct formula',1)

@@ -164,12 +164,15 @@ CONTAINS
    !**********************************************************
       USE T_smearing_module,        ONLY : delta,         &
                                            smearing_type, &
-                                           delta_ratio, xmax
+                                           delta_ratio,   &
+                                           nkpts_smear,   &
+                                           xmax
 
       USE T_input_parameters_module,ONLY : delta_         => delta,         &
                                            smearing_type_ => smearing_type, &
                                            delta_ratio_   => delta_ratio,   &
-                                           xmax_          => xmax
+                                           xmax_          => xmax,          &
+                                           nkpts_smear_   => nkpts_smear
 
       IMPLICIT NONE
 
@@ -177,6 +180,7 @@ CONTAINS
       smearing_type = smearing_type_
       delta_ratio   = delta_ratio_
       xmax          = xmax_
+      nkpts_smear   = nkpts_smear_
 
    END SUBROUTINE setup_smearing
 

@@ -7,25 +7,25 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 !
 !*****************************************************************
-   SUBROUTINE gzero_maker( dim, omgS_ham, S, gzero, calc )
+   SUBROUTINE gzero_maker( hdim, omgH, S, gzero, calc, smearing_type )
    !*****************************************************************
    !
-   ! Given \omega S - H, the routine compute the non-interacting 
+   ! Given \omega S - H, the routine computes the non-interacting 
    ! Green func Gzero (when calc == "direct" ) or Gzero^-1 (when calc == "inverse")
    ! according to the input smearing type.
    !
    ! the implemented formula is
-   ! gzero    = g_smear( omgS_ham )
-   ! gzero^-1 = 1/g_smear( omgS_ham )
+   ! gzero    = g_smear( omgH )
+   ! gzero^-1 = 1/g_smear( omgH )
    !
    ! where f is numerically computed (according to smearing type and smearing) in
    ! smearing_module. See the module file for more details.
    !
-   ! NOTE: omgS_ham is defined as  \omega *S - H; it is therefore hermitean  
+   ! NOTE: omgH is defined as  \omega *S - H; it is therefore hermitean  
    !
    USE kinds
    USE constants,        ONLY : ONE, CONE, CZERO, CI, PI
-   USE T_smearing_module,ONLY : smear_alloc => alloc, delta, smearing_type, g_smear, &
+   USE T_smearing_module,ONLY : smear_alloc => alloc, delta, g_smear, &
                                 xgrid_smear => xgrid, &
                                 nx_smear    => nx,    &
                                 dx_smear    => dx
@@ -36,10 +36,11 @@
    !  
    ! input variables 
    !  
-   INTEGER,      INTENT(in)  :: dim
-   COMPLEX(dbl), INTENT(in)  :: omgS_ham(dim,dim), S(dim,dim)
-   COMPLEX(dbl), INTENT(out) :: gzero(dim,dim)
+   INTEGER,      INTENT(in)  :: hdim
+   COMPLEX(dbl), INTENT(in)  :: omgH(hdim,hdim), S(hdim,hdim)
+   COMPLEX(dbl), INTENT(out) :: gzero(hdim,hdim)
    CHARACTER(*), INTENT(in)  :: calc
+   CHARACTER(*), INTENT(in)  :: smearing_type
    !
    ! local variables
    !
@@ -62,9 +63,9 @@
       
    IF ( .NOT. smear_alloc ) CALL errore(subname,'smearing module not allocated',1)
    !
-   ALLOCATE( aux(dim,dim), z(dim,dim), STAT=ierr )
+   ALLOCATE( aux(hdim,hdim), z(hdim,hdim), STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'allocating aux, z',ABS(ierr))
-   ALLOCATE( w(dim), gw(dim), STAT=ierr )
+   ALLOCATE( w(hdim), gw(hdim), STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'allocating w, gw',ABS(ierr))
 
 
@@ -79,17 +80,17 @@
         ! gzero = ( omega S - H + i delta S)^-1
         !
         gzero = CZERO
-        DO i=1,dim
+        DO i=1,hdim
             gzero(i,i) = CONE
         ENDDO
         !
-        aux(:,:) = omgS_ham(:,:) + CI * delta * S(:,:)
+        aux(:,:) = omgH(:,:) + CI * delta * S(:,:)
         !
         SELECT CASE (TRIM(calc))
         CASE ("direct")
             ! calculate the gzero function
             !
-            CALL mat_sv( dim, dim , aux, gzero, IERR=ierr)
+            CALL mat_sv( hdim, hdim , aux, gzero, IERR=ierr)
             IF (ierr/=0) CALL errore(subname,'inverting aux for lorentzian smearing',ABS(ierr))
         CASE ("inverse")
             ! calculate the gzero^{-1} function
@@ -106,16 +107,16 @@
         ! diagonalize the matrix and apply 
         ! the function to the eigenvalues
         !
-        aux =   omgS_ham(:,:)
+        aux =   omgH(:,:)
         !
-        CALL mat_hdiag( z, w, aux, dim) 
+        CALL mat_hdiag( z, w, aux, hdim) 
         w(:) = w(:)/delta
 
         !
         ! now, apply the g_smear function (numerically defined) to all eigv 
         ! this is done interpolating g_smear on the eigv 
         !
-        DO i=1, dim
+        DO i=1, hdim
 
             CALL locate( xgrid_smear, nx_smear, w(i), ig )
 
@@ -177,13 +178,13 @@
         ! gzero = z * gw * z^{dag} 
         ! first we set aux = z * gw and then aux * z^{dag} using BLAS
         !
-        DO j = 1, dim
-        DO i = 1, dim
+        DO j = 1, hdim
+        DO i = 1, hdim
              aux (i,j) = z(i,j) * gw(j)
         ENDDO
         ENDDO
         !
-        CALL mat_mul( gzero, aux, 'N', z, 'C', dim, dim, dim)
+        CALL mat_mul( gzero, aux, 'N', z, 'C', hdim, hdim, hdim)
 
    END SELECT
    !

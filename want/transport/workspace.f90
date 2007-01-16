@@ -21,6 +21,8 @@
    !
    COMPLEX(dbl), ALLOCATABLE :: aux00_L(:,:), aux01_L(:,:)
    COMPLEX(dbl), ALLOCATABLE :: aux00_R(:,:), aux01_R(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: aux00eff_L(:,:), aux01eff_L(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: aux00eff_R(:,:), aux01eff_R(:,:)
    COMPLEX(dbl), ALLOCATABLE :: aux00_C(:,:)
    COMPLEX(dbl), ALLOCATABLE :: aux_LC(:,:), aux_CL(:,:)
    COMPLEX(dbl), ALLOCATABLE :: aux_CR(:,:), aux_RC(:,:)
@@ -48,6 +50,8 @@
    !
    PUBLIC :: aux00_L, aux01_L
    PUBLIC :: aux00_R, aux01_R
+   PUBLIC :: aux00eff_L, aux01eff_L
+   PUBLIC :: aux00eff_R, aux01eff_R
    PUBLIC :: aux00_C
    PUBLIC :: aux_LC, aux_CL
    PUBLIC :: aux_CR, aux_RC
@@ -89,6 +93,16 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname,'allocating aux00_R', ABS(ierr) )
       ALLOCATE ( aux01_R(dimR,dimR), STAT=ierr )
          IF( ierr /=0 ) CALL errore(subname,'allocating aux01_R', ABS(ierr) )
+
+      ALLOCATE ( aux00eff_L(dimL,dimL), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname,'allocating aux00eff_L ', ABS(ierr) )
+      ALLOCATE ( aux01eff_L(dimL,dimL), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname,'allocating aux01eff_L', ABS(ierr) )
+      ALLOCATE ( aux00eff_R(dimR,dimR), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname,'allocating aux00eff_R', ABS(ierr) )
+      ALLOCATE ( aux01eff_R(dimR,dimR), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname,'allocating aux01eff_R', ABS(ierr) )
+
       ALLOCATE ( aux00_C(dimC,dimC), STAT=ierr )
          IF( ierr /=0 ) CALL errore(subname,'allocating aux00_C', ABS(ierr) )
       ALLOCATE ( aux_LC(dimL,dimC), STAT=ierr )
@@ -142,6 +156,10 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname,'deallocating aux00_L, aux01_L', ABS(ierr) )
       DEALLOCATE ( aux00_R, aux01_R, STAT=ierr )
          IF( ierr /=0 ) CALL errore(subname,'deallocating aux00_R, aux01_R', ABS(ierr) )
+      DEALLOCATE ( aux00eff_L, aux01eff_L, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname,'deallocating aux00eff_L, aux01eff_L', ABS(ierr) )
+      DEALLOCATE ( aux00eff_R, aux01eff_R, STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname,'deallocating aux00eff_R, aux01eff_R', ABS(ierr) )
       DEALLOCATE ( aux00_C, STAT=ierr )
          IF( ierr /=0 ) CALL errore(subname,'deallocating aux00_C', ABS(ierr) )
       DEALLOCATE ( aux_LC, aux_CL, STAT=ierr )

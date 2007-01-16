@@ -34,6 +34,7 @@
    REAL(dbl)                 :: dx, xmax         ! step and grid extrema (-xmax, xmax) 
    REAL(dbl), ALLOCATABLE    :: xgrid(:)         ! grid values
    COMPLEX(dbl), ALLOCATABLE :: g_smear(:)       ! numeric function for G_zero defined on the xgrid
+   INTEGER                   :: nkpts_smear      ! number of kpts used for numerical smearing
    !
    LOGICAL :: alloc = .FALSE.
 
@@ -44,6 +45,7 @@
    PUBLIC :: alloc
    PUBLIC :: delta, delta_ratio, smearing_type
    PUBLIC :: nx, dx, xmax, xgrid
+   PUBLIC :: nkpts_smear
    PUBLIC :: g_smear
    !
    PUBLIC :: smearing_init
