@@ -1,0 +1,254 @@
+iotk_02_unit_list.o : iotk_01_base.o
+iotk_03_attr_interf.o : iotk_01_base.o
+iotk_04_dat_interf.o : iotk_01_base.o
+iotk_05_error_interf.o : iotk_01_base.o
+iotk_06_files_interf.o : iotk_01_base.o
+iotk_07_fmt_interf.o : iotk_01_base.o
+iotk_08_misc_interf.o : iotk_01_base.o
+iotk_09_str_interf.o : iotk_01_base.o
+iotk_10_scan_interf.o : iotk_01_base.o
+iotk_11_stream_interf.o : iotk_01_base.o
+iotk_13_unit_interf.o : iotk_01_base.o
+iotk_14_write_interf.o : iotk_01_base.o
+iotk_15_xtox_interf.o : iotk_01_base.o
+iotk_16_module.o : iotk_01_base.o
+iotk_16_module.o : iotk_03_attr_interf.o
+iotk_16_module.o : iotk_04_dat_interf.o
+iotk_16_module.o : iotk_05_error_interf.o
+iotk_16_module.o : iotk_06_files_interf.o
+iotk_16_module.o : iotk_07_fmt_interf.o
+iotk_16_module.o : iotk_08_misc_interf.o
+iotk_16_module.o : iotk_10_scan_interf.o
+iotk_16_module.o : iotk_12_tool_interf.o
+iotk_16_module.o : iotk_13_unit_interf.o
+iotk_16_module.o : iotk_14_write_interf.o
+iotk_16_module.o : iotk_15_xtox_interf.o
+iotk_17_attr+CHARACTER.o : iotk_01_base.o
+iotk_17_attr+CHARACTER.o : iotk_03_attr_interf.o
+iotk_17_attr+CHARACTER.o : iotk_05_error_interf.o
+iotk_17_attr+CHARACTER.o : iotk_08_misc_interf.o
+iotk_17_attr+CHARACTER.o : iotk_09_str_interf.o
+iotk_18_attr+COMPLEX.o : iotk_01_base.o
+iotk_18_attr+COMPLEX.o : iotk_03_attr_interf.o
+iotk_18_attr+COMPLEX.o : iotk_05_error_interf.o
+iotk_18_attr+COMPLEX.o : iotk_07_fmt_interf.o
+iotk_18_attr+COMPLEX.o : iotk_08_misc_interf.o
+iotk_18_attr+COMPLEX.o : iotk_09_str_interf.o
+iotk_18_attr+COMPLEX.o : iotk_15_xtox_interf.o
+iotk_19_attr+REAL.o : iotk_01_base.o
+iotk_19_attr+REAL.o : iotk_03_attr_interf.o
+iotk_19_attr+REAL.o : iotk_05_error_interf.o
+iotk_19_attr+REAL.o : iotk_07_fmt_interf.o
+iotk_19_attr+REAL.o : iotk_08_misc_interf.o
+iotk_19_attr+REAL.o : iotk_09_str_interf.o
+iotk_19_attr+REAL.o : iotk_15_xtox_interf.o
+iotk_20_attr+INTEGER.o : iotk_01_base.o
+iotk_20_attr+INTEGER.o : iotk_03_attr_interf.o
+iotk_20_attr+INTEGER.o : iotk_05_error_interf.o
+iotk_20_attr+INTEGER.o : iotk_07_fmt_interf.o
+iotk_20_attr+INTEGER.o : iotk_08_misc_interf.o
+iotk_20_attr+INTEGER.o : iotk_09_str_interf.o
+iotk_20_attr+INTEGER.o : iotk_15_xtox_interf.o
+iotk_21_attr+LOGICAL.o : iotk_01_base.o
+iotk_21_attr+LOGICAL.o : iotk_03_attr_interf.o
+iotk_21_attr+LOGICAL.o : iotk_05_error_interf.o
+iotk_21_attr+LOGICAL.o : iotk_07_fmt_interf.o
+iotk_21_attr+LOGICAL.o : iotk_08_misc_interf.o
+iotk_21_attr+LOGICAL.o : iotk_09_str_interf.o
+iotk_21_attr+LOGICAL.o : iotk_15_xtox_interf.o
+iotk_22_dat+CHARACTER.o : iotk_01_base.o
+iotk_22_dat+CHARACTER.o : iotk_03_attr_interf.o
+iotk_22_dat+CHARACTER.o : iotk_04_dat_interf.o
+iotk_22_dat+CHARACTER.o : iotk_05_error_interf.o
+iotk_22_dat+CHARACTER.o : iotk_07_fmt_interf.o
+iotk_22_dat+CHARACTER.o : iotk_08_misc_interf.o
+iotk_22_dat+CHARACTER.o : iotk_09_str_interf.o
+iotk_22_dat+CHARACTER.o : iotk_10_scan_interf.o
+iotk_22_dat+CHARACTER.o : iotk_11_stream_interf.o
+iotk_22_dat+CHARACTER.o : iotk_13_unit_interf.o
+iotk_22_dat+CHARACTER.o : iotk_14_write_interf.o
+iotk_23_dat+COMPLEX.o : iotk_01_base.o
+iotk_23_dat+COMPLEX.o : iotk_03_attr_interf.o
+iotk_23_dat+COMPLEX.o : iotk_04_dat_interf.o
+iotk_23_dat+COMPLEX.o : iotk_05_error_interf.o
+iotk_23_dat+COMPLEX.o : iotk_07_fmt_interf.o
+iotk_23_dat+COMPLEX.o : iotk_08_misc_interf.o
+iotk_23_dat+COMPLEX.o : iotk_09_str_interf.o
+iotk_23_dat+COMPLEX.o : iotk_10_scan_interf.o
+iotk_23_dat+COMPLEX.o : iotk_11_stream_interf.o
+iotk_23_dat+COMPLEX.o : iotk_13_unit_interf.o
+iotk_23_dat+COMPLEX.o : iotk_14_write_interf.o
+iotk_24_dat+REAL.o : iotk_01_base.o
+iotk_24_dat+REAL.o : iotk_03_attr_interf.o
+iotk_24_dat+REAL.o : iotk_04_dat_interf.o
+iotk_24_dat+REAL.o : iotk_05_error_interf.o
+iotk_24_dat+REAL.o : iotk_07_fmt_interf.o
+iotk_24_dat+REAL.o : iotk_08_misc_interf.o
+iotk_24_dat+REAL.o : iotk_09_str_interf.o
+iotk_24_dat+REAL.o : iotk_10_scan_interf.o
+iotk_24_dat+REAL.o : iotk_11_stream_interf.o
+iotk_24_dat+REAL.o : iotk_13_unit_interf.o
+iotk_24_dat+REAL.o : iotk_14_write_interf.o
+iotk_25_dat+INTEGER.o : iotk_01_base.o
+iotk_25_dat+INTEGER.o : iotk_03_attr_interf.o
+iotk_25_dat+INTEGER.o : iotk_04_dat_interf.o
+iotk_25_dat+INTEGER.o : iotk_05_error_interf.o
+iotk_25_dat+INTEGER.o : iotk_07_fmt_interf.o
+iotk_25_dat+INTEGER.o : iotk_08_misc_interf.o
+iotk_25_dat+INTEGER.o : iotk_09_str_interf.o
+iotk_25_dat+INTEGER.o : iotk_10_scan_interf.o
+iotk_25_dat+INTEGER.o : iotk_11_stream_interf.o
+iotk_25_dat+INTEGER.o : iotk_13_unit_interf.o
+iotk_25_dat+INTEGER.o : iotk_14_write_interf.o
+iotk_26_dat+LOGICAL.o : iotk_01_base.o
+iotk_26_dat+LOGICAL.o : iotk_03_attr_interf.o
+iotk_26_dat+LOGICAL.o : iotk_04_dat_interf.o
+iotk_26_dat+LOGICAL.o : iotk_05_error_interf.o
+iotk_26_dat+LOGICAL.o : iotk_07_fmt_interf.o
+iotk_26_dat+LOGICAL.o : iotk_08_misc_interf.o
+iotk_26_dat+LOGICAL.o : iotk_09_str_interf.o
+iotk_26_dat+LOGICAL.o : iotk_10_scan_interf.o
+iotk_26_dat+LOGICAL.o : iotk_11_stream_interf.o
+iotk_26_dat+LOGICAL.o : iotk_13_unit_interf.o
+iotk_26_dat+LOGICAL.o : iotk_14_write_interf.o
+iotk_27_error.o : iotk_01_base.o
+iotk_27_error.o : iotk_05_error_interf.o
+iotk_27_error.o : iotk_08_misc_interf.o
+iotk_27_error.o : iotk_15_xtox_interf.o
+iotk_28_files.o : iotk_01_base.o
+iotk_28_files.o : iotk_03_attr_interf.o
+iotk_28_files.o : iotk_05_error_interf.o
+iotk_28_files.o : iotk_06_files_interf.o
+iotk_28_files.o : iotk_08_misc_interf.o
+iotk_28_files.o : iotk_09_str_interf.o
+iotk_28_files.o : iotk_10_scan_interf.o
+iotk_28_files.o : iotk_13_unit_interf.o
+iotk_28_files.o : iotk_14_write_interf.o
+iotk_29_fmt.o : iotk_01_base.o
+iotk_29_fmt.o : iotk_07_fmt_interf.o
+iotk_29_fmt.o : iotk_08_misc_interf.o
+iotk_29_fmt.o : iotk_09_str_interf.o
+iotk_29_fmt.o : iotk_15_xtox_interf.o
+iotk_30_misc.o : iotk_01_base.o
+iotk_30_misc.o : iotk_03_attr_interf.o
+iotk_30_misc.o : iotk_04_dat_interf.o
+iotk_30_misc.o : iotk_05_error_interf.o
+iotk_30_misc.o : iotk_08_misc_interf.o
+iotk_30_misc.o : iotk_09_str_interf.o
+iotk_30_misc.o : iotk_10_scan_interf.o
+iotk_30_misc.o : iotk_13_unit_interf.o
+iotk_30_misc.o : iotk_14_write_interf.o
+iotk_30_misc.o : iotk_15_xtox_interf.o
+iotk_31_str.o : iotk_01_base.o
+iotk_31_str.o : iotk_05_error_interf.o
+iotk_31_str.o : iotk_08_misc_interf.o
+iotk_31_str.o : iotk_09_str_interf.o
+iotk_32_stream.o : iotk_01_base.o
+iotk_32_stream.o : iotk_05_error_interf.o
+iotk_32_stream.o : iotk_11_stream_interf.o
+iotk_33_scan.o : iotk_01_base.o
+iotk_33_scan.o : iotk_03_attr_interf.o
+iotk_33_scan.o : iotk_05_error_interf.o
+iotk_33_scan.o : iotk_06_files_interf.o
+iotk_33_scan.o : iotk_08_misc_interf.o
+iotk_33_scan.o : iotk_09_str_interf.o
+iotk_33_scan.o : iotk_10_scan_interf.o
+iotk_33_scan.o : iotk_11_stream_interf.o
+iotk_33_scan.o : iotk_13_unit_interf.o
+iotk_34_tool.o : iotk_01_base.o
+iotk_34_tool.o : iotk_05_error_interf.o
+iotk_34_tool.o : iotk_06_files_interf.o
+iotk_34_tool.o : iotk_08_misc_interf.o
+iotk_34_tool.o : iotk_09_str_interf.o
+iotk_34_tool.o : iotk_12_tool_interf.o
+iotk_34_tool.o : iotk_15_xtox_interf.o
+iotk_35_unit.o : iotk_01_base.o
+iotk_35_unit.o : iotk_02_unit_list.o
+iotk_35_unit.o : iotk_05_error_interf.o
+iotk_35_unit.o : iotk_08_misc_interf.o
+iotk_35_unit.o : iotk_09_str_interf.o
+iotk_35_unit.o : iotk_13_unit_interf.o
+iotk_36_write.o : iotk_01_base.o
+iotk_36_write.o : iotk_05_error_interf.o
+iotk_36_write.o : iotk_06_files_interf.o
+iotk_36_write.o : iotk_08_misc_interf.o
+iotk_36_write.o : iotk_09_str_interf.o
+iotk_36_write.o : iotk_13_unit_interf.o
+iotk_36_write.o : iotk_14_write_interf.o
+iotk_37_xtox.o : iotk_01_base.o
+iotk_37_xtox.o : iotk_08_misc_interf.o
+iotk.o : iotk_01_base.o
+iotk.o : iotk_05_error_interf.o
+iotk.o : iotk_16_module.o
+iotk_01_base.o : 
+iotk_01_base.o : ../include/iotk_config.h
+iotk_02_unit_list.o : 
+iotk_02_unit_list.o : ../include/iotk_config.h
+iotk_03_attr_interf.o : 
+iotk_03_attr_interf.o : ../include/iotk_config.h
+iotk_04_dat_interf.o : 
+iotk_04_dat_interf.o : ../include/iotk_config.h
+iotk_05_error_interf.o : 
+iotk_05_error_interf.o : ../include/iotk_config.h
+iotk_06_files_interf.o : 
+iotk_06_files_interf.o : ../include/iotk_config.h
+iotk_07_fmt_interf.o : 
+iotk_07_fmt_interf.o : ../include/iotk_config.h
+iotk_08_misc_interf.o : 
+iotk_08_misc_interf.o : ../include/iotk_config.h
+iotk_09_str_interf.o : 
+iotk_09_str_interf.o : ../include/iotk_config.h
+iotk_10_scan_interf.o : 
+iotk_10_scan_interf.o : ../include/iotk_config.h
+iotk_11_stream_interf.o : 
+iotk_11_stream_interf.o : ../include/iotk_config.h
+iotk_12_tool_interf.o : 
+iotk_12_tool_interf.o : ../include/iotk_config.h
+iotk_13_unit_interf.o : 
+iotk_13_unit_interf.o : ../include/iotk_config.h
+iotk_14_write_interf.o : 
+iotk_14_write_interf.o : ../include/iotk_config.h
+iotk_15_xtox_interf.o : 
+iotk_15_xtox_interf.o : ../include/iotk_config.h
+iotk_17_attr+CHARACTER.o : 
+iotk_17_attr+CHARACTER.o : ../include/iotk_config.h
+iotk_18_attr+COMPLEX.o : 
+iotk_18_attr+COMPLEX.o : ../include/iotk_config.h
+iotk_19_attr+REAL.o : 
+iotk_19_attr+REAL.o : ../include/iotk_config.h
+iotk_20_attr+INTEGER.o : 
+iotk_20_attr+INTEGER.o : ../include/iotk_config.h
+iotk_21_attr+LOGICAL.o : 
+iotk_21_attr+LOGICAL.o : ../include/iotk_config.h
+iotk_22_dat+CHARACTER.o : 
+iotk_22_dat+CHARACTER.o : ../include/iotk_config.h
+iotk_23_dat+COMPLEX.o : 
+iotk_23_dat+COMPLEX.o : ../include/iotk_config.h
+iotk_24_dat+REAL.o : 
+iotk_24_dat+REAL.o : ../include/iotk_config.h
+iotk_25_dat+INTEGER.o : 
+iotk_25_dat+INTEGER.o : ../include/iotk_config.h
+iotk_26_dat+LOGICAL.o : 
+iotk_26_dat+LOGICAL.o : ../include/iotk_config.h
+iotk_27_error.o : 
+iotk_27_error.o : ../include/iotk_config.h
+iotk_28_files.o : 
+iotk_28_files.o : ../include/iotk_config.h
+iotk_29_fmt.o : 
+iotk_29_fmt.o : ../include/iotk_config.h
+iotk_30_misc.o : 
+iotk_30_misc.o : ../include/iotk_config.h
+iotk_31_str.o : 
+iotk_31_str.o : ../include/iotk_config.h
+iotk_32_stream.o : 
+iotk_32_stream.o : ../include/iotk_config.h
+iotk_33_scan.o : 
+iotk_33_scan.o : ../include/iotk_config.h
+iotk_34_tool.o : 
+iotk_34_tool.o : ../include/iotk_config.h
+iotk_35_unit.o : 
+iotk_35_unit.o : ../include/iotk_config.h
+iotk_36_write.o : 
+iotk_36_write.o : ../include/iotk_config.h
+iotk_37_xtox.o : 
+iotk_37_xtox.o : ../include/iotk_config.h
