@@ -4,6 +4,10 @@
 =======================================================
 
 
+16 Jan 2007      configure_iotk* and iotk_config.h.in updated. make.depend files added to
+                 repository: dependencies are no longer autobuilt during configuration. 
+                 configure updated in calling configure_iotk.  (AF)
+
 29 Dec 2006      flush_unit calls added todisentangle.x, wannier.x, conductor.x . (AF)
 
 05 Dec 2006      check on the 1D fft grid added in transport (ESSL were complainig);
