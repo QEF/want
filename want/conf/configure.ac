@@ -1372,18 +1372,24 @@ then
         if test "$iotk_logical_kinds" = "" ; then iotk_logical_kinds=ALL ; fi
         if test "$iotk_real_kinds" = ""    ; then iotk_real_kinds=ALL    ; fi
         if test "$iotk_fc" = ""            ; then iotk_fc=$f90           ; fi
-        echo setting IOTK_INTEGER_KINDS... $iotk_integer_kinds
-        echo setting IOTK_LOGICAL_KINDS... $iotk_logical_kinds
+        #
+        # uncomment here below to search for all INTEGER and LOGICAL kinds
+        #
+        # echo setting IOTK_INTEGER_KINDS... $iotk_integer_kinds
+        # echo setting IOTK_LOGICAL_KINDS... $iotk_logical_kinds
+        #
         echo setting IOTK_REAL_KINDS... $iotk_real_kinds
         echo setting IOTK_FC... $iotk_fc
         echo
         #
-        ( cd $topdir ; ./conf/configure_iotk  IOTK_INTEGER_KINDS=$iotk_integer_kinds \
-                                              IOTK_LOGICAL_KINDS=$iotk_logical_kinds \
-                                              IOTK_REAL_KINDS=$iotk_real_kinds \
+        # for the same reasons as before, add the two following lines if the case
+        #
+        # IOTK_INTEGER_KINDS=$iotk_integer_kinds \
+        # IOTK_LOGICAL_KINDS=$iotk_logical_kinds \
+        #
+        ( cd $topdir ; ./conf/configure_iotk  IOTK_REAL_KINDS=$iotk_real_kinds \
                                               FC=$iotk_fc )
 fi
-
 
 
 # final messages
