@@ -547,16 +547,8 @@ CONTAINS
       CALL iotk_scan_dat( iunpun, "BRAVAIS_LATTICE", bravais_latt_, IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      IF ( TRIM( bravais_latt_ ) == "Trigonal R" .OR. &
-           TRIM( bravais_latt_ ) == "Hexagonal and Trigonal P" ) THEN
-         !
-         symm_type_ = 'hexagonal'
-         !
-      ELSE
-         !
-         symm_type_ = 'cubic'
-         !
-      END IF
+      CALL iotk_scan_dat( iunpun, "CELL_SYMMETRY", symm_type_, IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_dat( iunpun, "LATTICE_PARAMETER", alat_, ATTR=attr, IERR=ierr )
       IF (ierr/=0) RETURN
@@ -569,7 +561,8 @@ CONTAINS
       CALL iotk_scan_begin( iunpun, "DIRECT_LATTICE_VECTORS", IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_empty( iunpun, "UNITS_FOR_DIRECT_LATTICE_VECTORS", ATTR=attr, IERR=ierr )
+      CALL iotk_scan_empty( iunpun, "UNITS_FOR_DIRECT_LATTICE_VECTORS", &
+                            ATTR=attr, IERR=ierr )
       IF (ierr/=0) RETURN
       CALL iotk_scan_attr( attr, "UNITS", a_units_, IERR=ierr )
       IF (ierr/=0) RETURN
@@ -584,7 +577,8 @@ CONTAINS
       !
       CALL iotk_scan_begin( iunpun, "RECIPROCAL_LATTICE_VECTORS", IERR=ierr )
       IF (ierr/=0) RETURN
-      CALL iotk_scan_empty( iunpun, "UNITS_FOR_RECIPROCAL_LATTICE_VECTORS", ATTR=attr, IERR=ierr )
+      CALL iotk_scan_empty( iunpun, "UNITS_FOR_RECIPROCAL_LATTICE_VECTORS", &
+                            ATTR=attr, IERR=ierr )
       IF (ierr/=0) RETURN
       CALL iotk_scan_attr( attr, "UNITS", b_units_, IERR=ierr )
       IF (ierr/=0) RETURN
@@ -616,7 +610,7 @@ CONTAINS
       IF ( PRESENT(b_units) )       b_units      = TRIM(b_units_)
 
     END SUBROUTINE qexml_read_cell
-
+    !
     !
     !------------------------------------------------------------------------
     SUBROUTINE qexml_read_ions( nsp, nat, atm, ityp, psfile, amass, amass_units, &
@@ -676,7 +670,8 @@ CONTAINS
          IF (ierr/=0) RETURN
          CALL iotk_scan_dat( iunpun, TRIM( atm_(i) ) // "_MASS", amass_(i), IERR=ierr )
          IF (ierr/=0) RETURN
-         CALL iotk_scan_dat( iunpun, "PSEUDO_FOR_" // TRIM( atm_(i) ), psfile_(i), IERR=ierr )
+         CALL iotk_scan_dat( iunpun, "PSEUDO_FOR_" // TRIM( atm_(i) ), &
+                             psfile_(i), IERR=ierr )
          IF (ierr/=0) RETURN
          !
       ENDDO
@@ -728,8 +723,8 @@ CONTAINS
       DEALLOCATE( if_pos_ )
       ! 
     END SUBROUTINE qexml_read_ions
-
-
+    !
+    !
     !------------------------------------------------------------------------
     SUBROUTINE qexml_read_symmetry( nsym, invsym, trasl, s, sname, s_units, t_rev, &
                                     irt, nat, ierr )
@@ -830,9 +825,9 @@ CONTAINS
 
 
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_planewaves( ecutwfc, ecutrho, npwx, gamma_only, nr1, nr2,  &
-                                      nr3, ngm, nr1s, nr2s, nr3s, ngms, nr1b, &
-                                      nr2b, nr3b, igv, cutoff_units, ierr )
+    SUBROUTINE qexml_read_planewaves( ecutwfc, ecutrho, npwx, gamma_only, &
+                                      nr1, nr2, nr3,  ngm,  nr1s, nr2s, nr3s, ngms, &
+                                      nr1b, nr2b, nr3b,  igv, cutoff_units, ierr )
       !------------------------------------------------------------------------
       !
       !
@@ -1049,8 +1044,8 @@ CONTAINS
 
 
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_xc( dft, lda_plus_u,  &
-                              Hubbard_lmax, Hubbard_l, nsp, Hubbard_U, Hubbard_alpha, ierr )
+    SUBROUTINE qexml_read_xc( dft, lda_plus_u, Hubbard_lmax, Hubbard_l, &
+                              nsp, Hubbard_U, Hubbard_alpha, ierr )
       !------------------------------------------------------------------------
       !
       CHARACTER(LEN=*), OPTIONAL, INTENT(OUT) :: dft
@@ -1161,7 +1156,8 @@ CONTAINS
          CALL iotk_scan_dat( iunpun, "SMEARING_TYPE", ngauss_, IERR=ierr )
          IF (ierr/=0) RETURN
          !
-         CALL iotk_scan_dat( iunpun, "SMEARING_PARAMETER", degauss_ , ATTR=attr, IERR=ierr )
+         CALL iotk_scan_dat( iunpun, "SMEARING_PARAMETER", degauss_ , &
+                                     ATTR=attr, IERR=ierr )
          IF (ierr/=0) RETURN
          !
          CALL iotk_scan_attr( ATTR, "UNITS", degauss_units_ , IERR=ierr )
@@ -1182,7 +1178,8 @@ CONTAINS
          !
          DO i = 1, ntetra_
             !
-            CALL iotk_scan_dat( iunpun, "TETRAHEDRON"//iotk_index(i), tetra_(1:4,i), IERR=ierr )
+            CALL iotk_scan_dat( iunpun, "TETRAHEDRON"//iotk_index(i), &
+                                        tetra_(1:4,i), IERR=ierr )
             IF (ierr/=0) RETURN
             !
          ENDDO
@@ -1231,7 +1228,8 @@ CONTAINS
 
 
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_bz( num_k_points, xk, wk, k1, k2, k3, nk1, nk2, nk3, k_units, ierr )
+    SUBROUTINE qexml_read_bz( num_k_points, xk, wk, k1, k2, k3, nk1, nk2, nk3, &
+                              k_units, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,       OPTIONAL, INTENT(OUT) :: num_k_points, k1, k2, k3, nk1, nk2, nk3
@@ -1287,7 +1285,8 @@ CONTAINS
       !
       DO ik = 1, num_k_points_
          !
-         CALL iotk_scan_empty( iunpun, "K-POINT" // TRIM( iotk_index(ik) ), ATTR=attr, IERR=ierr )
+         CALL iotk_scan_empty( iunpun, "K-POINT" // TRIM( iotk_index(ik) ), &
+                               ATTR=attr, IERR=ierr )
          IF ( ierr/=0 ) RETURN
          !
          CALL iotk_scan_attr( attr, "XYZ", xk_(:,ik), IERR=ierr )
@@ -1463,11 +1462,13 @@ CONTAINS
       !
       IF ( PRESENT( ispin) ) THEN
          !
-         filename = TRIM( wfc_filename( datadir, 'eigenval', ik, ispin, EXTENSION="xml" ) ) 
+         filename= TRIM( wfc_filename( datadir, 'eigenval', &
+                                       ik, ispin, EXTENSION="xml") ) 
          !
       ELSE
          !
-         filename = TRIM( wfc_filename( datadir, 'eigenval', ik, EXTENSION="xml" ) ) 
+         filename= TRIM( wfc_filename( datadir, 'eigenval', &
+                                       ik, EXTENSION="xml") ) 
          !
       ENDIF
       !
