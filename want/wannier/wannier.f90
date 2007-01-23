@@ -497,6 +497,8 @@ CALL timing('omega_best','stop')
       !
       CALL localization_print(stdout, FMT="extended")
       !
+      WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6,/) ") Omega_var 
+      !
       IF ( do_polarization ) CALL polarization( dimwann, rave )
       !
       CALL timing_upto_now(stdout)

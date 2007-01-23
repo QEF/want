@@ -69,7 +69,7 @@
    REAL(dbl)                   :: Omega_D       ! Diagonal part
    REAL(dbl)                   :: Omega_tot     ! = Omega_I + Omega_D + Omega_OD
    REAL(dbl)                   :: Omega_tot_best! the best Omega found during the minimiz.
-   INTEGER                     :: iter_best     ! counter of the bestlocalization iteration
+   INTEGER                     :: iter_best     ! counter of the best localization iteration
    
    LOGICAL :: alloc = .FALSE.
 
@@ -125,7 +125,7 @@ CONTAINS
        Omega_D        = ZERO  
        Omega_tot      = ZERO
        Omega_tot_best = ZERO
-       iter_best      = ZERO
+       iter_best      = -1
        alloc = .TRUE.
 
    END SUBROUTINE localization_allocate
@@ -210,7 +210,7 @@ CONTAINS
            WRITE( unit, "(  4x,'Omega OD      =   ', f13.6 ) " ) Omega_OD
            WRITE( unit, "(  4x,'Omega Tot     =   ', f13.6 ) " ) Omega_tot
            WRITE( unit, "(  4x,'Omega Avrg    =   ', f13.6 ) " ) Omega_tot/REAL(dimwann, dbl)
-           IF ( Omega_tot_best < Omega_tot ) THEN
+           IF ( Omega_tot_best < Omega_tot .AND. iter_best > 0 ) THEN
               WRITE( unit, "(/,4x,'WARNING: better localization found at iter #: ',i6)") &
                             iter_best
               WRITE( unit, "(  4x,'Omega Tot Min =   ', f13.6 ) " ) Omega_tot_best
