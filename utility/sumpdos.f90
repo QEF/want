@@ -29,8 +29,8 @@ PROGRAM sumpdos
 
 
   CHARACTER(256), ALLOCATABLE    :: file(:) ! names of the files to sum
-  CHARACTER(256)      :: filein, header, line
-  CHARACTER(10)       :: cdum, str, str1, str2
+  CHARACTER(256)      :: filein, header
+  CHARACTER(10)       :: cdum, str, str1
 
   LOGICAL             :: lexist
   REAL                :: efermi = 0.0       ! translate the input grid 
@@ -39,7 +39,7 @@ PROGRAM sumpdos
   REAL, ALLOCATABLE   :: egrid(:)
   REAL, ALLOCATABLE   :: mysum(:,:)
   
-  INTEGER :: ios, ierr, ilen, iarg, ie, ic, ifile, i
+  INTEGER :: ios, ierr, iarg, ie, ic, ifile, i
 
 
 !**************************************************************
