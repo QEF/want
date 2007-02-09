@@ -28,7 +28,7 @@
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE atomic_module,      ONLY : atomic_name2num, atomic_num2name
    !
-   USE lattice_module,     ONLY : avec, bvec, alat
+   USE lattice_module,     ONLY : avec, bvec, alat, omega
    USE ions_module,        ONLY : symb, tau, nat
    USE kpoints_module,     ONLY : nkpts, vkpt
    USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext,&
@@ -287,13 +287,15 @@
 
       !
       ! set the FFT mesh
+      ! the upper values get one point less to avoid
+      ! replica of the same points 
       !
       nrxl = NINT( r1min * nfft(1) )
-      nrxh = NINT( r1max * nfft(1) )
+      nrxh = NINT( r1max * nfft(1) ) -1
       nryl = NINT( r2min * nfft(2) )
-      nryh = NINT( r2max * nfft(2) )
+      nryh = NINT( r2max * nfft(2) ) -1
       nrzl = NINT( r3min * nfft(3) )
-      nrzh = NINT( r3max * nfft(3) )
+      nrzh = NINT( r3max * nfft(3) ) -1
 
       !
       ! summary of the input
@@ -335,19 +337,25 @@
       ! allocate WF and local data
       !
       ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
-         IF( ierr /=0 ) CALL errore('plot', 'allocating cwann ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'allocating cwann ', ABS(ierr) )
+      !
       ALLOCATE( kwann( PRODUCT(nfft), nplot ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating kwann ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'allocating kwann ', ABS(ierr) )
+      !
       ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating vkpt_cry ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'allocating vkpt_cry ', ABS(ierr) )
+      !
       ALLOCATE( rave_cry(3, dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating rave_cry ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'allocating rave_cry ', ABS(ierr) )
+      !
       ALLOCATE( rave_shift(3, dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating rave_shift ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'allocating rave_shift ', ABS(ierr) )
+      !
       ALLOCATE( cutot(dimwinx, dimwann), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating cutot ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'allocating cutot ', ABS(ierr) )
+      !
       ALLOCATE( map(npwkx), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating map ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'allocating map ', ABS(ierr) )
 
 
       !
@@ -366,14 +374,18 @@
       !
       rave_shift(:,:) = ZERO
       IF ( collect_wf ) THEN
+         !
          DO m=1,nplot
+            !
             DO i=1,3
                j = 0
                IF ( rave_cry(i,iwann(m)) -( rmin(i)+rmax(i)-ONE )/TWO < ZERO ) j = 1
                rave_shift(i,iwann(m)) = REAL( INT( rave_cry(i,iwann(m)) &
                                               -( rmin(i)+rmax(i)-ONE)/TWO ) -j ) 
             ENDDO
+            !
          ENDDO
+         !
       ENDIF
 
       !
@@ -412,11 +424,13 @@
 ! Get the atoms in the plotting cell
 !
       ALLOCATE( tau_cry(3, nat), STAT=ierr  )  
-         IF( ierr /=0 ) CALL errore('plot', 'allocating tau_cry', ABS(ierr) ) 
+      IF( ierr /=0 ) CALL errore('plot', 'allocating tau_cry', ABS(ierr) ) 
+      !
       ALLOCATE( tautot( 3, 125*nat ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating tautot ', ABS(ierr) ) 
+      IF( ierr /=0 ) CALL errore('plot', 'allocating tautot ', ABS(ierr) ) 
+      !
       ALLOCATE( symbtot( 125*nat ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'allocating symbtot ', ABS(ierr) ) 
+      IF( ierr /=0 ) CALL errore('plot', 'allocating symbtot ', ABS(ierr) ) 
 
       tau_cry(:,:) = tau(:,:) * alat
       CALL cart2cry( tau_cry, avec )  
@@ -426,18 +440,21 @@
            DO nx = -2, 2
            DO ny = -2, 2
            DO nz = -2, 2
-                raux(1) = ( tau_cry(1,ia) + REAL(nx, dbl) ) * REAL( nfft(1), dbl )
-                raux(2) = ( tau_cry(2,ia) + REAL(ny, dbl) ) * REAL( nfft(2), dbl )
-                raux(3) = ( tau_cry(3,ia) + REAL(nz, dbl) ) * REAL( nfft(3), dbl )
-
-                okp(1) = ( raux(1) >= (nrxl - 1) ) .AND. ( raux(1) < nrxh )
-                okp(2) = ( raux(2) >= (nryl - 1) ) .AND. ( raux(2) < nryh ) 
-                okp(3) = ( raux(3) >= (nrzl - 1) ) .AND. ( raux(3) < nrzh ) 
-                IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
-                     natot = natot+1
-                     tautot(:,natot) = raux(:) / REAL(nfft(:), dbl)
-                     symbtot(natot)  = symb( ia )
-                ENDIF
+               !
+               raux(1) = ( tau_cry(1,ia) + REAL(nx, dbl) ) * REAL( nfft(1), dbl )
+               raux(2) = ( tau_cry(2,ia) + REAL(ny, dbl) ) * REAL( nfft(2), dbl )
+               raux(3) = ( tau_cry(3,ia) + REAL(nz, dbl) ) * REAL( nfft(3), dbl )
+               !
+               okp(1) = ( raux(1) >= (nrxl - 1) ) .AND. ( raux(1) < nrxh )
+               okp(2) = ( raux(2) >= (nryl - 1) ) .AND. ( raux(2) < nryh ) 
+               okp(3) = ( raux(3) >= (nrzl - 1) ) .AND. ( raux(3) < nrzh ) 
+               !
+               IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
+                    natot = natot+1
+                    tautot(:,natot) = raux(:) / REAL(nfft(:), dbl)
+                    symbtot(natot)  = symb( ia )
+               ENDIF
+               !
            ENDDO
            ENDDO
            ENDDO
@@ -447,12 +464,14 @@
       ! convert atoms to cartesian coords (bohr)
       !
       CALL cry2cart( tautot(:,1:natot), avec )
-      
+      ! 
       WRITE(stdout, " (2x,'Atoms in the selected cell: (cart. coord. in Bohr)' ) " )
+      !
       DO ia = 1, natot
            WRITE( stdout, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
                   symbtot(ia), ia, (tautot( i, ia ), i = 1, 3)
       ENDDO
+      !
       WRITE(stdout, "(/)" )
 
 
@@ -595,8 +614,8 @@
       ! clean the large amount of memory used by wfcs and grids
       !
       DEALLOCATE( kwann, STAT=ierr)
-         IF (ierr/=0) CALL errore('plot','deallocating kwann',ABS(ierr))
-         !
+      IF (ierr/=0) CALL errore('plot','deallocating kwann',ABS(ierr))
+      !
       CALL wfc_data_deallocate()
       CALL ggrids_deallocate()
       !
@@ -606,22 +625,23 @@
       ! 
       ! Fix the global phase by setting the wannier to be real 
       ! at the point where it has max modulus
-      ! according to the first vector, normalize to 10.0 
-      ! this normalization is adopted for the sake of ease in 
-      ! working with std plotting programs (e.g. gOpenMol) 
-      ! 
-
+      ! according to the first vector, WFs are normalized to 1.0
+      ! WF square moduli are written in units of bohr^-3 
+      !
       cost = ZERO
       !
       DO nzz = nrzl, nrzh
       DO nyy = nryl, nryh
       DO nxx=  nrxl, nrxh
+           !
            cost = cost + REAL(cwann(nxx,nyy,nzz,1)*CONJG(cwann(nxx,nyy,nzz,1)), dbl)
+           !
       ENDDO
       ENDDO
       ENDDO
       !
-      cost =  10.0_dbl / SQRT(cost)
+      cost =  cost * omega / REAL( nfft(1) * nfft(2) * nfft(3), dbl)
+      cost =  1.0_dbl / SQRT(cost)
 
       WRITE(stdout, " (2x,'WF maximum values (normalization is one):',/)")
       !
@@ -633,12 +653,15 @@
           DO nzz = nrzl, nrzh
           DO nyy = nryl, nryh
           DO nxx=  nrxl, nrxh
-               cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * cost
-               tmax = REAL (cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) ) )
-               IF ( tmax > tmaxx ) THEN
-                    tmaxx = tmax
-                    cmod = cwann( nxx, nyy, nzz, m)
-               ENDIF
+              !
+              cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * cost
+              tmax = REAL (cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) ) )
+              !
+              IF ( tmax > tmaxx ) THEN
+                   tmaxx = tmax
+                   cmod = cwann( nxx, nyy, nzz, m)
+              ENDIF
+              !
           ENDDO
           ENDDO
           ENDDO
@@ -649,7 +672,9 @@
           cmod = CONJG( cmod ) / SQRT( cmod * CONJG(cmod) ) 
           !
           cwann(:,:,:,m) = cwann(:,:,:,m) * cmod
+          !
       ENDDO
+      !
       WRITE(stdout, "(/)")
 
       
@@ -659,15 +684,17 @@
 
       !
       ! Offset for position and WF's allignment
-      ! r0, r1  (bohr)
+      ! compute r0, r1 in crystal units
       !
       r0(1) = REAL( nrxl, dbl ) / REAL( nfft(1), dbl )
       r0(2) = REAL( nryl, dbl ) / REAL( nfft(2), dbl )
       r0(3) = REAL( nrzl, dbl ) / REAL( nfft(3), dbl )
       !
-      r1(1) = REAL( nrxh, dbl ) / REAL( nfft(1), dbl )
-      r1(2) = REAL( nryh, dbl ) / REAL( nfft(2), dbl )
-      r1(3) = REAL( nrzh, dbl ) / REAL( nfft(3), dbl )
+      r1(1) = REAL( nrxh+1, dbl ) / REAL( nfft(1), dbl )
+      r1(2) = REAL( nryh+1, dbl ) / REAL( nfft(2), dbl )
+      r1(3) = REAL( nrzh+1, dbl ) / REAL( nfft(3), dbl )
+      !
+      ! move r0, r1 to bohr
       !
       CALL cry2cart( r0, avec )
       CALL cry2cart( r1, avec )
@@ -720,11 +747,15 @@
 
 
           filename=TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)
+          !
           IF ( iwann(m) <= 9 ) THEN
+               !
                filename=TRIM(filename)//TRIM(str)//"00"//TRIM(int2char(iwann(m)))
           ELSE IF ( iwann(m) <= 99 ) THEN
+               !
                filename=TRIM(filename)//TRIM(str)//"0"//TRIM(int2char(iwann(m)))
           ELSE IF ( iwann(m) <= 999 ) THEN
+               !
                filename=TRIM(filename)//TRIM(str)//TRIM(int2char(iwann(m)))
           ELSE
               CALL errore('plot','iwann(m) > 999', iwann(m))
@@ -733,6 +764,7 @@
           !
           WRITE( stdout,"(2x,'writing WF(',i4,') plot on file: ',a)") &
                  iwann(m), TRIM(filename)//TRIM(aux_fmt)
+
           OPEN ( aux_unit, FILE=TRIM(filename)//TRIM(aux_fmt), FORM='formatted', &
                            STATUS='unknown', IOSTAT=ierr )
           IF (ierr/=0) CALL errore('plot','opening file '//TRIM(filename)//TRIM(aux_fmt),1)
@@ -776,7 +808,9 @@
               DO nz = nrzl, nrzh
               DO ny = nryl, nryh
               DO nx = nrxl, nrxh
+                  !
                   WRITE( aux_unit, "(f20.10)" ) rwann_out( nx, ny, nz )
+                  !
               ENDDO
               ENDDO
               ENDDO
@@ -812,6 +846,7 @@
           ! ... write a XYZ file for the atomic positions, when the case
           !
           IF ( TRIM( output_fmt ) == "txt" .OR. TRIM( output_fmt ) == "plt" ) THEN
+              !
               WRITE( stdout,"(7x,'atomic positions on file: ',a)") TRIM(filename)//".xyz"
               OPEN ( aux1_unit, FILE=TRIM(filename)//".xyz", FORM='formatted', &
                                 STATUS='unknown', IOSTAT=ierr )
@@ -830,6 +865,7 @@
           ! ... convert output to PLT fmt, if the case
           !
           IF ( TRIM( output_fmt ) == "plt" ) THEN
+               !
                CALL timing('gcubeplt',OPR='start')
                CALL gcube2plt( filename, LEN_TRIM(filename) )
                CALL timing('gcubeplt',OPR='stop')
