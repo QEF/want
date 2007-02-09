@@ -4,6 +4,10 @@
 =======================================================
 
 
+09 Feb 2007      Normalization of WFs written by plot.f90 fixed. (AF)
+
+01 Feb 2007      Cleanup in utility/sumpdos.f90 . (AF)
+
 16 Jan 2007      configure_iotk* and iotk_config.h.in updated. make.depend files added to
                  repository: dependencies are no longer autobuilt during configuration. 
                  configure updated in calling configure_iotk.  (AF)
