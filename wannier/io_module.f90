@@ -213,7 +213,7 @@
       ! init libs for all fmts
       !
       dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.save/'
-      CALL qexml_init( dft_unit, dirname, aux_unit )
+      CALL qexml_init( dft_unit, DATADIR=dirname )
       !
       dirname  = TRIM(work_dir) // '/' // TRIM(prefix) // '.export/'
       CALL qexpt_init( dft_unit, dirname )
