@@ -50,6 +50,7 @@ test_init () {
    ln -sf $TEST_HOME ./HOME
    #
    test -e $TMPDIR/$TEST_NAME/CRASH && rm $TMPDIR/$TEST_NAME/CRASH
+   test -e $TEST_HOME/CRASH && rm $TEST_HOME/CRASH
    #
    cd $TEST_HOME
 
