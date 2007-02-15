@@ -630,18 +630,23 @@
       !
       cost = ZERO
       !
-      DO nzz = nrzl, nrzh
-      DO nyy = nryl, nryh
-      DO nxx=  nrxl, nrxh
-           !
-           cost = cost + REAL(cwann(nxx,nyy,nzz,1)*CONJG(cwann(nxx,nyy,nzz,1)), dbl)
-           !
-      ENDDO
-      ENDDO
-      ENDDO
-      !
-      cost =  cost * omega / REAL( nfft(1) * nfft(2) * nfft(3), dbl)
-      cost =  1.0_dbl / SQRT(cost)
+! XXXX
+!      DO nzz = nrzl, nrzh
+!      DO nyy = nryl, nryh
+!      DO nxx=  nrxl, nrxh
+!           !
+!           cost = cost + REAL(cwann(nxx,nyy,nzz,1)*CONJG(cwann(nxx,nyy,nzz,1)), dbl)
+!           !
+!      ENDDO
+!      ENDDO
+!      ENDDO
+!      !
+!      cost =  cost * omega / REAL( nfft(1) * nfft(2) * nfft(3), dbl)
+!      cost =  1.0_dbl / SQRT(cost)
+!
+      cost =  1.0_dbl / ( REAL(nkpts, dbl) * SQRT(omega) )
+! XXXX
+
 
       WRITE(stdout, " (2x,'WF maximum values (normalization is one):',/)")
       !
