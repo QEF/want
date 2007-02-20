@@ -1,0 +1,51 @@
+
+==============================================================================
+
+                  ********* code: blc2wan.x  **********
+
+==============================================================================
+
+INPUT file layout
+-----------------------------------
+
+&INPUT
+   ...
+/
+
+-----------------------------------
+
+==============================================================================
+
+NAMELIST &INPUT
+
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file are written
+              DEFAULT: "./"
+
+filein        STRING
+              the name of the file containing the input operator in the Bloch
+              representation
+              DEFAULT: mandatory
+
+fileout       STRING
+              the name of the file containing the computed operator on the 
+              Wannier basis
+              DEFAULT: mandatory
+
+ascii         LOGICAL
+              if .TRUE. the output file is written in textual XML format.
+              DEFAULT: .FALSE.
+
+==============================================================================
+

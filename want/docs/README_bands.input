@@ -1,0 +1,76 @@
+
+==============================================================================
+
+                  ********* code: bands.x  **********
+
+==============================================================================
+
+INPUT file layout
+-----------------------------------
+
+&INPUT
+   ...
+/
+
+kpt_label1     kx  ky  kz
+...
+kpt_labelN     kx  ky  kz
+
+-----------------------------------
+
+==============================================================================
+
+NAMELIST &INPUT
+
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
+
+verbosity     STRING
+              ( "low" | "medium" | "high" )
+              the level of detail of the code output
+              DEFAULT: "medium"
+
+nkpts_in      INTEGER
+              number of edge kpts defining the directions on which bands will
+              be calculated
+              DEFAULT: mandatory
+
+nkpts_max     INTEGER
+              maximum number of interpolated kpoints
+              DEFAULT: 100
+
+spin_component    STRING
+              ( "up" | "down" | "none" )
+              define whether the calculation is spin polarized and if the case
+              which spin component is to be treated. 
+              DEFAULT: "none"
+
+
+==============================================================================
+
+After the INPUT namelist for each of the NSPTS kpts two lines with the following
+format must be provided:
+
+kpt_label    kx  ky  kz
+
+   kpt_label     CHARACTER(*)
+                 it is a string with the name of the kpoint
+
+   kx,ky,kz      REAL
+                 component of the kpt vector in units of crystal reciprocal 
+                 lattice vector (i.e. k = kx * b1 + ky * b2 + kz * b3)
+
+==============================================================================
+
