@@ -16,7 +16,7 @@
    USE constants,          ONLY : ZERO, CZERO, ONE, TWO, CONE, CI, TPI, &
                                   bohr => bohr_radius_angs, EPS_m6, EPS_m4
    USE parameters,         ONLY : ntypx, natx, nstrx
-   USE fft_scalar,         ONLY : cfft3d
+   USE fft_scalar,         ONLY : cfft3d, good_fft_order
    USE timing_module,      ONLY : timing, timing_upto_now
    USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
    USE io_module,          ONLY : io_name, dftdata_fmt, space_unit, wan_unit, dft_unit, &
@@ -54,6 +54,7 @@
    REAL(dbl)        :: r1min, r1max     ! plot cell dim along a1 (cry units)
    REAL(dbl)        :: r2min, r2max     ! the same but for a2
    REAL(dbl)        :: r3min, r3max     ! the same but for a3
+   INTEGER          :: nr1, nr2, nr3    ! the FFT mesh for interpolation on real space
    CHARACTER( 20 )  :: datatype         ! ( "modulus" "module" | "real" | "imaginary"  )
    CHARACTER( 20 )  :: output_fmt       ! ( "txt" | "plt" | "cube" | "xsf" )
    LOGICAL          :: assume_ncpp      ! If .TRUE. pp's are not read
@@ -62,9 +63,9 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
-                    datatype, assume_ncpp, output_fmt, collect_wf, &
-                    r1min, r1max, r2min, r2max, r3min, r3max, spin_component
+   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, spin_component, &
+                    datatype, assume_ncpp, output_fmt, collect_wf,   &
+                    r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3
 
    !
    ! local variables
@@ -129,6 +130,13 @@
       r2max                       =  0.5
       r3min                       = -0.5
       r3max                       =  0.5
+      !
+      ! the following defaults will be set later after 
+      ! FFT mesh is read
+      !
+      nr1                         =  -1
+      nr2                         =  -1
+      nr3                         =  -1
       
       CALL input_from_file ( stdin, ierr )
       IF ( ierr /= 0 )  CALL errore('plot','error in input from file',ABS(ierr))
@@ -158,6 +166,10 @@
            TRIM(output_fmt) /= "cube" .AND. TRIM(output_fmt) /= "xsf" ) &
            CALL errore('plot', 'Invalid output_fmt = '//TRIM(output_fmt), 4)
 
+      IF ( nr1 /= -1 .AND. nr1 <= 0 ) CALL errore('plot','Invalid nr1',-nr1+1)
+      IF ( nr2 /= -1 .AND. nr2 <= 0 ) CALL errore('plot','Invalid nr2',-nr2+1)
+      IF ( nr3 /= -1 .AND. nr3 <= 0 ) CALL errore('plot','Invalid nr3',-nr3+1)
+      !
       IF ( r1min > r1max ) CALL errore('plot', 'r1min > r1max',1)
       IF ( r2min > r2max ) CALL errore('plot', 'r2min > r2max',2)
       IF ( r3min > r3max ) CALL errore('plot', 'r3min > r3max',3)
@@ -244,6 +256,25 @@
       CALL file_close(dft_unit,PATH="/",ACTION="read")
 
       !
+      ! set FFT mesh
+      !
+      IF( nr1 == -1 ) nr1 = nfft(1)      
+      IF( nr2 == -1 ) nr2 = nfft(2)      
+      IF( nr3 == -1 ) nr3 = nfft(3)      
+      !
+      nr1 = good_fft_order ( nr1 )
+      nr2 = good_fft_order ( nr2 )
+      nr3 = good_fft_order ( nr3 )
+      !
+      ! for nrx too small, the mapping procedure in  ggrids_gk_indexes
+      ! may fail giving rise to out-of-bounds usage of arrays
+      !
+      IF ( nr1 < nfft(1) ) CALL errore('plot','non-safe nr1 adopted', ABS(nr1) +1 )
+      IF ( nr2 < nfft(2) ) CALL errore('plot','non-safe nr2 adopted', ABS(nr2) +1 )
+      IF ( nr3 < nfft(3) ) CALL errore('plot','non-safe nr3 adopted', ABS(nr3) +1 )
+
+
+      !
       ! ... stdout summary about grids
       !
       WRITE(stdout,"(2/,10x,'Energy cut-off for wfcs =  ',5x,F7.2,' (Ry)' )") ecutwfc
@@ -251,7 +282,8 @@
       WRITE(stdout, "(6x,'Total number of PW for rho  =  ',i9)") npw_rho
       WRITE(stdout, "(6x,'  Max number of PW for wfc  =  ',i9)") npwkx
       WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))+1
-      WRITE(stdout, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
+      WRITE(stdout, "(6x,'       input FFT mesh (rho) =  ( ', 3i5,' )' )") nfft(:)
+      WRITE(stdout, "(6x,'    required FFT mesh (rho) =  ( ', 3i5,' )' )") nr1, nr2, nr3
 
 
 !
@@ -290,12 +322,12 @@
       ! the upper values get one point less to avoid
       ! replica of the same points 
       !
-      nrxl = NINT( r1min * nfft(1) )
-      nrxh = NINT( r1max * nfft(1) ) -1
-      nryl = NINT( r2min * nfft(2) )
-      nryh = NINT( r2max * nfft(2) ) -1
-      nrzl = NINT( r3min * nfft(3) )
-      nrzh = NINT( r3max * nfft(3) ) -1
+      nrxl = NINT( r1min * nr1 )
+      nrxh = NINT( r1max * nr1 ) -1
+      nryl = NINT( r2min * nr2 )
+      nryh = NINT( r2max * nr2 ) -1
+      nrzl = NINT( r3min * nr3 )
+      nrzh = NINT( r3max * nr3 ) -1
 
       !
       ! summary of the input
@@ -328,9 +360,9 @@
       IF( nryh - nryl < 0 ) CALL errore( 'plot', 'wrong nryl and nryh ', 1 )
       IF( nrzh - nrzl < 0 ) CALL errore( 'plot', 'wrong nrzl and nrzh ', 1 )
       !
-      nnrx = ABS( nrxl / nfft(1) ) + 2
-      nnry = ABS( nryl / nfft(2) ) + 2
-      nnrz = ABS( nrzl / nfft(3) ) + 2
+      nnrx = ABS( nrxl / nr1 ) + 2
+      nnry = ABS( nryl / nr2 ) + 2
+      nnrz = ABS( nrzl / nr3 ) + 2
 
       
       !
@@ -339,7 +371,7 @@
       ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
       IF( ierr /=0 ) CALL errore('plot', 'allocating cwann ', ABS(ierr) )
       !
-      ALLOCATE( kwann( PRODUCT(nfft), nplot ), STAT=ierr )
+      ALLOCATE( kwann( nr1*nr2*nr3, nplot ), STAT=ierr )
       IF( ierr /=0 ) CALL errore('plot', 'allocating kwann ', ABS(ierr) )
       !
       ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
@@ -441,17 +473,22 @@
            DO ny = -2, 2
            DO nz = -2, 2
                !
-               raux(1) = ( tau_cry(1,ia) + REAL(nx, dbl) ) * REAL( nfft(1), dbl )
-               raux(2) = ( tau_cry(2,ia) + REAL(ny, dbl) ) * REAL( nfft(2), dbl )
-               raux(3) = ( tau_cry(3,ia) + REAL(nz, dbl) ) * REAL( nfft(3), dbl )
+               raux(1) = ( tau_cry(1,ia) + REAL(nx, dbl) ) * REAL( nr1, dbl )
+               raux(2) = ( tau_cry(2,ia) + REAL(ny, dbl) ) * REAL( nr2, dbl )
+               raux(3) = ( tau_cry(3,ia) + REAL(nz, dbl) ) * REAL( nr3, dbl )
                !
                okp(1) = ( raux(1) >= (nrxl - 1) ) .AND. ( raux(1) < nrxh )
                okp(2) = ( raux(2) >= (nryl - 1) ) .AND. ( raux(2) < nryh ) 
                okp(3) = ( raux(3) >= (nrzl - 1) ) .AND. ( raux(3) < nrzh ) 
                !
                IF( okp(1) .AND. okp(2) .AND. okp(3) ) THEN
+                    !
                     natot = natot+1
-                    tautot(:,natot) = raux(:) / REAL(nfft(:), dbl)
+                    !
+                    tautot(1,natot) = raux(1) / REAL( nr1, dbl)
+                    tautot(2,natot) = raux(2) / REAL( nr2, dbl)
+                    tautot(3,natot) = raux(3) / REAL( nr3, dbl)
+                    !
                     symbtot(natot)  = symb( ia )
                ENDIF
                !
@@ -520,7 +557,7 @@
           !
           map(:) = 0
           CALL ggrids_gk_indexes( igv, igsort(:,ik), npwk(ik), & 
-                                  nfft(1), nfft(2), nfft(3), GK2FFT=map ) 
+                                  nr1, nr2, nr3, GK2FFT=map ) 
          
           !
           ! set the kwann function
@@ -568,8 +605,8 @@
           DO m=1,nplot
 
              CALL timing('cfft3d',OPR='start')
-             CALL cfft3d( kwann(:,m), nfft(1), nfft(2), nfft(3),  &
-                                      nfft(1), nfft(2), nfft(3),  1 )
+             CALL cfft3d( kwann(:,m), nr1, nr2, nr3,  &
+                                      nr1, nr2, nr3,  1 )
              CALL timing('cfft3d',OPR='stop')
 
 
@@ -579,19 +616,19 @@
              CALL timing('cwann_calc',OPR='start')
              !
              DO nzz = nrzl, nrzh
-                 nz = MOD( nzz + nnrz * nfft(3) , nfft(3) ) + 1
+                 nz = MOD( nzz + nnrz * nr3 , nr3 ) + 1
                  !
                  DO nyy = nryl, nryh
-                     ny = MOD( nyy + nnry * nfft(2) , nfft(2) ) + 1
+                     ny = MOD( nyy + nnry * nr2 , nr2 ) + 1
                      !
                      DO nxx = nrxl, nrxh
-                         nx = MOD( nxx + nnrx * nfft(1) , nfft(1) ) + 1
+                         nx = MOD( nxx + nnrx * nr1 , nr1 ) + 1
                          !
-                         ir = nx + (ny-1) * nfft(1) + (nz-1) * nfft(1) * nfft(2)
+                         ir = nx + (ny-1) * nr1 + (nz-1) * nr1 * nr2
                          !
-                         arg   = vkpt_cry(1,ik) * REAL(nxx, dbl) / REAL(nfft(1), dbl) + &
-                                 vkpt_cry(2,ik) * REAL(nyy, dbl) / REAL(nfft(2), dbl) + &
-                                 vkpt_cry(3,ik) * REAL(nzz, dbl) / REAL(nfft(3), dbl)
+                         arg   = vkpt_cry(1,ik) * REAL(nxx, dbl) / REAL( nr1, dbl) + &
+                                 vkpt_cry(2,ik) * REAL(nyy, dbl) / REAL( nr2, dbl) + &
+                                 vkpt_cry(3,ik) * REAL(nzz, dbl) / REAL( nr3, dbl)
                                  !
                          caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg), dbl ) * &
                                  kwann( ir, m ) 
@@ -628,26 +665,8 @@
       ! according to the first vector, WFs are normalized to 1.0
       ! WF square moduli are written in units of bohr^-3 
       !
-      cost = ZERO
-      !
-! XXXX
-!      DO nzz = nrzl, nrzh
-!      DO nyy = nryl, nryh
-!      DO nxx=  nrxl, nrxh
-!           !
-!           cost = cost + REAL(cwann(nxx,nyy,nzz,1)*CONJG(cwann(nxx,nyy,nzz,1)), dbl)
-!           !
-!      ENDDO
-!      ENDDO
-!      ENDDO
-!      !
-!      cost =  cost * omega / REAL( nfft(1) * nfft(2) * nfft(3), dbl)
-!      cost =  1.0_dbl / SQRT(cost)
-!
       cost =  1.0_dbl / ( REAL(nkpts, dbl) * SQRT(omega) )
-! XXXX
-
-
+      !
       WRITE(stdout, " (2x,'WF maximum values (normalization is one):',/)")
       !
       DO m = 1, nplot
@@ -691,13 +710,13 @@
       ! Offset for position and WF's allignment
       ! compute r0, r1 in crystal units
       !
-      r0(1) = REAL( nrxl, dbl ) / REAL( nfft(1), dbl )
-      r0(2) = REAL( nryl, dbl ) / REAL( nfft(2), dbl )
-      r0(3) = REAL( nrzl, dbl ) / REAL( nfft(3), dbl )
+      r0(1) = REAL( nrxl, dbl ) / REAL( nr1, dbl )
+      r0(2) = REAL( nryl, dbl ) / REAL( nr2, dbl )
+      r0(3) = REAL( nrzl, dbl ) / REAL( nr3, dbl )
       !
-      r1(1) = REAL( nrxh+1, dbl ) / REAL( nfft(1), dbl )
-      r1(2) = REAL( nryh+1, dbl ) / REAL( nfft(2), dbl )
-      r1(3) = REAL( nrzh+1, dbl ) / REAL( nfft(3), dbl )
+      r1(1) = REAL( nrxh+1, dbl ) / REAL( nr1, dbl )
+      r1(2) = REAL( nryh+1, dbl ) / REAL( nr2, dbl )
+      r1(3) = REAL( nrzh+1, dbl ) / REAL( nr3, dbl )
       !
       ! move r0, r1 to bohr
       !
@@ -780,9 +799,9 @@
 
               ! 
               ! bohr
-              DO i=1,3
-                 avecl(:,i) = avec(:,i) / REAL(nfft(i), dbl) 
-              ENDDO
+              avecl(:,1) = avec(:,1) / REAL( nr1, dbl) 
+              avecl(:,2) = avec(:,2) / REAL( nr2, dbl) 
+              avecl(:,3) = avec(:,3) / REAL( nr3, dbl) 
 
               WRITE(aux_unit, '( " WanT" )') 
               WRITE(aux_unit, '( " plot output - cube format" )' ) 
@@ -824,9 +843,9 @@
 
               ! 
               ! bohr
-              avecl(:,1) = avec(:,1) * REAL(nrxh-nrxl+1, dbl) / REAL(nfft(1), dbl) 
-              avecl(:,2) = avec(:,2) * REAL(nryh-nryl+1, dbl) / REAL(nfft(2), dbl) 
-              avecl(:,3) = avec(:,3) * REAL(nrzh-nrzl+1, dbl) / REAL(nfft(3), dbl) 
+              avecl(:,1) = avec(:,1) * REAL(nrxh-nrxl+1, dbl) / REAL( nr1, dbl) 
+              avecl(:,2) = avec(:,2) * REAL(nryh-nryl+1, dbl) / REAL( nr2, dbl) 
+              avecl(:,3) = avec(:,3) * REAL(nrzh-nrzl+1, dbl) / REAL( nr3, dbl) 
               
               !
               ! tau is temporarily converted to bohr 
