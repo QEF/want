@@ -1,0 +1,92 @@
+
+==============================================================================
+
+                  ********* code: plot.x  **********
+
+==============================================================================
+
+INPUT file layout
+-----------------------------------
+
+&INPUT
+   ...
+/
+
+-----------------------------------
+
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
+
+wann          STRING       
+              specifies the indexes of the Wannier functions to be plotted.
+              It is a string of format e.g "1-3,5,7-9" (analogous to the fmt used
+              to specify pages to very common print tools)
+              DEFAULT: mandatory
+
+datatype      STRING
+              ("modulus" | "real" | "imaginary")
+              specifies the type of data plotted:
+                "modulus":    plot the real space square modulus of the WFs.
+                "real":       plot the real part (in real space) of the WFs.
+                "imaginary":  plot the imaginary part (in real space) of the WFs
+                              this choice shouldbe intended as a check because WFs
+                              are expected to be more or less "real".
+              DEFAULT: "modulus"
+
+output_fmt    STRING
+              ( "plt" | "txt" | "cube" | "xsf" )
+              Define the format of the output file. PLT is binary and smaller than
+              CUBE, XSF (read by XCRYSDEN) and TXT. While CUBE and XSF deals also with 
+              non-orthorombic lattices, TXT is suitable to be converted to further format.
+              DEFAULT: "plt"
+
+nr1, nr2, nr3 INTEGER
+              The dimensions of the FFT mesh used to move WFs to real space.
+              These dimensions are related to the crystal unit cell and should not be smaller
+              than the those read from DFT datafile.
+              DEFAULT: DFT FFT dimensions
+
+r1min, r1max  REAL
+              the starting and ending points of the plotting cell along a1 dir, 
+              in units of a1 lattice vector (crystal coord.).
+              DEFAULT: -0.5, 0.5
+
+r2min, r2max  REAL
+              as before but for a2 direction.
+              DEFAULT: -0.5, 0.5
+             
+r3min, r3max  REAL
+              as before but for a3 direction.
+              DEFAULT: -0.5, 0.5
+              
+assume_ncpp   LOGICAL
+              if using DFT pseudoptentials not readable in WanT set this value to 
+              .TRUE. in order to avoid PP reading.
+              DEFAULT: .FALSE.
+
+collect_wf    LOGICAL
+              if .TRUE. move the WFs in a unit cell centerd around the midpoint of the 
+              plotting cell. Useful to plot purposes.
+              DEFAULT: .TRUE.
+
+spin_component    STRING
+              ( "up" | "down" | "none" )
+              define whether the calculation is spin polarized and if the case
+              which spin component is to be treated. 
+              DEFAULT: "none"
+
+
+==============================================================================
+

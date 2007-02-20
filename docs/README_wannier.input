@@ -1,0 +1,389 @@
+==============================================================================
+    
+              ********* codes: disentangle.x wannier.x  **********
+    
+==============================================================================
+
+INPUT file layout
+-----------------------------------
+
+&CONTROL
+  ...
+/
+
+&SUBSPACE
+  ...
+/
+
+&LOCALIZATION
+  ...
+/
+
+WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" | "alat" )
+<type1>    <specific_fmt>
+    ....
+<typeN>    <specific_fmt>
+
+
+-----------------------------------
+
+==============================================================================
+
+NAMELIST &CONTROL
+
+prefix        STRING
+              the first part of the name of all the file written by the code
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
+
+title         STRING
+              the title of the calculation
+              DEFAULT: "Wannier Transport Calculation"
+
+restart_mode  STRING
+              ( "from_scratch" | "restart" )
+              define whether to restart a previous calculation; at the moment the "restart"
+              choice implies to overwrite the input variables OVERLAPS, PROJECTIONS, 
+              START_MODE_DIS and START_MODE_WAN , withthe value "from_file" (see below 
+              for thier meanings). 
+              DEFAULT: "from_scratch"
+
+verbosity     STRING
+              ( "low" | "medium" | "high" )
+              the level of detail of the code output
+              DEFAULT: "medium"
+
+overlaps      STRING
+              ( "from_scratch" | "from_file" )
+              determine how to get overlap integrals:
+              "from_scratch":  overlaps are calculated from wfcs.
+              "from_file":     overlaps are read from a previous data file.
+              In this second case dimensions should be consistent.
+              DEFAULT: "from_scratch"
+
+projections   STRING
+              ( "from_scratch" | "from_file" )
+              determine how to get projection integrals.
+              Meanings as before.
+              DEFAULT: "from_scratch"
+
+dftdata_fmt   STRING
+              ( "qexml" | "pw_export", "qexpt" )
+              Specified the format of the DFT datafile. If not specified (suggested option) it
+              is auto-dected by the code; preference is given to "qexml". 
+              DEFAULT: auto-detected
+
+wantdata_fmt  STRING
+              ( "binary" | "textual" )
+              Specified the format of the WanT internal datafiles. If not specified 
+              (suggested option) files are binary for dimwann >= 100, textual otherwise.
+              Reading does not care of that anyway (thanks to the iotk library).
+              DEFAULT: auto-detected
+
+assume_ncpp   LOGICAL
+              if .TRUE. avoids the reading of pseudopotential files
+              assuming that the DFT calculation has been performed within norm-conserving
+              pseudopotentials (no knowledge of them is required in the WanT calc)
+              DEFAULT: .FALSE.
+
+unitary_thr   REAL
+              threshold for the check of matrix unitariery
+              DEFAULT: 1.0d-6
+
+debug_level   INTEGER
+              level of debug report; values <= 0 switch the debug_mode off
+              DEFAULT: 0
+
+
+==============================================================================
+
+NAMELIST &SUBSPACE
+
+dimwann       INTEGER
+              the number of wannier functions, i.e. the dimension of the wannier subspace
+              DEFAULT : mandatory
+ 
+win_min       REAL
+              the lower limit [eV] of the energy window containing the states
+              forming the starting subspace for Wannier functions
+              DEFAULT : -20000000 (this is a large number which stands for -INF)
+
+win_max       REAL
+              the upper limit [eV] of the above described energy window
+              DEFAULT : 20000000 (this is a large number which stands for +INF)
+              
+froz_min      REAL
+              the lower limit [eV] of the energy window containing 'frozen' states
+              which will not enter the calculation of WFs
+              DEFAULT : -60000000 (this is a large number which stands for -INF)
+              
+froz_max      REAL
+              upper limit [eV] of the frozen window above described
+              DEFAULT : -50000000 (this is a large number which stands for -INF)
+
+alpha_dis     REAL
+              mixing parameter for the disentangle iterative procedure 
+              DEFAULT : 0.5
+
+maxiter_dis   INTEGER
+              maximum number of iterations during the disentangle procedure
+              DEFAULT : 1000
+
+nprint_dis    INTEGER
+              every nprint_dis iterations in disentangle minimization write to stdout
+              DEFAULT: 10
+
+nsave_dis     INTEGER
+              every nsave_dis iterations save subspace data to disk
+              DEFAULT: 10
+
+use_blimit    LOGICAL
+              if .TRUE., b vectors are set to zero when calculation overlap augmentations.
+              This essentially means we are doing a sort of thermodynamic limit
+              even if this is not consistent with the actual kpt grid. The .TRUE. value
+              should be considered for debug purposes.
+              DEFAULT: .FALSE.
+
+use_symmetry  LOGICAL
+              if .TRUE., read and use symmetry operation to reduce the workload
+              due to summations over k and b vectors.
+              NOTE: at the moment, data is only read and not used.
+              DEFAULT: .TRUE.
+
+disentangle_thr    REAL
+              threshold for convergence of the iterative disentangle procedure
+              DEFAULT: 1.0d-8
+
+subspace_init STRING
+              ( "randomized", "lower_states", "upper_states",  &
+                "center_projections", "from_file" )
+              Determine how the trial subspace is chosen
+              "randomized"   : random starting point is chosen
+              "lower_states" : the lower DIMWANN bands from DFT calculation are
+                 used to define the subspace
+              "upper_states" : the upper DIMWANN bands from DFT calculation are
+                 used to define the subspace
+              "center_projections" : a subspace is extracted from the DFT bands
+                 by means of a projections on the given WANNIER_TRIAL_CENTERS
+                 (see the section WANNIER_CENTERS)
+              "from_file" : subspace initialization is read from an existing data file;
+                 this is the choice used during restart.
+              DEFAULT : "center_projections"
+
+spin_component    STRING
+              ( "up" | "down" | "none" )
+              define whether the calculation is spin polarized and if the case 
+              which spin component is to be treated
+              DEFAULT: "none"
+ 
+
+==============================================================================
+
+NAMELIST &LOCALIZATION
+
+wannier_thr   REAL
+              threshold for convergence of the iterative wannier minimization
+              DEFAULT: 1.0d-6           
+ 
+alpha0_wan    REAL
+              mixing parameter during the first CG part of the wannier minimization
+              DEFAULT: 0.5
+
+alpha1_wan    REAL
+              mixing parameter during the second part of the wannier minimization
+              DEFAULT: 0.5
+
+maxiter0_wan  INTEGER
+              maximum number of iterations for the first minim part
+              DEFAULT: 500
+
+maxiter1_wan  INTEGER
+              maximum number of iterations for the second minim part
+              DEFAULT: 500
+
+nprint_wan    INTEGER
+              every nprint_wan iterations in wannier minimization write to stdout
+              DEFAULT: 10
+
+nsave_wan     INTEGER
+              every nsave_dis iterations save subspace data to disk
+              DEFAULT: 10
+
+ncg           INTEGER
+              each ncg iterations in the second minimization part, do a CG minimization
+              DEFAULT : 3
+
+localization_init   STRING
+              ( "no_guess", "randomized", "center_projections", "from_file" )
+              Determine how the wannier localization is started
+              "no_guess" : disentangle states are used as starting point
+                 without any further localization guess.
+              "randomized" : a random rotation is applied to the states found by
+                 the disentangle procedure.
+              "center_projections" : a subspace is extracted from the DFT bands
+                 by means of a projections on the given WANNIER_TRIAL_CENTERS
+                 (see the section WANNIER_CENTERS).
+              "from_file" : subspace initialization is read from an existing data file;
+                 this is the choice used during restart.
+              DEFAULT : "center_projections"
+           
+ordering_mode STRING
+              ( "none" | "spatial" | "spread" | "complete" ) 
+              specifies whether to order the computed Wannier functions and
+              which ordering criterion adopt. 
+              "none":      no ordering is performed
+              "spatial":   ordering based on WF center positions
+              "spread":    ordering based on WF increasing spreads
+              "complete":  SPATIAL + SPREAD for WF with the same centers
+              DEFAULT: "none"
+
+a_condmin     REAL
+              the amplitude of the conditioned minimization functional. If set to zero
+              ordinary minimization is performed.
+              DEFAULT: 0.0
+
+niter_condmin INTEGER
+              the number of steps for which minimization is conditioned. 
+              DEFAULT: maxiter0_wan + maxiter1_wan   (if a_condmin /= 0.0)
+                       0                             (otherwise)
+            
+dump_condmin  REAL
+              the dumping factor for a_condmin during the conditioned minimization.
+              If the dumping factor is specified, after niter_condmin iterations a_condmin
+              is dumped according to 
+                 a_condmin = a_condmin * dump_condmin     
+              at each iteration.
+              DEFAULT: 0.0
+
+collect_wf    LOGICAL
+              if .TRUE., collect all WFs in the same reference cell, specified by xcell (see below).
+              DEFAULT: .FALSE.
+
+xcell(3)      REAL
+              the lower corners of the rewference cell used to collect WFs, 
+              when collect_wf == .TRUE.
+              DEFAULT: -0.5, -0.5, -0.5
+              
+
+==============================================================================
+
+CARD 
+WANNIER_CENTERS ( "crystal" | "angstrom" | "bohr" | "alat" )
+
+Aside the tag WANNIER_CENTERS, units for positions maybe specified:
+"crystal"  : relative coordinates on the basis of a1,a2,a3 lattice vector (default)
+"angstrom" : cartesian coordinates in angstrom
+"bohr"     : cartesian coordinates in bohr
+"alat"     : cartesian coordinates in units of the first lattice vector module
+             (as in espresso)
+
+Next the card contains DIMWANN lines giving the trial centers for the WFs. 
+Depending on the <TYPE> flag at the beginning of the line, 
+formats are different.
+
+
+<TYPE> may assume the values:  "1gauss", "2gauss", "atomic"
+
+IF ( TYPE == "1gauss" ) THEN
+   1gauss      x  y  z      l  m           rloc   [weight]
+ENDIF
+
+IF ( TYPE == "2gauss" ) THEN
+   2gauss      x  y  z      xx  yy  zz     rloc   [weight]
+ENDIF
+
+IF ( TYPE == "atomic" ) THEN
+   atomic     iatom  l m   [weight] 
+ENDIF
+
+
+TYPE == "1gauss", 
+------------------------
+This center is given by a single gaussian set at a given position with a given
+angular momentum. Standard positions are usually atomic sites or bond midpoints.
+
+   x,y,z    REAL
+            define the position of the trial function. Units maybe specified aside
+            the tag WANNIER_CENTERS: see above for more details.
+
+   l, m     INTEGER
+            are the angular momentum quantum numbers for the spherical harmonics
+            giving the angular part of the trial WF. l can be set equal to 0, 1, or 2, 
+            (and m values are then as usual) for standard spherical harmonics or l == -1
+            indicate the sp^3 geometry. Here spherical harmonics are the real ones:
+            l == -1:   m = -4 -->   1, 1,-1 dir  
+                       m = -3 -->   1,-1, 1 dir 
+                       m = -2 -->  -1, 1, 1 dir 
+                       m = -1 -->  -1,-1,-1 dir 
+                       m =  1 -->   1, 1, 1 dir 
+                       m =  2 -->   1,-1,-1 dir
+                       m =  3 -->  -1, 1,-1 dir
+                       m =  4 -->  -1,-1, 1 dir
+            l == 0 :   m =  0 -->  no problem
+            l == 1 :   m = -1 -->  x 
+                       m =  0 -->  z 
+                       m =  1 -->  y 
+            l == 2 :   m = -2 -->  x^2 - y^2
+                       m = -1 -->  xz
+                       m =  0 -->  3z^2 - r^2
+                       m =  1 -->  yz
+                       m =  2 -->  xy 
+          
+   rloc     REAL
+            specifies the spread of the gaussian used for the radial part of the 
+            trial WF. Units are bohr for both "bohr" and "crystal" and angstrom for 
+            "angstrom" specifier.
+
+   weight   REAL
+            this value is required when conditioned minimization is performed. In case, 
+            it should be in the interval [0, 1] ans weights the relative importance of 
+            each center in the penalty functional. weight = 0 is used to switch off the
+            constrain for a given center.  
+
+
+TYPE == "2gauss" 
+------------------------
+The trial function is given as the difference between gaussians with s-symmetry placed
+at positions selected by the user. This is useful to mimic a antibonding state.
+
+   x,y,z    REAL
+            as before for TYPE == "1gauss"
+     
+ xx,yy,zz   REAL
+            as before for x,y,z for the units, specify the center of a second gaussian 
+            used to build up the trial WF. This second case could be useful to describe
+            anti-bonding WF.
+
+  rloc      REAL
+            as before for TYPE == "1gauss"
+
+  weight    REAL
+            as before for TYPE == "1gauss"
+        
+          
+TYPE == "atomic" 
+------------------------
+Atomic (pseudo)-orbitals from pseudopotential files are used as trial functions. They are 
+specified by the atomic index and the required angular momentum quantum numbers.
+
+   iatom    INTEGER
+            the index of the chosen atom.  
+
+   l, m     INTEGER
+            as before for TYPE == "1gauss" for a detailed description.
+
+   weight   REAL
+            as before for TYPE == "1gauss"
+            
+     
+==============================================================================
+
+
