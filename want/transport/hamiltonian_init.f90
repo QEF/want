@@ -46,7 +46,8 @@
    !
    USE kinds
    USE constants,            ONLY : CZERO, CONE
-   USE io_global_module,     ONLY : stdin
+   USE io_module,            ONLY : stdin, ionode, ionode_id
+   USE mp,                   ONLY : mp_bcast
    USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R
    USE T_kpoints_module,     ONLY : kpoints_init, nrtot_par
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate,   &
@@ -91,7 +92,7 @@
    !
    ! dimx = MAX( dimL, dimC, dimR) 
    ALLOCATE( aux(dimx,dimx,nrtot_par), STAT=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,'allocating aux',ABS(ierr))
+   IF ( ierr/=0 ) CALL errore(subname,'allocating aux',ABS(ierr))
 
    !
    ! set defaults for overlaps ( already in the fourier transformed, R_par to k_par)
@@ -119,26 +120,36 @@
    !
    ! open the IOTK tag
    !
-   CALL iotk_scan_begin( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
+   IF ( ionode ) THEN
+      !
+      CALL iotk_scan_begin( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
       IF (ierr/=0) CALL errore(subname,'searching HAMILTONIAN_DATA',ABS(ierr))
-
+      !
+   ENDIF
 
    !
    ! read basic quantities
    !
-   CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, aux, dimx, dimx)
+   IF ( ionode ) CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, aux, dimx, dimx)
+   CALL mp_bcast( aux, ionode_id )
    CALL fourier_par( h00_C, dimC, dimC, aux, dimx, dimx)   
    !
-   CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, aux, dimx, dimx)
+   !
+   IF ( ionode ) CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, aux, dimx, dimx)
+   CALL mp_bcast( aux, ionode_id )
    CALL fourier_par( h_CR, dimC, dimR, aux, dimx, dimx)   
+
 
    IF ( use_overlap ) THEN
        !
-       CALL read_matrix( datafile_C, 'S00_C', dimC, dimC, aux, dimx, dimx)
+       IF ( ionode ) CALL read_matrix( datafile_C, 'S00_C', dimC, dimC, aux, dimx, dimx)
+       CALL mp_bcast( aux, ionode_id )
        CALL fourier_par( s00_C, dimC, dimC, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_C, 'S_CR', dimC, dimR, aux, dimx, dimx)
+       IF ( ionode ) CALL read_matrix( datafile_C, 'S_CR', dimC, dimR, aux, dimx, dimx)
+       CALL mp_bcast( aux, ionode_id )
        CALL fourier_par( s_CR, dimC, dimR, aux, dimx, dimx)   
+       !
    ENDIF
 
    !
@@ -150,36 +161,46 @@
        !
        ! read the missing data
        !
-       CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, aux, dimx, dimx)
+       IF (ionode) CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, aux, dimx, dimx)
+       CALL mp_bcast( aux, ionode_id )
        CALL fourier_par( h_LC, dimL, dimC, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, aux, dimx, dimx)
+       IF (ionode) CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, aux, dimx, dimx)
+       CALL mp_bcast( aux, ionode_id )
        CALL fourier_par( h00_L, dimL, dimL, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, aux, dimx, dimx)
+       IF (ionode) CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, aux, dimx, dimx)
+       CALL mp_bcast( aux, ionode_id )
        CALL fourier_par( h01_L, dimL, dimL, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, aux, dimx, dimx)
+       IF (ionode) CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, aux, dimx, dimx)
+       CALL mp_bcast( aux, ionode_id )
        CALL fourier_par( h00_R, dimR, dimR, aux, dimx, dimx)   
        !
-       CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, aux, dimx, dimx)
+       IF (ionode) CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, aux, dimx, dimx)
+       CALL mp_bcast( aux, ionode_id )
        CALL fourier_par( h01_R, dimR, dimR, aux, dimx, dimx)   
        !
        IF ( use_overlap ) THEN
            !
-           CALL read_matrix( datafile_C, 'S_LC', dimL, dimC, aux, dimx, dimx)
+           IF (ionode) CALL read_matrix( datafile_C, 'S_LC', dimL, dimC, aux, dimx, dimx)
+           CALL mp_bcast( aux, ionode_id )
            CALL fourier_par( s_LC, dimL, dimC, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_L, 'S00_L',  dimL, dimL, aux, dimx, dimx)
+           IF (ionode) CALL read_matrix( datafile_L, 'S00_L',  dimL, dimL, aux, dimx, dimx)
+           CALL mp_bcast( aux, ionode_id )
            CALL fourier_par( s00_L, dimL, dimL, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_L, 'S01_L',  dimL, dimL, aux, dimx, dimx)
+           IF (ionode) CALL read_matrix( datafile_L, 'S01_L',  dimL, dimL, aux, dimx, dimx)
+           CALL mp_bcast( aux, ionode_id )
            CALL fourier_par( s01_L, dimL, dimL, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_R, 'S00_R',  dimR, dimR, aux, dimx, dimx)
+           IF (ionode) CALL read_matrix( datafile_R, 'S00_R',  dimR, dimR, aux, dimx, dimx)
+           CALL mp_bcast( aux, ionode_id )
            CALL fourier_par( s00_R, dimR, dimR, aux, dimx, dimx)   
            !
-           CALL read_matrix( datafile_R, 'S01_R',  dimR, dimR, aux, dimx, dimx)
+           IF (ionode) CALL read_matrix( datafile_R, 'S01_R',  dimR, dimR, aux, dimx, dimx)
+           CALL mp_bcast( aux, ionode_id )
            CALL fourier_par( s01_R, dimR, dimR, aux, dimx, dimx)   
        ENDIF
 
@@ -202,20 +223,23 @@
        ENDIF
 
    CASE DEFAULT
-       CALL errore(subname,'Invalid calculation_type = '// &
-                   TRIM(calculation_type),5)
+       CALL errore(subname,'Invalid calculation_type = '// TRIM(calculation_type),5)
    END SELECT
 
-   CALL iotk_scan_end( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
-      IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
+
+   IF ( ionode ) THEN
+       !
+       CALL iotk_scan_end( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
+       IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
+       !
+   ENDIF
 
 
    !
    ! local cleaning
    !
    DEALLOCATE( aux, STAT=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,'deallocating aux',ABS(ierr))
+   IF ( ierr/=0 ) CALL errore(subname,'deallocating aux',ABS(ierr))
 
 END SUBROUTINE hamiltonian_init
-
 

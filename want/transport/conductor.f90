@@ -10,6 +10,7 @@
 !***********************************************
    PROGRAM conductor
    !***********************************************
+   !
    USE iotk_module
    USE kinds,                ONLY : dbl
    USE constants,            ONLY : PI, ZERO, CZERO, CONE, CI, EPS_m5
@@ -19,10 +20,12 @@
    USE files_module,         ONLY : file_open, file_close
    USE timing_module,        ONLY : timing, timing_overview, global_list, timing_upto_now
    USE util_module,          ONLY : mat_mul, mat_sv
-   USE T_input_module,       ONLY : input_manager
-   USE io_module,            ONLY : stdout, stdin, sgm_unit => aux_unit,   &
+   USE mp_global,            ONLY : mpime, nproc
+   USE mp,                   ONLY : mp_sum
+   USE io_module,            ONLY : ionode, stdout, stdin, sgm_unit => aux_unit,   &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
                                     work_dir, prefix, postfix, aux_unit
+   USE T_input_module,       ONLY : input_manager
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
                                     conduct_formula, niterx, nprint, datafile_sgm, write_kdata
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid
@@ -47,7 +50,8 @@
    !
    COMPLEX(dbl)     :: ene
    CHARACTER(nstrx) :: filename
-   INTEGER          :: i, ie, ik, ierr, ncount, niter
+   INTEGER          :: i, ie, ik, ierr, niter
+   INTEGER          :: nomg_s, nomg_e
    REAL(dbl)        :: avg_iter
    CHARACTER(4)     :: ctmp
 
@@ -120,31 +124,41 @@
    CALL workspace_allocate()
 
    ALLOCATE ( dos(dimC,nkpts_par,ne), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor','allocating dos', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','allocating dos', ABS(ierr) )
+   !
    ALLOCATE ( conduct(dimC,nkpts_par,ne), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor','allocating conduct', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','allocating conduct', ABS(ierr) )
+   !
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor','allocating cond_aux', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','allocating cond_aux', ABS(ierr) )
+   !
    ALLOCATE ( work(dimx,dimx), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('conductor','allocating work', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','allocating work', ABS(ierr) )
+
+
 !
 ! main loop over frequency
 ! 
    WRITE(stdout,"()")
-      dos(:,:,:)     = ZERO
-      conduct(:,:,:) = ZERO
+   dos(:,:,:)     = ZERO
+   conduct(:,:,:) = ZERO
+
+   !
+   ! init parallelism over frequencies
+   !
+   CALL divide_et_impera( 1, ne,  nomg_s, nomg_e, mpime, nproc )
 
    energy_loop: &
-   DO ie = 1, ne
-      ncount = ie
+   DO ie = nomg_s, nomg_e
+      
       !
       ! grids and misc
       !
       ene =  egrid(ie)   
 
-      IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
+      IF ( MOD( ie, nprint) == 0 .OR. ie == 1 ) THEN
            WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") &
-                         ncount, egrid(ie)
+                         ie, egrid(ie)
       ENDIF
 
       !
@@ -243,7 +257,7 @@
 
       avg_iter = avg_iter/REAL(2*nkpts_par)
       !
-      IF ( MOD( ncount, nprint) == 0 .OR. ncount == 1 ) THEN
+      IF ( MOD( ie, nprint) == 0 .OR. ie == 1 ) THEN
            !
            WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
                  avg_iter
@@ -256,80 +270,130 @@
    ENDDO energy_loop
 
    !
+   ! recover over frequencies
+   !
+   CALL mp_sum( conduct )
+   CALL mp_sum( dos )
+
+   !
    ! close sgm file
    !
    IF ( use_correlation ) CALL file_close(sgm_unit, PATH="/", ACTION="read")
 
 
 !
-! ... write DOS and CONDUCT data on files
+! write DOS and CONDUCT data on files
 !
 
-   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
-   OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
-   DO ie = 1, ne
-       WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,:,ie) )
-   ENDDO
-   CLOSE( cond_unit )
+   IF ( ionode ) THEN
 
-   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
-   OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
-   DO ie = 1, ne
-       WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,:,ie) )
-   ENDDO
-   CLOSE( dos_unit )
+       filename = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
+       OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
+       !
+       DO ie = 1, ne
+           !
+           WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,:,ie) )
+           !
+       ENDDO
+       !
+       CLOSE( cond_unit )
+       !
+       filename = TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
+       WRITE(stdout,"(/,2x,'Conductance written on file: ',3x,a)") TRIM(filename)
+                            
+    
+       filename = TRIM(work_dir)//'/'//TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
+       OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
+       !
+       DO ie = 1, ne
+           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,:,ie) )
+       ENDDO
+       !
+       CLOSE( dos_unit )
+       !
+       filename = TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
+       WRITE(stdout,"(/,2x,'DOS written on file: ',3x,a)") TRIM(filename)
+   
+   ENDIF
+
 
 !
-!  write kpoints-resolved dos and transmittance data on files
+!  write kpoint-resolved dos and transmittance data on files
 !
-
-   IF ( write_kdata ) THEN
+   IF ( write_kdata .AND. ionode ) THEN
+      !
       DO ik = 1, nkpts_par
+         !
          WRITE( ctmp , "(i4.4)" ) ik
          filename= TRIM(work_dir)//'/'//TRIM(prefix)// &
                                         '_cond-'//ctmp//TRIM(postfix)//'.dat'
+         !
          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+         !
          IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
-            WRITE( aux_unit, *) "# E (eV)   cond(E)"
-            DO ie = 1, ne
-               WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( conduct(:,ik,ie) )
-            ENDDO
-            CLOSE( aux_unit )         
+         !
+         WRITE( aux_unit, *) "# E (eV)   cond(E)"
+         !
+         DO ie = 1, ne
+              WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( conduct(:,ik,ie) )
+         ENDDO
+         !
+         CLOSE( aux_unit )         
+         !
       ENDDO
+      !
+      !
       DO ik = 1, nkpts_par
+         !
          WRITE( ctmp , "(i4.4)" ) ik
          filename= TRIM(work_dir)//'/'//TRIM(prefix)// &
                                        '_doscond-'//ctmp//TRIM(postfix)//'.dat'
+
          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+         !
          IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
-            WRITE( aux_unit, *) "# E (eV)   doscond(E)"
-            DO ie = 1, ne
-               WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( dos(:,ik,ie) )
-            ENDDO
-            CLOSE( aux_unit )         
+         !
+         WRITE( aux_unit, *) "# E (eV)   doscond(E)"
+         !
+         DO ie = 1, ne
+             WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( dos(:,ik,ie) )
+         ENDDO
+         !
+         CLOSE( aux_unit )         
+         !
       ENDDO
+      !
    ENDIF
    
 
 !
-! ...  Finalize timing
+!...  shutdown
 !
-   CALL timing('conductor',OPR='stop')
-   CALL timing_overview(stdout,LIST=global_list,MAIN_NAME='conductor')
 
-
-!
-!...  free memory
-!
+   !
+   ! clean local memory
+   !
    DEALLOCATE ( dos, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor','deallocating dos', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','deallocating dos', ABS(ierr) )
+   !
    DEALLOCATE ( conduct, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor','deallocating conduct', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','deallocating conduct', ABS(ierr) )
+   !
    DEALLOCATE ( cond_aux, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor','deallocating cond_aux', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','deallocating cond_aux', ABS(ierr) )
+   !
    DEALLOCATE ( work, STAT=ierr )
-        IF( ierr /=0 ) CALL errore('conductor','deallocating work', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('conductor','deallocating work', ABS(ierr) )
+
+   !
+   ! clean global memory
+   !
    CALL cleanup()
+
+   !
+   ! finalize
+   !
+   CALL shutdown ( 'conductor' ) 
 
 END PROGRAM conductor
   

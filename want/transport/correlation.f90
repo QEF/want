@@ -9,9 +9,12 @@
 !*********************************************
    MODULE T_correlation_module
 !*********************************************
+   !
    USE kinds,                ONLY : dbl
    USE constants,            ONLY : EPS_m4
    USE parameters,           ONLY : nstrx
+   USE io_module,            ONLY : ionode, ionode_id
+   USE mp,                   ONLY : mp_bcast
    USE T_egrid_module,       ONLY : ne, egrid, egrid_alloc => alloc
    USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, vr_par, kpoints_alloc => alloc
    USE T_hamiltonian_module, ONLY : dimC
@@ -91,11 +94,11 @@ CONTAINS
    !
    IMPLICIT NONE
       INTEGER, INTENT(in):: unit
-      CHARACTER(16)    :: subname="correlation_init"
-      CHARACTER(nstrx) :: attr
+      CHARACTER(16)      :: subname="correlation_init"
+      CHARACTER(nstrx)   :: attr
       REAL(dbl), ALLOCATABLE :: grid_file(:)
-      LOGICAL          :: opened
-      INTEGER          :: nomega, ie, ierr
+      LOGICAL            :: opened
+      INTEGER            :: nomega, ie, ierr
 
       IF ( .NOT. egrid_alloc )   CALL errore(subname,'egrid not alloc', 1 )
 
@@ -105,36 +108,55 @@ CONTAINS
       !
       ! get main data and check them
       !
-      CALL iotk_scan_empty(unit, "DATA", ATTR=attr, IERR=ierr)
-      IF (ierr/=0) CALL errore(subname,'searching DATA',ABS(ierr))
+      IF ( ionode ) THEN
+         !
+         CALL iotk_scan_empty(unit, "DATA", ATTR=attr, IERR=ierr)
+         IF (ierr/=0) CALL errore(subname,'searching DATA',ABS(ierr))
+         !
+         CALL iotk_scan_attr(attr,"dimwann",dimC_file, IERR=ierr)
+         IF (ierr/=0) CALL errore(subname,'searching dimwann',ABS(ierr))
+         !
+         CALL iotk_scan_attr(attr,"nrtot",nrtot, IERR=ierr)
+         IF (ierr/=0) CALL errore(subname,'searching nrtot',ABS(ierr))
+         !
+         CALL iotk_scan_attr(attr,"nomega",nomega, IERR=ierr)
+         IF (ierr/=0) CALL errore(subname,'searching nomega',ABS(ierr))
+         !
+         CALL iotk_scan_dat(unit, "VR", ivr_corr, IERR=ierr)
+         IF (ierr/=0) CALL errore(subname,'searching VR',ABS(ierr))
+         !
+      ENDIF
       !
-      CALL iotk_scan_attr(attr,"dimwann",dimC_file, IERR=ierr)
-      IF (ierr/=0) CALL errore(subname,'searching dimwann',ABS(ierr))
+      CALL mp_bcast( dimC_file,    ionode_id )
+      CALL mp_bcast( nrtot,        ionode_id )
+      CALL mp_bcast( nomega,       ionode_id )
+      CALL mp_bcast( ivr_corr,     ionode_id )
       !
-      CALL iotk_scan_attr(attr,"nrtot",nrtot, IERR=ierr)
-      IF (ierr/=0) CALL errore(subname,'searching nrtot',ABS(ierr))
-      !
-      CALL iotk_scan_attr(attr,"nomega",nomega, IERR=ierr)
-      IF (ierr/=0) CALL errore(subname,'searching nomega',ABS(ierr))
-      !
-      CALL iotk_scan_dat(unit, "VR", ivr_corr, IERR=ierr)
-      IF (ierr/=0) CALL errore(subname,'searching VR',ABS(ierr))
       !
       ALLOCATE( grid_file(nomega), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating grid',ABS(ierr))
-      CALL iotk_scan_dat(unit, "GRID", grid_file, IERR=ierr)
-      IF (ierr/=0) CALL errore(subname,'searching GRID',ABS(ierr))
+      !
+      IF ( ionode ) THEN
+         !
+         CALL iotk_scan_dat(unit, "GRID", grid_file, IERR=ierr)
+         IF (ierr/=0) CALL errore(subname,'searching GRID',ABS(ierr))
+         !
+      ENDIF
+      !
+      CALL mp_bcast( grid_file,    ionode_id )
+      ! 
       ! 
       IF ( dimC_file > dimC) CALL errore(subname,'invalid dimC_file',3)
       IF ( nrtot <= 0 ) CALL errore(subname,'invalid nrtot',3)
       !
       ALLOCATE ( ivr_corr(3,nrtot), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
       !
       IF ( nomega /= ne) CALL errore(subname,'invalid nomega',3)
+      !
       DO ie=1, ne
-          IF ( ABS(egrid(ie)-grid_file(ie)) > EPS_m4 ) &
-             CALL errore(subname,'invalid grid',ie)
+          !
+          IF ( ABS(egrid(ie)-grid_file(ie)) > EPS_m4 ) CALL errore(subname,'invalid grid',ie)
       ENDDO
       !
       DEALLOCATE( grid_file, STAT=ierr )
@@ -214,7 +236,7 @@ CONTAINS
       R_loop: &
       DO ir_par = 1,nrtot_par
 
-	 !
+         !
          ! set the indexes
          !
          j = 0
