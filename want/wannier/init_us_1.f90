@@ -40,9 +40,9 @@ SUBROUTINE init_us_1
   USE uspp,            ONLY : nhtol, nhtoj, nhtolm, dvan, qq, qb, indv, ap, aainit
   USE uspp_param,      ONLY : lmaxq, dion, betar, qfunc, qfcoef, rinner, nbeta, &
                               kkbeta, nqf, nqlc, lll, jjj, lmaxkb, nh, tvanp
-#ifdef __PARA
-  USE uspp_param,      ONLY : nhm
-#endif
+!#ifdef __PARA
+!  USE uspp_param,      ONLY : nhm
+!#endif
   USE control_module,  ONLY : use_blimit
   !
   ! added for WFs
@@ -214,9 +214,9 @@ SUBROUTINE init_us_1
            ! l
         enddo
         qrad (:, :, :, nt) = qrad (:, :, :, nt)*prefr
-#ifdef __PARA
-        call reduce (nqxq * nbrx * (nbrx + 1) / 2 * lmaxq, qrad (1, 1, 1, nt) )
-#endif
+!#ifdef __PARA
+!        call reduce (nqxq * nbrx * (nbrx + 1) / 2 * lmaxq, qrad (1, 1, 1, nt) )
+!#endif
      endif
      ! ntyp
 
@@ -225,9 +225,9 @@ SUBROUTINE init_us_1
   !   and finally we compute the qq coefficients by integrating the Q.
   !   q are the g=0 components of Q.
   !
-#ifdef __PARA
-  if (gg (1) > EPS_m8 ) goto 100
-#endif
+!#ifdef __PARA
+!  if (gg (1) > EPS_m8 ) goto 100
+!#endif
   ALLOCATE (ylmk0( 1, lmaxq * lmaxq), STAT=ierr)    
     IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
   !
@@ -286,10 +286,10 @@ SUBROUTINE init_us_1
   
 
 
-#ifdef __PARA
-100 continue
-  call reduce ( nhm * nhm * ntyp, qq )
-#endif
+!#ifdef __PARA
+!100 continue
+!  call reduce ( nhm * nhm * ntyp, qq )
+!#endif
   !
   !     fill the interpolation table tab
   !
@@ -319,9 +319,9 @@ SUBROUTINE init_us_1
         enddo
      enddo
   enddo
-#ifdef __PARA
-  call reduce (nqx * nbrx * ntyp, tab)
-#endif
+!#ifdef __PARA
+!  call reduce (nqx * nbrx * ntyp, tab)
+!#endif
   deallocate (qtot)
   deallocate (besr)
   deallocate (aux1)

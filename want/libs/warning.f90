@@ -16,6 +16,10 @@
    !
    IMPLICIT NONE
 
+#if defined __MPI
+   include 'mpif.h'
+#endif
+
    !
    ! input variables
    !
@@ -26,6 +30,11 @@
    ! local variables
    !
    INTEGER :: ip, nproc, mpime
+   !
+#if defined __MPI
+   INTEGER :: ierr
+#endif
+
 
 !
 !----------------------------------------

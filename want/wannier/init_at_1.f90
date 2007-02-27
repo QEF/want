@@ -66,9 +66,9 @@ SUBROUTINE init_at_1()
         ENDIF
      ENDDO
  ENDDO
-#ifdef __PARA
-  CALL reduce (nqx * nchix * ntyp, tab_at)
-#endif
+!#ifdef __PARA
+!  CALL reduce (nqx * nchix * ntyp, tab_at)
+!#endif
 
   DEALLOCATE(aux ,vchi, STAT=ierr)
      IF (ierr/=0) CALL errore('init_at_1','deallocating aux, vchi', ABS(ierr))
