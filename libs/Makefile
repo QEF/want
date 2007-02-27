@@ -8,6 +8,7 @@ include ../make.sys
 OBJS= \
 constants.o \
 date_and_tim.o \
+divide_et_impera.o \
 erf.o \
 error.o \
 fft_scalar.o \
