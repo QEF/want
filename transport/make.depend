@@ -14,6 +14,8 @@ conductor.o : kpoints.o
 conductor.o : ../libs/constants.o
 conductor.o : ../libs/files.o
 conductor.o : ../libs/kind.o
+conductor.o : ../libs/mp_global.o
+conductor.o : ../libs/mp.o
 conductor.o : ../libs/parameters.o
 conductor.o : ../libs/parser.o
 conductor.o : ../libs/timing.o
@@ -31,12 +33,14 @@ correlation.o : ../iotk/iotk_16_module.o
 correlation.o : kpoints.o
 correlation.o : ../libs/constants.o
 correlation.o : ../libs/kind.o
+correlation.o : ../libs/mp.o
 correlation.o : ../libs/parameters.o
 correlation.o : ../libs/timing.o
-define_lead.o : ../libs/constants.o
-define_lead.o : ../libs/kind.o
-define_lead.o : ../libs/timing.o
-define_lead.o : smearing.o
+correlation.o : ../wannier/io_module.o
+define_smear_ham.o : ../libs/constants.o
+define_smear_ham.o : ../libs/kind.o
+define_smear_ham.o : ../libs/timing.o
+define_smear_ham.o : smearing.o
 egrid.o : ../libs/kind.o
 fourier_par.o : kpoints.o
 fourier_par.o : ../libs/constants.o
@@ -46,7 +50,6 @@ green.o : ../libs/constants.o
 green.o : ../libs/kind.o
 green.o : ../libs/timing.o
 green.o : ../libs/util.o
-green.o : smearing.o
 gzero_maker.o : ../libs/constants.o
 gzero_maker.o : ../libs/kind.o
 gzero_maker.o : ../libs/timing.o
@@ -57,8 +60,9 @@ hamiltonian_init.o : hamiltonian.o
 hamiltonian_init.o : ../iotk/iotk_16_module.o
 hamiltonian_init.o : kpoints.o
 hamiltonian_init.o : ../libs/constants.o
-hamiltonian_init.o : ../libs/io_global.o
 hamiltonian_init.o : ../libs/kind.o
+hamiltonian_init.o : ../libs/mp.o
+hamiltonian_init.o : ../wannier/io_module.o
 hamiltonian.o : kpoints.o
 hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/parameters.o
@@ -73,8 +77,10 @@ input.o : smearing.o
 input.o : ../wannier/io_module.o
 input_parameters.o : ../libs/constants.o
 input_parameters.o : ../libs/kind.o
+input_parameters.o : ../libs/mp.o
 input_parameters.o : ../libs/parameters.o
 input_parameters.o : ../libs/parser.o
+input_parameters.o : ../wannier/io_module.o
 kpoints.o : control.o
 kpoints.o : ../iotk/iotk_16_module.o
 kpoints.o : ../libs/constants.o

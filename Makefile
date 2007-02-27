@@ -24,6 +24,7 @@ default:
 	@echo  "     libctools          compile ctools library"
 	@echo 
 	@echo  "     all                all the above executables "
+	@echo  "     deps               update fortran90 dependencies "
 	@echo  "     clean              remove executables and objects"
 	@echo  "     clean_test         clean up the test examples"
 	@echo  "     wash               revert distribution to the original status"
@@ -33,6 +34,9 @@ default:
 # MAIN target
 #
 all: wannier transport utility
+
+deps:
+	if test -x ./conf/makedeps.sh ; then ./conf/makedeps.sh ; fi
 
 # 
 # LIBS and MODULES
