@@ -11,7 +11,7 @@
 !********************************************
    !
    USE kinds,     ONLY : dbl
-   USE io_module, ONLY : stdin
+   USE io_module, ONLY : stdin, ionode
    USE constants, ONLY : ZERO
    !
    IMPLICIT NONE
@@ -50,8 +50,10 @@ CONTAINS
       !
       ! attach input from file if the case
       !
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore('input_manager','error in input from file',ABS(ierr))
+      IF ( ionode ) THEN
+          CALL input_from_file ( stdin, ierr )
+          IF ( ierr /= 0 )  CALL errore('input_manager','error in input from file',ABS(ierr))
+      ENDIF
 
       !
       ! reading and checking namelists

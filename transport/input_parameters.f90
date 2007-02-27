@@ -9,10 +9,13 @@
 !********************************************
    MODULE T_input_parameters_module
 !********************************************
+   !
    USE kinds,         ONLY : dbl
    USE constants,     ONLY : ZERO, EPS_m1, EPS_m2, EPS_m5, EPS_m4, EPS_m3 
    USE parameters,    ONLY : nstrx
    USE parser_module, ONLY : change_case
+   USE io_module,     ONLY : ionode, ionode_id
+   USE mp,            ONLY : mp_bcast
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -176,8 +179,44 @@ CONTAINS
       LOGICAL :: allowed
       INTEGER :: i, ios
 
-      READ(unit, INPUT_CONDUCTOR, IOSTAT=ios )
+
+      IF ( ionode ) THEN
+         !
+         READ(unit, INPUT_CONDUCTOR, IOSTAT=ios )
          IF (ios/=0) CALL errore(subname,'reading INPUT_CONDUCTOR namelist',ABS(ios))
+         !
+      ENDIF
+
+      !
+      ! variable bcasting
+      !
+      CALL mp_bcast( dimL,               ionode_id)      
+      CALL mp_bcast( dimC,               ionode_id)      
+      CALL mp_bcast( dimR,               ionode_id)      
+      CALL mp_bcast( transport_dir,      ionode_id)      
+      CALL mp_bcast( calculation_type,   ionode_id)      
+      CALL mp_bcast( conduct_formula,    ionode_id)      
+      CALL mp_bcast( ne,                 ionode_id)      
+      CALL mp_bcast( emin,               ionode_id)      
+      CALL mp_bcast( emax,               ionode_id)      
+      CALL mp_bcast( delta,              ionode_id)      
+      CALL mp_bcast( smearing_type,      ionode_id)      
+      CALL mp_bcast( delta_ratio,        ionode_id)      
+      CALL mp_bcast( xmax,               ionode_id)      
+      CALL mp_bcast( bias,               ionode_id)      
+      CALL mp_bcast( nk,                 ionode_id)      
+      CALL mp_bcast( nprint,             ionode_id)      
+      CALL mp_bcast( niterx,             ionode_id)      
+      CALL mp_bcast( use_overlap,        ionode_id)      
+      CALL mp_bcast( use_correlation,    ionode_id)      
+      CALL mp_bcast( write_kdata,        ionode_id)      
+      CALL mp_bcast( work_dir,           ionode_id)      
+      CALL mp_bcast( prefix,             ionode_id)      
+      CALL mp_bcast( postfix,            ionode_id)      
+      CALL mp_bcast( datafile_L,         ionode_id)      
+      CALL mp_bcast( datafile_C,         ionode_id)      
+      CALL mp_bcast( datafile_R,         ionode_id)      
+      CALL mp_bcast( datafile_sgm,       ionode_id)      
 
       !
       ! ... checking parameters

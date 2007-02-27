@@ -31,6 +31,7 @@ WANNIER_OBJS= \
 ../wannier/io_module.o \
 ../wannier/startup.o \
 ../wannier/smearing.o \
+../wannier/shutdown.o \
 ../wannier/version.o
 
 

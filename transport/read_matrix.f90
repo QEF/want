@@ -18,15 +18,15 @@
    !       self-energies. This is a fragile implementation to be made safer. 
    !
    !
-   USE KINDS
-   USE parameters,       ONLY : nstrx
-   USE files_module,     ONLY : file_open, file_close, file_delete
-   USE io_module,        ONLY : stdin, aux_unit
+   USE kinds 
+   USE parameters,           ONLY : nstrx
+   USE files_module,         ONLY : file_open, file_close, file_delete
+   USE io_module,            ONLY : stdin, aux_unit
    USE iotk_module
    USE timing_module
    USE parser_module
-   USE T_control_module, ONLY : transport_dir, use_correlation
-   USE T_kpoints_module, ONLY : kpoints_alloc => alloc, nrtot_par, vr_par, nr_par
+   USE T_control_module,     ONLY : transport_dir, use_correlation
+   USE T_kpoints_module,     ONLY : kpoints_alloc => alloc, nrtot_par, vr_par, nr_par
    USE T_correlation_module, ONLY : icols_corr => icols, irows_corr => irows,  &
                                     ncols_corr => ncols, nrows_corr => nrows
    IMPLICIT NONE
@@ -284,12 +284,15 @@
 ! cleaning local workspace
 !
    DEALLOCATE( ivr, STAT=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'deallocating ivr', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'deallocating ivr', ABS(ierr) )
+   !
    DEALLOCATE( lmatrix, STAT=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'deallocating lmatrix', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'deallocating lmatrix', ABS(ierr) )
+   !
    DEALLOCATE( icols, irows, STAT=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'deallocating icols, irows', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'deallocating icols, irows', ABS(ierr) )
 
    CALL timing( 'read_matrix', OPR='stop' )
+   !
 END SUBROUTINE read_matrix
 
