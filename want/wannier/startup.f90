@@ -65,36 +65,52 @@
    ! description
    ! 
    CALL date_and_tim(cdate,ctime)
-   WRITE( stdout, "(2x,70('=') )" ) 
-   WRITE( stdout, "(a)" ) '              =                                            ='
-   WRITE( stdout, "(a)" ) '              =     *** WanT *** Wannier Transport Code    ='
-   WRITE( stdout, "(a)" ) '              =        (www.wannier-transport.org)         ='
-   WRITE( stdout, "(a)" ) '              =      Ultra Soft Pseudopotential Implem.    ='
-   WRITE( stdout, "(a)" ) '              =                                            ='
-   WRITE( stdout, "(2x,70('='),2/ )" ) 
-   WRITE(stdout, FMT='(2x,"Program <",a,">  v. ",A5,"  starts ..." )') &
-                 TRIM(main_name),TRIM(version) 
-   WRITE(stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
+   !
+   IF ( ionode ) THEN
+       !
+       WRITE( stdout, "(2x,70('=') )" ) 
+       WRITE( stdout, "(a)" ) '              =                                            ='
+       WRITE( stdout, "(a)" ) '              =     *** WanT *** Wannier Transport Code    ='
+       WRITE( stdout, "(a)" ) '              =        (www.wannier-transport.org)         ='
+       WRITE( stdout, "(a)" ) '              =      Ultra Soft Pseudopotential Implem.    ='
+       WRITE( stdout, "(a)" ) '              =                                            ='
+       WRITE( stdout, "(2x,70('='),2/ )" ) 
+       WRITE(stdout, FMT='(2x,"Program <",a,">  v. ",A5,"  starts ..." )') &
+                     TRIM(main_name),TRIM(version) 
+       WRITE(stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
+       !
+       IF ( nproc > 1 ) THEN
+           WRITE( stdout, FMT='(5x,"Parallel run, # proc: ",i4,/ )') nproc
+       ELSE
+           WRITE( stdout, FMT='(5x,"Serial run.",/ )')
+       ENDIF
+       !
+   ENDIF
 
    !
    ! architecture / compilation details
    !
+   IF ( ionode ) THEN
+       !
 #ifdef __HAVE_CONFIG_INFO
-   WRITE( stdout, "(2x,'        BUILT :',4x,a)" ) TRIM( ADJUSTL( __CONF_BUILT_DATE  ))
-   WRITE( stdout, "(2x,'         HOST :',4x,a)" ) TRIM( ADJUSTL( __CONF_HOST        ))
-   WRITE( stdout, "(2x,'         ARCH :',4x,a)" ) TRIM( ADJUSTL( __CONF_ARCH        ))
-   WRITE( stdout, "(2x,'           CC :',4x,a)" ) TRIM( ADJUSTL( __CONF_CC          ))
-   WRITE( stdout, "(2x,'          CPP :',4x,a)" ) TRIM( ADJUSTL( __CONF_CPP         ))
-   WRITE( stdout, "(2x,'          F90 :',4x,a)" ) TRIM( ADJUSTL( __CONF_MPIF90      ))
-   WRITE( stdout, "(2x,'          F77 :',4x,a)" ) TRIM( ADJUSTL( __CONF_F77         ))
-   WRITE( stdout, "(2x,'       DFLAGS :',4x,a)" ) TRIM( ADJUSTL( __CONF_DFLAGS      ))
-   WRITE( stdout, "(2x,'    BLAS LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_BLAS_LIBS   ))
-   WRITE( stdout, "(2x,'  LAPACK LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_LAPACK_LIBS ))
-   WRITE( stdout, "(2x,'     FFT LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_FFT_LIBS    ))
-   WRITE( stdout, "(2x,'    MASS LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_MASS_LIBS   ))
+       !
+       WRITE( stdout, "(2x,'        BUILT :',4x,a)" ) TRIM( ADJUSTL( __CONF_BUILT_DATE  ))
+       WRITE( stdout, "(2x,'         HOST :',4x,a)" ) TRIM( ADJUSTL( __CONF_HOST        ))
+       WRITE( stdout, "(2x,'         ARCH :',4x,a)" ) TRIM( ADJUSTL( __CONF_ARCH        ))
+       WRITE( stdout, "(2x,'           CC :',4x,a)" ) TRIM( ADJUSTL( __CONF_CC          ))
+       WRITE( stdout, "(2x,'          CPP :',4x,a)" ) TRIM( ADJUSTL( __CONF_CPP         ))
+       WRITE( stdout, "(2x,'          F90 :',4x,a)" ) TRIM( ADJUSTL( __CONF_MPIF90      ))
+       WRITE( stdout, "(2x,'          F77 :',4x,a)" ) TRIM( ADJUSTL( __CONF_F77         ))
+       WRITE( stdout, "(2x,'       DFLAGS :',4x,a)" ) TRIM( ADJUSTL( __CONF_DFLAGS      ))
+       WRITE( stdout, "(2x,'    BLAS LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_BLAS_LIBS   ))
+       WRITE( stdout, "(2x,'  LAPACK LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_LAPACK_LIBS ))
+       WRITE( stdout, "(2x,'     FFT LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_FFT_LIBS    ))
+       WRITE( stdout, "(2x,'    MASS LIBS :',4x,a)" ) TRIM( ADJUSTL( __CONF_MASS_LIBS   ))
 #endif
-   !
-   WRITE( stdout, "(/)")
+       !
+       WRITE( stdout, "(/)")
+       !
+   ENDIF
 
 END SUBROUTINE startup
 
