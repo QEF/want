@@ -439,7 +439,7 @@ CONTAINS
    IMPLICIT NONE
        CHARACTER(*),      INTENT(in) :: filefmt
        CHARACTER(16)      :: subname="windows_read_ext"
-       CHARACTER(nstrx)   :: str, str1
+       CHARACTER(nstrx)   :: str
        INTEGER            :: lnkpts, ierr, ik
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
 
