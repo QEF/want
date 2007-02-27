@@ -1069,11 +1069,11 @@ CONTAINS
       !------------------------------------------------------------------------
       !
 #ifdef __HAVE_WRITE_WFC
-      USE mp_wave,    ONLY : mergewf
-      USE mp,         ONLY : mp_get
-      USE mp_global,  ONLY : me_pool, nproc_image, nproc_pool, &
-                             root_pool, intra_pool_comm, me_image, &
-                             intra_image_comm
+!      USE mp_wave,    ONLY : mergewf
+!      USE mp,         ONLY : mp_get
+!      USE mp_global,  ONLY : me_pool, nproc_image, nproc_pool, &
+!                             root_pool, intra_pool_comm, me_image, &
+!                             intra_image_comm
 #endif
       !
       IMPLICIT NONE
@@ -1166,10 +1166,10 @@ CONTAINS
       ! ... on a single proc.
       !
 #ifdef __HAVE_WRITE_RHO
-      USE io_global, ONLY : ionode
-      USE mp_global, ONLY : me_image, intra_image_comm, me_pool, nproc_pool, &
-                            intra_pool_comm, my_pool_id
-      USE mp,        ONLY : mp_get
+!      USE io_module, ONLY : ionode
+!      USE mp_global, ONLY : me_image, intra_image_comm, me_pool, nproc_pool, &
+!                            intra_pool_comm, my_pool_id
+!      USE mp,        ONLY : mp_get
 #endif
       !
       IMPLICIT NONE
