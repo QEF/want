@@ -4,6 +4,8 @@
 =======================================================
 
 
+26 Feb 2007      Long standing bug in the midpoint.f90 algorithm fixed. (AF)
+
 20 Feb 2007      Normalization of WFs from plot.f90 further tested. nr1, nr2, nr3 vars
                  added to plot namelist to interpolate by FFT on finer real space meshes.
                  Documentation updated: README.input file split code by code, description
