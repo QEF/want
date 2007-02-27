@@ -140,7 +140,7 @@ END MODULE
    !
    ! local variables
    !
-   INTEGER   :: ia, ib, ipair, ia1, ia2
+   INTEGER   :: ia, ipair, ia1, ia2
    INTEGER   :: m, n, i, j, k, ierr
    INTEGER   :: npair, nmid
    REAL(dbl) :: aux, conv, vect(3)
