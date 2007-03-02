@@ -10,6 +10,7 @@
    MODULE T_kpoints_module
 !*********************************************
    USE kinds,           ONLY : dbl
+   USE log_module,      ONLY : log_push, log_pop
    IMPLICIT NONE
    PRIVATE 
    SAVE
@@ -72,6 +73,7 @@ CONTAINS
       INTEGER            :: ir, ik, i, j, ierr
       REAL(dbl)          :: arg
  
+      CALL log_push( 'kpoints_init' )
 
       !
       ! read data from datafile_C (wannier ham file)
@@ -176,6 +178,7 @@ CONTAINS
       ENDDO
       ENDDO
 
+      CALL log_pop( 'kpoints_init' )
    END SUBROUTINE kpoints_init
 
 
@@ -185,6 +188,7 @@ CONTAINS
    IMPLICIT NONE
       CHARACTER(18)      :: subname="kpoints_deallocate"
       INTEGER :: ierr
+      CALL log_push( 'kpoints_deallocate' )
 
       IF ( ALLOCATED( vr_par)  ) THEN
           DEALLOCATE( vr_par, STAT=ierr)
@@ -208,6 +212,7 @@ CONTAINS
       ENDIF
 
       alloc = .FALSE.
+      CALL log_pop( 'kpoints_deallocate' )
    END SUBROUTINE kpoints_deallocate
 
 END MODULE T_kpoints_module

@@ -9,8 +9,8 @@
     emax =   5.0 
     datafile_C = "./SCRATCH/gold_US_WanT.ham"
     transport_dir = 3
-    delta = 0.05
-    smearing_type = "gaussian"
+    delta = 0.0001
+!    smearing_type = "gaussian"
   /
 
 <HAMILTONIAN_DATA>

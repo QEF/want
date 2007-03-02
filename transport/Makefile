@@ -34,6 +34,9 @@ WANNIER_OBJS= \
 ../wannier/shutdown.o \
 ../wannier/version.o
 
+BIN= \
+conductor.x \
+current.x 
 
 EXTERNAL_LIBS= ../iotk/libiotk.a ../ctools/libctools.a ../libs/libwant.a
 BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
@@ -41,11 +44,16 @@ BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 #
 # main targets
 #
-all: conductor.x 
+all: $(BIN)
 
 
 conductor.x: conductor.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ conductor.o \
+	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../bin ; ln -sf ../transport/$@ . )
+
+current.x: current.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ current.o \
 	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../transport/$@ . )
 

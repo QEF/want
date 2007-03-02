@@ -15,6 +15,7 @@
    USE parameters,    ONLY : nstrx
    USE parser_module, ONLY : change_case
    USE io_module,     ONLY : ionode, ionode_id
+   USE log_module,    ONLY : log_push, log_pop
    USE mp,            ONLY : mp_bcast
    IMPLICIT NONE
    PRIVATE
@@ -179,6 +180,7 @@ CONTAINS
       LOGICAL :: allowed
       INTEGER :: i, ios
 
+      CALL log_push( 'read_namelist_input_conductor' )
 
       IF ( ionode ) THEN
          !
@@ -293,6 +295,8 @@ CONTAINS
            !
       IF ( use_correlation .AND. LEN_TRIM(datafile_sgm) == 0 ) &
            CALL errore(subname,'datafile_sgm unspecified',1)
+
+      CALL log_pop( 'read_namelist_input_conductor' )
 
    END SUBROUTINE read_namelist_input_conductor
 

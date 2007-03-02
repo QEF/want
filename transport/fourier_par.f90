@@ -16,6 +16,7 @@
    USE constants,            ONLY : CZERO
    USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, table_par, wr_par
    USE timing_module
+   USE log_module,           ONLY : log_push, log_pop
    IMPLICIT NONE
   
    !
@@ -36,6 +37,7 @@
 !------------------------------
 !
     CALL timing('fourier_par',OPR='start')
+    CALL log_push('fourier_par')
 
     DO ik = 1, nkpts_par
        !
@@ -53,6 +55,7 @@
     ENDDO
 
     CALL timing('fourier_par',OPR='stop')
+    CALL log_pop('fourier_par')
 END SUBROUTINE fourier_par
 
 

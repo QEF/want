@@ -10,9 +10,10 @@
    MODULE T_input_module
 !********************************************
    !
-   USE kinds,     ONLY : dbl
-   USE io_module, ONLY : stdin, ionode
-   USE constants, ONLY : ZERO
+   USE kinds,      ONLY : dbl
+   USE io_module,  ONLY : stdin, ionode
+   USE log_module, ONLY : log_push, log_pop
+   USE constants,  ONLY : ZERO
    !
    IMPLICIT NONE
    PRIVATE
@@ -50,6 +51,9 @@ CONTAINS
       !
       ! attach input from file if the case
       !
+      
+      CALL log_push( 'input_manager' )
+
       IF ( ionode ) THEN
           CALL input_from_file ( stdin, ierr )
           IF ( ierr /= 0 )  CALL errore('input_manager','error in input from file',ABS(ierr))
@@ -73,6 +77,8 @@ CONTAINS
       !
       ! reading further input data
       !
+
+      CALL log_pop( 'input_manager' )
 
    END SUBROUTINE input_manager
 

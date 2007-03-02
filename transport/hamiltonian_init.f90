@@ -47,6 +47,7 @@
    USE kinds
    USE constants,            ONLY : CZERO, CONE
    USE io_module,            ONLY : stdin, ionode, ionode_id
+   USE log_module,           ONLY : log_push, log_pop
    USE mp,                   ONLY : mp_bcast
    USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R
    USE T_kpoints_module,     ONLY : kpoints_init, nrtot_par
@@ -79,7 +80,7 @@
 ! main Body
 !----------------------------------------
 !
-
+   CALL log_push( 'hamiltonian_init' )
    !
    ! missing implementation
    !
@@ -240,6 +241,7 @@
    !
    DEALLOCATE( aux, STAT=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'deallocating aux',ABS(ierr))
+   CALL log_pop( 'hamiltonian_init' )
 
 END SUBROUTINE hamiltonian_init
 

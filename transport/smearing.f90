@@ -12,6 +12,7 @@
    USE kinds,           ONLY : dbl
    USE constants,       ONLY : ZERO, ONE, TWO, PI, SQRTPI, SQRT2, CZERO, CONE, CI, EPS_m1
    USE timing_module,   ONLY : timing
+   USE log_module,      ONLY : log_push, log_pop
    USE fft_scalar,      ONLY : cft_1z, good_fft_order_1dz
    USE smearing_module, ONLY : smearing_func
    IMPLICIT NONE
@@ -83,6 +84,7 @@ CONTAINS
 
 
        CALL timing ( 'smearing_init', OPR='start')
+       CALL log_push ( 'smearing_init' )
        !
        ! few checks
        IF ( alloc ) CALL errore(subname,'smearing already allocated',1)
@@ -188,11 +190,13 @@ CONTAINS
        ! freq to time FT
        !
        CALL timing ( 'cft_1z', OPR='start')
+       CALL log_push ( 'cft_1z')
             !
             CALL cft_1z ( auxs_in, 1, nfft, nfft, -1, auxs_out)
             CALL cft_1z ( auxp_in, 1, nfft, nfft, -1, auxp_out)
             !
        CALL timing ( 'cft_1z', OPR='stop')
+       CALL log_pop ( 'cft_1z')
 
        !
        ! perform the convolution
@@ -207,10 +211,12 @@ CONTAINS
        ! backwards fft
        !
        CALL timing ( 'cft_1z', OPR='start')
+       CALL log_push ( 'cft_1z')
             !
             CALL cft_1z ( auxp_out, 1, nfft, nfft, 1, auxp_in)
             !
        CALL timing ( 'cft_1z', OPR='stop')
+       CALL log_pop ( 'cft_1z')
 
        !
        ! smeared green function extraction
@@ -233,6 +239,7 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname, 'deallocating wrapped',ABS(ierr))
 
        CALL timing ( 'smearing_init', OPR='stop')
+       CALL log_pop ( 'smearing_init')
 
    END SUBROUTINE smearing_init
 

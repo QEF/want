@@ -24,6 +24,7 @@
    USE io_module,            ONLY : stdin, aux_unit
    USE iotk_module
    USE timing_module
+   USE log_module,           ONLY : log_push, log_pop
    USE parser_module
    USE T_control_module,     ONLY : transport_dir, use_correlation
    USE T_kpoints_module,     ONLY : kpoints_alloc => alloc, nrtot_par, vr_par, nr_par
@@ -65,6 +66,7 @@
 !----------------------------------------
 !
    CALL timing( 'read_matrix', OPR='start' )
+   CALL log_push( 'read_matrix' )
 
    !
    ! some checks
@@ -293,6 +295,7 @@
    IF (ierr/=0) CALL errore('read_matrix', 'deallocating icols, irows', ABS(ierr) )
 
    CALL timing( 'read_matrix', OPR='stop' )
+   CALL log_pop( 'read_matrix' )
    !
 END SUBROUTINE read_matrix
 

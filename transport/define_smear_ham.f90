@@ -20,6 +20,7 @@
    USE constants,          ONLY : ONE, CZERO, CI, TPI
    USE T_smearing_module,  ONLY : smear_alloc => alloc, delta, nkpts_smear
    USE timing_module,      ONLY : timing
+   USE log_module,         ONLY : log_push, log_pop
    IMPLICIT NONE 
 
    !  
@@ -49,6 +50,7 @@
 !----------------------------------------
 !
    CALL timing('define_smear_ham',OPR='start')
+   CALL log_push('define_smear_ham')
       
    !
    ! check
@@ -140,6 +142,7 @@
    END SELECT
 
    CALL timing('define_smear_ham',OPR='stop')
+   CALL log_pop('define_smear_ham')
 
 END SUBROUTINE define_smear_ham
 
