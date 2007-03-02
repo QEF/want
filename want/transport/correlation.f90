@@ -20,6 +20,7 @@
    USE T_hamiltonian_module, ONLY : dimC
    USE T_control_module,     ONLY : transport_dir
    USE timing_module,        ONLY : timing
+   USE log_module,     ONLY : log_push, log_pop
    USE iotk_module
    IMPLICIT NONE
    PRIVATE 
@@ -70,6 +71,8 @@ CONTAINS
    IMPLICIT NONE
       CHARACTER(20)  :: subname="correlation_allocate"
       INTEGER        :: ierr
+      
+      CALL log_push( 'correlation_allocate' )
 
       IF ( alloc )               CALL errore(subname,'already allocated', 1 )
       IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints not alloc', 1 )
@@ -82,6 +85,7 @@ CONTAINS
       ALLOCATE ( sgm_corr(dimC,dimC,nkpts_par), STAT=ierr )
            IF( ierr /=0 ) CALL errore(subname, 'allocating sgm_corr', ABS(ierr) )
       alloc = .TRUE.
+      CALL log_pop( 'correlation_allocate' )
 
    END SUBROUTINE correlation_allocate
 
@@ -100,6 +104,7 @@ CONTAINS
       LOGICAL            :: opened
       INTEGER            :: nomega, ie, ierr
 
+      CALL log_push( 'correlation_init' )
       IF ( .NOT. egrid_alloc )   CALL errore(subname,'egrid not alloc', 1 )
 
 
@@ -161,6 +166,8 @@ CONTAINS
       !
       DEALLOCATE( grid_file, STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'deallocating grid',ABS(ierr))
+
+      CALL log_pop( 'correlation_init' )
       
    END SUBROUTINE correlation_init
 
@@ -171,6 +178,8 @@ CONTAINS
    IMPLICIT NONE
       CHARACTER(22)      :: subname="correlation_deallocate"
       INTEGER :: ierr
+
+      CALL log_push( 'correlation_deallocate' )
 
       IF ( .NOT. alloc ) RETURN
 
@@ -192,6 +201,8 @@ CONTAINS
       ENDIF
       alloc = .FALSE.   
 
+      CALL log_pop( 'correlation_deallocate' )
+
    END SUBROUTINE correlation_deallocate
 
 
@@ -210,6 +221,7 @@ CONTAINS
 
 
       CALL timing( 'correlation_sgmread', OPR='start' )
+      CALL log_push( 'correlation_sgmread' )
  
       IF ( SIZE(opr,1) /= dimC ) CALL errore(subname,'invalid dim',1)
       IF ( SIZE(opr,2) /= dimC ) CALL errore(subname,'invalid dim',2)
@@ -298,6 +310,7 @@ CONTAINS
       IF ( ierr/=0 ) CALL errore(subname, 'deallocating aux, aux_small', ABS(ierr))
 
       CALL timing( 'correlation_sgmread', OPR='stop' )
+      CALL log_pop( 'correlation_sgmread' )
    END SUBROUTINE correlation_sgmread
     
 

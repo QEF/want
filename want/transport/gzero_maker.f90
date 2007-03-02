@@ -30,6 +30,7 @@
                                 nx_smear    => nx,    &
                                 dx_smear    => dx
    USE timing_module,    ONLY : timing
+   USE log_module,       ONLY : log_push, log_pop
    USE util_module,      ONLY : mat_hdiag, mat_mul, mat_sv
    IMPLICIT NONE 
 
@@ -59,6 +60,7 @@
 !----------------------------------------
 !
    CALL timing('gzero_maker',OPR='start')
+   CALL log_push('gzero_maker')
       
    IF ( .NOT. smear_alloc ) CALL errore(subname,'smearing module not allocated',1)
    !
@@ -195,5 +197,6 @@
    IF (ierr/=0) CALL errore(subname,'deallocating w, gw',ABS(ierr))
 
    CALL timing('gzero_maker',OPR='stop')
+   CALL log_pop('gzero_maker')
 END SUBROUTINE gzero_maker
 

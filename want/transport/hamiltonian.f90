@@ -12,6 +12,7 @@
    USE kinds,           ONLY : dbl
    USE parameters,      ONLY : nstrx
    USE T_kpoints_module,ONLY : nkpts_par
+   USE log_module,      ONLY : log_push, log_pop
    IMPLICIT NONE
    PRIVATE 
    SAVE
@@ -78,6 +79,8 @@ CONTAINS
       CHARACTER(20)      :: subname="hamiltonian_allocate"
       INTEGER  :: ierr
 
+      CALL log_push( 'hamiltonian_allocate' )
+
       IF ( alloc )       CALL errore(subname,'already allocated', 1 )
       IF ( dimL <= 0 )   CALL errore(subname,'invalid dimL', 1 )
       IF ( dimR <= 0 )   CALL errore(subname,'invalid dimR', 1 )
@@ -121,6 +124,9 @@ CONTAINS
            IF( ierr /=0 ) CALL errore(subname, ' allocating s_CR ', 1 )
 
       alloc = .TRUE.
+
+      CALL log_pop( 'hamiltonian_allocate' )
+
    END SUBROUTINE hamiltonian_allocate
 
 
@@ -130,6 +136,8 @@ CONTAINS
    IMPLICIT NONE
       CHARACTER(22)      :: subname="hamiltonian_deallocate"
       INTEGER :: ierr
+
+      CALL log_push( 'hamiltonian_deallocate' )
 
       IF ( .NOT. alloc ) RETURN
 
@@ -156,6 +164,8 @@ CONTAINS
            IF( ierr /=0 ) CALL errore(subname, 'deallocating s_CR', 1 )
           
       alloc = .FALSE.   
+
+      CALL log_pop( 'hamiltonian_deallocate' )
 
    END SUBROUTINE hamiltonian_deallocate
 

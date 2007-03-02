@@ -20,6 +20,7 @@
    USE kinds
    USE constants,         ONLY : CZERO, CONE, CI
    USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
    USE util_module,       ONLY : mat_mul, mat_sv
    IMPLICIT NONE
 
@@ -47,6 +48,7 @@
 !----------------------------------------
 !
    CALL timing('green',OPR='start')
+   CALL log_push('green')
 
    ALLOCATE( eh0(dim,dim), s1(dim,dim), s2(dim,dim), STAT=ierr)
       IF (ierr/=0) CALL errore('green','allocating eh0,s1,s2',ABS(ierr))
@@ -103,6 +105,7 @@
       IF (ierr/=0) CALL errore('green','deallocating eh0, s1, s2',ABS(ierr))
 
    CALL timing('green',OPR='stop')
+   CALL log_pop('green')
 
 END SUBROUTINE green
 

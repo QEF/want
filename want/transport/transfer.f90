@@ -19,6 +19,7 @@
    USE io_global_module,  ONLY : stdout
    USE constants,         ONLY : CZERO, CONE, ZERO, EPS_m7, CI
    USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
    USE util_module,       ONLY : mat_mul, mat_sv
    USE T_smearing_module, ONLY : delta
    IMPLICIT NONE
@@ -56,6 +57,7 @@
 !----------------------------------------
 !
       CALL timing('transfer',OPR='start')
+      CALL log_push('transfer')
 
 
       ALLOCATE( tau(dim, dim, 2), taut(dim, dim, 2), STAT=ierr)
@@ -220,6 +222,7 @@
          IF (ierr/=0) CALL errore('transfer','deallocating s1, s2',ABS(ierr))
 
       CALL timing('transfer',OPR='stop')
+      CALL log_pop('transfer')
 
    END SUBROUTINE transfer
 

@@ -20,6 +20,7 @@
    USE constants,      ONLY : CZERO, CONE, CI, ZERO , EPS_m5
    USE util_module,    ONLY : mat_mul, mat_sv
    USE timing_module,  ONLY : timing
+   USE log_module,     ONLY : log_push, log_pop
    IMPLICIT NONE
 
    !
@@ -48,6 +49,7 @@
 !------------------------------
 !
    CALL timing('transmittance', OPR='start')
+   CALL log_push('transmittance')
 
    ALLOCATE( tmp(dimC,dimC), tmp1(dimC,dimC), STAT=ierr )
       IF (ierr/=0) CALL errore('transmittance','allocating tmp,tm1',ABS(ierr))
@@ -128,5 +130,6 @@
       IF (ierr/=0) CALL errore('transmittance','deallocating lambda',ABS(ierr))
       
    CALL timing('transmittance', OPR='stop')
+   CALL log_pop('transmittance')
 END SUBROUTINE transmittance
 
