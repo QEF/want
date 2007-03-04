@@ -3,7 +3,8 @@
             WanT code:  Log of Changes 
 =======================================================
 
-02 Mar 2007      log_push and log_pop added in all routines in transport. (BB)
+
+02 Mar 2007      log_push and log_pop added in all the routines of transport/. (BB)
 
 27 Feb 2007      Parallelization of conductor implemented, divide_et_impera.f90 added. (AF)
 
