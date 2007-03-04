@@ -19,7 +19,7 @@
    !      analytical form for the FT of the gaussian orbitals.
    !
    USE kinds,                ONLY : dbl
-   USE constants,            ONLY : CZERO
+   USE constants,            ONLY : CONE, CZERO
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE sph_har_module,       ONLY : sph_har_index 
@@ -45,8 +45,8 @@
    !
    ! local variables
    !
-   INTEGER :: npwk
-   INTEGER :: lmax
+   INTEGER :: npwk, npwx
+   INTEGER :: lmax, ibs, ibe
    INTEGER :: iwann, ib, ig, ind 
    INTEGER :: ierr
    INTEGER,      ALLOCATABLE :: ylm_info(:,:)
@@ -65,10 +65,12 @@
       CALL log_push('projection')
 
       ind = wfc_info_getindex(imin, ik, "SPSI_IK", evc_info)
+      !
       npwk = evc_info%npw(ind)
+      npwx = evc_info%npwx
 
       ALLOCATE( trial_vect(npwk), STAT = ierr )
-        IF( ierr /= 0 ) CALL errore( 'projection', 'allocating trial_vect', npwk )
+      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating trial_vect', npwk )
 
       !
       ! set the maximum l for the spherical harmonics
@@ -76,27 +78,34 @@
       ! hybrid orbitals which are combinations of s and p Y_lm
       !
       lmax = 0
+      !
       DO iwann=1,dimwann
          lmax = MAX( lmax, ABS( trial(iwann)%l )  )
       ENDDO
 
       ALLOCATE( ylm_info(-lmax:lmax, 0:lmax ), STAT=ierr )
-        IF( ierr /= 0 ) CALL errore( 'projection', 'allocating ylm_info', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating ylm_info', ABS(ierr) )
+      !
       ALLOCATE( vkg(3,npwk), STAT=ierr )
-        IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vkg', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vkg', ABS(ierr) )
+      !
       ALLOCATE( vkgg(npwk), STAT=ierr )
-        IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vkgg', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vkgg', ABS(ierr) )
+      !
       ALLOCATE( ylm(npwk,(lmax+1)**2), STAT=ierr )
-        IF( ierr /= 0 ) CALL errore( 'projection', 'allocating ylm', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating ylm', ABS(ierr) )
 
       !
       ! compute the needed spherical harmonics
       ! vkg in bohr^-1
       !
       DO ig = 1, npwk
+          !
           vkg(:,ig) = - ( vkpt(:,ik) + g(:, igsort(ig,ik))*tpiba )  
           vkgg(ig)  = DOT_PRODUCT( vkg(:,ig) , vkg(:,ig) ) 
+          !
       ENDDO
+      !
       CALL ylmr2( (lmax+1)**2, npwk, vkg, vkgg, ylm ) 
       CALL sph_har_index(lmax, ylm_info)
 
@@ -123,21 +132,43 @@
              ENDDO
              !
           ENDDO 
+          !
+!
+! ALTERNATIVE IMPLEMENTATION
+!
+#ifdef __ALTERNATIVE
+          !
+          ! get the indexes of the required wfs in the evc workspace
+          !
+          ind = wfc_info_getindex( imin, ik, "SPSI_IK", evc_info )
+          !
+          ! perform the scalr produce < nk | trial_vect > 
+          ! for all the bands in the selected energy window
+          !
+          CALL ZGEMV ( 'C', npwk, dimw, CONE, evc(:, ind:ind+dimw-1 ), npwx, &
+                       trial_vect, 1, CZERO, ca(:, iwann), 1 )
+                 
+#endif
+          !
       ENDDO    
 
       !
       ! local cleaning
       ! 
       DEALLOCATE( trial_vect, STAT=ierr )
-          IF (ierr/=0) CALL errore('projection','deallocating trial_vect',ABS(ierr))
+      IF (ierr/=0) CALL errore('projection','deallocating trial_vect',ABS(ierr))
+      !
       DEALLOCATE( ylm_info, STAT=ierr )
-          IF (ierr/=0) CALL errore('projection','deallocating ylm_info',ABS(ierr))
+      IF (ierr/=0) CALL errore('projection','deallocating ylm_info',ABS(ierr))
+      !
       DEALLOCATE( vkg, STAT=ierr )
-          IF (ierr/=0) CALL errore('projection','deallocating vkg', ABS(ierr) )
+      IF (ierr/=0) CALL errore('projection','deallocating vkg', ABS(ierr) )
+      !
       DEALLOCATE( vkgg, STAT=ierr )
-          IF (ierr/=0) CALL errore('projection','deallocating vkgg', ABS(ierr) )
+      IF (ierr/=0) CALL errore('projection','deallocating vkgg', ABS(ierr) )
+      !
       DEALLOCATE( ylm, STAT=ierr )
-          IF (ierr/=0) CALL errore('projection','deallocating ylm', ABS(ierr) )
+      IF (ierr/=0) CALL errore('projection','deallocating ylm', ABS(ierr) )
 
       CALL timing('projection',OPR='stop')
       CALL log_pop('projection')
