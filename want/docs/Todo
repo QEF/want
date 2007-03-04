@@ -5,15 +5,15 @@
 
 * plot.x: USPP features not fully implemented.
 
+* disentangle + wannier: 
+     - scalar products in projections and overlaps by BLAS
+               
 * tests:  check.sh script
 
 * One step minimization (Thygesen like)
 * Symmetries in wfc management
 * Wannier and Transport parallelization
 
-* disentangle + wannier: 
-     - scalar products in projections and overlaps by BLAS
-               
 * direct calculation of the current
 * eigenchannel in transport calculation
 * eigenvalue problem in wannier localization
