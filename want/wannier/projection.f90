@@ -137,6 +137,9 @@
 ! ALTERNATIVE IMPLEMENTATION
 !
 #ifdef __ALTERNATIVE
+! 
+! XXX
+!
           !
           ! get the indexes of the required wfs in the evc workspace
           !
