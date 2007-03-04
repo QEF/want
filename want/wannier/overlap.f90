@@ -117,15 +117,19 @@
       ! loops over bands
       !
       DO j2 = 1, dimw2
+          !
           aux2(:) = CZERO
           ind2 = wfc_info_getindex(imin2 +j2 -1, ik2, "IKB", evc_info)
+          !
           DO ig=1, npwk2
              aux2( map( ig ) ) = evc( ig, ind2) 
           ENDDO
 
           DO j1 = 1, dimw1
+              !
               aux1(:) = CZERO
               ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
+              !
               DO ig=1, npwk1
                  aux1( igsort( ig, ik1 ) ) = evc( ig, ind1) 
               ENDDO
@@ -133,19 +137,24 @@
               Mkb( j1, j2 ) = CZERO
               !
               ! last position for ig is dummy
+              !
+! XXXX
+! add the use of BLAS dot product and maybe change the map.
+!
               DO ig=1, npwx_g -1  
                  Mkb( j1, j2 ) = Mkb( j1, j2 ) + &
                                          CONJG( aux1(ig) ) * aux2(ig)
               ENDDO
+              !
           ENDDO
       ENDDO
 
       DEALLOCATE( aux1, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap','deallocating aux1',ABS(ierr))
+      IF (ierr/=0) CALL errore('overlap','deallocating aux1',ABS(ierr))
       DEALLOCATE( aux2, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap','deallocating aux2',ABS(ierr))
+      IF (ierr/=0) CALL errore('overlap','deallocating aux2',ABS(ierr))
       DEALLOCATE( map, STAT=ierr)
-         IF (ierr/=0) CALL errore('overlap','deallocating map',ABS(ierr))
+      IF (ierr/=0) CALL errore('overlap','deallocating map',ABS(ierr))
 
       CALL timing('overlap',OPR='stop')
       CALL log_pop('overlap')
