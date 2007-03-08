@@ -8,15 +8,15 @@
 
 
   Program <bands>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  6:29:39 
+  Date  1Oct2006 at 16:18:48 
 
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
              CC :    gcc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__LINUX -D__INTEL -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
@@ -310,8 +310,8 @@
              clock number :     3
 
                     bands :     0.00s CPU 
-
-             want_dftread :     0.19s CPU
+ 
+             want_dftread :     0.09s CPU
                 want_init :     0.00s CPU
 
 

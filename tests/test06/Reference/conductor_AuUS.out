@@ -8,15 +8,16 @@
 
 
   Program <conductor>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  6:22:49 
+  Date 16Jan2007 at 15:22:49 
 
+          BUILT :    Tue Jan 16 12:27:45 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
@@ -29,28 +30,31 @@
   ======================================================================
 
   <INPUT>
-       Calculation Type    :     bulk
-       Conductance Formula :     landauer
-       Transport Direction :      3
-       Use Overlap         :     FALSE
-       Use Correlation     :     FALSE
-       Max iteration number:      200
+                        Prefix :     
+                       Postfix :     _AuUS
+                      Work_dir :     ./
+                Calculation Type :     bulk
+             Conductance Formula :     landauer
+             Transport Direction :      3
+                     Use Overlap :     FALSE
+                 Use Correlation :     FALSE
+                    Write k-data :     FALSE
+        Max number of iterations :       50
+                          Nprint :       20
 
-       Print info each  20 energy step
-
-       Conductor data read from file  :     ./SCRATCH/gold_US_WanT.ham
+        Conductor data from file :     ./SCRATCH/gold_US_WanT.ham
   </INPUT>
 
 
   <ENERGY_GRID>
-       Dimension     :       1000
-       Min Energy    :      -10.00000
-       Max Energy    :        5.00000
-       Energy Step   :        0.01502
-       Delta         :        0.05000
-       Smearing Type :     gaussian
-       Smearing grid Dimension :      19998
-       Smearing grid Extrema   :       25.00000
+                       Dimension :       1000
+                      Min Energy :      -10.00000
+                      Max Energy :        5.00000
+                     Energy Step :        0.01502
+                           Delta :        0.05000
+                   Smearing Type :     gaussian
+         Smearing grid Dimension :      20000
+           Smearing grid Extrema :       25.00000
   </ENERGY_GRID>
 
 
@@ -72,274 +76,1442 @@
   </K-POINTS>
 
 
+  ======================================================================
+  =                        Transport calculation                       =
+  ======================================================================
+
+
+
   Computing E(     1 ) = -10.00000 eV
   T matrix converged after avg. # of iterations    2.000
+                              Total time spent up to now :     0.18 secs
 
-                              Total time spent up to now :     0.32 secs
 
   Computing E(    20 ) =  -9.71471 eV
   T matrix converged after avg. # of iterations    2.000
+                              Total time spent up to now :     0.21 secs
 
-                              Total time spent up to now :     0.38 secs
 
   Computing E(    40 ) =  -9.41441 eV
   T matrix converged after avg. # of iterations    2.000
+                              Total time spent up to now :     0.25 secs
 
-                              Total time spent up to now :     0.44 secs
 
   Computing E(    60 ) =  -9.11411 eV
   T matrix converged after avg. # of iterations    2.000
+                              Total time spent up to now :     0.28 secs
 
-                              Total time spent up to now :     0.50 secs
 
   Computing E(    80 ) =  -8.81381 eV
   T matrix converged after avg. # of iterations    2.000
+                              Total time spent up to now :     0.32 secs
 
-                              Total time spent up to now :     0.56 secs
 
   Computing E(   100 ) =  -8.51351 eV
   T matrix converged after avg. # of iterations    2.000
+                              Total time spent up to now :     0.36 secs
 
-                              Total time spent up to now :     0.62 secs
 
   Computing E(   120 ) =  -8.21321 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     0.40 secs
 
-                              Total time spent up to now :     0.69 secs
 
   Computing E(   140 ) =  -7.91291 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     0.44 secs
 
-                              Total time spent up to now :     0.81 secs
 
   Computing E(   160 ) =  -7.61261 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     0.48 secs
 
-                              Total time spent up to now :     0.88 secs
 
   Computing E(   180 ) =  -7.31231 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     0.53 secs
 
-                              Total time spent up to now :     0.95 secs
 
   Computing E(   200 ) =  -7.01201 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     0.57 secs
 
-                              Total time spent up to now :     1.02 secs
 
   Computing E(   220 ) =  -6.71171 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     0.61 secs
 
-                              Total time spent up to now :     1.09 secs
 
   Computing E(   240 ) =  -6.41141 eV
   T matrix converged after avg. # of iterations    4.000
+                              Total time spent up to now :     0.66 secs
 
-                              Total time spent up to now :     1.16 secs
 
   Computing E(   260 ) =  -6.11111 eV
-  T matrix converged after avg. # of iterations    5.000
+  T matrix converged after avg. # of iterations    6.000
+                              Total time spent up to now :     0.71 secs
 
-                              Total time spent up to now :     1.24 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   280 ) =  -5.81081 eV
-  T matrix converged after avg. # of iterations    7.000
-
-                              Total time spent up to now :     1.34 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   300 ) =  -5.51051 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     1.45 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   320 ) =  -5.21021 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     1.55 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   340 ) =  -4.90991 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     1.66 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   360 ) =  -4.60961 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     1.77 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   380 ) =  -4.30931 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     1.88 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   400 ) =  -4.00901 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     1.99 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   420 ) =  -3.70871 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     2.11 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   440 ) =  -3.40841 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     2.22 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   460 ) =  -3.10811 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     2.34 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   480 ) =  -2.80781 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     2.45 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   500 ) =  -2.50751 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     2.56 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   520 ) =  -2.20721 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     2.67 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   540 ) =  -1.90691 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     2.78 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   560 ) =  -1.60661 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     2.90 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   580 ) =  -1.30631 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     3.01 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   600 ) =  -1.00601 eV
-  T matrix converged after avg. # of iterations    7.000
-
-                              Total time spent up to now :     3.12 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   620 ) =  -0.70571 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     3.23 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   640 ) =  -0.40541 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     3.39 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   660 ) =  -0.10511 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     3.49 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   680 ) =   0.19520 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     3.60 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   700 ) =   0.49550 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     3.71 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   720 ) =   0.79580 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     3.82 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   740 ) =   1.09610 eV
-  T matrix converged after avg. # of iterations    9.000
-
-                              Total time spent up to now :     3.93 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   760 ) =   1.39640 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     4.04 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   780 ) =   1.69670 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     4.15 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   800 ) =   1.99700 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     4.26 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   820 ) =   2.29730 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     4.37 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   840 ) =   2.59760 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     4.48 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   860 ) =   2.89790 eV
-  T matrix converged after avg. # of iterations    8.000
-
-                              Total time spent up to now :     4.59 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   880 ) =   3.19820 eV
-  T matrix converged after avg. # of iterations    7.000
-
-                              Total time spent up to now :     4.69 secs
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
+  WARNING: t-matrix not converged after  50 iterations
+  WARNING: bad convergence, discarting frequency
 
   Computing E(   900 ) =   3.49850 eV
   T matrix converged after avg. # of iterations    4.000
+                              Total time spent up to now :     2.04 secs
 
-                              Total time spent up to now :     4.78 secs
 
   Computing E(   920 ) =   3.79880 eV
   T matrix converged after avg. # of iterations    4.000
+                              Total time spent up to now :     2.09 secs
 
-                              Total time spent up to now :     4.86 secs
 
   Computing E(   940 ) =   4.09910 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     2.13 secs
 
-                              Total time spent up to now :     4.93 secs
 
   Computing E(   960 ) =   4.39940 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     2.17 secs
 
-                              Total time spent up to now :     5.00 secs
 
   Computing E(   980 ) =   4.69970 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     2.22 secs
 
-                              Total time spent up to now :     5.07 secs
 
   Computing E(  1000 ) =   5.00000 eV
   T matrix converged after avg. # of iterations    3.000
+                              Total time spent up to now :     2.34 secs
 
-                              Total time spent up to now :     5.14 secs
 
+  WARNING:  624 freq. not computed (Lead sgm NOT converged)
+
+  Conductance written on file:    cond_AuUS.dat
+
+  DOS written on file:    doscond_AuUS.dat
+
+  ======================================================================
 
    <global routines>
              clock number :     9
 
-                conductor :     5.00s CPU 
-
-            smearing_init :     0.22s CPU
-                   cft_1z :     0.20s CPU (       2 calls,   0.098 s avg)
-              read_matrix :     0.06s CPU (       2 calls,   0.030 s avg)
+                conductor :     2.00s CPU 
+ 
+            smearing_init :     0.07s CPU
+                   cft_1z :     0.05s CPU (       2 calls,   0.025 s avg)
+              read_matrix :     0.06s CPU (       2 calls,   0.031 s avg)
               fourier_par :     0.00s CPU (       2 calls,   0.000 s avg)
-                 transfer :     3.06s CPU (    8000 calls,   0.000 s avg)
-                    green :     0.96s CPU (    8000 calls,   0.000 s avg)
-              gzero_maker :     1.01s CPU (   12000 calls,   0.000 s avg)
-            transmittance :     0.08s CPU (    4000 calls,   0.000 s avg)
+                 transfer :     1.91s CPU (    3634 calls,   0.001 s avg)
+                    green :     0.07s CPU (    3010 calls,   0.000 s avg)
+              gzero_maker :     0.02s CPU (    1505 calls,   0.000 s avg)
+            transmittance :     0.03s CPU (    1505 calls,   0.000 s avg)
 
 

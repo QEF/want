@@ -8,15 +8,16 @@
 
 
   Program <disentangle>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  6:16:58 
+  Date 16Jan2007 at 15:17:12 
 
+          BUILT :    Tue Jan 16 12:27:45 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
@@ -133,11 +134,12 @@
      Au   tau(   1 ) = (   0.0000000   0.0000000   0.9448631 )
 
   Atomic positions: (crystal coord.)
-     Au   tau(   1 ) = (   0.0000000   0.0000000   0.0100000 )
+     Au   tau(   1 ) = (   0.0000000   0.0000000   0.1999998 )
  </IONS>
 
  <SYMMETRY>
   Number of symmetry operations =  8
+
 
       isym =  1                                          identity
 
@@ -201,24 +203,24 @@
   Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.1250000
-    k (   2) =    (   0.00000  0.00000  0.16625 ),   weight =   0.1250000
-    k (   3) =    (   0.00000  0.00000  0.33249 ),   weight =   0.1250000
-    k (   4) =    (   0.00000  0.00000  0.49874 ),   weight =   0.1250000
-    k (   5) =    (   0.00000  0.00000  0.66498 ),   weight =   0.1250000
-    k (   6) =    (   0.00000  0.00000  0.83123 ),   weight =   0.1250000
-    k (   7) =    (   0.00000  0.00000  0.99747 ),   weight =   0.1250000
-    k (   8) =    (   0.00000  0.00000  1.16372 ),   weight =   0.1250000
+    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =      0.1250000
+    k (   2) =    (   0.00000  0.00000  0.16625 ),   weight =      0.1250000
+    k (   3) =    (   0.00000  0.00000  0.33249 ),   weight =      0.1250000
+    k (   4) =    (   0.00000  0.00000  0.49874 ),   weight =      0.1250000
+    k (   5) =    (   0.00000  0.00000  0.66498 ),   weight =      0.1250000
+    k (   6) =    (   0.00000  0.00000  0.83123 ),   weight =      0.1250000
+    k (   7) =    (   0.00000  0.00000  0.99747 ),   weight =      0.1250000
+    k (   8) =    (   0.00000  0.00000  1.16372 ),   weight =      0.1250000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b (   1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0660592
-    b (   2) =    (   0.31416 -0.00000 -0.00000 ),   weight =   5.0660592
-    b (   3) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0660592
-    b (   4) =    (  -0.00000  0.31416 -0.00000 ),   weight =   5.0660592
-    b (   5) =    (   0.00000  0.00000  0.16625 ),   weight =  18.0912617
-    b (   6) =    (  -0.00000 -0.00000 -0.16625 ),   weight =  18.0912617
+    b (   1) =    (  -0.31416  0.00000  0.00000 ),   weight =      5.0660592
+    b (   2) =    (   0.31416  0.00000  0.00000 ),   weight =      5.0660592
+    b (   3) =    (   0.00000 -0.31416  0.00000 ),   weight =      5.0660592
+    b (   4) =    (   0.00000  0.31416  0.00000 ),   weight =      5.0660592
+    b (   5) =    (   0.00000  0.00000  0.16625 ),   weight =     18.0912617
+    b (   6) =    (   0.00000  0.00000 -0.16625 ),   weight =     18.0912617
 
   Total weight =      56.4467600
  </B-SHELL>
@@ -315,39 +317,39 @@
   Initializing atomic wfc
     Overlaps or Projections calculation for k-point:    1
     npw =  11303,    dimwin =    9
-                              Total time spent up to now :     1.87 secs
+                              Total time spent up to now :     1.89 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =  11299,    dimwin =    9
-                              Total time spent up to now :     2.32 secs
+                              Total time spent up to now :     2.16 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =  11287,    dimwin =    8
-                              Total time spent up to now :     2.62 secs
+                              Total time spent up to now :     2.43 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =  11254,    dimwin =    6
-                              Total time spent up to now :     2.88 secs
+                              Total time spent up to now :     2.63 secs
 
     Overlaps or Projections calculation for k-point:    5
     npw =  11226,    dimwin =    6
-                              Total time spent up to now :     3.13 secs
+                              Total time spent up to now :     2.91 secs
 
     Overlaps or Projections calculation for k-point:    6
     npw =  11254,    dimwin =    6
-                              Total time spent up to now :     3.41 secs
+                              Total time spent up to now :     3.13 secs
 
     Overlaps or Projections calculation for k-point:    7
     npw =  11287,    dimwin =    8
-                              Total time spent up to now :     3.78 secs
+                              Total time spent up to now :     3.46 secs
 
     Overlaps or Projections calculation for k-point:    8
     npw =  11299,    dimwin =    9
-                              Total time spent up to now :     4.21 secs
+                              Total time spent up to now :     3.84 secs
 
 
   Overlaps and projections written on file: gold_WanT.ovp
-                              Total time spent up to now :     4.32 secs
+                              Total time spent up to now :     3.95 secs
 
 
   ======================================================================
@@ -403,7 +405,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      22.209376         6.219254
    Avrg Omega_I                     :       3.701563         1.036542
 
-                              Total time spent up to now :     4.32 secs
+                              Total time spent up to now :     3.97 secs
 
 
   Subspace decomposition:
@@ -443,30 +445,34 @@
   ======================================================================
 
    <global routines>
-             clock number :    22
+             clock number :    26
 
-              disentangle :     4.00s CPU 
-
-             want_dftread :     0.56s CPU
-                want_init :     0.00s CPU
-             bshells_init :     0.00s CPU
-              wfc_manager :     3.65s CPU
-          ggrids_read_ext :     0.15s CPU
-      wfc_data_grids_read :     0.06s CPU
-              struct_fact :     0.02s CPU
-                init_at_1 :     0.33s CPU
-           wfc_data_kread :     1.23s CPU (      32 calls,   0.038 s avg)
-                  overlap :     1.15s CPU (      24 calls,   0.048 s avg)
-           overlap_setmap :     0.25s CPU (      24 calls,   0.010 s avg)
+              disentangle :     3.00s CPU 
+ 
+             want_dftread :     0.68s CPU
+         windows_read_ext :     0.02s CPU
+                want_init :     0.14s CPU
+             bshells_init :     0.12s CPU
+             windows_init :     0.00s CPU
+              wfc_manager :     2.57s CPU
+          ggrids_read_ext :     0.09s CPU
+      wfc_data_grids_read :     0.03s CPU
+              struct_fact :     0.01s CPU
+                init_at_1 :     0.05s CPU
+           wfc_data_kread :     0.83s CPU (      32 calls,   0.026 s avg)
+                  overlap :     1.10s CPU (      24 calls,   0.046 s avg)
+           overlap_setmap :     0.18s CPU (      24 calls,   0.007 s avg)
                     s_psi :     0.02s CPU (       8 calls,   0.002 s avg)
-               projection :     0.35s CPU (       8 calls,   0.044 s avg)
-       trial_center_setup :     0.10s CPU (      48 calls,   0.002 s avg)
-               atomic_wfc :     0.09s CPU (      48 calls,   0.002 s avg)
-               iterations :     0.00s CPU
-            subspace_init :     0.00s CPU
+               projection :     0.32s CPU (       8 calls,   0.040 s avg)
+       trial_center_setup :     0.16s CPU (      48 calls,   0.003 s avg)
+               atomic_wfc :     0.13s CPU (      48 calls,   0.003 s avg)
+               iterations :     0.02s CPU
+            subspace_init :     0.02s CPU
         projection_frozen :     0.00s CPU
                    omegai :     0.00s CPU (       2 calls,   0.000 s avg)
                   zmatrix :     0.00s CPU
                 mat_hdiag :     0.00s CPU (       9 calls,   0.000 s avg)
+            windows_write :     0.00s CPU
+           subspace_write :     0.01s CPU
 
 
