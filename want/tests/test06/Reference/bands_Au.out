@@ -8,15 +8,18 @@
 
 
   Program <bands>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  6:17: 4 
+  Date  8Mar2007 at 17:12:49 
 
+     Serial run.
+
+          BUILT :    Wed Feb 28 12:03:55 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
@@ -34,9 +37,12 @@
   =                           INPUT Summary                            =
   ======================================================================
 
-                      fileout :     ./SCRATCH/gold_WanT_bands.dat
+                      fileout :     bands_Au_NN.dat
                     nkpts_in  :      2
                     nkpts_max :    100
+                    use_nn(1) :     FALSE
+                    use_nn(2) :     FALSE
+                    use_nn(3) :     TRUE
 
 
   ======================================================================
@@ -67,18 +73,18 @@
  </LATTICE>
 
  <K-POINTS>
-  nkpts =    8
-  Monkhorst-Pack grid:      nk = (  1  1  8 ),      shift = (  0  0  0 )
+  nkpts =     8
+  Monkhorst-Pack grid:      nk = (   1   1   8 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.1250000
-    k (   2) =    (   0.00000  0.00000  0.16625 ),   weight =   0.1250000
-    k (   3) =    (   0.00000  0.00000  0.33249 ),   weight =   0.1250000
-    k (   4) =    (   0.00000  0.00000  0.49874 ),   weight =   0.1250000
-    k (   5) =    (   0.00000  0.00000  0.66498 ),   weight =   0.1250000
-    k (   6) =    (   0.00000  0.00000  0.83123 ),   weight =   0.1250000
-    k (   7) =    (   0.00000  0.00000  0.99747 ),   weight =   0.1250000
-    k (   8) =    (   0.00000  0.00000  1.16372 ),   weight =   0.1250000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    2) =    (    0.0000000   0.0000000   0.1662458 ),   weight =      0.1250000
+    k (    3) =    (    0.0000000   0.0000000   0.3324915 ),   weight =      0.1250000
+    k (    4) =    (    0.0000000   0.0000000   0.4987373 ),   weight =      0.1250000
+    k (    5) =    (    0.0000000   0.0000000   0.6649830 ),   weight =      0.1250000
+    k (    6) =    (    0.0000000   0.0000000   0.8312288 ),   weight =      0.1250000
+    k (    7) =    (    0.0000000   0.0000000   0.9974746 ),   weight =      0.1250000
+    k (    8) =    (    0.0000000   0.0000000   1.1637203 ),   weight =      0.1250000
  </K-POINTS>
 
 
@@ -307,11 +313,13 @@
   ======================================================================
 
    <global routines>
-             clock number :     3
+             clock number :     5
 
                     bands :     0.00s CPU 
-
-             want_dftread :     0.28s CPU
-                want_init :     0.12s CPU
+ 
+             want_dftread :     0.11s CPU
+                want_init :     0.00s CPU
+             windows_read :     0.01s CPU
+            subspace_read :     0.09s CPU
 
 

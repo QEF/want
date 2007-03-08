@@ -8,15 +8,16 @@
 
 
   Program <dos>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  6:22:15 
+  Date 16Jan2007 at 15:22:18 
 
+          BUILT :    Tue Jan 16 12:27:45 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
@@ -39,7 +40,7 @@
                         delta :     0.05000 eV
                            nk :      1   1 400
                             s :      0   0   0
-                        nktot :     ******
+                        nktot :          0
 
 
   ======================================================================
@@ -485,11 +486,13 @@
   ======================================================================
 
    <global routines>
-             clock number :     3
+             clock number :     5
 
-                      dos :     5.00s CPU 
-
-             want_dftread :     0.45s CPU
+                      dos :     3.00s CPU 
+ 
+             want_dftread :     0.25s CPU
                 want_init :     0.00s CPU
+             windows_read :     0.02s CPU
+            subspace_read :     0.53s CPU
 
 
