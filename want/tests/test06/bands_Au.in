@@ -3,7 +3,8 @@
    prefix = 'gold'
    postfix = '_WanT'
    work_dir = './SCRATCH'
-!   fileout = 'gold_WanT_bands_NN.dat'
+   fileout = 'bands_Au.dat'
+!   fileout = 'bands_Au_NN.dat'
 !   use_nn(3) = .TRUE.
    nkpts_in  = 2
    nkpts_max = 100

@@ -4,10 +4,11 @@
    postfix = '_WanT'
    work_dir = './SCRATCH'
    fileout = 'dos_Au.dat'
+!   fileout = 'dos_Au_NN.dat'
+!   use_nn(3) = .TRUE.
    nk(1) = 1
    nk(2) = 1
    nk(3) = 400
-   use_nn(3) = .TRUE.
    delta = 0.05
    smearing_type = 'gaussian'
    projdos = .TRUE.
