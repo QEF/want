@@ -22,7 +22,7 @@
    USE util_module,          ONLY : mat_mul, mat_sv
    USE mp_global,            ONLY : mpime, nproc
    USE mp,                   ONLY : mp_sum
-   USE io_module,            ONLY : ionode, stdout, stdin, sgm_unit => aux_unit,   &
+   USE io_module,            ONLY : ionode, stdout, stdin, sgm_unit, &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
                                     work_dir, prefix, postfix, aux_unit
    USE T_input_module,       ONLY : input_manager
