@@ -4,7 +4,6 @@ fft_scalar.o : kind.o
 files.o : ../iotk/iotk_16_module.o
 files.o : parameters.o
 files.o : parser.o
-invmat.o : kind.o
 io_global.o : ../iotk/iotk_16_module.o
 locate.o : kind.o
 mp_global.o : kind.o
