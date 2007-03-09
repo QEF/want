@@ -8,7 +8,7 @@
 !
 ! <INFO>
 !*********************************************
-   MODULE util_module
+  MODULE util_module
 !*********************************************
   USE kinds
   USE constants, ONLY : ZERO, ONE, CZERO, CONE
@@ -24,6 +24,7 @@
 ! SUBROUTINE   mat_sv ( n, nrhs, a, b [,ierr])
 ! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
 ! SUBROUTINE   mat_hdiag( z, w, a, n)
+! SUBROUTINE   mat_inv( n, a, z [,det_a] )
 ! SUBROUTINE  zmat_diag( z, w, a, n, side)
 ! LOGICAL FUNCTION  zmat_unitary( m, n, z [,side] [,toll])
 ! INTEGER FUNCTION   mat_rank( m, n, a, toll)
@@ -63,6 +64,12 @@ INTERFACE mat_hdiag
    MODULE PROCEDURE zmat_hdiag
    MODULE PROCEDURE dmat_hdiag
 END INTERFACE
+!
+! matrix inversion
+INTERFACE mat_inv
+   MODULE PROCEDURE zmat_inv
+   MODULE PROCEDURE dmat_inv
+END INTERFACE
 
 
 
@@ -72,6 +79,7 @@ PUBLIC ::  mat_svd
 PUBLIC ::  mat_sv
 PUBLIC ::  mat_mul
 PUBLIC ::  mat_hdiag
+PUBLIC ::  mat_inv
 PUBLIC :: zmat_diag
 PUBLIC :: zmat_unitary
 PUBLIC ::  mat_rank
@@ -87,8 +95,9 @@ CONTAINS
    !**********************************************************
     IMPLICIT NONE
     COMPLEX(dbl), INTENT(OUT) :: zp(:)
-    COMPLEX(dbl), INTENT(IN) :: z(:,:)
-    INTEGER :: n
+    COMPLEX(dbl), INTENT(IN)  :: z(:,:)
+    INTEGER,      INTENT(IN)  :: n
+    !
     INTEGER :: i, j, ind
 
     ind = 1
@@ -107,9 +116,9 @@ CONTAINS
    SUBROUTINE zmat_unpack( z, zp, n )
    !**********************************************************
     IMPLICIT NONE
-    COMPLEX(dbl), INTENT(IN) :: zp(:)
+    COMPLEX(dbl), INTENT(IN)  :: zp(:)
     COMPLEX(dbl), INTENT(OUT) :: z(:,:)
-    INTEGER :: n
+    INTEGER,      INTENT(IN)  :: n
     INTEGER :: i, j, ind
 
     ind = 1
@@ -777,6 +786,136 @@ END SUBROUTINE dmat_hdiag
    RETURN
 END SUBROUTINE zmat_diag
 
+
+!**********************************************************
+   SUBROUTINE zmat_inv( n, a, z, det_a )
+   !**********************************************************
+   !
+   ! compute Z = inv( A ), and, if required, 
+   ! the determinant of A
+   ! The current implementation is generalized from invmat.f90 
+   ! of the Quantum-Espresso distribution
+   !
+   IMPLICIT NONE
+   INTEGER,                INTENT(IN)  :: n
+   COMPLEX(dbl),           INTENT(IN)  :: a(n,n)
+   COMPLEX(dbl),           INTENT(OUT) :: z(n,n)
+   COMPLEX(dbl), OPTIONAL, INTENT(OUT) :: det_a
+   !
+   INTEGER           :: i, nb, info, ierr, ldz, lda, lwork, ipiv (n)
+   INTEGER, EXTERNAL :: ILAENV
+   ! info=0: inversion was successful
+   ! lda   : leading dimension (the same as n)
+   ! ipiv  : work space for pivoting (assumed of length lwork=n)
+   COMPLEX(dbl), ALLOCATABLE :: work(:)
+   !
+   !
+   lda = n
+   ldz = n
+   !
+   z(1:n,1:n) = a(1:n,1:n)
+   !
+   ! perform matrix inversion according to LAPACK
+   !
+   ! First get the optimum LWORK
+   !
+   nb = ILAENV( 1, 'ZGETRI', ' ', n, -1, -1, -1 )
+   lwork = n * nb
+   !
+   ALLOCATE( work( lwork ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore ('zmat_inv', 'allocating work', ABS (ierr) )
+   ! 
+   !
+   CALL ZGETRF (n, n, z, ldz, ipiv, info)
+   IF ( info/=0 ) CALL errore ('zmat_inv', 'error in ZGETRF', ABS (info) )
+   !
+   ! compute the determinan if required
+   !
+   IF ( PRESENT( det_a ) ) THEN
+      !
+      det_a = ONE
+      DO i = 1, n
+         det_a = det_a * z(i,i)
+      ENDDO
+      !
+   ENDIF
+   !
+   CALL ZGETRI (n, z, ldz, ipiv, work, lwork, info)
+   IF (info/=0) CALL errore ('zmat_inv', 'error in ZGETRI', ABS (info) )
+   !
+   ! 
+   DEALLOCATE( work, STAT=ierr )
+   IF ( ierr/=0 ) CALL errore ('zmat_inv', 'deallocating work', ABS (ierr) )
+   !
+END SUBROUTINE zmat_inv 
+
+
+!**********************************************************
+   SUBROUTINE dmat_inv( n, a, z, det_a )
+   !**********************************************************
+   !
+   ! compute Z = inv( A ), and, if required, 
+   ! the determinant of A
+   ! The current implementation is generalized from invmat.f90 
+   ! of the Quantum-Espresso distribution
+   !
+   IMPLICIT NONE
+   INTEGER,             INTENT(IN)    :: n
+   REAL(dbl),           INTENT(IN)    :: a(n,n)
+   REAL(dbl),           INTENT(OUT)   :: z(n,n)
+   REAL(dbl), OPTIONAL, INTENT(OUT)   :: det_a
+   !
+   INTEGER           :: i, nb, info, ierr, ldz, lda, lwork, ipiv (n)
+   INTEGER, EXTERNAL :: ILAENV
+   ! info=0: inversion was successful
+   ! lda   : leading dimension (the same as n)
+   ! ipiv  : work space for pivoting (assumed of length lwork=n)
+   REAL(dbl), ALLOCATABLE :: work(:)
+   !
+   !
+   lda = n
+   ldz = n
+   !
+   z(1:n,1:n) = a(1:n,1:n)
+   !
+   ! perform matrix inversion according to LAPACK
+   !
+   ! First get the optimum LWORK
+   !
+   nb = ILAENV( 1, 'DGETRI', ' ', n, -1, -1, -1 )
+   lwork = n * nb
+   !
+!! this does not work
+!   CALL DGETRI( n, z, ldz, ipiv, lwork, -1, info)
+!   IF ( info/=0 ) CALL errore ('dmat_inv', 'getting lwork in DGETRI', ABS (info) )
+   !
+   ALLOCATE( work( lwork ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore ('dmat_inv', 'allocating work', ABS (ierr) )
+   ! 
+   !
+   CALL DGETRF (n, n, z, ldz, ipiv, info)
+   IF ( info/=0 ) CALL errore ('dmat_inv', 'error in DGETRF', ABS (info) )
+
+   !
+   ! compute the determinan if required
+   !
+   IF ( PRESENT( det_a ) ) THEN
+      !
+      det_a = ONE
+      DO i = 1, n
+         det_a = det_a * z(i,i)
+      ENDDO
+      !
+   ENDIF
+   !
+   CALL DGETRI (n, z, ldz, ipiv, work, lwork, info)
+   IF (info/=0) CALL errore ('dmat_inv', 'error in ZGETRI', ABS (info) )
+   !
+   ! 
+   DEALLOCATE( work, STAT=ierr )
+   IF ( ierr/=0 ) CALL errore ('dmat_inv', 'deallocating work', ABS (ierr) )
+   !
+END SUBROUTINE dmat_inv 
 
 !**********************************************************
    FUNCTION  zmat_unitary( m, n, z, side, toll )
