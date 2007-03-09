@@ -49,8 +49,9 @@ MODULE uspp
   ! - Clebsch-Gordan coefficients "ap", auxiliary variables "lpx", "lpl"
   ! - beta and q functions of the solid
   !
-  USE kinds, ONLY: dbl
-  USE parameters, ONLY: lmaxx, lqmax
+  USE kinds,       ONLY : dbl
+  USE parameters,  ONLY : lmaxx, lqmax
+  USE util_module, ONLY : mat_inv
   IMPLICIT NONE
   PRIVATE
   SAVE
@@ -162,7 +163,7 @@ CONTAINS
 
     !-  store the inverse of ylm(ir,lm) in mly(lm,ir)
 
-    call invmat(llx, ylm, mly, dum)
+    CALL mat_inv(llx, ylm, mly, dum)
 
     !-  for each li,lj compute ap(l,li,lj) and the indices, lpx and lpl
     do li = 1, lli*lli

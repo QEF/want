@@ -440,13 +440,13 @@
    ! ... kpoints
    IF ( kpoints_alloc .AND. lkpoints  ) THEN 
        WRITE(unit, " (  ' <K-POINTS>')" )
-       WRITE(unit, "(2x, 'nkpts = ',i4 ) " ) nkpts
-       WRITE(unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i3,' ),', &
-                                         & 6x,'shift = (',3i3,' )' ) " ) nk(:), s(:) 
+       WRITE(unit, "(2x, 'nkpts = ',i5 ) " ) nkpts
+       WRITE(unit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i4,' ),', &
+                                         & 6x,'shift = (',3i4,' )' ) " ) nk(:), s(:) 
        WRITE(unit, "(/,2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
        !
        DO ik=1,nkpts
-          WRITE(unit, " (4x, 'k (', i4, ') =    ( ',3f9.5,' ),   weight = ', f14.7 )") &
+          WRITE(unit, " (4x, 'k (', i5, ') =    ( ',3f12.7,' ),   weight = ', f14.7 )") &
           ik, ( vkpt(i,ik), i=1,3 ), wk(ik)
        ENDDO
        WRITE(unit, " (  ' </K-POINTS>',/)" )
@@ -457,7 +457,7 @@
        !
        WRITE (unit, "(2x, 'List of the ' , i2, ' b-vectors : (Bohr^-1) ') ") nb
        DO i = 1, nb
-          WRITE(unit, " (4x, 'b (', i4, ') =    ( ',3f9.5, ' ),   weight = ',f14.7 )")&
+          WRITE(unit, " (4x, 'b (', i5, ') =    ( ',3f12.7, ' ),   weight = ',f14.7 )")&
                          i, ( vb(j,i), j=1,3 ), wb(i)
        ENDDO
        !
