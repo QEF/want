@@ -4,7 +4,7 @@
     postfix = '_Al'
     dimC = 4
     calculation_type = 'bulk'
-    ne = 1000
+    ne = 200
     emin = -7.0
     emax =  2.5
     datafile_C = "./SCRATCH/al1_WanT.ham"

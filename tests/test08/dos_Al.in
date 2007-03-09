@@ -1,0 +1,19 @@
+
+ &INPUT
+   prefix = 'al1'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'dos_Al.dat'
+!   fileout = 'dos_Al_NN.dat'
+!   use_nn(3) = .TRUE.
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 400
+   smearing_type = 'gaussian'
+   delta = 0.05
+   emin = -7.5
+   emax =  7.5
+   ne   =  250 
+   datafile_sgm = "./SCRATCH/sigma_Al.wan.xml"
+ /
+
