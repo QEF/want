@@ -47,6 +47,7 @@
      space_unit = 21,              &! space unit
        wan_unit = 22,              &! wannier stuff unit
        ham_unit = 23,              &! hamiltonian unit
+       sgm_unit = 24,              &! self-energy unit
        aux_unit = 30,              &! auxiliary units
       aux1_unit = 31,              &! 
       aux2_unit = 32,              &! 
@@ -88,7 +89,7 @@
    PUBLIC ::  dftdata_fmt, dftdata_fmt_version
    PUBLIC ::  wantdata_fmt, wantdata_form, wantdata_binary
    PUBLIC ::  dft_unit, pseudo_unit 
-   PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit 
+   PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit, sgm_unit 
    PUBLIC ::  aux_unit, aux1_unit, aux2_unit, aux3_unit, aux4_unit
    PUBLIC ::  save_unit
 

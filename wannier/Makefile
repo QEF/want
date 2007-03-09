@@ -17,10 +17,12 @@ bshells_init.o \
 ccalbec.o \
 cleanup.o \
 collect_wf.o \
+compute_kham.o \
 control.o \
 converters.o \
 domega_aux.o \
 domega.o \
+dyson_solver.o \
 functionals.o \
 get_rgrid.o \
 get_monkpack.o \
@@ -44,6 +46,7 @@ localization_init.o \
 monkpack.o \
 omega.o \
 omegai.o \
+operator.o \
 ordering.o \
 overlap_augment.o \
 overlap_extract.o \

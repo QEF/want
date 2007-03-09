@@ -10,8 +10,11 @@
 !*********************************************
    MODULE converters_module
 !*********************************************
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : ZERO
+   !
+   USE kinds,       ONLY : dbl
+   USE constants,   ONLY : ZERO, EPS_m8
+   USE util_module, ONLY : mat_inv
+   !
    IMPLICIT NONE
    PRIVATE
 
@@ -79,8 +82,9 @@ CONTAINS
       ! vcart(i) = \Sum_{j} vcry(j) * basis(j,i)
       ! Instead of the INV3 routine here TRANSF is directly theinverse of BASIS
       !
-      CALL invmat( 3, basis, transf, det )
-      IF ( det == 0 ) CALL errore('cart2cry','basis vectors are linearly dependent',1)
+      CALL mat_inv( 3, basis, transf, det )
+      !
+      IF ( ABS(det) < EPS_m8 ) CALL errore('cart2cry','basis vectors are linearly dependent',1)
 
       DO j=1,nvect 
           DO i=1,3
