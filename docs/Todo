@@ -3,6 +3,10 @@
   List of needed changes
 *************************************
 
+* update documentation according to dos and blc2wan
+  implement all the smearing types in dos.f90
+  cleanup in routines dealing with sgm/operator datafile
+
 * plot.x: USPP features not fully implemented.
 
 * disentangle + wannier: 
