@@ -350,6 +350,39 @@ run_dos () {
 
 #
 #----------------------
+run_blc2wan () {
+#----------------------
+#
+   local NAME=BLC2WAN
+   local EXEC=$WANT_BIN/blc2wan.x
+   local RUN=yes
+   local INPUT=
+   local OUTPUT=
+   local SUFFIX=
+   local name_tmp
+   
+   for arg 
+   do
+         [[ "$arg" == NAME=* ]]      && NAME="${arg#NAME=}"
+         [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
+         [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
+         [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+   done
+   
+   [[ "$RUN" != "yes" ]]  && return
+
+   name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/blc2wan$SUFFIX.in  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/blc2wan$SUFFIX.out ; fi
+
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+}
+
+
+#
+#
+#----------------------
 run_plot () {
 #----------------------
 #
