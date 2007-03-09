@@ -20,6 +20,8 @@ MANUAL=" Usage
                  the wannier minimization
  wannier         perform the above cited minimization
  bands           interpolates the band structure using WFs
+ blc2wan         convert sigma file to Wannier basis
+ dos             compute DOS using WFs
  conductor       evaluate the transmittance, for the bulk case
  want            perform DISENTANGLE, WANNIER, BANDS, CONDUCTOR all together 
  all             perform all the above described steps
@@ -51,6 +53,8 @@ PWEXPORT=
 DISENTANGLE=
 WANNIER=
 BANDS=
+BLC2WAN=
+DOS=
 CONDUCTOR=
 CHECK=
 CLEAN=
@@ -66,12 +70,14 @@ case $INPUT in
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (bands)          BANDS=yes ;;
+   (blc2wan)        BLC2WAN=yes ;;
+   (dos)            DOS=yes ;;
    (conductor)      CONDUCTOR=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ; BANDS=yes; 
-                    CONDUCTOR=yes ;;
+                    BLC2WAN=yes ; DOS=yes ; CONDUCTOR=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    BANDS=yes ; CONDUCTOR=yes ;;
+                    BANDS=yes ; BLC2WAN=yes ; DOS=yes ; CONDUCTOR=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -124,6 +130,16 @@ run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 # running BANDS
 #
 run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
+
+#
+# running BLC2WAN
+#
+run_blc2wan  SUFFIX=$SUFFIX  RUN=$BLC2WAN
+
+#
+# running DOS
+#
+run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 
 
 #
