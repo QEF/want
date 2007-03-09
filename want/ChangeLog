@@ -4,6 +4,18 @@
 =======================================================
 
 
+09 Mar 2007      Self-energy stuff added in dos.f90 (some special cases not yet implemented);
+                 operator_moduel added to wannier/ ; general driver for matrix inversion
+                 added to util.f90; lapack_all.f90 and lapack_atlas.f90 libs updated. (AF)
+
+08 Mar 2007      Further updates in blc2wan.f90; input summary added, output results checked. 
+                 Routine compute_kham.f90 added to wannier/ , dos.f90 updated to read and
+                 manage a generic self-energy from input. Test06 slightly changed, 
+                 references updated. (AF)
+
+07 Mar 2007      Updates in blc2wan.f90; output format changed in summary.f90; 
+                 test08 updated and example of use of blc2wan.x added. (AF)
+
 02 Mar 2007      log_push and log_pop added in all the routines of transport/. (BB)
 
 27 Feb 2007      Parallelization of conductor implemented, divide_et_impera.f90 added. (AF)
