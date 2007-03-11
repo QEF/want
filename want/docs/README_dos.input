@@ -76,6 +76,10 @@ projdos       LOGICAL
               if .TRUE. computes and writes WF projected-DOS.
               DEFAULT : .FALSE.
 
+datafile_sgm  STRING
+              If specified, the code reads the file to search for a static or dynamical
+              self-energy operator to be taken into account in the calculation of the DOS. 
+              DEFAULT : ""
 
 ==============================================================================
 

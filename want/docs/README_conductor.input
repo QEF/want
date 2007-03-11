@@ -119,10 +119,6 @@ use_overlap    LOGICAL
             is assumed (which is by definition the case of Wannier functions)
             DEFAULT : .FALSE.
 
-use_correlation   LOGICAL
-            If .TRUE. correlation correction are read from file and included in the 
-            calculation. See also the datafile_sgm variable.
-
 write_kdata LOGICAL
             If .TRUE. kpoint-resolved transmittance and dos are written.
             DEFAULT : .FALSE.
@@ -142,9 +138,9 @@ datafile_R  STRING
             DEFAULT : mandatory if not calculation_type == "bulk"
 
 datafile_sgm STRING
-            Name of the file containing the correlation self-energy. It is required 
-            only when correlation is included in the calculation.
-            DEFAULT : mandatory if use_correlation == .TRUE.
+            Name of the file containing the correlation self-energy. 
+            When specified, correlation is included in the calculation.
+            DEFAULT : ""
 
 
 CARD <HAMILTONIAN_DATA>
