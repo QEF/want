@@ -63,7 +63,8 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, binary, energy_ref
+   NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
+                    binary, energy_ref, spin_component
    !
    ! end of declariations
    !   
