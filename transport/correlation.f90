@@ -13,14 +13,16 @@
    USE kinds,                ONLY : dbl
    USE constants,            ONLY : EPS_m4
    USE parameters,           ONLY : nstrx
-   USE io_module,            ONLY : ionode, ionode_id
+   USE io_module,            ONLY : ionode, ionode_id, stdout, sgm_unit
    USE mp,                   ONLY : mp_bcast
-   USE T_egrid_module,       ONLY : ne, egrid, egrid_alloc => alloc
+   USE parser_module,        ONLY : change_case
+   USE operator_module,      ONLY : operator_read_aux
+   USE T_egrid_module,       ONLY : de, ne, egrid, emin, emax, egrid_alloc => alloc
    USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, vr_par, kpoints_alloc => alloc
    USE T_hamiltonian_module, ONLY : dimC
    USE T_control_module,     ONLY : transport_dir
    USE timing_module,        ONLY : timing
-   USE log_module,     ONLY : log_push, log_pop
+   USE log_module,           ONLY : log_push, log_pop
    USE iotk_module
    IMPLICIT NONE
    PRIVATE 
@@ -94,81 +96,80 @@ CONTAINS
    SUBROUTINE correlation_init(unit)
    !**********************************************************
    !
-   ! opne the sigma file and allocate the main workspace
+   ! open the sigma file and allocate the main workspace
+   ! energy grid is read from file
    !
    IMPLICIT NONE
       INTEGER, INTENT(in):: unit
       CHARACTER(16)      :: subname="correlation_init"
-      CHARACTER(nstrx)   :: attr
-      REAL(dbl), ALLOCATABLE :: grid_file(:)
-      LOGICAL            :: opened
-      INTEGER            :: nomega, ie, ierr
+      CHARACTER(nstrx)   :: attr, analyticity
+      LOGICAL            :: lopen, ldynam
+      INTEGER            :: ie, ierr
 
       CALL log_push( 'correlation_init' )
       IF ( .NOT. egrid_alloc )   CALL errore(subname,'egrid not alloc', 1 )
 
 
-      INQUIRE( unit, OPENED=opened )
-      IF ( .NOT. opened ) CALL errore(subname, 'unit not opened', 3 )
+      INQUIRE( unit, OPENED=lopen )
+      IF ( .NOT. lopen ) CALL errore(subname, 'unit not opened', 3 )
       !
       ! get main data and check them
       !
       IF ( ionode ) THEN
          !
-         CALL iotk_scan_empty(unit, "DATA", ATTR=attr, IERR=ierr)
-         IF (ierr/=0) CALL errore(subname,'searching DATA',ABS(ierr))
+         CALL operator_read_aux( sgm_unit, DIMWANN=dimC_file, NR=nrtot, DYNAMICAL=ldynam, &
+                                 NOMEGA=ne, ANALYTICITY=analyticity, IERR=ierr )
          !
-         CALL iotk_scan_attr(attr,"dimwann",dimC_file, IERR=ierr)
-         IF (ierr/=0) CALL errore(subname,'searching dimwann',ABS(ierr))
-         !
-         CALL iotk_scan_attr(attr,"nrtot",nrtot, IERR=ierr)
-         IF (ierr/=0) CALL errore(subname,'searching nrtot',ABS(ierr))
-         !
-         CALL iotk_scan_attr(attr,"nomega",nomega, IERR=ierr)
-         IF (ierr/=0) CALL errore(subname,'searching nomega',ABS(ierr))
-         !
-         CALL iotk_scan_dat(unit, "VR", ivr_corr, IERR=ierr)
-         IF (ierr/=0) CALL errore(subname,'searching VR',ABS(ierr))
+         IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr))
          !
       ENDIF
       !
       CALL mp_bcast( dimC_file,    ionode_id )
       CALL mp_bcast( nrtot,        ionode_id )
-      CALL mp_bcast( nomega,       ionode_id )
-      CALL mp_bcast( ivr_corr,     ionode_id )
+      CALL mp_bcast( ldynam,       ionode_id )
+      CALL mp_bcast( ne,           ionode_id )
+      CALL mp_bcast( analyticity,  ionode_id )
       !
       !
-      ALLOCATE( grid_file(nomega), STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating grid',ABS(ierr))
-      !
-      IF ( ionode ) THEN
-         !
-         CALL iotk_scan_dat(unit, "GRID", grid_file, IERR=ierr)
-         IF (ierr/=0) CALL errore(subname,'searching GRID',ABS(ierr))
-         !
-      ENDIF
-      !
-      CALL mp_bcast( grid_file,    ionode_id )
-      ! 
-      ! 
       IF ( dimC_file > dimC) CALL errore(subname,'invalid dimC_file',3)
-      IF ( nrtot <= 0 ) CALL errore(subname,'invalid nrtot',3)
+      IF ( nrtot <= 0 )      CALL errore(subname,'invalid nrtot',3)
+      IF ( ne <= 0 )         CALL errore(subname,'invalid ne',3)
+      IF ( .NOT. ldynam )    CALL errore(subname,'sgm is static', 10 )
+      !
+      CALL change_case( analyticity, 'lower' )
+      IF ( TRIM(analyticity) /= 'retarded' ) CALL errore(subname,'sgm is not retarded', 10 )
+      !
+      !
+      ALLOCATE( egrid(ne), STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'allocating egrid',ABS(ierr))
       !
       ALLOCATE ( ivr_corr(3,nrtot), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
       !
-      IF ( nomega /= ne) CALL errore(subname,'invalid nomega',3)
       !
-      DO ie=1, ne
-          !
-          IF ( ABS(egrid(ie)-grid_file(ie)) > EPS_m4 ) CALL errore(subname,'invalid grid',ie)
-      ENDDO
+      IF ( ionode ) THEN
+         !
+         CALL operator_read_aux( sgm_unit, GRID=egrid, IVR=ivr_corr, IERR=ierr )
+         IF (ierr/=0) CALL errore(subname,'reading GRID, IVR',ABS(ierr))
+         !
+         CALL warning( stdout, "energy egrid is forced from SGM datafile" )
+         WRITE( stdout, "()")
+         !
+      ENDIF
       !
-      DEALLOCATE( grid_file, STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'deallocating grid',ABS(ierr))
-
+      CALL mp_bcast( egrid,         ionode_id )
+      CALL mp_bcast( ivr_corr,     ionode_id )
+      ! 
+      !
+      ! set further data about the energy grid
+      !
+      emin = egrid(1)
+      emax = egrid(ne)
+      de   = ( emax - emin ) / REAL( ne -1, dbl )  
+      !
+      !
       CALL log_pop( 'correlation_init' )
-      
+      ! 
    END SUBROUTINE correlation_init
 
 

@@ -102,7 +102,6 @@ CONTAINS
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
                                            conduct_formula_   => conduct_formula, &
                                            use_overlap_       => use_overlap, &
-                                           use_correlation_   => use_correlation, &
                                            niterx_            => niterx, &
                                            nprint_            => nprint, &
                                            bias_              => bias, &
@@ -118,14 +117,14 @@ CONTAINS
       calculation_type    = calculation_type_
       conduct_formula     = conduct_formula_
       use_overlap         = use_overlap_
-      use_correlation     = use_correlation_
       niterx              = niterx_
       nprint              = nprint_
       bias                = bias_
-      datafile_sgm        = datafile_sgm_
       datafile_L          = datafile_L_
       datafile_C          = datafile_C_
       datafile_R          = datafile_R_
+      datafile_sgm        = datafile_sgm_
+      use_correlation     = LEN_TRIM( datafile_sgm_ ) /= 0
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
 

@@ -29,6 +29,7 @@ workspace.o
 WANNIER_OBJS= \
 ../wannier/control.o \
 ../wannier/io_module.o \
+../wannier/operator.o \
 ../wannier/startup.o \
 ../wannier/smearing.o \
 ../wannier/shutdown.o \
