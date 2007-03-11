@@ -4,9 +4,13 @@
 =======================================================
 
 
+11 Mar 2007      Documentation about blc2wan.f90, dos.f90, conductor.f90 updated. (AF)
+
 09 Mar 2007      Self-energy stuff added in dos.f90 (some special cases not yet implemented);
                  operator_moduel added to wannier/ ; general driver for matrix inversion
-                 added to util.f90; lapack_all.f90 and lapack_atlas.f90 libs updated. (AF)
+                 added to util.f90; lapack_all.f90 and lapack_atlas.f90 libs updated. 
+                 When reading dynamical self-energies, dos.x and conductor.x overwirte
+                 the input energy grids with those from file. (AF)
 
 08 Mar 2007      Further updates in blc2wan.f90; input summary added, output results checked. 
                  Routine compute_kham.f90 added to wannier/ , dos.f90 updated to read and
