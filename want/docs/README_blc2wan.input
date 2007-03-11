@@ -53,13 +53,17 @@ energy_ref    REAL
               reference. Useful to match Fermi energy between different calculations.
               DEFAULT: 0.0
 
-
 spin_component    STRING
               ( "up" | "down" | "none" )
               define whether the calculation is spin polarized and if the case
               which spin component is to be treated.
               Note that only one component is written in the output file.
               DEFAULT: "none"
+
+nprint        INTEGER
+              When converting a dynamical operator, every nprint energy step write to stdout.
+              DEFAULT : 10
+
 
 ==============================================================================
 
