@@ -22,6 +22,7 @@
    USE iotk_module
    USE files_module
    USE want_interfaces_module
+   USE timing_module
    USE parser_module,        ONLY : log2char, change_case
    USE converters_module,    ONLY : cry2cart
    USE version_module,       ONLY : version_number
@@ -41,6 +42,7 @@
    CHARACTER(10)             :: spin_component
    LOGICAL                   :: binary
    REAL(dbl)                 :: energy_ref
+   INTEGER                   :: nprint
 
    !
    ! local variables
@@ -64,7 +66,7 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
-                    binary, energy_ref, spin_component
+                    binary, energy_ref, spin_component, nprint
    !
    ! end of declariations
    !   
@@ -88,6 +90,7 @@
       binary                      = .TRUE.
       spin_component              = 'none'
       energy_ref                  = ZERO
+      nprint                      = 10
 
       
       CALL input_from_file ( stdin, ierr )
@@ -446,6 +449,15 @@
       energies: &
       DO ie=1,nomega
          
+          !
+          ! a brief report
+          !
+          IF ( ldynam .AND. ( MOD( ie, nprint) == 0 .OR. ie == 1 )  ) THEN
+              !
+              WRITE( stdout ,"(2x, 'Converting OPR for E( ',i5,' ) = ', f9.5 )") &
+                               ie, grid(ie)
+          ENDIF
+ 
           IF ( ldynam ) THEN
              str="OPR"//TRIM(iotk_index(ie))
           ELSE
@@ -573,6 +585,14 @@
           CALL iotk_write_end(out_unit, TRIM(str), IERR=ierr)
           IF (ierr/=0) CALL errore('blc2wan','writing end '//TRIM(str),ABS(ierr))
 
+          !
+          IF ( MOD( ie, nprint) ==0 .OR. ie == 1 ) THEN
+             !
+             CALL timing_upto_now( stdout )
+             CALL flush_unit( stdout )
+             !
+          ENDIF
+          !
       ENDDO energies
 
 
