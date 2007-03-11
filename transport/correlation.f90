@@ -107,7 +107,7 @@ CONTAINS
       INTEGER            :: ie, ierr
 
       CALL log_push( 'correlation_init' )
-      IF ( .NOT. egrid_alloc )   CALL errore(subname,'egrid not alloc', 1 )
+      IF ( egrid_alloc )   CALL errore(subname,'egrid already allocated', 1 )
 
 
       INQUIRE( unit, OPENED=lopen )
@@ -166,6 +166,7 @@ CONTAINS
       emin = egrid(1)
       emax = egrid(ne)
       de   = ( emax - emin ) / REAL( ne -1, dbl )  
+      egrid_alloc = .TRUE.
       !
       !
       CALL log_pop( 'correlation_init' )
