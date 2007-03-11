@@ -117,8 +117,6 @@
    LOGICAL :: use_overlap = .FALSE.
        ! wheter to include overlaps (non-orthogonal bases)
 
-   LOGICAL :: use_correlation = .FALSE.
-       ! wheter to include correlation corrections
    LOGICAL :: write_kdata = .FALSE.
        ! wheter to write kpoint-resolved dos an transmittance to output
 
@@ -142,17 +140,18 @@
 
    CHARACTER(nstrx) :: datafile_sgm = ' '
        ! the name of the file containing correlation self-energy
+       ! If a valid file is provided, correlation is taken into account
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, nk, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
-                 transport_dir, use_overlap, use_correlation, smearing_type, &
+                 transport_dir, use_overlap, smearing_type, &
                  delta_ratio, xmax, &
                  work_dir, prefix, postfix, write_kdata 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
-   PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, use_correlation, &
+   PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, &
              delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: work_dir, prefix, postfix, write_kdata
@@ -210,7 +209,6 @@ CONTAINS
       CALL mp_bcast( nprint,             ionode_id)      
       CALL mp_bcast( niterx,             ionode_id)      
       CALL mp_bcast( use_overlap,        ionode_id)      
-      CALL mp_bcast( use_correlation,    ionode_id)      
       CALL mp_bcast( write_kdata,        ionode_id)      
       CALL mp_bcast( work_dir,           ionode_id)      
       CALL mp_bcast( prefix,             ionode_id)      
@@ -290,11 +288,8 @@ CONTAINS
       IF ( delta_ratio < ZERO )   CALL errore(subname,'delta_ratio is negative',1)
       IF ( delta_ratio > EPS_m1 ) CALL errore(subname,'delta_ratio too large',1)
 
-      IF ( TRIM(conduct_formula) /= 'landauer' .AND. .NOT. use_correlation ) &
+      IF ( TRIM(conduct_formula) /= 'landauer' .AND. LEN_TRIM (datafile_sgm) == 0 ) &
            CALL errore(subname,'invalid conduct formula',1)
-           !
-      IF ( use_correlation .AND. LEN_TRIM(datafile_sgm) == 0 ) &
-           CALL errore(subname,'datafile_sgm unspecified',1)
 
       CALL log_pop( 'read_namelist_input_conductor' )
 
