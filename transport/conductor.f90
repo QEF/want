@@ -319,7 +319,7 @@
        CLOSE( dos_unit )
        !
        filename = TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
-       WRITE(stdout,"(/,2x,'DOS written on file: ',3x,a)") TRIM(filename)
+       WRITE(stdout,"(  2x,'        DOS written on file: ',3x,a)") TRIM(filename)
    
    ENDIF
 
