@@ -308,6 +308,7 @@ omega.o : ../libs/kind.o
 omega.o : ../libs/log_module.o
 omega.o : ../libs/timing.o
 operator.o : ../iotk/iotk_16_module.o
+operator.o : ../libs/constants.o
 operator.o : ../libs/kind.o
 ordering.o : ../libs/constants.o
 ordering.o : ../libs/kind.o
