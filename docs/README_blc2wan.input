@@ -43,9 +43,23 @@ fileout       STRING
               Wannier basis
               DEFAULT: mandatory
 
-ascii         LOGICAL
-              if .TRUE. the output file is written in textual XML format.
-              DEFAULT: .FALSE.
+binary        LOGICAL
+              if .TRUE. the output file is written in binary iotk fmt.
+              On the contrary, is it written in textual XML. 
+              DEFAULT: .TRUE.
+
+energy_ref    REAL
+              For a dynamical operator, the energy grid is shifted to this energy
+              reference. Useful to match Fermi energy between different calculations.
+              DEFAULT: 0.0
+
+
+spin_component    STRING
+              ( "up" | "down" | "none" )
+              define whether the calculation is spin polarized and if the case
+              which spin component is to be treated.
+              Note that only one component is written in the output file.
+              DEFAULT: "none"
 
 ==============================================================================
 
