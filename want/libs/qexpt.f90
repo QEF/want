@@ -523,17 +523,17 @@ CONTAINS
 
 
     !------------------------------------------------------------------------
-    SUBROUTINE qexpt_read_gk( ik, npwk, npwkx, index, igk, ierr )
+    SUBROUTINE qexpt_read_gk( ik, npwk, index, igk, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,                INTENT(IN)  :: ik
-      INTEGER,      OPTIONAL, INTENT(OUT) :: npwk, npwkx
+      INTEGER,      OPTIONAL, INTENT(OUT) :: npwk
       INTEGER,      OPTIONAL, INTENT(OUT) :: igk(:,:), index(:)
       INTEGER,                INTENT(OUT) :: ierr
       !
       CHARACTER(256) :: filename
       INTEGER :: iungk
-      INTEGER :: npwk_, npwkx_
+      INTEGER :: npwk_
       !
       
       ierr = 0
@@ -565,7 +565,6 @@ CONTAINS
       !
       !
       IF ( PRESENT( npwk ) )       npwk  = npwk_
-      IF ( PRESENT( npwkx ) )      npwkx = npwkx_
       !
     END SUBROUTINE qexpt_read_gk
 
@@ -810,7 +809,7 @@ CONTAINS
       !------------------------------------------------------------------------
       !
       ! read wfc from IBNDS to IBNDE, for kpt IK and spin ISPIN
-      ! WF is the wfc on itsproper k+g grid, while WF_KINDIP is the same wfc
+      ! WF is the wfc on its proper k+g grid, while WF_KINDIP is the same wfc
       ! but on a truncated rho grid (k-point indipendent)
       !
       INTEGER,                 INTENT(IN)  :: ibnds, ibnde, ik, ispin
@@ -858,7 +857,7 @@ CONTAINS
       ! read the main data
       !
       CALL iotk_free_unit( iunwfc )
-      filename = TRIM(datadir) // '/' // 'wfc' //TRIM( iotk_index(ik) )
+      filename = TRIM(datadir) // '/' // 'wfc' //TRIM( iotk_index(ik_eff) )
       !
       CALL iotk_open_read ( iunwfc, FILE = TRIM(filename), IERR=ierr )
       IF (ierr/=0)  RETURN

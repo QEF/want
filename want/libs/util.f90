@@ -802,15 +802,14 @@ END SUBROUTINE zmat_diag
    COMPLEX(dbl),           INTENT(OUT) :: z(n,n)
    COMPLEX(dbl), OPTIONAL, INTENT(OUT) :: det_a
    !
-   INTEGER           :: i, nb, info, ierr, ldz, lda, lwork, ipiv (n)
+   INTEGER           :: i, nb, info, ierr, ldz, lwork, ipiv (n)
    INTEGER, EXTERNAL :: ILAENV
    ! info=0: inversion was successful
-   ! lda   : leading dimension (the same as n)
+   ! ldz   : leading dimension (the same as n)
    ! ipiv  : work space for pivoting (assumed of length lwork=n)
    COMPLEX(dbl), ALLOCATABLE :: work(:)
    !
    !
-   lda = n
    ldz = n
    !
    z(1:n,1:n) = a(1:n,1:n)
@@ -865,15 +864,14 @@ END SUBROUTINE zmat_inv
    REAL(dbl),           INTENT(OUT)   :: z(n,n)
    REAL(dbl), OPTIONAL, INTENT(OUT)   :: det_a
    !
-   INTEGER           :: i, nb, info, ierr, ldz, lda, lwork, ipiv (n)
+   INTEGER           :: i, nb, info, ierr, ldz, lwork, ipiv (n)
    INTEGER, EXTERNAL :: ILAENV
    ! info=0: inversion was successful
-   ! lda   : leading dimension (the same as n)
+   ! ldz   : leading dimension (the same as n)
    ! ipiv  : work space for pivoting (assumed of length lwork=n)
    REAL(dbl), ALLOCATABLE :: work(:)
    !
    !
-   lda = n
    ldz = n
    !
    z(1:n,1:n) = a(1:n,1:n)
