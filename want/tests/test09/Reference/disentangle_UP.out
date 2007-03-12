@@ -8,23 +8,25 @@
 
 
   Program <disentangle>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  7:18:23 
+  Date 12Mar2007 at 22:25: 9 
 
+     Serial run.
+
+          BUILT :    Mon Mar 12 18:42:28 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
             F90 :    g95
             F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+         DFLAGS :    -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
       MASS LIBS :    
 
 
-  DFT-data fmt automaticaly detected: qexml
-  DFT-data read from file: nichain.save/data-file.xml
+  DFT-data read from file: nichain.export/index.xml
 
 
   ======================================================================
@@ -35,8 +37,8 @@
             Calculation title :     Wannier Transport Calculation
                        prefix :     nichain
                       postfix :     _WanT_UP
-                     work_dir :     ./
-                  dftdata_fmt :     qexml  v1.2.0
+                     work_dir :     ./SCRATCH/
+                  dftdata_fmt :     pw_export  v1.1.0
 
                  wantdata_fmt :     textual
                     verbosity :     medium
@@ -148,138 +150,27 @@
  <SYMMETRY>
   Number of symmetry operations = 16
 
-      isym =  1                                          identity
-
- cryst.   s( 1) = (     1          0          0      )    f =(  0.0000000 )
-                  (     0          1          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym =  2             180 deg rotation - cart. axis [0,0,1]
-
- cryst.   s( 2) = (    -1          0          0      )    f =(  0.0000000 )
-                  (     0         -1          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym =  3             180 deg rotation - cart. axis [0,1,0]
-
- cryst.   s( 3) = (    -1          0          0      )    f =(  0.0000000 )
-                  (     0          1          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
-
-      isym =  4             180 deg rotation - cart. axis [1,0,0]
-
- cryst.   s( 4) = (     1          0          0      )    f =(  0.0000000 )
-                  (     0         -1          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
-
-      isym =  5             180 deg rotation - cart. axis [1,1,0]
-
- cryst.   s( 5) = (     0          1          0      )    f =(  0.0000000 )
-                  (     1          0          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
-
-      isym =  6            180 deg rotation - cart. axis [1,-1,0]
-
- cryst.   s( 6) = (     0         -1          0      )    f =(  0.0000000 )
-                  (    -1          0          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
-
-      isym =  7             90 deg rotation - cart. axis [0,0,-1]
-
- cryst.   s( 7) = (     0         -1          0      )    f =(  0.0000000 )
-                  (     1          0          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym =  8              90 deg rotation - cart. axis [0,0,1]
-
- cryst.   s( 8) = (     0          1          0      )    f =(  0.0000000 )
-                  (    -1          0          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym =  9                                         inversion
-
- cryst.   s( 9) = (    -1          0          0      )    f =(  0.0000000 )
-                  (     0         -1          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
-
-      isym = 10        inv. 180 deg rotation - cart. axis [0,0,1]
-
- cryst.   s(10) = (     1          0          0      )    f =(  0.0000000 )
-                  (     0          1          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
-
-      isym = 11        inv. 180 deg rotation - cart. axis [0,1,0]
-
- cryst.   s(11) = (     1          0          0      )    f =(  0.0000000 )
-                  (     0         -1          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym = 12        inv. 180 deg rotation - cart. axis [1,0,0]
-
- cryst.   s(12) = (    -1          0          0      )    f =(  0.0000000 )
-                  (     0          1          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym = 13        inv. 180 deg rotation - cart. axis [1,1,0]
-
- cryst.   s(13) = (     0         -1          0      )    f =(  0.0000000 )
-                  (    -1          0          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym = 14       inv. 180 deg rotation - cart. axis [1,-1,0]
-
- cryst.   s(14) = (     0          1          0      )    f =(  0.0000000 )
-                  (     1          0          0      )       (  0.0000000 )
-                  (     0          0          1      )       (  0.0000000 )
-
-
-      isym = 15       inv.  90 deg rotation - cart. axis [0,0,-1]
-
- cryst.   s(15) = (     0          1          0      )    f =(  0.0000000 )
-                  (    -1          0          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
-
-      isym = 16        inv.  90 deg rotation - cart. axis [0,0,1]
-
- cryst.   s(16) = (     0         -1          0      )    f =(  0.0000000 )
-                  (     1          0          0      )       (  0.0000000 )
-                  (     0          0         -1      )       (  0.0000000 )
-
  </SYMMETRY>
 
  <K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  nkpts =     4
+  Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k (   2) =    (   0.00000  0.00000  0.33249 ),   weight =   0.2500000
-    k (   3) =    (   0.00000  0.00000  0.66498 ),   weight =   0.2500000
-    k (   4) =    (   0.00000  0.00000  0.99747 ),   weight =   0.2500000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.2500000
+    k (    2) =    (    0.0000000   0.0000000   0.3324915 ),   weight =      0.2500000
+    k (    3) =    (    0.0000000   0.0000000   0.6649830 ),   weight =      0.2500000
+    k (    4) =    (    0.0000000   0.0000000   0.9974746 ),   weight =      0.2500000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b (   1) =    (  -0.31416  0.00000  0.00000 ),   weight =   5.0660592
-    b (   2) =    (   0.31416 -0.00000 -0.00000 ),   weight =   5.0660592
-    b (   3) =    (   0.00000  0.31416  0.00000 ),   weight =   5.0660592
-    b (   4) =    (  -0.00000 -0.31416 -0.00000 ),   weight =   5.0660592
-    b (   5) =    (   0.00000  0.00000  0.33249 ),   weight =   4.5228154
-    b (   6) =    (  -0.00000 -0.00000 -0.33249 ),   weight =   4.5228154
+    b (    1) =    (   -0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    2) =    (    0.3141593  -0.0000000  -0.0000000 ),   weight =      5.0660592
+    b (    3) =    (    0.0000000   0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    4) =    (   -0.0000000  -0.3141593  -0.0000000 ),   weight =      5.0660592
+    b (    5) =    (    0.0000000   0.0000000   0.3324915 ),   weight =      4.5228154
+    b (    6) =    (   -0.0000000  -0.0000000  -0.3324915 ),   weight =      4.5228154
 
   Total weight =      29.3098676
  </B-SHELL>
@@ -327,8 +218,8 @@
   =                      Overlaps and Projections                      =
   ======================================================================
 
-  Reading density G-grid from file: nichain.save/data-file.xml
-  Reading Wfc grids from file: nichain.save/data-file.xml
+  Reading density G-grid from file: nichain.export/index.xml
+  Reading Wfc grids from file: nichain.export/index.xml
 
 
           Energy cut-off for wfcs =         20.00 (Ry)
@@ -347,23 +238,23 @@
 
     Overlaps or Projections calculation for k-point:    1
     npw =   2911,    dimwin =    9
-                              Total time spent up to now :     7.05 secs
+                              Total time spent up to now :    11.40 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =   2851,    dimwin =    6
-                              Total time spent up to now :     7.19 secs
+                              Total time spent up to now :    11.59 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =   2846,    dimwin =    6
-                              Total time spent up to now :     7.33 secs
+                              Total time spent up to now :    11.78 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =   2851,    dimwin =    6
-                              Total time spent up to now :     7.47 secs
+                              Total time spent up to now :    11.99 secs
 
 
   Overlaps and projections written on file: nichain_WanT_UP.ovp
-                              Total time spent up to now :     7.53 secs
+                              Total time spent up to now :    12.04 secs
 
 
   ======================================================================
@@ -392,7 +283,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      14.306563         4.006242
    Avrg Omega_I                     :       2.384427         0.667707
 
-                              Total time spent up to now :     7.54 secs
+                              Total time spent up to now :    12.05 secs
 
 
   Subspace data written on file: nichain_WanT_UP.space
@@ -400,31 +291,35 @@
   ======================================================================
 
    <global routines>
-             clock number :    23
+             clock number :    27
 
-              disentangle :     7.00s CPU 
+              disentangle :    12.00s CPU 
 
-             want_dftread :     0.59s CPU
+             want_dftread :     0.69s CPU
+         windows_read_ext :     0.03s CPU
                 want_init :     0.00s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :     6.88s CPU
+             windows_init :     0.00s CPU
+              wfc_manager :    11.33s CPU
           ggrids_read_ext :     0.13s CPU
       wfc_data_grids_read :     0.01s CPU
-              struct_fact :     0.02s CPU
-                init_us_1 :     6.06s CPU
-           wfc_data_kread :     0.14s CPU (      16 calls,   0.009 s avg)
-                init_us_2 :     0.18s CPU (      20 calls,   0.009 s avg)
+              struct_fact :     0.03s CPU
+                init_us_1 :    10.27s CPU
+           wfc_data_kread :     0.13s CPU (      16 calls,   0.008 s avg)
+                init_us_2 :     0.30s CPU (      20 calls,   0.015 s avg)
                   ccalbec :     0.03s CPU (      16 calls,   0.002 s avg)
-                  overlap :     0.15s CPU (      12 calls,   0.013 s avg)
-           overlap_setmap :     0.10s CPU (      12 calls,   0.008 s avg)
-          overlap_augment :     0.00s CPU (      12 calls,   0.000 s avg)
+                  overlap :     0.27s CPU (      12 calls,   0.023 s avg)
+           overlap_setmap :     0.15s CPU (      12 calls,   0.012 s avg)
+          overlap_augment :     0.02s CPU (      12 calls,   0.001 s avg)
                     s_psi :     0.01s CPU (       4 calls,   0.002 s avg)
-               projection :     0.05s CPU (       4 calls,   0.013 s avg)
-       trial_center_setup :     0.03s CPU (      24 calls,   0.001 s avg)
+               projection :     0.07s CPU (       4 calls,   0.018 s avg)
+       trial_center_setup :     0.04s CPU (      24 calls,   0.002 s avg)
                iterations :     0.01s CPU
             subspace_init :     0.00s CPU
                    omegai :     0.00s CPU (      10 calls,   0.000 s avg)
                   zmatrix :     0.00s CPU (      36 calls,   0.000 s avg)
                 mat_hdiag :     0.00s CPU (      40 calls,   0.000 s avg)
+            windows_write :     0.00s CPU
+           subspace_write :     0.01s CPU
 
 
