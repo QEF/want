@@ -18,7 +18,7 @@
    USE version_module,       ONLY : version_number
    USE parser_module,        ONLY : change_case
    USE files_module,         ONLY : file_open, file_close
-   USE timing_module,        ONLY : timing, timing_overview, global_list, timing_upto_now
+   USE timing_module,        ONLY : timing, timing_upto_now
    USE util_module,          ONLY : mat_mul, mat_sv
    USE mp_global,            ONLY : mpime, nproc
    USE mp,                   ONLY : mp_sum

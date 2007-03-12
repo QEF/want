@@ -26,7 +26,7 @@
    USE parser_module,        ONLY : log2char, change_case
    USE converters_module,    ONLY : cry2cart
    USE version_module,       ONLY : version_number
-   USE lattice_module,       ONLY : alat, bvec, tpiba
+   USE lattice_module,       ONLY : bvec, tpiba
    USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx, windows_read
    USE kpoints_module,       ONLY : nrtot, nkpts, vkpt, ivr, vr
    USE subspace_module,      ONLY : eamp, subspace_read

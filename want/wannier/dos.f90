@@ -26,7 +26,6 @@
    USE version_module,       ONLY : version_number
    USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart, cart2cry
-   USE parser_module,        ONLY : log2char, int2char
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
    USE windows_module,       ONLY : windows_read, nspin
@@ -74,7 +73,7 @@
    CHARACTER(nstrx)          :: filename, analyticity_sgm
    CHARACTER(4)              :: ctmp
    !
-   INTEGER      :: i, j, ie, ik, ir, ir_eff
+   INTEGER      :: i, j, ie, ik, ir
    INTEGER      :: ierr
    INTEGER      :: dimwann_sgm, nrtot_sgm
    LOGICAL      :: lfound, lhave_sgm, ldynam_sgm
