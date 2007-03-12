@@ -1,29 +1,29 @@
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/nichain_WanT_UP_WFM001.cube'
-Output file (plot file):  './/nichain_WanT_UP_WFM001.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_UP_WFM001.crd'
+Input file:      './SCRATCH//nichain_WanT_UP_WFM001.cube'
+Output file (plot file):  './SCRATCH//nichain_WanT_UP_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//nichain_WanT_UP_WFM001.crd'
 
  WanT
  plot output - cube format
 Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
 Min value: 0.000000
-Max value: 0.021008
+Max value: 0.026306
 Job done ...
 **********************************************************
 **********************************************************
 gCube2Plt conversion  ( .cube --> .plt )                
 
-Input file:      './/nichain_WanT_UP_WFM004.cube'
-Output file (plot file):  './/nichain_WanT_UP_WFM004.plt'
-Coordinate file (in CHARMM 'crd' format): './/nichain_WanT_UP_WFM004.crd'
+Input file:      './SCRATCH//nichain_WanT_UP_WFM004.cube'
+Output file (plot file):  './SCRATCH//nichain_WanT_UP_WFM004.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//nichain_WanT_UP_WFM004.crd'
 
  WanT
  plot output - cube format
 Number of atoms: 2, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-2.500002
 Min value: 0.000000
-Max value: 0.014308
+Max value: 0.017917
 Job done ...
 **********************************************************
   ======================================================================
@@ -36,15 +36,18 @@ Job done ...
 
 
   Program <plot>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  7:18:40 
+  Date 12Mar2007 at 22:25:37 
 
+     Serial run.
+
+          BUILT :    Mon Mar 12 18:42:28 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
             F90 :    g95
             F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+         DFLAGS :    -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
@@ -86,14 +89,14 @@ Job done ...
  </LATTICE>
 
  <K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  nkpts =     4
+  Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k (   2) =    (   0.00000  0.00000  0.33249 ),   weight =   0.2500000
-    k (   3) =    (   0.00000  0.00000  0.66498 ),   weight =   0.2500000
-    k (   4) =    (   0.00000  0.00000  0.99747 ),   weight =   0.2500000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.2500000
+    k (    2) =    (    0.0000000   0.0000000   0.3324915 ),   weight =      0.2500000
+    k (    3) =    (    0.0000000   0.0000000   0.6649830 ),   weight =      0.2500000
+    k (    4) =    (    0.0000000   0.0000000   0.9974746 ),   weight =      0.2500000
  </K-POINTS>
 
 
@@ -108,7 +111,8 @@ Job done ...
       Total number of PW for rho  =      90341
         Max number of PW for wfc  =       2912
       Total number of PW for wfcs =       5117
-        FFT grid components (rho) =  (    96   96   24 )
+             input FFT mesh (rho) =  (    96   96   24 )
+          required FFT mesh (rho) =  (    96   96   24 )
 
 
   ======================================================================
@@ -129,9 +133,9 @@ Job done ...
        r3 :   -1.0000 -->   1.0000
 
   Grid dimensions:
-      nrx :       -48 -->       48
-      nry :       -48 -->       48
-      nrz :       -24 -->       24
+      nrx :       -48 -->       47
+      nry :       -48 -->       47
+      nrz :       -24 -->       23
 
 
   Centers for the required Wannier functions:
@@ -164,31 +168,31 @@ Job done ...
                               Total time spent up to now :     1.29 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :     1.66 secs
+                              Total time spent up to now :     1.72 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :     2.04 secs
+                              Total time spent up to now :     2.12 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :     2.42 secs
+                              Total time spent up to now :     2.51 secs
 
 
   WF maximum values (normalization is one):
 
-    Wf(   1 )   -->     0.144941
-    Wf(   2 )   -->     0.119617
+    Wf(   1 )   -->     0.162192
+    Wf(   2 )   -->     0.133854
 
 
-  writing WF(   1) plot on file: .//nichain_WanT_UP_WFM001.cube
-         atomic positions on file: .//nichain_WanT_UP_WFM001.xyz
-  deleting tmp files: .//nichain_WanT_UP_WFM001.cube
-                      .//nichain_WanT_UP_WFM001.crd
+  writing WF(   1) plot on file: ./SCRATCH//nichain_WanT_UP_WFM001.cube
+       atomic positions on file: ./SCRATCH//nichain_WanT_UP_WFM001.xyz
+  deleting tmp files: ./SCRATCH//nichain_WanT_UP_WFM001.cube
+                      ./SCRATCH//nichain_WanT_UP_WFM001.crd
 
 
-  writing WF(   4) plot on file: .//nichain_WanT_UP_WFM004.cube
-         atomic positions on file: .//nichain_WanT_UP_WFM004.xyz
-  deleting tmp files: .//nichain_WanT_UP_WFM004.cube
-                      .//nichain_WanT_UP_WFM004.crd
+  writing WF(   4) plot on file: ./SCRATCH//nichain_WanT_UP_WFM004.cube
+       atomic positions on file: ./SCRATCH//nichain_WanT_UP_WFM004.xyz
+  deleting tmp files: ./SCRATCH//nichain_WanT_UP_WFM004.cube
+                      ./SCRATCH//nichain_WanT_UP_WFM004.crd
 
 
 
@@ -196,18 +200,20 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :    10
+             clock number :    12
 
                      plot :     6.00s CPU 
 
              want_dftread :     0.55s CPU
                 want_init :     0.00s CPU
-          ggrids_read_ext :     0.14s CPU
-      wfc_data_grids_read :     0.01s CPU
-           wfc_data_kread :     0.04s CPU (       4 calls,   0.009 s avg)
-               kwann_calc :     0.19s CPU (       8 calls,   0.024 s avg)
-                   cfft3d :     0.24s CPU (       8 calls,   0.030 s avg)
-               cwann_calc :     1.11s CPU (       8 calls,   0.138 s avg)
-                 gcubeplt :     1.74s CPU (       2 calls,   0.871 s avg)
+             windows_read :     0.01s CPU
+            subspace_read :     0.11s CPU
+          ggrids_read_ext :     0.15s CPU
+      wfc_data_grids_read :     0.02s CPU
+           wfc_data_kread :     0.03s CPU (       4 calls,   0.008 s avg)
+               kwann_calc :     0.22s CPU (       8 calls,   0.027 s avg)
+                   cfft3d :     0.27s CPU (       8 calls,   0.034 s avg)
+               cwann_calc :     1.09s CPU (       8 calls,   0.136 s avg)
+                 gcubeplt :     1.60s CPU (       2 calls,   0.798 s avg)
 
 

@@ -8,15 +8,18 @@
 
 
   Program <bands>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  7:18:40 
+  Date 12Mar2007 at 22:25:36 
 
+     Serial run.
+
+          BUILT :    Mon Mar 12 18:42:28 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
             F90 :    g95
             F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+         DFLAGS :    -D__FFTW
       BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    -lfftw
@@ -34,7 +37,7 @@
   =                           INPUT Summary                            =
   ======================================================================
 
-                      fileout :     .//nichain_WanT_DW_bands.dat
+                      fileout :     ./SCRATCH//nichain_WanT_DW_bands.dat
                     nkpts_in  :      2
                     nkpts_max :    100
 
@@ -67,14 +70,14 @@
  </LATTICE>
 
  <K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  nkpts =     4
+  Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k (   2) =    (   0.00000  0.00000  0.33249 ),   weight =   0.2500000
-    k (   3) =    (   0.00000  0.00000  0.66498 ),   weight =   0.2500000
-    k (   4) =    (   0.00000  0.00000  0.99747 ),   weight =   0.2500000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.2500000
+    k (    2) =    (    0.0000000   0.0000000   0.3324915 ),   weight =      0.2500000
+    k (    3) =    (    0.0000000   0.0000000   0.6649830 ),   weight =      0.2500000
+    k (    4) =    (    0.0000000   0.0000000   0.9974746 ),   weight =      0.2500000
  </K-POINTS>
 
 
@@ -303,11 +306,13 @@
   ======================================================================
 
    <global routines>
-             clock number :     3
+             clock number :     5
 
                     bands :     0.00s CPU 
 
-             want_dftread :     0.17s CPU
+             want_dftread :     0.23s CPU
                 want_init :     0.00s CPU
+             windows_read :     0.01s CPU
+            subspace_read :     0.11s CPU
 
 
