@@ -3,6 +3,9 @@
   List of needed changes
 *************************************
 
+* qexml_read_rho to be added.
+  parsers: PRIVATE/PUBLIC stuff
+
 * implement all the smearing types in dos.f90
   cleanup in routines dealing with sgm/operator datafile
 
