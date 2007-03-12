@@ -23,7 +23,7 @@
 
 !!
 !! NOTE: iotk_configure seems not to be able to detect all
-!!       workaround's. We impose them automatically. 
+!!       workarounds. We impose them automatically. 
 !!
 #if defined(__XLF)
 #   define __IOTK_WORKAROUND5
