@@ -154,7 +154,7 @@
                    !
                    WRITE (stdout,"(1x,'!')")
                    WRITE (stdout,"(1x,'!',4x,'R = (',3i4,' )')") ( ivr(i,ir), i=1,3 )
-                   WRITE (stdout,"( (1x,'!',3(2f11.6',',2x)) )") (rham(i,i,ir),i =1,dimwann)
+                   WRITE (stdout,"( (1x,'!',3(2f11.6,',',2x)) )") (rham(i,i,ir),i =1,dimwann)
                ENDIF
           ENDIF
       ENDDO
