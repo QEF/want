@@ -45,7 +45,7 @@
    INTEGER                     :: nspin              ! number of spin channels
    INTEGER                     :: dimwinx            ! MAX (dimwin(:)) over kpts
    INTEGER                     :: ispin              ! index of the spin component
-   CHARACTER(10)               :: spin_component = 'none' ! 'up', 'down', 'none'
+   CHARACTER(10)               :: spin_component = 'none' ! 'up', 'down','dw', 'none'
    !
    ! ... starting states within the energy window
    REAL(dbl)                   :: win_min, win_max   ! outer energy window
@@ -398,13 +398,16 @@ CONTAINS
        CALL windows_allocate()
        !
        ALLOCATE( dimfroz(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',ABS(ierr))
+       !
        ALLOCATE( indxfroz(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',ABS(ierr))
+       !
        ALLOCATE( indxnfroz(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',ABS(ierr))
+       !
        ALLOCATE( frozen(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',ABS(ierr))
 
        CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
@@ -426,7 +429,14 @@ CONTAINS
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+
        !
+       ! set the auxiliary quantities IKE, IKS, ISPIN
+       !
+       CALL windows_setspin( spin_component, nspin, nkpts, ispin, ike, iks )
+
+       !
+       ! close
        CALL timing( subname, OPR='stop')
        CALL log_pop ( subname )
        !
@@ -484,34 +494,10 @@ CONTAINS
        leig (:,:,:) = ZERO
 
        !
-       !
        ! setting the auxiliary quantities IKE, IKS, ISPIN
        !
-       IF ( nspin == 1) THEN
-            !
-            iks = 1
-            ike = nkpts
-            ispin = 1
-            !
-            IF ( TRIM(spin_component) /= 'none' ) &
-                 CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
-       ELSE
-            SELECT CASE ( TRIM(spin_component) )
-            CASE ( 'up' )
-                !
-                iks = 1
-                ike = nkpts
-                ispin = 1
-                !
-            CASE ( 'down' )
-                iks = nkpts+1
-                ike = 2*nkpts
-                ispin = 2
-                !
-            CASE DEFAULT
-                CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
-            END SELECT
-       ENDIF
+       CALL windows_setspin( spin_component, nspin, nkpts, ispin, ike, iks )
+
 
        !
        ! read data
@@ -593,6 +579,55 @@ CONTAINS
        CALL log_pop ( subname )
        !
    END SUBROUTINE windows_read_ext
+
+
+!**********************************************************
+   SUBROUTINE windows_setspin( spin_component, nspin, nkpts, ispin, ike, iks )
+   !**********************************************************
+   IMPLICIT NONE
+       CHARACTER(*),  INTENT(IN)  :: spin_component
+       INTEGER,       INTENT(IN)  :: nspin, nkpts
+       INTEGER,       INTENT(OUT) :: ike, iks, ispin
+       !
+       CHARACTER(17)  :: subname="windows_setspin"
+
+       !
+       !
+       ! setting the auxiliary quantities IKE, IKS, ISPIN
+       !
+       SELECT CASE ( nspin ) 
+       CASE( 1 )
+            !
+            iks = 1
+            ike = nkpts
+            ispin = 1
+            !
+            IF ( TRIM(spin_component) /= 'none' ) &
+                 CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
+            !
+       CASE( 2 )
+            !
+            SELECT CASE ( TRIM(spin_component) )
+            CASE ( 'up' )
+                !
+                iks = 1
+                ike = nkpts
+                ispin = 1
+                !
+            CASE ( 'down', 'dw' )
+                iks = nkpts+1
+                ike = 2*nkpts
+                ispin = 2
+                !
+            CASE DEFAULT
+                CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),2 )
+            END SELECT
+            !
+       CASE DEFAULT
+            CALL errore(subname,'Invalid nspin',ABS(nspin)+1 )
+       END SELECT
+   
+   END SUBROUTINE windows_setspin
 
 END MODULE windows_module
 

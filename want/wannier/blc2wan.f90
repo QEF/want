@@ -111,7 +111,7 @@
       CALL change_case(spin_component,'lower')
       !
       IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
-           TRIM(spin_component) /= "down" ) &
+           TRIM(spin_component) /= "down" .AND. TRIM(spin_component) /= "dw"     ) &
            CALL errore('blc2wan','invalid spin_component = '//TRIM(spin_component),3 )
 !
 ! ... Getting previous WanT data
@@ -436,7 +436,7 @@
          ispin = 0
       CASE( "up")
          ispin = 1
-      CASE( "down")
+      CASE( "down", "dw")
          ispin = 2
       CASE DEFAULT
          CALL errore('blc2wan','invalid spin_component = '//TRIM(spin_component),33)

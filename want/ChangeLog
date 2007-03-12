@@ -4,6 +4,12 @@
 =======================================================
 
 
+12 Mar 2007      Auxiliary allowed value for spin_component "dw" added. Input var 
+                 spin_component deleted from plot namelist since already overwritten
+                 by the value read from .space file. Documentation updated. 
+                 Interface to DFT data related to spin simplified (windows_setspin routine
+                 added). (AF)
+
 11 Mar 2007      Documentation about blc2wan.f90, dos.f90, conductor.f90 updated. (AF)
 
 09 Mar 2007      Self-energy stuff added in dos.f90 (some special cases not yet implemented);
