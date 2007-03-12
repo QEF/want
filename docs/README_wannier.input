@@ -179,7 +179,7 @@ subspace_init STRING
               DEFAULT : "center_projections"
 
 spin_component    STRING
-              ( "up" | "down" | "none" )
+              ( "up" | "down", "dw" | "none" )
               define whether the calculation is spin polarized and if the case 
               which spin component is to be treated
               DEFAULT: "none"

@@ -180,12 +180,12 @@
                                 'center_projections', 'from_file' /
 
    CHARACTER(10)    :: spin_component = 'none'
-       ! ( 'up' | 'down' | 'none' )
+       ! ( 'up' | 'down', 'dw' | 'none' )
        ! define whether the calculation is spin polarized and if
        ! the case which spin component is to be treated 
 
-   CHARACTER(nstrx) :: spin_component_allowed(3)
-   DATA spin_component_allowed / 'up',  'down', 'none' /
+   CHARACTER(nstrx) :: spin_component_allowed(4)
+   DATA spin_component_allowed / 'up',  'down', 'dw', 'none' /
        ! the allowed values for spin_component
 
    LOGICAL :: use_blimit = .FALSE.

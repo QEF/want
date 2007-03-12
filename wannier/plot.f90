@@ -31,8 +31,7 @@
    USE lattice_module,     ONLY : avec, bvec, alat, omega
    USE ions_module,        ONLY : symb, tau, nat
    USE kpoints_module,     ONLY : nkpts, vkpt
-   USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext,&
-                                  spin_component
+   USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
    USE localization_module,ONLY : cu, rave, localization_read
    USE ggrids_module,      ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
@@ -63,7 +62,7 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, spin_component, &
+   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
                     datatype, assume_ncpp, output_fmt, collect_wf,   &
                     r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3
 
@@ -123,7 +122,6 @@
       wann                        = ' '
       datatype                    = 'modulus'
       output_fmt                  = 'plt'
-      spin_component              = 'none'
       r1min                       = -0.5
       r1max                       =  0.5
       r2min                       = -0.5
@@ -155,12 +153,7 @@
            CALL errore('plot','invalid DATATYPE = '//TRIM(datatype),2)
            !
       IF ( TRIM(datatype) == "module" ) datatype = "modulus"
-
-      CALL change_case(spin_component,'lower')
-      IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
-           TRIM(spin_component) /= "down" ) &
-           CALL errore('plot', 'Invalid spin_component = '//TRIM(spin_component), 3)
-           !
+      !
       CALL change_case(output_fmt,'lower')
       IF ( TRIM(output_fmt) /= "txt" .AND. TRIM(output_fmt) /= "plt" .AND. &
            TRIM(output_fmt) /= "cube" .AND. TRIM(output_fmt) /= "xsf" ) &
@@ -190,7 +183,7 @@
 !
 ! ... Getting previous WanT data
 !
-      CALL want_dftread ( WINDOWS=.TRUE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE., &
+      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE., &
                           PSEUDO=read_pseudo)
       CALL want_init    ( INPUT =.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE., &
                           PSEUDO=read_pseudo)
@@ -200,10 +193,12 @@
       !
       CALL io_name('space',filename)
       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
+          !
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore('plot',"unable to find WINDOWS",1)
           CALL subspace_read(space_unit,"SUBSPACE",lfound)
           IF ( .NOT. lfound ) CALL errore('plot',"unable to find SUBSPACE",1)
+          !
       CALL file_close(space_unit,PATH="/",ACTION="read")
 
       CALL io_name('space',filename,LPATH=.FALSE.)

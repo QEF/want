@@ -81,12 +81,5 @@ collect_wf    LOGICAL
               plotting cell. Useful to plot purposes.
               DEFAULT: .TRUE.
 
-spin_component    STRING
-              ( "up" | "down" | "none" )
-              define whether the calculation is spin polarized and if the case
-              which spin component is to be treated. 
-              DEFAULT: "none"
-
-
 ==============================================================================
 
