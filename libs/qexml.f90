@@ -2580,6 +2580,7 @@ CONTAINS
       INTEGER                :: iopool_id, ionode_pool
       !
       !
+      rho = 0.0
 #ifdef __HAVE_RHO_READ
 
       rho_file = TRIM( rho_file_base ) // '.xml'

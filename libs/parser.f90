@@ -25,12 +25,14 @@
 !                               routine error and show by the second string the
 !                               name of the field where read-error occurred.
 !----------------------------------------------------------------------------
-MODULE parser_module
+  MODULE parser_module
   !----------------------------------------------------------------------------
   !
   USE kinds
-  USE parser_base_module
-  USE io_global_module, ONLY : stdout
+  USE io_global_module,   ONLY : stdout
+  USE parser_base_module, ONLY : int2char, char2int, log2char, log2int, &
+                                 upper_case, lower_case, change_case,   &
+                                 parser_replica, parser_path, parser_version
   IMPLICIT NONE
   PRIVATE
   !
