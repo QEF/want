@@ -8,7 +8,12 @@
                  spin_component deleted from plot namelist since already overwritten
                  by the value read from .space file. Documentation updated. 
                  Interface to DFT data related to spin simplified (windows_setspin routine
-                 added). (AF)
+                 added). 
+
+                 WARNING: important BUG fix
+                 when doing spin polarized calculation, QEXPT lib was buggy and used to
+                 read spin up wfc when spin down states were required (spin up were right anyway). 
+                 QEXML lib is right (sort of) anyway. (AF)
 
 11 Mar 2007      Documentation about blc2wan.f90, dos.f90, conductor.f90 updated. (AF)
 
