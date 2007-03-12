@@ -102,9 +102,9 @@ CONTAINS
    IMPLICIT NONE
       INTEGER, INTENT(in):: unit
       CHARACTER(16)      :: subname="correlation_init"
-      CHARACTER(nstrx)   :: attr, analyticity
+      CHARACTER(nstrx)   :: analyticity
       LOGICAL            :: lopen, ldynam
-      INTEGER            :: ie, ierr
+      INTEGER            :: ierr
 
       CALL log_push( 'correlation_init' )
       IF ( egrid_alloc )   CALL errore(subname,'egrid already allocated', 1 )

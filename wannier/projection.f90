@@ -45,8 +45,12 @@
    !
    ! local variables
    !
-   INTEGER :: npwk, npwx
-   INTEGER :: lmax, ibs, ibe
+! XXXX
+#ifdef __ALTERNATIVE
+   INTEGER :: npwx
+#endif
+   INTEGER :: npwk
+   INTEGER :: lmax
    INTEGER :: iwann, ib, ig, ind 
    INTEGER :: ierr
    INTEGER,      ALLOCATABLE :: ylm_info(:,:)
@@ -67,7 +71,9 @@
       ind = wfc_info_getindex(imin, ik, "SPSI_IK", evc_info)
       !
       npwk = evc_info%npw(ind)
+#ifdef __ALTERNATIVE
       npwx = evc_info%npwx
+#endif
 
       ALLOCATE( trial_vect(npwk), STAT = ierr )
       IF( ierr /= 0 ) CALL errore( 'projection', 'allocating trial_vect', npwk )
