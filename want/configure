@@ -54,10 +54,3 @@ test -e config.status   && mv config.status ./conf/
 
 exit 0
 
-
-
-
-
-
-
-
