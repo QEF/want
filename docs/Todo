@@ -4,7 +4,6 @@
 *************************************
 
 * qexml_read_rho to be added.
-  parsers: PRIVATE/PUBLIC stuff
 
 * implement all the smearing types in dos.f90
   cleanup in routines dealing with sgm/operator datafile
@@ -14,8 +13,6 @@
 * disentangle + wannier: 
      - scalar products in projections and overlaps by BLAS
                
-* tests:  check.sh script
-
 * One step minimization (Thygesen like)
 * Symmetries in wfc management
 * Wannier and Transport parallelization
