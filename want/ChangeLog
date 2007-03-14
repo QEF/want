@@ -4,6 +4,9 @@
 =======================================================
 
 
+14 Mar 2007      parsing of output files implemented (parser_output.awk added);
+                 check.sh script strongly updated to allow for automatic test check. (AF)
+
 12 Mar 2007      Auxiliary allowed value for spin_component "dw" added. Input var 
                  spin_component deleted from plot namelist since already overwritten
                  by the value read from .space file. Documentation updated. 
