@@ -103,7 +103,7 @@ printout () {
            #
            if ( name == "iteration" ) {
               #
-              diff = abs ( val - val_ref );
+              diff = sqrt( ( val -val_ref )*( val -val_ref ) );
               stat = stat_fail
               if ( diff < toll ) stat = stat_ok
               #
