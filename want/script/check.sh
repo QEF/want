@@ -6,9 +6,9 @@
 MANUAL=" Usage
    check.sh [-h] [-v] [<file1>...<fileN>]
 
- Report a simplified 'diff' of the selected <file>'s
+ Report a difference pattern between the selected <file>'s
  and their reference counterparts in the dir ./Reference .
- The script should therefore be run in a specific Test dir.
+ The script should be run in a specific Test dir.
 
 "
 #
@@ -29,11 +29,15 @@ done
 
 #
 # account for environment variables
+BIN="../../script/"
+#
 test -e ../environment.conf && . ../environment.conf
+test -e $BIN/basedef.sh && . $BIN/basedef.sh
+#
 if [ "$VERBOSITY_LEVEL" = "high" ] ; then
    VERBOSITY=$VERBOSITY_LEVEL
 fi
-echo "check VERBOSITY: $VERBOSITY"
+#echo "check VERBOSITY: $VERBOSITY"
 
 
 #
@@ -49,39 +53,134 @@ if [ ! -d "./Reference" ] ; then
    exit 1
 fi
 
+#-----------------------------
+print_header () {
+   #-----------------------------
+   # 
+   # used to format header printing
+   #
+   printf "%s" $boldon
+#   printf "%s" "[1;32;40m"
+   printf "\n%-15s\t%12s\t%12s\t%12s\n\n" "Variable" "This File" "Reference" "Difference"
+   printf "%s" $boldoff
+}
 
+#-----------------------------
+printout () {
+   #-----------------------------
+   #
+   # write results of the check
+   # USAGE:
+   #      printout $name, $val, $val_ref, $toll
+   #
+   if [ $# != 3 -a $# != 4 ] ; then 
+      echo "ERROR: invalid syntax in printout"; exit 1
+   fi
+   #
+   #
+   echo $1 $2 $3 $4 | awk '
+       { 
+           #  
+           # here is a simple awk script to format results  
+           #  
+
+           #
+           # first few definitions about colors
+           green_on="[1;32;48m"
+           green_off="[0m"
+           red_on="[1;31;48m"
+           red_off="[0m"
+           #
+           stat_ok   = green_on"OK"green_off ;
+           stat_fail = red_on"FAIL"red_off ;
+
+           #
+           # deal with data
+           name=$1;
+           val=$2;
+           val_ref=$3;
+           toll=$4;
+           #
+           if ( name == "iteration" ) {
+              #
+              diff = abs ( val - val_ref );
+              stat = stat_fail
+              if ( diff < toll ) stat = stat_ok
+              #
+              printf( "%-15s\t%12i\t%12i\t%12i\t%10s\n", name, val, val_ref, diff, stat );
+              #
+           } else if ( name == "status" ) { 
+              #
+              printf( "%-15s\t%12s\t%12s\n", name, val, val_ref );
+              #
+           } else {
+              #
+              diff = sqrt( ( val -val_ref )*( val -val_ref ) );
+              stat = stat_fail
+              if ( diff < toll ) stat = stat_ok
+              #
+              printf( "%-15s\t%12.6f\t%12.6f\t%12.6f\t%10s\n", name, val, val_ref, diff, stat );
+              #
+           }
+        }'
+}
+
+
+#
+# main loop over files to be checked
+#
 for file in $LIST
 do
     
    echo 
-   echo "######################### file: $file "
+   echo "######################### File: $file "
+   #
    if [ ! -e $file ] ; then 
+      #
       echo "   $file not found: skipped"  
+      #
    else
-      OUT="$( diff $file Reference/$file | 
-           grep -v "Date " |
-           grep -v CPU |
-           grep -v secs  )"
+      #
+      print_header
+      #
+      OUT_FILE=$( $BIN/parse_output.awk $file )
+      OUT_REF=$( $BIN/parse_output.awk ./Reference/$file )
 
-      if [ "$VERBOSITY" = "high" ] ; then
-         echo "$OUT"
-      else
-         echo "$OUT"                     | 
-              grep "^[-<>]"              |
-              grep -v  "Iteration ="     |
-              grep -vi "Center"          |
-              grep -v  "Omega variation" |
-              grep -v  "k point"         |
-              grep -v  "Fermi energy"    |
-              grep -v  "^[<>] *! "       |
-              uniq
-      fi
+      #
+      # print each value found
+      #
+      for item in $OUT_FILE
+      do
+          name=$( echo $item | cut -f1 -d"@" )
+           val=$( echo $item | cut -f2 -d"@" )
+          toll=$( echo $item | cut -f3 -d"@" )
+
+          #
+          # search the reference value
+          #
+          for item_ref in $OUT_REF
+          do 
+              name_ref=$( echo $item_ref | cut -f1 -d"@" )
+              if [ "$name_ref" = "$name" ] ; then 
+                 val_ref=$( echo $item_ref | cut -f2 -d"@" )
+              fi
+          done
+
+          #
+          # print
+          #
+          name_tmp=$( echo $name | tr [:upper:] [:lower:] )
+          name=$name_tmp
+          #
+          # avoid to have empty TOLL
+          if [ -z "$toll" ] ; then toll=@@ ; fi
+          #
+          printout $name $val $val_ref $toll
+          #
+      done
+
    fi
 done
-exit 0
-
-
-
-
+echo
 
 
