@@ -91,8 +91,8 @@ printout () {
            red_on="[1;31;48m"
            red_off="[0m"
            #
-           stat_ok   = green_on"OK"green_off ;
-           stat_fail = red_on"FAIL"red_off ;
+           stat_ok   = green_on"ok"green_off ;
+           stat_fail = red_on"failed"red_off ;
 
            #
            # deal with data
