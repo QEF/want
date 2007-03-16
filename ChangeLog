@@ -4,7 +4,10 @@
 =======================================================
 
 
-14 Mar 2007      parsing of output files implemented (parser_output.awk added);
+16 Mar 2007      rcut variable added to midpoint.f90 to define an upper bound for
+                 bond lengths. (AF)
+
+14 Mar 2007      Parsing of output files implemented (parser_output.awk added);
                  check.sh script strongly updated to allow for automatic test check. (AF)
 
 12 Mar 2007      Auxiliary allowed value for spin_component "dw" added. Input var 

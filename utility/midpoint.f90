@@ -316,8 +316,13 @@ END MODULE
       !
       ! report about 
       !
-      WRITE( stdout,"(  2x,'# Total bond types: ', i5)") npair
-      WRITE( stdout,"(  2x,'Minimum bond length [Ang]:')")
+      nmid = 0
+      DO ipair = 1, npair
+         IF ( pair_is_valid( ipair) ) nmid = nmid + 1 
+      ENDDO
+      !
+      WRITE( stdout,"(  2x,'# Valid bond types: ', i5)") nmid
+      WRITE( stdout,"(  2x,'Minimum bond length [Ang]:',/)")
       !
       DO ipair = 1, npair
          !
