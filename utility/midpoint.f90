@@ -106,6 +106,7 @@ END MODULE
    !                             $work_dir/$prefix.export/index.xml
    !      output_fmt       the fmt used to write the found midbond positions on output
    !                       ( "angstrom" | "bohr" | "alat" | "crystal" )
+   !      rcut             cutoff radius: bonds which are longer of rcut [Ang] are deleted
    !      toll             the tolerance on bond length used to distinguish between
    !                       nearest and next nearest neigbors. (given in percentage on the
    !                       bond length)
@@ -131,11 +132,11 @@ END MODULE
    ! input variables
    !
    CHARACTER( 20 )  :: output_fmt    ! ( "angstrom" | "bohr" | "alat" | "crystal" )
-   REAL(dbl)        :: toll
+   REAL(dbl)        :: toll, rcut
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, work_dir, output_fmt, toll
+   NAMELIST /INPUT/ prefix, work_dir, output_fmt, toll, rcut
 
    !
    ! local variables
@@ -149,6 +150,7 @@ END MODULE
    INTEGER,      ALLOCATABLE :: map(:,:)
    REAL(dbl),    ALLOCATABLE :: length(:)
    CHARACTER(3), ALLOCATABLE :: symb1(:), symb2(:)
+   LOGICAL,      ALLOCATABLE :: pair_is_valid(:)
    !
    TYPE( bond_type ), POINTER :: list, current, runner
    !
@@ -169,6 +171,7 @@ END MODULE
       prefix                      = 'WanT'
       work_dir                    = './'
       output_fmt                  = 'angstrom'
+      rcut                        = 5.0     ! [Ang]
       toll                        = 0.10
       
 
@@ -186,7 +189,14 @@ END MODULE
            TRIM(output_fmt) /= "alat" .AND. TRIM(output_fmt) /= "crystal" ) &
            CALL errore('midpoint', 'Invalid output_fmt = '//TRIM(output_fmt), 4)
 
+      IF ( toll < 0.0 ) CALL errore('midpoint','invalid toll',3)
+      IF ( rcut < 0.0 ) CALL errore('midpoint','invalid rcut',4)
 
+      !
+      ! convert rcut to bohr
+      ! to be consistent with internal units
+      !
+      rcut = rcut / bohr
 
 !
 ! Getting DFT data
@@ -212,6 +222,7 @@ END MODULE
 
       WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") TRIM(output_fmt)
       WRITE( stdout,"(  2x,'  Bond len. toll :',3x,f9.4)") toll
+      WRITE( stdout,"(  2x,'   Cutoff radius :',3x,f9.4,' [Ang]')") rcut * bohr
       WRITE( stdout,"(/)")
 
 
@@ -227,6 +238,8 @@ END MODULE
 
       ALLOCATE( length(npair), symb1(npair), symb2(npair), map(nsp,nsp), STAT=ierr )
       IF (ierr/=0) CALL errore('midpoint','allocating length, symb1, symb2',ABS(ierr))
+      ALLOCATE( pair_is_valid(npair), STAT=ierr )
+      IF (ierr/=0) CALL errore('midpoint','allocating pair_is_valid',ABS(ierr))
       
       !
       ! set the 
@@ -266,7 +279,8 @@ END MODULE
       tau(:,:) = tau(:,:) * alat
 
 
-      length(:) =  1000000.0
+      length(:)        =  1000000.0
+      pair_is_valid(:) =  .FALSE. 
       !
       DO ia1 = 1, nat
       DO ia2 = 1, nat
@@ -285,7 +299,12 @@ END MODULE
              !
              aux = DOT_PRODUCT( vect(:), vect(:) )
              !
-             IF ( aux < length(ipair) .AND. aux > EPS_m2 ) length(ipair) = aux
+             IF ( aux < length(ipair) .AND. aux > EPS_m2 .AND. aux < rcut**2 ) THEN
+                 !
+                 length( ipair )        = aux
+                 pair_is_valid( ipair ) = .TRUE.
+                 !
+             ENDIF
              ! 
           ENDDO
           ENDDO
@@ -297,13 +316,18 @@ END MODULE
       !
       ! report about 
       !
-      WRITE( stdout,"(  2x,'# bond types: ', i5)") npair
+      WRITE( stdout,"(  2x,'# Total bond types: ', i5)") npair
       WRITE( stdout,"(  2x,'Minimum bond length [Ang]:')")
       !
       DO ipair = 1, npair
          !
-         WRITE( stdout,"(4x,a3,'-- ',a3,'  : ',f9.6)") symb1(ipair), symb2(ipair), &
-                                                      SQRT(length(ipair)) * bohr
+         IF ( pair_is_valid( ipair ) ) THEN
+            !
+            WRITE( stdout,"(4x,a3,'-- ',a3,'  : ',f9.6)") symb1(ipair), symb2(ipair), &
+                                                         SQRT(length(ipair)) * bohr
+            !
+         ENDIF
+         !
       ENDDO
       !
       WRITE( stdout,"()")
@@ -337,7 +361,8 @@ END MODULE
               !
               ! check whether we found a "good" bond
               !
-              IF ( aux <= length(ipair)*(ONE+toll) .AND. aux > EPS_m2 ) THEN
+              IF ( aux <= MIN ( length( ipair )*( ONE+toll ) , rcut**2 ) .AND. &
+                   aux > EPS_m2 ) THEN
                  !
                  ALLOCATE( current, STAT=ierr)
                  IF ( ierr/=0 ) CALL errore('midpoint','allocating current',ABS(ierr))
@@ -469,6 +494,8 @@ END MODULE
 
       DEALLOCATE( length, symb1, symb2, map, STAT=ierr )
       IF (ierr/=0) CALL errore('midpoint','deallocating length--map', ABS(ierr))
+      DEALLOCATE( pair_is_valid, STAT=ierr )
+      IF (ierr/=0) CALL errore('midpoint','deallocating pair_is_valid', ABS(ierr))
       !
       runner => list
       DO 
