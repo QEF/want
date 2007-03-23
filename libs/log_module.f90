@@ -6,6 +6,8 @@
 ! in the root directory of the present distribution, 
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
+# include "f_defs.h"
+!
 !*********************************************
    MODULE log_module
 !*********************************************
@@ -87,7 +89,7 @@ CONTAINS
       OPEN( logunit, FILE=logfile, IOSTAT=ierr )
          IF (ierr/=0) CALL errore('log_init', 'opening logfile '//TRIM(logfile), ABS(ierr))
          !
-#if defined (HAVE_MALLINFO)
+#if defined HAVE_MALLINFO
          WRITE( logunit, "(2x, ' Time',6x, 'Memory [kB]   Routines',/ )")
 #else
          WRITE( logunit, "(2x, ' Time',6x, 'Routines',/ )")
@@ -151,7 +153,7 @@ CONTAINS
          !
          IF (ierr/=0) CALL errore('log_push', 'opening logfile '//TRIM(logfile), ABS(ierr))
          !
-#if defined (HAVE_MALLINFO)
+#if defined HAVE_MALLINFO
             WRITE( logunit, "( 2x, a9, ' | ', I9, 2x, ' | ')", ADVANCE="no" ) ctime, memory
 #else
             WRITE( logunit, "( 2x, a9, ' | ')", ADVANCE="no" ) ctime
