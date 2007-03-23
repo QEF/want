@@ -5,8 +5,8 @@ AC_INIT(WanT, 2.1, , want)
 
 # default choices
 # set each variable to 0 (false) or 1 (true)
-use_parallel=1
-use_shared=1
+use_parallel=0
+use_shared=0
 
 # -----------------------------
 
@@ -1357,7 +1357,18 @@ AC_CONFIG_FILES([include/configure.h:include/configure.h.in])
 AC_CONFIG_FILES(make.sys)
 AC_CONFIG_FILES(configure.msg)
 
+
 AC_OUTPUT
+
+#
+# greate also f_defs.h with a (not so) dirty trick
+#
+if test -e include/ctools.h
+then
+   test -e include/f_defs.h && rm include/f_defs.h
+   grep "#define " include/ctools.h > include/f_defs.h
+fi
+   
 
 #----------------------
 # configure iotk
