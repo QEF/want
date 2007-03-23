@@ -1678,22 +1678,22 @@ CONTAINS
       IF ( ierr /= 0 ) RETURN
       !
       !
-      CALL iotk_scan_dat( iunit, "HAS_ELECTRIC_FIELD", tefield )
+      CALL iotk_scan_dat( iunit, "HAS_ELECTRIC_FIELD", tefield_ )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "HAS_DIPOLE_CORRECTION", dipfield )
+      CALL iotk_scan_dat( iunit, "HAS_DIPOLE_CORRECTION", dipfield_ )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "FIELD_DIRECTION", edir )
+      CALL iotk_scan_dat( iunit, "FIELD_DIRECTION", edir_ )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "MAXIMUM_POSITION", emaxpos )
+      CALL iotk_scan_dat( iunit, "MAXIMUM_POSITION", emaxpos_ )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "INVERSE_REGION", eopreg )
+      CALL iotk_scan_dat( iunit, "INVERSE_REGION", eopreg_ )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "FIELD_AMPLITUDE", eamp )
+      CALL iotk_scan_dat( iunit, "FIELD_AMPLITUDE", eamp_ )
       IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_end( iunit, "ELECTRIC_FIELD" )
