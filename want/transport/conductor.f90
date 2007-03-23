@@ -146,7 +146,7 @@
 !
 ! main loop over frequency
 ! 
-   WRITE(stdout,"()")
+   IF (ionode) WRITE(stdout,"()")
    dos(:,:,:)     = ZERO
    conduct(:,:,:) = ZERO
 
@@ -163,7 +163,7 @@
       !
       ene =  egrid(ie)   
 
-      IF ( MOD( ie, nprint) == 0 .OR. ie == 1 ) THEN
+      IF ( (MOD( ie, nprint) == 0 .OR. ie == 1) .AND. ionode ) THEN
            WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") &
                          ie, egrid(ie)
       ENDIF
@@ -264,7 +264,7 @@
 
       avg_iter = avg_iter/REAL(2*nkpts_par)
       !
-      IF ( MOD( ie, nprint) == 0 .OR. ie == 1 ) THEN
+      IF ( (MOD( ie, nprint) == 0 .OR. ie == 1) .AND. ionode) THEN
            !
            WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
                  avg_iter
