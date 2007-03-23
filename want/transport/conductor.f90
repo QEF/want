@@ -57,7 +57,7 @@
 
 
    !   
-   REAL(dbl),    ALLOCATABLE :: dos(:,:,:), conduct(:,:,:)
+   REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
 
@@ -130,10 +130,10 @@
    !
    CALL workspace_allocate()
 
-   ALLOCATE ( dos(dimC,nkpts_par,ne), STAT=ierr )
+   ALLOCATE ( dos(nkpts_par,ne), STAT=ierr )
    IF( ierr /=0 ) CALL errore('conductor','allocating dos', ABS(ierr) )
    !
-   ALLOCATE ( conduct(dimC,nkpts_par,ne), STAT=ierr )
+   ALLOCATE ( conduct(nkpts_par,ne), STAT=ierr )
    IF( ierr /=0 ) CALL errore('conductor','allocating conduct', ABS(ierr) )
    !
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
@@ -147,8 +147,8 @@
 ! main loop over frequency
 ! 
    IF (ionode) WRITE(stdout,"()")
-   dos(:,:,:)     = ZERO
-   conduct(:,:,:) = ZERO
+   dos(:,:)     = ZERO
+   conduct(:,:) = ZERO
 
    !
    ! init parallelism over frequencies
@@ -248,7 +248,7 @@
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimC
-             dos(i,ik,ie) = - wk_par(ik) * AIMAG( gC(i,i) ) / PI
+             dos(ik,ie) = dos(ik,ie) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
           !
           ! evaluate the transmittance according to the Fisher-Lee formula
@@ -257,7 +257,9 @@
           !
           CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr(1,1,ik), &
                              TRIM(conduct_formula), cond_aux )
-          conduct(:,ik,ie) =  wk_par(ik) * cond_aux(:)
+          DO i=1,dimC
+             conduct(ik,ie) =  conduct(ik,ie) + wk_par(ik) * cond_aux(i)
+          ENDDO
       
       ENDDO kpt_loop 
 
@@ -299,7 +301,7 @@
        !
        DO ie = 1, ne
            !
-           WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,:,ie) )
+           WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,ie) )
            !
        ENDDO
        !
@@ -313,7 +315,7 @@
        OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
        !
        DO ie = 1, ne
-           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,:,ie) )
+           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,ie) )
        ENDDO
        !
        CLOSE( dos_unit )
@@ -342,7 +344,7 @@
          WRITE( aux_unit, *) "# E (eV)   cond(E)"
          !
          DO ie = 1, ne
-              WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( conduct(:,ik,ie) )
+              WRITE( aux_unit, '(2(f15.9))') egrid(ie), conduct(ik,ie) 
          ENDDO
          !
          CLOSE( aux_unit )         
@@ -363,7 +365,7 @@
          WRITE( aux_unit, *) "# E (eV)   doscond(E)"
          !
          DO ie = 1, ne
-             WRITE( aux_unit, '(2(f15.9))') egrid(ie), SUM( dos(:,ik,ie) )
+             WRITE( aux_unit, '(2(f15.9))') egrid(ie), dos(ik,ie) 
          ENDDO
          !
          CLOSE( aux_unit )         
