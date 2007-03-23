@@ -33,7 +33,9 @@ test_init () {
    
    #
    # exit if TMPDIR dies not exist
-   test -d $TMPDIR || exit 1 
+   if [ ! -d $TMPDIR ] ; then 
+       echo "TMPDIR = $TMPDIR   does not exist " ; exit 71 
+   fi
 
    #
    # if the case, create local test dir
