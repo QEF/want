@@ -52,7 +52,7 @@ INTERNAL_LIBS  = @internal_libs@
 # (possible arguments to -D or -U) and their meaning
 DFLAGS         = @dflags@
 FDFLAGS        = @fdflags@
-IFLAGS         = -I../include @includefftw@
+IFLAGS         = -I../include @iflags@
 MODFLAGS       = @imod@. @imod@../iotk @imod@../libs @imod@../wannier @imod@../transport
 
 LIBOBJS        = ../libs/libwant.a ../iotk/libiotk.a ../ctools/libctools.a
