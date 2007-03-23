@@ -7,13 +7,10 @@
     emin = -10.0
     emax =   5.0 
     datafile_C = "./SCRATCH/gold_WanT.ham"
-!    datafile_SGM = "./SCRATCH/gold_WanT.ham"
     transport_dir = 3
     delta = 0.05
     smearing_type = "gaussian"
 !    smearing_type = "lorentzian"
-    niterx = 100
-    nkpts_smear = 12
   /
 
 <HAMILTONIAN_DATA>
