@@ -29,7 +29,7 @@ SUBROUTINE input_from_file( iunit, ierr)
   !
   ! local variables
   !
-  INTEGER  :: ilen, iiarg, nargs
+  INTEGER  :: iiarg, nargs
   !
   ! do not define iargc as external: g95 does not like it
   INTEGER             :: iargc
