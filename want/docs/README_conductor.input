@@ -106,6 +106,15 @@ nk(2)       INTEGER
             dimension of the 2D kpt mesh used to interpolate the input Hamiltonian.
             DEFAULT : values from the WanT datafiles.
 
+s(2)        INTEGER
+            the shift vector used to generate the Monkhorst-Pack k-point mesh.
+            DEFAULT : 0, 0, 0
+
+use_symm    INTEGER
+            if .TRUE. symmetry (time-reversal only at the moment) is used to reduce
+            the number of kpts.
+            DEFAULT : .TRUE.
+
 nprint      INTEGER
             every nprint energy step write to stdout.
             DEFAULT : 20

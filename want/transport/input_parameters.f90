@@ -107,6 +107,13 @@
        ! dimension of the 2D kpt mesh on which the input 
        ! Hamiltonian will be interpolated
 
+   INTEGER :: s(2) =  0
+       ! shifts for the generation of the 2D mesh of kpts
+ 
+   LOGICAL :: use_symm = .FALSE.  ! this is a tmp default
+       ! whether to use symmetry to reduce the numberof kpts
+       ! only Time-Rev is implemented at the moment
+
    INTEGER :: nprint = 20 
        ! every nprint energy step write to stdout
 
@@ -143,18 +150,18 @@
        ! If a valid file is provided, correlation is taken into account
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
-                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, nk, &
+                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, smearing_type, &
-                 delta_ratio, xmax, &
+                 delta_ratio, xmax, nk, s, use_symm, &
                  work_dir, prefix, postfix, write_kdata 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
-   PUBLIC :: ne, emin, emax, nprint, delta, bias, nk, use_overlap, &
-             delta_ratio, xmax 
+   PUBLIC :: ne, emin, emax, nprint, delta, bias, use_overlap, delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: work_dir, prefix, postfix, write_kdata
+   PUBLIC :: nk, s, use_symm
    PUBLIC :: INPUT_CONDUCTOR
 
 
@@ -205,11 +212,13 @@ CONTAINS
       CALL mp_bcast( delta_ratio,        ionode_id)      
       CALL mp_bcast( xmax,               ionode_id)      
       CALL mp_bcast( bias,               ionode_id)      
-      CALL mp_bcast( nk,                 ionode_id)      
       CALL mp_bcast( nprint,             ionode_id)      
       CALL mp_bcast( niterx,             ionode_id)      
       CALL mp_bcast( use_overlap,        ionode_id)      
       CALL mp_bcast( write_kdata,        ionode_id)      
+      CALL mp_bcast( nk,                 ionode_id)      
+      CALL mp_bcast( s,                  ionode_id)      
+      CALL mp_bcast( use_symm,           ionode_id)      
       CALL mp_bcast( work_dir,           ionode_id)      
       CALL mp_bcast( prefix,             ionode_id)      
       CALL mp_bcast( postfix,            ionode_id)      
@@ -283,6 +292,8 @@ CONTAINS
                 CALL errore(subname,'datafile_R should not be specified',1)
       ENDIF
 
+      IF ( ANY( nk(:) < 0 ) ) CALL errore(subname,'invalid nk', 10 )
+      IF ( ANY( s(:)  < 0 .OR.  s(:) > 1 ) ) CALL errore(subname,'invalid s', 10 )
 
       IF ( xmax < 10.0_dbl )      CALL errore(subname,'xmax too small',1)
       IF ( delta_ratio < ZERO )   CALL errore(subname,'delta_ratio is negative',1)

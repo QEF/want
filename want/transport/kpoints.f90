@@ -10,6 +10,7 @@
    MODULE T_kpoints_module
 !*********************************************
    USE kinds,           ONLY : dbl
+   USE constants,       ONLY : EPS_m6, ZERO, ONE, TPI
    USE log_module,      ONLY : log_push, log_pop
    IMPLICIT NONE
    PRIVATE 
@@ -19,8 +20,10 @@
 ! Contains parallel kpt-and R-vectors data
 ! all vectors (vkpt_par, vr_par) in crystal units
 ! 
+    LOGICAL                   :: use_symm        ! whether to use kpt_symm
     INTEGER                   :: nkpts_par       ! number of parallel  kpts
     INTEGER                   :: nk_par(2)       ! 2D kpt mesh generator
+    INTEGER                   :: s_par(2)        ! 2D shifts for kpt mesh generation
     REAL(dbl),    ALLOCATABLE :: vkpt_par(:,:)   ! 2D kpt-vectors
     REAL(dbl),    ALLOCATABLE :: wk_par(:)       ! weights of the 2D kpts
     !
@@ -40,8 +43,9 @@
 ! end delcarations
 !
 
+   PUBLIC :: use_symm
    PUBLIC :: nrtot_par, nr_par, vr_par, wr_par
-   PUBLIC :: nkpts_par, nk_par, vkpt_par, wk_par
+   PUBLIC :: nkpts_par, nk_par, s_par, vkpt_par, wk_par
    PUBLIC :: table_par
    !
    PUBLIC :: alloc
@@ -60,7 +64,6 @@ CONTAINS
    SUBROUTINE kpoints_init()
    !**********************************************************
    USE parameters,       ONLY : nstrx
-   USE constants,        ONLY : ONE, TPI
    USE files_module,     ONLY : file_open, file_close
    USE io_module,        ONLY : aux_unit
    USE iotk_module
@@ -69,9 +72,10 @@ CONTAINS
 
       CHARACTER(12)      :: subname="kpoints_init"
       CHARACTER(nstrx)   :: attr
-      INTEGER            :: nr_(3), nk_(3), nrtot_
-      INTEGER            :: ir, ik, i, j, ierr
-      REAL(dbl)          :: arg
+      INTEGER            :: nr_(3), nk_(3), nrtot_, nkpts_par_x
+      INTEGER            :: ir, ik, i, j, l, ierr
+      LOGICAL            :: lfound
+      REAL(dbl)          :: arg, vaux(3)
  
       CALL log_push( 'kpoints_init' )
 
@@ -121,18 +125,19 @@ CONTAINS
       IF ( ALL( nk_par(:) == 0 ) ) nk_par(1:2) = nr_par(1:2)
       IF ( ANY( nk_par(:) < 1 ) ) CALL errore(subname,'nk mesh too small',71)
       !
-      nkpts_par = PRODUCT(nk_par)
+      ! the total number of kpts will re-defined below
+      ! due to symmetrization
+      !
+      nkpts_par_x = PRODUCT(nk_par)
   
       !
       ! allocations
       !
       ALLOCATE( vr_par(2,nrtot_par), wr_par(nrtot_par), STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'allocating vr_par, wr_par',ABS(ierr))
-      ALLOCATE( vkpt_par(2,nkpts_par), wk_par(nkpts_par) , STAT=ierr)
+      !
+      ALLOCATE( vkpt_par(2,nkpts_par_x), wk_par(nkpts_par_x) , STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_par, wk_par',ABS(ierr))
-      ALLOCATE( table_par(nrtot_par,nkpts_par) , STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'allocating table_par, wk_par',ABS(ierr))
-      alloc = .TRUE.
   
       !
       ! set the prallel grids (vr & kpt) in crystal units
@@ -155,30 +160,72 @@ CONTAINS
   
       !
       ! then the kpt grid
+      !
+      vkpt_par( :, :) = ZERO
+      wk_par( : )     = ZERO
+      !
       ik = 0
+      !
       DO j = 1, nk_par(2)
       DO i = 1, nk_par(1)
-           !
-           ik = ik + 1
-           !
-           vkpt_par(1,ik) = REAL( i - ( nk_par(1)+1)/2, dbl ) / REAL( nk_par(1), dbl )
-           vkpt_par(2,ik) = REAL( j - ( nk_par(2)+1)/2, dbl ) / REAL( nk_par(2), dbl )
-           !
-           wk_par( ik ) = ONE/REAL(nkpts_par, dbl)
+          !
+          vaux(1) = REAL( 2*i -nk_par(1) -s_par(1), dbl ) / REAL( 2*nk_par(1), dbl )
+          vaux(2) = REAL( 2*j -nk_par(2) -s_par(2), dbl ) / REAL( 2*nk_par(2), dbl )
+          !
+          ! check whether the new kpt is equivalent
+          ! to one of the formers
+          !
+          lfound = .FALSE.
+          DO l = 1, ik
+              !
+              IF ( .NOT. use_symm ) EXIT
+              IF ( kpoints_equivalent( vaux(:), vkpt_par(:,l) ) ) THEN
+                 !
+                 lfound = .TRUE.
+                 EXIT
+                 !
+              ENDIF
+              !
+          ENDDO
+          !
+          !
+          IF ( lfound ) THEN
+              !
+              ! equivalent kpt found, increase weight
+              wk_par( l ) = wk_par( l ) + ONE
+              !
+          ELSE
+              !
+              ik = ik + 1
+              vkpt_par(:,ik) = vaux(:)
+              wk_par( ik )   = ONE
+              !
+          ENDIF
+          !
       ENDDO
       ENDDO
+      !
+      wk_par ( : ) = wk_par ( : ) / REAL(nkpts_par_x, dbl)
+      nkpts_par    = ik 
+
+      ALLOCATE( table_par(nrtot_par,nkpts_par) , STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating table_par, wk_par',ABS(ierr))
 
       !
       ! setting the 2D Fourier transform phases
       !
       DO ik = 1, nkpts_par
       DO ir = 1, nrtot_par
-           arg = TPI * DOT_PRODUCT( vkpt_par(:,ik), vr_par(:,ir) )
-           table_par(ir,ik) = CMPLX( COS(arg), SIN(arg), dbl )
+          !
+          arg = TPI * DOT_PRODUCT( vkpt_par(:,ik), vr_par(:,ir) )
+          table_par(ir,ik) = CMPLX( COS(arg), SIN(arg), dbl )
+          !
       ENDDO
       ENDDO
 
+      alloc = .TRUE.
       CALL log_pop( 'kpoints_init' )
+      !
    END SUBROUTINE kpoints_init
 
 
@@ -214,6 +261,33 @@ CONTAINS
       alloc = .FALSE.
       CALL log_pop( 'kpoints_deallocate' )
    END SUBROUTINE kpoints_deallocate
+
+   
+!**********************************************************
+   LOGICAL FUNCTION kpoints_equivalent( v1, v2 )
+   !**********************************************************
+   !
+   ! this routine check whether the input 2D kpts are equivalent
+   ! by symmetry
+   ! At the moment, only time-reversal symmetry is implemented ( k <==> -k)
+   ! spatial symmetries maybe added later on if needed
+   !
+   IMPLICIT NONE
+      REAL( dbl )   :: v1(2), v2(2)   
+      INTEGER       :: i
+      !       
+      kpoints_equivalent = .TRUE.
+      !
+      DO i = 1, 2
+         !
+         ! Time-Rev symmetry
+         IF ( ABS( MOD( v1(i)+v2(i), ONE ) ) > EPS_m6 ) kpoints_equivalent = .FALSE.
+         !
+      ENDDO
+      !
+      RETURN
+      !
+   END FUNCTION kpoints_equivalent
 
 END MODULE T_kpoints_module
 
