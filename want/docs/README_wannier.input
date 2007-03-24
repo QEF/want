@@ -83,10 +83,9 @@ dftdata_fmt   STRING
 
 wantdata_fmt  STRING
               ( "binary" | "textual" )
-              Specified the format of the WanT internal datafiles. If not specified 
-              (suggested option) files are binary for dimwann >= 100, textual otherwise.
-              Reading does not care of that anyway (thanks to the iotk library).
-              DEFAULT: auto-detected
+              Specified the format of the WanT internal datafiles.
+              Reading does not care of ithe fmt of existing data (thanks to the iotk library).
+              DEFAULT: "binary"
 
 assume_ncpp   LOGICAL
               if .TRUE. avoids the reading of pseudopotential files
