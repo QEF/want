@@ -211,11 +211,13 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_kpoints()
    !**********************************************************
-      USE T_kpoints_module,         ONLY :     nk_par
-      USE T_input_parameters_module,ONLY :     nk
+      USE T_kpoints_module,         ONLY :     nk_par, s_par, use_symm
+      USE T_input_parameters_module,ONLY :     nk, s, use_symm_ => use_symm
       IMPLICIT NONE
       
       nk_par(1:2)  = nk(1:2)
+      s_par(1:2)   = s(1:2)
+      use_symm     = use_symm_
 
    END SUBROUTINE setup_kpoints
 
