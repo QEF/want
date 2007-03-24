@@ -139,11 +139,11 @@ maxiter_dis   INTEGER
 
 nprint_dis    INTEGER
               every nprint_dis iterations in disentangle minimization write to stdout
-              DEFAULT: 10
+              DEFAULT: 50
 
 nsave_dis     INTEGER
               every nsave_dis iterations save subspace data to disk
-              DEFAULT: 10
+              DEFAULT: 200
 
 use_blimit    LOGICAL
               if .TRUE., b vectors are set to zero when calculation overlap augmentations.
@@ -211,11 +211,11 @@ maxiter1_wan  INTEGER
 
 nprint_wan    INTEGER
               every nprint_wan iterations in wannier minimization write to stdout
-              DEFAULT: 10
+              DEFAULT: 50
 
 nsave_wan     INTEGER
               every nsave_dis iterations save subspace data to disk
-              DEFAULT: 10
+              DEFAULT: 200
 
 ncg           INTEGER
               each ncg iterations in the second minimization part, do a CG minimization
