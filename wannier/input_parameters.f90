@@ -94,7 +94,7 @@
    DATA dftdata_fmt_allowed / 'qexml',  'pw_export' /
        ! the allowed values for dftdata_fmt
 
-   CHARACTER(nstrx) :: wantdata_fmt = ' '
+   CHARACTER(nstrx) :: wantdata_fmt = 'binary'
        ! ( 'binary' | 'textual' )
        ! the format of newly created WanT data
 
@@ -151,10 +151,10 @@
    INTEGER :: maxiter_dis = 1000
        ! maximum number of iterations during the disentangle procedure
 
-   INTEGER :: nprint_dis = 10  
+   INTEGER :: nprint_dis = 50  
        ! every nprint iterations in disentangle minimizations write to stdout
 
-   INTEGER :: nsave_dis = 50  
+   INTEGER :: nsave_dis = 200  
        ! every nsave iterations in disentangle minimizations write subspace to disk
 
    REAL(dbl) :: disentangle_thr = 1.0d-8  
@@ -237,7 +237,7 @@
    INTEGER :: ncg = 3
        ! each ncg iterations in the second iteration part, do a CG minimization
 
-   INTEGER :: nprint_wan = 20  
+   INTEGER :: nprint_wan = 50  
        ! each nprint_wan iterations in wannier minimizations write to stdout
 
    INTEGER :: nsave_wan = 200  

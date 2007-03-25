@@ -178,19 +178,7 @@ CONTAINS
       work_dir = work_dir_
       title    = title_
       dftdata_fmt  = TRIM(dftdata_fmt_)
-      !
-      ! set a special default
-      !
-      IF ( LEN_TRIM( wantdata_fmt_ ) == 0 ) THEN
-           !
-           IF ( dimwann_ < 100 ) THEN
-                wantdata_fmt = 'textual'
-           ELSE
-                wantdata_fmt = 'binary'
-           ENDIF
-      ELSE
-           wantdata_fmt = TRIM(wantdata_fmt_)
-      ENDIF
+      wantdata_fmt = TRIM(wantdata_fmt_)
 
       !
       ! init io
