@@ -62,25 +62,31 @@
 
 
    ALLOCATE( qb(dimwann), STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega_aux', 'allocating qb', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating qb', ABS(ierr) )
+   !
    ALLOCATE( At(dimwann,dimwann), STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega_aux', 'allocating At', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating At', ABS(ierr) )
+   !
    ALLOCATE( Dr(3,dimwann), STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega_aux', 'allocating Dr', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating Dr', ABS(ierr) )
+   !
    ALLOCATE( aux2(dimwann,dimwann),  STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega_aux', 'allocating aux2', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating aux2', ABS(ierr) )
 
    !
    ! build Dr_n = <r>_n - r_n0
    !
    DO n=1,dimwann
-      IF ( TRIM(trial(n)%type) == "1gauss" .OR. TRIM(trial(n)%type) == "atomic" ) THEN 
+      !
+      SELECT CASE ( TRIM(trial(n)%type) )
+      CASE ( "1gauss", "atomic" )
           Dr(:,n) = rave(:,n) - trial(n)%x1
-      ELSEIF ( TRIM(trial(n)%type) == "2gauss" ) THEN
+      CASE ( "2gauss" )
           Dr(:,n) = rave(:,n) - ( trial(n)%x1 + trial(n)%x2 ) / TWO
-      ELSE 
+      CASE DEFAULT
           CALL errore('domega_aux','Invalid trial_center type = '//TRIM(trial(n)%type),n )
-      ENDIF
+      END SELECT
+      !
    ENDDO
 
    !
