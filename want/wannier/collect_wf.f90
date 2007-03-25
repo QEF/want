@@ -15,7 +15,7 @@
    ! in the U(k) matrices (cu in the routine).
    !
    USE kinds
-   USE constants,         ONLY : ZERO, TPI
+   USE constants,         ONLY : ZERO, ONE, TPI
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
    USE converters_module, ONLY : cart2cry, cry2cart
@@ -27,7 +27,7 @@
    ! input variables
    !
    INTEGER,      INTENT(in)    :: dimwann, nkpts     ! dimensions
-   REAL(dbl),    INTENT(in)    :: rave(3,dimwann)    ! the WF centers
+   REAL(dbl),    INTENT(inout) :: rave(3,dimwann)    ! the WF centers
    REAL(dbl),    INTENT(in)    :: xcell(3)           ! the corner of the selected cell, 
                                                      ! cryst units
    COMPLEX(dbl), INTENT(inout) :: cu(dimwann,dimwann,nkpts)
@@ -39,7 +39,7 @@
    REAL(dbl)    :: arg
    COMPLEX(dbl) :: phase
    REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:), rave_cry(:,:)
-   REAL(dbl), ALLOCATABLE :: rave_shift(:,:)
+   REAL(dbl), ALLOCATABLE :: rave_new(:,:)
 
    !
    ! end of declariations
@@ -58,8 +58,9 @@
       !
       ALLOCATE( vkpt_cry(3, nkpts), rave_cry(3, dimwann), STAT=ierr )
       IF (ierr/=0) CALL errore('locate_wf', 'allocating vkpt_cry, rave_cry', ABS(ierr))
-      ALLOCATE( rave_shift(3, dimwann), STAT=ierr )
-      IF (ierr/=0) CALL errore('locate_wf', 'allocating rave_shift', ABS(ierr))
+      !
+      ALLOCATE( rave_new(3, dimwann), STAT=ierr )
+      IF (ierr/=0) CALL errore('locate_wf', 'allocating rave_new', ABS(ierr))
 
       !
       ! convert vkpt from cart coord (bohr^-1) to cryst
@@ -72,30 +73,19 @@
 
       !
       ! determine the shift to rave to set the WF in the selected cell
-      ! starting point of this cell is given by xcell
+      ! the edge of this cell is given by xcell
       !
-      ! as a convention: rave_new = rave - rave_shift
+      ! as a convention: rave_new = rave + rave_shift
       !
-      rave_shift(:,:) = ZERO
+      rave_new(:,:) = ZERO
+      !
       DO m=1,dimwann
-          DO i=1,3
-              j = 0
-              IF ( rave_cry(i,m) - xcell(i) < ZERO ) j = 1
-              !
-              rave_shift(i,m) = REAL( INT( rave_cry(i,m) -xcell(i) -j ))
-          ENDDO
+         !
+         DO i=1,3
+            rave_new(i,m) = MODULO( rave_cry(i,m) -xcell(i), ONE ) + xcell(i)
+         ENDDO
+         !
       ENDDO
-
-! XXXX
-WRITE(6, *) "NEW CENTERS"
-CALL cry2cart( rave_shift, avec )
-!
-DO m = 1, dimwann
-     WRITE(6, "(i5, 4x, 3f15.9)") m, rave(:,m) - rave_shift(:,m)
-ENDDO
-!
-CALL cart2cry( rave_shift, avec )
-WRITE(6, *) 
 
       !
       ! apply the required shift to the bloch functions:
@@ -109,8 +99,8 @@ WRITE(6, *)
             !
             ! compute the phase for the global shift
             !
-            arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_shift(:,m) )
-            phase = CMPLX( COS(arg), SIN(arg), dbl )
+            arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_new(:,m) - rave(:,m) )
+            phase = CMPLX( COS(arg), -SIN(arg), dbl )
 
             !
             ! apply the shift
@@ -124,11 +114,20 @@ WRITE(6, *)
       ENDDO
       ENDDO
 
+      !
+      ! output updated centers
+      !
+      CALL cry2cart( rave_new, avec )
+      rave(:,:) = rave_new(:,:)
 
+      !
+      ! cleanup
+      !
       DEALLOCATE( vkpt_cry, rave_cry, STAT=ierr )
       IF (ierr/=0) CALL errore('locate_wf', 'deallocating vkpt_cry, rave_cry', ABS(ierr))
-      DEALLOCATE( rave_shift, STAT=ierr )
-      IF (ierr/=0) CALL errore('locate_wf', 'deallocating rave_shift', ABS(ierr))
+      !
+      DEALLOCATE( rave_new, STAT=ierr )
+      IF (ierr/=0) CALL errore('locate_wf', 'deallocating rave_new', ABS(ierr))
 
       CALL timing('collect_wf',OPR='stop')
       CALL log_pop('collect_wf')

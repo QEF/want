@@ -37,3 +37,4 @@ util.o : kind.o
 ylmr2.o : constants.o
 ylmr2.o : kind.o
 fft_scalar.o : ../include/fft_defs.h
+log_module.o : ../include/f_defs.h

@@ -26,7 +26,9 @@
    USE constants,          ONLY : ZERO, ONE, CZERO, CI, TWO
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
+   USE lattice_module,     ONLY : avec
    USE kpoints_module,     ONLY : nb, vb, wb
+   USE converters_module,  ONLY : cry2cart, cart2cry
    USE trial_center_module
    IMPLICIT NONE 
 
@@ -43,7 +45,7 @@
    ! local variables
    !
    INTEGER   :: ik, inn
-   INTEGER   :: m, n, ierr
+   INTEGER   :: i, m, n, ierr
    REAL(dbl) :: fact
    REAL(dbl),    ALLOCATABLE :: qb(:), Dr(:,:) 
    COMPLEX(dbl), ALLOCATABLE :: At(:,:)
@@ -86,6 +88,18 @@
       CASE DEFAULT
           CALL errore('domega_aux','Invalid trial_center type = '//TRIM(trial(n)%type),n )
       END SELECT
+
+      !
+      ! Dr should be smaller than a lattice vector
+      ! move it into the cell -0.5 : 0.5  (crystal units)
+      !
+      CALL cart2cry( Dr(:,n), avec )
+      !
+      DO i = 1, 3
+         Dr(i,n) = MODULO( Dr(i,n) +0.5_dbl, ONE ) - 0.5_dbl
+      ENDDO
+      !
+      CALL cry2cart( Dr(:,n), avec )
       !
    ENDDO
 

@@ -4,7 +4,12 @@
 =======================================================
 
 
-24 Mar 2007      kpt symmetrization added to transport (Time-reversal symmetry implemented
+25 Mar 2007      defaults to nprint and nsave stuff incremented. collect_wf.f90 routine
+                 and collect procedure fixed. Bug in conditioned minimization fixed: 
+                 there were problems when one or more centers were jumping out of the
+                 reference cell: the issue was first raised by Laura Zoppi. (AF)
+
+24 Mar 2007      Kpt symmetrization added to transport (Time-reversal symmetry implemented
                  at the moment). Vars "USE_SYMM" and "S(3)" added to transport input.
                  Default to use_symm set to temporarily to .FALSE. (AF)
                  Memory issue in transport fixed. (BB)
