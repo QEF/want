@@ -110,7 +110,7 @@ CONTAINS
 
       do_ordering   = .NOT. TRIM( ordering_mode ) == "none"
 
-      do_collect_wf = collect_wf_ .AND. .NOT. do_condmin
+      do_collect_wf = collect_wf_ 
 
       subspace_init = subspace_init_
       localization_init = localization_init_

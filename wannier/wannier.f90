@@ -52,7 +52,7 @@
       REAL(dbl)   :: gcnorm1, gcnorm0, gcnorm_aux
       REAL(dbl)   :: aux1, aux2, eqb, eqa, alpha, alphamin
       !
-      REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:) 
+      REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:), rave_aux(:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  domg(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE ::  dq(:,:,:) 
@@ -478,18 +478,31 @@ CALL timing('omega_best','stop')
       ! collect WF
       !
       IF ( do_collect_wf ) THEN
-           !
-           WRITE( stdout, "(2x,'Collecting WFs')") 
-           WRITE( stdout, "(2x,'Selected cell extrema [cryst. coord]:')") 
-           WRITE( stdout,"(  3( 6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4, /),/ )" ) &
-                          (m, xcell(m), xcell(m) + ONE, m=1,3 ) 
-                          !
-           CALL collect_wf(dimwann, nkpts, rave, xcell, cU)
-           !
-           CALL overlap_update( dimwann, nkpts, cU, Mkb, Mkb_aux)
-           CALL omega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, r2ave, rave2, &
-                       Omega_D, Omega_OD )
-           !
+          !
+          WRITE( stdout, "(2x,'Collecting WFs')") 
+          WRITE( stdout, "(2x,'Selected cell extrema [cryst. coord]:')") 
+          WRITE( stdout,"(  3( 6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4, /),/ )" ) &
+                         (m, xcell(m), xcell(m) + ONE, m=1,3 ) 
+          !
+          ALLOCATE( rave_aux(3, dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore('wannier','allocating rave_aux',ABS(ierr))
+          !
+          rave_aux = rave
+          !
+          CALL collect_wf(dimwann, nkpts, rave_aux, xcell, cU)
+          !
+          CALL overlap_update( dimwann, nkpts, cU, Mkb, Mkb_aux)
+          CALL omega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, r2ave, rave2, &
+                      Omega_D, Omega_OD )
+          !
+          ! this is needed because of the periodicity of the system
+          ! under hte periodic boundary conditions
+          !
+          rave = rave_aux 
+          !
+          DEALLOCATE( rave_aux, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore('wannier','deallocating rave_aux',ABS(ierr))
+          !
       ENDIF
 
       !
@@ -558,23 +571,31 @@ CALL timing('omega_best','stop')
       ! ... Deallocate local arrays
       !
       DEALLOCATE( csheet, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating csheet', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating csheet', ABS(ierr) )
+      !
       DEALLOCATE( sheet, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating sheet', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating sheet', ABS(ierr) )
+      !
       DEALLOCATE( cu0, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating cu0', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating cu0', ABS(ierr) )
+      !
       DEALLOCATE( Mkb0, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb0', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb0', ABS(ierr) )
+      !
       DEALLOCATE( Mkb_aux, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb_aux', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb_aux', ABS(ierr) )
+      !
       DEALLOCATE( domg, domg_aux, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating domg', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating domg', ABS(ierr) )
+      !
       DEALLOCATE( dq0, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq0', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq0', ABS(ierr) )
+      !
       DEALLOCATE( dq, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq', ABS(ierr) )
+      !
       DEALLOCATE( cdu, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'deallocating cdu', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'deallocating cdu', ABS(ierr) )
 
       !
       ! global cleanup

@@ -263,11 +263,12 @@ dump_condmin  REAL
               DEFAULT: 0.0
 
 collect_wf    LOGICAL
-              if .TRUE., collect all WFs in the same reference cell, specified by xcell (see below).
+              if .TRUE., collect all WFs in the same reference cell, 
+              specified by xcell (see below).
               DEFAULT: .FALSE.
 
 xcell(3)      REAL
-              the lower corners of the rewference cell used to collect WFs, 
+              the lower corners of the reference cell used to collect WFs, 
               when collect_wf == .TRUE.
               DEFAULT: -0.5, -0.5, -0.5
               

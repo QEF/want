@@ -52,6 +52,7 @@ blc2wan.o : ../libs/files.o
 blc2wan.o : ../libs/kind.o
 blc2wan.o : ../libs/parameters.o
 blc2wan.o : ../libs/parser.o
+blc2wan.o : ../libs/timing.o
 blc2wan.o : ../libs/util.o
 blc2wan.o : localization.o
 blc2wan.o : subspace.o
@@ -117,7 +118,9 @@ disentangle.o : subspace.o
 disentangle.o : version.o
 disentangle.o : want_interfaces.o
 disentangle.o : windows.o
+domega_aux.o : converters.o
 domega_aux.o : kpoints.o
+domega_aux.o : lattice.o
 domega_aux.o : ../libs/constants.o
 domega_aux.o : ../libs/kind.o
 domega_aux.o : ../libs/log_module.o
