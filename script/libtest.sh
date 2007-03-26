@@ -252,7 +252,7 @@ run_disentangle () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/want$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/disentangle$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes 
 }
 
 
@@ -282,7 +282,7 @@ run_wannier () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/want$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/wannier$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes 
 }
 
 
@@ -314,7 +314,7 @@ run_bands () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/bands$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/bands$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
 }
 
 
@@ -346,7 +346,7 @@ run_dos () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/dos$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/dos$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
 }
 
 
@@ -378,7 +378,7 @@ run_blc2wan () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/blc2wan$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/blc2wan$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
 }
 
 
@@ -411,7 +411,7 @@ run_plot () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/plot$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/plot$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
 }
 
 
@@ -443,6 +443,6 @@ run_conductor () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/conductor$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/conductor$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
 }
 
