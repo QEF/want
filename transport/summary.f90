@@ -14,26 +14,27 @@
    ! Print out all the informnatins obtained from the 
    ! input and initialization routines.
    !
-   USE kinds,             ONLY : dbl
-   USE constants,         ONLY : ZERO
-   USE parser_module,     ONLY : log2char
-   USE T_control_module,  ONLY : calculation_type, conduct_formula,  &
-                                 datafile_C, datafile_L, datafile_R, &
-                                 datafile_sgm,                       &
-                                 transport_dir, niterx, nprint,      & 
-                                 use_overlap, use_correlation, write_kdata
-   USE T_egrid_module,    ONLY : ne, emin, emax, de
-   USE T_smearing_module, ONLY : delta, smearing_type, nx_smear => nx, xmax
-   USE T_kpoints_module,  ONLY : nkpts_par, nk_par, s_par, vkpt_par, wk_par, use_symm, &
-                                 kpoints_alloc => alloc
-   USE T_kpoints_module,  ONLY : nrtot_par, nr_par, vr_par, wr_par
-   USE io_module,         ONLY : work_dir, prefix, postfix
+   USE kinds,                ONLY : dbl
+   USE constants,            ONLY : ZERO
+   USE parser_module,        ONLY : log2char
+   USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
+   USE T_control_module,     ONLY : calculation_type, conduct_formula,  &
+                                    datafile_C, datafile_L, datafile_R, &
+                                    datafile_sgm,                       &
+                                    transport_dir, niterx, nprint,      & 
+                                    use_overlap, use_correlation, write_kdata
+   USE T_egrid_module,       ONLY : ne, emin, emax, de
+   USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
+   USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par, wk_par, use_symm, &
+                                    kpoints_alloc => alloc
+   USE T_kpoints_module,     ONLY : nrtot_par, nr_par, vr_par, wr_par
+   USE io_module,            ONLY : work_dir, prefix, postfix
    IMPLICIT NONE
 
    !
    ! input variables
    !
-   INTEGER,   INTENT(in)         :: unit
+   INTEGER,   INTENT(in)  :: unit
 
    !
    ! local variables
@@ -63,12 +64,15 @@
    ELSE
       WRITE(unit,"(7x,'work_dir :',5x,/,10x,a)") TRIM(work_dir)
    ENDIF
+   WRITE(unit,"( 7x,'        L-lead dim. :',5x,i5)") dimL
+   WRITE(unit,"( 7x,'     conductor dim. :',5x,i5)") dimC
+   WRITE(unit,"( 7x,'        R-lead dim. :',5x,i5)") dimR
    WRITE(unit,"( 7x,'Conductance Formula :',5x,a)") TRIM(conduct_formula)
-   WRITE(unit,"( 7x,'Transport Direction :',5x,i2)") transport_dir
+   WRITE(unit,"( 7x,'Transport Direction :',8x,i2)") transport_dir
    WRITE(unit,"( 7x,'Use Overlap         :',5x,a)") log2char(use_overlap)
    WRITE(unit,"( 7x,'Use Correlation     :',5x,a)") log2char(use_correlation)
    WRITE(unit,"( 7x,'Write k-data        :',5x,a)") log2char(write_kdata)
-   WRITE(unit,"( 7x,'Max iteration number:',5x,i4)") niterx
+   WRITE(unit,"( 7x,'Max iteration number:',5x,i5)") niterx
    WRITE(unit,"( )")
    WRITE(unit,"( 7x,'Print info each ', i3,' energy step' )" ) nprint
    WRITE(unit,"( )")
