@@ -598,9 +598,9 @@
          !
          IF ( lhave_sgm ) THEN
             !
-            WRITE( aux_unit, *) "# E (eV)   ldos0(E)    ldos(E)"
+            WRITE( aux_unit, *) "# E (eV)   ldos(E)    ldos0(E)"
             DO ie = 1, ne
-                WRITE(aux_unit, "(f9.4,2E15.4E3)") egrid(ie), dos0(ie), dos(ie)
+                WRITE(aux_unit, "(f9.4,2E15.4E3)") egrid(ie), dos(ie), dos0(ie)
             ENDDO
             !
          ELSE
