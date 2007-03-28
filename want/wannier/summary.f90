@@ -520,6 +520,7 @@
    ENDIF
 
    !
+   CALL flush_unit( unit )
    CALL log_pop( 'summary' )
    !
 END SUBROUTINE summary_x

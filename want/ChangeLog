@@ -4,7 +4,9 @@
 =======================================================
 
 
-25 Mar 2007      defaults to nprint and nsave stuff incremented. collect_wf.f90 routine
+28 Mar 2007      flush_unit added in wfc_manager, summary and improved in disentangle. (AF)
+
+25 Mar 2007      Defaults to nprint and nsave stuff incremented. collect_wf.f90 routine
                  and collect procedure fixed. Bug in conditioned minimization fixed: 
                  there were problems when one or more centers were jumping out of the
                  reference cell: the issue was first raised by Laura Zoppi. (AF)
@@ -325,8 +327,8 @@
 Date: 13 Dec 2005    Version: WanT-2.0.0
 -------------------------------------------------
 
-13 Dec 2005      README.doc file updated; small corrections in the manual.(BB)
-                 manual updates. (AF) (AC)
+13 Dec 2005      README.doc file updated; small corrections in the manual. (BB)
+                 manual updates. (AF & AC)
 
 12 Dec 2005      README.input file updated; input for blc2wan.x added in the 
                  manual (BB). Further changes in the manual (AF).
@@ -439,8 +441,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
 
 06 Oct 2005      BLAS and LAPACK interfaces added to transport program. (BB)
 
-05 Oct 2005      Interface of localization_init changed for stability reasons
-                 (bugs in the xlf compiler): strange behaviours in restarting fixed.
+05 Oct 2005      Interface of localization_init changed for stability reasons (bugs 
+                 in the xlf compiler): strange behaviours in restarting fixed.
                  The same has been done in subspace_init.f90 . Output fmt changes in
                  summary.f90 and plot.f90 .
 
@@ -596,8 +598,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
                  of the code. Not fully tested. Routine convert_label.f90 
                  added to libs. (AF) 
 
-13 Jun 2005      Standard names for data outfiles of transport calculations
-                 ('dos.out' and 'cond.out') changed to 'dos.dat' and 'cond.dat'.
+13 Jun 2005      Standard names for data files of transport calculations
+                 'dos.out' and 'cond.out' changed to 'dos.dat' and 'cond.dat'.
                  Test scripts updated accordingly. (AF)
 
 12 Jun 2005      Iotk COLUMNS flag used instead of FMT in write calls. (AF)
@@ -632,8 +634,7 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
                  and overlap_augment respectively. Fixed a bug in overlap_augment. (AF)
 
 10 May 2005      Merge between the main branch and the one with sp3 orbitals implemented
-                 (together with a new impl of spherical harmonics) completed; bugs
-                 fixed. (AF)
+                 together with a new impl of spherical harmonics; bugs fixed. (AF)
 
 09 May 2005      Possibility to use random unitary matrixes added both in disentangle
                  and wannier. init_at_1.f90 and atomic_wfc.f90 added (from Espresso) 
@@ -652,8 +653,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
 28 Apr 2005      Test8 (isolated benzene molecule) added. Summary routine updated
                  in order to manage wrong bshell choices.
 
-27 Apr 2005      Further simplifications and code elimination in wannier.f90
-                 (cfunc_exp* variables deleted). (AF)
+27 Apr 2005      Further simplifications and code elimination in wannier.f90:
+                 cfunc_exp* variables deleted. (AF)
 
 22 Apr 2005      Overlap_extract updated with the use of blas in matrix 
                  multiplications. Overlap_update routine added (blas used). (AF)
@@ -667,9 +668,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
 
 17 Apr 2005      overlaps and projections variables (= "from_scratch" or "from_file") 
                  added to input in order to used previously saved data. Control
-                 module and Input routines updated.
-                 Wfc_manager module hardly changed in order to allow for this feature. 
-                 (AF)
+                 module and Input routines updated. Wfc_manager module hardly 
+                 changed in order to allow for this feature. (AF)
 
 16 Apr 2005      The same speedup procedure applied to zmatrix has been used for komegai.
                  In particular we adjusted some loops and introduce the use of BLAS for
@@ -724,12 +724,12 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
 24 Mar 2005      Important changes in the input format: 3 namelist instead of one,
                  variables renamed, input_parameters,f90 and input_base.f90 added;
                  many variables renamed through the code; intel compiler warning
-                 on temporary array creation eliminated; references to all tests updated. 
-                 (AF)
+                 on temporary array creation eliminated; references to all tests 
+                 updated.  (AF)
 
 21 Mar 2005      DFT data filename written in output corrected. 
-                 Timing modified in order to avoid initializations in derived types 
-                 (not f90 std). PGI compatibility checked. (AF)
+                 Timing modified in order to avoid initializations in derived types,
+                 which is not F90 std. PGI compatibility checked. (AF)
 
 18 Mar 2005      Fixed a bug in ions.f90: different atomic species were not properly
                  treated. (AF)
@@ -755,8 +755,8 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
 25 Feb 2005      G95 compilation tested. Trial_center_setup routine completed except
                  for the case of l = -1 (tetrahedron case, used e.g. for silicon). (AF)
 
-21 Feb 2005      Some variables moved away from INPUT_MODULE to other data modules
-                 (such as windows_module, subspace_module, kpoints_module) in order to
+21 Feb 2005      Some variables moved away from INPUT_MODULE to other data modules,
+                 -- such as windows_module, subspace_module, and kpoints_module -- in order to
                  avoid circular dependencies. (AF)
 
 18 Feb 2005      Projection routine started being re-written. Wfc_data renamed as
@@ -805,12 +805,11 @@ Date: 13 Dec 2005    Version: WanT-2.0.0
                  ccalbec.f90 added from Espresso. (AF)
 
 31 Jan 2005      Pseudopotential routines from Espresso package imported in order 
-                 to deal with USPP. Summary updated in order to describe the read PPs
-                 (when they are). Added Test5 managing the calculation for the Gold
+                 to deal with USPP. Summary updated in order to describe the PPs.
+                 Added Test5 managing the calculation for the Gold
                  chain within USPP. Many old routines replaced with better versions
                  from Espresso. The g and gg (G vect in cartesian coord, their moduli) 
-                 added to ggrid_module. Routines init_us_1.f90 and qvan2.f90 added.
-                 (AF) 
+                 added to ggrid_module. Routines init_us_1.f90 and qvan2.f90 added. (AF) 
 
 30 Jan 2005      Few bugs fixed. (AF)
 

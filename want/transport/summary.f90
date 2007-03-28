@@ -133,6 +133,8 @@
        !    
    ENDIF
    WRITE( unit, " ( 2x,'</K-POINTS>',/)" )
+   !
+   CALL flush_unit( unit )
 
 
 CONTAINS
