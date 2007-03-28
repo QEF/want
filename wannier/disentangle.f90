@@ -106,6 +106,7 @@
        WRITE(stdout, "(2/,2x,70('='))" )
        WRITE(stdout, "(2x,'=',22x,'Overlaps and Projections',22x,'=')" )
        WRITE(stdout, "(2x,70('='))" )
+       CALL flush_unit( stdout )
 
        CALL wfc_manager()
      
@@ -122,6 +123,7 @@
        WRITE( stdout, "(/,2x,70('='))" ) 
        WRITE( stdout, "(2x,'=',22x,'Starting Iteration loop',22x,'=')" ) 
        WRITE( stdout, "(2x,70('='),/)" ) 
+       CALL flush_unit( stdout )
 
       
        !

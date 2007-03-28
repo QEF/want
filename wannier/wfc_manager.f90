@@ -177,6 +177,9 @@
               ! ... atomic init
               CALL init_at_1()
           ENDIF
+          
+          !
+          CALL flush_unit( stdout )
 
 
 
@@ -219,6 +222,7 @@
              !
              WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point: ',i4)") ik
              WRITE(stdout,"( 4x,'npw = ',i6,',', 4x,'dimwin = ',i4)") npwk(ik), dimwin(ik)
+             CALL flush_unit( stdout )
 
              CALL wfc_data_kread( dftdata_fmt, ik, "IK", evc, evc_info)
 
@@ -341,9 +345,10 @@
           !
           ! ... local cleaning
           DEALLOCATE( becp, STAT=ierr )
-             IF (ierr/=0) CALL errore(subname,'deallocating becp',ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'deallocating becp',ABS(ierr))
+          !
           DEALLOCATE( aux, STAT=ierr )
-             IF (ierr/=0) CALL errore(subname,'deallocating aux',ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'deallocating aux',ABS(ierr))
 
 
           !
@@ -399,7 +404,9 @@
                  TRIM(filename)
       ENDIF
 
-      CALL timing_upto_now(stdout)
+      CALL timing_upto_now( stdout )
+      CALL flush_unit( stdout )
+      !
       CALL timing('wfc_manager',OPR='stop')
       !
       CALL log_pop ( 'wfc_manager' ) 
