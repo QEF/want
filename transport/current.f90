@@ -1,5 +1,4 @@
-!
-!      Copyright (C) 2005 WanT Group
+!      Copyright (C) 2007 WanT Group
 !
 !      This file is distributed under the terms of the
 !      GNU General Public License. See the file `License\'
@@ -12,7 +11,7 @@
    USE kinds,                ONLY : dbl
    USE parameters,           ONLY : nstrx 
    USE version_module,       ONLY : version_number
-   USE timing_module,        ONLY : timing, timing_overview, global_list, timing_upto_now
+   USE timing_module,        ONLY : timing, timing_upto_now
    USE io_module,            ONLY : stdout, stdin, curr_unit => aux_unit,   &
                                     cond_unit => aux1_unit,                 &
                                     work_dir, prefix, postfix
@@ -21,39 +20,48 @@
    IMPLICIT NONE
 
    !
-   ! local variables
+   REAL(dbl), ALLOCATABLE   :: curr(:)                 ! current
+   REAL(dbl)                :: mu_L, mu_R              ! chemical potentials
+   REAL(dbl)                :: mu_L_aux, mu_R_aux      ! 
+   REAL(dbl)                :: sigma                   ! broadening
+   REAL(dbl), ALLOCATABLE   :: ftemp_L(:), ftemp_R(:)  ! temperature smearing functions
+   REAL(dbl), ALLOCATABLE   :: transm(:)               ! transmittance from data file
    !
-   CHARACTER(nstrx)         :: filename
-   INTEGER                  :: ie, iv, ierr, ios,          &
-                               i_start, i_end, ndim          ! integration extrema
-   REAL(dbl), ALLOCATABLE   :: funct(:), rab(:)              ! auxiliary vectors for integration
-   !
-   REAL(dbl)                :: mu_L, mu_R                    !
-   REAL(dbl), ALLOCATABLE   :: mu_L_aux(:), mu_R_aux(:),   & ! chemical potentials
-                               ftemp_L(:,:), ftemp_R(:,:)    ! temperature smearing functions
-   REAL(dbl)                :: sigma                         ! broadening
-   REAL(dbl), ALLOCATABLE   :: transm(:)                     ! transmittance from data file
-   !
-   REAL(dbl), ALLOCATABLE   :: curr(:)                       ! current
-   CHARACTER(nstrx)         :: fileout                       ! output filename
+   CHARACTER(nstrx)         :: fileout                 ! output filename
 
    !
    ! energy grid
    !
-   INTEGER                  :: ne         ! dimension of the energy grid
-   REAL(dbl)                :: emin       ! egrid extrema
-   REAL(dbl)                :: emax       !
+   INTEGER                  :: ne                      ! dimension of the energy grid
    REAL(dbl)                :: de         
-   REAL(dbl), ALLOCATABLE   :: egrid(:)   ! energy grid
+   REAL(dbl)                :: de_old         
+   REAL(dbl), ALLOCATABLE   :: egrid(:)                ! energy grid
 
    !
    ! bias grid
    !
-   INTEGER                  :: nV         ! dimension of the bias grid
-   REAL(dbl)                :: Vmin       ! Vgrid extrema
-   REAL(dbl)                :: Vmax       !
+   INTEGER                  :: nV                      ! dimension of the bias grid
+   REAL(dbl)                :: Vmin                    ! Vgrid extrema
+   REAL(dbl)                :: Vmax                    !
    REAL(dbl)                :: dV         
-   REAL(dbl), ALLOCATABLE   :: Vgrid(:)   ! bias grid
+   REAL(dbl), ALLOCATABLE   :: Vgrid(:)                ! bias grid
+
+   !
+   ! interpolation variables
+   !
+   INTEGER                  :: ndiv, ndim_new          ! interpolation grid dimension
+   REAL(dbl)                :: de_new                  ! interpolation grid step 
+   REAL(dbl), ALLOCATABLE   :: egrid_new(:)            ! interpolation energy grid
+   REAL(dbl), ALLOCATABLE   :: transm_new(:)           ! interpolated transmittance
+   INTEGER                  :: i_min, i_max, inew      ! 
+
+   !
+   ! local variables
+   !
+   CHARACTER(nstrx)         :: filename
+   INTEGER                  :: ie, iv, ierr, ios
+   INTEGER                  :: i_start, i_end, ndim          ! integration extrema
+   REAL(dbl), ALLOCATABLE   :: funct(:), rab(:)              ! auxiliary vectors for integration
 
    !
    ! input namelist
@@ -95,14 +103,17 @@
    ! get energy grid and transmittance from data file
    !
    filename = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
-   OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
+   !
+   OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+   IF ( ierr/=0 ) CALL errore('current','opening file = '//TRIM(filename), ABS(ierr) )
    !
    ie = 0
    !
    DO WHILE ( .TRUE. ) 
       !
-      READ ( cond_unit, *, IOSTAT = ios )
-      IF ( ios /= 0 ) EXIT
+      READ ( cond_unit, *, IOSTAT=ierr )
+      !
+      IF ( ierr /= 0 ) EXIT
       ie = ie + 1
       !
    ENDDO
@@ -130,14 +141,8 @@
    ALLOCATE ( Vgrid(nV), STAT=ierr )
    IF( ierr /=0 ) CALL errore('current','allocating Vgrid', ABS(ierr) )
    !
-   ALLOCATE ( mu_L_aux(nV), mu_R_aux(nV), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('current','allocating mu', ABS(ierr) )
-   !
    ALLOCATE ( curr(nV), STAT=ierr )
    IF( ierr /=0 ) CALL errore('current','allocating current', ABS(ierr) )
-   !
-   ALLOCATE ( ftemp_L(ne,nV), ftemp_R(ne,nV), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('current','allocating ftemp', ABS(ierr) )
 
    !
    ! bias grid
@@ -154,52 +159,146 @@
 !
    !
    curr(:) = 0.0
-   emin = egrid(1)
-   emax = egrid(ne)
+   de_old = (egrid(ne) - egrid(1))/REAL((ne-1), dbl)
    !
    DO iv = 1, nV
       !
-      mu_L_aux(iv) = mu_L * Vgrid(iv)
-      mu_R_aux(iv) = mu_R * Vgrid(iv)
+      mu_L_aux = mu_L * Vgrid(iv)
+      mu_R_aux = mu_R * Vgrid(iv)
       !
       ! integration extrema
-      CALL locate( egrid, ne, MIN( mu_L_aux(iv), mu_R_aux(iv) ) -10.0*sigma, i_start)
+      CALL locate( egrid, ne, MIN( mu_L_aux, mu_R_aux ) -sigma -3.0_dbl*de_old, i_start)
       IF ( i_start == 0 .OR. i_start == ne ) CALL errore('current','invalid i_start',4)
       !
-      CALL locate( egrid, ne, MAX( mu_R_aux(iv), mu_L_aux(iv) ) +10.0*sigma, i_end)
+      CALL locate( egrid, ne, MAX( mu_R_aux, mu_L_aux ) +sigma +3.0_dbl*de_old, i_end)
       IF ( i_end == 0 .OR. i_end == ne ) CALL errore('current','invalid i_end',5)
+
+      !
       !
       ! simpson routine requires that ndim is an odd number
-      IF (REAL(ndim/2, dbl) == REAL(INT(REAL(ndim/2, dbl)), dbl)) THEN
-         i_end = i_end - 1
-      ENDIF
+      IF ( MOD(ndim, 2) == 0 ) i_end = i_end - 1
+      !
       ndim = i_end - i_start + 1
       de = (egrid(i_end) - egrid(i_start))/REAL(ndim-1, dbl)
+
+      !
+      ! redefinition of the integration mesh for a better interpolation
+      !
+      ndiv = NINT( de / (2.0_dbl*sigma) )
+      IF (ndiv == 0) ndiv = 1      
+      !
+      de_new   = de / REAL(ndiv, dbl)
+      ndim_new = (ndim - 1) * ndiv + 1 
+      !
+      ALLOCATE ( transm_new(ndim_new), STAT=ierr )
+      IF( ierr /=0 ) CALL errore('current','allocating transm_new', ABS(ierr) )
+      !
+      ALLOCATE ( egrid_new(ndim_new), STAT=ierr )
+      IF( ierr /=0 ) CALL errore('current','allocating transm_new', ABS(ierr) )
+      !
+      ! new integration mesh
+      egrid_new(1) = egrid(i_start)
+      !
+      DO inew = 2, ndim_new   
+         egrid_new(inew) = egrid_new(1) + de_new * REAL( inew -1, dbl)
+      ENDDO
+      !
+
+      ! Transmittance interpolated on the new grid
+!XXXXXXXXXXXXXXXXXXX
+!      DO ie = 1, ndim
+!         CALL locate(egrid_new, ndim_new, egrid(ie),   i_min)
+!         CALL locate(egrid_new, ndim_new, egrid(ie+1), i_max)
+!         WRITE(*,*) i_min
+!         WRITE(*,*) i_max
+!         transm_new(i_min) = transm(ie)
+!         transm_new(i_max) = transm(ie+1)
+!         !
+!         DO inew = i_min+1, i_max-1
+!            transm_new(inew) = transm_new(i_min)*(egrid_new(inew)-egrid_new(i_min))/  &
+!                               (egrid_new(i_max)-egrid_new(i_min)) -                  &
+!                               transm_new(i_max)*(egrid_new(inew)-egrid_new(i_max))/  &
+!                               (egrid_new(i_max)-egrid_new(i_min))
+!         ENDDO 
+!         !  
+!      ENDDO 
+!      !
+!XXXXXXXXXXXXXXXXXXXXXXXXX
+      IF (ndiv /= 1) THEN
+         !
+         DO ie = i_start, i_end - 1
+            !
+            i_min = (ie-i_start) * ndiv + 1 
+            i_max = (ie-i_start+1) * ndiv + 1 
+            !
+            transm_new(i_min) = transm(ie)
+            transm_new(i_max) = transm(ie+1)
+            !
+            DO inew = i_min+1, i_max-1
+               !
+               transm_new(inew) = transm_new(i_max)*(egrid_new(inew)-egrid_new(i_min))/  &
+                                  (egrid_new(i_max)-egrid_new(i_min)) -                  &
+                                  transm_new(i_min)*(egrid_new(inew)-egrid_new(i_max))/  &
+                                  (egrid_new(i_max)-egrid_new(i_min))
+            ENDDO
+         ENDDO
+         !
+      ELSE 
+         !
+         ! ndiv == 1
+         !
+         transm_new(:) = transm(i_start:i_end)
+      ENDIF
+!XXXXXXXXXXXXXXXXXXX
       !
       ! auxiliary vectors for integral calculation
-      ALLOCATE ( funct(ndim), STAT=ierr )
+      !
+      ALLOCATE ( funct(ndim_new), STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','allocating funct', ABS(ierr) )
-      ALLOCATE ( rab(ndim), STAT=ierr )
+      !
+      ALLOCATE ( rab(ndim_new), STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','allocating rab', ABS(ierr) )
       !
-      DO ie = i_start, i_end
+      ALLOCATE ( ftemp_L(ndim_new), ftemp_R(ndim_new), STAT=ierr )
+      IF( ierr /=0 ) CALL errore('current','allocating ftemp', ABS(ierr) )
+      !
+      !
+      DO ie = 1, ndim_new
           !
-          ftemp_L(ie, iv) = 1.0 / ( EXP(-(egrid(ie)-mu_L_aux(iv))/sigma) + 1.0 )
-          ftemp_R(ie, iv) = 1.0 / ( EXP(-(egrid(ie)-mu_R_aux(iv))/sigma) + 1.0 )
+          ftemp_L(ie) = 1.0 / ( EXP( -(egrid_new( ie ) -mu_L_aux ) / sigma) + 1.0 )
+          ftemp_R(ie) = 1.0 / ( EXP( -(egrid_new( ie ) -mu_R_aux ) / sigma) + 1.0 )
           !
-          rab(ie) = de
+          rab(ie) = de_new
           !
       ENDDO
       !
-!XXXXXXXXXXXXXX
-!          curr(iv) = curr(iv) + (ftemp_L(ie, iv) - ftemp_R(ie, iv)) * transm(ie) * de
-      funct = (ftemp_L(i_start:i_end, iv) - ftemp_R(i_start:i_end, iv)) * transm(i_start:i_end)
-      CALL simpson (ndim, funct, rab, curr(iv))
       !
+!XXXXXXXXXXXXXXXXX
+!      funct(:) = ( ftemp_L(:) - ftemp_R(:) ) * transm(i_start:i_end)
+      funct(:) = transm_new(1:ndim_new)
+      !
+      ! perform the integration
+      !
+!XXXXXXXXXXXXXXXXXXXXX
+!      CALL simpson (ndim, funct, rab, curr(iv) )
+      DO ie = 1, ndim_new-1
+         curr(iv) = curr(iv) + ( ftemp_L(ie) - ftemp_R(ie) )*funct(ie)*de_new/3.0 + &
+                    ( ftemp_L(ie+1) - ftemp_R(ie+1) )*funct(ie+1)*de_new/3.0 +      &
+                    ( ftemp_L(ie) - ftemp_R(ie) )*funct(ie+1)*de_new/6.0 +          &
+                    ( ftemp_L(ie+1) - ftemp_R(ie+1) )*funct(ie)*de_new/6.0
+      ENDDO
+      !
+      DEALLOCATE ( transm_new, STAT=ierr )
+      IF( ierr /=0 ) CALL errore('current','deallocating transm_new', ABS(ierr) )
+      !
+      DEALLOCATE ( egrid_new, STAT=ierr )
+      IF( ierr /=0 ) CALL errore('current','deallocating transm_new', ABS(ierr) )
       DEALLOCATE ( funct, STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','deallocating funct', ABS(ierr) )
       DEALLOCATE ( rab, STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','deallocating rab', ABS(ierr) )
+      DEALLOCATE ( ftemp_L, ftemp_R, STAT=ierr )
+      IF( ierr /=0 ) CALL errore('current','deallocating ftemp', ABS(ierr) )
       !
    ENDDO
    !
@@ -229,19 +328,15 @@
    DEALLOCATE ( Vgrid, STAT=ierr )
    IF( ierr /=0 ) CALL errore('current','deallocating Vgrid', ABS(ierr) )
    !
-   DEALLOCATE ( mu_L_aux, mu_R_aux, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('current','deallocating mu', ABS(ierr) )
-   !
    DEALLOCATE ( curr, STAT=ierr )
    IF( ierr /=0 ) CALL errore('current','deallocating current', ABS(ierr) )
-   !
-   DEALLOCATE ( ftemp_L, ftemp_R, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('current','deallocating ftemp', ABS(ierr) )
    !
    DEALLOCATE ( transm, STAT=ierr )
    IF( ierr /=0 ) CALL errore('current','deallocating transmittance', ABS(ierr) )
 
    CALL cleanup()
+   !
+   CALL shutdown('current')
 
 END PROGRAM current
   
