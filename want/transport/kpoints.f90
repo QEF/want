@@ -122,7 +122,9 @@ CONTAINS
       ! set the dimensions of the kpt_par mesh
       ! if nk_par /= 0 they are from input. otherwise use nr_par
       !
-      IF ( ALL( nk_par(:) == 0 ) ) nk_par(1:2) = nr_par(1:2)
+      IF ( nk_par(1) == 0 ) nk_par(1) = nr_par(1)
+      IF ( nk_par(2) == 0 ) nk_par(2) = nr_par(2)
+      !
       IF ( ANY( nk_par(:) < 1 ) ) CALL errore(subname,'nk mesh too small',71)
       !
       ! the total number of kpts will re-defined below
