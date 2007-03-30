@@ -3,6 +3,7 @@
             WanT code:  Log of Changes 
 =======================================================
 
+30 Mar 2007      Current calculation added to transport. (BB)
 
 29 Mar 2007      Bug fixed when giving nk(:) to conductor from input. Courtesy of 
                  Matias Nunez. (AF) 

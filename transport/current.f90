@@ -159,7 +159,7 @@
 !
    !
    curr(:) = 0.0
-   de_old = (egrid(ne) - egrid(1))/REAL((ne-1), dbl)
+   de_old = (egrid(ne) - egrid(1))/REAL(ne-1, dbl)
    !
    DO iv = 1, nV
       !
