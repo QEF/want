@@ -203,27 +203,8 @@
          egrid_new(inew) = egrid_new(1) + de_new * REAL( inew -1, dbl)
       ENDDO
       !
-
       ! Transmittance interpolated on the new grid
-!XXXXXXXXXXXXXXXXXXX
-!      DO ie = 1, ndim
-!         CALL locate(egrid_new, ndim_new, egrid(ie),   i_min)
-!         CALL locate(egrid_new, ndim_new, egrid(ie+1), i_max)
-!         WRITE(*,*) i_min
-!         WRITE(*,*) i_max
-!         transm_new(i_min) = transm(ie)
-!         transm_new(i_max) = transm(ie+1)
-!         !
-!         DO inew = i_min+1, i_max-1
-!            transm_new(inew) = transm_new(i_min)*(egrid_new(inew)-egrid_new(i_min))/  &
-!                               (egrid_new(i_max)-egrid_new(i_min)) -                  &
-!                               transm_new(i_max)*(egrid_new(inew)-egrid_new(i_max))/  &
-!                               (egrid_new(i_max)-egrid_new(i_min))
-!         ENDDO 
-!         !  
-!      ENDDO 
-!      !
-!XXXXXXXXXXXXXXXXXXXXXXXXX
+      !
       IF (ndiv /= 1) THEN
          !
          DO ie = i_start, i_end - 1
@@ -249,7 +230,6 @@
          !
          transm_new(:) = transm(i_start:i_end)
       ENDIF
-!XXXXXXXXXXXXXXXXXXX
       !
       ! auxiliary vectors for integral calculation
       !
@@ -272,14 +252,17 @@
           !
       ENDDO
       !
+      ! perform the integration
       !
-!XXXXXXXXXXXXXXXXX
+      ! if you want to use the simpson routine for integration 
+      ! uncomment the following line and comment the next one   
+      !
 !      funct(:) = ( ftemp_L(:) - ftemp_R(:) ) * transm(i_start:i_end)
       funct(:) = transm_new(1:ndim_new)
       !
-      ! perform the integration
+      ! if you want to use the simpson routine for integration 
+      ! uncomment the following line and comment the next ones   
       !
-!XXXXXXXXXXXXXXXXXXXXX
 !      CALL simpson (ndim, funct, rab, curr(iv) )
       DO ie = 1, ndim_new-1
          curr(iv) = curr(iv) + ( ftemp_L(ie) - ftemp_R(ie) )*funct(ie)*de_new/3.0 + &
