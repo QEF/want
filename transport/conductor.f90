@@ -121,7 +121,7 @@
    !
    ! write input data on the output file
    !
-   CALL summary( stdout )
+   IF (ionode) CALL summary( stdout )
 
 
 
