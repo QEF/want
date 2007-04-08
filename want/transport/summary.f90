@@ -17,6 +17,7 @@
    USE kinds,                ONLY : dbl
    USE constants,            ONLY : ZERO
    USE parser_module,        ONLY : log2char
+   USE mp_global,            ONLY : mpime, nproc
    USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
    USE T_control_module,     ONLY : calculation_type, conduct_formula,  &
                                     datafile_C, datafile_L, datafile_R, &
@@ -131,8 +132,15 @@
                  ir, vr_par3D(:), wr_par(ir)
        ENDDO
        !    
+       WRITE( unit, " ( 2x,'</K-POINTS>',/)" )
+       !
    ENDIF
-   WRITE( unit, " ( 2x,'</K-POINTS>',/)" )
+   !
+   !
+   WRITE( unit, "( /,2x,'<PARALLELISM>')" )
+   WRITE( unit, "(   7x, 'Paralellization over frequencies' ) " )
+   WRITE( unit, "(   7x, '# of processes: ', i5 ) " ) nproc
+   WRITE( unit, "(   2x,'</PARALLELISM>',/)" )
    !
    CALL flush_unit( unit )
 

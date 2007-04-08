@@ -146,15 +146,22 @@
 !
 ! main loop over frequency
 ! 
-   IF (ionode) WRITE(stdout,"()")
-   dos(:,:)     = ZERO
-   conduct(:,:) = ZERO
+
+   IF ( ionode ) THEN
+      WRITE( stdout, "(/,2x,70('='))" )
+      WRITE( stdout, "(2x,'=',27x,'Frequency Loop',27x,'=')" )
+      WRITE( stdout, "(2x,70('='),/)" )
+   ENDIF
 
    !
    ! init parallelism over frequencies
    !
    CALL divide_et_impera( 1, ne,  nomg_s, nomg_e, mpime, nproc )
 
+
+   dos(:,:)     = ZERO
+   conduct(:,:) = ZERO
+   !
    energy_loop: &
    DO ie = nomg_s, nomg_e
       
@@ -266,7 +273,8 @@
 
       avg_iter = avg_iter/REAL(2*nkpts_par)
       !
-      IF ( (MOD( ie, nprint) == 0 .OR. ie == 1) .AND. ionode) THEN
+      IF ( (MOD( ie, nprint) == 0 .OR. &
+            ie == nomg_s .OR. ie == nomg_e ) .AND. ionode) THEN
            !
            WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
                  avg_iter
@@ -293,6 +301,13 @@
 !
 ! write DOS and CONDUCT data on files
 !
+
+   IF ( ionode ) THEN
+      WRITE( stdout, "(/,2x,70('='))" )
+      WRITE( stdout, "(2x,'=',27x,'Writing Data',27x,'=')" )
+      WRITE( stdout, "(2x,70('='),/)" )
+   ENDIF
+
 
    IF ( ionode ) THEN
 

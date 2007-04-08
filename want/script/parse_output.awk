@@ -77,31 +77,31 @@ function check_line_wannier()
       }
    else if ( match($0, "! Center Sum =") )
       {
-         print "CENTER_SUM@"$NF"@1e-3";
+         print "CENTER_SUM@"$NF"@1e-5";
       }
    else if ( match($0, "Omega I       =") )
       {
-         print "OMEGA_I@"$NF"@1e-3";
+         print "OMEGA_I@"$NF"@1e-5";
       }
    else if ( match($0, "Omega D       =") )
       {
-         print "OMEGA_D@"$NF"@1e-3";
+         print "OMEGA_D@"$NF"@1e-5";
       }
    else if ( match($0, "Omega OD      =") )
       {
-         print "OMEGA_OD@"$NF"@1e-3";
+         print "OMEGA_OD@"$NF"@1e-5";
       }
    else if ( match($0, "Omega Tot     =") )
       {
-         print "OMEGA_TOT@"$NF"@1e-3";
+         print "OMEGA_TOT@"$NF"@1e-5";
       }
    else if ( match($0, "Omega Avrg    =") )
       {
-         print "OMEGA_AVRG@"$NF"@1e-3";
+         print "OMEGA_AVRG@"$NF"@1e-5";
       }
    else if ( match($0, "0   0   0     0.000000") )
       {
-         print "ONSITE_HR@"$NF"@1e-3";
+         print "ONSITE_HR@"$NF"@1e-5";
    }
 }
    
@@ -139,11 +139,11 @@ function check_line_disentangle()
       }
    else if ( match($0, "Final Omega_I ") )
       {
-         print "OMEGA_I@"$(NF-1)"@1e-3";
+         print "OMEGA_I@"$(NF-1)"@1e-5";
       }
    else if ( match($0, " Avrg Omega_I *:") )
       {
-         print "OMEGA_I_AVRG@"$(NF-1)"@1e-3";
+         print "OMEGA_I_AVRG@"$(NF-1)"@1e-5";
    }
 }
 
