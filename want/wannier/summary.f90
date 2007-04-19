@@ -234,11 +234,11 @@
            DO i = 1, dimwann
               str = "  "
               IF ( TRIM(trial(i)%type) == 'atomic' ) str = symb(trial(i)%iatom)
-              WRITE(unit, "(4x,i3,3x,a6, 2x,a2,1x,i3,1x,i3,3x,'(',3F11.6,')',1x,f9.5,1x,f7.3)") &
+              WRITE(unit, "(4x,i3,3x,a6, 2x,a2,1x,i3,1x,i3,3x,'(',3f11.6,' )',f9.5,1x,f7.3)") &
                      i, TRIM(trial(i)%type), str, trial(i)%l, trial(i)%m,  &
                      center_cart1(:,i), trial(i)%decay, trial(i)%weight
               IF ( TRIM(trial(i)%type) == "2gauss" ) THEN
-                 WRITE(unit, "(35x,'(',3F11.6,' )')") center_cart2(:,i)
+                 WRITE(unit, "(31x,'(',3f11.6,' )')") center_cart2(:,i)
               ENDIF
            ENDDO
        ELSE
@@ -247,11 +247,11 @@
            DO i = 1, dimwann
               str = "  "
               IF ( TRIM(trial(i)%type) == 'atomic' ) str = symb(trial(i)%iatom)
-              WRITE(unit, "(4x,i3,4x,a6, 2x,a2, 3x, i3,1x,i3,4x,'(',3F11.6,' )',2x,f9.5)") &
+              WRITE(unit, "(4x,i3,4x,a6, 2x,a2, 3x, i3,1x,i3,4x,'(',3f11.6,' )',2x,f9.5)") &
                      i, TRIM(trial(i)%type), str, trial(i)%l, trial(i)%m,  &
                      center_cart1(:,i), trial(i)%decay
               IF ( TRIM(trial(i)%type) == "2gauss" ) THEN
-                 WRITE(unit, "(35x,'(',3F11.6,' )')") center_cart2(:,i)
+                 WRITE(unit, "(35x,'(',3f11.6,' )')") center_cart2(:,i)
               ENDIF
            ENDDO
        ENDIF
