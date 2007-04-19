@@ -1,0 +1,13 @@
+
+ &INPUT
+   prefix = 'cobalt_US'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'dos_CoUS.dat'
+   nk(1) = 6
+   nk(2) = 6
+   nk(3) = 6
+   delta = 0.136
+   smearing_type = 'gaussian'
+   datafile_sgm = "./SCRATCH/sigma_CoUS.wan.xml"
+ /
