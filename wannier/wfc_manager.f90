@@ -22,32 +22,32 @@
    ! * waste ggrids and wfcs data
    !
    USE kinds
-   USE parameters,     ONLY : nstrx
-   USE constants,      ONLY : CZERO, ZERO
-   USE iotk_module
-   USE io_module,      ONLY : stdout, dft_unit, ovp_unit, io_name, dftdata_fmt, wantdata_form
-   USE log_module,     ONLY : log_push, log_pop
-   USE timing_module,  ONLY : timing, timing_upto_now
-   USE files_module,   ONLY : file_open, file_close
+   USE parameters,                 ONLY : nstrx
+   USE constants,                  ONLY : CZERO, ZERO
+   USE io_module,                  ONLY : stdout, dft_unit, ovp_unit
+   USE io_module,                  ONLY : io_name, dftdata_fmt, wantdata_form
+   USE log_module,                 ONLY : log_push, log_pop
+   USE timing_module,              ONLY : timing, timing_upto_now
+   USE files_module,               ONLY : file_open, file_close
    
-   USE control_module, ONLY : do_overlaps, do_projections, &
-                              use_atomwfc, use_pseudo, use_uspp, use_blimit, &
-                              read_overlaps, read_projections
-   USE lattice_module, ONLY : tpiba
-   USE subspace_module,ONLY : dimwann
+   USE control_module,             ONLY : do_overlaps, do_projections, &
+                                          use_atomwfc, use_pseudo, use_uspp, use_blimit, &
+                                          read_overlaps, read_projections
+   USE lattice_module,             ONLY : tpiba
+   USE subspace_module,            ONLY : dimwann
    USE trial_center_data_module,   ONLY : trial
-   USE windows_module, ONLY : windows_alloc => alloc, dimwin, dimwinx, imin, imax
-   USE kpoints_module, ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, &
-                              nb, nnlist, nncell, nnrev, nnpos
-   USE overlap_module, ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
-   USE ggrids_module,  ONLY : nfft, npw_rho, ecutwfc, ecutrho, &
-                              ggrids_read_ext, ggrids_deallocate
-   USE wfc_data_module,ONLY : npwkx, npwk, igsort, evc, evc_info, &
-                              wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate 
+   USE windows_module,             ONLY : windows_alloc => alloc, dimwin, dimwinx, imin, imax
+   USE kpoints_module,             ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, &
+                                          nb, nnlist, nncell, nnrev, nnpos
+   USE overlap_module,             ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
+   USE ggrids_module,              ONLY : nfft, npw_rho, ecutwfc, ecutrho, &
+                                          ggrids_read_ext, ggrids_deallocate
+   USE wfc_data_module,            ONLY : npwkx, npwk, igsort, evc, evc_info, &
+                                          wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate 
    USE wfc_info_module
-   USE struct_fact_data_module, ONLY : struct_fact_data_init
-   USE uspp,           ONLY : nkb, vkb, vkb_ik
-   USE becmod,         ONLY : becp
+   USE struct_fact_data_module,    ONLY : struct_fact_data_init
+   USE uspp,                       ONLY : nkb, vkb, vkb_ik
+   USE becmod,                     ONLY : becp
    !
    IMPLICIT NONE
       !
@@ -319,21 +319,22 @@
 
                 IF( use_uspp ) THEN
                      xk(:) = vkpt(:,ik) / tpiba
-                     CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
+                     CALL init_us_2( npwk(ik), igsort(:,ik), xk, vkb )
                      vkb_ik = ik
                 ENDIF
                 !
-                CALL s_psi(npwkx, npwk(ik), dimwin(ik), ik, evc(1,indin), evc(1,indout) )
-   
+                CALL s_psi(npwkx, npwk(ik), dimwin(ik), ik, evc(:,indin:), evc(:,indout:) )
+                !
                 CALL projection( ik, dimwin(ik), imin(ik), dimwinx, evc, evc_info, dimwann, &
-                                 trial, ca(1,1,ik) )
+                                 trial, ca(:,:,ik) )
                 !
                 ! clean the ik wfc data
                 CALL wfc_info_delete(evc_info, LABEL="SPSI_IK")
              ENDIF
-
+             !
              CALL wfc_info_delete(evc_info, LABEL="IK")
              CALL timing_upto_now(stdout)
+             ! 
           ENDDO kpoints
 
 
