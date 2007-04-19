@@ -4,10 +4,10 @@
    postfix = '_WanT'
    work_dir = './SCRATCH'
    fileout = 'dos_CoUS.dat'
-   nk(1) = 6
-   nk(2) = 6
-   nk(3) = 6
-   delta = 0.136
+   nk(1) = 15
+   nk(2) = 15
+   nk(3) = 15
+   delta = 0.05
    smearing_type = 'gaussian'
-   datafile_sgm = "./SCRATCH/sigma_CoUS.wan.xml"
+!   datafile_sgm = "./SCRATCH/sigma_CoUS.wan.xml"
  /
