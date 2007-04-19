@@ -21,6 +21,7 @@ MANUAL=" Usage
                  the wannier minimization
  wannier         perform the above cited minimization
  bands           interpolates the band structure using WFs
+ dos             compute DOS using WFs
  plot            compute WFs on real space for plotting
  want            perform DISENTANGLE, WANNIER, BANDS and PLOT all together 
  all             perform all the above described steps
@@ -53,6 +54,7 @@ DFT_BANDS=
 DISENTANGLE=
 WANNIER=
 BANDS=
+DOS=
 PLOT=
 CHECK=
 CLEAN=
@@ -69,12 +71,13 @@ case $INPUT in
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (bands)          BANDS=yes ;;
+   (dos)            DOS=yes ;;
    (plot)           PLOT=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    BANDS=yes; PLOT=yes ;;
+                    BANDS=yes; DOS=yes ; PLOT=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    BANDS=yes ; PLOT=yes ;; 
+                    BANDS=yes ; DOS=yes ; PLOT=yes ;; 
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -142,7 +145,7 @@ run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 #
 # running PLOT
 #
-run_plot  SUFFIX=$SUFFIX  RUN=$DOS
+run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
 
 
 #
