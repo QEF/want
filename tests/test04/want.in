@@ -13,9 +13,6 @@
    maxiter0_wan = 100
    maxiter1_wan = 2000
    ncg = 5
-   xcell(1) = -0.25
-   xcell(2) = 0.0
-   xcell(3) = 0.0
 /
 WANNIER_CENTERS {angstrom}
 1gauss   -5.449839    1.560923   -3.833842 0  0  0.5
