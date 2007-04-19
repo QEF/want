@@ -171,8 +171,11 @@ CONTAINS
       DO j = 1, nk_par(2)
       DO i = 1, nk_par(1)
           !
-          vaux(1) = REAL( 2*i -nk_par(1) -s_par(1), dbl ) / REAL( 2*nk_par(1), dbl )
-          vaux(2) = REAL( 2*j -nk_par(2) -s_par(2), dbl ) / REAL( 2*nk_par(2), dbl )
+          !
+          vaux(1) = REAL( i-1 -( nk_par(1) )/2, dbl ) / REAL( nk_par(1), dbl ) + &
+                    REAL( s_par(1), dbl ) / REAL( 2* nk_par(1), dbl )
+          vaux(2) = REAL( j-1 -( nk_par(2) )/2, dbl ) / REAL( nk_par(2), dbl ) + &
+                    REAL( s_par(2), dbl ) / REAL( 2* nk_par(2), dbl )
           !
           ! check whether the new kpt is equivalent
           ! to one of the formers
