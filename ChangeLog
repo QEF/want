@@ -3,7 +3,6 @@
             WanT code:  Log of Changes 
 =======================================================
 
-check check check check
 
 18 Apr 2007      Bug fixed in transport with parallel kpts: meshes with odd number of
                  points did not repsect the required shift. Bug signalled by
