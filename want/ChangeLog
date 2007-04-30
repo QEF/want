@@ -4,13 +4,16 @@
 =======================================================
 
 
+30 Apr 2007      configure script updated from the one of espresso (cvs version): mac and
+                 nec should be supported. (AF)
+
 18 Apr 2007      Bug fixed in transport with parallel kpts: meshes with odd number of
                  points did not repsect the required shift. Bug signalled by
                  Matias Nunez and Vincent Meunier. (AF)
 
 08 Apr 2007      Txt output of conductor.x improved. (AF)  
 
-30 Mar 2007      Current calculation added to transport. (BB)
+30 Mar 2007      Calculation of the current added to transport. (BB)
 
 29 Mar 2007      Bug fixed when giving nk(:) to conductor from input. Courtesy of 
                  Matias Nunez. (AF) 
