@@ -275,14 +275,16 @@ which can be read by gOpenMol or SCARECROW.
 
 
 */
+#include "ctools.h"
 
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
-#include <malloc.h>
+#ifdef HAVE_MALLINFO
+#   include <malloc.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
-#include "ctools.h"
 
 #define BUFF_LEN        256
 #define BOHR_RADIUS     0.52917715  /* conversion constant */
