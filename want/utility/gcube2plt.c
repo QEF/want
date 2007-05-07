@@ -276,11 +276,15 @@ which can be read by gOpenMol or SCARECROW.
 
 
 */
+#include "ctools.h"
+
+#ifdef HAVE_MALLINFO
+#   include <malloc.h>
+#endif
 
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
-#include <malloc.h>
 #include <string.h>
 
 #define BUFF_LEN        256
