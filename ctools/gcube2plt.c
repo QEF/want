@@ -280,7 +280,7 @@ which can be read by gOpenMol or SCARECROW.
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
-#ifdef HAVE_MALLINFO
+#ifdef HAVE_MALLOC
 #   include <malloc.h>
 #endif
 #include <stdlib.h>

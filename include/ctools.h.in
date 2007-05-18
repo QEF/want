@@ -16,6 +16,7 @@ or http://www.gnu.org/copyleft/gpl.txt .
 #undef F77_FUNC
 #undef F77_FUNC_
 
-/* do we have the mallinfo structure (see ctools/memstat.c) ? */
+/* do we have malloc.h and/or the mallinfo structure  ? */
 
+#undef HAVE_MALLOC
 #undef HAVE_MALLINFO

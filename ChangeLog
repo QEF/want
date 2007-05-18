@@ -4,6 +4,10 @@
 =======================================================
 
 
+18 Apr 2007      HAVE_MALLOC macro added to the search done by configure. Related changes
+                 done (gcube2plt.c): this is useful to compile where malloc.h is included
+                 in stdlib.h or in anyother header. AF
+
 30 Apr 2007      configure script updated from the one of espresso (cvs version): mac and
                  nec should be supported. (AF)
 
