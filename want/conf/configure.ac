@@ -333,6 +333,7 @@ AC_CONFIG_FILES([include/fft_defs.h:include/fft_defs.h.in])
 AC_CHECK_HEADER(malloc.h,have_malloc_h=1,have_malloc_h=0, )
 if test "$have_malloc_h" -ne 0 
 then
+AC_DEFINE(HAVE_MALLOC)
 AC_CHECK_MEMBER([struct mallinfo.arena], 
                 [AC_DEFINE(HAVE_MALLINFO)], 
                 ,
