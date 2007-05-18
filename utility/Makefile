@@ -81,7 +81,7 @@ kgrid.x: kgrid.o
 	$(LD) $(LDFLAGS) -o $@ kgrid.o 
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
-gcube2plt.x: 
+gcube2plt.x: gcube2plt.o
 	$(CC) $(CFLAGS) -o $@ gcube2plt.c
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
