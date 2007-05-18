@@ -15,9 +15,8 @@
                
 * One step minimization (Thygesen like)
 * Symmetries in wfc management
-* Wannier and Transport parallelization
+* Wannier parallelization
 
-* direct calculation of the current
 * eigenchannel in transport calculation
 * eigenvalue problem in wannier localization
 
