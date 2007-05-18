@@ -44,6 +44,7 @@
    INTEGER          :: nk(3)         ! kpt generators
    INTEGER          :: s(3)          ! kpt shifts
    INTEGER          :: ne            ! dimension of the energy grid
+   INTEGER          :: ne_sgm        ! dimension of the energy grid from sgm file
    REAL(dbl)        :: emin          ! egrid extrema
    REAL(dbl)        :: emax
    REAL(dbl)        :: delta         ! smearing parameter
@@ -223,7 +224,7 @@
           CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read")
           !
           CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
-                                            DYNAMICAL=ldynam_sgm, NOMEGA=ne,          &
+                                            DYNAMICAL=ldynam_sgm, NOMEGA=ne_sgm,      &
                                             ANALYTICITY=analyticity_sgm, IERR=ierr )
                                             !
           IF ( ierr/=0 ) CALL errore('dos','reading DIMWANN--ANALYTICITY', ABS(ierr) )
@@ -237,20 +238,27 @@
 
           IF ( dimwann_sgm /= dimwann ) CALL errore('dos','invalid dimwann_sgm',1)
           IF ( nrtot_sgm /= nrtot )     CALL errore('dos','invalid nrtot_sgm',1)
-          !
-          IF ( ldynam_sgm ) THEN 
-             !
-             ALLOCATE( egrid( ne ), STAT=ierr )
-             IF ( ierr /=0 ) CALL errore('dos','allocating egrid', ABS(ierr) ) 
-             !
-          ENDIF
           ! 
           ALLOCATE( vr_sgm( 3, nrtot ), STAT=ierr )
           IF ( ierr /=0 ) CALL errore('dos','allocating vr_sgm', ABS(ierr) ) 
           !
-          !
-          CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=egrid, IERR=ierr )
-          IF ( ierr/=0 ) CALL errore('dos','reading VR, GRID', ABS(ierr) )
+          ! 
+          IF ( ldynam_sgm ) THEN 
+             !
+             ne = ne_sgm
+             !
+             ALLOCATE( egrid( ne ), STAT=ierr )
+             IF ( ierr /=0 ) CALL errore('dos','allocating egrid', ABS(ierr) ) 
+             !
+             CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=egrid, IERR=ierr )
+             IF ( ierr/=0 ) CALL errore('dos','reading VR, GRID', ABS(ierr) )
+             !
+          ELSE
+             !
+             CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
+             IF ( ierr/=0 ) CALL errore('dos','reading VR', ABS(ierr) )
+             !
+          ENDIF
  
           ! 
           ! here we check that the order of R vectors from file is 
