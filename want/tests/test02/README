@@ -1,25 +1,24 @@
 
 ==============================================================================
-@title@   FCC Transition Metals  (Co and Cu, NC and USPP)
+@title@   FCC Transition Metals  (Cu, NC and USPP)
 ==============================================================================
 
-  This test performs the calculation of the Wannier functions for some
-  typical transition metal FCC bulk crystals, such as Cu and Co. No transport 
-  calculation is done. Calculations are performed both with NC and US pseudopots 
-  for Copper and only with US pseudopot for Cobalt.
+  This test performs the calculation of the Wannier functions for a
+  typical transition metal FCC bulk crystal as Copper. No transport
+  calculation is done. Calculations are performed both with NC and US pseudopots. 
   Particular interest is connected with the cutoff convergence (both wfc and rho)
-  in the Co case where the augmentation charge is supposed to be quite hard.
+  since the augmentation charge (USPP case) is supposed to be quite hard.
 
   The band structure along standard symmetry lines is computed by the DFT code
   (see the files $TESTDIR/Reference/dft_band_Cu.dat, 
-  $TESTDIR/Reference/dft_band_CuUS.dat, $TESTDIR/Reference/dft_band_CoUS.dat)
+  $TESTDIR/Reference/dft_band_CuUS.dat)
   and then recalculated by interpolation on the Wannier function Hamiltonian.
 
   Disentangle calculation is performed using Bloch states up to 19.78 eV upper-
-  bound for Cu (20.04 eV for Cu with US pp and 28.00 eV for Co). States are 
-  frozen up to the Fermi energy level (12.7979 eV for Cu, 13.0588 eV for CuUS 
-  and 11.6181 eV for Co). Six initial guess centers of 1gauss type are considered: 
-  5 with d-type and 1 with s-type geometry, localized on the Cu (or Co) atom (see 
+  bound for Cu NCPP, 20.04 eV for Cu with USPP. States are 
+  frozen up to the Fermi energy level.
+  Six initial guess centers of "1gauss" type are considered: 
+  5 with d-type and 1 with s-type geometry, localized on the Cu atom (see 
   the manual for further details).
 
 
@@ -27,18 +26,13 @@
 
   Nearest neighbours b-shell vectors, computed by disentangle, DFT eigenvalues
   and frozen states are reported on the disentangle output file. Disentangle
-  convergence is achieved in about 40 iterations for copper (about 70 for cobalt)
-  and the final invariant spread (\Omega_I) is about 12.197 Bohr^2 for Cu 
-  (13.068 Bohr^2 for CuUS and 11.421 Bohr^2 for Co), 2.033 Bohr^2 on average 
-  (2.178 Bohr^2 for CuUS and 1.903 Bohr^2 for Co): this component of the spread 
-  will remain unchanged during the Wannier localization.
+  convergence is achieved in few iterations, depending on the number of kpts.
+  The average invariant spread (disentagle output) is quite small, probably
+  because of the d-like WFs.
 
-  After about 260 iterations Wannier convergence for copper is achieved. A total 
-  spread of about 15.716 Bohr^2 for Cu (16.009 Bohr^2 for CuUS) is found, with an 
-  average of about 2.619 Bohr^2 for Cu (2.668 Bohr^2 for CuUS).
-  After 2000 iterations Wannier convergence for cobalt is not fully achieved but 
-  can be considered adequate. A total spread of about 19.421 Bohr^2 is found (with 
-  an average of about 3.237 Bohr^2).
+  The wannier localization procedure is the most time consuming and
+  requires few thousands of iterations. This number can change dramatically if
+  the kpt mesh is made finer.
 
   In every case the computed localization of Wannier functions is verified:
 
@@ -53,9 +47,8 @@
 
       * A comparison between DFT and interpolated Wannier band structure can be done. 
         The files to be plotted are:
-            $TESTDIR/Reference/dft_bands_Cu.dat (or _CuUS or _CoUS)
-            $TESTDIR/SCRATCH/copper_WanT_intband.dat (or copper_US or cobalt_US if 
-            the case)
+            $TESTDIR/Reference/dft_bands_Cu.dat (or _CuUS for USPP)
+            $TESTDIR/bands_Cu.dat (or _CuUS for USPP)
 
         Interpolated bands don't fit exactly DFT bands because the kpoints convergence
         is not fully achieved: it would require a further run with a (8 8 8) or 
@@ -69,14 +62,14 @@
 
         The effect of disentangle on the Wannier subspace can be seen also in the
         files:
-            $TESTDIR/SCRATCH/copper_WanT_dftband.dat (or copper_US or cobalt_US)
-            $TESTDIR/SCRATCH/copper_WanT_wanband.dat (or copper_US or cobalt_US)
+            $TESTDIR/SCRATCH/copper_WanT_dftband.dat (or copper_US)
+            $TESTDIR/SCRATCH/copper_WanT_wanband.dat (or copper_US)
         describing Bloch eigenvalues before and after disentangle procedure.
         If the frozen states condition is present, band structures in _dftband.dat 
         and _wanband.dat files must be completely overlapping, up to the frozen energy
         level.
 
-   Norm-conserving and Ultra-soft calculations (in the copper case) show some small
+   Norm-conserving and Ultra-soft calculations show some small
    differences which can be safely attributed to the pseudopotentials and their 
    pseudization types.
 
