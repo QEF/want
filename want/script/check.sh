@@ -61,7 +61,7 @@ print_header () {
    #
    printf "%s" $boldon
 #   printf "%s" "[1;32;40m"
-   printf "\n%-15s\t%12s\t%12s\t%12s\n\n" "Variable" "This File" "Reference" "Difference"
+   printf "\n%-15s\t%12s\t%12s\t%12s\n\n" "Variable" "This File" "Reference" "% Difference"
    printf "%s" $boldoff
 }
 
@@ -88,10 +88,13 @@ printout () {
            # first few definitions about colors
            green_on="[1;32;48m"
            green_off="[0m"
+           orange_on="[1;33;48m"
+           orange_off="[0m"
            red_on="[1;31;48m"
            red_off="[0m"
            #
            stat_ok   = green_on"ok"green_off ;
+           stat_warn = orange_on"warning"orange_off ;
            stat_fail = red_on"failed"red_off ;
 
            #
@@ -103,11 +106,17 @@ printout () {
            #
            if ( name == "iteration" ) {
               #
-              diff = sqrt( ( val -val_ref )*( val -val_ref ) );
-              stat = stat_fail
-              if ( diff < toll ) stat = stat_ok
+              diff = val - val_ref;
+              rel_diff = sqrt ( ( diff / val_ref ) * ( diff / val_ref ) );
               #
-              printf( "%-15s\t%12i\t%12i\t%12i\t%10s\n", name, val, val_ref, diff, stat );
+              stat = stat_fail
+              if ( rel_diff < toll ) {
+                 stat = stat_ok
+              } else if ( rel_diff < 5.0 * toll ) {
+                 stat = stat_warn
+              }
+              #
+              printf( "%-15s\t%12i\t%12i\t%12.6f\t%10s\n", name, val, val_ref, rel_diff, stat );
               #
            } else if ( name == "status" ) { 
               #
@@ -115,11 +124,22 @@ printout () {
               #
            } else {
               #
-              diff = sqrt( ( val -val_ref )*( val -val_ref ) );
-              stat = stat_fail
-              if ( diff < toll ) stat = stat_ok
+              diff = val - val_ref;
               #
-              printf( "%-15s\t%12.6f\t%12.6f\t%12.6f\t%10s\n", name, val, val_ref, diff, stat );
+              if ( val_ref == 0.0 ) {
+                   rel_diff = diff;
+              } else {
+                   rel_diff = sqrt ( ( diff / val_ref ) * ( diff / val_ref ) );
+              }
+              #
+              stat = stat_fail
+              if ( rel_diff < toll ) {
+                 stat = stat_ok
+              } else if ( rel_diff < 5.0 * toll ) {
+                 stat = stat_warn
+              }
+              #
+              printf( "%-15s\t%12.6f\t%12.6f\t%12.6f\t%10s\n", name, val, val_ref, rel_diff, stat );
               #
            }
         }'
