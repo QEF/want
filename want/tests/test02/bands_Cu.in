@@ -1,14 +1,16 @@
  &INPUT
-   prefix = 'copper'
-   postfix = '_WanT'
-   work_dir = './SCRATCH'
+   prefix    = 'copper'
+   postfix   = '_WanT'
+   work_dir  = './SCRATCH'
+   fileout   = './bands_Cu.dat'
    nkpts_in  = 6
    nkpts_max = 200
  /
-G  0.0 0.0 0.0
-X  0.5 0.5 0.0
-W  0.5 0.75 0.25
-L  0.0 0.5 0.0
-G  0.0 0.0 0.0
-K  0.375 0.75 0.375
+
+G  0.0    0.0    0.0
+X  0.5    0.5    0.0
+W  0.5    0.75   0.25
+L  0.0    0.5    0.0
+G  0.0    0.0    0.0
+K  0.375  0.75   0.375
 

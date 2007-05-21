@@ -1,8 +1,9 @@
 
  &INPUT
-   prefix = 'chain4'
-   postfix = '_WanT'
-   work_dir = './SCRATCH/LEADS/'
+   prefix    = 'chain4'
+   postfix   = '_WanT'
+   work_dir  = './SCRATCH/LEADS/'
+   fileout   = './bands_leads.dat'
    nkpts_in  = 2
    nkpts_max = 100
  /
