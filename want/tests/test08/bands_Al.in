@@ -4,6 +4,7 @@
    postfix   = '_WanT'
    work_dir  = './SCRATCH/'
    fileout   = './bands_Al.dat'
+   datafile_sgm = './SCRATCH/sigma_Al.wan.xml'
    nkpts_in  = 2
    nkpts_max = 100
 /
