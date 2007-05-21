@@ -179,15 +179,13 @@
       CALL file_close(ham_unit,PATH="/",ACTION="read")
 
       CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a)") TRIM(filename)
+      WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a,/)") TRIM(filename)
 
 
       !
       ! input summary
       !
-      WRITE( stdout, "(2/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',27x,'INPUT Summary',28x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
+      CALL write_header( stdout, "INPUT Summary" )
       !
       WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
       WRITE( stdout, "(   7x,'                  type :',5x,   a)") TRIM(smearing_type)
@@ -295,9 +293,8 @@
 !
 ! ... Main task 
 !
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',14x,'DOS computation using Wannier Functions',15x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
+      CALL write_header( stdout, "DOS computation using Wannier Functions" )
+      CALL flush_unit( stdout )
 
       !
       ! few local allocations

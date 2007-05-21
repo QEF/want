@@ -75,9 +75,10 @@
        WRITE( stdout, "(a)" ) '              =      Ultra Soft Pseudopotential Implem.    ='
        WRITE( stdout, "(a)" ) '              =                                            ='
        WRITE( stdout, "(2x,70('='),2/ )" ) 
-       WRITE(stdout, FMT='(2x,"Program <",a,">  v. ",A5,"  starts ..." )') &
-                     TRIM(main_name),TRIM(version) 
-       WRITE(stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
+       !
+       WRITE( stdout, FMT='(2x,"Program <",a,">  v. ",A5,"  starts ..." )') &
+                      TRIM(main_name),TRIM(version) 
+       WRITE( stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
        !
        IF ( nproc > 1 ) THEN
            WRITE( stdout, FMT='(5x,"Parallel run, # proc: ",i4,/ )') nproc

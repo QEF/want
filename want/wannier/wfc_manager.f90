@@ -99,12 +99,12 @@
 
           !
           ! ... Read grids
-          WRITE( stdout,"(/,2x,'Reading density G-grid from file: ',a)") TRIM(filename)
+          WRITE( stdout,"( 2x,'Reading density G-grid from file: ',a)") TRIM(filename)
           CALL ggrids_read_ext( dftdata_fmt )
 
           !
           ! ... Read wfcs
-          WRITE( stdout,"(  2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
+          WRITE( stdout,"( 2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
           CALL wfc_data_grids_read( dftdata_fmt )
 
           !
@@ -146,7 +146,7 @@
           !
           IF ( use_uspp ) THEN
               IF ( .NOT. use_pseudo ) CALL errore(subname,'pseudo should be used',4)
-              WRITE( stdout,"(/,2x,'Initializing US pseudopot. data')")
+              WRITE( stdout,"(2x,'Initializing US pseudopot. data')")
               
               !
               ! ... first initialization
@@ -156,7 +156,7 @@
               IF ( use_blimit ) &
                  CALL warning( stdout, "setting b = 0 in qb (overlap augment.)" )
                  !
-              WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5,2/ ) ') nkb
+              WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5 ) ') nkb
 
               !
               ! ... space for beta functions in reciproc space within struct_facts
@@ -179,6 +179,7 @@
           ENDIF
           
           !
+          WRITE( stdout, "(/)")
           CALL flush_unit( stdout )
 
 

@@ -103,14 +103,10 @@
 ! ...  Compute the OVERLAP and PROJECTION matrix elements
 !--------------------------------------------
 !
-       WRITE(stdout, "(2/,2x,70('='))" )
-       WRITE(stdout, "(2x,'=',22x,'Overlaps and Projections',22x,'=')" )
-       WRITE(stdout, "(2x,70('='))" )
+       CALL write_header( stdout, "Overlaps and Projections" )
        CALL flush_unit( stdout )
-
+       !
        CALL wfc_manager()
-     
-
 
 !
 !--------------------------------------------
@@ -119,10 +115,7 @@
 !
        CALL timing('iterations',OPR='START')
        !
-       !
-       WRITE( stdout, "(/,2x,70('='))" ) 
-       WRITE( stdout, "(2x,'=',22x,'Starting Iteration loop',22x,'=')" ) 
-       WRITE( stdout, "(2x,70('='),/)" ) 
+       CALL write_header( stdout, "Starting Iteration loop" )
        CALL flush_unit( stdout )
 
       
@@ -314,13 +307,11 @@
        WRITE(stdout, "()")
        CALL timing('iterations',OPR='stop')
 
-       WRITE( stdout, "(/,2x,70('='))" )
        IF ( ncount == maxiter_dis ) THEN 
-           WRITE( stdout, "(2x,'=',18x,'Max number of iteration reached',19x,'=')")
+           CALL write_header( stdout, 'Max number of iteration reached' )
        ELSE
-           WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
+           CALL write_header( stdout, 'Convergence Achieved' )
        ENDIF
-       WRITE( stdout, "(2x,70('='),/)" )
 
 
        !

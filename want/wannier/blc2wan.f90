@@ -322,10 +322,8 @@
 !
 ! report summary of input data
 !
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',25x,'Input data summary',25x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
-
+      CALL write_header( stdout, "Input data summary" )
+      !
       WRITE( stdout,"(/,2x,'      Input file :',3x,a)") TRIM(filein)
       WRITE( stdout,"(  2x,'     Output file :',3x,a)") TRIM(fileout)
       !
@@ -358,9 +356,8 @@
 !
 ! ... Main task 
 !
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',16x,'Conversion to Wannier Function basis',16x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
+      CALL write_header( stdout, "Conversion to Wannier Function basis" )
+      CALL flush_unit( stdout )
 
 
       !

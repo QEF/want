@@ -154,14 +154,12 @@
       CALL file_close(ham_unit,PATH="/",ACTION="read")
 
       CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a)") TRIM(filename)
+      WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a,/)") TRIM(filename)
 
       !
       ! input summary
       !
-      WRITE( stdout, "(2/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',27x,'INPUT Summary',28x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
+      CALL write_header( stdout, "INPUT Summary" )
       !
       WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
       WRITE( stdout, "(   7x,'             nkpts_in  :',3x,3i4 )") nkpts_in
@@ -184,10 +182,8 @@
 !
 ! ... Main task 
 !
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',21x,'Band interpolation by WFs',22x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
-
+      CALL write_header( stdout, 'Band interpolation by WFs' )
+      CALL flush_unit( stdout )
 
       !
       ! Determine the k-points used in the band structure interpolation

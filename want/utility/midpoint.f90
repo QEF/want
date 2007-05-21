@@ -216,14 +216,14 @@ END MODULE
       !
       ! summary of the input
       !
-      WRITE( stdout, "(2/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',19x,'Computing mid points of bonds',20x,'=')" )
-      WRITE( stdout, "(2x,70('='),2/)" )
-
+      CALL write_header( stdout, "Computing mid points of bonds" )
+      !
       WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") TRIM(output_fmt)
       WRITE( stdout,"(  2x,'  Bond len. toll :',3x,f9.4)") toll
       WRITE( stdout,"(  2x,'   Cutoff radius :',3x,f9.4,' [Ang]')") rcut * bohr
       WRITE( stdout,"(/)")
+      !
+      CALL flush_unit( stdout )
 
 
 !

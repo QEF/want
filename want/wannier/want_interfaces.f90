@@ -34,9 +34,9 @@
 
    INTERFACE summary
       !
-      SUBROUTINE summary_x ( unit, input, lattice, ions, windows, symmetry, &
+      SUBROUTINE summary_x ( iunit, input, lattice, ions, windows, symmetry, &
                              kpoints, bshells, pseudo)
-         INTEGER,           INTENT(in) :: unit
+         INTEGER,           INTENT(in) :: iunit
          LOGICAL, OPTIONAL, INTENT(in) :: input   
          LOGICAL, OPTIONAL, INTENT(in) :: lattice 
          LOGICAL, OPTIONAL, INTENT(in) :: ions   

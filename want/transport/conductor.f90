@@ -148,9 +148,10 @@
 ! 
 
    IF ( ionode ) THEN
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',27x,'Frequency Loop',27x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
+      !
+      CALL write_header( stdout, "Frequency Loop" )
+      CALL flush_unit( stdout )
+      !
    ENDIF
 
    !
@@ -303,13 +304,10 @@
 !
 
    IF ( ionode ) THEN
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',27x,'Writing Data',27x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
-   ENDIF
-
-
-   IF ( ionode ) THEN
+       !
+       CALL write_header( stdout, "Writing data" )
+       CALL flush_unit( stdout )
+   
 
        filename = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
        OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
@@ -325,7 +323,6 @@
        filename = TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
        WRITE(stdout,"(/,2x,'Conductance written on file: ',3x,a)") TRIM(filename)
                             
-    
        filename = TRIM(work_dir)//'/'//TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
        OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
        !

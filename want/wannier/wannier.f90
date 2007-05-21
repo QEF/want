@@ -140,11 +140,8 @@
 !--------------------------------------------
 ! 
 
-      !
-      !
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',21x,'Init localization procedure',20x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
+      CALL write_header( stdout, "Init localization procedure")
+      CALL flush_unit( stdout )
 
       !
       ! init many quantities, particularly the cU matrix
@@ -201,14 +198,13 @@
 !  ... Main iterative loop
 !----------------------------------------------
 !
-      !
-      !
-      WRITE( stdout, "(/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',22x,'Starting iteration loop',23x,'=')" )
-      WRITE( stdout, "(2x,70('='),/)" )
 
+      CALL write_header( stdout, "Starting iteration loop" )
+      CALL flush_unit( stdout )
+      !
       CALL timing('iterations',OPR='start')
-
+      !
+      !
       iteration_loop : &
       DO iter = 1, maxiter0_wan + maxiter1_wan
 
@@ -454,14 +450,13 @@ CALL timing('omega_best','stop')
       WRITE(stdout, "()")
       CALL timing('iterations',OPR='stop')
 
-      WRITE( stdout, "(/,2x,70('='))" )
       IF ( ncount == maxiter0_wan + maxiter1_wan ) THEN
-          WRITE( stdout, "(2x,'=',18x,'Max number of iteration reached',19x,'=')")
+          CALL write_header( stdout, "Max number of iteration reached" )
       ELSE
-          WRITE( stdout, "(2x,'=',24x,'Convergence Achieved',24x,'=')" )
+          CALL write_header( stdout, "Convergence Achieved" )
       ENDIF
-      WRITE( stdout, "(2x,70('='),2/)" )
-      WRITE( stdout, "(2x,'Iteration # : ',i5,/)") ncount
+      !
+      WRITE( stdout, "(/,2x,'Iteration # : ',i5,/)") ncount
 
 
       !
