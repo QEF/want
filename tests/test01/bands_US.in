@@ -1,8 +1,9 @@
 
  &INPUT
-   prefix = 'silicon_US'
-   postfix = '_WanT'
-   work_dir = './SCRATCH'
+   prefix     = 'silicon_US'
+   postfix    = '_WanT'
+   work_dir   = './SCRATCH'
+   fileout    = './bands_US.dat'
    nkpts_in   = 7
    nkpts_max  = 500
  /

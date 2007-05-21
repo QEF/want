@@ -1,8 +1,9 @@
 
 &INPUT
-   prefix = 'al1'
-   postfix = '_WanT'
-   work_dir = './SCRATCH/'
+   prefix    = 'al1'
+   postfix   = '_WanT'
+   work_dir  = './SCRATCH/'
+   fileout   = './bands_Al.dat'
    nkpts_in  = 2
    nkpts_max = 100
 /

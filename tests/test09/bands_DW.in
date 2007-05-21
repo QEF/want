@@ -1,8 +1,9 @@
 
  &INPUT
-   prefix = 'nichain'
-   postfix = '_WanT_DW'
-   work_dir = './SCRATCH/'
+   prefix    = 'nichain'
+   postfix   = '_WanT_DW'
+   work_dir  = './SCRATCH/'
+   fileout   = './bands_DW.dat'
    nkpts_in  = 2
    nkpts_max = 100
  /
