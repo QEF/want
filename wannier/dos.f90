@@ -24,7 +24,7 @@
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE files_module,         ONLY : file_open, file_close
    USE version_module,       ONLY : version_number
-   USE util_module,          ONLY : mat_hdiag
+   USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
@@ -69,7 +69,7 @@
    REAL(dbl),    ALLOCATABLE :: egrid(:)
    REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), wk(:)
-   REAL(dbl),    ALLOCATABLE :: eig_int(:,:)  
+   REAL(dbl),    ALLOCATABLE :: eig_int(:,:)
    REAL(dbl),    ALLOCATABLE :: vr_cry(:,:), vr_nn(:,:), wr_nn(:), vr_sgm(:,:)
    CHARACTER(nstrx)          :: filename, analyticity_sgm
    CHARACTER(4)              :: ctmp
@@ -451,9 +451,11 @@
                   !
                   CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, r_sgm,  &
                                      vkpt_int(:,ik), k_sgm)
+                  !
+                  ! symmetryze the static sgm in order to make it hermitean
+                  !
+                  CALL zmat_herm( k_sgm, dimwann )
                   ! 
-                  ! we are assuming the static sgm to be hermitean
-                  ! it would be probably better to symmetrize k_sgm
                   ! 
                   kham(:,:) = kham(:,:) + k_sgm(:,:)
                   !
@@ -549,7 +551,7 @@
       ENDDO energy_loop1
       !
       !
-      IF ( lhave_sgm ) CLOSE( sgm_unit )
+      IF ( lhave_sgm ) CALL file_close(sgm_unit, PATH="/", ACTION="read" )
 
 
       !
