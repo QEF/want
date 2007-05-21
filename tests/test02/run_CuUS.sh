@@ -145,7 +145,7 @@ run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 #
 # running PLOT
 #
-run_plot  SUFFIX=$SUFFIX  RUN=$DOS
+run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
 
 
 #
