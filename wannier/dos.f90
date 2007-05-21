@@ -140,7 +140,7 @@
       IF ( nkpts_int <=0 ) CALL errore( 'dos', 'unexpected nkpts_int ', -nkpts_int + 1)
       !
       ! the check of SMEARING_TYPE is done inside the function smearing_func
-      ! justmove to lower_case
+      ! just move to lower_case
       CALL change_case(smearing_type,'lower')
 
 
