@@ -4,7 +4,12 @@
 =======================================================
 
 
-18 Apr 2007      HAVE_MALLOC macro added to the search done by configure. Related changes
+21 May 2007      Cobalt exmaple removed from test02; bands input changed (explicit output file
+                 provided); references updated with bands*.dat files. AF
+
+20 May 2007      write_header.f90 routine added to libs/; fmt changes around; (AF)
+
+18 May 2007      HAVE_MALLOC macro added to the search done by configure. Related changes
                  done (gcube2plt.c): this is useful to compile where malloc.h is included
                  in stdlib.h or in anyother header. Bug fixed in dos.x when dealing with 
                  staic self-energies. (AF)
