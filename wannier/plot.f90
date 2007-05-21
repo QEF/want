@@ -279,6 +279,7 @@
       WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))+1
       WRITE(stdout, "(6x,'       input FFT mesh (rho) =  ( ', 3i5,' )' )") nfft(:)
       WRITE(stdout, "(6x,'    required FFT mesh (rho) =  ( ', 3i5,' )' )") nr1, nr2, nr3
+      WRITE(stdout, "()" )
 
 
 !
@@ -327,10 +328,8 @@
       !
       ! summary of the input
       !
-      WRITE( stdout, "(2/,2x,70('='))" )
-      WRITE( stdout, "(2x,'=',21x,'Wannier function plotting',22x,'=')" )
-      WRITE( stdout, "(2x,70('='),2/)" )
-
+      CALL write_header( stdout, "Wannier function plotting" )
+      !
       WRITE( stdout,"(2x,'nplot = ',i4, ' Wannier func.s to be plotted')") nplot
       DO m=1,nplot
           WRITE( stdout,"(5x,'wf (',i4,' ) = ',i4 )") m, iwann(m)
@@ -346,6 +345,8 @@
       WRITE( stdout,"(  6x, 'nry :  ', i8, ' --> ', i8 )" ) nryl, nryh 
       WRITE( stdout,"(  6x, 'nrz :  ', i8, ' --> ', i8 )" ) nrzl, nrzh 
       WRITE( stdout,"()")
+      !
+      CALL flush_unit( stdout )
 
 
 !

@@ -45,11 +45,7 @@
    !
    ! local variables
    !
-! XXXX
-#ifdef __ALTERNATIVE
-   INTEGER :: npwx
-#endif
-   INTEGER :: npwk
+   INTEGER :: npwk, npwx
    INTEGER :: lmax
    INTEGER :: iwann, ib, ig, ind 
    INTEGER :: ierr
@@ -71,9 +67,7 @@
       ind = wfc_info_getindex(imin, ik, "SPSI_IK", evc_info)
       !
       npwk = evc_info%npw(ind)
-#ifdef __ALTERNATIVE
       npwx = evc_info%npwx
-#endif
 
       ALLOCATE( trial_vect(npwk), STAT = ierr )
       IF( ierr /= 0 ) CALL errore( 'projection', 'allocating trial_vect', npwk )
@@ -124,6 +118,10 @@
           CALL trial_center_setup(ik, npwk, vkgg, lmax, ylm, ylm_info, &
                                   trial(iwann), trial_vect)
 
+#define __OLD_PROJECTIONS
+
+#ifdef __OLD_PROJECTIONS
+
           !
           ! ... bands 
           DO ib = 1, dimw
@@ -139,13 +137,8 @@
              !
           ENDDO 
           !
-!
-! ALTERNATIVE IMPLEMENTATION
-!
-#ifdef __ALTERNATIVE
-! 
-! XXX
-!
+#else
+
           !
           ! get the indexes of the required wfs in the evc workspace
           !
@@ -154,10 +147,19 @@
           ! perform the scalr produce < nk | trial_vect > 
           ! for all the bands in the selected energy window
           !
+#ifdef __INTEL
+          !
+          ! workaround for a strange behavior (bug?) of the intel compiler
+          !
+          CALL ZGEMV ( 'C', npwk, dimw, CONE, evc(1:npwx, ind:ind+dimw-1 ), npwx, &
+                       trial_vect, 1, CZERO, ca(:, iwann), 1 )
+#else
           CALL ZGEMV ( 'C', npwk, dimw, CONE, evc(:, ind:ind+dimw-1 ), npwx, &
                        trial_vect, 1, CZERO, ca(:, iwann), 1 )
-                 
 #endif
+
+#endif
+                 
           !
       ENDDO    
 

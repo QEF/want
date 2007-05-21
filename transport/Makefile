@@ -33,7 +33,7 @@ WANNIER_OBJS= \
 ../wannier/startup.o \
 ../wannier/smearing.o \
 ../wannier/shutdown.o \
-../wannier/version.o
+../wannier/version.o 
 
 BIN= \
 conductor.x \
