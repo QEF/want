@@ -36,6 +36,7 @@ sph_har.o \
 timing.o \
 util.o \
 warning.o \
+write_header.o \
 ylmr2.o
 
 
