@@ -11,7 +11,7 @@
   MODULE util_module
 !*********************************************
   USE kinds
-  USE constants, ONLY : ZERO, ONE, CZERO, CONE
+  USE constants, ONLY : ZERO, ONE, CZERO, CONE, CI
   IMPLICIT NONE
   PRIVATE
 
@@ -20,6 +20,8 @@
 ! routines in this module:
 ! SUBROUTINE  zmat_pack( zp, z, n)
 ! SUBROUTINE  zmat_unpack( z, zp, n)
+! SUBROUTINE  zmat_herm( z, n)
+! SUBROUTINE  zmat_antiherm( z, n)
 ! SUBROUTINE   mat_svd( m, n, a, s, u, vt)
 ! SUBROUTINE   mat_sv ( n, nrhs, a, b [,ierr])
 ! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
@@ -75,6 +77,8 @@ END INTERFACE
 
 PUBLIC :: zmat_pack
 PUBLIC :: zmat_unpack
+PUBLIC :: zmat_herm
+PUBLIC :: zmat_antiherm
 PUBLIC ::  mat_svd
 PUBLIC ::  mat_sv
 PUBLIC ::  mat_mul
@@ -115,22 +119,66 @@ CONTAINS
 !**********************************************************
    SUBROUTINE zmat_unpack( z, zp, n )
    !**********************************************************
-    IMPLICIT NONE
-    COMPLEX(dbl), INTENT(IN)  :: zp(:)
-    COMPLEX(dbl), INTENT(OUT) :: z(:,:)
-    INTEGER,      INTENT(IN)  :: n
-    INTEGER :: i, j, ind
+   IMPLICIT NONE
+   COMPLEX(dbl), INTENT(IN)  :: zp(:)
+   COMPLEX(dbl), INTENT(OUT) :: z(:,:)
+   INTEGER,      INTENT(IN)  :: n
+   INTEGER :: i, j, ind
 
-    ind = 1
-    DO j = 1, n
-      DO i = 1, n
-        z(i,j) = zp(ind)
-        ind = ind + 1
-      END DO
-    END DO
+   ind = 1
+   DO j = 1, n
+     DO i = 1, n
+       z(i,j) = zp(ind)
+       ind = ind + 1
+     END DO
+   END DO
 
-    RETURN
-  END SUBROUTINE
+   RETURN
+END SUBROUTINE
+
+
+!**********************************************************
+   SUBROUTINE zmat_herm( z, n )
+   !**********************************************************
+   !
+   ! overwrite the input matrix with its hermitean part
+   !
+   IMPLICIT NONE
+   COMPLEX(dbl), INTENT(INOUT) :: z(:,:)
+   INTEGER,      INTENT(IN)    :: n
+   INTEGER :: i, j
+
+   DO j = 1, n
+   DO i = j, n
+       z(i,j) = 0.5_dbl * ( z(i,j) + CONJG( z(j,i) ) )
+       z(j,i) = CONJG( z(i,j) )
+   ENDDO
+   ENDDO
+
+   RETURN
+END SUBROUTINE
+
+
+!**********************************************************
+   SUBROUTINE zmat_antiherm( z, n )
+   !**********************************************************
+   !
+   ! overwrite the input matrix with its antihermitean part
+   !
+   IMPLICIT NONE
+   COMPLEX(dbl), INTENT(INOUT) :: z(:,:)
+   INTEGER,      INTENT(IN)    :: n
+   INTEGER :: i, j
+
+   DO j = 1, n
+   DO i = j, n
+       z(i,j) = -CI * 0.5_dbl * ( z(i,j) - CONJG( z(j,i) ) )
+       z(j,i) = CONJG( z(i,j) )
+   ENDDO
+   ENDDO
+
+   RETURN
+END SUBROUTINE
 
 
 !**********************************************************
