@@ -19,8 +19,8 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
- bands           interpolates the band structure using WFs
  blc2wan         convert sigma file to Wannier basis
+ bands           interpolates the band structure using WFs
  dos             compute DOS using WFs
  conductor       evaluate the transmittance, for the bulk case
  want            perform DISENTANGLE, WANNIER, BANDS, CONDUCTOR all together 
@@ -52,8 +52,8 @@ NSCF=
 PWEXPORT=
 DISENTANGLE=
 WANNIER=
-BANDS=
 BLC2WAN=
+BANDS=
 DOS=
 CONDUCTOR=
 CHECK=
@@ -69,8 +69,8 @@ case $INPUT in
    (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;;
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
-   (bands)          BANDS=yes ;;
    (blc2wan)        BLC2WAN=yes ;;
+   (bands)          BANDS=yes ;;
    (dos)            DOS=yes ;;
    (conductor)      CONDUCTOR=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ; BANDS=yes; 
@@ -127,14 +127,14 @@ run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
 run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 
 #
-# running BANDS
-#
-run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
-
-#
 # running BLC2WAN
 #
 run_blc2wan  SUFFIX=$SUFFIX  RUN=$BLC2WAN
+
+#
+# running BANDS
+#
+run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
 
 #
 # running DOS

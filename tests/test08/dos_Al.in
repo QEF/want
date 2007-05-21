@@ -11,7 +11,7 @@
    nk(3) = 400
    smearing_type = 'gaussian'
    delta = 0.05
-   emin = -7.5
+   emin = -8.5
    emax =  7.5
    ne   =  250 
    datafile_sgm = "./SCRATCH/sigma_Al.wan.xml"

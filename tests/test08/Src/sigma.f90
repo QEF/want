@@ -86,16 +86,16 @@
       !
       IF ( ldiag ) THEN
          !
-         DO i = 1, nbnd
-            sgm_diag( i, ik, ie ) = 1.0
-         ENDDO
+         sgm_diag( :, ik, ie ) = 0.0
+         sgm_diag( 1:1, ik, ie ) = -1.0
+         ! 
          !
       ELSE
          !
          sgm_full( :, :, ik, ie) = 0.0
          !
-         DO i = 1, nbnd
-            sgm_full( i, i, ik, ie ) = 1.0
+         DO i = 1, 1
+            sgm_full( i, i, ik, ie ) = -1.0
          ENDDO
          !
       ENDIF
