@@ -1,12 +1,11 @@
 
 *************************************
-  List of needed changes
+  TO DO list
 *************************************
 
-* qexml_read_rho to be added.
+* qexml lib to be completed.
 
 * implement all the smearing types in dos.f90
-  cleanup in routines dealing with sgm/operator datafile
 
 * plot.x: USPP features not fully implemented.
 
