@@ -35,7 +35,7 @@ work_dir      STRING
 
 fileout       STRING
               the file used to write the computed DOS.
-              DEFAULT: "./$prefix$suffix_dos.dat"
+              DEFAULT: "$work_dir/$prefix$suffix_dos.dat"
 
 nk(3)         INTEGER
               the 3D k-points mesh used to computed the DOS.

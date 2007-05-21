@@ -37,6 +37,10 @@ work_dir      STRING
               the scratch directory where the massive data file will be written
               DEFAULT: "./"
 
+fileout       STRING
+              the file used to write the computed BANDS.
+              DEFAULT: "$work_dir/$prefix$suffix_bands.dat"
+
 nkpts_in      INTEGER
               number of edge kpts defining the directions on which bands will
               be calculated
@@ -50,6 +54,11 @@ use_nn(3)     LOGICAL
               if .TRUE. along direction i, only nearest neighbors Hamiltonians along i
               are used to compute bands. Useful to compare with transport calculation.
               DEFAULT : .FALSE., .FALSE., .FLASE.
+
+datafile_sgm  STRING
+              If specified, the code reads the file to search for a static (and hermitean)
+              self-energy operator to be taken into account in the interpolation of the bands.
+              DEFAULT : ""
 
 
 ==============================================================================
