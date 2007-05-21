@@ -5,7 +5,9 @@
 
 
 21 May 2007      Cobalt exmaple removed from test02; bands input changed (explicit output file
-                 provided); references updated with bands*.dat files. AF
+                 provided); references updated with bands*.dat files. Updates in dos.f90; 
+                 self-energy (static case) added to bands; hermitean symmetrizator added to
+                 util.f90; test08 updated. (AF)
 
 20 May 2007      write_header.f90 routine added to libs/; fmt changes around; (AF)
 
