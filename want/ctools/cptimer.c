@@ -1,45 +1,23 @@
 /*
-  Copyright (C) 2002 FPMD group
+  Copyright (C) 2002-2006 Quantum-Espresso group
   This file is distributed under the terms of the
   GNU General Public License. See the file `License'
   in the root directory of the present distribution,
   or http://www.gnu.org/copyleft/gpl.txt .
 */
 
-#include<stdio.h>
-#include<time.h>
-#include<ctype.h>
-#include<sys/types.h>
-#include<sys/time.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
 
-#include"ctools.h"
-
-
-double F77_FUNC_(elapsed_seconds,ELAPSED_SECONDS)()
-{
-  static time_t tstart, tend;
-  static int first = 1;
-  double sec;
-  time(&tend);
-  if( first ) {
-    tstart = tend;
-    first = 0;
-  }
-  sec = difftime( tend, tstart );
-  return sec;
-}
-
+#include "ctools.h"
 
 double F77_FUNC(cclock,CCLOCK)()
-/* Restituisce i secondi trascorsi dalla chiamata al timer rest */
+
+/* Return the second elapsed since Epoch (00:00:00 UTC, January 1, 1970)
+*/
+
 {
-
-#if defined __T3E
-
-/*  return (double)(rtclock() * 3.333e-6 / 2.); */
-    return (double)( ( _rtc() / (double)CLK_TCK ) );
-
-#else
 
     struct timeval tmp;
     double sec;
@@ -47,6 +25,18 @@ double F77_FUNC(cclock,CCLOCK)()
     sec = tmp.tv_sec + ((double)tmp.tv_usec)/1000000.0;
     return sec;
 
-#endif
-
 }
+
+double F77_FUNC(scnds,SCNDS) ( )
+
+/* Return the cpu time associated to the current process 
+*/
+
+{
+        static struct rusage T;
+
+        getrusage(RUSAGE_SELF, &T);
+
+        return ((double)T.ru_utime.tv_sec + ((double)T.ru_utime.tv_usec)/1000000.0);
+}
+
