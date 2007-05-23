@@ -36,6 +36,7 @@ bands.o : ../libs/kind.o
 bands.o : ../libs/parameters.o
 bands.o : ../libs/parser.o
 bands.o : ../libs/util.o
+bands.o : operator.o
 bands.o : subspace.o
 bands.o : version.o
 bands.o : want_interfaces.o
@@ -621,7 +622,6 @@ wfc_manager.o : becmod.o
 wfc_manager.o : control.o
 wfc_manager.o : ggrids.o
 wfc_manager.o : io_module.o
-wfc_manager.o : ../iotk/iotk_16_module.o
 wfc_manager.o : kpoints.o
 wfc_manager.o : lattice.o
 wfc_manager.o : ../libs/constants.o

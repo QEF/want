@@ -34,6 +34,7 @@ sph_har.o : constants.o
 sph_har.o : kind.o
 util.o : constants.o
 util.o : kind.o
+write_header.o : io_global.o
 ylmr2.o : constants.o
 ylmr2.o : kind.o
 fft_scalar.o : ../include/fft_defs.h
