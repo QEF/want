@@ -12,7 +12,7 @@
    !
    ! Print out the given header message msg
    !
-   USE io_module, ONLY : ionode
+   USE io_global_module, ONLY : ionode
    IMPLICIT NONE
 
    !
@@ -39,7 +39,7 @@
       WRITE( str, *) "(2x,'=  ',a,", 70-4-msglen, "x, '=')"
       !
       WRITE( iun, "(/,2x,70('='))" )
-      WRITE( iun, TRIM(str) ), TRIM(msg)
+      WRITE( iun, FMT=TRIM(str) ) TRIM(msg)
       WRITE( iun, "(2x,70('='),/)" )
       !
    ENDIF

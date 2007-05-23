@@ -9,3 +9,4 @@ midpoint.o : ../wannier/ions.o
 midpoint.o : ../wannier/lattice.o
 midpoint.o : ../wannier/version.o
 midpoint.o : ../wannier/want_interfaces.o
+gcube2plt.o : ../include/ctools.h

@@ -125,9 +125,11 @@ smearing.o : ../libs/timing.o
 smearing.o : ../wannier/smearing.o
 summary.o : control.o
 summary.o : egrid.o
+summary.o : hamiltonian.o
 summary.o : kpoints.o
 summary.o : ../libs/constants.o
 summary.o : ../libs/kind.o
+summary.o : ../libs/mp_global.o
 summary.o : ../libs/parser.o
 summary.o : smearing.o
 summary.o : ../wannier/io_module.o
