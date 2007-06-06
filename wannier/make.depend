@@ -362,6 +362,7 @@ overlap_update.o : ../libs/log_module.o
 overlap_update.o : ../libs/timing.o
 overlap_update.o : ../libs/util.o
 plot.o : atomic.o
+plot.o : becmod.o
 plot.o : control.o
 plot.o : converters.o
 plot.o : ggrids.o
@@ -378,7 +379,9 @@ plot.o : ../libs/parser.o
 plot.o : ../libs/timing.o
 plot.o : ../libs/util.o
 plot.o : localization.o
+plot.o : struct_fact_data.o
 plot.o : subspace.o
+plot.o : uspp.o
 plot.o : version.o
 plot.o : want_interfaces.o
 plot.o : wfc_data.o
@@ -471,7 +474,6 @@ s_psi.o : ../libs/timing.o
 s_psi.o : pwcom.o
 s_psi.o : uspp.o
 startup.o : io_module.o
-startup.o : ../libs/log_module.o
 startup.o : ../libs/mp_global.o
 startup.o : ../libs/mp.o
 startup.o : ../libs/timing.o
@@ -607,6 +609,20 @@ want_init.o : trial_center_data.o
 want_init.o : trial_center.o
 want_init.o : windows.o
 want_interfaces.o : ../libs/kind.o
+wf2_augment.o : becmod.o
+wf2_augment.o : converters.o
+wf2_augment.o : ggrids.o
+wf2_augment.o : ions.o
+wf2_augment.o : kpoints.o
+wf2_augment.o : lattice.o
+wf2_augment.o : ../libs/constants.o
+wf2_augment.o : ../libs/fft_scalar.o
+wf2_augment.o : ../libs/kind.o
+wf2_augment.o : ../libs/log_module.o
+wf2_augment.o : ../libs/timing.o
+wf2_augment.o : pwcom.o
+wf2_augment.o : struct_fact_data.o
+wf2_augment.o : uspp.o
 wfc_data.o : ../libs/constants.o
 wfc_data.o : ../libs/kind.o
 wfc_data.o : ../libs/log_module.o
