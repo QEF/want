@@ -5,8 +5,6 @@
    work_dir = './SCRATCH/'
    restart_mode = 'from_scratch'
    verbosity = 'high'
-!   dftdata_fmt = 'pw_export'
-   debug_level = 10
 /
 
 &SUBSPACE

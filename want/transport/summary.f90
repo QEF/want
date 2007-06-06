@@ -17,7 +17,7 @@
    USE kinds,                ONLY : dbl
    USE constants,            ONLY : ZERO
    USE parser_module,        ONLY : log2char
-   USE mp_global,            ONLY : mpime, nproc
+   USE mp_global,            ONLY : nproc
    USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
    USE T_control_module,     ONLY : calculation_type, conduct_formula,  &
                                     datafile_C, datafile_L, datafile_R, &
@@ -40,7 +40,7 @@
    !
    ! local variables
    !
-   INTEGER      :: i, ik, ir
+   INTEGER      :: ik, ir
    INTEGER      :: nk_par3D(3)       ! 3D kpt mesh generator
    INTEGER      :: s_par3D(3)        ! 3D shifts
    INTEGER      :: nr_par3D(3)       ! 3D R-vect mesh generator
