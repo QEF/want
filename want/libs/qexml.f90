@@ -79,36 +79,36 @@ CONTAINS
 !-------------------------------------------
 !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_init( iunit_, ounit_, datadir, datadir_in_, datadir_out_ )
+    SUBROUTINE qexml_init( unit_in, unit_out, dir, dir_in, dir_out )
       !------------------------------------------------------------------------
       !
       ! just init module data
       !
       IMPLICIT NONE
-      INTEGER,                INTENT(IN) :: iunit_
-      INTEGER,      OPTIONAL, INTENT(IN) :: ounit_
-      CHARACTER(*), OPTIONAL, INTENT(IN) :: datadir    
-      CHARACTER(*), OPTIONAL, INTENT(IN) :: datadir_in_, datadir_out_   
+      INTEGER,                INTENT(IN) :: unit_in
+      INTEGER,      OPTIONAL, INTENT(IN) :: unit_out
+      CHARACTER(*), OPTIONAL, INTENT(IN) :: dir    
+      CHARACTER(*), OPTIONAL, INTENT(IN) :: dir_in, dir_out   
       !
-      iunit       = iunit_
-      ounit       = iunit_
+      iunit       = unit_in
+      ounit       = unit_in
+      IF ( PRESENT( unit_out ) ) ounit  = unit_out
       !
-      IF ( PRESENT( ounit_) ) ounit = ounit_
       !
       datadir_in  = "./"
       datadir_out = "./"
       !
-      IF ( PRESENT( datadir ) ) THEN
-          datadir_in  = TRIM(datadir)
-          datadir_out = TRIM(datadir)
+      IF ( PRESENT( dir ) ) THEN
+          datadir_in  = TRIM(dir)
+          datadir_out = TRIM(dir)
       ENDIF
       !
-      IF ( PRESENT( datadir_in_ ) ) THEN
-          datadir_in  = TRIM(datadir_in_)
+      IF ( PRESENT( dir_in ) ) THEN
+          datadir_in  = TRIM(dir_in)
       ENDIF
       !
-      IF ( PRESENT( datadir_out_ ) ) THEN
-          datadir_out  = TRIM(datadir_out_)
+      IF ( PRESENT( dir_out ) ) THEN
+          datadir_out  = TRIM(dir_out)
       ENDIF
       !
     END SUBROUTINE qexml_init
@@ -1062,240 +1062,217 @@ CONTAINS
     END SUBROUTINE qexml_write_bands
     !     
     !
-    !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_write_wfc( iuni, ik, nk, kunit, ispin, &
-                                nspin, wf0, ngw, nbnd, igl, ngwl, filename, scalef )
+    SUBROUTINE qexml_write_wfc( nbnd, nkpts, nspin, ik, ispin, ipol, igk, ngw, igwx, &
+                                wf, wf_kindip, scale_factor )
       !------------------------------------------------------------------------
-      !
-#ifdef __HAVE_WRITE_WFC
-!      USE mp_wave,    ONLY : mergewf
-!      USE mp,         ONLY : mp_get
-!      USE mp_global,  ONLY : me_pool, nproc_image, nproc_pool, &
-!                             root_pool, intra_pool_comm, me_image, &
-!                             intra_image_comm
-#endif
       !
       IMPLICIT NONE
       !
-      INTEGER,            INTENT(IN) :: iuni
-      INTEGER,            INTENT(IN) :: ik, nk, kunit, ispin, nspin
-      COMPLEX(dbl),       INTENT(IN) :: wf0(:,:)
-      INTEGER,            INTENT(IN) :: ngw
-      INTEGER,            INTENT(IN) :: nbnd
-      INTEGER,            INTENT(IN) :: ngwl
-      INTEGER,            INTENT(IN) :: igl(:)
-      CHARACTER(LEN=256), INTENT(IN) :: filename
-      REAL(dbl),          INTENT(IN) :: scalef    
-        ! scale factor, usually 1.0 for pw and 1/SQRT( omega ) for CP
+      INTEGER,                INTENT(IN) :: nbnd, nkpts, nspin
+      INTEGER,                INTENT(IN) :: ik
+      INTEGER,      OPTIONAL, INTENT(IN) :: ispin, ipol
+      INTEGER,                INTENT(IN) :: ngw, igwx
+      INTEGER,      OPTIONAL, INTENT(IN) :: igk(:)
+      COMPLEX(dbl), OPTIONAL, INTENT(IN) :: wf(:,:)
+      COMPLEX(dbl), OPTIONAL, INTENT(IN) :: wf_kindip(:,:)
+      REAL(dbl),    OPTIONAL, INTENT(IN) :: scale_factor
       !
-#ifdef __HAVE_WRITE_WFC
-      INTEGER                  :: j
-      INTEGER                  :: iks, ike, ikt, igwx
-      INTEGER                  :: npool, ipmask(nproc_image), ipsour
-      COMPLEX(dbl), ALLOCATABLE :: wtmp(:)
+      INTEGER         :: iunaux, ierr
+      INTEGER         :: ig, ib
+      CHARACTER(256)  :: filename
+      COMPLEX(dbl),  ALLOCATABLE :: wtmp(:)
+
+      ierr = 0
       !
-      !
-      CALL set_kpoints_vars( ik, nk, kunit, ngwl, igl, &
-                             npool, ikt, iks, ike, igwx, ipmask, ipsour )
-      !
-      IF ( ionode ) THEN
+      IF ( PRESENT( ispin ) .AND. PRESENT( ipol )  ) THEN
          !
-         CALL iotk_open_write( iuni, FILE = TRIM( filename ), &
-                               ROOT="WFC", BINARY = .TRUE. )
+         ierr = 1
+         RETURN
          !
-         CALL iotk_write_attr( attr, "ngw",          ngw, FIRST = .TRUE. )
-         CALL iotk_write_attr( attr, "igwx",         igwx )
-         CALL iotk_write_attr( attr, "nbnd",         nbnd )
-         CALL iotk_write_attr( attr, "ik",           ik )
-         CALL iotk_write_attr( attr, "nk",           nk )
-         CALL iotk_write_attr( attr, "ispin",        ispin )
-         CALL iotk_write_attr( attr, "nspin",        nspin )
-         CALL iotk_write_attr( attr, "scale_factor", scalef )
-         !
-         CALL iotk_write_empty( iuni, "INFO", attr )
-         !
-      END IF
+      ENDIF
       !
-      ALLOCATE( wtmp( MAX( igwx, 1 ) ) )
       !
-      wtmp = 0.D0
+      ! open the file to write
       !
-      DO j = 1, nbnd
+      CALL iotk_free_unit( iunaux )
+      !
+      IF ( PRESENT( ispin ) ) THEN
          !
-         IF ( npool > 1 ) THEN
+         filename = TRIM( wfc_filename( datadir_out, 'evc', ik, ispin ) )
+         !
+      ELSEIF ( PRESENT( ipol )  ) THEN
+         !
+         filename = TRIM( wfc_filename( datadir_out, 'evc', ik, ipol ) )
+         !
+      ELSE
+         !
+         filename = TRIM( wfc_filename( datadir_out, 'evc', ik ) )
+         !
+      ENDIF
+      !
+      CALL iotk_open_write ( iunaux, FILE = TRIM(filename), ROOT="WFC", BINARY=.TRUE., IERR=ierr )
+      IF (ierr/=0)  RETURN
+      !
+      !
+      CALL iotk_write_attr( attr, "ngw",          ngw, FIRST = .TRUE. )
+      CALL iotk_write_attr( attr, "igwx",         igwx )
+      CALL iotk_write_attr( attr, "nbnd",         nbnd )
+      CALL iotk_write_attr( attr, "ik",           ik )
+      CALL iotk_write_attr( attr, "nk",           nkpts )
+      CALL iotk_write_attr( attr, "ispin",        ispin )
+      CALL iotk_write_attr( attr, "nspin",        nspin )
+      IF ( PRESENT( scale_factor) ) CALL iotk_write_attr( attr, "scale_factor", scale_factor )
+      !
+      CALL iotk_write_empty( iunaux, "INFO", attr )
+      !
+      !
+      IF ( PRESENT( wf ) ) THEN
+         !
+         ! write wfcs without any G-reordering
+         !
+         DO ib = 1, nbnd
             !
-            IF ( ikt >= iks .AND. ikt <= ike ) &      
-               CALL mergewf( wf0(:,j), wtmp, ngwl, igl, me_pool, &
-                             nproc_pool, root_pool, intra_pool_comm )
+            CALL iotk_write_dat( iunaux, "evc" // TRIM(iotk_index( ib )), wf( 1: ngw, ib) )
             !
-            IF ( ipsour /= ionode_id ) &
-               CALL mp_get( wtmp, wtmp, me_image, &
-                            ionode_id, ipsour, j, intra_image_comm )
-            !
-         ELSE
-            !
-            CALL mergewf( wf0(:,j), wtmp, ngwl, igl, &
-                          me_image, nproc_image, ionode_id, intra_image_comm )
-            !
-         END IF
+         ENDDO
          !
-         IF ( ionode ) &
-            CALL iotk_write_dat( iuni, "evc" // iotk_index( j ), wtmp(1:igwx) )
+      ENDIF
+      !
+      !
+      IF ( PRESENT( wf_kindip ) ) THEN
          !
-      END DO
+         ! we need to reorder wfcs in terms of G-vectors
+         ! we need the igk map
+         !
+         IF ( .NOT. PRESENT( igk ) ) THEN
+            ierr = 71
+            RETURN
+         ENDIF
+         !
+         ALLOCATE( wtmp( ngw ) )
+         !
+         DO ib = 1, nbnd
+            !
+            DO ig = 1, ngw
+               !
+               wtmp( ig ) = wf_kindip( igk(ig), ib)
+               !
+            ENDDO
+            !
+            CALL iotk_write_dat( iunaux, "evc" // TRIM(iotk_index( ib )), wtmp( 1: ngw) )
+            !
+         ENDDO
+         !
+         DEALLOCATE( wtmp )
+         !
+      ENDIF
       !
-      IF ( ionode ) CALL iotk_close_write( iuni )
       !
-      DEALLOCATE( wtmp )
-      !
-#endif
-      RETURN
+      CALL iotk_close_write( iunaux )
       !
     END SUBROUTINE qexml_write_wfc
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_write_rho( rho_file_base, rho, &
-                          nr1, nr2, nr3, nr1x, nr2x, ipp, npp, binary )
+    SUBROUTINE qexml_write_rho( nr1, nr2, nr3, rho, nr1x, nr2x, rhov, binary )
       !------------------------------------------------------------------------
       !
-      ! ... Writes charge density rho, one plane at a time.
-      ! ... If ipp and npp are specified, planes are collected one by one from
-      ! ... all processors, avoiding an overall collect of the charge density
-      ! ... on a single proc.
-      !
-#ifdef __HAVE_WRITE_RHO
-!      USE io_module, ONLY : ionode
-!      USE mp_global, ONLY : me_image, intra_image_comm, me_pool, nproc_pool, &
-!                            intra_pool_comm, my_pool_id
-!      USE mp,        ONLY : mp_get
-#endif
+      ! Writes charge density rho, one plane at a time.
       !
       IMPLICIT NONE
       !
-      CHARACTER(LEN=*),  INTENT(IN) :: rho_file_base
-      INTEGER,           INTENT(IN) :: nr1, nr2, nr3
-      INTEGER,           INTENT(IN) :: nr1x, nr2x
-      REAL(dbl),         INTENT(IN) :: rho(:)
-      INTEGER, OPTIONAL, INTENT(IN) :: ipp(:)
-      INTEGER, OPTIONAL, INTENT(IN) :: npp(:)
-      LOGICAL, OPTIONAL, INTENT(IN) :: binary
+      INTEGER,             INTENT(IN) :: nr1, nr2, nr3
+      INTEGER,   OPTIONAL, INTENT(IN) :: nr1x, nr2x
+      REAL(dbl), OPTIONAL, INTENT(IN) :: rho(:,:,:), rhov(:)
+      LOGICAL,   OPTIONAL, INTENT(IN) :: binary
       !
-#ifdef __HAVE_WRITE_RHO
-      INTEGER               :: iunaux, ierr, i, j, k, kk, ldr, ip
-      CHARACTER(LEN=256)    :: rho_file
-      REAL(dbl), ALLOCATABLE :: rho_plane(:)
-      INTEGER,  ALLOCATABLE :: kowner(:)
-      INTEGER               :: iopool_id, ionode_pool
+      INTEGER        :: iunaux, nr1x_, nr2x_, ip, i1, i2, i
+      LOGICAL        :: binary_
+      CHARACTER(256) :: filename
+      REAL(dbl), ALLOCATABLE :: plane(:,:)
       !
-      !
-      rho_binary = .FALSE.
-      IF ( PRESENT( binary ) ) rho_binary = binary
       !
       CALL iotk_free_unit( iunaux )
       !
-      rho_file = TRIM( rho_file_base ) // '.xml'
+      binary_ = .TRUE.
+      IF ( PRESENT (binary) ) binary_ = binary
       !
-      IF ( ionode ) &
-         CALL iotk_open_write( iunaux, FILE = rho_file, &
-                               BINARY = rho_binary, IERR = ierr )
+      filename = TRIM( datadir_out ) // '/' //'charge-density.xml'
       !
-      CALL mp_bcast( ierr, ionode_id, intra_image_comm )
+      CALL iotk_open_write( iunaux, FILE = TRIM(filename), BINARY=binary_ )
       !
-      CALL errore( 'write_rho_xml', 'cannot open' // &
-                 & TRIM( rho_file ) // ' file for writing', ierr )
       !
-      IF ( ionode ) THEN
+      CALL iotk_write_begin( iunaux, "CHARGE-DENSITY" )
+      !
+      CALL iotk_write_attr( attr, "nr1", nr1, FIRST = .TRUE. )
+      CALL iotk_write_attr( attr, "nr2", nr2 )
+      CALL iotk_write_attr( attr, "nr3", nr3 )
+      !
+      CALL iotk_write_empty( iunaux, "INFO", attr )
+      !
+      !
+      IF ( PRESENT( rho ) ) THEN
          !
-         CALL iotk_write_begin( iunaux, "CHARGE-DENSITY" )
-         !
-         CALL iotk_write_attr( attr, "nr1", nr1, FIRST = .TRUE. )
-         CALL iotk_write_attr( attr, "nr2", nr2 )
-         CALL iotk_write_attr( attr, "nr3", nr3 )
-         !
-         CALL iotk_write_empty( iunaux, "INFO", attr )
-         !
-      END IF
-      !
-      ALLOCATE( rho_plane( nr1*nr2 ) )
-      ALLOCATE( kowner( nr3 ) )
-      !
-      ! ... find the index of the pool that will write rho
-      !
-      IF ( ionode ) iopool_id = my_pool_id
-      !
-      CALL mp_bcast( iopool_id, ionode_id, intra_image_comm )
-      !
-      ! ... find the index of the ionode within its own pool
-      !
-      IF ( ionode ) ionode_pool = me_pool
-      !
-      CALL mp_bcast( ionode_pool, ionode_id, intra_image_comm )
-      !
-      ! ... find out the owner of each "z" plane
-      !
-      IF ( PRESENT( ipp ) .AND. PRESENT( npp ) ) THEN
-         !
-         DO ip = 1, nproc_pool
+         DO ip = 1, nr3 
             !
-            kowner( (ipp(ip)+1):(ipp(ip)+npp(ip)) ) = ip - 1
+            CALL iotk_write_dat( iunaux, "z"//TRIM(iotk_index(ip)), rho(1:nr1,1:nr2,ip) )
             !
-         END DO
+         ENDDO
          !
-      ELSE
+      ELSEIF ( PRESENT( rhov ) ) THEN
          !
-         kowner = ionode_id
+         nr1x_ = nr1
+         IF ( PRESENT( nr1x )) nr1x_ = nr1x
+         nr2x_ = nr2
+         IF ( PRESENT( nr2x )) nr2x_ = nr2x
          !
-      END IF
-      !
-      ldr = nr1x*nr2x
-      !
-      DO k = 1, nr3
-         !
-         IF( kowner(k) == me_pool ) THEN
+         IF ( nr1x_ /= nr1 .OR. nr2x_ /= nr2 ) THEN
             !
-            kk = k
+            ! we need to separately reconstruct the rho-plane
             !
-            IF ( PRESENT( ipp ) ) kk = k - ipp(me_pool+1)
-            ! 
-            DO j = 1, nr2
+            ALLOCATE( plane(nr1, nr2 ) )
+            !
+            DO ip = 1, nr3
                !
-               DO i = 1, nr1
-                  !
-                  rho_plane(i+(j-1)*nr1) = rho(i+(j-1)*nr1x+(kk-1)*ldr)
-                  !
-               END DO
+               DO i2 = 1, nr2
+               DO i1 = 1, nr1
+                   !
+                   i = (nr1x_ * nr2x_) * ( ip -1 ) + nr1x_ * ( i2 -1 ) + i1 
+                   !
+                   plane( i1, i2) = rhov( i )
+                   !
+               ENDDO
+               ENDDO
                !
-            END DO
+               CALL iotk_write_dat( iunaux, "z"//TRIM(iotk_index(ip)), plane )
+               !
+            ENDDO
             !
-         END IF
+            DEALLOCATE( plane )
+            !
+         ELSE
+            !
+            DO ip = 1, nr3 
+               !
+               i1  = ( nr1 * nr2 ) * ( ip -1 ) + 1
+               i2  = ( nr1 * nr2 ) * ip
+               !
+               CALL iotk_write_dat( iunaux, "z"//TRIM(iotk_index(ip)), rhov(i1:i2) )
+               !
+            ENDDO
+            !
+         ENDIF
          !
-         IF ( kowner(k) /= ionode_pool .AND. my_pool_id == iopool_id ) &
-            CALL mp_get( rho_plane, rho_plane, &
-                         me_pool, ionode_pool, kowner(k), k, intra_pool_comm )
-         !
-         IF ( ionode ) &
-            CALL iotk_write_dat( iunaux, "z" // iotk_index( k ), rho_plane )
-         !
-      END DO
+      ENDIF
       !
-      DEALLOCATE( rho_plane )
-      DEALLOCATE( kowner )
       !
-      IF ( ionode ) THEN
-         !
-         CALL iotk_write_end( iunaux, "CHARGE-DENSITY" )
-         !
-         CALL iotk_close_write( iunaux )
-         !
-      END IF
+      CALL iotk_write_end( iunaux, "CHARGE-DENSITY" )
       !
-#endif
-      RETURN
+      CALL iotk_close_write( iunaux )
+      !
       !
     END SUBROUTINE qexml_write_rho
-    !
     !
 
 !
@@ -2418,7 +2395,7 @@ CONTAINS
       !------------------------------------------------------------------------
       !
       ! read wfc from IBNDS to IBNDE, for kpt IK and spin ISPIN
-      ! WF is the wfc on itsproper k+g grid, while WF_KINDIP is the same wfc
+      ! WF is the wfc on its proper k+g grid, while WF_KINDIP is the same wfc
       ! but on a truncated rho grid (k-point indipendent)
       !
       INTEGER,                 INTENT(IN)  :: ibnds, ibnde, ik
@@ -2547,161 +2524,84 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_read_rho( rho_file_base, rho, &
-                              nr1, nr2, nr3, nr1x, nr2x, ipp, npp )
+    SUBROUTINE qexml_read_rho( nr1, nr2, nr3, rho, ip, rhoz, ierr  )
       !------------------------------------------------------------------------
       !
-      ! ... Writes charge density rho, one plane at a time.
-      ! ... If ipp and npp are specified, planes are collected one by one from
-      ! ... all processors, avoiding an overall collect of the charge density
-      ! ... on a single proc.
-      !
-#ifdef __HAVE_READ_RHO
-!      USE io_global, ONLY : ionode, ionode_id
-!      USE mp_global, ONLY : me_image, intra_image_comm, me_pool, nproc_pool, &
-!                            intra_pool_comm, my_pool_id, npool
-!      USE mp,        ONLY : mp_put
-#endif
+      ! Reads charge density rho, as a whole or one plane at a time.
+      ! if RHO is specified, the whole charge density is read;
+      ! if RHOZ is specified only the IP-th plane is read
       !
       IMPLICIT NONE
       !
-      CHARACTER(LEN=*),   INTENT(IN)  :: rho_file_base
-      INTEGER,            INTENT(IN)  :: nr1, nr2, nr3
-      INTEGER,            INTENT(IN)  :: nr1x, nr2x
-      REAL(dbl),          INTENT(OUT) :: rho(:)
-      INTEGER, OPTIONAL,  INTENT(IN)  :: ipp(:)
-      INTEGER, OPTIONAL,  INTENT(IN)  :: npp(:)
+      INTEGER,   OPTIONAL, INTENT(OUT) :: nr1, nr2, nr3
+      INTEGER,   OPTIONAL, INTENT(IN)  :: ip
+      REAL(dbl), OPTIONAL, INTENT(OUT) :: rho(:,:,:), rhoz(:)
+      INTEGER,             INTENT(OUT) :: ierr
       !
-      INTEGER                :: iunaux, ierr, i, j, k, kk, ldr, ip
-      INTEGER                :: nr( 3 )
-      CHARACTER(LEN=256)     :: rho_file
-      REAL(dbl), ALLOCATABLE :: rho_plane(:)
-      INTEGER,   ALLOCATABLE :: kowner(:)
-      INTEGER                :: iopool_id, ionode_pool
+      INTEGER        :: nr1_, nr2_, nr3_, ip_
+      INTEGER        :: iunaux
+      CHARACTER(256) :: filename
+      
+      ierr = 0
       !
-      !
-      rho = 0.0
-#ifdef __HAVE_RHO_READ
-
-      rho_file = TRIM( rho_file_base ) // '.xml'
       !
       CALL iotk_free_unit( iunaux )
       !
-      CALL iotk_open_read( iunaux, FILE = rho_file, IERR = ierr )
+      filename = TRIM( datadir_in ) // '/' // 'charge-density.xml'
       !
-      CALL mp_bcast( ierr, ionode_id, intra_image_comm )
+      CALL iotk_open_read( iunaux, FILE = filename, IERR=ierr )
+      IF ( ierr/=0 ) RETURN
       !
-      CALL errore( 'read_rho', 'cannot open ' // &
-                 & TRIM( rho_file ) // ' file for reading', ierr )
       !
-      IF ( ionode ) THEN
+      CALL iotk_scan_begin( iunaux, "CHARGE-DENSITY", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_empty( iunaux, "INFO", ATTR=attr, IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_attr( attr, "nr1", nr1_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr( attr, "nr2", nr2_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      CALL iotk_scan_attr( attr, "nr3", nr3_, IERR=ierr )
+      IF (ierr/=0) RETURN
+      ! 
+      !
+      IF ( PRESENT( rhoz ) ) THEN
          !
-         CALL iotk_scan_begin( iunaux, "CHARGE-DENSITY" )
+         IF ( .NOT. PRESENT( ip ) ) THEN
+            ierr = 71
+            RETURN
+         ENDIF
          !
-         CALL iotk_scan_empty( iunaux, "INFO", attr )
+         CALL iotk_scan_dat( iunaux, "z"//TRIM(iotk_index(ip)), rhoz, IERR=ierr)
+         IF (ierr/=0) RETURN
          !
-         CALL iotk_scan_attr( attr, "nr1", nr(1) )
-         CALL iotk_scan_attr( attr, "nr2", nr(2) )
-         CALL iotk_scan_attr( attr, "nr3", nr(3) )
+      ENDIF
+      !
+      !
+      IF ( PRESENT( rho ) ) THEN
          !
-      END IF
-      !
-      CALL mp_bcast( nr, ionode_id, intra_image_comm )
-      !
-      IF ( nr1 /= nr(1) .OR. nr2 /= nr(2) .OR. nr3 /= nr(3) ) &
-         CALL errore( 'read_rho', 'dimensions do not match', 1 )
-      !
-      ALLOCATE( rho_plane( nr1*nr2 ) )
-      ALLOCATE( kowner( nr3 ) )
-      !
-      ! ... find the index of the pool that will write rho
-      !
-      IF ( ionode ) iopool_id = my_pool_id
-      !
-      CALL mp_bcast( iopool_id, ionode_id, intra_image_comm )
-      !
-      ! ... find the index of the ionode within its own pool
-      !
-      IF ( ionode ) ionode_pool = me_pool
-      !
-      CALL mp_bcast( ionode_pool, ionode_id, intra_image_comm )
-      !
-      ! ... find out the owner of each "z" plane
-      !
-      IF ( PRESENT( ipp ) .AND. PRESENT( npp ) ) THEN
-         !
-         DO ip = 1, nproc_pool
+         DO ip_ = 1, nr3_
             !
-            kowner((ipp(ip)+1):(ipp(ip)+npp(ip))) = ip - 1
+            CALL iotk_scan_dat( iunaux, "z"//TRIM(iotk_index(ip_)), rho(1:nr1_,1:nr2_,ip_), &
+                                IERR=ierr)
+            IF (ierr/=0) RETURN
             !
-         END DO
+         ENDDO
          !
-      ELSE
-         !
-         kowner = ionode_id
-         !
-      END IF
+      ENDIF
       !
-      ldr = nr1x*nr2x
+      CALL iotk_scan_end( iunaux, "CHARGE-DENSITY", IERR=ierr )
+      IF (ierr/=0) RETURN
       !
-      DO k = 1, nr3
-         !
-         ! ... only ionode reads the charge planes
-         !
-         IF ( ionode ) &
-            CALL iotk_scan_dat( iunaux, "z" // iotk_index( k ), rho_plane )
-         !
-         ! ... planes are sent to the destination processor
-         !
-         IF( npool > 1 ) THEN
-            !
-            !  send to all proc/pools
-            !
-            CALL mp_bcast( rho_plane, ionode_id, intra_image_comm )
-            !
-         ELSE
-            !
-            !  send to the destination proc
-            !
-            IF ( kowner(k) /= ionode_id ) &
-               CALL mp_put( rho_plane, rho_plane, me_image, &
-                            ionode_id, kowner(k), k, intra_image_comm )
-            !
-         END IF
-         !
-         IF( kowner(k) == me_pool ) THEN
-            !
-            kk = k
-            !
-            IF ( PRESENT( ipp ) ) kk = k - ipp(me_pool+1)
-            ! 
-            DO j = 1, nr2
-               !
-               DO i = 1, nr1
-                  !
-                  rho(i+(j-1)*nr1x+(kk-1)*ldr) = rho_plane(i+(j-1)*nr1)
-                  !
-               END DO
-               !
-            END DO
-            !
-         END IF
-         !
-      END DO
+      CALL iotk_close_read( iunaux, IERR=ierr )
+      IF (ierr/=0) RETURN
       !
-      DEALLOCATE( rho_plane )
-      DEALLOCATE( kowner )
       !
-      IF ( ionode ) THEN
-         !
-         CALL iotk_scan_end( iunaux, "CHARGE-DENSITY" )
-         !
-         CALL iotk_close_read( iunaux )
-         !
-      END IF
-      !
-#endif
-      RETURN
+      IF ( PRESENT( nr1 ) )     nr1 = nr1_
+      IF ( PRESENT( nr2 ) )     nr2 = nr2_
+      IF ( PRESENT( nr3 ) )     nr3 = nr3_
       !
     END SUBROUTINE qexml_read_rho
     !

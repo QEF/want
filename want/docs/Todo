@@ -3,11 +3,9 @@
   TO DO list
 *************************************
 
-* qexml lib to be completed.
+* plot.x: USPP features not fully implemented.
 
 * implement all the smearing types in dos.f90
-
-* plot.x: USPP features not fully implemented.
 
 * disentangle + wannier: 
      - scalar products in projections and overlaps by BLAS
