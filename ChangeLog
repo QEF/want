@@ -4,6 +4,8 @@
 =======================================================
 
 
+06 Jun 2007      qexml lib almost complete: read/write of rho and write of wfc added. (AF)
+
 21 May 2007      Cobalt exmaple removed from test02; bands input changed (explicit output file
                  provided); references updated with bands*.dat files. Updates in dos.f90; 
                  self-energy (static case) added to bands; hermitean symmetrizator added to
