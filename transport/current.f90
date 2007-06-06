@@ -60,8 +60,8 @@
    !
    CHARACTER(nstrx)         :: filename
    INTEGER                  :: ie, iv, ierr, ios
-   INTEGER                  :: i_start, i_end, ndim          ! integration extrema
-   REAL(dbl), ALLOCATABLE   :: funct(:), rab(:)              ! auxiliary vectors for integration
+   INTEGER                  :: i_start, i_end, ndim    ! integration extrema
+   REAL(dbl), ALLOCATABLE   :: funct(:)                ! auxiliary vectors for integration
 
    !
    ! input namelist
@@ -236,9 +236,6 @@
       ALLOCATE ( funct(ndim_new), STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','allocating funct', ABS(ierr) )
       !
-      ALLOCATE ( rab(ndim_new), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('current','allocating rab', ABS(ierr) )
-      !
       ALLOCATE ( ftemp_L(ndim_new), ftemp_R(ndim_new), STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','allocating ftemp', ABS(ierr) )
       !
@@ -247,8 +244,6 @@
           !
           ftemp_L(ie) = 1.0 / ( EXP( -(egrid_new( ie ) -mu_L_aux ) / sigma) + 1.0 )
           ftemp_R(ie) = 1.0 / ( EXP( -(egrid_new( ie ) -mu_R_aux ) / sigma) + 1.0 )
-          !
-          rab(ie) = de_new
           !
       ENDDO
       !
@@ -278,8 +273,6 @@
       IF( ierr /=0 ) CALL errore('current','deallocating transm_new', ABS(ierr) )
       DEALLOCATE ( funct, STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','deallocating funct', ABS(ierr) )
-      DEALLOCATE ( rab, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('current','deallocating rab', ABS(ierr) )
       DEALLOCATE ( ftemp_L, ftemp_R, STAT=ierr )
       IF( ierr /=0 ) CALL errore('current','deallocating ftemp', ABS(ierr) )
       !
