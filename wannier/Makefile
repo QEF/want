@@ -88,6 +88,7 @@ version.o \
 want_dftread.o \
 want_init.o \
 want_interfaces.o \
+wf2_augment.o \
 wfc_data.o \
 wfc_info.o \
 wfc_manager.o \

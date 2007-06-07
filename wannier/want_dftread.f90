@@ -74,6 +74,12 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
 ! main body
 !------------------------------
 !
+
+    !
+    ! if the case, init IO
+    !
+    IF ( .NOT. io_alloc ) CALL io_init ( ) 
+
     CALL timing('want_dftread',OPR='start')
     CALL log_push('want_dftread')
 
@@ -94,10 +100,6 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
     IF ( PRESENT(pseudo) )     read_pseudo_ = pseudo 
 
 
-!
-! ... if the case init IO
-!
-    IF ( .NOT. io_alloc ) CALL io_init ( ) 
 
 
 !

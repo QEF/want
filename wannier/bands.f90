@@ -62,7 +62,7 @@
    CHARACTER(2), ALLOCATABLE :: kptname_in(:)    
    CHARACTER(nstrx)          :: filename
    !
-   INTEGER      :: i, j, ik, ir, ir_eff
+   INTEGER      :: i, j, ik, ir
    INTEGER      :: ierr
    LOGICAL      :: lfound, lhave_sgm, ldynam_sgm
    !

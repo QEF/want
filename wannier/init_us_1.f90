@@ -58,7 +58,7 @@ SUBROUTINE init_us_1
        lastq, ilast, ndm
   ! various counters
   REAL(kind=dbl), ALLOCATABLE :: aux (:), aux1 (:), besr (:), qtot (:,:,:)
-  REAL(kind=dbl), ALLOCATABLE :: bkvect(:,:), bkmod(:)
+  REAL(kind=dbl), ALLOCATABLE :: bkvect(:,:), bkmod(:), bkmod2(:)
   ! various work space
   REAL(kind=dbl) :: prefr, pref, q, qi
   ! the prefactor of the q functions
@@ -80,20 +80,29 @@ SUBROUTINE init_us_1
   !
   ndm = MAXVAL (kkbeta(1:ntyp))
   ALLOCATE (aux ( ndm), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
+  IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
+  !
   ALLOCATE (aux1( ndm), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating aux1',ABS(ierr))
-    !
+  IF ( ierr/=0) CALL errore('init_us_1','allocating aux1',ABS(ierr))
+  !
+  !
   ALLOCATE (qgm( nb ), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating qgm',ABS(ierr))
+  IF ( ierr/=0) CALL errore('init_us_1','allocating qgm',ABS(ierr))
+  !
   ALLOCATE (bkvect( 3, nb ), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating bkvect',ABS(ierr))
+  IF ( ierr/=0) CALL errore('init_us_1','allocating bkvect',ABS(ierr))
+  !
   ALLOCATE (bkmod( nb ), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating bkmod',ABS(ierr))
+  IF ( ierr/=0) CALL errore('init_us_1','allocating bkmod',ABS(ierr))
+  !
+  ALLOCATE (bkmod2( nb ), STAT=ierr)    
+  IF ( ierr/=0) CALL errore('init_us_1','allocating bkmod2',ABS(ierr))
+  !
   ALLOCATE (besr( ndm), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating besr',ABS(ierr))
+  IF ( ierr/=0) CALL errore('init_us_1','allocating besr',ABS(ierr))
+  !
   ALLOCATE (qtot( ndm , nbrx , nbrx), STAT=ierr)    
-    IF ( ierr/=0) CALL errore('init_us_1','allocating qtot',ABS(ierr))
+  IF ( ierr/=0) CALL errore('init_us_1','allocating qtot',ABS(ierr))
 
   ap (:,:,:)   = ZERO
   if (lmaxq > 0) qrad(:,:,:,:)= ZERO
@@ -249,12 +258,11 @@ SUBROUTINE init_us_1
   !
   ! ... qb computation, added for WFs
   !     Conversion from bohr^-1 to tpiba units is performed for the b vecotrs.
-  !     Before gg is used instead of SQRT(gg) because there we were interested
-  !     only in the first element which is gg = 0
   !
   DO nn=1,nb
-         bkvect(1:3,nn) = vb(1:3,nn) / tpiba
-         bkmod(nn) = SQRT( bkvect(1,nn)**2 + bkvect(2,nn)**2 + bkvect(3,nn)**2 )
+       bkvect(1:3,nn) = vb(1:3,nn) / tpiba
+       bkmod2(nn)     = bkvect(1,nn)**2 + bkvect(2,nn)**2 + bkvect(3,nn)**2 
+       bkmod(nn)      = SQRT( bkmod2(nn) )
   ENDDO
 
   !
@@ -263,13 +271,14 @@ SUBROUTINE init_us_1
   !
   IF ( use_blimit) THEN
        bkvect(:,1:nb) = ZERO
-       bkmod(1:nb) = ZERO
+       bkmod2(1:nb)   = ZERO
+       bkmod(1:nb)    = ZERO
   ENDIF
 
   ALLOCATE (ylmk0( nb, lmaxq * lmaxq), STAT=ierr)    
   IF ( ierr/=0) CALL errore('init_us_1','allocating aux',ABS(ierr))
 
-  CALL ylmr2 (lmaxq * lmaxq, nb, bkvect, bkmod, ylmk0)
+  CALL ylmr2 (lmaxq * lmaxq, nb, bkvect, bkmod2, ylmk0)
   DO nt = 1, ntyp
      IF (tvanp (nt) ) THEN
          DO ih = 1, nh (nt)
@@ -322,13 +331,14 @@ SUBROUTINE init_us_1
 !#ifdef __PARA
 !  call reduce (nqx * nbrx * ntyp, tab)
 !#endif
-  deallocate (qtot)
-  deallocate (besr)
-  deallocate (aux1)
-  deallocate (aux)
-  deallocate (qgm)
-  deallocate (bkvect)
-  deallocate (bkmod)
+  DEALLOCATE (qtot)
+  DEALLOCATE (besr)
+  DEALLOCATE (aux1)
+  DEALLOCATE (aux)
+  DEALLOCATE (qgm)
+  DEALLOCATE (bkvect)
+  DEALLOCATE (bkmod)
+  DEALLOCATE (bkmod2)
 
   CALL timing('init_us_1',OPR='stop')
   CALL log_pop('init_us_1')

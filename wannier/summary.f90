@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !**********************************************************
-   SUBROUTINE summary_x(iunit, input,   lattice, ions, windows, symmetry, &
+   SUBROUTINE summary_x(iunit, input,  lattice, ions, windows, symmetry, &
                               kpoints, bshells, pseudo )
    !**********************************************************
    !
