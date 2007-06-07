@@ -7,4 +7,5 @@
    wann = '1-2,6'
    r3min = -1.0
    r3max =  1.0
+   uspp_augmentation = .TRUE.
  /
