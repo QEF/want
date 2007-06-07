@@ -4,6 +4,9 @@
 =======================================================
 
 
+07 Jun 2007      USPP augmentation added to plot.f90 and tested: since it is time-consuming
+                 we also added an input variable to switchin in off (uspp_augmentation). (AF)  
+
 06 Jun 2007      qexml lib almost complete: read/write of rho and write of wfc added. (AF)
 
 21 May 2007      Cobalt exmaple removed from test02; bands input changed (explicit output file

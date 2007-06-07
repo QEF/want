@@ -76,6 +76,11 @@ assume_ncpp   LOGICAL
               .TRUE. in order to avoid PP reading.
               DEFAULT: .FALSE.
 
+uspp_augmentation   LOGICAL
+              if .TRUE. and we are using USPP, the augmentation part of the charge
+              associated to WFs is computed. It is quite time consuming.
+              DEFAULT: .FALSE.
+
 collect_wf    LOGICAL
               if .TRUE. move the WFs in a unit cell centerd around the midpoint of the 
               plotting cell. Useful to plot purposes.
