@@ -1,10 +1,10 @@
 
-     Program POST-PROC v.3.1.1  starts ...
-     Today is  1Oct2006 at 16:18:33 
+     Program POST-PROC v.3.2    starts ...
+     Today is 19May2007 at  2:27:16 
 
      nbndx  =    10  nbnd   =    10  natomwfc =     6  npwx   =    6495
      nelec  =   9.00  nkb   =    18  ngl    =   10279
 
      Check: negative/imaginary core charge=   -0.000009    0.000000
 
-     negative rho (up, down):  0.235E-01 0.000E+00
+     negative rho (up, down):  0.241E-01 0.000E+00
