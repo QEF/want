@@ -82,11 +82,13 @@ CONTAINS
        IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
 
        ALLOCATE( igv(3,npw_rho), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating igv',3*npw_rho)
+       IF (ierr/=0) CALL errore(subname,'allocating igv',3*npw_rho)
+       !
        ALLOCATE( g(3,npw_rho), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating g',3*npw_rho)
+       IF (ierr/=0) CALL errore(subname,'allocating g',3*npw_rho)
+       !
        ALLOCATE( gg(npw_rho), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating gg',npw_rho)
+       IF (ierr/=0) CALL errore(subname,'allocating gg',npw_rho)
        alloc = .TRUE.
        ! 
        CALL log_pop ( subname )
@@ -285,10 +287,14 @@ END SUBROUTINE ggrids_gk_indexes
 
 
 !**********************************************************
-   SUBROUTINE ggrids_gv_indexes( igv, ngm, nr1, nr2, nr3, gv2fft, fft2gv )
+   SUBROUTINE ggrids_gv_indexes( igvl, ngm, nr1, nr2, nr3, gv2fft, fft2gv )
    !**********************************************************
+   !
+   ! Set the direct and inverse map between IGV and FFT grid, i.e. between
+   ! rho and FFT.
+   !
    IMPLICIT NONE
-   INTEGER, INTENT(IN) :: igv(:,:)
+   INTEGER, INTENT(IN) :: igvl(3,ngm)
    INTEGER, INTENT(IN) :: ngm, nr1, nr2, nr3
    INTEGER, OPTIONAL, INTENT(OUT) :: fft2gv(0:)
    INTEGER, OPTIONAL, INTENT(OUT) :: gv2fft(:)
@@ -305,12 +311,12 @@ END SUBROUTINE ggrids_gk_indexes
       ny = -100000
       nz = -100000
       !
-      IF ( igv(1,ig) >= 0 ) nx = igv(1,ig) + 1
-      IF ( igv(1,ig) <  0 ) nx = igv(1,ig) + 1 + nr1
-      IF ( igv(2,ig) >= 0 ) ny = igv(2,ig) + 1
-      IF ( igv(2,ig) <  0 ) ny = igv(2,ig) + 1 + nr2
-      IF ( igv(3,ig) >= 0 ) nz = igv(3,ig) + 1
-      IF ( igv(3,ig) <  0 ) nz = igv(3,ig) + 1 + nr3       
+      IF ( igvl(1,ig) >= 0 ) nx = igvl(1,ig) + 1
+      IF ( igvl(1,ig) <  0 ) nx = igvl(1,ig) + 1 + nr1
+      IF ( igvl(2,ig) >= 0 ) ny = igvl(2,ig) + 1
+      IF ( igvl(2,ig) <  0 ) ny = igvl(2,ig) + 1 + nr2
+      IF ( igvl(3,ig) >= 0 ) nz = igvl(3,ig) + 1
+      IF ( igvl(3,ig) <  0 ) nz = igvl(3,ig) + 1 + nr3       
    
       npoint = nx + (ny-1)*nr1 + (nz-1)*nr1*nr2
 

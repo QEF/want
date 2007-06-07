@@ -19,7 +19,6 @@
    USE io_module,     ONLY : stdout, ionode, ionode_id, &
                              io_global_start, io_global_getionode
    USE timing_module, ONLY : nclockx, timing, timing_allocate
-   USE log_module,    ONLY : log_init
    USE mp,            ONLY : mp_start, mp_env
    USE mp_global,     ONLY : mpime, nproc, root, group, mp_global_start
    !

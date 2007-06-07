@@ -55,8 +55,8 @@ subroutine allocate_nlpot
   !
   ! defining gcutm, xqq
   !
-  gcutm = ecutrho / tpiba**2
-  xqq = ZERO
+  gcutm  = ecutrho / tpiba**2
+  xqq(:) = 3.0_dbl
   
   !
   !     calculate the number of beta functions for each atomic type

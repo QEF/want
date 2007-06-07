@@ -17,7 +17,7 @@
    !
    ! units of vr and vkpt are considered consistent in
    ! such a way that  sum_i vr(i) * vkpt(i) 
-   ! is the adimensional scalr product k dot R
+   ! is the adimensional scalr product k dot R (given in cartesian coordinates)
    !
    USE kinds
    USE constants,      ONLY : CZERO

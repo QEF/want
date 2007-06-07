@@ -21,14 +21,14 @@
    USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
    USE io_module,          ONLY : io_name, dftdata_fmt, space_unit, wan_unit, dft_unit, &
                                   aux_unit, aux1_unit 
-   USE control_module,     ONLY : read_pseudo, use_uspp
+   USE control_module,     ONLY : read_pseudo, use_uspp, debug_level, use_debug_mode
    USE files_module,       ONLY : file_open, file_close, file_delete
    USE version_module,     ONLY : version_number
    USE util_module,        ONLY : mat_mul
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE atomic_module,      ONLY : atomic_name2num, atomic_num2name
    !
-   USE lattice_module,     ONLY : avec, bvec, alat, omega
+   USE lattice_module,     ONLY : avec, bvec, alat, tpiba, omega
    USE ions_module,        ONLY : symb, tau, nat
    USE kpoints_module,     ONLY : nkpts, vkpt
    USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext
@@ -40,7 +40,10 @@
    USE wfc_info_module
    USE wfc_data_module,    ONLY : npwkx, npwk, igsort, evc, evc_info, &
                                   wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate
+   USE uspp,               ONLY : nkb, vkb, vkb_ik
+   USE becmod,             ONLY : becp
    USE parser_module
+   USE struct_fact_data_module
    USE want_interfaces_module
    !
    IMPLICIT NONE
@@ -48,23 +51,24 @@
    !
    ! input variables
    !
-   CHARACTER(nstrx) :: wann             ! contains the list of WF indexes to plot 
-                                        ! in the fmt e.g. "1-3,4,7-9"
-   REAL(dbl)        :: r1min, r1max     ! plot cell dim along a1 (cry units)
-   REAL(dbl)        :: r2min, r2max     ! the same but for a2
-   REAL(dbl)        :: r3min, r3max     ! the same but for a3
-   INTEGER          :: nr1, nr2, nr3    ! the FFT mesh for interpolation on real space
-   CHARACTER( 20 )  :: datatype         ! ( "modulus" "module" | "real" | "imaginary"  )
-   CHARACTER( 20 )  :: output_fmt       ! ( "txt" | "plt" | "cube" | "xsf" )
-   LOGICAL          :: assume_ncpp      ! If .TRUE. pp's are not read
-   LOGICAL          :: collect_wf       ! move the centers of WF in a unit cell centered
-                                        ! around the selected lotting cell
+   CHARACTER(nstrx) :: wann              ! contains the list of WF indexes to plot 
+                                         ! in the fmt e.g. "1-3,4,7-9"
+   REAL(dbl)        :: r1min, r1max      ! plot cell dim along a1 (cry units)
+   REAL(dbl)        :: r2min, r2max      ! the same but for a2
+   REAL(dbl)        :: r3min, r3max      ! the same but for a3
+   INTEGER          :: nr1, nr2, nr3     ! the FFT mesh for interpolation on real space
+   CHARACTER( 20 )  :: datatype          ! ( "modulus" "module" | "real" | "imaginary"  )
+   CHARACTER( 20 )  :: output_fmt        ! ( "txt" | "plt" | "cube" | "xsf" )
+   LOGICAL          :: assume_ncpp       ! If .TRUE. pp's are not read
+   LOGICAL          :: uspp_augmentation ! If .TRUE. USPP augmentation is computed
+   LOGICAL          :: collect_wf        ! move the centers of WF in a unit cell centered
+                                         ! around the selected lotting cell
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
-                    datatype, assume_ncpp, output_fmt, collect_wf,   &
-                    r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3
+                    datatype, assume_ncpp, uspp_augmentation, output_fmt, collect_wf,   &
+                    r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3, debug_level
 
    !
    ! local variables
@@ -78,26 +82,27 @@
    INTEGER :: natot, nplot
    INTEGER :: m, n, i, j, ierr
    INTEGER :: zatom
-   INTEGER, ALLOCATABLE :: map(:), iwann(:)
-
-   COMPLEX(dbl) :: caux, cmod
-   COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:,:)   
-   COMPLEX(dbl), ALLOCATABLE :: kwann(:,:)       
-   COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
-
-   REAL(dbl)    :: tmaxx, tmax
+   !
+   REAL(dbl)    :: tmaxx, tmax, xk(3)
    REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
+   REAL(dbl)    :: arg, cost, norm, norm_us
+   COMPLEX(dbl) :: phase
+   COMPLEX(dbl) :: caux, cmod
+   !
+   INTEGER,      ALLOCATABLE :: map(:), iwann(:)
    REAL(dbl),    ALLOCATABLE :: rwann_out(:,:,:)
    REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
    REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
-   REAL(dbl)    :: arg, cost
-   COMPLEX(dbl) :: phase
    CHARACTER(3), ALLOCATABLE :: symbtot(:)
+   COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:,:), cwann_aug(:,:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: kwann(:,:), wfc_aux(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
+
 
    CHARACTER( nstrx )  :: filename
    CHARACTER( 5 )      :: str, aux_fmt
-   LOGICAL             :: lfound
+   LOGICAL             :: lfound, do_modulus
    LOGICAL             :: okp( 3 )
    !
    ! end of declariations
@@ -118,6 +123,8 @@
       postfix                     = ' '
       work_dir                    = './'
       assume_ncpp                 = .FALSE.
+      uspp_augmentation           = .FALSE.
+      debug_level                 = 0
       collect_wf                  = .TRUE.
       wann                        = ' '
       datatype                    = 'modulus'
@@ -153,6 +160,7 @@
            CALL errore('plot','invalid DATATYPE = '//TRIM(datatype),2)
            !
       IF ( TRIM(datatype) == "module" ) datatype = "modulus"
+      IF ( TRIM(datatype) == "modulus") do_modulus = .TRUE.
       !
       CALL change_case(output_fmt,'lower')
       IF ( TRIM(output_fmt) /= "txt" .AND. TRIM(output_fmt) /= "plt" .AND. &
@@ -175,8 +183,11 @@
       rmax(1) = r1max 
       rmax(2) = r2max
       rmax(3) = r3max
-
+      !
       read_pseudo = .NOT. assume_ncpp
+      !
+      use_debug_mode = .FALSE.
+      IF ( debug_level > 0 ) use_debug_mode = .TRUE.
 
 
 
@@ -185,9 +196,12 @@
 !
       CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE., &
                           PSEUDO=read_pseudo)
-      CALL want_init    ( INPUT =.FALSE., WINDOWS=.FALSE., BSHELLS=.FALSE., &
+      CALL want_init    ( INPUT =.FALSE., WINDOWS=.FALSE., BSHELLS=.TRUE., &
                           PSEUDO=read_pseudo)
 
+      uspp_augmentation = uspp_augmentation .AND. use_uspp
+
+      !
       !
       ! Read Subspace data
       !
@@ -209,8 +223,10 @@
       !
       CALL io_name('wannier',filename)
       CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
+          !
           CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
           IF ( .NOT. lfound ) CALL errore('plot','searching WANNIER_LOCALIZATION',1)
+          !
       CALL file_close(wan_unit,PATH="/",ACTION="read")
 
       CALL io_name('wannier',filename,LPATH=.FALSE.)
@@ -220,16 +236,10 @@
       !
       ! Print data to output
       !
-      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., WINDOWS=.FALSE. )
+      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., BSHELLS=.FALSE., WINDOWS=.FALSE. )
 
-      !
-      ! should be eliminated ASAP
-      !
-      IF ( use_uspp ) THEN
-             WRITE(stdout,"()")
-             CALL warning( stdout, 'USPP not fully implemented')
-      ENDIF
-     
+
+
       !
       ! opening the file containing the PW-DFT data
       !
@@ -240,7 +250,9 @@
 
       !
       ! ... Read grids
-      WRITE( stdout,"(/,2x,'Reading density G-grid from file: ',a)") TRIM(filename)
+      CALL write_header( stdout, "Grids" )
+
+      WRITE( stdout,"(  2x,'Reading density G-grid from file: ',a)") TRIM(filename)
       CALL ggrids_read_ext( dftdata_fmt )
       !
       ! ... Read wfcs
@@ -346,6 +358,16 @@
       WRITE( stdout,"(  6x, 'nrz :  ', i8, ' --> ', i8 )" ) nrzl, nrzh 
       WRITE( stdout,"()")
       !
+      IF ( uspp_augmentation .AND. .NOT. do_modulus ) THEN
+         !
+         ! in this case we cannot perform the full PAW reconstruction:
+         ! a warning is given
+         !
+         CALL warning(stdout,"data type: "//TRIM(datatype) )
+         CALL warning(stdout,"USPP do not allow for a full PAW reconstruction.")
+         !
+      ENDIF
+
       CALL flush_unit( stdout )
 
 
@@ -355,10 +377,6 @@
       IF( nrxh - nrxl < 0 ) CALL errore( 'plot', 'wrong nrxl and nrxh ', 1 )
       IF( nryh - nryl < 0 ) CALL errore( 'plot', 'wrong nryl and nryh ', 1 )
       IF( nrzh - nrzl < 0 ) CALL errore( 'plot', 'wrong nrzl and nrzh ', 1 )
-      !
-      nnrx = ABS( nrxl / nr1 ) + 2
-      nnry = ABS( nryl / nr2 ) + 2
-      nnrz = ABS( nrzl / nr3 ) + 2
 
       
       !
@@ -438,7 +456,6 @@
                     i, (rmin(i)+rmax(i)-ONE)/TWO, (rmin(i)+rmax(i)+ONE)/TWO
           ENDDO
           WRITE( stdout,"(/,2x,'New center positions [cryst. coord]:')") 
-          WRITE( stdout,"(8x,'in crystal coord' )")
           DO m=1,nplot
              WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
                     iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
@@ -523,6 +540,46 @@
       
      
 !
+! ... Pseudo initializations
+!
+      !
+      ! ... if pseudo are used do the required allocations
+      !
+      IF ( uspp_augmentation ) THEN
+          !
+          WRITE( stdout,"(2x,'Initializing global dft data')")
+          !
+          ! ... data required by USPP and atomic WFC
+          CALL allocate_nlpot()
+          !
+          ! ... structure factors
+          CALL struct_fact_data_init()
+
+          !
+          ! ... quantities strictly related to USPP
+          WRITE( stdout,"(2x,'Initializing US pseudopot. data')")
+
+          !
+          ! first initialization
+          ! here we compute (among other quantities) \int dr Q_ij(r)
+          !                                              \int dr e^ibr Q_ij(r)
+          CALL init_us_1()
+          WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5 ) ') nkb
+
+          !
+          ! space for beta functions in reciproc space within struct_facts
+          !
+          IF ( nkb <= 0 ) CALL errore('plot','no beta functions within USPP',-nkb+1)
+          !
+          ALLOCATE( becp(nkb, nplot, nkpts), STAT=ierr )
+          IF (ierr/=0) CALL errore('plot','allocating becp',ABS(ierr))
+          !
+          WRITE( stdout, "(/)") 
+          !
+      ENDIF
+
+
+!
 ! ... Main loop on wfcs
 !
 
@@ -530,7 +587,6 @@
       ! init real space WFs
       !
       cwann( :, :, :, :) = CZERO
-    
 
       kpoint_loop: &
       DO ik = 1, nkpts
@@ -563,11 +619,10 @@
               CALL timing('kwann_calc',OPR='start')
 
               !
-              ! apply a globgal shift to set the WF in the required cell
+              ! apply a global shift to set the WF in the required cell
               !
               arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_shift(:,iwann(m)) )
               phase = CMPLX( COS(arg), SIN(arg), dbl )
-
 
 
               kwann( :, m ) = CZERO
@@ -584,10 +639,47 @@
                  !
                  ! apply the translation phase
                  kwann( map(ig) ,m) = kwann( map(ig) ,m) * phase 
+                 !
               ENDDO
               !
               CALL timing('kwann_calc',OPR='stop')
+              !
           ENDDO
+
+          !
+          ! compute auxiliary quantities to evaluate the 
+          ! auxmentation charge
+          !
+          IF ( uspp_augmentation ) THEN
+              ! 
+              xk(:) = vkpt(:,ik) / tpiba
+              CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
+              !
+              vkb_ik = ik
+
+              !
+              ! we ned to reset the order of G indexes in KWANN from the
+              ! FFT grid to the k-dipendent grid of wfcs
+              !
+              ALLOCATE( wfc_aux( npwkx, nplot ), STAT=ierr )
+              IF( ierr /=0 ) CALL errore('plot', 'allocating wfc_aux', ABS(ierr) )
+              !
+              DO m  = 1, nplot
+              DO ig = 1, npwk(ik)
+                 wfc_aux( ig, m ) = kwann( map(ig), m )
+              ENDDO
+              ENDDO
+              !
+              wfc_aux( npwk(ik)+1: npwkx, : ) = CZERO
+              !
+              ! 
+              CALL ccalbec( nkb, npwkx, npwk(ik), nplot, becp( 1:nkb, 1:nplot, ik), &
+                            vkb, wfc_aux )
+              !
+              DEALLOCATE( wfc_aux, STAT=ierr )
+              IF( ierr /=0 ) CALL errore('plot', 'deallocating wfc_aux', ABS(ierr) )
+              !
+          ENDIF
 
           !
           ! logically clean wfcs (but memory is NOT free)
@@ -595,8 +687,20 @@
           CALL wfc_info_delete(evc_info, LABEL="IK")
 
 
+          !
+          ! prepar for real-space loop
+          !
+          nnrx = ABS( nrxl / nr1 ) + 2
+          nnry = ABS( nryl / nr2 ) + 2
+          nnrz = ABS( nrzl / nr3 ) + 2
+          !
+          !
+          raux(1) = vkpt_cry(1,ik) / REAL( nr1, dbl)
+          raux(2) = vkpt_cry(2,ik) / REAL( nr2, dbl)
+          raux(3) = vkpt_cry(3,ik) / REAL( nr3, dbl)
+
           ! 
-          ! FFT call 
+          ! FFT call and real-space loop
           ! 
           DO m=1,nplot
 
@@ -604,7 +708,6 @@
              CALL cfft3d( kwann(:,m), nr1, nr2, nr3,  &
                                       nr1, nr2, nr3,  1 )
              CALL timing('cfft3d',OPR='stop')
-
 
              !
              ! loop over FFT grid
@@ -622,12 +725,12 @@
                          !
                          ir = nx + (ny-1) * nr1 + (nz-1) * nr1 * nr2
                          !
-                         arg   = vkpt_cry(1,ik) * REAL(nxx, dbl) / REAL( nr1, dbl) + &
-                                 vkpt_cry(2,ik) * REAL(nyy, dbl) / REAL( nr2, dbl) + &
-                                 vkpt_cry(3,ik) * REAL(nzz, dbl) / REAL( nr3, dbl)
+                         arg   = raux(1) * REAL(nxx, dbl) + &
+                                 raux(2) * REAL(nyy, dbl) + &
+                                 raux(3) * REAL(nzz, dbl)
                                  !
                          caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg), dbl ) * &
-                                 kwann( ir, m ) 
+                                 kwann( ir, m )
                                  !
                          cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux
                          !
@@ -639,6 +742,7 @@
           ENDDO 
           !
           CALL timing_upto_now(stdout)
+          !
       ENDDO kpoint_loop
       !
       WRITE(stdout, "()")
@@ -649,46 +753,112 @@
       DEALLOCATE( kwann, STAT=ierr)
       IF (ierr/=0) CALL errore('plot','deallocating kwann',ABS(ierr))
       !
+      DEALLOCATE( map, STAT=ierr )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating map', ABS(ierr) )
+      !
+      DEALLOCATE( vkpt_cry, STAT=ierr )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating vkpt_cry', ABS(ierr) )
+      !
       CALL wfc_data_deallocate()
-      CALL ggrids_deallocate()
+      !
       !
       CALL file_close(dft_unit,PATH="/",ACTION="read")
 
 
-      ! 
-      ! Fix the global phase by setting the wannier to be real 
-      ! at the point where it has max modulus
-      ! according to the first vector, WFs are normalized to 1.0
+!
+! Compute USPP augmentation if the case
+!
+      IF ( uspp_augmentation ) THEN
+          !
+          ALLOCATE ( cwann_aug( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
+          IF( ierr /=0 ) CALL errore('plot', 'allocating cwann_aug', ABS(ierr) )
+
+          !
+          ! compute the augmentation in reciprocal space
+          !
+          cwann_aug( :,:,:,:) = CZERO
+          !
+          CALL wf2_augment( nrxl, nrxh, nryl,nryh, nrzl,nrzh, &
+                            nr1, nr2, nr3, nplot, cwann_aug ) 
+
+          DEALLOCATE( becp, STAT=ierr)
+          IF( ierr /=0 ) CALL errore('plot', 'deallocating becp', ABS(ierr) )
+          !
+      ENDIF
+      !
+      CALL ggrids_deallocate()
+
+
+! 
+! Fix the global phase of WFs
+!
+      !
+      ! WF are made be almost real by setting the phase
+      ! at the point where they have max modulus
       ! WF square moduli are written in units of bohr^-3 
       !
-      cost =  1.0_dbl / ( REAL(nkpts, dbl) * SQRT(omega) )
+      cost =  ONE / ( REAL(nkpts, dbl) * SQRT(omega) )
       !
-      WRITE(stdout, " (2x,'WF maximum values (normalization is one):',/)")
+      WRITE(stdout, " (2x,'WF normalization:')")
+      !
+      IF ( uspp_augmentation ) THEN
+          WRITE(stdout, " (2x,'  Index', 14x, 'Max value', 5x, 'Normaliz.', 5x, &
+                        & 'Wfc comp.',3x,'Aug comp.')")
+          WRITE(stdout, " (2x,71('-'))")
+      ELSE
+          WRITE(stdout, " (2x,'  Index', 14x, 'Max value', 5x, 'Normaliz.')" )
+          WRITE(stdout, " (2x,45('-'))")
+      ENDIF
+      !
       !
       DO m = 1, nplot
           !
-          tmaxx = ZERO
-          cmod = CONE
+          norm     = ZERO
+          norm_us  = ZERO
+          tmaxx    = ZERO
+          cmod     = CONE
           !
           DO nzz = nrzl, nrzh
           DO nyy = nryl, nryh
           DO nxx=  nrxl, nrxh
               !
               cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * cost
-              tmax = REAL (cwann( nxx, nyy, nzz, m) * CONJG( cwann( nxx, nyy, nzz, m) ) )
+              !
+              tmax = REAL(cwann( nxx, nyy, nzz, m) * &
+                          CONJG( cwann( nxx, nyy, nzz, m) ), dbl )
               !
               IF ( tmax > tmaxx ) THEN
                    tmaxx = tmax
                    cmod = cwann( nxx, nyy, nzz, m)
               ENDIF
               !
+              norm = norm + tmax
+              !
           ENDDO
           ENDDO
           ENDDO
-
-          ! set the phase and invert it
-          WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6 ) " ) m, ABS(cmod)
           !
+          norm = norm * omega / REAL( nr1*nr2*nr3, dbl )
+          !
+          norm_us = ZERO
+          IF ( uspp_augmentation ) THEN
+              !
+              norm_us = REAL( SUM( cwann_aug(:,:,:, m))  )
+              norm_us = norm_us * omega / REAL( nr1*nr2*nr3, dbl )
+              !
+          ENDIF
+          !
+          ! report
+          IF ( uspp_augmentation ) THEN
+              WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6, 2x, f12.6, 2x, 2f12.6) " ) &
+                            m, ABS(cmod), norm+norm_us, norm, norm_us
+          ELSE
+              WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6, 2x, f12.6 ) " ) &
+                            m, ABS(cmod), norm
+          ENDIF
+          !
+          !
+          ! set the phase and invert it
           cmod = CONJG( cmod ) / SQRT( cmod * CONJG(cmod) ) 
           !
           cwann(:,:,:,m) = cwann(:,:,:,m) * cmod
@@ -754,7 +924,14 @@
           SELECT CASE ( TRIM(datatype) )
           CASE( "modulus" )    
               str = "_WFM"
-              rwann_out(:,:,:) = REAL( cwann(:,:,:,m) * CONJG( cwann(:,:,:,m) ) )
+              !
+              IF ( uspp_augmentation ) THEN
+                  rwann_out(:,:,:) = REAL( cwann(:,:,:,m) * CONJG( cwann(:,:,:,m) ) ) +  &
+                                     REAL( cwann_aug(:,:,:,m), dbl ) 
+              ELSE
+                  rwann_out(:,:,:) = REAL( cwann(:,:,:,m) * CONJG( cwann(:,:,:,m) ) )
+              ENDIF
+              !
           CASE( "real" )    
               str = "_WFR"
               rwann_out(:,:,:) = REAL( cwann(:,:,:,m) )
@@ -907,25 +1084,38 @@
 ! ... Clean up memory
 !
       DEALLOCATE( iwann, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating iwann', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating iwann', ABS(ierr) )
+      !
       DEALLOCATE( tautot, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating tautot', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating tautot', ABS(ierr) )
+      !
       DEALLOCATE( symbtot, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating symbtot', ABS(ierr) )
-      DEALLOCATE( vkpt_cry, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating vkpt_cry', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating symbtot', ABS(ierr) )
+      !
       DEALLOCATE( rave_cry, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_cry', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_cry', ABS(ierr) )
+      !
       DEALLOCATE( rave_shift, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_shift', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_shift', ABS(ierr) )
+      !
       DEALLOCATE( tau_cry, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating tau_cry', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating tau_cry', ABS(ierr) )
+      !
       DEALLOCATE( cutot, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating cutot ', ABS(ierr) )
-      DEALLOCATE( map, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating map ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating cutot ', ABS(ierr) )
+      !
       DEALLOCATE( rwann_out, STAT=ierr )
-         IF( ierr /=0 ) CALL errore('plot', 'deallocating rwann_out', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating rwann_out', ABS(ierr) )
+      !
+      DEALLOCATE( cwann, STAT=ierr)
+      IF( ierr /=0 ) CALL errore('plot', 'deallocating cwann', ABS(ierr) )
+      !
+      IF ( uspp_augmentation ) THEN
+          !
+          DEALLOCATE( cwann_aug, STAT=ierr)
+          IF( ierr /=0 ) CALL errore('plot', 'deallocating cwann_aug', ABS(ierr) )
+          !
+      ENDIF
 
       !
       ! global cleanup
