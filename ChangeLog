@@ -4,6 +4,10 @@
 =======================================================
 
 
+
+08 Jun 2007      Graphene example updated (test03); Graphite exmple added to test12 to 
+                 show another example fo transport calculation usng parallel kpts. (AF) 
+
 07 Jun 2007      USPP augmentation added to plot.f90 and tested: since it is time-consuming
                  we also added an input variable to switchin in off (uspp_augmentation). (AF)  
 
