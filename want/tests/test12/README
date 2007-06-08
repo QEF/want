@@ -1,8 +1,34 @@
 
 
 ==============================================================================
-@title@   Bulk Silicon in hexagonal cell
+@title@   Bulk Silicon and Graphite in hexagonal cells
 ==============================================================================
 
+This test shows how to use parallel (in-plane) k-points to compute
+transport properties. We perform calculations both for Silicon and Graphite
+bulk.
+
+In the case of Silicon, we compute valence and conduction bands using a
+hexagonal cell including 12 atoms.  We perform the calculation of transport along 
+the Si[111] direction, using the kpt-techniques to describe the in-plane 
+(i.e. orthogonal to transport direction) dispersion of silicon.
+This part of the test might be quite time-consuming, especially for the 
+localization of Wannier functions.
+
+After the localization of WFs, transport is computed interpolating 
+the in-plane kpts ( nk(:) variables); symmetry (time-reversal, use_symm = .TRUE.) 
+is exploited to reduce the global overhead. 
+Anyway, the results for transport are obtained with a minimum 2D kpt-mesh and
+should be considered out-of-convergence.
+Note the use of gaussian smearing both in dos.in and conductor.in: dos.dat and
+doscond.dat take trace of that and are quite similar (even if not identical since 
+the two calculations are different and not converged).
+
+The same chain of calculations is performed also for the case of Graphite, 
+computing transport properties in the direction orthogonal to the graphene planes.
+Due to the smaller cell, calculations are much faster. We remark the use of 
+conditioned minimization in the iterative procedure for WF localization.
+We also interpolate the band structure using WFs (reasults in bands_graphite.dat);
+for a comparison see eg: G.S. Painter and D.E. Ellis, Phys.Rev. B 1, 4747 (1970).
 
 

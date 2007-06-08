@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# Si bulk 
+# Graphite bulk
 #
 #================================================================
 #
@@ -20,8 +20,9 @@ MANUAL=" Usage
                  the wannier minimization
  wannier         perform the above cited minimization
  dos             compute DOS using WFs
+ bands           compute BANDS using WFs
  conductor       evaluate the transmittance, for the bulk case
- want            perform DISENTANGLE, WANNIER, PLOT, CONDUCTOR all together 
+ want            perform DISENTANGLE, WANNIER, DOS, BANDS, CONDUCTOR all together 
  all             perform all the above described steps
 
  check           check results with the reference outputs
@@ -40,7 +41,7 @@ MANUAL=" Usage
 
 #
 # macros
-SUFFIX=
+SUFFIX="_graphite"
 
 #
 # evaluate the starting choice about what is to run 
@@ -51,6 +52,7 @@ PWEXPORT=
 DISENTANGLE=
 WANNIER=
 DOS=
+BANDS=
 CONDUCTOR=
 CHECK=
 CLEAN=
@@ -66,12 +68,13 @@ case $INPUT in
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (dos)            DOS=yes ;;
+   (bands)          BANDS=yes ;;
    (conductor)      CONDUCTOR=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    DOS=yes ; CONDUCTOR=yes ;;
+                    DOS=yes ; BANDS=yes ; CONDUCTOR=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ;
-                    DOS=yes ; CONDUCTOR=yes ;;
+                    DOS=yes ; BANDS=yes ; CONDUCTOR=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -123,6 +126,11 @@ run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 # running DOS
 #
 run_dos  SUFFIX=$SUFFIX  RUN=$DOS
+
+#
+# running BANDS
+#
+run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
 
 #
 # running CONDUCTOR
