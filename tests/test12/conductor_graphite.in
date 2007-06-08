@@ -1,17 +1,18 @@
 
 &INPUT_CONDUCTOR
-   calculation_type = 'bulk'
-   dimC = 48
-   ne   = 300
-   emin =  -4.0
-   emax =   4.0
-   datafile_C = "./SCRATCH/si111_WanT.ham"
+   calculation_type = "bulk"
+   postfix = "_graphite"
+   dimC = 10
+   ne   = 400
+   emin =  -5.0
+   emax =   5.0
+   datafile_C = "./SCRATCH/graphite_WanT.ham"
    transport_dir = 3
-   delta = 0.1
+   delta = 0.05
    smearing_type = "gaussian"
    use_symm = .TRUE.
-   nk(1) = 8
-   nk(2) = 4
+   nk(1) = 20
+   nk(2) = 20
 /
 
 <HAMILTONIAN_DATA>

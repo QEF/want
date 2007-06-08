@@ -1,0 +1,16 @@
+
+&INPUT
+   prefix = 'graphite'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   fileout = 'dos_graphite.dat'
+   nk(1) = 16
+   nk(2) = 16
+   nk(3) = 8
+   ne    = 4000
+   emin  = -20.0
+   emax  =  10.0
+   delta =  0.1
+   smearing_type = 'gaussian'
+/
+ 

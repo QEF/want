@@ -2,7 +2,7 @@
   prefix='si111'
   outdir='./SCRATCH/'
   pseudo_dir = '../pseudo/'
-  psfile(1) = 'Si.pbe-n-van.UPF'
+  psfile(1) = 'Si.vbc.UPF'
   single_file = .FALSE.
   ascii = .FALSE.
 /

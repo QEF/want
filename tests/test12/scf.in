@@ -16,7 +16,6 @@ Si bulk in the (111) cell
     nat=  12, 
     ntyp= 1,
     ecutwfc =25.0,
-    ecutrho =200.0   
  /
  &ELECTRONS
     mixing_mode = 'plain'
@@ -24,7 +23,7 @@ Si bulk in the (111) cell
     conv_thr =  1.0d-8
  /
 ATOMIC_SPECIES
- Si   28.086  Si.pbe-n-van.UPF
+ Si   28.086  Si.vbc.UPF
 ATOMIC_POSITIONS (angstrom)
 Si    0.00000   0.00000   0.00000 
 Si    1.91955   3.32476   0.00000 
@@ -39,5 +38,5 @@ Si    1.91955   1.10825   6.26922
 Si    1.91955   3.32476   7.05288 
 Si    3.83910   6.64952   7.05288 
 K_POINTS {automatic}
-  16 8 12  1 1 1
+  6 3 3  1 1 1
 
