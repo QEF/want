@@ -108,8 +108,8 @@ run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 #
 # running DFT BANDS
 #
-run_dft  NAME=DFT_BANDS  INPUT=nscf_band$SUFFIX.in  \
-         OUTPUT=nscf_band$SUFFIX.out  RUN=$DFT_BANDS
+run_dft  NAME=DFT_BANDS  INPUT=dft_bands$SUFFIX.in  \
+         OUTPUT=dft_bands$SUFFIX.out  RUN=$DFT_BANDS
 
 
 #
