@@ -4,6 +4,8 @@
 =======================================================
 
 
+12 Jun 2007      test01 changed: only WFs for valence bands are computed to simplify 
+                 the example. (AF)
 
 08 Jun 2007      Graphene example updated (test03); Graphite exmple added to test12 to 
                  show another example fo transport calculation usng parallel kpts. (AF) 
