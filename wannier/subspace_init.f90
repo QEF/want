@@ -77,7 +77,7 @@
 
    CASE ( 'from_file' )
 
-        WRITE( stdout,"(/,'  Initial trial subspace: from_file')")
+        WRITE( stdout,"('  Initial trial subspace: from_file')")
             CALL io_name('space',filename)
             CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", &
                            FORM=TRIM(wantdata_form))
@@ -90,14 +90,14 @@
         
    CASE ( 'randomized' )
 
-        WRITE( stdout,"(/,'  Initial trial subspace: random Unit transform',/)")
+        WRITE( stdout,"('  Initial trial subspace: random Unit transform',/)")
         DO ik=1, nkpts
             CALL random_orthovect(dimwann, dimwin(ik), dimwinx, lamp(1,1,ik) )
         ENDDO           
            
    CASE ( 'lower_states' )
 
-        WRITE( stdout,"(/,'  Initial trial subspace: lowest energy eigenvectors',/)")
+        WRITE( stdout,"('  Initial trial subspace: lowest energy eigenvectors',/)")
         DO ik=1, nkpts
             DO l=1, dimwann
             DO j=1,dimwin(ik)
@@ -109,7 +109,7 @@
            
    CASE ( 'upper_states' )
 
-        WRITE( stdout,"(/,'  Initial trial subspace: highest energy eigenvectors',/)")
+        WRITE( stdout,"('  Initial trial subspace: highest energy eigenvectors',/)")
         DO ik=1, nkpts
             DO l=1, dimwann
             DO j=1,dimwin(ik)
@@ -120,7 +120,7 @@
         ENDDO           
    
    CASE ( 'center_projections' )
-        WRITE( stdout,"(/,'  Initial trial subspace: projected localized orbitals')")
+        WRITE( stdout,"('  Initial trial subspace: projected localized orbitals')")
 
         !
         ! If CENTER_PROJECTIONS are selected for the starting subspace
