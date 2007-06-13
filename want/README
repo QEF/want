@@ -28,9 +28,8 @@ chemical bonds, providing insight onto the mechanisms that govern electron flow 
 nanoscale.
 
 The WanT package operates, in principles, as a simple post-processing of any standard 
-electronic structure code. In its present version (2.0.0) the user will find a 
-wrapper to run WanT from the results of a self-consistent calculation done using the 
-PWscf package (www.pwscf.org).
+electronic structure code. The WanT code is currently interfaced to the
+Quantum-ESPRESSO suite of codes (http://www.quantum-espresso.org, http://www.pwscf.org).
 
 
 ==========================
@@ -43,28 +42,16 @@ WanT calculations will provide the user with:
 - Density of states spectrum in the conductor region
 - Centers and spreads of the maximally-localized Wannier functions of the system
 
-New features of version 2.0.0:
-- complete code restyling (number of executable, internal data representation, repository)
-- new iotk (XML-like) interface with quantum-ESPRESSO package
-- new user interface (input file formats and calculation steps)
-- test suite enlarged and improved
-- important performance issues addressed (e.g. different scaling for large systems)
-- improved numerical stability and machine portability
-- implementation of ultra-soft pseudopotentials in the calculation of Wannier functions and
-  related quantities
-- implementation of "conditioned" localization and penalty functionals in 
-  Wannier minimization
-- implementation of k-point summations in transport calculations
-- upgraded postprocessing suite (e.g. supported fmts in plot.x) and enlarged
+See also the WanT User's Guide in docs/want_manual.pdf
 
 
 ==========================
 TECHNICAL NOTES
 ==========================
 
-- Installation procedure is reported in the docs/README.install file
-- docs/README.input description of the input files
-- docs/README.doc summarizes the documentation included in the WanT package
+- Installation procedure is reported in the docs/README.install file;
+- docs/README_<prog>.input description of the input file for program <prog>;
+- docs/README summarizes the documentation included in the WanT package;
 
 See also the WanT User's Guide in docs/want_manual.pdf
 
@@ -73,23 +60,7 @@ See also the WanT User's Guide in docs/want_manual.pdf
 CREDITS
 ==========================
 
-The development and maintenance of the WanT code is promoted by the 
-National Research Center on nanoStructures and bioSystems at Surfaces (S3) of the 
-Italian INFM-CNR (http://www.s3.infm.it) and the North Carolina State University (NCSU) 
-(http://ermes.physics.ncsu.edu) under the coordination of Arrigo Calzolari, 
-Andrea Ferretti and Marco Buongiorno Nardelli.
-
-The present release of the WanT package has been realized by Andrea Ferretti (S3), 
-Arrigo Calzolari (S3) and Marco Buongiorno Nardelli (NCSU).  A list of contributors 
-includes Carlo Cavazzoni (CINECA), Benedetta Bonferroni (S3) and Nicola Marzari (MIT).
-
-The routines for the calculation of the maximally-localized Wannier functions were 
-originally written by Nicola Marzari and David Vanderbilt (©1997); Ivo Souza, 
-Nicola Marzari and David Vanderbilt (©2002); Arrigo Calzolari, Nicola Marzari, and Marco 
-Buongiorno Nardelli (©2003).
-The routines for the calculation of the quantum conductance were originally written by 
-Marco Buongiorno Nardelli (©1998); Arrigo Calzolari, Nicola Marzari, and Marco 
-Buongiorno Nardelli (©2003).
+See file  ~want/docs/CREDITS  for the details.
 
  
 ==========================
@@ -101,8 +72,9 @@ Licence, the developers of WanT would appreciate the acknowledgment of the effor
 produce such codes in the form of the following reference:
 
 In the text: "The results of this work have been obtained using the WanT package.[ref]"
-In references: "[ref] WanT code by A. Calzolari, A. Ferretti, C. Cavazzoni, N. Marzari 
-and M. Buongiorno Nardelli, (www.wannier-transport.org). See also: A. Calzolari, 
+
+In references: "[ref] WanT code by A. Ferretti, B. Bonferroni, A. Calzolari, and 
+M. Buongiorno Nardelli, http://www.wannier-transport.org. See also: A. Calzolari, 
 N. Marzari, I. Souza and M. Buongiorno Nardelli, Phys. Rev. B 69, 035108 (2004)."
 
 
