@@ -11,24 +11,31 @@ calculations, as implemented in the WanT code.
 
 Files in the directory:
 
-README.doc          the current file
-want_manual.pdf     the WanT Manual file. It is also possible to generate
-                    the pdf file directly from the tex sources in tex/
-                    using the reported Makefile.
+README                the current file
 
-                    Note that only want_manual.tex file should be compiled,
-                    while all the other tex sources are simply included 
-                    in the main file.
+CREDITS               the file acknowledging developers, contributors and
+                      all the people who helped in maintaining and developing
+                      the package. 
 
-README.input        the file explaining how to set an input file for Wannier 
-                    post-processing and transport calculations
+TODO                  the file containing the list of scheduled changes 
 
-README.install      the file containing the instructions to configure and 
-                    compile the code.
+want_manual.pdf       the WanT Manual file. It is also possible to generate
+                      the pdf file directly from the tex sources in tex/
+                      using the reported Makefile.
 
-KnownBugs           the file containing the list of the known bugs
+                      Note that only want_manual.tex file should be compiled,
+                      while all the other tex sources are simply included 
+                      in the main file.
 
-Todo                the file containing the list of needed changes
+README_<prog>.input   the file explaining how to set an input file for 
+                      program <prog> (wannier, conductor, and a number of 
+                      post-processing tools). 
 
-tex                 the directory containing the tex sources and the Makefile 
-                    to generate the pdf file of the manual
+README.install        the file containing the instructions to configure and 
+                      compile the code.
+
+KnownBugs             the file containing the list of the known bugs
+
+tex                   the directory containing the tex sources and the Makefile 
+                      to generate the pdf file of the manual
+

@@ -1,0 +1,79 @@
+
+==========================
+   CREDITS
+==========================
+
+The development and maintenance of the WanT code is promoted by: 
+
+  * the National Research Center on nanoStructures and bioSystems at Surfaces (S3) 
+    of the Italian INFM-CNR (http://www.s3.infm.it) 
+
+  * the North Carolina State University (NCSU)
+    (http://ermes.physics.ncsu.edu) 
+
+under the coordination of Andrea Ferretti, Arrigo Calzolari and Marco Buongiorno Nardelli.
+
+
+The routines for the calculation of the maximally-localized Wannier functions were
+originally written by: 
+Nicola Marzari and David Vanderbilt (1997); 
+Ivo Souza, Nicola Marzari and David Vanderbilt (2002); 
+Arrigo Calzolari, Nicola Marzari, and Marco Buongiorno Nardelli (2003).
+
+The routines for the calculation of the quantum conductance were originally written by:
+Marco Buongiorno Nardelli (1998); 
+Arrigo Calzolari, Nicola Marzari, and Marco Buongiorno Nardelli (2003).
+
+The iotk library is written and maintained by Giovanni Bussi (2002).
+
+
+
+Full list of developers and contributors for each release of the code:
+-----------------------------------------------------------------------
+
+
+Developers and contributors of WanT v2.1:
+===========================================
+
+Andrea Ferretti             S3, Modena    andrea.ferretti@unimore.it
+Benedetta Bonferroni        S3, Modena    bonferroni@unimore.it
+Arrigo Calzolari            S3, Modena    calzolari.arrigo@unimore.it
+Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
+
+We acknowledge contributions and help from:  
+
+Carlo Cavazzoni             CINECA, S3
+Pierre Darancet             Grenoble
+Vincent Meunier             ORNL, Tennessee
+Matias Nunez                NCSU
+
+
+
+Developers and contributors of WanT v2.0:
+===========================================
+
+Andrea Ferretti             S3, Modena    andrea.ferretti@unimore.it
+Arrigo Calzolari            S3, Modena    calzolari.arrigo@unimore.it
+Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
+
+We acknowledge contribution and help from:  
+
+Benedetta Bonferroni        S3, Modena
+Giovanni Bussi              S3, Modena
+Carlo Cavazzoni             CINECA, S3
+
+
+
+Developers and contributors of WanT v1.0:
+===========================================
+
+Arrigo Calzolari            S3, Modena    calzolari.arrigo@unimore.it
+Carlo Cavazzoni             CINECA, S3    carlo.cavazzoni@cineca.it
+Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
+Nicola Marzari              MIT           marzari@mit.edu
+
+We acknowledge contribution and help from:  
+
+Andrea Ferretti             S3, Modena
+
+
