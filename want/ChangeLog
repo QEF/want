@@ -21,7 +21,7 @@ Date: 14 Jun 2007    Version: WanT-2.1.0
 
 06 Jun 2007      qexml lib almost complete: read/write of rho and write of wfc added. (AF)
 
-21 May 2007      Cobalt exmaple removed from test02; bands input changed (explicit output file
+21 May 2007      Cobalt example removed from test02; bands input changed (explicit output file
                  provided); references updated with bands*.dat files. Updates in dos.f90; 
                  self-energy (static case) added to bands; hermitean symmetrizator added to
                  util.f90; test08 updated. (AF)
@@ -117,7 +117,7 @@ Date: 14 Jun 2007    Version: WanT-2.1.0
                  repository: dependencies are no longer autobuilt during configuration. 
                  configure updated in calling configure_iotk.  (AF)
 
-29 Dec 2006      flush_unit calls added todisentangle.x, wannier.x, conductor.x . (AF)
+29 Dec 2006      flush_unit calls added to disentangle.x, wannier.x, conductor.x . (AF)
 
 05 Dec 2006      check on the 1D fft grid added in transport (ESSL were complainig);
                  fft_scalar.f90 module updated to account for 1D stuff; workaround
