@@ -11,7 +11,7 @@
 \section{The test suite}
 \label{section:test}
 %
-\WANT\ package is distributed with a suite of tests which are
+\WANT{} package is distributed with a suite of tests which are
 intended to check the portability of the code and to show its
 features. Along these lines, reference results as well as detailed
 explanations are supplied.  A discussion on how to fruitfully use
@@ -20,9 +20,9 @@ the test suite is reported in the following.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{HOW TO set up the environment}
      In order to get started with running tests you should modify the
-     {\tt \$TOPDIR/tests/environment.conf} file according to your system.
+     {\tt \~{}want/tests/environment.conf} file according to your system.
      You should provide the location of the executables for DFT calculation
-     (at present, tests are suited for the \PWSCF code) and the directory
+     (at present, tests are suited for the \PWSCF{} code) and the directory
      that will be used for temporary files ({\tt scratch}).
      In the case of parallel machines you are also requested to
      specify some special commands to run the DFT codes within an
@@ -31,7 +31,7 @@ the test suite is reported in the following.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{HOW TO run the tests}
      After environment setting, you can directly start running tests. The
-     script {\tt run.sh} in {\tt \$TOPDIR/tests/} (type {\tt ./run.sh} to get a
+     script {\tt run.sh} in {\tt \~{}want/tests/} (type {\tt ./run.sh} to get a
      short manual) manages all operations on the tests.
      The script should be run with the following arguments: \\
 
@@ -49,7 +49,7 @@ the test suite is reported in the following.
 {\tt info}     &       print detailed info about the implemented tests \\
 {\tt all}      &       perform all the calculations \\
 {\tt dft}      &       perform DFT calculations only \\
-{\tt want}     &       perform \WANT calculations only \\
+{\tt want}     &       perform \WANT{} calculations only \\
 {\tt check}    &       check results with the reference outputs \\
 {\tt clean}    &       delete all output files and the temporary directory \\
 \end{tabular}

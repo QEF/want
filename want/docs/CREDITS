@@ -11,7 +11,8 @@ The development and maintenance of the WanT code is promoted by:
   * the North Carolina State University (NCSU)
     (http://ermes.physics.ncsu.edu) 
 
-under the coordination of Andrea Ferretti, Arrigo Calzolari and Marco Buongiorno Nardelli.
+The present release of the WanT package has been realized by Andrea Ferretti (S3),
+Benedetta Bonferroni (S3), Arrigo Calzolari (S3), and Marco Buongiorno Nardelli (NCSU).
 
 
 The routines for the calculation of the maximally-localized Wannier functions were
@@ -43,7 +44,7 @@ Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
 We acknowledge contributions and help from:  
 
 Carlo Cavazzoni             CINECA, S3
-Pierre Darancet             Grenoble
+Pierre Darancet             CNRS, Grenoble
 Vincent Meunier             ORNL, Tennessee
 Matias Nunez                NCSU
 
@@ -56,7 +57,7 @@ Andrea Ferretti             S3, Modena    andrea.ferretti@unimore.it
 Arrigo Calzolari            S3, Modena    calzolari.arrigo@unimore.it
 Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
 
-We acknowledge contribution and help from:  
+We acknowledge contributions and help from:  
 
 Benedetta Bonferroni        S3, Modena
 Giovanni Bussi              S3, Modena
@@ -72,7 +73,7 @@ Carlo Cavazzoni             CINECA, S3    carlo.cavazzoni@cineca.it
 Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
 Nicola Marzari              MIT           marzari@mit.edu
 
-We acknowledge contribution and help from:  
+We acknowledge contributions and help from:  
 
 Andrea Ferretti             S3, Modena
 
