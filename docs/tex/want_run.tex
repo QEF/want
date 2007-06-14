@@ -8,12 +8,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \thispagestyle{empty}
-\section{How to run \WANT\ : a step by step description}\label{sec:run}
+\section{How to run \WANT{}: a step by step description}\label{sec:run}
 
-\noindent \underline {NOTE}: At present the \WANT\ code is
-implemented to work as post processing of DFT
-calculations done using the \PWSCF package (\PWSCFURL); we
-will refer to that code in the following.\\
+\noindent \underline {NOTE}: At present the \WANT{} code is
+implemented to work as a post processing of DFT
+calculations done using the codes in the \QUANTUMESPRESSO{} distribution 
+(\QUANTUMESPRESSOURL, \PWSCFURL); we will refer to these codes in the following.\\
 
 \noindent Following the theoretical description of
 Section~\ref{section:intro}, the evaluation of transport
@@ -34,38 +34,47 @@ Calculations}\label{subsection:run_dft}
 \renewcommand{\labelenumi}{\theenumi)}
 \begin{enumerate}
 %
-\item Self-consistent calculation using the \PWSCF code.\\
-      \noindent For the description of the input and for further details see the \PWSCF
-      manual.
+\item Self-consistent calculation using the DFT codes ({\it e.g.} \PWSCF) 
+      in the \QUANTUMESPRESSO{} distribution. For the description of the input and for 
+      further details see the \PWSCF{} manual.
       %
-\item Bandstucture calculation.\\
+\item Band structure calculation.\\
       \noindent  Starting from the self-consistent charge
-      calculated in point $(1)$, we calculate the Bloch functions for a
-      {\bf REGULAR {\bf k}-point grid in the COMPLETE Brillouin Zone}; Gamma point
-      must be included. Reduction of \textbf{k}-points due to time-reversal
-      symmetry is not (yet) allowed. The complete list of
+      calculated at point $(1)$, compute the Bloch functions for a
+      {\bf REGULAR {\bf k}-point grid in the COMPLETE Brillouin Zone}; the presence of
+      the Gamma point is not mandatory.
+      Reduction of \textbf{k}-points due to time-reversal symmetry is not (yet) allowed. 
+      The complete list of
       \textbf{k}-points should be specified in the {\tt K\_POINTS} card.
       The simple program
-      {\tt kgrid.x} in {\tt \$TOPDIR/utility }can be used to generate non-symmetrized
+      {\tt kgrid.x} in {\tt \~{}want/utility} can be used to generate non-symmetrized
       Monkhorst-Pack grids (run it and follow the instructions).
+      \\
+      If using \QUANTUMESPRESSO{} v3.2 or newer, it is highly recommended to set
+      {\tt wf\_collect = .TRUE.} in the {\tt \&CONTROL} namelist (see below). 
       %
-\item From \PWSCF to the Wannier code.\\
-      \noindent Use the post processing
-      {\tt pw\_export.x} (distributed in the \PWSCF package
+\item From \QUANTUMESPRESSO{} to \WANT.\\
       %
-      \footnote{The export utility is already distributed in the
-      Qantum-Espresso v3.0, but a patch to include it also in versions v2.1.x is
-      available at \WANTURL{} or \PWSCFURL{}. When using v.3.0.0 do not compile with
-      the {\tt -D\_\_NEWPUNCH} pre-processor flag.}
-      ),
+      \noindent \QUANTUMESPRESSO{} upto v3.1: Use the post processing
+      {\tt pw\_export.x} (distributed in the \QUANTUMESPRESSO{} suite\footnote{
       %
-      to extract the input data necessary for the following Wannier
-      calculations
-      from \PWSCF output datafile. Data will be stored in the
-      newly-created directory {\tt \$prefix.export/}.
+      The export utility is already distributed in
+      \QUANTUMESPRESSO{} v3.0 (and later versions), but a patch to include it also in 
+      versions v2.1.x is available at \WANTURL{}.}),
+      %
+      to extract the data needed for the following Wannier
+      calculations. Data will be stored in the
+      newly-created \texttt{\$prefix.export/} directory.  \\
+     
+      \noindent \QUANTUMESPRESSO{} v3.2 and newer: it is either possible to use the
+      {\tt pw\_export.x} utility as before, or just to set 
+      {\tt wf\_collect = .TRUE.} in the band-structure calculation. In the latter case, 
+      no further run of any post-processing is needed since \WANT{} is able to directly read
+      \QUANTUMESPRESSO{} datafiles (stored in the \texttt{\$prefix.save/} directory).
+
 \end{enumerate}
 
-\noindent \underline{NOTE}: Steps (i-iii) should be run, using the
+\noindent \underline{NOTE}: Steps (i--iii) should be run, using the
 parallel version of the code, paying attention to use the same
 number of processors. From this point to the end, instead, the
 code is scalar.
@@ -75,8 +84,8 @@ code is scalar.
 functions}\label{subsection:run_wannier}
 
 Following the list of input parameters as in
-Section~\ref{sec:input} (also reported in the {\tt README.input} file
-in {\tt \$TOPDIR/docs/}) and the examples in directory {\tt \$TOPDIR/tests/},
+Section~\ref{sec:input} (also reported in the {\tt README\_<prog>.input} files
+in {\tt \~{}want/docs/}) and the examples in directory {\tt \~{}want/tests/},
 create your own input file, that will be used for the following two steps (a-b).
 \renewcommand{\theenumi}{\alph{enumi}}
 \renewcommand{\labelenumi}{\theenumi)}
@@ -96,7 +105,7 @@ create your own input file, that will be used for the following two steps (a-b).
       Trial Wannier centers are not mandatory in this step (depending
       on the {\tt subspace\_init} flag).
       To setup these centers, the program {\tt midpoint.x} in 
-      {\tt \$TOPDIR/utility } can be used to compute
+      {\tt \~{}want/utility } can be used to compute
       the middle points of bonds for a periodic structure (the simple input file 
       is described in the head of the source). 
 
@@ -131,8 +140,8 @@ post-processing of the WFs calculation. They are not necessary for
 the transport calculation, but they may be useful for a
 better understanding of the intrinsic electronic properties of the
 system. These codes require a separate input, to be generated
-following Sec.~\ref{sec:input} or the file
-{\tt \$TOPDIR/docs/README.input} .
+following Sec.~\ref{sec:input} or the
+{\tt \~{}want/docs/README\_<prog>.input} files.
 
 %
 %
@@ -155,10 +164,6 @@ following Sec.~\ref{sec:input} or the file
       we are essentially throwing away some non-negligible matrix elements
       in the Hamiltonian representation, and the bands
       are not accurate. Typical unphysical oscillations appears in these cases.
-      %
-      The code produces three files {\tt \$prefix\_\$postfix\_dftband.dat,
-      \$prefix\_\$postfix\_wanband.dat} and {\tt \$prefix\_\$postfix\_intband.dat}
-      which can be used for a direct visualization.
       %
 
 \item {\tt dos.x}: the code computes the {\it density of states} (DOS) 
@@ -203,14 +208,14 @@ following Sec.~\ref{sec:input} or the file
 Using the hamiltonian matrices calculated in step (b) we can
 calculate both the {\em bulk} and the {\em two-terminal}
 transmittance. Input file may be generated following
-Sec.~\ref{sec:input} or the file {\tt README.input} in {\tt
-\$TOPDIR/docs}. The main result of the calculation is the quantum
-transmittance across the conductor region which is written on file
-{\tt \$SCRATCH/cond.dat}. Conductance is given in $2e^2/h$ units.
+Sec.~\ref{sec:input} or the {\tt README\_<prog>.input} files in {\tt
+\~{}want/docs}. The main result of the calculation is the quantum
+transmittance across the conductor region.
+Conductance is given in $2e^2/h$ units.
 Calculations are performed using the Fisher-Lee formula according
 to Sec.~\ref{subsec:tran}. As an auxiliary piece of information,
 the density of states (DOS) projected on the conductor is also
-written in {\tt \$SCRATCH/dos.dat}. This DOS is computed as the
+written. This DOS is computed as the
 trace of the conductor Green's function $ N(E) = -(1/\pi)\,
 \text{Im} \, \text{Tr}\, G_C(E)$.
 
@@ -220,6 +225,17 @@ in principle avoid a 2D periodicity in the orthogonal plane. The use of
 2D mesh of $\mathbf{k}$-points in this context is implemented in the present
 version of the code.  \\
 
+Note also that \texttt{conductor.x} has been parallelized over the 
+main frequency loop, and therefore turns out to be very scalable.
+To compile this part of the code using a parallel environment, configure
+with the command:
+
+\texttt{ ./configure --enable-parallel [other-options]}
+
+\noindent
+according to Sec.~\ref{section:install}. 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %
@@ -227,7 +243,7 @@ version of the code.  \\
    \centering
    \includegraphics[clip,width=0.6\textwidth]{lcr}
    \caption{Schematic definitions for Hamiltonian block matrices used in
-        transport calculations. \label{fig:matrix_naming}}
+            transport calculations. \label{fig:matrix_naming}}
 \end{figure}
 %
 %
@@ -339,7 +355,7 @@ numerical performance of these schemes.
 %
 \\
 
-\noindent The transport code distributed within the \WANT package is
+\noindent The transport code distributed within the \WANT{} package is
 {\tt conductor.x} which calculates both the
 {\em bulk} and the {\em two-terminal} transmittance for the systems.
 While in the former case we

@@ -28,8 +28,8 @@ chemical bonds, providing insight onto the mechanisms that govern electron flow 
 nanoscale.
 
 The WanT package operates, in principles, as a simple post-processing of any standard 
-electronic structure code. The WanT code is currently interfaced to the
-Quantum-ESPRESSO suite of codes (http://www.quantum-espresso.org, http://www.pwscf.org).
+electronic structure code. The WanT code is currently interfaced to the codes in the
+Quantum-ESPRESSO distribution (http://www.quantum-espresso.org, http://www.pwscf.org).
 
 
 ==========================
