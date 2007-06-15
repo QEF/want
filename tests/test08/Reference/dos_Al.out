@@ -8,11 +8,11 @@
 
 
   Program <dos>  v. 2.1.0  starts ...
-  Date  8Mar2007 at 17:19:10 
+  Date 21May2007 at 18:20:48 
 
      Serial run.
 
-          BUILT :    Wed Feb 28 12:03:55 2007
+          BUILT :    Fri May 18 15:33:46 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
              CC :    cc
@@ -20,8 +20,8 @@
             F90 :    ifort
             F77 :    ifort
          DFLAGS :    -D__INTEL -D__FFTW
-      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
-    LAPACK LIBS :    -lmkl_lapack
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
        FFT LIBS :    -lfftw
       MASS LIBS :    
 
@@ -34,7 +34,7 @@
 
 
   ======================================================================
-  =                           INPUT Summary                            =
+  =  INPUT Summary                                                     =
   ======================================================================
 
                       fileout :     dos_Al.dat
@@ -43,11 +43,13 @@
                            nk :      1   1 400
                             s :      0   0   0
                         nktot :        400
-                   have sigma :     FALSE
+              compute projdos :     FALSE
+                   have sigma :     TRUE
+               sigma datafile :     ./SCRATCH/sigma_Al.wan.xml
 
 
   ======================================================================
-  =                              DFT data                              =
+  =  DFT data                                                          =
   ======================================================================
 
  <LATTICE>
@@ -75,7 +77,7 @@
 
 
   ======================================================================
-  =              DOS computation using Wannier Functions               =
+  =  DOS computation using Wannier Functions                           =
   ======================================================================
 
   nktot =   400
@@ -491,12 +493,12 @@
    <global routines>
              clock number :     6
 
-                      dos :     1.00s CPU 
+                      dos :     0.00s CPU 
  
              want_dftread :     0.14s CPU
                 want_init :     0.00s CPU
-             windows_read :     0.01s CPU
-            subspace_read :     0.14s CPU
-             compute_kham :     0.00s CPU (     400 calls,   0.000 s avg)
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+             compute_kham :     0.01s CPU (     800 calls,   0.000 s avg)
 
 
