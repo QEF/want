@@ -1,31 +1,3 @@
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './LEADS//chain4_WanT_WFM001.cube'
-Output file (plot file):  './LEADS//chain4_WanT_WFM001.plt'
-Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM001.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.740001,-6.165001,-6.165001
-Min value: 0.000000
-Max value: 0.194570
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './LEADS//chain4_WanT_WFM002.cube'
-Output file (plot file):  './LEADS//chain4_WanT_WFM002.plt'
-Coordinate file (in CHARMM 'crd' format): './LEADS//chain4_WanT_WFM002.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.740001,-6.165001,-6.165001
-Min value: 0.000000
-Max value: 0.057525
-Job done ...
-**********************************************************
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -36,85 +8,94 @@ Job done ...
 
 
   Program <plot>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  7:54:18 
+  Date 15Jun2007 at 10:36:17 
 
+     Serial run.
+
+          BUILT :    Mon May 28 10:12:03 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
-      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
-    LAPACK LIBS :    -lmkl_lapack
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
        FFT LIBS :    -lfftw
       MASS LIBS :    
 
 
-  DFT-data fmt automaticaly detected: pw_export
-  DFT-data read from file: chain4.export/index.xml
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: chain4.save/data-file.xml
 
   Subspace data read from file: chain4_WanT.space
   Wannier data read from file: chain4_WanT.wan
 
 
   ======================================================================
-  =                              DFT data                              =
+  =  DFT data                                                          =
   ======================================================================
 
  <LATTICE>
-  Alat  =      10.3557030 (Bohr)
-  Alat  =       5.4799998 (Ang )
-  Omega =    5622.1676973 (Bohr^3)
-  Omega =     833.1183020 (Ang^3 )
+  Alat  =      10.0000000 (Bohr)
+  Alat  =       5.2917700 (Ang )
+  Omega =    1440.0000000 (Bohr^3)
+  Omega =     213.3857294 (Ang^3 )
 
   Crystal axes:
                 in units of Bohr                 in Alat units
-    a(1) = ( 10.3557  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    a(2) = (  0.0000 23.3003  0.0000 )     (   0.0000  2.2500  0.0000 )
-    a(3) = (  0.0000  0.0000 23.3003 )     (   0.0000  0.0000  2.2500 )
+    a(1) = ( 10.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 12.0000  0.0000 )     (   0.0000  1.2000  0.0000 )
+    a(3) = (  0.0000  0.0000 12.0000 )     (   0.0000  0.0000  1.2000 )
   Crystal axes: (Ang)
-    a(1) = (  5.4800  0.0000  0.0000 )
-    a(2) = (  0.0000 12.3300  0.0000 )
-    a(3) = (  0.0000  0.0000 12.3300 )
+    a(1) = (  5.2918  0.0000  0.0000 )
+    a(2) = (  0.0000  6.3501  0.0000 )
+    a(3) = (  0.0000  0.0000  6.3501 )
 
    Reciprocal lattice vectors:
                 in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.6067  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    b(2) = (  0.0000  0.2697  0.0000 )     (   0.0000  0.4444  0.0000 )
-    b(3) = (  0.0000  0.0000  0.2697 )     (   0.0000  0.0000  0.4444 )
+    b(1) = (  0.6283  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.5236  0.0000 )     (   0.0000  0.8333  0.0000 )
+    b(3) = (  0.0000  0.0000  0.5236 )     (   0.0000  0.0000  0.8333 )
  </LATTICE>
 
  <K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  4  1  1 ),      shift = (  0  0  0 )
+  nkpts =     8
+  Monkhorst-Pack grid:      nk = (   8   1   1 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k (   2) =    (   0.15168  0.00000  0.00000 ),   weight =   0.2500000
-    k (   3) =    (   0.30337  0.00000  0.00000 ),   weight =   0.2500000
-    k (   4) =    (   0.45505  0.00000  0.00000 ),   weight =   0.2500000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    2) =    (    0.0785398   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    3) =    (    0.1570796   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    4) =    (    0.2356194   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    5) =    (    0.3141593   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    6) =    (    0.3926991   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    7) =    (    0.4712389   0.0000000   0.0000000 ),   weight =      0.1250000
+    k (    8) =    (    0.5497787   0.0000000   0.0000000 ),   weight =      0.1250000
  </K-POINTS>
 
 
-  WARNING: USPP not fully implemented
+  ======================================================================
+  =  Grids                                                             =
+  ======================================================================
 
-  Reading density G-grid from file: chain4.export/index.xml
-  Reading Wfc grids from file: chain4.export/index.xml
+  Reading density G-grid from file: chain4.save/data-file.xml
+  Reading Wfc grids from file: chain4.save/data-file.xml
 
 
           Energy cut-off for wfcs =         20.00 (Ry)
                          for rho  =        200.00 (Ry)
-      Total number of PW for rho  =     268739
-        Max number of PW for wfc  =       8540
-      Total number of PW for wfcs =      11254
-        FFT grid components (rho) =  (    48  108  108 )
+      Total number of PW for rho  =      68853
+        Max number of PW for wfc  =       2179
+      Total number of PW for wfcs =       2944
+             input FFT mesh (rho) =  (    48   60   60 )
+          required FFT mesh (rho) =  (    48   60   60 )
 
 
   ======================================================================
-  =                     Wannier function plotting                      =
+  =  Wannier function plotting                                         =
   ======================================================================
-
 
   nplot =    2 Wannier func.s to be plotted
      wf (   1 ) =    1
@@ -129,19 +110,19 @@ Job done ...
        r3 :   -0.5000 -->   0.5000
 
   Grid dimensions:
-      nrx :       -24 -->       24
-      nry :       -54 -->       54
-      nrz :       -54 -->       54
+      nrx :       -24 -->       23
+      nry :       -30 -->       29
+      nrz :       -30 -->       29
 
 
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (     1.152732    -0.000530     0.000002 )
-    Wf(   2 ) = (     1.152749     0.000000    -0.000002 )
+    Wf(   1 ) = (     1.113135     0.000961     0.000000 )
+    Wf(   2 ) = (     1.113173     0.000000     0.000000 )
         in crystal coord
-    Wf(   1 ) = (     0.111314    -0.000023     0.000000 )
-    Wf(   2 ) = (     0.111315     0.000000    -0.000000 )
+    Wf(   1 ) = (     0.111314     0.000080     0.000000 )
+    Wf(   2 ) = (     0.111317     0.000000     0.000000 )
 
   Collecting WFs: 
   Plotting Cell dimensions [cryst. coord]:
@@ -150,47 +131,87 @@ Job done ...
        r3 :   -0.5000 -->   0.5000
 
   New center positions [cryst. coord]:
-        in crystal coord
-    Wf(   1 ) = (     0.111314    -0.000023     0.000000 )
-    Wf(   2 ) = (     0.111315     0.000000    -0.000000 )
+    Wf(   1 ) = (     0.111314     0.000080     0.000000 )
+    Wf(   2 ) = (     0.111317     0.000000     0.000000 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
      C    tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
-     C    tau(   2 ) = (   2.3054663   0.0000000   0.0000000 )
-     C    tau(   3 ) = (  -5.1778515   0.0000000   0.0000000 )
-     C    tau(   4 ) = (  -2.8723852   0.0000000   0.0000000 )
+     C    tau(   2 ) = (   2.2262770   0.0000000   0.0000000 )
+     C    tau(   3 ) = (  -5.0000000   0.0000000   0.0000000 )
+     C    tau(   4 ) = (  -2.7737230   0.0000000   0.0000000 )
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :     1.57 secs
+                              Total time spent up to now :     0.56 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :     2.28 secs
+                              Total time spent up to now :     0.83 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :     3.06 secs
+                              Total time spent up to now :     1.13 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :     3.78 secs
+                              Total time spent up to now :     1.40 secs
+
+    Wfc Fourier Transf. for k-point    5
+                              Total time spent up to now :     1.68 secs
+
+    Wfc Fourier Transf. for k-point    6
+                              Total time spent up to now :     1.96 secs
+
+    Wfc Fourier Transf. for k-point    7
+                              Total time spent up to now :     2.25 secs
+
+    Wfc Fourier Transf. for k-point    8
+                              Total time spent up to now :     2.53 secs
 
 
-  WF maximum values (normalization is one):
-
-    Wf(   1 )   -->     0.441102
-    Wf(   2 )   -->     0.239843
-
-
-  writing WF(   1) plot on file: ./LEADS//chain4_WanT_WFM001.cube
-         atomic positions on file: ./LEADS//chain4_WanT_WFM001.xyz
-  deleting tmp files: ./LEADS//chain4_WanT_WFM001.cube
-                      ./LEADS//chain4_WanT_WFM001.crd
+  WF normalization:
+    Index              Max value     Normaliz.
+  ---------------------------------------------
+    Wf(   1 )   -->     0.460975      1.011063
+    Wf(   2 )   -->     0.242357      0.922013
 
 
-  writing WF(   2) plot on file: ./LEADS//chain4_WanT_WFM002.cube
-         atomic positions on file: ./LEADS//chain4_WanT_WFM002.xyz
-  deleting tmp files: ./LEADS//chain4_WanT_WFM002.cube
-                      ./LEADS//chain4_WanT_WFM002.crd
+  writing WF(   1) plot on file: ./SCRATCH/LEADS//chain4_WanT_WFM001.cube
+       atomic positions on file: ./SCRATCH/LEADS//chain4_WanT_WFM001.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH/LEADS//chain4_WanT_WFM001.cube'
+Output file (plot file):  './SCRATCH/LEADS//chain4_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH/LEADS//chain4_WanT_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.645886,-3.175063,-3.175063
+Min value: 0.000000
+Max value: 0.212500
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH/LEADS//chain4_WanT_WFM001.cube
+                      ./SCRATCH/LEADS//chain4_WanT_WFM001.crd
+
+
+  writing WF(   2) plot on file: ./SCRATCH/LEADS//chain4_WanT_WFM002.cube
+       atomic positions on file: ./SCRATCH/LEADS//chain4_WanT_WFM002.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH/LEADS//chain4_WanT_WFM002.cube'
+Output file (plot file):  './SCRATCH/LEADS//chain4_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH/LEADS//chain4_WanT_WFM002.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.645886,-3.175063,-3.175063
+Min value: 0.000000
+Max value: 0.058737
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH/LEADS//chain4_WanT_WFM002.cube
+                      ./SCRATCH/LEADS//chain4_WanT_WFM002.crd
 
 
 
@@ -198,18 +219,21 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :    10
+             clock number :    13
 
-                     plot :     8.00s CPU 
-
-             want_dftread :     0.36s CPU
+                     plot :     3.00s CPU 
+ 
+             want_dftread :     0.11s CPU
                 want_init :     0.00s CPU
-          ggrids_read_ext :     0.33s CPU
+             bshells_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+          ggrids_read_ext :     0.08s CPU
       wfc_data_grids_read :     0.02s CPU
-           wfc_data_kread :     0.21s CPU (       4 calls,   0.052 s avg)
-               kwann_calc :     0.67s CPU (       8 calls,   0.084 s avg)
-                   cfft3d :     0.71s CPU (       8 calls,   0.089 s avg)
-               cwann_calc :     1.29s CPU (       8 calls,   0.162 s avg)
-                 gcubeplt :     2.19s CPU (       2 calls,   1.095 s avg)
+           wfc_data_kread :     0.05s CPU (       8 calls,   0.006 s avg)
+               kwann_calc :     1.07s CPU (      16 calls,   0.067 s avg)
+                   cfft3d :     0.75s CPU (      16 calls,   0.047 s avg)
+               cwann_calc :     0.37s CPU (      16 calls,   0.023 s avg)
+                 gcubeplt :     0.39s CPU (       2 calls,   0.196 s avg)
 
 
