@@ -8,11 +8,11 @@
 
 
   Program <blc2wan>  v. 2.1.0  starts ...
-  Date  9Mar2007 at 16:27:58 
+  Date 21May2007 at 17:57:45 
 
      Serial run.
 
-          BUILT :    Fri Mar  9 15:34:18 2007
+          BUILT :    Fri May 18 15:33:46 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
              CC :    cc
@@ -20,8 +20,8 @@
             F90 :    ifort
             F77 :    ifort
          DFLAGS :    -D__INTEL -D__FFTW
-      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
-    LAPACK LIBS :    -lmkl_lapack
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
        FFT LIBS :    -lfftw
       MASS LIBS :    
 
@@ -33,7 +33,7 @@
 
 
   ======================================================================
-  =                              DFT data                              =
+  =  DFT data                                                          =
   ======================================================================
 
  <LATTICE>
@@ -78,7 +78,7 @@
 
 
   ======================================================================
-  =                         Input data summary                         =
+  =  Input data summary                                                =
   ======================================================================
 
 
@@ -92,37 +92,38 @@
               nbnd :      10
              nkpts :      10
              nspin :       1
-   dynam. operator :   TRUE
-            nomega :     250
-       analitycity :   retarded
+   dynam. operator :   FALSE
     diag. on bands :   TRUE
         ibnd_start :       1
           ibnd_end :      10
+  energy reference :       0.0000
 
 
   ======================================================================
-  =                Conversion to Wannier Function basis                =
+  =  Conversion to Wannier Function basis                              =
   ======================================================================
+
+                              Total time spent up to now :     0.21 secs
 
 
   Real space decay of OPR:
 
      R [cry]     |R| [Bohr]      Norm of Opr(R) [eV]
-    0   0   0     0.0000000        0.999989922
-    0   0   1     4.5000000        0.000015324
-    0   0   2     9.0000000        0.000010944
-    0   0   3    13.5000000        0.000010936
+    0   0   0     0.0000000        0.420506822
+    0   0   1     4.5000000        0.175846229
+    0   0   2     9.0000000        0.062568386
+    0   0   3    13.5000000        0.033877436
 
   ======================================================================
 
    <global routines>
              clock number :     5
 
-                  blc2wan :     3.00s CPU 
+                  blc2wan :     0.00s CPU 
  
-             want_dftread :     0.17s CPU
+             want_dftread :     0.14s CPU
                 want_init :     0.00s CPU
-             windows_read :     0.01s CPU
-            subspace_read :     0.15s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
 
 

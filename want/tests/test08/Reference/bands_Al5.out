@@ -8,39 +8,42 @@
 
 
   Program <bands>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  6:47:44 
+  Date 21May2007 at 16: 4:58 
 
+     Serial run.
+
+          BUILT :    Fri May 18 15:33:46 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
-      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
-    LAPACK LIBS :    -lmkl_lapack
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
        FFT LIBS :    -lfftw
       MASS LIBS :    
 
 
-  DFT-data fmt automaticaly detected: pw_export
-  DFT-data read from file: al5.export/index.xml
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: al5.save/data-file.xml
 
   Space data read from file: al5_WanT.space
   Hamiltonian data read from file: al5_WanT.ham
 
 
   ======================================================================
-  =                           INPUT Summary                            =
+  =  INPUT Summary                                                     =
   ======================================================================
 
-                      fileout :     .//al5_WanT_bands.dat
+                      fileout :     ./bands_Al5.dat
                     nkpts_in  :      2
                     nkpts_max :    100
 
 
   ======================================================================
-  =                              DFT data                              =
+  =  DFT data                                                          =
   ======================================================================
 
  <LATTICE>
@@ -67,19 +70,19 @@
  </LATTICE>
 
  <K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  nkpts =     4
+  Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k (   2) =    (   0.00000  0.00000  0.06981 ),   weight =   0.2500000
-    k (   3) =    (   0.00000  0.00000  0.13963 ),   weight =   0.2500000
-    k (   4) =    (   0.00000  0.00000  0.20944 ),   weight =   0.2500000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.2500000
+    k (    2) =    (    0.0000000   0.0000000   0.0698132 ),   weight =      0.2500000
+    k (    3) =    (    0.0000000   0.0000000   0.1396263 ),   weight =      0.2500000
+    k (    4) =    (    0.0000000   0.0000000   0.2094395 ),   weight =      0.2500000
  </K-POINTS>
 
 
   ======================================================================
-  =                     Band interpolation by WFs                      =
+  =  Band interpolation by WFs                                         =
   ======================================================================
 
 
@@ -303,11 +306,13 @@
   ======================================================================
 
    <global routines>
-             clock number :     3
+             clock number :     5
 
-                    bands :     1.00s CPU 
-
-             want_dftread :     0.24s CPU
+                    bands :     0.00s CPU 
+ 
+             want_dftread :     0.11s CPU
                 want_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.01s CPU
 
 
