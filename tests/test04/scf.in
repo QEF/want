@@ -28,8 +28,6 @@ US Pseudopotentials
       mixing_beta = 0.3,
       conv_thr =  1.0d-8,
    /
-   &IONS
-   /
 ATOMIC_SPECIES
  C   12.01   C.pbe-van_bm.UPF
  N   14.01   N.pbe-van_bm.UPF
