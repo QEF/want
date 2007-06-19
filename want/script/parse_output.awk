@@ -135,7 +135,7 @@ function check_line_disentangle()
    #
    if ( match($0, "Iteration # :") ) 
       {
-         print "ITERATION@"$4"@5e-2";
+         print "ITERATION@"$4"@1e-1";
       }
    else if ( match($0, "Final Omega_I ") )
       {
