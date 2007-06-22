@@ -1,13 +1,16 @@
 
 ==============================================================================
-@title@   Isolated benzene molecule (both NC and USPP)
+@title@   Isolated benzene molecule (both NC and USPP) and Graphene
 ==============================================================================
 
   This test performs the calculation of the Wannier functions for the
   isolated benzene molecule, both in the norm-conserving and ultra-soft
-  pseudopotential case. The molecule is oriented in the xy plane. 
+  pseudopotential case and for a graphene sheet simulated in an hexagonal 
+  cell containing two C atoms, using norm-conserving pseudopotential. 
+  The molecule, as well as the graphene, is oriented in the xy plane.
 
-  Disentangle calculation is performed within an energy window ranging up to 
+  In the benzene case disentangle calculation is performed within an energy 
+  window ranging up to 
   2.0 eV. A conditioned minimization is carried out and the amplitude of the 
   penalty functional is set to 20 (see the manual for further details about 
   conditioned minimization). 
@@ -19,10 +22,16 @@
   entering the expression for the penalty functional. This would result in no
   constrain on that center.
   
+  The graphene disentangle calculation is performed with the states frozen
+  up to the Fermi energy. A conditioned minimization is carried out and the 
+  amplitude of the penalty functional is set to 20. Five initial guess centers
+  are considered: 3 of 1gauss-type with s-geometry, localized at the bond 
+  midpoints and 2 s-type atomic orbitals, localized on the C atoms.
 
   RESULTS discussion
 
-  Disentangle convergence is achieved in about 50 iterations for NC pseudopots 
+  In the benzene case disentangle convergence is achieved in about 50 
+  iterations for NC pseudopots 
   (about 90 for US pseudopots) and the final invariant spread (\Omega_I) is 
   about 66.457 Bohr^2 for NC pseudopots (66.794 Bohr^2 for US pseudopots), 
   3.692 Bohr^2 on average (3.711 Bohr^2 for US): this component of the spread
@@ -54,6 +63,20 @@
 
    Norm-conserving and Ultra-soft calculations work almost the same. 
 
+  In the graphene case disentangle convergence is achieved in about 40
+  iterations 
+  and the final invariant spread (\Omega_I) is
+  about 15 Bohr^2,
+  about 3 Bohr^2 on average: this component of the spread
+  will remain unchanged during the Wannier localization. 
+                                                                                
+  After about 2200 iterations Wannier convergence is achieved
+  A total spread of about 23 Bohr^2 is found,
+  with an average of about 4.5 Bohr^2.
 
-
-
+  Also in this case the computed localization of Wannier functions is verified:
+                                                                                
+      * Average invariant spread is small. 
+                                                                                
+      * Final average total spreads are small.
+                                                                                
