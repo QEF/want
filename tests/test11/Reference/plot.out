@@ -1,59 +1,3 @@
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/pt_h2_pt_WanT_WFM024.cube'
-Output file (plot file):  './/pt_h2_pt_WanT_WFM024.plt'
-Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM024.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
-Min value: 0.000000
-Max value: 0.111140
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/pt_h2_pt_WanT_WFM025.cube'
-Output file (plot file):  './/pt_h2_pt_WanT_WFM025.plt'
-Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM025.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
-Min value: 0.000000
-Max value: 0.138930
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/pt_h2_pt_WanT_WFM026.cube'
-Output file (plot file):  './/pt_h2_pt_WanT_WFM026.plt'
-Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM026.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
-Min value: 0.000000
-Max value: 0.040719
-Job done ...
-**********************************************************
-**********************************************************
-gCube2Plt conversion  ( .cube --> .plt )                
-
-Input file:      './/pt_h2_pt_WanT_WFM027.cube'
-Output file (plot file):  './/pt_h2_pt_WanT_WFM027.plt'
-Coordinate file (in CHARMM 'crd' format): './/pt_h2_pt_WanT_WFM027.crd'
-
- WanT
- plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
-Min value: 0.000000
-Max value: 0.078361
-Job done ...
-**********************************************************
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -64,30 +8,33 @@ Job done ...
 
 
   Program <plot>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  9:21: 2 
+  Date 23Jun2007 at 17:18:20 
 
+     Serial run.
+
+          BUILT :    Mon May 28 10:12:03 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
-      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
-    LAPACK LIBS :    -lmkl_lapack
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
        FFT LIBS :    -lfftw
       MASS LIBS :    
 
 
-  DFT-data fmt automaticaly detected: pw_export
-  DFT-data read from file: pt_h2_pt.export/index.xml
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: pt_h2_pt.save/data-file.xml
 
   Subspace data read from file: pt_h2_pt_WanT.space
   Wannier data read from file: pt_h2_pt_WanT.wan
 
 
   ======================================================================
-  =                              DFT data                              =
+  =  DFT data                                                          =
   ======================================================================
 
  <LATTICE>
@@ -114,21 +61,23 @@ Job done ...
  </LATTICE>
 
  <K-POINTS>
-  nkpts =    4
-  Monkhorst-Pack grid:      nk = (  1  1  4 ),      shift = (  0  0  0 )
+  nkpts =     4
+  Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   0.2500000
-    k (   2) =    (   0.00000  0.00000  0.03941 ),   weight =   0.2500000
-    k (   3) =    (   0.00000  0.00000  0.07883 ),   weight =   0.2500000
-    k (   4) =    (   0.00000  0.00000  0.11824 ),   weight =   0.2500000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.2500000
+    k (    2) =    (    0.0000000   0.0000000   0.0394134 ),   weight =      0.2500000
+    k (    3) =    (    0.0000000   0.0000000   0.0788269 ),   weight =      0.2500000
+    k (    4) =    (    0.0000000   0.0000000   0.1182403 ),   weight =      0.2500000
  </K-POINTS>
 
 
-  WARNING: USPP not fully implemented
+  ======================================================================
+  =  Grids                                                             =
+  ======================================================================
 
-  Reading density G-grid from file: pt_h2_pt.export/index.xml
-  Reading Wfc grids from file: pt_h2_pt.export/index.xml
+  Reading density G-grid from file: pt_h2_pt.save/data-file.xml
+  Reading Wfc grids from file: pt_h2_pt.save/data-file.xml
 
 
           Energy cut-off for wfcs =         22.00 (Ry)
@@ -136,13 +85,13 @@ Job done ...
       Total number of PW for rho  =     508969
         Max number of PW for wfc  =      22573
       Total number of PW for wfcs =      24117
-        FFT grid components (rho) =  (    80   80  180 )
+             input FFT mesh (rho) =  (    80   80  180 )
+          required FFT mesh (rho) =  (    80   80  180 )
 
 
   ======================================================================
-  =                     Wannier function plotting                      =
+  =  Wannier function plotting                                         =
   ======================================================================
-
 
   nplot =    4 Wannier func.s to be plotted
      wf (   1 ) =   24
@@ -159,23 +108,23 @@ Job done ...
        r3 :    0.3000 -->   0.6000
 
   Grid dimensions:
-      nrx :       -20 -->       20
-      nry :       -20 -->       20
-      nrz :        54 -->      108
+      nrx :       -20 -->       19
+      nry :       -20 -->       19
+      nrz :        54 -->      107
 
 
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(  24 ) = (     0.024334     0.036471    15.688756 )
-    Wf(  25 ) = (     0.000064    -0.001662    18.347633 )
-    Wf(  26 ) = (    -0.023490    -0.023686    20.908093 )
-    Wf(  27 ) = (    -0.033095    -0.090997    21.686070 )
+    Wf(  24 ) = (     0.006077     0.012688    15.720145 )
+    Wf(  25 ) = (     0.006813     0.000358    18.392033 )
+    Wf(  26 ) = (     0.005535    -0.001298    21.084457 )
+    Wf(  27 ) = (    -0.010647     0.024068    21.999249 )
         in crystal coord
-    Wf(  24 ) = (     0.001352     0.002026     0.393652 )
-    Wf(  25 ) = (     0.000004    -0.000092     0.460367 )
-    Wf(  26 ) = (    -0.001305    -0.001316     0.524613 )
-    Wf(  27 ) = (    -0.001839    -0.005055     0.544133 )
+    Wf(  24 ) = (     0.000338     0.000705     0.394440 )
+    Wf(  25 ) = (     0.000379     0.000020     0.461481 )
+    Wf(  26 ) = (     0.000308    -0.000072     0.529038 )
+    Wf(  27 ) = (    -0.000591     0.001337     0.551991 )
 
   Collecting WFs: 
   Plotting Cell dimensions [cryst. coord]:
@@ -184,11 +133,10 @@ Job done ...
        r3 :   -0.0500 -->   0.9500
 
   New center positions [cryst. coord]:
-        in crystal coord
-    Wf(  24 ) = (     0.001352     0.002026     0.393652 )
-    Wf(  25 ) = (     0.000004    -0.000092     0.460367 )
-    Wf(  26 ) = (    -0.001305    -0.001316     0.524613 )
-    Wf(  27 ) = (    -0.001839    -0.005055     0.544133 )
+    Wf(  24 ) = (     0.000338     0.000705     0.394440 )
+    Wf(  25 ) = (     0.000379     0.000020     0.461481 )
+    Wf(  26 ) = (     0.000308    -0.000072     0.529038 )
+    Wf(  27 ) = (    -0.000591     0.001337     0.551991 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -199,48 +147,105 @@ Job done ...
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :     9.70 secs
+                              Total time spent up to now :   130.39 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :    18.03 secs
+                              Total time spent up to now :   259.02 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :    26.39 secs
+                              Total time spent up to now :   388.63 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :    34.69 secs
+                              Total time spent up to now :   519.34 secs
 
 
-  WF maximum values (normalization is one):
-
-    Wf(   1 )   -->     0.333382
-    Wf(   2 )   -->     0.372738
-    Wf(   3 )   -->     0.201789
-    Wf(   4 )   -->     0.279930
-
-
-  writing WF(  24) plot on file: .//pt_h2_pt_WanT_WFM024.cube
-         atomic positions on file: .//pt_h2_pt_WanT_WFM024.xyz
-  deleting tmp files: .//pt_h2_pt_WanT_WFM024.cube
-                      .//pt_h2_pt_WanT_WFM024.crd
+  WF normalization:
+    Index              Max value     Normaliz.
+  ---------------------------------------------
+    Wf(   1 )   -->     0.289139      0.822073
+    Wf(   2 )   -->     0.321382      0.923214
+    Wf(   3 )   -->     0.212444      0.666377
+    Wf(   4 )   -->     0.228385      0.618060
 
 
-  writing WF(  25) plot on file: .//pt_h2_pt_WanT_WFM025.cube
-         atomic positions on file: .//pt_h2_pt_WanT_WFM025.xyz
-  deleting tmp files: .//pt_h2_pt_WanT_WFM025.cube
-                      .//pt_h2_pt_WanT_WFM025.crd
+  writing WF(  24) plot on file: ./SCRATCH//pt_h2_pt_WanT_WFM024.cube
+       atomic positions on file: ./SCRATCH//pt_h2_pt_WanT_WFM024.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//pt_h2_pt_WanT_WFM024.cube'
+Output file (plot file):  './SCRATCH//pt_h2_pt_WanT_WFM024.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM024.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Min value: 0.000000
+Max value: 0.083601
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM024.cube
+                      ./SCRATCH//pt_h2_pt_WanT_WFM024.crd
 
 
-  writing WF(  26) plot on file: .//pt_h2_pt_WanT_WFM026.cube
-         atomic positions on file: .//pt_h2_pt_WanT_WFM026.xyz
-  deleting tmp files: .//pt_h2_pt_WanT_WFM026.cube
-                      .//pt_h2_pt_WanT_WFM026.crd
+  writing WF(  25) plot on file: ./SCRATCH//pt_h2_pt_WanT_WFM025.cube
+       atomic positions on file: ./SCRATCH//pt_h2_pt_WanT_WFM025.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//pt_h2_pt_WanT_WFM025.cube'
+Output file (plot file):  './SCRATCH//pt_h2_pt_WanT_WFM025.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM025.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Min value: 0.000000
+Max value: 0.103290
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM025.cube
+                      ./SCRATCH//pt_h2_pt_WanT_WFM025.crd
 
 
-  writing WF(  27) plot on file: .//pt_h2_pt_WanT_WFM027.cube
-         atomic positions on file: .//pt_h2_pt_WanT_WFM027.xyz
-  deleting tmp files: .//pt_h2_pt_WanT_WFM027.cube
-                      .//pt_h2_pt_WanT_WFM027.crd
+  writing WF(  26) plot on file: ./SCRATCH//pt_h2_pt_WanT_WFM026.cube
+       atomic positions on file: ./SCRATCH//pt_h2_pt_WanT_WFM026.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//pt_h2_pt_WanT_WFM026.cube'
+Output file (plot file):  './SCRATCH//pt_h2_pt_WanT_WFM026.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM026.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Min value: 0.000000
+Max value: 0.045132
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM026.cube
+                      ./SCRATCH//pt_h2_pt_WanT_WFM026.crd
+
+
+  writing WF(  27) plot on file: ./SCRATCH//pt_h2_pt_WanT_WFM027.cube
+       atomic positions on file: ./SCRATCH//pt_h2_pt_WanT_WFM027.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//pt_h2_pt_WanT_WFM027.cube'
+Output file (plot file):  './SCRATCH//pt_h2_pt_WanT_WFM027.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM027.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Min value: 0.000000
+Max value: 0.052160
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM027.cube
+                      ./SCRATCH//pt_h2_pt_WanT_WFM027.crd
 
 
 
@@ -248,18 +253,21 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :    10
+             clock number :    13
 
-                     plot :    36.00s CPU 
-
-             want_dftread :     0.53s CPU
-                want_init :     0.00s CPU
-          ggrids_read_ext :     0.57s CPU
-      wfc_data_grids_read :     0.05s CPU
-           wfc_data_kread :     2.06s CPU (       4 calls,   0.514 s avg)
-               kwann_calc :    25.72s CPU (      16 calls,   1.607 s avg)
-                   cfft3d :     5.16s CPU (      16 calls,   0.322 s avg)
-               cwann_calc :     0.41s CPU (      16 calls,   0.026 s avg)
-                 gcubeplt :     0.66s CPU (       4 calls,   0.165 s avg)
+                     plot :  8m40.00s CPU 
+ 
+             want_dftread :     0.27s CPU
+                want_init :     0.08s CPU
+             bshells_init :     0.04s CPU
+             windows_read :     0.02s CPU
+            subspace_read :     0.04s CPU
+          ggrids_read_ext :     0.32s CPU
+      wfc_data_grids_read :     0.03s CPU
+           wfc_data_kread :     1.21s CPU (       4 calls,   0.302 s avg)
+               kwann_calc :   509.74s CPU (      16 calls,  31.859 s avg)
+                   cfft3d :     6.96s CPU (      16 calls,   0.435 s avg)
+               cwann_calc :     0.18s CPU (      16 calls,   0.011 s avg)
+                 gcubeplt :     0.40s CPU (       4 calls,   0.099 s avg)
 
 
