@@ -10,7 +10,7 @@ Date: 26 Jun 2007    Version: WanT-2.1.0
 
 
 23 Jun 2007      Documentation for current.x added (suggested by Matias Nunez); 
-                 few typos fixed. (AF)
+                 few typos fixed. Example of the usage of current.x added to test11. (AF)
 
 15 Jun 2007      Test references updated for test02, test08, and test10. 
                  Other minor changes in the test suite. (AF)
