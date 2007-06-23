@@ -27,17 +27,12 @@
 
 RESULTS discussion
 
-  After 1000 iterations disentangle convergence is not fully achieved, but it can 
-  be considered adequate. The final invariant spread is about 219.434 Bohr^2 
-  (4.389 Bohr^2 on average): this component of the spread will remain unchanged
-  during the Wannier localization.
-
-  After about 1200 iterations Wannier convergence is achieved. A total spread of 
-  about 247.874 Bohr^2 is found, 4.957 Bohr^2 on average.
+  After 2000 iterations the disentangle procedure is not fully converged, but
+  can be considered adeguate. An almost fine localization is reached by wannier.x 
 
   Transport calculation results are plotted in files:
-     $TESTDIR/cond_bulk.dat   and   $TESTDIR/dos_bulk.dat
-     $TESTDIR/cond.dat        and   $TESTDIR/dos.dat
+     $TESTDIR/cond_bulk.dat   and   $TESTDIR/doscond_bulk.dat
+     $TESTDIR/cond.dat        and   $TESTDIR/doscond.dat
 
   In the bulk-like calculation, conductance exhibits a stepwise behavior, with the
   presence of dips due to the lack of symmetry in the simulated interactions. 
@@ -49,4 +44,9 @@ RESULTS discussion
   Results may be checked with a published work which uses the same approach based
   on Wannier functions: 
     K.S. Thygesen and K.W. Jacobsen,  arXiv:cond-mat/0501238 v1 (11 Jan 2005)
+
+  As an example, we also compute the current in the "linear regime", i.e. considering
+  the transmittance indipendend on the applied bias. The output result is given
+  in the file $TESTDIR/current.dat .
+  
 
