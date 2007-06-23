@@ -27,7 +27,8 @@
    REAL(dbl), ALLOCATABLE   :: ftemp_L(:), ftemp_R(:)  ! temperature smearing functions
    REAL(dbl), ALLOCATABLE   :: transm(:)               ! transmittance from data file
    !
-   CHARACTER(nstrx)         :: fileout                 ! output filename
+   CHARACTER(nstrx)         :: filein                  ! input  filename (transmittance)
+   CHARACTER(nstrx)         :: fileout                 ! output filename (current)
 
    !
    ! energy grid
@@ -58,7 +59,6 @@
    !
    ! local variables
    !
-   CHARACTER(nstrx)         :: filename
    INTEGER                  :: ie, iv, ierr, ios
    INTEGER                  :: i_start, i_end, ndim    ! integration extrema
    REAL(dbl), ALLOCATABLE   :: funct(:)                ! auxiliary vectors for integration
@@ -66,7 +66,7 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, mu_L, mu_R, sigma, fileout, &
+   NAMELIST /INPUT/ prefix, postfix, work_dir, mu_L, mu_R, sigma, filein, fileout, &
                     Vmin, Vmax, nV
 
 !
@@ -79,9 +79,10 @@
 !
 ! ... Read INPUT namelist from stdin
 !
-   prefix                      = 'T'
-   postfix                     = '_WanT'
+   prefix                      = ' '
+   postfix                     = ' '
    work_dir                    = './'
+   filein                      = ' '
    fileout                     = ' '
    mu_L                        =  -0.5
    mu_R                        =   0.5
@@ -102,10 +103,11 @@
    !
    ! get energy grid and transmittance from data file
    !
-   filename = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
+   IF( LEN_TRIM( filein ) == 0 ) &
+      filein = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
    !
-   OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
-   IF ( ierr/=0 ) CALL errore('current','opening file = '//TRIM(filename), ABS(ierr) )
+   OPEN ( cond_unit, FILE=TRIM(filein), FORM='formatted', IOSTAT=ierr )
+   IF ( ierr/=0 ) CALL errore('current','opening file = '//TRIM(filein), ABS(ierr) )
    !
    ie = 0
    !
