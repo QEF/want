@@ -30,13 +30,13 @@ prefix      STRING
             $WORK_DIR // $PREFIX // "whatever" // $POSTFIX //'.dat'
             DEFAULT: ''
                                                                                                      
-prefix      STRING
+postfix     STRING
             the last part of the name of all the output data files written 
             by the code. See prefix for the naming convention.
             DEFAULT: ''
 
 work_dir    STRING
-            the scratch directory where the data file are written
+            the scratch directory where the data files are written
             See prefix for the naming convention.
             DEFAULT: "./"
 
