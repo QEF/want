@@ -446,3 +446,37 @@ run_conductor () {
    run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
 }
 
+
+#
+#
+#----------------------
+run_current () {
+#----------------------
+#
+   local NAME=CURRENT
+   local EXEC=$WANT_BIN/current.x
+   local RUN=yes
+   local INPUT=
+   local OUTPUT=
+   local SUFFIX=
+   local name_tmp
+   
+   for arg 
+   do
+         [[ "$arg" == NAME=* ]]      && NAME="${arg#NAME=}"
+         [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
+         [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
+         [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+   done
+   
+   [[ "$RUN" != "yes" ]]  && return
+
+   name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/current$SUFFIX.in  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/current$SUFFIX.out ; fi
+
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+}
+
+
