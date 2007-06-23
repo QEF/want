@@ -10,8 +10,8 @@
    datafile_C = "./SCRATCH/pt_h2_pt_WanT.ham"
    datafile_R = "./SCRATCH/pt_h2_pt_WanT.ham"
    transport_dir = 3
-   delta = 0.05
-   smearing_type = 'gaussian'
+   delta = 0.005
+!   smearing_type = 'gaussian'
 /
 
 <HAMILTONIAN_DATA>

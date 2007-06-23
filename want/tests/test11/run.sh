@@ -22,7 +22,8 @@ MANUAL=" Usage
  plot            compute WFs on real space for plotting
  conductor       evaluate the transmittance across the junction
  conductor_bulk  evaluate the bulk transmittance for the leads
- want            perform DISENTANGLE, WANNIER, BANDS, PLOT, CONDUCTOR all together 
+ current         compute the current
+ want            perform all WANT calculations
  all             perform all the above described steps
 
  check           check results with the reference outputs
@@ -52,6 +53,7 @@ WANNIER=
 PLOT=
 CONDUCTOR=
 CONDUCTOR_BULK=
+CURRENT=
 CHECK=
 CLEAN=
 
@@ -68,11 +70,12 @@ case $INPUT in
    (plot)           PLOT=yes ;;
    (conductor)      CONDUCTOR=yes ;;
    (conductor_bulk) CONDUCTOR_BULK=yes ;;
+   (current)        CURRENT=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ; 
-                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; PLOT=yes ;;
+                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; CURRENT=yes ; PLOT=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes; PLOT=yes ;;
+                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; CURRENT=yes ; PLOT=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -133,9 +136,15 @@ run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
 run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
 
 #
+# running CURRENT
+#
+run_current NAME=CURRENT  SUFFIX=$SUFFIX  RUN=$CURRENT
+
+#
 # running CONDUCTOR_BULK
 #
 run_conductor NAME=CONDUCTOR_BULK  SUFFIX=${SUFFIX}_bulk  RUN=$CONDUCTOR_BULK
+
 
 
 #
