@@ -1,0 +1,38 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <current>  v. 2.1.0  starts ...
+  Date 23Jun2007 at 21: 4:49 
+
+     Serial run.
+
+          BUILT :    Mon May 28 10:12:03 2007
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    cc
+            CPP :    cpp
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :     1
+
+                  current :     0.00s CPU 
+ 
+
+
