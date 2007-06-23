@@ -75,10 +75,6 @@ function check_line_wannier()
       {
          print "ITERATION@"$4"@1e-1";
       }
-   else if ( match($0, "! Center Sum =") )
-      {
-         print "CENTER_SUM@"$NF"@1e-2";
-      }
    else if ( match($0, "Omega I       =") )
       {
          print "OMEGA_I@"$NF"@1e-2";
