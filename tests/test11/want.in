@@ -10,7 +10,7 @@
 &SUBSPACE
    dimwann = 50     
    win_max = 10.0  
-   maxiter_dis = 1000
+   maxiter_dis = 5000
 /
 
 &LOCALIZATION
