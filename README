@@ -49,9 +49,9 @@ See also the WanT User's Guide in docs/want_manual.pdf
 TECHNICAL NOTES
 ==========================
 
-- Installation procedure is reported in the docs/README.install file;
-- docs/README_<prog>.input description of the input file for program <prog>;
-- docs/README summarizes the documentation included in the WanT package;
+- Installation procedure is reported in the ~want/docs/README.install file;
+- ~want/docs/README_<prog>.input description of the input file for program <prog>;
+- ~want/docs/README summarizes the documentation included in the WanT package;
 
 See also the WanT User's Guide in docs/want_manual.pdf
 
