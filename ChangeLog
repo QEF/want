@@ -5,9 +5,10 @@
 
 
 -------------------------------------------------
-Date: 26 Jun 2007    Version: WanT-2.1.0
+Date: 03 Jul 2007    Version: WanT-2.1.0
 -------------------------------------------------
 
+03 Jul 2007      The use of shared libs is the default during configuration. (AF)
 
 23 Jun 2007      Documentation for current.x added (suggested by Matias Nunez); 
                  few typos fixed. Example of the usage of current.x added to test11. 
