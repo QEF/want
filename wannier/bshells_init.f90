@@ -126,7 +126,7 @@
    !
    DO j = 1, 3
 
-      ! suqared norm of the generators
+      ! squared norm of the generators
       aux1 = DOT_PRODUCT( bvec(:,j), bvec(:,j) ) 
 
       found = .FALSE.
