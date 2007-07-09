@@ -60,6 +60,7 @@ CONTAINS
 ! subroutines
 !
 
+
 !**********************************************************
    SUBROUTINE kpoints_init()
    !**********************************************************
@@ -74,7 +75,7 @@ CONTAINS
       CHARACTER(nstrx)   :: attr
       INTEGER            :: nr_(3), nk_(3), nrtot_, nkpts_par_x
       INTEGER            :: ir, ik, i, j, l, ierr
-      LOGICAL            :: lfound
+      LOGICAL            :: lfound, lequiv
       REAL(dbl)          :: arg, vaux(3)
  
       CALL log_push( 'kpoints_init' )
@@ -117,7 +118,7 @@ CONTAINS
       ENDDO
       !
       nrtot_par = PRODUCT(nr_par)
-  
+
       !
       ! set the dimensions of the kpt_par mesh
       ! if nk_par /= 0 they are from input. otherwise use nr_par
@@ -184,7 +185,10 @@ CONTAINS
           DO l = 1, ik
               !
               IF ( .NOT. use_symm ) EXIT
-              IF ( kpoints_equivalent( vaux(:), vkpt_par(:,l) ) ) THEN
+              !
+              lequiv = kpoints_equivalent( vaux(:), vkpt_par(:,l) )
+              !
+              IF ( lequiv ) THEN
                  !
                  lfound = .TRUE.
                  EXIT
@@ -293,6 +297,7 @@ CONTAINS
       RETURN
       !
    END FUNCTION kpoints_equivalent
+
 
 END MODULE T_kpoints_module
 
