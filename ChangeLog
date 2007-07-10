@@ -9,6 +9,8 @@ Date: 10 Jul 2007    Version: WanT-2.1.0
 -------------------------------------------------
 
 
+10 Jul 2007      Negative b-weights are allowed in bshells_init. (AF)
+
 09 Jul 2007      Workaround to compile on old SGI machines implemented. (AF)
 
 03 Jul 2007      The use of shared libs is the default during configuration. (AF)
