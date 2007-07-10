@@ -116,7 +116,7 @@
    !
    ! first found the candidates:
    ! search for 6 vectors not parallel to each other
-   ! always include the 3 vectors parallel to the generators of 
+   ! always include the 3 vectors parallel to the generators of
    ! the reciprocal lattice
    !
 
@@ -154,7 +154,8 @@
    !
    ! now search for the reamining vectors
    !
-   DO i = 3, nq      
+   DO i = 2, nq      
+       !
        eqv_found = .FALSE.
        DO j = 1, inum 
           !
@@ -253,8 +254,13 @@
    DEALLOCATE( work_aux )
    !
 
-   IF ( ANY( rhs(1:rank) < -EPS_m6 ) ) &
-      CALL errore('bshells_init','negative weights',4)
+   !
+   ! We used to impose that weights must be positive...
+   ! in principles there is no indication this should be the case
+   ! as an experimental change, we try to relax the constraint
+   !
+   !   IF ( ANY( rhs(1:rank) < -EPS_m6 ) ) &
+   !      CALL errore('bshells_init','negative weights',4)
     
    !
    ! found the non negligible weights, and complete the b, -b pairs
