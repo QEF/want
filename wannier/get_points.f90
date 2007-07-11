@@ -127,7 +127,7 @@
        !
        DO i=1,nkpts_in-1
            !
-           WRITE(stdout, "(6x, 'line', i4, ':   ',i5 ) ') " ) i, knum(i)-1
+           WRITE(stdout, "(6x, 'line', i4, ':   ',i5 )" ) i, knum(i)-1
            !
        ENDDO
        !
