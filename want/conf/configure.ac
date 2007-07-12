@@ -200,6 +200,14 @@ f90=$F77
 if test "$use_parallel" -eq 0 ; 
 then
 	mpif90=$f90
+
+	case "$arch" in
+	ia32 | ia64 | amd64 )
+		# for MKL libraries
+	        MKL_LIBS="-lguide -lpthread"
+	        MKL_FLAGS=""
+        esac
+
 else
         # clear cached values (not sure when and why this is needed)
         unset F77 ac_cv_prog_ac_ct_F77 ac_cv_f77_compiler_gnu ac_cv_prog_f77_g
