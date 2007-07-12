@@ -5,9 +5,12 @@
 
 
 -------------------------------------------------
-Date: 10 Jul 2007    Version: WanT-2.1.0
+Date: 12 Jul 2007    Version: WanT-2.1.0
 -------------------------------------------------
 
+
+12 Jul 2007      Bug fixed in configure: when not searching for parallel environment,
+                 mkl libs were not properly searched. (AF)
 
 10 Jul 2007      Negative b-weights are allowed in bshells_init. (AF)
 
