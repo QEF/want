@@ -1983,6 +1983,14 @@ f90=$F77
 if test "$use_parallel" -eq 0 ;
 then
 	mpif90=$f90
+
+	case "$arch" in
+	ia32 | ia64 | amd64 )
+		# for MKL libraries
+	        MKL_LIBS="-lguide -lpthread"
+	        MKL_FLAGS=""
+        esac
+
 else
         # clear cached values (not sure when and why this is needed)
         unset F77 ac_cv_prog_ac_ct_F77 ac_cv_f77_compiler_gnu ac_cv_prog_f77_g
@@ -2081,7 +2089,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:2084:" \
+echo "$as_me:2092:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4122,7 +4130,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4125:" \
+echo "$as_me:4133:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4605,7 +4613,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4608: \"$ac_link\") >&5
+(eval echo $as_me:4616: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4683,7 +4691,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4686: \"$ac_link\") >&5
+(eval echo $as_me:4694: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
