@@ -1,9 +1,0 @@
-&inputpp
-  prefix='chain4'
-  outdir='./LEADS/'
-  ascii = .FALSE.
-  pseudo_dir = './'
-  psfile(1) = 'C.pbe-van_bm.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
-/
