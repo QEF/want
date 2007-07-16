@@ -183,34 +183,34 @@ CONTAINS
 !-------------------------------------------
 !
     !------------------------------------------------------------------------
-    FUNCTION int_to_char( int )
+    FUNCTION int_to_char( i )
       !------------------------------------------------------------------------
       !
       IMPLICIT NONE
       !
-      INTEGER, INTENT(IN) :: int
+      INTEGER, INTENT(IN) :: i
       CHARACTER (LEN=6)   :: int_to_char
       !
       !
-      IF ( int < 10 ) THEN
+      IF ( i < 10 ) THEN
          !
-         WRITE( UNIT = int_to_char , FMT = "(I1)" ) int
+         WRITE( UNIT = int_to_char , FMT = "(I1)" ) i
          !
-      ELSE IF ( int < 100 ) THEN
+      ELSE IF ( i < 100 ) THEN
          !
-         WRITE( UNIT = int_to_char , FMT = "(I2)" ) int
+         WRITE( UNIT = int_to_char , FMT = "(I2)" ) i
          !
-       ELSE IF ( int < 1000 ) THEN
+       ELSE IF ( i < 1000 ) THEN
          !
-         WRITE( UNIT = int_to_char , FMT = "(I3)" ) int
+         WRITE( UNIT = int_to_char , FMT = "(I3)" ) i
          !
-       ELSE IF ( int < 10000 ) THEN
+       ELSE IF ( i < 10000 ) THEN
          !
-         WRITE( UNIT = int_to_char , FMT = "(I4)" ) int
+         WRITE( UNIT = int_to_char , FMT = "(I4)" ) i
          !
        ELSE
          !
-       WRITE( UNIT = int_to_char , FMT = "(I5)" ) int
+       WRITE( UNIT = int_to_char , FMT = "(I5)" ) i
        !
       END IF
       !
@@ -735,7 +735,7 @@ CONTAINS
       CHARACTER(*), INTENT(IN) :: k_units
       LOGICAL,      INTENT(IN) :: index(:), igk(:,:)
       !
-      INTEGER        :: iunaux
+><DEFANGED.59780       INTEGER        :: iunaux
       CHARACTER(256) :: filename
 
       CALL iotk_free_unit( iunaux )
@@ -837,7 +837,7 @@ CONTAINS
       !
       LOGICAL,                INTENT(IN) :: lgauss, ltetra, tfixed_occ, lsda
       INTEGER,      OPTIONAL, INTENT(IN) :: ngauss, ntetra, nelup, neldw
-      INTEGER,      OPTIONAL, INTENT(IN) :: tetra(:,:)
+><DEFANGED.59781       INTEGER,      OPTIONAL, INTENT(IN) :: tetra(:,:)
       REAL(dbl),    OPTIONAL, INTENT(IN) :: degauss, input_occ(:,:)      
       CHARACTER(*), OPTIONAL, INTENT(IN) :: degauss_units
       !
@@ -951,7 +951,7 @@ CONTAINS
       CALL iotk_write_begin( ounit, "PHONON" )
       !
       CALL iotk_write_dat( ounit, "NUMBER_OF_MODES", modenum )
-      !
+><DEFANGED.59782       !
       CALL iotk_write_attr( attr, "UNITS", TRIM(q_units), FIRST = .TRUE. )
       CALL iotk_write_empty( ounit, "UNITS_FOR_Q-POINT", attr )
       !
@@ -1063,7 +1063,7 @@ CONTAINS
     !     
     !
     !------------------------------------------------------------------------
-    SUBROUTINE qexml_write_wfc( nbnd, nkpts, nspin, ik, ispin, ipol, igk, ngw, igwx, &
+><DEFANGED.59783     SUBROUTINE qexml_write_wfc( nbnd, nkpts, nspin, ik, ispin, ipol, igk, ngw, igwx, &
                                 wf, wf_kindip, scale_factor )
       !------------------------------------------------------------------------
       !
@@ -1190,7 +1190,7 @@ CONTAINS
       INTEGER        :: iunaux, nr1x_, nr2x_, ip, i1, i2, i
       LOGICAL        :: binary_
       CHARACTER(256) :: filename
-      REAL(dbl), ALLOCATABLE :: plane(:,:)
+><DEFANGED.59784       REAL(dbl), ALLOCATABLE :: plane(:,:)
       !
       !
       CALL iotk_free_unit( iunaux )
@@ -1321,7 +1321,7 @@ CONTAINS
       !
       !
       IF ( PRESENT(creator_name) )     creator_name    = TRIM(creator_name_)
-      IF ( PRESENT(creator_version) )  creator_version = TRIM(creator_version_)
+><DEFANGED.59785       IF ( PRESENT(creator_version) )  creator_version = TRIM(creator_version_)
       IF ( PRESENT(format_name) )      format_name     = TRIM(format_name_)
       IF ( PRESENT(format_version) )   format_version  = TRIM(format_version_)
       !
@@ -1412,7 +1412,7 @@ CONTAINS
       IF ( PRESENT(a2) )            a2           = a2_
       IF ( PRESENT(a3) )            a3           = a3_
       IF ( PRESENT(b1) )            b1           = b1_
-      IF ( PRESENT(b2) )            b2           = b2_
+><DEFANGED.59786       IF ( PRESENT(b2) )            b2           = b2_
       IF ( PRESENT(b3) )            b3           = b3_
       IF ( PRESENT(alat_units) )    alat_units   = TRIM(alat_units_)
       IF ( PRESENT(a_units) )       a_units      = TRIM(a_units_)
@@ -1517,7 +1517,7 @@ CONTAINS
       IF ( PRESENT(nat) )         nat    = nat_
       IF ( PRESENT(atm) )         atm(1:nsp_)    = atm_
       IF ( PRESENT(amass) )       amass(1:nsp_)  = amass_
-      IF ( PRESENT(amass_units) ) amass_units    = TRIM(amass_units_)
+><DEFANGED.59787       IF ( PRESENT(amass_units) ) amass_units    = TRIM(amass_units_)
       IF ( PRESENT(psfile) )      psfile(1:nsp_) = psfile_(1:nsp_)
       IF ( PRESENT(ityp) )        ityp(1:nat_)   = ityp_
       IF ( PRESENT(tau_units) )   tau_units      = TRIM(tau_units_)
@@ -1620,7 +1620,7 @@ CONTAINS
       IF ( PRESENT(trasl) )       trasl(1:3, 1:nsym_)   = trasl_(1:3, 1:nsym_)
       IF ( PRESENT(s) )           s(1:3, 1:3, 1:nsym_)  = s_(1:3, 1:3, 1:nsym_)
       IF ( PRESENT(irt) )         irt(1:nsym_, 1:nat_)  = irt_(1:nsym_, 1:nat_)
-      IF ( PRESENT(sname) )  THEN     
+><DEFANGED.59788       IF ( PRESENT(sname) )  THEN     
           DO i = 1, nsym_
                                   sname( i )            = TRIM( sname_( i ) )
           ENDDO
@@ -1725,7 +1725,7 @@ CONTAINS
       CALL iotk_scan_dat( iunit, "RHO_CUTOFF", ecutrho_ , IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat( iunit, "MAX_NUMBER_OF_GK-VECTORS", npwx_, IERR=ierr )
+><DEFANGED.59789       CALL iotk_scan_dat( iunit, "MAX_NUMBER_OF_GK-VECTORS", npwx_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
       CALL iotk_scan_dat( iunit, "GAMMA_ONLY", gamma_only_, IERR=ierr )
@@ -1827,7 +1827,7 @@ CONTAINS
       !
       CALL iotk_free_unit( iunaux )
       filename = wfc_filename( datadir_in, 'gkvectors', ik )
-      !
+><DEFANGED.59790       !
       CALL iotk_open_read ( iunaux, FILE = TRIM(filename), IERR=ierr )
       IF (ierr/=0)  RETURN
       !
@@ -1943,7 +1943,7 @@ CONTAINS
       IF ( ierr/=0 ) RETURN
       !
       CALL iotk_scan_dat( iunit, "DFT", dft_, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
+><DEFANGED.59791       IF ( ierr/=0 ) RETURN
       !
       CALL iotk_scan_dat( iunit, "LDA_PLUS_U_CALCULATION", lda_plus_u_, IERR=ierr )
       IF ( ierr/=0 ) RETURN
@@ -2053,7 +2053,7 @@ CONTAINS
             !
             CALL iotk_scan_dat( iunit, "TETRAHEDRON"//iotk_index(i), &
                                         tetra_(1:4,i), IERR=ierr )
-            IF (ierr/=0) RETURN
+><DEFANGED.59792             IF (ierr/=0) RETURN
             !
          ENDDO
          !
