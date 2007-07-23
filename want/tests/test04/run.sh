@@ -59,13 +59,13 @@ case $INPUT in
    (scf)            SCF=yes ;;
    (pwexport)       PWEXPORT=yes ;;
    (dipole)         DIPOLE=yes ;;
-   (dft)            SCF=yes; PWEXPORT=yes ; DIPOLE=yes ;;
+   (dft)            SCF=yes; PWEXPORT=yes ; DIPOLE=no ;;
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (plot)           PLOT=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
                     PLOT=yes ;;
-   (all)            SCF=yes ; PWEXPORT=yes ; DIPOLE=yes ;
+   (all)            SCF=yes ; PWEXPORT=yes ; DIPOLE=no ;
                     DISENTANGLE=yes ; WANNIER=yes ; 
                     PLOT=yes ;;
    (check)          CHECK=yes ;;
