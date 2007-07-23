@@ -150,82 +150,82 @@
 
 ! Some useful check follow
 #if __IOTK_MAXRANK > 7
-#error
+   #error
 #endif
 #if __IOTK_MAXRANK < 1
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_LOGICAL5
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_LOGICAL6
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_LOGICAL7
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_LOGICAL8
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_LOGICAL9
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_LOGICAL10
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_INTEGER5
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_INTEGER6
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_INTEGER7
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_INTEGER8
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_INTEGER9
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_INTEGER10
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_REAL5
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_REAL6
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_REAL7
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_REAL8
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_REAL9
-#error
+   #error
 #endif
 # 102 "iotk_auxmacros.spp"
 #ifdef __IOTK_REAL10
-#error
+   #error
 #endif
 # 107 "iotk_auxmacros.spp"
 

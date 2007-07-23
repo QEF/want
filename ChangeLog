@@ -6,11 +6,15 @@
 
 23 Jul 2007      b-vector symmetrization completed. Memory usage due to excess b-vecotrs
                  not yet eliminated. Qexml lib updated to account for a fmt change 
-                 introduced by espresso-3.2cvs . (AF)
+                 introduced by espresso-3.2cvs . Merging of want-2.1 fixes into the main
+                 development trunk. (AF)
+
+16 Jul 2007      Preprocessor bug of NEC SX6 fixed; WORKSROUND7 added to iotk lib,
+                 thanks to Guido Roma and Paolo Giannozzi. Few changes to qexml.f90 due to 
+                 Paolo Giannozzi. (AF)
 
 12 Jul 2007      Test references updated. Further symmetrization related to 
                  b-vectors started. (AF)
-
 
 -------------------------------------------------
 Date: 12 Jul 2007    Version: WanT-2.1.0

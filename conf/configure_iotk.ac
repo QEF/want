@@ -20,7 +20,7 @@ NEWLINE="
 
 # Define the backslash character
 
-AC_PROG_FC(ifort g95 f95 pgf90 xlf90 gfortran)
+AC_PROG_FC(ifort g95 f95 pgf90 xlf90 gfortran sxf90)
 
 # Selecting the language
 AC_LANG(Fortran)
