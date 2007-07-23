@@ -41,6 +41,7 @@
 #   define __IOTK_WORKAROUND6
 #elif defined(__SX6)
 #   define __IOTK_WORKAROUND5
+#   define __IOTK_WORKAROUND7
 #else
 #   define __IOTK_SAFEST
 #endif

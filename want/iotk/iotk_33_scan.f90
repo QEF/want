@@ -520,7 +520,17 @@ call iotk_error_write(ierr,"iostat",iostat)
       control = modulo(header,int(iotk_ncontrol+1,kind=kind(header)))
       if(control/=0 .and. control/=128) then
         found = .true.
-        taglen  = modulo(header/(iotk_ncontrol+1),int(iotk_taglenx+1,kind=kind(header/(iotk_ncontrol+1))))
+        ! 
+        ! Compiler BUG of NEC sxf90, reported by Guido Roma 
+        !
+        !!! taglen  = modulo(header/(iotk_ncontrol+1),int(iotk_taglenx+1,&
+        !!!           kind=kind(header/(iotk_ncontrol+1))))
+        !
+        taglen=header/(iotk_ncontrol+1)
+        taglen  = modulo(taglen,int(iotk_taglenx+1,kind=kind(taglen)))
+        !
+        ! end of workaround for NEC bug
+        !
         if(stream) then
           call iotk_stream_read(unit,header,tagtmp(:)(1:taglen),ierr=ierr)
           tag(1:taglen) = tagtmp(1)(1:taglen)
