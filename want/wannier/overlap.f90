@@ -7,8 +7,8 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !************************************************************
-   SUBROUTINE overlap( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, evc, evc_info, &
-                       igsort, lnncell, Mkb )
+   SUBROUTINE overlap( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, &
+                       evc, evc_info, igsort, lnncell, Mkb )
    !************************************************************
    USE kinds
    USE constants,      ONLY : CZERO

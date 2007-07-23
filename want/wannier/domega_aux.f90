@@ -14,7 +14,7 @@
    ! This routine compute the additional part of the omega variation
    ! accounting for the term driving the conditioned minimization
    !
-   ! domg / dW_k = 2/N \Sum_b w_b S[ At^kb ]     where
+   ! domg/dW_k = domg/dW_k + 2/N \Sum_b w_b S[ At^kb ]     where
    !
    ! At^{kb}_{mn} = a * w_n * (b * Dr_n)/ Mkb_nn  * Mkb_mn
    ! a:    coupling constant 
@@ -27,7 +27,7 @@
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
    USE lattice_module,     ONLY : avec
-   USE kpoints_module,     ONLY : nb, vb, wb
+   USE kpoints_module,     ONLY : nb, vb, wb, nnpos, nnrev, nnlist
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE trial_center_module
    IMPLICIT NONE 
@@ -35,21 +35,21 @@
    !  
    ! input variables 
    !  
-   INTEGER,            INTENT(in)  :: dimwann, nkpts
-   REAL(dbl),          INTENT(in)  :: rave(3,dimwann), a
-   TYPE(trial_center), INTENT(in)  :: trial(dimwann)
-   COMPLEX(dbl),       INTENT(in)  :: Mkb(dimwann,dimwann,nb,nkpts)
-   COMPLEX(dbl),       INTENT(out) :: domg(dimwann,dimwann,nkpts)
+   INTEGER,            INTENT(in)    :: dimwann, nkpts
+   REAL(dbl),          INTENT(in)    :: rave(3,dimwann), a
+   TYPE(trial_center), INTENT(in)    :: trial(dimwann)
+   COMPLEX(dbl),       INTENT(in)    :: Mkb(dimwann,dimwann,nb,nkpts)
+   COMPLEX(dbl),       INTENT(inout) :: domg(dimwann,dimwann,nkpts)
 
    !
    ! local variables
    !
-   INTEGER   :: ik, inn
+   INTEGER   :: ik, ik_eff, ib, inn, ipos
    INTEGER   :: i, m, n, ierr
    REAL(dbl) :: fact
    REAL(dbl),    ALLOCATABLE :: qb(:), Dr(:,:) 
    COMPLEX(dbl), ALLOCATABLE :: At(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: aux2(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: aux2(:,:), Mkb_aux(:,:)
    !
    ! end of declarations 
    !
@@ -68,6 +68,9 @@
    !
    ALLOCATE( At(dimwann,dimwann), STAT=ierr )
    IF( ierr /=0 ) CALL errore('domega_aux', 'allocating At', ABS(ierr) )
+   !
+   ALLOCATE( Mkb_aux(dimwann,dimwann), STAT=ierr )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating Mkb_aux', ABS(ierr) )
    !
    ALLOCATE( Dr(3,dimwann), STAT=ierr )
    IF( ierr /=0 ) CALL errore('domega_aux', 'allocating Dr', ABS(ierr) )
@@ -108,52 +111,108 @@
    !
    fact = a / REAL( nkpts, dbl)
 
+   kpoints_loop: &
    DO ik = 1, nkpts
        !
        aux2(:,:) = CZERO
        !
-       DO inn = 1, nb
-
+       !
+       bvectors_loop: &
+       DO inn = 1, nb / 2 
            !
-           ! Compute:
-           !       qb_n  = w_n *  b * Dr_n
-           !       At_mn = w_n * (b * Dr_n) * Mkb_mn / Mkb_nn 
-           !
-           DO n = 1, dimwann
-               qb(n) = trial(n)%weight * DOT_PRODUCT( vb(:,inn), Dr(:,n) ) 
-               DO m = 1, dimwann
-                   At(m,n) = qb(n) * Mkb(m,n,inn,ik) / Mkb(n,n,inn,ik)
+           DO ipos = 1, 2
+               !
+               ! here we compute basic quantites separately for "positive"
+               ! and "negative" b-vectors
+               !
+               SELECT CASE ( ipos )
+               CASE ( 1 )
+                  !
+                  ! positive b vectors
+                  !
+                  ib     = nnpos( inn )
+                  ik_eff = ik
+                  !
+                  Mkb_aux( :, :)  = Mkb( :, :, ib, ik_eff)
+                  !
+               CASE ( 2 )
+                  !
+                  ! negative b vectors
+                  !
+                  ib     = nnrev( nnpos( inn ) )
+                  ik_eff = nnlist( ib, ik)
+                  !
+                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, nnrev(ib), ik_eff) ) )
+                  !
+               CASE DEFAULT
+                  CALL errore('domega_aux','invalid ipos value',71)
+               END SELECT
+               
+               !
+               ! Compute:
+               !       qb_n  = w_n *  b * Dr_n
+               !       At_mn = w_n * (b * Dr_n) * Mkb_mn / Mkb_nn 
+               !
+               DO n = 1, dimwann
+                   !
+                   qb(n) = trial(n)%weight * DOT_PRODUCT( vb(:,ib), Dr(:,n) ) 
+                   !
+                   DO m = 1, dimwann
+                       !
+                       At(m,n) = qb(n) * Mkb_aux(m,n) / Mkb_aux(n,n)
+                       !
+                   ENDDO
+                   !
                ENDDO
+               !
+               !
+               ! compute the contribution to the variation of the functional
+               ! note that a term -i has been factorized out ot make dOmega/dW
+               ! hermitean
+               !
+               DO n = 1, dimwann
+               DO m = 1, n
+                   !
+                   ! S[At^{k,b}] = (At+At\dag)/2 
+                   !
+                   aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
+                   !
+               ENDDO
+               ENDDO
+               !
            ENDDO
-
            !
-           ! compute the contribution to the variation of the functional
-           ! note that a term -i has been factorized out ot make dOmega/dW
-           ! hermitean
-           !
-           DO n = 1, dimwann
-           DO m = 1, dimwann
-                !
-                ! S[At^{k,b}] = (At+At\dag)/2 
-                !
-                aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
-
-           ENDDO
-           ENDDO
+       ENDDO bvectors_loop
+       ! 
+       ! 
+       ! symmetrize aux2 
+       ! 
+       DO n = 1, dimwann 
+       DO m = 1, n-1
+           aux2(n,m) = CONJG( aux2(m,n) )
        ENDDO
-
+       ENDDO
+       !
        !
        ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
        !
        domg(:,:,ik) = fact * aux2(:,:)
-   ENDDO
+       !
+   ENDDO kpoints_loop
+
 
    DEALLOCATE( qb, STAT=ierr )
-       IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating qb', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating qb', ABS(ierr) )
+   !
    DEALLOCATE( At, Dr, STAT=ierr )
-       IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating At, Dr', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating At, Dr', ABS(ierr) )
+   !
+   DEALLOCATE( Mkb_aux, STAT=ierr )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating Mkb_aux', ABS(ierr) )
+   !
    DEALLOCATE( aux2, STAT=ierr )
-       IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating aux2', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating aux2', ABS(ierr) )
+
 
    CALL timing('domega_aux',OPR='stop')
    CALL log_pop('domega_aux')

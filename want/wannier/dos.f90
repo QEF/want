@@ -1,13 +1,10 @@
 ! 
-! Copyright (C) 2004 WanT Group
+! Copyright (C) 2006 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
-!
-! Based on a previous version by Nicola Marzari and David Vanderbilt
-! See the file README in the root directory for a full list of credits
 !
 !=====================================================
    PROGRAM dos_main

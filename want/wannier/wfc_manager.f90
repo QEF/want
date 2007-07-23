@@ -297,6 +297,7 @@
                     ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
                     !
                     Mkb(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb(:,:,ib,ik)))
+                    
                 ENDDO neighbours
              ENDIF
 
@@ -369,24 +370,28 @@
 ! ... Here read overlap or projections (or both) if needed
 !
       IF ( read_overlaps .OR. read_projections ) THEN
+          !
           CALL io_name('overlap_projection',filename)
           CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="read")
-              !
-              CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION", lfound, &  
-                   LOVERLAP=read_overlaps, LPROJECTION=read_projections)
-                   !
-              IF ( .NOT. lfound ) CALL errore(subname,'reading ovp and proj',1)
-              !
+          !
+          CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION", lfound, &  
+               LOVERLAP=read_overlaps, LPROJECTION=read_projections)
+               !
+          IF ( .NOT. lfound ) CALL errore(subname,'reading ovp and proj',1)
+          !
           CALL file_close(ovp_unit,PATH="/",ACTION="read")
 
           CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
           WRITE(stdout, "(/)")
+          !
           IF ( read_overlaps ) &
-             WRITE( stdout,"(2x,'Overlaps read from file: ',a)") TRIM(filename)
+               WRITE( stdout,"(2x,'Overlaps read from file: ',a)") TRIM(filename)
+          !
           IF ( read_projections ) &
-             WRITE( stdout,"(2x,'Projections read from file: ',a)") TRIM(filename)
+               WRITE( stdout,"(2x,'Projections read from file: ',a)") TRIM(filename)
+          !
           WRITE(stdout,"()")
-
+          !
       ENDIF
 
 !
@@ -396,9 +401,9 @@
 
           CALL io_name('overlap_projection',filename)
           CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form))
-               !
-               CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
-               !
+          !
+          CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
+          !
           CALL file_close(ovp_unit,PATH="/",ACTION="write")
 
           CALL io_name('overlap_projection',filename,LPATH=.FALSE.)

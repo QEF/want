@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 ! Based on a previous version by Nicola Marzari and David Vanderbilt
-! See the file README in the root directory for a full list of credits
+! See the CREDITS file in the ~want directory for a full description
 !
 !=====================================================
    PROGRAM bands

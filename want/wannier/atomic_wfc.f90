@@ -6,7 +6,7 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Based on a previous version from the Espresso package
+! Based on the atomic_wfc.f90 routine from the PWscf package.
 !
 !-----------------------------------------------------------------------
 SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)

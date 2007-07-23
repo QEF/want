@@ -6,7 +6,8 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Based on a previous version from the Qantum Espresso package
+! Part of the implementation is based on the ions_base.f90 file 
+! from the PWscf package.
 !
 ! <INFO>
 !*********************************************************

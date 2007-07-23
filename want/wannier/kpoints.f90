@@ -67,10 +67,10 @@
   !
   ! ... Nearest neighbor data (b vectors)
   INTEGER                 :: nb            ! number of neighbours
-  INTEGER, ALLOCATABLE    :: nnlist(:,:)   ! k+b list for each k, DIM: nb*nkpts
-  INTEGER, ALLOCATABLE    :: nncell(:,:,:) ! k+b cell, DIM: 3*nb*nkpts
-  INTEGER, ALLOCATABLE    :: nnrev(:)      ! -b index for each b, DIM: nb
-  INTEGER, ALLOCATABLE    :: nnpos(:)      ! DIM: nb/2 "positive" def b-vectors
+  INTEGER,   ALLOCATABLE  :: nnlist(:,:)   ! k+b list for each k, DIM: nb*nkpts
+  INTEGER,   ALLOCATABLE  :: nncell(:,:,:) ! k+b cell, DIM: 3*nb*nkpts
+  INTEGER,   ALLOCATABLE  :: nnrev(:)      ! -b index for each b, DIM: nb
+  INTEGER,   ALLOCATABLE  :: nnpos(:)      ! DIM: nb/2 "positive" def b-vectors
   REAL(dbl), ALLOCATABLE  :: vb (:,:)      ! b coords, DIM: 3*nb (bohr^-1)
   REAL(dbl), ALLOCATABLE  :: wb(:)         ! b-weights, DIM: nb
   REAL(dbl)               :: wbtot         ! sum of the b-weights
@@ -123,10 +123,12 @@ CONTAINS
       ! kpt data
       !
       IF ( nkpts <= 0) CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
+      !
       ALLOCATE( vkpt(3,nkpts),STAT=ierr )
-         IF (ierr/=0) CALL errore(subname,'allocating vkpt',3*nkpts)
+      IF (ierr/=0) CALL errore(subname,'allocating vkpt',3*nkpts)
+      !
       ALLOCATE( wk(nkpts),STAT=ierr )
-         IF (ierr/=0) CALL errore(subname,'allocating wk',nkpts)
+      IF (ierr/=0) CALL errore(subname,'allocating wk',nkpts)
 
       kpoints_alloc = .TRUE.
       !
@@ -161,27 +163,30 @@ CONTAINS
       nrtot   = PRODUCT(nr)
       !
       ALLOCATE( vr( 3, nrtot ), STAT=ierr )
-         IF ( ierr /= 0) CALL errore(subname,'allocating vr',ABS(ierr))
+      IF ( ierr /= 0) CALL errore(subname,'allocating vr',ABS(ierr))
+      !
       ALLOCATE( ivr( 3, nrtot ), STAT=ierr )
-         IF ( ierr /= 0) CALL errore(subname,'allocating ivr',ABS(ierr))
+      IF ( ierr /= 0) CALL errore(subname,'allocating ivr',ABS(ierr))
+      !
       ALLOCATE( wr( nrtot ), STAT=ierr )
-         IF ( ierr /= 0) CALL errore(subname,'allocating wr',ABS(ierr))
-         !
+      IF ( ierr /= 0) CALL errore(subname,'allocating wr',ABS(ierr))
+      !
+      !
       CALL get_rgrid(nr, nrtot, wr, vr, avec )
 
       !
       ! compute ivr, crystal compononet of vr
       !
       ALLOCATE( vr_cry( 3, nrtot ), STAT=ierr )
-         IF ( ierr /= 0) CALL errore(subname,'allocating vr_cry',ABS(ierr))
-         !
+      IF ( ierr /= 0) CALL errore(subname,'allocating vr_cry',ABS(ierr))
+      !
       vr_cry(:,:) = vr(:,:) 
       CALL cart2cry(vr_cry, avec)
       !
       ivr(:,:) = NINT( vr_cry(:,:) )
       !
       DEALLOCATE( vr_cry, STAT=ierr )
-         IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
+      IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
       
       CALL log_pop ( subname )
       !
@@ -201,17 +206,22 @@ CONTAINS
       IF ( nb <= 0 .OR. nb > nnx )  CALL errore(subname,'Invalid NB',ABS(nb)+1)
 
       ALLOCATE( nnlist(nb,nkpts), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nnlist ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating nnlist', ABS(ierr) )
+      !
       ALLOCATE( nncell(3,nb,nkpts), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nncell ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating nncell', ABS(ierr) )
+      !
       ALLOCATE( nnrev(nb), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nnrev ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating nnrev', ABS(ierr) )
+      !
       ALLOCATE( vb(3,nb), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating vb ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating vb', ABS(ierr) )
+      !
       ALLOCATE( nnpos(nb/2), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating nnpos ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating nnpos', ABS(ierr) )
+      !
       ALLOCATE( wb(nb), STAT = ierr )
-         IF( ierr /=0 ) CALL errore(subname, ' allocating wb ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating wb', ABS(ierr) )
 
       bshells_alloc = .TRUE.
       !
