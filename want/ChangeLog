@@ -4,10 +4,17 @@
 =======================================================
 
 
+23 Jul 2007      b-vector symmetrization completed. Memory usage due to excess b-vecotrs
+                 not yet eliminated. Qexml lib updated to account for a fmt change 
+                 introduced by espresso-3.2cvs . (AF)
+
+12 Jul 2007      Test references updated. Further symmetrization related to 
+                 b-vectors started. (AF)
+
+
 -------------------------------------------------
 Date: 12 Jul 2007    Version: WanT-2.1.0
 -------------------------------------------------
-
 
 12 Jul 2007      Bug fixed in configure: when not searching for parallel environment,
                  mkl libs were not properly searched. (AF)
