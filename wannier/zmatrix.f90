@@ -13,31 +13,32 @@ SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
   ! Compute the Z matrix according to the formula:
   ! Z_mn = \Sum_b wb  \Sum_l  a_{m,l}^{k,b} * CONJG ( a_{n,l}^{k,b} )
   ! where
-  ! a_{m,l}^{k,b} = \Sum_j lamp(j,l,ikb) * Mkb_{m,j}
+  ! a_{m,l}^{k,b} = \Sum_j  Mkb_{m,j} * lamp(j,l,ikb)
   ! (l is the index over the generators of the wannier subspace, while j is on 
   !  the bloch states) 
   !
   USE kinds
-  USE constants, ONLY : CZERO
-  USE timing_module
+  USE constants,      ONLY : CZERO, CONE
   USE kpoints_module, ONLY : nb, wb
+  USE timing_module
  
   IMPLICIT NONE
 
-  INTEGER,      INTENT(in) :: ik
-  INTEGER,      INTENT(in) :: dimwann, dimwin(*), dimwinx
-  INTEGER,      INTENT(in) :: dimfroz, indxnfroz(*)
-  COMPLEX(dbl), INTENT(in) :: Akb(dimwinx,dimwann,*)
+  INTEGER,      INTENT(in)    :: ik
+  INTEGER,      INTENT(in)    :: dimwann, dimwin(*), dimwinx
+  INTEGER,      INTENT(in)    :: dimfroz, indxnfroz(*)
+  COMPLEX(dbl), INTENT(in)    :: Akb(dimwinx,dimwann,*)
   COMPLEX(dbl), INTENT(inout) :: mtrx(dimwinx,dimwinx)
 
   !
   ! few local variables
   !
-  INTEGER :: ib
-  INTEGER :: m, n, mf, nf, l
+  INTEGER :: dimaux
+  INTEGER :: ib, m, l, ierr
+  COMPLEX(dbl), ALLOCATABLE :: caux(:,:)
 
 !
-!--------------------------------------------------------------------
+!---------------------------------------------------------
 !
 
    mtrx(:,:) = CZERO
@@ -46,41 +47,51 @@ SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
    CALL timing('zmatrix',OPR='start')
 
    !
-   ! ...  Loop over b-vectors
+   ! set auxiliary quantities
+   !
+   dimaux = dimwin(ik)-dimfroz
+   !
+   ALLOCATE( caux( dimaux, dimwann), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore('zmatrix','allocating caux', ABS(ierr))
+
+   !
+   ! Loop over b-vectors
+   ! here we need to consider both b, -b because 
+   ! Akb and not Mkb enter the expression for z-matrix
+   !
+   ! In fact, Akb breaks the [ M^{k,b}_mn ]^* = M^{k+b,-b}_nm
+   ! symmetry
    ! 
    DO ib = 1, nb
 
        !
-       ! loop over the generators of the subspace
+       ! setup the auxiliary matrix CAUX to allow for the usage of ZGEMM
        !
        DO l = 1, dimwann
-
-            !
-            ! update mtrx
-            !
-            DO n = 1, dimwin(ik) - dimfroz
-                nf = indxnfroz(n)
-                !
-                DO m = 1, n
-                    mf = indxnfroz(m)
-                    !
-                    mtrx(m,n) = mtrx(m,n) +  &
-                                wb(ib) * Akb(mf,l,ib) * CONJG( Akb(nf,l,ib) )
-
-                ENDDO
-            ENDDO
-       ENDDO 
-   ENDDO 
-
-   !
-   ! use hermiticity
-   !
-   DO n = 1, dimwin(ik) - dimfroz
-   DO m = 1, n
-        mtrx(n,m) = CONJG( mtrx(m,n) )
+           !
+           caux(:,l) = CZERO
+           !
+           DO m = 1, dimaux     ! dimwin(ik) - dimwann
+               !
+               caux( m, l ) = Akb( indxnfroz(m), l, ib)
+               !
+           ENDDO
+           !
+       ENDDO
+       !
+       ! Here we use ZGEMM instead of the driver zmat_mul 
+       ! to directly increment mtrx avoiding further auxiliary memory.
+       ! Note: the usage of ZHEMM instead of ZGEMM might be evaluated. 
+       !
+       CALL ZGEMM( 'N', 'C', dimaux, dimaux, dimwann,   &
+                   wb(ib)*CONE, caux, dimaux, caux, dimaux, CONE, mtrx, dimwinx)
+       !
    ENDDO
-   ENDDO
- 
+   !
+   !
+   DEALLOCATE( caux, STAT=ierr )
+   IF ( ierr/=0 ) CALL errore('zmatrix','deallocating caux', ABS(ierr))
+   !
    CALL timing('zmatrix',OPR='stop')
  
 END SUBROUTINE zmatrix

@@ -33,7 +33,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE util_module,     ONLY : mat_mul
    USE subspace_module, ONLY : eamp, subspace_read
    USE windows_module,  ONLY : dimwinx, dimwin, windows_read
-   USE kpoints_module,  ONLY : nkpts, nb, nnlist 
+   USE kpoints_module,  ONLY : nkpts, nb, nnlist, nnpos, nnrev 
    USE overlap_module,  ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
    IMPLICIT NONE
 
@@ -52,7 +52,7 @@ SUBROUTINE overlap_extract(dimwann)
    !
    LOGICAL                   :: lfound
    CHARACTER(nstrx)          :: filename 
-   INTEGER                   :: ik, ikb, inn
+   INTEGER                   :: ik, ikb, ib, inn
    INTEGER                   :: ierr
    ! 
    ! end of declarations
@@ -74,6 +74,7 @@ SUBROUTINE overlap_extract(dimwann)
         !
         CALL windows_read(space_unit,"WINDOWS",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1) 
+        !
         CALL subspace_read(space_unit,"SUBSPACE",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1) 
         !
@@ -100,52 +101,61 @@ SUBROUTINE overlap_extract(dimwann)
    ! here allocate the temporary variables for the extracted CM and CA 
    !
    ALLOCATE( Mkb_tmp(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
-      IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
+   IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
+   !
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
-      IF (ierr/=0) CALL errore(subname,"allocating ca_tmp",ABS(ierr))
+   IF (ierr/=0) CALL errore(subname,"allocating ca_tmp",ABS(ierr))
+   !
    ALLOCATE( aux(dimwinx,dimwinx), STAT=ierr ) 
-      IF (ierr/=0) CALL errore(subname,"allocating aux",ABS(ierr))
+   IF (ierr/=0) CALL errore(subname,"allocating aux",ABS(ierr))
 
-
-!
-! ... Transform the original overlaps |u0 nk> according to the wfc transformation rule:
-!
-!     | u mk > = \sum_n |u0 nk > * EAMP_nm k)
-!
-!     where | u mk > are the eigenvector of the hamiltonian on the Wannier subspace
-!     The new overlaps become:
-!
-!     < u mk | u nk+b > = \sum_{ij} EAMP^{daga}_mi (k) * < u0 ik | u0 jk+b > * EAMP_jn (k+b)
-!
-!     As well, the projection on the input localized orbitals are given:
-!     ca(m,i,k) = < u mk | phi_i > and thus
-!     
-!     ca(m,i,k) = \sum_l EAMP^{daga}_ml * ca0(l,i,k)
-!
 
    !
-   ! CM
+   ! Transform the original overlaps |u0 nk> according to the wfc transformation rule:
+   ! 
+   !   | u mk > = \sum_n |u0 nk > * EAMP_nm k)
    !
-   DO ik = 1, nkpts
-   DO inn= 1, nb
+   ! where | u mk > are the eigenvector of the hamiltonian on the Wannier subspace
+   ! The new overlaps become:
+   !
+   !   < u mk | u nk+b > = \sum_{ij} EAMP^{daga}_mi (k) * < u0 ik | u0 jk+b > * EAMP_jn (k+b)
+   !
+   ! As well, the projection on the input localized orbitals are given:
+   ! ca(m,i,k) = < u mk | phi_i > and thus
+   !     
+   ! ca(m,i,k) = \sum_l EAMP^{daga}_ml * ca0(l,i,k)
+   !
+
+   !
+   ! Overlap integrals
+   !
+   DO ik  = 1, nkpts
        !
-       ikb = nnlist( inn, ik )
-       !
-       CALL mat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
-                    dimwann, dimwin(ikb), dimwin(ik) )
-       CALL mat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
-                    dimwann, dimwann, dimwin(ikb) )
+       DO inn = 1, nb / 2
+           !
+           ib  = nnpos ( inn )
+           ikb = nnlist( ib, ik )
+           !
+           CALL mat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,ib,ik), 'N', &
+                        dimwann, dimwin(ikb), dimwin(ik) )
+           CALL mat_mul(Mkb_tmp(:,:,ib,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
+                        dimwann, dimwann, dimwin(ikb) )
+           !
+           ! Symmetrize
+           !
+           Mkb_tmp(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_tmp(:,:,ib,ik)))
+           !
+       ENDDO
        !
    ENDDO
-   ENDDO
 
    !
-   ! CA 
+   ! Projections
    !
    DO ik = 1, nkpts
-
-      CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
-                    dimwann, dimwann, dimwin(ik) )
+       !
+       CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
+                     dimwann, dimwann, dimwin(ik) )
    ENDDO
 
 
@@ -153,19 +163,24 @@ SUBROUTINE overlap_extract(dimwann)
    ! finally redefine the CM iand CA variables 
    !
    CALL overlap_deallocate()
+   !
    dimwinx = dimwann
+   !
    CALL overlap_allocate()
-
+   !
+   !
    Mkb(:,:,:,:) = Mkb_tmp(:,:,:,:)
-   ca(:,:,:) =   ca_tmp(:,:,:)
+   !
+   ca(:,:,:)    = ca_tmp(:,:,:)
 
    !
    ! cleaning
    !
    DEALLOCATE( Mkb_tmp, ca_tmp, STAT=ierr) 
-      IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp, ca_tmp",ABS(ierr))
+   IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp, ca_tmp",ABS(ierr))
+   !
    DEALLOCATE( aux, STAT=ierr ) 
-      IF (ierr/=0) CALL errore(subname,"deallocating aux",ABS(ierr))
+   IF (ierr/=0) CALL errore(subname,"deallocating aux",ABS(ierr))
 
    CALL timing('overlap_extract',OPR='stop')
    CALL log_pop('overlap_extract')

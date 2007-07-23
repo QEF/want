@@ -54,31 +54,33 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
 
 
    DO ik = 1, nkpts
-      !
-      ! take advantage on the symmetry properties of Mkb
-      ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
-      !
-      ! perform the loop only for the "positive" b, 
-      ! and symmetrize at the end
-      !
-      DO inn= 1, nb/2
-         !
-         ib  = nnpos (inn)
-         ikb = nnlist( ib, ik )
+       !
+       ! take advantage on the symmetry properties of Mkb
+       ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
+       !
+       ! perform the loop only for the "positive" b, 
+       ! and symmetrize at the end
+       !
+       DO inn = 1, nb / 2
+           !
+           ib  = nnpos (inn)
+           ikb = nnlist( ib, ik )
+ 
+           !
+           ! aux1 = U(ik)^dag * Mkb * U(ikb)
+           !
+           CALL mat_mul(aux, U(:,:,ik), 'C', Mkb_in(:,:,ib,ik), 'N', &
+                        dimwann, dimwann, dimwann)
+           CALL mat_mul(Mkb_out(:,:,ib,ik), aux, 'N', U(:,:,ikb), 'N', & 
+                        dimwann, dimwann, dimwann)
 
-         !
-         ! aux1 = U(ik)^dag * Mkb * U(ikb)
-         !
-         CALL mat_mul(aux, U(:,:,ik), 'C', Mkb_in(:,:,ib,ik), 'N', &
-                      dimwann, dimwann, dimwann)
-         CALL mat_mul(Mkb_out(:,:,ib,ik), aux, 'N', U(:,:,ikb), 'N', & 
-                      dimwann, dimwann, dimwann)
-
-         !
-         ! symmetrize
-         !
-         Mkb_out(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_out(:,:,ib,ik)))
-      ENDDO
+           !
+           ! symmetrize
+           !
+           Mkb_out(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_out(:,:,ib,ik)))
+           !
+       ENDDO
+       !
    ENDDO
 
    !

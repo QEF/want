@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 ! Based on a previous version by I.Souza, N.Marzari and D.Vanderbilt
-! See the file README in the root directory for a full list of credits
+! See the CREDITS file in the ~want directory for a full description
 !
 !=====================================================
    PROGRAM disentangle
@@ -25,7 +25,7 @@
                                    unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
                                    read_symmetry
        USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
-       USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist
+       USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist, nnpos, nnrev
        USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, dimfroz, indxnfroz
        USE windows_module,   ONLY: windows_allocate, windows_write
        USE subspace_module,  ONLY: dimwann, wan_eig, lamp, camp, eamp, comp_eamp, &
@@ -48,7 +48,7 @@
        !
        REAL(dbl)  :: omega_i, omega_i_save, omega_i_err
        INTEGER    :: i, j, l, m, ierr
-       INTEGER    :: ik, ib, ikb, iter, ncount
+       INTEGER    :: ik, inn, ib, ikb, iter, ncount
 
 !      
 ! ...  end of declarations
@@ -88,13 +88,16 @@
        ! ...  Local allocations
        !
        ALLOCATE( ham(dimwinx,dimwinx,nkpts), STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating ham', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore('disentangle', 'allocating ham', ABS(ierr) )
+       !
        ALLOCATE( z(dimwinx,dimwinx), w(dimwinx), STAT = ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating z, w', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore('disentangle', 'allocating z, w', ABS(ierr) )
+       !
        ALLOCATE( Mkb_aux(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating Mkb_aux', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore('disentangle', 'allocating Mkb_aux', ABS(ierr) )
+       !
        ALLOCATE( Akb_aux(dimwinx,dimwann,nb,nkpts), STAT=ierr ) 
-           IF( ierr /=0 ) CALL errore('disentangle', 'allocating Akb_aux', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore('disentangle', 'allocating Akb_aux', ABS(ierr) )
 
 
 
@@ -140,12 +143,37 @@
                !     Akb     = Mkb * Lamp(ikb)
                !     Mkb_aux = Lamp(ik)^{\dag} * Akb
                !
-               DO ib = 1, nb
+               DO inn = 1, nb / 2
+                    !
+                    ! <DEVEL>
+                    ! we only do half of the b vectors and then, 
+                    ! temporarily, apply the symmetrization rule: 
+                    ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
+                    !
+                    ib  = nnpos(inn)
                     ikb = nnlist(ib, ik)
+                    !
+                    !  A^kb  =  M^kb * Lamp^(k+b)
+                    !
                     CALL mat_mul(Akb_aux(:,:,ib,ik), Mkb(:,:,ib,ik), 'N',  &
                                  lamp(:,:,ikb), 'N', dimwin(ik), dimwann, dimwin(ikb) )
+
+                    !
+                    ! Here we compute the updated overlap integrals (M^kb_aux)
+                    !
+                    !  M^kb_aux  =  Lamp^k^dag * A^kb = Lamp^k^dag * M^kb * Lamp^(k+b)
+                    !
                     CALL mat_mul(Mkb_aux(:,:,ib,ik), lamp(:,:,ik), 'C', & 
                                  Akb_aux(:,:,ib,ik), 'N', dimwann, dimwann, dimwin(ik) )
+                    !
+                    !
+                    ! impose the symmetry
+                    !
+                    Mkb_aux(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_aux(:,:,ib,ik)))
+                    !
+                    CALL mat_mul(Akb_aux(:,:,nnrev(ib),ikb), Mkb(:,:,ib,ik), 'C',  &
+                                 lamp(:,:,ik), 'N', dimwin(ikb), dimwann, dimwin(ik) )
+                    !
                ENDDO
            ENDDO
       
@@ -217,8 +245,10 @@
            CALL log_push( 'zmatrix' )
            !
            DO ik = 1, nkpts
-                CALL zmatrix( ik, dimwann, dimwin, dimwinx, Akb_aux(1,1,1,ik), &
-                              mtrx_out(1,1,ik), dimfroz(ik), indxnfroz(1,ik) )
+               !
+               CALL zmatrix( ik, dimwann, dimwin, dimwinx, Akb_aux(1,1,1,ik), &
+                             mtrx_out(1,1,ik), dimfroz(ik), indxnfroz(1,ik) )
+               !
            ENDDO
            !
            CALL log_pop ( 'zmatrix' )
@@ -234,6 +264,7 @@
                ! 
                DO ik = 1, nkpts
                    IF ( dimwann > dimfroz(ik) )  THEN
+                       !
                        DO i = 1, dimwin(ik)-dimfroz(ik)
                        DO j = 1, i
                             mtrx_in(j,i,ik) = alpha_dis * mtrx_out(j,i,ik) + &
@@ -244,6 +275,7 @@
                             mtrx_in(i,j,ik) = CONJG(mtrx_in(j,i,ik))     
                        ENDDO
                        ENDDO
+                       !
                    ENDIF
                ENDDO
                ! 
@@ -260,13 +292,14 @@
                ! Diagonalize z matrix mtrx_in at all relevant k-points
                ! 
                IF ( dimwann > dimfroz(ik) )  THEN
-                    !
-                    CALL timing('mat_hdiag', OPR='start')
-                    !
-                    m = dimwin(ik)-dimfroz(ik)
-                    CALL mat_hdiag( z(:,:), w(:), mtrx_in(:,:,ik), m)
-                    !
-                    CALL timing('mat_hdiag', OPR='stop')
+                   !
+                   CALL timing('mat_hdiag', OPR='start')
+                   !
+                   m = dimwin(ik)-dimfroz(ik)
+                   CALL mat_hdiag( z(:,:), w(:), mtrx_in(:,:,ik), m)
+                   !
+                   CALL timing('mat_hdiag', OPR='stop')
+                   !
                ENDIF
 
                ! 
@@ -275,15 +308,24 @@
                ! to build the optimal subspace for the next iteration
                ! 
                IF ( dimwann > dimfroz(ik) )  THEN
+                   !
                    m = dimfroz(ik)
+                   !
                    DO j = dimwin(ik)-dimwann+1, dimwin(ik)-dimfroz(ik)
-                        m = m+1
-                        lamp( 1:dimwin(ik), m, ik) = CZERO
-                        DO i = 1, dimwin(ik)-dimfroz(ik)
-                            lamp( indxnfroz(i,ik), m, ik) = z(i,j) 
-                        ENDDO
+                       !
+                       m = m+1
+                       lamp( 1:dimwin(ik), m, ik) = CZERO
+                       !
+                       DO i = 1, dimwin(ik)-dimfroz(ik)
+                           !
+                           lamp( indxnfroz(i,ik), m, ik) = z(i,j) 
+                           !
+                       ENDDO
+                       !
                    ENDDO
+                   !
                ENDIF
+               !
            ENDDO
            !
            CALL log_pop ( 'lamp' )
@@ -358,7 +400,7 @@
            ! check the unitariry of lamp
            !
            IF ( .NOT. zmat_unitary( dimwin(ik), dimwann, lamp(:,:,ik), &
-                                    SIDE='left', TOLL=unitary_thr) )&
+                                    SIDE='left', TOLL=unitary_thr ) )&
                  CALL errore('disentangle',"Lamp matrices not orthogonal",ik)
 
            DO j = 1, dimwann
@@ -509,14 +551,16 @@
 !
 
        !
-       ! ...  Deallocate local arrays
+       ! Cleanup of local memory
        !
        DEALLOCATE( ham, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating ham', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore('disentangle', 'deallocating ham', ABS(ierr) )
+       !
        DEALLOCATE( z, w, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating z, w', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore('disentangle', 'deallocating z, w', ABS(ierr) )
+       !
        DEALLOCATE( Mkb_aux, Akb_aux, STAT=ierr )
-           IF( ierr /=0 ) CALL errore('disentangle', 'deallocating Mkb_ Akb_aux', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore('disentangle', 'deallocating Mkb_aux, Akb_aux', ABS(ierr) )
 
        !
        ! global cleanup

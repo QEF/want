@@ -25,7 +25,7 @@
    USE parameters,      ONLY : nnx
    USE lattice_module,  ONLY : bvec, lattice_alloc => alloc
    USE kpoints_module,  ONLY : vkpt, nkpts, nb, vb, wb, wbtot, &
-                               nnlist, nncell, nnrev, nnpos, &
+                               nnlist, nncell, nnrev, nnpos,   &
                                kpoints_alloc, bshells_allocate 
    IMPLICIT NONE
 
@@ -282,30 +282,33 @@
    j = 0
    l = 0
    DO i=1,rank
+      !
       IF ( ABS(rhs(i)) > EPS_m6 ) THEN    
          !
          l = l + 1
-         j = j + 2
+         j = j + 1
          !
-         wb(j-1) = rhs(i)
-         wb(j)   = rhs(i)
+         wb(j)        = rhs(i)
+         wb(j+nb/2)   = rhs(i)
          !
-         vb(:,j-1) =  vb_aux(:,ipiv(i))
-         vb(:,j)   = -vb_aux(:,ipiv(i))
+         vb(:,j)      =  vb_aux(:,ipiv(i))
+         vb(:,j+nb/2) = -vb_aux(:,ipiv(i))
          !
          ! b vectors excluding -b
-         nnpos(l)  =  j-1
+         nnpos(l)       =  j
          !
          ! once b is fixed, report the index of -b
-         nnrev(j-1) = j 
-         nnrev(j) = j-1 
+         nnrev(j)      = j+nb/2
+         nnrev(j+nb/2) = j
          !
       ENDIF
+      !
    ENDDO
-   IF( j/=nb ) CALL errore('bshells_init','j /= nb, unexpected',ABS(j)+1)
+   !
+   IF( j /= nb/2 ) CALL errore('bshells_init','j /= nb/2, unexpected',ABS(j)+1)
    !
    DEALLOCATE( vb_aux, STAT=ierr)
-      IF (ierr/=0) CALL errore('bshells_init','deallocating vb_aux',ABS(ierr))
+   IF (ierr/=0) CALL errore('bshells_init','deallocating vb_aux',ABS(ierr))
 
    !
    ! get the tsum of the weights

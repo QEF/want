@@ -17,11 +17,11 @@
    ! is computed in omegai.f90
    !
    USE kinds
-   USE constants,        ONLY : ZERO, ONE, CI 
+   USE constants,        ONLY : ZERO, ONE, TWO, CI 
    USE io_module,        ONLY : stdout
    USE timing_module,    ONLY : timing
    USE log_module,       ONLY : log_push, log_pop
-   USE kpoints_module,   ONLY : nb, vb, wb
+   USE kpoints_module,   ONLY : nb, vb, wb, nnpos
    IMPLICIT NONE
 
    !
@@ -31,14 +31,14 @@
    REAL(dbl),    INTENT(in) :: sheet(dimwann,nb,nkpts)
    COMPLEX(dbl), INTENT(in) :: csheet(dimwann,nb,nkpts)
    COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nb,nkpts)
-
-   REAL(dbl), INTENT(out) :: r2ave(dimwann), rave2(dimwann), rave(3,dimwann)
-   REAL(dbl), INTENT(out) :: Omega_D, Omega_OD
+   !
+   REAL(dbl),   INTENT(out) :: r2ave(dimwann), rave2(dimwann), rave(3,dimwann)
+   REAL(dbl),   INTENT(out) :: Omega_D, Omega_OD
 
    !
    ! local variables
    !
-   INTEGER   :: ik, ib
+   INTEGER   :: ik, ib, inn
    INTEGER   :: m, n, ierr 
    REAL(dbl) :: rtmp, rtmp1
    REAL(dbl), ALLOCATABLE :: aux(:,:,:)
@@ -62,17 +62,22 @@
    !
    ! first compute the auxiliary quantity
    ! aux(m,ib,ik) =  Im Log (Mkb(m,m))
+   ! for the positive b-vectors only
    !
-   ALLOCATE( aux(dimwann,nb,nkpts), STAT=ierr)
-      IF (ierr/=0) CALL errore('omega','allocating aux', ABS(ierr))
+   ALLOCATE( aux(dimwann, nb/2, nkpts), STAT=ierr)
+   IF (ierr/=0) CALL errore('omega','allocating aux', ABS(ierr))
   
-   DO ik = 1, nkpts
-   DO ib = 1, nb
-        DO m = 1, dimwann
-             !
-             aux(m,ib,ik) = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
-                            - sheet(m,ib,ik) 
-        ENDDO
+   DO ik  = 1, nkpts
+   DO inn = 1, nb / 2
+       !
+       ib = nnpos( inn )
+       !
+       DO m = 1, dimwann
+            !
+            aux(m,inn,ik) = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
+                           - sheet(m,ib,ik) 
+       ENDDO
+       !
    ENDDO
    ENDDO
 
@@ -88,29 +93,34 @@
    rave(:,:) = ZERO
    r2ave(:)  = ZERO
 
-   DO ik = 1, nkpts
-   DO ib = 1, nb
-        !
-        !
-        DO m = 1, dimwann
-             !
-             r2ave(m) = r2ave(m) + wb(ib) *  &
-                 ( ONE - REAL( Mkb(m,m,ib,ik) * CONJG( Mkb(m,m,ib,ik)) ) + &
-                 aux(m,ib,ik) ** 2 )
-                 !
-             rave(:,m) = rave(:,m) + wb(ib) * aux(m,ib,ik) * vb(:,ib) 
-        ENDDO
+   DO ik  = 1, nkpts
+   DO inn = 1, nb / 2
+       !
+       ib = nnpos( inn )
+       !
+       DO m = 1, dimwann
+           !
+           r2ave(m) = r2ave(m) + wb(ib) *  &
+               ( ONE - REAL( Mkb(m,m,ib,ik) * CONJG( Mkb(m,m,ib,ik)) ) + &
+               aux(m,inn,ik) ** 2 )
+               !
+           rave(:,m) = rave(:,m) + wb(ib) * aux(m,inn,ik) * vb(:,ib) 
+           !
+       ENDDO
+       !
    ENDDO
    ENDDO
    !
-   rave(:,:) = - rave(:,:) / REAL(nkpts, dbl)
-   r2ave(:) =     r2ave(:) / REAL(nkpts, dbl)
+   rave(:,:) = - TWO * rave(:,:) / REAL(nkpts, dbl)
+   r2ave(:) =    TWO * r2ave(:) / REAL(nkpts, dbl)
 
    !
    ! compute | <r_n> |^2
    !
    DO m = 1, dimwann
+       !
        rave2(m) = rave(1,m)**2 + rave(2,m)**2 + rave(3,m)**2
+       !
    ENDDO
 
 
@@ -122,46 +132,64 @@
    ! Omega_OD = 1/Nk \Sum_{ik, nn} wb(nn) * \Sum_{m/=n} | Mkb(m,n,nn,ik) |^2
    !
    Omega_OD = ZERO
-   DO ik = 1, nkpts
-   DO ib = 1, nb
-
-        rtmp = ZERO
-        DO n = 1, dimwann
-             DO m = 1, dimwann
-                 rtmp = rtmp + REAL( Mkb(m,n,ib,ik)*CONJG( Mkb(m,n,ib,ik)), dbl )
-             ENDDO
-             !
-             ! eliminate the diagonal term
-             rtmp = rtmp - REAL( Mkb(n,n,ib,ik) * CONJG( Mkb(n,n,ib,ik)), dbl)
-        ENDDO
-        Omega_OD = Omega_OD + wb(ib) * rtmp
+   !
+   DO ik  = 1, nkpts
+   DO inn = 1, nb / 2
+       !
+       ib   = nnpos( inn )
+       rtmp = ZERO
+       !
+       DO n = 1, dimwann
+           !
+           DO m = 1, dimwann
+               rtmp = rtmp + REAL( Mkb(m,n,ib,ik)*CONJG( Mkb(m,n,ib,ik)), dbl )
+           ENDDO
+           !
+           ! eliminate the diagonal term
+           rtmp = rtmp - REAL( Mkb(n,n,ib,ik) * CONJG( Mkb(n,n,ib,ik)), dbl)
+           !
+       ENDDO
+       !
+       Omega_OD = Omega_OD + wb(ib) * rtmp
+       !
    ENDDO
    ENDDO
-   Omega_OD = Omega_OD / REAL(nkpts, dbl)
+   !
+   Omega_OD = TWO * Omega_OD / REAL(nkpts, dbl)
 
 
    !
-   ! func_D =  1/Nk \Sum_{ik, nn} wb(nn) * \Sum_m ( Im Log Mkb(m,m) + b * <r>_m )**2
+   ! Omega_D =  1/Nk \Sum_{ik, nn} wb(nn) * \Sum_m ( Im Log Mkb(m,m) + b * <r>_m )**2
    !
    Omega_D = ZERO
-   DO ik = 1, nkpts
-   DO ib = 1, nb
-        rtmp = ZERO
-        DO m = 1, dimwann
-              rtmp1 = DOT_PRODUCT( vb(:, ib), rave(:, m) )
-              rtmp = rtmp + ( aux(m,ib,ik) + rtmp1 ) **2
-        ENDDO
-        Omega_D = Omega_D + wb(ib) * rtmp
+   !
+   DO ik  = 1, nkpts
+   DO inn = 1, nb / 2
+       !
+       ib   = nnpos( inn )
+       rtmp = ZERO
+       !
+       DO m = 1, dimwann
+           !
+           rtmp1 = DOT_PRODUCT( vb(:, ib), rave(:, m) )
+           rtmp = rtmp + ( aux(m,inn,ik) + rtmp1 ) **2
+           !
+       ENDDO
+       !
+       Omega_D = Omega_D + wb(ib) * rtmp
+       !
    ENDDO
    ENDDO
-   Omega_D = Omega_D / REAL(nkpts, dbl)
+   !
+   Omega_D = TWO * Omega_D / REAL(nkpts, dbl)
 
 
    !
    ! cleaning
    !
    DEALLOCATE( aux, STAT=ierr)
-      IF (ierr/=0) CALL errore('omega','deallocating aux', ABS(ierr))
+   IF (ierr/=0) CALL errore('omega','deallocating aux', ABS(ierr))
+
 
    CALL timing('omega',OPR='stop')
    CALL log_pop('omega')

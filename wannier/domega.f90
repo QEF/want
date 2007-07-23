@@ -24,7 +24,7 @@
    USE constants,          ONLY : ZERO, ONE, TWO, CZERO, CI
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
-   USE kpoints_module,     ONLY : nb, vb, wb
+   USE kpoints_module,     ONLY : nb, vb, wb, nnpos, nnrev, nnlist
    IMPLICIT NONE 
 
    !  
@@ -40,12 +40,12 @@
    !
    ! local variables
    !
-   INTEGER   :: ik, inn
+   INTEGER   :: ik, ik_eff, ikb, ib, inn, ipos
    INTEGER   :: m, n, ierr
    REAL(dbl) :: fact
-   REAL(dbl),    ALLOCATABLE :: qkb(:) 
-   COMPLEX(dbl), ALLOCATABLE :: R(:,:), Rt(:,:), T(:,:) 
-   COMPLEX(dbl), ALLOCATABLE :: aux1(:,:), aux2(:,:)
+   REAL(dbl),    ALLOCATABLE :: qkb(:), sheet_aux(:) 
+   COMPLEX(dbl), ALLOCATABLE :: R(:,:), T(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: aux1(:,:), aux2(:,:), Mkb_aux(:,:), csheet_aux(:)
    !
    ! end of declarations 
    !
@@ -60,81 +60,154 @@
       
 
    ALLOCATE( qkb(dimwann), STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega', 'allocating qkb', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega', 'allocating qkb', ABS(ierr) )
+   !
    ALLOCATE( R(dimwann,dimwann), T(dimwann,dimwann), STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega', 'allocating R,T', ABS(ierr) )
-   ALLOCATE( Rt(dimwann,dimwann), STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega', 'allocating Rt', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega', 'allocating R,T', ABS(ierr) )
+   !
+   ALLOCATE( Mkb_aux(dimwann,dimwann),  STAT=ierr )
+   IF( ierr /=0 ) CALL errore('domega', 'allocating Mkb_aux', ABS(ierr) )
+   !
+   ALLOCATE( csheet_aux(dimwann), sheet_aux(dimwann),  STAT=ierr )
+   IF( ierr /=0 ) CALL errore('domega', 'allocating sheets', ABS(ierr) )
+   !
    ALLOCATE( aux1(dimwann,dimwann),  STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega', 'allocating aux1', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega', 'allocating aux1', ABS(ierr) )
+   !
    ALLOCATE( aux2(dimwann,dimwann),  STAT=ierr )
-        IF( ierr /=0 ) CALL errore('domega', 'allocating aux2', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega', 'allocating aux2', ABS(ierr) )
 
 
    !
    ! domg is calculated
    !
    fact = TWO / REAL( nkpts, dbl )
-
+   domg(:,:,:) = CZERO
+   !
+   !
+   kpoints_loop: &
    DO ik = 1, nkpts
-
+       !
        aux1(:,:) = CZERO
        aux2(:,:) = CZERO
-
-       DO inn = 1, nb
-
+       !
+       bvectors_loop: &
+       DO inn = 1, nb / 2
            !
-           ! Compute:
-           !       qbk_n = Im Log Mkb_nn + b * r_n 
-           !       Rt_mn = Mkb_mn / Mkb_nn 
-           !        R_mn = Mkb_mn * CONJG( Mkb_nn ) 
-           !        T_mn = Rt_mn * qkb_n
-           !
-           DO n = 1, dimwann
-               qkb(n) = AIMAG( LOG( csheet(n,inn,ik)* Mkb(n,n,inn,ik) ) - &
-                               sheet(n,inn,ik) ) + DOT_PRODUCT( vb(:,inn), rave(:,n) ) 
-               DO m = 1, dimwann
-                   R (m,n) = Mkb(m,n,inn,ik) * CONJG( Mkb(n,n,inn,ik) )
-                   Rt(m,n) = Mkb(m,n,inn,ik) / Mkb(n,n,inn,ik)
-                   T (m,n) = Rt(m,n) * qkb(n)
+           DO ipos = 1, 2
+               !
+               ! here we compute basic quantites separately for "positive"
+               ! and "negative" b-vectors
+               !
+               SELECT CASE ( ipos ) 
+               CASE ( 1 )
+                  !
+                  ! positive b vectors
+                  !
+                  ib     = nnpos( inn )
+                  ik_eff = ik
+                  !
+                  Mkb_aux( :, :)  = Mkb( :, :, ib, ik_eff)
+                  csheet_aux( : ) = csheet(:, ib, ik_eff)
+                  sheet_aux( : )  = sheet(:, ib, ik_eff)
+                  !
+               CASE ( 2 )
+                  !
+                  ! negative b vectors
+                  !
+                  ib     = nnrev( nnpos( inn ) )
+                  ik_eff = nnlist( ib, ik)
+                  !
+                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, nnrev(ib), ik_eff) ) )
+                  csheet_aux( : ) = CONJG( csheet(:, nnrev(ib), ik_eff) )
+                  sheet_aux( : )  =        sheet(:, nnrev(ib), ik_eff) 
+                  !
+               CASE DEFAULT
+                  CALL errore('domega','invalid ipos value',71)
+               END SELECT
+              
+               !
+               ! Compute:
+               !       qbk_n = Im Log Mkb_nn + b * r_n 
+               !
+               !      R (mn) = Mkb_mn * CONJG( Mkb_nn ) 
+               !      T (mn) = Mkb_mn / Mkb_nn * qkb_n
+               !
+               DO n = 1, dimwann
+                   !
+                   qkb(n) = AIMAG( LOG( csheet_aux(n)* Mkb_aux(n,n) ) - sheet_aux(n) ) + &
+                            DOT_PRODUCT( vb(:,ib), rave(:,n) ) 
+                   !
+                   DO m = 1, dimwann
+                       !
+                       R (m,n) = Mkb_aux(m,n) * CONJG( Mkb_aux(n,n) )
+                       T (m,n) = Mkb_aux(m,n) / Mkb_aux(n,n) * qkb(n)
+                       !
+                   ENDDO
+                   !
                ENDDO
+               !
+               !
+               ! compute the contribution to the variation of the functional
+               ! note that a term -i has been factorized out to make dOmega/dW
+               ! hermitean
+               !
+               DO n = 1, dimwann
+               DO m = 1, n
+                   !
+                   ! A[R^{k,b}] = -i ( R - R^dag )/2
+                   ! where    R_mn = Mkb(m,n) * CONJG( Mkb(n,n) )
+                   ! which is different from what reported on the paper PRB 56, 12852 (97)
+                   !
+                   aux1(m,n) = aux1(m,n) - wb(ib) * CI * ( R(m,n) - CONJG( R(n,m)) )
+    
+                   !
+                   ! S[T^{k,b}] = (T+Tdag)/2 
+                   !
+                   aux2(m,n) = aux2(m,n) + wb(ib) * ( T(m,n) + CONJG(T(n,m)) )
+                   !
+               ENDDO
+               ENDDO
+               !
            ENDDO
-
            !
-           ! compute the contribution to the variation of the functional
-           ! note that a term -i has been factorized out to make dOmega/dW
-           ! hermitean
+       ENDDO bvectors_loop
+       !
+       !
+       ! symmetrize aux1, aux2
+       !
+       DO n = 1, dimwann
+       DO m = 1, n-1
            !
-           DO n = 1, dimwann
-           DO m = 1, dimwann
-                !
-                ! A[R^{k,b}] = -i ( R - R^dag )/2
-                ! where    R_mn = Mkb(m,n) * CONJG( Mkb(n,n) )
-                ! which is different from what reported on the paper PRB 56, 12852 (97)
-                !
-                aux1(m,n) = aux1(m,n) - wb(inn) * CI * ( R(m,n) - CONJG( R(n,m)) )
-
-                !
-                ! S[T^{k,b}] = (T+Tdag)/2 
-                !
-                aux2(m,n) = aux2(m,n) + wb(inn) * ( T(m,n) + CONJG(T(n,m)) )
-
-           ENDDO
-           ENDDO
+           aux1(n,m) = CONJG( aux1(m,n) )
+           aux2(n,m) = CONJG( aux2(m,n) )
+           !
        ENDDO
-
+       ENDDO
+       !
        !
        ! dOmega/dW(k) = 4 * \Sum_b wb * (  A[R] - S[T] )
        !
-       domg(:,:,ik) = fact * ( aux1(:,:) + aux2(:,:) )
-   ENDDO
+       domg(:,:,ik) = domg(:,:,ik) + fact * ( aux1(:,:) + aux2(:,:) )
+       !
+   ENDDO kpoints_loop
+
 
    DEALLOCATE( qkb, STAT=ierr )
-       IF( ierr /=0 ) CALL errore('domega', 'deallocating qkb', ABS(ierr) )
-   DEALLOCATE( R, Rt, T, STAT=ierr )
-       IF( ierr /=0 ) CALL errore('domega', 'deallocating R, Rt, T', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega', 'deallocating qkb', ABS(ierr) )
+   !
+   DEALLOCATE( R, T, STAT=ierr )
+   IF( ierr /=0 ) CALL errore('domega', 'deallocating R, T', ABS(ierr) )
+   !
+   DEALLOCATE( Mkb_aux, STAT=ierr )
+   IF( ierr /=0 ) CALL errore('domega', 'deallocating Mkb_aux', ABS(ierr) )
+   !
+   DEALLOCATE( csheet_aux, sheet_aux, STAT=ierr )
+   IF( ierr /=0 ) CALL errore('domega', 'deallocating csheet_aux, sheet_aux', ABS(ierr) )
+   !
    DEALLOCATE( aux1, aux2, STAT=ierr )
-       IF( ierr /=0 ) CALL errore('domega', 'deallocating aux1, aux2', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore('domega', 'deallocating aux1, aux2', ABS(ierr) )
+
 
    CALL timing('domega',OPR='stop')
    CALL log_pop('domega')

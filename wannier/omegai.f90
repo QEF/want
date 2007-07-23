@@ -18,8 +18,8 @@
    ! Mkb_upd = Lamp(ik)^dag * Mkb0 * Lamp(ikb)
    !
    USE kinds
-   USE constants,      ONLY : ZERO
-   USE kpoints_module, ONLY : nb, wb, wbtot
+   USE constants,      ONLY : ZERO, TWO
+   USE kpoints_module, ONLY : nb, wb, wbtot, nnpos
    USE log_module,     ONLY : log_push, log_pop
    USE timing_module,  ONLY : timing
    !
@@ -36,7 +36,7 @@
    ! local variables
    !
    INTEGER :: m, n 
-   INTEGER :: ik, ib
+   INTEGER :: ik, ib, inn
    !
    ! end of declariations
    !
@@ -53,20 +53,27 @@
    !
    ! ...  Loop over k- and b-vectors
    !
-   DO ik = 1, nkpts
-   DO ib = 1, nb
-
+   DO ik  = 1, nkpts
+   DO inn = 1, nb / 2
+       !
+       ib = nnpos( inn )
+       !
        DO n = 1, dimwann     
        DO m = 1, dimwann
+            !
             Omega_I = Omega_I - wb(ib) * &
                       REAL( CONJG( Mkb(m,n,ib,ik) ) * Mkb(m,n,ib,ik), dbl )
+            !
        ENDDO 
        ENDDO 
-
+       !
    ENDDO 
    ENDDO 
    !
-   Omega_I = Omega_I / REAL(nkpts, dbl) + REAL(dimwann, dbl) * wbtot
+   ! Omega_I is moltiplied by two to account for the -b terms which
+   ! have not been summed up in the previous loop
+   !
+   Omega_I = TWO * Omega_I / REAL(nkpts, dbl) + REAL(dimwann, dbl) * wbtot
 
    CALL timing('omegai',OPR='stop') 
    CALL log_pop ('omegai')
