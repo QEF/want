@@ -2321,7 +2321,6 @@ CONTAINS
       INTEGER        :: nbnd_
       CHARACTER(256) :: energy_units_
       CHARACTER(256) :: filename
-      REAL(dbl)      :: ef_
       REAL(dbl), ALLOCATABLE :: occ_(:), eig_(:)
       !
       
@@ -2358,8 +2357,12 @@ CONTAINS
       CALL iotk_scan_attr( attr, "UNITS", energy_units_, IERR=ierr )
       IF (ierr/=0)  RETURN
       !
-      CALL iotk_scan_dat( iunaux, "FERMI_ENERGY", ef_, IERR=ierr )
-      IF (ierr/=0)  RETURN
+      IF ( PRESENT( ef )) THEN
+         !
+         CALL iotk_scan_dat( iunaux, "FERMI_ENERGY", ef, IERR=ierr )
+         IF (ierr/=0)  RETURN
+         !
+      ENDIF
       !
       !
       ! Allocations
@@ -2379,7 +2382,6 @@ CONTAINS
       !
       IF ( PRESENT( nbnd ) )             nbnd             = nbnd_
       IF ( PRESENT( energy_units ) )     energy_units     = TRIM( energy_units_ )
-      IF ( PRESENT( ef ) )                         ef     = ef_
       IF ( PRESENT( occ ) )              occ  (1:nbnd_ )  = occ_(:)
       IF ( PRESENT( eig ) )              eig  (1:nbnd_ )  = eig_(:)
       !
