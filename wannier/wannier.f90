@@ -244,8 +244,13 @@
            ! apply conditioned minimization if required
            !
            IF ( do_condmin ) THEN
-                CALL domega_aux( dimwann, nkpts, Mkb_aux, rave, trial, a_condmin, domg_aux)
-                domg(:,:,:) = domg(:,:,:) + domg_aux(:,:,:)
+               !
+               domg_aux = CZERO
+               !
+               CALL domega_aux( dimwann, nkpts, Mkb_aux, rave, trial, a_condmin, domg_aux)
+               !
+               domg(:,:,:) = domg(:,:,:) + domg_aux(:,:,:)
+               !
            ENDIF
 
 
