@@ -93,7 +93,7 @@
        ALLOCATE( z(dimwinx,dimwinx), w(dimwinx), STAT = ierr )
        IF( ierr /=0 ) CALL errore('disentangle', 'allocating z, w', ABS(ierr) )
        !
-       ALLOCATE( Mkb_aux(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
+       ALLOCATE( Mkb_aux(dimwann,dimwann,nb/2,nkpts), STAT=ierr ) 
        IF( ierr /=0 ) CALL errore('disentangle', 'allocating Mkb_aux', ABS(ierr) )
        !
        ALLOCATE( Akb_aux(dimwinx,dimwann,nb,nkpts), STAT=ierr ) 
@@ -155,24 +155,19 @@
                     !
                     !  A^kb  =  M^kb * Lamp^(k+b)
                     !
-                    CALL mat_mul(Akb_aux(:,:,ib,ik), Mkb(:,:,ib,ik), 'N',  &
+                    CALL mat_mul(Akb_aux(:,:,ib,ik), Mkb(:,:,inn,ik), 'N',  &
                                  lamp(:,:,ikb), 'N', dimwin(ik), dimwann, dimwin(ikb) )
-
+                    !
+                    CALL mat_mul(Akb_aux(:,:,nnrev(ib),ikb), Mkb(:,:,inn,ik), 'C',  &
+                                 lamp(:,:,ik), 'N', dimwin(ikb), dimwann, dimwin(ik) )
+                    !
                     !
                     ! Here we compute the updated overlap integrals (M^kb_aux)
                     !
                     !  M^kb_aux  =  Lamp^k^dag * A^kb = Lamp^k^dag * M^kb * Lamp^(k+b)
                     !
-                    CALL mat_mul(Mkb_aux(:,:,ib,ik), lamp(:,:,ik), 'C', & 
+                    CALL mat_mul(Mkb_aux(:,:,inn,ik), lamp(:,:,ik), 'C', & 
                                  Akb_aux(:,:,ib,ik), 'N', dimwann, dimwann, dimwin(ik) )
-                    !
-                    !
-                    ! impose the symmetry
-                    !
-                    Mkb_aux(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_aux(:,:,ib,ik)))
-                    !
-                    CALL mat_mul(Akb_aux(:,:,nnrev(ib),ikb), Mkb(:,:,ib,ik), 'C',  &
-                                 lamp(:,:,ik), 'N', dimwin(ikb), dimwann, dimwin(ik) )
                     !
                ENDDO
            ENDDO

@@ -34,7 +34,7 @@
    REAL(dbl),    INTENT(in)  :: rave(3,dimwann)
    REAL(dbl),    INTENT(in)  :: sheet(dimwann,nb,nkpts)
    COMPLEX(dbl), INTENT(in)  :: csheet(dimwann,nb,nkpts)
-   COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nb,nkpts)
+   COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nb/2,nkpts)
    COMPLEX(dbl), INTENT(out) :: domg(dimwann,dimwann,nkpts)
 
    !
@@ -107,7 +107,7 @@
                   ib     = nnpos( inn )
                   ik_eff = ik
                   !
-                  Mkb_aux( :, :)  = Mkb( :, :, ib, ik_eff)
+                  Mkb_aux( :, :)  = Mkb( :, :, inn, ik_eff)
                   csheet_aux( : ) = csheet(:, ib, ik_eff)
                   sheet_aux( : )  = sheet(:, ib, ik_eff)
                   !
@@ -118,7 +118,7 @@
                   ib     = nnrev( nnpos( inn ) )
                   ik_eff = nnlist( ib, ik)
                   !
-                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, nnrev(ib), ik_eff) ) )
+                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, inn, ik_eff) ) )
                   csheet_aux( : ) = CONJG( csheet(:, nnrev(ib), ik_eff) )
                   sheet_aux( : )  =        sheet(:, nnrev(ib), ik_eff) 
                   !

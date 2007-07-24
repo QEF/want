@@ -274,7 +274,7 @@
                     !
                     CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), &
                                   imin(ik), imin(ikb), dimwinx, evc, evc_info,  &
-                                  igsort, nncell(1,ib,ik), Mkb(1,1,ib,ik) )
+                                  igsort, nncell(1,ib,ik), Mkb(1,1,inn,ik) )
 
                     !
                     ! ... add the augmentation term fo USPP
@@ -282,8 +282,8 @@
                     IF ( use_uspp ) THEN
                          CALL overlap_augment(dimwinx, dimwin(ik), dimwin(ikb), &
                                               ik, ikb, ib, aux)
-                         Mkb(1:dimwin(ik), 1:dimwin(ikb), ib, ik) =        &
-                                Mkb(1:dimwin(ik), 1:dimwin(ikb), ib, ik) + &
+                         Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =        &
+                                Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
                                 aux(1:dimwin(ik), 1:dimwin(ikb))
                     ENDIF
               
@@ -292,12 +292,6 @@
                     !
                     CALL wfc_info_delete(evc_info, LABEL="IKB" )
 
-                    !
-                    ! apply the symmetrization
-                    ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
-                    !
-                    Mkb(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb(:,:,ib,ik)))
-                    
                 ENDDO neighbours
              ENDIF
 

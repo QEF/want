@@ -100,7 +100,7 @@ SUBROUTINE overlap_extract(dimwann)
    !
    ! here allocate the temporary variables for the extracted CM and CA 
    !
-   ALLOCATE( Mkb_tmp(dimwann,dimwann,nb,nkpts), STAT=ierr ) 
+   ALLOCATE( Mkb_tmp(dimwann,dimwann,nb/2,nkpts), STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
    !
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
@@ -136,14 +136,10 @@ SUBROUTINE overlap_extract(dimwann)
            ib  = nnpos ( inn )
            ikb = nnlist( ib, ik )
            !
-           CALL mat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,ib,ik), 'N', &
+           CALL mat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
                         dimwann, dimwin(ikb), dimwin(ik) )
-           CALL mat_mul(Mkb_tmp(:,:,ib,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
+           CALL mat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
                         dimwann, dimwann, dimwin(ikb) )
-           !
-           ! Symmetrize
-           !
-           Mkb_tmp(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_tmp(:,:,ib,ik)))
            !
        ENDDO
        !
@@ -156,6 +152,7 @@ SUBROUTINE overlap_extract(dimwann)
        !
        CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
                      dimwann, dimwann, dimwin(ik) )
+       !
    ENDDO
 
 
@@ -186,5 +183,4 @@ SUBROUTINE overlap_extract(dimwann)
    CALL log_pop('overlap_extract')
 
 END SUBROUTINE overlap_extract
-
 

@@ -13,7 +13,7 @@
    ! ...  Initialize the localization procedure in Wannier
    !      according to the input choice of mode:
    !
-   !      * 'center_projections'  uses the Ca matrix to find Cu and update Mkb
+   !      * 'center_projections'  uses the Ca matrix to find Cu
    !      * 'no_guess'  Cu's are set equal to the identity
    !      * 'randomized' Cu's are random unitary matrixes
    !      * 'from_file'  read info from file (used in restart)
@@ -26,7 +26,7 @@
    USE log_module,          ONLY : log_push, log_pop
    USE files_module,        ONLY : file_open, file_close
    USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd
-   USE localization_module, ONLY : localization_read, cu, cu_best
+   USE localization_module, ONLY : localization_read, cu
    USE overlap_module,      ONLY : ca, dimwann, nkpts 
    USE control_module,      ONLY : unitary_thr
    IMPLICIT NONE
@@ -99,20 +99,23 @@
         ! NOTE that lapack routine returns cv^{\dag} directly
         !
         ALLOCATE( singvd(dimwann), STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'allocating singvd', ABS(ierr) )
+        IF( ierr /=0 ) CALL errore('wannier', 'allocating singvd', ABS(ierr) )
+        !
         ALLOCATE( cv1(dimwann,dimwann), STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'allocating cv1 ', ABS(ierr) )
+        IF( ierr /=0 ) CALL errore('wannier', 'allocating cv1 ', ABS(ierr) )
+        !
         ALLOCATE( cv2(dimwann,dimwann), STAT=ierr )
-           IF( ierr /=0 ) CALL errore('wannier', 'allocating cv2 ', ABS(ierr) )
+        IF( ierr /=0 ) CALL errore('wannier', 'allocating cv2 ', ABS(ierr) )
 
         DO ik = 1, nkpts
-             !
-             CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
-             CALL mat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
+            !
+            CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
+            CALL mat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
+            !
         ENDDO
 
         DEALLOCATE( singvd, cv1, cv2, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname,'deallocating SVD aux', ABS(ierr))
+        IF( ierr /=0 ) CALL errore(subname,'deallocating SVD aux', ABS(ierr))
 
    CASE( 'no_guess' )
         WRITE( stdout,"(/,'  Initial unitary rotations : identities',/)")
@@ -138,16 +141,6 @@
         ENDDO
 
    END SELECT
-
-
-   !
-   ! if the case init cU_best
-   !
-   IF ( TRIM(mode) /= 'from_file' ) THEN
-       !
-       cU_best(:,:,:) = cU(:,:,:)
-       !
-   ENDIF
 
 
    !

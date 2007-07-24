@@ -42,6 +42,8 @@
 
       INTEGER, ALLOCATABLE      :: map(:)
       COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)
+
+      COMPLEX(dbl),    EXTERNAL :: ZDOTC
       !
       ! ... end declarations
       !
@@ -68,29 +70,31 @@
       IF ( dimw2 > dimwinx ) CALL errore('overlap', 'Invalid dimw2', dimw2)
 
       ALLOCATE( map(npwkx), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap','allocating map',npwkx)
+      IF (ierr/=0) CALL errore('overlap','allocating map',npwkx)
+      !
       ALLOCATE( aux1(npwx_g), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap','allocating aux1',npwx_g)
+      IF (ierr/=0) CALL errore('overlap','allocating aux1',npwx_g)
+      !
       ALLOCATE( aux2(npwx_g), STAT=ierr )
-         IF (ierr/=0) CALL errore('overlap','allocating aux2',npwx_g)
+      IF (ierr/=0) CALL errore('overlap','allocating aux2',npwx_g)
 
-!
-! ... Calculate cm(i,j)=<u_i k|u_j k+dk> (keeping into account
-!     that if k+dk is outside (or should be outside) the first BZ it must be
-!     brought from there (or there)
-!     with a exp(-iG.r) factor (given the proper convention for the sign):
-!     psi_nk=psi_nk+G -> u_nk exp(ikr)=u_nk+G exp(ikr) exp (iGr) ->
-!                        u_nk+G = u_nk exp(-iGr)
-! 
-!     Additionally, we might have a exp (iG_0r) that has to be introduced,
-!     if we need a ik2 that lies outside the BZ. In our reciprocal space
-!     products, that means that we have <v_m,k1|v_n,k2>=\sum_G1,G2 c_m,k1,G1
-!     c_n,k2,G2* \int exp [i(G2-G1-G0)r], if G0 is the vector that, say,
-!     brings a k2 inside the BZ just outside it, to be a neighbour of a
-!     k1 that lies just inside the boundary (and the u are now in standard
-!     Bloch notation). The integral gives a delta, and so we take G2s that
-!     are G1s+G0, i.e. nx+nncell, etc...
-!
+      !
+      ! Calculate cm(i,j)=<u_i k|u_j k+dk> (keeping into account
+      ! that if k+dk is outside (or should be outside) the first BZ it must be
+      ! brought from there (or there)
+      ! with a exp(-iG.r) factor (given the proper convention for the sign):
+      ! psi_nk=psi_nk+G -> u_nk exp(ikr)=u_nk+G exp(ikr) exp (iGr) ->
+      !                    u_nk+G = u_nk exp(-iGr)
+      ! 
+      ! Additionally, we might have a exp (iG_0r) that has to be introduced,
+      ! if we need a ik2 that lies outside the BZ. In our reciprocal space
+      ! products, that means that we have <v_m,k1|v_n,k2>=\sum_G1,G2 c_m,k1,G1
+      ! c_n,k2,G2* \int exp [i(G2-G1-G0)r], if G0 is the vector that, say,
+      ! brings a k2 inside the BZ just outside it, to be a neighbour of a
+      ! k1 that lies just inside the boundary (and the u are now in standard
+      ! Bloch notation). The integral gives a delta, and so we take G2s that
+      ! are G1s+G0, i.e. nx+nncell, etc...
+      !
 
       !
       ! Here imin* take into account the fact that dimwin 
@@ -134,25 +138,20 @@
                  aux1( igsort( ig, ik1 ) ) = evc( ig, ind1) 
               ENDDO
 
-              Mkb( j1, j2 ) = CZERO
               !
               ! last position for ig is dummy
               !
-! XXXX
-! add the use of BLAS dot product and maybe change the map.
-!
-              DO ig=1, npwx_g -1  
-                 Mkb( j1, j2 ) = Mkb( j1, j2 ) + &
-                                         CONJG( aux1(ig) ) * aux2(ig)
-              ENDDO
+              Mkb( j1, j2)= ZDOTC ( npwx_g -1, aux1, 1, aux2, 1) 
               !
           ENDDO
       ENDDO
 
       DEALLOCATE( aux1, STAT=ierr)
       IF (ierr/=0) CALL errore('overlap','deallocating aux1',ABS(ierr))
+      !
       DEALLOCATE( aux2, STAT=ierr)
       IF (ierr/=0) CALL errore('overlap','deallocating aux2',ABS(ierr))
+      !
       DEALLOCATE( map, STAT=ierr)
       IF (ierr/=0) CALL errore('overlap','deallocating map',ABS(ierr))
 

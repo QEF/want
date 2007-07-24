@@ -38,7 +38,7 @@
    INTEGER,            INTENT(in)    :: dimwann, nkpts
    REAL(dbl),          INTENT(in)    :: rave(3,dimwann), a
    TYPE(trial_center), INTENT(in)    :: trial(dimwann)
-   COMPLEX(dbl),       INTENT(in)    :: Mkb(dimwann,dimwann,nb,nkpts)
+   COMPLEX(dbl),       INTENT(in)    :: Mkb(dimwann,dimwann,nb/2,nkpts)
    COMPLEX(dbl),       INTENT(inout) :: domg(dimwann,dimwann,nkpts)
 
    !
@@ -133,7 +133,7 @@
                   ib     = nnpos( inn )
                   ik_eff = ik
                   !
-                  Mkb_aux( :, :)  = Mkb( :, :, ib, ik_eff)
+                  Mkb_aux( :, :)  = Mkb( :, :, inn, ik_eff)
                   !
                CASE ( 2 )
                   !
@@ -142,7 +142,7 @@
                   ib     = nnrev( nnpos( inn ) )
                   ik_eff = nnlist( ib, ik)
                   !
-                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, nnrev(ib), ik_eff) ) )
+                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, inn, ik_eff) ) )
                   !
                CASE DEFAULT
                   CALL errore('domega_aux','invalid ipos value',71)
