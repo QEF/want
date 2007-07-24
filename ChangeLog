@@ -4,6 +4,9 @@
 =======================================================
 
 
+24 Jul 2007      Version number changed to "2.2.0-dev"; fmts in startup routine modified. 
+                 Tag "WanT-2_2-alpha1" added. (AF)
+
 23 Jul 2007      b-vector symmetrization completed. Memory usage due to excess b-vecotrs
                  not yet eliminated. Qexml lib updated to account for a fmt change 
                  introduced by espresso-3.2cvs . Merging of want-2.1 fixes into the main

@@ -75,7 +75,7 @@
        WRITE( stdout, "(a)" ) '              =                                            ='
        WRITE( stdout, "(2x,70('='),2/ )" ) 
        !
-       WRITE( stdout, FMT='(2x,"Program <",a,">  v. ",A5,"  starts ..." )') &
+       WRITE( stdout, FMT='(2x,"Program <",a,">  v. ",a,"  starts ..." )') &
                       TRIM(main_name),TRIM(version) 
        WRITE( stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
        !

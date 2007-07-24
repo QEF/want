@@ -8,8 +8,9 @@
 ! 
 #define  __VERSION_NAME    "WanT"
 #define  __VERSION_MAJOR   "2"
-#define  __VERSION_MINOR   "1"
+#define  __VERSION_MINOR   "2"
 #define  __VERSION_PATCH   "0"
+#define  __VERSION_LABEL   "-dev"
 
 
 
