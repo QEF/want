@@ -215,7 +215,6 @@ CONTAINS
       !
       ! Compatibility
       ! 
-! XXX
       INQUIRE(unit, OPENED=tmp)
       IF ( tmp ) CALL errore(subname,"Unit already connected",ABS(unit))
       
