@@ -1,4 +1,3 @@
-<<<<<<< qexml.f90
 !
 ! Copyright (C) 2006 WanT Group
 ! This file is distributed under the terms of the
@@ -197,7 +196,7 @@ CONTAINS
          !
          WRITE( UNIT = int_to_char , FMT = "(I1)" ) i
          !
-      ELSE IF ( int < 100 ) THEN
+      ELSE IF ( i < 100 ) THEN
          !
          WRITE( UNIT = int_to_char , FMT = "(I2)" ) i
          !
