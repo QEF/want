@@ -28,8 +28,8 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
    !
    INTEGER,         INTENT(in)    :: dimwann, nkpts
    COMPLEX(dbl),    INTENT(in)    :: U(dimwann,dimwann,nkpts) 
-   COMPLEX(dbl),    INTENT(in)    :: Mkb_in (dimwann,dimwann,nb,nkpts) 
-   COMPLEX(dbl),    INTENT(out)   :: Mkb_out(dimwann,dimwann,nb,nkpts) 
+   COMPLEX(dbl),    INTENT(in)    :: Mkb_in (dimwann,dimwann,nb/2,nkpts) 
+   COMPLEX(dbl),    INTENT(out)   :: Mkb_out(dimwann,dimwann,nb/2,nkpts) 
 
    !
    ! local variables
@@ -50,16 +50,14 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
 
 
    ALLOCATE( aux(dimwann,dimwann), STAT=ierr ) 
-      IF (ierr/=0) CALL errore("overlap_update","allocating aux",ABS(ierr))
+   IF (ierr/=0) CALL errore("overlap_update","allocating aux",ABS(ierr))
 
 
    DO ik = 1, nkpts
        !
        ! take advantage on the symmetry properties of Mkb
        ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
-       !
-       ! perform the loop only for the "positive" b, 
-       ! and symmetrize at the end
+       ! only positive b-vectors are considered
        !
        DO inn = 1, nb / 2
            !
@@ -69,15 +67,10 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
            !
            ! aux1 = U(ik)^dag * Mkb * U(ikb)
            !
-           CALL mat_mul(aux, U(:,:,ik), 'C', Mkb_in(:,:,ib,ik), 'N', &
+           CALL mat_mul(aux, U(:,:,ik), 'C', Mkb_in(:,:,inn,ik), 'N', &
                         dimwann, dimwann, dimwann)
-           CALL mat_mul(Mkb_out(:,:,ib,ik), aux, 'N', U(:,:,ikb), 'N', & 
+           CALL mat_mul(Mkb_out(:,:,inn,ik), aux, 'N', U(:,:,ikb), 'N', & 
                         dimwann, dimwann, dimwann)
-
-           !
-           ! symmetrize
-           !
-           Mkb_out(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb_out(:,:,ib,ik)))
            !
        ENDDO
        !
@@ -87,7 +80,7 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
    ! cleaning
    !
    DEALLOCATE( aux, STAT=ierr ) 
-      IF (ierr/=0) CALL errore("overlap_update","deallocating aux",ABS(ierr))
+   IF (ierr/=0) CALL errore("overlap_update","deallocating aux",ABS(ierr))
 
    CALL timing('overlap_update',OPR='stop')
    CALL log_pop('overlap_update')

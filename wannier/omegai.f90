@@ -30,7 +30,7 @@
    !
    REAL(dbl),    INTENT(out) :: Omega_I
    INTEGER,      INTENT(in)  :: dimwann, nkpts
-   COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nb,nkpts)
+   COMPLEX(dbl), INTENT(in)  :: Mkb(dimwann,dimwann,nb/2,nkpts)
  
    !
    ! local variables
@@ -62,7 +62,7 @@
        DO m = 1, dimwann
             !
             Omega_I = Omega_I - wb(ib) * &
-                      REAL( CONJG( Mkb(m,n,ib,ik) ) * Mkb(m,n,ib,ik), dbl )
+                      REAL( CONJG( Mkb(m,n,inn,ik) ) * Mkb(m,n,inn,ik), dbl )
             !
        ENDDO 
        ENDDO 

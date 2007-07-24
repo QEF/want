@@ -30,7 +30,7 @@
    INTEGER,      INTENT(in) :: dimwann, nkpts
    REAL(dbl),    INTENT(in) :: sheet(dimwann,nb,nkpts)
    COMPLEX(dbl), INTENT(in) :: csheet(dimwann,nb,nkpts)
-   COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nb,nkpts)
+   COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nb/2,nkpts)
    !
    REAL(dbl),   INTENT(out) :: r2ave(dimwann), rave2(dimwann), rave(3,dimwann)
    REAL(dbl),   INTENT(out) :: Omega_D, Omega_OD
@@ -74,7 +74,7 @@
        !
        DO m = 1, dimwann
             !
-            aux(m,inn,ik) = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,ib,ik) ) ) &
+            aux(m,inn,ik) = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,inn,ik) ) ) &
                            - sheet(m,ib,ik) 
        ENDDO
        !
@@ -101,7 +101,7 @@
        DO m = 1, dimwann
            !
            r2ave(m) = r2ave(m) + wb(ib) *  &
-               ( ONE - REAL( Mkb(m,m,ib,ik) * CONJG( Mkb(m,m,ib,ik)) ) + &
+               ( ONE - REAL( Mkb(m,m,inn,ik) * CONJG( Mkb(m,m,inn,ik)) ) + &
                aux(m,inn,ik) ** 2 )
                !
            rave(:,m) = rave(:,m) + wb(ib) * aux(m,inn,ik) * vb(:,ib) 
@@ -142,11 +142,11 @@
        DO n = 1, dimwann
            !
            DO m = 1, dimwann
-               rtmp = rtmp + REAL( Mkb(m,n,ib,ik)*CONJG( Mkb(m,n,ib,ik)), dbl )
+               rtmp = rtmp + REAL( Mkb(m,n,inn,ik)*CONJG( Mkb(m,n,inn,ik)), dbl )
            ENDDO
            !
            ! eliminate the diagonal term
-           rtmp = rtmp - REAL( Mkb(n,n,ib,ik) * CONJG( Mkb(n,n,ib,ik)), dbl)
+           rtmp = rtmp - REAL( Mkb(n,n,inn,ik) * CONJG( Mkb(n,n,inn,ik)), dbl)
            !
        ENDDO
        !

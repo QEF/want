@@ -31,7 +31,6 @@
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                                       ncg, wannier_thr, cu, rave, rave2, r2ave, &
                                       Omega_I, Omega_D, Omega_OD, Omega_tot, &
-                                      cu_best, Omega_tot_best, &
                                       localization_allocate, localization_write, localization_print, &
                                       a_condmin, niter_condmin, dump_condmin, xcell
       USE trial_center_data_module, ONLY : trial
@@ -112,26 +111,34 @@
       ! ... allocate local variables
       !
       ALLOCATE( csheet(dimwann,nb,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet', ABS(ierr))
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet', ABS(ierr))
+      !
       ALLOCATE( sheet(dimwann,nb,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet', ABS(ierr))
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet', ABS(ierr))
 
       ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0', ABS(ierr) )
-      ALLOCATE( Mkb0(dimwann,dimwann,nb,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0', ABS(ierr) )
-      ALLOCATE( Mkb_aux(dimwann,dimwann,nb,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb_aux', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0', ABS(ierr) )
+      !
+      ALLOCATE( Mkb0(dimwann,dimwann,nb/2,nkpts), STAT=ierr )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0', ABS(ierr) )
+      !
+      ALLOCATE( Mkb_aux(dimwann,dimwann,nb/2,nkpts), STAT=ierr )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb_aux', ABS(ierr) )
+      !
       ALLOCATE( domg(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating domg', ABS(ierr) )
+      !
       ALLOCATE( domg_aux(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating domg_aux', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating domg_aux', ABS(ierr) )
+      !
       ALLOCATE( dq0(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating dq0', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating dq0', ABS(ierr) )
+      !
       ALLOCATE( dq(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating dq', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating dq', ABS(ierr) )
+      !
       ALLOCATE( cdU(dimwann,dimwann,nkpts), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('wannier', 'allocating cdU', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore('wannier', 'allocating cdU', ABS(ierr) )
 
 
 !
@@ -165,9 +172,6 @@
                   Omega_D, Omega_OD )
                   !
       Omega_tot = Omega_I + Omega_D + Omega_OD 
-      !
-      ! init Omega_tot_best if not reading it from file
-      IF ( TRIM(localization_init_mode) /= 'from_file' ) Omega_tot_best = Omega_tot
       !
       CALL localization_print(stdout,FMT="extended")
       !
@@ -381,20 +385,6 @@
    
            Omega_old = Omega_tot
            Omega0 = OmegaA
-   
-
-           !
-           ! check against the iteration of best localization
-           !
-! XXX
-CALL timing('omega_best','start')
-           IF ( Omega_tot < Omega_tot_best ) THEN
-                !
-                Omega_tot_best   = Omega_tot
-                cU_best(:,:,:)   = cU(:,:,:)
-                !
-           ENDIF
-CALL timing('omega_best','stop')
    
 
            !

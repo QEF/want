@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************************
-SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
+SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    !***************************************************************
    !
    !    This routine add the augmentation part due to USPP to the
@@ -20,7 +20,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    !     dimw2      true dimensions of the array Mkb
    !     ik1        index of the first kpt
    !     ik2        index of the second kpt
-   !     inn        index of the nearest neighbour b
+   !     ib         index of the nearest neighbour b
    ! input / output:
    !     Mkb        the overlap matrix
    !
@@ -44,7 +44,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
    !
 
    INTEGER,           INTENT(in)    :: dimwinx, dimw1, dimw2
-   INTEGER,           INTENT(in)    :: ik1, ik2, inn
+   INTEGER,           INTENT(in)    :: ik1, ik2, ib
    COMPLEX(KIND=dbl), INTENT(inout) :: Mkb(dimwinx,dimwinx)
    !
    ! ... local variables
@@ -74,7 +74,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
             ! compute the phase factor e^i(b*tau)
             ! vb in bohr^-1, tau in alat and directly converted
             !
-            arg = DOT_PRODUCT( vb(:,inn), tau(:,na) ) * alat
+            arg = DOT_PRODUCT( vb(:,ib), tau(:,na) ) * alat
             phase = CMPLX ( COS(arg), -SIN(arg), dbl )
             !
             IF ( ityp(na) == nt ) THEN
@@ -87,7 +87,7 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, inn, Mkb )
                      DO ibnd1 = 1, dimw1
                          Mkb(ibnd1,ibnd2) = Mkb(ibnd1,ibnd2) +  &
                                  CONJG( becp(ikb,ibnd1,ik1) ) * becp(jkb,ibnd2,ik2) *&
-                                 phase * qb(ih,jh,nt,inn) 
+                                 phase * qb(ih,jh,nt,ib) 
                      ENDDO
                      ENDDO
                   ENDDO

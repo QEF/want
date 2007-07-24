@@ -37,7 +37,7 @@
 !   
 
    COMPLEX(dbl), ALLOCATABLE   :: Mkb(:,:,:,:)   ! <u_nk|u_mk+b> overlap
-                                                 ! DIM: dimwinx,dimwinx,nb,nkpts
+                                                 ! DIM: dimwinx,dimwinx,nb/2,nkpts
    COMPLEX(dbl), ALLOCATABLE   :: ca(:,:,:)      ! <u_nk|phi_lk> projection
                                                  ! DIM: dimwinx,dimwann,nkpts
    LOGICAL :: alloc = .FALSE.
@@ -70,16 +70,16 @@ CONTAINS
 
        CALL log_push( subname )
        !
-       IF ( dimwinx <= 0 ) CALL errore(subname,'Invalid DIMWINX',1)
-       IF ( nkpts <= 0   ) CALL errore(subname,'Invalid NKPTS',1)
-       IF ( dimwann <= 0 ) CALL errore(subname,'Invalid DIMWANN',1)
-       IF ( nb <= 0      ) CALL errore(subname,'Invalid NB',1)
+       IF ( dimwinx <= 0 ) CALL errore(subname,'Invalid dimwinx',1)
+       IF ( nkpts <= 0   ) CALL errore(subname,'Invalid nkpts',1)
+       IF ( dimwann <= 0 ) CALL errore(subname,'Invalid dimwann',1)
+       IF ( nb <= 0      ) CALL errore(subname,'Invalid nb',1)
 
-       ALLOCATE( Mkb(dimwinx,dimwinx,nb,nkpts), STAT=ierr )       
-           IF ( ierr/=0 ) CALL errore(subname,' allocating Mkb', ABS(ierr) )
-
+       ALLOCATE( Mkb(dimwinx,dimwinx,nb/2,nkpts), STAT=ierr )       
+       IF ( ierr/=0 ) CALL errore(subname,'allocating Mkb', ABS(ierr) )
+       !
        ALLOCATE( ca(dimwinx,dimwann,nkpts), STAT=ierr )       
-           IF ( ierr/=0 ) CALL errore(subname,' allocating ca ', ABS(ierr) )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating ca', ABS(ierr) )
 
        alloc = .TRUE. 
        !
@@ -156,8 +156,8 @@ CONTAINS
              CALL iotk_write_attr(attr,'dimwin_kb',dimwin(ikb))
              CALL iotk_write_empty(iun, 'data', ATTR=attr)
              !
-             CALL iotk_write_dat(iun,'mkb', Mkb(1:dimwin(ik),1:dimwin(ikb),ib,ik) )
-             CALL iotk_write_dat(iun,'mkb_abs', ABS(Mkb(1:dimwin(ik),1:dimwin(ikb),ib,ik)) )
+             CALL iotk_write_dat(iun,'mkb', Mkb(1:dimwin(ik),1:dimwin(ikb),inn,ik) )
+             CALL iotk_write_dat(iun,'mkb_abs', ABS(Mkb(1:dimwin(ik),1:dimwin(ikb),inn,ik)) )
              !
              CALL iotk_write_end(iun, "b-vect"//TRIM(iotk_index(ib)) )
              !
@@ -266,7 +266,10 @@ CONTAINS
           IF ( nb_ /= nb) CALL errore(subname,'Invalid NB',ABS(nb_-nb))
        ELSE
           nkpts = nkpts_
-          ! XXX tmp error call
+          !
+          ! in the actual implementation of b-vector stuff, we need
+          ! some initializations coming from kpoints module
+          !
           CALL errore(subname,'kpoints should be allocated', 71)
        ENDIF
        !
@@ -321,12 +324,8 @@ CONTAINS
                    !
                    IF ( dimwin_kb > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_kb)
                    ! 
-                   CALL iotk_scan_dat(iun,'mkb', Mkb(1:dimwin_k,1:dimwin_kb,ib,ik),IERR=ierr )
+                   CALL iotk_scan_dat(iun,'mkb', Mkb(1:dimwin_k,1:dimwin_kb,inn,ik),IERR=ierr )
                    IF (ierr/=0) CALL errore(subname,'scanning for mkb',inn)
-                   !
-                   ! symmetrize overlaps
-                   !
-                   Mkb(:,:, nnrev(ib), ikb) = CONJG( TRANSPOSE( Mkb(:,:,ib,ik)) )
                    !
                    CALL iotk_scan_end(iun, 'b-vect'//TRIM(iotk_index(ib)), IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'scanning end for b-vect',inn)
