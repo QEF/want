@@ -44,6 +44,7 @@
   !
   ! ... usual kpt data (k vectors)
   INTEGER                 :: nkpts         ! kpt number (NOT doubled when nspin=2)
+  INTEGER                 :: nkpts_all     ! number of kpts over the whole BZ
   !
   INTEGER                 :: iks           ! the starting ik (at the current spin)
   INTEGER                 :: ike           ! the ending ik (at the current spin)
@@ -51,6 +52,7 @@
   INTEGER                 :: nk(3)         ! component of the MP kgrid
   INTEGER                 :: s(3)          ! fractional shifts of the MP grid
   REAL(dbl), ALLOCATABLE  :: vkpt(:,:)     ! kpt components; DIM: 3*nkpts (Bohr^-1)
+  REAL(dbl), ALLOCATABLE  :: vkpt_all(:,:) ! kpt components; DIM: 3*nkpts_all (Bohr^-1)
   REAL(dbl), ALLOCATABLE  :: wk(:)         ! weight of each kpt for BZ sums 
   REAL(dbl)               :: wksum         ! sum of the weights
 
@@ -87,6 +89,7 @@
   PUBLIC :: nk, s
   PUBLIC :: vkpt
   PUBLIC :: wk, wksum
+  PUBLIC :: nkpts_all, vkpt_all
   !
   PUBLIC :: nrtot, nr
   PUBLIC :: ivr, vr, wr
@@ -149,6 +152,13 @@ CONTAINS
       !
       IF ( .NOT. lattice_alloc ) CALL errore(subname,'lattice NOT alloc',1) 
       IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1) 
+
+      !
+      ! get the kpt grid over the full BZ
+      !
+      CALL symmetrize_kgrid() 
+! XXX
+STOP
 
       !
       ! get the monkhorst pack grid
@@ -350,6 +360,10 @@ CONTAINS
        IF ( ALLOCATED( wr ) ) THEN
           DEALLOCATE( wr, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating wr',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED( vkpt_all ) ) THEN
+          DEALLOCATE( vkpt_all, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating vkpt_all',ABS(ierr))
        ENDIF
        !
        kpoints_alloc = .FALSE.

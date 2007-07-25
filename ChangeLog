@@ -4,6 +4,8 @@
 =======================================================
 
 
+25 Jul 2007      Implementation of symmetries started: symmetrize_kgrid routine added. (AF)
+
 24 Jul 2007      Version number changed to "2.2.0-dev"; fmts in startup routine modified. 
                  Tag "WanT-2_2-alpha1" added. Memory doubling for overlap integrals removed.
                  Cleanup of best_localization_stuff. (AF)

@@ -48,6 +48,7 @@ WANNIER_OBJS= \
 ../wannier/struct_fact_data.o \
 ../wannier/subspace.o \
 ../wannier/summary.o \
+../wannier/symmetrize_kgrid.o \
 ../wannier/symmetry.o \
 ../wannier/trial_center.o \
 ../wannier/trial_center_data.o \
