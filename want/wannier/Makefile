@@ -78,6 +78,7 @@ struct_fact.o \
 subspace.o \
 subspace_init.o \
 summary.o \
+symmetrize_kgrid.o \
 symmetry.o \
 trial_center_data.o \
 trial_center.o \

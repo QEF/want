@@ -526,6 +526,15 @@ summary.o : symmetry.o
 summary.o : trial_center_data.o
 summary.o : uspp.o
 summary.o : windows.o
+symmetrize_kgrid.o : control.o
+symmetrize_kgrid.o : converters.o
+symmetrize_kgrid.o : kpoints.o
+symmetrize_kgrid.o : lattice.o
+symmetrize_kgrid.o : ../libs/constants.o
+symmetrize_kgrid.o : ../libs/kind.o
+symmetrize_kgrid.o : ../libs/log_module.o
+symmetrize_kgrid.o : ../libs/timing.o
+symmetrize_kgrid.o : symmetry.o
 symmetry.o : ../libs/kind.o
 symmetry.o : ../libs/log_module.o
 symmetry.o : ../libs/parameters.o

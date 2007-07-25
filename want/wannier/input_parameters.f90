@@ -194,13 +194,16 @@
    LOGICAL :: use_symmetry = .TRUE.
        ! if .TRUE. reads and uses symmetry making kpt sums
 
+   LOGICAL :: use_timerev = .TRUE.
+       ! if .TRUE. uses time-reversal symmetry to reduce the number of required kpts
+
    NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, spin_component, &
                          alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &
-                         subspace_init, use_blimit, use_symmetry
+                         subspace_init, use_blimit, use_symmetry, use_timerev
 
 
    PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component
-   PUBLIC :: use_blimit, use_symmetry
+   PUBLIC :: use_blimit, use_symmetry, use_timerev
    PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, subspace_init
    PUBLIC :: SUBSPACE
    
@@ -402,15 +405,15 @@ CONTAINS
       !
       ! ... checking parameters
       !
-      IF ( win_max <= win_min ) CALL errore(subname, 'win_max <= win_min ', 1 )
-      IF ( froz_max <= froz_min ) CALL errore(subname, 'win_max <= win_min ', 1 )
-      IF ( dimwann <= 0 ) CALL errore(subname, 'dimwann should be positive ', -dimwann+1 ) 
-      IF ( alpha_dis <= 0.0 ) CALL errore(subname, 'alpha_dis should be positive ', 1 ) 
-      IF ( alpha_dis > 1.0) CALL errore(subname, 'alpha_dis should <=1.0 ', 1 ) 
-      IF ( maxiter_dis < 0) CALL errore(subname, 'maxiter_dis should be >= 0',-maxiter_dis+1)
+      IF ( win_max <= win_min )     CALL errore(subname, 'win_max <= win_min ', 1 )
+      IF ( froz_max <= froz_min )   CALL errore(subname, 'win_max <= win_min ', 1 )
+      IF ( dimwann <= 0 )           CALL errore(subname, 'dimwann should be positive ', -dimwann+1 ) 
+      IF ( alpha_dis <= 0.0 )       CALL errore(subname, 'alpha_dis should be positive ', 1 ) 
+      IF ( alpha_dis > 1.0)         CALL errore(subname, 'alpha_dis should <=1.0 ', 1 ) 
+      IF ( maxiter_dis < 0)         CALL errore(subname, 'maxiter_dis should be >= 0',-maxiter_dis+1)
       IF ( disentangle_thr <= 0.0 ) CALL errore(subname, 'disentangle_thr should be > 0',1)
-      IF ( nprint_dis <= 0) CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
-      IF ( nsave_dis <= 0 ) CALL errore(subname, ' nsave_dis must be > 0 ', -nsave_dis+1 )
+      IF ( nprint_dis <= 0)         CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
+      IF ( nsave_dis <= 0 )         CALL errore(subname, ' nsave_dis must be > 0 ', -nsave_dis+1 )
       !
       CALL string_check( subspace_init, subspace_init_allowed, ierr ) 
       IF ( ierr/=0 ) CALL errore(subname,'Invalid subspace_init = '//TRIM(subspace_init),10)

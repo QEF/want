@@ -25,6 +25,7 @@
 ! routines in this module:
 ! SUBROUTINE symmetry_allocate()
 ! SUBROUTINE symmetry_deallocate()
+! SUBROUTINE symmetry_rotate( vect, opr )
 ! SUBROUTINE symmetry_read_ext( filefmt )
 ! SUBROUTINE symmetry_write ( unit, isym, srot, tau, sname)
 
@@ -54,6 +55,7 @@
    PUBLIC :: symmetry_allocate
    PUBLIC :: symmetry_deallocate
    PUBLIC :: symmetry_read_ext
+   PUBLIC :: symmetry_rotate
    PUBLIC :: symmetry_write
 
 CONTAINS
@@ -114,6 +116,32 @@ CONTAINS
        CALL log_pop ( subname )
        !
    END SUBROUTINE symmetry_deallocate
+
+
+!**********************************************************
+   SUBROUTINE symmetry_rotate(vect, opr)
+   !**********************************************************
+   !
+   ! this subrotuine apply rotates a given vector according to 
+   ! the specified symmetry operation.
+   ! Crystal units for both the symmetry rotation and the vector
+   ! are assumed.
+   ! The input vector is overwritten
+   !
+   IMPLICIT NONE
+       !
+       REAL(dbl), INTENT(INOUT) :: vect(3)
+       INTEGER,   INTENT(IN)    :: opr(3,3)
+       ! 
+       REAL(dbl) :: rtmp(3)
+ 
+       rtmp(1) = DOT_PRODUCT( REAL(opr(1,:), dbl), vect(:) )
+       rtmp(2) = DOT_PRODUCT( REAL(opr(2,:), dbl), vect(:) )
+       rtmp(3) = DOT_PRODUCT( REAL(opr(3,:), dbl), vect(:) )
+       !
+       vect(:) = rtmp(:)
+       ! 
+   END SUBROUTINE symmetry_rotate
 
 
 !*********************************************************

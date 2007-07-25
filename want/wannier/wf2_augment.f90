@@ -197,7 +197,7 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
            rtmp(3) = MODULO( xq(3)-vq(3,iq), ONE )
            !
            ! the second condition ( after .OR. ) should be useless,
-           ! but some compilers sem to allow for MODULO(x, ONE) to
+           ! but some compilers seem to allow for MODULO(x, ONE) to
            ! retur ONE, and therefore we need to workaround the problem.
            !
            IF ( ( rtmp(1) < EPS_m6 .OR. rtmp(1) > ONE-EPS_m6 )  .AND.  &

@@ -38,6 +38,7 @@
    LOGICAL                   :: use_atomwfc 
    LOGICAL                   :: use_blimit 
    LOGICAL                   :: use_symmetry
+   LOGICAL                   :: use_timerev
    LOGICAL                   :: use_debug_mode
 
    LOGICAL                   :: do_overlaps
@@ -75,6 +76,7 @@
    PUBLIC :: use_uspp
    PUBLIC :: use_blimit
    PUBLIC :: use_symmetry
+   PUBLIC :: use_timerev
    PUBLIC :: use_debug_mode
 
    PUBLIC :: do_overlaps
