@@ -41,7 +41,7 @@ SUBROUTINE symmetrize_kgrid( )
    REAL(dbl), ALLOCATABLE    :: vkpt_cry(:,:), vkpt_symm(:,:)
    INTEGER,   ALLOCATABLE    :: symm_map(:), kpteq_map(:)
    LOGICAL                   :: found
-   INTEGER                   :: ifact, isym, ik, i, j, ierr
+   INTEGER                   :: ifact, isym, ik, i, j, ierr, m,n
 
 !
 !------------------------------
@@ -88,7 +88,7 @@ SUBROUTINE symmetrize_kgrid( )
    symm_map( ik )    = 1
    kpteq_map( ik )   = 1
    !
-   DO i = 2, nkpts
+   DO i = 1, nkpts
        !
        !
        symmetries_loop: &
@@ -116,6 +116,16 @@ SUBROUTINE symmetrize_kgrid( )
            ! bring the rotate kpt in the BZ around 0 
            ! 
            vect(:) = MODULO( vect(:) + 0.5_dbl, ONE ) -0.5_dbl 
+
+!WRITE(0,*)
+!WRITE(0,*) "vkpt", vkpt_cry(:,i)
+!WRITE(0,*) "vect", vect(:)
+!WRITE(0,*) "vect", vect(:)
+!WRITE(0,*) "isym", isym
+!IF ( isym /= 0 ) THEN
+!   WRITE(0,"(3i5)") ((srot(m,n,isym), n = 1,3), m=1,3)
+!ENDIF
+
            ! 
            ! check whether the newly generated point is equivalent
            ! to any of those previously found
@@ -124,7 +134,7 @@ SUBROUTINE symmetrize_kgrid( )
            !
            DO j = 1, ik
                !
-               found = kpt_equiv( vect, vkpt_cry(:,j) )
+               found = kpt_equiv( vect, vkpt_symm(:,j) )
                !
                IF ( found ) EXIT
                !
