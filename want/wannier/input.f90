@@ -52,6 +52,7 @@ CONTAINS
                                            do_ordering,       &
                                            use_pseudo,        &
                                            use_symmetry,      &
+                                           use_timerev,       &
                                            use_debug_mode,    &
                                            debug_level,       &
                                            read_pseudo,       &
@@ -83,6 +84,7 @@ CONTAINS
                                            collect_wf_      => collect_wf, &
                                            use_blimit_      => use_blimit, &
                                            use_symmetry_    => use_symmetry, &
+                                           use_timerev_     => use_symmetry, &
                                            debug_level_     => debug_level, &
                                            assume_ncpp_     => assume_ncpp
 
@@ -100,6 +102,7 @@ CONTAINS
       read_pseudo      = .NOT. assume_ncpp_
       use_symmetry     = use_symmetry_
       read_symmetry    = use_symmetry_
+      use_timerev      = use_timerev_
 
       debug_level      = debug_level_
       use_debug_mode   = .FALSE.
