@@ -8,7 +8,7 @@
 ! 
 !
 !*********************************************************
-SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
+SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo, need_wfc)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -58,13 +58,15 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
    LOGICAL, OPTIONAL, INTENT(in) :: symmetry
    LOGICAL, OPTIONAL, INTENT(in) :: kpoints
    LOGICAL, OPTIONAL, INTENT(in) :: pseudo
+   LOGICAL, OPTIONAL, INTENT(in) :: need_wfc
 
    !
    ! local variables
    !
    CHARACTER(nstrx)          :: filename 
    LOGICAL                   :: read_lattice_,  read_ions_, read_windows_, &
-                                read_symmetry_, read_kpoints_, read_pseudo_
+                                read_symmetry_, read_kpoints_, read_pseudo_, &
+                                need_wfc_
    !   
    ! end of declarations
    !    
@@ -78,7 +80,10 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo)
     !
     ! if the case, init IO
     !
-    IF ( .NOT. io_alloc ) CALL io_init ( ) 
+    need_wfc_ = .TRUE.
+    IF ( PRESENT( need_wfc) ) need_wfc_ = need_wfc
+    !
+    IF ( .NOT. io_alloc ) CALL io_init ( need_wfc_ ) 
 
     CALL timing('want_dftread',OPR='start')
     CALL log_push('want_dftread')

@@ -68,13 +68,14 @@
 
    INTERFACE want_dftread
       !
-      SUBROUTINE want_dftread_x (lattice, ions, windows, symmetry, kpoints, pseudo)
+      SUBROUTINE want_dftread_x (lattice, ions, windows, symmetry, kpoints, pseudo, need_wfc)
          LOGICAL, OPTIONAL, INTENT(in) :: lattice
          LOGICAL, OPTIONAL, INTENT(in) :: ions
          LOGICAL, OPTIONAL, INTENT(in) :: windows
          LOGICAL, OPTIONAL, INTENT(in) :: symmetry
          LOGICAL, OPTIONAL, INTENT(in) :: kpoints
          LOGICAL, OPTIONAL, INTENT(in) :: pseudo
+         LOGICAL, OPTIONAL, INTENT(in) :: need_wfc
       END SUBROUTINE want_dftread_x
       !
    END INTERFACE
