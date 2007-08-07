@@ -7,22 +7,22 @@
   ======================================================================
 
 
-  Program <bands>  v. 2.1.0  starts ...
-  Date  8Jun2007 at 15:40:15 
+  Program <bands>  v. 2.2.0-dev  starts ...
+  Date  7Aug2007 at 18: 5:17 
 
      Serial run.
 
-          BUILT :    Mon May 28 10:12:03 2007
+          BUILT :    Mon Jul 30 10:25:49 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
              CC :    cc
             CPP :    cpp
             F90 :    ifort
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW
-      BLAS LIBS :    -lblas
-    LAPACK LIBS :    -llapack
-       FFT LIBS :    -lfftw
+         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW
+      BLAS LIBS :    -L/opt/intel/mkl/9.1_beta/lib/32/ -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    
       MASS LIBS :    
 
 
@@ -541,10 +541,10 @@
 
                     bands :     0.00s CPU 
  
-             want_dftread :     0.48s CPU
-                want_init :     0.03s CPU
+             want_dftread :     0.24s CPU
+                want_init :     0.00s CPU
              windows_read :     0.00s CPU
-            subspace_read :     0.03s CPU
-             compute_kham :     0.00s CPU (     197 calls,   0.000 s avg)
+            subspace_read :     0.01s CPU
+             compute_kham :     0.02s CPU (     197 calls,   0.000 s avg)
 
 
