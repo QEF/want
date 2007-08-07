@@ -7,19 +7,22 @@
   ======================================================================
 
 
-  Program <disentangle>  v. 2.1.0  starts ...
-  Date 14Oct2006 at  0:18: 1 
+  Program <disentangle>  v. 2.2.0-dev  starts ...
+  Date  7Aug2007 at 18:15:16 
 
+     Serial run.
+
+          BUILT :    Mon Jul 30 10:25:49 2007
            HOST :    i686-pc-linux-gnu
            ARCH :    ia32
-             CC :    gcc
+             CC :    cc
             CPP :    cpp
-            F90 :    g95
-            F77 :    g95
-         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
-      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW
+      BLAS LIBS :    -L/opt/intel/mkl/9.1_beta/lib/32/ -lmkl_ia32 -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
-       FFT LIBS :    -lfftw
+       FFT LIBS :    
       MASS LIBS :    
 
 
@@ -28,17 +31,17 @@
 
 
   ======================================================================
-  =                           INPUT Summary                            =
+  =  INPUT Summary                                                     =
   ======================================================================
 
  <CONTROL>
             Calculation title :     Wannier Transport Calculation
                        prefix :     benzene
                       postfix :     _WanT
-                     work_dir :     ./
+                     work_dir :     ./SCRATCH/
                   dftdata_fmt :     qexml  v1.2.0
 
-                 wantdata_fmt :     textual
+                 wantdata_fmt :     binary
                     verbosity :     high
                  restart_mode :     from_scratch
                   unitary_thr :       0.1000E-05
@@ -61,8 +64,8 @@
                       win_max :       2.0000
                     alpha_dis :       0.5000
                   maxiter_dis :         5000
-                   nprint_dis :           10
-                    nsave_dis :           50
+                   nprint_dis :           50
+                    nsave_dis :          200
  </SUBSPACE>
 
  <LOCALIZATION>
@@ -75,7 +78,7 @@
                  maxiter0_wan :          200
                  maxiter1_wan :         4000
                           ncg :            5
-                   nprint_wan :           20
+                   nprint_wan :           50
                     nsave_wan :          200
                     a_condmin :      20.0000
                  dump_condmin :       0.0000
@@ -85,32 +88,32 @@
  <TRIAL_CENTERS>
   Trial centers: (cart. coord. in Bohr)
 
-      #     Type          l   m       Position                              Decay
-    ----  ------------  --------   ------------------------------------   ---------
-      1    1gauss         0   0    (  -5.332809   2.481211   3.123719 )    1.00000
-      2    1gauss         0   0    (  -3.497884   5.655007   3.116159 )    1.00000
-      3    1gauss         0   0    (  -1.664849   4.770616   3.097262 )    1.00000
-      4    1gauss         0   0    (  -3.650007   3.626386   3.111435 )    1.00000
-      5    1gauss         0   0    (   0.168186   5.653118   3.084034 )    1.00000
-      6    1gauss         0   0    (   0.318419   3.623551   3.075531 )    1.00000
-      7    1gauss         0   0    (   1.999331   2.477432   3.055688 )    1.00000
-      8    1gauss         0   0    (   0.317474   1.332258   3.067972 )    1.00000
-      9    1gauss         0   0    (   0.165351  -0.696364   3.062303 )    1.00000
-     10    1gauss         0   0    (  -1.666739   0.188028   3.082145 )    1.00000
-     11    1gauss         0   0    (  -3.500719  -0.694475   3.095373 )    1.00000
-     12    1gauss         0   0    (  -3.650952   1.335092   3.103877 )    1.00000
-     13    atomic  C      1   0    (  -2.987657   4.771558   3.108599 )    0.00000
-     14    atomic  C      1   0    (  -0.342040   4.769669   3.085923 )    0.00000
-     15    atomic  C      1   0    (   0.978878   2.477431   3.065136 )    0.00000
-     16    atomic  C      1   0    (  -0.343930   0.187083   3.070805 )    0.00000
-     17    atomic  C      1   0    (  -2.989547   0.188973   3.093482 )    0.00000
-     18    atomic  C      1   0    (  -4.312355   2.481210   3.114269 )    0.00000
+      #    Type        l   m    Position                             Decay    Weight
+    ---- ----------- -------- ------------------------------------ --------- -------
+      1   1gauss       0   0   (  -5.332809   2.481211   3.123719 )  1.00000   1.000
+      2   1gauss       0   0   (  -3.497884   5.655007   3.116159 )  1.00000   1.000
+      3   1gauss       0   0   (  -1.664849   4.770616   3.097262 )  1.00000   1.000
+      4   1gauss       0   0   (  -3.650007   3.626386   3.111435 )  1.00000   1.000
+      5   1gauss       0   0   (   0.168186   5.653118   3.084034 )  1.00000   1.000
+      6   1gauss       0   0   (   0.318419   3.623551   3.075531 )  1.00000   1.000
+      7   1gauss       0   0   (   1.999331   2.477432   3.055688 )  1.00000   1.000
+      8   1gauss       0   0   (   0.317474   1.332258   3.067972 )  1.00000   1.000
+      9   1gauss       0   0   (   0.165351  -0.696364   3.062303 )  1.00000   1.000
+     10   1gauss       0   0   (  -1.666739   0.188028   3.082145 )  1.00000   1.000
+     11   1gauss       0   0   (  -3.500719  -0.694475   3.095373 )  1.00000   1.000
+     12   1gauss       0   0   (  -3.650952   1.335092   3.103877 )  1.00000   1.000
+     13   atomic  C    1   0   (  -2.987657   4.771558   3.108599 )  0.00000   1.000
+     14   atomic  C    1   0   (  -0.342040   4.769669   3.085923 )  0.00000   1.000
+     15   atomic  C    1   0   (   0.978878   2.477431   3.065136 )  0.00000   1.000
+     16   atomic  C    1   0   (  -0.343930   0.187083   3.070805 )  0.00000   1.000
+     17   atomic  C    1   0   (  -2.989547   0.188973   3.093482 )  0.00000   1.000
+     18   atomic  C    1   0   (  -4.312355   2.481210   3.114269 )  0.00000   1.000
 
  </TRIAL_CENTERS>
 
 
   ======================================================================
-  =                              DFT data                              =
+  =  DFT data                                                          =
   ======================================================================
 
  <LATTICE>
@@ -162,22 +165,23 @@
      C    tau(  12 ) = (  -4.3123550   2.4812104   3.1142687 )
 
   Atomic positions: (crystal coord.)
-     H    tau(   1 ) = (  -0.0158831   0.0062030   0.0078329 )
-     C    tau(   2 ) = (  -0.0074691   0.0119289   0.0077715 )
-     H    tau(   3 ) = (  -0.0100203   0.0163461   0.0078093 )
-     C    tau(   4 ) = (  -0.0008551   0.0119242   0.0077148 )
-     H    tau(   5 ) = (   0.0016960   0.0163414   0.0077054 )
-     C    tau(   6 ) = (   0.0024472   0.0061936   0.0076628 )
-     H    tau(   7 ) = (   0.0075495   0.0061936   0.0076156 )
-     C    tau(   8 ) = (  -0.0008598   0.0004677   0.0076770 )
-     H    tau(   9 ) = (   0.0016866  -0.0039495   0.0076345 )
-     C    tau(  10 ) = (  -0.0074739   0.0004724   0.0077337 )
-     H    tau(  11 ) = (  -0.0100297  -0.0039448   0.0077432 )
-     C    tau(  12 ) = (  -0.0107809   0.0062030   0.0077857 )
+     H    tau(   1 ) = (  -0.3176630   0.1240605   0.1566583 )
+     C    tau(   2 ) = (  -0.1493829   0.2385779   0.1554300 )
+     H    tau(   3 ) = (  -0.2004055   0.3269226   0.1561859 )
+     C    tau(   4 ) = (  -0.0171020   0.2384834   0.1542961 )
+     H    tau(   5 ) = (   0.0339206   0.3268281   0.1541072 )
+     C    tau(   6 ) = (   0.0489439   0.1238715   0.1532568 )
+     H    tau(   7 ) = (   0.1509891   0.1238715   0.1523119 )
+     C    tau(   8 ) = (  -0.0171965   0.0093541   0.1535402 )
+     H    tau(   9 ) = (   0.0337316  -0.0789906   0.1526899 )
+     C    tau(  10 ) = (  -0.1494773   0.0094486   0.1546741 )
+     H    tau(  11 ) = (  -0.2005944  -0.0788961   0.1548631 )
+     C    tau(  12 ) = (  -0.2156178   0.1240605   0.1557134 )
  </IONS>
 
  <SYMMETRY>
   Number of symmetry operations =  1
+
 
       isym =  1                                          identity
 
@@ -188,21 +192,21 @@
  </SYMMETRY>
 
  <K-POINTS>
-  nkpts =    1
-  Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
+  nkpts =     1
+  Monkhorst-Pack grid:      nk = (   1   1   1 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
-    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000000
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      1.0000000
  </K-POINTS>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b (   1) =    (   0.31416  0.00000  0.00000 ),   weight =   5.0660592
-    b (   2) =    (  -0.31416 -0.00000 -0.00000 ),   weight =   5.0660592
-    b (   3) =    (   0.00000 -0.31416  0.00000 ),   weight =   5.0660592
-    b (   4) =    (  -0.00000  0.31416 -0.00000 ),   weight =   5.0660592
-    b (   5) =    (   0.00000  0.00000  0.31416 ),   weight =   5.0660592
-    b (   6) =    (  -0.00000 -0.00000 -0.31416 ),   weight =   5.0660592
+    b (    1) =    (    0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    2) =    (    0.0000000  -0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    3) =    (    0.0000000   0.0000000   0.3141593 ),   weight =      5.0660592
+    b (    4) =    (   -0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    5) =    (    0.0000000   0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    6) =    (    0.0000000   0.0000000  -0.3141593 ),   weight =      5.0660592
 
   Total weight =      30.3963551
  </B-SHELL>
@@ -230,39 +234,40 @@
  </WINDOWS>
 
 
-
   ======================================================================
-  =                      Overlaps and Projections                      =
+  =  Overlaps and Projections                                          =
   ======================================================================
 
   Reading density G-grid from file: benzene.save/data-file.xml
   Reading Wfc grids from file: benzene.save/data-file.xml
 
 
-          Energy cut-off for wfcs =         35.00 (Ry)
-                         for rho  =        140.00 (Ry)
+          Energy cut-off for rho  =        140.00 (Ry)
       Total number of PW for rho  =     223735
+        FFT grid components (rho) =  (    80   80   80 )
+
+          Energy cut-off for wfcs =         35.00 (Ry)
         Max number of PW for wfc  =      28017
       Total number of PW for wfcs =      28017
-        FFT grid components (rho) =  (    80   80   80 )
 
 
   Initializing global dft data
 
   Initializing atomic wfc
+
+
     Overlaps or Projections calculation for k-point:    1
     npw =  28017,    dimwin =   25
-                              Total time spent up to now :     7.20 secs
+                              Total time spent up to now :    10.69 secs
 
 
   Overlaps and projections written on file: benzene_WanT.ovp
-                              Total time spent up to now :     7.27 secs
+                              Total time spent up to now :    10.73 secs
 
 
   ======================================================================
-  =                      Starting Iteration loop                      =
+  =  Starting Iteration loop                                           =
   ======================================================================
-
 
   Initial trial subspace: projected localized orbitals
 
@@ -289,9 +294,6 @@
   Iteration =     8     Omega_I =   66.610002      Error =      0.00061308
   Iteration =     9     Omega_I =   66.580166      Error =      0.00044811
   Iteration =    10     Omega_I =   66.557416      Error =      0.00034182
-
-                              Total time spent up to now :     7.29 secs
-
   Iteration =    11     Omega_I =   66.539418      Error =      0.00027049
   Iteration =    12     Omega_I =   66.524781      Error =      0.00022002
   Iteration =    13     Omega_I =   66.512663      Error =      0.00018218
@@ -302,9 +304,6 @@
   Iteration =    18     Omega_I =   66.476173      Error =      0.00007352
   Iteration =    19     Omega_I =   66.472154      Error =      0.00006046
   Iteration =    20     Omega_I =   66.468871      Error =      0.00004940
-
-                              Total time spent up to now :     7.30 secs
-
   Iteration =    21     Omega_I =   66.466205      Error =      0.00004011
   Iteration =    22     Omega_I =   66.464053      Error =      0.00003238
   Iteration =    23     Omega_I =   66.462325      Error =      0.00002600
@@ -315,9 +314,6 @@
   Iteration =    28     Omega_I =   66.457743      Error =      0.00000816
   Iteration =    29     Omega_I =   66.457316      Error =      0.00000642
   Iteration =    30     Omega_I =   66.456982      Error =      0.00000503
-
-                              Total time spent up to now :     7.32 secs
-
   Iteration =    31     Omega_I =   66.456720      Error =      0.00000394
   Iteration =    32     Omega_I =   66.456516      Error =      0.00000308
   Iteration =    33     Omega_I =   66.456356      Error =      0.00000240
@@ -328,9 +324,6 @@
   Iteration =    38     Omega_I =   66.455956      Error =      0.00000068
   Iteration =    39     Omega_I =   66.455921      Error =      0.00000053
   Iteration =    40     Omega_I =   66.455894      Error =      0.00000041
-
-                              Total time spent up to now :     7.34 secs
-
   Iteration =    41     Omega_I =   66.455873      Error =      0.00000032
   Iteration =    42     Omega_I =   66.455856      Error =      0.00000025
   Iteration =    43     Omega_I =   66.455844      Error =      0.00000019
@@ -342,7 +335,7 @@
   Iteration =    49     Omega_I =   66.455810      Error =      0.00000004
   Iteration =    50     Omega_I =   66.455808      Error =      0.00000003
 
-                              Total time spent up to now :     7.35 secs
+                              Total time spent up to now :    10.83 secs
 
   Iteration =    51     Omega_I =   66.455806      Error =      0.00000002
   Iteration =    52     Omega_I =   66.455805      Error =      0.00000002
@@ -352,14 +345,14 @@
 
 
   ======================================================================
-  =                        Convergence Achieved                        =
+  =  Convergence Achieved                                              =
   ======================================================================
 
   Iteration # :    55
   Final Omega_I (Bohr^2, Angstrom^2):      66.455802        18.609505
    Avrg Omega_I                     :       3.691989         1.033861
 
-                              Total time spent up to now :     7.38 secs
+                              Total time spent up to now :    10.84 secs
 
 
   Subspace decomposition:
@@ -378,29 +371,33 @@
   ======================================================================
 
    <global routines>
-             clock number :    21
+             clock number :    25
 
-              disentangle :     7.00s CPU 
-
-             want_dftread :     0.15s CPU
-                want_init :     0.00s CPU
+              disentangle :    10.00s CPU 
+ 
+             want_dftread :     0.09s CPU
+         windows_read_ext :     0.01s CPU
+                want_init :     0.01s CPU
              bshells_init :     0.00s CPU
-              wfc_manager :     7.09s CPU
-          ggrids_read_ext :     0.24s CPU
+             windows_init :     0.00s CPU
+              wfc_manager :    10.61s CPU
+          ggrids_read_ext :     0.35s CPU
       wfc_data_grids_read :     0.01s CPU
-              struct_fact :     0.54s CPU
-                init_at_1 :     0.06s CPU
-           wfc_data_kread :     1.29s CPU (       4 calls,   0.323 s avg)
-                  overlap :     4.14s CPU (       3 calls,   1.381 s avg)
-           overlap_setmap :     0.09s CPU (       3 calls,   0.031 s avg)
+              struct_fact :     0.61s CPU
+                init_at_1 :     0.10s CPU
+           wfc_data_kread :     1.23s CPU (       4 calls,   0.307 s avg)
+                  overlap :     6.05s CPU (       3 calls,   2.017 s avg)
+           overlap_setmap :     0.15s CPU (       3 calls,   0.049 s avg)
                     s_psi :     0.01s CPU
-               projection :     0.71s CPU
-       trial_center_setup :     0.44s CPU (      18 calls,   0.025 s avg)
-               atomic_wfc :     0.03s CPU (       6 calls,   0.005 s avg)
+               projection :     2.20s CPU
+       trial_center_setup :     0.46s CPU (      18 calls,   0.025 s avg)
+               atomic_wfc :     0.12s CPU (       6 calls,   0.020 s avg)
                iterations :     0.11s CPU
             subspace_init :     0.00s CPU
-                   omegai :     0.00s CPU (      56 calls,   0.000 s avg)
-                  zmatrix :     0.03s CPU (      55 calls,   0.001 s avg)
+                   omegai :     0.01s CPU (      56 calls,   0.000 s avg)
+                  zmatrix :     0.04s CPU (      55 calls,   0.001 s avg)
                 mat_hdiag :     0.03s CPU (      57 calls,   0.001 s avg)
+            windows_write :     0.00s CPU
+           subspace_write :     0.00s CPU
 
 

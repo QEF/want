@@ -7,4 +7,5 @@
    datatype = 'modulus'
    collect_wf = .FALSE.
    wann = '1-2,14-15'
+   uspp_augmentation = .TRUE.
  /
