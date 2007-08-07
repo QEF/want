@@ -4,6 +4,15 @@
 =======================================================
 
 
+07 Aug 2007      Bug fix in iotk_magic (ierrl not initialized). Smooth FFT mesh read when
+                 possible and used in plot.f90 when uspp_augmentation is not required; 
+                 changes in the output fmt of PW's and grids performed. Test03 slightly
+                 changed; references updated. (AF)
+
+06 Aug 2007      Error for missign DFT dataset made clearer. io_init modified in order to
+                 allow for initialization of DFT data without taking care of wfcs: midpoint.f90
+                 updated coherently. (AF)
+
 25 Jul 2007      Implementation of symmetries started: symmetrize_kgrid routine added. (AF)
 
 24 Jul 2007      Version number changed to "2.2.0-dev"; fmts in startup routine modified. 
