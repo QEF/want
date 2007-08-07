@@ -17,6 +17,7 @@
    USE windows_module,    ONLY : nbnd, nkpts, dimwinx, imin, imax, ispin, nspin
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
+   USE ggrids_module,     ONLY : ecutwfc
    USE wfc_info_module
    USE qexml_module
    USE qexpt_module
@@ -30,7 +31,8 @@
 !
 ! routines in this module:
 ! SUBROUTINE wfc_data_deallocate()
-! SUBROUTINE wfc_data_grids_read(unit)
+! SUBROUTINE wfc_data_grids_read( filefmt )
+! SUBROUTINE wfc_data_grids_summary( iunit )
 ! SUBROUTINE wfc_data_kread(unit,ik,label,wfc,lwfc[,iband_min][,iband_max])
 !
 
@@ -65,10 +67,12 @@
    PUBLIC :: igsort
    PUBLIC :: evc
    PUBLIC :: evc_info
+   PUBLIC :: ecutwfc
    PUBLIC :: alloc
 
    PUBLIC :: wfc_data_deallocate
    PUBLIC :: wfc_data_grids_read 
+   PUBLIC :: wfc_data_grids_summary
    PUBLIC :: wfc_data_kread
 
 CONTAINS
@@ -310,6 +314,27 @@ CONTAINS
        ! 
    END SUBROUTINE wfc_data_kread
 
+
+!**********************************************************
+   SUBROUTINE wfc_data_grids_summary( iunit )
+   !**********************************************************
+   !
+   ! Writes summary of the main quantities and dimensions in the
+   ! module
+   !
+   IMPLICIT NONE
+       INTEGER, INTENT(IN) :: iunit
+       !
+       !
+       WRITE(iunit, "(/,6x,'    Energy cut-off for wfcs =  ',5x,F7.2,' (Ry)' )") ecutwfc
+       !
+       ! we subtract 1 because of the internal redefinition of the parameter npwkx
+       ! wrt the one used in DFT (see wfc_data_grids_read)
+       !
+       WRITE(iunit, "(  6x,'  Max number of PW for wfc  =  ',i9)") npwkx -1
+       WRITE(iunit, "(  6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))
+       !
+   END SUBROUTINE wfc_data_grids_summary
 
 END MODULE wfc_data_module
 

@@ -40,10 +40,12 @@
    USE kpoints_module,             ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, &
                                           nb, nnlist, nncell, nnrev, nnpos
    USE overlap_module,             ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
-   USE ggrids_module,              ONLY : nfft, npw_rho, ecutwfc, ecutrho, &
+   USE ggrids_module,              ONLY : nfft, npw_rho, nffts, npws_rho, have_smooth_rhogrid, &
+                                          ecutwfc, ecutrho, ggrids_summary, &
                                           ggrids_read_ext, ggrids_deallocate
    USE wfc_data_module,            ONLY : npwkx, npwk, igsort, evc, evc_info, &
-                                          wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate 
+                                          wfc_data_grids_read, wfc_data_grids_summary, &
+                                          wfc_data_kread, wfc_data_deallocate 
    USE wfc_info_module
    USE struct_fact_data_module,    ONLY : struct_fact_data_init
    USE uspp,                       ONLY : nkb, vkb, vkb_ik
@@ -115,16 +117,11 @@
           !
           ! ... stdout summary about grids
           !
-          WRITE(stdout,"(2/,10x,'Energy cut-off for wfcs =  ',5x,F7.2,' (Ry)' )") ecutwfc
-          WRITE(stdout, "(25x,'for rho  =  ', 5x, F7.2, ' (Ry)' )")  ecutrho
-          WRITE(stdout, "(6x,'Total number of PW for rho  =  ',i9)") npw_rho
+          WRITE(stdout, "()")
           !
-          ! here we use npwkx -1 due to a previous redefinition respect
-          ! to DFT data
+          CALL ggrids_summary( stdout )
+          CALL wfc_data_grids_summary( stdout )
           !
-          WRITE(stdout, "(6x,'  Max number of PW for wfc  =  ',i9)") npwkx -1
-          WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))
-          WRITE(stdout, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
           WRITE(stdout, "()")
 
 

@@ -34,12 +34,14 @@
    USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
    USE localization_module,ONLY : cu, rave, localization_read
-   USE ggrids_module,      ONLY : nfft, npw_rho, ecutwfc, ecutrho, igv, &
+   USE ggrids_module,      ONLY : nfft, npw_rho, nffts, npws_rho, have_smooth_rhogrid, &
+                                  ecutwfc, ecutrho, igv, &
                                   ggrids_read_ext, ggrids_deallocate, &
-                                  ggrids_gk_indexes
+                                  ggrids_gk_indexes, ggrids_summary
    USE wfc_info_module
    USE wfc_data_module,    ONLY : npwkx, npwk, igsort, evc, evc_info, &
-                                  wfc_data_grids_read, wfc_data_kread, wfc_data_deallocate
+                                  wfc_data_grids_read, wfc_data_grids_summary, &
+                                  wfc_data_kread, wfc_data_deallocate
    USE uspp,               ONLY : nkb, vkb, vkb_ik
    USE becmod,             ONLY : becp
    USE parser_module
@@ -265,9 +267,23 @@
       !
       ! set FFT mesh
       !
-      IF( nr1 == -1 ) nr1 = nfft(1)      
-      IF( nr2 == -1 ) nr2 = nfft(2)      
-      IF( nr3 == -1 ) nr3 = nfft(3)      
+      IF ( uspp_augmentation ) THEN
+         !
+         ! use the full grid if required
+         !
+         IF( nr1 == -1 ) nr1 = nfft(1)
+         IF( nr2 == -1 ) nr2 = nfft(2)
+         IF( nr3 == -1 ) nr3 = nfft(3)
+         !
+      ELSE
+         !
+         ! use the smooth grid
+         !
+         IF( nr1 == -1 ) nr1 = nffts(1)      
+         IF( nr2 == -1 ) nr2 = nffts(2)      
+         IF( nr3 == -1 ) nr3 = nffts(3)      
+         !
+      ENDIF
       !
       nr1 = good_fft_order ( nr1 )
       nr2 = good_fft_order ( nr2 )
@@ -276,23 +292,30 @@
       ! for nrx too small, the mapping procedure in  ggrids_gk_indexes
       ! may fail giving rise to out-of-bounds usage of arrays
       !
-      IF ( nr1 < nfft(1) ) CALL errore('plot','non-safe nr1 adopted', ABS(nr1) +1 )
-      IF ( nr2 < nfft(2) ) CALL errore('plot','non-safe nr2 adopted', ABS(nr2) +1 )
-      IF ( nr3 < nfft(3) ) CALL errore('plot','non-safe nr3 adopted', ABS(nr3) +1 )
+      IF ( uspp_augmentation ) THEN
+         !
+         IF ( nr1 < nfft(1) ) CALL errore('plot','non-safe nr1 adopted', ABS(nr1) +1 )
+         IF ( nr2 < nfft(2) ) CALL errore('plot','non-safe nr2 adopted', ABS(nr2) +1 )
+         IF ( nr3 < nfft(3) ) CALL errore('plot','non-safe nr3 adopted', ABS(nr3) +1 )
+         !
+      ELSE
+         !
+         IF ( nr1 < nffts(1) ) CALL errore('plot','non-safe nr1 adopted', ABS(nr1) +1 )
+         IF ( nr2 < nffts(2) ) CALL errore('plot','non-safe nr2 adopted', ABS(nr2) +1 )
+         IF ( nr3 < nffts(3) ) CALL errore('plot','non-safe nr3 adopted', ABS(nr3) +1 )
+         !
+      ENDIF
 
 
       !
       ! ... stdout summary about grids
       !
-      WRITE(stdout,"(2/,10x,'Energy cut-off for wfcs =  ',5x,F7.2,' (Ry)' )") ecutwfc
-      WRITE(stdout, "(25x,'for rho  =  ', 5x, F7.2, ' (Ry)' )")  ecutrho
-      WRITE(stdout, "(6x,'Total number of PW for rho  =  ',i9)") npw_rho
-      WRITE(stdout, "(6x,'  Max number of PW for wfc  =  ',i9)") npwkx
-      WRITE(stdout, "(6x,'Total number of PW for wfcs =  ',i9)") MAXVAL(igsort(:,:))+1
-      WRITE(stdout, "(6x,'       input FFT mesh (rho) =  ( ', 3i5,' )' )") nfft(:)
-      WRITE(stdout, "(6x,'    required FFT mesh (rho) =  ( ', 3i5,' )' )") nr1, nr2, nr3
-      WRITE(stdout, "()" )
-
+      WRITE(stdout, "()")
+      !
+      CALL ggrids_summary( stdout )
+      CALL wfc_data_grids_summary( stdout )
+      !
+      WRITE(stdout, "()")
 
 !
 ! ... final settings on input
