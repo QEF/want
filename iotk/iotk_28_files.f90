@@ -845,6 +845,10 @@ subroutine iotk_magic_x(file,binary)
   character(len=iotk_namlenx) :: name
   character(len=iotk_attlenx) :: attr
   binary=.false.
+  !
+  ierrl = 0
+  binary = .FALSE.
+  !
   call iotk_free_unit(unit)
   open(unit=unit,file=trim(file(1:iotk_strlen(file))),status="old",form="unformatted", &
        position="rewind",iostat=iostat,action="read")
