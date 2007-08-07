@@ -32,6 +32,7 @@
 ! SUBROUTINE ggrids_allocate()
 ! SUBROUTINE ggrids_deallocate()
 ! SUBROUTINE ggrids_read_ext( filefmt )
+! SUBROUTINE ggrids_summary( ounit )
 ! SUBROUTINE ggrids_gk_indexes( igv, igsort, npwk, nr1, nr2, nr3, gk2fft, fft2gk )
 ! SUBROUTINE ggrids_gv_indexes( igv, ngm, nr1, nr2, nr3, gv2fft, fft2gv )
 
@@ -41,6 +42,11 @@
 
    INTEGER                   :: npw_rho          ! number of G vects for the density
    INTEGER                   :: nfft(3)          ! dimension of the FFT space grid
+   !
+   LOGICAL                   :: have_smooth_rhogrid   ! if .true. we have a smooth grid
+   INTEGER                   :: npws_rho         ! number of G vects in the smooth density grid
+   INTEGER                   :: nffts(3)         ! dimension of the smooth (USPP only) FFT grid
+   !                                             ! when dealing with NCPP, nfft and nffts are equal 
    !
    REAL(dbl)                 :: ecutwfc          ! energy cutoff for wfc (Ry)
    REAL(dbl)                 :: ecutrho          ! energy cutoff for the density (Ry)
@@ -54,13 +60,15 @@
 ! end of declarations
 !
 
-   PUBLIC :: npw_rho, nfft
+   PUBLIC :: npw_rho,  nfft
+   PUBLIC :: npws_rho, nffts, have_smooth_rhogrid
    PUBLIC :: ecutwfc, ecutrho
    PUBLIC :: igv, g, gg
    PUBLIC :: alloc
 
    PUBLIC :: ggrids_allocate, ggrids_deallocate
    PUBLIC :: ggrids_read_ext
+   PUBLIC :: ggrids_summary
    PUBLIC :: ggrids_gk_indexes, ggrids_gv_indexes
 
 CONTAINS
@@ -148,8 +156,9 @@ CONTAINS
        CASE ( 'qexml' )
             !
             CALL qexml_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=str, &
-                                        NR1=nfft(1), NR2=nfft(2), NR3=nfft(3),              &
-                                        NGM=npw_rho, IERR=ierr )
+                                        NR1=nfft(1),   NR2=nfft(2),   NR3=nfft(3),          &
+                                        NR1S=nffts(1), NR2S=nffts(2), NR3S=nffts(3),        &
+                                        NGM=npw_rho,   NGMS=npws_rho, IERR=ierr )
             !
        CASE ( 'pw_export' )
             !
@@ -157,13 +166,24 @@ CONTAINS
                                         NR1=nfft(1), NR2=nfft(2), NR3=nfft(3),              &
                                         NGM=npw_rho, IERR=ierr )
             !
+            ! because data related to the smooth grid is missing in the pw_export dataset
+            ! we set the two grids to be equal
+            !
+            nffts(1:3) = nfft(1:3)
+            npws_rho   = npw_rho
+            !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
        END SELECT
        !
        IF ( ierr/=0) CALL errore(subname,'getting bands dimensions',ABS(ierr))
+       
        !
+       ! for future reference
+       !
+       have_smooth_rhogrid = .FALSE.
+       IF ( ANY( nffts(:) < nfft(:)) ) have_smooth_rhogrid = .TRUE.
 
        !
        ! ... allocaing ggrids
@@ -328,6 +348,33 @@ END SUBROUTINE ggrids_gk_indexes
    CALL log_pop( 'ggrids_gv_indexes' )
    !
 END SUBROUTINE ggrids_gv_indexes
+
+
+!**********************************************************
+   SUBROUTINE ggrids_summary( iunit )
+   !**********************************************************
+   !
+   ! Writes summary of the main quantities and dimensions in the
+   ! module
+   !
+   IMPLICIT NONE
+   INTEGER, INTENT(IN) :: iunit
+   !
+   !
+   WRITE(iunit, "(/,6x,'    Energy cut-off for rho  =  ',5x,F7.2,' (Ry)' )") ecutrho
+   WRITE(iunit, "(  6x,'Total number of PW for rho  =  ',i9)") npw_rho
+   !
+   IF ( have_smooth_rhogrid ) &
+      WRITE(iunit, "(6x,'              (smooth grid) =  ',i9)") npws_rho
+   !
+   WRITE(iunit, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
+   !
+   IF ( have_smooth_rhogrid ) &
+      WRITE(iunit, "(6x,'              (smooth grid) =  ( ', 3i5,' )' )") nffts(:)
+   !
+   !
+END SUBROUTINE ggrids_summary
+   
 
 END MODULE ggrids_module
 
