@@ -107,7 +107,7 @@
 ! subroutines
 !
 !**********************************************************
-   SUBROUTINE get_dftdata_fmt(prefix_,work_dir_, dftdata_fmt_)
+   SUBROUTINE get_dftdata_fmt(prefix_,work_dir_, dftdata_fmt_, need_wfc)
    !**********************************************************
       !
       ! get the fmt of the dftdata file (use the names)
@@ -115,11 +115,12 @@
       IMPLICIT NONE
       CHARACTER(*),  INTENT(IN)  ::  prefix_, work_dir_
       CHARACTER(*),  INTENT(OUT) ::  dftdata_fmt_
+      LOGICAL, OPTIONAL, INTENT(IN) :: need_wfc
       !
       CHARACTER(nstrx) :: filename, version
       CHARACTER(nstrx) :: fmt_searched(2)
       CHARACTER(nstrx) :: fmt_filename(2)
-      LOGICAL          :: lexist, lexist1
+      LOGICAL          :: lexist, lexist1, lneed_wfc
       INTEGER          :: i, ierr
       !
       ! Setting fmts to be searched
@@ -127,17 +128,20 @@
       DATA fmt_searched /'qexml', 'pw_export'  /
       DATA fmt_filename /'.save/data-file.xml', '.export/index.xml'  /
       !
-      lexist = .FALSE.
+      lexist    = .FALSE.
+      lneed_wfc = .TRUE.
+      IF ( PRESENT( need_wfc )) lneed_wfc = need_wfc
+      !
       !
       DO i = 1, SIZE( fmt_searched )
            !
            filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // TRIM( fmt_filename( i ) )
            INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
            !
-           IF ( lexist .AND. TRIM( fmt_searched(i) ) == 'qexml'  )  THEN
+           IF ( lexist .AND. lneed_wfc .AND. TRIM( fmt_searched(i) ) == 'qexml'  )  THEN
                 !
-                ! check olso the existence of evc.dat or evc1.dat
-                ! this means that file produced by espresso are usable by WanT
+                ! check also the existence of evc.dat or evc1.dat
+                ! this means that file produced by espresso are fine for WanT
                 !
                 filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc.dat"
                 INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
@@ -184,17 +188,25 @@
       
 
 !**********************************************************
-   SUBROUTINE io_init()
+   SUBROUTINE io_init( need_wfc )
    !**********************************************************
    !
    ! init some data related to IO and taken from input
    !
    IMPLICIT NONE
+      !
+      LOGICAL, OPTIONAL, INTENT(IN) :: need_wfc
+      !
+      LOGICAL           :: lneed_wfc
       INTEGER           :: ierr
       CHARACTER(nstrx)  :: dirname, logfile, filename
       !
       ionode = .TRUE.
       ionode_id = 0
+      !
+      lneed_wfc = .TRUE.
+      IF ( PRESENT(need_wfc) ) lneed_wfc = need_wfc
+      !
       !
       SELECT CASE ( TRIM(wantdata_fmt) ) 
       !
@@ -221,11 +233,18 @@
       !
       !
       IF ( LEN_TRIM( dftdata_fmt ) == 0 ) THEN 
-           !
-           CALL get_dftdata_fmt ( prefix, work_dir, dftdata_fmt )
+          !
+          CALL get_dftdata_fmt ( prefix, work_dir, dftdata_fmt, lneed_wfc )
+          !
       ENDIF
       !
+      ! if dftdata_fmt is still empty, it means no complete dtf dataset
+      ! has been found
       !
+      IF ( LEN_TRIM( dftdata_fmt ) == 0 ) &
+           CALL errore('io_init','No DFT dataset found',1)
+
+
       SELECT CASE ( TRIM(dftdata_fmt) )
       !
       CASE ( 'qexml' )

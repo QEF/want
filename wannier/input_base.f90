@@ -152,7 +152,7 @@ CONTAINS
 
            CALL read_line(unit, tmp_line )
            READ(tmp_line,*, IOSTAT=ierr) list(iwann)%type 
-           IF (ierr/=0) CALL errore('card_wannier_centers','reading line I',ABS(ierr))
+           IF (ierr/=0) CALL errore('card_wannier_centers','reading line I', iwann )
            !
            CALL change_case(list(iwann)%type,'lower')
 
@@ -167,7 +167,7 @@ CONTAINS
                    READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
                         list(iwann)%l, list(iwann)%m, list(iwann)%decay
                ENDIF
-               IF (ierr/=0) CALL errore('card_wannier_centers','reading line II',ABS(ierr))
+               IF (ierr/=0) CALL errore('card_wannier_centers','reading line II', iwann )
 
            CASE ( "2gauss" ) 
                !
@@ -183,7 +183,7 @@ CONTAINS
                    READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
                         list(iwann)%x2(1:3), list(iwann)%decay
                ENDIF
-               IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
+               IF (ierr/=0) CALL errore('card_wannier_centers','reading line III', iwann)
                !
            CASE ( "atomic" )
                !
@@ -200,7 +200,7 @@ CONTAINS
                    READ(tmp_line,*, IOSTAT=ierr) adum, &
                         list(iwann)%iatom, list(iwann)%l, list(iwann)%m
                ENDIF
-               IF (ierr/=0) CALL errore('card_wannier_centers','reading line',ABS(ierr))
+               IF (ierr/=0) CALL errore('card_wannier_centers','reading line IV', iwann)
                !
            CASE DEFAULT
                CALL errore('card_wannier_centers','Wrong wannier center type',iwann)
