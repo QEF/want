@@ -30,6 +30,7 @@
       INTEGER     :: itype
       REAL(dbl)   :: r2
       REAL(dbl)   :: midcoord(3)
+      REAL(dbl)   :: pair_coord(6)
       !
       TYPE( bond_type ), POINTER :: next
       !
@@ -387,6 +388,10 @@ END MODULE
                  current%midcoord(:) = 0.5 * ( tau(:,ia1) +tau(:,ia2) &
                                        +i * avec(:,1) +j * avec(:,2) +k * avec(:,3) )
                  !
+                 current%pair_coord(1:3) = tau(:,ia1)
+                 current%pair_coord(4:6) = tau(:,ia2)+i*avec(:,1)+j*avec(:,2) &
+                                           +k*avec(:,3)
+                 !
                  ! check whether this bond is already in the list
                  !
                  lfound = .FALSE.
@@ -459,6 +464,9 @@ END MODULE
             IF ( .NOT. ASSOCIATED( runner ) ) EXIT 
             CALL cart2cry( runner%midcoord(:),avec)
             !
+            CALL cart2cry( runner%pair_coord(1:3),avec)
+            CALL cart2cry( runner%pair_coord(4:6),avec)
+            !
             runner => runner%next 
          ENDDO
          conv = ONE
@@ -491,8 +499,29 @@ END MODULE
           runner => runner%next
           !
       ENDDO
+      !
+      !
+      WRITE( stdout, "()" )
+      WRITE( stdout,"(/,2x,70('='))" )
+      !
+      WRITE( stdout,"(  2x,'Bond atomic coordinates[',a,']:',/)") TRIM(output_fmt)
+      WRITE( stdout, "(i5,/)") nmid
+      !
+      !
+      runner => list
+      !
+      DO
+          IF ( .NOT. ASSOCIATED( runner ) ) EXIT
+          !
+          WRITE( stdout, "(2x,a3,'-- ',a3,2x,6f15.9)" ) symb1( runner%itype ), &
+                    symb2( runner%itype ), runner%pair_coord(:)*conv
+          !
+          runner => runner%next
+          !
+      ENDDO
+      !
       
-!
+
 ! closing the run
 !
 
