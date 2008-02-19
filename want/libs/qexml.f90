@@ -34,7 +34,7 @@ MODULE qexml_module
   ! definitions for the fmt
   !
   CHARACTER(5), PARAMETER :: fmt_name = "QEXML"
-  CHARACTER(5), PARAMETER :: fmt_version = "1.2.0"
+  CHARACTER(5), PARAMETER :: fmt_version = "1.3.0"
   !
   ! some default for kinds
   !
@@ -347,6 +347,25 @@ CONTAINS
       !
     END SUBROUTINE copy_file
     !
+    !
+    !------------------------------------------------------------------------
+    FUNCTION check_file_exst( filename )
+      !------------------------------------------------------------------------
+      !    
+      IMPLICIT NONE 
+      !    
+      LOGICAL          :: check_file_exst
+      CHARACTER(LEN=*) :: filename
+      !    
+      LOGICAL :: lexists
+      !    
+      INQUIRE( FILE = TRIM( filename ), EXIST = lexists )
+      !    
+      check_file_exst = lexists
+      RETURN
+      !    
+    END FUNCTION check_file_exst
+    !    
     !
     !------------------------------------------------------------------------
     FUNCTION restart_dirname( outdir, prefix )
@@ -1198,7 +1217,15 @@ CONTAINS
       binary_ = .TRUE.
       IF ( PRESENT (binary) ) binary_ = binary
       !
-      filename = TRIM( datadir_out ) // '/' //'charge-density.xml'
+      IF ( binary_ ) THEN
+         !
+         filename = TRIM( datadir_out ) // '/' //'charge-density.dat'
+         !
+      ELSE
+         !
+         filename = TRIM( datadir_out ) // '/' //'charge-density.xml'
+         !
+      ENDIF
       !
       CALL iotk_open_write( iunaux, FILE = TRIM(filename), BINARY=binary_ )
       !
@@ -2542,6 +2569,7 @@ CONTAINS
       !
       INTEGER        :: nr1_, nr2_, nr3_, ip_
       INTEGER        :: iunaux
+      LOGICAL        :: lexists
       CHARACTER(256) :: filename
       
       ierr = 0
@@ -2549,7 +2577,22 @@ CONTAINS
       !
       CALL iotk_free_unit( iunaux )
       !
-      filename = TRIM( datadir_in ) // '/' // 'charge-density.xml'
+      filename = TRIM( datadir_in ) // '/' // 'charge-density.dat'
+      lexists  = check_file_exst( TRIM(filename) )
+      ! 
+      IF ( .NOT. lexists ) THEN
+          !
+          filename = TRIM( datadir_in ) // '/' // 'charge-density.xml'
+          lexists  = check_file_exst( TRIM(filename) )
+          !
+      ENDIF
+      !
+      IF ( .NOT. lexists ) THEN
+          !
+          ierr = -1
+          RETURN
+          !
+      ENDIF
       !
       CALL iotk_open_read( iunaux, FILE = filename, IERR=ierr )
       IF ( ierr/=0 ) RETURN
