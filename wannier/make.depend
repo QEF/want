@@ -632,6 +632,7 @@ wf2_augment.o : ../libs/timing.o
 wf2_augment.o : pwcom.o
 wf2_augment.o : struct_fact_data.o
 wf2_augment.o : uspp.o
+wfc_data.o : ggrids.o
 wfc_data.o : ../libs/constants.o
 wfc_data.o : ../libs/kind.o
 wfc_data.o : ../libs/log_module.o
