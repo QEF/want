@@ -36,7 +36,7 @@ do
         sed 's/@fftw.c@/fftw.c/' make.depend.tmp > make.depend
     fi
 
-    rm -f make.depend.tmp
+    test -e make.depend.tmp && rm make.depend.tmp
 
     # check for missing dependencies
     if grep @ make.depend
@@ -46,7 +46,21 @@ do
     else
         echo directory $DIR : ok
     fi
+    #
+    # eliminate missing deps to make the script working
+    mv make.depend make.depend.tmp
+    awk '{
+           if ( match($0, "@") ) { 
+               print "#", $0 
+           } else {
+               print 
+           }
+         }' make.depend.tmp > make.depend
+    #
+    test -e make.depend.tmp && rm make.depend.tmp
+    #
 done
+#
 if test "$notfound" = ""
 then
     echo all dependencies updated successfully
