@@ -10,6 +10,8 @@ OBJS= \
 cleanup.o \
 control.o \
 correlation.o \
+crystal_to_internal.o \
+datafiles.o \
 egrid.o \
 smearing.o \
 green.o \
