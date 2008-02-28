@@ -81,7 +81,7 @@ CONTAINS
       CALL log_push( 'kpoints_init' )
 
       !
-      ! read data from datafile_C (wannier ham file)
+      ! read data from datafile_C (ham file)
       !
       CALL file_open(aux_unit,TRIM(datafile_C),PATH="/",ACTION="read")
       !
