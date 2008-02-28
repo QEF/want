@@ -43,6 +43,6 @@ awk '{print "s/@" $1 "@/" $2 "/" }' > includedep.tmp2
 
 # replace file names with pathnames
 # by applying the file of substitution patterns just created
-sed -f includedep.tmp2 includedep.tmp1
+sed -f includedep.tmp2 includedep.tmp1 
 
 rm -f includedep.tmp1 includedep.tmp2 # remove temporary files
