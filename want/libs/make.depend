@@ -38,4 +38,5 @@ write_header.o : io_global.o
 ylmr2.o : constants.o
 ylmr2.o : kind.o
 fft_scalar.o : ../include/fft_defs.h
+# fft_scalar.o : @mkl_dfti.f90@
 log_module.o : ../include/f_defs.h
