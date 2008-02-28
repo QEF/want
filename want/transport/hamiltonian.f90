@@ -91,37 +91,49 @@ CONTAINS
       ! h allocation       
       !
       ALLOCATE ( h00_L(dimL,dimL,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating h00_L', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating h00_L', 1 )
+      !
       ALLOCATE ( h01_L(dimL,dimL,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating h01_L', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating h01_L', 1 )
+      !
       ALLOCATE ( h00_R(dimR,dimR,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating h00_R', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating h00_R', 1 )
+      !
       ALLOCATE ( h01_R(dimR,dimR,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating h01_R', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating h01_R', 1 )
+      !
       ALLOCATE ( h00_C(dimC,dimC,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating h00_C', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating h00_C', 1 )
+      !
       ALLOCATE ( h_LC(dimL,dimC,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating h_LC', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating h_LC', 1 )
+      !
       ALLOCATE ( h_CR(dimC,dimR,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating h_CR', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating h_CR', 1 )
 
       !
       ! s allocation
       !
       ALLOCATE ( s00_L(dimL,dimL,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating s00_L ', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating s00_L ', 1 )
+      !
       ALLOCATE ( s01_L(dimL,dimL,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating s01_L ', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating s01_L ', 1 )
+      !
       ALLOCATE ( s00_R(dimR,dimR,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating s00_R ', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating s00_R ', 1 )
+      !
       ALLOCATE ( s01_R(dimR,dimR,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating s01_R ', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating s01_R ', 1 )
+      !
       ALLOCATE ( s00_C(dimC,dimC,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating s00_C ', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating s00_C ', 1 )
+      !
       ALLOCATE ( s_LC(dimL,dimC,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating s_LC ', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating s_LC ', 1 )
+      !
       ALLOCATE ( s_CR(dimC,dimR,nkpts_par), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating s_CR ', 1 )
+      IF( ierr /=0 ) CALL errore(subname, ' allocating s_CR ', 1 )
 
       alloc = .TRUE.
 
@@ -142,26 +154,34 @@ CONTAINS
       IF ( .NOT. alloc ) RETURN
 
       DEALLOCATE ( h00_L, h01_L, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_L, h01_L', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_L, h01_L', 1 )
+      !
       DEALLOCATE ( h00_R, h01_R, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_R, h01_R', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_R, h01_R', 1 )
+      !
       DEALLOCATE ( h00_C, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_C', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_C', 1 )
+      !
       DEALLOCATE ( h_LC, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating h_LC', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating h_LC', 1 )
+      !
       DEALLOCATE ( h_CR, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating hac_cb', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating hac_cb', 1 )
 
       DEALLOCATE ( s00_L, s01_L, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_L, s01_L', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_L, s01_L', 1 )
+      !
       DEALLOCATE ( s00_R, s01_R, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_R, s01_R', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_R, s01_R', 1 )
+      !
       DEALLOCATE ( s00_C, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_C', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_C', 1 )
+      !
       DEALLOCATE ( s_LC, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating s_LC', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating s_LC', 1 )
+      !
       DEALLOCATE ( s_CR, STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'deallocating s_CR', 1 )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating s_CR', 1 )
           
       alloc = .FALSE.   
 

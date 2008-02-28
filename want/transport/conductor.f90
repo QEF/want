@@ -27,7 +27,8 @@
                                     work_dir, prefix, postfix, aux_unit
    USE T_input_module,       ONLY : input_manager
    USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
-                                    conduct_formula, niterx, nprint, datafile_sgm, write_kdata
+                                    conduct_formula, niterx, nprint, datafile_sgm,  &
+                                    write_kdata
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
@@ -42,6 +43,7 @@
                                     workspace_allocate
    USE T_correlation_module, ONLY : sgm_corr, correlation_sgmread, correlation_allocate, &
                                     correlation_init
+   USE T_datafiles_module,   ONLY : datafiles_init
 
    IMPLICIT NONE
 
@@ -77,6 +79,10 @@
 !
 ! init
 !
+   !
+   ! check whether data files should be internally converted
+   !
+   CALL datafiles_init()
 
    !
    ! smearing functions

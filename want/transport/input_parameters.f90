@@ -183,7 +183,7 @@ CONTAINS
       INTEGER, INTENT(in)   :: unit
 
       CHARACTER(29) :: subname='read_namelist_input_conductor'
-      LOGICAL :: allowed
+      LOGICAL :: allowed, exists
       INTEGER :: i, ios
 
       CALL log_push( 'read_namelist_input_conductor' )
@@ -238,6 +238,9 @@ CONTAINS
       IF ( LEN_TRIM(datafile_C) == 0 ) &
            CALL errore(subname,'datafile_C unspecified',1)
 
+      INQUIRE( FILE=datafile_C, EXIST=exists )
+      IF ( .NOT. exists ) CALL errore(subname,'unable to find '//TRIM(datafile_C),1)
+      !
       IF ( emax <= emin ) CALL errore(subname,'Invalid EMIN EMAX',1)
       IF ( ne <= 1 ) CALL errore(subname,'Invalid NE',1)
       IF ( niterx <= 0 ) CALL errore(subname,'Invalid NITERX',1)
@@ -278,6 +281,14 @@ CONTAINS
                 CALL errore(subname,'datafile_L unspecified',1)
            IF ( LEN_TRIM(datafile_R) == 0 ) &
                 CALL errore(subname,'datafile_R unspecified',1)
+
+           !
+           INQUIRE( FILE=datafile_L, EXIST=exists )
+           IF ( .NOT. exists ) CALL errore(subname,'unable to find '//TRIM(datafile_L),1)
+           ! 
+           INQUIRE( FILE=datafile_R, EXIST=exists )
+           IF ( .NOT. exists ) CALL errore(subname,'unable to find '//TRIM(datafile_R),1)
+           !
       ELSE
            !
            ! bulk case

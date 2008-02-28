@@ -136,18 +136,22 @@
    ! this statement is quite fragile and should be improved
    !
    IF ( use_correlation ) THEN
+      !
       IF ( TRIM(name) == 'H00_C') THEN 
            !
            ncols_corr = ncols
            nrows_corr = nrows
+           !
            ALLOCATE( icols_corr(ncols_corr), STAT=ierr )
-               IF (ierr/=0) CALL errore('read_matrix','allocating icols_corr',ABS(ierr))
+           IF (ierr/=0) CALL errore('read_matrix','allocating icols_corr',ABS(ierr))
+           !
            ALLOCATE( irows_corr(nrows_corr), STAT=ierr )
-               IF (ierr/=0) CALL errore('read_matrix','allocating irows_corr',ABS(ierr))
-
+           IF (ierr/=0) CALL errore('read_matrix','allocating irows_corr',ABS(ierr))
+           !
            icols_corr(:) = icols(:)
            irows_corr(:) = irows(:)
       ENDIF
+      !
    ENDIF
 
 
@@ -157,41 +161,48 @@
    CALL file_open( aux_unit, TRIM(filein), PATH="/HAMILTONIAN/", ACTION="read" )
    !
    CALL iotk_scan_empty(aux_unit, "DATA", ATTR=attr, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching DATA', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'searching DATA', ABS(ierr) )
+   !
    CALL iotk_scan_attr(attr,"dimwann",ldimwann, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching dimwann', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'searching dimwann', ABS(ierr) )
+   !
    CALL iotk_scan_attr(attr,"nr",nr_aux, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching nr', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'searching nr', ABS(ierr) )
+   !
    CALL iotk_scan_attr(attr,"nrtot",nrtot, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching nrtot', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'searching nrtot', ABS(ierr) )
 
    IF (ldimwann <=0 ) CALL errore('read_matrix', 'invalid dimwann', ABS(ierr))
    IF (nrtot <=0 ) CALL errore('read_matrix', 'invalid nrtot', ABS(ierr))
    !
    i = 0
    DO j= 1, 3
-      IF ( transport_dir /= j ) THEN
-         i = i+1
-         IF ( nr_aux(j) /= nr_par(i) ) CALL errore('read_matrix', 'invalid nr', j)
-      ENDIF
+       !
+       IF ( transport_dir /= j ) THEN
+          i = i+1
+          IF ( nr_aux(j) /= nr_par(i) ) CALL errore('read_matrix', 'invalid nr', j)
+       ENDIF
+       !
    ENDDO
 
    !
    DO i=1,ncols
       IF ( icols(i) > ldimwann ) CALL errore('read_matrix', 'invalid icols(i)', i)
    ENDDO
+   !
    DO i=1,nrows
       IF ( irows(i) > ldimwann ) CALL errore('read_matrix', 'invalid irows(i)', i)
    ENDDO
 
    !
    ALLOCATE( ivr(3,nrtot), STAT=ierr )
-      IF (ierr/=0) CALL errore('read_matrix', 'allocating ivr', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'allocating ivr', ABS(ierr) )
+   !
    ALLOCATE( lmatrix(ldimwann,ldimwann), STAT=ierr )
-      IF (ierr/=0) CALL errore('read_matrix', 'allocating lmatrix', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'allocating lmatrix', ABS(ierr) )
 
    CALL iotk_scan_dat(aux_unit, "IVR", ivr, IERR=ierr)
-      IF (ierr/=0) CALL errore('read_matrix', 'searching indxws', ABS(ierr) )
+   IF (ierr/=0) CALL errore('read_matrix', 'searching indxws', ABS(ierr) )
 
    !
    ! get the desired R indexes
