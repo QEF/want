@@ -191,11 +191,13 @@
    LOGICAL :: use_blimit = .FALSE.
        ! if .TRUE. sets b = 0 in the calculation of overlap augmentation
 
-   LOGICAL :: use_symmetry = .TRUE.
+! XXX
+   LOGICAL :: use_symmetry = .FALSE.
        ! if .TRUE. reads and uses symmetry making kpt sums
 
-   LOGICAL :: use_timerev = .TRUE.
+   LOGICAL :: use_timerev = .FALSE.
        ! if .TRUE. uses time-reversal symmetry to reduce the number of required kpts
+! XXX
 
    NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, spin_component, &
                          alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &

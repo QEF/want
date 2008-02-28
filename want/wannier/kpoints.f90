@@ -157,8 +157,6 @@ CONTAINS
       ! get the kpt grid over the full BZ
       !
       CALL symmetrize_kgrid() 
-! XXX
-STOP
 
       !
       ! get the monkhorst pack grid

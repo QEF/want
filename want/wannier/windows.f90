@@ -124,7 +124,7 @@ CONTAINS
           !
           ! ... Check which eigenvalues fall within the outer energy window
           IF ( eig_(1,ik) > win_max .OR. eig_(nbnd,ik) < win_min ) &
-              CALL errore(subname, ' energy window contains no eigenvalues ',1)
+              CALL errore(subname, 'energy window contains no eigenvalues ',1)
 
           imin(ik) = 0
           DO i = 1, nbnd
@@ -139,10 +139,10 @@ CONTAINS
           !
           dimwin(ik) = imax(ik) - imin(ik) + 1       
           !
-          IF ( dimwin(ik) < dimwann) CALL errore(subname,'dimwin < dimwann ', ik )
-          IF ( dimwin(ik) > nbnd) CALL errore(subname,'dimwin > nbnd ', ik )
-          IF ( imax(ik) < imin(ik) ) CALL errore(subname,'imax < imin ',ik)
-          IF ( imin(ik) < 1 ) CALL errore(subname,' imin < 1 ',ik)
+          IF ( dimwin(ik) < dimwann) CALL errore(subname,'dimwin < dimwann', ik )
+          IF ( dimwin(ik) > nbnd) CALL errore(subname,'dimwin > nbnd', ik )
+          IF ( imax(ik) < imin(ik) ) CALL errore(subname,'imax < imin',ik)
+          IF ( imin(ik) < 1 ) CALL errore(subname,'imin < 1',ik)
           !
        ENDDO kpoints_loop
 
@@ -153,13 +153,13 @@ CONTAINS
        dimwinx = MAXVAL( dimwin(:) )
        !
        ALLOCATE( dimfroz(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',ABS(ierr))
+           IF ( ierr/=0 ) CALL errore(subname,'allocating dimfroz',ABS(ierr))
        ALLOCATE( indxfroz(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',ABS(ierr))
+           IF ( ierr/=0 ) CALL errore(subname,'allocating indxfroz',ABS(ierr))
        ALLOCATE( indxnfroz(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',ABS(ierr))
+           IF ( ierr/=0 ) CALL errore(subname,'allocating indxnfroz',ABS(ierr))
        ALLOCATE( frozen(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',ABS(ierr))
+           IF ( ierr/=0 ) CALL errore(subname,'allocating frozen',ABS(ierr))
        lfrozen = .FALSE.
 
 
@@ -234,17 +234,17 @@ CONTAINS
        CALL log_push ( subname )
        !
        IF ( nbnd <= 0 .OR. nkpts <= 0 ) &
-           CALL errore(subname,' Invalid NBND or NKPTS ',1)
+           CALL errore(subname,'Invalid NBND or NKPTS ',1)
        IF ( nspin /= 1 .AND. nspin /=2 ) CALL errore(subname,'Invalid NSPIN',ABS(nspin)+1)
        !
        ALLOCATE( dimwin(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating dimwin ',nkpts)      
+           IF ( ierr/=0 ) CALL errore(subname,'allocating dimwin',nkpts)      
        ALLOCATE( imin(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating imin ',nkpts)      
+           IF ( ierr/=0 ) CALL errore(subname,'allocating imin',nkpts)      
        ALLOCATE( imax(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating imax ',nkpts)      
+           IF ( ierr/=0 ) CALL errore(subname,'allocating imax',nkpts)      
        ALLOCATE( eig(nbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,' allocating eig ',nbnd*nkpts)
+           IF ( ierr/=0 ) CALL errore(subname,'allocating eig',nbnd*nkpts)
 
        alloc = .TRUE.
        !
@@ -264,35 +264,35 @@ CONTAINS
        !
        IF ( ALLOCATED(dimwin) ) THEN
             DEALLOCATE(dimwin, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating dimwin ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating dimwin',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(imin) ) THEN
             DEALLOCATE(imin, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating imin ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating imin',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(imax) ) THEN
             DEALLOCATE(imax, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating imax ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating imax',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(eig) ) THEN
             DEALLOCATE(eig, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating eig ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating eig',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(dimfroz) ) THEN
             DEALLOCATE(dimfroz, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating dimfroz ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating dimfroz',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(indxfroz) ) THEN
             DEALLOCATE(indxfroz, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating indxfroz ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating indxfroz',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(indxnfroz) ) THEN
             DEALLOCATE(indxnfroz, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating indxnfroz ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating indxnfroz',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(frozen) ) THEN
             DEALLOCATE(frozen, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating frozen ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,'deallocating frozen',ABS(ierr))
        ENDIF
        !
        alloc = .FALSE.
@@ -398,16 +398,16 @@ CONTAINS
        CALL windows_allocate()
        !
        ALLOCATE( dimfroz(nkpts), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,' allocating dimfroz ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,'allocating dimfroz',ABS(ierr))
        !
        ALLOCATE( indxfroz(dimwinx,nkpts), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,' allocating indxfroz ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,'allocating indxfroz',ABS(ierr))
        !
        ALLOCATE( indxnfroz(dimwinx,nkpts), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,' allocating indxnfroz ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,'allocating indxnfroz',ABS(ierr))
        !
        ALLOCATE( frozen(dimwinx,nkpts), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,' allocating frozen ',ABS(ierr))
+       IF ( ierr/=0 ) CALL errore(subname,'allocating frozen',ABS(ierr))
 
        CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
