@@ -294,8 +294,8 @@ END SUBROUTINE ggrids_gk_indexes
    ! rho and FFT.
    !
    IMPLICIT NONE
-   INTEGER, INTENT(IN) :: igvl(3,ngm)
    INTEGER, INTENT(IN) :: ngm, nr1, nr2, nr3
+   INTEGER, INTENT(IN) :: igvl(3,ngm)
    INTEGER, OPTIONAL, INTENT(OUT) :: fft2gv(0:)
    INTEGER, OPTIONAL, INTENT(OUT) :: gv2fft(:)
    INTEGER :: ig, nx, ny, nz, npoint
