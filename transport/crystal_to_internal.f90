@@ -219,13 +219,30 @@
    norm   = SUM( wk )
    wk(:)  = wk(:) / norm
 
+
+   !
+   ! read Overlaps
+   !
+   CALL crio_read_overlap( DIM_BASIS=dimwann, NRTOT=auxdim2, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading ovp dimensions', ABS(ierr) )
+   !
+   IF ( auxdim2 /= nrtot )   CALL errore(subname, 'inconsistent dimensions', 72)
+   !
+   ALLOCATE( rovp(dimwann, dimwann, nrtot), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'allocating rovp', ABS(ierr) )
+   ! 
+   CALL crio_read_overlap( OVP_MATRIX=rovp, IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'reading ovp matrix', ABS(ierr) )
+
+
    !
    ! read Hamiltonian 
    !
-   CALL crio_read_hamiltonian( UNITS=h_units, DIM_BASIS=dimwann, &
+   CALL crio_read_hamiltonian( UNITS=h_units, DIM_BASIS=auxdim1, &
                                NRTOT=auxdim2, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname, 'reading ham dimensions', ABS(ierr) )
-   IF ( auxdim2 /= nrtot ) CALL errore(subname, 'inconsistent dimensions', 72)
+   IF ( auxdim1 /= dimwann ) CALL errore(subname, 'inconsistent dimensions', 74)
+   IF ( auxdim2 /= nrtot )   CALL errore(subname, 'inconsistent dimensions', 73)
    !
    !
    ALLOCATE( rham(dimwann, dimwann, nrtot), STAT=ierr )
@@ -254,21 +271,6 @@
       CALL errore( subname, 'unknown units for ham: '//TRIM(h_units), 71)
    END SELECT
 
-
-   !
-   ! read Overlaps
-   !
-   CALL crio_read_overlap( DIM_BASIS=auxdim1, NRTOT=auxdim2, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname, 'reading ovp dimensions', ABS(ierr) )
-   !
-   IF ( auxdim1 /= dimwann ) CALL errore(subname, 'inconsistent dimensions', 73)
-   IF ( auxdim2 /= nrtot )   CALL errore(subname, 'inconsistent dimensions', 74)
-   !
-   ALLOCATE( rovp(dimwann, dimwann, nrtot), STAT=ierr )
-   IF ( ierr/=0 ) CALL errore(subname, 'allocating rovp', ABS(ierr) )
-   ! 
-   CALL crio_read_overlap( OVP_MATRIX=rovp, IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname, 'reading ovp matrix', ABS(ierr) )
 
    !
    ! close the file

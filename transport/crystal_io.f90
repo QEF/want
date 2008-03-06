@@ -418,7 +418,7 @@ CONTAINS
       INTEGER,                     INTENT(OUT) :: ierr
       !
       CHARACTER(256)     :: r_units_
-      INTEGER            :: nrtot_, ntmp, ir
+      INTEGER            :: nrtot_, ntmp_, ir
       !
 
       ierr=0
@@ -441,12 +441,12 @@ CONTAINS
           CALL iotk_scan_empty( iunit, "CARTESIAN_VECTORS_INFO", ATTR=attr, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          CALL iotk_scan_attr( attr, "number_of_items", ntmp, IERR=ierr )
+          CALL iotk_scan_attr( attr, "number_of_items", ntmp_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           CALL iotk_scan_attr( attr, "unit", r_units_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          IF ( ntmp /= nrtot_ ) RETURN
+          IF ( ntmp_ /= nrtot_ ) RETURN
           !
           DO ir = 1, nrtot_
               !
@@ -469,12 +469,12 @@ CONTAINS
           CALL iotk_scan_empty( iunit, "INTEGER_VECTORS_INFO", ATTR=attr, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          CALL iotk_scan_attr( attr, "number_of_items", ntmp, IERR=ierr )
+          CALL iotk_scan_attr( attr, "number_of_items", ntmp_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           CALL iotk_scan_attr( attr, "unit", r_units_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          IF ( ntmp /= nrtot_ ) RETURN
+          IF ( ntmp_ /= nrtot_ ) RETURN
           !
           DO ir = 1, nrtot_
               !
@@ -512,7 +512,7 @@ CONTAINS
       CHARACTER(*),  OPTIONAL, INTENT(OUT) :: k_units
       INTEGER,                 INTENT(OUT) :: ierr
       !
-      INTEGER                :: num_k_points_, nk_(3)
+      INTEGER                :: num_k_points_, nk_(3), ntmp_
       CHARACTER(256)         :: k_units_
       REAL(dbl), ALLOCATABLE :: xk_(:,:), wk_(:)
       !
@@ -527,17 +527,23 @@ CONTAINS
       CALL iotk_scan_begin( iunit, "BRILLOUIN_ZONE", IERR=ierr )
       IF ( ierr/=0 ) RETURN
       !
+      CALL iotk_scan_dat( iunit, "NUMBER_OF_IRREDUCIBLE_K_VECTORS", &
+                                  num_k_points_, IERR=ierr )
+      IF ( ierr/=0 ) RETURN
+      !
       CALL iotk_scan_begin( iunit, "IRREDUCIBLE_K_VECTORS", IERR=ierr )
       IF ( ierr/=0 ) RETURN
       !
       CALL iotk_scan_empty( iunit, "IRREDUCIBLE_K_VECTORS_INFO", ATTR=attr, IERR=ierr )
       IF ( ierr/=0 ) RETURN
-      CALL iotk_scan_attr( attr, "number_of_items", num_k_points_, IERR=ierr )
+      CALL iotk_scan_attr( attr, "number_of_items", ntmp_, IERR=ierr )
       IF ( ierr/=0 ) RETURN
       CALL iotk_scan_attr( attr, "monkhorst_pack_grid", nk_(1:3), IERR=ierr )
       IF ( ierr/=0 ) RETURN
       CALL iotk_scan_attr( attr, "unit", k_units_, IERR=ierr )
       IF ( ierr/=0 ) RETURN
+      !
+      IF ( ntmp_ /= num_k_points_ ) RETURN
       !
       !
       ALLOCATE( xk_( 3, num_k_points_ ) )
@@ -594,7 +600,10 @@ CONTAINS
       ierr=0
       !
       !
-      CALL iotk_scan_begin( iunit, "REAL_OVERLAP_MATRIX", IERR=ierr )
+      CALL iotk_scan_begin( iunit, "OUTPUT_DATA", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_begin( iunit, "DIRECT_OVERLAP_MATRIX", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
       IF ( PRESENT( label ) ) THEN
@@ -622,19 +631,25 @@ CONTAINS
       !
       IF ( PRESENT( ovp_matrix ) ) THEN
           !
-          DO ir = 1, nrtot_
-              !
-              CALL iotk_scan_dat( iunit, "OVP_G"//TRIM(iotk_index(ir)), &
-                                  ovp_matrix(:,:,ir), IERR=ierr )
-              IF ( ierr /= 0 ) RETURN
-              !
-          ENDDO
+          CALL iotk_scan_dat( iunit, "OVERLAPS", ovp_matrix(:,:,:), IERR=ierr)
+          IF ( ierr /= 0 ) RETURN
+          !
+!          DO ir = 1, nrtot_
+!              !
+!              CALL iotk_scan_dat( iunit, "OVP_G"//TRIM(iotk_index(ir)), &
+!                                  ovp_matrix(:,:,ir), IERR=ierr )
+!              IF ( ierr /= 0 ) RETURN
+!              !
+!          ENDDO
           !
       ENDIF
       !
       !
-      CALL iotk_scan_end( iunit, "REAL_OVERLAP_MATRIX", IERR=ierr )
+      CALL iotk_scan_end( iunit, "DIRECT_OVERLAP_MATRIX", IERR=ierr )
       IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_end( iunit, "OUTPUT_DATA", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
       !
       ! 
       IF ( PRESENT(dim_basis) ) dim_basis = dim_basis_
@@ -660,7 +675,10 @@ CONTAINS
       ierr=0
       !
       !
-      CALL iotk_scan_begin( iunit, "REAL_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
+      CALL iotk_scan_begin( iunit, "OUTPUT_DATA", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_begin( iunit, "DIRECT_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
       IF ( PRESENT( label ) ) THEN
@@ -688,19 +706,25 @@ CONTAINS
       !
       IF ( PRESENT( ham_matrix ) ) THEN
           !
-          DO ir = 1, nrtot_
-              !
-              CALL iotk_scan_dat( iunit, "HAM_G"//TRIM(iotk_index(ir)), &
-                                  ham_matrix(:,:,ir), IERR=ierr )
-              IF ( ierr /= 0 ) RETURN
-              !
-          ENDDO
+          CALL iotk_scan_dat( iunit, "HAMILTONIAN", ham_matrix(:,:,:), IERR=ierr)
+          IF ( ierr /= 0 ) RETURN
           !
+!          DO ir = 1, nrtot_
+!              !
+!              CALL iotk_scan_dat( iunit, "HAM_G"//TRIM(iotk_index(ir)), &
+!                                  ham_matrix(:,:,ir), IERR=ierr )
+!              IF ( ierr /= 0 ) RETURN
+!              !
+!          ENDDO
+!          !
       ENDIF
       !
       !
-      CALL iotk_scan_end( iunit, "REAL_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
+      CALL iotk_scan_end( iunit, "DIRECT_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
       IF (ierr/=0) RETURN
+      !
+      CALL iotk_scan_end( iunit, "OUTPUT_DATA", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
       !
       ! 
       IF ( PRESENT(dim_basis) ) dim_basis = dim_basis_
