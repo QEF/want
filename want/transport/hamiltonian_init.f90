@@ -7,7 +7,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE hamiltonian_init( use_overlap, calculation_type )
+   SUBROUTINE hamiltonian_init( calculation_type )
    !*******************************************************************
    !
    ! Initialize hamiltonian data:
@@ -45,11 +45,11 @@
    !     energies are supposed to be in eV
    !
    USE kinds
-   USE constants,            ONLY : CZERO, CONE
    USE io_module,            ONLY : stdin, ionode, ionode_id
    USE log_module,           ONLY : log_push, log_pop
    USE mp,                   ONLY : mp_bcast
-   USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R
+   USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R, &
+                                    use_overlap
    USE T_kpoints_module,     ONLY : kpoints_init, nrtot_par
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate,   &
                                     dimL, dimR, dimC, dimx, &
@@ -62,14 +62,15 @@
    ! 
    ! input variables
    !
-   LOGICAL,      INTENT(in)  :: use_overlap
    CHARACTER(*), INTENT(in)  :: calculation_type
    !
    ! local variables
    !
    CHARACTER(16) :: subname="hamiltonian_init"
-   COMPLEX(dbl), ALLOCATABLE :: aux(:,:,:)
    INTEGER       :: i, ierr
+   LOGICAL       :: lhave_overlap
+   !
+   COMPLEX(dbl), ALLOCATABLE :: haux(:,:,:), saux(:,:,:)
 
    !
    ! end of declarations
@@ -81,41 +82,25 @@
 !----------------------------------------
 !
    CALL log_push( 'hamiltonian_init' )
-   !
-   ! missing implementation
-   !
-   IF ( use_overlap ) CALL errore(subname,'overlaps not currently implemented',1)
 
    !
    ! allocations
    !
    CALL hamiltonian_allocate()
+
    !
    ! dimx = MAX( dimL, dimC, dimR) 
-   ALLOCATE( aux(dimx,dimx,nrtot_par), STAT=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'allocating aux',ABS(ierr))
+   !
+   ALLOCATE( haux(dimx,dimx,nrtot_par), STAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'allocating haux',ABS(ierr))
+   !
+   ALLOCATE( saux(dimx,dimx,nrtot_par), STAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'allocating saux',ABS(ierr))
 
    !
-   ! set defaults for overlaps ( already in the fourier transformed, R_par to k_par)
-   ! NOTE: at the moment overlaps are not impemented 
+   ! set defaults for overlaps 
    !
-   s00_L(:,:,:)  = CZERO
-   s01_L(:,:,:)  = CZERO
-   s00_R(:,:,:)  = CZERO
-   s01_R(:,:,:)  = CZERO
-   s00_C(:,:,:)  = CZERO
-   s_LC(:,:,:)   = CZERO
-   s_CR(:,:,:)   = CZERO
-
-   DO i = 1, dimL
-       s00_L(i,i,:) = CONE
-   ENDDO
-   DO i = 1, dimR
-       s00_R(i,i,:) = CONE
-   ENDDO
-   DO i = 1, dimC
-       s00_C(i,i,:) = CONE
-   ENDDO
+   use_overlap = .FALSE.
 
 
    !
@@ -131,27 +116,36 @@
    !
    ! read basic quantities
    !
-   IF ( ionode ) CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, aux, dimx, dimx)
-   CALL mp_bcast( aux, ionode_id )
-   CALL fourier_par( h00_C, dimC, dimC, aux, dimx, dimx)   
-   !
-   !
-   IF ( ionode ) CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, aux, dimx, dimx)
-   CALL mp_bcast( aux, ionode_id )
-   CALL fourier_par( h_CR, dimC, dimR, aux, dimx, dimx)   
-
-
-   IF ( use_overlap ) THEN
-       !
-       IF ( ionode ) CALL read_matrix( datafile_C, 'S00_C', dimC, dimC, aux, dimx, dimx)
-       CALL mp_bcast( aux, ionode_id )
-       CALL fourier_par( s00_C, dimC, dimC, aux, dimx, dimx)   
-       !
-       IF ( ionode ) CALL read_matrix( datafile_C, 'S_CR', dimC, dimR, aux, dimx, dimx)
-       CALL mp_bcast( aux, ionode_id )
-       CALL fourier_par( s_CR, dimC, dimR, aux, dimx, dimx)   
-       !
+   IF ( ionode ) THEN 
+       CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, haux, dimx, dimx, &
+                         lhave_overlap, saux, dimx, dimx)
    ENDIF
+   !
+   CALL mp_bcast( haux, ionode_id )
+   CALL mp_bcast( saux, ionode_id )
+   CALL mp_bcast( lhave_overlap, ionode_id )
+   !
+   CALL fourier_par( h00_C, dimC, dimC, haux, dimx, dimx)   
+   CALL fourier_par( s00_C, dimC, dimC, saux, dimx, dimx)   
+   !
+   use_overlap = use_overlap .OR. lhave_overlap
+   !
+   !
+   !
+   IF ( ionode ) THEN
+       CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, haux, dimx, dimx, &
+                         lhave_overlap, saux, dimx, dimx)
+   ENDIF
+   !
+   CALL mp_bcast( haux, ionode_id )
+   CALL mp_bcast( saux, ionode_id )
+   CALL mp_bcast( lhave_overlap, ionode_id )
+   !
+   CALL fourier_par( h_CR, dimC, dimR, haux, dimx, dimx)   
+   CALL fourier_par( s_CR, dimC, dimR, saux, dimx, dimx)   
+   !
+   use_overlap = use_overlap .OR. lhave_overlap
+
 
    !
    ! chose whether to do 'conductor' or 'bulk'
@@ -162,49 +156,85 @@
        !
        ! read the missing data
        !
-       IF (ionode) CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, aux, dimx, dimx)
-       CALL mp_bcast( aux, ionode_id )
-       CALL fourier_par( h_LC, dimL, dimC, aux, dimx, dimx)   
-       !
-       IF (ionode) CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, aux, dimx, dimx)
-       CALL mp_bcast( aux, ionode_id )
-       CALL fourier_par( h00_L, dimL, dimL, aux, dimx, dimx)   
-       !
-       IF (ionode) CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, aux, dimx, dimx)
-       CALL mp_bcast( aux, ionode_id )
-       CALL fourier_par( h01_L, dimL, dimL, aux, dimx, dimx)   
-       !
-       IF (ionode) CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, aux, dimx, dimx)
-       CALL mp_bcast( aux, ionode_id )
-       CALL fourier_par( h00_R, dimR, dimR, aux, dimx, dimx)   
-       !
-       IF (ionode) CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, aux, dimx, dimx)
-       CALL mp_bcast( aux, ionode_id )
-       CALL fourier_par( h01_R, dimR, dimR, aux, dimx, dimx)   
-       !
-       IF ( use_overlap ) THEN
-           !
-           IF (ionode) CALL read_matrix( datafile_C, 'S_LC', dimL, dimC, aux, dimx, dimx)
-           CALL mp_bcast( aux, ionode_id )
-           CALL fourier_par( s_LC, dimL, dimC, aux, dimx, dimx)   
-           !
-           IF (ionode) CALL read_matrix( datafile_L, 'S00_L',  dimL, dimL, aux, dimx, dimx)
-           CALL mp_bcast( aux, ionode_id )
-           CALL fourier_par( s00_L, dimL, dimL, aux, dimx, dimx)   
-           !
-           IF (ionode) CALL read_matrix( datafile_L, 'S01_L',  dimL, dimL, aux, dimx, dimx)
-           CALL mp_bcast( aux, ionode_id )
-           CALL fourier_par( s01_L, dimL, dimL, aux, dimx, dimx)   
-           !
-           IF (ionode) CALL read_matrix( datafile_R, 'S00_R',  dimR, dimR, aux, dimx, dimx)
-           CALL mp_bcast( aux, ionode_id )
-           CALL fourier_par( s00_R, dimR, dimR, aux, dimx, dimx)   
-           !
-           IF (ionode) CALL read_matrix( datafile_R, 'S01_R',  dimR, dimR, aux, dimx, dimx)
-           CALL mp_bcast( aux, ionode_id )
-           CALL fourier_par( s01_R, dimR, dimR, aux, dimx, dimx)   
+       IF ( ionode ) THEN
+           CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, haux, dimx, dimx, &
+                             lhave_overlap, saux, dimx, dimx )
        ENDIF
-
+       !
+       CALL mp_bcast( haux, ionode_id )
+       CALL mp_bcast( saux, ionode_id )
+       CALL mp_bcast( lhave_overlap, ionode_id )
+       !
+       CALL fourier_par( h_LC, dimL, dimC, haux, dimx, dimx)   
+       CALL fourier_par( s_LC, dimL, dimC, saux, dimx, dimx)   
+       !
+       use_overlap = use_overlap .OR. lhave_overlap
+       !
+       !
+       !
+       IF ( ionode ) THEN 
+           CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, haux, dimx, dimx, &
+                             lhave_overlap, saux, dimx, dimx )
+       ENDIF
+       !
+       CALL mp_bcast( haux, ionode_id )
+       CALL mp_bcast( saux, ionode_id )
+       CALL mp_bcast( lhave_overlap, ionode_id )
+       !
+       CALL fourier_par( h00_L, dimL, dimL, haux, dimx, dimx)   
+       CALL fourier_par( s00_L, dimL, dimL, saux, dimx, dimx)   
+       !
+       use_overlap = use_overlap .OR. lhave_overlap
+       !
+       !
+       !
+       IF ( ionode ) THEN 
+           CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, haux, dimx, dimx, &
+                             lhave_overlap, saux, dimx, dimx )
+       ENDIF
+       !
+       CALL mp_bcast( haux, ionode_id )
+       CALL mp_bcast( saux, ionode_id )
+       CALL mp_bcast( lhave_overlap, ionode_id )
+       !
+       CALL fourier_par( h01_L, dimL, dimL, haux, dimx, dimx)   
+       CALL fourier_par( s01_L, dimL, dimL, saux, dimx, dimx)   
+       !
+       use_overlap = use_overlap .OR. lhave_overlap
+       !
+       !
+       !
+       IF ( ionode ) THEN
+           CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, haux, dimx, dimx, &
+                             lhave_overlap, saux, dimx, dimx )
+       ENDIF
+       !
+       CALL mp_bcast( haux, ionode_id )
+       CALL mp_bcast( saux, ionode_id )
+       CALL mp_bcast( lhave_overlap, ionode_id )
+       !
+       CALL fourier_par( h00_R, dimR, dimR, haux, dimx, dimx)   
+       CALL fourier_par( s00_R, dimR, dimR, saux, dimx, dimx)   
+       !
+       use_overlap = use_overlap .OR. lhave_overlap
+       !
+       !
+       !
+       IF ( ionode ) THEN 
+           CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, haux, dimx, dimx, &
+                             lhave_overlap, saux, dimx, dimx )
+       ENDIF
+       !
+       CALL mp_bcast( haux, ionode_id )
+       CALL mp_bcast( saux, ionode_id )
+       CALL mp_bcast( lhave_overlap, ionode_id ) 
+       !
+       CALL fourier_par( h01_R, dimR, dimR, haux, dimx, dimx)   
+       CALL fourier_par( s01_R, dimR, dimR, saux, dimx, dimx)   
+       !
+       use_overlap = use_overlap .OR. lhave_overlap
+       !
+       !
    CASE ( "bulk" )
        !
        ! rearrange the data already read
@@ -215,14 +245,12 @@
        h01_R(:,:,:) = h_CR(:,:,:)
        h_LC(:,:,:)  = h_CR(:,:,:)
        !
-       IF ( use_overlap ) THEN
-           s00_L(:,:,:) = s00_C(:,:,:)
-           s00_R(:,:,:) = s00_C(:,:,:)
-           s01_L(:,:,:) = s_CR(:,:,:)
-           s01_R(:,:,:) = s_CR(:,:,:)
-           s_LC(:,:,:)  = s_CR(:,:,:)
-       ENDIF
-
+       s00_L(:,:,:) = s00_C(:,:,:)
+       s00_R(:,:,:) = s00_C(:,:,:)
+       s01_L(:,:,:) = s_CR(:,:,:)
+       s01_R(:,:,:) = s_CR(:,:,:)
+       s_LC(:,:,:)  = s_CR(:,:,:)
+       !
    CASE DEFAULT
        CALL errore(subname,'Invalid calculation_type = '// TRIM(calculation_type),5)
    END SELECT
@@ -239,8 +267,9 @@
    !
    ! local cleaning
    !
-   DEALLOCATE( aux, STAT=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'deallocating aux',ABS(ierr))
+   DEALLOCATE( haux, saux, STAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'deallocating haux, saux',ABS(ierr))
+   !
    CALL log_pop( 'hamiltonian_init' )
 
 END SUBROUTINE hamiltonian_init

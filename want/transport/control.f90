@@ -25,9 +25,11 @@
    CHARACTER(nstrx)          :: datafile_sgm
    !
    INTEGER                   :: transport_dir
+   INTEGER                   :: debug_level
    !
    LOGICAL                   :: use_overlap
    LOGICAL                   :: use_correlation
+   LOGICAL                   :: use_debug_mode
    LOGICAL                   :: write_kdata
    !
    INTEGER                   :: niterx
@@ -46,9 +48,11 @@
    PUBLIC :: datafile_sgm
    !
    PUBLIC :: transport_dir
+   PUBLIC :: debug_level
    !
    PUBLIC :: use_overlap
    PUBLIC :: use_correlation
+   PUBLIC :: use_debug_mode
    PUBLIC :: write_kdata
    !
    PUBLIC :: niterx
