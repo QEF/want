@@ -10,6 +10,7 @@ OBJS= \
 cleanup.o \
 control.o \
 correlation.o \
+crystal_io.o \
 crystal_to_internal.o \
 datafiles.o \
 egrid.o \
@@ -30,6 +31,7 @@ workspace.o
 
 WANNIER_OBJS= \
 ../wannier/control.o \
+../wannier/converters.o \
 ../wannier/io_module.o \
 ../wannier/operator.o \
 ../wannier/startup.o \

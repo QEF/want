@@ -11,8 +11,9 @@
 !********************************************
    !
    USE kinds,      ONLY : dbl
-   USE io_module,  ONLY : stdin, ionode
-   USE log_module, ONLY : log_push, log_pop
+   USE parameters, ONLY : nstrx
+   USE io_module,  ONLY : stdin, ionode, log_unit
+   USE log_module, ONLY : log_init, log_push
    USE constants,  ONLY : ZERO
    !
    IMPLICIT NONE
@@ -43,7 +44,9 @@ CONTAINS
 !**********************************************************
    SUBROUTINE input_manager()
    !**********************************************************
+      !
       USE T_input_parameters_module,  ONLY : read_namelist_input_conductor
+      !
       IMPLICIT NONE
       !
       INTEGER :: ierr
@@ -52,8 +55,6 @@ CONTAINS
       ! attach input from file if the case
       !
       
-      CALL log_push( 'input_manager' )
-
       IF ( ionode ) THEN
           CALL input_from_file ( stdin, ierr )
           IF ( ierr /= 0 )  CALL errore('input_manager','error in input from file',ABS(ierr))
@@ -74,11 +75,6 @@ CONTAINS
       CALL setup_hamiltonian()
       CALL setup_kpoints()
 
-      !
-      ! reading further input data
-      !
-
-      CALL log_pop( 'input_manager' )
 
    END SUBROUTINE input_manager
 
@@ -98,7 +94,10 @@ CONTAINS
                                            datafile_C,        &
                                            datafile_R,        &
                                            datafile_sgm,      &
-                                           write_kdata 
+                                           write_kdata,       &
+                                           debug_level,       &
+                                           use_debug_mode
+                                            
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
                                            conduct_formula_   => conduct_formula, &
                                            use_overlap_       => use_overlap, &
@@ -110,7 +109,8 @@ CONTAINS
                                            datafile_C_        => datafile_C, &
                                            datafile_R_        => datafile_R, &
                                            datafile_sgm_      => datafile_sgm, &
-                                           write_kdata_       => write_kdata
+                                           write_kdata_       => write_kdata, &
+                                           debug_level_       => debug_level
 
       IMPLICIT NONE
 
@@ -127,6 +127,10 @@ CONTAINS
       use_correlation     = LEN_TRIM( datafile_sgm_ ) /= 0
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
+      debug_level         = debug_level_
+
+      use_debug_mode = .FALSE.
+      IF ( debug_level_ > 0 )  use_debug_mode  = .TRUE.
 
    END SUBROUTINE setup_control
       
@@ -135,16 +139,35 @@ CONTAINS
    SUBROUTINE setup_io()
    !**********************************************************
       USE io_module,                ONLY : work_dir, &
-                                           prefix, &
+                                           prefix,   &
                                            postfix
+      USE T_control_module,         ONLY : debug_level, &
+                                           use_debug_mode
       USE T_input_parameters_module,ONLY : work_dir_          => work_dir, &
-                                           prefix_            => prefix, &
-                                           postfix_           => postfix
+                                           prefix_            => prefix,   &
+                                           postfix_           => postfix,  &
+                                           debug_level_       => debug_level
       IMPLICIT NONE
+      !
+      CHARACTER( nstrx ) :: logfile
 
       work_dir            = work_dir_
       prefix              = prefix_
       postfix             = postfix_
+
+      !
+      ! this part is replicated for the sake of robustness
+      !
+      debug_level         = debug_level_
+      use_debug_mode      = .FALSE.
+      !
+      IF ( debug_level_ > 0 )  use_debug_mode  = .TRUE.
+
+      logfile = TRIM(work_dir)//'/'//TRIM(prefix)// &
+                    'debug'//TRIM(postfix)//'.log'
+      !
+      CALL log_init( log_unit, use_debug_mode, logfile, debug_level)
+      CALL log_push("main")
 
    END SUBROUTINE setup_io
 

@@ -26,7 +26,7 @@
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
                                     work_dir, prefix, postfix, aux_unit
    USE T_input_module,       ONLY : input_manager
-   USE T_control_module,     ONLY : use_overlap, use_correlation, calculation_type, &
+   USE T_control_module,     ONLY : use_correlation, calculation_type, &
                                     conduct_formula, niterx, nprint, datafile_sgm,  &
                                     write_kdata
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid
@@ -97,7 +97,7 @@
    !
    ! Set up the layer hamiltonians
    !
-   CALL hamiltonian_init( use_overlap, calculation_type )
+   CALL hamiltonian_init( calculation_type )
 
 
 

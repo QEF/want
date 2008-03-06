@@ -19,6 +19,7 @@
    USE timing_module,    ONLY : timing
    USE log_module,       ONLY : log_push, log_pop
    USE T_control_module, ONLY : datafile_L, datafile_C, datafile_R, calculation_type
+   USE crystal_io_module
    USE iotk_module
    !
    IMPLICIT NONE
@@ -120,7 +121,10 @@ CONTAINS
            !
        ENDIF
        !
+       CALL mp_bcast( fmtstr,      ionode_id )
        CALL mp_bcast( filelist(i), ionode_id )
+       !
+       IF ( LEN_TRIM(fmtstr) == 0 ) CALL errore(subname, 'no input fmt detected', 71)
        !
    ENDDO file_loop
 
@@ -148,36 +152,119 @@ END SUBROUTINE datafiles_init
    !**********************************************************
    !
    ! determine the fmt of the datafile provided in input
+   ! possible fmts are:
+   !
+   ! * internal
+   ! * crystal
+   ! 
+   ! an empty string is returned when no knwon fmt is found
    !
    IMPLICIT NONE
      !
      CHARACTER(*), INTENT(IN)  :: filename 
      CHARACTER(*), INTENT(OUT) :: fmtstr
      !
-     INTEGER :: ierr
-
-     !
      fmtstr=' '
-
      !
-     ! check for the internal format
-     !
-     CALL iotk_open_read( aux_unit, TRIM(filename), IERR=ierr )
-     !
-     IF ( ierr == 0 ) THEN 
-         !
-         fmtstr = 'internal'
-         RETURN
-         !
+     IF ( file_is_internal( filename) ) THEN 
+        !
+        fmtstr = 'internal'
+        RETURN
+        !
      ENDIF
-
      !
-     ! now check for the crystal fmt
+     IF ( file_is_crystal( filename) ) THEN 
+        !
+        fmtstr = 'crystal'
+        RETURN
+        !
+     ENDIF
      !
-     RETURN
      !
    END SUBROUTINE datafiles_check_fmt
 
+
+!**********************************************************
+   LOGICAL FUNCTION file_is_internal( filename )
+   !**********************************************************
+   !
+   ! check for internal fmt
+   ! 
+   CHARACTER(*) :: filename 
+   !
+   LOGICAL   :: lerror, lopnd
+   INTEGER   :: ierr
+     !
+     file_is_internal = .FALSE.
+     lerror = .FALSE.
+     !
+     CALL iotk_open_read( aux_unit, TRIM(filename), IERR=ierr )
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     CALL iotk_scan_end( aux_unit, "HAMILTONIAN", IERR=ierr )
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     CALL iotk_close_read( aux_unit, IERR=ierr ) 
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     !
+     IF ( lerror ) THEN
+         !
+         INQUIRE( aux_unit, OPENED=lopnd )
+         IF( lopnd ) CLOSE( aux_unit )
+         !
+         RETURN
+         !
+     ENDIF
+     !
+     file_is_internal = .TRUE.
+     !
+  END FUNCTION file_is_internal
+  !
+  !
+!**********************************************************
+   LOGICAL FUNCTION file_is_crystal( filename )
+   !**********************************************************
+   !
+   ! check for crystal fmt
+   ! 
+   CHARACTER(*)     :: filename 
+   !
+   INTEGER          :: ierr
+   LOGICAL          :: lerror, lopnd
+   CHARACTER(nstrx) :: prog
+     !
+     file_is_crystal = .FALSE.
+     lerror = .FALSE.
+     !
+     CALL crio_init( aux_unit, FILEIN=TRIM(filename) )
+     !
+     CALL crio_openfile( FILENAME=TRIM(filename), ACTION='read', IERR=ierr )
+     IF ( ierr/= 0 ) lerror = .TRUE.
+     !
+     CALL crio_read_header( CREATOR_NAME=prog, IERR=ierr)
+     IF ( ierr/= 0 ) lerror = .TRUE.
+     !
+     IF ( TRIM(prog) /= "CRYSTAL06" ) lerror = .TRUE.
+     !
+     CALL crio_closefile( ACTION='read', IERR=ierr )
+     IF ( ierr/= 0 ) lerror = .TRUE.
+
+     IF ( lerror ) THEN
+         !
+         INQUIRE( aux_unit, OPENED=lopnd )
+         IF( lopnd ) CLOSE( aux_unit )
+         !
+         RETURN
+         !
+     ENDIF
+     !
+     file_is_crystal = .TRUE.
+     !
+  END FUNCTION file_is_crystal
 
 END MODULE T_datafiles_module
 
