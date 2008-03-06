@@ -92,7 +92,7 @@
    PUBLIC ::  dft_unit, pseudo_unit 
    PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit, sgm_unit 
    PUBLIC ::  aux_unit, aux1_unit, aux2_unit, aux3_unit, aux4_unit
-   PUBLIC ::  save_unit
+   PUBLIC ::  save_unit, log_unit
 
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
    PUBLIC ::  alloc
