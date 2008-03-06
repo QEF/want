@@ -4,6 +4,16 @@
 =======================================================
 
 
+06 Mar 2008      Interface with CRYSTAL went ahead; we added a general purpose
+                 library (crystal_io.f90) to read a xml-formatted datafile written 
+                 by CRYSTAL06. Changes in the format still around. (AF)
+
+28 Feb 2008      Further implementation in crystal_to_internal.f90 .
+                 Debug_level utilities added to transport part. (AF)
+
+27 Feb 2008      Interface to CRYSTAL06 started: datafile.f90, crystal_to_internal.f90
+                 added to transport/ dir. Autocheck of file fmt added in conductor.f90. (AF)
+
 07 Aug 2007      Bug fix in iotk_magic (ierrl not initialized). Smooth FFT mesh read when
                  possible and used in plot.f90 when uspp_augmentation is not required; 
                  changes in the output fmt of PW's and grids performed. Test03 slightly
