@@ -66,14 +66,20 @@
 !
    CALL crio_init( UNIT_IN=aux_unit, FILEIN=filein )
    !
-   CALL crio_openfile( FILENAME=filein, ACTION='read', IERR=ierr )
+   CALL crio_open_file( FILENAME=filein, ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'opening'//TRIM(filein), ABS(ierr) )
    !
    !
-   CALL crio_read_lattice( AVEC=dlatt, BVEC=rlatt, &
-                           A_UNITS=a_units, B_UNITS=b_units, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname, 'reading lattice', ABS(ierr) )
-   
+   CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'opening sec. GEOMETRY', ABS(ierr) )
+   !
+   CALL crio_read_cell( AVEC=dlatt, BVEC=rlatt, &
+                        A_UNITS=a_units, B_UNITS=b_units, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading lattice dimensions', ABS(ierr) )
+   ! 
+   CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'closing sec. GEOMETRY', ABS(ierr) )
+   !
    !
    ! convert units if the case
    !
@@ -106,9 +112,15 @@
       CALL errore( subname, 'unknown units for B: '//TRIM(b_units), 71)
    END SELECT
 
+   !
+   ! enter section METHOD
+   !
+   CALL crio_open_section( "METHOD", ACTION='read', IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'opening sec. METHOD', ABS(ierr) )
 
    !
    ! real-space lattice vectors
+   !
    !
    CALL crio_read_direct_lattice( NRTOT=nrtot, IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'reading direct lattice dims', ABS(ierr) )
@@ -219,6 +231,15 @@
    norm   = SUM( wk )
    wk(:)  = wk(:) / norm
 
+   !
+   ! exit section METHOD, enter section OUTPUT_DATA
+   !
+   CALL crio_close_section( "METHOD", ACTION='read', IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'closing sec. METHOD', ABS(ierr) )
+   !
+   CALL crio_open_section( "OUTPUT_DATA", ACTION='read', IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'opening sec. OUTPUT_DATA', ABS(ierr) )
+   
 
    !
    ! read Overlaps
@@ -273,9 +294,12 @@
 
 
    !
-   ! close the file
+   ! exit sec. OUTPUT_DATA and close the file
    !
-   CALL crio_closefile( ACTION='read', IERR=ierr )
+   CALL crio_close_section( "OUTPUT_DATA", ACTION='read', IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'closing sec. OUTPUT_DATA', ABS(ierr) )
+   !
+   CALL crio_close_file( ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'closing'//TRIM(filein), ABS(ierr))
 
 !

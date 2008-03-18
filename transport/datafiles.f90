@@ -242,7 +242,7 @@ END SUBROUTINE datafiles_init
      !
      CALL crio_init( aux_unit, FILEIN=TRIM(filename) )
      !
-     CALL crio_openfile( FILENAME=TRIM(filename), ACTION='read', IERR=ierr )
+     CALL crio_open_file( FILENAME=TRIM(filename), ACTION='read', IERR=ierr )
      IF ( ierr/= 0 ) lerror = .TRUE.
      !
      CALL crio_read_header( CREATOR_NAME=prog, IERR=ierr)
@@ -250,7 +250,7 @@ END SUBROUTINE datafiles_init
      !
      IF ( TRIM(prog) /= "CRYSTAL06" ) lerror = .TRUE.
      !
-     CALL crio_closefile( ACTION='read', IERR=ierr )
+     CALL crio_close_file( ACTION='read', IERR=ierr )
      IF ( ierr/= 0 ) lerror = .TRUE.
 
      IF ( lerror ) THEN
