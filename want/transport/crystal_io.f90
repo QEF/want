@@ -39,11 +39,15 @@ MODULE crystal_io_module
   PUBLIC :: fmt_name, fmt_version
   PUBLIC :: iunit, ounit
   !
-  PUBLIC :: crio_init,  crio_openfile, crio_closefile
-  PUBLIC :: crio_read_header, crio_read_lattice,       &
-            crio_read_atoms, crio_read_symmetry,       &
-            crio_read_direct_lattice, crio_read_bz,    &
-            crio_read_hamiltonian, crio_read_overlap 
+  PUBLIC :: crio_init,  crio_open_file,    crio_close_file
+  PUBLIC ::             crio_open_section, crio_close_section
+  !
+  PUBLIC :: crio_write_header
+  !
+  PUBLIC :: crio_read_header,          crio_read_cell,      &
+            crio_read_symmetry,        crio_read_atoms,     &
+            crio_read_direct_lattice,  crio_read_bz,        &
+            crio_read_hamiltonian,     crio_read_overlap 
 
 CONTAINS
 
@@ -84,7 +88,7 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_openfile( filename, action, binary, ierr)
+    SUBROUTINE crio_open_file( filename, action, binary, ierr)
       !------------------------------------------------------------------------
       !
       ! open data file
@@ -115,11 +119,11 @@ CONTAINS
           ierr = 1
       END SELECT
           
-    END SUBROUTINE crio_openfile
+    END SUBROUTINE crio_open_file
     !  
     !  
     !------------------------------------------------------------------------
-    SUBROUTINE crio_closefile( action, ierr)
+    SUBROUTINE crio_close_file( action, ierr)
       !------------------------------------------------------------------------
       !
       ! close data file
@@ -144,7 +148,73 @@ CONTAINS
           ierr = 2
       END SELECT
       !
-    END SUBROUTINE crio_closefile
+    END SUBROUTINE crio_close_file
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_open_section( tag, action, ierr)
+      !------------------------------------------------------------------------
+      !
+      ! open data file
+      !
+      IMPLICIT NONE
+      !
+      CHARACTER(*),       INTENT(IN)  :: tag
+      CHARACTER(*),       INTENT(IN)  :: action      ! ("read"|"write")
+      INTEGER,            INTENT(OUT) :: ierr
+      !
+      !
+      ierr = 0
+      !
+      SELECT CASE( TRIM(action) )
+      CASE ( 'read', 'READ' )
+         !
+         CALL iotk_scan_begin( iunit, tag, IERR=ierr)
+         !
+      CASE ( 'write', 'WRITE' )
+         !
+         CALL iotk_write_begin( ounit, tag, IERR=ierr)
+         !
+      CASE DEFAULT 
+         !
+         ierr = 2
+         !
+      END SELECT
+      !
+    END SUBROUTINE crio_open_section
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_close_section( tag, action, ierr)
+      !------------------------------------------------------------------------
+      !
+      ! open data file
+      !
+      IMPLICIT NONE
+      !
+      CHARACTER(*),       INTENT(IN)  :: tag
+      CHARACTER(*),       INTENT(IN)  :: action      ! ("read"|"write")
+      INTEGER,            INTENT(OUT) :: ierr
+      !
+      !
+      ierr = 0
+      !
+      SELECT CASE( TRIM(action) )
+      CASE ( 'read', 'READ' )
+         !
+         CALL iotk_scan_end( iunit, tag, IERR=ierr)
+         !
+      CASE ( 'write', 'WRITE' )
+         !
+         CALL iotk_write_end( ounit, tag, IERR=ierr)
+         !
+      CASE DEFAULT 
+         !
+         ierr = 2
+         !
+      END SELECT
+      !
+    END SUBROUTINE crio_close_section
 
 !
 !-------------------------------------------
@@ -340,7 +410,7 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_lattice( avec, bvec, a_units, b_units, ierr )
+    SUBROUTINE crio_read_cell( avec, bvec, a_units, b_units, ierr )
       !------------------------------------------------------------------------
       !
       REAL(dbl),         OPTIONAL, INTENT(OUT) :: avec(3,3)
@@ -354,9 +424,6 @@ CONTAINS
 
       ierr=0
       !
-      !
-      CALL iotk_scan_begin( iunit, "GEOMETRY", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_begin( iunit, "CELL", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
@@ -395,18 +462,13 @@ CONTAINS
       CALL iotk_scan_end( iunit, "CELL_RECIPROCAL", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      ! Symmetries and Atoms to be added here
-      !
-      CALL iotk_scan_end( iunit, "GEOMETRY", IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
       ! 
       IF ( PRESENT(avec) )       avec = avec_
       IF ( PRESENT(bvec) )       bvec = bvec_
       IF ( PRESENT(a_units) ) a_units = TRIM( a_units_ )
       IF ( PRESENT(b_units) ) b_units = TRIM( b_units_ )
-
-    END SUBROUTINE crio_read_lattice
+      !
+    END SUBROUTINE crio_read_cell
     !
     !
     !------------------------------------------------------------------------
@@ -575,9 +637,6 @@ CONTAINS
       ierr=0
       r_units_ = ' '
       !
-      CALL iotk_scan_begin( iunit, "METHOD", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
       CALL iotk_scan_begin( iunit, "DIRECT_LATTICE", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
@@ -643,9 +702,6 @@ CONTAINS
       CALL iotk_scan_end( iunit, "DIRECT_LATTICE", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_end( iunit, "METHOD", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
       !
       IF ( PRESENT( nrtot ) )       nrtot  = nrtot_
       IF ( PRESENT(r_units) )      r_units = TRIM( r_units_ )
@@ -671,9 +727,6 @@ CONTAINS
       !
 
       ierr = 0
-      !
-      CALL iotk_scan_begin( iunit, "METHOD", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_begin( iunit, "BRILLOUIN_ZONE", IERR=ierr )
       IF ( ierr/=0 ) RETURN
@@ -717,8 +770,6 @@ CONTAINS
       CALL iotk_scan_end( iunit, "BRILLOUIN_ZONE", IERR=ierr )
       IF ( ierr/=0 ) RETURN
       !
-      CALL iotk_scan_end( iunit, "METHOD", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
       IF ( PRESENT( num_k_points ) )       num_k_points  = num_k_points_
       IF ( PRESENT( nk1 ) )                nk1           = nk_(1)
@@ -750,9 +801,6 @@ CONTAINS
 
       ierr=0
       !
-      !
-      CALL iotk_scan_begin( iunit, "OUTPUT_DATA", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_begin( iunit, "DIRECT_OVERLAP_MATRIX", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
@@ -799,9 +847,6 @@ CONTAINS
       CALL iotk_scan_end( iunit, "DIRECT_OVERLAP_MATRIX", IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_end( iunit, "OUTPUT_DATA", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
       ! 
       IF ( PRESENT(dim_basis) ) dim_basis = dim_basis_
       IF ( PRESENT(nrtot) )         nrtot = nrtot_
@@ -825,9 +870,6 @@ CONTAINS
 
       ierr=0
       !
-      !
-      CALL iotk_scan_begin( iunit, "OUTPUT_DATA", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_begin( iunit, "DIRECT_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
@@ -873,9 +915,6 @@ CONTAINS
       !
       CALL iotk_scan_end( iunit, "DIRECT_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
       IF (ierr/=0) RETURN
-      !
-      CALL iotk_scan_end( iunit, "OUTPUT_DATA", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
       ! 
       IF ( PRESENT(dim_basis) ) dim_basis = dim_basis_
