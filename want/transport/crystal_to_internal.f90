@@ -70,9 +70,9 @@
    IF ( ierr/=0 ) CALL errore(subname, 'opening'//TRIM(filein), ABS(ierr) )
    !
    !
-   CALL crio_read_geometry( AVEC=dlatt, BVEC=rlatt, &
-                            A_UNITS=a_units, B_UNITS=b_units, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname, 'reading lattice dimensions', ABS(ierr) )
+   CALL crio_read_lattice( AVEC=dlatt, BVEC=rlatt, &
+                           A_UNITS=a_units, B_UNITS=b_units, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading lattice', ABS(ierr) )
    
    !
    ! convert units if the case
