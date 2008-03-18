@@ -40,8 +40,9 @@ MODULE crystal_io_module
   PUBLIC :: iunit, ounit
   !
   PUBLIC :: crio_init,  crio_openfile, crio_closefile
-  PUBLIC :: crio_read_header, crio_read_geometry,     &
-            crio_read_direct_lattice, crio_read_bz,   &
+  PUBLIC :: crio_read_header, crio_read_lattice,       &
+            crio_read_atoms, crio_read_symmetry,       &
+            crio_read_direct_lattice, crio_read_bz,    &
             crio_read_hamiltonian, crio_read_overlap 
 
 CONTAINS
@@ -339,7 +340,7 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_geometry( avec, bvec, a_units, b_units, ierr )
+    SUBROUTINE crio_read_lattice( avec, bvec, a_units, b_units, ierr )
       !------------------------------------------------------------------------
       !
       REAL(dbl),         OPTIONAL, INTENT(OUT) :: avec(3,3)
@@ -405,7 +406,157 @@ CONTAINS
       IF ( PRESENT(a_units) ) a_units = TRIM( a_units_ )
       IF ( PRESENT(b_units) ) b_units = TRIM( b_units_ )
 
-    END SUBROUTINE crio_read_geometry
+    END SUBROUTINE crio_read_lattice
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_read_atoms( num_of_atoms, periodicity, atm_symb, atm_number, &
+                                coords, units, coords_cry, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,           OPTIONAL, INTENT(OUT) :: num_of_atoms, periodicity
+      REAL(dbl),         OPTIONAL, INTENT(OUT) :: coords(:,:), coords_cry(:,:)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: atm_symb(:), units
+      INTEGER,           OPTIONAL, INTENT(OUT) :: atm_number(:)
+      INTEGER,                     INTENT(OUT) :: ierr
+      !
+      INTEGER            :: num_of_atoms_, periodicity_, ia
+      CHARACTER(256)     :: units_
+      !
+
+      ierr=0
+      units_ = ' '
+      !
+      CALL iotk_scan_begin( iunit, "GEOMETRY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_empty( iunit, "CELL_INFO", ATTR=attr, IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      CALL iotk_scan_attr( attr, "periodicity", periodicity_, IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_begin( iunit, "ATOMS", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_dat( iunit, "NUMBER_OF_ATOMS", num_of_atoms_, IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      IF ( PRESENT( coords ) ) THEN 
+          !
+          CALL iotk_scan_begin( iunit, "CARTESIAN_COORDINATES", ATTR=attr, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          CALL iotk_scan_attr( attr, "unit", units_, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          DO ia = 1, num_of_atoms_
+              !
+              CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords(:,ia), &
+                                  ATTR=attr, IERR=ierr )
+              IF ( ierr /= 0 ) RETURN
+              !
+              IF ( PRESENT( atm_symb ) ) THEN
+                  !
+                  CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
+                  IF ( ierr /= 0 ) RETURN
+                  !
+              ENDIF
+              !
+              IF ( PRESENT( atm_number ) ) THEN
+                  !
+                  CALL iotk_scan_attr( attr, "atomic_number", atm_number(ia), IERR=ierr )
+                  IF ( ierr /= 0 ) RETURN
+                  !
+              ENDIF
+              !
+          ENDDO
+          !
+          CALL iotk_scan_end( iunit, "CARTESIAN_COORDINATES", IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+      ENDIF
+      !
+      !
+      IF ( PRESENT( coords_cry ) ) THEN 
+          !
+          CALL iotk_scan_begin( iunit, "FRACTIONARY_COORDINATES", ATTR=attr, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          CALL iotk_scan_attr( attr, "unit", units_, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          DO ia = 1, num_of_atoms_
+              !
+              CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity_,ia), &
+                                  ATTR=attr, IERR=ierr )
+              IF ( ierr /= 0 ) RETURN
+              !
+              IF ( PRESENT( atm_symb ) ) THEN
+                  !
+                  CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
+                  IF ( ierr /= 0 ) RETURN
+                  !
+              ENDIF
+              !
+              IF ( PRESENT( atm_number ) ) THEN
+                  !
+                  CALL iotk_scan_attr( attr, "atomic_number", atm_number(ia), IERR=ierr )
+                  IF ( ierr /= 0 ) RETURN
+                  !
+              ENDIF
+              !
+          ENDDO
+          !
+          CALL iotk_scan_end( iunit, "FRACTIONARY_COORDINATES", IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+      ENDIF
+      !
+      !
+      CALL iotk_scan_end( iunit, "ATOMS", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_end( iunit, "GEOMETRY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      !
+      IF ( PRESENT( num_of_atoms ) )       num_of_atoms = num_of_atoms_
+      IF ( PRESENT( periodicity ) )        periodicity  = periodicity_
+      IF ( PRESENT( units ) )              units        = TRIM(units_)
+      !
+    END SUBROUTINE crio_read_atoms
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_read_symmetry( num_of_symmetries, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,           OPTIONAL, INTENT(OUT) :: num_of_symmetries
+      INTEGER,                     INTENT(OUT) :: ierr
+      !
+      INTEGER            :: num_of_symmetries_
+      !
+      ierr=0
+      !
+      CALL iotk_scan_begin( iunit, "GEOMETRY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_begin( iunit, "SYMMETRY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_dat( iunit, "NUMBER_OF_SYMMETRY_OPERATORS", num_of_symmetries_, IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_end( iunit, "SYMMETRY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_end( iunit, "GEOMETRY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      !
+      IF ( PRESENT( num_of_symmetries ) )   num_of_symmetries = num_of_symmetries_
+      !
+    END SUBROUTINE crio_read_symmetry
     !
     !
     !------------------------------------------------------------------------
