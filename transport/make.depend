@@ -41,6 +41,8 @@ correlation.o : ../libs/parser.o
 correlation.o : ../libs/timing.o
 correlation.o : ../wannier/io_module.o
 correlation.o : ../wannier/operator.o
+crystal_io_base.o : ../iotk/iotk_16_module.o
+crystal_io.o : crystal_io_base.o
 crystal_io.o : ../iotk/iotk_16_module.o
 crystal_to_internal.o : crystal_io.o
 crystal_to_internal.o : ../iotk/iotk_16_module.o

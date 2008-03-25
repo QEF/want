@@ -240,9 +240,7 @@ END SUBROUTINE datafiles_init
      file_is_crystal = .FALSE.
      lerror = .FALSE.
      !
-     CALL crio_init( aux_unit, FILEIN=TRIM(filename) )
-     !
-     CALL crio_open_file( FILENAME=TRIM(filename), ACTION='read', IERR=ierr )
+     CALL crio_open_file( aux_unit, FILENAME=TRIM(filename), ACTION='read', IERR=ierr )
      IF ( ierr/= 0 ) lerror = .TRUE.
      !
      CALL crio_read_header( CREATOR_NAME=prog, IERR=ierr)

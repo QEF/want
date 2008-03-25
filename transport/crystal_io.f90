@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2007 WanT Group
+! Copyright (C) 2008 WanT Group
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
@@ -10,6 +10,8 @@ MODULE crystal_io_module
   !----------------------------------------------------------------------------
   !
   USE iotk_module
+  USE crystal_io_base_module
+  !
   IMPLICIT NONE
   !
   PRIVATE
@@ -17,17 +19,12 @@ MODULE crystal_io_module
   !
   ! definitions for the fmt
   !
-  CHARACTER(10), PARAMETER :: fmt_name = "CRYSTAL_IO"
-  CHARACTER(5),  PARAMETER :: fmt_version = "0.1.0"
-  !
-  ! some default for kinds
-  !
-  INTEGER,   PARAMETER :: dbl = SELECTED_REAL_KIND( 14, 200 )
-  REAL(dbl), PARAMETER :: e2 = 2.0_dbl
+  CHARACTER(10), PARAMETER :: crio_fmt_name = "CRYSTAL_IO"
+  CHARACTER(5),  PARAMETER :: crio_fmt_version = "0.1.0"
+  
   !
   ! internal data to be set
   !
-  CHARACTER(256)   :: file_in, file_out
   INTEGER          :: iunit, ounit
   !
   CHARACTER(iotk_attlenx) :: attr
@@ -36,18 +33,27 @@ MODULE crystal_io_module
   ! end of declarations
   !
 
-  PUBLIC :: fmt_name, fmt_version
-  PUBLIC :: iunit, ounit
+  PUBLIC :: crio_fmt_name, crio_fmt_version
+  PUBLIC :: crio_atm_orbital, crio_atm_orbital_allocate,           &
+            crio_atm_orbital_deallocate
   !
-  PUBLIC :: crio_init,  crio_open_file,    crio_close_file
-  PUBLIC ::             crio_open_section, crio_close_section
+  PUBLIC :: crio_open_file,    crio_close_file
+  PUBLIC :: crio_open_section, crio_close_section
   !
-  PUBLIC :: crio_write_header
+  PUBLIC :: crio_write_header,                                     &
+            crio_write_periodicity,     crio_write_cell,           &
+            crio_write_cell_reciprocal, crio_write_symmetry,       &
+            crio_write_atoms,                                      &
+            crio_write_atomic_orbitals,                            &
+            crio_write_direct_lattice , crio_write_bz 
   !
-  PUBLIC :: crio_read_header,          crio_read_cell,      &
-            crio_read_symmetry,        crio_read_atoms,     &
-            crio_read_direct_lattice,  crio_read_bz,        &
-            crio_read_hamiltonian,     crio_read_overlap 
+  PUBLIC :: crio_read_header,                                      & 
+            crio_read_periodicity,      crio_read_cell,            &
+            crio_read_cell_reciprocal,  crio_read_symmetry,        &
+            crio_read_atoms,                                       &
+            crio_read_atomic_orbitals,                             &
+            crio_read_direct_lattice,   crio_read_bz,              &
+            crio_read_hamiltonian,      crio_read_overlap 
 
 CONTAINS
 
@@ -56,45 +62,16 @@ CONTAINS
 ! ... basic (public) subroutines
 !-------------------------------------------
 !
-    !------------------------------------------------------------------------
-    SUBROUTINE crio_init( unit_in, unit_out, filein, fileout )
-      !------------------------------------------------------------------------
-      !
-      ! just init module data
-      !
-      IMPLICIT NONE
-      INTEGER,                INTENT(IN) :: unit_in
-      INTEGER,      OPTIONAL, INTENT(IN) :: unit_out
-      CHARACTER(*), OPTIONAL, INTENT(IN) :: filein, fileout
-      !
-      iunit       = unit_in
-      ounit       = unit_in
-      IF ( PRESENT( unit_out ) ) ounit  = unit_out
-      !
-      !
-      file_in  = " "
-      file_out = "./"
-      !
-      !
-      IF ( PRESENT( filein ) ) THEN
-          file_in  = TRIM(filein)
-      ENDIF
-      !
-      IF ( PRESENT( fileout ) ) THEN
-          file_out  = TRIM(fileout)
-      ENDIF
-      !
-    END SUBROUTINE crio_init
-    !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_open_file( filename, action, binary, ierr)
+    SUBROUTINE crio_open_file( unit, filename, action, binary, ierr)
       !------------------------------------------------------------------------
       !
       ! open data file
       !
       IMPLICIT NONE
       !
+      INTEGER,            INTENT(IN)  :: unit
       CHARACTER(*),       INTENT(IN)  :: filename
       CHARACTER(*),       INTENT(IN)  :: action      ! ("read"|"write")
       LOGICAL, OPTIONAL,  INTENT(IN)  :: binary
@@ -109,10 +86,12 @@ CONTAINS
       SELECT CASE ( TRIM(action) )
       CASE ( "read", "READ" )
           !
+          iunit = unit
           CALL iotk_open_read ( iunit, FILE = TRIM(filename), IERR=ierr )
           !
       CASE ( "write", "WRITE" )
           !
+          ounit = unit
           CALL iotk_open_write( ounit, FILE = TRIM(filename), BINARY=binary_, IERR=ierr )
           !
       CASE DEFAULT
@@ -324,26 +303,344 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_write_header( creator_name, creator_version ) 
+    SUBROUTINE crio_write_header( creator_name, creator_version, title ) 
       !------------------------------------------------------------------------
       !
       IMPLICIT NONE
-      CHARACTER(LEN=*), INTENT(IN) :: creator_name, creator_version
+      CHARACTER(LEN=*), INTENT(IN) :: creator_name, creator_version, title
       !
       CALL iotk_write_begin( ounit, "HEADER" )
       !
-      CALL iotk_write_attr(attr, "NAME",TRIM(fmt_name), FIRST=.TRUE.)
-      CALL iotk_write_attr(attr, "VERSION",TRIM(fmt_version) )
+      CALL iotk_write_attr(attr, "name",TRIM(crio_fmt_name), FIRST=.TRUE.)
+      CALL iotk_write_attr(attr, "version",TRIM(crio_fmt_version) )
       CALL iotk_write_empty( ounit, "FORMAT", ATTR=attr )
       !
-      CALL iotk_write_attr(attr, "NAME",TRIM(creator_name), FIRST=.TRUE.)
-      CALL iotk_write_attr(attr, "VERSION",TRIM(creator_version) )
+      CALL iotk_write_attr(attr, "name",TRIM(creator_name), FIRST=.TRUE.)
+      CALL iotk_write_attr(attr, "version",TRIM(creator_version) )
       CALL iotk_write_empty( ounit, "CREATOR", ATTR=attr )
+      !
+      CALL iotk_write_dat( ounit, "TITLE", TRIM(title) )
       !
       CALL iotk_write_end( ounit, "HEADER" )
       !
     END SUBROUTINE crio_write_header
     !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_periodicity( num_of_periodic_dir, periodic_dir )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,               INTENT(IN) :: num_of_periodic_dir
+      INTEGER,     OPTIONAL, INTENT(IN) :: periodic_dir(:)
+      !
+      !
+      CALL iotk_write_begin( ounit, "PERIODICITY" )
+      !
+      CALL iotk_write_dat( ounit, "NUMBER_OF_PERIODIC_DIRECTIONS", num_of_periodic_dir )
+      !
+      IF ( PRESENT ( periodic_dir) ) THEN
+          !
+          CALL iotk_write_dat( ounit, "PERIODIC_DIRECTIONS", &
+                               periodic_dir(1:num_of_periodic_dir), COLUMNS=3 )
+          !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "PERIODICITY" )
+      !
+    END SUBROUTINE crio_write_periodicity
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_cell( avec, units, periodicity )
+      !------------------------------------------------------------------------
+      !
+      REAL(dbl),         OPTIONAL, INTENT(IN) :: avec(3,3)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: units
+      INTEGER,           OPTIONAL, INTENT(IN) :: periodicity
+      !
+      !
+      CALL iotk_write_begin( ounit, "CELL" )
+      !
+      attr = " "
+      IF (PRESENT( units ) )       CALL iotk_write_attr( attr, "unit", TRIM(units) )
+      IF (PRESENT( periodicity ) ) CALL iotk_write_attr( attr, "periodicity", periodicity)
+      !
+      CALL iotk_write_empty( ounit, "CELL_INFO", ATTR=attr )
+      !
+      IF (PRESENT (avec) ) THEN
+          !
+          CALL iotk_write_dat( ounit, "CELL_VECTOR_A", avec(:,1), COLUMNS=3)
+          CALL iotk_write_dat( ounit, "CELL_VECTOR_B", avec(:,2), COLUMNS=3)
+          CALL iotk_write_dat( ounit, "CELL_VECTOR_C", avec(:,3), COLUMNS=3)
+          !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "CELL" )
+      !
+    END SUBROUTINE crio_write_cell
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_cell_reciprocal( bvec, units, periodicity )
+      !------------------------------------------------------------------------
+      !
+      REAL(dbl),         OPTIONAL, INTENT(IN) :: bvec(3,3)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: units
+      INTEGER,           OPTIONAL, INTENT(IN) :: periodicity
+      !
+      !
+      CALL iotk_write_begin( ounit, "CELL_RECIPROCAL" )
+      !
+      attr = " "
+      IF (PRESENT( units ) )       CALL iotk_write_attr( attr, "unit", TRIM( units ))
+      IF (PRESENT( periodicity ) ) CALL iotk_write_attr( attr, "periodicity", periodicity)
+      !
+      CALL iotk_write_empty( ounit, "CELL_RECIPROCAL_INFO", ATTR=attr )
+      !
+      IF (PRESENT (bvec) ) THEN
+          !
+          CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_A", bvec(:,1), COLUMNS=3)
+          CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_B", bvec(:,2), COLUMNS=3)
+          CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_C", bvec(:,3), COLUMNS=3)
+          !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "CELL_RECIPROCAL" )
+      !
+    END SUBROUTINE crio_write_cell_reciprocal
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_symmetry( num_of_symmetries )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,  INTENT(IN) :: num_of_symmetries
+      !
+      !
+      CALL iotk_write_begin( ounit, "SYMMETRY" )
+      !
+      CALL iotk_write_dat( ounit, "NUMBER_OF_SYMMETRY_OPERATORS", num_of_symmetries)
+      !
+      CALL iotk_write_end( ounit, "SYMMETRY" )
+      !
+    END SUBROUTINE crio_write_symmetry
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_atoms( num_of_atoms, periodicity, atm_symb, atm_number, &
+                                coords, units, coords_cry )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                     INTENT(IN) :: num_of_atoms
+      INTEGER,           OPTIONAL, INTENT(IN) :: periodicity
+      REAL(dbl),         OPTIONAL, INTENT(IN) :: coords(:,:), coords_cry(:,:)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: atm_symb(:), units
+      INTEGER,           OPTIONAL, INTENT(IN) :: atm_number(:)
+      !
+      INTEGER :: ia
+      !
+      CALL iotk_write_begin( ounit, "ATOMS" )
+      !
+      CALL iotk_write_dat( ounit, "NUMBER_OF_ATOMS", num_of_atoms )
+      !
+      IF ( PRESENT( coords) ) THEN
+          !
+          CALL iotk_write_attr( attr, "number_of_items", num_of_atoms, FIRST=.TRUE.)
+          IF ( PRESENT(units) ) CALL iotk_write_attr( attr, "unit", TRIM(units) )
+          !
+          CALL iotk_write_begin( ounit, "CARTESIAN_COORDINATES", ATTR=attr )
+          ! 
+          DO ia = 1, num_of_atoms
+              !
+              attr=" "
+              IF (PRESENT( atm_symb))   CALL iotk_write_attr(attr, "atomic_symbol", TRIM(atm_symb(ia)) )
+              IF (PRESENT( atm_number)) CALL iotk_write_attr(attr, "atomic_number", atm_number(ia) )
+              !
+              CALL iotk_write_dat( ounit, "ATOM"//TRIM(iotk_index(ia)), coords(1:3,ia), &
+                                   ATTR=attr, COLUMNS=3 )
+              !
+          ENDDO
+          ! 
+          CALL iotk_write_end( ounit, "CARTESIAN_COORDINATES" )
+          !
+      ENDIF
+      !
+      IF ( PRESENT( coords_cry ) ) THEN
+          !
+          CALL iotk_write_attr( attr, "number_of_items", num_of_atoms, FIRST=.TRUE.)
+          CALL iotk_write_attr( attr, "unit", "relative" )
+          IF ( PRESENT(periodicity) ) CALL iotk_write_attr( attr, "periodicity", periodicity )
+          !
+          CALL iotk_write_begin( ounit, "FRACTIONARY_COORDINATES", ATTR=attr )
+          ! 
+          DO ia = 1, num_of_atoms
+              !
+              attr=" "
+              IF (PRESENT( atm_symb))   CALL iotk_write_attr(attr, "atomic_symbol", TRIM(atm_symb(ia)))
+              IF (PRESENT( atm_number)) CALL iotk_write_attr(attr, "atomic_number", atm_number(ia) )
+              !
+              CALL iotk_write_dat( ounit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:3,ia), &
+                                   ATTR=attr, COLUMNS=3 ) 
+              !
+          ENDDO
+          ! 
+          CALL iotk_write_end( ounit, "FRACTIONARY_COORDINATES" )
+          !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "ATOMS" )
+      !
+    END SUBROUTINE crio_write_atoms
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_atomic_orbitals( num_of_atomic_orbitals, num_of_atoms, atm_orbital )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                          INTENT(IN) :: num_of_atomic_orbitals, num_of_atoms
+      TYPE(crio_atm_orbital), OPTIONAL, INTENT(IN) :: atm_orbital(:)
+      !
+      INTEGER        :: i
+
+      !
+      CALL iotk_write_begin( ounit, "ATOMIC_ORBITALS" )
+      !
+      CALL iotk_write_attr( attr, "number_of_atoms", num_of_atoms, FIRST=.TRUE. )
+      CALL iotk_write_empty( ounit, "ATOMIC_ORBITALS_INFO", ATTR=attr )
+      !
+      CALL iotk_write_dat( ounit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals )
+      !
+      IF ( PRESENT ( atm_orbital ) ) THEN
+          !
+          DO i = 1, num_of_atoms
+              !
+              CALL iotk_write_attr( attr, "number_of_atomic_orbitals", &
+                                    atm_orbital(i)%norb, FIRST=.TRUE. )
+              CALL iotk_write_attr( attr, "unit", TRIM(atm_orbital(i)%units) )
+              CALL iotk_write_attr( attr, "centre", atm_orbital(i)%coord )
+              !
+              CALL iotk_write_begin( ounit, "ATOMIC_ORBITALS_OF_ATOM"//TRIM(iotk_index(i)), &
+                                     ATTR=attr)
+              !
+              CALL iotk_write_dat( ounit, "SEQUENCE_NUMBER_LABEL", atm_orbital(i)%seq(:), COLUMNS=10 )
+              CALL iotk_write_dat( ounit, "TYPE", atm_orbital(i)%orb_type(:), COLUMNS=10 )
+              !
+              CALL iotk_write_end( ounit, "ATOMIC_ORBITALS_OF_ATOM"//TRIM(iotk_index(i)) )
+              !
+          ENDDO
+          !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "ATOMIC_ORBITALS" )
+      !
+    END SUBROUTINE crio_write_atomic_orbitals
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_direct_lattice( nrtot, rvec, rvec_cry, r_units )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                     INTENT(IN) :: nrtot
+      REAL(dbl),         OPTIONAL, INTENT(IN) :: rvec(:,:)
+      INTEGER,           OPTIONAL, INTENT(IN) :: rvec_cry(:,:)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: r_units
+      !
+      INTEGER :: ir
+
+      !
+      CALL iotk_write_begin( ounit, "DIRECT_LATTICE" )
+      !
+      CALL iotk_write_dat( ounit, "NUMBER_OF_DIRECT_LATTICE_VECTORS", nrtot )
+      !
+      IF ( PRESENT( rvec ) ) THEN
+          !
+          CALL iotk_write_begin( ounit, "CARTESIAN_VECTORS" )
+          !
+          CALL iotk_write_attr( attr, "number_of_items", nrtot, FIRST=.TRUE.)
+          IF (PRESENT( r_units ) ) &
+               CALL iotk_write_attr( attr, "unit", TRIM(r_units) )
+          CALL iotk_write_empty( ounit, "CARTESIAN_VECTORS_INFO", ATTR=attr )
+          !
+          DO ir = 1, nrtot
+              !
+              CALL iotk_write_dat( ounit, "CVDL"//TRIM(iotk_index(ir)), rvec(:,ir), COLUMNS=3)
+              !
+          ENDDO
+          !
+          CALL iotk_write_end( ounit, "CARTESIAN_VECTORS" )
+          !
+      ENDIF
+      !
+      IF ( PRESENT( rvec_cry ) ) THEN
+          !
+          CALL iotk_write_begin( ounit, "INTEGER_VECTORS" )
+          !
+          CALL iotk_write_attr( attr, "number_of_items", nrtot, FIRST=.TRUE.)
+          CALL iotk_write_attr( attr, "unit", "relative" )
+          CALL iotk_write_empty( ounit, "INTEGER_VECTORS_INFO", ATTR=attr )
+          !
+          DO ir = 1, nrtot
+              !
+              CALL iotk_write_dat( ounit, "IVDL"//TRIM(iotk_index(ir)), rvec_cry(:,ir), COLUMNS=3)
+              !
+          ENDDO
+          !
+          CALL iotk_write_end( ounit, "INTEGER_VECTORS" )
+          !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "DIRECT_LATTICE" )
+      !
+    END SUBROUTINE crio_write_direct_lattice
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_bz( num_k_points, nk, xk, k_units, wk, wfc_type )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                 INTENT(IN) :: num_k_points
+      INTEGER,       OPTIONAL, INTENT(IN) :: nk(:)
+      REAL(dbl),     OPTIONAL, INTENT(IN) :: xk(:,:), wk(:)
+      CHARACTER(*),  OPTIONAL, INTENT(IN) :: wfc_type(:)
+      CHARACTER(*),  OPTIONAL, INTENT(IN) :: k_units
+      !
+      INTEGER :: ik
+
+      !
+      CALL iotk_write_begin( ounit, "BRILLOUIN_ZONE" )
+      !
+      CALL iotk_write_dat( ounit, "NUMBER_OF_IRREDUCIBLE_K_VECTORS", num_k_points )
+      !
+      CALL iotk_write_attr( attr, "alias", &
+                            "IRREDUCIBLE_FRACTIONARY_VECTORS_IN_RECIPROCAL_LATTICE", FIRST=.TRUE.)
+      CALL iotk_write_begin( ounit, "IRREDUCIBLE_K_VECTORS", ATTR=attr )
+      !
+      CALL iotk_write_attr( attr, "number_of_items", num_k_points, FIRST=.TRUE.) 
+      IF ( PRESENT( nk ) ) CALL iotk_write_attr( attr, "monkhorst_pack_grid", nk )
+      IF ( PRESENT( k_units ) ) CALL iotk_write_attr( attr, "unit", TRIM(k_units) )
+      !
+      CALL iotk_write_empty( ounit, "IRREDUCIBLE_K_VECTORS_INFO", ATTR=attr)
+      !
+      IF ( PRESENT( xk ) ) THEN
+          !
+          DO ik = 1, num_k_points
+              !
+              attr = " "
+              IF ( PRESENT( wk )) CALL iotk_write_attr( attr, "weight", wk(ik) )
+              IF ( PRESENT( wfc_type )) CALL iotk_write_attr( attr, "wavefunction_type", &
+                                                              TRIM( wfc_type(ik)) )
+              CALL iotk_write_dat( ounit, "K_VECTOR"//TRIM(iotk_index(ik)), xk(:,ik), &
+                                   COLUMNS=3, ATTR=attr )
+              !
+          ENDDO
+          !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "IRREDUCIBLE_K_VECTORS" )
+      !
+      CALL iotk_write_end( ounit, "BRILLOUIN_ZONE" )
+      !
+    END SUBROUTINE crio_write_bz
 
 !
 !-------------------------------------------
@@ -391,15 +688,15 @@ CONTAINS
       CALL iotk_scan_attr(attr, "version", creator_version_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_end( iunit, "HEADER", IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
       IF ( PRESENT( title ) ) THEN
           !
           CALL iotk_scan_dat( iunit, "TITLE", title, IERR=ierr )
           IF (ierr/=0) RETURN
           !
       ENDIF
+      !
+      CALL iotk_scan_end( iunit, "HEADER", IERR=ierr )
+      IF (ierr/=0) RETURN
       !
       IF ( PRESENT(creator_name) )     creator_name    = TRIM(creator_name_)
       IF ( PRESENT(creator_version) )  creator_version = TRIM(creator_version_)
@@ -410,16 +707,47 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_cell( avec, bvec, a_units, b_units, ierr )
+    SUBROUTINE crio_read_periodicity( num_of_periodic_dir, periodic_dir, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,           OPTIONAL, INTENT(OUT) :: num_of_periodic_dir
+      INTEGER,           OPTIONAL, INTENT(OUT) :: periodic_dir(:)
+      INTEGER,                     INTENT(OUT) :: ierr
+      !
+      INTEGER :: num_of_periodic_dir_
+      !
+
+      ierr=0
+      !
+      CALL iotk_scan_begin( iunit, "PERIODICITY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_dat( iunit, "NUMBER_OF_PERIODIC_DIRECTIONS", num_of_periodic_dir_, IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      IF ( PRESENT( periodic_dir) ) THEN
+          !
+          CALL iotk_scan_dat( iunit, "PERIODIC_DIRECTIONS", periodic_dir(1:num_of_periodic_dir_), IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+      ENDIF
+      !
+      CALL iotk_scan_end( iunit, "PERIODICITY", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      !
+      IF ( PRESENT( num_of_periodic_dir ) )      num_of_periodic_dir = num_of_periodic_dir_
+      !
+    END SUBROUTINE crio_read_periodicity
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_read_cell( avec, units, periodicity, ierr )
       !------------------------------------------------------------------------
       !
       REAL(dbl),         OPTIONAL, INTENT(OUT) :: avec(3,3)
-      REAL(dbl),         OPTIONAL, INTENT(OUT) :: bvec(3,3)
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: a_units, b_units
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: units, periodicity
       INTEGER,                     INTENT(OUT) :: ierr
-      !
-      CHARACTER(256)     :: a_units_, b_units_
-      REAL(dbl)          :: avec_(3,3), bvec_(3,3)
       !
 
       ierr=0
@@ -430,18 +758,44 @@ CONTAINS
       !
       CALL iotk_scan_empty( iunit, "CELL_INFO", ATTR=attr, IERR=ierr )
       IF ( ierr /= 0 ) RETURN
-      CALL iotk_scan_attr( attr, "unit", a_units_, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "CELL_VECTOR_A", avec_(:,1), IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_dat( iunit, "CELL_VECTOR_B", avec_(:,2), IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_dat( iunit, "CELL_VECTOR_C", avec_(:,3), IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT( units )) THEN
+         CALL iotk_scan_attr( attr, "unit", units, IERR=ierr )
+         IF ( ierr /= 0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( periodicity )) THEN
+         CALL iotk_scan_attr( attr, "periodicity", periodicity, IERR=ierr )
+         IF ( ierr /= 0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( avec ) ) THEN
+         !
+         CALL iotk_scan_dat( iunit, "CELL_VECTOR_A", avec(:,1), IERR=ierr )
+         IF (ierr/=0) RETURN
+         CALL iotk_scan_dat( iunit, "CELL_VECTOR_B", avec(:,2), IERR=ierr )
+         IF (ierr/=0) RETURN
+         CALL iotk_scan_dat( iunit, "CELL_VECTOR_C", avec(:,3), IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+      ENDIF
       !
       CALL iotk_scan_end( iunit, "CELL", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
+      !
+    END SUBROUTINE crio_read_cell
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_read_cell_reciprocal( bvec, units, periodicity, ierr )
+      !------------------------------------------------------------------------
+      !
+      REAL(dbl),         OPTIONAL, INTENT(OUT) :: bvec(3,3)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: units, periodicity
+      INTEGER,                     INTENT(OUT) :: ierr
+      !
+
+      ierr=0
       !
       !
       CALL iotk_scan_begin( iunit, "CELL_RECIPROCAL", IERR=ierr )
@@ -449,26 +803,32 @@ CONTAINS
       !
       CALL iotk_scan_empty( iunit, "CELL_RECIPROCAL_INFO", ATTR=attr, IERR=ierr )
       IF ( ierr /= 0 ) RETURN
-      CALL iotk_scan_attr( attr, "unit", b_units_, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_A", bvec_(:,1), IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_B", bvec_(:,2), IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_C", bvec_(:,3), IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT( units )) THEN
+         CALL iotk_scan_attr( attr, "unit", units, IERR=ierr )
+         IF ( ierr /= 0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( periodicity )) THEN
+         CALL iotk_scan_attr( attr, "periodicity", periodicity, IERR=ierr )
+         IF ( ierr /= 0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( bvec ) ) THEN
+         !
+         CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_A", bvec(:,1), IERR=ierr )
+         IF (ierr/=0) RETURN
+         CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_B", bvec(:,2), IERR=ierr )
+         IF (ierr/=0) RETURN
+         CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_C", bvec(:,3), IERR=ierr )
+         IF (ierr/=0) RETURN
+         !
+      ENDIF
       !
       CALL iotk_scan_end( iunit, "CELL_RECIPROCAL", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      ! 
-      IF ( PRESENT(avec) )       avec = avec_
-      IF ( PRESENT(bvec) )       bvec = bvec_
-      IF ( PRESENT(a_units) ) a_units = TRIM( a_units_ )
-      IF ( PRESENT(b_units) ) b_units = TRIM( b_units_ )
-      !
-    END SUBROUTINE crio_read_cell
+    END SUBROUTINE crio_read_cell_reciprocal
     !
     !
     !------------------------------------------------------------------------
@@ -488,14 +848,6 @@ CONTAINS
 
       ierr=0
       units_ = ' '
-      !
-      CALL iotk_scan_begin( iunit, "GEOMETRY", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-      CALL iotk_scan_empty( iunit, "CELL_INFO", ATTR=attr, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      CALL iotk_scan_attr( attr, "periodicity", periodicity_, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_begin( iunit, "ATOMS", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
@@ -539,35 +891,39 @@ CONTAINS
       ENDIF
       !
       !
-      IF ( PRESENT( coords_cry ) ) THEN 
+      IF ( PRESENT( coords_cry ) .OR. PRESENT( periodicity ) ) THEN 
           !
           CALL iotk_scan_begin( iunit, "FRACTIONARY_COORDINATES", ATTR=attr, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          CALL iotk_scan_attr( attr, "unit", units_, IERR=ierr )
+          CALL iotk_scan_attr( attr, "periodicity", periodicity_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          DO ia = 1, num_of_atoms_
+          IF ( PRESENT( coords_cry) ) THEN
               !
-              CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity_,ia), &
-                                  ATTR=attr, IERR=ierr )
-              IF ( ierr /= 0 ) RETURN
-              !
-              IF ( PRESENT( atm_symb ) ) THEN
+              DO ia = 1, num_of_atoms_
                   !
-                  CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
+                  CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity_,ia), &
+                                      ATTR=attr, IERR=ierr )
                   IF ( ierr /= 0 ) RETURN
                   !
-              ENDIF
-              !
-              IF ( PRESENT( atm_number ) ) THEN
+                  IF ( PRESENT( atm_symb ) ) THEN
+                      !
+                      CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
+                      IF ( ierr /= 0 ) RETURN
+                      !
+                  ENDIF
                   !
-                  CALL iotk_scan_attr( attr, "atomic_number", atm_number(ia), IERR=ierr )
-                  IF ( ierr /= 0 ) RETURN
+                  IF ( PRESENT( atm_number ) ) THEN
+                      !
+                      CALL iotk_scan_attr( attr, "atomic_number", atm_number(ia), IERR=ierr )
+                      IF ( ierr /= 0 ) RETURN
+                      !
+                  ENDIF
                   !
-              ENDIF
+              ENDDO
               !
-          ENDDO
+          ENDIF
           !
           CALL iotk_scan_end( iunit, "FRACTIONARY_COORDINATES", IERR=ierr )
           IF ( ierr /= 0 ) RETURN
@@ -576,9 +932,6 @@ CONTAINS
       !
       !
       CALL iotk_scan_end( iunit, "ATOMS", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-      CALL iotk_scan_end( iunit, "GEOMETRY", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
       !
@@ -600,9 +953,6 @@ CONTAINS
       !
       ierr=0
       !
-      CALL iotk_scan_begin( iunit, "GEOMETRY", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
       CALL iotk_scan_begin( iunit, "SYMMETRY", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
@@ -612,9 +962,6 @@ CONTAINS
       CALL iotk_scan_end( iunit, "SYMMETRY", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_end( iunit, "GEOMETRY", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
       !
       IF ( PRESENT( num_of_symmetries ) )   num_of_symmetries = num_of_symmetries_
       !
@@ -622,11 +969,83 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+    SUBROUTINE crio_read_atomic_orbitals( num_of_atomic_orbitals, num_of_atoms, atm_orbital, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                OPTIONAL, INTENT(OUT) :: num_of_atomic_orbitals, num_of_atoms
+      TYPE(crio_atm_orbital), OPTIONAL, INTENT(OUT) :: atm_orbital(:)
+      INTEGER,                          INTENT(OUT) :: ierr
+      !
+      INTEGER        :: num_of_atomic_orbitals_, num_of_atoms_, norb_
+      INTEGER        :: i
+      CHARACTER(256) :: str
+      !
+
+      ierr=0
+      !
+      CALL iotk_scan_begin( iunit, "ATOMIC_ORBITALS", IERR=ierr)
+      IF ( ierr/=0 ) RETURN
+      !
+      CALL iotk_scan_empty( iunit, "ATOMIC_ORBITALS_INFO", ATTR=attr, IERR=ierr)
+      IF ( ierr/=0 ) RETURN
+      CALL iotk_scan_attr( attr, "number_of_atoms", num_of_atoms_, IERR=ierr)
+      IF ( ierr/=0 ) RETURN
+      !
+      CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals_, IERR=ierr)
+      IF ( ierr/=0 ) RETURN
+      !
+      !
+      IF ( PRESENT( atm_orbital ) ) THEN
+          !
+          DO i = 1, num_of_atoms_
+              !
+              str="ATOMIC_ORBITALS_OF_ATOM"//TRIM(iotk_index( i ))
+              !
+              CALL iotk_scan_begin( iunit, TRIM(str), ATTR=attr, IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              !
+              CALL iotk_scan_attr( attr, "number_of_atomic_orbitals", norb_, IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              CALL iotk_scan_attr( attr, "unit", atm_orbital(i)%units, IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              CALL iotk_scan_attr( attr, "centre", atm_orbital(i)%coord, IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              !
+              CALL crio_atm_orbital_allocate( norb_, atm_orbital(i), ierr )
+              IF ( ierr/=0 ) RETURN
+              !
+              CALL iotk_scan_dat( iunit, "SEQUENCE_NUMBER_LABEL", atm_orbital(i)%seq, IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              !
+              CALL iotk_scan_dat( iunit, "TYPE", atm_orbital(i)%orb_type, IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              !
+              !
+              CALL iotk_scan_end( iunit, TRIM(str), IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              !
+          ENDDO
+          !
+      ENDIF
+      !
+      !
+      CALL iotk_scan_end( iunit, "ATOMIC_ORBITALS", IERR=ierr)
+      IF ( ierr/=0 ) RETURN
+      !
+      !
+      IF ( PRESENT( num_of_atomic_orbitals ) )     num_of_atomic_orbitals = num_of_atomic_orbitals_
+      IF ( PRESENT( num_of_atoms ) )               num_of_atoms           = num_of_atoms_
+      !
+    END SUBROUTINE crio_read_atomic_orbitals
+    !
+    !
+    !------------------------------------------------------------------------
     SUBROUTINE crio_read_direct_lattice( nrtot, rvec, rvec_cry, r_units, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,           OPTIONAL, INTENT(OUT) :: nrtot
-      REAL(dbl),         OPTIONAL, INTENT(OUT) :: rvec(:,:), rvec_cry(:,:)
+      REAL(dbl),         OPTIONAL, INTENT(OUT) :: rvec(:,:)
+      INTEGER,           OPTIONAL, INTENT(OUT) :: rvec_cry(:,:)
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: r_units
       INTEGER,                     INTENT(OUT) :: ierr
       !
@@ -681,10 +1100,11 @@ CONTAINS
           !
           CALL iotk_scan_attr( attr, "number_of_items", ntmp_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
-          CALL iotk_scan_attr( attr, "unit", r_units_, IERR=ierr )
-          IF ( ierr /= 0 ) RETURN
           !
-          IF ( ntmp_ /= nrtot_ ) RETURN
+          IF ( ntmp_ /= nrtot_ ) THEN
+               ierr = 71
+               RETURN
+          ENDIF
           !
           DO ir = 1, nrtot_
               !
@@ -710,18 +1130,16 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_bz( num_k_points, xk, wk, nk1, nk2, nk3, &
-                             k_units, ierr )
+    SUBROUTINE crio_read_bz( num_k_points, nk, xk, k_units, wk, wfc_type, ierr )
       !------------------------------------------------------------------------
       !
-      INTEGER,       OPTIONAL, INTENT(OUT) :: num_k_points, nk1, nk2, nk3
+      INTEGER,       OPTIONAL, INTENT(OUT) :: num_k_points, nk(:)
       REAL(dbl),     OPTIONAL, INTENT(OUT) :: xk(:,:), wk(:)
-      CHARACTER(*),  OPTIONAL, INTENT(OUT) :: k_units
+      CHARACTER(*),  OPTIONAL, INTENT(OUT) :: k_units, wfc_type(:)
       INTEGER,                 INTENT(OUT) :: ierr
       !
-      INTEGER                :: num_k_points_, nk_(3), ntmp_
-      CHARACTER(256)         :: k_units_
-      REAL(dbl), ALLOCATABLE :: xk_(:,:), wk_(:)
+      INTEGER                :: num_k_points_, ntmp_
+      REAL(dbl), ALLOCATABLE :: xk_(:,:)
       !
       INTEGER :: ik
       !
@@ -742,27 +1160,43 @@ CONTAINS
       IF ( ierr/=0 ) RETURN
       CALL iotk_scan_attr( attr, "number_of_items", ntmp_, IERR=ierr )
       IF ( ierr/=0 ) RETURN
-      CALL iotk_scan_attr( attr, "monkhorst_pack_grid", nk_(1:3), IERR=ierr )
-      IF ( ierr/=0 ) RETURN
-      CALL iotk_scan_attr( attr, "unit", k_units_, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
+      !
+      IF ( PRESENT( nk )) THEN
+          CALL iotk_scan_attr( attr, "monkhorst_pack_grid", nk, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( k_units )) THEN
+          CALL iotk_scan_attr( attr, "unit", k_units, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+      ENDIF
       !
       IF ( ntmp_ /= num_k_points_ ) RETURN
       !
       !
       ALLOCATE( xk_( 3, num_k_points_ ) )
-      ALLOCATE( wk_(    num_k_points_ ) )
       !
-      DO ik = 1, num_k_points_
+      IF ( PRESENT(xk) .OR. PRESENT(wk) .OR. PRESENT(wfc_type) ) THEN
           !
-          CALL iotk_scan_dat( iunit, "K_VECTOR" // TRIM( iotk_index(ik) ), &
-                              xk_(:,ik), ATTR=attr, IERR=ierr )
-          IF ( ierr/=0 ) RETURN
+          DO ik = 1, num_k_points_
+              !
+              CALL iotk_scan_dat( iunit, "K_VECTOR" // TRIM( iotk_index(ik) ), &
+                                  xk_(:,ik), ATTR=attr, IERR=ierr )
+              IF ( ierr/=0 ) RETURN
+              !
+              IF ( PRESENT( wk ) ) THEN
+                  CALL iotk_scan_attr( attr, "weight", wk(ik), IERR=ierr )
+                  IF ( ierr/=0 ) RETURN
+              ENDIF
+              !
+              IF ( PRESENT( wfc_type ) ) THEN
+                  CALL iotk_scan_attr( attr, "wavefunction_type", wfc_type(ik), IERR=ierr )
+                  IF ( ierr/=0 ) RETURN
+              ENDIF
+              !
+          ENDDO
           !
-          CALL iotk_scan_attr( attr, "weight", wk_(ik), IERR=ierr )
-          IF ( ierr/=0 ) RETURN
-          !
-      ENDDO
+      ENDIF
       !
       CALL iotk_scan_end( iunit, "IRREDUCIBLE_K_VECTORS", IERR=ierr )
       IF ( ierr/=0 ) RETURN
@@ -772,15 +1206,9 @@ CONTAINS
       !
       !
       IF ( PRESENT( num_k_points ) )       num_k_points  = num_k_points_
-      IF ( PRESENT( nk1 ) )                nk1           = nk_(1)
-      IF ( PRESENT( nk2 ) )                nk2           = nk_(2)
-      IF ( PRESENT( nk3 ) )                nk3           = nk_(3)
-      IF ( PRESENT( k_units ) )            k_units       =  TRIM(k_units_)
       IF ( PRESENT( xk ) )                 xk(1:3,1:num_k_points_) = xk_(:,:)
-      IF ( PRESENT( wk ) )                 wk(1:num_k_points_)     = wk_(:)
       !
       DEALLOCATE( xk_ )
-      DEALLOCATE( wk_ )
       !
     END SUBROUTINE crio_read_bz
     !

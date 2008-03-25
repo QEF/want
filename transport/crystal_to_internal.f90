@@ -64,18 +64,19 @@
 ! read from filein (CRYSTAL06 fmt)
 !---------------------------------
 !
-   CALL crio_init( UNIT_IN=aux_unit, FILEIN=filein )
-   !
-   CALL crio_open_file( FILENAME=filein, ACTION='read', IERR=ierr )
+   CALL crio_open_file( UNIT=aux_unit, FILENAME=filein, ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'opening'//TRIM(filein), ABS(ierr) )
    !
    !
    CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'opening sec. GEOMETRY', ABS(ierr) )
    !
-   CALL crio_read_cell( AVEC=dlatt, BVEC=rlatt, &
-                        A_UNITS=a_units, B_UNITS=b_units, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname, 'reading lattice dimensions', ABS(ierr) )
+   CALL crio_read_cell( AVEC=dlatt, UNITS=a_units, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading direct lattice', ABS(ierr) )
+   !
+   CALL crio_read_cell_reciprocal( BVEC=rlatt, UNITS=b_units, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading reciprocal lattice', ABS(ierr) )
+   ! 
    ! 
    CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'closing sec. GEOMETRY', ABS(ierr) )
@@ -181,8 +182,7 @@
    !
    ! read bz information
    !
-   CALL crio_read_bz( NUM_K_POINTS=nkpts, NK1=nk(1), NK2=nk(2), NK3=nk(3), &
-                      K_UNITS=k_units, IERR=ierr )
+   CALL crio_read_bz( NUM_K_POINTS=nkpts, NK=nk, K_UNITS=k_units, IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'reading bz dimensions', ABS(ierr) )
    !
    ! crystal does not allow for shifted k-meshes
