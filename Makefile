@@ -88,4 +88,5 @@ wash : clean clean_test
 		./include/configure.h ./include/fft_defs.h \
 	        ./include/ctools.h ./include/iotk_config.h \
 		*/dum1 */dum2 
+	- touch make.sys
 
