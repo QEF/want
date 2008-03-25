@@ -11,6 +11,7 @@ cleanup.o \
 control.o \
 correlation.o \
 crystal_io.o \
+crystal_io_base.o \
 crystal_to_internal.o \
 datafiles.o \
 egrid.o \
