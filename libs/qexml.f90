@@ -53,7 +53,6 @@ MODULE qexml_module
   !
 
   PUBLIC :: fmt_name, fmt_version
-  PUBLIC :: iunit, ounit
   !
   PUBLIC :: qexml_init,  qexml_openfile, qexml_closefile
   !
