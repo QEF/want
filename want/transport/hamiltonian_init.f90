@@ -67,7 +67,7 @@
    ! local variables
    !
    CHARACTER(16) :: subname="hamiltonian_init"
-   INTEGER       :: i, ierr
+   INTEGER       :: ierr
    LOGICAL       :: lhave_overlap
    !
    COMPLEX(dbl), ALLOCATABLE :: haux(:,:,:), saux(:,:,:)
