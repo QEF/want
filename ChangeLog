@@ -4,6 +4,22 @@
 =======================================================
 
 
+10 Jun 2008      bug fixed when reading US pseudopot. not in UPF format.
+                 The global management of PP has been updated according to
+                 espresso-4.0: major changes occured. Updates in the 
+                 scripts to manage the test suite. (AF)
+
+17 Apr 2008      iotk lib updated to v1.2.0 (fro the head of toady's CVS). 
+                 qexml.f90 further updated to include the very last changes to
+                 qexml fmt before the release of espresso-4.0 . (AF)
+
+16 Apr 2008      qexml.f90 further updated: qexml_init now supports datafile
+                 parsing to get the working directory. (AF)
+
+10 Apr 2008      qexml.f90 updated according to the changes done in espresso-qexml;
+                 versions of the qexml lib interfacing to espresso before 3.2.0
+                 removed from cvs. Further implementation in crystal_io.f90 . (AF)
+
 06 Mar 2008      Interface with CRYSTAL went ahead; we added a general purpose
                  library (crystal_io.f90) to read a xml-formatted datafile written 
                  by CRYSTAL06. Changes in the format still around. (AF)
