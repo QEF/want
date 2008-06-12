@@ -19,12 +19,10 @@ parser.o : mp_global.o
 parser.o : mp.o
 parser.o : parser_base.o
 qexml.o : ../iotk/iotk_16_module.o
-qexml_v3.1.1.o : ../iotk/iotk_16_module.o
-qexml_v3.1.o : ../iotk/iotk_16_module.o
 qexpt.o : constants.o
 qexpt.o : ../iotk/iotk_16_module.o
 qexpt.o : kind.o
-rranf.o : kind.o
+random_numbers.o : kind.o
 shmem_include.o : kind.o
 simpsn.o : kind.o
 sort.o : kind.o
@@ -34,6 +32,7 @@ sph_har.o : constants.o
 sph_har.o : kind.o
 util.o : constants.o
 util.o : kind.o
+warning.o : io_global.o
 write_header.o : io_global.o
 ylmr2.o : constants.o
 ylmr2.o : kind.o

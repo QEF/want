@@ -27,7 +27,7 @@ parser_base.o \
 parser.o \
 qexml.o \
 qexpt.o \
-rranf.o \
+random_numbers.o \
 shmem_include.o \
 simpsn.o \
 sort.o \
