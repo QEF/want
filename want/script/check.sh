@@ -159,6 +159,10 @@ do
       #
       echo "   $file not found: skipped"  
       #
+   elif [ ! -e ./Reference/$file ] ; then 
+      #
+      echo "   ./Reference/$file not found: skipped"  
+      #
    else
       #
       print_header
