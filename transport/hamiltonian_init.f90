@@ -53,6 +53,7 @@
    USE T_kpoints_module,     ONLY : kpoints_init, nrtot_par
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate,   &
                                     dimL, dimR, dimC, dimx, &
+                                    ispin,                  &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, &
                                     s00_L, s01_L, s00_R, s01_R, s00_C, &
                                     h_LC, h_CR, s_LC, s_CR
@@ -117,7 +118,7 @@
    ! read basic quantities
    !
    IF ( ionode ) THEN 
-       CALL read_matrix( datafile_C, 'H00_C', dimC, dimC, haux, dimx, dimx, &
+       CALL read_matrix( datafile_C, ispin, 'H00_C', dimC, dimC, haux, dimx, dimx, &
                          lhave_overlap, saux, dimx, dimx)
    ENDIF
    !
@@ -133,7 +134,7 @@
    !
    !
    IF ( ionode ) THEN
-       CALL read_matrix( datafile_C, 'H_CR', dimC, dimR, haux, dimx, dimx, &
+       CALL read_matrix( datafile_C, ispin, 'H_CR', dimC, dimR, haux, dimx, dimx, &
                          lhave_overlap, saux, dimx, dimx)
    ENDIF
    !
@@ -157,7 +158,7 @@
        ! read the missing data
        !
        IF ( ionode ) THEN
-           CALL read_matrix( datafile_C, 'H_LC', dimL, dimC, haux, dimx, dimx, &
+           CALL read_matrix( datafile_C, ispin, 'H_LC', dimL, dimC, haux, dimx, dimx, &
                              lhave_overlap, saux, dimx, dimx )
        ENDIF
        !
@@ -173,7 +174,7 @@
        !
        !
        IF ( ionode ) THEN 
-           CALL read_matrix( datafile_L, 'H00_L', dimL, dimL, haux, dimx, dimx, &
+           CALL read_matrix( datafile_L, ispin, 'H00_L', dimL, dimL, haux, dimx, dimx, &
                              lhave_overlap, saux, dimx, dimx )
        ENDIF
        !
@@ -189,7 +190,7 @@
        !
        !
        IF ( ionode ) THEN 
-           CALL read_matrix( datafile_L, 'H01_L', dimL, dimL, haux, dimx, dimx, &
+           CALL read_matrix( datafile_L, ispin, 'H01_L', dimL, dimL, haux, dimx, dimx, &
                              lhave_overlap, saux, dimx, dimx )
        ENDIF
        !
@@ -205,7 +206,7 @@
        !
        !
        IF ( ionode ) THEN
-           CALL read_matrix( datafile_R, 'H00_R', dimR, dimR, haux, dimx, dimx, &
+           CALL read_matrix( datafile_R, ispin, 'H00_R', dimR, dimR, haux, dimx, dimx, &
                              lhave_overlap, saux, dimx, dimx )
        ENDIF
        !
@@ -221,7 +222,7 @@
        !
        !
        IF ( ionode ) THEN 
-           CALL read_matrix( datafile_R, 'H01_R', dimR, dimR, haux, dimx, dimx, &
+           CALL read_matrix( datafile_R, ispin, 'H01_R', dimR, dimR, haux, dimx, dimx, &
                              lhave_overlap, saux, dimx, dimx )
        ENDIF
        !

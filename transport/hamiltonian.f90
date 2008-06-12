@@ -26,6 +26,9 @@
     INTEGER                   :: dimR       
     INTEGER                   :: dimx      ! MAX ( dimL, dimC, dimR )       
     !
+    INTEGER                   :: nspin
+    INTEGER                   :: ispin
+    !
     COMPLEX(dbl), ALLOCATABLE :: h00_L(:,:,:), h01_L(:,:,:)
     COMPLEX(dbl), ALLOCATABLE :: h00_R(:,:,:), h01_R(:,:,:)
     COMPLEX(dbl), ALLOCATABLE :: h00_C(:,:,:)
@@ -45,7 +48,8 @@
 ! end delcarations
 !
 
-   PUBLIC :: dimL, dimC, dimR, dimx     
+   PUBLIC :: dimL, dimC, dimR, dimx
+   PUBLIC :: nspin, ispin
    PUBLIC :: nkpts_par
    !
    PUBLIC :: h00_L, h01_L

@@ -217,17 +217,21 @@ CONTAINS
       USE T_hamiltonian_module, ONLY :     dimL,    &
                                            dimR,    &
                                            dimC,    & 
-                                           dimx
+                                           dimx,    &
+                                           ispin
       USE T_input_parameters_module,ONLY : dimL_     => dimL, &
                                            dimR_     => dimR, &
-                                           dimC_     => dimC
+                                           dimC_     => dimC, &
+                                           ispin_    => ispin
       IMPLICIT NONE
-      
+      ! 
       dimL            = dimL_
       dimR            = dimR_
       dimC            = dimC_
       dimx            = MAX ( dimL, dimC, dimR )
-
+      !
+      ispin           = ispin_
+      !
    END SUBROUTINE setup_hamiltonian
 
 

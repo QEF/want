@@ -1,9 +1,9 @@
 !
 ! Copyright (C) 2008 WanT Group
 ! This file is distributed under the terms of the
-! GNU General Public License. See the file `License'
+! GNU Lesser General Public License. See the file `License'
 ! in the root directory of the present distribution,
-! or http://www.gnu.org/copyleft/gpl.txt .
+! or http://www.gnu.org/copyleft/lgpl.txt .
 !
 !----------------------------------------------------------------------------
 MODULE crystal_io_module
@@ -20,7 +20,7 @@ MODULE crystal_io_module
   ! definitions for the fmt
   !
   CHARACTER(10), PARAMETER :: crio_fmt_name = "CRYSTAL_IO"
-  CHARACTER(5),  PARAMETER :: crio_fmt_version = "0.1.0"
+  CHARACTER(5),  PARAMETER :: crio_fmt_version = "0.2.0"
   
   !
   ! internal data to be set
@@ -41,19 +41,18 @@ MODULE crystal_io_module
   PUBLIC :: crio_open_section, crio_close_section
   !
   PUBLIC :: crio_write_header,                                     &
-            crio_write_periodicity,     crio_write_cell,           &
-            crio_write_cell_reciprocal, crio_write_symmetry,       &
+            crio_write_periodicity,     crio_write_symmetry,       &
             crio_write_atoms,                                      &
             crio_write_atomic_orbitals,                            &
-            crio_write_direct_lattice , crio_write_bz 
+            crio_write_direct_lattice,  crio_write_bz,             &
+            crio_write_elec_structure,  crio_write_matrix 
   !
   PUBLIC :: crio_read_header,                                      & 
-            crio_read_periodicity,      crio_read_cell,            &
-            crio_read_cell_reciprocal,  crio_read_symmetry,        &
+            crio_read_periodicity,      crio_read_symmetry,        &
             crio_read_atoms,                                       &
             crio_read_atomic_orbitals,                             &
             crio_read_direct_lattice,   crio_read_bz,              &
-            crio_read_hamiltonian,      crio_read_overlap 
+            crio_read_elec_structure,   crio_read_matrix
 
 CONTAINS
 
@@ -327,87 +326,69 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_write_periodicity( num_of_periodic_dir, periodic_dir )
+    SUBROUTINE crio_write_periodicity( num_of_periodic_dir, periodic_dir, avec, a_units, bvec, b_units )
       !------------------------------------------------------------------------
       !
-      INTEGER,               INTENT(IN) :: num_of_periodic_dir
-      INTEGER,     OPTIONAL, INTENT(IN) :: periodic_dir(:)
+      INTEGER,                     INTENT(IN) :: num_of_periodic_dir
+      INTEGER,           OPTIONAL, INTENT(IN) :: periodic_dir(:)
+      REAL(dbl),         OPTIONAL, INTENT(IN) :: avec(3,3), bvec(3,3)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: a_units, b_units
       !
       !
       CALL iotk_write_begin( ounit, "PERIODICITY" )
       !
       CALL iotk_write_dat( ounit, "NUMBER_OF_PERIODIC_DIRECTIONS", num_of_periodic_dir )
       !
-      IF ( PRESENT ( periodic_dir) ) THEN
+      IF ( num_of_periodic_dir /= 0 ) THEN
           !
-          CALL iotk_write_dat( ounit, "PERIODIC_DIRECTIONS", &
-                               periodic_dir(1:num_of_periodic_dir), COLUMNS=3 )
+          IF ( PRESENT ( periodic_dir ) ) THEN
+              !
+              CALL iotk_write_dat( ounit, "PERIODIC_DIRECTIONS", &
+                                   periodic_dir(1:num_of_periodic_dir), COLUMNS=3 )
+              !
+          ENDIF
+          !
+          CALL iotk_write_begin( ounit, "CELL" )
+          !
+          attr = " "
+          IF (PRESENT( a_units ) )       CALL iotk_write_attr( attr, "unit", TRIM(a_units) )
+          !
+          CALL iotk_write_empty( ounit, "CELL_INFO", ATTR=attr )
+          !
+          IF (PRESENT (avec) ) THEN
+              !
+              CALL iotk_write_dat( ounit, "CELL_VECTOR_A", avec(:,1), COLUMNS=3)
+              CALL iotk_write_dat( ounit, "CELL_VECTOR_B", avec(:,2), COLUMNS=3)
+              CALL iotk_write_dat( ounit, "CELL_VECTOR_C", avec(:,3), COLUMNS=3)
+              !
+          ENDIF
+          !
+          CALL iotk_write_end( ounit, "CELL" )
+          !
+          !
+          CALL iotk_write_begin( ounit, "CELL_RECIPROCAL" )
+          !
+          attr = " "
+          IF (PRESENT( b_units ) )       CALL iotk_write_attr( attr, "unit", TRIM( b_units ))
+          !
+          CALL iotk_write_empty( ounit, "CELL_RECIPROCAL_INFO", ATTR=attr )
+          !
+          IF (PRESENT (bvec) ) THEN
+              !
+              CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_A", bvec(:,1), COLUMNS=3)
+              CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_B", bvec(:,2), COLUMNS=3)
+              CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_C", bvec(:,3), COLUMNS=3)
+              !
+          ENDIF
+          !
+          CALL iotk_write_end( ounit, "CELL_RECIPROCAL" )
           !
       ENDIF
+      !
       !
       CALL iotk_write_end( ounit, "PERIODICITY" )
       !
     END SUBROUTINE crio_write_periodicity
-    !
-    !
-    !------------------------------------------------------------------------
-    SUBROUTINE crio_write_cell( avec, units, periodicity )
-      !------------------------------------------------------------------------
-      !
-      REAL(dbl),         OPTIONAL, INTENT(IN) :: avec(3,3)
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: units
-      INTEGER,           OPTIONAL, INTENT(IN) :: periodicity
-      !
-      !
-      CALL iotk_write_begin( ounit, "CELL" )
-      !
-      attr = " "
-      IF (PRESENT( units ) )       CALL iotk_write_attr( attr, "unit", TRIM(units) )
-      IF (PRESENT( periodicity ) ) CALL iotk_write_attr( attr, "periodicity", periodicity)
-      !
-      CALL iotk_write_empty( ounit, "CELL_INFO", ATTR=attr )
-      !
-      IF (PRESENT (avec) ) THEN
-          !
-          CALL iotk_write_dat( ounit, "CELL_VECTOR_A", avec(:,1), COLUMNS=3)
-          CALL iotk_write_dat( ounit, "CELL_VECTOR_B", avec(:,2), COLUMNS=3)
-          CALL iotk_write_dat( ounit, "CELL_VECTOR_C", avec(:,3), COLUMNS=3)
-          !
-      ENDIF
-      !
-      CALL iotk_write_end( ounit, "CELL" )
-      !
-    END SUBROUTINE crio_write_cell
-    !
-    !
-    !------------------------------------------------------------------------
-    SUBROUTINE crio_write_cell_reciprocal( bvec, units, periodicity )
-      !------------------------------------------------------------------------
-      !
-      REAL(dbl),         OPTIONAL, INTENT(IN) :: bvec(3,3)
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: units
-      INTEGER,           OPTIONAL, INTENT(IN) :: periodicity
-      !
-      !
-      CALL iotk_write_begin( ounit, "CELL_RECIPROCAL" )
-      !
-      attr = " "
-      IF (PRESENT( units ) )       CALL iotk_write_attr( attr, "unit", TRIM( units ))
-      IF (PRESENT( periodicity ) ) CALL iotk_write_attr( attr, "periodicity", periodicity)
-      !
-      CALL iotk_write_empty( ounit, "CELL_RECIPROCAL_INFO", ATTR=attr )
-      !
-      IF (PRESENT (bvec) ) THEN
-          !
-          CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_A", bvec(:,1), COLUMNS=3)
-          CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_B", bvec(:,2), COLUMNS=3)
-          CALL iotk_write_dat( ounit, "CELL_RECIPROCAL_VECTOR_C", bvec(:,3), COLUMNS=3)
-          !
-      ENDIF
-      !
-      CALL iotk_write_end( ounit, "CELL_RECIPROCAL" )
-      !
-    END SUBROUTINE crio_write_cell_reciprocal
     !
     !
     !------------------------------------------------------------------------
@@ -432,7 +413,7 @@ CONTAINS
       !------------------------------------------------------------------------
       !
       INTEGER,                     INTENT(IN) :: num_of_atoms
-      INTEGER,           OPTIONAL, INTENT(IN) :: periodicity
+      INTEGER,                     INTENT(IN) :: periodicity
       REAL(dbl),         OPTIONAL, INTENT(IN) :: coords(:,:), coords_cry(:,:)
       CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: atm_symb(:), units
       INTEGER,           OPTIONAL, INTENT(IN) :: atm_number(:)
@@ -465,11 +446,11 @@ CONTAINS
           !
       ENDIF
       !
-      IF ( PRESENT( coords_cry ) ) THEN
+      IF ( PRESENT( coords_cry ) .AND. periodicity /= 0 ) THEN
           !
           CALL iotk_write_attr( attr, "number_of_items", num_of_atoms, FIRST=.TRUE.)
           CALL iotk_write_attr( attr, "unit", "relative" )
-          IF ( PRESENT(periodicity) ) CALL iotk_write_attr( attr, "periodicity", periodicity )
+          CALL iotk_write_attr( attr, "periodicity", periodicity )
           !
           CALL iotk_write_begin( ounit, "FRACTIONARY_COORDINATES", ATTR=attr )
           ! 
@@ -479,11 +460,11 @@ CONTAINS
               IF (PRESENT( atm_symb))   CALL iotk_write_attr(attr, "atomic_symbol", TRIM(atm_symb(ia)))
               IF (PRESENT( atm_number)) CALL iotk_write_attr(attr, "atomic_number", atm_number(ia) )
               !
-              CALL iotk_write_dat( ounit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:3,ia), &
+              CALL iotk_write_dat( ounit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity,ia), &
                                    ATTR=attr, COLUMNS=3 ) 
               !
           ENDDO
-          ! 
+          !    
           CALL iotk_write_end( ounit, "FRACTIONARY_COORDINATES" )
           !
       ENDIF
@@ -515,15 +496,15 @@ CONTAINS
           DO i = 1, num_of_atoms
               !
               CALL iotk_write_attr( attr, "number_of_atomic_orbitals", &
-                                    atm_orbital(i)%norb, FIRST=.TRUE. )
+                                    atm_orbital(i)%norb, NEWLINE=.TRUE., FIRST=.TRUE. )
               CALL iotk_write_attr( attr, "unit", TRIM(atm_orbital(i)%units) )
-              CALL iotk_write_attr( attr, "centre", atm_orbital(i)%coord )
+              CALL iotk_write_attr( attr, "centre", atm_orbital(i)%coord, NEWLINE=.TRUE. )
               !
               CALL iotk_write_begin( ounit, "ATOMIC_ORBITALS_OF_ATOM"//TRIM(iotk_index(i)), &
                                      ATTR=attr)
               !
               CALL iotk_write_dat( ounit, "SEQUENCE_NUMBER_LABEL", atm_orbital(i)%seq(:), COLUMNS=10 )
-              CALL iotk_write_dat( ounit, "TYPE", atm_orbital(i)%orb_type(:), COLUMNS=10 )
+              CALL iotk_write_dat( ounit, "TYPE", atm_orbital(i)%orb_type(:), FMT="(T5,10(A5,X))" )
               !
               CALL iotk_write_end( ounit, "ATOMIC_ORBITALS_OF_ATOM"//TRIM(iotk_index(i)) )
               !
@@ -641,6 +622,234 @@ CONTAINS
       CALL iotk_write_end( ounit, "BRILLOUIN_ZONE" )
       !
     END SUBROUTINE crio_write_bz
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_elec_structure( nelec, nspin, num_of_atomic_orbitals, &
+                                          energy_ref, energy_tag, e_units )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                 INTENT(IN) :: nelec, nspin, num_of_atomic_orbitals
+      REAL(dbl),     OPTIONAL, INTENT(IN) :: energy_ref
+      CHARACTER(*),  OPTIONAL, INTENT(IN) :: e_units, energy_tag
+      !
+      CHARACTER(256) :: tag
+      !
+
+      CALL iotk_write_begin( ounit, "ELECTRONIC_STRUCTURE" )
+      !
+      CALL iotk_write_dat( ounit, "NUMBER_OF_ELECTRONS", nelec )
+      CALL iotk_write_dat( ounit, "NUMBER_OF_SPIN_COMPONENTS", nspin )
+      CALL iotk_write_dat( ounit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", &
+                                  num_of_atomic_orbitals )
+      !
+      IF ( PRESENT( energy_ref ) ) THEN
+         !
+         IF ( PRESENT(e_units) ) CALL iotk_write_attr(attr, "unit", TRIM(e_units), FIRST=.TRUE. )
+         !
+         tag = "FERMI_ENERGY"
+         IF ( PRESENT(energy_tag)) tag = TRIM(energy_tag)
+         !
+         CALL iotk_write_dat( ounit, TRIM(tag), energy_ref, ATTR=attr )
+         !
+      ENDIF
+      !
+      CALL iotk_write_end( ounit, "ELECTRONIC_STRUCTURE" )
+      !
+    END SUBROUTINE crio_write_elec_structure
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE crio_write_matrix( objname, dim_basis, nrtot, nspin, matrix_form,  &
+                                  matrix, matrix_p, matrix_s, matrix_ps, units, label, ivr )
+      !------------------------------------------------------------------------
+      !
+      CHARACTER(LEN=*),            INTENT(IN) :: objname
+      INTEGER,                     INTENT(IN) :: dim_basis, nrtot
+      INTEGER,           OPTIONAL, INTENT(IN) :: nspin
+      REAL(dbl),         OPTIONAL, INTENT(IN) :: matrix(:,:,:), matrix_p(:,:)
+      REAL(dbl),         OPTIONAL, INTENT(IN) :: matrix_s(:,:,:,:), matrix_ps(:,:,:)
+      INTEGER,           OPTIONAL, INTENT(IN) :: ivr(:,:)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: label, units, matrix_form
+      !
+      CHARACTER(256)  :: str, tag, spin_tag, matrix_type
+      INTEGER         :: ir, isp, nspin_, n_elements
+      LOGICAL         :: mlt, mut, mfull
+      !
+
+      !
+      ! initialize some variables
+      !
+      SELECT CASE( TRIM(objname) ) 
+      CASE( "overlaps", "OVERLAPS" )
+         !
+         tag="DIRECT_OVERLAP_MATRIX"
+         !
+      CASE( "density_matrix", "DENSITY_MATRIX" )
+         !
+         tag="DIRECT_DENSITY_MATRIX"
+         !
+      CASE( "hamiltonian", "HAMILTONIAN" )
+         !
+         tag="DIRECT_FOCK_KOHN-SHAM_MATRIX"
+         !
+      CASE DEFAULT
+         RETURN
+      END SELECT
+      !
+      !
+      nspin_ = 1
+      IF ( PRESENT(nspin) ) nspin_ = nspin 
+      !  
+      matrix_type = "real"
+      !
+      !
+      mlt   = .FALSE.
+      mut   = .FALSE.
+      mfull = .FALSE.
+      !
+      IF ( PRESENT( matrix_form ) ) THEN
+          !
+          SELECT CASE( TRIM( matrix_form ) )
+          CASE ( "lower_triangular" )
+              !
+              mlt = .TRUE.
+              !
+          CASE ( "upper_triangular" )
+              !
+              mut = .TRUE.
+              !
+          CASE ( "full" )
+              mfull = .TRUE.
+          CASE DEFAULT
+              mfull = .TRUE.
+          END SELECT
+          !
+      ELSE
+          IF ( PRESENT( matrix )   .OR. PRESENT( matrix_s ) )  mfull = .TRUE.
+          IF ( PRESENT( matrix_p ) .OR. PRESENT( matrix_ps ) )   mlt = .TRUE.
+      ENDIF
+      !
+      !
+      n_elements = dim_basis * dim_basis
+      !
+      IF ( mfull )         n_elements = dim_basis * dim_basis
+      IF ( mlt .OR. mut )  n_elements = dim_basis * ( dim_basis + 1 ) / 2
+      !      
+ 
+      !
+      ! some checks
+      !
+      IF (      ( PRESENT(matrix)   .OR. PRESENT(matrix_p)  ) &
+          .AND. ( PRESENT(matrix_s) .OR. PRESENT(matrix_ps) ) ) RETURN
+      !
+      IF ( ( PRESENT(matrix)   .OR. PRESENT(matrix_p)  ) .AND. nspin_ == 2 ) RETURN
+      IF ( ( PRESENT(matrix_s) .OR. PRESENT(matrix_ps) ) .AND. nspin_ == 1 ) RETURN
+      !
+      IF ( PRESENT(matrix)   .AND. PRESENT(matrix_p)  ) RETURN
+      IF ( PRESENT(matrix_s) .AND. PRESENT(matrix_ps) ) RETURN
+
+      !
+      ! write
+      !
+      CALL iotk_write_begin( ounit, TRIM(tag) )
+      !
+      attr = " "
+      IF ( PRESENT(nspin) ) &
+         CALL iotk_write_attr( attr, "number_of_spin_components", nspin, NEWLINE=.TRUE. )
+      ! 
+      CALL iotk_write_attr( attr, "number_of_direct_lattice_vectors", nrtot, NEWLINE=.TRUE. )
+      CALL iotk_write_attr( attr, "total_number_of_atomic_orbitals", dim_basis, NEWLINE=.TRUE. )
+      !
+      CALL iotk_write_attr( attr, "matrix_type", TRIM(matrix_type), NEWLINE=.TRUE. )
+      !
+      IF ( PRESENT( matrix_form ) ) THEN
+         !
+         CALL iotk_write_attr( attr, "matrix_form", TRIM(matrix_form), NEWLINE=.TRUE. )
+         !
+      ELSE
+         !
+         IF ( mfull ) CALL iotk_write_attr( attr, "matrix_form", "full", NEWLINE=.TRUE. )
+         IF ( mut )   CALL iotk_write_attr( attr, "matrix_form", "upper_triangular", NEWLINE=.TRUE. )
+         IF ( mlt )   CALL iotk_write_attr( attr, "matrix_form", "lower_triangular", NEWLINE=.TRUE. )
+         !
+      ENDIF
+      !
+      CALL iotk_write_attr( attr, "matrix_number_of_elements", n_elements, NEWLINE=.TRUE. )
+      !
+      IF ( PRESENT( units ) ) &
+         CALL iotk_write_attr( attr, "unit", TRIM(units), NEWLINE=.TRUE. )
+      !
+      IF ( PRESENT( label ) ) &
+         CALL iotk_write_attr( attr, "label", TRIM(label) )
+      !
+      CALL iotk_write_empty( ounit, TRIM(tag)//"_INFO", ATTR=attr)
+      !
+      !
+      spin_loop: &
+      DO isp = 1, nspin_
+          !
+          spin_tag = " "
+          !
+          SELECT CASE( TRIM( objname ) )
+          CASE( "hamiltonian", "HAMILTONIAN" )
+             !
+             IF( isp == 1 ) spin_tag = "ALPHA_ELECTRONS"
+             IF( isp == 2 ) spin_tag = "BETA_ELECTRONS"
+             !
+          CASE( "density_matrix", "DENSITY_MATRIX" )
+             !
+             IF( isp == 1 ) spin_tag = "ALPHA+BETA_ELECTRONS"
+             IF( isp == 2 ) spin_tag = "ALPHA-BETA_ELECTRONS"
+             !
+          CASE( "overlaps", "OVERLAPS" )
+             !
+          CASE DEFAULT
+             !
+             RETURN
+             !
+          END SELECT
+          !
+          IF ( nspin_ == 2 ) THEN
+              !
+              CALL iotk_write_begin( ounit, TRIM(spin_tag) )
+              !
+          ENDIF
+          !
+          DO ir = 1, nrtot
+              !
+              attr=" "
+              IF ( PRESENT( ivr ) ) THEN
+                  !
+                  CALL iotk_write_attr( attr, "components_of_IVDL"//TRIM(iotk_index(ir)), &
+                                        ivr(1:3,ir), FIRST=.TRUE. ) 
+                  !
+              ENDIF
+              !
+              str = TRIM(tag)//"__IVDL"//TRIM( iotk_index(ir) )
+              !
+              IF ( PRESENT( matrix    ) ) &
+                   CALL iotk_write_dat( ounit, TRIM(str), matrix(:,:,ir), ATTR=attr, COLUMNS=4)
+              IF ( PRESENT( matrix_p  ) ) &
+                   CALL iotk_write_dat( ounit, TRIM(str), matrix_p(:,ir), ATTR=attr, COLUMNS=4)
+              IF ( PRESENT( matrix_s  ) ) &
+                   CALL iotk_write_dat( ounit, TRIM(str), matrix_s(:,:,ir,isp), ATTR=attr, COLUMNS=4)
+              IF ( PRESENT( matrix_ps ) ) &
+                   CALL iotk_write_dat( ounit, TRIM(str), matrix_ps(:,ir,isp),  ATTR=attr, COLUMNS=4)
+              !
+          ENDDO
+          !
+          IF ( nspin_ == 2 ) THEN
+              !
+              CALL iotk_write_end( ounit, TRIM(spin_tag) )
+              !
+          ENDIF
+          !
+      ENDDO spin_loop
+      !
+      CALL iotk_write_end( ounit, TRIM(tag) )
+      !
+    END SUBROUTINE crio_write_matrix 
 
 !
 !-------------------------------------------
@@ -707,11 +916,13 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_periodicity( num_of_periodic_dir, periodic_dir, ierr )
+    SUBROUTINE crio_read_periodicity( num_of_periodic_dir, periodic_dir, avec, a_units, bvec, b_units, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,           OPTIONAL, INTENT(OUT) :: num_of_periodic_dir
       INTEGER,           OPTIONAL, INTENT(OUT) :: periodic_dir(:)
+      REAL(dbl),         OPTIONAL, INTENT(OUT) :: avec(3,3), bvec(3,3)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: a_units, b_units
       INTEGER,                     INTENT(OUT) :: ierr
       !
       INTEGER :: num_of_periodic_dir_
@@ -719,18 +930,77 @@ CONTAINS
 
       ierr=0
       !
+      !
       CALL iotk_scan_begin( iunit, "PERIODICITY", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
       CALL iotk_scan_dat( iunit, "NUMBER_OF_PERIODIC_DIRECTIONS", num_of_periodic_dir_, IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      IF ( PRESENT( periodic_dir) ) THEN
+      !
+      IF ( num_of_periodic_dir_ /= 0 ) THEN
           !
-          CALL iotk_scan_dat( iunit, "PERIODIC_DIRECTIONS", periodic_dir(1:num_of_periodic_dir_), IERR=ierr )
+          IF ( PRESENT( periodic_dir) ) THEN
+              !
+              CALL iotk_scan_dat( iunit, "PERIODIC_DIRECTIONS", periodic_dir(1:num_of_periodic_dir_), IERR=ierr )
+              IF ( ierr /= 0 ) RETURN
+              !
+          ENDIF
+          !
+          !
+          CALL iotk_scan_begin( iunit, "CELL", IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          CALL iotk_scan_empty( iunit, "CELL_INFO", ATTR=attr, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          IF ( PRESENT( a_units )) THEN
+             CALL iotk_scan_attr( attr, "unit", a_units, IERR=ierr )
+             IF ( ierr /= 0 ) RETURN
+          ENDIF
+          !
+          IF ( PRESENT( avec ) ) THEN
+             !
+             CALL iotk_scan_dat( iunit, "CELL_VECTOR_A", avec(:,1), IERR=ierr )
+             IF (ierr/=0) RETURN
+             CALL iotk_scan_dat( iunit, "CELL_VECTOR_B", avec(:,2), IERR=ierr )
+             IF (ierr/=0) RETURN
+             CALL iotk_scan_dat( iunit, "CELL_VECTOR_C", avec(:,3), IERR=ierr )
+             IF (ierr/=0) RETURN
+             !
+          ENDIF
+          !
+          CALL iotk_scan_end( iunit, "CELL", IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          !
+          CALL iotk_scan_begin( iunit, "CELL_RECIPROCAL", IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          CALL iotk_scan_empty( iunit, "CELL_RECIPROCAL_INFO", ATTR=attr, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          IF ( PRESENT( b_units )) THEN
+             CALL iotk_scan_attr( attr, "unit", b_units, IERR=ierr )
+             IF ( ierr /= 0 ) RETURN
+          ENDIF
+          !
+          IF ( PRESENT( bvec ) ) THEN
+             !
+             CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_A", bvec(:,1), IERR=ierr )
+             IF (ierr/=0) RETURN
+             CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_B", bvec(:,2), IERR=ierr )
+             IF (ierr/=0) RETURN
+             CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_C", bvec(:,3), IERR=ierr )
+             IF (ierr/=0) RETURN
+             !
+          ENDIF
+          !
+          CALL iotk_scan_end( iunit, "CELL_RECIPROCAL", IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
       ENDIF
+      !
       !
       CALL iotk_scan_end( iunit, "PERIODICITY", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
@@ -739,96 +1009,6 @@ CONTAINS
       IF ( PRESENT( num_of_periodic_dir ) )      num_of_periodic_dir = num_of_periodic_dir_
       !
     END SUBROUTINE crio_read_periodicity
-    !
-    !
-    !------------------------------------------------------------------------
-    SUBROUTINE crio_read_cell( avec, units, periodicity, ierr )
-      !------------------------------------------------------------------------
-      !
-      REAL(dbl),         OPTIONAL, INTENT(OUT) :: avec(3,3)
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: units, periodicity
-      INTEGER,                     INTENT(OUT) :: ierr
-      !
-
-      ierr=0
-      !
-      !
-      CALL iotk_scan_begin( iunit, "CELL", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-      CALL iotk_scan_empty( iunit, "CELL_INFO", ATTR=attr, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-      IF ( PRESENT( units )) THEN
-         CALL iotk_scan_attr( attr, "unit", units, IERR=ierr )
-         IF ( ierr /= 0 ) RETURN
-      ENDIF
-      !
-      IF ( PRESENT( periodicity )) THEN
-         CALL iotk_scan_attr( attr, "periodicity", periodicity, IERR=ierr )
-         IF ( ierr /= 0 ) RETURN
-      ENDIF
-      !
-      IF ( PRESENT( avec ) ) THEN
-         !
-         CALL iotk_scan_dat( iunit, "CELL_VECTOR_A", avec(:,1), IERR=ierr )
-         IF (ierr/=0) RETURN
-         CALL iotk_scan_dat( iunit, "CELL_VECTOR_B", avec(:,2), IERR=ierr )
-         IF (ierr/=0) RETURN
-         CALL iotk_scan_dat( iunit, "CELL_VECTOR_C", avec(:,3), IERR=ierr )
-         IF (ierr/=0) RETURN
-         !
-      ENDIF
-      !
-      CALL iotk_scan_end( iunit, "CELL", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-    END SUBROUTINE crio_read_cell
-    !
-    !
-    !------------------------------------------------------------------------
-    SUBROUTINE crio_read_cell_reciprocal( bvec, units, periodicity, ierr )
-      !------------------------------------------------------------------------
-      !
-      REAL(dbl),         OPTIONAL, INTENT(OUT) :: bvec(3,3)
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: units, periodicity
-      INTEGER,                     INTENT(OUT) :: ierr
-      !
-
-      ierr=0
-      !
-      !
-      CALL iotk_scan_begin( iunit, "CELL_RECIPROCAL", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-      CALL iotk_scan_empty( iunit, "CELL_RECIPROCAL_INFO", ATTR=attr, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-      IF ( PRESENT( units )) THEN
-         CALL iotk_scan_attr( attr, "unit", units, IERR=ierr )
-         IF ( ierr /= 0 ) RETURN
-      ENDIF
-      !
-      IF ( PRESENT( periodicity )) THEN
-         CALL iotk_scan_attr( attr, "periodicity", periodicity, IERR=ierr )
-         IF ( ierr /= 0 ) RETURN
-      ENDIF
-      !
-      IF ( PRESENT( bvec ) ) THEN
-         !
-         CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_A", bvec(:,1), IERR=ierr )
-         IF (ierr/=0) RETURN
-         CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_B", bvec(:,2), IERR=ierr )
-         IF (ierr/=0) RETURN
-         CALL iotk_scan_dat( iunit, "CELL_RECIPROCAL_VECTOR_C", bvec(:,3), IERR=ierr )
-         IF (ierr/=0) RETURN
-         !
-      ENDIF
-      !
-      CALL iotk_scan_end( iunit, "CELL_RECIPROCAL", IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
-      !
-    END SUBROUTINE crio_read_cell_reciprocal
     !
     !
     !------------------------------------------------------------------------
@@ -843,6 +1023,7 @@ CONTAINS
       INTEGER,                     INTENT(OUT) :: ierr
       !
       INTEGER            :: num_of_atoms_, periodicity_, ia
+      LOGICAL            :: found
       CHARACTER(256)     :: units_
       !
 
@@ -893,40 +1074,51 @@ CONTAINS
       !
       IF ( PRESENT( coords_cry ) .OR. PRESENT( periodicity ) ) THEN 
           !
-          CALL iotk_scan_begin( iunit, "FRACTIONARY_COORDINATES", ATTR=attr, IERR=ierr )
+          CALL iotk_scan_begin( iunit, "FRACTIONARY_COORDINATES", FOUND=found, ATTR=attr, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          CALL iotk_scan_attr( attr, "periodicity", periodicity_, IERR=ierr )
-          IF ( ierr /= 0 ) RETURN
-          !
-          IF ( PRESENT( coords_cry) ) THEN
+          IF ( .NOT. found ) THEN
               !
-              DO ia = 1, num_of_atoms_
+              periodicity_ = 0
+              IF ( PRESENT( coords_cry )) coords_cry(:,:) = 0.0
+              IF ( PRESENT( atm_symb ))   atm_symb(:) = " "
+              IF ( PRESENT( atm_number )) atm_number(:) = 0
+              !
+          ELSE
+              !
+              CALL iotk_scan_attr( attr, "periodicity", periodicity_, IERR=ierr )
+              IF ( ierr /= 0 ) RETURN
+              !
+              IF ( PRESENT( coords_cry) ) THEN
                   !
-                  CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity_,ia), &
-                                      ATTR=attr, IERR=ierr )
-                  IF ( ierr /= 0 ) RETURN
-                  !
-                  IF ( PRESENT( atm_symb ) ) THEN
+                  DO ia = 1, num_of_atoms_
                       !
-                      CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
+                      CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity_,ia), &
+                                          ATTR=attr, IERR=ierr )
                       IF ( ierr /= 0 ) RETURN
                       !
-                  ENDIF
-                  !
-                  IF ( PRESENT( atm_number ) ) THEN
+                      IF ( PRESENT( atm_symb ) ) THEN
+                          !
+                          CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
+                          IF ( ierr /= 0 ) RETURN
+                          !
+                      ENDIF
                       !
-                      CALL iotk_scan_attr( attr, "atomic_number", atm_number(ia), IERR=ierr )
-                      IF ( ierr /= 0 ) RETURN
+                      IF ( PRESENT( atm_number ) ) THEN
+                          !
+                          CALL iotk_scan_attr( attr, "atomic_number", atm_number(ia), IERR=ierr )
+                          IF ( ierr /= 0 ) RETURN
+                          !
+                      ENDIF
                       !
-                  ENDIF
+                  ENDDO
                   !
-              ENDDO
+              ENDIF
+              !
+              CALL iotk_scan_end( iunit, "FRACTIONARY_COORDINATES", IERR=ierr )
+              IF ( ierr /= 0 ) RETURN
               !
           ENDIF
-          !
-          CALL iotk_scan_end( iunit, "FRACTIONARY_COORDINATES", IERR=ierr )
-          IF ( ierr /= 0 ) RETURN
           !
       ENDIF
       !
@@ -986,12 +1178,12 @@ CONTAINS
       CALL iotk_scan_begin( iunit, "ATOMIC_ORBITALS", IERR=ierr)
       IF ( ierr/=0 ) RETURN
       !
+      CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals_, IERR=ierr)
+      IF ( ierr/=0 ) RETURN
+      !
       CALL iotk_scan_empty( iunit, "ATOMIC_ORBITALS_INFO", ATTR=attr, IERR=ierr)
       IF ( ierr/=0 ) RETURN
       CALL iotk_scan_attr( attr, "number_of_atoms", num_of_atoms_, IERR=ierr)
-      IF ( ierr/=0 ) RETURN
-      !
-      CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals_, IERR=ierr)
       IF ( ierr/=0 ) RETURN
       !
       !
@@ -1214,141 +1406,408 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_overlap( label, form_of_data, units, dim_basis, nrtot, &
-                                  ovp_matrix, ierr )
+    SUBROUTINE crio_read_elec_structure( nelec, nspin, num_of_atomic_orbitals, &
+                                         energy_ref, energy_tag, e_units, ierr )
       !------------------------------------------------------------------------
       !
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: label, form_of_data, units
-      INTEGER,           OPTIONAL, INTENT(OUT) :: dim_basis, nrtot
-      REAL(dbl),         OPTIONAL, INTENT(OUT) :: ovp_matrix(:,:,:)
-      INTEGER,                     INTENT(OUT) :: ierr
+      INTEGER,       OPTIONAL, INTENT(OUT) :: nelec, nspin, num_of_atomic_orbitals
+      REAL(dbl),     OPTIONAL, INTENT(OUT) :: energy_ref
+      CHARACTER(*),  OPTIONAL, INTENT(OUT) :: e_units, energy_tag
+      INTEGER,                 INTENT(OUT) :: ierr
       !
-      INTEGER :: dim_basis_, nrtot_
-      INTEGER :: ir
+      INTEGER         :: i
+      REAL(dbl)       :: energy_ref_
+      LOGICAL         :: found
+      CHARACTER(25)   :: energy_ref_allowed(3)
+      DATA energy_ref_allowed / "FERMI_ENERGY", "TOP_OF_VALENCE_BANDS", "HOMO" /
+      
+      ierr = 0 
       !
-
-      ierr=0
-      !
-      !
-      CALL iotk_scan_begin( iunit, "DIRECT_OVERLAP_MATRIX", IERR=ierr )
+      CALL iotk_scan_begin( iunit, "ELECTRONIC_STRUCTURE", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      IF ( PRESENT( label ) ) THEN
-          CALL iotk_scan_dat( iunit, "LABEL", label, IERR=ierr ) 
-          IF ( ierr /= 0 ) RETURN
+      IF ( PRESENT( nelec ) ) THEN
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_ELECTRONS", nelec, IERR=ierr)
+         IF (ierr/=0 ) RETURN
       ENDIF
-      !
-      IF ( PRESENT( form_of_data ) ) THEN
-          CALL iotk_scan_dat( iunit, "FORM", form_of_data, IERR=ierr ) 
-          IF ( ierr /= 0 ) RETURN
-      ENDIF
-      !
-      IF ( PRESENT( units ) ) THEN
-          CALL iotk_scan_dat( iunit, "UNITS", units, IERR=ierr ) 
-          IF ( ierr /= 0 ) RETURN
-      ENDIF
-      !
-      CALL iotk_scan_empty( iunit, "DIMENSIONS", ATTR=attr, IERR=ierr ) 
-      IF ( ierr /= 0 ) RETURN
-      !
-      CALL iotk_scan_attr( attr, "dim", dim_basis_, IERR=ierr)
-      IF ( ierr /= 0 ) RETURN
-      CALL iotk_scan_attr( attr, "ngtot", nrtot_, IERR=ierr)
-      IF ( ierr /= 0 ) RETURN
-      !
-      IF ( PRESENT( ovp_matrix ) ) THEN
-          !
-          CALL iotk_scan_dat( iunit, "OVERLAPS", ovp_matrix(:,:,:), IERR=ierr)
-          IF ( ierr /= 0 ) RETURN
-          !
-!          DO ir = 1, nrtot_
-!              !
-!              CALL iotk_scan_dat( iunit, "OVP_G"//TRIM(iotk_index(ir)), &
-!                                  ovp_matrix(:,:,ir), IERR=ierr )
-!              IF ( ierr /= 0 ) RETURN
-!              !
-!          ENDDO
-          !
-      ENDIF
-      !
-      !
-      CALL iotk_scan_end( iunit, "DIRECT_OVERLAP_MATRIX", IERR=ierr )
-      IF (ierr/=0) RETURN
-      !
       ! 
-      IF ( PRESENT(dim_basis) ) dim_basis = dim_basis_
-      IF ( PRESENT(nrtot) )         nrtot = nrtot_
+      IF ( PRESENT( nspin ) ) THEN
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin, IERR=ierr)
+         IF (ierr/=0 ) RETURN
+      ENDIF
+      ! 
+      IF ( PRESENT( num_of_atomic_orbitals ) ) THEN
+         CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", &
+                                    num_of_atomic_orbitals, IERR=ierr)
+         IF (ierr/=0 ) RETURN
+      ENDIF
+      ! 
+      IF ( PRESENT( energy_ref ) .OR. PRESENT( e_units ) ) THEN
+         !
+         found = .FALSE.
+         !
+         DO i = 1, SIZE( energy_ref_allowed ) 
+            !
+            CALL iotk_scan_dat( iunit, TRIM(energy_ref_allowed(i)), energy_ref_, &
+                                ATTR=attr, FOUND=found, IERR=ierr)
+            IF (ierr/=0 ) RETURN
+            !
+            IF ( PRESENT( energy_tag ) ) energy_tag = TRIM(energy_ref_allowed(i))
+            IF ( found ) EXIT
+            !
+         ENDDO
+         !
+         IF ( .NOT. found ) THEN
+            !
+            IF (PRESENT( energy_tag) ) energy_tag = " "
+            ierr = 71
+            RETURN
+            !
+         ENDIF
+         !
+         IF ( PRESENT(e_units) ) THEN
+             !
+             CALL iotk_scan_attr( attr, "unit", e_units, IERR=ierr)
+             IF (ierr/=0 ) RETURN
+             !
+         ENDIF
+         !
+      ENDIF
+      ! 
+      CALL iotk_scan_end( iunit, "ELECTRONIC_STRUCTURE", IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
       !
-    END SUBROUTINE crio_read_overlap
-    !
+      !
+      IF ( PRESENT( energy_ref ) )     energy_ref = energy_ref_
+      !
+    END SUBROUTINE crio_read_elec_structure
+    ! 
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_hamiltonian( label, form_of_data, units, dim_basis, nrtot, &
-                                      ham_matrix, ierr )
+    SUBROUTINE crio_read_matrix( objname, dim_basis, nrtot, nspin, matrix_type, matrix_form, &
+                                 matrix,  matrix_s, units, label, ivr, ierr )
       !------------------------------------------------------------------------
       !
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: label, form_of_data, units
-      INTEGER,           OPTIONAL, INTENT(OUT) :: dim_basis, nrtot
-      REAL(dbl),         OPTIONAL, INTENT(OUT) :: ham_matrix(:,:,:)
+      CHARACTER(LEN=*),            INTENT(IN)  :: objname
+      INTEGER,           OPTIONAL, INTENT(OUT) :: dim_basis, nrtot, nspin
+      REAL(dbl),         OPTIONAL, INTENT(OUT) :: matrix(:,:,:)
+      REAL(dbl),         OPTIONAL, INTENT(OUT) :: matrix_s(:,:,:,:)
+      INTEGER,           OPTIONAL, INTENT(OUT) :: ivr(:,:)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: label, matrix_type, matrix_form, units
       INTEGER,                     INTENT(OUT) :: ierr
       !
-      INTEGER :: dim_basis_, nrtot_
-      INTEGER :: ir
+      INTEGER         :: dim_basis_, nrtot_, nspin_, n_elements_
+      CHARACTER(256)  :: matrix_form_, str, tag, spin_tag
+      INTEGER         :: ir, ir1, i, j, l, isp
+      LOGICAL         :: mlt, mut, mfull, found
+      INTEGER,   ALLOCATABLE :: ivr_(:,:), invmap(:)
+      REAL(dbl), ALLOCATABLE :: matp_(:,:)
       !
 
       ierr=0
       !
+      SELECT CASE( TRIM(objname) ) 
+      CASE( "overlaps", "OVERLAPS" )
+         !
+         tag="DIRECT_OVERLAP_MATRIX"
+         !
+      CASE( "density_matrix", "DENSITY_MATRIX" )
+         !
+         tag="DIRECT_DENSITY_MATRIX"
+         !
+      CASE( "hamiltonian", "HAMILTONIAN" )
+         !
+         tag="DIRECT_FOCK_KOHN-SHAM_MATRIX"
+         !
+      CASE DEFAULT
+         ierr = 74
+         RETURN
+      END SELECT
       !
-      CALL iotk_scan_begin( iunit, "DIRECT_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
+      !
+      CALL iotk_scan_begin( iunit, TRIM(tag), IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      IF ( PRESENT( label ) ) THEN
-          CALL iotk_scan_dat( iunit, "LABEL", label, IERR=ierr ) 
+      CALL iotk_scan_empty( iunit, TRIM(tag)//"_INFO", ATTR=attr, IERR=ierr )
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_attr( attr, "number_of_spin_components", nspin_, FOUND=found, IERR=ierr ) 
+      IF ( ierr /= 0 ) RETURN
+      !
+      IF ( .NOT. found ) nspin_ = 1
+      !
+      CALL iotk_scan_attr( attr, "number_of_direct_lattice_vectors", nrtot_, IERR=ierr ) 
+      IF ( ierr /= 0 ) RETURN
+      CALL iotk_scan_attr( attr, "total_number_of_atomic_orbitals", dim_basis_, IERR=ierr ) 
+      IF ( ierr /= 0 ) RETURN
+
+      !
+      ! some checks
+      !
+      IF ( PRESENT( matrix ) .AND. PRESENT( matrix_s ) ) THEN
+         ierr = 75
+         RETURN
+      ENDIF
+      !
+      IF ( PRESENT( matrix ) .AND. nspin_ == 2 ) THEN
+         ierr = 76
+         RETURN
+      ENDIF
+      !
+      IF ( PRESENT( matrix_s ) .AND. nspin_ == 1 ) THEN
+         ierr = 77
+         RETURN
+      ENDIF
+      !
+      !
+      IF ( PRESENT( matrix_type ) ) THEN
+          CALL iotk_scan_attr( attr, "matrix_type", matrix_type, IERR=ierr ) 
           IF ( ierr /= 0 ) RETURN
       ENDIF
       !
-      IF ( PRESENT( form_of_data ) ) THEN
-          CALL iotk_scan_dat( iunit, "FORM", form_of_data, IERR=ierr ) 
-          IF ( ierr /= 0 ) RETURN
-      ENDIF
+      CALL iotk_scan_attr( attr, "matrix_form", matrix_form_, IERR=ierr ) 
+      IF ( ierr /= 0 ) RETURN
+      !
+      CALL iotk_scan_attr( attr, "matrix_number_of_elements", n_elements_, IERR=ierr ) 
+      IF ( ierr /= 0 ) RETURN
       !
       IF ( PRESENT( units ) ) THEN
-          CALL iotk_scan_dat( iunit, "UNITS", units, IERR=ierr ) 
+          CALL iotk_scan_attr( attr, "unit", units, IERR=ierr ) 
           IF ( ierr /= 0 ) RETURN
       ENDIF
       !
-      CALL iotk_scan_empty( iunit, "DIMENSIONS", ATTR=attr, IERR=ierr ) 
-      IF ( ierr /= 0 ) RETURN
-      !
-      CALL iotk_scan_attr( attr, "dim", dim_basis_, IERR=ierr)
-      IF ( ierr /= 0 ) RETURN
-      CALL iotk_scan_attr( attr, "ngtot", nrtot_, IERR=ierr)
-      IF ( ierr /= 0 ) RETURN
-      !
-      IF ( PRESENT( ham_matrix ) ) THEN
-          !
-          CALL iotk_scan_dat( iunit, "HAMILTONIAN", ham_matrix(:,:,:), IERR=ierr)
+      IF ( PRESENT( label ) ) THEN
+          CALL iotk_scan_attr( attr, "label", label, IERR=ierr ) 
           IF ( ierr /= 0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( ivr ) .AND. .NOT. &
+              ( PRESENT( matrix ) .OR. PRESENT( matrix_s ) ) ) THEN
           !
-!          DO ir = 1, nrtot_
-!              !
-!              CALL iotk_scan_dat( iunit, "HAM_G"//TRIM(iotk_index(ir)), &
-!                                  ham_matrix(:,:,ir), IERR=ierr )
-!              IF ( ierr /= 0 ) RETURN
-!              !
-!          ENDDO
-!          !
+          ierr = 71
+          RETURN
+          !
       ENDIF
       !
       !
-      CALL iotk_scan_end( iunit, "DIRECT_FOCK_KOHN-SHAM_MATRIX", IERR=ierr )
+      spin_loop: &
+      DO isp = 1, nspin_
+          !
+          spin_tag = " "
+          !
+          SELECT CASE( TRIM( objname ) )
+          CASE( "hamiltonian", "HAMILTONIAN" )
+             !
+             IF( isp == 1 ) spin_tag = "ALPHA_ELECTRONS" 
+             IF( isp == 2 ) spin_tag = "BETA_ELECTRONS" 
+             !
+          CASE( "density_matrix", "DENSITY_MATRIX" )
+             !
+             IF( isp == 1 ) spin_tag = "ALPHA+BETA_ELECTRONS" 
+             IF( isp == 2 ) spin_tag = "ALPHA-BETA_ELECTRONS" 
+             !
+          CASE( "overlaps", "OVERLAPS" )
+             !
+          CASE DEFAULT 
+             !
+             ierr = 71
+             RETURN
+             !
+          END SELECT
+          !
+          !
+          IF ( nspin_ == 2 .AND. PRESENT( matrix_s ) ) THEN
+              !
+              CALL iotk_scan_begin( iunit, TRIM(spin_tag), IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              !
+          ENDIF
+          !
+          !
+          IF ( PRESENT( matrix ) .OR. PRESENT( matrix_s ) ) THEN 
+              !
+              mlt   = .FALSE.
+              mut   = .FALSE.
+              mfull = .FALSE.
+              !
+              ! only these cases are allowed at the moment
+              !
+              SELECT CASE( TRIM( matrix_form_) )
+              CASE ( "lower_triangular" )
+                 mlt = .TRUE.
+              CASE ( "upper_triangular" )
+                 mut = .TRUE.
+              CASE ( "full" )
+                 mfull = .TRUE.
+              CASE DEFAULT 
+                 ierr = 72
+                 RETURN
+              END SELECT
+              !
+              IF ( mlt .OR. mut ) THEN
+                  !
+                  ALLOCATE( matp_( n_elements_, nrtot_), STAT=ierr )
+                  IF ( ierr/=0 ) RETURN
+                  !
+              ENDIF
+              !
+              IF ( .NOT. ALLOCATED( ivr_) ) THEN
+                  !
+                  ALLOCATE( ivr_(3, nrtot_), STAT=ierr )
+                  IF ( ierr/=0 ) RETURN
+                  !
+              ENDIF
+              !
+              ! define the index of the -R vector for each R vector
+              ALLOCATE( invmap(nrtot_), STAT=ierr )
+              IF ( ierr/=0 ) RETURN
+              !
+              !
+              DO ir = 1, nrtot_
+                  !
+                  str = TRIM(tag)//"__IVDL"//TRIM( iotk_index(ir) )
+                  !
+                  IF ( mfull ) THEN
+                      !
+                      IF ( nspin_ == 1 ) &
+                         CALL iotk_scan_dat( iunit, TRIM(str), matrix(:,:,ir), ATTR=attr, IERR=ierr )
+                      IF ( nspin_ == 2 ) &
+                         CALL iotk_scan_dat( iunit, TRIM(str), matrix_s(:,:,ir,isp), ATTR=attr, IERR=ierr )
+                      !
+                  ELSEIF( mlt .OR. mut ) THEN
+                      !
+                      CALL iotk_scan_dat( iunit, TRIM(str), matp_(:,ir), ATTR=attr, IERR=ierr )
+                      !
+                  ENDIF
+                  IF ( ierr /= 0 ) RETURN
+                  !
+                  CALL iotk_scan_attr( attr, "components_of_IVDL"//TRIM(iotk_index(ir)), ivr_(:,ir), IERR=ierr )
+                  IF ( ierr /= 0 ) RETURN
+                  !
+              ENDDO
+              !
+              ! fill invmap
+              !
+              DO ir = 1, nrtot_
+                  !
+                  invmap( ir ) = -1
+                  !
+                  DO ir1 = 1, nrtot_
+                      !
+                      IF ( ALL( ivr_(:, ir) == -ivr_(:, ir1) ) ) THEN 
+                         !
+                         invmap( ir ) = ir1
+                         EXIT
+                         !
+                      ENDIF
+                      !
+                  ENDDO
+                  !
+              ENDDO
+              
+              !
+              ! reconstruct matrix (or matrix_s) if required
+              !
+              DO ir = 1, nrtot_
+                  !
+                  IF ( mlt ) THEN 
+                      !
+                      IF ( nspin_ == 1 ) THEN 
+                          !
+                          l = 0
+                          DO j = 1, dim_basis_ 
+                          DO i = 1, j
+                              !
+                              l = l+1
+                              !
+                              matrix(i, j, ir ) = matp_( l, ir)  
+                              matrix(j, i, ir ) = matp_( l, invmap(ir) )  
+                              !
+                          ENDDO
+                          ENDDO
+                          !
+                      ELSEIF ( nspin_ == 2 ) THEN
+                          !
+                          l = 0
+                          DO j = 1, dim_basis_ 
+                          DO i = 1, j
+                              !
+                              l = l+1
+                              !
+                              matrix_s(i, j, ir, isp ) = matp_( l, ir)  
+                              matrix_s(j, i, ir, isp ) = matp_( l, invmap(ir) )  
+                              !
+                          ENDDO
+                          ENDDO
+                          !
+                      ENDIF
+                      !
+                  ELSEIF( mut ) THEN
+                      ! 
+                      IF ( nspin_ == 1 ) THEN 
+                          !
+                          l = 0
+                          DO j = 1, dim_basis_ 
+                          DO i = 1, j
+                              !
+                              l = l+1
+                              !
+                              matrix(i, j, ir ) = matp_( l, invmap(ir) )  
+                              matrix(j, i, ir ) = matp_( l, ir )  
+                              !
+                          ENDDO
+                          ENDDO
+                          !
+                      ELSEIF ( nspin_ == 2 ) THEN
+                          !
+                          l = 0
+                          DO j = 1, dim_basis_ 
+                          DO i = 1, j
+                              !
+                              l = l+1
+                              !
+                              matrix_s(i, j, ir, isp ) = matp_( l, invmap(ir) )  
+                              matrix_s(j, i, ir, isp ) = matp_( l, ir )  
+                              !
+                          ENDDO
+                          ENDDO
+                          !
+                      ENDIF
+                      !
+                  ENDIF
+                  !
+              ENDDO
+              !
+              IF ( ALLOCATED( matp_ ) )   DEALLOCATE( matp_ )
+              IF ( ALLOCATED( invmap ) )  DEALLOCATE( invmap )
+              !
+          ENDIF
+          !
+          !
+          IF ( nspin_ == 2 .AND. PRESENT( matrix_s ) ) THEN
+              !
+              CALL iotk_scan_end( iunit, TRIM(spin_tag), IERR=ierr ) 
+              IF ( ierr/=0 ) RETURN
+              !
+          ENDIF
+          !
+      ENDDO spin_loop
+      ! 
+      !
+      CALL iotk_scan_end( iunit, TRIM(tag), IERR=ierr )
       IF (ierr/=0) RETURN
       !
       ! 
-      IF ( PRESENT(dim_basis) ) dim_basis = dim_basis_
-      IF ( PRESENT(nrtot) )         nrtot = nrtot_
+      IF ( PRESENT(dim_basis) )       dim_basis = dim_basis_
+      IF ( PRESENT(nrtot) )               nrtot = nrtot_
+      IF ( PRESENT(nspin) )               nspin = nspin_
+      IF ( PRESENT(matrix_form) )   matrix_form = TRIM(matrix_form_)
+      IF ( PRESENT(ivr) )                   ivr = ivr_
       !
-    END SUBROUTINE crio_read_hamiltonian
+      !
+      IF ( ALLOCATED( ivr_ ) )    DEALLOCATE( ivr_ )
+      !
+    END SUBROUTINE crio_read_matrix
     !
     !
 END MODULE crystal_io_module

@@ -7,7 +7,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************************************
-   SUBROUTINE read_matrix( filename, label, dim1, dim2, A, lda1, lda2, &
+   SUBROUTINE read_matrix( filename, ispin, label, dim1, dim2, A, lda1, lda2, &
                            have_overlap, S, lds1, lds2 )
    !***************************************************************************
    !
@@ -40,6 +40,7 @@
    ! input variables
    !
    CHARACTER(*), INTENT(IN)  :: filename, label 
+   INTEGER,      INTENT(IN)  :: ispin
    INTEGER,      INTENT(IN)  :: dim1, dim2, lda1, lda2
    INTEGER,      INTENT(IN)  :: lds1, lds2
    LOGICAL,      INTENT(OUT) :: have_overlap
@@ -52,7 +53,7 @@
    CHARACTER(11)             :: subname = 'read_matrix'
    INTEGER                   :: i, j, ierr
    !
-   INTEGER                   :: ldimwann, nrtot, ir, ir_par
+   INTEGER                   :: ldimwann, nrtot, nspin, ir, ir_par
    INTEGER,      ALLOCATABLE :: ivr(:,:)
    COMPLEX(dbl), ALLOCATABLE :: A_loc(:,:), S_loc(:,:)
    CHARACTER(nstrx)          :: attr, str
@@ -173,7 +174,7 @@
 
 
 !
-! reading form iotk-formatted .ham file (internal datafmt)
+! reading from iotk-formatted .ham file (internal datafmt)
 !
    CALL file_open( aux_unit, TRIM(filein), PATH="/HAMILTONIAN/", ACTION="read" )
    !
@@ -182,6 +183,11 @@
    !
    CALL iotk_scan_attr(attr,"dimwann",ldimwann, IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching dimwann', ABS(ierr) )
+   !
+   CALL iotk_scan_attr(attr,"nspin",nspin, FOUND=found, IERR=ierr)
+   IF (ierr > 0) CALL errore(subname, 'searching nspin', ABS(ierr) )
+   !
+   IF ( .NOT. found ) nspin = 1
    !
    CALL iotk_scan_attr(attr,"nrtot",nrtot, IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching nrtot', ABS(ierr) )
@@ -195,8 +201,9 @@
    !
    IF ( .NOT. found ) have_overlap = .FALSE.
 
-   IF (ldimwann <=0 ) CALL errore(subname, 'invalid dimwann', ABS(ierr))
-   IF (nrtot <=0 ) CALL errore(subname, 'invalid nrtot', ABS(ierr))
+   IF ( ldimwann <=0 )                CALL errore(subname, 'invalid dimwann', ABS(ierr))
+   IF ( nrtot <=0 )                   CALL errore(subname, 'invalid nrtot', ABS(ierr))
+   IF ( nspin == 2 .AND. ispin == 0 ) CALL errore(subname,'unspecified ispin', 71)
    !
    i = 0
    DO j= 1, 3
@@ -231,6 +238,16 @@
    CALL iotk_scan_dat(aux_unit, "IVR", ivr, IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching indxws', ABS(ierr) )
 
+   !
+   ! select the required spin component, if the case
+   !
+   IF ( nspin == 2 ) THEN
+       !
+       CALL iotk_scan_begin(aux_unit, "SPIN"//TRIM(iotk_index(ispin)), IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching SPIN'//TRIM(iotk_index(ispin)), ABS(ierr) )
+       !
+   ENDIF
+        
    !
    ! get the desired R indexes
    !
@@ -348,7 +365,14 @@
 
    CALL iotk_scan_end(aux_unit, "RHAM", IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching end of RHAM', ABS(ierr) )
-
+   !
+   IF ( nspin == 2 ) THEN
+       !
+       CALL iotk_scan_end(aux_unit, "SPIN"//TRIM(iotk_index(ispin)), IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching end of SPIN'//TRIM(iotk_index(ispin)), ABS(ierr) )
+       !
+   ENDIF
+   !
    CALL file_close( aux_unit, PATH="/HAMILTONIAN/", ACTION="read" )
 
 

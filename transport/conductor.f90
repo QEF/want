@@ -178,7 +178,7 @@
       ene =  egrid(ie)   
 
       IF ( (MOD( ie, nprint) == 0 .OR. ie == 1) .AND. ionode ) THEN
-           WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f9.5, ' eV' )") &
+           WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f12.5, ' eV' )") &
                          ie, egrid(ie)
       ENDIF
 

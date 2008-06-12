@@ -40,16 +40,15 @@
    !
    CHARACTER(19)               :: subname="crystal_to_internal"
    !
-   CHARACTER(nstrx)            :: attr, r_units, a_units, b_units, k_units, h_units
-   INTEGER                     :: dimwann, nkpts, nk(3), shift(3), nrtot, nr(3) 
-   INTEGER                     :: auxdim1, auxdim2
-   INTEGER                     :: ierr, ir
+   CHARACTER(nstrx)            :: attr, r_units, a_units, b_units, k_units, h_units, e_units
+   INTEGER                     :: dimwann, nkpts, nk(3), shift(3), nrtot, nr(3), nspin 
+   INTEGER                     :: auxdim1, auxdim2, auxdim3
+   INTEGER                     :: ierr, ir, isp
    !
-   REAL(dbl)                   :: dlatt(3,3), rlatt(3,3), norm
+   REAL(dbl)                   :: dlatt(3,3), rlatt(3,3), norm, efermi
    INTEGER,        ALLOCATABLE :: ivr(:,:)
    REAL(dbl),      ALLOCATABLE :: vkpt_cry(:,:), wk(:), wr(:), vr(:,:)
-!   REAL(dbl),      ALLOCATABLE :: wan_eig(:,:)
-   REAL(dbl),      ALLOCATABLE :: rham(:,:,:), rovp(:,:,:)
+   REAL(dbl),      ALLOCATABLE :: rham(:,:,:,:), rovp(:,:,:)
 
 !
 !------------------------------
@@ -71,13 +70,9 @@
    CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'opening sec. GEOMETRY', ABS(ierr) )
    !
-   CALL crio_read_cell( AVEC=dlatt, UNITS=a_units, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname, 'reading direct lattice', ABS(ierr) )
+   CALL crio_read_periodicity( AVEC=dlatt, A_UNITS=a_units, BVEC=rlatt, B_UNITS=b_units, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading lattices', ABS(ierr) )
    !
-   CALL crio_read_cell_reciprocal( BVEC=rlatt, UNITS=b_units, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname, 'reading reciprocal lattice', ABS(ierr) )
-   ! 
-   ! 
    CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'closing sec. GEOMETRY', ABS(ierr) )
    !
@@ -240,50 +235,94 @@
    CALL crio_open_section( "OUTPUT_DATA", ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'opening sec. OUTPUT_DATA', ABS(ierr) )
    
+   !
+   ! read electronic structure info
+   !
+   CALL crio_read_elec_structure( NSPIN=nspin, ENERGY_REF=efermi, &
+                                  E_UNITS=e_units, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading electronic structure', ABS(ierr) )
+
+   !
+   ! efermi is converted to eV's
+   !
+   CALL change_case( e_units, 'lower' )
+   !
+   SELECT CASE( ADJUSTL(TRIM(e_units)) )
+   CASE ( "ha", "hartree", "au" )
+      !
+      efermi = efermi * TWO * RYD 
+      !
+   CASE ( "ry", "ryd", "rydberg" )
+      !
+      efermi = efermi * RYD 
+      !
+   CASE ( "ev", "electronvolt" )
+      !
+      ! do nothing
+   CASE DEFAULT
+      CALL errore( subname, 'unknown units for efermi: '//TRIM(e_units), 72)
+   END SELECT
 
    !
    ! read Overlaps
    !
-   CALL crio_read_overlap( DIM_BASIS=dimwann, NRTOT=auxdim2, IERR=ierr)
+   CALL crio_read_matrix( "overlaps", DIM_BASIS=dimwann, NRTOT=auxdim2, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname, 'reading ovp dimensions', ABS(ierr) )
    !
-   IF ( auxdim2 /= nrtot )   CALL errore(subname, 'inconsistent dimensions', 72)
+   IF ( auxdim2 /= nrtot ) CALL errore(subname, 'inconsistent dimensions', 72)
    !
    ALLOCATE( rovp(dimwann, dimwann, nrtot), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating rovp', ABS(ierr) )
    ! 
-   CALL crio_read_overlap( OVP_MATRIX=rovp, IERR=ierr )
+   CALL crio_read_matrix( "overlaps", MATRIX=rovp, IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'reading ovp matrix', ABS(ierr) )
 
 
    !
    ! read Hamiltonian 
    !
-   CALL crio_read_hamiltonian( UNITS=h_units, DIM_BASIS=auxdim1, &
-                               NRTOT=auxdim2, IERR=ierr)
+   CALL crio_read_matrix( "hamiltonian", UNITS=h_units, NSPIN=auxdim3, DIM_BASIS=auxdim1, &
+                                         NRTOT=auxdim2, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname, 'reading ham dimensions', ABS(ierr) )
-   IF ( auxdim1 /= dimwann ) CALL errore(subname, 'inconsistent dimensions', 74)
-   IF ( auxdim2 /= nrtot )   CALL errore(subname, 'inconsistent dimensions', 73)
+   !
+   IF ( auxdim1 /= dimwann ) CALL errore(subname, 'inconsistent dimwann in ham', 73)
+   IF ( auxdim2 /= nrtot )   CALL errore(subname, 'inconsistent nrtot in ham', 74)
+   IF ( auxdim3 /= nspin )   CALL errore(subname, 'inconsistent nspin in ham', 75)
    !
    !
-   ALLOCATE( rham(dimwann, dimwann, nrtot), STAT=ierr )
+   ALLOCATE( rham(dimwann, dimwann, nrtot, nspin), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
    !
-   CALL crio_read_hamiltonian( HAM_MATRIX=rham, IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname, 'reading ham matrix', ABS(ierr) )
+   SELECT CASE ( nspin ) 
+   CASE ( 1 )
+      !
+      CALL crio_read_matrix( "hamiltonian", MATRIX=rham(:,:,:,1), IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname, 'reading ham matrix', ABS(ierr) )
+      !
+   CASE ( 2 )
+      !
+      CALL crio_read_matrix( "hamiltonian", MATRIX_S=rham, IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname, 'reading ham matrix spin', ABS(ierr) )
+      !
+   CASE DEFAULT
+      !
+      CALL errore(subname, 'invalid spin value', 76 )
+      !
+   END SELECT
+
    !
    ! units are converted to eV's
    !
    CALL change_case( h_units, 'lower' )
    !
    SELECT CASE( ADJUSTL(TRIM(h_units)) )
-   CASE ( "ha", "hartree" )
+   CASE ( "ha", "hartree", "au" )
       !
-      rham(:,:,:) = rham (:,:,:) * TWO * RYD 
+      rham = rham * TWO * RYD 
       !
    CASE ( "ry", "ryd", "rydberg" )
       !
-      rham(:,:,:) = rham (:,:,:) * RYD 
+      rham = rham * RYD 
       !
    CASE ( "ev", "electronvolt" )
       !
@@ -291,6 +330,17 @@
    CASE DEFAULT
       CALL errore( subname, 'unknown units for ham: '//TRIM(h_units), 71)
    END SELECT
+
+   !
+   ! take fermi energy into account
+   !
+   DO isp = 1, nspin
+   DO ir  = 1, nrtot
+       !
+       rham(:,:,ir,isp) = rham(:,:,ir,isp) -efermi * rovp(:,:,ir)
+       !
+   ENDDO
+   ENDDO
 
 
    !
@@ -313,11 +363,13 @@
    !
    CALL iotk_write_attr( attr,"dimwann",dimwann,FIRST=.TRUE.)
    CALL iotk_write_attr( attr,"nkpts",nkpts)
+   CALL iotk_write_attr( attr,"nspin",nspin)
    CALL iotk_write_attr( attr,"nk",nk)
    CALL iotk_write_attr( attr,"shift",shift)
    CALL iotk_write_attr( attr,"nrtot",nrtot)
    CALL iotk_write_attr( attr,"nr",nr)
    CALL iotk_write_attr( attr,"have_overlap", .TRUE. )
+   CALL iotk_write_attr( attr,"fermi_energy", 0.0 )
    CALL iotk_write_empty( ham_unit,"DATA",ATTR=attr)
    !
    CALL iotk_write_attr( attr,"units","bohr",FIRST=.TRUE.)
@@ -334,24 +386,41 @@
    CALL iotk_write_dat( ham_unit,"WR", wr)
    !
    !
-   ! Eigenvalues are not read, and are temporarily not written
-   ! when converting from Crystal
-   !
-   ! CALL iotk_write_dat( ham_unit,"WAN_EIGENVALUES", wan_eig)
-   !
-   CALL iotk_write_begin( ham_unit,"RHAM")
-   !
-   DO ir = 1, nrtot
-       !
-       CALL iotk_write_dat( ham_unit,"VR"//TRIM(iotk_index(ir)), &
-                            CMPLX(rham(:,:,ir), ZERO, dbl) )
-       CALL iotk_write_dat( ham_unit,"OVERLAP"//TRIM(iotk_index(ir)), &
-                            CMPLX(rovp(:,:,ir), ZERO, dbl) )
-       !
-   ENDDO
-   !
-   CALL iotk_write_end( ham_unit,"RHAM")
-   !
+   spin_loop: & 
+   DO isp = 1, nspin
+      !
+      IF ( nspin == 2 ) THEN
+          !
+          CALL iotk_write_begin( ham_unit, "SPIN"//TRIM(iotk_index(isp)) )
+          !
+      ENDIF
+      !
+      !
+      ! Eigenvalues are not read, and are temporarily not written
+      ! when converting from Crystal
+      !
+      ! CALL iotk_write_dat( ham_unit,"WAN_EIGENVALUES", wan_eig)
+      !
+      CALL iotk_write_begin( ham_unit,"RHAM")
+      !
+      DO ir = 1, nrtot
+          !
+          CALL iotk_write_dat( ham_unit,"VR"//TRIM(iotk_index(ir)), &
+                             CMPLX(rham( :, :, ir, isp), ZERO, dbl) )
+          CALL iotk_write_dat( ham_unit,"OVERLAP"//TRIM(iotk_index(ir)), &
+                             CMPLX(rovp( :, :, ir), ZERO, dbl) )
+          !
+      ENDDO
+      !
+      CALL iotk_write_end( ham_unit,"RHAM")
+      !
+      IF ( nspin == 2 ) THEN
+          !
+          CALL iotk_write_end( ham_unit, "SPIN"//TRIM(iotk_index(isp)) )
+          !
+      ENDIF
+      !
+   ENDDO spin_loop
    !
    CALL iotk_write_end( ham_unit, "HAMILTONIAN" )
    CALL iotk_close_write( ham_unit )
