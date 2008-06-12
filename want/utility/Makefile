@@ -20,6 +20,7 @@ WANNIER_OBJS= \
 ../wannier/get_monkpack.o \
 ../wannier/get_rgrid.o \
 ../wannier/ggrids.o \
+../wannier/hamiltonian.o \
 ../wannier/init_at_1.o \
 ../wannier/init_us_1.o \
 ../wannier/init_us_2.o \
@@ -34,12 +35,12 @@ WANNIER_OBJS= \
 ../wannier/pseudo_types.o \
 ../wannier/pwcom.o \
 ../wannier/qvan2.o \
+../wannier/radial_grids.o \
 ../wannier/read_ncpp.o \
-../wannier/readnewvan.o \
-../wannier/readpp.o \
-../wannier/read_pseudo_base.o \
 ../wannier/read_pseudo.o \
-../wannier/readvan.o \
+../wannier/read_upf_v1.o \
+../wannier/read_upf_v2.o \
+../wannier/read_uspp.o \
 ../wannier/recips.o \
 ../wannier/setqf.o \
 ../wannier/shutdown.o \
@@ -52,6 +53,7 @@ WANNIER_OBJS= \
 ../wannier/symmetry.o \
 ../wannier/trial_center.o \
 ../wannier/trial_center_data.o \
+../wannier/upf.o \
 ../wannier/upf_to_internal.o \
 ../wannier/uspp.o \
 ../wannier/version.o \
@@ -59,8 +61,8 @@ WANNIER_OBJS= \
 ../wannier/want_dftread.o \
 ../wannier/wfc_data.o \
 ../wannier/wfc_info.o \
-../wannier/hamiltonian.o \
-../wannier/windows.o 
+../wannier/windows.o \
+../wannier/write_upf_v2.o 
 
 
 
