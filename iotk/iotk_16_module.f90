@@ -88,6 +88,8 @@ module iotk_module
   public :: iotk_error_print
   public :: iotk_error_pool_pending
   public :: iotk_tool
+  public :: iotk_readcmdline
+  public :: iotk_init_static_vars
   public :: iotk_dummytype ! CHECK IF EVERY COMPILER ALLOW TO OMIT THIS TYPE
 end module iotk_module
 

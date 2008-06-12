@@ -132,7 +132,7 @@ subroutine iotk_deescape_x(to,from,quot,apos)
   pos = 1
   pos1 = 1
   do
-    if(pos>len(from) .or. pos1>len(to)) exit ! i due test devono essere separati
+    if(pos>len(from) .or. pos1>len(to)) exit ! The two checks must be separated
     if(from(pos:pos)==iotk_eos) exit
     select case(from(pos:pos))
     case("&")
@@ -254,7 +254,7 @@ subroutine iotk_strcpy_x(to,from,ierr)
     if(from(i:i)/=iotk_eos) then
       call iotk_error_issue(ierr,"iotk_strcpy",__FILE__,__LINE__)
 # 259 "iotk_str.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.14 ")
       return
     end if
   end if
@@ -278,7 +278,7 @@ subroutine iotk_strcat_x(to,from,ierr)
   if(tolen+fromlen>len(to)) then
     call iotk_error_issue(ierr,"iotk_strcat",__FILE__,__LINE__)
 # 281 "iotk_str.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.13 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.14 ")
   end if
   if(ierr/=0) return
   to(tolen+1:tolen+fromlen) = from(1:fromlen)

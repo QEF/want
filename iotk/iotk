@@ -60,6 +60,8 @@ else
     else
 # very last: surrend
       echo "iotk: I cannot find the iotk.x executable" 1>&2
+      echo "iotk: try $0 --iotk-exe EXE" 1>&2
+      echo "iotk: where EXE is the complete path to the iotk.x executable" 1>&2
       exit 1
     fi
   fi

@@ -57,21 +57,21 @@ subroutine iotk_copy_tag_x(source,dest,dummy,maxsize,ierr)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 62 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
     goto 1
   end if
   call iotk_inquire(dest,dest_binary,dest_stream,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 67 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")            
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")            
     goto 1
   end if
   call iotk_unit_get(source,pointer=this)
   if(.not.associated(this)) then
     call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 72 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 72 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'unit')  
     goto 1
@@ -81,7 +81,7 @@ call iotk_error_msg(ierrl,'unit')
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 78 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
       goto 1
     end if
     if(control/=4) then ! SKIP FOR COMMENTS
@@ -89,7 +89,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 84 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
         goto 1
       end if
     end if
@@ -98,7 +98,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 91 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
         goto 1
       end if
       return
@@ -109,7 +109,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 100 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
         goto 1
       end if
       if((iotk_strcomp(type,"real") .or. iotk_strcomp(type,"integer") .or. iotk_strcomp(type,"logical") &
@@ -118,7 +118,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
         if(ierrl/=0) then
           call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 107 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
           goto 1
         end if
         call iotk_scan_tag(source,+1,control,tag,source_binary,source_stream,ierrl)
@@ -137,7 +137,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_copy_tag",__FILE__,__LINE__)
 # 124 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
       goto 1
     end if
   end do
@@ -180,7 +180,7 @@ subroutine iotk_parse_dat_x(attr,type,ikind,isize,ilen,fmt,columns,ierr)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_parse_dat",__FILE__,__LINE__)
 # 165 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   type = iotk_toupper(typename)
@@ -188,35 +188,35 @@ call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_parse_dat",__FILE__,__LINE__)
 # 171 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   call iotk_scan_attr(attr,"size",isize,ierr=ierr,default=-1)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_parse_dat",__FILE__,__LINE__)
 # 176 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   call iotk_scan_attr(attr,"len", ilen, ierr=ierr,default=-1)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_parse_dat",__FILE__,__LINE__)
 # 181 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   call iotk_scan_attr(attr,"fmt", fmt, ierr=ierr,eos=.true.,default="!"//iotk_eos)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_parse_dat",__FILE__,__LINE__)
 # 186 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   call iotk_scan_attr(attr,"columns",columns,ierr=ierr,default=1)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_parse_dat",__FILE__,__LINE__)
 # 191 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
 end subroutine iotk_parse_dat_x
@@ -248,7 +248,7 @@ subroutine iotk_set_x(dummy,unitmin,unitmax,getline_buffer,error_warn_overflow, 
     if(unitmin<0) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 221 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 221 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for unitmin')
 # 221 "iotk_misc.spp"
@@ -261,7 +261,7 @@ call iotk_error_write(ierrl,"unitmin",unitmin)
     if(unitmax<0) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 228 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 228 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for unitmax')
 # 228 "iotk_misc.spp"
@@ -273,7 +273,7 @@ call iotk_error_write(ierrl,"unitmax",unitmax)
   if(iotk_unitmin>iotk_unitmax) then
     call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 234 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 234 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Inconsistency: unitmin should be less then unitmax')
 # 234 "iotk_misc.spp"
@@ -286,7 +286,7 @@ call iotk_error_write(ierrl,"iotk_unitmax",iotk_unitmax)
     if(getline_buffer<1) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 239 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 239 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for getline_buffer')
 # 239 "iotk_misc.spp"
@@ -299,7 +299,7 @@ call iotk_error_write(ierrl,"getline_buffer",getline_buffer)
     if(linlen<1) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 246 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 246 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for linlen')
 # 246 "iotk_misc.spp"
@@ -312,7 +312,7 @@ call iotk_error_write(ierrl,"linlen",linlen)
     if(indent<0) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 253 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 253 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for indent')
 # 253 "iotk_misc.spp"
@@ -325,7 +325,7 @@ call iotk_error_write(ierrl,"indent",indent)
     if(maxindent<0 .or. maxindent>iotk_linlenx) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 260 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 260 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for maxindent, should be between 0 and iotk_linlenx')
 # 260 "iotk_misc.spp"
@@ -340,7 +340,7 @@ call iotk_error_write(ierrl,"iotk_linlenx",iotk_linlenx)
     if(error_unit<0) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 267 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 267 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for error_unit')
 # 267 "iotk_misc.spp"
@@ -353,7 +353,7 @@ call iotk_error_write(ierrl,"error_unit",error_unit)
     if(output_unit<0) then
       call iotk_error_issue(ierrl,"iotk_set",__FILE__,__LINE__)
 # 274 "iotk_misc.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.35 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
 # 274 "iotk_misc.spp"
 call iotk_error_msg(ierrl,'Wrong value for output_unit')
 # 274 "iotk_misc.spp"
@@ -601,54 +601,55 @@ subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,i
 #endif
 # 384 "iotk_misc.spp"
 
-! la regola e' semplice
-! SE SOURCE E' BINARIO: usa il kind di source
-! SE SOURCE E' TESTUALE: use il kind di default se e' definito
-!                        altrimenti usa il primo kind disponibile
-! ad ogni modo, il kind e' calcolato run-time, dunque in futuro lo si potrebbe
-! chiedere all'utente
+! Here is the rule:
+! IF SOURCE IS BINARY: use the kind of source
+! IF SOURCE IS TEXTUAL: use the default kind if available
+!                       otherwise use the first kind found
+! anyway, kind is computed runtime and in a future implementation
+! it might be also asked to the user
+!
   ierr=0
   select case(type(1:iotk_strlen(type)))
-# 394 "iotk_misc.spp"
+# 395 "iotk_misc.spp"
   case("LOGICAL")
-# 398 "iotk_misc.spp"
+# 399 "iotk_misc.spp"
     if(source_binary) then
       tmpkind=ikind
     else
       tmpkind=0
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL1
       if(tmpkind==0) tmpkind=iotk_LOGICAL1
       if(iotk_LOGICAL1 == iotk_LOGICAL_defkind) then
         tmpkind=iotk_LOGICAL_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL2
       if(tmpkind==0) tmpkind=iotk_LOGICAL2
       if(iotk_LOGICAL2 == iotk_LOGICAL_defkind) then
         tmpkind=iotk_LOGICAL_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL3
       if(tmpkind==0) tmpkind=iotk_LOGICAL3
       if(iotk_LOGICAL3 == iotk_LOGICAL_defkind) then
         tmpkind=iotk_LOGICAL_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL4
       if(tmpkind==0) tmpkind=iotk_LOGICAL4
       if(iotk_LOGICAL4 == iotk_LOGICAL_defkind) then
         tmpkind=iotk_LOGICAL_defkind
       end if
 #endif
-# 410 "iotk_misc.spp"
+# 411 "iotk_misc.spp"
     end if
-# 412 "iotk_misc.spp"
+# 413 "iotk_misc.spp"
     select case(tmpkind)
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL1
     case(iotk_LOGICAL1)
       allocate(dat_LOGICAL1(isize))
@@ -656,7 +657,7 @@ subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,i
       if(ierr==0) call iotk_write_dat(dest,name,dat_LOGICAL1,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_LOGICAL1)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL2
     case(iotk_LOGICAL2)
       allocate(dat_LOGICAL2(isize))
@@ -664,7 +665,7 @@ subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,i
       if(ierr==0) call iotk_write_dat(dest,name,dat_LOGICAL2,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_LOGICAL2)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL3
     case(iotk_LOGICAL3)
       allocate(dat_LOGICAL3(isize))
@@ -672,7 +673,7 @@ subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,i
       if(ierr==0) call iotk_write_dat(dest,name,dat_LOGICAL3,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_LOGICAL3)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_LOGICAL4
     case(iotk_LOGICAL4)
       allocate(dat_LOGICAL4(isize))
@@ -680,54 +681,54 @@ subroutine iotk_copy_dat_aux_x(source,dest,source_binary,dest_binary,name,type,i
       if(ierr==0) call iotk_write_dat(dest,name,dat_LOGICAL4,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_LOGICAL4)
 #endif
-# 424 "iotk_misc.spp"
+# 425 "iotk_misc.spp"
     case default
       call iotk_error_issue(ierr,"iotk_copy_dat_aux",__FILE__,__LINE__)
-# 425 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 425 "iotk_misc.spp"
+# 426 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 426 "iotk_misc.spp"
 call iotk_error_msg(ierr,'internal error')
     end select
-# 394 "iotk_misc.spp"
+# 395 "iotk_misc.spp"
   case("INTEGER")
-# 398 "iotk_misc.spp"
+# 399 "iotk_misc.spp"
     if(source_binary) then
       tmpkind=ikind
     else
       tmpkind=0
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER1
       if(tmpkind==0) tmpkind=iotk_INTEGER1
       if(iotk_INTEGER1 == iotk_INTEGER_defkind) then
         tmpkind=iotk_INTEGER_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER2
       if(tmpkind==0) tmpkind=iotk_INTEGER2
       if(iotk_INTEGER2 == iotk_INTEGER_defkind) then
         tmpkind=iotk_INTEGER_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER3
       if(tmpkind==0) tmpkind=iotk_INTEGER3
       if(iotk_INTEGER3 == iotk_INTEGER_defkind) then
         tmpkind=iotk_INTEGER_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER4
       if(tmpkind==0) tmpkind=iotk_INTEGER4
       if(iotk_INTEGER4 == iotk_INTEGER_defkind) then
         tmpkind=iotk_INTEGER_defkind
       end if
 #endif
-# 410 "iotk_misc.spp"
+# 411 "iotk_misc.spp"
     end if
-# 412 "iotk_misc.spp"
+# 413 "iotk_misc.spp"
     select case(tmpkind)
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER1
     case(iotk_INTEGER1)
       allocate(dat_INTEGER1(isize))
@@ -735,7 +736,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_INTEGER1,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_INTEGER1)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER2
     case(iotk_INTEGER2)
       allocate(dat_INTEGER2(isize))
@@ -743,7 +744,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_INTEGER2,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_INTEGER2)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER3
     case(iotk_INTEGER3)
       allocate(dat_INTEGER3(isize))
@@ -751,7 +752,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_INTEGER3,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_INTEGER3)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_INTEGER4
     case(iotk_INTEGER4)
       allocate(dat_INTEGER4(isize))
@@ -759,54 +760,54 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_INTEGER4,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_INTEGER4)
 #endif
-# 424 "iotk_misc.spp"
+# 425 "iotk_misc.spp"
     case default
       call iotk_error_issue(ierr,"iotk_copy_dat_aux",__FILE__,__LINE__)
-# 425 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 425 "iotk_misc.spp"
+# 426 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 426 "iotk_misc.spp"
 call iotk_error_msg(ierr,'internal error')
     end select
-# 394 "iotk_misc.spp"
+# 395 "iotk_misc.spp"
   case("REAL")
-# 398 "iotk_misc.spp"
+# 399 "iotk_misc.spp"
     if(source_binary) then
       tmpkind=ikind
     else
       tmpkind=0
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_REAL1
       if(tmpkind==0) tmpkind=iotk_REAL1
       if(iotk_REAL1 == iotk_REAL_defkind) then
         tmpkind=iotk_REAL_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_REAL2
       if(tmpkind==0) tmpkind=iotk_REAL2
       if(iotk_REAL2 == iotk_REAL_defkind) then
         tmpkind=iotk_REAL_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_REAL3
       if(tmpkind==0) tmpkind=iotk_REAL3
       if(iotk_REAL3 == iotk_REAL_defkind) then
         tmpkind=iotk_REAL_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_REAL4
       if(tmpkind==0) tmpkind=iotk_REAL4
       if(iotk_REAL4 == iotk_REAL_defkind) then
         tmpkind=iotk_REAL_defkind
       end if
 #endif
-# 410 "iotk_misc.spp"
+# 411 "iotk_misc.spp"
     end if
-# 412 "iotk_misc.spp"
+# 413 "iotk_misc.spp"
     select case(tmpkind)
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_REAL1
     case(iotk_REAL1)
       allocate(dat_REAL1(isize))
@@ -814,7 +815,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_REAL1,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_REAL1)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_REAL2
     case(iotk_REAL2)
       allocate(dat_REAL2(isize))
@@ -822,7 +823,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_REAL2,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_REAL2)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_REAL3
     case(iotk_REAL3)
       allocate(dat_REAL3(isize))
@@ -830,7 +831,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_REAL3,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_REAL3)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_REAL4
     case(iotk_REAL4)
       allocate(dat_REAL4(isize))
@@ -838,54 +839,54 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_REAL4,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_REAL4)
 #endif
-# 424 "iotk_misc.spp"
+# 425 "iotk_misc.spp"
     case default
       call iotk_error_issue(ierr,"iotk_copy_dat_aux",__FILE__,__LINE__)
-# 425 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 425 "iotk_misc.spp"
+# 426 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 426 "iotk_misc.spp"
 call iotk_error_msg(ierr,'internal error')
     end select
-# 394 "iotk_misc.spp"
+# 395 "iotk_misc.spp"
   case("COMPLEX")
-# 398 "iotk_misc.spp"
+# 399 "iotk_misc.spp"
     if(source_binary) then
       tmpkind=ikind
     else
       tmpkind=0
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX1
       if(tmpkind==0) tmpkind=iotk_COMPLEX1
       if(iotk_COMPLEX1 == iotk_COMPLEX_defkind) then
         tmpkind=iotk_COMPLEX_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX2
       if(tmpkind==0) tmpkind=iotk_COMPLEX2
       if(iotk_COMPLEX2 == iotk_COMPLEX_defkind) then
         tmpkind=iotk_COMPLEX_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX3
       if(tmpkind==0) tmpkind=iotk_COMPLEX3
       if(iotk_COMPLEX3 == iotk_COMPLEX_defkind) then
         tmpkind=iotk_COMPLEX_defkind
       end if
 #endif
-# 403 "iotk_misc.spp"
+# 404 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX4
       if(tmpkind==0) tmpkind=iotk_COMPLEX4
       if(iotk_COMPLEX4 == iotk_COMPLEX_defkind) then
         tmpkind=iotk_COMPLEX_defkind
       end if
 #endif
-# 410 "iotk_misc.spp"
+# 411 "iotk_misc.spp"
     end if
-# 412 "iotk_misc.spp"
+# 413 "iotk_misc.spp"
     select case(tmpkind)
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX1
     case(iotk_COMPLEX1)
       allocate(dat_COMPLEX1(isize))
@@ -893,7 +894,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_COMPLEX1,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_COMPLEX1)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX2
     case(iotk_COMPLEX2)
       allocate(dat_COMPLEX2(isize))
@@ -901,7 +902,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_COMPLEX2,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_COMPLEX2)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX3
     case(iotk_COMPLEX3)
       allocate(dat_COMPLEX3(isize))
@@ -909,7 +910,7 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_COMPLEX3,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_COMPLEX3)
 #endif
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_COMPLEX4
     case(iotk_COMPLEX4)
       allocate(dat_COMPLEX4(isize))
@@ -917,21 +918,21 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_COMPLEX4,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_COMPLEX4)
 #endif
-# 424 "iotk_misc.spp"
+# 425 "iotk_misc.spp"
     case default
       call iotk_error_issue(ierr,"iotk_copy_dat_aux",__FILE__,__LINE__)
-# 425 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 425 "iotk_misc.spp"
+# 426 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 426 "iotk_misc.spp"
 call iotk_error_msg(ierr,'internal error')
     end select
-# 394 "iotk_misc.spp"
+# 395 "iotk_misc.spp"
   case("CHARACTER")
-# 396 "iotk_misc.spp"
+# 397 "iotk_misc.spp"
     tmpkind=iotk_CHARACTER_defkind
-# 412 "iotk_misc.spp"
+# 413 "iotk_misc.spp"
     select case(tmpkind)
-# 415 "iotk_misc.spp"
+# 416 "iotk_misc.spp"
 #ifdef __IOTK_CHARACTER1
     case(iotk_CHARACTER1)
       allocate(dat_CHARACTER1(isize))
@@ -939,27 +940,27 @@ call iotk_error_msg(ierr,'internal error')
       if(ierr==0) call iotk_write_dat(dest,name,dat_CHARACTER1,attr=attr,ierr=ierr,fmt=fmt,columns=columns)
       deallocate(dat_CHARACTER1)
 #endif
-# 424 "iotk_misc.spp"
+# 425 "iotk_misc.spp"
     case default
       call iotk_error_issue(ierr,"iotk_copy_dat_aux",__FILE__,__LINE__)
-# 425 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 425 "iotk_misc.spp"
+# 426 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 426 "iotk_misc.spp"
 call iotk_error_msg(ierr,'internal error')
     end select
-# 428 "iotk_misc.spp"
+# 429 "iotk_misc.spp"
   case default
     call iotk_error_issue(ierr,"iotk_copy_dat_aux",__FILE__,__LINE__)
-# 429 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 429 "iotk_misc.spp"
+# 430 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 430 "iotk_misc.spp"
 call iotk_error_msg(ierr,'internal error')
   end select
   
 end subroutine iotk_copy_dat_aux_x
 
 
-# 436 "iotk_misc.spp"
+# 437 "iotk_misc.spp"
 subroutine iotk_copy_dat_x(source,dest,source_binary,dest_binary,name,attr,maxsize,ierr)
   use iotk_base
   use iotk_error_interf
@@ -984,26 +985,26 @@ subroutine iotk_copy_dat_x(source,dest,source_binary,dest_binary,name,attr,maxsi
   call iotk_parse_dat(attr,type,ikind,isize,ilen,fmt,columns,ierr)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 459 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 460 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   if(iotk_strcomp(type,iotk_eos)) then
     call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 463 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 464 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   if(isize==-1) then
     call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 467 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 468 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   if(ilen==-1 .and. iotk_strcomp(type,"CHARACTER")) then
     call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 471 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 472 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   if(isize<=maxsize .or. maxsize==-1 .or. dest_binary) then
@@ -1011,36 +1012,36 @@ call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
                            ilen,fmt,columns,attr,ierr)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 478 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 479 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if  
   else    
     call iotk_strcpy(attr1,attr,ierr=ierr)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 484 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 485 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if
     call iotk_write_attr (attr1,"trunc",.true.,ierr=ierr)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 489 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 490 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if
     call iotk_write_empty(dest,name,attr=attr1,ierr=ierr)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_copy_dat",__FILE__,__LINE__)
-# 494 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 495 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if
   end if
 end subroutine iotk_copy_dat_x
 
-# 501 "iotk_misc.spp"
+# 502 "iotk_misc.spp"
 subroutine iotk_check_iotk_attr_x(unit,attr,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1061,8 +1062,8 @@ subroutine iotk_check_iotk_attr_x(unit,attr,ierr)
   call iotk_scan_attr(attr,"file_version",file_version,eos=.true.,ierr=ierr,found=found)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 520 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 521 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   if(found) then
@@ -1070,32 +1071,32 @@ call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
     pos1   = iotk_strscan(file_version,".")
     if(pos1<=1 .or. pos1>=attlen) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 527 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 527 "iotk_misc.spp"
+# 528 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 528 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Problems reading file version')
-# 527 "iotk_misc.spp"
+# 528 "iotk_misc.spp"
 call iotk_error_write(ierr,"file_version",file_version)
-# 527 "iotk_misc.spp"
+# 528 "iotk_misc.spp"
 call iotk_error_write(ierr,"attlen",attlen)
-# 527 "iotk_misc.spp"
+# 528 "iotk_misc.spp"
 call iotk_error_write(ierr,"pos1",pos1)
       return
     end if
     pos2   = pos1 + verify(file_version(pos1+1:attlen),numbers)
     if(pos2==pos1+1) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 532 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 532 "iotk_misc.spp"
+# 533 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 533 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Problems reading file version')
-# 532 "iotk_misc.spp"
+# 533 "iotk_misc.spp"
 call iotk_error_write(ierr,"file_version",file_version)
-# 532 "iotk_misc.spp"
+# 533 "iotk_misc.spp"
 call iotk_error_write(ierr,"attlen",attlen)
-# 532 "iotk_misc.spp"
+# 533 "iotk_misc.spp"
 call iotk_error_write(ierr,"pos1",pos1)
-# 532 "iotk_misc.spp"
+# 533 "iotk_misc.spp"
 call iotk_error_write(ierr,"pos2",pos2)
       return
     end if
@@ -1103,35 +1104,35 @@ call iotk_error_write(ierr,"pos2",pos2)
     call iotk_atoi(itmp_major,file_version(1:pos1-1),check)
     if(.not.check) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 538 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 538 "iotk_misc.spp"
+# 539 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 539 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Problems reading file version')
-# 538 "iotk_misc.spp"
+# 539 "iotk_misc.spp"
 call iotk_error_write(ierr,"file_version",file_version)
       return
     end if
     call iotk_atoi(itmp_minor,file_version(pos1+1:pos2-1),check)
     if(.not.check) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 543 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 543 "iotk_misc.spp"
+# 544 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 544 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Problems reading file version')
-# 543 "iotk_misc.spp"
+# 544 "iotk_misc.spp"
 call iotk_error_write(ierr,"file_version",file_version)
       return
     end if
     if(itmp_major > iotk_file_version_major .or. &
       (itmp_major==iotk_file_version_major .and. itmp_minor > iotk_file_version_minor) ) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 548 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 548 "iotk_misc.spp"
+# 549 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 549 "iotk_misc.spp"
 call iotk_error_msg(ierr,'File version is newer than internal version')
-# 548 "iotk_misc.spp"
+# 549 "iotk_misc.spp"
 call iotk_error_write(ierr,"file_version",file_version)
-# 548 "iotk_misc.spp"
+# 549 "iotk_misc.spp"
 call iotk_error_write(ierr,"internal_version",iotk_file_version)
       return
     end if
@@ -1139,47 +1140,47 @@ call iotk_error_write(ierr,"internal_version",iotk_file_version)
   call iotk_scan_attr(attr,"binary",rbinary,ierr=ierr,found=found)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 554 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 555 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   if(found) then
     call iotk_inquire(unit,binary,stream,ierr)
     if(ierr/=0) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 560 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 561 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if
     if(rbinary .neqv. binary) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 564 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 565 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if
   end if
   call iotk_scan_attr(attr,"extensions",extensions,ierr=ierr,found=found,eos=.true.)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 570 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 571 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
     return
   end if
   if(found) then
     if(iotk_strlen(extensions) > 0) then
       call iotk_error_issue(ierr,"iotk_check_iotk_attr",__FILE__,__LINE__)
-# 575 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 575 "iotk_misc.spp"
+# 576 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 576 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Extensions are not supported in this version')
-# 575 "iotk_misc.spp"
+# 576 "iotk_misc.spp"
 call iotk_error_write(ierr,"extensions",extensions)
       return
     end if
   end if
 end subroutine iotk_check_iotk_attr_x
 
-# 582 "iotk_misc.spp"
+# 583 "iotk_misc.spp"
 function iotk_index_scal(index)
   use iotk_base
   use iotk_xtox_interf
@@ -1189,7 +1190,7 @@ function iotk_index_scal(index)
   iotk_index_scal="."//iotk_itoa(index)
 end function iotk_index_scal
   
-# 592 "iotk_misc.spp"
+# 593 "iotk_misc.spp"
 function iotk_index_vec(index)
   use iotk_base
   use iotk_xtox_interf
@@ -1207,7 +1208,7 @@ function iotk_index_vec(index)
 end function iotk_index_vec
 
 
-# 610 "iotk_misc.spp"
+# 611 "iotk_misc.spp"
 subroutine iotk_tag_parse_x(tag,name,attr,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1223,9 +1224,9 @@ subroutine iotk_tag_parse_x(tag,name,attr,ierr)
   lentag=iotk_strlen(tag)
   if(verify(tag(1:1),iotk_namcharfirst)/=0) then
     call iotk_error_issue(ierr,"iotk_tag_parse",__FILE__,__LINE__)
-# 624 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 624 "iotk_misc.spp"
+# 625 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 625 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Wrong syntax in tag')
     call iotk_error_write(ierr,"tag",tag(1:lentag))
     return
@@ -1234,9 +1235,9 @@ call iotk_error_msg(ierr,'Wrong syntax in tag')
   if(pos==0) pos=lentag+1
   if(pos>len(name)+1) then
     call iotk_error_issue(ierr,"iotk_tag_parse",__FILE__,__LINE__)
-# 631 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 631 "iotk_misc.spp"
+# 632 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 632 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Tag name too long')
     return
    end if
@@ -1245,9 +1246,9 @@ call iotk_error_msg(ierr,'Tag name too long')
   lenatt = len_trim(tag(pos:lentag))
   if(lenatt>iotk_attlenx) then
     call iotk_error_issue(ierr,"iotk_tag_parse",__FILE__,__LINE__)
-# 638 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 638 "iotk_misc.spp"
+# 639 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 639 "iotk_misc.spp"
 call iotk_error_msg(ierr,'Attribute string too long')
     return
   end if
@@ -1259,7 +1260,7 @@ call iotk_error_msg(ierr,'Attribute string too long')
   end if
 end subroutine iotk_tag_parse_x
 
-# 650 "iotk_misc.spp"
+# 651 "iotk_misc.spp"
 function iotk_complete_filepath_x(newfile,oldfile)
   use iotk_base
   use iotk_misc_interf
@@ -1279,7 +1280,7 @@ function iotk_complete_filepath_x(newfile,oldfile)
   end if
 end function iotk_complete_filepath_x
 
-# 670 "iotk_misc.spp"
+# 671 "iotk_misc.spp"
 function iotk_check_name_x(name)
   use iotk_base
   use iotk_misc_interf
@@ -1298,7 +1299,7 @@ function iotk_check_name_x(name)
   end if
 end function iotk_check_name_x
 
-# 689 "iotk_misc.spp"
+# 690 "iotk_misc.spp"
 subroutine iotk_delete_attr_x(attr,name,ierr)
   use iotk_base
   use iotk_str_interf
@@ -1322,13 +1323,13 @@ subroutine iotk_delete_attr_x(attr,name,ierr)
     pos = scan(attr(equal+1:attlen),"=")
     if(pos<=0) then
       call iotk_error_issue(ierr,"iotk_delete_attr",__FILE__,__LINE__)
-# 711 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 711 "iotk_misc.spp"
+# 712 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 712 "iotk_misc.spp"
 call iotk_error_msg(ierr,'')
-# 711 "iotk_misc.spp"
+# 712 "iotk_misc.spp"
 call iotk_error_write(ierr,"attr",attr)
-# 711 "iotk_misc.spp"
+# 712 "iotk_misc.spp"
 call iotk_error_write(ierr,"equal",equal)
       return
     end if
@@ -1338,25 +1339,25 @@ call iotk_error_write(ierr,"equal",equal)
     pos   = verify(attr(equal+1:attlen)," ")
     if(pos<=0) then
       call iotk_error_issue(ierr,"iotk_delete_attr",__FILE__,__LINE__)
-# 719 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 720 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if
     equal = equal + pos
     delim = attr(equal:equal)
     if(delim/="'" .and. delim/='"') then
       call iotk_error_issue(ierr,"iotk_delete_attr",__FILE__,__LINE__)
-# 725 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
-# 725 "iotk_misc.spp"
+# 726 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
+# 726 "iotk_misc.spp"
 call iotk_error_msg(ierr,'delim')
       return
     end if
     pos = scan(attr(equal+1:attlen),delim)
     if(pos<=0) then
       call iotk_error_issue(ierr,"iotk_delete_attr",__FILE__,__LINE__)
-# 730 "iotk_misc.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
+# 731 "iotk_misc.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.39 ")
       return
     end if
     equal = equal + pos
@@ -1378,4 +1379,82 @@ call iotk_error_msg(ierr,"CVS Revision: 1.35 ")
     end if
   end if
 end subroutine iotk_delete_attr_x
+
+subroutine iotk_readcmdline_x(args,nargs,eos,ierr)
+  use iotk_base
+  use iotk_error_interf
+  use iotk_str_interf
+  implicit none
+  character(len=*),  intent(out) :: args(:)
+  integer,           intent(out) :: nargs
+  logical, optional, intent(in)  :: eos
+  integer, optional, intent(out) :: ierr
+  integer :: iarg,iostat,pos,ierrl
+  logical :: leos
+
+  ierrl = 0
+  iarg = 0
+  leos=.false.
+  nargs = 0
+  if(present(eos))leos=eos
+  do
+    iarg = iarg + 1
+    if(iarg>size(args)) then
+      call iotk_error_issue(ierrl,"iotk_delete_attr",__FILE__,__LINE__)
+# 774 "iotk_misc.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
+      goto 1
+    end if
+    read(*,"(a)",iostat=iostat) args(iarg)
+    if(iostat<0) exit
+    if(iostat>0) then
+      call iotk_error_issue(ierrl,"iotk_delete_attr",__FILE__,__LINE__)
+# 780 "iotk_misc.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.39 ")
+      goto 1
+    end if
+    pos = scan(args(iarg),"|",back=.true.)
+    if(pos>0) then
+      if(args(iarg)(pos:)=="|") then
+        args(iarg)(pos:pos) = iotk_eos
+      end if
+    else
+      pos = len_trim(args(iarg)) + 1
+      if(pos<=len(args)) args(iarg)(pos:pos) = iotk_eos
+    end if
+    if(.not. leos) then
+      pos = iotk_strlen(args(iarg))
+      if(pos<len(args(iarg))) args(iarg)(pos+1:) = " "
+    end if
+  end do
+  iarg = iarg -1
+  nargs = iarg
+1 continue
+  if(present(ierr)) then
+    ierr = ierrl
+  else
+    if(ierrl/=0) call iotk_error_handler(ierrl)
+  end if
+end subroutine iotk_readcmdline_x
+
+subroutine iotk_init_static_vars_x()
+  use iotk_base
+  implicit none
+  logical, save :: first=.true.
+  if(first) then
+    iotk_error_pool_used     = .false.
+    iotk_error_pool_order    = 0
+    iotk_unitmin             = iotk_unitmin_def
+    iotk_unitmax             = iotk_unitmax_def
+    iotk_error_unit          = iotk_error_unit_def
+    iotk_output_unit         = iotk_output_unit_def
+    iotk_getline_buffer      = iotk_getline_buffer_def
+    iotk_linlen              = iotk_linlen_def
+    iotk_indent              = iotk_indent_def
+    iotk_maxindent           = iotk_maxindent_def
+    iotk_error_warn_overflow = iotk_error_warn_overflow_def
+  end if
+  first=.false.
+end subroutine iotk_init_static_vars_x
+
 

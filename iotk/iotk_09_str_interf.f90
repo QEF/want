@@ -164,6 +164,6 @@ subroutine iotk_str_clean_x(str)
   implicit none
   character(len=*), intent(inout) :: str
 end subroutine iotk_str_clean_x
-end interface iotk_str_clean
+end interface
 
 end module iotk_str_interf

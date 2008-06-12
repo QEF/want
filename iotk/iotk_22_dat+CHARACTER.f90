@@ -76,7 +76,7 @@ subroutine iotk_write_dat_CHARACTER1_0(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -90,27 +90,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -125,14 +125,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",1,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -140,7 +140,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -148,14 +148,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -164,49 +164,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -214,14 +214,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -236,7 +236,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -244,7 +244,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -256,7 +256,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -264,7 +264,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -275,7 +275,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -285,7 +285,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -294,7 +294,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -307,9 +307,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
 end subroutine iotk_write_dat_CHARACTER1_0
 
 
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -335,9 +335,9 @@ subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default 
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -356,8 +356,8 @@ subroutine iotk_scan_dat_CHARACTER1_0(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -365,46 +365,46 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==1) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(1))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 743 "iotk_dat.spp"
+# 744 "iotk_dat.spp"
      dat = tmpdat(1)
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -418,11 +418,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -508,7 +508,7 @@ subroutine iotk_write_dat_CHARACTER1_1(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -522,27 +522,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -557,14 +557,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -572,7 +572,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -580,14 +580,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -596,49 +596,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -646,14 +646,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -674,7 +674,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -682,7 +682,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -694,7 +694,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -702,7 +702,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -713,7 +713,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -723,7 +723,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -732,7 +732,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -793,7 +793,7 @@ recursive subroutine iotk_scan_dat_aux_CHARACTER1(unit,dat,rkind,rlen,fmt,ierr)
   if(ierr/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 382 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
     return
   end if
 # 386 "iotk_dat.spp"
@@ -807,7 +807,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 394 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 394 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 394 "iotk_dat.spp"
@@ -820,7 +820,7 @@ call iotk_error_write(ierr,"iostat",iostat)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 401 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
           return
         end if
       else
@@ -833,7 +833,7 @@ call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 412 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 412 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 412 "iotk_dat.spp"
@@ -851,7 +851,7 @@ call iotk_error_write(ierr,"iostat",iostat)
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 424 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 424 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 424 "iotk_dat.spp"
@@ -867,7 +867,7 @@ call iotk_error_write(ierr,"iostat",iostat)
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 434 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 434 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 434 "iotk_dat.spp"
@@ -882,20 +882,20 @@ call iotk_error_write(ierr,"iostat",iostat)
         if(ierr/=0) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 443 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
           return
         end if
         nexttag = scan(line(1:length),"<")
         if(nexttag==0) then
           nexttag = length + 1
         else
-! AGGIUSTA LA POSIZIONE SE C'E' UNA TAG SU QUESTA LINEA
-! E' UN PO' CASERECCIO MA FUNZIONA
+! adjust the positioning if there is a tag on this line
+! implementation to be improved
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 454 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 454 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 454 "iotk_dat.spp"
@@ -906,14 +906,14 @@ call iotk_error_write(ierr,"iostat",iostat)
           if(ierr/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 459 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
             return
           end if
           backspace(lunit,iostat=iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 464 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 464 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 464 "iotk_dat.spp"
@@ -924,7 +924,7 @@ call iotk_error_write(ierr,"iostat",iostat)
           if(iostat/=0) then
             call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 469 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 469 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 469 "iotk_dat.spp"
@@ -939,7 +939,7 @@ call iotk_error_write(ierr,"iostat",iostat)
         if(nexttag/=length + 1) then
           call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 478 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 478 "iotk_dat.spp"
 call iotk_error_msg(ierr,'Missing dat')
           return
@@ -954,7 +954,7 @@ call iotk_error_msg(ierr,'Missing dat')
       if(iostat/=0) then
         call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
 # 489 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
 # 489 "iotk_dat.spp"
 call iotk_error_msg(ierr,' ')
 # 489 "iotk_dat.spp"
@@ -968,17 +968,17 @@ call iotk_error_write(ierr,"iostat",iostat)
   else
     dat (:) = dattmp (:) (1:len(dat))
   end if
-# 662 "iotk_dat.spp"
+# 663 "iotk_dat.spp"
   if(idummy/=0) then
     call iotk_error_issue(ierr,"iotk_scan_dat_aux",__FILE__,__LINE__)
-# 663 "iotk_dat.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.26 ")
+# 664 "iotk_dat.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.27 ")
     return
   end if
 end subroutine iotk_scan_dat_aux_CHARACTER1
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1004,9 +1004,9 @@ subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default (:)
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -1025,8 +1025,8 @@ subroutine iotk_scan_dat_CHARACTER1_1(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -1034,52 +1034,52 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 745 "iotk_dat.spp"
+# 746 "iotk_dat.spp"
 #if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
-# 747 "iotk_dat.spp"
+# 748 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dat,tmpdat,size(tmpdat),len(tmpdat))
-# 751 "iotk_dat.spp"
+# 752 "iotk_dat.spp"
 #else
      dat = reshape(tmpdat,shape(dat))
 #endif
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1093,11 +1093,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -1183,7 +1183,7 @@ subroutine iotk_write_dat_CHARACTER1_2(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -1197,27 +1197,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -1232,14 +1232,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -1247,7 +1247,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -1255,14 +1255,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -1271,49 +1271,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -1321,14 +1321,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -1349,7 +1349,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -1357,7 +1357,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -1369,7 +1369,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -1377,7 +1377,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -1388,7 +1388,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -1398,7 +1398,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -1407,7 +1407,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -1420,9 +1420,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
 end subroutine iotk_write_dat_CHARACTER1_2
 
 
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1448,9 +1448,9 @@ subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default (:,:)
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -1469,8 +1469,8 @@ subroutine iotk_scan_dat_CHARACTER1_2(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -1478,52 +1478,52 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 745 "iotk_dat.spp"
+# 746 "iotk_dat.spp"
 #if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
-# 747 "iotk_dat.spp"
+# 748 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dat,tmpdat,size(tmpdat),len(tmpdat))
-# 751 "iotk_dat.spp"
+# 752 "iotk_dat.spp"
 #else
      dat = reshape(tmpdat,shape(dat))
 #endif
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1537,11 +1537,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -1644,7 +1644,7 @@ subroutine iotk_write_dat_CHARACTER1_3(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -1658,27 +1658,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -1693,14 +1693,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -1708,7 +1708,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -1716,14 +1716,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -1732,49 +1732,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -1782,14 +1782,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -1810,7 +1810,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -1818,7 +1818,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -1830,7 +1830,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -1838,7 +1838,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -1849,7 +1849,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -1859,7 +1859,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -1868,7 +1868,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -1881,9 +1881,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
 end subroutine iotk_write_dat_CHARACTER1_3
 
 
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -1909,9 +1909,9 @@ subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default (:,:,:)
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -1930,8 +1930,8 @@ subroutine iotk_scan_dat_CHARACTER1_3(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -1939,52 +1939,52 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 745 "iotk_dat.spp"
+# 746 "iotk_dat.spp"
 #if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
-# 747 "iotk_dat.spp"
+# 748 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dat,tmpdat,size(tmpdat),len(tmpdat))
-# 751 "iotk_dat.spp"
+# 752 "iotk_dat.spp"
 #else
      dat = reshape(tmpdat,shape(dat))
 #endif
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -1998,11 +1998,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -2088,7 +2088,7 @@ subroutine iotk_write_dat_CHARACTER1_4(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -2102,27 +2102,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -2137,14 +2137,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -2152,7 +2152,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -2160,14 +2160,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -2176,49 +2176,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -2226,14 +2226,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -2254,7 +2254,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -2262,7 +2262,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -2274,7 +2274,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -2282,7 +2282,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -2293,7 +2293,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -2303,7 +2303,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -2312,7 +2312,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -2325,9 +2325,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
 end subroutine iotk_write_dat_CHARACTER1_4
 
 
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -2353,9 +2353,9 @@ subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default (:,:,:,:)
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -2374,8 +2374,8 @@ subroutine iotk_scan_dat_CHARACTER1_4(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -2383,52 +2383,52 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 745 "iotk_dat.spp"
+# 746 "iotk_dat.spp"
 #if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
-# 747 "iotk_dat.spp"
+# 748 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dat,tmpdat,size(tmpdat),len(tmpdat))
-# 751 "iotk_dat.spp"
+# 752 "iotk_dat.spp"
 #else
      dat = reshape(tmpdat,shape(dat))
 #endif
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -2442,11 +2442,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -2532,7 +2532,7 @@ subroutine iotk_write_dat_CHARACTER1_5(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -2546,27 +2546,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -2581,14 +2581,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -2596,7 +2596,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -2604,14 +2604,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -2620,49 +2620,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -2670,14 +2670,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -2698,7 +2698,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -2706,7 +2706,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -2718,7 +2718,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -2726,7 +2726,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -2737,7 +2737,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -2747,7 +2747,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -2756,7 +2756,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -2769,9 +2769,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
 end subroutine iotk_write_dat_CHARACTER1_5
 
 
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -2797,9 +2797,9 @@ subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default (:,:,:,:,:)
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -2818,8 +2818,8 @@ subroutine iotk_scan_dat_CHARACTER1_5(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -2827,52 +2827,52 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 745 "iotk_dat.spp"
+# 746 "iotk_dat.spp"
 #if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
-# 747 "iotk_dat.spp"
+# 748 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dat,tmpdat,size(tmpdat),len(tmpdat))
-# 751 "iotk_dat.spp"
+# 752 "iotk_dat.spp"
 #else
      dat = reshape(tmpdat,shape(dat))
 #endif
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -2886,11 +2886,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -2993,7 +2993,7 @@ subroutine iotk_write_dat_CHARACTER1_6(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -3007,27 +3007,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -3042,14 +3042,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -3057,7 +3057,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -3065,14 +3065,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -3081,49 +3081,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -3131,14 +3131,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -3159,7 +3159,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -3167,7 +3167,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -3179,7 +3179,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -3187,7 +3187,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -3198,7 +3198,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -3208,7 +3208,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -3217,7 +3217,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -3230,9 +3230,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
 end subroutine iotk_write_dat_CHARACTER1_6
 
 
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -3258,9 +3258,9 @@ subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default (:,:,:,:,:,:)
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -3279,8 +3279,8 @@ subroutine iotk_scan_dat_CHARACTER1_6(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -3288,52 +3288,52 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 745 "iotk_dat.spp"
+# 746 "iotk_dat.spp"
 #if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
-# 747 "iotk_dat.spp"
+# 748 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dat,tmpdat,size(tmpdat),len(tmpdat))
-# 751 "iotk_dat.spp"
+# 752 "iotk_dat.spp"
 #else
      dat = reshape(tmpdat,shape(dat))
 #endif
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -3347,11 +3347,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
@@ -3437,7 +3437,7 @@ subroutine iotk_write_dat_CHARACTER1_7(unit,name,dat,dummy,attr,columns,sep,fmt,
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 126 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
   end if
@@ -3451,27 +3451,27 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 138 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_strcpy(usefmt,"!",ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 143 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(fmt) .and. .not. raw) call iotk_strcpy(usefmt,iotk_strtrim(fmt),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 148 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(iotk_strscan(usefmt,"<>&")/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 152 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
 # 152 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Special characters (<>&) found in fmt string')
 # 152 "iotk_dat.spp"
@@ -3486,14 +3486,14 @@ call iotk_error_write(ierrl,"fmt",trim(fmt))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 157 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_attr(lattr,"size",size(dat),ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 162 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 166 "iotk_dat.spp"
@@ -3501,7 +3501,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 168 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 # 180 "iotk_dat.spp"
@@ -3509,14 +3509,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 182 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(lcolumns/=1) call iotk_write_attr(lattr,"columns",lcolumns,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 187 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(present(attr)) then
@@ -3525,49 +3525,49 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 194 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"type",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 199 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"kind",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 204 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"size",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 209 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"fmt",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 214 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"columns",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 219 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     call iotk_delete_attr(attr_tmp,"len",ierrl)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 224 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
       goto 1
     end if
     if(iotk_strlen_trim(attr_tmp)>0) call iotk_strcat(lattr,iotk_strtrim(attr_tmp),ierr=ierrl)
@@ -3575,14 +3575,14 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 230 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_write_begin(unit,name,lattr,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 235 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 
@@ -3603,7 +3603,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 258 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else
@@ -3611,7 +3611,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 264 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -3623,7 +3623,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 276 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"*")) then
@@ -3631,7 +3631,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 282 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     else if(iotk_strcomp(usefmt,"!")) then
@@ -3642,7 +3642,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
        if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 291 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
         end if
      end do
@@ -3652,7 +3652,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
       if(iostat/=0) then
         call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 305 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
         goto 1
       end if
     end if
@@ -3661,7 +3661,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_dat",__FILE__,__LINE__)
 # 312 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
 1 continue
@@ -3674,9 +3674,9 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
 end subroutine iotk_write_dat_CHARACTER1_7
 
 
-# 668 "iotk_dat.spp"
+# 669 "iotk_dat.spp"
 
-# 670 "iotk_dat.spp"
+# 671 "iotk_dat.spp"
 subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,dummy,attr,found,default,ierr)
   use iotk_base
   use iotk_error_interf
@@ -3702,9 +3702,9 @@ subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,dummy,attr,found,default,ier
   logical,                         optional, intent(out) :: found
   CHARACTER(kind=this_kind,len=*), optional, intent(in)  :: default (:,:,:,:,:,:,:)
   integer,                         optional, intent(out) :: ierr
-# 696 "iotk_dat.spp"
+# 697 "iotk_dat.spp"
   CHARACTER (kind=this_kind,len=len(dat)), allocatable :: tmpdat(:)
-# 700 "iotk_dat.spp"
+# 701 "iotk_dat.spp"
   integer :: ierrl,ierrl2
   integer :: rkind,rsize,rlen
   character(iotk_vallenx) :: rtype
@@ -3723,8 +3723,8 @@ subroutine iotk_scan_dat_CHARACTER1_7(unit,name,dat,dummy,attr,found,default,ier
   if(present(attr)) call iotk_strcpy(attr,lattr,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 717 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 718 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   call iotk_parse_dat(lattr,rtype,rkind,rsize,rlen,fmt,columns,ierrl)
@@ -3732,52 +3732,52 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
   if(ierrl/=0) goto 1
   if(.not. (iotk_strcomp(rtype,iotk_eos) .or. iotk_strcomp(rtype,"CHARACTER") ) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 724 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 725 "iotk_dat.spp"
 call iotk_error_msg(ierrl,' ')
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rtype",rtype(1:iotk_strlen(rtype)))
-# 724 "iotk_dat.spp"
+# 725 "iotk_dat.spp"
 call iotk_error_write(ierrl,"type","CHARACTER")
     goto 1
   end if
   if(.not. (rsize==-1 .or. rsize==size(dat)) ) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 728 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
+# 729 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
     goto 1
   end if
   if(rkind==-1) rkind = kind(dat)
-# 733 "iotk_dat.spp"
+# 734 "iotk_dat.spp"
   if(rlen ==-1) rlen  = len(dat)
-# 735 "iotk_dat.spp"
+# 736 "iotk_dat.spp"
 
   allocate(tmpdat(size(dat)))
   call iotk_scan_dat_aux(unit,tmpdat,rkind,rlen,fmt(1:iotk_strlen(fmt)),ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 739 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 740 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Error reading data')
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rkind",rkind)
-# 739 "iotk_dat.spp"
+# 740 "iotk_dat.spp"
 call iotk_error_write(ierrl,"rlen",rlen)
     goto 1
   end if
-# 745 "iotk_dat.spp"
+# 746 "iotk_dat.spp"
 #if defined(__IOTK_WORKAROUND3) || defined(__IOTK_WORKAROUND4)
-# 747 "iotk_dat.spp"
+# 748 "iotk_dat.spp"
      call iotk_private_pack_CHARACTER1(dat,tmpdat,size(tmpdat),len(tmpdat))
-# 751 "iotk_dat.spp"
+# 752 "iotk_dat.spp"
 #else
      dat = reshape(tmpdat,shape(dat))
 #endif
-# 755 "iotk_dat.spp"
+# 756 "iotk_dat.spp"
   deallocate(tmpdat)
 1 continue
   if(inside) then
@@ -3791,11 +3791,11 @@ call iotk_error_write(ierrl,"rlen",rlen)
   if(present(found)) found = foundl
   if(ierrl==0 .and. .not. present(found) .and. .not. present(default) .and. .not. foundl) then
     call iotk_error_issue(ierrl,"iotk_scan_dat",__FILE__,__LINE__)
-# 767 "iotk_dat.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.26 ")
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
+call iotk_error_msg(ierrl,"CVS Revision: 1.27 ")
+# 768 "iotk_dat.spp"
 call iotk_error_msg(ierrl,'Dat not found')
-# 767 "iotk_dat.spp"
+# 768 "iotk_dat.spp"
 call iotk_error_write(ierrl,"name",name)
     ierrl = - ierrl
   end if 
