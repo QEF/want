@@ -6,9 +6,9 @@
 # Input flags for this script (./run.sh FLAG): 
 #
 MANUAL=" Usage
-   run.sh [-h] [-r <flag>] [<test_list>] 
+   run.sh [-h] [-r <flag>] [<test_dirs>] 
 
- run the action <flag> on the <test_list> 
+ run the action <flag> on the <test_dirs> list 
  if <flag> is not present the action is assumed as "ALL" while
  if the <test_list> is missing ALL tests are included.
  When the command line is empty the following manual page is printed:
@@ -20,7 +20,7 @@ MANUAL=" Usage
  want            perform want calculations only
  check           check results with the reference outputs
  update_ref      update reference results with the current output files
- clean           delete all output files and the temporary directory
+ clean           delete all output files and the temporary directories
 
  Go in the specific Test dirs in order to have a more detailed menu.
 "
