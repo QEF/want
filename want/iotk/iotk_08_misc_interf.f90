@@ -42,8 +42,8 @@ public :: iotk_check_name
 public :: iotk_tag_parse
 public :: iotk_complete_filepath
 public :: iotk_delete_attr
-
-
+public :: iotk_readcmdline
+public :: iotk_init_static_vars
 
 ! This module contains the interfaces to all iotk routines
 
@@ -216,6 +216,21 @@ subroutine iotk_delete_attr_x(attr,name,ierr)
   character(len=*), intent(in)    :: name
   integer,          intent(out)   :: ierr
 end subroutine iotk_delete_attr_x
+end interface
+
+interface iotk_readcmdline
+subroutine iotk_readcmdline_x(args,nargs,eos,ierr)
+  implicit none
+  character(len=*),  intent(out) :: args(:)
+  integer,           intent(out) :: nargs
+  logical, optional, intent(in)  :: eos
+  integer, optional, intent(out) :: ierr
+end subroutine iotk_readcmdline_x
+end interface
+
+interface iotk_init_static_vars
+subroutine iotk_init_static_vars_x()
+end subroutine iotk_init_static_vars_x
 end interface
 
 end module iotk_misc_interf

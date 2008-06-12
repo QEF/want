@@ -39,9 +39,9 @@ save
 
 !------------------------------------------------------------------------------!
 ! Version strings and integer constants
-character(16),      parameter :: iotk_version            = "1.1.0development"
+character(16),      parameter :: iotk_version            = "1.2.0development"
 integer,                            parameter :: iotk_version_major      = 1
-integer,                            parameter :: iotk_version_minor      = 1
+integer,                            parameter :: iotk_version_minor      = 2
 integer,                            parameter :: iotk_version_patch      = 0
 character(3), parameter :: iotk_file_version       = "1.0"
 integer,                            parameter :: iotk_file_version_major = 1

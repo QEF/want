@@ -46,7 +46,7 @@ subroutine iotk_tool_convert_x(args,ierr)
   character(len=*),           intent(in)  :: args(:)
   integer,          optional, intent(out) :: ierr
 end subroutine iotk_tool_convert_x
-end interface iotk_tool_convert
+end interface
 
 interface iotk_tool_dump
 subroutine iotk_tool_dump_x(args,ierr)
@@ -54,7 +54,7 @@ subroutine iotk_tool_dump_x(args,ierr)
   character(len=*),           intent(in)  :: args(:)
   integer,          optional, intent(out) :: ierr
 end subroutine iotk_tool_dump_x
-end interface iotk_tool_dump
+end interface
 
 interface iotk_tool_info
 subroutine iotk_tool_info_x(args,ierr)
@@ -62,7 +62,7 @@ subroutine iotk_tool_info_x(args,ierr)
   character(len=*),           intent(in)  :: args(:)
   integer,          optional, intent(out) :: ierr
 end subroutine iotk_tool_info_x
-end interface iotk_tool_info
+end interface
 
 interface iotk_tool_man
 subroutine iotk_tool_man_x(args,ierr)
@@ -70,6 +70,6 @@ subroutine iotk_tool_man_x(args,ierr)
   character(len=*),           intent(in)  :: args(:)
   integer,          optional, intent(out) :: ierr
 end subroutine iotk_tool_man_x
-end interface iotk_tool_man
+end interface
 
 end module iotk_tool_interf

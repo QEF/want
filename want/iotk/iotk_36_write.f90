@@ -59,7 +59,7 @@ subroutine iotk_write_begin_x(unit,name,attr,dummy,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_begin",__FILE__,__LINE__)
 # 64 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
 # 64 "iotk_write.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 64 "iotk_write.spp"
@@ -72,7 +72,7 @@ call iotk_error_write(ierrl,"name",name)
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_begin",__FILE__,__LINE__)
 # 71 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
       goto 1
     end if
   end if
@@ -80,21 +80,21 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_begin",__FILE__,__LINE__)
 # 77 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   call iotk_strcat(tag,attrl,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_begin",__FILE__,__LINE__)
 # 82 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   call iotk_inquire(lunit,binary,stream,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_begin",__FILE__,__LINE__)
 # 87 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   if(associated(this_unit)) indent = iotk_indent*(this_unit%level+1)
@@ -102,7 +102,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_begin",__FILE__,__LINE__)
 # 93 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
 # 93 "iotk_write.spp"
 call iotk_error_msg(ierrl,'Error writing tag')
 # 93 "iotk_write.spp"
@@ -146,7 +146,7 @@ subroutine iotk_write_end_x(unit,name,dummy,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_end",__FILE__,__LINE__)
 # 131 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
 # 131 "iotk_write.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 131 "iotk_write.spp"
@@ -157,7 +157,7 @@ call iotk_error_write(ierrl,"name",iotk_strtrim(name))
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_end",__FILE__,__LINE__)
 # 136 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   if(associated(this_unit)) then
@@ -167,7 +167,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_end",__FILE__,__LINE__)
 # 144 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   if(associated(this_unit)) indent = iotk_indent * this_unit%level
@@ -175,7 +175,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_end",__FILE__,__LINE__)
 # 150 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
 2 continue
@@ -188,7 +188,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
       if(ierrl/=0) then
         call iotk_error_issue(ierrl,"iotk_write_end",__FILE__,__LINE__)
 # 161 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
         goto 1
       end if
       lunit = iotk_phys_unit(unit)
@@ -196,7 +196,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
       if(.not.associated(this_unit)) then
         call iotk_error_issue(ierrl,"iotk_write_end",__FILE__,__LINE__)
 # 167 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
         goto 1
       end if
     end if
@@ -239,7 +239,7 @@ subroutine iotk_write_pi_x(unit,name,attr,dummy,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_pi",__FILE__,__LINE__)
 # 208 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
 # 208 "iotk_write.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 208 "iotk_write.spp"
@@ -252,7 +252,7 @@ call iotk_error_write(ierrl,"name",iotk_strtrim(name))
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_pi",__FILE__,__LINE__)
 # 215 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
       goto 1
     end if
   end if
@@ -260,21 +260,21 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_pi",__FILE__,__LINE__)
 # 221 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   call iotk_strcat(tag,attrl,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_pi",__FILE__,__LINE__)
 # 226 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1 
   end if
   call iotk_inquire(lunit,binary,stream,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_pi",__FILE__,__LINE__)
 # 231 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   if(associated(this_unit)) indent = iotk_indent*(this_unit%level+1)
@@ -282,7 +282,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_pi",__FILE__,__LINE__)
 # 237 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
 1 continue
@@ -324,7 +324,7 @@ subroutine iotk_write_comment_x(unit,text,dummy,ierr)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_comment",__FILE__,__LINE__)
 # 277 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   if(associated(this)) indent = iotk_indent*(this%level+1)
@@ -332,7 +332,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_comment",__FILE__,__LINE__)
 # 283 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
 1 continue
@@ -372,7 +372,7 @@ subroutine iotk_write_empty_x(unit,name,attr,dummy,ierr)
   if(.not.iotk_check_name(name)) then
     call iotk_error_issue(ierrl,"iotk_write_empty",__FILE__,__LINE__)
 # 321 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
 # 321 "iotk_write.spp"
 call iotk_error_msg(ierrl,'Wrong tag name')
 # 321 "iotk_write.spp"
@@ -385,7 +385,7 @@ call iotk_error_write(ierrl,"name",trim(name))
     if(ierrl/=0) then
       call iotk_error_issue(ierrl,"iotk_write_empty",__FILE__,__LINE__)
 # 328 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
       goto 1
     end if
   end if
@@ -393,21 +393,21 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_empty",__FILE__,__LINE__)
 # 334 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   call iotk_strcat(tag,attrl,ierr=ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_empty",__FILE__,__LINE__)
 # 339 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   call iotk_inquire(lunit,binary,stream,ierrl)
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_empty",__FILE__,__LINE__)
 # 344 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
   if(associated(this_unit)) indent = iotk_indent*(this_unit%level+1)
@@ -415,7 +415,7 @@ call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
   if(ierrl/=0) then
     call iotk_error_issue(ierrl,"iotk_write_empty",__FILE__,__LINE__)
 # 350 "iotk_write.spp"
-call iotk_error_msg(ierrl,"CVS Revision: 1.21 ")
+call iotk_error_msg(ierrl,"CVS Revision: 1.23 ")
     goto 1
   end if
 1 continue
@@ -443,6 +443,7 @@ subroutine iotk_write_tag_x(unit,control,tag,binary,indent,ierr)
   integer :: taglen,taglenp
   integer :: iostat,pos1,pos2
   integer :: lindent
+  integer :: mannl, lname
   character(iotk_linlenx), parameter :: indentstr=""
   character(4) :: begin,end
   lindent = min(len(indentstr),indent,iotk_maxindent)
@@ -470,21 +471,22 @@ subroutine iotk_write_tag_x(unit,control,tag,binary,indent,ierr)
     taglenp = taglen + len_trim(begin) + len_trim(end) + 2 + lindent
     header  = control + taglenp*(iotk_ncontrol+1)
     header2 = 128     + taglenp*(iotk_ncontrol+1)
-! taglenp e' la lunghezza TOTALE (inclusi delimitatori e newlines)
+! taglenp is the TOTAL length (including tag delimiters and newlines)
     write(unit,iostat=iostat) header
     if(iostat/=0) then
       call iotk_error_issue(ierr,"iotk_write_tag",__FILE__,__LINE__)
-# 408 "iotk_write.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.21 ")
-# 408 "iotk_write.spp"
+# 409 "iotk_write.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.23 ")
+# 409 "iotk_write.spp"
 call iotk_error_msg(ierr,'error writing the header record')
-# 408 "iotk_write.spp"
+# 409 "iotk_write.spp"
 call iotk_error_write(ierr,"iostat",iostat)
     end if
     write(unit,iostat=iostat) header2,iotk_newline//indentstr(1:lindent)// &
                          trim(begin)//tag(1:taglen)//trim(end)//iotk_newline
   else
     pos1=0
+    lname = min(lindent+1+scan(tag," "),len(indentstr))
     write(unit,"(a)",iostat=iostat,advance="no") indentstr(1:lindent)//trim(begin)
     do
       if(pos1+iotk_linlen >= taglen ) then
@@ -496,20 +498,29 @@ call iotk_error_write(ierr,"iostat",iostat)
           if(pos2<=pos1+iotk_linlen) pos2=taglen+1
         end if
       end if
-      write(unit,"(a)",iostat=iostat,advance="no") tag(pos1+1:pos2-1)
+      ! Look for a manual newline between pos1 and pos2
+      mannl = scan(tag(pos1+1:pos2-1),iotk_newline)
+      if ( mannl > 0 ) then
+         pos2 = pos1+mannl+1
+         write(unit,"(a)",iostat=iostat,advance="no") &
+            tag(pos1+1:pos2-1)//indentstr(1:lname)
+      else
+         write(unit,"(a)",iostat=iostat,advance="no") tag(pos1+1:pos2-1)
+      endif
       pos1=pos2
       if(pos1>taglen) exit
+      if(mannl>0)     cycle
       write(unit,*,iostat=iostat)
     end do
     write(unit,"(a)",iostat=iostat) trim(end)
   end if
   if(iostat/=0) then
     call iotk_error_issue(ierr,"iotk_write_tag",__FILE__,__LINE__)
-# 433 "iotk_write.spp"
-call iotk_error_msg(ierr,"CVS Revision: 1.21 ")
-# 433 "iotk_write.spp"
+# 444 "iotk_write.spp"
+call iotk_error_msg(ierr,"CVS Revision: 1.23 ")
+# 444 "iotk_write.spp"
 call iotk_error_msg(ierr,'error writing')
-# 433 "iotk_write.spp"
+# 444 "iotk_write.spp"
 call iotk_error_write(ierr,"iostat",iostat)
   end if
 end subroutine iotk_write_tag_x
