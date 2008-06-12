@@ -316,7 +316,7 @@ CONTAINS
        !
        IF ( lfound ) THEN
           !
-          CALL warning( stdout, 'Invalid kpt weights from DFT data. Recalculated')
+          CALL warning( 'kpoints_read_ext', 'Invalid kpt weights from DFT data. Recalculated')
           wk(:) = ONE/REAL(nkpts, dbl)
        ENDIF
 

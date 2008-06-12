@@ -15,9 +15,9 @@
    ! simple Gram Schmidt procedure.
    ! The rndm() function is used as random number generator.
    !
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : ZERO, ONE, CZERO, EPS_m6
-   USE util_module, ONLY : mat_mul
+   USE kinds,                 ONLY : dbl
+   USE constants,             ONLY : ZERO, ONE, CZERO, EPS_m6
+   USE util_module,           ONLY : mat_mul
    IMPLICIT NONE
 
    !
@@ -112,15 +112,15 @@ END SUBROUTINE random_orthovect
    !
    ! generates a non-null random vector
    !
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : ZERO, EPS_m6
+   USE kinds,                   ONLY : dbl
+   USE constants,               ONLY : ZERO, EPS_m6
+   USE random_numbers_module,   ONLY : rndm
+   !
    IMPLICIT NONE
    INTEGER,      INTENT(in) :: ndim
    COMPLEX(dbl), INTENT(out):: z(ndim)
-
-   ! external function
-   REAL(dbl) :: rndm  
-
+   !
+   !
    INTEGER, PARAMETER :: nmax = 10     ! after NMAX attempt if fails
    INTEGER   :: i, ncount
    LOGICAL   :: found

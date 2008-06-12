@@ -15,7 +15,7 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   USE kinds,                   ONLY : dbl
   USE constants,               ONLY : TPI, CZERO, CI
   USE log_module,              ONLY : log_push, log_pop
-  USE ions_module,             ONLY : nat, ntyp => nsp, ityp, tau
+  USE ions_module,             ONLY : nat, nsp, ityp, tau
   USE lattice_module,          ONLY : tpiba
   USE struct_fact_data_module, ONLY : eigts1, eigts2, eigts3
   USE ggrids_module,           ONLY : g, igv
@@ -23,7 +23,7 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !
   USE us_module,               ONLY : dq, tab
   USE uspp,                    ONLY : nkb, nhtol, nhtolm, indv
-  USE uspp_param,              ONLY : lmaxkb, nbeta, nhm, nh
+  USE uspp_param,              ONLY : upf, lmaxkb, nhm, nh
   USE timing_module
   !
   IMPLICIT NONE
@@ -75,9 +75,9 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   jkb = 0
   vkb_(:,:) = CZERO
   !
-  DO nt = 1, ntyp
+  DO nt = 1, nsp
      ! calculate beta in G-space using an interpolation table
-     DO nb = 1, nbeta (nt)
+     DO nb = 1, upf(nt)%nbeta
         DO ig = 1, npw_
            px = qg (ig) / dq - int (qg (ig) / dq)
            ux = 1.d0 - px

@@ -35,8 +35,8 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    USE lattice_module,  ONLY : alat
    USE us_module,       ONLY : okvan
    USE uspp,            ONLY : nkb, qb
-   USE uspp_param,      ONLY : nh, tvanp
-   USE ions_module,     ONLY : nat, ntyp => nsp, ityp, tau
+   USE uspp_param,      ONLY : upf, nh
+   USE ions_module,     ONLY : nat, nsp, ityp, tau
    USE becmod,          ONLY : becp
    USE log_module,      ONLY : log_push, log_pop
    USE timing_module
@@ -67,8 +67,8 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    !
    !
    ijkb0 = 0
-   DO nt = 1, ntyp
-      IF ( tvanp(nt) ) THEN
+   DO nt = 1, nsp
+      IF ( upf(nt)%tvanp ) THEN
          DO na = 1, nat
             !
             ! compute the phase factor e^i(b*tau)

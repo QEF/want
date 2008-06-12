@@ -27,8 +27,8 @@ SUBROUTINE s_psi( lda, n, m, ik, psi, spsi )
   USE us_module,     ONLY : okvan
   USE uspp,          ONLY : nkb, vkb, vkb_ik, qq
   USE becmod,        ONLY : becp
-  USE uspp_param,    ONLY : nh, tvanp
-  USE ions_module,   ONLY : nat, ntyp => nsp, ityp
+  USE uspp_param,    ONLY : upf, nh
+  USE ions_module,   ONLY : nat, nsp, ityp
   USE log_module,    ONLY : log_push, log_pop
   USE timing_module
   IMPLICIT NONE
@@ -88,8 +88,8 @@ SUBROUTINE s_psi( lda, n, m, ik, psi, spsi )
        ps(:,:) = CZERO
        !
        ijkb0 = 0
-       DO nt = 1, ntyp
-          IF ( tvanp(nt) ) THEN
+       DO nt = 1, nsp
+          IF ( upf(nt)%tvanp ) THEN
              DO na = 1, nat
                 IF ( ityp(na) == nt ) THEN
                    DO ibnd = 1, m

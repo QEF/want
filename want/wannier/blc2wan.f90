@@ -220,7 +220,7 @@
       IF ( TRIM(spin_component) /= "none" .AND. nspin_file == 1 ) &
                                   CALL errore('blc2wan','calculation is spin-unpolarized',3)
       IF ( ABS(energy_ref) > EPS_m6 .AND. .NOT. ldynam ) &
-           CALL warning( stdout, "energy_ref specified for a static operator" )
+           CALL warning( 'blc2wan', 'energy_ref specified for a static operator' )
 
 
       !
