@@ -56,13 +56,6 @@
    USE subspace_module,   ONLY : dimwann, disentangle_thr, alpha_dis, maxiter_dis
    USE localization_module, ONLY : alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg, &
                                  wannier_thr, a_condmin, niter_condmin, dump_condmin, xcell
-   !
-   ! pseudopotential modules
-   USE pseud_module,      ONLY : zp, alps, alpc, cc, aps, nlc, nnl, lmax, lloc, &
-                                 a_nlcc, b_nlcc, alpha_nlcc
-   USE atom_module,       ONLY : mesh, xmin, dx, numeric, nlcc
-   USE uspp_param,        ONLY : nqf, rinner, nqlc, nbeta, iver, lll, psd, tvanp
-   USE funct_module
    ! 
    IMPLICIT NONE
 
@@ -93,11 +86,10 @@
    LOGICAL                :: lpseudo
    LOGICAL                :: ldft
 
-   INTEGER                :: ik, ia, ib
-   INTEGER                :: i, j, is, nt, l, isym
+   INTEGER                :: ik, ia
+   INTEGER                :: i, j, is, nt, isym
    REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:), tau_cry(:,:)
    INTEGER                :: ierr
-   CHARACTER(5)           :: ps
    CHARACTER(2)           :: str
 
 !
@@ -310,7 +302,7 @@
        IF ( lpseudo ) THEN
            !
            IF ( .NOT. use_pseudo )  THEN
-               CALL warning( iunit, 'Pseudopots not read, assumed to be norm cons.')
+               CALL warning( 'summary', 'Pseudopots not read, assumed to be norm cons.')
            ELSEIF ( use_uspp ) THEN
                WRITE(iunit, " (2x,'Calculation is done within US pseudopot.',/)") 
            ENDIF
@@ -323,65 +315,14 @@
            ! ... pseudo summary from Espresso
            !
            IF ( use_pseudo ) THEN 
+               !
                DO nt = 1, nsp
-                 IF (tvanp (nt) ) THEN
-                    ps = '(US)'
-                    WRITE(iunit, '(/5x,"Pseudo(",i2,") is ",a2, &
-                         &        1x,a5,"   zval =",f5.1,"   lmax=",i2, &
-                         &        "   lloc=",i2)') nt, psd (nt) , ps, zp (nt) , lmax (nt) &
-                         &, lloc (nt)
-                    WRITE(iunit, '(5x,"Version ", 3i3, " of US pseudo code")') &
-                         (iver (i, nt) , i = 1, 3)
-                    WRITE(iunit, '(5x,"Using log mesh of ", i5, " points")') mesh (nt)
-                    WRITE(iunit, '(5x,"The pseudopotential has ",i2, &
-                         &       " beta functions with: ")') nbeta (nt)
-                    DO ib = 1, nbeta (nt)
-                       WRITE(iunit, '(15x," l(",i1,") = ",i3)') ib, lll (ib, nt)
-                    ENDDO
-                    WRITE(iunit, '(5x,"Q(r) pseudized with ", &
-                         &          i2," coefficients,  rinner = ",3f8.3,/ &
-                         &          52x,3f8.3,/ &
-                         &          52x,3f8.3)') nqf(nt), (rinner(i,nt), i=1,nqlc(nt) )
-                 ELSE
-                    IF (nlc(nt) == 1 .AND. nnl(nt) == 1) THEN
-                        ps = '(vbc)'
-                    ELSEIF (nlc(nt) == 2 .AND. nnl(nt) == 3) THEN
-                        ps = '(bhs)'
-                    ELSEIF (nlc(nt) == 1 .AND. nnl(nt) == 3) THEN
-                        ps = '(our)'
-                    ELSE
-                        ps = '     '
-                    ENDIF
-   
-                    WRITE(iunit, '(/5x,"Pseudo(",i2,") is ",a2, 1x,a5,"   zval =",f5.1,&
-                         &      "   lmax=",i2,"   lloc=",i2)') &
-                                    nt, psd(nt), ps, zp(nt), lmax(nt), lloc(nt)
-                    IF (numeric (nt) ) THEN
-                        WRITE(iunit, '(5x,"(in numerical form: ",i5,&
-                             &" grid points",", xmin = ",f5.2,", dx = ",f6.4,")")')&
-                             & mesh (nt) , xmin (nt) , dx (nt)
-                    ELSE
-                        WRITE(iunit, '(/14x,"i=",7x,"1",13x,"2",10x,"3")')
-                        WRITE(iunit, '(/5x,"core")')
-                        WRITE(iunit, '(5x,"alpha =",4x,3g13.5)') (alpc (i, nt) , i = 1, 2)
-                        WRITE(iunit, '(5x,"a(i)  =",4x,3g13.5)') (cc (i, nt) , i = 1, 2)
-                        DO l = 0, lmax (nt)
-                            WRITE(iunit,'(/5x,"l = ",i2)') l
-                            WRITE(iunit,'(5x,"alpha =",4x,3g13.5)') (alps (i, l, nt), i=1,3)
-                            WRITE(iunit,'(5x,"a(i)  =",4x,3g13.5)') (aps (i, l, nt) , i=1,3)
-                            WRITE(iunit,'(5x,"a(i+3)=",4x,3g13.5)') (aps (i, l, nt) , i=4,6)
-                        ENDDO
-                        IF (nlcc(nt)) WRITE(iunit,20) a_nlcc(nt), b_nlcc(nt), alpha_nlcc(nt)
-                        20 FORMAT(/5x,'nonlinear core correction: ', &
-                             &     'rho(r) = ( a + b r^2) exp(-alpha r^2)', &
-                             & /,5x,'a    =',4x,g11.5, &
-                             & /,5x,'b    =',4x,g11.5, &
-                             & /,5x,'alpha=',4x,g11.5)
-
-                    ENDIF
-                 ENDIF  ! PP type
-              ENDDO     ! atomic species
-           ENDIF        ! whether PP are read
+                 !
+                 CALL print_ps_info( iunit, nt )
+                 !
+               ENDDO
+               !
+           ENDIF
            !
            ! ... end of pseudo summary from Espresso
            !
@@ -524,4 +465,69 @@
    CALL log_pop( 'summary' )
    !
 END SUBROUTINE summary_x
+!
+!************************************************************
+SUBROUTINE print_ps_info( iunit, nt )
+  !************************************************************
+  !
+  ! Copyright (C) 2001-2007 PWSCF group
+  ! This file is distributed under the terms of the
+  ! GNU General Public License. See the file `License'
+  ! in the root directory of the present distribution,
+  ! or http://www.gnu.org/copyleft/gpl.txt .
+  !
+  USE ions_module,     ONLY : psfile
+  USE atom_module,     ONLY : rgrid
+  USE uspp_param,      ONLY : upf
+  USE funct_module,    ONLY : dft_is_gradient
+
+  !
+  INTEGER, INTENT(IN) :: iunit, nt
+  !
+  CHARACTER(LEN=35) :: ps
+     !
+     IF ( upf(nt)%tpawp ) THEN
+        ! Note: for PAW pseudo also tvanp is .true.
+        ps="Projector augmented-wave"
+     ELSE IF ( upf(nt)%tvanp ) THEN
+        ps='Ultrasoft'
+     ELSE
+        ps='Norm-conserving'
+     END IF
+     !
+     IF ( upf(nt)%nlcc ) ps = TRIM(ps) // ' + core correction'
+     !
+     WRITE( iunit, '(/5x,"PseudoPot. #",i2," for ",a2," read from file ",a)')&
+             nt, upf(nt)%psd, TRIM (psfile(nt))
+     !
+     WRITE( iunit, '( 5x,"Pseudo is ",a,", Zval =",f5.1)') &
+            TRIM (ps), upf(nt)%zp
+     !
+     WRITE( iunit, '(5x,A)') TRIM(upf(nt)%generated)
+     !
+     IF(upf(nt)%tpawp) &
+        WRITE( iunit, '(5x,a,a)') &
+               "Shape of augmentation charge: ", TRIM(upf(nt)%paw%augshape)
+     WRITE( iunit, '(5x,"Using radial grid of ", i4, " points, ", &
+         &i2," beta functions with: ")') rgrid(nt)%mesh, upf(nt)%nbeta
+     DO ib = 1, upf(nt)%nbeta
+        IF (ib<10) THEN
+           WRITE( iunit, '(15x," l(",i1,") = ",i3)') ib, upf(nt)%lll(ib)
+        ELSE
+           WRITE( iunit, '(14x," l(",i2,") = ",i3)') ib, upf(nt)%lll(ib)
+        ENDIF
+     END DO
+
+     IF ( upf(nt)%tvanp ) THEN
+        IF (upf(nt)%nqf==0) THEN
+           WRITE( iunit, '(5x,"Q(r) pseudized with 0 coefficients ",/)') 
+        ELSE
+           WRITE( iunit, '(5x,"Q(r) pseudized with ", &
+           &          i2," coefficients,  rinner = ",3f8.3,/ &
+           &          52x,3f8.3,/ 52x,3f8.3)') &
+           &          upf(nt)%nqf, (upf(nt)%rinner(i), i=1,upf(nt)%nqlc)
+        END IF
+     ENDIF
+
+END SUBROUTINE print_ps_info
 

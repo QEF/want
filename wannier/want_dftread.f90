@@ -44,7 +44,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo, nee
    !
    USE control_module,           ONLY : use_uspp
    USE us_module,                ONLY : okvan
-   USE uspp_param,               ONLY : tvanp
+   USE uspp_param,               ONLY : upf
    USE ions_module,              ONLY : uspp_calculation
    ! 
    IMPLICIT NONE
@@ -180,7 +180,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo, nee
       !
       CALL readpp()
       !
-      okvan = ANY( tvanp(:) )
+      okvan = ANY( upf(:)%tvanp )
       uspp_calculation = okvan
       use_uspp = okvan
       ! 

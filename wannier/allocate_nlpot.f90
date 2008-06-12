@@ -27,7 +27,7 @@ subroutine allocate_nlpot
   USE constants,       ONLY : ZERO, ONE
   USE parameters,      ONLY : nbrx, nchix
   USE log_module,      ONLY : log_push, log_pop
-  USE ions_module,     ONLY : nat, ntyp => nsp, ityp
+  USE ions_module,     ONLY : nat, nsp, ityp
   USE lattice_module,  ONLY : tpiba
   USE windows_module,  ONLY : nspin
   USE wfc_data_module, ONLY : npwkx
@@ -36,7 +36,7 @@ subroutine allocate_nlpot
   USE us_module,       ONLY : qrad, tab, tab_at, dq, nqx, nqxq
   USE uspp,            ONLY : indv, nhtol, nhtolm, qq, qb, dvan, deeq, vkb, nkb, &
                               nkbus, nhtoj, becsum
-  USE uspp_param,      ONLY : lmaxq, lmaxkb, lll, nbeta, nh, nhm, tvanp
+  USE uspp_param,      ONLY : upf, lmaxq, lmaxkb, nh, nhm
   !
   ! added for WFs
   USE kpoints_module,  ONLY : nb
@@ -62,17 +62,17 @@ subroutine allocate_nlpot
   !     calculate the number of beta functions for each atomic type
   !
   lmaxkb = - 1
-  do nt = 1, ntyp
+  do nt = 1, nsp
      nh (nt) = 0
-     do ib = 1, nbeta (nt)
-        nh (nt) = nh (nt) + 2 * lll (ib, nt) + 1
-        lmaxkb = max (lmaxkb, lll (ib, nt) )
+     do ib = 1, upf(nt)%nbeta
+        nh (nt) = nh (nt) + 2 * upf(nt)%lll(ib) + 1
+        lmaxkb = MAX (lmaxkb, upf(nt)%lll(ib) )
      enddo
   enddo
   !
   ! calculate the maximum number of beta functions
   !
-  nhm = MAXVAL (nh (1:ntyp))
+  nhm = MAXVAL (nh (1:nsp))
   !
   ! calculate the number of beta functions of the solid
   !
@@ -81,34 +81,40 @@ subroutine allocate_nlpot
   do na = 1, nat
      nt = ityp(na)
      nkb = nkb + nh (nt)
-     if (tvanp(nt)) nkbus = nkbus + nh (nt)
+     if ( upf(nt)%tvanp ) nkbus = nkbus + nh (nt)
   enddo
   !
-  ALLOCATE (indv( nhm, ntyp), STAT=ierr)    
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating indv',ABS(ierr))
-  ALLOCATE (nhtol(nhm, ntyp), STAT=ierr)    
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating nhtol',ABS(ierr))
-  ALLOCATE (nhtolm(nhm, ntyp), STAT=ierr)    
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating nhtolm',ABS(ierr))
-  ALLOCATE (nhtoj(nhm, ntyp), STAT=ierr)    
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating nntoj',ABS(ierr))
+  ALLOCATE (indv( nhm, nsp), STAT=ierr)    
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating indv',ABS(ierr))
+  !
+  ALLOCATE (nhtol(nhm, nsp), STAT=ierr)    
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating nhtol',ABS(ierr))
+  !
+  ALLOCATE (nhtolm(nhm, nsp), STAT=ierr)    
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating nhtolm',ABS(ierr))
+  !
+  ALLOCATE (nhtoj(nhm, nsp), STAT=ierr)    
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating nntoj',ABS(ierr))
+  !
   ALLOCATE (deeq( nhm, nhm, nat, nspin), STAT=ierr)    
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating deeq',ABS(ierr))
-
-  ALLOCATE (qq(   nhm, nhm, ntyp), STAT=ierr)    
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating qq',ABS(ierr))
-  ALLOCATE (dvan( nhm, nhm, ntyp), STAT=ierr)    
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating deeq',ABS(ierr))
+  !
+  !
+  ALLOCATE (qq( nhm, nhm, nsp), STAT=ierr)    
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating qq',ABS(ierr))
+  !
+  ALLOCATE (dvan( nhm, nhm, nsp), STAT=ierr)    
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating dvan',ABS(ierr))
   !
   ! added for Wannier calc. (ANDREA)
-  ALLOCATE (qb( nhm, nhm, ntyp, nb ), STAT=ierr)
-     IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
+  ALLOCATE (qb( nhm, nhm, nsp, nb ), STAT=ierr)
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating qb',ABS(ierr))
   !
   nqxq = INT (( SQRT(gcutm) + SQRT(xqq(1)**2 + xqq(2)**2 + xqq(3)**2) ) / dq ) + 4
   lmaxq = 2*lmaxkb+1
   !
   IF (lmaxq > 0) THEN 
-       ALLOCATE (qrad( nqxq, nbrx*(nbrx+1)/2, lmaxq, ntyp), STAT=ierr)    
+       ALLOCATE (qrad( nqxq, nbrx*(nbrx+1)/2, lmaxq, nsp), STAT=ierr)    
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qrad',ABS(ierr))
   ENDIF
   !
@@ -127,9 +133,9 @@ subroutine allocate_nlpot
   !
   nqx = INT (SQRT (ecutwfc) / dq ) + 4
 
-  ALLOCATE (tab( nqx , nbrx , ntyp), STAT=ierr)    
+  ALLOCATE (tab( nqx , nbrx , nsp), STAT=ierr)    
       IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab',ABS(ierr))
-  ALLOCATE (tab_at( nqx , nchix , ntyp), STAT=ierr)
+  ALLOCATE (tab_at( nqx , nchix , nsp), STAT=ierr)
       IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab_at',ABS(ierr))
 
   CALL log_pop ( 'allocate_nlpot' )

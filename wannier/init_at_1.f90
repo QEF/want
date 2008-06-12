@@ -13,13 +13,13 @@ SUBROUTINE init_at_1()
   ! of the atomic wavefunctions.
   !
   USE kinds,           ONLY : dbl
-  USE parameters,      ONLY : nchix
   USE constants,       ONLY : ZERO, FPI
   USE log_module,      ONLY : log_push, log_pop
-  USE atom_module,     ONLY : nchi, lchi, chi, oc, r, rab, msh
+  USE atom_module,     ONLY : rgrid, msh
   USE lattice_module,  ONLY : omega
-  USE ions_module,     ONLY : ntyp => nsp
+  USE ions_module,     ONLY : nsp
   USE us_module,       ONLY : tab_at, nqx, dq
+  USE uspp_param,      ONLY : upf
   USE timing_module,   ONLY : timing
   !
   IMPLICIT NONE
@@ -33,10 +33,10 @@ SUBROUTINE init_at_1()
   CALL timing ('init_at_1', OPR='start')
   CALL log_push ('init_at_1')
 
-  ndm = MAXVAL (msh(1:ntyp))
+  ndm = MAXVAL (msh(1:nsp))
 
   ALLOCATE (aux(ndm),vchi(ndm), STAT=ierr)
-     IF (ierr/=0) CALL errore('init_at_1','allocating aux, vchi', ABS(ierr))
+  IF (ierr/=0) CALL errore('init_at_1','allocating aux, vchi', ABS(ierr))
 
   !
   ! chiq = radial fourier transform of atomic orbitals chi
@@ -50,24 +50,24 @@ SUBROUTINE init_at_1()
   lastq = nqx
 
   tab_at(:,:,:) = ZERO
-  DO nt = 1, ntyp
-     DO nb = 1, nchi (nt)
-        IF (oc (nb, nt) >= 0.d0) then
-           l = lchi (nb, nt)
+  DO nt = 1, nsp
+     DO nb = 1, upf(nt)%nwfc
+        IF ( upf(nt)%oc(nb) >= 0.d0) then
+           l = upf(nt)%lchi (nb)
            DO iq = startq, lastq
               q = dq * (iq - 1)
-              call sph_bes (msh(nt), r(1,nt), q, l, aux)
+              call sph_bes (msh(nt), rgrid(nt)%r, q, l, aux)
               DO ir = 1, msh(nt)
-                 vchi(ir) = chi(ir,nb,nt) * aux(ir) * r(ir,nt)
+                 vchi(ir) = upf(nt)%chi(ir,nb) * aux(ir) * rgrid(nt)%r(ir)
               ENDDO
-              CALL simpson (msh(nt), vchi, rab(1,nt), vqint)
+              CALL simpson (msh(nt), vchi, rgrid(nt)%rab, vqint)
               tab_at (iq, nb, nt) = vqint * pref
            ENDDO
         ENDIF
      ENDDO
  ENDDO
 !#ifdef __PARA
-!  CALL reduce (nqx * nchix * ntyp, tab_at)
+!  CALL reduce (nqx * nchix * nsp, tab_at)
 !#endif
 
   DEALLOCATE(aux ,vchi, STAT=ierr)

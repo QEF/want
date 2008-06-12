@@ -31,6 +31,8 @@
                             ONLY : struct_fact_data_deallocate, strf_alloc => alloc 
    USE us_module,           ONLY : us_deallocate
    USE uspp,                ONLY : uspp_deallocate
+   USE uspp_param,          ONLY : uspp_param_deallocate
+   USE atom_module,         ONLY : atom_deallocate
    USE hamiltonian_module,  ONLY : hamiltonian_deallocate, ham_alloc => alloc
    IMPLICIT NONE
       
@@ -49,6 +51,8 @@
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
                             CALL us_deallocate()
                             CALL uspp_deallocate()
+                            CALL uspp_param_deallocate()
+                            CALL atom_deallocate()
 
 END SUBROUTINE cleanup
 

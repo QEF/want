@@ -19,10 +19,10 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   USE constants,       ONLY : ZERO, CI
   USE timing_module,   ONLY : timing
   USE log_module,      ONLY : log_push, log_pop
-  USE atom_module,     ONLY : nchi, lchi, oc
   USE ions_module,     ONLY : ityp, tau
   USE lattice_module,  ONLY : alat
   USE us_module,       ONLY : tab_at, dq
+  USE uspp_param,      ONLY : upf
   USE wfc_data_module, ONLY : igsort
   USE ggrids_module,   ONLY : igv
   USE struct_fact_data_module, &
@@ -66,8 +66,8 @@ SUBROUTINE atomic_wfc (ik, xk, iatom, il, npw, vkg, ylm, wfcatom)
   nt = ityp( iatom )
   !
   nb = -1
-  DO ib = 1, nchi(nt)
-     IF ( lchi(ib,nt) == il .AND. oc(ib,nt) >= ZERO ) nb = ib
+  DO ib = 1, upf(nt)%nwfc
+     IF ( upf(nt)%lchi(ib) == il .AND. upf(nt)%oc(ib) >= ZERO ) nb = ib
   ENDDO
   IF ( nb == -1 ) CALL errore('atomic_wfc','searching for nb with the required param', iatom)
   

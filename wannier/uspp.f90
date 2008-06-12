@@ -9,39 +9,50 @@ MODULE uspp_param
   !
   ! ... Ultrasoft and Norm-Conserving pseudopotential parameters
   !  
-  USE kinds,      ONLY : dbl
-  USE parameters, ONLY : lqmax, nbrx, npsx, nqfx, ndmx
+  USE kinds,                ONLY : DP => dbl
+  USE parameters,           ONLY : npsx
+  USE pseudo_types_module,  ONLY : pseudo_upf, deallocate_pseudo_upf
   !
   SAVE
   !
-  CHARACTER(LEN=2 ) ::  psd(npsx)   ! name of the pseudopotential
+  TYPE (pseudo_upf),  ALLOCATABLE, TARGET :: upf(:)
 
-  REAL(dbl) :: &
-       dion(nbrx,nbrx,npsx),       &! D_{mu,nu} parameters (in the atomic case)
-       betar(ndmx,nbrx,npsx),      &! radial beta_{mu} functions
-       jjj(nbrx,npsx),             &! total angular momentum of the beta function
-       qqq(nbrx,nbrx,npsx),        &! q_{mu,nu} parameters (in the atomic case)
-       qfunc(ndmx,nbrx,nbrx,npsx), &! Q_{mu,nu}(|r|) function for |r|> r_L
-       qfcoef(nqfx,lqmax,nbrx,nbrx,npsx), &! coefficients for Q for |r|<r_L
-       vloc_at(ndmx,npsx),                &! local potential
-       rinner(lqmax,npsx)                  ! values of r_L
   INTEGER :: &
-       nbeta(npsx),          &! number of beta functions
        nh(npsx),             &! number of beta functions per atomic type
        nhm,                  &! max number of different beta functions per atom
-       kkbeta(npsx),         &! point where the beta are zero
-       nqf(npsx),            &! number of coefficients for Q
-       nqlc(npsx),           &! number of angular momenta in Q
-       ifqopt(npsx),         &! level of q optimization
-       lll(nbrx,npsx),       &! angular momentum of the beta function
+       nbetam,               &! max number of beta functions
        iver(3,npsx)           ! version of the atomic code
   INTEGER :: &
        lmaxkb,               &! max angular momentum
        lmaxq                  ! max angular momentum + 1 for Q functions
   LOGICAL :: &
-       tvanp(npsx),          &! if .TRUE. the atom is of Vanderbilt type
-       newpseudo(npsx)        ! if .TRUE. multiple projectors are allowed
+       newpseudo(npsx),      &! if .TRUE. multiple projectors are allowed
+       oldvan(npsx)           ! old version of Vanderbilt PPs, using 
+                              ! Herman-Skillman grid - obsolescent
+
+CONTAINS
+
+  !-----------------------------------------------------------------------
+  SUBROUTINE uspp_param_deallocate()
+    !-----------------------------------------------------------------------
+    !
+    IMPLICIT NONE
+    INTEGER :: nt
+    !
+    IF ( ALLOCATED( upf ) ) THEN
+        !
+        DO nt = 1, SIZE( upf )
+            CALL deallocate_pseudo_upf( upf(nt) )
+        ENDDO
+        !
+        DEALLOCATE( upf )
+        !
+    ENDIF
+    !   
+  END SUBROUTINE uspp_param_deallocate
+
 END MODULE uspp_param
+!
 !
 MODULE uspp
   !
@@ -49,16 +60,15 @@ MODULE uspp
   ! - Clebsch-Gordan coefficients "ap", auxiliary variables "lpx", "lpl"
   ! - beta and q functions of the solid
   !
-  USE kinds,       ONLY : dbl
-  USE parameters,  ONLY : lmaxx, lqmax
-  USE util_module, ONLY : mat_inv
+  USE kinds,      ONLY : DP => dbl
+  USE parameters, ONLY : lmaxx, lqmax
   IMPLICIT NONE
   PRIVATE
   SAVE
   PUBLIC :: nlx, lpx, lpl, ap, aainit, indv, nhtol, nhtolm, nkb, nkbus, &
-       vkb, vkb_ik, dvan, deeq, qq, qb, nhtoj, becsum, uspp_deallocate
+            vkb, vkb_ik, dvan, deeq, qq, qb, nhtoj, ijtoh, beta, becsum, okvan, &
+            uspp_deallocate
   PUBLIC :: qq_so, dvan_so, deeq_nc 
-  
 
   INTEGER, PARAMETER :: &
        nlx  = (lmaxx+1)**2, &! maximum number of combined angular momentum
@@ -66,7 +76,7 @@ MODULE uspp
   INTEGER ::             &! for each pair of combined momenta lm(1),lm(2): 
        lpx(nlx,nlx),     &! maximum combined angular momentum LM
        lpl(nlx,nlx,mx)    ! list of combined angular momenta  LM
-  REAL(dbl) :: &
+  REAL(DP) :: &
        ap(lqmax*lqmax,nlx,nlx)
   ! Clebsch-Gordan coefficients for spherical harmonics
   !
@@ -76,28 +86,36 @@ MODULE uspp
   INTEGER, ALLOCATABLE ::&
        indv(:,:),        &! indes linking  atomic beta's to beta's in the solid
        nhtol(:,:),       &! correspondence n <-> angular momentum l
-       nhtolm(:,:)        ! correspondence n <-> combined lm index for (l,m)
+       nhtolm(:,:),      &! correspondence n <-> combined lm index for (l,m)
+       ijtoh(:,:,:)       ! correspondence beta indexes ih,jh -> composite index ijh
+  !
+  LOGICAL :: &
+       okvan = .FALSE.    ! if .TRUE. at least one pseudo is Vanderbilt
   !
   INTEGER :: vkb_ik       ! indicate for which ik vkb has been calculated
-  COMPLEX(dbl), ALLOCATABLE   :: &
+  COMPLEX(DP), ALLOCATABLE, TARGET :: &
        vkb(:,:)                ! all beta functions in reciprocal space
-                               ! indeces: plw, betaf
-  REAL(dbl), ALLOCATABLE :: &
+  REAL(DP), ALLOCATABLE :: &
+       becsum(:,:,:)           ! \sum_i f(i) <psi(i)|beta_l><beta_m|psi(i)>
+  REAL(DP), ALLOCATABLE :: &
        dvan(:,:,:),           &! the D functions of the solid
        deeq(:,:,:,:),         &! the integral of V_eff and Q_{nm} 
-       becsum(:,:,:),         &! \sum_i f(i) <psi(i)|beta_l><beta_m|psi(i)>
        qq(:,:,:),             &! the q functions in the solid
        nhtoj(:,:)              ! correspondence n <-> total angular momentum
-  COMPLEX(dbl), ALLOCATABLE :: & 
+  !
+  COMPLEX(DP), ALLOCATABLE :: & 
        qb(:,:,:,:)             ! the b FT of the Q(r) for each kpt (i,j,ia,ib)
   !
-  COMPLEX(dbl), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:
+  COMPLEX(DP), ALLOCATABLE :: & ! variables for spin-orbit/noncolinear case:
        qq_so(:,:,:,:),           &! Q_{nm}
        dvan_so(:,:,:,:),         &! D_{nm}
        deeq_nc(:,:,:,:)           ! \int V_{eff}(r) Q_{nm}(r) dr 
   !
   ! spin-orbit coupling: qq and dvan are complex, qq has additional spin index
   ! noncolinear magnetism: deeq is complex (even in absence of spin-orbit)
+  !
+  REAL(DP), ALLOCATABLE :: &
+       beta(:,:,:)           ! beta functions for CP (without struct.factor)
   !
 CONTAINS
   !
@@ -118,6 +136,8 @@ CONTAINS
     ! The indices limi,ljmj and LM assume the order for real spherical
     ! harmonics given in routine ylmr2
     !
+    USE util_module, ONLY : mat_inv
+    !
     implicit none
     !
     ! input: the maximum li considered
@@ -127,15 +147,14 @@ CONTAINS
     ! local variables
     !
     integer :: llx, l, li, lj
-    real(dbl) , allocatable :: r(:,:), rr(:), ylm(:,:), mly(:,:)
+    real(DP) , allocatable :: r(:,:), rr(:), ylm(:,:), mly(:,:)
     ! an array of random vectors: r(3,llx)
     ! the norm of r: rr(llx)
     ! the real spherical harmonics for array r: ylm(llx,llx)
     ! the inverse of ylm considered as a matrix: mly(llx,llx)
-    real(dbl) :: dum
+    real(DP) :: dum
     !
-    ! ANDREA: mortal error is given
-    if (lli < 0) call errore('aainit','lli not allowed',-lli)
+    if (lli < 0) call errore('aainit','lli not allowed',lli)
 
     if (lli*lli > nlx) call errore('aainit','nlx is too small ',lli*lli)
 
@@ -148,10 +167,10 @@ CONTAINS
     allocate (ylm( llx, llx ))    
     allocate (mly( llx, llx ))    
 
-    r(:,:)   = 0.d0
-    ylm(:,:) = 0.d0
-    mly(:,:) = 0.d0
-    ap(:,:,:)= 0.d0
+    r(:,:)   = 0.0_DP
+    ylm(:,:) = 0.0_DP
+    mly(:,:) = 0.0_DP
+    ap(:,:,:)= 0.0_DP
 
     ! - generate an array of random vectors (uniform deviate on unitary sphere)
 
@@ -163,7 +182,7 @@ CONTAINS
 
     !-  store the inverse of ylm(ir,lm) in mly(lm,ir)
 
-    CALL mat_inv(llx, ylm, mly, dum)
+    call mat_inv(llx, ylm, mly, dum)
 
     !-  for each li,lj compute ap(l,li,lj) and the indices, lpx and lpl
     do li = 1, lli*lli
@@ -194,31 +213,32 @@ CONTAINS
     !-----------------------------------------------------------------------
     ! - generate an array of random vectors (uniform deviate on unitary sphere)
     !
-    USE constants, ONLY: tpi
+    USE constants,             ONLY : TPI
+    USE random_numbers_module, ONLY : rndm
+    
     implicit none
     !
     ! first the I/O variables
     !
     integer :: llx         ! input: the dimension of r and rr
     
-    real(dbl) :: &
+    real(DP) :: &
          r(3,llx),  &! output: an array of random vectors
          rr(llx)    ! output: the norm of r
     !
     ! here the local variables
     !
     integer :: ir
-    real(dbl) :: costheta, sintheta, phi
-    real(dbl), external :: rndm
+    real(DP) :: costheta, sintheta, phi
     
     do ir = 1, llx
-       costheta = 2.d0 * rndm() - 1.d0
-       sintheta = sqrt ( 1.d0 - costheta*costheta)
-       phi = tpi * rndm()
+       costheta = 2.0_DP * rndm() - 1.0_DP
+       sintheta = SQRT ( 1.0_DP - costheta*costheta)
+       phi = TPI * rndm()
        r (1,ir) = sintheta * cos(phi)
        r (2,ir) = sintheta * sin(phi)
        r (3,ir) = costheta
-       rr(ir)   = 1.d0
+       rr(ir)   = 1.0_DP
     end do
     
     return
@@ -236,7 +256,7 @@ CONTAINS
          llx,         &! the dimension of ylm and mly
          l,li,lj       ! the arguments of the array ap
     
-    real(dbl) :: &
+    real(DP) :: &
          compute_ap,  &! this function
          ylm(llx,llx),&! the real spherical harmonics for array r
          mly(llx,llx)  ! the inverse of ylm considered as a matrix
@@ -245,29 +265,34 @@ CONTAINS
     !
     integer :: ir
     
-    compute_ap = 0.d0
+    compute_ap = 0.0_DP
     do ir = 1,llx
        compute_ap = compute_ap + mly(l,ir)*ylm(ir,li)*ylm(ir,lj)
     end do
     
     return
   end function compute_ap
-
+  !
+  !-----------------------------------------------------------------------
   SUBROUTINE uspp_deallocate()
-    IF( ALLOCATED( nhtol ) )    DEALLOCATE( nhtol )
-    IF( ALLOCATED( indv ) )     DEALLOCATE( indv )
-    IF( ALLOCATED( nhtolm ) )   DEALLOCATE( nhtolm )
-    IF( ALLOCATED( nhtoj ) )    DEALLOCATE( nhtoj )
-    IF( ALLOCATED( vkb ) )      DEALLOCATE( vkb )
-    IF( ALLOCATED( becsum ) )   DEALLOCATE( becsum )
-    IF( ALLOCATED( qq ) )       DEALLOCATE( qq )
-    IF( ALLOCATED( qb ) )       DEALLOCATE( qb )
-    IF( ALLOCATED( dvan ) )     DEALLOCATE( dvan )
-    IF( ALLOCATED( deeq ) )     DEALLOCATE( deeq )
-    IF( ALLOCATED( qq_so ) )    DEALLOCATE( qq_so )
-    IF( ALLOCATED( dvan_so ) )  DEALLOCATE( dvan_so )
-    IF( ALLOCATED( deeq_nc ) )  DEALLOCATE( deeq_nc )
+    !-----------------------------------------------------------------------
+    !
+    IF( ALLOCATED( nhtol ) )   DEALLOCATE( nhtol )
+    IF( ALLOCATED( indv ) )    DEALLOCATE( indv )
+    IF( ALLOCATED( nhtolm ) )  DEALLOCATE( nhtolm )
+    IF( ALLOCATED( nhtoj ) )   DEALLOCATE( nhtoj )
+    IF( ALLOCATED( ijtoh ) )   DEALLOCATE( ijtoh )
+    IF( ALLOCATED( vkb ) )     DEALLOCATE( vkb )
+    IF( ALLOCATED( becsum ) )  DEALLOCATE( becsum )
+    IF( ALLOCATED( qq ) )      DEALLOCATE( qq )
+    IF( ALLOCATED( dvan ) )    DEALLOCATE( dvan )
+    IF( ALLOCATED( deeq ) )    DEALLOCATE( deeq )
+    IF( ALLOCATED( qq_so ) )   DEALLOCATE( qq_so )
+    IF( ALLOCATED( dvan_so ) ) DEALLOCATE( dvan_so )
+    IF( ALLOCATED( deeq_nc ) ) DEALLOCATE( deeq_nc )
+    IF( ALLOCATED( qb ) )      DEALLOCATE( qb )
+    !
   END SUBROUTINE uspp_deallocate
-
-end module uspp
+  !
+END MODULE uspp
 

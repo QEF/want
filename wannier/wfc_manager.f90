@@ -38,11 +38,9 @@
    USE trial_center_data_module,   ONLY : trial
    USE windows_module,             ONLY : windows_alloc => alloc, dimwin, dimwinx, imin, imax
    USE kpoints_module,             ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, &
-                                          nb, nnlist, nncell, nnrev, nnpos
+                                          nb, nnlist, nncell, nnpos
    USE overlap_module,             ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
-   USE ggrids_module,              ONLY : nfft, npw_rho, nffts, npws_rho, have_smooth_rhogrid, &
-                                          ecutwfc, ecutrho, ggrids_summary, &
-                                          ggrids_read_ext, ggrids_deallocate
+   USE ggrids_module,              ONLY : ggrids_summary, ggrids_read_ext, ggrids_deallocate
    USE wfc_data_module,            ONLY : npwkx, npwk, igsort, evc, evc_info, &
                                           wfc_data_grids_read, wfc_data_grids_summary, &
                                           wfc_data_kread, wfc_data_deallocate 
@@ -151,7 +149,7 @@
               !                                              \int dr e^ibr Q_ij(r)
               CALL init_us_1()
               IF ( use_blimit ) &
-                 CALL warning( stdout, "setting b = 0 in qb (overlap augment.)" )
+                 CALL warning( subname, "setting b = 0 in qb (overlap augment.)" )
                  !
               WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5 ) ') nkb
 

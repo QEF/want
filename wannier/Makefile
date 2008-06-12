@@ -60,13 +60,13 @@ projection_frozen.o \
 pseudo_types.o \
 pwcom.o \
 qvan2.o \
+radial_grids.o \
 random_orthovect.o \
 read_ncpp.o \
-readnewvan.o \
-readpp.o \
-read_pseudo_base.o \
 read_pseudo.o \
-readvan.o \
+read_upf_v1.o \
+read_upf_v2.o \
+read_uspp.o \
 recips.o \
 s_psi.o \
 setqf.o \
@@ -83,6 +83,7 @@ symmetry.o \
 trial_center_data.o \
 trial_center.o \
 unitary_update.o \
+upf.o \
 upf_to_internal.o \
 uspp.o \
 version.o \
@@ -94,6 +95,7 @@ wfc_data.o \
 wfc_info.o \
 wfc_manager.o \
 windows.o \
+write_upf_v2.o \
 xsf.o \
 zmatrix.o
 

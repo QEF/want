@@ -34,8 +34,7 @@
    USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext
    USE subspace_module,    ONLY : dimwann, eamp, subspace_read
    USE localization_module,ONLY : cu, rave, localization_read
-   USE ggrids_module,      ONLY : nfft, npw_rho, nffts, npws_rho, have_smooth_rhogrid, &
-                                  ecutwfc, ecutrho, igv, &
+   USE ggrids_module,      ONLY : nfft, nffts, igv, &
                                   ggrids_read_ext, ggrids_deallocate, &
                                   ggrids_gk_indexes, ggrids_summary
    USE wfc_info_module
@@ -386,8 +385,8 @@
          ! in this case we cannot perform the full PAW reconstruction:
          ! a warning is given
          !
-         CALL warning(stdout,"data type: "//TRIM(datatype) )
-         CALL warning(stdout,"USPP do not allow for a full PAW reconstruction.")
+         WRITE(stdout, "(6x, 'data type: ', a )" ) TRIM(datatype)
+         CALL warning('plot','USPP do not allow for a full PAW reconstruction.')
          !
       ENDIF
 

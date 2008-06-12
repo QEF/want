@@ -153,10 +153,12 @@
                     ib  = nnpos(inn)
                     ikb = nnlist(ib, ik)
                     !
-                    !  A^kb  =  M^kb * Lamp^(k+b)
+                    !  A^k,b     =  M^kb * Lamp^(k+b)
                     !
                     CALL mat_mul(Akb_aux(:,:,ib,ik), Mkb(:,:,inn,ik), 'N',  &
                                  lamp(:,:,ikb), 'N', dimwin(ik), dimwann, dimwin(ikb) )
+                    !
+                    !  A^k+b,-b  =  M^k+b,-b * Lamp(k)  =  M^kb^dag * Lamp^(k)
                     !
                     CALL mat_mul(Akb_aux(:,:,nnrev(ib),ikb), Mkb(:,:,inn,ik), 'C',  &
                                  lamp(:,:,ik), 'N', dimwin(ikb), dimwann, dimwin(ik) )
@@ -170,6 +172,7 @@
                                  Akb_aux(:,:,ib,ik), 'N', dimwann, dimwann, dimwin(ik) )
                     !
                ENDDO
+               !
            ENDDO
       
 

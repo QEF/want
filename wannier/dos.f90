@@ -310,8 +310,8 @@
       !
       IF ( ldynam_sgm ) THEN
          !
-         CALL warning( stdout , "energy grid is forced from SGM datafile" )
-         WRITE( stdout, "()")
+         CALL warning( 'dos', 'energy grid is forced from SGM datafile' )
+         WRITE( stdout, '()')
          !
          emin = egrid( 1 )
          emax = egrid( ne )

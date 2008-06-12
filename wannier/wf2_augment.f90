@@ -38,10 +38,10 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
    USE constants,                   ONLY : CZERO, TPI, ONE, EPS_m6
    USE kpoints_module,              ONLY : nkpts, vkpt
    USE us_module,                   ONLY : okvan
-   USE uspp,                        ONLY : nkb, qq
-   USE uspp_param,                  ONLY : lmaxq, nh, nhm, tvanp
-   USE lattice_module,              ONLY : tpiba, omega, bvec
-   USE ions_module,                 ONLY : nat, ntyp => nsp, ityp, tau
+   USE uspp,                        ONLY : nkb
+   USE uspp_param,                  ONLY : upf, lmaxq, nh, nhm
+   USE lattice_module,              ONLY : tpiba, bvec
+   USE ions_module,                 ONLY : nat, nsp, ityp, tau
    USE ggrids_module,               ONLY : g, igv, npw_rho, ggrids_gv_indexes
    USE struct_fact_data_module,     ONLY : eigts1, eigts2, eigts3
    USE becmod,                      ONLY : becp
@@ -152,8 +152,8 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
    ikb = 0
    becmap( :, :) = -1
    !
-   DO nt = 1, ntyp
-       IF ( tvanp(nt) ) THEN
+   DO nt = 1, nsp
+       IF ( upf(nt)%tvanp ) THEN
            ! 
            DO na = 1, nat
                IF ( ityp (na) == nt) THEN
@@ -248,8 +248,8 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
        !
        caux( :, :) = CZERO
        !
-       DO nt = 1, ntyp
-          IF ( tvanp(nt) ) THEN
+       DO nt = 1, nsp
+          IF ( upf(nt)%tvanp ) THEN
              !
              !
              DO ih = 1, nh (nt)
