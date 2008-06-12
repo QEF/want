@@ -152,20 +152,25 @@
    INTEGER :: debug_level = 0
        ! level of debug report; values <= 0 switch the debug_mode off
 
+   INTEGER :: ispin = 0
+       ! define which spin component has to be used in the calculation.
+       ! This variable is intended to exist temporarily until a full
+       ! treatment of the spin degrees of freedom is not implemented.
+       ! Currently it is used only within the interface with CRYSTAL06.
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, smearing_type, &
                  delta_ratio, xmax, nk, s, use_symm, debug_level, &
-                 work_dir, prefix, postfix, write_kdata 
+                 work_dir, prefix, postfix, write_kdata, ispin 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
    PUBLIC :: ne, emin, emax, nprint, delta, bias, use_overlap, delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: nk, s, use_symm, debug_level
-   PUBLIC :: work_dir, prefix, postfix, write_kdata
+   PUBLIC :: work_dir, prefix, postfix, write_kdata, ispin
    PUBLIC :: INPUT_CONDUCTOR
 
 
@@ -224,6 +229,7 @@ CONTAINS
       CALL mp_bcast( s,                  ionode_id)      
       CALL mp_bcast( use_symm,           ionode_id)      
       CALL mp_bcast( debug_level,        ionode_id)      
+      CALL mp_bcast( ispin,              ionode_id)      
       CALL mp_bcast( work_dir,           ionode_id)      
       CALL mp_bcast( prefix,             ionode_id)      
       CALL mp_bcast( postfix,            ionode_id)      
@@ -317,6 +323,9 @@ CONTAINS
 
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. LEN_TRIM (datafile_sgm) == 0 ) &
            CALL errore(subname,'invalid conduct formula',1)
+
+      IF ( ispin < 0 ) CALL errore(subname, 'ispin too small', 1) 
+      IF ( ispin > 2 ) CALL errore(subname, 'ispin too large', 2) 
 
       CALL log_pop( 'read_namelist_input_conductor' )
 

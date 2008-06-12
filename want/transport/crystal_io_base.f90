@@ -1,9 +1,9 @@
 !
 ! Copyright (C) 2008 WanT Group
 ! This file is distributed under the terms of the
-! GNU General Public License. See the file `License'
+! GNU Lesser General Public License. See the file `License'
 ! in the root directory of the present distribution,
-! or http://www.gnu.org/copyleft/gpl.txt .
+! or http://www.gnu.org/copyleft/lgpl.txt .
 !
 !----------------------------------------------------------------------------
 MODULE crystal_io_base_module

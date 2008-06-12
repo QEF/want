@@ -110,12 +110,12 @@ CONTAINS
            !
            IF ( TRIM( fmtstr) == 'crystal' ) THEN
                !
-               CALL crystal_to_internal( filename, TRIM(filename)//'.xml' )
+               CALL crystal_to_internal( filename, TRIM(filename)//'.ham' )
                !
                WRITE( stdout, "(2x, A,' converted to internal fmt' )") &
                    TRIM( filename )
                !
-               filelist(i) = TRIM(filelist(i))//'.xml' 
+               filelist(i) = TRIM(filelist(i))//'.ham' 
                !
            ENDIF
            !
