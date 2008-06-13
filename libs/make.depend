@@ -1,4 +1,7 @@
 constants.o : kind.o
+crystal_io_base.o : ../iotk/iotk_16_module.o
+crystal_io.o : crystal_io_base.o
+crystal_io.o : ../iotk/iotk_16_module.o
 erf.o : kind.o
 fft_scalar.o : kind.o
 files.o : ../iotk/iotk_16_module.o

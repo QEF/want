@@ -7,6 +7,8 @@ include ../make.sys
 
 OBJS= \
 constants.o \
+crystal_io.o \
+crystal_io_base.o \
 date_and_tim.o \
 divide_et_impera.o \
 erf.o \
