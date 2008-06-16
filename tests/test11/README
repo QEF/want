@@ -43,7 +43,7 @@ RESULTS discussion
 
   Results may be checked with a published work which uses the same approach based
   on Wannier functions: 
-    K.S. Thygesen and K.W. Jacobsen,  arXiv:cond-mat/0501238 v1 (11 Jan 2005)
+    K.S. Thygesen and K.W. Jacobsen, Chem. Phys. 319, 111-125 (2005). 
 
   As an example, we also compute the current in the "linear regime", i.e. considering
   the transmittance indipendend on the applied bias. The output result is given
