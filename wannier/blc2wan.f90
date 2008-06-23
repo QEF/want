@@ -31,7 +31,7 @@
    USE kpoints_module,       ONLY : nrtot, nkpts, vkpt, ivr, vr
    USE subspace_module,      ONLY : eamp, subspace_read
    USE localization_module,  ONLY : cu, localization_read
-   USE hamiltonian_module,   ONLY : dimwann, hamiltonian_init
+   USE hamiltonian_module,   ONLY : dimwann, hamiltonian_allocate
    USE util_module,          ONLY : mat_mul
    IMPLICIT NONE 
 
@@ -162,7 +162,7 @@
       ! setup real space quantities (such as those used to move the hamiltonian 
       ! to WFs basis)
       !
-      CALL hamiltonian_init()
+      CALL hamiltonian_allocate()
 
 !
 ! ... Init operator data from filein

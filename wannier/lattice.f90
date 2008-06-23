@@ -7,14 +7,18 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************************
-MODULE lattice_module
+   MODULE lattice_module
    !*********************************************************
+   !
    USE kinds
-   USE constants,  ONLY : ZERO, TPI
-   USE parameters, ONLY : nstrx
-   USE log_module, ONLY : log_push, log_pop
+   USE constants,        ONLY : ZERO, TPI, BOHR => bohr_radius_angs
+   USE parameters,       ONLY : nstrx
+   USE log_module,       ONLY : log_push, log_pop
+   USE parser_module,    ONLY : change_case
    USE qexml_module
    USE qexpt_module
+   USE crystal_io_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -82,6 +86,7 @@ CONTAINS
    IMPLICIT NONE
        CHARACTER(*)       :: filefmt
        CHARACTER(16)      :: subname="lattice_read_ext"
+       CHARACTER(256)     :: a_units
        INTEGER            :: ierr
 
        CALL log_push ( subname )
@@ -94,17 +99,51 @@ CONTAINS
            CALL qexml_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
                                             A3=avec(:,3), IERR=ierr)
            !
+           IF (ierr/=0) CALL errore(subname,'QEXML: reading lattice',ABS(ierr))
+           !
        CASE ( 'pw_export' )
            !
            CALL qexpt_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
                                             A3=avec(:,3), IERR=ierr)
+           !
+           IF (ierr/=0) CALL errore(subname,'QEXPT: reading lattice',ABS(ierr))
+           !
+       CASE ( 'crystal' )
+           !
+           CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening sec. GEOMETRY', ABS(ierr) )
+           !
+           CALL crio_read_periodicity( AVEC=avec, A_UNITS=a_units, IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname, 'CRIO: reading lattice', ABS(ierr) )
+           !
+           CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. GEOMETRY', ABS(ierr) )
+           !
+           CALL change_case( a_units, 'lower' )
+           !
+           SELECT CASE( TRIM(a_units) )
+           CASE ( "b", "bohr", "au" )
+              !
+              ! do nothing
+           CASE ( "ang", "angstrom" )
+              !
+              avec = avec / BOHR
+              !
+           CASE DEFAULT
+              CALL errore(subname, 'unknown units for A: '//TRIM(a_units), 71)
+           END SELECT
+
+           !
+           ! compute alat [bohr]
+           !
+           alat = DOT_PRODUCT( avec(:,1), avec(:,1) )
+           alat = SQRT( alat )
            !
        CASE DEFAULT
            !
            CALL errore(subname,'invalid fmt ='//TRIM(filefmt),1)
        END SELECT
        !
-       IF (ierr/=0) CALL errore(subname,'reading lattice',ABS(ierr))
        !
        ! impose the normalization
        !

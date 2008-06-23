@@ -9,9 +9,11 @@
 !*********************************************************
 SUBROUTINE get_rgrid(nr, nrtot, wr, vr, avec)
    !*********************************************************
+   !
    USE kinds
    USE constants,         ONLY : ONE
    USE converters_module, ONLY : cry2cart
+   !
    IMPLICIT NONE
 
 ! <INFO>
@@ -47,17 +49,18 @@ SUBROUTINE get_rgrid(nr, nrtot, wr, vr, avec)
    DO k=1,nr(3)
    DO j=1,nr(2)
    DO i=1,nr(1)
-        !
-        ir = ir + 1
-        ! 
-        vr(1,ir) = REAL( i - ( nr(1)+1)/2, dbl )
-        vr(2,ir) = REAL( j - ( nr(2)+1)/2, dbl )
-        vr(3,ir) = REAL( k - ( nr(3)+1)/2, dbl )
-        !
-        ! the sum rule on the weights depends on the definition 
-        ! of the kpt-weight sum
-        !
-        wr( ir ) = ONE
+       !
+       ir = ir + 1
+       ! 
+       vr(1,ir) = REAL( i - ( nr(1)+1)/2, dbl )
+       vr(2,ir) = REAL( j - ( nr(2)+1)/2, dbl )
+       vr(3,ir) = REAL( k - ( nr(3)+1)/2, dbl )
+       !
+       ! the sum rule on the weights depends on the definition 
+       ! of the kpt-weight sum
+       !
+       wr( ir ) = ONE
+       !
    ENDDO
    ENDDO
    ENDDO

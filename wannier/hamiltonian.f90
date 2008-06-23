@@ -45,6 +45,10 @@
    COMPLEX(dbl), ALLOCATABLE   :: kham(:,:,:)  ! DIM: dimwann, dimwann, nkpts
                                                ! kpt-symm hamiltonian rotated according to
                                                ! WF transform
+   COMPLEX(dbl), ALLOCATABLE   :: rovp(:,:,:)  ! overlap integrals, DIMS as rham
+   COMPLEX(dbl), ALLOCATABLE   :: kovp(:,:,:)  ! DIMS as kham
+   !
+   LOGICAL :: lhave_overlap = .FALSE.
    !
    LOGICAL :: alloc = .FALSE.
 
@@ -55,11 +59,12 @@
    PUBLIC :: nkpts, dimwann
    PUBLIC :: nrtot
    PUBLIC :: wan_eig
-   PUBLIC :: rham
-   PUBLIC :: kham
+   PUBLIC :: rham, kham
+   PUBLIC :: rovp, kovp
+   PUBLIC :: lhave_overlap
    PUBLIC :: alloc
 
-   PUBLIC :: hamiltonian_init
+   PUBLIC :: hamiltonian_allocate
    PUBLIC :: hamiltonian_deallocate
    PUBLIC :: hamiltonian_write
    PUBLIC :: hamiltonian_read
@@ -71,10 +76,10 @@ CONTAINS
 !
 
 !**********************************************************
-   SUBROUTINE hamiltonian_init()
+   SUBROUTINE hamiltonian_allocate()
    !**********************************************************
    IMPLICIT NONE
-       CHARACTER(16)      :: subname="hamiltonian_init"
+       CHARACTER(20)      :: subname="hamiltonian_allocate"
        INTEGER            :: ierr 
 
        CALL log_push ( subname )
@@ -92,15 +97,26 @@ CONTAINS
        ! other allocations
        !
        ALLOCATE( rham(dimwann,dimwann,nrtot), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
+       !
        ALLOCATE( kham(dimwann,dimwann,nkpts), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
-
+       IF( ierr /=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
+       !
+       IF ( lhave_overlap ) THEN
+           !
+           ALLOCATE( rovp(dimwann,dimwann,nrtot), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating rovp', ABS(ierr) )
+           !
+           ALLOCATE( kovp(dimwann,dimwann,nkpts), STAT=ierr )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating kovp', ABS(ierr) )
+           !
+       ENDIF
+       !
        alloc = .TRUE.
        !
        CALL log_pop ( subname )
        !
-   END SUBROUTINE hamiltonian_init
+   END SUBROUTINE hamiltonian_allocate
 
 
 !**********************************************************
@@ -119,6 +135,14 @@ CONTAINS
        IF ( ALLOCATED(kham) ) THEN 
             DEALLOCATE(kham, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,'deallocating kham ',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(rovp) ) THEN 
+            DEALLOCATE(rovp, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,'deallocating rovp ',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(kovp) ) THEN 
+            DEALLOCATE(kovp, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,'deallocating kovp ',ABS(ierr))
        ENDIF
        !
        CALL log_pop ( subname )
@@ -150,6 +174,8 @@ CONTAINS
        CALL iotk_write_attr(attr,"nk",nk) 
        CALL iotk_write_attr(attr,"nrtot",nrtot) 
        CALL iotk_write_attr(attr,"nr",nr) 
+       CALL iotk_write_attr(attr,"have_overlap",lhave_overlap) 
+       CALL iotk_write_attr(attr,"fermi_energy",0.0) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
        ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
@@ -182,14 +208,32 @@ CONTAINS
        CALL iotk_write_dat(unit,"WAN_EIGENVALUES",wan_eig)
        !
        CALL iotk_write_begin(unit,"KHAM")
+       !
        DO ik = 1, nkpts
-             CALL iotk_write_dat(unit,"KPT"//TRIM(iotk_index(ik)), kham(:,:,ik))
+           !
+           CALL iotk_write_dat(unit,"KPT"//TRIM(iotk_index(ik)), kham(:,:,ik))
+           !
+           IF ( lhave_overlap ) THEN
+               !
+               CALL iotk_write_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), kovp(:,:,ir))
+               !
+           ENDIF
+           !
        ENDDO
        CALL iotk_write_end(unit,"KHAM")
        !
        CALL iotk_write_begin(unit,"RHAM")
+       !
        DO ir = 1, nrtot
-             CALL iotk_write_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir))
+           !
+           CALL iotk_write_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir))
+           !
+           IF ( lhave_overlap ) THEN
+               !
+               CALL iotk_write_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir))
+               !
+           ENDIF
+           !
        ENDDO
        CALL iotk_write_end(unit,"RHAM")
 
@@ -207,6 +251,7 @@ CONTAINS
        INTEGER,           INTENT(in) :: unit
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
+       LOGICAL            :: lfound
        CHARACTER(nstrx)   :: attr
        CHARACTER(16)      :: subname="hamiltonian_read"
        INTEGER            :: nkpts_, nrtot_, dimwann_
@@ -215,7 +260,6 @@ CONTAINS
        CALL log_push ( subname )
        !
        IF ( alloc ) CALL hamiltonian_deallocate()
-       CALL hamiltonian_init()
 
        CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
        IF (.NOT. found) RETURN
@@ -230,26 +274,58 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
        CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NRTOT',ABS(ierr))
+       !
+       CALL iotk_scan_attr(attr,'have_overlap',lhave_overlap, FOUND=lfound ,IERR=ierr)
+       IF (ierr>0) CALL errore(subname,'Unable to find attr HAVE_OVERLAP',ABS(ierr))
+       IF ( .NOT. lfound ) lhave_overlap = .FALSE.
 
+       !
+       ! few compatibility checks
        IF ( dimwann_ /= dimwann) CALL errore(subname,'invalid dimwann',1)
        IF ( nkpts_ /= nkpts) CALL errore(subname,'invalid nkpts',2)
        IF ( nrtot_ /= nrtot) CALL errore(subname,'invalid nrtot',3)
-
+       !
+       ! allocations
+       CALL hamiltonian_allocate()
+       !
+       ! massive data read
        CALL iotk_scan_begin(unit,"KHAM", IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag KHAM',ABS(ierr))
+       !
        DO ik = 1, nkpts
-             CALL iotk_scan_dat(unit,"KPT"//TRIM(iotk_index(ik)), kham(:,:,ik), IERR=ierr)
-             IF (ierr/=0) CALL errore(subname,'Unable to find dat KPT in KHAM',ik)
+           !
+           CALL iotk_scan_dat(unit,"KPT"//TRIM(iotk_index(ik)), kham(:,:,ik), IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find dat KPT in KHAM',ik)
+           !
+           IF ( lhave_overlap ) THEN
+               !
+               CALL iotk_scan_dat(unit,"OVERLAP"//TRIM(iotk_index(ik)), kovp(:,:,ik), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'Unable to find dat OVERLAP in KHAM',ik)
+               !
+           ENDIF
+           !
        ENDDO
+       !
        CALL iotk_scan_end(unit,"KHAM", IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag KHAM',ABS(ierr))
        !
        CALL iotk_scan_begin(unit,"RHAM", IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag RHAM',ABS(ierr))
+       !
        DO ir = 1, nrtot
-             CALL iotk_scan_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir), IERR=ierr)
-             IF (ierr/=0) CALL errore(subname,'Unable to find dat VR in RHAM',ir)
+           !
+           CALL iotk_scan_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir), IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find dat VR in RHAM',ir)
+           !
+           IF ( lhave_overlap ) THEN
+               !
+               CALL iotk_scan_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'Unable to find dat OVERLAP in RHAM',ir)
+               !
+           ENDIF
+           !
        ENDDO
+       !
        CALL iotk_scan_end(unit,"RHAM", IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag RHAM',ABS(ierr))
 

@@ -272,22 +272,22 @@
        WRITE(iunit, " (2x,'Omega = ', F15.7, ' (Bohr^3)' )" ) omega
        WRITE(iunit, " (2x,'Omega = ', F15.7, ' (Ang^3 )',/ )" ) omega * BOHR**3
        WRITE(iunit, " (2x, 'Crystal axes:' ) ")
-       WRITE(iunit, " (16x,'in units of Bohr',17x,'in Alat units' )")
+       WRITE(iunit, " (16x,'in Bohr units',27x,'in Alat units' )")
        DO j=1,3
-          WRITE (iunit, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
+          WRITE (iunit, fmt="(4x,'a(',I1,') = (', 3F11.5, ' )    (',3F11.5, ' )'  )" ) &
                    j, ( avec(i,j), i=1,3 ), ( avec(i,j)/alat, i=1,3 )
        ENDDO
        !
-       WRITE(iunit, fmt= " (2x, 'Crystal axes: (Ang)' ) ")
+       WRITE(iunit, " (16x,'in Ang units' )")
        DO j=1,3
-          WRITE (iunit, fmt="(4x,'a(',I1,') = (', 3F8.4, ' )'  )" ) &
+          WRITE (iunit, fmt="(4x,'a(',I1,') = (', 3F11.5, ' )'  )" ) &
                   j, ( avec(i,j)*BOHR , i=1,3 )
        ENDDO
        !
        WRITE(iunit, " (/,2x, ' Reciprocal lattice vectors:' ) " )
-       WRITE(iunit, " (16x,'in units of Bohr^-1',14x,'in 2Pi/Alat units' )")
+       WRITE(iunit, " (16x,'in Bohr^-1 units',24x,'in 2Pi/Alat units' )")
        DO j=1,3
-          WRITE (iunit, fmt="(4x,'b(',I1,') = (', 3F8.4, ' )     ( ',3F8.4, ' )'  )" ) &
+          WRITE (iunit, fmt="(4x,'b(',I1,') = (', 3F11.5, ' )    (',3F11.5, ' )'  )" ) &
                    j, ( bvec(i,j), i=1,3 ), ( bvec(i,j)*alat / TPI, i=1,3 )
        ENDDO
        WRITE(iunit, " (  ' </LATTICE>',/)" )

@@ -11,15 +11,19 @@
 !
 ! <INFO>
 !*********************************************************
-MODULE ions_module
+   MODULE ions_module
    !*********************************************************
+   !
    USE kinds,          ONLY : dbl
    USE constants,      ONLY : ZERO, BOHR => bohr_radius_angs
    USE parameters,     ONLY : ntypx, natx, nstrx
    USE io_module,      ONLY : pseudo_dir, prefix, work_dir
    USE log_module,     ONLY : log_push, log_pop
+   USE parser_module,  ONLY : change_case
    USE qexml_module
    USE qexpt_module
+   USE crystal_io_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -101,23 +105,31 @@ CONTAINS
       nsp = nsp_
 
       ALLOCATE(na(nsp), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating na',nsp)
+      IF(ierr/=0) CALL errore(subname,'allocating na',nsp)
+      !
       ALLOCATE(zv(nsp), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating zv',nsp)
+      IF(ierr/=0) CALL errore(subname,'allocating zv',nsp)
+      !
       ALLOCATE(ityp(nat), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating ityp',nat)
+      IF(ierr/=0) CALL errore(subname,'allocating ityp',nat)
+      !
       ALLOCATE(symb(nat), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating symb',nat)
+      IF(ierr/=0) CALL errore(subname,'allocating symb',nat)
+      !
       ALLOCATE(tau(3,nat), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating tau',nat*nsp)
+      IF(ierr/=0) CALL errore(subname,'allocating tau',nat*nsp)
+      !
       ALLOCATE(tau_srt(3,nat), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating tau_srt',nat*nsp)
+      IF(ierr/=0) CALL errore(subname,'allocating tau_srt',nat*nsp)
+      !
       ALLOCATE(ind_srt(nat), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating ind_srt',nat)
+      IF(ierr/=0) CALL errore(subname,'allocating ind_srt',nat)
+      !
       ALLOCATE(atm_symb(nsp), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating atm_symb',nsp)
+      IF(ierr/=0) CALL errore(subname,'allocating atm_symb',nsp)
+      !
       ALLOCATE(psfile(nsp), STAT=ierr) 
-         IF(ierr/=0) CALL errore(subname,'allocating psfile',nsp)
+      IF(ierr/=0) CALL errore(subname,'allocating psfile',nsp)
 
       alloc = .TRUE.
       !
@@ -184,9 +196,12 @@ CONTAINS
    IMPLICIT NONE
        CHARACTER(*),      INTENT(in) :: filefmt
        !
-       CHARACTER(13)        :: subname="ions_read_ext"
-       INTEGER, ALLOCATABLE :: ityp(:)
-       INTEGER              :: i, ierr
+       CHARACTER(13)             :: subname="ions_read_ext"
+       CHARACTER(256)            :: units
+       INTEGER,      ALLOCATABLE :: ityp(:)
+       CHARACTER(3), ALLOCATABLE :: symb_tmp(:), atm_symb_tmp(:)
+       INTEGER                   :: i, ia, ierr
+       LOGICAL                   :: found
 
        CALL log_push( subname )
        !
@@ -195,14 +210,60 @@ CONTAINS
        CASE ( 'qexml' )
             !
             CALL qexml_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
+            IF ( ierr/=0) CALL errore(subname,'QEXML: getting ion dimensions',ABS(ierr))
             !
        CASE ( 'pw_export' )
             !
             CALL qexpt_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
+            IF ( ierr/=0) CALL errore(subname,'QEXPT: getting ion dimensions',ABS(ierr))
             !
+       CASE ( 'crystal' )
+            !
+            CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
+            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening sec. GEOMETRY', ABS(ierr) )
+            !
+            CALL crio_read_atoms( NUM_OF_ATOMS=nat, IERR=ierr )
+            IF ( ierr/=0) CALL errore(subname,'CRIO: getting ion dimensions',ABS(ierr))
+
+            !
+            ! verbose workaround to determine the number 
+            ! of atomic species, currently missing in CRYSTAL xml
+            !
+            ALLOCATE( symb_tmp(nat), atm_symb_tmp(ntypx), STAT=ierr )
+            IF ( ierr/=0) CALL errore(subname,'allocating symb_tmp',ABS(ierr))
+            !
+            CALL crio_read_atoms( SYMB=symb_tmp, IERR=ierr )
+            IF ( ierr/=0) CALL errore(subname,'CRIO: getting SYMB',ABS(ierr))
+            !
+            nsp = 1
+            atm_symb_tmp(1) = TRIM(symb_tmp(1))
+            !
+            DO ia = 2, nat
+                !
+                found = .FALSE.
+                inner_loop:&
+                DO  i = 1, nsp 
+                    !
+                    IF ( TRIM(atm_symb_tmp(i)) == TRIM(symb_tmp(ia)) ) THEN
+                       found = .TRUE.
+                       EXIT inner_loop                        
+                    ENDIF
+                    !
+                ENDDO inner_loop
+                !
+                IF ( .NOT. found ) THEN
+                    !
+                    nsp = nsp + 1
+                    atm_symb_tmp( nsp ) = TRIM(symb_tmp(ia))
+                    !
+                ENDIF
+                !
+            ENDDO
+            !    
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+            !
        END SELECT
        !
        IF ( ierr/=0) CALL errore(subname,'getting ion dimensions',ABS(ierr))
@@ -248,6 +309,41 @@ CONTAINS
                                   PSFILE=psfile, TAU=tau,  IERR=ierr )
             !
             IF (ierr/=0) CALL errore(subname,'reading qexpt file' , ABS(ierr))
+            !
+       CASE ( 'crystal' )
+            !
+            CALL crio_read_atoms( SYMB=symb, COORDS=tau, UNITS=units, IERR=ierr )
+            IF ( ierr/=0) CALL errore(subname,'CRIO: getting ion dimensions',ABS(ierr))
+            !
+            ! set tau in bohr
+            CALL change_case( units, 'lower' )
+            !
+            SELECT CASE( TRIM(units) )
+            CASE ( "b", "bohr", "au" )
+               !
+               ! do nothing
+            CASE ( "ang", "angstrom" )
+               !
+               tau = tau / BOHR
+               !
+            CASE DEFAULT
+               CALL errore(subname, 'unknown units for A: '//TRIM(units), 71)
+            END SELECT
+            !
+            ! set unsused vars
+            pseudo_dir  = " "
+            psfile(:)   = " "
+            !
+            DO i = 1, nsp
+               atm_symb(i) = TRIM( atm_symb_tmp(i) )
+            ENDDO
+            !
+            CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
+            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. GEOMETRY', ABS(ierr) )
+            !
+            ! local cleanup
+            DEALLOCATE( symb_tmp, atm_symb_tmp, STAT=ierr)
+            IF ( ierr/=0) CALL errore(subname,'deallocating symb_tmp, atm_symb_tmp',ABS(ierr))
             !
        CASE DEFAULT
             !

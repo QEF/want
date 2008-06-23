@@ -34,7 +34,7 @@
                                       localization_allocate, localization_write, localization_print, &
                                       a_condmin, niter_condmin, dump_condmin, xcell
       USE trial_center_data_module, ONLY : trial
-      USE hamiltonian_module,  ONLY : hamiltonian_write, hamiltonian_init
+      USE hamiltonian_module,  ONLY : hamiltonian_write, hamiltonian_allocate
       !
       USE parser_module
       USE want_interfaces_module
@@ -540,7 +540,7 @@
       ! ... Convert the Hamiltonian from the bloch basis to the wannier one
       !     and write the results to file
       !
-      CALL hamiltonian_init()
+      CALL hamiltonian_allocate()
       CALL hamiltonian_calc(dimwann, nkpts, cu)
 
       CALL io_name('hamiltonian',filename)

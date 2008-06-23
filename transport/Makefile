@@ -10,9 +10,6 @@ OBJS= \
 cleanup.o \
 control.o \
 correlation.o \
-crystal_io.o \
-crystal_io_base.o \
-crystal_to_internal.o \
 datafiles.o \
 egrid.o \
 smearing.o \
@@ -31,8 +28,10 @@ transmittance.o \
 workspace.o
 
 WANNIER_OBJS= \
+../wannier/compute_kham.o \
 ../wannier/control.o \
 ../wannier/converters.o \
+../wannier/crystal_tools.o \
 ../wannier/io_module.o \
 ../wannier/operator.o \
 ../wannier/startup.o \

@@ -9,9 +9,10 @@
 !********************************************
    MODULE input_parameters_module
 !********************************************
-   USE kinds, ONLY : dbl
-   USE parameters, ONLY : nstrx
-   USE parser_module, ONLY : change_case
+   !
+   USE kinds,           ONLY : dbl
+   USE parameters,      ONLY : nstrx
+   USE parser_module,   ONLY : change_case
    IMPLICIT NONE
    PRIVATE
    SAVE

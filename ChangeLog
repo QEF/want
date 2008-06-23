@@ -4,6 +4,18 @@
 =======================================================
 
 
+23 Jun 2008      interface to CRYTSAL06 completed for the DFT data. bands.x
+                 upgraded to support such interface. bands.x cleaned up,
+                 correlation_module added. (AF)
+
+14 Jun 2008      interface to CRYSTAL06 (made using crystal_io) added to 
+                 lattice and ions. (AF)
+
+13 Jun 2008      crystal_to_internal.f90 generalized to write also the
+                 .space file. postproc_init.f90 added to rationalize the
+                 management of WanT data in postprocessing. Full
+                 interfacement of CRYSTAL to WanT postproc started. (AF)
+
 10 Jun 2008      bug fixed when reading US pseudopot. not in UPF format.
                  The global management of PP has been updated according to
                  espresso-4.0: major changes occured. Updates in the 

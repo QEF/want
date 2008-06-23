@@ -26,7 +26,7 @@
                                    read_symmetry
        USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
        USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist, nnpos, nnrev
-       USE windows_module,   ONLY: dimwin, dimwinx, eig, lcompspace, dimfroz, indxnfroz
+       USE windows_module,   ONLY: dimwin, dimwinx, eig, dimfroz, indxnfroz
        USE windows_module,   ONLY: windows_allocate, windows_write
        USE subspace_module,  ONLY: dimwann, wan_eig, lamp, camp, eamp, comp_eamp, &
                                    mtrx_in, mtrx_out
@@ -447,7 +447,7 @@
 
 !
 !--------------------------------------
-! ...  writing main data related to the obtained subspace on the .SPACES datafile
+! ...  writing main data related to the obtained subspace on the .SPACE datafile
 !      ( IOTK formatted ) after some postprocessing on subspace quantities
 !--------------------------------------
 !
@@ -458,6 +458,8 @@
            ! complement space
            ! 
            camp(:,:,ik) = CZERO
+           !
+           condition_have_a_nonzero_comp_space: &
            IF ( dimwin(ik) > dimwann )  THEN
                DO j = 1, dimwin(ik)-dimwann
                    IF ( dimwann > dimfroz(ik) )  THEN
@@ -479,53 +481,48 @@
                    ENDIF
                ENDDO
                
-            ELSE
-               lcompspace = .FALSE.
-            ENDIF
-       ENDDO
-
-
-       IF ( lcompspace )  THEN
-           !
-           ! Diagonalize the hamiltonian in the complement subspace, write the
-           ! corresponding eigenfunctions and energy eigenvalues
-           !
-           DO ik = 1, nkpts
-
-               IF ( dimwin(ik)-dimwann > 0 ) THEN
-                   DO j = 1, dimwin(ik)-dimwann
-                   DO i = 1, dimwin(ik)-dimwann
-                       ham(i,j,ik) = CZERO
-                       DO l = 1, dimwin(ik)
-                             ham(i,j,ik) = ham(i,j,ik) + CONJG(camp(l,i,ik)) * &
-                                                         camp(l,j,ik) * eig(l,ik)
-                       ENDDO
-                   ENDDO
-                   ENDDO
-
-                   m = dimwin(ik)-dimwann
+               !
+               ! Diagonalize the hamiltonian in the complement subspace, write the
+               ! corresponding eigenfunctions and energy eigenvalues
+               !
+               DO j = 1, dimwin(ik)-dimwann
+               DO i = 1, dimwin(ik)-dimwann
                    !
-                   CALL timing('mat_hdiag', OPR='start')
-                   CALL mat_hdiag( z(:,:), w(:), ham(:,:,ik), m )
-                   CALL timing('mat_hdiag', OPR='stop')
- 
-                   ! ... Calculate amplitudes of the energy eigenvectors in the complement 
-                   !     subspace in terms of the original energy eigenvectors
-                   !  
-                   comp_eamp(:,:,ik) = CZERO
-                   DO j = 1, dimwin(ik)-dimwann
-                   DO i = 1, dimwin(ik)
-                       DO l = 1, dimwin(ik)-dimwann
-                          comp_eamp(i,j,ik) = comp_eamp(i,j,ik)+z(l,j)*camp(i,l,ik)
-                       ENDDO
+                   ham(i,j,ik) = CZERO
+                   DO l = 1, dimwin(ik)
+                         ham(i,j,ik) = ham(i,j,ik) + CONJG(camp(l,i,ik)) * &
+                                                     camp(l,j,ik) * eig(l,ik)
                    ENDDO
-                   ENDDO
+                   !
+               ENDDO
+               ENDDO
 
-               ELSE
-                    comp_eamp(:,:,ik) = CZERO
-               ENDIF
-           ENDDO 
-       ENDIF
+               m = dimwin(ik)-dimwann
+               !
+               CALL timing('mat_hdiag', OPR='start')
+               CALL mat_hdiag( z(:,:), w(:), ham(:,:,ik), m )
+               CALL timing('mat_hdiag', OPR='stop')
+
+               ! ... Calculate amplitudes of the energy eigenvectors in the complement 
+               !     subspace in terms of the original energy eigenvectors
+               !  
+               comp_eamp(:,:,ik) = CZERO
+               !
+               DO j = 1, dimwin(ik)-dimwann
+               DO i = 1, dimwin(ik)
+                   DO l = 1, dimwin(ik)-dimwann
+                      comp_eamp(i,j,ik) = comp_eamp(i,j,ik)+z(l,j)*camp(i,l,ik)
+                   ENDDO
+               ENDDO
+               ENDDO
+               !
+           ELSE
+               !
+               comp_eamp(:,:,ik) = CZERO
+               !
+           ENDIF condition_have_a_nonzero_comp_space
+           !
+       ENDDO
 
        !
        ! ...  actual writing procedures

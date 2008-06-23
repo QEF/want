@@ -24,30 +24,33 @@
    !
    USE parameters,      ONLY : nnx
    USE lattice_module,  ONLY : bvec, lattice_alloc => alloc
-   USE kpoints_module,  ONLY : vkpt, nkpts, nb, vb, wb, wbtot, &
-                               nnlist, nncell, nnrev, nnpos,   &
+   USE kpoints_module,  ONLY : vkpt, nkpts, nk, s, nb, vb, wb, wbtot, &
+                               nnlist, nncell, nnrev, nnpos,          &
                                kpoints_alloc, bshells_allocate 
    IMPLICIT NONE
 
    !
    ! local variables
    !
-
+   
    REAL(dbl), PARAMETER :: eps = EPS_m6
- 
-   INTEGER   :: ik, ik1, ib, inum, ierr
-   INTEGER   :: i, j, l, m, n
-   INTEGER   :: nq, rank
-   LOGICAL   :: eqv_found, found
+   ! 
+   INTEGER       :: ik, ik1, ib, inum, ierr
+   INTEGER       :: i, j, l, m, n
+   INTEGER       :: nq, rank
+   INTEGER       :: nk_(3), s_(3)
+   INTEGER       :: lwork_aux, info, ipiv(6)
+   LOGICAL       :: eqv_found, found
    !
-   REAL(dbl) :: aux, aux1, vkb(3), vtmp(3)
-   REAL(dbl) :: work(6,6), work1(6,6), rhs(6)
+   REAL(dbl)     :: aux, aux1, vkb(3), vtmp(3)
+   REAL(dbl)     :: work(6,6), work1(6,6), rhs(6)
    !
-   INTEGER   :: lwork_aux, info, ipiv(6)
    INTEGER,   ALLOCATABLE :: ivb(:), index(:)
    REAL(dbl), ALLOCATABLE :: vq(:,:), vqq(:)
    REAL(dbl), ALLOCATABLE :: vb_aux(:,:), vbb(:)
    REAL(dbl), ALLOCATABLE :: work_aux(:)
+   !
+   CHARACTER(12) :: subname = 'bshells_init'
    !
    ! end of declariations
    !
@@ -57,16 +60,24 @@
 ! main body
 !------------------------------
 !
-   CALL timing('bshells_init',OPR='start')
-   CALL log_push('bshells_init')
+   CALL timing( subname, OPR='start')
+   CALL log_push( subname )
 
-   IF ( .NOT. lattice_alloc ) CALL errore('bshells_init', 'lattice NOT alloc', 1 )
-   IF ( .NOT. kpoints_alloc ) CALL errore('bshells_init', 'kpoints NOT alloc', 1 )
-   IF ( nkpts <= 0) CALL errore('bshells_init', 'Invaid nkpts', ABS(nkpts)+1 )
+   IF ( .NOT. lattice_alloc ) CALL errore(subname, 'lattice NOT alloc', 1 )
+   IF ( .NOT. kpoints_alloc ) CALL errore(subname, 'kpoints NOT alloc', 1 )
+   IF ( nkpts <= 0) CALL errore(subname, 'Invaid nkpts', ABS(nkpts)+1 )
 
+   !
+   ! if not already done, check that the kpt grid is Monkhorst-pack
+   !
+   CALL get_monkpack(nk_, s_, nkpts, vkpt, 'CARTESIAN', bvec, ierr)
+   IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+   !
+   IF ( ANY( nk(:) /= nk_(:)) ) CALL errore(subname, 'invalid nk from kpt grid', 71) 
+   IF ( ANY( s(:) /= s_(:)) )   CALL errore(subname, 'invalid s from kpt grid', 71) 
 
 !
-! First, find the distance between k-point 1 and its nearest-neighbour shells
+! Find the distance between k-point 1 and its nearest-neighbour shells
 ! if we have only one k-point, the n-neighbours are its periodic images 
 !
 
@@ -77,7 +88,7 @@
    nq = 125*nkpts
 
    ALLOCATE( vq(3,nq), vqq(nq), index(nq),  STAT=ierr )
-     IF (ierr/=0) CALL errore('bshells_init','allocating vq--index',ABS(ierr))
+     IF (ierr/=0) CALL errore(subname,'allocating vq--index',ABS(ierr))
 
    !
    ! loop over 125 different cells in rec space
@@ -111,7 +122,7 @@
 ! zero-weight is found.
 !
    ALLOCATE( vb_aux(3,nnx), vbb(nnx), ivb(nnx), STAT=ierr )
-      IF (ierr/=0) CALL errore('bshells_init','allocating vb_aux, vbb, ivb ',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating vb_aux, vbb, ivb ',ABS(ierr))
 
    !
    ! first found the candidates:
@@ -148,7 +159,7 @@
           ENDIF 
       ENDDO
       !
-      IF ( .NOT. found ) CALL errore('bshells_init','vb parallel to bvec not found',j)
+      IF ( .NOT. found ) CALL errore(subname,'vb parallel to bvec not found',j)
    ENDDO
     
    !
@@ -181,7 +192,7 @@
    ENDDO
    !
    DEALLOCATE( ivb, vbb, vq, vqq, index, STAT=ierr )
-      IF (ierr/=0) CALL errore('bshells_init','deallocating ivb--index ',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'deallocating ivb--index ',ABS(ierr))
 
    !
    ! then impose the sum rule to find the weights
@@ -241,7 +252,7 @@
    ENDDO outer_column_loop
 
    IF ( mat_rank( 6, rank, work1, EPS_m6 ) /= rank ) &
-        CALL errore('bshells_init','work still a rank-deficient matrix',3)
+        CALL errore(subname,'work still a rank-deficient matrix',3)
 
    !
    ! solve the 6 x rank overdetermined system of linear equations
@@ -250,7 +261,7 @@
    !
    CALL DGELS( 'N', 6, rank, 1, work1, 6, rhs, 6, work_aux, lwork_aux, info)
    !
-   IF ( info < 0 )  CALL errore('bshells_init','invalid value in DGELS',-info)
+   IF ( info < 0 )  CALL errore(subname,'invalid value in DGELS',-info)
    DEALLOCATE( work_aux )
    !
 
@@ -260,7 +271,7 @@
    ! as an experimental change, we try to relax the constraint
    !
    !   IF ( ANY( rhs(1:rank) < -EPS_m6 ) ) &
-   !      CALL errore('bshells_init','negative weights',4)
+   !      CALL errore(subname,'negative weights',4)
     
    !
    ! found the non negligible weights, and complete the b, -b pairs
@@ -305,10 +316,10 @@
       !
    ENDDO
    !
-   IF( j /= nb/2 ) CALL errore('bshells_init','j /= nb/2, unexpected',ABS(j)+1)
+   IF( j /= nb/2 ) CALL errore(subname,'j /= nb/2, unexpected',ABS(j)+1)
    !
    DEALLOCATE( vb_aux, STAT=ierr)
-   IF (ierr/=0) CALL errore('bshells_init','deallocating vb_aux',ABS(ierr))
+   IF (ierr/=0) CALL errore(subname,'deallocating vb_aux',ABS(ierr))
 
    !
    ! get the tsum of the weights
@@ -332,7 +343,7 @@
       IF ( i == j ) aux = aux - ONE
       !
       IF ( ABS( aux ) > EPS_m6 ) &
-        CALL errore('bshells_init', 'sum rule not satisfied', i+j )
+        CALL errore(subname, 'sum rule not satisfied', i+j )
         !   
    ENDDO
    ENDDO
@@ -383,13 +394,13 @@
           ENDDO
        ENDDO inner_kpt_loop
        !
-       IF ( .NOT. found ) CALL errore('bshells_init','k+b not found',ib+ik)
+       IF ( .NOT. found ) CALL errore(subname,'k+b not found',ib+ik)
        !
    ENDDO 
    ENDDO
 
-   CALL timing('bshells_init',OPR='stop')
-   CALL log_pop('bshells_init')
+   CALL timing(subname,OPR='stop')
+   CALL log_pop(subname)
    !
 END SUBROUTINE bshells_init
 

@@ -67,7 +67,7 @@
    !
    IF ( ionode ) THEN
        !
-       WRITE( stdout, "(2x,70('=') )" ) 
+       WRITE( stdout, "(/,2x,70('=') )" ) 
        WRITE( stdout, "(a)" ) '              =                                            ='
        WRITE( stdout, "(a)" ) '              =     *** WanT *** Wannier Transport Code    ='
        WRITE( stdout, "(a)" ) '              =        (www.wannier-transport.org)         ='

@@ -14,8 +14,11 @@ WANNIER_OBJS= \
 ../wannier/bachel.o \
 ../wannier/bshells_init.o \
 ../wannier/cleanup.o \
+../wannier/compute_kham.o \
 ../wannier/control.o \
 ../wannier/converters.o \
+../wannier/correlation.o \
+../wannier/crystal_tools.o \
 ../wannier/functionals.o \
 ../wannier/get_monkpack.o \
 ../wannier/get_rgrid.o \

@@ -64,6 +64,7 @@ END INTERFACE
 ! matrix diagonalization
 INTERFACE mat_hdiag
    MODULE PROCEDURE zmat_hdiag
+   MODULE PROCEDURE zmat_hdiag_gen
    MODULE PROCEDURE dmat_hdiag
 END INTERFACE
 !
@@ -713,6 +714,71 @@ END SUBROUTINE dmat_mul
 
    RETURN
 END SUBROUTINE zmat_hdiag
+
+
+!**********************************************************
+   SUBROUTINE zmat_hdiag_gen( z, w, a, b, n )
+   !**********************************************************
+   !
+   ! utility to solve the generalized eigenvalue problem with
+   ! A,B hermitean matrices:
+   !  A * z = w * B * z
+   !
+   IMPLICIT NONE
+   COMPLEX(dbl), INTENT(IN)  :: a(:,:)
+   COMPLEX(dbl), INTENT(IN)  :: b(:,:)
+   COMPLEX(dbl), INTENT(OUT) :: z(:,:)
+   REAL(dbl),    INTENT(OUT) :: w(:)
+   INTEGER,      INTENT(in)  :: n
+
+   INTEGER :: i, j, ierr, info
+   COMPLEX(dbl), ALLOCATABLE :: ap(:), bp(:)
+   COMPLEX(dbl), ALLOCATABLE :: work(:)
+   REAL(dbl),    ALLOCATABLE :: rwork(:)
+   INTEGER,      ALLOCATABLE :: ifail(:)
+   INTEGER,      ALLOCATABLE :: iwork(:)
+
+   ! get the dimension of the problem
+   IF ( n <= 0 ) CALL errore('zmat_hdiag_gen','Invalid N',ABS(n)+1)
+   IF ( n > SIZE(a,1) .OR. n > SIZE(a,2) ) &
+        CALL errore('zmat_hdiag_gen','Invalid A dimensions',ABS(n)+1)
+   IF ( n > SIZE(b,1) .OR. n > SIZE(b,2) ) &
+        CALL errore('zmat_hdiag_gen','Invalid B dimensions',ABS(n)+1)
+   IF ( n > SIZE(z,1) .OR. n > SIZE(z,2) ) &
+        CALL errore('zmat_hdiag_gen','Invalid Z dimensions',ABS(n)+1)
+   
+   ALLOCATE( ap(n*(n+1)/2), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating ap',ABS(ierr))
+   ALLOCATE( bp(n*(n+1)/2), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating bp',ABS(ierr))
+   ALLOCATE( work(2*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating work',ABS(ierr))
+   ALLOCATE( rwork(7*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating rwork',ABS(ierr))
+   ALLOCATE( iwork(5*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating iwork',ABS(ierr))
+   ALLOCATE( ifail(n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating ifail',ABS(ierr))
+
+   DO j = 1, n
+   DO i = 1, j
+      ap(i + ( (j-1)*j)/2 ) = a(i,j)
+      bp(i + ( (j-1)*j)/2 ) = b(i,j)
+   ENDDO
+   ENDDO
+
+   CALL ZHPGVX( 1, 'v', 'a', 'u', n, ap, bp, ZERO, ZERO, 0, 0, -ONE, i, w, &
+                 z, SIZE(z,1), work, rwork, iwork, ifail, info )
+
+   IF ( info < 0 ) CALL errore('zmat_hdiag', 'zhpevx: info illegal value', -info )
+   IF ( info > 0 ) &
+        CALL errore('zmat_hdiag', 'zhpevx: eigenvectors not converged', info )
+    
+   DEALLOCATE( ap, bp, work, rwork, iwork, ifail, STAT=ierr)
+      IF(ierr/=0) CALL errore('zmat_hdiag','deallocating ap...ifail',ABS(ierr))
+
+   RETURN
+END SUBROUTINE zmat_hdiag_gen
 
 
 !**********************************************************

@@ -20,6 +20,9 @@ collect_wf.o \
 compute_kham.o \
 control.o \
 converters.o \
+correlation.o \
+crystal_tools.o \
+datafiles.o \
 domega_aux.o \
 domega.o \
 dyson_solver.o \
@@ -55,6 +58,7 @@ overlap_module.o \
 overlap_setmap.o \
 overlap_update.o \
 polarization.o \
+postproc_init.o \
 projection.o \
 projection_frozen.o \
 pseudo_types.o \

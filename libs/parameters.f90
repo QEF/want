@@ -18,7 +18,7 @@ module parameters
   INTEGER , PARAMETER ::   &
        nstrx  = 600,       &! max lenght for strings
        ntypx  = 10,        &! max number of different types of atom
-       npsx   =  ntypx,    &! obsolete, for PWscf compatibility
+       npsx   = ntypx,     &! obsolete, for PWscf compatibility
        npkx   = 40000,     &! max number of k-points               
        npwx   = 100000000, &! max number of density G vectors
        nshx   = 200,       &! max number of nearest neighb. k-point shells
