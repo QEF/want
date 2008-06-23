@@ -9,7 +9,8 @@
 
 !*********************************************
    MODULE windows_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,          ONLY : dbl
    USE constants,      ONLY : RYD, TWO, ZERO
    USE parameters,     ONLY : nstrx
@@ -20,6 +21,7 @@
    USE iotk_module
    USE qexml_module 
    USE qexpt_module 
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -57,7 +59,6 @@
    REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: nbnd, nkpts
    REAL(dbl)                   :: efermi             ! Fermi energy (from DFT)
    REAL(dbl)                   :: nelec              ! total number of electrons
-   LOGICAL                     :: lcompspace=.TRUE.  ! whether COMPLEMENT space is NOT null
    !
    LOGICAL                     :: alloc=.FALSE.      
 
@@ -75,7 +76,7 @@
 
    PUBLIC :: nkpts, nbnd, nspin, ispin, spin_component, dimwinx
    PUBLIC :: win_min, win_max, froz_min, froz_max
-   PUBLIC :: dimwin, imin, imax, eig, efermi, nelec, lcompspace
+   PUBLIC :: dimwin, imin, imax, eig, efermi, nelec
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
    PUBLIC :: alloc
 
@@ -325,20 +326,19 @@ CONTAINS
        CALL iotk_write_attr(attr,"spin_component",TRIM(spin_component))
        CALL iotk_write_attr(attr,"efermi",efermi)
        CALL iotk_write_attr(attr,"dimwinx",dimwinx)
-       CALL iotk_write_attr(attr,"lcompspace",lcompspace)
        CALL iotk_write_attr(attr,"lfrozen",lfrozen)
        CALL iotk_write_empty(unit,"DATA",ATTR=attr, IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'writing DATA',ABS(ierr))
 
-       CALL iotk_write_dat(unit,"DIMWIN",dimwin)
-       CALL iotk_write_dat(unit,"IMIN",imin)
-       CALL iotk_write_dat(unit,"IMAX",imax)
-       CALL iotk_write_dat(unit,"EIG",eig)
+       CALL iotk_write_dat(unit,"DIMWIN",dimwin, COLUMNS=8)
+       CALL iotk_write_dat(unit,"IMIN",imin, COLUMNS=8)
+       CALL iotk_write_dat(unit,"IMAX",imax, COLUMNS=8)
+       CALL iotk_write_dat(unit,"EIG",eig, COLUMNS=4)
 
-       CALL iotk_write_dat(unit,"DIMFROZ",dimfroz)
-       CALL iotk_write_dat(unit,"INDXFROZ",indxfroz)
-       CALL iotk_write_dat(unit,"INDXNFROZ",indxnfroz)
-       CALL iotk_write_dat(unit,"FROZEN",frozen)
+       CALL iotk_write_dat(unit,"DIMFROZ",dimfroz, COLUMNS=8)
+       CALL iotk_write_dat(unit,"INDXFROZ",indxfroz, COLUMNS=8)
+       CALL iotk_write_dat(unit,"INDXNFROZ",indxnfroz, COLUMNS=8)
+       CALL iotk_write_dat(unit,"FROZEN",frozen, COLUMNS=8)
 
        CALL iotk_write_end(unit,TRIM(name))
        !
@@ -357,8 +357,8 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="windows_read"
-       INTEGER            :: nkpts_
-       INTEGER            :: ierr
+       INTEGER            :: nkpts_, ierr
+       LOGICAL            :: lfound
 
        CALL timing( subname, OPR='start')
        CALL log_push ( subname )
@@ -384,10 +384,10 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find attr EFERMI',ABS(ierr))
        CALL iotk_scan_attr(attr,'dimwinx',dimwinx,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
-       CALL iotk_scan_attr(attr,'lcompspace',lcompspace,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr LCOMPSPACE',ABS(ierr))
-       CALL iotk_scan_attr(attr,'lfrozen',lfrozen,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr LFROZEN',ABS(ierr))
+       !
+       CALL iotk_scan_attr(attr,'lfrozen',lfrozen, FOUND=lfound, IERR=ierr)
+       IF (ierr>0) CALL errore(subname,'Unable to find attr LFROZEN',ABS(ierr))
+       IF ( .NOT. lfound ) lfrozen = .FALSE.
 
        IF ( kpoints_alloc ) THEN
             IF ( nkpts_ /= nkpts ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_)+1)
@@ -418,14 +418,21 @@ CONTAINS
        CALL iotk_scan_dat(unit,'EIG',eig,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find EIG',ABS(ierr))
 
-       CALL iotk_scan_dat(unit,'DIMFROZ',dimfroz,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find DIMFROZ',ABS(ierr))
+       CALL iotk_scan_dat(unit,'DIMFROZ',dimfroz, FOUND=lfound ,IERR=ierr)
+       IF (ierr>0) CALL errore(subname,'Unable to find DIMFROZ',ABS(ierr))
+       IF ( .NOT. lfound ) dimfroz = 0
+       !
        CALL iotk_scan_dat(unit,'INDXFROZ',indxfroz,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find INDXFROZ',ABS(ierr))
+       IF (ierr>0) CALL errore(subname,'Unable to find INDXFROZ',ABS(ierr))
+       IF ( .NOT. lfound ) indxfroz = 0
+       !
        CALL iotk_scan_dat(unit,'INDXNFROZ',indxnfroz,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find INDXNFROZ',ABS(ierr))
+       IF (ierr>0) CALL errore(subname,'Unable to find INDXNFROZ',ABS(ierr))
+       IF ( .NOT. lfound ) indxnfroz = 0
+       !
        CALL iotk_scan_dat(unit,'FROZEN',frozen,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find FROZEN',ABS(ierr))
+       IF (ierr>0) CALL errore(subname,'Unable to find FROZEN',ABS(ierr))
+       IF ( .NOT. lfound ) frozen = .FALSE.
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))

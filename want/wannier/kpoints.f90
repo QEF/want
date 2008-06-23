@@ -13,14 +13,16 @@
 !*********************************************
    !
    USE kinds,             ONLY : dbl
-   USE constants,         ONLY : ONE, TWO, TPI, EPS_m6
+   USE constants,         ONLY : ONE, TWO, TPI, EPS_m6, BOHR => bohr_radius_angs
    USE parameters,        ONLY : nstrx, nnx
    USE io_module,         ONLY : stdout
    USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : alat, avec, bvec, lattice_alloc => alloc
-   USE converters_module, ONLY : cart2cry
+   USE parser_module,     ONLY : change_case
+   USE converters_module, ONLY : cart2cry, cry2cart
    USE qexml_module
    USE qexpt_module
+   USE crystal_io_module
    !
    IMPLICIT NONE
    PRIVATE
@@ -55,16 +57,20 @@
   REAL(dbl), ALLOCATABLE  :: vkpt_all(:,:) ! kpt components; DIM: 3*nkpts_all (Bohr^-1)
   REAL(dbl), ALLOCATABLE  :: wk(:)         ! weight of each kpt for BZ sums 
   REAL(dbl)               :: wksum         ! sum of the weights
+  LOGICAL                 :: kgrid_from_file = .FALSE.     ! whether nk,s are read or not
 
   LOGICAL :: kpoints_alloc = .FALSE.
 
   !
   ! ... Real space lattice vectors (R vectors)
   INTEGER                 :: nrtot         ! total number R vects
-  INTEGER                 :: nr(3)         ! uniform grid of R vectors
+  INTEGER                 :: nr(3)         ! generators of the uniform Rgrid
   INTEGER,   ALLOCATABLE  :: ivr(:,:)      ! R vector components (crystal)
   REAL(dbl), ALLOCATABLE  :: vr(:,:)       ! R vector components (bohr)
   REAL(dbl), ALLOCATABLE  :: wr(:)         ! R vector weights 
+  LOGICAL                 :: rgrid_from_file = .FALSE.     ! whether nr,wr are read or not
+
+  LOGICAL :: rgrid_alloc = .FALSE.
 
   !
   ! ... Nearest neighbor data (b vectors)
@@ -90,9 +96,11 @@
   PUBLIC :: vkpt
   PUBLIC :: wk, wksum
   PUBLIC :: nkpts_all, vkpt_all
+  PUBLIC :: kgrid_from_file
   !
   PUBLIC :: nrtot, nr
   PUBLIC :: ivr, vr, wr
+  PUBLIC :: rgrid_from_file
   !
   PUBLIC :: nb
   PUBLIC :: vb
@@ -103,11 +111,14 @@
   PUBLIC :: nnrev
   PUBLIC :: nnpos
   !
-  PUBLIC :: kpoints_alloc, bshells_alloc
+  PUBLIC :: kpoints_alloc, rgrid_alloc, bshells_alloc
   !
   PUBLIC :: kpoints_read_ext
   PUBLIC :: kpoints_init
+  PUBLIC :: kpoints_allocate
   PUBLIC :: kpoints_deallocate
+  PUBLIC :: rgrid_allocate
+  PUBLIC :: rgrid_deallocate
   PUBLIC :: bshells_allocate
   PUBLIC :: bshells_deallocate
 
@@ -115,11 +126,12 @@
 CONTAINS
 
 !**********************************************************
-   SUBROUTINE kpoints_allocate()
+   SUBROUTINE kpoints_allocate( )
    !**********************************************************
    IMPLICIT NONE
-      INTEGER   :: ierr
-      CHARACTER(16)     :: subname="kpoints_allocate"
+      !
+      INTEGER       :: ierr
+      CHARACTER(16) :: subname="kpoints_allocate"
 
       CALL log_push ( subname )
       !
@@ -128,12 +140,13 @@ CONTAINS
       IF ( nkpts <= 0) CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
       !
       ALLOCATE( vkpt(3,nkpts),STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating vkpt',3*nkpts)
+      IF (ierr/=0) CALL errore(subname,'allocating vkpt',ABS(ierr))
       !
       ALLOCATE( wk(nkpts),STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating wk',nkpts)
+      IF (ierr/=0) CALL errore(subname,'allocating wk',ABS(ierr))
 
       kpoints_alloc = .TRUE.
+      !
       !
       CALL log_pop( subname )
       !
@@ -144,8 +157,9 @@ CONTAINS
    SUBROUTINE kpoints_init( )
    !**********************************************************
    IMPLICIT NONE
-      INTEGER           :: ierr
       CHARACTER(12)     :: subname="kpoints_init"
+      LOGICAL           :: lfound
+      INTEGER           :: ierr, ik
       REAL(dbl), ALLOCATABLE :: vr_cry(:,:)
 
       CALL log_push ( subname )
@@ -159,28 +173,65 @@ CONTAINS
       CALL symmetrize_kgrid() 
 
       !
-      ! get the monkhorst pack grid
+      ! set the correct weight if the case
       !
-      CALL get_monkpack(nk,s,nkpts,vkpt,'CARTESIAN',bvec,ierr)
-      IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+      lfound = .FALSE.
+      DO ik = 1, nkpts
+          !
+          IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) lfound = .TRUE.
+          !
+      ENDDO
+      !
+      IF ( lfound ) THEN
+          !
+          WRITE(stdout, "()")
+          CALL warning( subname, 'Invalid kpt weights from DFT data. Recalculated')
+          wk(:) = ONE/REAL(nkpts, dbl)
+          !
+      ENDIF
+
+      !
+      ! if needed get the monkhorst pack grid
+      ! when nk is read from file, no need to check the
+      ! M-P grid here
+      !
+      IF ( kgrid_from_file ) THEN
+          !
+          IF ( ANY(nk(:) <= 0 ) ) CALL errore(subname,'invalid nk from file',10)
+          !
+      ELSE
+          !
+          CALL get_monkpack(nk,s,nkpts,vkpt,'CARTESIAN',bvec,ierr)
+          IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+          !
+      ENDIF
+
 
       !
       ! init the R vectors, corresponding to the given MP grid
+      ! nr is initialized with nk only if it is not read from file
+      ! (see the case crystal in kpoints_read_ext)
       !
-      nr(1:3) = nk(1:3)
-      nrtot   = PRODUCT(nr)
+      nr(:) = -1
       !
-      ALLOCATE( vr( 3, nrtot ), STAT=ierr )
-      IF ( ierr /= 0) CALL errore(subname,'allocating vr',ABS(ierr))
+      IF ( .NOT. rgrid_from_file ) THEN
+          !
+          nr(1:3) = nk(1:3)
+          nrtot = PRODUCT(nr)
+          !
+          CALL rgrid_allocate( )
+          !
+          CALL get_rgrid(nr, nrtot, wr, vr, avec )
+          !
+      ELSE
+          !
+          IF ( .NOT. rgrid_alloc )    CALL errore(subname, 'rgrid not alloc', 20)
+          IF ( .NOT. ALLOCATED(vr) )  CALL errore(subname, 'vr not alloc', 10)
+          IF ( .NOT. ALLOCATED(ivr) ) CALL errore(subname,'ivr not alloc', 11)
+          IF ( .NOT. ALLOCATED(wr) )  CALL errore(subname, 'wr not alloc', 12)
+          !
+      ENDIF
       !
-      ALLOCATE( ivr( 3, nrtot ), STAT=ierr )
-      IF ( ierr /= 0) CALL errore(subname,'allocating ivr',ABS(ierr))
-      !
-      ALLOCATE( wr( nrtot ), STAT=ierr )
-      IF ( ierr /= 0) CALL errore(subname,'allocating wr',ABS(ierr))
-      !
-      !
-      CALL get_rgrid(nr, nrtot, wr, vr, avec )
 
       !
       ! compute ivr, crystal compononet of vr
@@ -192,6 +243,18 @@ CONTAINS
       CALL cart2cry(vr_cry, avec)
       !
       ivr(:,:) = NINT( vr_cry(:,:) )
+
+      !
+      ! determine nr if needed
+      ! (nr is taken from ivr)
+      !
+      IF ( rgrid_from_file ) THEN
+          !
+          nr ( 1 ) = MAXVAL( ivr(1,:) ) - MINVAL( ivr(1,:) ) +1
+          nr ( 2 ) = MAXVAL( ivr(2,:) ) - MINVAL( ivr(2,:) ) +1
+          nr ( 3 ) = MAXVAL( ivr(3,:) ) - MINVAL( ivr(3,:) ) +1           
+          !
+      ENDIF
       !
       DEALLOCATE( vr_cry, STAT=ierr )
       IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
@@ -199,6 +262,33 @@ CONTAINS
       CALL log_pop ( subname )
       !
    END SUBROUTINE kpoints_init
+
+
+!**********************************************************
+   SUBROUTINE rgrid_allocate( )
+   !**********************************************************
+   IMPLICIT NONE
+      INTEGER   :: ierr
+      CHARACTER(14)     :: subname="rgrid_allocate"
+
+      CALL log_push ( subname )
+      !
+      IF ( nrtot <= 0)  CALL errore(subname,'Invalid nrtot',ABS(nrtot)+1)
+      !
+      ALLOCATE( vr(3, nrtot), STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'allocating vr',ABS(ierr))
+      !
+      ALLOCATE( ivr(3, nrtot), STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'allocating ivr',ABS(ierr))
+      !
+      ALLOCATE( wr(nrtot), STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'allocating wr',ABS(ierr))
+      !
+      rgrid_alloc = .TRUE.
+      !
+      CALL log_pop ( subname )
+      !
+   END SUBROUTINE rgrid_allocate
 
 
 !**********************************************************
@@ -245,8 +335,9 @@ CONTAINS
        CHARACTER(*),      INTENT(in) :: filefmt
        !
        CHARACTER(16)      :: subname='kpoints_read_ext'
-       INTEGER            :: nspin, ik, ierr
-       LOGICAL            :: lsda, lfound
+       CHARACTER(256)     :: k_units, r_units, b_units
+       REAL(dbl)          :: lbvec(3,3)
+       INTEGER            :: ierr
        
        CALL log_push ( subname )
        !
@@ -257,33 +348,74 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_spin( LSDA=lsda, IERR=ierr )
-            IF ( ierr/=0) CALL errore(subname,'getting spin dimensions',ABS(ierr))
-            !
-            nspin = 1
-            IF ( lsda ) nspin = 2
-            !
             CALL qexml_read_bz( NUM_K_POINTS=nkpts, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'QEXML: getting bz dimensions',ABS(ierr))
+            !
+            ! assuming k_units are not crystal
+            lbvec = 0.0
+            !
+            kgrid_from_file = .FALSE.
+            rgrid_from_file = .FALSE.
             !
        CASE ( 'pw_export' )
             !
-            CALL qexpt_read_spin( NSPIN=nspin, IERR=ierr )
-            IF ( ierr/=0) CALL errore(subname,'getting spin dimensions',ABS(ierr))
-            !
             CALL qexpt_read_bz( NUM_K_POINTS=nkpts, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'QEXPT: getting bz dimensions',ABS(ierr))
+            !
+            ! assuming k_units are not crystal
+            lbvec = 0.0
+            !
+            kgrid_from_file = .FALSE.
+            rgrid_from_file = .FALSE.
+            !
+       CASE ( 'crystal' )
+            !
+            CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
+            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening sec. GEOMETRY', ABS(ierr) )
+            !
+            CALL crio_read_periodicity( BVEC=lbvec, B_UNITS=b_units, IERR=ierr)
+            IF ( ierr/=0 )   CALL errore(subname,'CRIO: getting bvec',ABS(ierr))
+            !
+            CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
+            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. GEOMETRY', ABS(ierr) )
+            !
+            !
+            CALL change_case( b_units, 'lower' )
+            !
+            SELECT CASE ( TRIM(b_units) )
+            CASE ( 'au', 'bohr^-1' )
+                !
+                ! do nothing
+            CASE ( 'ang^-1' ) 
+                bvec = bvec * BOHR
+            CASE DEFAULT
+                CALL errore(subname, 'invalid b_units: '//TRIM(b_units), 10 )
+            END SELECT
+            !
+            CALL crio_open_section( "METHOD", ACTION='read', IERR=ierr )
+            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening sec. METHOD', ABS(ierr) )
+            !
+            ! read Rgrid dimensions from file
+            !
+            CALL crio_read_direct_lattice( NRTOT=nrtot, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'CRIO: getting bz dimensions',ABS(ierr))
+            !
+            CALL crio_read_bz( NUM_K_POINTS=nkpts, NK=nk, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'CRIO: getting bz dimensions',ABS(ierr))
+            !
+            s(1:3) = 0
+            !
+            kgrid_from_file = .TRUE.
+            rgrid_from_file = .TRUE.
             !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
        END SELECT
        !
-       IF ( ierr/=0 )   CALL errore(subname,'getting bz dimensions',ABS(ierr))
-       IF ( nkpts <=0 ) CALL errore(subname,'invalid nkpts',1)  
-       IF ( nspin <=0 ) CALL errore(subname,'invalid nspin',2)  
-       IF ( nspin > 2 ) CALL errore(subname,'invalid nspin',3)  
-       !
        !
        CALL kpoints_allocate( )
+       IF( rgrid_from_file ) CALL rgrid_allocate( )
       
        !
        ! massive data reading
@@ -292,38 +424,92 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_bz( XK=vkpt, WK=wk, IERR=ierr )
+            CALL qexml_read_bz( XK=vkpt, WK=wk, K_UNITS=k_units, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'QEXML: reading bz',ABS(ierr))
             !
        CASE ( 'pw_export' )
             !
             CALL qexpt_read_bz( XK=vkpt, WK=wk, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'QEXPT: reading bz',ABS(ierr))
+            !
+            k_units = '2 pi / alat'
+            !
+       CASE ( 'crystal' )
+            !
+            CALL crio_read_direct_lattice( RVEC=vr, R_UNITS=r_units, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'CRIO: reading rgrid',ABS(ierr))
+            !
+            wr(:) = ONE
+            !
+            CALL change_case( r_units, 'lower' )
+            !
+            SELECT CASE ( TRIM(r_units) )
+            CASE ( 'au', 'bohr' )
+                !
+                ! do nothing
+            CASE ( 'ang', 'angstrom' ) 
+                vr = vr / BOHR
+            CASE DEFAULT
+                CALL errore(subname, 'invalid r_units: '//TRIM(r_units), 10 )
+            END SELECT
+            !
+            !
+            CALL crio_read_bz( XK=vkpt, WK=wk, K_UNITS=k_units, IERR=ierr )
+            IF ( ierr/=0 )   CALL errore(subname,'CRIO: reading bz',ABS(ierr))
+            !
+            CALL crio_close_section( "METHOD", ACTION='read', IERR=ierr )
+            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. METHOD', ABS(ierr) )
             !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 2)
+            !
        END SELECT
 
        !
-       ! due to a different convention in Espresso
-       wk(:) = wk(:) * REAL( nspin, dbl) / TWO 
-       wksum = SUM(wk(:))
+       ! manage units
+       ! convert to bohr^-1 cartesian units  
        !
-       lfound = .FALSE.
-       DO ik = 1, nkpts
-          !
-          IF( ABS( wk(ik) - ONE/REAL(nkpts, dbl) ) > EPS_m6 ) lfound = .TRUE.
-       ENDDO
+       IF ( LEN_TRIM(k_units) == 0 ) CALL errore(subname,'invalid k_units',1)  
        !
-       IF ( lfound ) THEN
-          !
-          CALL warning( 'kpoints_read_ext', 'Invalid kpt weights from DFT data. Recalculated')
-          wk(:) = ONE/REAL(nkpts, dbl)
-       ENDIF
+       CALL change_case( k_units, 'lower' )
+       !
+       SELECT CASE ( TRIM(k_units) )
+       CASE ( 'relative', 'crystal' )
+           !
+           ! the espresso interfaces doesn't lead to
+           ! crystal units; therefore the search for bvec is avoided
+           ! and an error is given if we arrive here
+           !
+           IF ( TRIM(filefmt) == "qexml" .OR. TRIM(filefmt) == "pw_export" ) &
+              CALL errore(subname,'unexpected units for kpts', 71)
+           !
+           ! do the actual conversion
+           !
+           CALL cry2cart( vkpt, lbvec )
+           !
+       CASE ( '2 pi / alat', '2 pi / a', '2pi/alat', '2pi/a' )
+           !
+           ! typical espresso units
+           ! 
+           vkpt(:,:) = vkpt(:,:) * TPI/alat
+           !
+       CASE ( 'au', 'bohr^-1' )
+           ! do nothing
+       CASE DEFAULT
+           !
+           CALL errore(subname,'invalid units for kpts: '//TRIM(k_units),72 ) 
+           !
+       END SELECT
 
        !
-       ! convert them to bohr^-1 cartesian units 
-       vkpt(:,:) = vkpt(:,:) * TPI/alat
+       ! weights should sum to one
+       ! 
+       wksum = SUM(wk(:))
+       wk(:) = wk(:) / wksum
        !
+       wksum = ONE
+
        CALL log_pop ( subname )
        !
    END SUBROUTINE kpoints_read_ext
@@ -346,6 +532,26 @@ CONTAINS
           DEALLOCATE( wk, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating wk',ABS(ierr))
        ENDIF
+       IF ( ALLOCATED( vkpt_all ) ) THEN
+          DEALLOCATE( vkpt_all, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating vkpt_all',ABS(ierr))
+       ENDIF
+       !
+       kpoints_alloc = .FALSE.
+       !
+       CALL log_pop( subname )
+       !
+   END SUBROUTINE kpoints_deallocate
+
+
+!**********************************************************
+   SUBROUTINE rgrid_deallocate()
+   !**********************************************************
+   IMPLICIT NONE
+       INTEGER          :: ierr
+       CHARACTER(16)    :: subname='rgrid_deallocate'
+   
+       CALL log_push( subname )
        !
        IF ( ALLOCATED( ivr ) ) THEN
           DEALLOCATE( ivr, STAT=ierr )
@@ -359,16 +565,12 @@ CONTAINS
           DEALLOCATE( wr, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating wr',ABS(ierr))
        ENDIF
-       IF ( ALLOCATED( vkpt_all ) ) THEN
-          DEALLOCATE( vkpt_all, STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'deallocating vkpt_all',ABS(ierr))
-       ENDIF
        !
-       kpoints_alloc = .FALSE.
+       rgrid_alloc = .FALSE.
        !
        CALL log_pop( subname )
        !
-   END SUBROUTINE kpoints_deallocate
+   END SUBROUTINE rgrid_deallocate
 
 
 !**********************************************************

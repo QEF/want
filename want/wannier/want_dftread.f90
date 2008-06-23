@@ -110,7 +110,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo, nee
 !
 ! ... opening the file containing the PW-DFT data
 !
-    CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+    CALL io_name('dft_data',filename)
     CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read")
 
 
@@ -169,7 +169,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo, nee
 !
    CALL file_close(dft_unit,PATH="/",ACTION="read")
 
-   CALL io_name('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
+   CALL io_name('dft_data',filename,LPATH=.FALSE.)
    WRITE( stdout,"(2x,'DFT-data read from file: ',a)") TRIM(filename)   
     
 

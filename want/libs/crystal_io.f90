@@ -408,14 +408,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_write_atoms( num_of_atoms, periodicity, atm_symb, atm_number, &
-                                coords, units, coords_cry )
+    SUBROUTINE crio_write_atoms( num_of_atoms, periodicity, symb, atm_number, &
+                                 coords, units, coords_cry )
       !------------------------------------------------------------------------
       !
       INTEGER,                     INTENT(IN) :: num_of_atoms
       INTEGER,                     INTENT(IN) :: periodicity
       REAL(dbl),         OPTIONAL, INTENT(IN) :: coords(:,:), coords_cry(:,:)
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: atm_symb(:), units
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN) :: symb(:), units
       INTEGER,           OPTIONAL, INTENT(IN) :: atm_number(:)
       !
       INTEGER :: ia
@@ -434,7 +434,7 @@ CONTAINS
           DO ia = 1, num_of_atoms
               !
               attr=" "
-              IF (PRESENT( atm_symb))   CALL iotk_write_attr(attr, "atomic_symbol", TRIM(atm_symb(ia)) )
+              IF (PRESENT( symb))   CALL iotk_write_attr(attr, "atomic_symbol", TRIM(symb(ia)) )
               IF (PRESENT( atm_number)) CALL iotk_write_attr(attr, "atomic_number", atm_number(ia) )
               !
               CALL iotk_write_dat( ounit, "ATOM"//TRIM(iotk_index(ia)), coords(1:3,ia), &
@@ -457,7 +457,7 @@ CONTAINS
           DO ia = 1, num_of_atoms
               !
               attr=" "
-              IF (PRESENT( atm_symb))   CALL iotk_write_attr(attr, "atomic_symbol", TRIM(atm_symb(ia)))
+              IF (PRESENT( symb))   CALL iotk_write_attr(attr, "atomic_symbol", TRIM(symb(ia)))
               IF (PRESENT( atm_number)) CALL iotk_write_attr(attr, "atomic_number", atm_number(ia) )
               !
               CALL iotk_write_dat( ounit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity,ia), &
@@ -1012,18 +1012,19 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_atoms( num_of_atoms, periodicity, atm_symb, atm_number, &
+    SUBROUTINE crio_read_atoms( num_of_atoms, periodicity, symb, atm_number, &
                                 coords, units, coords_cry, ierr )
       !------------------------------------------------------------------------
       !
       INTEGER,           OPTIONAL, INTENT(OUT) :: num_of_atoms, periodicity
       REAL(dbl),         OPTIONAL, INTENT(OUT) :: coords(:,:), coords_cry(:,:)
-      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: atm_symb(:), units
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: symb(:), units
       INTEGER,           OPTIONAL, INTENT(OUT) :: atm_number(:)
       INTEGER,                     INTENT(OUT) :: ierr
       !
       INTEGER            :: num_of_atoms_, periodicity_, ia
       LOGICAL            :: found
+      REAL(dbl)          :: rvect_(3)
       CHARACTER(256)     :: units_
       !
 
@@ -1036,7 +1037,7 @@ CONTAINS
       CALL iotk_scan_dat( iunit, "NUMBER_OF_ATOMS", num_of_atoms_, IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      IF ( PRESENT( coords ) ) THEN 
+      IF ( PRESENT(coords) .OR. PRESENT(symb) .OR. PRESENT(atm_number) ) THEN 
           !
           CALL iotk_scan_begin( iunit, "CARTESIAN_COORDINATES", ATTR=attr, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
@@ -1046,13 +1047,19 @@ CONTAINS
           !
           DO ia = 1, num_of_atoms_
               !
-              CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords(:,ia), &
+              CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), rvect_(:), &
                                   ATTR=attr, IERR=ierr )
               IF ( ierr /= 0 ) RETURN
               !
-              IF ( PRESENT( atm_symb ) ) THEN
+              IF ( PRESENT( coords ) ) THEN
                   !
-                  CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
+                  coords(:,ia) = rvect_(:)
+                  !
+              ENDIF
+              !
+              IF ( PRESENT( symb ) ) THEN
+                  !
+                  CALL iotk_scan_attr( attr, "atomic_symbol", symb(ia), IERR=ierr )
                   IF ( ierr /= 0 ) RETURN
                   !
               ENDIF
@@ -1081,8 +1088,6 @@ CONTAINS
               !
               periodicity_ = 0
               IF ( PRESENT( coords_cry )) coords_cry(:,:) = 0.0
-              IF ( PRESENT( atm_symb ))   atm_symb(:) = " "
-              IF ( PRESENT( atm_number )) atm_number(:) = 0
               !
           ELSE
               !
@@ -1093,23 +1098,10 @@ CONTAINS
                   !
                   DO ia = 1, num_of_atoms_
                       !
-                      CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), coords_cry(1:periodicity_,ia), &
-                                          ATTR=attr, IERR=ierr )
+                      CALL iotk_scan_dat( iunit, "ATOM"//TRIM(iotk_index(ia)), &
+                                          coords_cry(1:periodicity_,ia),       &
+                                          IERR=ierr )
                       IF ( ierr /= 0 ) RETURN
-                      !
-                      IF ( PRESENT( atm_symb ) ) THEN
-                          !
-                          CALL iotk_scan_attr( attr, "atomic_symbol", atm_symb(ia), IERR=ierr )
-                          IF ( ierr /= 0 ) RETURN
-                          !
-                      ENDIF
-                      !
-                      IF ( PRESENT( atm_number ) ) THEN
-                          !
-                          CALL iotk_scan_attr( attr, "atomic_number", atm_number(ia), IERR=ierr )
-                          IF ( ierr /= 0 ) RETURN
-                          !
-                      ENDIF
                       !
                   ENDDO
                   !

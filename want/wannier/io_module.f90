@@ -10,14 +10,17 @@
    MODULE io_module
 !*********************************************
    !
-   USE parameters,       ONLY : nstrx
-   USE io_global_module, ONLY : stdout, stdin, ionode, ionode_id, &
-                                io_global_start, io_global_getionode
-   USE control_module,   ONLY : read_symmetry, use_debug_mode, debug_level
-   USE log_module,       ONLY : log_init, log_push
+   USE parameters,           ONLY : nstrx
+   USE io_global_module,     ONLY : stdout, stdin, ionode, ionode_id, &
+                                    io_global_start, io_global_getionode
+   USE control_module,       ONLY : read_symmetry, use_debug_mode, debug_level
+   USE log_module,           ONLY : log_init, log_push
+   USE crystal_io_module,    ONLY : crio_open_file, crio_read_header, crio_close_file
+   USE crystal_tools_module, ONLY : file_is_crystal
    USE qexml_module
    USE qexpt_module
    USE iotk_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -73,9 +76,12 @@
          
    CHARACTER(nstrx)           :: dftdata_fmt = ' '
    CHARACTER(nstrx)           :: dftdata_fmt_version
+   CHARACTER(nstrx)           :: dftdata_file = ' '
    CHARACTER(nstrx)           :: wantdata_fmt
    CHARACTER(nstrx)           :: wantdata_form
    LOGICAL                    :: wantdata_binary
+   !
+   CHARACTER(nstrx)           :: datafile_sgm = ' '
 
    LOGICAL                    :: alloc = .FALSE.
 !
@@ -87,7 +93,8 @@
    PUBLIC ::  ionode, ionode_id
 
    PUBLIC ::  stdin, stdout 
-   PUBLIC ::  dftdata_fmt, dftdata_fmt_version
+   PUBLIC ::  dftdata_fmt, dftdata_fmt_version, dftdata_file
+   PUBLIC ::  datafile_sgm
    PUBLIC ::  wantdata_fmt, wantdata_form, wantdata_binary
    PUBLIC ::  dft_unit, pseudo_unit 
    PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit, sgm_unit 
@@ -108,27 +115,34 @@
 ! subroutines
 !
 !**********************************************************
-   SUBROUTINE get_dftdata_fmt(prefix_,work_dir_, dftdata_fmt_, need_wfc)
+   SUBROUTINE get_dftdata_fmt(prefix_, work_dir_, dftdata_file_, dftdata_fmt_, need_wfc)
    !**********************************************************
       !
       ! get the fmt of the dftdata file (use the names)
       !
       IMPLICIT NONE
-      CHARACTER(*),  INTENT(IN)  ::  prefix_, work_dir_
-      CHARACTER(*),  INTENT(OUT) ::  dftdata_fmt_
+      CHARACTER(*),     INTENT(IN)  ::  prefix_, work_dir_, dftdata_file_
+      CHARACTER(*),     INTENT(OUT) ::  dftdata_fmt_
       LOGICAL, OPTIONAL, INTENT(IN) :: need_wfc
       !
       CHARACTER(nstrx) :: filename, version
-      CHARACTER(nstrx) :: fmt_searched(2)
-      CHARACTER(nstrx) :: fmt_filename(2)
+      CHARACTER(nstrx) :: fmt_searched(3)
+      CHARACTER(nstrx) :: fmt_filename(3)
       LOGICAL          :: lexist, lexist1, lneed_wfc
       INTEGER          :: i, ierr
+
       !
       ! Setting fmts to be searched
       !
-      DATA fmt_searched /'qexml', 'pw_export'  /
-      DATA fmt_filename /'.save/data-file.xml', '.export/index.xml'  /
+      fmt_searched(1) = 'crystal'
+      fmt_searched(2) = 'qexml'
+      fmt_searched(3) = 'pw_export'
       !
+      fmt_filename(1) = TRIM(dftdata_file_)
+      fmt_filename(2) = '.save/data-file.xml'
+      fmt_filename(3) = '.export/index.xml'
+      !
+      ! init
       lexist    = .FALSE.
       lneed_wfc = .TRUE.
       IF ( PRESENT( need_wfc )) lneed_wfc = need_wfc
@@ -136,43 +150,65 @@
       !
       DO i = 1, SIZE( fmt_searched )
            !
-           filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // TRIM( fmt_filename( i ) )
+           ! set the filename
+           !
+           IF ( TRIM( fmt_searched(i) ) == 'crystal' ) THEN
+               !
+               ! in the case of crystal fmt, the presence of 
+               ! a non-null dftdata_file is required
+               !
+               IF ( LEN_TRIM(fmt_filename( i )) == 0 ) CYCLE
+               !
+               filename = TRIM( fmt_filename( i ) )
+               !
+           ELSE
+               filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // TRIM( fmt_filename( i ) )
+           ENDIF
+           !
+           ! check the existence of the file
            INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
            !
            IF ( lexist .AND. lneed_wfc .AND. TRIM( fmt_searched(i) ) == 'qexml'  )  THEN
-                !
-                ! check also the existence of evc.dat or evc1.dat
-                ! this means that file produced by espresso are fine for WanT
-                !
-                filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc.dat"
-                INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
-                filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc1.dat"
-                INQUIRE ( FILE=TRIM(filename), EXIST=lexist1 )
-                !            
-                lexist = lexist .OR. lexist1
-                !
-                !
-                ! check  the version of the format.
-                ! At the moment, if the header section exist, 
-                ! the fmt is supported whatever version
-                !
-                filename = TRIM(work_dir_) //'/'// TRIM(prefix_) // '.save/data-file.xml'
-                !
-                CALL qexml_openfile( filename, "read", IERR=ierr )
-                IF ( ierr /= 0 ) CALL errore('get_dftdata_fmt','opening dftdata file',ABS(ierr))
-                !
-                CALL qexml_read_header( FORMAT_VERSION=version, IERR=ierr )
-                !
-                IF ( ierr /= 0 )  lexist = .FALSE.
-                !
-                ! any check on the version should be placed here
-                !
-                CALL qexml_closefile ( "read", IERR=ierr )
-                IF ( ierr /= 0 ) CALL errore('get_dftdata_fmt','closing dftdata file',ABS(ierr))
-                !
+               !
+               ! check also the existence of evc.dat or evc1.dat
+               ! this means that file produced by espresso are fine for WanT
+               !
+               filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc.dat"
+               INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
+               filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc1.dat"
+               INQUIRE ( FILE=TRIM(filename), EXIST=lexist1 )
+               !            
+               lexist = lexist .OR. lexist1
+               !
+               !
+               ! check  the version of the format.
+               ! At the moment, if the header section exist, 
+               ! the fmt is supported whatever version
+               !
+               filename = TRIM(work_dir_) //'/'// TRIM(prefix_) // '.save/data-file.xml'
+               !
+               CALL qexml_openfile( filename, "read", IERR=ierr )
+               IF ( ierr /= 0 ) CALL errore('get_dftdata_fmt','opening dftdata file',ABS(ierr))
+               !
+               CALL qexml_read_header( FORMAT_VERSION=version, IERR=ierr )
+               !
+               IF ( ierr /= 0 )  lexist = .FALSE.
+               !
+               ! any check on the version should be placed here
+               !
+               CALL qexml_closefile ( "read", IERR=ierr )
+               IF ( ierr /= 0 ) CALL errore('get_dftdata_fmt','closing dftdata file',ABS(ierr))
+               !
+           ENDIF
+           !
+           IF ( lexist .AND. TRIM( fmt_searched(i) ) == 'crystal'  )  THEN
+               !
+               lexist = file_is_crystal( filename )
+               !
            ENDIF
            !
            IF ( lexist ) EXIT
+           !
       ENDDO
       !
       IF ( .NOT. lexist ) THEN
@@ -235,7 +271,7 @@
       !
       IF ( LEN_TRIM( dftdata_fmt ) == 0 ) THEN 
           !
-          CALL get_dftdata_fmt ( prefix, work_dir, dftdata_fmt, lneed_wfc )
+          CALL get_dftdata_fmt ( prefix, work_dir, dftdata_file, dftdata_fmt, lneed_wfc )
           !
       ENDIF
       !
@@ -284,6 +320,19 @@
            CALL qexpt_closefile ( "read", IERR=ierr )
            IF ( ierr/=0) CALL errore('io_init','closing dftdata file',ABS(ierr))
            !
+      CASE ( 'crystal' )
+           !
+           filename = TRIM( dftdata_file )
+           !
+           CALL crio_open_file( UNIT=dft_unit, FILENAME=filename, ACTION='read', IERR=ierr )
+           IF ( ierr/=0 ) CALL errore('io_init', 'opening dftdata file: '//TRIM(filename), ABS(ierr) )
+           !
+           CALL crio_read_header( CREATOR_VERSION=dftdata_fmt_version, IERR=ierr)
+           IF ( ierr/=0 ) CALL errore('io_init', 'reading CRIO header', ABS(ierr) )
+           !
+           CALL crio_close_file( ACTION='read', IERR=ierr )
+           IF ( ierr/=0) CALL errore('io_init','closing crio datafile',ABS(ierr))
+           !
       CASE DEFAULT
            !
            CALL errore('io_init','invalid dftdata_fmt = '//TRIM(dftdata_fmt),1)
@@ -309,7 +358,7 @@
       CHARACTER(*),       INTENT(out) :: filename
       LOGICAL, OPTIONAL,  INTENT(in)  :: lpostfix, lpath   
       LOGICAL             :: lpostfix_, lpath_
-      CHARACTER(nstrx)    :: path_, postfix_, suffix_
+      CHARACTER(nstrx)    :: path_, prefix_, postfix_, suffix_
       INTEGER             :: length
 
       !
@@ -317,13 +366,13 @@
       lpostfix_ = .TRUE.
       lpath_ = .TRUE.
       IF ( PRESENT(lpostfix) ) lpostfix_ = lpostfix
-      IF ( PRESENT(lpath) )     lpath_ = lpath
+      IF ( PRESENT(lpath) )       lpath_ = lpath
       
       !
       ! setting the base name
       path_ = " " 
       postfix_ = " " 
-      IF ( lpath_ )  path_ = TRIM(work_dir)
+      IF ( lpath_ )       path_ = TRIM(work_dir)
       IF ( lpostfix_ ) postfix_ = TRIM(postfix)
 
 
@@ -334,11 +383,24 @@
          IF ( path_(length:length) /= "/"  ) path_ = TRIM(path_)//"/"
       ENDIF
 
+      !
+      ! redefnie prefix
+      prefix_ = TRIM(prefix)
           
 
       SELECT CASE( TRIM(data) )
       CASE ( "dft_data" ) 
-           suffix_ = TRIM(suffix_dft_data)
+           suffix_  = TRIM(suffix_dft_data)
+           postfix_ = " "
+           !
+           IF ( TRIM(dftdata_fmt) == 'crystal' ) THEN
+               !
+               path_    = " "
+               prefix_  = " " 
+               suffix_  = TRIM( dftdata_file )
+               !
+           ENDIF
+           !
       CASE ( "space" ) 
            suffix_ = TRIM(suffix_space)
       CASE ( "overlap_projection" ) 
@@ -355,7 +417,7 @@
            CALL errore('io_name','Unknown DATA type in input',1)
       END SELECT
 
-      filename = TRIM(path_)//TRIM(prefix)//TRIM(postfix_)//TRIM(suffix_)
+      filename = TRIM(path_)//TRIM(prefix_)//TRIM(postfix_)//TRIM(suffix_)
 
   END SUBROUTINE io_name
    

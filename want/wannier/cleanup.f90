@@ -16,6 +16,7 @@
    ! goes through and nothing happens.
    !
    USE kpoints_module,      ONLY : kpoints_deallocate, kpoints_alloc 
+   USE kpoints_module,      ONLY : rgrid_deallocate,   rgrid_alloc
    USE kpoints_module,      ONLY : bshells_deallocate, bshells_alloc
    USE ions_module,         ONLY : ions_deallocate, ions_alloc => alloc    
    USE symmetry_module,     ONLY : symmetry_deallocate, symm_alloc => alloc
@@ -34,9 +35,12 @@
    USE uspp_param,          ONLY : uspp_param_deallocate
    USE atom_module,         ONLY : atom_deallocate
    USE hamiltonian_module,  ONLY : hamiltonian_deallocate, ham_alloc => alloc
+   USE correlation_module,  ONLY : correlation_deallocate, corr_alloc => alloc
+   !
    IMPLICIT NONE
       
       IF ( kpoints_alloc )  CALL kpoints_deallocate()
+      IF ( rgrid_alloc )    CALL rgrid_deallocate()
       IF ( bshells_alloc )  CALL bshells_deallocate()
       IF ( ions_alloc )     CALL ions_deallocate()
       IF ( symm_alloc )     CALL symmetry_deallocate()
@@ -48,6 +52,7 @@
       IF ( loc_alloc )      CALL localization_deallocate()
       IF ( trial_alloc )    CALL trial_center_data_deallocate()
       IF ( ham_alloc )      CALL hamiltonian_deallocate()
+      IF ( corr_alloc )     CALL correlation_deallocate()
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
                             CALL us_deallocate()
                             CALL uspp_deallocate()

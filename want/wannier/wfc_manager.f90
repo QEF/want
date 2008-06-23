@@ -92,10 +92,10 @@
           !
           ! ... opening the file containing the PW-DFT data
           !
-          CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+          CALL io_name('dft_data',filename)
           CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read" )
           !
-          CALL io_name('dft_data',filename,LPATH=.FALSE.,LPOSTFIX=.FALSE.)
+          CALL io_name('dft_data',filename,LPATH=.FALSE.)
 
           !
           ! ... Read grids
@@ -200,7 +200,7 @@
 
           !
           ! ... re-open the main data file
-          CALL io_name('dft_data',filename,LPOSTFIX=.FALSE.)
+          CALL io_name('dft_data',filename)
           CALL file_open( dft_unit, TRIM(filename), PATH="/", ACTION="read" )
 
 

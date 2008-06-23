@@ -9,13 +9,14 @@
 
 !*********************************************
    MODULE subspace_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,          ONLY : dbl
+   USE constants,      ONLY : CZERO
    USE parameters,     ONLY : nstrx
    USE timing_module,  ONLY : timing
    USE log_module,     ONLY : log_push, log_pop
-   USE windows_module, ONLY : nbnd, dimwin, dimwinx, lcompspace, &
-                              windows_allocate, &
+   USE windows_module, ONLY : nbnd, dimwin, dimwinx, windows_allocate, &
                               windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, kpoints_alloc
    USE iotk_module
@@ -200,7 +201,7 @@ CONTAINS
        ENDDO
        CALL iotk_write_dat(unit,"CAMP",camp)
        CALL iotk_write_dat(unit,"EAMP",eamp)
-       IF ( lcompspace ) CALL iotk_write_dat(unit,"COMP_EAMP",comp_eamp)
+       ! CALL iotk_write_dat(unit,"COMP_EAMP",comp_eamp)
 
        CALL iotk_write_end(unit,TRIM(name))
        !
@@ -263,17 +264,28 @@ CONTAINS
        !
        CALL iotk_scan_dat(unit,'WAN_EIGENVALUES',wan_eig,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find EIGENVALUES',ABS(ierr))
+       !
        DO ik=1,nkpts
-           CALL iotk_scan_dat(unit,'LAMP'//TRIM(iotk_index(ik)), &
-                              lamp(1:dimwin(ik), 1:dimwann, ik),IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'Unable to find LAMP at ik',ik)
+           !
+           CALL iotk_scan_dat( unit,'LAMP'//TRIM(iotk_index(ik)), &
+                               lamp(1:dimwin(ik), 1:dimwann, ik), FOUND=lfound, IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find LAMP at ik',ik)
+           !
+           IF ( .NOT. lfound ) lamp(1:dimwin(ik), 1:dimwann, ik) = CZERO
+           !
        ENDDO
-       CALL iotk_scan_dat(unit,'CAMP',camp,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find CAMP',ABS(ierr))
-       CALL iotk_scan_dat(unit,'EAMP',eamp,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find EAMP',ABS(ierr))
+       !
+       CALL iotk_scan_dat(unit,'CAMP',camp, FOUND=lfound, IERR=ierr)
+       IF (ierr>0) CALL errore(subname,'Unable to find CAMP',ABS(ierr))
+       IF ( .NOT. lfound ) camp = CZERO
+       !
+       CALL iotk_scan_dat(unit,'EAMP',eamp, FOUND=lfound, IERR=ierr)
+       IF (ierr>0) CALL errore(subname,'Unable to find EAMP',ABS(ierr))
+       IF ( .NOT. lfound ) eamp = CZERO
+       !
        CALL iotk_scan_dat(unit,'COMP_EAMP',comp_eamp, FOUND=lfound, IERR=ierr)
        IF (ierr>0) CALL errore(subname,'Wrong fmt in COMP_EAMP',ABS(ierr))
+       IF ( .NOT. lfound ) comp_eamp = CZERO
 
        CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))

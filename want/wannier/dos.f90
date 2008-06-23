@@ -17,7 +17,7 @@
    USE kinds
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6
-   USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, aux_unit, sgm_unit, space_unit
+   USE io_module,            ONLY : stdout, stdin, aux_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE files_module,         ONLY : file_open, file_close
    USE version_module,       ONLY : version_number
@@ -25,10 +25,9 @@
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
-   USE windows_module,       ONLY : windows_read, nspin
-   USE subspace_module,      ONLY : subspace_read
+   USE windows_module,       ONLY : nspin
    USE smearing_module,      ONLY : smearing_func
-   USE hamiltonian_module,   ONLY : dimwann, rham, hamiltonian_read, hamiltonian_init
+   USE hamiltonian_module,   ONLY : dimwann, rham
    USE operator_module
    USE parser_module
    USE want_interfaces_module
@@ -140,45 +139,6 @@
       ! just move to lower_case
       CALL change_case(smearing_type,'lower')
 
-
-!
-! ... Getting previous WanT data
-!
-      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE.,  IONS=.TRUE., KPOINTS=.TRUE. )
-      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., BSHELLS=.FALSE. )
-
-      !
-      ! Read Subspace data
-      !
-      CALL io_name('space',filename)
-      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
-          !
-          CALL windows_read(space_unit,"WINDOWS",lfound)
-          IF ( .NOT. lfound ) CALL errore('dos',"unable to find WINDOWS",1)
-          !
-          CALL subspace_read(space_unit,"SUBSPACE",lfound)
-          IF ( .NOT. lfound ) CALL errore('dos',"unable to find SUBSPACE",1)
-          !
-      CALL file_close(space_unit,PATH="/",ACTION="read")
-
-      CALL io_name('space',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(/,2x,'Space data read from file: ',a)") TRIM(filename)
-
-      !
-      ! Read hamiltonian data
-      !
-      CALL io_name('hamiltonian',filename)
-      CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="read")
-          !
-          CALL hamiltonian_read(ham_unit,"HAMILTONIAN",lfound)
-          IF ( .NOT. lfound ) CALL errore('dos',"unable to find HAMILTONIAN",1)
-          !
-      CALL file_close(ham_unit,PATH="/",ACTION="read")
-
-      CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a,/)") TRIM(filename)
-
-
       !
       ! input summary
       !
@@ -202,7 +162,13 @@
       IF ( lhave_sgm ) THEN
           WRITE( stdout, "(   7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
       ENDIF
-      
+
+
+!
+! ... Init post processing (reading previous WanT and DFT data )
+!
+      CALL postproc_init ()
+
       !
       ! Print data to output
       !
