@@ -37,6 +37,11 @@ work_dir      STRING
               the scratch directory where the massive data file will be written
               DEFAULT: "./"
 
+datafile_dft  STRING
+              the name of the datafile for DFT when importing data from 
+              CRYSTAL06.
+              DEFAULT: " "
+
 fileout       STRING
               the file used to write the computed BANDS.
               DEFAULT: "$work_dir/$prefix$suffix_bands.dat"
