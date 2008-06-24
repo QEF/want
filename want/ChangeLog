@@ -4,6 +4,8 @@
 =======================================================
 
 
+19 Jun 2008      qexml.f90 upgraded to support the interface with espresso-4.0. (AF)
+
 16 Jul 2007      Preprocessor bug of NEC SX6 fixed; WORKSROUND7 added to iotk lib,
                  thanks to Guido Roma and Paolo Giannozzi. Few changes to qexml.f90 due to 
                  Paolo Giannozzi. (AF)
