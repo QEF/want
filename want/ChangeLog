@@ -4,6 +4,10 @@
 =======================================================
 
 
+24 Jun 2008      dos.x upgraded and cleaned up as bands.x. Now it deals with
+                 overlaps. Also the contraint of avoiding the usage of
+                 nearest-neigh when having a sgm has been relaxed. (AF)
+
 23 Jun 2008      interface to CRYTSAL06 completed for the DFT data. bands.x
                  upgraded to support such interface. bands.x cleaned up,
                  correlation_module added. (AF)

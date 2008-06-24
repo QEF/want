@@ -160,6 +160,9 @@ domega.o : ../libs/kind.o
 domega.o : ../libs/log_module.o
 domega.o : ../libs/timing.o
 dos.o : converters.o
+dos.o : correlation.o
+dos.o : datafiles.o
+dos.o : dyson_solver.o
 dos.o : hamiltonian.o
 dos.o : io_module.o
 dos.o : kpoints.o
@@ -167,8 +170,10 @@ dos.o : lattice.o
 dos.o : ../libs/constants.o
 dos.o : ../libs/files.o
 dos.o : ../libs/kind.o
+dos.o : ../libs/log_module.o
 dos.o : ../libs/parameters.o
 dos.o : ../libs/parser.o
+dos.o : ../libs/timing.o
 dos.o : ../libs/util.o
 dos.o : operator.o
 dos.o : smearing.o
