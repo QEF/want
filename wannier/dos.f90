@@ -14,23 +14,20 @@
    ! the direct lattice hamiltonian on Wannier function basis
    ! and compute the Density of states (DOS)
    !
+   !
    USE kinds
-   USE parameters,           ONLY : nstrx
-   USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6
-   USE io_module,            ONLY : stdout, stdin, aux_unit, sgm_unit
-   USE io_module,            ONLY : work_dir, prefix, postfix
-   USE files_module,         ONLY : file_open, file_close
    USE version_module,       ONLY : version_number
-   USE util_module,          ONLY : mat_hdiag, zmat_herm
-   USE converters_module,    ONLY : cry2cart, cart2cry
-   USE lattice_module,       ONLY : avec, bvec
-   USE kpoints_module,       ONLY : nrtot, vr, wr 
-   USE windows_module,       ONLY : nspin
-   USE smearing_module,      ONLY : smearing_func
-   USE hamiltonian_module,   ONLY : dimwann, rham
-   USE operator_module
-   USE parser_module
+   USE parameters,           ONLY : nstrx
+   USE io_module,            ONLY : stdout, stdin
+   USE io_module,            ONLY : prefix, postfix, work_dir
+   USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
+   USE correlation_module,   ONLY : lhave_sgm
+   USE timing_module,        ONLY : timing
+   USE log_module,           ONLY : log_push, log_pop
+   USE datafiles_module,     ONLY : datafiles_init
+   USE parser_module,        ONLY : change_case, log2char
    USE want_interfaces_module
+
    !
    IMPLICIT NONE 
 
@@ -40,46 +37,21 @@
    INTEGER          :: nk(3)         ! kpt generators
    INTEGER          :: s(3)          ! kpt shifts
    INTEGER          :: ne            ! dimension of the energy grid
-   INTEGER          :: ne_sgm        ! dimension of the energy grid from sgm file
    REAL(dbl)        :: emin          ! egrid extrema
    REAL(dbl)        :: emax
    REAL(dbl)        :: delta         ! smearing parameter
    CHARACTER(nstrx) :: smearing_type
    CHARACTER(nstrx) :: fileout       ! output filename
-   CHARACTER(nstrx) :: datafile_sgm  ! self-energy file
    LOGICAL          :: projdos       ! whether to write WF projected DOS
    LOGICAL          :: use_nn(3)     ! use nearest neighb. in direction i, i=1,3
                                      ! DEBUG and transport purposes
-   !
-   ! loval variables
-   !
-   INTEGER      :: nkpts_int     ! Number of interpolated k-points
-   INTEGER      :: nrtot_nn
-   REAL(dbl)    :: arg, cost, raux
-   COMPLEX(dbl) :: caux, ze
-   !
-   INTEGER,      ALLOCATABLE :: r_index(:)
-   COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:), k_sgm(:,:), r_sgm(:,:,:)  
-   COMPLEX(dbl), ALLOCATABLE :: z(:,:,:)        
-   COMPLEX(dbl), ALLOCATABLE :: GF(:,:), GF0(:,:)
-   REAL(dbl),    ALLOCATABLE :: egrid(:)
-   REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
-   REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), wk(:)
-   REAL(dbl),    ALLOCATABLE :: eig_int(:,:)
-   REAL(dbl),    ALLOCATABLE :: vr_cry(:,:), vr_nn(:,:), wr_nn(:), vr_sgm(:,:)
-   CHARACTER(nstrx)          :: filename, analyticity_sgm
-   CHARACTER(4)              :: ctmp
-   !
-   INTEGER      :: i, j, ie, ik, ir
-   INTEGER      :: ierr
-   INTEGER      :: dimwann_sgm, nrtot_sgm
-   LOGICAL      :: lfound, lhave_sgm, ldynam_sgm
 
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, nk, s, delta, smearing_type, fileout, &
-                    emin, emax, ne, use_nn, projdos, datafile_sgm
+   NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
+                    nk, s, delta, smearing_type, fileout, &
+                    emin, emax, ne, use_nn, projdos
    !
    ! end of declariations
    !   
@@ -91,10 +63,62 @@
 !
       CALL startup(version_number,'dos')
 
+      !
+      ! read input
+      !
+      CALL dos_input( )
 
-!
-! ... Read INPUT namelist from stdin
-!
+      !
+      ! init post processing (reading previous WanT and DFT data )
+      !
+      CALL write_header( stdout, "Post Processing Init" )
+      !
+      CALL datafiles_init()
+      !
+      CALL postproc_init ()
+
+      !
+      ! print data to output
+      !
+      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., WINDOWS=.FALSE. )
+
+      !
+      ! do the main task
+      !
+      CALL do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
+                   use_nn, projdos )
+      !
+      ! clean global memory
+      !
+      CALL cleanup()
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'dos' )
+
+CONTAINS
+
+!********************************************************
+   SUBROUTINE dos_input()
+   !********************************************************
+   !
+   ! Read INPUT namelist from stdin
+   !
+   IMPLICIT NONE
+
+      CHARACTER(9)     :: subname = 'dos_input'
+      INTEGER          :: ierr, nkpts_int
+      !
+      ! end of declarations
+      !
+
+      CALL timing( subname, OPR='start' )
+      CALL log_push( subname )
+
+      !
+      ! init input namelist
+      !
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
@@ -111,10 +135,10 @@
       projdos                     = .FALSE.
       
       CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore('dos','error in input from file',ABS(ierr))
+      IF ( ierr /= 0 )  CALL errore(subname,'error in input from file',ABS(ierr))
       !
       READ(stdin, INPUT, IOSTAT=ierr)
-      IF ( ierr /= 0 )  CALL errore('dos','Unable to read namelist INPUT',ABS(ierr))
+      IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
 
       IF ( LEN_TRIM(fileout) == 0 ) &
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dos.dat'
@@ -122,18 +146,18 @@
       !
       ! Some checks 
       !
-      IF ( ANY( nk(:) <=0 ) )  CALL errore('dos', 'Invalid nk', 1)
-      IF ( ANY( s(:)  < 0 ) )  CALL errore('dos', 'Invalid s', 1)
-      IF ( ANY( s(:)  > 1 ) )  CALL errore('dos', 'Invalid s', 2)
-      IF ( delta <= 0.0 )      CALL errore('dos', 'Invalid delta', 3)
-      IF ( emin > emax  )      CALL errore('dos', 'emin larger than emax', 4)
-      IF ( ne <= 0  )          CALL errore('dos', 'invalid ne', 4)
+      IF ( ANY( nk(:) <=0 ) )  CALL errore(subname, 'Invalid nk', 1)
+      IF ( ANY( s(:)  < 0 ) )  CALL errore(subname, 'Invalid s', 1)
+      IF ( ANY( s(:)  > 1 ) )  CALL errore(subname, 'Invalid s', 2)
+      IF ( delta <= 0.0 )      CALL errore(subname, 'Invalid delta', 3)
+      IF ( emin > emax  )      CALL errore(subname, 'emin larger than emax', 4)
+      IF ( ne <= 0  )          CALL errore(subname, 'invalid ne', 4)
       !
       lhave_sgm = .FALSE.
       IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
       !
       nkpts_int = PRODUCT( nk(1:3) )
-      IF ( nkpts_int <=0 ) CALL errore( 'dos', 'unexpected nkpts_int ', -nkpts_int + 1)
+      IF ( ANY( nk(:) <= 0 ) ) CALL  errore(subname, 'invalid nk', 71) 
       !
       ! the check of SMEARING_TYPE is done inside the function smearing_func
       ! just move to lower_case
@@ -163,16 +187,97 @@
           WRITE( stdout, "(   7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
       ENDIF
 
+   END SUBROUTINE dos_input
+   !
+END PROGRAM dos_main
 
-!
-! ... Init post processing (reading previous WanT and DFT data )
-!
-      CALL postproc_init ()
+
+!********************************************************
+   SUBROUTINE do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
+                      use_nn, projdos )
+   !********************************************************
+   !
+   ! perform the main task of the calculation
+   !
+   USE kinds
+   USE parameters,           ONLY : nstrx
+   USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6
+   USE io_module,            ONLY : stdout, stdin, aux_unit, sgm_unit
+   USE io_module,            ONLY : work_dir, prefix, postfix
+   USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
+   USE files_module,         ONLY : file_open, file_close
+   USE util_module,          ONLY : mat_hdiag, zmat_herm
+   USE converters_module,    ONLY : cry2cart, cart2cry
+   USE lattice_module,       ONLY : avec, bvec
+   USE kpoints_module,       ONLY : nrtot, vr, wr 
+   USE windows_module,       ONLY : nspin
+   USE smearing_module,      ONLY : smearing_func
+   USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
+   USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
+   USE correlation_module,   ONLY : omg_min, omg_max, omg_grid, omg_nint
+   USE timing_module,        ONLY : timing
+   USE log_module,           ONLY : log_push, log_pop
+   USE parser_module,        ONLY : change_case
+   USE dyson_solver_module,  ONLY : dyson_solver
+   USE operator_module
+   !
+   IMPLICIT NONE
 
       !
-      ! Print data to output
+      ! input vars
       !
-      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., KPOINTS=.FALSE., WINDOWS=.FALSE. )
+      CHARACTER(*),  INTENT(IN)    :: fileout
+      INTEGER,       INTENT(IN)    :: nk(3), s(3)
+      REAL(dbl),     INTENT(IN)    :: delta
+      INTEGER,       INTENT(INOUT) :: ne
+      REAL(dbl),     INTENT(INOUT) :: emin, emax
+      CHARACTER(*),  INTENT(IN)    :: smearing_type
+      LOGICAL,       INTENT(IN)    :: use_nn(3)
+      LOGICAL,       INTENT(IN)    :: projdos
+
+      !
+      ! local vars
+      !
+      CHARACTER(6) :: subname = 'do_dos'
+      !
+      INTEGER      :: nkpts_int     ! Number of interpolated k-points
+      INTEGER      :: nrtot_nn
+      INTEGER      :: ne_sgm
+      REAL(dbl)    :: arg, cost, raux
+      COMPLEX(dbl) :: caux, ze
+      !
+      INTEGER,      ALLOCATABLE :: r_index(:)
+      COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: ksgm(:,:), rsgm_nn(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: kovp(:,:), rovp_nn(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: z(:,:,:)        
+      COMPLEX(dbl), ALLOCATABLE :: GF(:,:), GF0(:,:)
+      REAL(dbl),    ALLOCATABLE :: egrid(:)
+      REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
+      REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), wk(:)
+      REAL(dbl),    ALLOCATABLE :: eig_int(:,:)
+      REAL(dbl),    ALLOCATABLE :: vr_cry(:,:), vr_nn(:,:), wr_nn(:), vr_sgm(:,:)
+      CHARACTER(nstrx)          :: filename, analyticity_sgm
+      CHARACTER(4)              :: ctmp
+      !
+      INTEGER      :: i, j, ie, ik, ir
+      INTEGER      :: ierr
+      INTEGER      :: dimwann_sgm, nrtot_sgm
+      LOGICAL      :: lfound
+      !
+      ! end of declarations
+      !
+
+!
+!------------------------------
+! main body 
+!------------------------------
+!
+      CALL timing(subname,OPR='start')
+      CALL log_push(subname)
+
+      CALL write_header( stdout, "DOS computation using Wannier Functions" )
+      CALL flush_unit( stdout )
 
 
       !
@@ -185,39 +290,36 @@
           CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read")
           !
           CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
-                                            DYNAMICAL=ldynam_sgm, NOMEGA=ne_sgm,      &
+                                            DYNAMICAL=ldynam_sgm, NOMEGA=omg_nint,    &
                                             ANALYTICITY=analyticity_sgm, IERR=ierr )
                                             !
-          IF ( ierr/=0 ) CALL errore('dos','reading DIMWANN--ANALYTICITY', ABS(ierr) )
+          IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr) )
 
           !
           ! few checks
           !
           CALL change_case( analyticity_sgm, 'lower' )
           IF ( TRIM(analyticity_sgm) /= 'retarded' .AND. ldynam_sgm )  &
-                       CALL errore('dos','invalid analyticity = '//TRIM(analyticity_sgm),1)
+                       CALL errore(subname,'invalid analyticity = '//TRIM(analyticity_sgm),1)
 
-          IF ( dimwann_sgm /= dimwann ) CALL errore('dos','invalid dimwann_sgm',1)
-          IF ( nrtot_sgm /= nrtot )     CALL errore('dos','invalid nrtot_sgm',1)
+          IF ( dimwann_sgm /= dimwann ) CALL errore(subname,'invalid dimwann_sgm',1)
+          IF ( nrtot_sgm /= nrtot )     CALL errore(subname,'invalid nrtot_sgm',1)
           ! 
           ALLOCATE( vr_sgm( 3, nrtot ), STAT=ierr )
-          IF ( ierr /=0 ) CALL errore('dos','allocating vr_sgm', ABS(ierr) ) 
+          IF ( ierr /=0 ) CALL errore(subname,'allocating vr_sgm', ABS(ierr) ) 
           !
           ! 
+          CALL correlation_allocate( )
+          !
           IF ( ldynam_sgm ) THEN 
              !
-             ne = ne_sgm
-             !
-             ALLOCATE( egrid( ne ), STAT=ierr )
-             IF ( ierr /=0 ) CALL errore('dos','allocating egrid', ABS(ierr) ) 
-             !
-             CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=egrid, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore('dos','reading VR, GRID', ABS(ierr) )
+             CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=omg_grid, IERR=ierr )
+             IF ( ierr/=0 ) CALL errore(subname,'reading VR, GRID', ABS(ierr) )
              !
           ELSE
              !
              CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore('dos','reading VR', ABS(ierr) )
+             IF ( ierr/=0 ) CALL errore(subname,'reading VR', ABS(ierr) )
              !
           ENDIF
  
@@ -228,70 +330,65 @@
           DO ir = 1, nrtot
              !
              raux = DOT_PRODUCT( vr(:,ir)-vr_sgm(:,ir), vr(:,ir)-vr_sgm(:,ir) ) 
-             IF ( raux > EPS_m6 ) CALL errore('dos','invalid R vectors from sgm file',ir)
+             IF ( raux > EPS_m6 ) CALL errore(subname,'invalid R vectors from sgm file',ir)
              !
           ENDDO
           !
-          !
           DEALLOCATE( vr_sgm, STAT=ierr)
-          IF ( ierr/=0 ) CALL errore('dos','deallocating vr_sgm',ABS(ierr))
-
-          !
-          ! now allocate global quantities
-          !
-          ALLOCATE( r_sgm(dimwann, dimwann, nrtot), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore('dos','allocating r_sgm',ABS(ierr))
-          ALLOCATE( k_sgm(dimwann, dimwann), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore('dos','allocating k_sgm',ABS(ierr))
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating vr_sgm',ABS(ierr))
           !
       ENDIF
 
       !
       ! furhter checks on non-implemented special cases
       !
-      IF ( ldynam_sgm .AND. projdos )   CALL errore('dos','projdos and sigma NOT impl.', 10)
-      IF ( ldynam_sgm .AND. ANY( use_nn )  ) &
-           CALL errore('dos','nearest enighb. NOT impl. with sgm', 10)
+      IF ( ldynam_sgm .AND. projdos )   CALL errore(subname,'projdos and sigma NOT impl.', 10)
 
-!
-! ... Main task 
-!
-      CALL write_header( stdout, "DOS computation using Wannier Functions" )
-      CALL flush_unit( stdout )
 
       !
-      ! few local allocations
-      !
-      ALLOCATE( vkpt_int( 3, nkpts_int ), wk( nkpts_int ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'allocating vkpt_int, wk', ABS(ierr) )
-      !
-      ALLOCATE( dos( ne ), dos0( ne ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'allocating dos, dos0', ABS(ierr) )
-      !
-      ALLOCATE( pdos( ne, dimwann ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'allocating pdos', ABS(ierr) )
-
-      !
-      ! setting egrid
+      ! setting energy grid
       !
       IF ( ldynam_sgm ) THEN
          !
-         CALL warning( 'dos', 'energy grid is forced from SGM datafile' )
+         CALL warning(subname, 'energy grid is forced from SGM datafile' )
          WRITE( stdout, '()')
          !
-         emin = egrid( 1 )
-         emax = egrid( ne )
+         ne = omg_nint
+         !
+         emin = omg_grid( 1 )
+         emax = omg_grid( omg_nint )
+         !
+         ALLOCATE( egrid( ne ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname, 'allocating egrid', ABS(ierr) )
+         !
+         egrid(:) = omg_grid(:)
          !
       ELSE
          !
          ALLOCATE( egrid( ne ), STAT=ierr )
-         IF( ierr /=0 ) CALL errore('dos', 'allocating egrid', ABS(ierr) )
+         IF( ierr /=0 ) CALL errore(subname, 'allocating egrid', ABS(ierr) )
          !
          DO ie = 1, ne
             egrid (ie) = emin + REAL(ie-1, dbl) * (emax-emin) / REAL( ne -1, dbl)
          ENDDO
          !
       ENDIF
+
+      !
+      ! local workspace
+      !
+      nkpts_int = PRODUCT( nk )
+      !
+      !
+      ALLOCATE( vkpt_int( 3, nkpts_int ), wk( nkpts_int ), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_int, wk', ABS(ierr) )
+      !
+      ALLOCATE( dos( ne ), dos0( ne ), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating dos, dos0', ABS(ierr) )
+      !
+      ALLOCATE( pdos( ne, dimwann ), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating pdos', ABS(ierr) )
+
 
       !
       ! generate monkhorst-pack grid, using nk(:) and s(:)
@@ -323,13 +420,23 @@
       ! Determine the k-points used in the band structure interpolation
       !
       ALLOCATE( kham( dimwann, dimwann ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos','allocating kham', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname,'allocating kham', ABS(ierr) )
+      !
+      IF ( lhave_sgm ) THEN
+          ALLOCATE( ksgm(dimwann, dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating ksgm',ABS(ierr))
+      ENDIF
+      !
+      IF ( lhave_overlap ) THEN
+          ALLOCATE( kovp(dimwann, dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating kovp',ABS(ierr))
+      ENDIF
       !
       ALLOCATE( z( dimwann, dimwann, nkpts_int ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'allocating z', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating z', ABS(ierr) )
       !
       ALLOCATE( eig_int( dimwann, nkpts_int ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos','allocating eig_int', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname,'allocating eig_int', ABS(ierr) )
 
       !
       ! if chosen from input, select only R corresponding to nearest-neighb
@@ -337,10 +444,10 @@
       ! nn_index will point only to the selected nrtot_nn vectors
       !
       ALLOCATE( vr_cry(3, nrtot), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos','allocating vr_cry', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname,'allocating vr_cry', ABS(ierr) )
       !
       ALLOCATE( r_index(nrtot), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos','allocating r_index', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname,'allocating r_index', ABS(ierr) )
 
       !
       ! move vr_int to crystal coords
@@ -366,10 +473,20 @@
       !
       !
       ALLOCATE( vr_nn( 3, nrtot_nn ), wr_nn( nrtot_nn ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos','allocating vr_nn, wr_nn', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname,'allocating vr_nn, wr_nn', ABS(ierr) )
       !
       ALLOCATE( rham_nn( dimwann,dimwann, nrtot_nn ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos','allocating rham_nn', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname,'allocating rham_nn', ABS(ierr) )
+      !
+      IF ( lhave_sgm ) THEN
+          ALLOCATE( rsgm_nn(dimwann, dimwann, nrtot_nn), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating rsgm_nn',ABS(ierr))
+      ENDIF
+      !
+      IF ( lhave_overlap ) THEN
+          ALLOCATE( rovp_nn(dimwann, dimwann, nrtot_nn), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating rovp_nn',ABS(ierr))
+      ENDIF
       !
       DO ir = 1, nrtot_nn
           !
@@ -378,10 +495,12 @@
           ! 
           rham_nn( :, :, ir ) = rham( :, :, r_index(ir) ) 
           !
+          IF ( lhave_overlap ) rovp_nn( :, :, ir ) = rovp( :, :, r_index(ir) )
+          !
       ENDDO
       !
       DEALLOCATE( vr_cry, r_index, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'deallocating vr_cry, r_index', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_cry, r_index', ABS(ierr) )
 
 
       !
@@ -395,10 +514,14 @@
           ! read static self-energy if the case
           !
           IF ( lhave_sgm ) THEN
-             !
-             CALL operator_read_data( sgm_unit, R_OPR=r_sgm, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore('dos','reading static r_sgm', 11)
-             !
+              !
+              CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11)
+              !
+              DO ir = 1, nrtot
+                  rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
+              ENDDO
+              !
           ENDIF
 
           kpt_loop: &
@@ -410,24 +533,40 @@
               CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
                                  vkpt_int(:,ik), kham)
 
+              IF ( lhave_overlap ) THEN
+                  !
+                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
+                                     vkpt_int(:,ik), kovp)
+                  !
+              ENDIF
+
               IF ( lhave_sgm ) THEN
                   !
-                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, r_sgm,  &
-                                     vkpt_int(:,ik), k_sgm)
+                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm,  &
+                                     vkpt_int(:,ik), ksgm)
                   !
                   ! symmetryze the static sgm in order to make it hermitean
                   !
-                  CALL zmat_herm( k_sgm, dimwann )
+                  CALL zmat_herm( ksgm, dimwann )
                   ! 
                   ! 
-                  kham(:,:) = kham(:,:) + k_sgm(:,:)
+                  kham(:,:) = kham(:,:) + ksgm(:,:)
                   !
               ENDIF
 
               !
               ! Diagonalize the hamiltonian at the present k-point
+              ! taking care of the overlaps if the case
               !
-              CALL mat_hdiag( z(:,:,ik), eig_int(:,ik), kham(:,:), dimwann)
+              IF ( .NOT. lhave_overlap ) THEN
+                  !
+                  CALL mat_hdiag( z(:,:,ik), eig_int(:,ik), kham(:,:), dimwann)
+                  !
+              ELSE
+                  !
+                  CALL mat_hdiag( z(:,:,ik), eig_int(:,ik), kham(:,:), kovp(:,:), dimwann)
+                  !
+              ENDIF
               !
           ENDDO kpt_loop
           !
@@ -444,10 +583,10 @@
           cost = ONE / ( TWO * PI )
           !
           ALLOCATE( GF0( dimwann, dimwann ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore('dos','allocating GF0', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(subname,'allocating GF0', ABS(ierr) )
           !
           ALLOCATE( GF( dimwann, dimwann ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore('dos','allocating GF', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(subname,'allocating GF', ABS(ierr) )
           !
       ELSE
           cost = ONE / ( TWO * delta )
@@ -466,17 +605,31 @@
              !
              ! include external self-energy in the calc
              !
-             CALL operator_read_data( sgm_unit, IE=ie, R_OPR=r_sgm, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore('dos','reading r_sgm', ie)
+             CALL operator_read_data( sgm_unit, IE=ie, R_OPR=rsgm, IERR=ierr )
+             IF ( ierr/=0 ) CALL errore(subname,'reading rsgm', ie)
+             !
+             DO ir = 1, nrtot
+                 rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
+             ENDDO
+             !
              !
              DO ik = 1, nkpts_int
                 !
-                ! interpolate r_sgm on the required kpt
+                ! interpolate rsgm on the required kpt
+                ! in principles kham and kovp could be computed out of the
+                ! energy loop (saving time)
                 !
                 CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
                                    vkpt_int(:,ik), kham )
-                CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, r_sgm,  &
-                                   vkpt_int(:,ik), k_sgm )
+                CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm_nn,  &
+                                   vkpt_int(:,ik), ksgm )
+                !
+                IF ( lhave_overlap ) THEN
+                    !
+                    CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
+                                       vkpt_int(:,ik), kovp )
+                    !
+                ENDIF
                 !
                 ! solve dyson equation to obtain the interacting Green function
                 ! NOTE: here the smearing of GF0 (non-interacting) is still
@@ -484,7 +637,16 @@
                 !
                 ze = egrid( ie ) + CI * delta
                 !
-                CALL dyson_solver( ze, dimwann, kham(:,:), k_sgm(:,:), GF0, GF )
+                IF ( .NOT. lhave_overlap ) THEN
+                    !
+                    CALL dyson_solver( GF0, GF, ze, dimwann, kham(:,:), ksgm(:,:) )
+                    !
+                ELSE
+                    !
+                    CALL dyson_solver( GF0, GF, ze, dimwann, kham(:,:), ksgm(:,:), kovp(:,:) )
+                    !
+                ENDIF
+                !
                 !
                 DO i  = 1, dimwann 
                    !
@@ -564,7 +726,7 @@
       filename=TRIM(fileout)
       !
       OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
-      IF (ierr/=0) CALL errore('dos','opening '//TRIM(filename),ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
          !
          IF ( lhave_sgm ) THEN
             !
@@ -598,7 +760,7 @@
                         '_dos-'//ctmp//'.dat'
               !
               OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
-              IF (ierr/=0) CALL errore('dos','opening '//TRIM(filename),ABS(ierr))
+              IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
               !
               WRITE( aux_unit, *) "# E (eV)   ldos(E)"
               DO ie = 1, ne
@@ -619,41 +781,33 @@
       ! Clean local memory
       !
       DEALLOCATE( vkpt_int, wk, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('dos', 'deallocating vkpt_int, wk', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_int, wk', ABS(ierr) )
       !
       DEALLOCATE( eig_int, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('dos', 'deallocating eig_int', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating eig_int', ABS(ierr) )
       !
       DEALLOCATE( z, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'deallocating z', ABS(ierr))
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating z', ABS(ierr))
       !
       DEALLOCATE( egrid, dos, dos0, pdos, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'deallocating egrid, dos, pdos', ABS(ierr))
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating egrid, dos, pdos', ABS(ierr))
       !
       DEALLOCATE( vr_nn, wr_nn, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('dos', 'deallocating vr_nn, wr_nn', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_nn, wr_nn', ABS(ierr) )
       !
       DEALLOCATE( kham, rham_nn, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('dos', 'deallocating kham, rham_nn', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating kham, rham_nn', ABS(ierr) )
       !
       IF ( lhave_sgm ) THEN
          !
-         DEALLOCATE( r_sgm, STAT=ierr )
-         IF ( ierr/=0 ) CALL errore('dos','deallocating r_sgm',ABS(ierr))
-         DEALLOCATE( k_sgm, STAT=ierr )
-         IF ( ierr/=0 ) CALL errore('dos','deallocating k_sgm',ABS(ierr))
+         DEALLOCATE( ksgm, rsgm_nn, STAT=ierr )
+         IF ( ierr/=0 ) CALL errore(subname,'deallocating ksgm',ABS(ierr))
          !
       ENDIF
 
-      !
-      ! Clean global memory
-      !
-      CALL cleanup()
 
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
       !
-      ! finalize
-      !
-      CALL shutdown( 'dos' )
-
-END PROGRAM dos_main
+END SUBROUTINE do_dos
 

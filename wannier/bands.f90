@@ -71,7 +71,7 @@
       CALL postproc_init ()
 
       !
-      ! Print data to output
+      ! print data to output
       !
       CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., WINDOWS=.FALSE. )
 
@@ -206,9 +206,9 @@ END PROGRAM bands
       !
       ! input vars
       !
+      CHARACTER(*),  INTENT(IN) :: fileout
       INTEGER,       INTENT(IN) :: nkpts_in, nkpts_max
       LOGICAL,       INTENT(IN) :: use_nn(3)
-      CHARACTER(*),  INTENT(IN) :: fileout
    
       !
       ! local vars
@@ -219,8 +219,9 @@ END PROGRAM bands
       INTEGER           :: nrtot_nn, nrtot_sgm, dimwann_sgm
       REAL(dbl)         :: raux
       INTEGER,      ALLOCATABLE :: r_index(:)
-      COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:), z(:,:), ksgm(:,:)  
+      COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:), z(:,:)
       COMPLEX(dbl), ALLOCATABLE :: kovp(:,:), rovp_nn(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: ksgm(:,:), rsgm_nn(:,:,:)
       !
       REAL(dbl),    ALLOCATABLE :: kpt_in(:,:), xval_in(:) 
       REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), xval(:)
@@ -406,6 +407,11 @@ END PROGRAM bands
          IF( ierr /=0 ) CALL errore(subname,'allocating rovp_nn', ABS(ierr) )
       ENDIF
       !
+      IF ( lhave_sgm ) THEN
+         ALLOCATE( rsgm_nn( dimwann, dimwann, nrtot_nn ), STAT=ierr )
+         IF( ierr /=0 ) CALL errore(subname,'allocating rsgm_nn', ABS(ierr) )
+      ENDIF
+      !
       DO ir = 1, nrtot_nn
           !
           vr_nn(:, ir )  = vr ( :, r_index(ir) )
@@ -413,7 +419,8 @@ END PROGRAM bands
           !
           rham_nn( :, :, ir ) = rham( :, :, r_index(ir) )
           !
-          IF ( lhave_overlap) rovp_nn( :, :, ir ) = rovp( :, :, r_index(ir) )
+          IF ( lhave_overlap ) rovp_nn( :, :, ir ) = rovp( :, :, r_index(ir) )
+          IF ( lhave_sgm )     rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
           !
       ENDDO
       !
@@ -443,7 +450,7 @@ END PROGRAM bands
 
           IF ( lhave_sgm ) THEN
               !
-              CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm,  &
+              CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm_nn,  &
                                  vkpt_int(:,ik), ksgm)
               !
               ! symmetrize the input static sgm to make it hermitean
@@ -567,17 +574,15 @@ END PROGRAM bands
       !
       IF ( lhave_overlap ) THEN
           !
-          DEALLOCATE( kovp, STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'deallocating kovp',ABS(ierr))
-          DEALLOCATE( rovp_nn, STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'deallocating rovp_nn',ABS(ierr))
+          DEALLOCATE( kovp, rovp_nn, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating kovp, rovp_nn',ABS(ierr))
           !
       ENDIF
       !
       IF ( lhave_sgm ) THEN
           !
-          DEALLOCATE( ksgm, STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'deallocating ksgm',ABS(ierr))
+          DEALLOCATE( ksgm, rsgm_nn, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating ksgm, rsgm_nn',ABS(ierr))
           !
       ENDIF
 
