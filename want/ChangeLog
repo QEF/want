@@ -4,6 +4,13 @@
 =======================================================
 
 
+-------------------------------------------------
+Date: 25 Jun 2008    Version: WanT-2.1.1
+-------------------------------------------------
+
+25 Jun 2008      bug reported when cutting off the lowest valence states
+                 in disentangle.x (Arrigo): fixed. (AC & AF)
+
 19 Jun 2008      qexml.f90 upgraded to support the interface with espresso-4.0. (AF)
 
 16 Jul 2007      Preprocessor bug of NEC SX6 fixed; WORKSROUND7 added to iotk lib,
