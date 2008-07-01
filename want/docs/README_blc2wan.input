@@ -62,7 +62,14 @@ spin_component    STRING
 
 nprint        INTEGER
               When converting a dynamical operator, every nprint energy step write to stdout.
-              DEFAULT : 10
+              DEFAULT: 10
+
+verbosity     STRING
+              ( "low" | "medium" | "high" )
+              the level of detail of the output. In particular the code writes more about
+              decay in stdout and also writes a data file in $work_dir/ containing the
+              whole information about decay.
+              DEFAULT: "medium"
 
 
 ==============================================================================

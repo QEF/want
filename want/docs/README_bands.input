@@ -31,7 +31,7 @@ postfix       STRING
               the tail of the names of the above mentioned files (useful e.g. to
               distinguish among different calculations having a common part).
               should be equal to the value given in the main calculations.
-              DEFAULT: ""
+              DEFAULT: " "
 
 work_dir      STRING
               the scratch directory where the massive data file will be written
@@ -55,10 +55,11 @@ nkpts_max     INTEGER
               maximum number of interpolated kpoints
               DEFAULT: 100
 
-use_nn(3)     LOGICAL
-              if .TRUE. along direction i, only nearest neighbors Hamiltonians along i
-              are used to compute bands. Useful to compare with transport calculation.
-              DEFAULT : .FALSE., .FALSE., .FLASE.
+ircut(1:3)    INTEGER
+              if different for zero along direction i, cutoff the hamiltonian 
+              (and or the corresponding sgm) for values of R larger than ircut(i).
+              ircut is intended to be in crystal units. 
+              DEFAULT : 0 0 0
 
 datafile_sgm  STRING
               If specified, the code reads the file to search for a static (and hermitean)
