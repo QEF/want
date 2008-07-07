@@ -116,7 +116,7 @@ use_symm    INTEGER
             DEFAULT : .TRUE.
 
 nprint      INTEGER
-            every nprint energy step write to stdout.
+            every nprint energy steps write to stdout.
             DEFAULT : 20
 
 niterx      INTEGER

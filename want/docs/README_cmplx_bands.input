@@ -1,7 +1,7 @@
 
 ==============================================================================
 
-                  ********* code: dos.x  **********
+                  ********* code: cmplx_bands.x  **********
 
 ==============================================================================
 
@@ -44,19 +44,36 @@ datafile_sgm  STRING
               DEFAULT : ""
 
 fileout       STRING
-              the file used to write the computed DOS.
-              DEFAULT: "$work_dir/${prefix}${suffix}_dos.dat"
+              the file used to write the computed cmplx bands structure.
+              Note that the codes writes the beta decay factors [ beta(E) = 2 Im(k(E)) ]
+              DEFAULT: "$work_dir/${prefix}${suffix}_cmplx_bands.dat"
 
-nk(3)         INTEGER
-              the 3D k-points mesh used to computed the DOS.
+idir          INTEGER
+              the periodic (crystallographic) direction (from 1 to 3) along which
+              to compute the complex band structure.
+              DEFAULT: mandatory
+     
+nk(2)         INTEGER
+              the 2D k-points mesh (in the plane orthogonal to idir) used in the calculation.
               DEFAULT: mandatory.
 
-s(3)          INTEGER
-              the shift vector used to generate the Monkhorst-Pack k-point mesh.
-              DEFAULT: 0, 0, 0
+s(2)          INTEGER
+              the 2D shift vectors used to generate the above Monkhorst-Pack k-point mesh.
+              DEFAULT: 0, 0
+
+toll          REAL
+              tolerance to define inegligible Hamiltonian (or Sgm) matrix elements. 
+              It is used to compute the decay renage of Ham or Sgm. 
+              DEFAULT: 1.0d-4
+
+ircut(1:3)    INTEGER
+              if different for zero along direction i, the hamiltonian is cutoff
+              (and so the corresponding sgm) for values of R larger than ircut(i).
+              ircut is intended to be in crystal units.
+              DEFAULT : 0, 0, 0
 
 ne            INTEGER
-              dimension of the energy grid for DOS calculation.
+              dimension of the energy window for cmplx_bands calculation
               DEFAULT : 1000
 
 emin          REAL
@@ -67,25 +84,9 @@ emax          REAL
               upper limit [eV] of the energy grid.
               DEFAULT : +10.0
 
-delta         REAL
-              the smearing parameter [eV] used in the calculation of the DOS.
-              DEFAULT : 0.1
-
-smearing_type STRING
-              ( "lorantzian" | "gaussian" | "fermi-dirac", "fd" | "methfessel-paxton", "mp" |
-                "marzari-vanderbilt", "mv" )
-              the shape of the used smearing function.
-              DEFAULT : "gaussian"
-
-ircut(1:3)    INTEGER
-              if different for zero along direction i, the hamiltonian is cutoff
-              (and so the corresponding sgm) for values of R larger than ircut(i).
-              ircut is intended to be in crystal units.
-              DEFAULT : 0, 0, 0
-
-projdos       LOGICAL
-              if .TRUE. computes and writes WF projected-DOS.
-              DEFAULT : .FALSE.
+nprint        INTEGER
+              every nprint energy steps write to stdout.
+              DEFAULT : 20
 
 
 ==============================================================================
