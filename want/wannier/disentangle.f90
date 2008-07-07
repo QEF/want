@@ -26,7 +26,7 @@
                                    read_symmetry
        USE util_module,      ONLY: zmat_unitary, mat_hdiag, mat_mul
        USE kpoints_module,   ONLY: nkpts, vkpt, nb, nnlist, nnpos, nnrev
-       USE windows_module,   ONLY: dimwin, dimwinx, eig, dimfroz, indxnfroz
+       USE windows_module,   ONLY: imin, dimwin, dimwinx, eig, dimfroz, indxnfroz
        USE windows_module,   ONLY: windows_allocate, windows_write
        USE subspace_module,  ONLY: dimwann, wan_eig, lamp, camp, eamp, comp_eamp, &
                                    mtrx_in, mtrx_out
@@ -405,7 +405,7 @@
            DO i = 1, dimwann
                ham(i,j,ik) = CZERO
                DO l = 1, dimwin(ik)
-                  ham(i,j,ik) = ham(i,j,ik) + CONJG(lamp(l,i,ik))*lamp(l,j,ik)*eig(l,ik)
+                  ham(i,j,ik) = ham(i,j,ik) + CONJG(lamp(l,i,ik))*lamp(l,j,ik)*eig(imin(ik)+l-1,ik)
                ENDDO
            ENDDO
            ENDDO

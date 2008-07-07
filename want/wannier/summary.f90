@@ -7,8 +7,19 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !**********************************************************
-   SUBROUTINE summary_x(iunit, input,  lattice, ions, windows, symmetry, &
-                              kpoints, bshells, pseudo )
+   MODULE summary_module
+   !**********************************************************
+   !
+   IMPLICIT NONE
+   PRIVATE
+   !
+   PUBLIC :: summary
+   ! 
+CONTAINS
+!
+!**********************************************************
+   SUBROUTINE summary(iunit, input,  lattice, ions, windows, symmetry, &
+                             kpoints, bshells, pseudo )
    !**********************************************************
    !
    ! Print out all the informnatins obtained from the 
@@ -173,7 +184,7 @@
           WRITE(iunit,"(7x,'               win_max :',1x,f12.4)") win_max
        IF ( froz_min > -10000.0 ) &
           WRITE(iunit,"(7x,'              froz_min :',1x,f12.4)") froz_min
-       IF ( froz_max <  10000.0 .AND. froz_max > -10000.0 ) &
+       IF ( froz_max <  10000.0 ) &
           WRITE(iunit,"(7x,'              froz_max :',1x,f12.4)") froz_max
           !
        WRITE(iunit,"(   7x,'             alpha_dis :',1x,f12.4)") alpha_dis
@@ -442,29 +453,37 @@
        ENDIF
 
        IF ( .NOT. lfrozen ) THEN
-            WRITE(iunit," (/,4x,'inner window: NOT used --> NO FROZEN STATES' )" )
+           WRITE(iunit," (/,4x,'inner window: NOT used --> NO FROZEN STATES' )" )
        ELSE
-            IF ( froz_min < 10000.0 ) THEN
-                WRITE(iunit," (/,4x,'inner window: E  = (  -inf , ',f8.4, &
-                   & ' ) --> FROZEN STATES' )" ) froz_max
-            ELSE
-                WRITE(iunit," (/,4x,'inner window: E  = (', f8.4, ' , ',f8.4, &
-                   & ' ) --> FROZEN STATES' )" ) froz_min, froz_max
-            ENDIF
-            DO ik=1,nkpts
-                WRITE(iunit, "(4x, 'there are ', i3,' frozen states at k-point = ',i5)") &
-                      dimfroz(ik), ik
-            ENDDO
+           !
+           WRITE(iunit," (/,4x,'inner window:',/)")
+           IF ( froz_min > -10000.0 ) THEN
+               WRITE(iunit," (  7x,'froz_min = ', f8.4)") froz_min
+           ELSE
+               WRITE(iunit," (  7x,'froz_min = -inf')") 
+           ENDIF
+           !
+           IF ( froz_max <  10000.0 ) THEN
+               WRITE(iunit," (  7x,'froz_max = ', f8.4)") froz_max
+           ELSE
+               WRITE(iunit," (  7x,'froz_max = +inf')") 
+           ENDIF
+           !
+           WRITE( iunit, "()" )
+           DO ik=1,nkpts
+               WRITE(iunit, "(4x, 'k(' i5, ' )  --> ', i5, '  frozen states')") ik, dimfroz(ik)
+           ENDDO
+           !
        ENDIF
 
-       WRITE(iunit, " (  ' </WINDOWS>',/)" )
+       WRITE(iunit, " ( /, ' </WINDOWS>',/)" )
    ENDIF
 
    !
    CALL flush_unit( iunit )
    CALL log_pop( 'summary' )
    !
-END SUBROUTINE summary_x
+END SUBROUTINE summary
 !
 !************************************************************
 SUBROUTINE print_ps_info( iunit, nt )
@@ -484,6 +503,8 @@ SUBROUTINE print_ps_info( iunit, nt )
   !
   INTEGER, INTENT(IN) :: iunit, nt
   !
+  !
+  INTEGER           :: ib, i
   CHARACTER(LEN=35) :: ps
      !
      IF ( upf(nt)%tpawp ) THEN
@@ -530,4 +551,6 @@ SUBROUTINE print_ps_info( iunit, nt )
      ENDIF
 
 END SUBROUTINE print_ps_info
+
+END MODULE summary_module
 

@@ -18,6 +18,7 @@ ccalbec.o \
 cleanup.o \
 collect_wf.o \
 compute_kham.o \
+compute_kham_2D.o \
 control.o \
 converters.o \
 correlation.o \
@@ -99,6 +100,7 @@ wfc_data.o \
 wfc_info.o \
 wfc_manager.o \
 windows.o \
+write_decay.o \
 write_upf_v2.o \
 xsf.o \
 zmatrix.o
@@ -106,10 +108,11 @@ zmatrix.o
 BIN= \
 disentangle.x \
 wannier.x \
+blc2wan.x \
 bands.x \
+cmplx_bands.x \
 dos.x \
-plot.x \
-blc2wan.x
+plot.x
 
 EXTERNAL_LIBS= ../iotk/libiotk.a ../ctools/libctools.a ../libs/libwant.a 
 BIN_DEPS=      $(OBJS) $(EXTERNAL_LIBS)
@@ -128,21 +131,26 @@ wannier.x:     wannier.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ wannier.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
-plot.x:        plot.o $(BIN_DEPS)
-	$(LD) $(LDFLAGS) -o $@ plot.o $(OBJS) $(LIBOBJS) $(LIBS)
+blc2wan.x:     blc2wan.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ blc2wan.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
 bands.x:       bands.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ bands.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
+cmplx_bands.x:       cmplx_bands.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ cmplx_bands.o $(OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+
 dos.x:         dos.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ dos.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
 
-blc2wan.x:     blc2wan.o $(BIN_DEPS)
-	$(LD) $(LDFLAGS) -o $@ blc2wan.o $(OBJS) $(LIBOBJS) $(LIBS)
+plot.x:        plot.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ plot.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+
 
 #
 # cleaning

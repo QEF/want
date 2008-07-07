@@ -44,7 +44,7 @@
    !
    CHARACTER(16) :: subname = 'hamiltonian_calc'
 
-   INTEGER :: i, j, m, ik, ir, inorm
+   INTEGER       :: i, j, m, ik, ir, inorm, imax, imin
    REAL(dbl)     :: norm, rmod
    REAL(dbl)     :: arg
    COMPLEX(dbl)  :: phase
@@ -169,9 +169,15 @@
       WRITE(stdout,"(  2x,'  (number of R vectors (nrtot) :',i5,/)") nrtot
       WRITE(stdout,"(  4x,'#       R [cry]     |R| [Bohr]      Norm of H(R) [eV]')") 
       !
+      imax = 3
+      IF ( TRIM(verbosity) == "high" ) imax = MAXVAL( ivr(:,:) )
+      !
+      imin = 0
+      IF ( TRIM(verbosity) == "high" ) imin = MINVAL( ivr(:,:) )
+      !
       DO ir = 1, nrtot
           !
-          IF ( ALL( ivr(:,ir) >= 0 .AND. ivr(:,ir) <= 3)  ) THEN
+          IF ( ALL( ivr(:,ir) >= imin .AND. ivr(:,ir) <= imax )  ) THEN
               !
               ! consider only positive directions, and a cutoff of 4 cells
               ! for each dir

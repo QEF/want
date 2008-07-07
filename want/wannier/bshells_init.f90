@@ -27,6 +27,7 @@
    USE kpoints_module,  ONLY : vkpt, nkpts, nk, s, nb, vb, wb, wbtot, &
                                nnlist, nncell, nnrev, nnpos,          &
                                kpoints_alloc, bshells_allocate 
+   !
    IMPLICIT NONE
 
    !
@@ -35,19 +36,17 @@
    
    REAL(dbl), PARAMETER :: eps = EPS_m6
    ! 
-   INTEGER       :: ik, ik1, ib, inum, ierr
+   INTEGER       :: ik, ik1, ib, ierr
    INTEGER       :: i, j, l, m, n
-   INTEGER       :: nq, rank
+   INTEGER       :: nq, nqx, rank
    INTEGER       :: nk_(3), s_(3)
    INTEGER       :: lwork_aux, info, ipiv(6)
    LOGICAL       :: eqv_found, found
-   !
    REAL(dbl)     :: aux, aux1, vkb(3), vtmp(3)
-   REAL(dbl)     :: work(6,6), work1(6,6), rhs(6)
    !
    INTEGER,   ALLOCATABLE :: ivb(:), index(:)
-   REAL(dbl), ALLOCATABLE :: vq(:,:), vqq(:)
-   REAL(dbl), ALLOCATABLE :: vb_aux(:,:), vbb(:)
+   REAL(dbl), ALLOCATABLE :: vb_aux(:,:), vq(:,:), vqq(:)
+   REAL(dbl), ALLOCATABLE :: work(:,:), work1(:,:), rhs(:)
    REAL(dbl), ALLOCATABLE :: work_aux(:)
    !
    CHARACTER(12) :: subname = 'bshells_init'
@@ -85,10 +84,13 @@
    ! allocate the trial kpoints, searching for the shells
    ! 125 = 5 **3 
    !
-   nq = 125*nkpts
+   nq  = 125*nkpts
+   nqx = 125
 
    ALLOCATE( vq(3,nq), vqq(nq), index(nq),  STAT=ierr )
-     IF (ierr/=0) CALL errore(subname,'allocating vq--index',ABS(ierr))
+   IF (ierr/=0) CALL errore(subname,'allocating vq--index',ABS(ierr))
+   ALLOCATE( vb_aux(3, nnx), ivb(nnx),  STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'allocating vb_aux, ivb',ABS(ierr))
 
    !
    ! loop over 125 different cells in rec space
@@ -116,83 +118,18 @@
    CALL hpsort_eps(nq, vqq(:), index(:), EPS_m6 )
 
 !
-! Now we deternine the possible b-vectors, adding non-proportional vectors
-! in order of increasing module, up to a max number of nnx = 12.
+! Now we deternine the possible b-vectors.
 ! Eventual useless b vects will be deleted after weight calculation if 
 ! zero-weight is found.
 !
-   ALLOCATE( vb_aux(3,nnx), vbb(nnx), ivb(nnx), STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating vb_aux, vbb, ivb ',ABS(ierr))
 
-   !
-   ! first found the candidates:
-   ! search for 6 vectors not parallel to each other
-   ! always include the 3 vectors parallel to the generators of
-   ! the reciprocal lattice
-   !
+   ALLOCATE( work( 6, nq ), STAT=ierr )
+   IF (ierr/=0 ) CALL errore(subname,'allocating work ',ABS(ierr))
+   ALLOCATE( rhs( 6 ), STAT=ierr )
+   IF (ierr/=0 ) CALL errore(subname,'allocating rhs ',ABS(ierr))
+   ALLOCATE( work1( 6 , 6), STAT=ierr )
+   IF (ierr/=0 ) CALL errore(subname,'allocating work1 ',ABS(ierr))
 
-   inum = 0
-   !
-   ! found the 3 vectors parallel to the reciprocal lattice gen.
-   !
-   DO j = 1, 3
-
-      ! squared norm of the generators
-      aux1 = DOT_PRODUCT( bvec(:,j), bvec(:,j) ) 
-
-      found = .FALSE.
-      DO i = 2, nq
-          !
-          aux = DOT_PRODUCT( bvec(:,j),vq(:,index(i)) ) /  &
-                    SQRT( aux1 * vqq(i) )
-          aux = ABS(aux)
-          !
-          IF ( ABS( aux - ONE ) < EPS_m6 ) THEN
-             found = .TRUE.
-             !
-             inum = inum +1
-             ivb(inum)  = index(i)
-             vb_aux(:,inum) = vq(:, ivb(inum) )
-             vbb(inum)  = vqq( i )
-             !
-             EXIT
-          ENDIF 
-      ENDDO
-      !
-      IF ( .NOT. found ) CALL errore(subname,'vb parallel to bvec not found',j)
-   ENDDO
-    
-   !
-   ! now search for the reamining vectors
-   !
-   DO i = 2, nq      
-       !
-       eqv_found = .FALSE.
-       DO j = 1, inum 
-          !
-          ! check whether the new vector is parallel to anyone
-          ! already found, compute the dir cosine
-          !
-          aux = DOT_PRODUCT( vb_aux(:,j), vq(:,index(i)) ) /  &
-                    SQRT( vbb(j) * vqq(i) )
-          aux = ABS(aux)
-          !
-          IF ( ABS( aux - ONE ) < EPS_m6 ) THEN 
-             eqv_found = .TRUE.
-             EXIT
-          ENDIF
-       ENDDO
-       IF ( .NOT. eqv_found )  THEN
-          inum = inum +1
-          ivb(inum)  = index(i)
-          vb_aux(:,inum) = vq(:, ivb(inum) )
-          vbb(inum)  = vqq( i )
-       ENDIF
-       IF ( inum == 6 ) EXIT
-   ENDDO
-   !
-   DEALLOCATE( ivb, vbb, vq, vqq, index, STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'deallocating ivb--index ',ABS(ierr))
 
    !
    ! then impose the sum rule to find the weights
@@ -200,14 +137,17 @@
    ! SumRule:  \sum_b wb |b >< b| = I  
    ! which are 6 eqs in wb, 
    !
-   DO i=1,6   
-      work( 1, i ) = vb_aux( 1, i) * vb_aux( 1, i )
-      work( 2, i ) = vb_aux( 1, i) * vb_aux( 2, i )
-      work( 3, i ) = vb_aux( 1, i) * vb_aux( 3, i )
-      work( 4, i ) = vb_aux( 2, i) * vb_aux( 2, i )
-      work( 5, i ) = vb_aux( 2, i) * vb_aux( 3, i )
-      work( 6, i ) = vb_aux( 3, i) * vb_aux( 3, i )
+   !
+   DO i=1,nq
+      j = index(i)
+      work( 1, i ) = vq( 1, j) * vq( 1, j)
+      work( 2, i ) = vq( 1, j) * vq( 2, j)
+      work( 3, i ) = vq( 1, j) * vq( 3, j)
+      work( 4, i ) = vq( 2, j) * vq( 2, j)
+      work( 5, i ) = vq( 2, j) * vq( 3, j)
+      work( 6, i ) = vq( 3, j) * vq( 3, j)
    ENDDO
+   !
    rhs(1) = ONE
    rhs(2) = ZERO
    rhs(3) = ZERO
@@ -219,49 +159,112 @@
    ! since we sum over 6 vectors only
    ! basically we are considering only one vector for each
    ! b, -b couple
-   rhs = rhs / TWO
+   rhs  = rhs / TWO
+
+!   rank =  mat_rank( 6, nq-1, work, EPS_m6 )
+!   IF ( rank/=6 ) CALL errore(subname,'rank /= 6 ',ABS(rank)+1)
+
+!
+! determine the number of b-vectors:
+! * we find out a full-rank (6) submatrix from work,
+!   selecting suitable b vectors (columns), 
+! * we solve the linear system above
+! * select the bvectors
+!   corresponding to non negligible weights
+!
 
    !
-   ! determine the number of b-vectors, which is the rank
-   ! of the matrix, and get a full rank submatrix (work1) from work 
-   ! starting from the first column (smallest b-vector) we add
-   ! columns up to the work rank is reached
+   ! first found the candidates b-vectors:
+   ! search for 6 vectors not parallel to each other,
+   ! always include the 3 vectors parallel to the generators of
+   ! the reciprocal lattice
    !
-   rank =  mat_rank( 6, 6, work, EPS_m6 )
+
    !
    work1(:,:) = ZERO
-   work1(:,1) = work(:,1) 
-   ipiv(1) = 1
+
    !
-   ! this is a counter on the work columns
-   j = 2
+   ! found the 3 vectors parallel to the reciprocal lattice gen.
+   !
+   DO j = 1, 3
+
+       ! squared norm of the generators
+       aux1 = DOT_PRODUCT( bvec(:,j), bvec(:,j) )
+ 
+       found = .FALSE.
+       !
+       inner_b_loop: &
+       DO l = 2, nq
+           !
+           aux = DOT_PRODUCT( bvec(:,j), vq(:,index(l)) ) /  &
+                     SQRT( aux1 * vqq(l) )
+           aux = ABS(aux)
+           !
+           IF ( ABS( aux - ONE ) < EPS_m6 ) THEN
+               found = .TRUE.
+               !
+               ivb(j)  = index(l)
+               !
+               vb_aux(:,j) = vq(:, index(l) )
+               work1(:,j)  = work(:, l ) 
+               !
+               EXIT inner_b_loop
+               !
+           ENDIF
+           !
+       ENDDO inner_b_loop
+       !
+       IF ( .NOT. found ) CALL errore(subname,'vb parallel to bvec not found',j)
+       !
+   ENDDO
+
+   IF ( mat_rank( 6, 3, work1, EPS_m6 ) /= 3 ) &
+      CALL errore(subname,'work1 is a rank-deficient matrix I',3)
+
+   !
+   ! now search for the remaining vectors
    !
    outer_column_loop: &
-   DO i = 2, rank
-      !
-      inner_column_loop: &
-      DO l = j,6
-         work1(:,i) = work(:,l)
-         IF ( mat_rank( 6, i, work1, EPS_m6 ) == i ) THEN
-            ipiv(i) = j
-            j = j+1
-            EXIT inner_column_loop
-         ENDIF
-         !
-      ENDDO inner_column_loop
+   DO i = 4, 6
+       !
+       found = .FALSE.
+       !
+       inner_column_loop: &
+       DO l = 2, nq
+           !
+           work1(:,i) = work(:,l)
+           IF ( mat_rank( 6, i, work1, EPS_m6 ) == i ) THEN
+               !
+               found = .TRUE.
+               ivb(i)  = index(l)
+               !
+               vb_aux(:,i) = vq(:, index(l) )
+               !
+               EXIT inner_column_loop
+               !
+           ENDIF
+           !
+       ENDDO inner_column_loop
+       !
+       IF ( .NOT. found ) CALL errore(subname, 'unable to complete te rank', i )
+       !
    ENDDO outer_column_loop
-
-   IF ( mat_rank( 6, rank, work1, EPS_m6 ) /= rank ) &
-        CALL errore(subname,'work still a rank-deficient matrix',3)
+   !
+   !
+   IF ( mat_rank( 6, 6, work1, EPS_m6 ) /= 6 ) &
+        CALL errore(subname,'work1 is a rank-deficient matrix II',3)
 
    !
-   ! solve the 6 x rank overdetermined system of linear equations
-   lwork_aux = 2 * rank
+   ! solve the 6 x 6 full-rank system of linear equations
+   !
+   lwork_aux = 2 * 6 * 6 
    ALLOCATE( work_aux(lwork_aux) )
    !
-   CALL DGELS( 'N', 6, rank, 1, work1, 6, rhs, 6, work_aux, lwork_aux, info)
+   CALL DGELS( 'N', 6, 6, 1, work1, 6, rhs, 6, work_aux, lwork_aux, info)
    !
    IF ( info < 0 )  CALL errore(subname,'invalid value in DGELS',-info)
+   IF ( info > 0 )  CALL errore(subname,'DGELS: solving system', info)
+   !
    DEALLOCATE( work_aux )
    !
 
@@ -277,10 +280,11 @@
    ! found the non negligible weights, and complete the b, -b pairs
    !
    nb = 0 
-   DO i=1, rank
+   DO i=1, 6
       IF ( ABS(rhs(i)) > EPS_m6 ) nb = nb + 1
    ENDDO
    nb = 2 * nb
+
 
    !
    ! allocating b-vector data
@@ -292,7 +296,7 @@
    !
    j = 0
    l = 0
-   DO i=1,rank
+   DO i = 1, 6
       !
       IF ( ABS(rhs(i)) > EPS_m6 ) THEN    
          !
@@ -302,8 +306,8 @@
          wb(j)        = rhs(i)
          wb(j+nb/2)   = rhs(i)
          !
-         vb(:,j)      =  vb_aux(:,ipiv(i))
-         vb(:,j+nb/2) = -vb_aux(:,ipiv(i))
+         vb(:,j)      =  vb_aux(:, i)
+         vb(:,j+nb/2) = -vb_aux(:, i)
          !
          ! b vectors excluding -b
          nnpos(l)       =  j
@@ -317,9 +321,6 @@
    ENDDO
    !
    IF( j /= nb/2 ) CALL errore(subname,'j /= nb/2, unexpected',ABS(j)+1)
-   !
-   DEALLOCATE( vb_aux, STAT=ierr)
-   IF (ierr/=0) CALL errore(subname,'deallocating vb_aux',ABS(ierr))
 
    !
    ! get the tsum of the weights
@@ -330,24 +331,28 @@
 !  now check that the completeness relation is satisfied
 !  (see Appendix B, PRB 56 12847 (1997) for more details )
 !
-!  Even if this is not necessary, we check it again for safety
-!
    DO i = 1, 3
    DO j = 1, 3
-      !
-      aux = ZERO
-      DO ib = 1, nb
-          aux = aux + wb(ib) * vb(i,ib) * vb(j,ib)
-      ENDDO
-
-      IF ( i == j ) aux = aux - ONE
-      !
-      IF ( ABS( aux ) > EPS_m6 ) &
-        CALL errore(subname, 'sum rule not satisfied', i+j )
-        !   
+       !
+       aux = ZERO
+       DO ib = 1, nb
+           aux = aux + wb(ib) * vb(i,ib) * vb(j,ib)
+       ENDDO
+ 
+       IF ( i == j ) aux = aux - ONE
+       !
+       IF ( ABS( aux ) > EPS_m6 ) THEN
+           !
+           CALL summary( stdout, INPUT=.FALSE.,    IONS=.FALSE.,     &
+                                 WINDOWS=.FALSE.,  SYMMETRY=.FALSE., &
+                                 KPOINTS=.TRUE.,   BSHELLS=.TRUE.,   &
+                                 PSEUDO=.FALSE.    )
+           CALL errore(subname, 'sum rule not satisfied', i+j )
+           ! 
+       ENDIF
+       !   
    ENDDO
    ENDDO
-
 
 !
 ! Now build up the list of b-vectors for each k-point.
@@ -399,6 +404,20 @@
    ENDDO 
    ENDDO
 
+   !
+   ! local cleanup
+   !
+   DEALLOCATE( work, STAT=ierr )
+   IF (ierr/=0 ) CALL errore(subname,'deallocating work ',ABS(ierr))
+   DEALLOCATE( rhs, work1, STAT=ierr )
+   IF (ierr/=0 ) CALL errore(subname,'deallocating rhs, work1',ABS(ierr))
+   DEALLOCATE( vq, vqq, index,  STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'deallocating vq--index',ABS(ierr))
+   DEALLOCATE( vb_aux, ivb, STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'deallocating vb_aux--ivb',ABS(ierr))
+
+   !
+   !
    CALL timing(subname,OPR='stop')
    CALL log_pop(subname)
    !

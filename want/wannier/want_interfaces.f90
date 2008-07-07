@@ -10,9 +10,14 @@
    MODULE want_interfaces_module
 !*********************************************
    !
-   ! contains explicit interfaces for some WanT internal routines 
+   ! contains explicit and inplicit interfaces to some WanT internal routines 
    !
    USE kinds
+   USE summary_module,         ONLY : summary
+   USE want_dftread_module,    ONLY : want_dftread
+   USE want_init_module,       ONLY : want_init
+   USE postproc_init_module,   ONLY : postproc_init
+   !
    IMPLICIT NONE
    PRIVATE
 
@@ -22,63 +27,31 @@
 ! *   summary
 ! *   want_dftread
 ! *   want_init
+! *   postproc_init
 !
 
    PUBLIC :: summary 
    PUBLIC :: want_dftread
    PUBLIC :: want_init
+   PUBLIC :: postproc_init
              
 !
-! defined interfcaes
+! locally-defined interfaces
 !
 
-   INTERFACE summary
-      !
-      SUBROUTINE summary_x ( iunit, input, lattice, ions, windows, symmetry, &
-                             kpoints, bshells, pseudo)
-         INTEGER,           INTENT(in) :: iunit
-         LOGICAL, OPTIONAL, INTENT(in) :: input   
-         LOGICAL, OPTIONAL, INTENT(in) :: lattice 
-         LOGICAL, OPTIONAL, INTENT(in) :: ions   
-         LOGICAL, OPTIONAL, INTENT(in) :: windows
-         LOGICAL, OPTIONAL, INTENT(in) :: symmetry
-         LOGICAL, OPTIONAL, INTENT(in) :: kpoints   
-         LOGICAL, OPTIONAL, INTENT(in) :: bshells   
-         LOGICAL, OPTIONAL, INTENT(in) :: pseudo   
-      END SUBROUTINE summary_x
-      !
-   END INTERFACE
-
-
-   INTERFACE want_init
-      !
-      SUBROUTINE want_init_x (input, lattice, ions, windows, &
-                              kpoints, bshells, pseudo)
-         LOGICAL, OPTIONAL, INTENT(in) :: input
-         LOGICAL, OPTIONAL, INTENT(in) :: lattice
-         LOGICAL, OPTIONAL, INTENT(in) :: ions
-         LOGICAL, OPTIONAL, INTENT(in) :: windows
-         LOGICAL, OPTIONAL, INTENT(in) :: kpoints
-         LOGICAL, OPTIONAL, INTENT(in) :: bshells
-         LOGICAL, OPTIONAL, INTENT(in) :: pseudo
-      END SUBROUTINE want_init_x
-      !
-   END INTERFACE
-
-
-   INTERFACE want_dftread
-      !
-      SUBROUTINE want_dftread_x (lattice, ions, windows, symmetry, kpoints, pseudo, need_wfc)
-         LOGICAL, OPTIONAL, INTENT(in) :: lattice
-         LOGICAL, OPTIONAL, INTENT(in) :: ions
-         LOGICAL, OPTIONAL, INTENT(in) :: windows
-         LOGICAL, OPTIONAL, INTENT(in) :: symmetry
-         LOGICAL, OPTIONAL, INTENT(in) :: kpoints
-         LOGICAL, OPTIONAL, INTENT(in) :: pseudo
-         LOGICAL, OPTIONAL, INTENT(in) :: need_wfc
-      END SUBROUTINE want_dftread_x
-      !
-   END INTERFACE
+!
+! left here as a template
+!
+!   INTERFACE postproc_init
+!      !
+!      SUBROUTINE postproc_init_x ( windows, subspace, hamiltonian, wannier )
+!         LOGICAL, OPTIONAL, INTENT(in) :: windows
+!         LOGICAL, OPTIONAL, INTENT(in) :: subspace
+!         LOGICAL, OPTIONAL, INTENT(in) :: hamiltonian
+!         LOGICAL, OPTIONAL, INTENT(in) :: wannier
+!      END SUBROUTINE postproc_init_x
+!      !
+!   END INTERFACE
 
 END MODULE want_interfaces_module
 

@@ -36,15 +36,15 @@
    !
    INTEGER            :: nkpts_in       ! Number of k-points generating the line (edges)
    INTEGER            :: nkpts_max      ! maximum number of interpolated points
-   LOGICAL            :: use_nn(3)      ! use nearest neighb. in direction i, i=1,3
-                                        ! DEBUG and transport purposes
+   INTEGER            :: ircut(3)       ! real space curoff in terms of unit cells
+                                        ! for directions i=1,2,3  (0 means no cutoff)
    CHARACTER(nstrx)   :: fileout        ! output filename
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
-                    fileout, nkpts_in, nkpts_max, use_nn
+                    fileout, nkpts_in, nkpts_max, ircut
    !
    ! end of declariations
    !   
@@ -78,7 +78,7 @@
       !
       ! do the main task
       !
-      CALL do_bands( fileout, nkpts_in, nkpts_max, use_nn ) 
+      CALL do_bands( fileout, nkpts_in, nkpts_max, ircut ) 
 
       !
       ! Clean global memory
@@ -115,12 +115,12 @@ CONTAINS
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
-      datafile_dft                = ' '
       datafile_sgm                = ' '
+      datafile_dft                = ' '
       fileout                     = ' '
       nkpts_in                    = 0
       nkpts_max                   = 100
-      use_nn(1:3)                 = .FALSE.
+      ircut(1:3)                  = 0
       
       CALL input_from_file ( stdin, ierr )
       IF ( ierr /= 0 )  CALL errore(subname,'error in input from file',ABS(ierr))
@@ -138,8 +138,9 @@ CONTAINS
       ! Some checks 
       !
       IF ( nkpts_in > nkpts_inx ) CALL errore(subname, 'nkpts_in too large',  nkpts_in)
-      IF ( nkpts_in <= 0 )  CALL errore(subname, 'Invalid nkpts_in', ABS(nkpts_in)+1)
-      IF ( nkpts_max <= 0 ) CALL errore(subname, 'Invalid nkpts_max', ABS(nkpts_max)+1)
+      IF ( nkpts_in <= 0 )        CALL errore(subname, 'Invalid nkpts_in', ABS(nkpts_in)+1)
+      IF ( nkpts_max <= 0 )       CALL errore(subname, 'Invalid nkpts_max', ABS(nkpts_max)+1)
+      IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname,'Invalid ircut', 10)
 
 
       !
@@ -156,15 +157,17 @@ CONTAINS
       WRITE( stdout, "(   7x,'             nkpts_in  :',3x,3i4 )") nkpts_in
       WRITE( stdout, "(   7x,'             nkpts_max :',3x,3i4 )") nkpts_max
       !
-      IF ( ANY( use_nn(:) ) ) THEN
-          WRITE( stdout, "(   7x,'             use_nn(1) :',5x,   a)") TRIM( log2char(use_nn(1)) )
-          WRITE( stdout, "(   7x,'             use_nn(2) :',5x,   a)") TRIM( log2char(use_nn(2)) )
-          WRITE( stdout, "(   7x,'             use_nn(3) :',5x,   a)") TRIM( log2char(use_nn(3)) )
+      IF ( ANY( ircut(:) > 0 ) ) THEN
+          WRITE( stdout, "(   7x,'                 ircut :',3x,3i4)") ircut(:)
+      ENDIF
+      !
+      IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
+          WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
       ENDIF
       !
       WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
       IF ( lhave_sgm ) THEN
-          WRITE( stdout, "(   7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+          WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
       ENDIF
       !
       WRITE( stdout, "()" )
@@ -178,7 +181,7 @@ END PROGRAM bands
 
 
 !********************************************************
-   SUBROUTINE do_bands( fileout, nkpts_in, nkpts_max, use_nn )
+   SUBROUTINE do_bands( fileout, nkpts_in, nkpts_max, ircut )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -208,7 +211,7 @@ END PROGRAM bands
       !
       CHARACTER(*),  INTENT(IN) :: fileout
       INTEGER,       INTENT(IN) :: nkpts_in, nkpts_max
-      LOGICAL,       INTENT(IN) :: use_nn(3)
+      INTEGER,       INTENT(IN) :: ircut(3)
    
       !
       ! local vars
@@ -216,8 +219,11 @@ END PROGRAM bands
       CHARACTER(8)      :: subname = 'do_bands'
 
       INTEGER           :: nkpts_tot            ! actual number of point in the line
-      INTEGER           :: nrtot_nn, nrtot_sgm, dimwann_sgm
+      INTEGER           :: nrtot_sgm, dimwann_sgm
+      INTEGER           :: nrtot_nn
+      LOGICAL           :: lhave_nn(3)
       REAL(dbl)         :: raux
+      !
       INTEGER,      ALLOCATABLE :: r_index(:)
       COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:), z(:,:)
       COMPLEX(dbl), ALLOCATABLE :: kovp(:,:), rovp_nn(:,:,:)
@@ -374,7 +380,10 @@ END PROGRAM bands
 
 
       !
-      ! find the real space R -vectors to be used (according to use_nn)
+      ! find the real space R-vectors to be used (according to ircut)
+      !
+      lhave_nn(:) = ( ircut(:) /= 0 )
+      !
       !
       vr_cry(:,:) = vr(:,:)
       CALL cart2cry( vr_cry, avec )
@@ -383,9 +392,9 @@ END PROGRAM bands
       !
       DO ir = 1, nrtot
           !
-          IF (  ( .NOT. use_nn(1)  .OR.  ABS(NINT(vr_cry(1,ir))) <= 1 ) .AND. &
-                ( .NOT. use_nn(2)  .OR.  ABS(NINT(vr_cry(2,ir))) <= 1 ) .AND. &
-                ( .NOT. use_nn(3)  .OR.  ABS(NINT(vr_cry(3,ir))) <= 1 )       )  THEN
+          IF (  ( .NOT. lhave_nn(1) .OR.  ABS(NINT(vr_cry(1,ir))) <= ircut(1) ) .AND. &
+                ( .NOT. lhave_nn(2) .OR.  ABS(NINT(vr_cry(2,ir))) <= ircut(2) ) .AND. &
+                ( .NOT. lhave_nn(3) .OR.  ABS(NINT(vr_cry(3,ir))) <= ircut(3) )       )  THEN
                 !
                 nrtot_nn = nrtot_nn + 1
                 !
@@ -394,6 +403,9 @@ END PROGRAM bands
           ENDIF
           !
       ENDDO
+      !
+      DEALLOCATE( vr_cry, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_cry', ABS(ierr) )
       !
       !
       ALLOCATE( vr_nn( 3, nrtot_nn ), wr_nn( nrtot_nn ), STAT=ierr )
@@ -423,9 +435,6 @@ END PROGRAM bands
           IF ( lhave_sgm )     rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
           !
       ENDDO
-      !
-      DEALLOCATE( vr_cry, r_index, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_cry, r_index', ABS(ierr) )
 
 
       !
@@ -509,6 +518,7 @@ END PROGRAM bands
       ! to the fermi level. We impose the alignment manually...
       !
       filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
+      !
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
       IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
       !
@@ -521,7 +531,9 @@ END PROGRAM bands
       ENDDO
       CLOSE( ham_unit )
 
+
       filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
+      !
       OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
       IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
       !
@@ -568,6 +580,9 @@ END PROGRAM bands
       !
       DEALLOCATE( vr_nn, wr_nn, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_nn, wr_nn', ABS(ierr) )
+      !
+      DEALLOCATE( r_index, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating r_index', ABS(ierr) )
       !
       DEALLOCATE( kham, rham_nn, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating kham, rham_nn', ABS(ierr) )

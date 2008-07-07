@@ -13,26 +13,18 @@
    ! Given a (dynamical) operator from file in the bloch basis
    ! it is calculated on the WFs basis
    !
-   USE kinds
-   USE constants,            ONLY: ZERO, CZERO, TWO, RYD, EPS_m6
-   USE parameters,           ONLY : nstrx
-   USE io_module,            ONLY : stdout, stdin, io_name, space_unit, wan_unit, &
-                                    in_unit => aux1_unit, out_unit => aux2_unit, &
-                                    work_dir, prefix, postfix
-   USE iotk_module
-   USE files_module
-   USE want_interfaces_module
-   USE timing_module
-   USE parser_module,        ONLY : log2char, change_case
-   USE converters_module,    ONLY : cry2cart
    USE version_module,       ONLY : version_number
-   USE lattice_module,       ONLY : bvec, tpiba
-   USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx, windows_read
-   USE kpoints_module,       ONLY : nrtot, nkpts, vkpt, ivr, vr
-   USE subspace_module,      ONLY : eamp, subspace_read
-   USE localization_module,  ONLY : cu, localization_read
-   USE hamiltonian_module,   ONLY : dimwann, hamiltonian_allocate
-   USE util_module,          ONLY : mat_mul
+   USE kinds,                ONLY : dbl
+   USE parameters,           ONLY : nstrx
+   USE io_module,            ONLY : stdout, stdin
+   USE io_module,            ONLY : work_dir, prefix, postfix
+   USE control_module,       ONLY : verbosity
+   USE timing_module,        ONLY : timing
+   USE log_module,           ONLY : log_push, log_pop
+   USE parser_module,        ONLY : log2char, change_case
+   USE datafiles_module,     ONLY : datafiles_init
+   USE want_interfaces_module
+   !
    IMPLICIT NONE 
 
    !
@@ -45,28 +37,10 @@
    INTEGER                   :: nprint
 
    !
-   ! local variables
-   !
-   REAL(dbl),    ALLOCATABLE :: grid(:), vkpt_file(:,:)
-   REAL(dbl),    ALLOCATABLE :: vrr(:), norms(:)
-   COMPLEX(dbl), ALLOCATABLE :: phase(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: opr_in(:,:,:), opr_out(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: oprk(:,:,:), cutot(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: aux(:), work(:,:)
-   !
-   REAL(dbl)                 :: arg, rtmp
-   CHARACTER(nstrx)          :: filename
-   CHARACTER(nstrx)          :: attr, str, grid_units, analyticity
-   !
-   INTEGER :: i, j, m, ie, ik, ir, ierr
-   INTEGER :: nbnd_file, nkpts_file, nspin_file, nomega
-   INTEGER :: ibnd_start, ibnd_end, ispin
-   LOGICAL :: lfound, ldynam, lband_diag 
-   !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
-                    binary, energy_ref, spin_component, nprint
+                    binary, energy_ref, spin_component, nprint, verbosity
    !
    ! end of declariations
    !   
@@ -78,91 +52,200 @@
 !
       CALL startup(version_number,'blc2wan')
 
-
-!
-! ... Read INPUT namelist from stdin
-!
-      prefix                      = 'WanT' 
-      postfix                     = ' ' 
-      work_dir                    = './' 
-      filein                      = ' '
-      fileout                     = ' '
-      binary                      = .TRUE.
-      spin_component              = 'none'
-      energy_ref                  = ZERO
-      nprint                      = 10
-
-      
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore('blc2wan','error in input from file',ABS(ierr))
       !
-      READ(stdin, INPUT, IOSTAT=ierr)
-      IF ( ierr /= 0 )  CALL errore('blc2wan','Unable to read namelist INPUT',ABS(ierr))
+      ! read input
+      !
+      CALL blc2wan_input( )
 
       !
-      ! Some checks 
+      ! init post processing (reading previous WanT and DFT data )
       !
-      IF ( LEN_TRIM(filein) == 0 )  CALL errore('blc2wan','invalid void filein',1)
-      IF ( LEN_TRIM(fileout) == 0 ) CALL errore('blc2wan','invalid void fileout',2)
+      CALL write_header( stdout, "Post Processing Init" )
       !
-      IF ( TRIM(filein) == TRIM(fileout) ) &
-                CALL errore('blc2wan','filein and fileout equal',3)
-
-      CALL change_case(spin_component,'lower')
+      CALL datafiles_init()
       !
-      IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
-           TRIM(spin_component) /= "down" .AND. TRIM(spin_component) /= "dw"     ) &
-           CALL errore('blc2wan','invalid spin_component = '//TRIM(spin_component),3 )
-!
-! ... Getting previous WanT data
-!
-
-      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE. )
-      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      CALL postproc_init ( WANNIER=.TRUE. )
 
       !
-      ! Read Subspace data
-      !
-      CALL io_name('space',filename)
-      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
-         !
-         CALL windows_read(space_unit,"WINDOWS",lfound)
-         IF ( .NOT. lfound ) CALL errore('bands',"unable to find WINDOWS",1)
-         !
-         CALL subspace_read(space_unit,"SUBSPACE",lfound)
-         IF ( .NOT. lfound ) CALL errore('blc2wan',"unable to find SUBSPACE",1)
-         !
-      CALL file_close(space_unit,PATH="/",ACTION="read")
-      !
-      CALL io_name('space',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Space data read from file: ',a)") TRIM(filename)
-
-
-      !
-      ! Read wannier data
-      !
-      CALL io_name('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
-         !
-         CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
-         IF ( .NOT. lfound ) CALL errore('blc2wan',"unable to find WANNIER_LOCALIZATION",1)
-         !
-      CALL file_close(wan_unit,PATH="/",ACTION="read")
-      !
-      CALL io_name('space',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(2x,'Wannier data read from file: ',a)") TRIM(filename)
-
-
-      !
-      ! Print data to output
+      ! print data to output
       !
       CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., WINDOWS=.FALSE. )
 
       !
-      ! setup real space quantities (such as those used to move the hamiltonian 
-      ! to WFs basis)
+      ! do the main task 
+      ! 
+      CALL do_blc2wan( filein, fileout, energy_ref, spin_component, &
+                       binary, nprint, verbosity )
+
       !
-      CALL hamiltonian_allocate()
+      ! clean global memory
+      !
+      CALL cleanup()
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'blc2wan' )
+
+CONTAINS
+
+!********************************************************
+   SUBROUTINE blc2wan_input()
+   !********************************************************
+   !
+   ! Read INPUT namelist from stdin
+   !
+   IMPLICIT NONE
+
+      CHARACTER(13)    :: subname = 'blc2wan_input'
+      INTEGER          :: ierr
+      !
+      ! end of declarations
+      !
+
+      CALL timing( subname, OPR='start' )
+      CALL log_push( subname )
+
+      !
+      ! init input namelist
+      !
+      prefix                      = 'WanT'
+      postfix                     = ' '
+      work_dir                    = './'
+      filein                      = ' '
+      fileout                     = ' '
+      binary                      = .TRUE.
+      spin_component              = 'none'
+      energy_ref                  = 0.0
+      nprint                      = 10
+      verbosity                   = 'medium'
+
+
+      CALL input_from_file ( stdin, ierr )
+      IF ( ierr /= 0 )  CALL errore(subname,'error in input from file',ABS(ierr))
+      !
+      READ(stdin, INPUT, IOSTAT=ierr)
+      IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
+
+
+      !
+      ! Some checks
+      !
+      IF ( LEN_TRIM(filein) == 0 )  CALL errore(subname,'invalid empty filein',1)
+      IF ( LEN_TRIM(fileout) == 0 ) CALL errore(subname,'invalid empty fileout',2)
+      !
+      IF ( TRIM(filein) == TRIM(fileout) ) &
+                CALL errore(subname,'filein and fileout equal',3)
+
+      CALL change_case(spin_component,'lower')
+      !
+      IF ( TRIM(spin_component) /= "none" .AND. TRIM(spin_component) /= "up" .AND. &
+           TRIM(spin_component) /= "down" .AND. TRIM(spin_component) /= "dw") &
+           CALL errore(subname,'invalid spin_component = '//TRIM(spin_component),3 )
+
+      CALL change_case(verbosity,'lower')
+      !
+      IF ( TRIM(verbosity) /= "low" .AND. TRIM(verbosity) /= "medium" .AND. &
+           TRIM(verbosity) /= "high" ) &
+           CALL errore(subname,'invalid verbosity = '//TRIM(verbosity),3 )
+
+      !
+      ! input summary
+      !
+      CALL write_header( stdout, "INPUT Summary" )
+      !
+      WRITE( stdout,"(/,2x,'      Input file :',3x,a)") TRIM(filein)
+      WRITE( stdout,"(  2x,'     Output file :',3x,a)") TRIM(fileout)
+      !
+      IF ( binary ) THEN
+         WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "binary"
+      ELSE
+         WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "textual"
+      ENDIF
+      !
+      WRITE( stdout,"(  2x,'  Spin component :',3x,a)") TRIM(spin_component)
+      !
+      !
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
+      !
+   END SUBROUTINE blc2wan_input
+
+END PROGRAM blc2wan
+      
+
+!********************************************************
+   SUBROUTINE do_blc2wan( filein, fileout, energy_ref, spin_component, &
+                          binary, nprint, verbosity  )
+   !********************************************************
+   !
+   ! perform the main task of the calculation
+   !
+   USE kinds
+   USE constants,            ONLY : ZERO, CZERO, TWO, RYD, EPS_m6
+   USE parameters,           ONLY : nstrx
+   USE io_module,            ONLY : stdout, work_dir, prefix, postfix
+   USE io_module,            ONLY : in_unit => aux1_unit, out_unit => aux2_unit
+   USE parser_module,        ONLY : log2char, change_case
+   USE converters_module,    ONLY : cry2cart
+   USE lattice_module,       ONLY : bvec, tpiba
+   USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx
+   USE kpoints_module,       ONLY : nrtot, nkpts, vkpt, ivr, vr
+   USE subspace_module,      ONLY : eamp
+   USE localization_module,  ONLY : cu, rave
+   USE hamiltonian_module,   ONLY : dimwann, rham
+   USE util_module,          ONLY : mat_mul
+   USE timing_module,        ONLY : timing, timing_upto_now
+   USE log_module,           ONLY : log_push, log_pop
+   USE iotk_module
+   USE files_module
+   !
+   IMPLICIT NONE
+   
+      !
+      ! input vars
+      !
+      CHARACTER(*),  INTENT(IN) :: filein, fileout
+      CHARACTER(*),  INTENT(IN) :: spin_component
+      REAL(dbl),     INTENT(IN) :: energy_ref
+      INTEGER,       INTENT(IN) :: nprint
+      LOGICAL,       INTENT(IN) :: binary
+      CHARACTER(*),  INTENT(IN) :: verbosity
+
+      !
+      ! local vars
+      !
+      CHARACTER(10)      :: subname = 'do_blc2wan'       
+      !
+      REAL(dbl),    ALLOCATABLE :: grid(:), vkpt_file(:,:)
+      REAL(dbl),    ALLOCATABLE :: vrr(:), norms(:)
+      COMPLEX(dbl), ALLOCATABLE :: phase(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: opr_in(:,:,:), opr_out(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: oprk(:,:,:), cutot(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: aux(:), work(:,:)
+      !
+      REAL(dbl)                 :: arg, rtmp
+      CHARACTER(nstrx)          :: filename
+      CHARACTER(nstrx)          :: attr, str, grid_units, analyticity
+      !
+      INTEGER :: ierr
+      INTEGER :: i, j, m, ie, ik, ir, isup, iinf
+      INTEGER :: nbnd_file, nkpts_file, nspin_file, nomega
+      INTEGER :: ibnd_start, ibnd_end, ispin
+      LOGICAL :: lfound, ldynam, lband_diag
+      !
+      ! end of declarations
+      !
+
+!
+!------------------------------
+! main body
+!------------------------------
+!
+
+      CALL timing(subname,OPR='start')
+      CALL log_push(subname)
+
 
 !
 ! ... Init operator data from filein
@@ -170,35 +253,35 @@
 !
       filename = TRIM(filein)
       CALL iotk_open_read(in_unit, TRIM(filename), IERR=ierr)
-         IF (ierr/=0)  CALL errore('blc2wan','opening '//TRIM(filename),ABS(ierr))
+         IF (ierr/=0)  CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
       !
       ! reading main info
       !
       CALL iotk_scan_empty(in_unit,"DATA",ATTR=attr,IERR=ierr)
-      IF (ierr/=0)  CALL errore('blc2wan','searching data',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching data',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,'nbnd',nbnd_file,IERR=ierr)
-      IF (ierr/=0)  CALL errore('blc2wan','searching nbnd',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching nbnd',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,'iband_start',ibnd_start, FOUND=lfound ,IERR=ierr)
       IF ( .NOT. lfound ) ibnd_start=1
-      IF (ierr > 0)  CALL errore('blc2wan','searching iband_start',ABS(ierr))
+      IF (ierr > 0)  CALL errore(subname,'searching iband_start',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,'iband_end',ibnd_end, FOUND=lfound ,IERR=ierr)
       IF ( .NOT. lfound ) ibnd_end=nbnd_file
-      IF (ierr > 0)  CALL errore('blc2wan','searching iband_end',ABS(ierr))
+      IF (ierr > 0)  CALL errore(subname,'searching iband_end',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,'nkpts',nkpts_file,IERR=ierr)
-      IF (ierr/=0)  CALL errore('blc2wan','searching nkpts',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching nkpts',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,'nspin',nspin_file,IERR=ierr)
-      IF (ierr/=0)  CALL errore('blc2wan','searching nspin',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching nspin',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,'band_diagonal',lband_diag,IERR=ierr)
-      IF (ierr/=0)  CALL errore('blc2wan','searching band_diagonal',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching band_diagonal',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,'dynamical',ldynam,IERR=ierr)
-      IF (ierr/=0)  CALL errore('blc2wan','searching dynamical',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching dynamical',ABS(ierr))
       !
       nomega = 1
       analyticity = " "
@@ -206,65 +289,65 @@
       IF ( ldynam ) THEN
           !
           CALL iotk_scan_attr(attr,'nomega',nomega,IERR=ierr)
-          IF (ierr/=0)  CALL errore('blc2wan','searching nomega',ABS(ierr))
+          IF (ierr/=0)  CALL errore(subname,'searching nomega',ABS(ierr))
           !
           CALL iotk_scan_attr(attr,'analyticity', analyticity, IERR=ierr)
-          IF (ierr/=0)  CALL errore('blc2wan','searching nomega',ABS(ierr))
+          IF (ierr/=0)  CALL errore(subname,'searching nomega',ABS(ierr))
           !
       ENDIF
 
-      IF ( ibnd_end - ibnd_start +1 /= nbnd_file ) CALL errore('blc2wan','invalid nbnd_file',3)
-      IF ( nbnd_file > nbnd )     CALL errore('blc2wan','nbnd_file too large',3)
-      IF ( nkpts_file /= nkpts )  CALL errore('blc2wan','invalid nkpts',3)
-      IF ( nspin_file /= 1 .AND. nspin_file /= 2 )  CALL errore('blc2wan','invalid nspin',3)
+      IF ( ibnd_end - ibnd_start +1 /= nbnd_file ) CALL errore(subname,'invalid nbnd_file',3)
+      IF ( nbnd_file > nbnd )     CALL errore(subname,'nbnd_file too large',3)
+      IF ( nkpts_file /= nkpts )  CALL errore(subname,'invalid nkpts',3)
+      IF ( nspin_file /= 1 .AND. nspin_file /= 2 )  CALL errore(subname,'invalid nspin',3)
       IF ( TRIM(spin_component) /= "none" .AND. nspin_file == 1 ) &
-                                  CALL errore('blc2wan','calculation is spin-unpolarized',3)
+                                  CALL errore(subname,'calculation is spin-unpolarized',3)
       IF ( ABS(energy_ref) > EPS_m6 .AND. .NOT. ldynam ) &
-           CALL warning( 'blc2wan', 'energy_ref specified for a static operator' )
+           CALL warning( subname, 'energy_ref specified for a static operator' )
 
 
       !
       ! few local allocations
       !
       ALLOCATE( opr_in(nbnd,nbnd,nkpts), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating opr_in',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating opr_in',ABS(ierr))
       !
       ALLOCATE( oprk(dimwann,dimwann,nkpts), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating oprk',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating oprk',ABS(ierr))
       !
       ALLOCATE( opr_out(dimwann,dimwann,nrtot), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating opr_out',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating opr_out',ABS(ierr))
       !
       ALLOCATE( cutot(dimwinx,dimwann,nkpts), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating opr_out',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating opr_out',ABS(ierr))
       !
       ALLOCATE( aux(nbnd_file), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating aux',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating aux',ABS(ierr))
       !
       ALLOCATE( work(dimwinx,dimwinx), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating work',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating work',ABS(ierr))
       !
       ALLOCATE( vkpt_file(3,nkpts), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating vkpt_file',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating vkpt_file',ABS(ierr))
       !
       ALLOCATE( phase(nkpts,nrtot), STAT=ierr )
-      IF (ierr/=0) CALL errore('blc2wan','allocating phase',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating phase',ABS(ierr))
       !
       ALLOCATE( norms(nrtot), STAT=ierr )     
-      IF (ierr/=0) CALL errore('blc2wan','allocating norms',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating norms',ABS(ierr))
       !
       ALLOCATE( vrr(nrtot), STAT=ierr )     
-      IF (ierr/=0) CALL errore('blc2wan','allocating vrr',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating vrr',ABS(ierr))
 
 
       !
       ! read kpt list
       !
       CALL iotk_scan_dat(in_unit, 'VKPT', vkpt_file, ATTR=attr, IERR=ierr )
-      IF (ierr/=0)  CALL errore('blc2wan','searching VKPT',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching VKPT',ABS(ierr))
       !
       CALL iotk_scan_attr(attr,"units",str, IERR=ierr)
-      IF (ierr/=0)  CALL errore('blc2wan','searching units',ABS(ierr))
+      IF (ierr/=0)  CALL errore(subname,'searching units',ABS(ierr))
       !
       ! units conversion when possible
       !
@@ -285,7 +368,7 @@
           ! 
       CASE DEFAULT
           !
-          CALL errore('blc2wan','unknown kpt units ='//TRIM(str), 3)
+          CALL errore(subname,'unknown kpt units ='//TRIM(str), 3)
           !
       END SELECT
       
@@ -296,45 +379,31 @@
           !
           rtmp = DOT_PRODUCT( vkpt(:,ik)-vkpt_file(:,ik) , vkpt(:,ik)-vkpt_file(:,ik) )
           !
-          IF ( rtmp > EPS_m6 ) CALL errore('blc2wan','invalid input kpts', ik ) 
+          IF ( rtmp > EPS_m6 ) CALL errore(subname,'invalid input kpts', ik ) 
           !
       ENDDO 
       !
       DEALLOCATE( vkpt_file, STAT=ierr)
-      IF ( ierr/=0 ) CALL errore('blc2wan','deallocating vkpt_file', ABS(ierr) )
+      IF ( ierr/=0 ) CALL errore(subname,'deallocating vkpt_file', ABS(ierr) )
 
 
       !
       IF ( ldynam ) THEN
           !
           ALLOCATE( grid(nomega), STAT=ierr )
-          IF (ierr/=0)  CALL errore('blc2wan','allocating grid',ABS(ierr))
+          IF (ierr/=0)  CALL errore(subname,'allocating grid',ABS(ierr))
           ! 
           CALL iotk_scan_dat(in_unit,"GRID",grid, ATTR=attr, IERR=ierr)
-          IF (ierr/=0)  CALL errore('blc2wan','reading grid',ABS(ierr))
+          IF (ierr/=0)  CALL errore(subname,'reading grid',ABS(ierr))
           !
           CALL iotk_scan_attr( attr, "units", grid_units, FOUND=lfound, IERR=ierr) 
           IF ( .NOT. lfound ) grid_units = ""
-          IF (ierr > 0)  CALL errore('blc2wan','reading grid units',ABS(ierr))
+          IF (ierr > 0)  CALL errore(subname,'reading grid units',ABS(ierr))
           !
       ENDIF
 
-!
-! report summary of input data
-!
-      CALL write_header( stdout, "Input data summary" )
       !
-      WRITE( stdout,"(/,2x,'      Input file :',3x,a)") TRIM(filein)
-      WRITE( stdout,"(  2x,'     Output file :',3x,a)") TRIM(fileout)
-      !
-      IF ( binary ) THEN
-         WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "binary"
-      ELSE
-         WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "textual"
-      ENDIF
-      !
-      WRITE( stdout,"(  2x,'  Spin component :',3x,a)") TRIM(spin_component)
-      !
+      ! report data from file
       !
       WRITE( stdout,"(/,2x,'  Data from file',/)")
       WRITE( stdout,"(  2x,'            nbnd :',3x,i5)") nbnd_file
@@ -436,7 +505,7 @@
       CASE( "down", "dw")
          ispin = 2
       CASE DEFAULT
-         CALL errore('blc2wan','invalid spin_component = '//TRIM(spin_component),33)
+         CALL errore(subname,'invalid spin_component = '//TRIM(spin_component),33)
       END SELECT
       
 
@@ -465,17 +534,17 @@
           !
           !
           CALL iotk_scan_begin(in_unit, TRIM(str), IERR=ierr)
-          IF (ierr/=0) CALL errore('blc2wan','searching for '//TRIM(str),ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'searching for '//TRIM(str),ABS(ierr))
           !
           CALL iotk_write_begin(out_unit, TRIM(str), IERR=ierr)
-          IF (ierr/=0) CALL errore('blc2wan','writing '//TRIM(str),ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'writing '//TRIM(str),ABS(ierr))
           !
           ! spin stuff 
           !
           IF ( nspin_file == 2 ) THEN
               !
               CALL iotk_scan_begin(in_unit, "SPIN"//TRIM(iotk_index(ispin)), IERR=ierr)
-              IF (ierr/=0) CALL errore('blc2wan','searching for SPIN',ABS(ispin)+10)
+              IF (ierr/=0) CALL errore(subname,'searching for SPIN',ABS(ispin)+10)
               !
           ENDIF
 
@@ -490,7 +559,7 @@
                IF ( lband_diag ) THEN 
                    !
                    CALL iotk_scan_dat(in_unit, "KPT"//TRIM(iotk_index(ik)), aux(:), IERR=ierr)
-                   IF (ierr/=0) CALL errore('blc2wan','reading diag KPT' ,ik)
+                   IF (ierr/=0) CALL errore(subname,'reading diag KPT' ,ik)
                    !
                    DO m = ibnd_start, ibnd_end
                        !
@@ -503,7 +572,7 @@
                    CALL iotk_scan_dat(in_unit,"KPT"//TRIM(iotk_index(ik)),  &
                                       opr_in(ibnd_start:ibnd_end, ibnd_start:ibnd_end, ik), &
                                       IERR=ierr)
-                   IF (ierr/=0) CALL errore('blc2wan','reading full KPT' ,ik)
+                   IF (ierr/=0) CALL errore(subname,'reading full KPT' ,ik)
                ENDIF
 
                !
@@ -527,7 +596,7 @@
           IF ( nspin_file == 2 ) THEN
               !
               CALL iotk_scan_end(in_unit, "SPIN"//TRIM(iotk_index(ispin)), IERR=ierr)
-              IF (ierr/=0) CALL errore('blc2wan','searching end for SPIN',ABS(ispin)+10)
+              IF (ierr/=0) CALL errore(subname,'searching end for SPIN',ABS(ispin)+10)
               !
           ENDIF
 
@@ -577,10 +646,10 @@
           ! ending the sections
           !
           CALL iotk_scan_end(in_unit, TRIM(str), IERR=ierr)
-          IF (ierr/=0) CALL errore('blc2wan','ending '//TRIM(str),ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'ending '//TRIM(str),ABS(ierr))
           !
           CALL iotk_write_end(out_unit, TRIM(str), IERR=ierr)
-          IF (ierr/=0) CALL errore('blc2wan','writing end '//TRIM(str),ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'writing end '//TRIM(str),ABS(ierr))
 
           !
           IF ( MOD( ie, nprint) ==0 .OR. ie == 1 ) THEN
@@ -597,7 +666,7 @@
       ! close files
       !
       CALL iotk_close_read(in_unit, IERR=ierr)
-      IF (ierr/=0) CALL errore('blc2wan','closing IN_UNIT',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'closing IN_UNIT',ABS(ierr))
       !
       CALL iotk_close_write(out_unit)
       !
@@ -609,9 +678,15 @@
       WRITE(stdout,"(/,2x,'Real space decay of OPR:',/)")
       WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of Opr(R) [eV]')")
       !
+      isup = 3    
+      IF ( TRIM(verbosity) == "high" ) isup = MAXVAL( ivr(:,:) ) 
+      !
+      iinf = 3    
+      IF ( TRIM(verbosity) == "high" ) iinf = MINVAL( ivr(:,:) ) 
+      !
       DO ir = 1, nrtot
           !
-          IF ( ALL( ivr(:,ir) >= 0 .AND. ivr(:,ir) <= 3)  ) THEN
+          IF ( ALL( ivr(:,ir) >= iinf .AND. ivr(:,ir) <= isup )  ) THEN
               !
               WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") &
                             ivr(:,ir), vrr(ir), SQRT(  norms(ir) / REAL(dimwann*nomega, dbl) )
@@ -619,6 +694,21 @@
           !
       ENDDO
       
+
+      !
+      ! write full information if the case
+      !
+      IF ( TRIM(verbosity) == "high" .AND. .NOT. ldynam ) THEN
+          !
+          filename = TRIM(work_dir) // '/' // TRIM(prefix) // TRIM(postfix) // &
+                     '_decay_opr.dat'
+          CALL write_decay( filename, dimwann, nrtot, rave, vr, opr_out )
+          !
+          filename = TRIM(work_dir) // '/' // TRIM(prefix) // TRIM(postfix) // &
+                     '_decay_ham.dat'
+          CALL write_decay( filename, dimwann, nrtot, rave, vr, rham )
+          !
+      ENDIF
 
 !
 ! ... Shutdown
@@ -628,34 +718,29 @@
       ! Clean local memory
       !
       DEALLOCATE( opr_in, opr_out, oprk, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating opr_in -- opr_out', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating opr_in -- opr_out', ABS(ierr) )
       !
       DEALLOCATE( cutot, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating cutot', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating cutot', ABS(ierr) )
       !
       DEALLOCATE( aux, work, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating aux, work', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating aux, work', ABS(ierr) )
       !
       DEALLOCATE( phase, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating phase, kpt', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating phase, kpt', ABS(ierr) )
       !
       DEALLOCATE( vrr, norms, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating vrr, norms', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vrr, norms', ABS(ierr) )
       !
       IF ( ALLOCATED(grid) ) THEN 
           DEALLOCATE( grid, STAT=ierr)
-          IF( ierr /=0 ) CALL errore('blc2wan', 'deallocating grid', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating grid', ABS(ierr) )
       ENDIF
+      !
+      !
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
+      !
+END SUBROUTINE do_blc2wan
 
-      !
-      ! Clean global memory
-      !
-      CALL cleanup()
-
-      !
-      ! finalize
-      !
-      CALL shutdown( 'blc2wan' )
-
-END PROGRAM blc2wan
 

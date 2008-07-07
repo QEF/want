@@ -304,6 +304,7 @@
    PUBLIC :: read_namelist_control
    PUBLIC :: read_namelist_subspace
    PUBLIC :: read_namelist_localization
+   PUBLIC :: string_check
 
 CONTAINS
 
