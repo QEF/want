@@ -4,6 +4,33 @@
 =======================================================
 
 
+07 Jul 2008      blc2wan.f90 updated according to the new postproc_init driver.
+                 want_interfaces.f90 changed to solve a recursive module
+                 dependence. (AF)
+
+06 Jul 2008      documentation updated. Bug fixed in cmplx_bands.x when using 
+                 ircut plus and external self-energy. (AF)
+
+05 Jul 2008      further improvements in the post-procs, documentation updated.
+                 blc2wan.f90 updated according to the postproc_init routine. (AF)
+
+04 Jul 2008      important changes in the algorithm to ini bshells: a case not
+                 working was found, the algorithm has now been generalized. 
+                 Changes in the output fmt of hamiltonian_calc ad blc2wan. (AF)
+
+02 Jul 2008      bug reported for test08 (nscf_AlH.in used scf flag): fixed.
+                 (AF & AC)
+
+01 Jul 2008      write_decay.f90 added to blc2wan.x and wannier.x .
+                 use_nn(1:3) input vars removed from bands.x and changed to
+                 ircut(1:3). verbosity var added to blc2wan namelist. (AF)
+
+26 Jun 2008      the calculation of complex band structure has been implemented
+                 in cmplx_bands.f90 and works. Some related changes done. (AF)
+
+25 Jun 2008      bug reported when cutting off the lowest valence states
+                 in disentangle.x (Arrigo): fixed. (AC & AF)
+
 24 Jun 2008      dos.x upgraded and cleaned up as bands.x. Now it deals with
                  overlaps. Also the contraint of avoiding the usage of
                  nearest-neigh when having a sgm has been relaxed. (AF)
