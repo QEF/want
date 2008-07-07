@@ -7,8 +7,19 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !
+!**********************************************************
+   MODULE want_init_module
+   !**********************************************************
+   !   
+   IMPLICIT NONE
+   PRIVATE
+   !   
+   PUBLIC :: want_init
+   !   
+CONTAINS
+!
 !*********************************************************
-SUBROUTINE want_init_x(input, lattice, ions, windows, kpoints, bshells, pseudo)
+SUBROUTINE want_init(input, lattice, ions, windows, kpoints, bshells, pseudo)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -211,5 +222,6 @@ SUBROUTINE want_init_x(input, lattice, ions, windows, kpoints, bshells, pseudo)
     CALL timing('want_init',OPR='stop')
     CALL log_pop('want_init')
 
-END SUBROUTINE want_init_x
+END SUBROUTINE want_init
 
+END MODULE want_init_module

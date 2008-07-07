@@ -91,7 +91,6 @@ CONTAINS
        IF ( dimwann <= 0 )  CALL errore(subname,'Invalid DIMWANN',1)
        IF ( nkpts <= 0 )    CALL errore(subname,'Invalid NKPTS',1)
        IF ( nrtot <= 0 )    CALL errore(subname,'Invalid NRTOT',1)
-       IF ( nrtot < nkpts ) CALL errore(subname,'Invalid NRTOT < NKPTS',1)
 
        !
        ! other allocations

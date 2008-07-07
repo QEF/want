@@ -89,7 +89,8 @@ subroutine readpp
      !
      open (unit = iunps, file = file_pseudo, status = 'old', form = &
           'formatted', iostat = ios)
-     call errore ('readpp', 'file '//trim(file_pseudo)//' not found', ios)
+     IF( ios /= 0 ) &
+         CALL errore ('readpp', 'file '//TRIM(file_pseudo)//' not found', ABS(ios))
      !
      ! read UPF  pseudopotentials - the UPF format is detected via the
      ! presence of the keyword '<PP_HEADER>' at the beginning of the file
@@ -197,6 +198,7 @@ subroutine readpp
   !
   return
 end subroutine readpp
+
 !-----------------------------------------------------------------------
 integer function pseudo_type (psfile)
   !-----------------------------------------------------------------------

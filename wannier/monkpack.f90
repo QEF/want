@@ -48,13 +48,16 @@ SUBROUTINE monkpack(nk, s, vkpt)
 
    DO i=1,nk(1)
        u(1) = REAL( s(1) + 2*i ) / (TWO * nk(1))
+       u(1) = u(1) - REAL( NINT( u(1)) )
        !
        DO j=1,nk(2)
            u(2) = REAL( s(2) + 2*j ) / (TWO * nk(2))
+           u(2) = u(2) - REAL( NINT( u(2)) )
            !
            DO k=1,nk(3)
                ik = ik+1
                u(3) = REAL( s(3) + 2*k ) / (TWO * nk(3))
+               u(3) = u(3) - REAL( NINT( u(3)) )
                !
                vkpt(:,ik) = u(:)
            ENDDO

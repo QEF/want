@@ -6,9 +6,19 @@
 ! in the root directory of the present distribution, 
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
+!**********************************************************
+   MODULE want_dftread_module
+   !**********************************************************
+   !   
+   IMPLICIT NONE
+   PRIVATE
+   !   
+   PUBLIC :: want_dftread
+   !   
+CONTAINS
 !
 !*********************************************************
-SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo, need_wfc)
+   SUBROUTINE want_dftread(lattice, ions, windows, symmetry, kpoints, pseudo, need_wfc)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -190,5 +200,7 @@ SUBROUTINE want_dftread_x(lattice, ions, windows, symmetry, kpoints, pseudo, nee
    CALL timing('want_dftread',OPR='stop')
    CALL log_pop('want_dftread')
 
-END SUBROUTINE want_dftread_x
+END SUBROUTINE want_dftread
+
+END MODULE want_dftread_module
 

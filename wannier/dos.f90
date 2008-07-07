@@ -43,15 +43,16 @@
    CHARACTER(nstrx) :: smearing_type
    CHARACTER(nstrx) :: fileout       ! output filename
    LOGICAL          :: projdos       ! whether to write WF projected DOS
-   LOGICAL          :: use_nn(3)     ! use nearest neighb. in direction i, i=1,3
-                                     ! DEBUG and transport purposes
+   INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
+                                     ! for directions i=1,2,3  (0 means no cutoff)
+
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, delta, smearing_type, fileout, &
-                    emin, emax, ne, use_nn, projdos
+                    emin, emax, ne, ircut, projdos
    !
    ! end of declariations
    !   
@@ -86,7 +87,7 @@
       ! do the main task
       !
       CALL do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                   use_nn, projdos )
+                   ircut, projdos )
       !
       ! clean global memory
       !
@@ -122,8 +123,9 @@ CONTAINS
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
-      fileout                     = ' '
       datafile_sgm                = ' '
+      datafile_dft                = ' '
+      fileout                     = ' '
       delta                       = 0.1    ! eV
       nk(:)                       = -1
       s(:)                        =  0
@@ -131,7 +133,7 @@ CONTAINS
       emax                        =  10.0
       ne                          =  1000
       smearing_type               = 'gaussian'
-      use_nn(1:3)                 = .FALSE.
+      ircut(1:3)                  =  0
       projdos                     = .FALSE.
       
       CALL input_from_file ( stdin, ierr )
@@ -146,12 +148,13 @@ CONTAINS
       !
       ! Some checks 
       !
-      IF ( ANY( nk(:) <=0 ) )  CALL errore(subname, 'Invalid nk', 1)
-      IF ( ANY( s(:)  < 0 ) )  CALL errore(subname, 'Invalid s', 1)
-      IF ( ANY( s(:)  > 1 ) )  CALL errore(subname, 'Invalid s', 2)
-      IF ( delta <= 0.0 )      CALL errore(subname, 'Invalid delta', 3)
-      IF ( emin > emax  )      CALL errore(subname, 'emin larger than emax', 4)
-      IF ( ne <= 0  )          CALL errore(subname, 'invalid ne', 4)
+      IF ( ANY( nk(:) <=0 ) )     CALL errore(subname, 'Invalid nk', 1)
+      IF ( ANY( s(:)  < 0 ) )     CALL errore(subname, 'Invalid s', 1)
+      IF ( ANY( s(:)  > 1 ) )     CALL errore(subname, 'Invalid s', 2)
+      IF ( delta <= 0.0 )         CALL errore(subname, 'Invalid delta', 3)
+      IF ( emin > emax  )         CALL errore(subname, 'emin larger than emax', 4)
+      IF ( ne <= 0  )             CALL errore(subname, 'Invalid ne', 4)
+      IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname, 'Invalid ircut', 10)
       !
       lhave_sgm = .FALSE.
       IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
@@ -174,17 +177,23 @@ CONTAINS
       WRITE( stdout, "(   7x,'                    nk :',3x,3i4 )") nk(:)
       WRITE( stdout, "(   7x,'                     s :',3x,3i4 )") s(:)
       WRITE( stdout, "(   7x,'                 nktot :',5x,i6  )") nkpts_int
+      WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin 
+      WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax 
+      WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
       !
-      IF ( ANY( use_nn(:) ) ) THEN
-          WRITE( stdout, "(   7x,'             use_nn(1) :',5x,   a)") TRIM( log2char(use_nn(1)) )
-          WRITE( stdout, "(   7x,'             use_nn(2) :',5x,   a)") TRIM( log2char(use_nn(2)) )
-          WRITE( stdout, "(   7x,'             use_nn(3) :',5x,   a)") TRIM( log2char(use_nn(3)) )
+      IF ( ANY( ircut(:) > 0 ) ) THEN
+          WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
       ENDIF
       !
       WRITE( stdout, "(   7x,'       compute projdos :',5x,   a)") TRIM( log2char( projdos ) )
+      !
+      IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
+          WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+      ENDIF
+      !
       WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
       IF ( lhave_sgm ) THEN
-          WRITE( stdout, "(   7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+          WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
       ENDIF
 
    END SUBROUTINE dos_input
@@ -194,7 +203,7 @@ END PROGRAM dos_main
 
 !********************************************************
    SUBROUTINE do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                      use_nn, projdos )
+                      ircut, projdos )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -232,7 +241,7 @@ END PROGRAM dos_main
       INTEGER,       INTENT(INOUT) :: ne
       REAL(dbl),     INTENT(INOUT) :: emin, emax
       CHARACTER(*),  INTENT(IN)    :: smearing_type
-      LOGICAL,       INTENT(IN)    :: use_nn(3)
+      INTEGER,       INTENT(IN)    :: ircut(3)
       LOGICAL,       INTENT(IN)    :: projdos
 
       !
@@ -242,6 +251,7 @@ END PROGRAM dos_main
       !
       INTEGER      :: nkpts_int     ! Number of interpolated k-points
       INTEGER      :: nrtot_nn
+      LOGICAL      :: lhave_nn(3)
       INTEGER      :: ne_sgm
       REAL(dbl)    :: arg, cost, raux
       COMPLEX(dbl) :: caux, ze
@@ -450,7 +460,10 @@ END PROGRAM dos_main
       IF( ierr /=0 ) CALL errore(subname,'allocating r_index', ABS(ierr) )
 
       !
+      ! find the real space R-vectors to be used (according to ircut)
       ! move vr_int to crystal coords
+      !
+      lhave_nn(:) = ( ircut(:) /= 0 )
       !
       vr_cry(:,:) = vr(:,:)
       CALL cart2cry( vr_cry, avec )
@@ -459,9 +472,9 @@ END PROGRAM dos_main
       !
       DO ir = 1, nrtot
           !
-          IF (  ( .NOT. use_nn(1)  .OR.  ABS(NINT(vr_cry(1,ir))) <= 1 ) .AND. &
-                ( .NOT. use_nn(2)  .OR.  ABS(NINT(vr_cry(2,ir))) <= 1 ) .AND. &
-                ( .NOT. use_nn(3)  .OR.  ABS(NINT(vr_cry(3,ir))) <= 1 )       )  THEN
+          IF (  ( .NOT. lhave_nn(1) .OR.  ABS(NINT(vr_cry(1,ir))) <= ircut(1) ) .AND. &
+                ( .NOT. lhave_nn(2) .OR.  ABS(NINT(vr_cry(2,ir))) <= ircut(2) ) .AND. &
+                ( .NOT. lhave_nn(3) .OR.  ABS(NINT(vr_cry(3,ir))) <= ircut(3) ) )  THEN
                 !
                 nrtot_nn = nrtot_nn + 1
                 !
@@ -470,6 +483,9 @@ END PROGRAM dos_main
           ENDIF
           !
       ENDDO
+      !
+      DEALLOCATE( vr_cry, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_cry', ABS(ierr) )
       !
       !
       ALLOCATE( vr_nn( 3, nrtot_nn ), wr_nn( nrtot_nn ), STAT=ierr )
@@ -498,9 +514,6 @@ END PROGRAM dos_main
           IF ( lhave_overlap ) rovp_nn( :, :, ir ) = rovp( :, :, r_index(ir) )
           !
       ENDDO
-      !
-      DEALLOCATE( vr_cry, r_index, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_cry, r_index', ABS(ierr) )
 
 
       !
@@ -518,7 +531,7 @@ END PROGRAM dos_main
               CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
               IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11)
               !
-              DO ir = 1, nrtot
+              DO ir = 1, nrtot_nn
                   rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
               ENDDO
               !
@@ -542,7 +555,7 @@ END PROGRAM dos_main
 
               IF ( lhave_sgm ) THEN
                   !
-                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm,  &
+                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm_nn,  &
                                      vkpt_int(:,ik), ksgm)
                   !
                   ! symmetryze the static sgm in order to make it hermitean
@@ -798,11 +811,18 @@ END PROGRAM dos_main
       DEALLOCATE( kham, rham_nn, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating kham, rham_nn', ABS(ierr) )
       !
+      IF ( lhave_overlap ) THEN
+          !
+          DEALLOCATE( kovp, rovp_nn, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating kovp, rovp_nn',ABS(ierr))
+          !
+      ENDIF
+      !
       IF ( lhave_sgm ) THEN
-         !
-         DEALLOCATE( ksgm, rsgm_nn, STAT=ierr )
-         IF ( ierr/=0 ) CALL errore(subname,'deallocating ksgm',ABS(ierr))
-         !
+          !
+          DEALLOCATE( ksgm, rsgm_nn, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating ksgm, rsgm_nn',ABS(ierr))
+          !
       ENDIF
 
 
