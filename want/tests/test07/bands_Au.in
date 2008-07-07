@@ -5,7 +5,7 @@
    work_dir  = './SCRATCH/'
    fileout   = './bands_Au.dat'
 !   fileout   = './bands_Au_NN.dat'
-!   use_nn(3) = .TRUE.
+!   ircut(3) = 1
    nkpts_in  = 2
    nkpts_max = 100
  /
