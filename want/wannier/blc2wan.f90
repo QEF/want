@@ -121,8 +121,7 @@ CONTAINS
       verbosity                   = 'medium'
 
 
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore(subname,'error in input from file',ABS(ierr))
+      CALL input_from_file ( stdin )
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
@@ -184,7 +183,7 @@ END PROGRAM blc2wan
    USE kinds
    USE constants,            ONLY : ZERO, CZERO, TWO, RYD, EPS_m6
    USE parameters,           ONLY : nstrx
-   USE io_module,            ONLY : stdout, work_dir, prefix, postfix
+   USE io_module,            ONLY : stdout, work_dir, prefix, postfix, ionode
    USE io_module,            ONLY : in_unit => aux1_unit, out_unit => aux2_unit
    USE parser_module,        ONLY : log2char, change_case
    USE converters_module,    ONLY : cry2cart
@@ -652,7 +651,7 @@ END PROGRAM blc2wan
           IF (ierr/=0) CALL errore(subname,'writing end '//TRIM(str),ABS(ierr))
 
           !
-          IF ( MOD( ie, nprint) ==0 .OR. ie == 1 ) THEN
+          IF ( (MOD( ie, nprint) ==0 .OR. ie == 1) .AND. ionode ) THEN
              !
              CALL timing_upto_now( stdout )
              CALL flush_unit( stdout )

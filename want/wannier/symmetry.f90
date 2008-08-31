@@ -9,10 +9,13 @@
 
 !*********************************************
    MODULE symmetry_module
-!*********************************************
-   USE kinds,           ONLY : dbl
-   USE parameters,      ONLY : nstrx
-   USE log_module,      ONLY : log_push, log_pop
+   !*********************************************
+   !
+   USE kinds,             ONLY : dbl
+   USE parameters,        ONLY : nstrx
+   USE log_module,        ONLY : log_push, log_pop
+   USE io_global_module,  ONLY : ionode, ionode_id
+   USE mp,                ONLY : mp_bcast
    USE qexml_module
    USE qexpt_module
    IMPLICIT NONE
@@ -159,11 +162,19 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_symmetry( NSYM=nsym, IERR=ierr )
+            IF (ionode) CALL qexml_read_symmetry( NSYM=nsym, IERR=ierr )
+            CALL mp_bcast( nsym, ionode_id)
+            CALL mp_bcast( ierr, ionode_id)
             !
        CASE ( 'pw_export' )
             !
-            CALL qexpt_read_symmetry( NSYM=nsym, IERR=ierr )
+            IF (ionode) CALL qexpt_read_symmetry( NSYM=nsym, IERR=ierr )
+            CALL mp_bcast( nsym, ionode_id)
+            CALL mp_bcast( ierr, ionode_id)
+            !
+       CASE ( 'crystal' )
+            !
+            CALL errore(subname,'crystal readin not yet implemeted', 1)
             !
        CASE DEFAULT
             !
@@ -185,11 +196,21 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
+            IF (ionode) CALL qexml_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
+            !
+            CALL mp_bcast( srot,    ionode_id)
+            CALL mp_bcast( strasl,  ionode_id)
+            CALL mp_bcast( sname,   ionode_id)
+            CALL mp_bcast( ierr,    ionode_id)
             !
        CASE ( 'pw_export' )
             !
             CALL qexpt_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
+            !
+            CALL mp_bcast( srot,    ionode_id)
+            CALL mp_bcast( strasl,  ionode_id)
+            CALL mp_bcast( sname,   ionode_id)
+            CALL mp_bcast( ierr,    ionode_id)
             !
        CASE DEFAULT
             !

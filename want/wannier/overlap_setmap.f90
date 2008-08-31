@@ -61,9 +61,10 @@ SUBROUTINE overlap_setmap(npwk,npwx_g,ngx,ngy,ngz,igsort,nncell,map)
 
 
    ALLOCATE( gk2fft(npwk), STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating gk2fft', ABS(ierr) )
+   IF (ierr/=0) CALL errore(subname,'allocating gk2fft', ABS(ierr) )
+   !
    ALLOCATE( fft2gv(0:ngx*ngy*ngz), STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating fft2gv', ABS(ierr) )
+   IF (ierr/=0) CALL errore(subname,'allocating fft2gv', ABS(ierr) )
 
    CALL ggrids_gk_indexes(igv, igsort, npwk, ngx, ngy, ngz, GK2FFT=gk2fft )
    CALL ggrids_gv_indexes(igv, SIZE(igv,2), ngx, ngy, ngz, FFT2GV=fft2gv )

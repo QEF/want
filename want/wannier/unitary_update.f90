@@ -58,11 +58,13 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
 
 
    ALLOCATE( w(dimwann), z(dimwann, dimwann), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('unitary_update', 'allocating w, z', ABS(ierr))
+   IF( ierr /=0 ) CALL errore('unitary_update', 'allocating w, z', ABS(ierr))
+   !
    ALLOCATE( cw(dimwann), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('unitary_update', 'allocating cw', ABS(ierr))
+   IF( ierr /=0 ) CALL errore('unitary_update', 'allocating cw', ABS(ierr))
+   !
    ALLOCATE( work(dimwann,dimwann), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('unitary_update', 'allocating work', ABS(ierr))
+   IF( ierr /=0 ) CALL errore('unitary_update', 'allocating work', ABS(ierr))
 
    !
    ! compute the change in the unitary matrix dU = e^(i * dq)
@@ -108,11 +110,13 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    ! cleaning
    !
    DEALLOCATE( w, z, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating w, z', ABS(ierr))
+   IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating w, z', ABS(ierr))
+   !
    DEALLOCATE( cw, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating cw', ABS(ierr))
+   IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating cw', ABS(ierr))
+   !
    DEALLOCATE( work, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating work', ABS(ierr))
+   IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating work', ABS(ierr))
 
 
    CALL timing('unitary_update',OPR='stop')

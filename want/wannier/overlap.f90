@@ -16,7 +16,7 @@
    USE log_module,     ONLY : log_push, log_pop
    USE ggrids_module,  ONLY : nfft
    USE wfc_info_module 
-
+   !
    IMPLICIT NONE
       !
       ! ... Input Variables

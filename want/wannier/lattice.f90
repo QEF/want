@@ -15,6 +15,8 @@
    USE parameters,       ONLY : nstrx
    USE log_module,       ONLY : log_push, log_pop
    USE parser_module,    ONLY : change_case
+   USE io_global_module, ONLY : ionode, ionode_id
+   USE mp,               ONLY : mp_bcast
    USE qexml_module
    USE qexpt_module
    USE crystal_io_module
@@ -96,27 +98,42 @@ CONTAINS
        !
        CASE ( 'qexml' )
            !
+           IF ( ionode ) &
            CALL qexml_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
                                             A3=avec(:,3), IERR=ierr)
+           !
+           CALL mp_bcast( avec,  ionode_id )
+           CALL mp_bcast( alat,  ionode_id )
+           CALL mp_bcast( ierr,  ionode_id )
            !
            IF (ierr/=0) CALL errore(subname,'QEXML: reading lattice',ABS(ierr))
            !
        CASE ( 'pw_export' )
            !
+           IF ( ionode ) &
            CALL qexpt_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
                                             A3=avec(:,3), IERR=ierr)
+           !
+           CALL mp_bcast( avec,  ionode_id )
+           CALL mp_bcast( alat,  ionode_id )
+           CALL mp_bcast( ierr,  ionode_id )
            !
            IF (ierr/=0) CALL errore(subname,'QEXPT: reading lattice',ABS(ierr))
            !
        CASE ( 'crystal' )
            !
-           CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
+           IF ( ionode ) CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
+           CALL mp_bcast( ierr,  ionode_id )
            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening sec. GEOMETRY', ABS(ierr) )
            !
-           CALL crio_read_periodicity( AVEC=avec, A_UNITS=a_units, IERR=ierr)
+           IF ( ionode ) CALL crio_read_periodicity( AVEC=avec, A_UNITS=a_units, IERR=ierr)
+           CALL mp_bcast( a_units,  ionode_id )
+           CALL mp_bcast( avec,     ionode_id )
+           CALL mp_bcast( ierr,     ionode_id )
            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: reading lattice', ABS(ierr) )
            !
-           CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
+           IF ( ionode ) CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
+           CALL mp_bcast( ierr,  ionode_id )
            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. GEOMETRY', ABS(ierr) )
            !
            CALL change_case( a_units, 'lower' )

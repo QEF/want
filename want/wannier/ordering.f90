@@ -9,6 +9,7 @@
 !*********************************************************
 SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    !*********************************************************
+   !
    USE kinds,     ONLY : dbl
    USE constants, ONLY : EPS_m6, EPS_m2
    IMPLICIT NONE
@@ -77,12 +78,16 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
 
    ALLOCATE(index(dimwann), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating INDEX',ABS(ierr))
+   !
    ALLOCATE(rtmp(dimwann), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating RTMP',ABS(ierr))
+   !
    ALLOCATE(rtmp2(dimwann), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating RTMP2',ABS(ierr))
+   !
    ALLOCATE(rswap(dimwann), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating rswap',ABS(ierr))
+   !
    ALLOCATE(cswap(dimwann,dimwann,nkpts), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating cswap',ABS(ierr))
    
@@ -90,17 +95,21 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    ! distance of the center from the origin
    !
    DO i=1,dimwann
-      rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i), rave(:,i) ) )
-      rtmp2(i) = r2ave(i) - rave2(i) 
-      index(i) = i
+       !
+       rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i), rave(:,i) ) )
+       rtmp2(i) = r2ave(i) - rave2(i) 
+       index(i) = i
+       !
    ENDDO
    !
    ! sorting by distance
    !
    IF ( lspatial ) THEN
+       !
        CALL hpsort_eps(dimwann, rtmp(:), index(:), toll_dist )
        rswap(:) = rtmp2(:)
        rtmp2(:) = rswap( index(:) )
+       !
    ENDIF
    !
    ! sorting by spread
@@ -115,16 +124,18 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
          ie = 1
 
          DO i=2,dimwann
-            IF ( ABS(rtmp(is) - rtmp(i)) < toll_dist ) THEN 
-                ie = i
-                IF ( i == dimwann ) &
-                    CALL hpsort_eps( ie-is +1, rtmp2(is:ie), index(is:ie), toll_spread)
-            ELSE
-                IF ( ie > is ) &
-                    CALL hpsort_eps( ie-is +1, rtmp2(is:ie), index(is:ie), toll_spread)
-                is = i
-                ie = i
-            ENDIF
+             !
+             IF ( ABS(rtmp(is) - rtmp(i)) < toll_dist ) THEN 
+                 ie = i
+                 IF ( i == dimwann ) &
+                     CALL hpsort_eps( ie-is +1, rtmp2(is:ie), index(is:ie), toll_spread)
+             ELSE
+                 IF ( ie > is ) &
+                     CALL hpsort_eps( ie-is +1, rtmp2(is:ie), index(is:ie), toll_spread)
+                 is = i
+                 ie = i
+             ENDIF
+             !
          ENDDO
 
       ENDIF
@@ -137,6 +148,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
       rswap(:) = rave(i,:)
       rave(i,:) = rswap( index(:) )
    ENDDO
+   !
    rswap(:)  = rave2(:)
    rave2(:)  = rswap( index(:) )
    rswap(:)  = r2ave(:)
@@ -146,8 +158,10 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
 
    DEALLOCATE( index, STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','deallocating INDEX',ABS(ierr))
+   !
    DEALLOCATE( rtmp, rtmp2, STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','deallocating RTMP, RTMP2',ABS(ierr))
+   !
    DEALLOCATE( rswap, cswap, STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','deallocating RSWAP, CSWAP',ABS(ierr))
 

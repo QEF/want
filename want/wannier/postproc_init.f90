@@ -26,6 +26,7 @@ CONTAINS
    !
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, io_name, ham_unit, space_unit, wan_unit
+   USE io_module,            ONLY : ionode, ionode_id
    USE files_module,         ONLY : file_open, file_close
    USE windows_module,       ONLY : windows_read
    USE subspace_module,      ONLY : subspace_read
@@ -51,6 +52,7 @@ CONTAINS
    !
    CHARACTER(13)      :: subname = 'postproc_init'
    CHARACTER(nstrx)   :: filename
+   INTEGER            :: ierr
    LOGICAL            :: lfound
    !
    LOGICAL            :: lwindows
@@ -87,7 +89,8 @@ CONTAINS
       !
       CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE.  )
       CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., BSHELLS=.FALSE. )
-
+      !
+      IF (ionode) WRITE( stdout, "()")
 
       !
       ! Read windows data
@@ -96,18 +99,17 @@ CONTAINS
           !
           CALL io_name('space',filename)
           !
-          CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
+          CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
               !
               CALL windows_read(space_unit,"WINDOWS",lfound)
               IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1)
               !
-              CALL subspace_read(space_unit,"SUBSPACE",lfound)
-              IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1)
-              !
-          CALL file_close(space_unit,PATH="/",ACTION="read")
+          CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr))
           !
           CALL io_name('space',filename,LPATH=.FALSE.)
-          WRITE( stdout,"(/,2x,'Windows data read from file: ',a)") TRIM(filename)
+          IF (ionode) WRITE( stdout,"(2x,'    Windows data read from file: ',a)") TRIM(filename)
           !
       ENDIF
 
@@ -118,15 +120,17 @@ CONTAINS
           !
           CALL io_name('space',filename)
           !
-          CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
+          CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
               !
               CALL subspace_read(space_unit,"SUBSPACE",lfound)
               IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1)
               !
-          CALL file_close(space_unit,PATH="/",ACTION="read")
+          CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr))
           !
           CALL io_name('space',filename,LPATH=.FALSE.)
-          WRITE( stdout,"(/,2x,'Subspace data read from file: ',a)") TRIM(filename)
+          IF (ionode) WRITE( stdout,"(2x,'   Subspace data read from file: ',a)") TRIM(filename)
           !
       ENDIF
 
@@ -137,15 +141,17 @@ CONTAINS
           !
           CALL io_name('hamiltonian',filename)
           !
-          CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="read")
+          CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
               !
               CALL hamiltonian_read(ham_unit,"HAMILTONIAN",lfound)
               IF ( .NOT. lfound ) CALL errore(subname,"unable to find HAMILTONIAN",1)
               !
-          CALL file_close(ham_unit,PATH="/",ACTION="read")
+          CALL file_close(ham_unit,PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr))
           !
           CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
-          WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a,/)") TRIM(filename)
+          IF (ionode) WRITE( stdout,"(2x,'Hamiltonian data read from file: ',a)") TRIM(filename)
           !
       ENDIF
 
@@ -156,17 +162,21 @@ CONTAINS
           !
           CALL io_name('wannier',filename)
           !
-          CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
+          CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
               !
               CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
               IF ( .NOT. lfound ) CALL errore(subname,"unable to find WANNIER_LOCALIZATION",1)
               !
-          CALL file_close(wan_unit,PATH="/",ACTION="read")
+          CALL file_close(wan_unit,PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr))
           !
           CALL io_name('wannier',filename,LPATH=.FALSE.)
-          WRITE( stdout,"(2x,'Wannier data read from file: ',a,/)") TRIM(filename)
+          IF (ionode) WRITE( stdout,"(2x,'    Wannier data read from file: ',a)") TRIM(filename)
           !
       ENDIF
+
+      IF (ionode) WRITE( stdout, "()")
 
       !
       ! exit the routine

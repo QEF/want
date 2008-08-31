@@ -13,12 +13,13 @@
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : TWO, RYD
    USE parameters,        ONLY : nstrx
-   USE windows_module,    ONLY : nkpts
    USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba 
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
    USE parser_module,     ONLY : change_case
    USE converters_module, ONLY : cry2cart
+   USE io_global_module,  ONLY : ionode, ionode_id
+   USE mp,                ONLY : mp_bcast
    USE qexml_module
    USE qexpt_module
    IMPLICIT NONE
@@ -87,7 +88,6 @@ CONTAINS
        CALL log_push( subname )
        !
        IF ( npw_rho <= 0 ) CALL errore(subname,'npw_rho <= 0',ABS(npw_rho)+1)
-       IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
 
        ALLOCATE( igv(3,npw_rho), STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'allocating igv',3*npw_rho)
@@ -155,16 +155,36 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
+            IF ( ionode ) &
             CALL qexml_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=str, &
                                         NR1=nfft(1),   NR2=nfft(2),   NR3=nfft(3),          &
                                         NR1S=nffts(1), NR2S=nffts(2), NR3S=nffts(3),        &
                                         NGM=npw_rho,   NGMS=npws_rho, IERR=ierr )
             !
+            CALL mp_bcast( ecutwfc,    ionode_id )
+            CALL mp_bcast( ecutrho,    ionode_id )
+            CALL mp_bcast( str,        ionode_id )
+            CALL mp_bcast( nfft,       ionode_id )
+            CALL mp_bcast( nffts,      ionode_id )
+            CALL mp_bcast( npw_rho,    ionode_id )
+            CALL mp_bcast( npws_rho,   ionode_id )
+            CALL mp_bcast( ierr,       ionode_id )
+            !
        CASE ( 'pw_export' )
             !
+            IF ( ionode ) &
             CALL qexpt_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=str, &
                                         NR1=nfft(1), NR2=nfft(2), NR3=nfft(3),              &
                                         NGM=npw_rho, IERR=ierr )
+            !
+            CALL mp_bcast( ecutwfc,    ionode_id )
+            CALL mp_bcast( ecutrho,    ionode_id )
+            CALL mp_bcast( str,        ionode_id )
+            CALL mp_bcast( nfft,       ionode_id )
+            CALL mp_bcast( nffts,      ionode_id )
+            CALL mp_bcast( npw_rho,    ionode_id )
+            CALL mp_bcast( npws_rho,   ionode_id )
+            CALL mp_bcast( ierr,       ionode_id )
             !
             ! because data related to the smooth grid is missing in the pw_export dataset
             ! we set the two grids to be equal
@@ -197,11 +217,17 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            CALL qexml_read_planewaves( IGV = igv, IERR = ierr )
+            IF ( ionode ) CALL qexml_read_planewaves( IGV = igv, IERR = ierr )
+            !
+            CALL mp_bcast( igv,        ionode_id )
+            CALL mp_bcast( ierr,       ionode_id )
             !
        CASE ( 'pw_export' )
             !
-            CALL qexpt_read_planewaves( IGV = igv, IERR = ierr )
+            IF (ionode) CALL qexpt_read_planewaves( IGV = igv, IERR = ierr )
+            !
+            CALL mp_bcast( igv,        ionode_id )
+            CALL mp_bcast( ierr,       ionode_id )
             !
        CASE DEFAULT
             !
@@ -361,20 +387,22 @@ END SUBROUTINE ggrids_gv_indexes
    INTEGER, INTENT(IN) :: iunit
    !
    !
-   WRITE(iunit, "(/,6x,'    Energy cut-off for rho  =  ',5x,F7.2,' (Ry)' )") ecutrho
-   WRITE(iunit, "(  6x,'Total number of PW for rho  =  ',i9)") npw_rho
-   !
-   IF ( have_smooth_rhogrid ) &
-      WRITE(iunit, "(6x,'              (smooth grid) =  ',i9)") npws_rho
-   !
-   WRITE(iunit, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
-   !
-   IF ( have_smooth_rhogrid ) &
-      WRITE(iunit, "(6x,'              (smooth grid) =  ( ', 3i5,' )' )") nffts(:)
-   !
+   IF ( ionode ) THEN
+       !
+       WRITE(iunit, "(2/,6x,'    Energy cut-off for rho  =  ',5x,F7.2,' (Ry)' )") ecutrho
+       WRITE(iunit, "(   6x,'Total number of PW for rho  =  ',i9)") npw_rho
+       !
+       IF ( have_smooth_rhogrid ) &
+          WRITE(iunit, "(6x,'              (smooth grid) =  ',i9)") npws_rho
+       !
+       WRITE(iunit, "(6x,'  FFT grid components (rho) =  ( ', 3i5,' )' )") nfft(:)
+       !
+       IF ( have_smooth_rhogrid ) &
+          WRITE(iunit, "(6x,'              (smooth grid) =  ( ', 3i5,' )' )") nffts(:)
+       !
+   ENDIF
    !
 END SUBROUTINE ggrids_summary
    
-
 END MODULE ggrids_module
 

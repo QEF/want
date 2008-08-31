@@ -118,7 +118,7 @@ CONTAINS
 
 
 !****************************************************
-   SUBROUTINE trial_center_setup(ik, npwk, vkgg2, lmax, ylm, ylm_info, obj, vect)
+   SUBROUTINE trial_center_setup(ik_g, npwk, vkgg2, lmax, ylm, ylm_info, obj, vect)
    !****************************************************
    !
    ! this routine set the G representation of the trial wannier
@@ -128,14 +128,14 @@ CONTAINS
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : PI, ONE, TWO, CI, SQRT3
    USE lattice_module,    ONLY : bvec, omega 
-   USE kpoints_module,    ONLY : vkpt     
+   USE kpoints_module,    ONLY : vkpt_g
    USE ggrids_module,     ONLY : igv
    USE wfc_data_module,   ONLY : igsort
    USE timing_module,     ONLY : timing
    USE sph_har_module,    ONLY : sph_har_setup
 
    IMPLICIT NONE
-      INTEGER,            INTENT(in) :: ik, npwk, lmax
+      INTEGER,            INTENT(in) :: ik_g, npwk, lmax
       REAL(dbl),          INTENT(in) :: vkgg2(npwk)
       REAL(dbl),          INTENT(in) :: ylm(npwk,(lmax+1)**2)
       INTEGER,            INTENT(in) :: ylm_info(-lmax:lmax,0:lmax)
@@ -171,7 +171,7 @@ CONTAINS
       decay   = obj%decay 
       x1(:) = obj%x1
       x2(:) = obj%x2
-      vk(:) = vkpt(:,ik)
+      vk(:) = vkpt_g(:,ik_g)
 
       !
       ! various allocations
@@ -197,7 +197,7 @@ CONTAINS
            !
            ! use a routine mutuated from espresso
            !
-           CALL atomic_wfc( ik, vk, obj%iatom, obj%l, npwk, vkg, &
+           CALL atomic_wfc( ik_g, vk, obj%iatom, obj%l, npwk, vkg, &
                             ylm(1, ilm), vect )
 
       CASE ('1gauss','2gauss')
@@ -220,7 +220,7 @@ CONTAINS
            !     e^{-i (k+G)*x1 ) = e^{-i k*x1} *  &
            !                  (e^{-i b1*x1})^n1 * (e^{-i b2*x1})^n2 * (e^{-i b3*x1})^n3
            DO ig = 1, npwk
-                igvect(:) = igv(:,igsort(ig,ik))
+                igvect(:) = igv(:,igsort(ig,ik_g))
                 phase(ig) = kphase * ( bphase(1) )**igvect(1) * &
                                      ( bphase(2) )**igvect(2) * &
                                      ( bphase(3) )**igvect(3) 
@@ -243,7 +243,7 @@ CONTAINS
                kphase = CMPLX( COS(arg), -SIN(arg), dbl )
 
                DO ig = 1, npwk
-                   igvect(:) = igv(:,igsort(ig,ik))
+                   igvect(:) = igv(:,igsort(ig,ik_g))
                    phase(ig) = phase(ig) - kphase * ( bphase(1) )**igvect(1) * &
                                                     ( bphase(2) )**igvect(2) * &
                                                     ( bphase(3) )**igvect(3) 

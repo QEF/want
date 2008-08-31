@@ -24,15 +24,15 @@
    ! 
    ! 
    USE kinds
-   USE constants,      ONLY : ZERO, ONE, TWO, EPS_m6, &
-                              ELECTRONVOLT_SI, BOHR_RADIUS_SI
-   USE io_module,      ONLY : stdout
-   USE timing_module,  ONLY : timing
-   USE log_module,     ONLY : log_push, log_pop
-   USE windows_module, ONLY : nspin, nkpts, windows_alloc => alloc
-   USE ions_module,    ONLY : ityp, zv, nat, tau, ion_charge, ions_alloc => alloc
-   USE lattice_module, ONLY : alat, omega, avec, lattice_alloc => alloc
-   USE converters_module, ONLY : cry2cart, cart2cry
+   USE constants,           ONLY : ZERO, ONE, TWO, EPS_m6, &
+                                   ELECTRONVOLT_SI, BOHR_RADIUS_SI
+   USE io_module,           ONLY : stdout, ionode
+   USE timing_module,       ONLY : timing
+   USE log_module,          ONLY : log_push, log_pop
+   USE windows_module,      ONLY : nspin, nkpts_g, windows_alloc => alloc
+   USE ions_module,         ONLY : ityp, zv, nat, tau, ion_charge, ions_alloc => alloc
+   USE lattice_module,      ONLY : alat, omega, avec, lattice_alloc => alloc
+   USE converters_module,   ONLY : cry2cart, cart2cry
 
    IMPLICIT NONE 
    !
@@ -131,11 +131,15 @@
       !
       ! stdout writing
       !
-      WRITE(stdout, "(/,2x, 'Charge centers: (crystal coord.)')")
-      WRITE(stdout, "(4x,'Ionic charge  =     ( ',3f12.6, ' )' )") &
-                     P_ion(:) / ion_charge
-      WRITE(stdout, "(4x,' Elec charge  =     ( ',3f12.6, ' )' )") &
-                     P_el(:)  / ion_charge
+      IF ( ionode ) THEN
+          !
+          WRITE(stdout, "(/,2x, 'Charge centers: (crystal coord.)')")
+          WRITE(stdout, "(4x,'Ionic charge  =     ( ',3f12.6, ' )' )") &
+                         P_ion(:) / ion_charge
+          WRITE(stdout, "(4x,' Elec charge  =     ( ',3f12.6, ' )' )") &
+                         P_el(:)  / ion_charge
+          !
+      ENDIF
 
       CALL cry2cart( P_ion, avec) 
       CALL cry2cart( P_el,  avec) 
@@ -144,31 +148,35 @@
       const_SI = ELECTRONVOLT_SI / BOHR_RADIUS_SI**2
 
       lsupercell = .FALSE.
-      IF ( nkpts == 1 ) lsupercell = .TRUE.
+      IF ( nkpts_g == 1 ) lsupercell = .TRUE.
       
-      IF ( lsupercell ) THEN
-          WRITE(stdout, "(/,2x, 'Dipole contributions: &
-                                &(cart. coord. in e*Bohr = 2.541766 Debye)')")
+      IF ( ionode ) THEN
           !
-          WRITE(stdout, "(4x,'Ionic dipole  =     ( ',3f12.6, ' )')") &
-                          P_ion(:) / REAL(nspin, dbl) 
-          WRITE(stdout, "(4x,'Elec  dipole  =     ( ',3f12.6, ' )')") &
-                          -P_el(:) * TWO / REAL(nspin, dbl)
-          WRITE(stdout, "(/,4x,'Total dipole  =     ( ',3f12.6, ' )')") &
-                          delta_P(:) / REAL(nspin, dbl)
-          WRITE(stdout, "(  4x,'              =     | ',f12.6, ' |')") &
-                          SQRT (DOT_PRODUCT( delta_P(:), delta_P(:))) / REAL(nspin, dbl)
-      ELSE
-          WRITE(stdout, "(/,2x, 'Polarization contributions: (cart. coord. in C/m^2)')")
+          IF ( lsupercell ) THEN
+              WRITE(stdout, "(/,2x, 'Dipole contributions: &
+                                    &(cart. coord. in e*Bohr = 2.541766 Debye)')")
+              !
+              WRITE(stdout, "(4x,'Ionic dipole  =     ( ',3f12.6, ' )')") &
+                              P_ion(:) / REAL(nspin, dbl) 
+              WRITE(stdout, "(4x,'Elec  dipole  =     ( ',3f12.6, ' )')") &
+                              -P_el(:) * TWO / REAL(nspin, dbl)
+              WRITE(stdout, "(/,4x,'Total dipole  =     ( ',3f12.6, ' )')") &
+                              delta_P(:) / REAL(nspin, dbl)
+              WRITE(stdout, "(  4x,'              =     | ',f12.6, ' |')") &
+                              SQRT (DOT_PRODUCT( delta_P(:), delta_P(:))) / REAL(nspin, dbl)
+          ELSE
+              WRITE(stdout, "(/,2x, 'Polarization contributions: (cart. coord. in C/m^2)')")
+              !
+              WRITE(stdout, "(4x,'Ionic pol.    =     ( ',3f12.6, ' )')") &
+                              P_ion(:) / ( REAL(nspin, dbl) * omega ) * const_SI
+              WRITE(stdout, "(4x,'Elec  pol.    =     ( ',3f12.6, ' )')") &
+                              -P_el(:) * TWO / ( REAL(nspin, dbl) * omega ) * const_SI
+              WRITE(stdout, "(4x,'Total pol.    =     ( ',3f12.6, ' )')") &
+                              delta_P(:) / ( REAL(nspin, dbl) * omega ) * const_SI
+          ENDIF
+          WRITE(stdout, "()")     
           !
-          WRITE(stdout, "(4x,'Ionic pol.    =     ( ',3f12.6, ' )')") &
-                          P_ion(:) / ( REAL(nspin, dbl) * omega ) * const_SI
-          WRITE(stdout, "(4x,'Elec  pol.    =     ( ',3f12.6, ' )')") &
-                          -P_el(:) * TWO / ( REAL(nspin, dbl) * omega ) * const_SI
-          WRITE(stdout, "(4x,'Total pol.    =     ( ',3f12.6, ' )')") &
-                          delta_P(:) / ( REAL(nspin, dbl) * omega ) * const_SI
       ENDIF
-      WRITE(stdout, "()")     
 
       ! 
       ! cleaning 

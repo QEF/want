@@ -22,15 +22,15 @@
    USE constants,       ONLY : CZERO, CONE, EPS_m8
    USE parameters,      ONLY : nstrx
    USE timing_module,   ONLY : timing
-   USE io_module,       ONLY : stdout, io_name, wantdata_form, space_unit
+   USE io_module,       ONLY : stdout, io_name, wantdata_form, space_unit, ionode
    USE log_module,      ONLY : log_push, log_pop
    USE files_module,    ONLY : file_open, file_close
    USE util_module,     ONLY : zmat_unitary, mat_mul, mat_svd
    !
    USE windows_module,  ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
-   USE kpoints_module,  ONLY : vkpt
+   USE kpoints_module,  ONLY : vkpt_g, nkpts, iks
    USE control_module,  ONLY : unitary_thr, verbosity
-   USE subspace_module, ONLY : subspace_read, lamp, nkpts, dimwann
+   USE subspace_module, ONLY : subspace_read, lamp, dimwann
    USE overlap_module,  ONLY : ca 
    IMPLICIT NONE
 
@@ -47,7 +47,7 @@
    COMPLEX(dbl),    ALLOCATABLE :: cu(:,:)
    COMPLEX(dbl),    ALLOCATABLE :: vt(:,:), u(:,:)
    LOGICAL                      :: lfound
-   INTEGER                      :: i, j, l, ik, ierr
+   INTEGER                      :: i, j, l, ik, ik_g, ierr
 
 !
 !------------------------------
@@ -77,50 +77,73 @@
 
    CASE ( 'from_file' )
 
-        WRITE( stdout,"('  Initial trial subspace: from_file')")
-            CALL io_name('space',filename)
-            CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", &
-                           FORM=TRIM(wantdata_form))
-            CALL subspace_read(space_unit,"SUBSPACE", lfound)
-            IF ( .NOT. lfound ) CALL errore(subname,'searching tag "SUBSPACE"',1)
-        CALL file_close(space_unit,PATH="/",ACTION="read")
+        IF (ionode) WRITE( stdout,"('  Initial trial subspace: from_file')")
+        ! 
+        CALL io_name('space',filename)
+        CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", &
+                       FORM=TRIM(wantdata_form), IERR=ierr)
+        IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr))
+           !
+           CALL subspace_read(space_unit,"SUBSPACE", lfound)
+           IF ( .NOT. lfound ) CALL errore(subname,'searching tag "SUBSPACE"',1)
+           !
+        CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
+        IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr))
         !
         CALL io_name('space',filename,LPATH=.FALSE.)
-        WRITE( stdout,"(2x,'Subspace data read from file: ',a,/)") TRIM(filename)
-        
+        IF (ionode) WRITE( stdout,"(2x,'Subspace data read from file: ',a,/)") TRIM(filename)
+        ! 
    CASE ( 'randomized' )
 
-        WRITE( stdout,"('  Initial trial subspace: random Unit transform',/)")
+        IF (ionode) WRITE( stdout,"('  Initial trial subspace: random Unit transform',/)")
+        !
         DO ik=1, nkpts
-            CALL random_orthovect(dimwann, dimwin(ik), dimwinx, lamp(1,1,ik) )
+            !
+            ik_g = ik + iks -1
+            !
+            CALL random_orthovect(dimwann, dimwin(ik_g), dimwinx, lamp(1,1,ik) )
+            !
         ENDDO           
-           
+        !   
    CASE ( 'lower_states' )
-
-        WRITE( stdout,"('  Initial trial subspace: lowest energy eigenvectors',/)")
+        !
+        IF (ionode) WRITE( stdout,"('  Initial trial subspace: lowest energy eigenvectors',/)")
+        !
         DO ik=1, nkpts
+            !
+            ik_g = ik + iks -1
+            !
             DO l=1, dimwann
-            DO j=1,dimwin(ik)
+            DO j=1,dimwin(ik_g)
+                !
                 lamp(j,l,ik) = CZERO
                 IF ( j == l ) lamp(j,l,ik) = CONE
+                !
             ENDDO
             ENDDO
         ENDDO           
-           
+        !   
    CASE ( 'upper_states' )
-
-        WRITE( stdout,"('  Initial trial subspace: highest energy eigenvectors',/)")
+        !
+        IF (ionode) WRITE( stdout,"('  Initial trial subspace: highest energy eigenvectors',/)")
+        !
         DO ik=1, nkpts
+            !
+            ik_g = ik + iks -1
+            !
             DO l=1, dimwann
-            DO j=1,dimwin(ik)
+            DO j=1,dimwin(ik_g)
+                !
                 lamp(j,l,ik) = CZERO
-                IF ( j == l+dimwin(ik)-dimwann ) lamp(j,l,ik) = CONE
+                IF ( j == l+dimwin(ik_g)-dimwann ) lamp(j,l,ik) = CONE
+                !
             ENDDO
             ENDDO
         ENDDO           
-   
+        ! 
    CASE ( 'center_projections' )
-        WRITE( stdout,"('  Initial trial subspace: projected localized orbitals')")
+        !
+        IF (ionode) WRITE( stdout,"('  Initial trial subspace: projected localized orbitals')")
 
         !
         ! If CENTER_PROJECTIONS are selected for the starting subspace
@@ -140,41 +163,52 @@
         ! NOTE that lapack routine returns cv^{\dag} directly
         !
         ALLOCATE( cu(dimwinx, dimwinx), STAT=ierr )
-            IF(ierr/=0) CALL errore(subname,'allocating CU',ABS(ierr))
+        IF(ierr/=0) CALL errore(subname,'allocating CU',ABS(ierr))
+        !
         ALLOCATE( u(dimwinx, dimwinx), STAT=ierr )
-            IF(ierr/=0) CALL errore(subname,'allocating U',ABS(ierr))
+        IF(ierr/=0) CALL errore(subname,'allocating U',ABS(ierr))
+        !
         ALLOCATE( vt(dimwann, dimwann), STAT=ierr )
-            IF(ierr/=0) CALL errore(subname,'allocating VT',ABS(ierr))
+        IF(ierr/=0) CALL errore(subname,'allocating VT',ABS(ierr))
+        !
         ALLOCATE( s(dimwann), STAT = ierr )
-            IF( ierr /= 0 ) CALL errore(subname, 'allocating s ', dimwann )
+        IF( ierr /= 0 ) CALL errore(subname, 'allocating s ', dimwann )
   
         DO ik=1,nkpts
-           IF ( dimwann > dimfroz(ik) ) THEN
+            !
+            ik_g = ik + iks -1
+            !
+            IF ( dimwann > dimfroz(ik_g) ) THEN
                 !
-                CALL mat_svd( dimwin(ik), dimwann, ca(:,:,ik), s, u, vt )
+                CALL mat_svd( dimwin(ik_g), dimwann, ca(:,:,ik), s, u, vt )
                 !
-                CALL mat_mul( cu, u, 'N', vt, 'N', dimwin(ik), dimwann, dimwann )
-                lamp(  1:dimwin(ik), 1:dimwann , ik) = cu( 1:dimwin(ik), 1:dimwann )
-
-           ENDIF
+                CALL mat_mul( cu, u, 'N', vt, 'N', dimwin(ik_g), dimwann, dimwann )
+                lamp(  1:dimwin(ik_g), 1:dimwann , ik) = cu( 1:dimwin(ik_g), 1:dimwann )
+                !
+            ENDIF
+            !
         ENDDO
 
         !
         ! cleaning
         DEALLOCATE( cu, STAT=ierr )
-            IF(ierr/=0) CALL errore(subname,'deallocating CU',ABS(ierr))
+        IF(ierr/=0) CALL errore(subname,'deallocating CU',ABS(ierr))
+        !
         DEALLOCATE( u, STAT=ierr )
-            IF(ierr/=0) CALL errore(subname,'deallocating U',ABS(ierr))
+        IF(ierr/=0) CALL errore(subname,'deallocating U',ABS(ierr))
+        !
         DEALLOCATE( s, STAT=ierr )
-            IF(ierr/=0) CALL errore(subname,'deallocating S',ABS(ierr))
+        IF(ierr/=0) CALL errore(subname,'deallocating S',ABS(ierr))
+        !
         DEALLOCATE( vt, STAT=ierr )
-            IF(ierr/=0) CALL errore(subname,'deallocating VT',ABS(ierr))
+        IF(ierr/=0) CALL errore(subname,'deallocating VT',ABS(ierr))
 
         !
         ! In case of frozen states
         !
         IF ( lfrozen ) THEN
-            WRITE(stdout,"(2x, 'There are frozen states')")
+            !
+            IF (ionode) WRITE(stdout,"(2x, 'There are frozen states')")
             !
             ! Now find the (dimwann-dimfroz(ik))-dimensional space of non-frozen states
             ! with largest overlap with s, and include it in the trial subspace
@@ -192,17 +226,23 @@
             ! would override it
             !
             DO ik = 1, nkpts
-                IF ( dimfroz(ik) > 0 ) THEN
-                    DO l = 1, dimfroz(ik)
-                       DO j = 1, dimwin(ik)
+                !
+                ik_g = ik + iks -1
+                !
+                IF ( dimfroz(ik_g) > 0 ) THEN
+                    !
+                    DO l = 1, dimfroz(ik_g)
+                       DO j = 1, dimwin(ik_g)
                            lamp(j,l,ik)= CZERO
                        ENDDO
-                       lamp(indxfroz(l,ik),l,ik) = CONE
+                       lamp(indxfroz(l,ik_g),l,ik) = CONE
                     ENDDO
+                    !
                 ENDIF
             ENDDO
         ENDIF
-        WRITE(stdout,"()")
+        !
+        IF (ionode) WRITE(stdout,"()")
 
    END SELECT
 
@@ -221,12 +261,16 @@
    ! while it should be SIDE = 'right' to perform A.A^{\dag}
    !
    DO ik = 1, nkpts
-       IF ( .NOT. zmat_unitary( dimwin(ik), dimwann, lamp(:,:,ik), &
+       !
+       ik_g = ik + iks -1
+       !
+       IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik), &
                                 SIDE='left', TOLL=unitary_thr ) ) &
-       CALL errore(subname, 'Vectors in lamp not orthonormal',ik)
+       CALL errore(subname, 'Vectors in lamp not orthonormal',ik_g)
+       !
    ENDDO
 
-   IF ( TRIM(verbosity) == "high" ) THEN
+   IF ( TRIM(verbosity) == "high" .AND. ionode ) THEN
        !
        ALLOCATE(cu(dimwinx,dimwinx), STAT=ierr)
        IF(ierr/=0) CALL errore(subname,'allocating cu (II)',ABS(ierr))
@@ -236,11 +280,14 @@
        !
        DO ik=1,nkpts
            !
+           ik_g = ik + iks -1
+           !
            WRITE(stdout,"(1x,'!',6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
-                 ik, vkpt(:,ik), dimwin(ik)
+                 ik, vkpt_g(:,ik_g), dimwin(ik_g)
            CALL mat_mul(cu, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
-                         dimwin(ik), dimwin(ik), dimwann )
-           WRITE(stdout,"(1x,'!',2x, 8f9.5)") ( REAL(cu(i,i)), i=1,dimwin(ik) )
+                         dimwin(ik_g), dimwin(ik_g), dimwann )
+           !
+           WRITE(stdout,"(1x,'!',2x, 8f9.5)") ( REAL(cu(i,i)), i=1,dimwin(ik_g) )
            WRITE(stdout,"(1x,'!')" )
            !
        ENDDO

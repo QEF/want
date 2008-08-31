@@ -21,7 +21,9 @@
    USE io_module,        ONLY : stdout
    USE timing_module,    ONLY : timing
    USE log_module,       ONLY : log_push, log_pop
-   USE kpoints_module,   ONLY : nb, vb, wb, nnpos
+   USE kpoints_module,   ONLY : nkpts_g, nb, vb, wb, nnpos
+   USE mp,               ONLY : mp_sum
+   !
    IMPLICIT NONE
 
    !
@@ -111,8 +113,11 @@
    ENDDO
    ENDDO
    !
-   rave(:,:) = - TWO * rave(:,:) / REAL(nkpts, dbl)
-   r2ave(:) =    TWO * r2ave(:) / REAL(nkpts, dbl)
+   CALL mp_sum( rave ) 
+   CALL mp_sum( r2ave ) 
+   !
+   rave(:,:) = - TWO * rave(:,:) / REAL(nkpts_g, dbl)
+   r2ave(:) =    TWO * r2ave(:) / REAL(nkpts_g, dbl)
 
    !
    ! compute | <r_n> |^2
@@ -155,7 +160,9 @@
    ENDDO
    ENDDO
    !
-   Omega_OD = TWO * Omega_OD / REAL(nkpts, dbl)
+   CALL mp_sum( Omega_OD )
+   !
+   Omega_OD = TWO * Omega_OD / REAL(nkpts_g, dbl)
 
 
    !
@@ -181,7 +188,9 @@
    ENDDO
    ENDDO
    !
-   Omega_D = TWO * Omega_D / REAL(nkpts, dbl)
+   CALL mp_sum( Omega_D )
+   !
+   Omega_D = TWO * Omega_D / REAL(nkpts_g, dbl)
 
 
    !

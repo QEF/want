@@ -22,6 +22,7 @@
    USE kpoints_module, ONLY : nb, wb, wbtot, nnpos
    USE log_module,     ONLY : log_push, log_pop
    USE timing_module,  ONLY : timing
+   USE mp,             ONLY : mp_sum
    !
    IMPLICIT NONE
  
@@ -35,8 +36,9 @@
    !
    ! local variables
    !
-   INTEGER :: m, n 
-   INTEGER :: ik, ib, inn
+   INTEGER   :: m, n 
+   INTEGER   :: ik, ib, inn
+   REAL(dbl) :: cost
    !
    ! end of declariations
    !
@@ -70,10 +72,19 @@
    ENDDO 
    ENDDO 
    !
+   ! recover over parallelism
+   !
+   CALL mp_sum( Omega_I )
+   !
+   ! this is a nasty way to recover the total number of kpts
+   !
+   cost = REAL( nkpts, dbl )
+   CALL mp_sum( cost )
+   !
    ! Omega_I is moltiplied by two to account for the -b terms which
    ! have not been summed up in the previous loop
    !
-   Omega_I = TWO * Omega_I / REAL(nkpts, dbl) + REAL(dimwann, dbl) * wbtot
+   Omega_I = TWO * Omega_I / cost + REAL(dimwann, dbl) * wbtot
 
    CALL timing('omegai',OPR='stop') 
    CALL log_pop ('omegai')

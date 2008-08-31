@@ -18,7 +18,9 @@
    USE log_module,     ONLY : log_push, log_pop
    USE windows_module, ONLY : nbnd, dimwin, dimwinx, windows_allocate, &
                               windows_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, kpoints_alloc
+   USE kpoints_module, ONLY : nkpts, nkpts_g, iks, kpoints_alloc
+   USE io_module,      ONLY : ionode, ionode_id
+   USE mp,             ONLY : mp_bcast, mp_sum
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -70,7 +72,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, dimwinx
+   PUBLIC :: nkpts, nkpts_g, dimwinx
    PUBLIC :: dimwann
    PUBLIC :: maxiter_dis, alpha_dis, disentangle_thr
    PUBLIC :: wan_eig
@@ -177,7 +179,7 @@ CONTAINS
    IMPLICIT NONE
        INTEGER,         INTENT(in) :: unit
        CHARACTER(*),    INTENT(in) :: name
-       INTEGER            :: ik
+       INTEGER            :: ik, ik_g
        CHARACTER(nstrx)   :: attr
        CHARACTER(14)      :: subname="subspace_write"
 
@@ -186,19 +188,28 @@ CONTAINS
        CALL log_push( subname )
        !
        IF ( .NOT. windows_alloc ) CALL errore(subname,'windows module not alloc',1)
-
+       !
+       ! every processor writes to a different file
+       !
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.) 
        CALL iotk_write_attr(attr,"nkpts",nkpts) 
        CALL iotk_write_attr(attr,"dimwann",dimwann) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
-
+       !
        CALL iotk_write_dat(unit,"DIMWIN",dimwin) 
        CALL iotk_write_dat(unit,"WAN_EIGENVALUES",wan_eig)
-       DO ik =1,nkpts
-          CALL iotk_write_dat(unit,"LAMP"//TRIM(iotk_index(ik)), &
-               lamp(1:dimwin(ik),1:dimwann,ik))
+       !
+       !
+       DO ik = 1, nkpts
+           !
+           ik_g = ik + iks -1
+           !
+           CALL iotk_write_dat(unit,"LAMP"//TRIM(iotk_index(ik_g)), &
+                               lamp(1:dimwin(ik_g),1:dimwann,ik))
+           !
        ENDDO
+       !
        CALL iotk_write_dat(unit,"CAMP",camp)
        CALL iotk_write_dat(unit,"EAMP",eamp)
        ! CALL iotk_write_dat(unit,"COMP_EAMP",comp_eamp)
@@ -221,7 +232,7 @@ CONTAINS
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="subspace_read"
        INTEGER            :: nkpts_, dimwinx_
-       INTEGER            :: ik, ierr
+       INTEGER            :: ik, ik_g, ierr
 
        CALL timing( subname, OPR='start' )
        CALL log_push( subname )
@@ -267,11 +278,13 @@ CONTAINS
        !
        DO ik=1,nkpts
            !
-           CALL iotk_scan_dat( unit,'LAMP'//TRIM(iotk_index(ik)), &
-                               lamp(1:dimwin(ik), 1:dimwann, ik), FOUND=lfound, IERR=ierr)
-           IF (ierr>0) CALL errore(subname,'Unable to find LAMP at ik',ik)
+           ik_g = ik + iks -1
            !
-           IF ( .NOT. lfound ) lamp(1:dimwin(ik), 1:dimwann, ik) = CZERO
+           CALL iotk_scan_dat( unit,'LAMP'//TRIM(iotk_index(ik_g)), &
+                               lamp(1:dimwin(ik_g), 1:dimwann, ik), FOUND=lfound, IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find LAMP at ik',ik_g)
+           !
+           IF ( .NOT. lfound ) lamp(1:dimwin(ik_g), 1:dimwann, ik) = CZERO
            !
        ENDDO
        !

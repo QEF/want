@@ -6,18 +6,20 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-
 !*********************************************
    MODULE windows_module
    !*********************************************
    !
-   USE kinds,          ONLY : dbl
-   USE constants,      ONLY : RYD, TWO, ZERO
-   USE parameters,     ONLY : nstrx
-   USE timing_module,  ONLY : timing
-   USE log_module,     ONLY : log_push, log_pop
-   USE parser_module,  ONLY : change_case
-   USE kpoints_module, ONLY : iks, ike, nkpts, kpoints_alloc
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : RYD, TWO, ZERO
+   USE parameters,        ONLY : nstrx
+   USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
+   USE parser_module,     ONLY : change_case
+   USE kpoints_module,    ONLY : nkpts, nkpts_g, kpoints_alloc
+   USE io_global_module,  ONLY : ionode, ionode_id
+   USE mp_global,         ONLY : nproc
+   USE mp,                ONLY : mp_bcast
    USE iotk_module
    USE qexml_module 
    USE qexpt_module 
@@ -55,8 +57,8 @@
 
    INTEGER,      ALLOCATABLE   :: dimwin(:)          ! define which eigenv are in the
    INTEGER,      ALLOCATABLE   :: imin(:)            ! chosen energy window
-   INTEGER,      ALLOCATABLE   :: imax(:)            ! dim: nkpts
-   REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: nbnd, nkpts
+   INTEGER,      ALLOCATABLE   :: imax(:)            ! dim: nkpts_g
+   REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: nbnd, nkpts_g
    REAL(dbl)                   :: efermi             ! Fermi energy (from DFT)
    REAL(dbl)                   :: nelec              ! total number of electrons
    !
@@ -64,17 +66,17 @@
 
    !
    ! ... frozen states
-   INTEGER,      ALLOCATABLE   :: dimfroz(:)         ! variable for using frozen (dim: nkpts)
+   INTEGER,      ALLOCATABLE   :: dimfroz(:)         ! variable for using frozen (dim: nkpts_g)
    INTEGER,      ALLOCATABLE   :: indxfroz(:,:)      ! states which are kept equal
-   INTEGER,      ALLOCATABLE   :: indxnfroz(:,:)     ! dim: dimwinx nkpts
+   INTEGER,      ALLOCATABLE   :: indxnfroz(:,:)     ! dim: dimwinx nkpts_g
    LOGICAL                     :: lfrozen =.FALSE.   ! whether FROZEN states are present
    LOGICAL,      ALLOCATABLE   :: frozen(:,:)        ! which are the frozen states
-                                                     ! dim: dimwinx, nkpts
+                                                     ! dim: dimwinx, nkpts_g
 !
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, nbnd, nspin, ispin, spin_component, dimwinx
+   PUBLIC :: nkpts_g, nbnd, nspin, ispin, spin_component, dimwinx
    PUBLIC :: win_min, win_max, froz_min, froz_max
    PUBLIC :: dimwin, imin, imax, eig, efermi, nelec
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
@@ -97,7 +99,7 @@ CONTAINS
    SUBROUTINE windows_init( eig_, dimwann )
    !**********************************************************
    !
-   ! nbnd and nkpts are supposed to be already setted
+   ! nbnd and nkpts_g are supposed to be already setted
    !
    IMPLICIT NONE
        REAL(dbl), INTENT(in) :: eig_(:,:)
@@ -111,21 +113,21 @@ CONTAINS
        CALL log_push( subname )
        !
        IF ( .NOT. alloc ) CALL errore(subname,'windows module not allocated',1)
-       IF ( nkpts <= 0)   CALL errore(subname,'Invalid nkpts',ABS(nkpts)+1)
+       IF ( nkpts_g <= 0)   CALL errore(subname,'Invalid nkpts_g',ABS(nkpts_g)+1)
        IF ( nbnd <= 0)    CALL errore(subname,'Invalid nbnd',ABS(nbnd)+1)
        IF ( SIZE(eig_,1) /= nbnd ) CALL errore(subname,'Invalid EIG size1',ABS(nbnd)+1)
-       IF ( SIZE(eig_,2) /= nkpts ) CALL errore(subname,'Invalid EIG size2',ABS(nkpts)+1)
+       IF ( SIZE(eig_,2) /= nkpts_g ) CALL errore(subname,'Invalid EIG size2',ABS(nkpts_g)+1)
       
 !
 ! ... windows dimensions
 !
        kpoints_loop: &
-       DO ik = 1,nkpts
+       DO ik = 1,nkpts_g
 
           !
           ! ... Check which eigenvalues fall within the outer energy window
           IF ( eig_(1,ik) > win_max .OR. eig_(nbnd,ik) < win_min ) &
-              CALL errore(subname, 'energy window contains no eigenvalues ',1)
+               CALL errore(subname, 'energy window contains no eigenvalues ',1)
 
           imin(ik) = 0
           DO i = 1, nbnd
@@ -153,19 +155,23 @@ CONTAINS
 !
        dimwinx = MAXVAL( dimwin(:) )
        !
-       ALLOCATE( dimfroz(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating dimfroz',ABS(ierr))
-       ALLOCATE( indxfroz(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating indxfroz',ABS(ierr))
-       ALLOCATE( indxnfroz(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating indxnfroz',ABS(ierr))
-       ALLOCATE( frozen(dimwinx,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating frozen',ABS(ierr))
+       ALLOCATE( dimfroz(nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating dimfroz',ABS(ierr))
+       !
+       ALLOCATE( indxfroz(dimwinx,nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating indxfroz',ABS(ierr))
+       !
+       ALLOCATE( indxnfroz(dimwinx,nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating indxnfroz',ABS(ierr))
+       !
+       ALLOCATE( frozen(dimwinx,nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating frozen',ABS(ierr))
+       !
        lfrozen = .FALSE.
 
 
        kpoints_frozen_loop: &
-       DO ik = 1, nkpts
+       DO ik = 1, nkpts_g
           !
           ! ... frozen states
           frozen(:,ik) = .FALSE.
@@ -234,18 +240,21 @@ CONTAINS
 
        CALL log_push ( subname )
        !
-       IF ( nbnd <= 0 .OR. nkpts <= 0 ) &
-           CALL errore(subname,'Invalid NBND or NKPTS ',1)
+       IF ( nbnd <= 0 .OR. nkpts_g <= 0 ) &
+           CALL errore(subname,'Invalid NBND or NKPTS_G ',1)
        IF ( nspin /= 1 .AND. nspin /=2 ) CALL errore(subname,'Invalid NSPIN',ABS(nspin)+1)
        !
-       ALLOCATE( dimwin(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating dimwin',nkpts)      
-       ALLOCATE( imin(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating imin',nkpts)      
-       ALLOCATE( imax(nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating imax',nkpts)      
-       ALLOCATE( eig(nbnd,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating eig',nbnd*nkpts)
+       ALLOCATE( dimwin(nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating dimwin', ABS(ierr) )
+       !
+       ALLOCATE( imin(nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating imin', ABS(ierr) )      
+       !
+       ALLOCATE( imax(nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating imax', ABS(ierr) )      
+       !
+       ALLOCATE( eig(nbnd,nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating eig', ABS(ierr) )
 
        alloc = .TRUE.
        !
@@ -313,34 +322,43 @@ CONTAINS
        CHARACTER(13)      :: subname="windows_write"
        INTEGER            :: ierr
 
-
+       !
+       ! even if all the quantities are global, 
+       ! every processor writes to a different file
+       !
        IF ( .NOT. alloc ) RETURN
        !
        CALL timing( subname, OPR='start')
        CALL log_push ( subname )
-       
+       ! 
+       !
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr(attr,"nkpts",nkpts)
+       !
+       IF ( nproc > 1 ) THEN
+           CALL iotk_write_attr(attr,"nkpts_g",nkpts_g)
+       ENDIF
+       !
        CALL iotk_write_attr(attr,"nspin",nspin)
        CALL iotk_write_attr(attr,"spin_component",TRIM(spin_component))
        CALL iotk_write_attr(attr,"efermi",efermi)
        CALL iotk_write_attr(attr,"dimwinx",dimwinx)
        CALL iotk_write_attr(attr,"lfrozen",lfrozen)
-       CALL iotk_write_empty(unit,"DATA",ATTR=attr, IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'writing DATA',ABS(ierr))
-
+       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+       !
        CALL iotk_write_dat(unit,"DIMWIN",dimwin, COLUMNS=8)
        CALL iotk_write_dat(unit,"IMIN",imin, COLUMNS=8)
        CALL iotk_write_dat(unit,"IMAX",imax, COLUMNS=8)
        CALL iotk_write_dat(unit,"EIG",eig, COLUMNS=4)
-
+       !
        CALL iotk_write_dat(unit,"DIMFROZ",dimfroz, COLUMNS=8)
        CALL iotk_write_dat(unit,"INDXFROZ",indxfroz, COLUMNS=8)
        CALL iotk_write_dat(unit,"INDXNFROZ",indxnfroz, COLUMNS=8)
        CALL iotk_write_dat(unit,"FROZEN",frozen, COLUMNS=8)
-
+       !
        CALL iotk_write_end(unit,TRIM(name))
+       !
        !
        CALL timing( subname, OPR='stop')
        CALL log_pop ( subname )
@@ -357,25 +375,35 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="windows_read"
-       INTEGER            :: nkpts_, ierr
+       INTEGER            :: nkpts_, nkpts_g_, ierr
        LOGICAL            :: lfound
 
        CALL timing( subname, OPR='start')
        CALL log_push ( subname )
        !
        IF ( alloc ) CALL windows_deallocate()
-    
+       ! 
        CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+       !
        IF (.NOT. found) RETURN
        IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
        found = .TRUE.
 
+       !
        CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
        CALL iotk_scan_attr(attr,'nbnd',nbnd,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NBND',ABS(ierr))
        CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+       !
+       IF ( nproc > 1 ) THEN
+           CALL iotk_scan_attr(attr,'nkpts_g',nkpts_g_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS_G',ABS(ierr))
+       ELSE
+           nkpts_g_ = nkpts_
+       ENDIF
+       !
        CALL iotk_scan_attr(attr,'nspin',nspin,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NSPIN',ABS(ierr))
        CALL iotk_scan_attr(attr,'spin_component',spin_component,IERR=ierr)
@@ -389,26 +417,30 @@ CONTAINS
        IF (ierr>0) CALL errore(subname,'Unable to find attr LFROZEN',ABS(ierr))
        IF ( .NOT. lfound ) lfrozen = .FALSE.
 
+
        IF ( kpoints_alloc ) THEN
-            IF ( nkpts_ /= nkpts ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_)+1)
+            IF ( nkpts_   /= nkpts   ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_)+1)
+            IF ( nkpts_g_ /= nkpts_g ) CALL errore(subname,'Invalid NKPTS_G',ABS(nkpts_g_)+1)
        ELSE
-            nkpts = nkpts_
+            nkpts   = nkpts_
+            nkpts_g = nkpts_g_
        ENDIF
        !
        CALL windows_allocate()
        !
-       ALLOCATE( dimfroz(nkpts), STAT=ierr )
+       ALLOCATE( dimfroz(nkpts_g), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,'allocating dimfroz',ABS(ierr))
        !
-       ALLOCATE( indxfroz(dimwinx,nkpts), STAT=ierr )
+       ALLOCATE( indxfroz(dimwinx,nkpts_g), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,'allocating indxfroz',ABS(ierr))
        !
-       ALLOCATE( indxnfroz(dimwinx,nkpts), STAT=ierr )
+       ALLOCATE( indxnfroz(dimwinx,nkpts_g), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,'allocating indxnfroz',ABS(ierr))
        !
-       ALLOCATE( frozen(dimwinx,nkpts), STAT=ierr )
+       ALLOCATE( frozen(dimwinx,nkpts_g), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,'allocating frozen',ABS(ierr))
 
+       !
        CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
        CALL iotk_scan_dat(unit,'IMIN',imin,IERR=ierr)
@@ -440,7 +472,7 @@ CONTAINS
        !
        ! set the auxiliary quantities IKE, IKS, ISPIN
        !
-       CALL windows_setspin( spin_component, nspin, nkpts, ispin, ike, iks )
+       CALL windows_setspin( spin_component, nspin, nkpts_g, ispin )
 
        !
        ! close
@@ -471,9 +503,17 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
+            IF ( ionode ) &
             CALL qexml_read_bands_info( NBND=nbnd, NUM_K_POINTS=lnkpts, &
                                         NSPIN=nspin, EF=efermi, &
                                         NELEC=nelec, IERR=ierr )
+            !
+            CALL mp_bcast( nbnd,    ionode_id )
+            CALL mp_bcast( lnkpts,  ionode_id )
+            CALL mp_bcast( nspin,   ionode_id )
+            CALL mp_bcast( efermi,  ionode_id )
+            CALL mp_bcast( nelec,   ionode_id )
+            CALL mp_bcast( ierr,    ionode_id )
             !
        CASE ( 'pw_export' )
             !
@@ -481,29 +521,35 @@ CONTAINS
                                    NSPIN=nspin, EF=efermi, &
                                    NELEC=nelec, IERR=ierr )
             !
+            CALL mp_bcast( nbnd,    ionode_id )
+            CALL mp_bcast( lnkpts,  ionode_id )
+            CALL mp_bcast( nspin,   ionode_id )
+            CALL mp_bcast( efermi,  ionode_id )
+            CALL mp_bcast( nelec,   ionode_id )
+            CALL mp_bcast( ierr,    ionode_id )
+            !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
        END SELECT
        !
        IF ( ierr/=0) CALL errore(subname,'getting bands dimensions',ABS(ierr))
-       !
-       IF ( nkpts /= lnkpts ) CALL errore(subname,'invalid nkpts on read',2)
+       IF ( nkpts_g /= lnkpts ) CALL errore(subname,'invalid nkpts on read',2)
        !
 
        !
        ! ... allocating windows
        CALL windows_allocate()
        !
-       ALLOCATE( leig( nbnd, nkpts, nspin), STAT=ierr )
+       ALLOCATE( leig( nbnd, nkpts_g, nspin), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating LEIG', ABS(ierr))
        !
        leig (:,:,:) = ZERO
 
        !
-       ! setting the auxiliary quantities IKE, IKS, ISPIN
+       ! setting the auxiliary quantity ISPIN
        !
-       CALL windows_setspin( spin_component, nspin, nkpts, ispin, ike, iks )
+       CALL windows_setspin( spin_component, nspin, nkpts_g, ispin )
 
 
        !
@@ -516,23 +562,33 @@ CONTAINS
             !
             IF ( nspin == 1 ) THEN
                 !
-                DO ik = 1, nkpts
+                DO ik = 1, nkpts_g
                    ! 
+                   IF ( ionode ) &
                    CALL qexml_read_bands( IK=ik, EIG=leig(1:nbnd, ik, 1), &
                                           ENERGY_UNITS=str, IERR=ierr )
                    !
-                   IF ( ierr/=0 ) CALL errore(subname,'reading bands',ik)
+                   CALL mp_bcast( leig(1:nbnd, ik, 1),  ionode_id )
+                   CALL mp_bcast( str,    ionode_id )
+                   CALL mp_bcast( ierr,   ionode_id )
+                   !
+                   IF ( ierr/=0 ) CALL errore(subname,'QEXML reading bands I',ik)
                    !
                 ENDDO
                 !
             ELSE
                 !
-                DO ik = 1, nkpts
+                DO ik = 1, nkpts_g
                    ! 
+                   IF ( ionode ) &
                    CALL qexml_read_bands( IK=ik, ISPIN=ispin, EIG=leig(1:nbnd, ik, ispin), &
                                           ENERGY_UNITS=str, IERR=ierr )
                    !
-                   IF ( ierr/=0 ) CALL errore(subname,'reading bands',ik)
+                   CALL mp_bcast( leig(1:nbnd, ik, ispin),  ionode_id )
+                   CALL mp_bcast( str,    ionode_id )
+                   CALL mp_bcast( ierr,   ionode_id )
+                   !
+                   IF ( ierr/=0 ) CALL errore(subname,'QEXML reading bands II',ik)
                    !
                 ENDDO
                 !
@@ -541,11 +597,18 @@ CONTAINS
             !
        CASE ( 'pw_export' )
             !
-            CALL qexpt_read_bands( EIG_S=leig, ENERGY_UNITS=str, IERR=ierr )
+            IF (ionode) CALL qexpt_read_bands( EIG_S=leig, ENERGY_UNITS=str, IERR=ierr )
+            !
+            CALL mp_bcast( leig,   ionode_id )
+            CALL mp_bcast( str,    ionode_id )
+            CALL mp_bcast( ierr,   ionode_id )
+            !
+            IF ( ierr/=0 ) CALL errore(subname,'QEXPT: reading bands',10)
             !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+            !
        END SELECT
 
        !
@@ -574,9 +637,9 @@ CONTAINS
  
 
        !
-       ! define EIG
+       ! define EIG, which contains only the kpts related to the current pool
        !
-       eig(:,:) = leig(:,:, ispin)
+       eig(:,1:nkpts_g) = leig(:, 1:nkpts_g, ispin)
        !
 
        DEALLOCATE( leig, STAT=ierr)
@@ -589,24 +652,22 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE windows_setspin( spin_component, nspin, nkpts, ispin, ike, iks )
+   SUBROUTINE windows_setspin( spin_component, nspin, nkpts_g, ispin )
    !**********************************************************
    IMPLICIT NONE
        CHARACTER(*),  INTENT(IN)  :: spin_component
-       INTEGER,       INTENT(IN)  :: nspin, nkpts
-       INTEGER,       INTENT(OUT) :: ike, iks, ispin
+       INTEGER,       INTENT(IN)  :: nspin, nkpts_g
+       INTEGER,       INTENT(OUT) :: ispin
        !
        CHARACTER(17)  :: subname="windows_setspin"
 
        !
        !
-       ! setting the auxiliary quantities IKE, IKS, ISPIN
+       ! setting the auxiliary quantity ISPIN
        !
        SELECT CASE ( nspin ) 
        CASE( 1 )
             !
-            iks = 1
-            ike = nkpts
             ispin = 1
             !
             IF ( TRIM(spin_component) /= 'none' ) &
@@ -617,13 +678,10 @@ CONTAINS
             SELECT CASE ( TRIM(spin_component) )
             CASE ( 'up' )
                 !
-                iks = 1
-                ike = nkpts
                 ispin = 1
                 !
             CASE ( 'down', 'dw' )
-                iks = nkpts+1
-                ike = 2*nkpts
+                !
                 ispin = 2
                 !
             CASE DEFAULT

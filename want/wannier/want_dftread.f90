@@ -42,6 +42,7 @@ CONTAINS
    USE parameters,               ONLY : nstrx
    USE timing_module,            ONLY : timing
    USE log_module,               ONLY : log_push, log_pop
+   USE io_global_module,         ONLY : ionode
    USE io_module,                ONLY : stdout, dft_unit, io_name, dftdata_fmt, &
                                         io_init, io_alloc => alloc
    USE files_module,             ONLY : file_open, file_close
@@ -73,10 +74,12 @@ CONTAINS
    !
    ! local variables
    !
+   CHARACTER(12)             :: subname='want_dftread'
    CHARACTER(nstrx)          :: filename 
    LOGICAL                   :: read_lattice_,  read_ions_, read_windows_, &
                                 read_symmetry_, read_kpoints_, read_pseudo_, &
                                 need_wfc_
+   INTEGER                   :: ierr
    !   
    ! end of declarations
    !    
@@ -121,7 +124,8 @@ CONTAINS
 ! ... opening the file containing the PW-DFT data
 !
     CALL io_name('dft_data',filename)
-    CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read")
+    CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+    IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
 
 
 !
@@ -177,10 +181,11 @@ CONTAINS
 !
 ! ... closing the main data file 
 !
-   CALL file_close(dft_unit,PATH="/",ACTION="read")
+   CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr)
+   IF (ierr/=0) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr))
 
-   CALL io_name('dft_data',filename,LPATH=.FALSE.)
-   WRITE( stdout,"(2x,'DFT-data read from file: ',a)") TRIM(filename)   
+   CALL io_name('dft_data',filename,LPATH=.FALSE. )
+   IF (ionode) WRITE( stdout,"(2x,'DFT-data read from file: ',a)") TRIM(filename)   
     
 
 !

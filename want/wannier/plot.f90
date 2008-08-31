@@ -18,7 +18,7 @@
    USE parameters,         ONLY : ntypx, natx, nstrx
    USE fft_scalar,         ONLY : cfft3d, good_fft_order
    USE timing_module,      ONLY : timing, timing_upto_now
-   USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout
+   USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout, ionode, ionode_id
    USE io_module,          ONLY : io_name, dftdata_fmt, space_unit, wan_unit, dft_unit, &
                                   aux_unit, aux1_unit 
    USE control_module,     ONLY : read_pseudo, use_uspp, debug_level, use_debug_mode
@@ -74,6 +74,8 @@
    !
    ! local variables
    !
+   CHARACTER( 4 )      :: subname = 'plot'
+   !
    INTEGER :: nrxl, nryl, nrzl
    INTEGER :: nrxh, nryh, nrzh
    INTEGER :: nnrx, nnry, nnrz
@@ -114,7 +116,7 @@
 ! main body
 !------------------------------
 !
-      CALL startup(version_number,'plot')
+      CALL startup(version_number,subname)
 
 
 !
@@ -144,21 +146,20 @@
       nr2                         =  -1
       nr3                         =  -1
       
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore('plot','error in input from file',ABS(ierr))
+      CALL input_from_file ( stdin )
       !
       READ(stdin, INPUT, IOSTAT=ierr)
-      IF ( ierr /= 0 )  CALL errore('plot','Unable to read namelist INPUT',ABS(ierr))
+      IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
 
       !
       ! Some checks
       !
-      IF ( LEN_TRIM( wann) == 0 ) CALL errore('plot', 'wann not supplied ', 1)
+      IF ( LEN_TRIM( wann) == 0 ) CALL errore(subname, 'wann not supplied ', 1)
       !
       CALL change_case( datatype, 'lower')
       IF ( TRIM(datatype) /= "modulus" .AND. TRIM(datatype) /= "module" .AND. &
            TRIM(datatype) /= "real"    .AND. TRIM(datatype) /= "imaginary"  ) &
-           CALL errore('plot','invalid DATATYPE = '//TRIM(datatype),2)
+           CALL errore(subname,'invalid DATATYPE = '//TRIM(datatype),2)
            !
       IF ( TRIM(datatype) == "module" ) datatype = "modulus"
       IF ( TRIM(datatype) == "modulus") do_modulus = .TRUE.
@@ -166,18 +167,18 @@
       CALL change_case(output_fmt,'lower')
       IF ( TRIM(output_fmt) /= "txt" .AND. TRIM(output_fmt) /= "plt" .AND. &
            TRIM(output_fmt) /= "cube" .AND. TRIM(output_fmt) /= "xsf" ) &
-           CALL errore('plot', 'Invalid output_fmt = '//TRIM(output_fmt), 4)
+           CALL errore(subname, 'Invalid output_fmt = '//TRIM(output_fmt), 4)
 
-      IF ( nr1 /= -1 .AND. nr1 <= 0 ) CALL errore('plot','Invalid nr1',-nr1+1)
-      IF ( nr2 /= -1 .AND. nr2 <= 0 ) CALL errore('plot','Invalid nr2',-nr2+1)
-      IF ( nr3 /= -1 .AND. nr3 <= 0 ) CALL errore('plot','Invalid nr3',-nr3+1)
+      IF ( nr1 /= -1 .AND. nr1 <= 0 ) CALL errore(subname,'Invalid nr1',-nr1+1)
+      IF ( nr2 /= -1 .AND. nr2 <= 0 ) CALL errore(subname,'Invalid nr2',-nr2+1)
+      IF ( nr3 /= -1 .AND. nr3 <= 0 ) CALL errore(subname,'Invalid nr3',-nr3+1)
       !
-      IF ( r1min > r1max ) CALL errore('plot', 'r1min > r1max',1)
-      IF ( r2min > r2max ) CALL errore('plot', 'r2min > r2max',2)
-      IF ( r3min > r3max ) CALL errore('plot', 'r3min > r3max',3)
-      IF ( ABS(r1max -r1min) < EPS_m4 ) CALL errore('plot', 'r1 too small',1)
-      IF ( ABS(r2max -r2min) < EPS_m4 ) CALL errore('plot', 'r2 too small',2)
-      IF ( ABS(r3max -r3min) < EPS_m4 ) CALL errore('plot', 'r3 too small',3)
+      IF ( r1min > r1max ) CALL errore(subname, 'r1min > r1max',1)
+      IF ( r2min > r2max ) CALL errore(subname, 'r2min > r2max',2)
+      IF ( r3min > r3max ) CALL errore(subname, 'r3min > r3max',3)
+      IF ( ABS(r1max -r1min) < EPS_m4 ) CALL errore(subname, 'r1 too small',1)
+      IF ( ABS(r2max -r2min) < EPS_m4 ) CALL errore(subname, 'r2 too small',2)
+      IF ( ABS(r3max -r3min) < EPS_m4 ) CALL errore(subname, 'r3 too small',3)
       rmin(1) = r1min 
       rmin(2) = r2min
       rmin(3) = r3min
@@ -207,31 +208,35 @@
       ! Read Subspace data
       !
       CALL io_name('space',filename)
-      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
+      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
           !
           CALL windows_read(space_unit,"WINDOWS",lfound)
-          IF ( .NOT. lfound ) CALL errore('plot',"unable to find WINDOWS",1)
+          IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1)
           CALL subspace_read(space_unit,"SUBSPACE",lfound)
-          IF ( .NOT. lfound ) CALL errore('plot',"unable to find SUBSPACE",1)
+          IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1)
           !
-      CALL file_close(space_unit,PATH="/",ACTION="read")
+      CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
 
       CALL io_name('space',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(/,2x,'Subspace data read from file: ',a)") TRIM(filename)
+      IF (ionode) WRITE( stdout,"(/,2x,'Subspace data read from file: ',a)") TRIM(filename)
 
       !
       ! Read unitary matrices U(k) that rotate the bloch states
       !
       CALL io_name('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
+      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
           !
           CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
-          IF ( .NOT. lfound ) CALL errore('plot','searching WANNIER_LOCALIZATION',1)
+          IF ( .NOT. lfound ) CALL errore(subname,'searching WANNIER_LOCALIZATION',1)
           !
-      CALL file_close(wan_unit,PATH="/",ACTION="read")
+      CALL file_close(wan_unit,PATH="/",ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
 
       CALL io_name('wannier',filename,LPATH=.FALSE.)
-      WRITE( stdout,"('  Wannier data read from file: ',a)") TRIM(filename)
+      IF (ionode) WRITE( stdout,"('  Wannier data read from file: ',a)") TRIM(filename)
 
      
       !
@@ -245,7 +250,8 @@
       ! opening the file containing the PW-DFT data
       !
       CALL io_name('dft_data',filename)
-      CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read")
+      CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
       !
       CALL io_name('dft_data',filename,LPATH=.FALSE.)
 
@@ -253,15 +259,16 @@
       ! ... Read grids
       CALL write_header( stdout, "Grids" )
 
-      WRITE( stdout,"(  2x,'Reading density G-grid from file: ',a)") TRIM(filename)
+      IF (ionode) WRITE( stdout,"(  2x,'Reading density G-grid from file: ',a)") TRIM(filename)
       CALL ggrids_read_ext( dftdata_fmt )
       !
       ! ... Read wfcs
-      WRITE( stdout,"(  2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
+      IF (ionode) WRITE( stdout,"(  2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
       CALL wfc_data_grids_read( dftdata_fmt )
       !
       ! ... closing the main data file
-      CALL file_close(dft_unit,PATH="/",ACTION="read")
+      CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
 
       !
       ! set FFT mesh
@@ -293,15 +300,15 @@
       !
       IF ( uspp_augmentation ) THEN
          !
-         IF ( nr1 < nfft(1) ) CALL errore('plot','non-safe nr1 adopted', ABS(nr1) +1 )
-         IF ( nr2 < nfft(2) ) CALL errore('plot','non-safe nr2 adopted', ABS(nr2) +1 )
-         IF ( nr3 < nfft(3) ) CALL errore('plot','non-safe nr3 adopted', ABS(nr3) +1 )
+         IF ( nr1 < nfft(1) ) CALL errore(subname,'non-safe nr1 adopted', ABS(nr1) +1 )
+         IF ( nr2 < nfft(2) ) CALL errore(subname,'non-safe nr2 adopted', ABS(nr2) +1 )
+         IF ( nr3 < nfft(3) ) CALL errore(subname,'non-safe nr3 adopted', ABS(nr3) +1 )
          !
       ELSE
          !
-         IF ( nr1 < nffts(1) ) CALL errore('plot','non-safe nr1 adopted', ABS(nr1) +1 )
-         IF ( nr2 < nffts(2) ) CALL errore('plot','non-safe nr2 adopted', ABS(nr2) +1 )
-         IF ( nr3 < nffts(3) ) CALL errore('plot','non-safe nr3 adopted', ABS(nr3) +1 )
+         IF ( nr1 < nffts(1) ) CALL errore(subname,'non-safe nr1 adopted', ABS(nr1) +1 )
+         IF ( nr2 < nffts(2) ) CALL errore(subname,'non-safe nr2 adopted', ABS(nr2) +1 )
+         IF ( nr3 < nffts(3) ) CALL errore(subname,'non-safe nr3 adopted', ABS(nr3) +1 )
          !
       ENDIF
 
@@ -322,18 +329,18 @@
       !
       ! get the exact number of plot
       CALL parser_replica( wann, nplot, IERR=ierr )
-      IF ( ierr/=0 ) CALL errore('plot','wrong FMT in wann string I',ABS(ierr))
+      IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in wann string I',ABS(ierr))
       !
       ALLOCATE( iwann(nplot), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore('plot','allocating iwann',ABS(ierr))
+      IF ( ierr/=0 ) CALL errore(subname,'allocating iwann',ABS(ierr))
       !
       ! get the WF indexes
       CALL parser_replica( wann, nplot, iwann, ierr )
-      IF ( ierr/=0 ) CALL errore('plot','wrong FMT in wann string II',ABS(ierr))
+      IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in wann string II',ABS(ierr))
       !
       DO m = 1, nplot
          IF ( iwann(m) <= 0  .OR. iwann(m) > dimwann ) &
-              CALL errore('plot','iwann too large',m)
+              CALL errore(subname,'iwann too large',m)
       ENDDO
       !
       !
@@ -344,7 +351,7 @@
            ABS( DOT_PRODUCT( avec(:,2), avec(:,3) )) > EPS_m6   ) THEN 
            !
            IF ( TRIM(output_fmt) == "plt" .OR. TRIM(output_fmt) == "txt" ) &
-                CALL errore('plot','lattice not orthorombic: use xsf or cube output_fmt',4)
+                CALL errore(subname,'lattice not orthorombic: use xsf or cube output_fmt',4)
       ENDIF
 
       !
@@ -386,7 +393,7 @@
          ! a warning is given
          !
          WRITE(stdout, "(6x, 'data type: ', a )" ) TRIM(datatype)
-         CALL warning('plot','USPP do not allow for a full PAW reconstruction.')
+         CALL warning(subname,'USPP do not allow for a full PAW reconstruction.')
          !
       ENDIF
 
@@ -396,34 +403,34 @@
 !
 ! Initialize the data used for the fast fourier transforms
 !
-      IF( nrxh - nrxl < 0 ) CALL errore( 'plot', 'wrong nrxl and nrxh ', 1 )
-      IF( nryh - nryl < 0 ) CALL errore( 'plot', 'wrong nryl and nryh ', 1 )
-      IF( nrzh - nrzl < 0 ) CALL errore( 'plot', 'wrong nrzl and nrzh ', 1 )
+      IF( nrxh - nrxl < 0 ) CALL errore( subname, 'wrong nrxl and nrxh ', 1 )
+      IF( nryh - nryl < 0 ) CALL errore( subname, 'wrong nryl and nryh ', 1 )
+      IF( nrzh - nrzl < 0 ) CALL errore( subname, 'wrong nrzl and nrzh ', 1 )
 
       
       !
       ! allocate WF and local data
       !
       ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
-      IF( ierr /=0 ) CALL errore('plot', 'allocating cwann ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating cwann ', ABS(ierr) )
       !
       ALLOCATE( kwann( nr1*nr2*nr3, nplot ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating kwann ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating kwann ', ABS(ierr) )
       !
       ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating vkpt_cry ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_cry ', ABS(ierr) )
       !
       ALLOCATE( rave_cry(3, dimwann), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating rave_cry ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating rave_cry ', ABS(ierr) )
       !
       ALLOCATE( rave_shift(3, dimwann), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating rave_shift ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating rave_shift ', ABS(ierr) )
       !
       ALLOCATE( cutot(dimwinx, dimwann), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating cutot ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating cutot ', ABS(ierr) )
       !
       ALLOCATE( map(npwkx), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating map ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating map ', ABS(ierr) )
 
 
       !
@@ -491,13 +498,13 @@
 ! Get the atoms in the plotting cell
 !
       ALLOCATE( tau_cry(3, nat), STAT=ierr  )  
-      IF( ierr /=0 ) CALL errore('plot', 'allocating tau_cry', ABS(ierr) ) 
+      IF( ierr /=0 ) CALL errore(subname, 'allocating tau_cry', ABS(ierr) ) 
       !
       ALLOCATE( tautot( 3, 125*nat ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating tautot ', ABS(ierr) ) 
+      IF( ierr /=0 ) CALL errore(subname, 'allocating tautot ', ABS(ierr) ) 
       !
       ALLOCATE( symbtot( 125*nat ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'allocating symbtot ', ABS(ierr) ) 
+      IF( ierr /=0 ) CALL errore(subname, 'allocating symbtot ', ABS(ierr) ) 
 
       tau_cry(:,:) = tau(:,:) * alat
       CALL cart2cry( tau_cry, avec )  
@@ -552,13 +559,14 @@
 !
       CALL wfc_info_allocate(npwkx, dimwinx, nkpts, dimwinx, evc_info)
       ALLOCATE( evc(npwkx, dimwinx ), STAT=ierr )
-         IF (ierr/=0) CALL errore('plot','allocating EVC',ABS(ierr))
+         IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
 
       !
       ! re-opening the file containing the PW-DFT data
       !
       CALL io_name('dft_data',filename)
-      CALL file_open(dft_unit,TRIM(filename),PATH="/", ACTION="read")
+      CALL file_open(dft_unit,TRIM(filename),PATH="/", ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
       
      
 !
@@ -591,10 +599,10 @@
           !
           ! space for beta functions in reciproc space within struct_facts
           !
-          IF ( nkb <= 0 ) CALL errore('plot','no beta functions within USPP',-nkb+1)
+          IF ( nkb <= 0 ) CALL errore(subname,'no beta functions within USPP',-nkb+1)
           !
           ALLOCATE( becp(nkb, nplot, nkpts), STAT=ierr )
-          IF (ierr/=0) CALL errore('plot','allocating becp',ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
           !
           WRITE( stdout, "(/)") 
           !
@@ -684,7 +692,7 @@
               ! FFT grid to the k-dipendent grid of wfcs
               !
               ALLOCATE( wfc_aux( npwkx, nplot ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore('plot', 'allocating wfc_aux', ABS(ierr) )
+              IF( ierr /=0 ) CALL errore(subname, 'allocating wfc_aux', ABS(ierr) )
               !
               DO m  = 1, nplot
               DO ig = 1, npwk(ik)
@@ -699,7 +707,7 @@
                             vkb, wfc_aux )
               !
               DEALLOCATE( wfc_aux, STAT=ierr )
-              IF( ierr /=0 ) CALL errore('plot', 'deallocating wfc_aux', ABS(ierr) )
+              IF( ierr /=0 ) CALL errore(subname, 'deallocating wfc_aux', ABS(ierr) )
               !
           ENDIF
 
@@ -763,28 +771,29 @@
              CALL timing('cwann_calc',OPR='stop')
           ENDDO 
           !
-          CALL timing_upto_now(stdout)
+          IF (ionode) CALL timing_upto_now(stdout)
           !
       ENDDO kpoint_loop
       !
-      WRITE(stdout, "()")
+      IF (ionode) WRITE(stdout, "()")
 
       !
       ! clean the large amount of memory used by wfcs and grids
       !
       DEALLOCATE( kwann, STAT=ierr)
-      IF (ierr/=0) CALL errore('plot','deallocating kwann',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'deallocating kwann',ABS(ierr))
       !
       DEALLOCATE( map, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating map', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating map', ABS(ierr) )
       !
       DEALLOCATE( vkpt_cry, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating vkpt_cry', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_cry', ABS(ierr) )
       !
       CALL wfc_data_deallocate()
       !
       !
-      CALL file_close(dft_unit,PATH="/",ACTION="read")
+      CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
 
 
 !
@@ -793,7 +802,7 @@
       IF ( uspp_augmentation ) THEN
           !
           ALLOCATE ( cwann_aug( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
-          IF( ierr /=0 ) CALL errore('plot', 'allocating cwann_aug', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(subname, 'allocating cwann_aug', ABS(ierr) )
 
           !
           ! compute the augmentation in reciprocal space
@@ -804,7 +813,7 @@
                             nr1, nr2, nr3, nplot, cwann_aug ) 
 
           DEALLOCATE( becp, STAT=ierr)
-          IF( ierr /=0 ) CALL errore('plot', 'deallocating becp', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating becp', ABS(ierr) )
           !
       ENDIF
       !
@@ -925,14 +934,14 @@
       CASE ( "plt", "cube" )
            aux_fmt = ".cube"
       CASE DEFAULT
-           CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),4)
+           CALL errore(subname,'invalid OUTPUT_FMT '//TRIM(output_fmt),4)
       END SELECT
 
       !
       ! workspace for output writing
       !
       ALLOCATE( rwann_out( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
-         IF (ierr/=0) CALL errore('plot','allocating rwann_out',ABS(ierr))
+         IF (ierr/=0) CALL errore(subname,'allocating rwann_out',ABS(ierr))
 
 
       !
@@ -961,7 +970,7 @@
               str = "_WFI"
               rwann_out(:,:,:) = AIMAG( cwann(:,:,:,m) )
           CASE DEFAULT
-              CALL errore('plot','invalid DATATYPE '//TRIM(datatype),3)
+              CALL errore(subname,'invalid DATATYPE '//TRIM(datatype),3)
           END SELECT 
 
 
@@ -977,7 +986,7 @@
                !
                filename=TRIM(filename)//TRIM(str)//TRIM(int2char(iwann(m)))
           ELSE
-              CALL errore('plot','iwann(m) > 999', iwann(m))
+              CALL errore(subname,'iwann(m) > 999', iwann(m))
           ENDIF
           !
           !
@@ -986,7 +995,7 @@
 
           OPEN ( aux_unit, FILE=TRIM(filename)//TRIM(aux_fmt), FORM='formatted', &
                            STATUS='unknown', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore('plot','opening file '//TRIM(filename)//TRIM(aux_fmt),1)
+          IF (ierr/=0) CALL errore(subname,'opening file '//TRIM(filename)//TRIM(aux_fmt),1)
 
 
           SELECT CASE ( TRIM(output_fmt) )
@@ -1055,7 +1064,7 @@
                                      r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
 
           CASE DEFAULT
-              CALL errore('plot','invalid OUTPUT_FMT '//TRIM(output_fmt),5)
+              CALL errore(subname,'invalid OUTPUT_FMT '//TRIM(output_fmt),5)
           END SELECT
           !
           CLOSE(aux_unit)
@@ -1069,7 +1078,7 @@
               WRITE( stdout,"(7x,'atomic positions on file: ',a)") TRIM(filename)//".xyz"
               OPEN ( aux1_unit, FILE=TRIM(filename)//".xyz", FORM='formatted', &
                                 STATUS='unknown', IOSTAT=ierr )
-              IF (ierr/=0) CALL errore('plot','opening file '//TRIM(filename)//".xyz",1)
+              IF (ierr/=0) CALL errore(subname,'opening file '//TRIM(filename)//".xyz",1)
               !
               WRITE(aux1_unit,"(i6,/)") natot
               DO ia = 1, natot
@@ -1106,36 +1115,36 @@
 ! ... Clean up memory
 !
       DEALLOCATE( iwann, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating iwann', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating iwann', ABS(ierr) )
       !
       DEALLOCATE( tautot, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating tautot', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating tautot', ABS(ierr) )
       !
       DEALLOCATE( symbtot, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating symbtot', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating symbtot', ABS(ierr) )
       !
       DEALLOCATE( rave_cry, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_cry', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating rave_cry', ABS(ierr) )
       !
       DEALLOCATE( rave_shift, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating rave_shift', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating rave_shift', ABS(ierr) )
       !
       DEALLOCATE( tau_cry, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating tau_cry', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating tau_cry', ABS(ierr) )
       !
       DEALLOCATE( cutot, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating cutot ', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating cutot ', ABS(ierr) )
       !
       DEALLOCATE( rwann_out, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating rwann_out', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating rwann_out', ABS(ierr) )
       !
       DEALLOCATE( cwann, STAT=ierr)
-      IF( ierr /=0 ) CALL errore('plot', 'deallocating cwann', ABS(ierr) )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating cwann', ABS(ierr) )
       !
       IF ( uspp_augmentation ) THEN
           !
           DEALLOCATE( cwann_aug, STAT=ierr)
-          IF( ierr /=0 ) CALL errore('plot', 'deallocating cwann_aug', ABS(ierr) )
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating cwann_aug', ABS(ierr) )
           !
       ENDIF
 
@@ -1147,7 +1156,7 @@
       !
       ! finalize
       !
-      CALL shutdown( 'plot' )
+      CALL shutdown( subname )
 
 END PROGRAM plot
 

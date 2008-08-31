@@ -21,7 +21,7 @@
    USE kinds,               ONLY : dbl
    USE parameters,          ONLY : nstrx
    USE constants,           ONLY : CZERO, CONE
-   USE io_module,           ONLY : stdout, io_name, wan_unit
+   USE io_module,           ONLY : stdout, io_name, wan_unit, ionode
    USE timing_module,       ONLY : timing
    USE log_module,          ONLY : log_push, log_pop
    USE files_module,        ONLY : file_open, file_close
@@ -72,20 +72,24 @@
 
    CASE ( 'from_file' )
 
-        WRITE( stdout,"(/,'  Initial unitary rotations : from_file')")
-            CALL io_name('wannier',filename)
-            CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read")
-            !
-            CALL localization_read(wan_unit,"WANNIER_LOCALIZATION", lfound)
-            IF ( .NOT. lfound ) CALL errore(subname,'searching tag "WANNIER_LOCALIZATION"',1)
-            !
-        CALL file_close(wan_unit,PATH="/",ACTION="read")
+        IF (ionode) WRITE( stdout,"(/,'  Initial unitary rotations : from_file')")
+        !
+        CALL io_name('wannier',filename)
+        CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+        IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+        !
+        CALL localization_read(wan_unit,"WANNIER_LOCALIZATION", lfound)
+        IF ( .NOT. lfound ) CALL errore(subname,'searching tag "WANNIER_LOCALIZATION"',1)
+        !
+        CALL file_close(wan_unit,PATH="/",ACTION="read", IERR=ierr)
+        IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename),ABS(ierr))
         !
         CALL io_name('wannier',filename,LPATH=.FALSE.)
-        WRITE( stdout,"(2x,'Unitary matrices read from file: ',a,/)") TRIM(filename)
+        IF (ionode) WRITE( stdout,"(2x,'Unitary matrices read from file: ',a,/)") TRIM(filename)
         
    CASE ( 'center_projections' )
-        WRITE( stdout,"(/,'  Initial unitary rotations : projected localized orbitals',/)")
+        !
+        IF (ionode) WRITE( stdout,"(/,'  Initial unitary rotations : projected localized orbitals',/)")
         !
         ! Here we calculate the transformation matrix
         !
@@ -118,7 +122,8 @@
         IF( ierr /=0 ) CALL errore(subname,'deallocating SVD aux', ABS(ierr))
 
    CASE( 'no_guess' )
-        WRITE( stdout,"(/,'  Initial unitary rotations : identities',/)")
+        !
+        IF (ionode) WRITE( stdout,"(/,'  Initial unitary rotations : identities',/)")
         !
         ! The Cu(k) matrices are set equal to the identity, therefore the
         ! starting wfc from dsentangle are used as they are
@@ -129,9 +134,10 @@
                   cu(i,i,ik) = CONE
              ENDDO
         ENDDO
-
+        !
    CASE( 'randomized' )
-        WRITE( stdout,"(/,'  Initial unitary rotations : random',/)")
+        !
+        IF (ionode) WRITE( stdout,"(/,'  Initial unitary rotations : random',/)")
         !
         ! The Cu(k) matrices unitary random matrixes
         !
@@ -139,7 +145,7 @@
              cu(:,:,ik) = CZERO
              CALL random_orthovect(dimwann,dimwann,dimwann,cu(1,1,ik))
         ENDDO
-
+        !
    END SELECT
 
 
@@ -147,9 +153,11 @@
    ! check unitariery of Cu
    !
    DO ik=1,nkpts
-      IF ( .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
-                 SIDE='both', TOLL=unitary_thr )  ) &
-                 CALL errore(subname,'U matrix not unitary', ik)
+       !
+       IF ( .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
+                  SIDE='both', TOLL=unitary_thr )  ) &
+                  CALL errore(subname,'U matrix not unitary', ik)
+       !
    ENDDO
 
 
@@ -157,6 +165,4 @@
    CALL log_pop('localization_init')
    !
 END SUBROUTINE localization_init
-
-
 

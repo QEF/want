@@ -9,15 +9,17 @@
 
 !*********************************************
    MODULE overlap_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,            ONLY : dbl
    USE constants,        ONLY : CZERO
    USE parameters,       ONLY : nstrx
    USE log_module,       ONLY : log_push, log_pop
    USE windows_module,   ONLY : dimwinx, dimwin, windows_alloc => alloc
-   USE kpoints_module,   ONLY : nkpts, nb, nnlist, nnpos, nnrev, kpoints_alloc
+   USE kpoints_module,   ONLY : nkpts, iks, nb, nnlist, nnpos, nnrev, kpoints_alloc
    USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
    USE iotk_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -120,7 +122,7 @@ CONTAINS
        INTEGER,         INTENT(in) :: iun
        CHARACTER(*),    INTENT(in) :: tag
        CHARACTER(nstrx)   :: attr
-       INTEGER            :: iwann, ib, ik, ikb, inn
+       INTEGER            :: iwann, ib, ik, ik_g, ikb, ikb_g, inn
 
        IF ( .NOT. alloc ) RETURN
        CALL log_push ( 'overlap_write' )
@@ -139,7 +141,9 @@ CONTAINS
        !
        DO ik=1,nkpts
           !
-          CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik),FIRST=.TRUE.)
+          ik_g = ik + iks-1
+          !
+          CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
           CALL iotk_write_attr(attr,'nneigh',nb)
           CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr)
           !
@@ -147,17 +151,17 @@ CONTAINS
           !
           DO inn = 1, nb / 2
              !
-             ib  = nnpos( inn )
-             ikb = nnlist(ib, ik)
+             ib    = nnpos( inn )
+             ikb_g = nnlist(ib, ik_g)
              !
              CALL iotk_write_begin(iun, "b-vect"//TRIM(iotk_index(ib)) )
              !
-             CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik),FIRST=.TRUE.)
-             CALL iotk_write_attr(attr,'dimwin_kb',dimwin(ikb))
+             CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
+             CALL iotk_write_attr(attr,'dimwin_kb',dimwin(ikb_g))
              CALL iotk_write_empty(iun, 'data', ATTR=attr)
              !
-             CALL iotk_write_dat(iun,'mkb', Mkb(1:dimwin(ik),1:dimwin(ikb),inn,ik) )
-             CALL iotk_write_dat(iun,'mkb_abs', ABS(Mkb(1:dimwin(ik),1:dimwin(ikb),inn,ik)) )
+             CALL iotk_write_dat(iun,'mkb', Mkb(1:dimwin(ik_g),1:dimwin(ikb_g),inn,ik) )
+             CALL iotk_write_dat(iun,'mkb_abs', ABS(Mkb(1:dimwin(ik_g),1:dimwin(ikb_g),inn,ik)) )
              !
              CALL iotk_write_end(iun, "b-vect"//TRIM(iotk_index(ib)) )
              !
@@ -175,15 +179,17 @@ CONTAINS
        !
        DO ik=1,nkpts
           !
-          CALL iotk_write_attr(attr,'dimwin',dimwin(ik),FIRST=.TRUE.)
+          ik_g = ik + iks-1
+          !
+          CALL iotk_write_attr(attr,'dimwin',dimwin(ik_g),FIRST=.TRUE.)
           CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr)
           !
           DO iwann=1,dimwann
              !
              CALL iotk_write_dat(iun,'wannier'//TRIM(iotk_index(iwann)), &
-                                       ca(1:dimwin(ik),iwann,ik) )
+                                       ca(1:dimwin(ik_g),iwann,ik) )
              CALL iotk_write_dat(iun,'wannier_abs'//TRIM(iotk_index(iwann)), &
-                                       ABS(ca(1:dimwin(ik),iwann,ik)) )
+                                       ABS(ca(1:dimwin(ik_g),iwann,ik)) )
           ENDDO
           !
           CALL iotk_write_end(iun,'kpoint'//TRIM(iotk_index(ik)))
@@ -217,7 +223,7 @@ CONTAINS
        CHARACTER(12)      :: subname="overlap_read"
        LOGICAL            :: loverlap_, lprojection_
        INTEGER            :: dimwinx_, dimwann_, nb_, nkpts_
-       INTEGER            :: ik, ikb, ib, inn
+       INTEGER            :: ik, ib, inn
        INTEGER            :: iwann, dimwin_, dimwin_k, dimwin_kb, nneigh_
        INTEGER            :: ierr
 
@@ -311,7 +317,6 @@ CONTAINS
                DO inn = 1,nneigh_ / 2
                    !
                    ib  = nnpos( inn )
-                   ikb = nnlist( ib, ik )
                    !
                    CALL iotk_scan_begin(iun, 'b-vect'//TRIM(iotk_index(ib)), IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'scanning for b-vect',inn)

@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !************************************************
-SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
+SUBROUTINE zmatrix( ik_g, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
   !************************************************
   !
   ! Compute the Z matrix according to the formula:
@@ -24,7 +24,7 @@ SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
  
   IMPLICIT NONE
 
-  INTEGER,      INTENT(in)    :: ik
+  INTEGER,      INTENT(in)    :: ik_g
   INTEGER,      INTENT(in)    :: dimwann, dimwin(*), dimwinx
   INTEGER,      INTENT(in)    :: dimfroz, indxnfroz(*)
   COMPLEX(dbl), INTENT(in)    :: Akb(dimwinx,dimwann,*)
@@ -49,7 +49,7 @@ SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
    !
    ! set auxiliary quantities
    !
-   dimaux = dimwin(ik)-dimfroz
+   dimaux = dimwin(ik_g)-dimfroz
    !
    ALLOCATE( caux( dimaux, dimwann), STAT=ierr )
    IF ( ierr/=0 ) CALL errore('zmatrix','allocating caux', ABS(ierr))
@@ -71,7 +71,7 @@ SUBROUTINE zmatrix( ik, dimwann, dimwin, dimwinx, Akb, mtrx, dimfroz, indxnfroz)
            !
            caux(:,l) = CZERO
            !
-           DO m = 1, dimaux     ! dimwin(ik) - dimwann
+           DO m = 1, dimaux     ! dimwin(ik_g) - dimwann
                !
                caux( m, l ) = Akb( indxnfroz(m), l, ib)
                !
