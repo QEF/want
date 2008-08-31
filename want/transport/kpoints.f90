@@ -64,11 +64,13 @@ CONTAINS
 !**********************************************************
    SUBROUTINE kpoints_init()
    !**********************************************************
+   !
    USE parameters,       ONLY : nstrx
    USE files_module,     ONLY : file_open, file_close
    USE io_module,        ONLY : aux_unit
    USE iotk_module
    USE T_control_module, ONLY : datafile_C, transport_dir 
+   !
    IMPLICIT NONE
 
       CHARACTER(12)      :: subname="kpoints_init"
@@ -83,7 +85,8 @@ CONTAINS
       !
       ! read data from datafile_C (ham file)
       !
-      CALL file_open(aux_unit,TRIM(datafile_C),PATH="/",ACTION="read")
+      CALL file_open(aux_unit,TRIM(datafile_C),PATH="/",ACTION="read", IERR=ierr)
+      IF (ierr/=0) CALL errore(subname, 'opening '//TRIM(datafile_C), ABS(ierr) )
       !
       CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
       IF (ierr/=0) CALL errore(subname, 'searching for HAMILTONIAN', ABS(ierr) )
@@ -100,7 +103,8 @@ CONTAINS
       CALL iotk_scan_end( aux_unit, "HAMILTONIAN", IERR=ierr )
       IF (ierr/=0) CALL errore(subname, 'searching for end HAMILTONIAN', ABS(ierr) )
       !
-      CALL file_close(aux_unit,PATH="/",ACTION="read")
+      CALL file_close(aux_unit,PATH="/",ACTION="read", IERR=ierr)
+      IF (ierr/=0) CALL errore(subname, 'closing '//TRIM(datafile_C), ABS(ierr) )
   
       !
       ! set the 2D Rmesh orthogonal to transport direction

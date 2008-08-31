@@ -50,6 +50,8 @@
    !
    ! local variables
    !
+   CHARACTER(9)     :: subname='conductor'
+   !
    COMPLEX(dbl)     :: ene
    CHARACTER(nstrx) :: filename
    INTEGER          :: i, ie, ik, ierr, niter
@@ -68,7 +70,7 @@
 ! main body
 !------------------------------
 !
-   CALL startup(version_number,'conductor')
+   CALL startup(version_number,subname)
 
 !
 ! read input file
@@ -119,7 +121,9 @@
        !
    ELSE
        !
-       CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read" ) 
+       CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr ) 
+       IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
+       !
        CALL correlation_init( sgm_unit )
        !
    ENDIF   
@@ -137,16 +141,16 @@
    CALL workspace_allocate()
 
    ALLOCATE ( dos(nkpts_par,ne), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','allocating dos', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'allocating dos', ABS(ierr) )
    !
    ALLOCATE ( conduct(nkpts_par,ne), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','allocating conduct', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'allocating conduct', ABS(ierr) )
    !
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','allocating cond_aux', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'allocating cond_aux', ABS(ierr) )
    !
    ALLOCATE ( work(dimx,dimx), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','allocating work', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
 
 
 !
@@ -302,7 +306,13 @@
    !
    ! close sgm file
    !
-   IF ( use_correlation ) CALL file_close(sgm_unit, PATH="/", ACTION="read")
+   IF ( use_correlation ) THEN
+       !
+       CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
+       !
+   ENDIF
+       
 
 
 !
@@ -357,7 +367,7 @@
          !
          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
          !
-         IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
+         IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
          !
          WRITE( aux_unit, *) "# E (eV)   cond(E)"
          !
@@ -378,7 +388,7 @@
 
          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
          !
-         IF (ierr/=0) CALL errore('conductor','opening '//TRIM(filename),ABS(ierr))
+         IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
          !
          WRITE( aux_unit, *) "# E (eV)   doscond(E)"
          !
@@ -401,16 +411,16 @@
    ! clean local memory
    !
    DEALLOCATE ( dos, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','deallocating dos', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'deallocating dos', ABS(ierr) )
    !
    DEALLOCATE ( conduct, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','deallocating conduct', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'deallocating conduct', ABS(ierr) )
    !
    DEALLOCATE ( cond_aux, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','deallocating cond_aux', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'deallocating cond_aux', ABS(ierr) )
    !
    DEALLOCATE ( work, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('conductor','deallocating work', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
 
    !
    ! clean global memory
@@ -420,7 +430,7 @@
    !
    ! finalize
    !
-   CALL shutdown ( 'conductor' ) 
+   CALL shutdown ( subname ) 
 
 END PROGRAM conductor
   
