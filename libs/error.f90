@@ -1,108 +1,108 @@
 !
-! Copyright (C) 2002 FPMD group
+! Copyright (C) 2001-2007 Quantum-ESPRESSO group
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-
-
-!  AB INITIO COSTANT PRESSURE MOLECULAR DYNAMICS
-!  ----------------------------------------------
-!  Car-Parrinello Parallel Program
-!  Carlo Cavazzoni - Gerardo Ballabio
-!  SISSA, Trieste, Italy - 1997-99
-!  Last modified: Mon Nov 15 13:26:42 MET 1999
-!  ----------------------------------------------
-!  BEGIN manual
-
-   SUBROUTINE errore(a,b,n)
-
-!  this routine prints an error and warning message and 
-!  if necessary terminates the program.
-!  INPUT: a, b, n
-!    a   (character)   subroutine name
-!    b   (character)   error message
-!    n   (integer)     error code
-!                      if n > 0 write the error message and terminate the execution
-!                      if n = 0 do nothing
-!                      if n < 0 print the error message and return
-!  OUTPUT: none
-!  ----------------------------------------------
-!  END manual
-
-    IMPLICIT NONE
-
-#if defined __MPI
-      include 'mpif.h'
+!----------------------------------------------------------------------------
+SUBROUTINE errore( calling_routine, message, ierr )
+  !----------------------------------------------------------------------------
+  !
+  ! ... This is a simple routine which writes an error message to output: 
+  ! ... if ierr <= 0 it does nothing, 
+  ! ... if ierr  > 0 it stops.
+  !
+  ! ...          **** Important note for parallel execution ***
+  !
+  ! ... in parallel execution unit 6 is written only by the first node;
+  ! ... all other nodes have unit 6 redirected to nothing (/dev/null).
+  ! ... As a consequence an error not occurring on the first node
+  ! ... will be invisible. For T3E and ORIGIN machines, this problem
+  ! ... is solved by writing an error message to unit * instead of 6.
+  ! ... Whenever possible (IBM SP machines), we write to the standard
+  ! ... error, unit 0 (the message will appear in the error files 
+  ! ... produced by loadleveler).
+  !
+  USE io_global_module, ONLY : stdout
+  USE parallel_include
+  !
+  IMPLICIT NONE
+  !
+  INTEGER,       PARAMETER :: crashunit = 50
+  CHARACTER(10), PARAMETER :: crash_file = "CRASH"
+  !
+  CHARACTER(LEN=*), INTENT(IN) :: calling_routine, message
+    ! the name of the calling calling_routinee
+    ! the output messagee
+  INTEGER,          INTENT(IN) :: ierr
+    ! the error flag
+  INTEGER                      :: mpime, mpierr
+    ! the task id  
+    !
+  LOGICAL                      :: exists
+  !
+  !
+  IF ( ierr <= 0 ) RETURN
+  !
+  ! ... the error message is written un the "*" unit
+  !
+  WRITE( UNIT = *, FMT = '(/,1X,78("%"))' )
+  WRITE( UNIT = *, &
+         FMT = '(5X,"from ",A," : error #",I10)' ) calling_routine, ierr
+  WRITE( UNIT = *, FMT = '(5X,A)' ) message
+  WRITE( UNIT = *, FMT = '(1X,78("%"),/)' )
+  !
+#if defined (__PARA) && defined (__AIX)
+  !
+  ! ... in the case of ibm machines it is also written on the "0" unit
+  ! ... which is automatically connected to stderr
+  !
+  WRITE( UNIT = 0, FMT = '(/,1X,78("%"))')
+  WRITE( UNIT = 0, &
+         FMT = '(5X,"from ",A," : error #",I10)' ) calling_routine, ierr
+  WRITE( UNIT = 0, FMT = '(5X,A)' ) message
+  WRITE( UNIT = 0, FMT = '(1X,78("%"),/)' )
+  !
 #endif
-
-! ... declare subroutine arguments
-      CHARACTER(LEN=*)    :: a, b
-      INTEGER, INTENT(IN) :: n
-
-      INTEGER :: ip, nproc, mpime
-#if defined __MPI
-      INTEGER :: ierr
+  !
+  WRITE( *, '("     stopping ...")' )
+  !
+  CALL flush_unit( stdout )
+  !
+#if defined (__PARA) && defined (__MPI)
+  !
+  mpime = 0
+  !
+  CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpime, mpierr )
+  !
+  !  .. write the message to a file and close it before exiting
+  !  .. this will prevent loss of information on systems that
+  !  .. do not flush the open streams
+  !  .. added by C.C.
+  !
+  OPEN( UNIT = crashunit, FILE = crash_file, &
+        POSITION = 'APPEND', STATUS = 'UNKNOWN' )
+  !      
+  WRITE( UNIT = crashunit, FMT = '(/,1X,78("%"))' )
+  WRITE( UNIT = crashunit, FMT = '(5X,"task #",I10)' ) mpime
+  WRITE( UNIT = crashunit, &
+         FMT = '(5X,"from ",A," : error #",I10)' ) calling_routine, ierr
+  WRITE( UNIT = crashunit, FMT = '(5X,A)' ) message
+  WRITE( UNIT = crashunit, FMT = '(1X,78("%"),/)' )
+  !
+  CLOSE( UNIT = crashunit )
+  !
+  ! ... try to exit in a smooth way
+  !
+  CALL MPI_ABORT( MPI_COMM_WORLD, mpierr )
+  !
+  CALL MPI_FINALIZE( mpierr )
+  !
 #endif
-
-! ... declare function
-
-!  end of declarations
-!  ----------------------------------------------
-
-#if defined __MPI
-      CALL mpi_comm_size(mpi_comm_world,nproc,ierr)
-      CALL mpi_comm_rank(mpi_comm_world,mpime,ierr)
-#else
-      MPIME = 0
-      NPROC = 1
-#endif
-
-! ... print the error message
-!
-      DO ip = 0, nproc-1
-        IF( n > 0 ) THEN
-          WRITE (6,100) mpime, a, b, n
-          OPEN(UNIT=15, FILE='CRASH', POSITION='append', STATUS='unknown')
-          WRITE (15,100) mpime, a, b, n
-          CLOSE(UNIT=15)
-        ELSE IF ( n < 0 ) THEN
-          IF( mpime == 0 ) WRITE (6,200) a, b
-        END IF
-#if defined __MPI
-        CALL mpi_barrier(mpi_comm_world,ierr)
-#endif
-      END DO
-
-! ... terminate the program
-!
-      ! CALL cpflush  ! flush output streams
-
-      IF( n > 0 ) THEN
-#if defined __MPI
-        CALL mpi_finalize(ierr)
-        IF ( ierr/=0 ) THEN
-          CALL mpi_abort(mpi_comm_world, ierr)
-        END IF
-#endif
-      END IF
-
-100   FORMAT (/,' *** from PE    : ',I5, &
-              /,' *** in routine : ',A, &
-              /,' *** error msg. : ',A, &
-              /,' *** error code : ',I5, &
-              /,' *** aborting ***', /)
-
-200   FORMAT ('   Warning (', A, ') : ', A)
-
-      IF( n > 0 ) THEN
-        STOP 'CRASH'
-      ELSE IF( n == 0 ) THEN
-        WRITE(6,*) ' ERROR DEBUG ', a, '  ', b
-      END IF
- 
-    RETURN
-
-  END SUBROUTINE
-
+  !
+  STOP 2
+  !
+  RETURN
+  !
+END SUBROUTINE errore

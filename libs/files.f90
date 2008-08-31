@@ -10,10 +10,14 @@
 ! <INFO>
 !*********************************************
    MODULE files_module
-!*********************************************
-   USE parameters, ONLY: nstrx
-   USE parser_module, ONLY: parser_path, change_case
+   !*********************************************
+   !
+   USE parameters,       ONLY : nstrx
+   USE parser_module,    ONLY : parser_path, change_case
+   USE io_global_module, ONLY : ionode, ionode_id
+   USE mp,               ONLY : mp_bcast
    USE iotk_module
+   !
    IMPLICIT NONE
    PRIVATE
 
@@ -22,8 +26,8 @@
 !
 ! routines in this module:
 ! SUBROUTINE  file_open(unit,filename[,path][,root][,status][,access][,recl] 
-!                       [,form][,position][,action])
-! SUBROUTINE  file_close(unit[,path][,action])
+!                       [,form][,position][,action], ierr)
+! SUBROUTINE  file_close(unit[,path][,action], ierr)
 ! SUBROUTINE  get_free_unit(unit)
 ! SUBROUTINE  file_delete(name)
 ! SUBROUTINE  file_exist(name,exist)
@@ -68,14 +72,29 @@ CONTAINS
    IMPLICIT NONE
       INTEGER, INTENT(out) :: unit
       INTEGER  :: i 
-      LOGICAL  :: opnd
+      LOGICAL  :: opnd, found
 
-      DO i=1,unitx
-         unit = i
-         INQUIRE(UNIT=1,OPENED=opnd)
-         IF (.NOT. opnd) RETURN
-      ENDDO
-      CALL errore('get_free_unit','Unable to find an available unit',1)
+      IF ( ionode ) THEN
+          !
+          DO i=1,unitx
+             !
+             unit = i
+             INQUIRE(UNIT=1,OPENED=opnd)
+             !
+             IF (.NOT. opnd) THEN
+                found = .TRUE.
+                EXIT
+             ENDIF
+             !
+          ENDDO
+          !
+      ENDIF
+      !
+      CALL mp_bcast( found,   ionode_id )
+      CALL mp_bcast( unit,    ionode_id )
+      !
+      IF (.NOT. found ) CALL errore('get_free_unit','Unable to find an available unit',1)
+      !
    END SUBROUTINE get_free_unit
 
 
@@ -87,13 +106,23 @@ CONTAINS
       LOGICAL :: exist
       INTEGER :: unit,ierr
    
-      INQUIRE(FILE=TRIM(filename),EXIST=exist)
+      IF ( ionode ) INQUIRE(FILE=TRIM(filename),EXIST=exist)
+      CALL mp_bcast( exist, ionode_id )
+      !
       IF (.NOT. exist) RETURN
+      !
       CALL get_free_unit(unit)
-      OPEN(unit,FILE=TRIM(filename),IOSTAT=ierr)
-           IF (ierr/=0) CALL errore('file_delete','Unable to open file '//TRIM(filename),1)
-      CLOSE(unit,STATUS='delete',IOSTAT=ierr)
-           IF (ierr/=0) CALL errore('file_delete','Unable to close file '//TRIM(filename),1)
+      !
+      IF (ionode) OPEN(unit,FILE=TRIM(filename),IOSTAT=ierr)
+      CALL mp_bcast( ierr, ionode_id )
+      !
+      IF (ierr/=0) CALL errore('file_delete','Unable to open file '//TRIM(filename),1)
+      !
+      IF (ionode) CLOSE(unit,STATUS='delete',IOSTAT=ierr)
+      CALL mp_bcast( ierr, ionode_id )
+      !
+      IF (ierr/=0) CALL errore('file_delete','Unable to close file '//TRIM(filename),1)
+      !
    END SUBROUTINE file_delete
       
 
@@ -104,14 +133,17 @@ CONTAINS
       CHARACTER(*),  INTENT(in)  :: filename
       LOGICAL,       INTENT(out) :: exist
    
-      INQUIRE(FILE=TRIM(filename),EXIST=exist)
+      IF (ionode) INQUIRE(FILE=TRIM(filename),EXIST=exist)
+      CALL mp_bcast( exist, ionode_id )
+      !
       RETURN
+      !
    END SUBROUTINE file_exist
 
 
 !**********************************************************
    SUBROUTINE file_open(unit,filename,path,root,       &
-                       status,access,recl,form,position,action)
+                       status,access,recl,form,position,action, ierr)
    !**********************************************************
    IMPLICIT NONE
       INTEGER,                INTENT(in)  :: unit
@@ -124,6 +156,7 @@ CONTAINS
       CHARACTER(*), OPTIONAL, INTENT(in)  :: form
       CHARACTER(*), OPTIONAL, INTENT(in)  :: position
       CHARACTER(*), OPTIONAL, INTENT(in)  :: action
+      INTEGER,                INTENT(out) :: ierr
 
       CHARACTER(9)                        :: subname='file_open'
       CHARACTER(7)                        :: status_
@@ -134,7 +167,7 @@ CONTAINS
       CHARACTER(10*nstrx)                 :: path_
        
       LOGICAL                             :: fmt_iotk, tmp, binary
-      INTEGER                             :: ierr, ndir, i
+      INTEGER                             :: ndir, i
       CHARACTER(nstrx), POINTER           :: tags(:)
 
       !
@@ -157,6 +190,8 @@ CONTAINS
       !
       ! Set defaults
       ! 
+      ierr = 0
+      !
       status_   = "UNKNOWN"
       access_   = "SEQUENTIAL"
       form_     = "FORMATTED"
@@ -199,49 +234,39 @@ CONTAINS
       ! Checking allowed values
       ! 
       IF ( TRIM(status_) /= "OLD" .AND. TRIM(status_) /= "NEW" .AND.         &
-           TRIM(status_) /= "REPLACE" .AND.  TRIM(status_) /= "UNKNOWN")     &
-           CALL errore(subname,"Invalid STATUS attribute = "//TRIM(status_),1)
-      IF ( TRIM(access_) /= "DIRECT" .AND. TRIM(access_) /= "SEQUENTIAL")    &
-           CALL errore(subname,"Invalid ACCESS attribute = "//TRIM(access_),1)
-      IF ( TRIM(form_) /= "FORMATTED" .AND. TRIM(form_) /= "UNFORMATTED")    &
-           CALL errore(subname,"Invalid FORM attribute = "//TRIM(form_),1)
+           TRIM(status_) /= "REPLACE" .AND.  TRIM(status_) /= "UNKNOWN")  ierr = 1
+      IF ( TRIM(access_) /= "DIRECT" .AND. TRIM(access_) /= "SEQUENTIAL") ierr = 2
+      IF ( TRIM(form_) /= "FORMATTED" .AND. TRIM(form_) /= "UNFORMATTED") ierr = 3
       IF ( TRIM(position_) /= "ASIS" .AND. TRIM(position_) /= "REWIND" .AND. &
-           TRIM(position_) /= "APPEND")    &
-           CALL errore(subname,"Invalid POSITION attribute = "//TRIM(position_),1)
+           TRIM(position_) /= "APPEND")                                   ierr = 4
       IF ( TRIM(action_) /= "READ" .AND. TRIM(action_) /= "WRITE" .AND. &
-           TRIM(action_) /= "READWRITE")    &
-           CALL errore(subname,"Invalid ACTION attribute = "//TRIM(action_),1)
+           TRIM(action_) /= "READWRITE")                                  ierr = 5
+
+      IF ( ierr/=0 ) RETURN
 
       !
       ! Compatibility
       ! 
       INQUIRE(unit, OPENED=tmp)
-      IF ( tmp ) CALL errore(subname,"Unit already connected",ABS(unit))
-      
-      IF ( fmt_iotk .AND. .NOT. PRESENT(action) ) &
-           CALL errore(subname,"Action must be specified when using IOTK",1)
-      IF ( fmt_iotk .AND. TRIM(action_) == "READWRITE" ) &
-           CALL errore(subname,"ACTION == readwrite NOT allowed within IOTK",1)
-      IF ( fmt_iotk .AND. (PRESENT(access) .OR. PRESENT(position)) ) &
-           CALL errore(subname,"ACCESS or POSITION incompatible with IOTK",1)
-      IF ( fmt_iotk .AND. TRIM(action_) == "READ" .AND. PRESENT(status) ) &
-           CALL errore(subname,"STATUS is incompatible with IOTK read",1)
+      !
+      IF ( tmp ) ierr = 10
+      IF ( fmt_iotk .AND. .NOT. PRESENT(action) ) ierr = 11
+      IF ( fmt_iotk .AND. TRIM(action_) == "READWRITE" ) ierr = 12
+      IF ( fmt_iotk .AND. (PRESENT(access) .OR. PRESENT(position)) ) ierr = 13
+      IF ( fmt_iotk .AND. TRIM(action_) == "READ" .AND. PRESENT(status) ) ierr = 14
 
-      IF ( TRIM(access_) == "DIRECT" .AND. .NOT. PRESENT(recl) ) &
-           CALL errore(subname,"RECL must be specified for direct ACCESS",1)
+      IF ( TRIM(access_) == "DIRECT" .AND. .NOT. PRESENT(recl) ) ierr = 15
       IF ( PRESENT(recl) ) THEN
-           IF ( recl <= 0 ) CALL errore(subname,"RECL must be positive",1)
-           IF ( TRIM(access_) /= "DIRECT" ) &
-           CALL errore(subname,"RECL present while sequential access",1)
+           IF ( recl <= 0 ) ierr = 16
+           IF ( TRIM(access_) /= "DIRECT" ) ierr = 17
       ENDIF
-      IF ( TRIM(access_) == "DIRECT" .AND. PRESENT(position) ) &
-           CALL errore(subname,"DIRECT access and POSITION are incompatible",1)
-      IF ( .NOT. fmt_iotk .AND. PRESENT(root) ) &
-           CALL errore(subname,"ROOT should not be present",1)
-      IF ( PRESENT(root) .AND. TRIM(action_) /= "WRITE") &
-           CALL errore(subname,"ROOT must be used only for writing purposes",1)
-      IF ( TRIM(action_) == "WRITE" .AND. ndir /= 0 ) &
-           CALL errore(subname,"During WRITE PATH must be / "//TRIM(action_),1)
+      IF ( TRIM(access_) == "DIRECT" .AND. PRESENT(position) ) ierr = 18
+      IF ( .NOT. fmt_iotk .AND. PRESENT(root) ) ierr = 19
+      IF ( PRESENT(root) .AND. TRIM(action_) /= "WRITE") ierr = 20
+      IF ( TRIM(action_) == "WRITE" .AND. ndir /= 0 ) ierr = 21
+
+      IF ( ierr /= 0 ) RETURN
+
       
       !
       ! IOTK opening
@@ -253,27 +278,30 @@ CONTAINS
          
          SELECT CASE (TRIM(action_))
          CASE("READ")
-               CALL iotk_open_read(unit,FILE=TRIM(filename),IERR=ierr)
+            CALL iotk_open_read(unit,FILE=TRIM(filename),IERR=ierr)
          CASE("WRITE")
             IF ( PRESENT(root) ) THEN
                CALL iotk_open_write(unit,FILE=TRIM(filename),BINARY=binary, &
-                                   ROOT=root,IERR=ierr)
+                                    ROOT=root,IERR=ierr)
             ELSE 
                CALL iotk_open_write(unit,FILE=TRIM(filename),BINARY=binary,IERR=ierr)
             ENDIF
 
          CASE DEFAULT
-            CALL errore(subname,"Invalid ACTION for IOTK",1)
-
+             ierr = 30
          END SELECT
-         IF ( ierr/= 0) CALL errore(subname,"During opening of file: "//TRIM(filename),1)
+         !
+         IF ( ierr/= 0 ) RETURN
 
          !
          ! goes into path
          !
          DO i=1,ndir
-            CALL iotk_scan_begin(unit,TRIM(tags(i)),IERR=ierr )
-            IF ( ierr /= 0 ) CALL errore(subname,"Unable to find tag: "//TRIM(tags(i)),1)
+             !
+             CALL iotk_scan_begin(unit,TRIM(tags(i)),IERR=ierr )
+             !
+             IF ( ierr /= 0 ) RETURN
+             !
          ENDDO
            
 
@@ -281,14 +309,17 @@ CONTAINS
       ! ORDINARY opening
       !
       ELSE
-         IF ( TRIM(access_ ) == "DIRECT" ) THEN
-             OPEN(unit,FILE=filename,STATUS=status_,ACCESS=access_,RECL=recl,   &
-                       ACTION=action_,FORM=form_,IOSTAT=ierr)
-         ELSE
-             OPEN(unit,FILE=filename,STATUS=status_,POSITION=position_,   &
-                       ACTION=action_,FORM=form_,IOSTAT=ierr)
-         ENDIF
-         IF ( ierr/= 0) CALL errore(subname,"During opening of file"//TRIM(filename),1)
+          !
+          IF ( TRIM(access_ ) == "DIRECT" ) THEN
+              OPEN(unit,FILE=filename,STATUS=status_,ACCESS=access_,RECL=recl,   &
+                        ACTION=action_,FORM=form_,IOSTAT=ierr)
+          ELSE
+              OPEN(unit,FILE=filename,STATUS=status_,POSITION=position_,   &
+                        ACTION=action_,FORM=form_,IOSTAT=ierr)
+          ENDIF
+          !
+          IF ( ierr/= 0) RETURN
+          !
       ENDIF    
 
       !
@@ -300,24 +331,27 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE file_close(unit,path,action)
+   SUBROUTINE file_close(unit,path,action,ierr)
    !**********************************************************
    IMPLICIT NONE
       INTEGER,                INTENT(in)  :: unit
       CHARACTER(*), OPTIONAL, INTENT(in)  :: path
       CHARACTER(*), OPTIONAL, INTENT(in)  :: action
+      INTEGER,                INTENT(out) :: ierr
 
       CHARACTER(10)                       :: subname='file_close'
       CHARACTER(9)                        :: action_
       CHARACTER(10*nstrx)                 :: path_
        
       LOGICAL                             :: fmt_iotk, tmp
-      INTEGER                             :: ierr, ndir, i
+      INTEGER                             :: ndir, i
       CHARACTER(nstrx), POINTER           :: tags(:)
 
       !
       ! Set defaults
       ! 
+      ierr      = 0
+      !
       action_   = "READWRITE"
       path_     = "/"
 
@@ -348,21 +382,22 @@ CONTAINS
       ! Checking allowed values
       ! 
       IF ( TRIM(action_) /= "READ" .AND. TRIM(action_) /= "WRITE" .AND. &
-           TRIM(action_) /= "READWRITE")    &
-           CALL errore(subname,"Invalid ACTION attribute = "//TRIM(action_),1)
-      IF ( TRIM(action_) == "WRITE" .AND. ndir /= 0 ) &
-           CALL errore(subname,"During WRITE PATH must be / "//TRIM(action_),1)
+           TRIM(action_) /= "READWRITE")               ierr = 11
+      IF ( TRIM(action_) == "WRITE" .AND. ndir /= 0 )  ierr = 12
+      !
+      IF ( ierr/=0 ) RETURN
 
       !
       ! Compatibility
       ! 
       INQUIRE(unit,OPENED=tmp)
-      IF ( .NOT. tmp ) CALL errore(subname,"Unit NOT connected",1)
-      
-      IF ( fmt_iotk .AND. .NOT. PRESENT(action) ) &
-           CALL errore(subname,"Action must be specified when using IOTK",1)
-      IF ( fmt_iotk .AND. TRIM(action_) == "READWRITE" ) &
-           CALL errore(subname,"ACTION == readwrite NOT allowed within IOTK",1)
+      !
+      IF ( .NOT. tmp ) ierr = 20
+      ! 
+      IF ( fmt_iotk .AND. .NOT. PRESENT(action) ) ierr = 21
+      IF ( fmt_iotk .AND. TRIM(action_) == "READWRITE" ) ierr = 22
+      !
+      IF ( ierr/=0 ) RETURN
 
       
       !
@@ -374,10 +409,13 @@ CONTAINS
          ! moving to the ROOT folder
          !
          DO i=1,ndir
-            CALL iotk_scan_end(unit,TRIM(tags(i)),IERR=ierr )
-            IF (ierr/= 0 ) CALL errore(subname,"Unable to close tag: "//TRIM(tags(i)),1)
+             !
+             CALL iotk_scan_end(unit,TRIM(tags(i)),IERR=ierr )
+             !
+             IF (ierr/= 0 ) RETURN
+             !
          ENDDO
-         
+         !
          SELECT CASE (TRIM(action_))
          CASE("READ")
             CALL iotk_close_read(unit,IERR=ierr)
@@ -386,19 +424,22 @@ CONTAINS
             CALL iotk_close_write(unit,IERR=ierr)
 
          CASE DEFAULT
-            CALL errore(subname,"Invalid ACTION for IOTK",1)
+            ierr = 30
 
          END SELECT
-         IF ( ierr/= 0) CALL errore(subname,"During closing",1)
+         !
+         IF ( ierr/= 0) RETURN
 
 
       !
       ! ORDINARY closing
       !
       ELSE
-         CLOSE(unit,IOSTAT=ierr)
-         IF ( ierr/= 0) CALL errore(subname,"During closing",2)
-
+          !
+          CLOSE(unit,IOSTAT=ierr)
+          !
+          IF ( ierr/= 0) RETURN
+          !
       ENDIF
 
       !
@@ -409,6 +450,4 @@ CONTAINS
    END SUBROUTINE file_close
 
 END MODULE files_module
-
-
 
