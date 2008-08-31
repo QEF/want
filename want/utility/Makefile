@@ -35,6 +35,7 @@ WANNIER_OBJS= \
 ../wannier/localization.o \
 ../wannier/monkpack.o \
 ../wannier/overlap_module.o \
+../wannier/paratools.o \
 ../wannier/pseudo_types.o \
 ../wannier/pwcom.o \
 ../wannier/qvan2.o \
