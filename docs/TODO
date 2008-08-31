@@ -5,12 +5,10 @@
 
 * implement all the smearing types in dos.f90
 
-* disentangle + wannier: 
-     - scalar products in projections and overlaps by BLAS
-               
 * One step minimization (Thygesen like)
 * Symmetries in wfc management
 * Wannier parallelization
+* Symmetries in DOS calculation
 
 * eigenchannel in transport calculation
 * eigenvalue problem in wannier localization

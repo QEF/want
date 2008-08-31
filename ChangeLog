@@ -4,6 +4,13 @@
 =======================================================
 
 
+31 Aug 2008      The currently implemented parallelism is not highly
+                 performing. Further changes are going to be introduced. (AF)
+
+08 Aug 2008      parallelism over kpts is partly included. Important changes
+                 all around, especially related to I/O. Disentangle.x and
+                 wannier.x are working in parallel mode. (AF)
+
 07 Jul 2008      blc2wan.f90 updated according to the new postproc_init driver.
                  want_interfaces.f90 changed to solve a recursive module
                  dependence. (AF)
