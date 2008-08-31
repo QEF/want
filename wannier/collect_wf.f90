@@ -20,7 +20,7 @@
    USE log_module,        ONLY : log_push, log_pop
    USE converters_module, ONLY : cart2cry, cry2cart
    USE lattice_module,    ONLY : avec, bvec
-   USE kpoints_module,    ONLY : vkpt
+   USE kpoints_module,    ONLY : vkpt_g, iks, ike
    IMPLICIT NONE
 
    !
@@ -66,7 +66,7 @@
       ! convert vkpt from cart coord (bohr^-1) to cryst
       ! the same for rave, from cart coord (bohr) to cryst
       !
-      vkpt_cry(:,:) = vkpt(:,:)
+      vkpt_cry(:,:) = vkpt_g(:,iks:ike)
       rave_cry(:,:) = rave(:,:)
       CALL cart2cry( vkpt_cry, bvec )
       CALL cart2cry( rave_cry, avec)
@@ -133,7 +133,4 @@
       CALL log_pop('collect_wf')
       !
    END SUBROUTINE collect_wf
-
-
-
 

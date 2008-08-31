@@ -45,6 +45,7 @@
    LOGICAL          :: projdos       ! whether to write WF projected DOS
    INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
                                      ! for directions i=1,2,3  (0 means no cutoff)
+   INTEGER          :: nprint        ! print every "nprint" iterations
 
 
    !
@@ -52,7 +53,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, delta, smearing_type, fileout, &
-                    emin, emax, ne, ircut, projdos
+                    emin, emax, ne, ircut, projdos, nprint
    !
    ! end of declariations
    !   
@@ -87,7 +88,7 @@
       ! do the main task
       !
       CALL do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                   ircut, projdos )
+                   ircut, projdos, nprint )
       !
       ! clean global memory
       !
@@ -135,9 +136,9 @@ CONTAINS
       smearing_type               = 'gaussian'
       ircut(1:3)                  =  0
       projdos                     = .FALSE.
+      nprint                      = 50
       
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore(subname,'error in input from file',ABS(ierr))
+      CALL input_from_file ( stdin )
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
@@ -155,6 +156,7 @@ CONTAINS
       IF ( emin > emax  )         CALL errore(subname, 'emin larger than emax', 4)
       IF ( ne <= 0  )             CALL errore(subname, 'Invalid ne', 4)
       IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname, 'Invalid ircut', 10)
+      IF ( nprint <= 0  )         CALL errore(subname, 'invalid nprint', 5)
       !
       lhave_sgm = .FALSE.
       IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
@@ -180,6 +182,7 @@ CONTAINS
       WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin 
       WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax 
       WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
+      WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
       !
       IF ( ANY( ircut(:) > 0 ) ) THEN
           WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
@@ -203,7 +206,7 @@ END PROGRAM dos_main
 
 !********************************************************
    SUBROUTINE do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                      ircut, projdos )
+                      ircut, projdos, nprint )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -211,7 +214,7 @@ END PROGRAM dos_main
    USE kinds
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6
-   USE io_module,            ONLY : stdout, stdin, aux_unit, sgm_unit
+   USE io_module,            ONLY : stdout, stdin, ionode, ionode_id, aux_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
    USE files_module,         ONLY : file_open, file_close
@@ -224,7 +227,7 @@ END PROGRAM dos_main
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
    USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
    USE correlation_module,   ONLY : omg_min, omg_max, omg_grid, omg_nint
-   USE timing_module,        ONLY : timing
+   USE timing_module,        ONLY : timing, timing_upto_now
    USE log_module,           ONLY : log_push, log_pop
    USE parser_module,        ONLY : change_case
    USE dyson_solver_module,  ONLY : dyson_solver
@@ -243,6 +246,7 @@ END PROGRAM dos_main
       CHARACTER(*),  INTENT(IN)    :: smearing_type
       INTEGER,       INTENT(IN)    :: ircut(3)
       LOGICAL,       INTENT(IN)    :: projdos
+      INTEGER,       INTENT(IN)    :: nprint
 
       !
       ! local vars
@@ -297,7 +301,8 @@ END PROGRAM dos_main
       !
       IF ( lhave_sgm ) THEN
           !
-          CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read")
+          CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
           !
           CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
                                             DYNAMICAL=ldynam_sgm, NOMEGA=omg_nint,    &
@@ -361,7 +366,7 @@ END PROGRAM dos_main
       IF ( ldynam_sgm ) THEN
          !
          CALL warning(subname, 'energy grid is forced from SGM datafile' )
-         WRITE( stdout, '()')
+         IF(ionode) WRITE( stdout, '()')
          !
          ne = omg_nint
          !
@@ -606,10 +611,25 @@ END PROGRAM dos_main
       ENDIF
      
       !
+      ! stdout report
+      !
+      CALL write_header( stdout, "Loop over energies" )
+      CALL flush_unit( stdout )
+          
+      !
       ! compute DOS and pDOS
       !
       energy_loop1: &
       DO ie = 1, ne
+          
+          !
+          ! stdout report
+          !
+          IF ( (MOD( ie, nprint) == 0 .OR. ie == 1) .AND. ionode ) THEN
+              WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f12.5, ' eV' )") &
+                            ie, egrid(ie)
+          ENDIF
+
           !
           dos  ( ie ) = ZERO
           !
@@ -686,16 +706,32 @@ END PROGRAM dos_main
              !
           ENDIF
           !
+          ! stdout report
+          !
+          IF ( (MOD( ie, nprint) == 0 .OR. ie == 1 .OR. ie == ne ) .AND. ionode) THEN
+               !
+               CALL timing_upto_now(stdout)
+               CALL flush_unit(stdout)
+               !
+          ENDIF          
+          !
       ENDDO energy_loop1
       !
       !
-      IF ( lhave_sgm ) CALL file_close(sgm_unit, PATH="/", ACTION="read" )
+      IF ( lhave_sgm ) THEN
+          !
+          CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
+          !
+      ENDIF
 
 
       !
       ! compute pDOS if requested
       !
       IF ( projdos ) THEN  
+          !
+          IF (ionode) WRITE( stdout, "(/,2x, 'Computing projected-DOS...',/)")
           !
           pdos ( 1: ne, 1: dimwann ) = ZERO
           ! 
@@ -738,33 +774,37 @@ END PROGRAM dos_main
 ! 
       filename=TRIM(fileout)
       !
-      OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-         !
-         IF ( lhave_sgm ) THEN
-            !
-            WRITE( aux_unit, *) "# E (eV)   ldos(E)    ldos0(E)"
-            DO ie = 1, ne
-                WRITE(aux_unit, "(f9.4,2E15.4E3)") egrid(ie), dos(ie), dos0(ie)
-            ENDDO
-            !
-         ELSE
-            !
-            WRITE( aux_unit, *) "# E (eV)   ldos(E)"
-            DO ie = 1, ne
-                WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie), dos(ie)
-            ENDDO
-            !
-         ENDIF
-         !
-      CLOSE( aux_unit )
-      !
-      WRITE( stdout, "(/,2x,'Total DOS written on file:',4x,a)" ) TRIM(fileout)
+      IF ( ionode ) THEN
+          !
+          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+             !
+             IF ( lhave_sgm ) THEN
+                !
+                WRITE( aux_unit, *) "# E (eV)   ldos(E)    ldos0(E)"
+                DO ie = 1, ne
+                    WRITE(aux_unit, "(f9.4,2E15.4E3)") egrid(ie), dos(ie), dos0(ie)
+                ENDDO
+                !
+             ELSE
+                !
+                WRITE( aux_unit, *) "# E (eV)   ldos(E)"
+                DO ie = 1, ne
+                    WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie), dos(ie)
+                ENDDO
+                !
+             ENDIF
+             !
+          CLOSE( aux_unit )
+          !
+          WRITE( stdout, "(/,2x,'Total DOS written on file:',4x,a)" ) TRIM(fileout)
+          !
+      ENDIF
 
       !
       ! write pDOS if the case
       !
-      IF ( projdos ) THEN
+      IF ( projdos .AND. ionode ) THEN
           !
           DO i = 1, dimwann
               !

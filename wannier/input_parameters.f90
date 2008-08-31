@@ -10,9 +10,12 @@
    MODULE input_parameters_module
 !********************************************
    !
-   USE kinds,           ONLY : dbl
-   USE parameters,      ONLY : nstrx
-   USE parser_module,   ONLY : change_case
+   USE kinds,            ONLY : dbl
+   USE parameters,       ONLY : nstrx
+   USE parser_module,    ONLY : change_case
+   USE io_global_module, ONLY : ionode, ionode_id
+   USE mp,               ONLY : mp_bcast
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -280,7 +283,7 @@
        ! whether to collect all the WFs in a selected reference cell
        ! see the xcell parameter
 
-   REAL :: xcell(3) = -0.5_dbl
+   REAL(dbl) :: xcell(3) = -0.5_dbl
        ! the corner of the reference cell used to collect WFs (if collect_wf == .TRUE.)
        ! crystal units are used
 
@@ -353,8 +356,26 @@ CONTAINS
       CHARACTER(21) :: subname='read_namelist_control'
       INTEGER :: ios, ierr
 
-      READ(unit, CONTROL, IOSTAT=ios )
-         IF (ios/=0) CALL errore(subname,'reading CONTROL namelist',ABS(ios))
+      IF ( ionode ) READ(unit, CONTROL, IOSTAT=ios )
+      !
+      CALL mp_bcast( ios,     ionode_id )
+      IF (ios/=0) CALL errore(subname,'reading CONTROL namelist',ABS(ios))
+      !
+      ! bcast
+      !
+      CALL mp_bcast( title,            ionode_id )
+      CALL mp_bcast( prefix,           ionode_id )
+      CALL mp_bcast( postfix,          ionode_id )
+      CALL mp_bcast( restart_mode,     ionode_id )
+      CALL mp_bcast( work_dir,         ionode_id )
+      CALL mp_bcast( verbosity,        ionode_id )
+      CALL mp_bcast( overlaps,         ionode_id )
+      CALL mp_bcast( projections,      ionode_id )
+      CALL mp_bcast( assume_ncpp,      ionode_id )
+      CALL mp_bcast( unitary_thr,      ionode_id )
+      CALL mp_bcast( dftdata_fmt,      ionode_id )
+      CALL mp_bcast( wantdata_fmt,     ionode_id )
+      CALL mp_bcast( debug_level,      ionode_id )
 
       !
       ! ... checking parameters
@@ -403,8 +424,30 @@ CONTAINS
       CHARACTER(22) :: subname='read_namelist_subspace'
       INTEGER :: ios, ierr
 
-      READ(unit, SUBSPACE, IOSTAT=ios )
-         IF (ios/=0) CALL errore(subname,'reading SUBSPACE namelist',ABS(ios))
+      IF ( ionode ) READ(unit, SUBSPACE, IOSTAT=ios )
+      !
+      CALL mp_bcast( ios,     ionode_id )
+      IF (ios/=0) CALL errore(subname,'reading SUBSPACE namelist',ABS(ios))
+
+      !
+      ! bcast
+      !
+      CALL mp_bcast( dimwann,            ionode_id )
+      CALL mp_bcast( win_min,            ionode_id )
+      CALL mp_bcast( win_max,            ionode_id )
+      CALL mp_bcast( froz_min,           ionode_id )
+      CALL mp_bcast( froz_max,           ionode_id )
+      CALL mp_bcast( spin_component,     ionode_id )
+      CALL mp_bcast( alpha_dis,          ionode_id )
+      CALL mp_bcast( maxiter_dis,        ionode_id )
+      CALL mp_bcast( disentangle_thr,    ionode_id )
+      CALL mp_bcast( nprint_dis,         ionode_id )
+      CALL mp_bcast( nsave_dis,          ionode_id )
+      CALL mp_bcast( subspace_init,      ionode_id )
+      CALL mp_bcast( use_blimit,         ionode_id )
+      CALL mp_bcast( use_symmetry,       ionode_id )
+      CALL mp_bcast( use_timerev,        ionode_id )
+
 
       !
       ! ... checking parameters
@@ -416,8 +459,8 @@ CONTAINS
       IF ( alpha_dis > 1.0)         CALL errore(subname, 'alpha_dis should <=1.0 ', 1 ) 
       IF ( maxiter_dis < 0)         CALL errore(subname, 'maxiter_dis should be >= 0',-maxiter_dis+1)
       IF ( disentangle_thr <= 0.0 ) CALL errore(subname, 'disentangle_thr should be > 0',1)
-      IF ( nprint_dis <= 0)         CALL errore(subname, ' nprint_dis must be > 0 ', -nprint_dis+1 )
-      IF ( nsave_dis <= 0 )         CALL errore(subname, ' nsave_dis must be > 0 ', -nsave_dis+1 )
+      IF ( nprint_dis <= 0)         CALL errore(subname, 'nprint_dis must be > 0', -nprint_dis+1 )
+      IF ( nsave_dis <= 0 )         CALL errore(subname, 'nsave_dis must be > 0', -nsave_dis+1 )
       !
       CALL string_check( subspace_init, subspace_init_allowed, ierr ) 
       IF ( ierr/=0 ) CALL errore(subname,'Invalid subspace_init = '//TRIM(subspace_init),10)
@@ -440,24 +483,46 @@ CONTAINS
       CHARACTER(26) :: subname='read_namelist_localization'
       INTEGER :: ios, ierr
 
-      READ(unit, LOCALIZATION, IOSTAT=ios )
-         IF (ios/=0) CALL errore(subname,'reading LOCALIZATION namelist',ABS(ios))
+      IF ( ionode ) READ(unit, LOCALIZATION, IOSTAT=ios )
+      !
+      CALL mp_bcast( ios,     ionode_id )
+      IF (ios/=0) CALL errore(subname,'reading LOCALIZATION namelist',ABS(ios))
+ 
+      !
+      ! bcast
+      !
+      CALL mp_bcast( wannier_thr,        ionode_id )
+      CALL mp_bcast( alpha0_wan,         ionode_id )
+      CALL mp_bcast( alpha1_wan,         ionode_id )
+      CALL mp_bcast( maxiter0_wan,       ionode_id )
+      CALL mp_bcast( maxiter1_wan,       ionode_id )
+      CALL mp_bcast( nprint_wan,         ionode_id )
+      CALL mp_bcast( nsave_wan,          ionode_id )
+      CALL mp_bcast( ncg,                ionode_id )
+      CALL mp_bcast( localization_init,  ionode_id )
+      CALL mp_bcast( ordering_mode,      ionode_id )
+      CALL mp_bcast( a_condmin,          ionode_id )
+      CALL mp_bcast( niter_condmin,      ionode_id )
+      CALL mp_bcast( dump_condmin,       ionode_id )
+      CALL mp_bcast( collect_wf,         ionode_id )
+      CALL mp_bcast( xcell,              ionode_id )
+
 
       !
       ! ... checking parameters
       !
-      IF ( wannier_thr <= 0.0 ) CALL errore(subname, 'wannier_thr should be > 0.0 ', 1 )
-      IF ( alpha0_wan <= 0.0 ) CALL errore(subname, 'alpha0_wan should be positive ', 1 ) 
-      IF ( alpha0_wan > 1.0 ) CALL errore(subname, 'alpha0_wan should <=1.0 ', 1 ) 
-      IF ( alpha1_wan <= 0.0 ) CALL errore(subname, 'alpha1_wan should be positive ', 1 ) 
-      IF ( alpha1_wan > 1.0 ) CALL errore(subname, 'alpha1_wan should <=1.0 ', 1 ) 
-      IF ( maxiter0_wan < 0 ) CALL errore(subname, 'maxiter0_wan should be >= 0',1)
-      IF ( maxiter1_wan < 0 ) CALL errore(subname, 'maxiter1_wan should be >= 0',1)
-      IF ( niter_condmin < 0 ) CALL errore(subname, 'niter_condmin should be >= 0',1)
-      IF ( dump_condmin < 0.0 ) CALL errore(subname, 'dump_condmin should be >= 0.0',1)
-      IF ( nprint_wan <= 0 ) CALL errore(subname, ' nprint_wan must be > 0 ', -nprint_wan+1 )
-      IF ( nsave_wan <= 0 ) CALL errore(subname, ' nsave_wan must be > 0 ', -nsave_wan+1 )
-      IF ( ncg <= 0 ) CALL errore(subname, 'ncg should be >0',1)
+      IF ( wannier_thr <= 0.0 )  CALL errore(subname, 'wannier_thr should be > 0.0 ', 1 )
+      IF ( alpha0_wan <= 0.0 )   CALL errore(subname, 'alpha0_wan should be positive ', 1 ) 
+      IF ( alpha0_wan > 1.0 )    CALL errore(subname, 'alpha0_wan should <=1.0 ', 1 ) 
+      IF ( alpha1_wan <= 0.0 )   CALL errore(subname, 'alpha1_wan should be positive ', 1 ) 
+      IF ( alpha1_wan > 1.0 )    CALL errore(subname, 'alpha1_wan should <=1.0 ', 1 ) 
+      IF ( maxiter0_wan < 0 )    CALL errore(subname, 'maxiter0_wan should be >= 0',1)
+      IF ( maxiter1_wan < 0 )    CALL errore(subname, 'maxiter1_wan should be >= 0',1)
+      IF ( niter_condmin < 0 )   CALL errore(subname, 'niter_condmin should be >= 0',1)
+      IF ( dump_condmin < 0.0 )  CALL errore(subname, 'dump_condmin should be >= 0.0',1)
+      IF ( nprint_wan <= 0 )     CALL errore(subname, 'nprint_wan must be > 0', -nprint_wan+1 )
+      IF ( nsave_wan <= 0 )      CALL errore(subname, 'nsave_wan must be > 0', -nsave_wan+1 )
+      IF ( ncg <= 0 )            CALL errore(subname, 'ncg should be >0',1)
       !
       CALL string_check( localization_init, localization_init_allowed, ierr ) 
       IF ( ierr/=0 ) CALL errore(subname,'Invalid spin_component = '//TRIM(localization_init),10)

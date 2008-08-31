@@ -27,7 +27,9 @@
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
    USE lattice_module,     ONLY : avec
-   USE kpoints_module,     ONLY : nb, vb, wb, nnpos, nnrev, nnlist
+   USE kpoints_module,     ONLY : nkpts_g, iks, iproc_g, nb, vb, wb, nnpos, nnrev, nnlist
+   USE mp_global,          ONLY : mpime
+   USE mp,                 ONLY : mp_get
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE trial_center_module
    IMPLICIT NONE 
@@ -44,9 +46,11 @@
    !
    ! local variables
    !
-   INTEGER   :: ik, ik_eff, ib, inn, ipos
-   INTEGER   :: i, m, n, ierr
-   REAL(dbl) :: fact
+   CHARACTER(10)   :: subname='domega_aux'
+   !
+   INTEGER         :: ik, ik_g, ik_proc, ikb, ikb_g, ikb_proc, ib, inn, ipos
+   INTEGER         :: i, m, n, ierr
+   REAL(dbl)       :: fact
    REAL(dbl),    ALLOCATABLE :: qb(:), Dr(:,:) 
    COMPLEX(dbl), ALLOCATABLE :: At(:,:)
    COMPLEX(dbl), ALLOCATABLE :: aux2(:,:), Mkb_aux(:,:)
@@ -59,24 +63,24 @@
 ! main Body
 !----------------------------------------
 !
-   CALL timing('domega_aux',OPR='start')
-   CALL log_push('domega_aux')
+   CALL timing(subname,OPR='start')
+   CALL log_push(subname)
 
 
    ALLOCATE( qb(dimwann), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating qb', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating qb', ABS(ierr) )
    !
    ALLOCATE( At(dimwann,dimwann), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating At', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating At', ABS(ierr) )
    !
    ALLOCATE( Mkb_aux(dimwann,dimwann), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating Mkb_aux', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating Mkb_aux', ABS(ierr) )
    !
    ALLOCATE( Dr(3,dimwann), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating Dr', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating Dr', ABS(ierr) )
    !
    ALLOCATE( aux2(dimwann,dimwann),  STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'allocating aux2', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating aux2', ABS(ierr) )
 
    !
    ! build Dr_n = <r>_n - r_n0
@@ -89,7 +93,7 @@
       CASE ( "2gauss" )
           Dr(:,n) = rave(:,n) - ( trial(n)%x1 + trial(n)%x2 ) / TWO
       CASE DEFAULT
-          CALL errore('domega_aux','Invalid trial_center type = '//TRIM(trial(n)%type),n )
+          CALL errore(subname,'Invalid trial_center type = '//TRIM(trial(n)%type),n )
       END SELECT
 
       !
@@ -109,10 +113,13 @@
    !
    ! domg_aux is calculated
    !
-   fact = a / REAL( nkpts, dbl)
+   fact = a / REAL( nkpts_g, dbl)
 
    kpoints_loop: &
-   DO ik = 1, nkpts
+   DO ik_g = 1, nkpts_g
+       !
+       ik = ik_g -iks + 1
+       ik_proc = iproc_g( ik_g )
        !
        aux2(:,:) = CZERO
        !
@@ -130,22 +137,37 @@
                   !
                   ! positive b vectors
                   !
-                  ib     = nnpos( inn )
-                  ik_eff = ik
-                  !
-                  Mkb_aux( :, :)  = Mkb( :, :, inn, ik_eff)
+                  IF ( mpime == ik_proc ) THEN
+                      !
+                      ib     = nnpos( inn )
+                      !
+                      Mkb_aux( :, :)  = Mkb( :, :, inn, ik)
+                      !
+                  ENDIF
                   !
                CASE ( 2 )
                   !
                   ! negative b vectors
                   !
-                  ib     = nnrev( nnpos( inn ) )
-                  ik_eff = nnlist( ib, ik)
+                  ib       = nnrev( nnpos( inn ) )
+                  ikb_g    = nnlist( ib, ik_g )
+                  ikb_proc = iproc_g( ikb_g )
+
                   !
-                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, inn, ik_eff) ) )
+                  ! get all the needed quantities in the current pool
+                  !
+                  IF ( mpime == ikb_proc ) THEN
+                      !
+                      ikb = ikb_g - iks +1
+                      !
+                      Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, inn, ikb) ) )
+                      !
+                  ENDIF
+                  !
+                  CALL mp_get( Mkb_aux, Mkb_aux, mpime, ik_proc, ikb_proc, 1 )
                   !
                CASE DEFAULT
-                  CALL errore('domega_aux','invalid ipos value',71)
+                  CALL errore(subname,'invalid ipos value',71)
                END SELECT
                
                !
@@ -153,69 +175,77 @@
                !       qb_n  = w_n *  b * Dr_n
                !       At_mn = w_n * (b * Dr_n) * Mkb_mn / Mkb_nn 
                !
-               DO n = 1, dimwann
+               IF ( mpime == ik_proc ) THEN
                    !
-                   qb(n) = trial(n)%weight * DOT_PRODUCT( vb(:,ib), Dr(:,n) ) 
-                   !
-                   DO m = 1, dimwann
+                   DO n = 1, dimwann
                        !
-                       At(m,n) = qb(n) * Mkb_aux(m,n) / Mkb_aux(n,n)
+                       qb(n) = trial(n)%weight * DOT_PRODUCT( vb(:,ib), Dr(:,n) ) 
+                       !
+                       DO m = 1, dimwann
+                           !
+                           At(m,n) = qb(n) * Mkb_aux(m,n) / Mkb_aux(n,n)
+                           !
+                       ENDDO
                        !
                    ENDDO
                    !
-               ENDDO
-               !
-               !
-               ! compute the contribution to the variation of the functional
-               ! note that a term -i has been factorized out ot make dOmega/dW
-               ! hermitean
-               !
-               DO n = 1, dimwann
-               DO m = 1, n
                    !
-                   ! S[At^{k,b}] = (At+At\dag)/2 
+                   ! compute the contribution to the variation of the functional
+                   ! note that a term -i has been factorized out ot make dOmega/dW
+                   ! hermitean
                    !
-                   aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
+                   DO n = 1, dimwann
+                   DO m = 1, n
+                       !
+                       ! S[At^{k,b}] = (At+At\dag)/2 
+                       !
+                       aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
+                       !
+                   ENDDO
+                   ENDDO
                    !
-               ENDDO
-               ENDDO
+               ENDIF
                !
            ENDDO
            !
        ENDDO bvectors_loop
        ! 
-       ! 
-       ! symmetrize aux2 
-       ! 
-       DO n = 1, dimwann 
-       DO m = 1, n-1
-           aux2(n,m) = CONJG( aux2(m,n) )
-       ENDDO
-       ENDDO
        !
-       !
-       ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
-       !
-       domg(:,:,ik) = fact * aux2(:,:)
+       IF ( mpime == ik_proc ) THEN
+           ! 
+           ! symmetrize aux2 
+           ! 
+           DO n = 1, dimwann 
+           DO m = 1, n-1
+               aux2(n,m) = CONJG( aux2(m,n) )
+           ENDDO
+           ENDDO
+           !
+           !
+           ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
+           !
+           domg(:,:,ik) = fact * aux2(:,:)
+           !
+       ENDIF
        !
    ENDDO kpoints_loop
 
 
    DEALLOCATE( qb, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating qb', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating qb', ABS(ierr) )
    !
    DEALLOCATE( At, Dr, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating At, Dr', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating At, Dr', ABS(ierr) )
    !
    DEALLOCATE( Mkb_aux, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating Mkb_aux', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating Mkb_aux', ABS(ierr) )
    !
    DEALLOCATE( aux2, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('domega_aux', 'deallocating aux2', ABS(ierr) )
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating aux2', ABS(ierr) )
 
 
-   CALL timing('domega_aux',OPR='stop')
-   CALL log_pop('domega_aux')
+   CALL timing(subname,OPR='stop')
+   CALL log_pop(subname)
    !
 END SUBROUTINE domega_aux
 

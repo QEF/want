@@ -10,11 +10,12 @@
 !*********************************************
    MODULE localization_module
 !*********************************************
-   USE kinds,           ONLY : dbl
-   USE parameters,      ONLY : nstrx
-   USE constants,       ONLY : ZERO
-   USE kpoints_module,  ONLY : nkpts, kpoints_alloc
-   USE subspace_module, ONLY : dimwann, subspace_alloc => alloc
+   USE kinds,            ONLY : dbl
+   USE parameters,       ONLY : nstrx
+   USE constants,        ONLY : ZERO
+   USE kpoints_module,   ONLY : nkpts, kpoints_alloc
+   USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
+   USE io_global_module, ONLY : ionode
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -181,17 +182,20 @@ CONTAINS
             CALL errore(subname,"Invalid FMT = "//TRIM(fmt_),1)
        END SELECT
 
+       IF ( ionode ) THEN
+           !
+           WRITE( unit, " (2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2):')")
+           DO iwann = 1, dimwann
+               WRITE( unit, " ( 4x, 'Center ', i3, 1x, '= ( ',3f13.6,' )  Omega = ',f13.6 )" ) &
+                      iwann,( rave(i,iwann), i=1,3 ), r2ave(iwann) - rave2(iwann)
+           ENDDO
+           WRITE( unit, " (2x, '! Center Sum', 1x, '= ( ',3f13.6,' )  Omega = ',f13.6,/ )" ) &
+                          ( SUM(rave(i,1:dimwann)) ,i=1,3),  &
+                            SUM(r2ave(1:dimwann)) - SUM(rave2(1:dimwann))
+       ENDIF
        !
-       WRITE( unit, " (2x, 'Wannier centers (Bohr) and Spreads Omega (Bohr^2):')")
-       DO iwann = 1, dimwann
-           WRITE( unit, " ( 4x, 'Center ', i3, 1x, '= ( ',3f13.6,' )  Omega = ',f13.6 )" ) &
-              iwann,( rave(i,iwann), i=1,3 ), r2ave(iwann) - rave2(iwann)
-       ENDDO
-       WRITE( unit, " (2x, '! Center Sum', 1x, '= ( ',3f13.6,' )  Omega = ',f13.6,/ )" ) &
-                       ( SUM(rave(i,1:dimwann)) ,i=1,3),  &
-                         SUM(r2ave(1:dimwann)) - SUM(rave2(1:dimwann))
-
-       IF ( lxprint ) THEN
+       IF ( lxprint .AND. ionode ) THEN
+           !
            WRITE( unit, "(  2x, 'Spread Operator decomposition (Bohr^2): ')")
            WRITE( unit, "(  4x,'Omega I       =   ', f13.6 ) " ) Omega_I
            WRITE( unit, "(  4x,'Omega D       =   ', f13.6 ) " ) Omega_D
@@ -199,6 +203,7 @@ CONTAINS
            WRITE( unit, "(  4x,'Omega Tot     =   ', f13.6 ) " ) Omega_tot
            WRITE( unit, "(  4x,'Omega Avrg    =   ', f13.6 ) " ) Omega_tot/REAL(dimwann, dbl)
            WRITE( unit, "()")
+           !
        ENDIF
 
    END SUBROUTINE localization_print

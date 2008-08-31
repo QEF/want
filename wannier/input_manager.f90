@@ -23,22 +23,20 @@
                                         read_namelist_localization
    USE trial_center_data_module, ONLY : trial_center_data_allocate
    USE input_base_module,        ONLY : read_cards, card_wannier_centers
+   !
    IMPLICIT NONE
-
-   INTEGER :: ierr
 
    !
    ! attach input from file if the case
    !
-   CALL input_from_file ( stdin, ierr )
-   IF ( ierr /= 0 )  CALL errore('input_manager','error in input from file',ABS(ierr))
+   CALL input_from_file ( stdin )
 
    !
    ! reading and checking namelists
    !
-   CALL read_namelist_control(stdin)
-   CALL read_namelist_subspace(stdin)
-   CALL read_namelist_localization(stdin)
+   CALL read_namelist_control( stdin )
+   CALL read_namelist_subspace( stdin )
+   CALL read_namelist_localization( stdin )
 
    !
    ! scattering data in their own modules
@@ -53,7 +51,8 @@
    ! reading cards
    !
    CALL trial_center_data_allocate()
-   CALL read_cards(stdin)
+   !
+   CALL read_cards( stdin )
 
 END SUBROUTINE input_manager
 

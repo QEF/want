@@ -10,10 +10,13 @@
 !
 !********************************************
    MODULE input_base_module
-!********************************************
-   USE kinds, ONLY : dbl
-   USE constants, ONLY : ZERO
-   USE io_module, ONLY : stdout
+   !********************************************
+   !
+   USE kinds,       ONLY : dbl
+   USE constants,   ONLY : ZERO
+   USE io_module,   ONLY : stdout, ionode, ionode_id
+   USE mp,          ONLY : mp_bcast
+   !
    IMPLICIT NONE
    PRIVATE
 !
@@ -56,7 +59,8 @@ CONTAINS
       !
       lstop = .FALSE.
       wannier_centers_found = .FALSE.
- 100  CALL read_line(unit, input_line, END_OF_FILE=lend )
+
+100   CALL read_line(unit, input_line, END_OF_FILE=lend )
       !
       IF( lend .OR. lstop ) GO TO 120
       IF( input_line == ' ' .OR. input_line(1:1) == '#' ) GO TO 100
@@ -76,7 +80,7 @@ CONTAINS
          !
       ELSE
          !
-         WRITE( stdout,'(A)') 'Warning: card '//TRIM(input_line)//' ignored'
+         IF ( ionode ) WRITE( stdout,'(A)') 'Warning: card '//TRIM(input_line)//' ignored'
          !
       ENDIF
       !
@@ -90,31 +94,34 @@ CONTAINS
       IF ( .NOT. wannier_centers_found ) &
             CALL errore('read_cards','Card WANNIER_CENTERS not found',1)
     RETURN
+    !
   END SUBROUTINE read_cards
 
 
 !**********************************************************
    SUBROUTINE card_wannier_centers(unit, input_line )
    !**********************************************************
-      USE parser_module,  ONLY : read_line, matches, change_case
-      USE control_module, ONLY : use_atomwfc, do_condmin
-      USE trial_center_data_module, ONLY : list => trial
-      USE trial_center_module
-      IMPLICIT NONE
+   !
+   USE parser_module,             ONLY : read_line, matches, change_case
+   USE control_module,            ONLY : use_atomwfc, do_condmin
+   USE trial_center_data_module,  ONLY : list => trial
+   USE trial_center_module
+   !
+   IMPLICIT NONE
       !
       INTEGER,            INTENT(in) :: unit
       CHARACTER(LEN=256), INTENT(in) :: input_line
 
       LOGICAL, SAVE      :: tread = .FALSE.
       CHARACTER(LEN=256) :: tmp_line
-      INTEGER            :: dim
+      INTEGER            :: ndim
       INTEGER            :: iwann, ierr
       CHARACTER(LEN=10)  :: adum, units
       !
       !
       IF ( tread ) CALL errore( 'card_wannier_centers', ' two occurrence ', 2 )
 
-      dim = SIZE( list )
+      ndim = SIZE( list )
 
       IF ( matches('CRYSTAL', input_line ) ) THEN
           units = 'crystal'
@@ -142,7 +149,7 @@ CONTAINS
       !
       ! through the trial centers
       !
-      DO iwann = 1, dim
+      DO iwann = 1, ndim
 
            !
            ! ... init center
@@ -151,6 +158,7 @@ CONTAINS
            list(iwann)%weight = ZERO
 
            CALL read_line(unit, tmp_line )
+           !
            READ(tmp_line,*, IOSTAT=ierr) list(iwann)%type 
            IF (ierr/=0) CALL errore('card_wannier_centers','reading line I', iwann )
            !

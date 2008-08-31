@@ -24,7 +24,7 @@
    !
    USE parameters,      ONLY : nnx
    USE lattice_module,  ONLY : bvec, lattice_alloc => alloc
-   USE kpoints_module,  ONLY : vkpt, nkpts, nk, s, nb, vb, wb, wbtot, &
+   USE kpoints_module,  ONLY : vkpt_g, nkpts_g, vkpt, nkpts, nk, s, nb, vb, wb, wbtot, &
                                nnlist, nncell, nnrev, nnpos,          &
                                kpoints_alloc, bshells_allocate 
    !
@@ -64,12 +64,13 @@
 
    IF ( .NOT. lattice_alloc ) CALL errore(subname, 'lattice NOT alloc', 1 )
    IF ( .NOT. kpoints_alloc ) CALL errore(subname, 'kpoints NOT alloc', 1 )
-   IF ( nkpts <= 0) CALL errore(subname, 'Invaid nkpts', ABS(nkpts)+1 )
+   IF ( nkpts <= 0)   CALL errore(subname, 'Invalid nkpts', ABS(nkpts)+1 )
+   IF ( nkpts_g <= 0) CALL errore(subname, 'Invalid nkptsi_g', ABS(nkpts_g)+1 )
 
    !
    ! if not already done, check that the kpt grid is Monkhorst-pack
    !
-   CALL get_monkpack(nk_, s_, nkpts, vkpt, 'CARTESIAN', bvec, ierr)
+   CALL get_monkpack(nk_, s_, nkpts_g, vkpt_g, 'CARTESIAN', bvec, ierr)
    IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
    !
    IF ( ANY( nk(:) /= nk_(:)) ) CALL errore(subname, 'invalid nk from kpt grid', 71) 
@@ -84,7 +85,7 @@
    ! allocate the trial kpoints, searching for the shells
    ! 125 = 5 **3 
    !
-   nq  = 125*nkpts
+   nq  = 125*nkpts_g
    nqx = 125
 
    ALLOCATE( vq(3,nq), vqq(nq), index(nq),  STAT=ierr )
@@ -100,10 +101,10 @@
    DO n = -2, 2
         !
         ! loop over kpts in each cell
-        DO ik = 1, nkpts
+        DO ik = 1, nkpts_g
              !
              i = i+1
-             vq(:,i) = vkpt(:,ik) -vkpt(:,1) + l*bvec(:,1) + m*bvec(:,2) + n*bvec(:,3)
+             vq(:,i) = vkpt_g(:,ik) -vkpt_g(:,1) + l*bvec(:,1) + m*bvec(:,2) + n*bvec(:,3)
              !
              vqq(i)= DOT_PRODUCT( vq(:,i), vq(:,i) )
         ENDDO
@@ -362,10 +363,10 @@
 !
 ! k- and b-vect in bohr^-1
 !
-   DO ik = 1, nkpts
+   DO ik = 1, nkpts_g
    DO ib = 1, nb
 
-       vkb(:) = vkpt(:,ik) + vb(:,ib)
+       vkb(:) = vkpt_g(:,ik) + vb(:,ib)
 
        !
        ! now find who is k+b, and the cell in which it is set
@@ -373,12 +374,12 @@
        found = .FALSE.
        !
        inner_kpt_loop :&
-       DO ik1 = 1, nkpts
+       DO ik1 = 1, nkpts_g
           DO l = -1, 1
           DO m = -1, 1
           DO n = -1, 1
              !
-             vtmp(:) = vkpt(:,ik1) + l*bvec(:,1) + m*bvec(:,2) + n*bvec(:,3)
+             vtmp(:) = vkpt_g(:,ik1) + l*bvec(:,1) + m*bvec(:,2) + n*bvec(:,3)
              !
              aux = DOT_PRODUCT( vtmp(:)-vkb(:), vtmp(:)-vkb(:) )  
              !      

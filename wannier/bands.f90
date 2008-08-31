@@ -98,6 +98,8 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
+   USE io_module,            ONLY : ionode, ionode_id
+   USE mp,                   ONLY : mp_bcast
    IMPLICIT NONE
 
       CHARACTER(11)    :: subname = 'bands_input'
@@ -122,8 +124,7 @@ CONTAINS
       nkpts_max                   = 100
       ircut(1:3)                  = 0
       
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore(subname,'error in input from file',ABS(ierr))
+      CALL input_from_file ( stdin )
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
@@ -192,6 +193,8 @@ END PROGRAM bands
    USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
+   USE io_module,            ONLY : ionode, ionode_id
+   USE mp,                   ONLY : mp_bcast
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
@@ -283,7 +286,8 @@ END PROGRAM bands
       !
       IF ( lhave_sgm ) THEN
           !
-          CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read")
+          CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
           !
           CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
                                             DYNAMICAL=ldynam_sgm, IERR=ierr )
@@ -326,7 +330,8 @@ END PROGRAM bands
           CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11)
           !
-          CALL file_close(sgm_unit, PATH="/", ACTION="read")
+          CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
           !
       ENDIF
 

@@ -8,9 +8,11 @@
 ! 
 !********************************************
    MODULE input_module
-!********************************************
+   !********************************************
+   !
    USE kinds,     ONLY : dbl
    USE constants, ONLY : ZERO
+   !
    IMPLICIT NONE
    PRIVATE
 !
@@ -210,6 +212,7 @@ CONTAINS
       froz_min   = froz_min_
       froz_max   = froz_max_
       spin_component = spin_component_
+      !
    END SUBROUTINE setup_windows
 
 
@@ -229,6 +232,7 @@ CONTAINS
       alpha_dis    = alpha_dis_
       maxiter_dis  = maxiter_dis_
       disentangle_thr  = disentangle_thr_
+      !
    END SUBROUTINE setup_subspace
 
  

@@ -24,7 +24,7 @@
    USE kinds
    USE parameters,                 ONLY : nstrx
    USE constants,                  ONLY : CZERO, ZERO
-   USE io_module,                  ONLY : stdout, dft_unit, ovp_unit
+   USE io_module,                  ONLY : stdout, ionode, dft_unit, ovp_unit
    USE io_module,                  ONLY : io_name, dftdata_fmt, wantdata_form
    USE log_module,                 ONLY : log_push, log_pop
    USE timing_module,              ONLY : timing, timing_upto_now
@@ -37,7 +37,7 @@
    USE subspace_module,            ONLY : dimwann
    USE trial_center_data_module,   ONLY : trial
    USE windows_module,             ONLY : windows_alloc => alloc, dimwin, dimwinx, imin, imax
-   USE kpoints_module,             ONLY : kpoints_alloc, bshells_alloc, nkpts, vkpt, &
+   USE kpoints_module,             ONLY : kpoints_alloc, bshells_alloc, nkpts, nkpts_g, iks, vkpt_g, &
                                           nb, nnlist, nncell, nnpos
    USE overlap_module,             ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
    USE ggrids_module,              ONLY : ggrids_summary, ggrids_read_ext, ggrids_deallocate
@@ -58,7 +58,7 @@
       REAL(dbl)                 :: xk(3)
       COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
       LOGICAL                   :: lfound
-      INTEGER                   :: ib, ikb, ik, inn
+      INTEGER                   :: ib, ikb_g, ik, ik_g, inn
       INTEGER                   :: indin, indout, index
       INTEGER                   :: ierr
       !
@@ -93,41 +93,40 @@
           ! ... opening the file containing the PW-DFT data
           !
           CALL io_name('dft_data',filename)
-          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read" )
+          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
           !
           CALL io_name('dft_data',filename,LPATH=.FALSE.)
 
+
           !
           ! ... Read grids
-          WRITE( stdout,"( 2x,'Reading density G-grid from file: ',a)") TRIM(filename)
+          IF (ionode) WRITE( stdout,"( 2x,'Reading density G-grid from file: ',a)") TRIM(filename)
           CALL ggrids_read_ext( dftdata_fmt )
 
           !
           ! ... Read wfcs
-          WRITE( stdout,"( 2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
+          IF (ionode) WRITE( stdout,"( 2x,'Reading Wfc grids from file: ',a)") TRIM(filename)
           CALL wfc_data_grids_read( dftdata_fmt )
 
           !
           ! ... closing the main data file
-          CALL file_close(dft_unit,PATH="/",ACTION="read")
+          CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
 
 
           !
           ! ... stdout summary about grids
           !
-          WRITE(stdout, "()")
-          !
           CALL ggrids_summary( stdout )
           CALL wfc_data_grids_summary( stdout )
-          !
-          WRITE(stdout, "()")
 
 
           !
           ! ... if pseudo are used do the required allocations
           !
           IF ( use_pseudo ) THEN
-              WRITE( stdout,"(/,2x,'Initializing global dft data')")
+              IF (ionode) WRITE( stdout,"(/,2x,'Initializing global dft data')")
               !
               ! ... data required by USPP and atomic WFC
               CALL allocate_nlpot()
@@ -140,41 +139,46 @@
           ! ... if USPP are used, initialize the related quantities
           !
           IF ( use_uspp ) THEN
+              !
               IF ( .NOT. use_pseudo ) CALL errore(subname,'pseudo should be used',4)
-              WRITE( stdout,"(2x,'Initializing US pseudopot. data')")
+              IF (ionode) WRITE( stdout,"(2x,'Initializing US pseudopot. data')")
               
               !
               ! ... first initialization
               !     here we compute (among other quantities) \int dr Q_ij(r)
               !                                              \int dr e^ibr Q_ij(r)
               CALL init_us_1()
+              !
               IF ( use_blimit ) &
                  CALL warning( subname, "setting b = 0 in qb (overlap augment.)" )
                  !
-              WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5 ) ') nkb
+              IF (ionode) WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5 ) ') nkb
 
               !
               ! ... space for beta functions in reciproc space within struct_facts
               ! 
               IF ( nkb <= 0 ) CALL errore(subname,'no beta functions within USPP',-nkb+1)
-              ALLOCATE( becp(nkb, dimwinx, nkpts), STAT=ierr )
-                  IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
-
+              !
+              ALLOCATE( becp(nkb, dimwinx, nkpts_g), STAT=ierr )
+              IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
+              !
           ENDIF
 
           !
           ! ... if ATOMWFC are used
           !
           IF ( use_atomwfc ) THEN
+              !
               IF ( .NOT. use_pseudo ) CALL errore(subname,'pseudo should be used',5)
-              WRITE( stdout,"(/,2x,'Initializing atomic wfc')")
+              IF (ionode) WRITE( stdout,"(/,2x,'Initializing atomic wfc')")
               !
               ! ... atomic init
               CALL init_at_1()
+              !
           ENDIF
           
           !
-          WRITE( stdout, "(/)")
+          IF (ionode) WRITE( stdout, "(/)")
           CALL flush_unit( stdout )
 
 
@@ -184,24 +188,27 @@
           ! becp(i,j,ik) = <beta_i |psi_j_ik >
           !
           IF ( .NOT. ALLOCATED(becp) ) THEN
-               ALLOCATE( becp(1,1,nkpts), STAT=ierr )
-               IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
+              ALLOCATE( becp(1,1,nkpts_g), STAT=ierr )
+              IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
           ENDIF
           !
-          ! local workspace
+          ! Local workspace
           ALLOCATE( aux(dimwinx, dimwinx), STAT=ierr )
-             IF (ierr/=0) CALL errore(subname,'allocating aux',ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'allocating aux',ABS(ierr))
 
           !
-          ! ... allocating wfcs
+          ! Allocating wfcs
           CALL wfc_info_allocate(npwkx, dimwinx, nkpts, 2*dimwinx, evc_info)
+          !
           ALLOCATE( evc(npwkx, 2*dimwinx ), STAT=ierr )
-             IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
+          IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
 
           !
-          ! ... re-open the main data file
+          ! Re-open the main data file
           CALL io_name('dft_data',filename)
-          CALL file_open( dft_unit, TRIM(filename), PATH="/", ACTION="read" )
+          !
+          CALL file_open( dft_unit, TRIM(filename), PATH="/", ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
 
 
           !
@@ -214,26 +221,31 @@
           ! main loop on kpts
           !
           kpoints : &
-          DO ik=1,nkpts
+          DO ik= 1, nkpts
              !
-             WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point: ',i4)") ik
-             WRITE(stdout,"( 4x,'npw = ',i6,',', 4x,'dimwin = ',i4)") npwk(ik), dimwin(ik)
+             ik_g = ik + iks-1
+             !
+             IF ( ionode ) THEN
+                 WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point: ',i4)") ik_g
+                 WRITE(stdout,"( 4x,'npw = ',i6,',', 4x,'dimwin = ',i4)") npwk(ik_g), dimwin(ik_g)
+             ENDIF
+             !
              CALL flush_unit( stdout )
 
-             CALL wfc_data_kread( dftdata_fmt, ik, "IK", evc, evc_info)
+             CALL wfc_data_kread( dftdata_fmt, ik_g, "IK", evc, evc_info)
 
              IF ( use_uspp ) THEN
                  !
                  ! determine the index related to the first wfc of the current ik
                  ! to be used in evc to get the right starting point
                  !
-                 index = wfc_info_getindex(imin(ik), ik, "IK", evc_info )
+                 index = wfc_info_getindex(imin(ik_g), ik_g, "IK", evc_info )
                  !
-                 xk(:) = vkpt(:,ik) / tpiba
-                 CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
+                 xk(:) = vkpt_g(:,ik_g) / tpiba
+                 CALL init_us_2( npwk(ik_g), igsort(1,ik_g), xk, vkb )
                  !
-                 vkb_ik = ik
-                 CALL ccalbec( nkb, npwkx, npwk(ik), dimwin(ik), becp(1,1,ik), vkb, &
+                 vkb_ik = ik_g
+                 CALL ccalbec( nkb, npwkx, npwk(ik_g), dimwin(ik_g), becp(1,1,ik_g), vkb, &
                                evc(1,index))
              ENDIF
 
@@ -251,35 +263,35 @@
                     ! for half of the defined b vectors and then impose the
                     ! other values by symmetry
                     !
-                    ib = nnpos(inn)
-                    ikb = nnlist( ib , ik)
+                    ib    = nnpos(inn)
+                    ikb_g = nnlist( ib , ik_g)
                     !
-                    CALL wfc_data_kread( dftdata_fmt, ikb, "IKB", evc, evc_info)
+                    CALL wfc_data_kread( dftdata_fmt, ikb_g, "IKB", evc, evc_info)
                     !
                     IF( use_uspp ) THEN
                           !
-                          index = wfc_info_getindex(imin(ikb), ikb, "IKB", evc_info)
+                          index = wfc_info_getindex(imin(ikb_g), ikb_g, "IKB", evc_info)
                           !
-                          xk(:) = vkpt(:,ikb) / tpiba
-                          CALL init_us_2( npwk(ikb), igsort(1,ikb), xk, vkb )
-                          vkb_ik = ikb
-                          CALL ccalbec( nkb, npwkx, npwk(ikb), dimwin(ikb), becp(1,1,ikb),&
+                          xk(:) = vkpt_g(:,ikb_g) / tpiba
+                          CALL init_us_2( npwk(ikb_g), igsort(1,ikb_g), xk, vkb )
+                          vkb_ik = ikb_g
+                          CALL ccalbec( nkb, npwkx, npwk(ikb_g), dimwin(ikb_g), becp(1,1,ikb_g),&
                                         vkb, evc(1,index))
                     ENDIF
                     !
-                    CALL overlap( ik, ikb, dimwin(ik), dimwin(ikb), &
-                                  imin(ik), imin(ikb), dimwinx, evc, evc_info,  &
-                                  igsort, nncell(1,ib,ik), Mkb(1,1,inn,ik) )
+                    CALL overlap( ik_g, ikb_g, dimwin(ik_g), dimwin(ikb_g), &
+                                  imin(ik_g), imin(ikb_g), dimwinx, evc, evc_info,  &
+                                  igsort, nncell(1,ib,ik_g), Mkb(1,1,inn,ik) )
 
                     !
                     ! ... add the augmentation term fo USPP
                     !
                     IF ( use_uspp ) THEN
-                         CALL overlap_augment(dimwinx, dimwin(ik), dimwin(ikb), &
-                                              ik, ikb, ib, aux)
-                         Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) =        &
-                                Mkb(1:dimwin(ik), 1:dimwin(ikb), inn, ik) + &
-                                aux(1:dimwin(ik), 1:dimwin(ikb))
+                         CALL overlap_augment(dimwinx, dimwin(ik_g), dimwin(ikb_g), &
+                                              ik_g, ikb_g, ib, aux)
+                         Mkb(1:dimwin(ik_g), 1:dimwin(ikb_g), inn, ik) =        &
+                                Mkb(1:dimwin(ik_g), 1:dimwin(ikb_g), inn, ik) + &
+                                aux(1:dimwin(ik_g), 1:dimwin(ikb_g))
                     ENDIF
               
                     !
@@ -300,23 +312,25 @@
                 ! after the call to s_psi evc will contain the S \psi wfc
                 ! with the label SPSI_IK
                 ! 
-                indin = wfc_info_getindex(imin(ik), ik, "IK", evc_info)
+                indin = wfc_info_getindex(imin(ik_g), ik_g, "IK", evc_info)
                 !
-                DO ib = imin(ik), imax(ik)
-                     CALL wfc_info_add(npwk(ik), ib, ik, 'SPSI_IK', evc_info)
+                DO ib = imin(ik_g), imax(ik_g)
+                     CALL wfc_info_add(npwk(ik_g), ib, ik_g, 'SPSI_IK', evc_info)
                 ENDDO
                 !
-                indout = wfc_info_getindex(imin(ik), ik, "SPSI_IK", evc_info)
+                indout = wfc_info_getindex(imin(ik_g), ik_g, "SPSI_IK", evc_info)
 
                 IF( use_uspp ) THEN
-                     xk(:) = vkpt(:,ik) / tpiba
-                     CALL init_us_2( npwk(ik), igsort(:,ik), xk, vkb )
-                     vkb_ik = ik
+                    !
+                    xk(:) = vkpt_g(:,ik_g) / tpiba
+                    CALL init_us_2( npwk(ik_g), igsort(:,ik_g), xk, vkb )
+                    vkb_ik = ik_g
+                    !
                 ENDIF
                 !
-                CALL s_psi(npwkx, npwk(ik), dimwin(ik), ik, evc(:,indin:), evc(:,indout:) )
+                CALL s_psi(npwkx, npwk(ik_g), dimwin(ik_g), ik_g, evc(:,indin:), evc(:,indout:) )
                 !
-                CALL projection( ik, dimwin(ik), imin(ik), dimwinx, evc, evc_info, dimwann, &
+                CALL projection( ik_g, dimwin(ik_g), imin(ik_g), dimwinx, evc, evc_info, dimwann, &
                                  trial, ca(:,:,ik) )
                 !
                 ! clean the ik wfc data
@@ -324,14 +338,15 @@
              ENDIF
              !
              CALL wfc_info_delete(evc_info, LABEL="IK")
-             CALL timing_upto_now(stdout)
+             IF (ionode) CALL timing_upto_now(stdout)
              ! 
           ENDDO kpoints
 
 
           !
           ! ... re-closing the main data file
-          CALL file_close( dft_unit, PATH="/", ACTION="read")
+          CALL file_close( dft_unit, PATH="/", ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
 
 
           !
@@ -361,25 +376,27 @@
       IF ( read_overlaps .OR. read_projections ) THEN
           !
           CALL io_name('overlap_projection',filename)
-          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="read")
+          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
           !
           CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION", lfound, &  
                LOVERLAP=read_overlaps, LPROJECTION=read_projections)
                !
           IF ( .NOT. lfound ) CALL errore(subname,'reading ovp and proj',1)
           !
-          CALL file_close(ovp_unit,PATH="/",ACTION="read")
+          CALL file_close(ovp_unit,PATH="/",ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
 
-          CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
-          WRITE(stdout, "(/)")
+          CALL io_name('overlap_projection',filename,LPATH=.FALSE., LPROC=.FALSE.)
+          IF (ionode) WRITE(stdout, "(/)")
           !
-          IF ( read_overlaps ) &
+          IF ( read_overlaps .AND. ionode ) &
                WRITE( stdout,"(2x,'Overlaps read from file: ',a)") TRIM(filename)
           !
-          IF ( read_projections ) &
+          IF ( read_projections .AND. ionode ) &
                WRITE( stdout,"(2x,'Projections read from file: ',a)") TRIM(filename)
           !
-          WRITE(stdout,"()")
+          IF (ionode) WRITE(stdout,"()")
           !
       ENDIF
 
@@ -389,18 +406,20 @@
       IF ( .NOT. (read_overlaps .AND. read_projections)  ) THEN
 
           CALL io_name('overlap_projection',filename)
-          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form))
-          !
-          CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
-          !
-          CALL file_close(ovp_unit,PATH="/",ACTION="write")
+          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form), IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
+              !
+              CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
+              !
+          CALL file_close(ovp_unit,PATH="/",ACTION="write", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
 
-          CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
-          WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") &
-                 TRIM(filename)
+          CALL io_name('overlap_projection',filename,LPATH=.FALSE., LPROC=.FALSE.)
+          IF (ionode) WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") TRIM(filename)
+          !
       ENDIF
 
-      CALL timing_upto_now( stdout )
+      IF (ionode) CALL timing_upto_now( stdout )
       CALL flush_unit( stdout )
       !
       CALL timing('wfc_manager',OPR='stop')

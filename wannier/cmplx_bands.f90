@@ -39,6 +39,7 @@
    INTEGER          :: s(2)          ! kpt shifts
    REAL(dbl)        :: toll          ! tolerance to define Ham matrix elements
                                      ! to be negligible
+   REAL(dbl)        :: toll2         ! toll^2
    INTEGER          :: ne            ! dimension of the energy grid
    REAL(dbl)        :: emin          ! egrid extrema
    REAL(dbl)        :: emax
@@ -85,7 +86,7 @@
       !
       ! do the main task
       !
-      CALL do_cmplx_bands( fileout, idir, toll, nk, s, emin, emax, ne, ircut, nprint )
+      CALL do_cmplx_bands( fileout, idir, toll2, nk, s, emin, emax, ne, ircut, nprint )
       !
       ! clean global memory
       !
@@ -104,6 +105,7 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
+   USE io_module,            ONLY : ionode, ionode_id
    IMPLICIT NONE
 
       CHARACTER(17)    :: subname = 'cmplx_bands_input'
@@ -132,10 +134,9 @@ CONTAINS
       emax                        =  10.0
       ne                          =  1000
       ircut(1:3)                  =  0
-      nprint                      = 20
+      nprint                      = 50
       
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore(subname,'error in input from file',ABS(ierr))
+      CALL input_from_file ( stdin )
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
@@ -160,6 +161,8 @@ CONTAINS
       !
       lhave_sgm = .FALSE.
       IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
+      !
+      toll2 = toll**2
 
       !
       ! input summary
@@ -173,8 +176,8 @@ CONTAINS
       WRITE( stdout, "(   7x,'                  toll :',3x,e12.4 )") toll
       WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin
       WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax
-      WRITE( stdout, "(   7x,'                    ne :',3x,i4 )") ne
-      WRITE( stdout, "(   7x,'                nprint :',3x,i4 )") nprint
+      WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
+      WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
       !
       IF ( ANY( ircut(:) > 0 ) ) THEN
           WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
@@ -197,7 +200,7 @@ END PROGRAM cmplx_bands
 
 
 !********************************************************
-   SUBROUTINE do_cmplx_bands( fileout, idir, toll, nk, s, emin, emax, ne, ircut, nprint )
+   SUBROUTINE do_cmplx_bands( fileout, idir, toll2, nk, s, emin, emax, ne, ircut, nprint )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -230,7 +233,7 @@ END PROGRAM cmplx_bands
       !
       CHARACTER(*),  INTENT(IN)    :: fileout
       INTEGER,       INTENT(IN)    :: idir
-      REAL(dbl),     INTENT(IN)    :: toll
+      REAL(dbl),     INTENT(IN)    :: toll2
       INTEGER,       INTENT(IN)    :: nk(2), s(2)
       INTEGER,       INTENT(INOUT) :: ne
       REAL(dbl),     INTENT(INOUT) :: emin, emax
@@ -304,7 +307,8 @@ END PROGRAM cmplx_bands
       !
       IF ( lhave_sgm ) THEN
           !
-          CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read")
+          CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
           !
           CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
                                             DYNAMICAL=ldynam_sgm, NOMEGA=omg_nint,    &
@@ -719,17 +723,30 @@ END PROGRAM cmplx_bands
                   ! determine the range of Z
                   ! along idir
                   !
-                  IF ( ANY( ABS( zz(:,:) ) > toll ) ) THEN
+                  lfound = .FALSE.
+                  !
+                  DO j = 1, dimwann
+                  DO i = 1, dimwann
+                      !
+                      raux = REAL( zz(i,j) * CONJG( zz(i,j) ), dbl )
+                      IF ( raux > toll2 ) lfound = .TRUE.
+                      !
+                  ENDDO
+                  ENDDO
+                  !
+                  IF ( lfound ) THEN
                       !
                       nrs = nrs + 1
                       rmap_1D(nrs) = ir
                       !
                   ENDIF
                   !
+                  !
               ENDDO
               !
               nrsx    = MAX( nrsx, nrs)
               avg_nrs = avg_nrs + REAL(nrs)
+
 
               !
               ! allocate the big matrix and related quantities
@@ -970,7 +987,12 @@ END PROGRAM cmplx_bands
       ENDDO energy_loop
       !
       !
-      IF ( lhave_sgm ) CALL file_close(sgm_unit, PATH="/", ACTION="read" )
+      IF ( lhave_sgm ) THEN
+          !
+          CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
+          !
+      ENDIF
 
 
 

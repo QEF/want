@@ -40,10 +40,12 @@ CONTAINS
    !
    USE kinds,             ONLY : dbl
    USE parameters,        ONLY : nstrx
-   USE constants,         ONLY : PI, TPI, BOHR => bohr_radius_angs
+   USE constants,         ONLY : ZERO, PI, TPI, BOHR => bohr_radius_angs
    USE parser_module,     ONLY : log2char
    USE io_module,         ONLY : title, prefix, postfix, work_dir, dftdata_fmt, &
-                                 dftdata_fmt_version, wantdata_fmt
+                                 dftdata_fmt_version, wantdata_fmt, ionode
+   USE mp_global,         ONLY : nproc
+   USE mp,                ONLY : mp_sum
    USE log_module,        ONLY : log_push, log_pop
    USE converters_module, ONLY : cart2cry
    USE control_module,    ONLY : ordering_mode, verbosity, restart_mode, & 
@@ -59,8 +61,8 @@ CONTAINS
    USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
    USE symmetry_module,   ONLY : symmetry_alloc => alloc, nsym, srot, strasl, sname, &
                                  symmetry_write
-   USE kpoints_module,    ONLY : kpoints_alloc, nkpts, vkpt, wk, nk, s, &
-                                 bshells_alloc, nb, vb, wb, wbtot
+   USE kpoints_module,    ONLY : kpoints_alloc, nkpts, vkpt, wk, nkpts_g, vkpt_g, wk_g, &
+                                 iks, ike, nk, s, bshells_alloc, nb, vb, wb, wbtot
    USE windows_module,    ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, &
                                  imin, imax, dimfroz, lfrozen, dimwinx, nspin, &
                                  spin_component, win_min, win_max, froz_min, froz_max
@@ -135,9 +137,11 @@ CONTAINS
 !
 ! <MAIN & INPUT> section
 !
+
    !
-   WRITE(iunit,"()" )
-   IF ( linput  ) THEN
+   IF (ionode) WRITE(iunit,"()" )
+   !
+   IF ( linput .AND. ionode ) THEN
        !
        CALL write_header( iunit, "INPUT Summary" )
        !
@@ -184,7 +188,7 @@ CONTAINS
           WRITE(iunit,"(7x,'               win_max :',1x,f12.4)") win_max
        IF ( froz_min > -10000.0 ) &
           WRITE(iunit,"(7x,'              froz_min :',1x,f12.4)") froz_min
-       IF ( froz_max <  10000.0 ) &
+       IF ( froz_max > -10000.0 ) &
           WRITE(iunit,"(7x,'              froz_max :',1x,f12.4)") froz_max
           !
        WRITE(iunit,"(   7x,'             alpha_dis :',1x,f12.4)") alpha_dis
@@ -267,7 +271,7 @@ CONTAINS
 !
 ! <DFT> section
 !
-   IF ( ldft ) THEN
+   IF ( ldft .AND. ionode ) THEN
        ! 
        CALL write_header( iunit, "DFT data" )
        !
@@ -275,7 +279,7 @@ CONTAINS
 
    !
    ! ... Lattice
-   IF ( lattice_alloc .AND. llattice  ) THEN
+   IF ( lattice_alloc .AND. llattice .AND. ionode ) THEN
        !
        WRITE(iunit, " (  ' <LATTICE>')" )
        WRITE(iunit, " (2x,'Alat  = ', F15.7, ' (Bohr)' )" ) alat
@@ -306,7 +310,7 @@ CONTAINS
 
    !
    ! ... ions
-   IF ( ions_alloc .AND. lions ) THEN 
+   IF ( ions_alloc .AND. lions .AND. ionode ) THEN 
        WRITE(iunit, " (  ' <IONS>')" )
        WRITE(iunit, " (2x,'Number of chemical species =', i3 ) " ) nsp
 
@@ -347,8 +351,7 @@ CONTAINS
        !
        IF ( TRIM(verbosity) == 'high') THEN
            !
-           ALLOCATE( tau_cry(3,nat), STAT=ierr )
-           IF (ierr/=0) CALL errore('summary','allocating tau_cry',ABS(ierr))
+           ALLOCATE( tau_cry(3,nat) )
            !
            tau_cry(:,:) = tau(:,:) * alat
            CALL cart2cry(tau_cry, avec)
@@ -359,8 +362,7 @@ CONTAINS
                       symb(ia), ia, (tau_cry( i, ia ), i = 1, 3)
            ENDDO
            !
-           DEALLOCATE( tau_cry, STAT=ierr )
-           IF (ierr/=0) CALL errore('summary','deallocating tau_cry',ABS(ierr))
+           DEALLOCATE( tau_cry )
            !
        ENDIF
             
@@ -369,7 +371,7 @@ CONTAINS
        
    !
    ! ... symmetry
-   IF ( symmetry_alloc .AND. lsymmetry ) THEN 
+   IF ( symmetry_alloc .AND. lsymmetry .AND. ionode ) THEN 
        !
        WRITE(iunit, " (  ' <SYMMETRY>')" )
        WRITE(iunit, " (2x,'Number of symmetry operations =', i3,/ ) " ) nsym
@@ -390,21 +392,23 @@ CONTAINS
 
    !
    ! ... kpoints
-   IF ( kpoints_alloc .AND. lkpoints  ) THEN 
+   IF ( kpoints_alloc .AND. lkpoints .AND. ionode ) THEN 
        WRITE(iunit, " (  ' <K-POINTS>')" )
-       WRITE(iunit, "(2x, 'nkpts = ',i5 ) " ) nkpts
+       WRITE(iunit, "(2x, '       nproc = ',i5, '   (Parallelism over kpts)' ) " ) nproc
+       WRITE(iunit, "(2x, 'global nkpts = ',i5 ) " ) nkpts_g
+       WRITE(iunit, "(2x, ' local nkpts = ',i5 ) " ) nkpts
        WRITE(iunit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i4,' ),', &
                                          & 6x,'shift = (',3i4,' )' ) " ) nk(:), s(:) 
        WRITE(iunit, "(/,2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
        !
-       DO ik=1,nkpts
+       DO ik=1,nkpts_g
           WRITE(iunit, " (4x, 'k (', i5, ') =    ( ',3f12.7,' ),   weight = ', f14.7 )") &
-          ik, ( vkpt(i,ik), i=1,3 ), wk(ik)
+          ik, ( vkpt_g(i,ik), i=1,3 ), wk_g(ik)
        ENDDO
        WRITE(iunit, " (  ' </K-POINTS>',/)" )
    ENDIF
 
-   IF ( bshells_alloc .AND. lbshells ) THEN
+   IF ( bshells_alloc .AND. lbshells .AND. ionode ) THEN
        WRITE(iunit, " (  ' <B-SHELL>')" )
        !
        WRITE (iunit, "(2x, 'List of the ' , i2, ' b-vectors : (Bohr^-1) ') ") nb
@@ -419,64 +423,71 @@ CONTAINS
    !
    ! ... eigs and windows
    IF ( windows_alloc .AND. lwindows ) THEN 
+       !
        IF ( .NOT. kpoints_alloc ) CALL errore('summary','Unexpectedly kpts NOT alloc',1)
-       WRITE(iunit, " (  ' <WINDOWS>')" )
-       WRITE(iunit," (2x, 'Definition of energy windows: (energies in eV)' ) " )
-       IF ( win_min < -10000.0 .AND. win_max > 10000.0 ) THEN
-           WRITE(iunit, " (4x, 'outer window: E  = (  -inf ,  inf  )' )" ) 
-       ELSEIF ( win_min < -10000.0 ) THEN
-           WRITE(iunit, " (4x, 'outer window: E  = (  -inf , ',f9.4, ' )' )" ) &
-                               win_max
-       ELSEIF ( win_max > 10000.0 ) THEN
-           WRITE(iunit, " (4x, 'outer window: E  = ( ', f9.4, ' ,  inf  )' )" ) &
-                                win_min
-       ELSE  
-          ! std case
-          WRITE(iunit, " (4x, 'outer window: E  = ( ', f9.4, ' , ',f9.4, ' )' )" ) &
-                               win_min, win_max
-       ENDIF
-       WRITE(iunit,"(4x,'Max number of bands within the energy window = ',i5)") dimwinx
-       WRITE(iunit,"(/,2x,'Electronic Structure from DFT calculation:')")
-       WRITE(iunit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4,',')") nkpts, nbnd
-       WRITE(iunit,"(  4x,'nspin =',i4 ) " ) nspin
-       WRITE(iunit,"(  4x,'Fermi energy =',f15.9,' eV')") efermi
-
-       IF ( TRIM(verbosity) == "medium" .OR. TRIM(verbosity) == "high" ) THEN
-           DO ik=1,nkpts
-               WRITE(iunit,"(1x,'!')")
-               WRITE(iunit,"(1x,'!',4x,'kpt = ',i4,' ( ',3f9.5,' )    dimwin = ',i4)") &
-                            ik, vkpt(:,ik), dimwin(ik)
-               WRITE(iunit,"(1x,'!',39x,'imin = ',i4,'  imax = ',i4)") imin(ik), imax(ik)
-               WRITE(iunit,"(1x,'!',3x,'Eigenvalues:')"  )
-               WRITE(iunit,"(1x,'!',2x, 8f9.4)") ( eig(i,ik), i=1,nbnd )
-           ENDDO
-       ENDIF
-
-       IF ( .NOT. lfrozen ) THEN
-           WRITE(iunit," (/,4x,'inner window: NOT used --> NO FROZEN STATES' )" )
-       ELSE
+       !
+       IF ( ionode ) THEN
            !
-           WRITE(iunit," (/,4x,'inner window:',/)")
-           IF ( froz_min > -10000.0 ) THEN
-               WRITE(iunit," (  7x,'froz_min = ', f8.4)") froz_min
-           ELSE
-               WRITE(iunit," (  7x,'froz_min = -inf')") 
+           WRITE(iunit, " (  ' <WINDOWS>')" )
+           WRITE(iunit," (2x, 'Definition of energy windows: (energies in eV)' ) " )
+           IF ( win_min < -10000.0 .AND. win_max > 10000.0 ) THEN
+               WRITE(iunit, " (4x, 'outer window: E  = (  -inf ,  inf  )' )" ) 
+           ELSEIF ( win_min < -10000.0 ) THEN
+               WRITE(iunit, " (4x, 'outer window: E  = (  -inf , ',f9.4, ' )' )" ) &
+                                   win_max
+           ELSEIF ( win_max > 10000.0 ) THEN
+               WRITE(iunit, " (4x, 'outer window: E  = ( ', f9.4, ' ,  inf  )' )" ) &
+                                   win_min
+           ELSE  
+              ! std case
+              WRITE(iunit, " (4x, 'outer window: E  = ( ', f9.4, ' , ',f9.4, ' )' )" ) &
+                                   win_min, win_max
            ENDIF
-           !
-           IF ( froz_max <  10000.0 ) THEN
-               WRITE(iunit," (  7x,'froz_max = ', f8.4)") froz_max
-           ELSE
-               WRITE(iunit," (  7x,'froz_max = +inf')") 
+           WRITE(iunit,"(4x,'Max number of bands within the energy window = ',i5)") dimwinx
+           WRITE(iunit,"(/,2x,'Electronic Structure from DFT calculation:')")
+           WRITE(iunit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4,',')") nkpts_g, nbnd
+           WRITE(iunit,"(  4x,'nspin =',i4 ) " ) nspin
+           WRITE(iunit,"(  4x,'Fermi energy =',f15.9,' eV')") efermi
+
+           IF ( TRIM(verbosity) == "medium" .OR. TRIM(verbosity) == "high" ) THEN
+               DO ik=1,nkpts_g
+                   WRITE(iunit,"(1x,'!')")
+                   WRITE(iunit,"(1x,'!',4x,'kpt = ',i4,' ( ',3f9.5,' )    dimwin = ',i4)") &
+                                ik, vkpt_g(:,ik), dimwin(ik)
+                   WRITE(iunit,"(1x,'!',39x,'imin = ',i4,'  imax = ',i4)") imin(ik), imax(ik)
+                   WRITE(iunit,"(1x,'!',3x,'Eigenvalues:')"  )
+                  WRITE(iunit,"(1x,'!',2x, 8f9.4)") ( eig(i,ik), i=1,nbnd )
+               ENDDO
            ENDIF
-           !
-           WRITE( iunit, "()" )
-           DO ik=1,nkpts
-               WRITE(iunit, "(4x, 'k(' i5, ' )  --> ', i5, '  frozen states')") ik, dimfroz(ik)
-           ENDDO
+
+           IF ( .NOT. lfrozen ) THEN
+               WRITE(iunit," (/,4x,'inner window: NOT used --> NO FROZEN STATES' )" )
+           ELSE
+               !
+               WRITE(iunit," (/,4x,'inner window:',/)")
+               IF ( froz_min > -10000.0 ) THEN
+                   WRITE(iunit," (  7x,'froz_min = ', f8.4)") froz_min
+               ELSE
+                   WRITE(iunit," (  7x,'froz_min = -inf')") 
+               ENDIF
+               !
+               IF ( froz_max <  10000.0 ) THEN
+                   WRITE(iunit," (  7x,'froz_max = ', f8.4)") froz_max
+               ELSE
+                   WRITE(iunit," (  7x,'froz_max = +inf')") 
+               ENDIF
+               !
+               WRITE( iunit, "()" )
+               DO ik=1,nkpts_g
+                   WRITE(iunit, "(4x, 'k(' i5, ' )  --> ', i5, '  frozen states')") ik, dimfroz(ik)
+               ENDDO
+               !
+           ENDIF
+
+           WRITE(iunit, " ( /, ' </WINDOWS>',/)" )
            !
        ENDIF
-
-       WRITE(iunit, " ( /, ' </WINDOWS>',/)" )
+       !
    ENDIF
 
    !

@@ -7,11 +7,11 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE projection( ik, dimw, imin, dimwinx, evc, evc_info, dimwann, trial, ca)
+   SUBROUTINE projection( ik_g, dimw, imin, dimwinx, evc, evc_info, dimwann, trial, ca)
    !*******************************************************************
    !
    ! ...  Calculate the projection of the gaussians on the bloch eigenstates inside 
-   !      energy window: store it in dimwin(ik) X dimwann overlap matrix CA
+   !      energy window: store it in dimwin(ik_g) X dimwann overlap matrix CA
    !
    !      CA(iwann,ib,ik) = < ib, ik | iwann >
    !
@@ -26,7 +26,7 @@
    USE trial_center_module,  ONLY : trial_center, trial_center_setup
    !
    USE lattice_module,       ONLY : tpiba
-   USE kpoints_module,       ONLY : vkpt
+   USE kpoints_module,       ONLY : vkpt_g
    USE wfc_data_module,      ONLY : igsort
    USE ggrids_module,        ONLY : g
    USE wfc_info_module
@@ -37,7 +37,7 @@
    !
    TYPE(wfc_info),     INTENT(in) :: evc_info
    COMPLEX(dbl),       INTENT(in) :: evc( evc_info%npwx, evc_info%nwfc )
-   INTEGER,            INTENT(in) :: ik, dimw, imin
+   INTEGER,            INTENT(in) :: ik_g, dimw, imin
    INTEGER,            INTENT(in) :: dimwinx
    INTEGER,            INTENT(in) :: dimwann
    TYPE(trial_center), INTENT(in) :: trial(dimwann)
@@ -64,7 +64,7 @@
       CALL timing('projection',OPR='start')
       CALL log_push('projection')
 
-      ind = wfc_info_getindex(imin, ik, "SPSI_IK", evc_info)
+      ind = wfc_info_getindex(imin, ik_g, "SPSI_IK", evc_info)
       !
       npwk = evc_info%npw(ind)
       npwx = evc_info%npwx
@@ -101,7 +101,7 @@
       !
       DO ig = 1, npwk
           !
-          vkg(:,ig) = - ( vkpt(:,ik) + g(:, igsort(ig,ik))*tpiba )  
+          vkg(:,ig) = - ( vkpt_g(:,ik_g) + g(:, igsort(ig,ik_g))*tpiba )  
           vkgg(ig)  = DOT_PRODUCT( vkg(:,ig) , vkg(:,ig) ) 
           !
       ENDDO
@@ -115,7 +115,7 @@
       DO iwann = 1, dimwann
           !
           ! set the trial centers in PW represent.
-          CALL trial_center_setup(ik, npwk, vkgg, lmax, ylm, ylm_info, &
+          CALL trial_center_setup(ik_g, npwk, vkgg, lmax, ylm, ylm_info, &
                                   trial(iwann), trial_vect)
 
 #define __OLD_PROJECTIONS
@@ -126,7 +126,7 @@
           ! ... bands 
           DO ib = 1, dimw
              !
-             ind = wfc_info_getindex(imin +ib -1, ik, "SPSI_IK", evc_info)
+             ind = wfc_info_getindex(imin +ib -1, ik_g, "SPSI_IK", evc_info)
              !
              ca(ib,iwann) = CZERO    
              !
@@ -142,7 +142,7 @@
           !
           ! get the indexes of the required wfs in the evc workspace
           !
-          ind = wfc_info_getindex( imin, ik, "SPSI_IK", evc_info )
+          ind = wfc_info_getindex( imin, ik_g, "SPSI_IK", evc_info )
           !
           ! perform the scalr produce < nk | trial_vect > 
           ! for all the bands in the selected energy window

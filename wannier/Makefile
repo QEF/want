@@ -58,6 +58,7 @@ overlap.o \
 overlap_module.o \
 overlap_setmap.o \
 overlap_update.o \
+paratools.o \
 polarization.o \
 postproc_init.o \
 projection.o \

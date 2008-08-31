@@ -24,17 +24,21 @@ SUBROUTINE overlap_extract(dimwann)
    ! calculated in disentangle as well.
    !
    USE kinds
-   USE constants,       ONLY : CZERO
-   USE parameters,      ONLY : nstrx
-   USE io_module,       ONLY : stdout, ovp_unit, space_unit, io_name
-   USE timing_module,   ONLY : timing
-   USE log_module,      ONLY : log_push, log_pop
-   USE files_module,    ONLY : file_open, file_close
-   USE util_module,     ONLY : mat_mul
-   USE subspace_module, ONLY : eamp, subspace_read
-   USE windows_module,  ONLY : dimwinx, dimwin, windows_read
-   USE kpoints_module,  ONLY : nkpts, nb, nnlist, nnpos, nnrev 
-   USE overlap_module,  ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
+   USE constants,         ONLY : CZERO
+   USE parameters,        ONLY : nstrx
+   USE io_module,         ONLY : stdout, ionode, ovp_unit, space_unit, io_name
+   USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
+   USE files_module,      ONLY : file_open, file_close
+   USE util_module,       ONLY : mat_mul
+   USE subspace_module,   ONLY : eamp, subspace_read
+   USE windows_module,    ONLY : dimwinx, dimwin, windows_read
+   USE kpoints_module,    ONLY : nkpts, nkpts_g, iks, iproc_g, nb, nnlist, nnpos, nnrev 
+   USE overlap_module,    ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
+   USE mp_global,         ONLY : mpime
+   USE mp,                ONLY : mp_get
+   
+   !
    IMPLICIT NONE
 
    !
@@ -48,11 +52,12 @@ SUBROUTINE overlap_extract(dimwann)
    !
    COMPLEX(dbl), ALLOCATABLE :: Mkb_tmp(:,:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: ca_tmp(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: aux(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: caux1(:,:), caux2(:,:)
    !
    LOGICAL                   :: lfound
    CHARACTER(nstrx)          :: filename 
-   INTEGER                   :: ik, ikb, ib, inn
+   INTEGER                   :: ik_proc, ikb_proc
+   INTEGER                   :: ik, ik_g, ikb, ikb_g, ib, inn
    INTEGER                   :: ierr
    ! 
    ! end of declarations
@@ -70,7 +75,8 @@ SUBROUTINE overlap_extract(dimwann)
    ! reading subspace and windows data
    !
    CALL io_name('space',filename)
-   CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read")
+   CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(filename), ABS(ierr) )
         !
         CALL windows_read(space_unit,"WINDOWS",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1) 
@@ -78,24 +84,28 @@ SUBROUTINE overlap_extract(dimwann)
         CALL subspace_read(space_unit,"SUBSPACE",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1) 
         !
-   CALL file_close(space_unit,PATH="/",ACTION="read")
+   CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(filename), ABS(ierr) )
 
-   CALL io_name('space',filename,LPATH=.FALSE.)
-   WRITE( stdout,"(/,'  Subspace data read from file: ',a)") TRIM(filename)   
+   CALL io_name('space',filename,LPATH=.FALSE., LPROC=.FALSE.)
+   IF (ionode) WRITE( stdout,"(/,'  Subspace data read from file: ',a)") TRIM(filename)   
     
    !
    ! reading overlap and projections
    !
    CALL io_name('overlap_projection',filename)
-   CALL file_open(ovp_unit,TRIM(filename),PATH="/", ACTION="read")
+   CALL file_open(ovp_unit,TRIM(filename),PATH="/", ACTION="read", IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(filename), ABS(ierr) )
         !
         CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find OVERLAP_PROJECTION",1) 
         !
-   CALL file_close(ovp_unit,PATH="/", ACTION="read")        
+   CALL file_close(ovp_unit,PATH="/", ACTION="read", IERR=ierr)        
+   IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(filename), ABS(ierr) )
 
-   CALL io_name('overlap_projection',filename,LPATH=.FALSE.)
-   WRITE( stdout,"('  Overlap and projections read from file: ',a)") TRIM(filename)   
+   CALL io_name('overlap_projection',filename,LPATH=.FALSE., LPROC=.FALSE.)
+   IF (ionode) WRITE( stdout,"('  Overlap and projections read from file: ',a)") TRIM(filename)   
+
 
    !
    ! here allocate the temporary variables for the extracted CM and CA 
@@ -106,8 +116,10 @@ SUBROUTINE overlap_extract(dimwann)
    ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"allocating ca_tmp",ABS(ierr))
    !
-   ALLOCATE( aux(dimwinx,dimwinx), STAT=ierr ) 
-   IF (ierr/=0) CALL errore(subname,"allocating aux",ABS(ierr))
+   ALLOCATE( caux1(dimwinx,dimwinx), STAT=ierr ) 
+   IF (ierr/=0) CALL errore(subname,"allocating caux1",ABS(ierr))
+   ALLOCATE( caux2(dimwinx,dimwinx), STAT=ierr ) 
+   IF (ierr/=0) CALL errore(subname,"allocating caux2",ABS(ierr))
 
 
    !
@@ -129,17 +141,38 @@ SUBROUTINE overlap_extract(dimwann)
    !
    ! Overlap integrals
    !
-   DO ik  = 1, nkpts
+   DO ik_g = 1, nkpts_g
        !
        DO inn = 1, nb / 2
            !
-           ib  = nnpos ( inn )
-           ikb = nnlist( ib, ik )
+           ib    = nnpos ( inn )
+           ikb_g = nnlist( ib, ik_g )
            !
-           CALL mat_mul(aux, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
-                        dimwann, dimwin(ikb), dimwin(ik) )
-           CALL mat_mul(Mkb_tmp(:,:,inn,ik), aux, 'N', eamp(:,:,ikb), 'N', & 
-                        dimwann, dimwann, dimwin(ikb) )
+           ik_proc  = iproc_g ( ik_g )
+           ikb_proc = iproc_g ( ikb_g )
+           
+           !
+           ! get eamp(:,:,ikb) in the current pool
+           !
+           IF ( mpime == ikb_proc ) THEN
+               caux2 =  eamp(:,:,ikb_g -iks +1)
+           ENDIF
+           !
+           CALL mp_get( caux2, caux2, mpime, ik_proc, ikb_proc, 1 ) 
+
+           !
+           ! perform the main task
+           !
+           IF ( mpime == ik_proc ) THEN
+               !
+               ik = ik_g - iks +1
+               !
+               CALL mat_mul(caux1, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
+                            dimwann, dimwin(ikb_g), dimwin(ik_g) )
+               CALL mat_mul(Mkb_tmp(:,:,inn,ik), caux1, 'N', caux2, 'N', & 
+                            dimwann, dimwann, dimwin(ikb_g) )
+               !
+           ENDIF
            !
        ENDDO
        !
@@ -150,8 +183,10 @@ SUBROUTINE overlap_extract(dimwann)
    !
    DO ik = 1, nkpts
        !
+       ik_g = ik + iks -1
+       !
        CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
-                     dimwann, dimwann, dimwin(ik) )
+                     dimwann, dimwann, dimwin(ik_g) )
        !
    ENDDO
 
@@ -176,8 +211,10 @@ SUBROUTINE overlap_extract(dimwann)
    DEALLOCATE( Mkb_tmp, ca_tmp, STAT=ierr) 
    IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp, ca_tmp",ABS(ierr))
    !
-   DEALLOCATE( aux, STAT=ierr ) 
-   IF (ierr/=0) CALL errore(subname,"deallocating aux",ABS(ierr))
+   DEALLOCATE( caux1, STAT=ierr ) 
+   IF (ierr/=0) CALL errore(subname,"deallocating caux1",ABS(ierr))
+   DEALLOCATE( caux2, STAT=ierr ) 
+   IF (ierr/=0) CALL errore(subname,"deallocating caux2",ABS(ierr))
 
    CALL timing('overlap_extract',OPR='stop')
    CALL log_pop('overlap_extract')

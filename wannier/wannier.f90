@@ -12,7 +12,7 @@
 !=====================================================
    PROGRAM wannier
    !=====================================================
-
+      !
       USE kinds
       USE constants,           ONLY : CZERO, CONE, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
       USE parameters,          ONLY : nstrx
@@ -21,6 +21,7 @@
                                       localization_init_mode => localization_init, &
                                       ordering_mode, do_ordering, do_collect_wf 
       USE io_module,           ONLY : stdout, wan_unit, ham_unit, io_name, wantdata_form
+      USE io_module,           ONLY : ionode, ionode_id
       USE timing_module,       ONLY : timing, timing_upto_now
       USE log_module,          ONLY : log_push, log_pop
       USE files_module,        ONLY : file_open, file_close
@@ -33,8 +34,9 @@
                                       Omega_I, Omega_D, Omega_OD, Omega_tot, &
                                       localization_allocate, localization_write, localization_print, &
                                       a_condmin, niter_condmin, dump_condmin, xcell
-      USE trial_center_data_module, ONLY : trial
       USE hamiltonian_module,  ONLY : hamiltonian_write, hamiltonian_allocate
+      USE mp,                  ONLY : mp_sum
+      USE trial_center_data_module, ONLY : trial
       !
       USE parser_module
       USE want_interfaces_module
@@ -101,10 +103,15 @@
       ! ... import overlap and projections from the disentangle sotred data
       !
       CALL overlap_extract(dimwann)
-      WRITE(stdout,"(/,2x,'Overlaps and projections setup completed')")
       !
-      CALL timing_upto_now(stdout)
-      CALL flush_unit(stdout)
+      IF (ionode) THEN
+          !
+          WRITE(stdout,"(/,2x,'Overlaps and projections setup completed')")
+          !
+          CALL timing_upto_now(stdout)
+          CALL flush_unit(stdout)
+          !
+      ENDIF
 
 
       !
@@ -269,6 +276,8 @@
                ENDDO
                ENDDO
            ENDDO
+           !
+           CALL mp_sum( gcnorm1 )
 
 
            !
@@ -287,6 +296,7 @@
            ! auxiliary norm for cg
            !
            gcnorm_aux = ZERO
+           !
            DO ik = 1, nkpts
                !
                DO n = 1, dimwann
@@ -296,6 +306,8 @@
                ENDDO
                !
            ENDDO
+           !
+           CALL mp_sum( gcnorm1 )
            !
            gcnorm_aux = gcnorm_aux * aux1
 
@@ -390,20 +402,21 @@
            !
            ! write info to stdout
            !
-           IF ( MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1 ) THEN
-                !
-                IF ( do_condmin ) THEN 
-                     WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
-                            & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
-                ELSE
-                     WRITE( stdout,"(/,2x,'Iteration = ',i5) ") ncount
-                ENDIF
-                CALL localization_print(stdout, FMT="standard" )
-                WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6) ") Omega_var
-                
-                CALL timing_upto_now(stdout)
-                CALL flush_unit(stdout)
-                !
+           IF ( (MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1) .AND. ionode ) THEN
+               !
+               IF ( do_condmin ) THEN 
+                    WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
+                           & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
+               ELSE
+                    WRITE( stdout,"(/,2x,'Iteration = ',i5) ") ncount
+               ENDIF
+               !
+               CALL localization_print(stdout, FMT="standard" )
+               WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6) ") Omega_var
+               
+               CALL timing_upto_now(stdout)
+               CALL flush_unit(stdout)
+               !
            ENDIF
    
    
@@ -411,14 +424,17 @@
            ! write data to disk
            !
            IF ( MOD( ncount, nsave_wan ) == 0 ) THEN
-                !
-                CALL io_name('wannier',filename)
-                CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write", &
-                               FORM=TRIM(wantdata_form))
-                     !
-                     CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
-                     !
-                CALL file_close(wan_unit,PATH="/",ACTION="write")
+               !
+               CALL io_name('wannier',filename)
+               CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write", &
+                              FORM=TRIM(wantdata_form), IERR=ierr)
+               IF ( ierr/=0 ) CALL errore('wannier', 'opening '//TRIM(filename), ABS(ierr) )
+                    !
+                    CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
+                    !
+               CALL file_close(wan_unit,PATH="/",ACTION="write", IERR=ierr)
+               IF ( ierr/=0 ) CALL errore('wannier', 'closing '//TRIM(filename), ABS(ierr) )
+               !
            ENDIF
            !
            !     
@@ -442,7 +458,7 @@
       !
       ! ...  Status of the convergence
       !
-      WRITE(stdout, "()")
+      IF (ionode) WRITE(stdout, "()")
       CALL timing('iterations',OPR='stop')
 
       IF ( ncount == maxiter0_wan + maxiter1_wan ) THEN
@@ -451,7 +467,7 @@
           CALL write_header( stdout, "Convergence Achieved" )
       ENDIF
       !
-      WRITE( stdout, "(/,2x,'Iteration # : ',i5,/)") ncount
+      IF (ionode) WRITE( stdout, "(/,2x,'Iteration # : ',i5,/)") ncount
 
 
       !
@@ -459,7 +475,7 @@
       !
       IF ( do_ordering ) THEN
            !
-           WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
+           IF (ionode) WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
            CALL ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
            !
       ENDIF
@@ -469,10 +485,14 @@
       !
       IF ( do_collect_wf ) THEN
           !
-          WRITE( stdout, "(2x,'Collecting WFs')") 
-          WRITE( stdout, "(2x,'Selected cell extrema [cryst. coord]:')") 
-          WRITE( stdout,"(  3( 6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4, /),/ )" ) &
-                         (m, xcell(m), xcell(m) + ONE, m=1,3 ) 
+          IF ( ionode ) THEN
+              !
+              WRITE( stdout, "(2x,'Collecting WFs')") 
+              WRITE( stdout, "(2x,'Selected cell extrema [cryst. coord]:')") 
+              WRITE( stdout,"(  3( 6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4, /),/ )" ) &
+                             (m, xcell(m), xcell(m) + ONE, m=1,3 ) 
+              !
+          ENDIF
           !
           ALLOCATE( rave_aux(3, dimwann), STAT=ierr )
           IF ( ierr/=0 ) CALL errore('wannier','allocating rave_aux',ABS(ierr))
@@ -500,11 +520,11 @@
       !
       CALL localization_print(stdout, FMT="extended")
       !
-      WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6,/) ") Omega_var 
+      IF (ionode) WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6,/) ") Omega_var 
       !
       IF ( do_polarization ) CALL polarization( dimwann, rave )
       !
-      CALL timing_upto_now(stdout)
+      IF (ionode) CALL timing_upto_now(stdout)
       CALL flush_unit(stdout)
 
 
@@ -516,6 +536,7 @@
           IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik),  &
                                     SIDE='both', TOLL=unitary_thr )  )  &
                CALL warning('wannier', 'U matrix NOT unitary at ikpt = '//TRIM(int2char(ik)) )
+          !
       ENDDO
 
 
@@ -524,16 +545,18 @@
       !     to the Wannier localization procedure to a file
       !
       CALL io_name('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form) )
+      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form), IERR=ierr)
+      IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
            !
            CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
            !
-      CALL file_close(wan_unit,PATH="/",ACTION="write")
+      CALL file_close(wan_unit,PATH="/",ACTION="write", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 
 
-      CALL io_name('wannier',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(/,2x,'Unitary transf. matrixes written on file: ',a)") &
-                    TRIM(filename)
-      WRITE(stdout,"(2x,70('='))")
+      CALL io_name('wannier',filename, LPATH=.FALSE., LPROC=.FALSE.)
+      !
+      IF (ionode) WRITE( stdout,"(/,2x,'Unitary transf. matrixes written on file: ',a)") TRIM(filename)
+      IF (ionode) WRITE(stdout,"(2x,70('='))")
 
 
       !
@@ -544,13 +567,16 @@
       CALL hamiltonian_calc(dimwann, nkpts, cu)
 
       CALL io_name('hamiltonian',filename)
-      CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="write", &
-                              FORM=TRIM(wantdata_form))
-            CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
-      CALL file_close(ham_unit,PATH="/",ACTION="write")
+      CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="write", FORM=TRIM(wantdata_form), IERR=ierr)
+      IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
+           !
+           CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
+           !
+      CALL file_close(ham_unit,PATH="/",ACTION="write", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 
 
-      CALL io_name('hamiltonian',filename,LPATH=.FALSE.)
-      WRITE( stdout,"(/,'  Hamiltonian on WF basis written on file : ',a)") TRIM(filename)
+      CALL io_name('hamiltonian',filename, LPATH=.FALSE., LPROC=.FALSE.)
+      IF (ionode) WRITE( stdout,"(/,'  Hamiltonian on WF basis written on file : ',a)") TRIM(filename)
 
 !
 !--------------------------------------
