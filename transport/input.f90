@@ -54,11 +54,7 @@ CONTAINS
       !
       ! attach input from file if the case
       !
-      
-      IF ( ionode ) THEN
-          CALL input_from_file ( stdin, ierr )
-          IF ( ierr /= 0 )  CALL errore('input_manager','error in input from file',ABS(ierr))
-      ENDIF
+      CALL input_from_file ( stdin )
 
       !
       ! reading and checking namelists

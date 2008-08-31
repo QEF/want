@@ -176,7 +176,8 @@
 !
 ! reading from iotk-formatted .ham file (internal datafmt)
 !
-   CALL file_open( aux_unit, TRIM(filein), PATH="/HAMILTONIAN/", ACTION="read" )
+   CALL file_open( aux_unit, TRIM(filein), PATH="/HAMILTONIAN/", ACTION="read", IERR=ierr )
+   IF (ierr/=0) CALL errore(subname, 'opening '//TRIM(filein), ABS(ierr) )
    !
    CALL iotk_scan_empty(aux_unit, "DATA", ATTR=attr, IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching DATA', ABS(ierr) )
@@ -373,7 +374,8 @@
        !
    ENDIF
    !
-   CALL file_close( aux_unit, PATH="/HAMILTONIAN/", ACTION="read" )
+   CALL file_close( aux_unit, PATH="/HAMILTONIAN/", ACTION="read", IERR=ierr )
+   IF (ierr/=0) CALL errore(subname, 'closing '//TRIM(filein), ABS(ierr) )
 
 
 !
