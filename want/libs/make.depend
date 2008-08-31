@@ -3,10 +3,16 @@ crystal_io_base.o : ../iotk/iotk_16_module.o
 crystal_io.o : crystal_io_base.o
 crystal_io.o : ../iotk/iotk_16_module.o
 erf.o : kind.o
+error.o : io_global.o
+error.o : parallel_include.o
 fft_scalar.o : kind.o
+files.o : io_global.o
 files.o : ../iotk/iotk_16_module.o
+files.o : mp.o
 files.o : parameters.o
 files.o : parser.o
+input_from_file.o : io_global.o
+input_from_file.o : mp.o
 io_global.o : ../iotk/iotk_16_module.o
 locate.o : kind.o
 mp_global.o : kind.o
