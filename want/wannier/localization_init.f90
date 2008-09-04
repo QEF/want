@@ -26,9 +26,12 @@
    USE log_module,          ONLY : log_push, log_pop
    USE files_module,        ONLY : file_open, file_close
    USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd
-   USE localization_module, ONLY : localization_read, cu
-   USE overlap_module,      ONLY : ca, dimwann, nkpts 
+   USE kpoints_module,      ONLY : nkpts, nkpts_g, iks
+   USE localization_module, ONLY : localization_read, cU
+   USE overlap_module,      ONLY : ca, dimwann
    USE control_module,      ONLY : unitary_thr
+   USE mp,                  ONLY : mp_sum
+   !
    IMPLICIT NONE
 
    !
@@ -44,7 +47,7 @@
    REAL(dbl),       ALLOCATABLE :: singvd(:)
    COMPLEX(dbl),    ALLOCATABLE :: cv1(:,:), cv2(:,:)
    LOGICAL                      :: lfound
-   INTEGER                      :: i, ik, ierr
+   INTEGER                      :: i, ik, ik_g, ierr
    !
    ! end of declarations
    !
@@ -111,13 +114,25 @@
         ALLOCATE( cv2(dimwann,dimwann), STAT=ierr )
         IF( ierr /=0 ) CALL errore('wannier', 'allocating cv2 ', ABS(ierr) )
 
+        !
+        ! nullify the whoel vector
+        !
+        cu( :,:, 1:nkpts_g ) = CZERO
+        !
         DO ik = 1, nkpts
             !
+            ik_g = ik + iks -1
+            !
             CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
-            CALL mat_mul( cu(:,:,ik), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
+            CALL mat_mul( cU(:,:,ik_g), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
             !
         ENDDO
+        !
+        ! recover over pool
+        !
+        CALL mp_sum( cU )
 
+        !
         DEALLOCATE( singvd, cv1, cv2, STAT=ierr )
         IF( ierr /=0 ) CALL errore(subname,'deallocating SVD aux', ABS(ierr))
 
@@ -128,12 +143,20 @@
         ! The Cu(k) matrices are set equal to the identity, therefore the
         ! starting wfc from dsentangle are used as they are
         !
+        cU( :,:, 1:nkpts_g ) = CZERO
+        !
         DO ik = 1, nkpts
-             cu(:,:,ik) = CZERO
-             DO i = 1, dimwann
-                  cu(i,i,ik) = CONE
-             ENDDO
+            !
+            ik_g = ik + iks -1
+            !
+            cU(:,:,ik_g) = CZERO
+            !
+            DO i = 1, dimwann
+                cU(i,i,ik_g) = CONE
+            ENDDO
         ENDDO
+        !
+        CALL mp_sum( cU )
         !
    CASE( 'randomized' )
         !
@@ -141,22 +164,32 @@
         !
         ! The Cu(k) matrices unitary random matrixes
         !
+        cU( :,:, 1:nkpts_g ) = CZERO
+        !
         DO ik = 1, nkpts
-             cu(:,:,ik) = CZERO
-             CALL random_orthovect(dimwann,dimwann,dimwann,cu(1,1,ik))
+            !
+            ik_g = ik + iks -1
+            !
+            cU(:,:,ik_g) = CZERO
+            CALL random_orthovect(dimwann,dimwann,dimwann,cu(1,1,ik_g))
+            !
         ENDDO
+        !
+        CALL mp_sum( cU )
         !
    END SELECT
 
 
    !
-   ! check unitariery of Cu
+   ! check unitariery of cU
    !
-   DO ik=1,nkpts
+   DO ik = 1, nkpts
        !
-       IF ( .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
+       ik_g = ik + iks -1
+       !
+       IF ( .NOT. zmat_unitary( dimwann, dimwann, cU(:,:,ik_g), &
                   SIDE='both', TOLL=unitary_thr )  ) &
-                  CALL errore(subname,'U matrix not unitary', ik)
+                  CALL errore(subname,'U matrix not unitary', ik_g)
        !
    ENDDO
 

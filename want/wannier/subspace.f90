@@ -341,8 +341,9 @@ CONTAINS
            !
        ENDIF
        !
-       CALL mp_bcast( lamp,   ionode_id )
-       CALL mp_bcast( eamp_,  ionode_id )
+       CALL mp_bcast( wan_eig, ionode_id )
+       CALL mp_bcast( lamp,    ionode_id )
+       CALL mp_bcast( eamp_,   ionode_id )
        !
        IF ( lfound ) THEN
            !
