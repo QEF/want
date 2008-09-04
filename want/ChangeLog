@@ -4,6 +4,9 @@
 =======================================================
 
 
+04 Sep 2008      Internal copies of blas and lapack updated, according to the
+                 current needs of WanT. (AF)
+
 03 Sep 2008      Further development of the parallel implementation of 
                  disentangle.x and wannier.x . (AF)
 
