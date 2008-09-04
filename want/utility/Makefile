@@ -33,6 +33,7 @@ WANNIER_OBJS= \
 ../wannier/kpoints.o \
 ../wannier/lattice.o \
 ../wannier/localization.o \
+../wannier/memusage.o \
 ../wannier/monkpack.o \
 ../wannier/overlap_module.o \
 ../wannier/paratools.o \
@@ -66,6 +67,7 @@ WANNIER_OBJS= \
 ../wannier/wfc_data.o \
 ../wannier/wfc_info.o \
 ../wannier/windows.o \
+../wannier/workspace_wan.o \
 ../wannier/write_upf_v2.o 
 
 

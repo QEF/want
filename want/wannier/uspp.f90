@@ -61,14 +61,16 @@ MODULE uspp
   ! - beta and q functions of the solid
   !
   USE kinds,      ONLY : DP => dbl
+  USE constants,  ONLY : ZERO
   USE parameters, ONLY : lmaxx, lqmax
+  !
   IMPLICIT NONE
   PRIVATE
   SAVE
   PUBLIC :: nlx, lpx, lpl, ap, aainit, indv, nhtol, nhtolm, nkb, nkbus, &
-            vkb, vkb_ik, dvan, deeq, qq, qb, nhtoj, ijtoh, beta, becsum, okvan, &
-            uspp_deallocate
+            vkb, vkb_ik, dvan, deeq, qq, qb, nhtoj, ijtoh, beta, becsum, okvan
   PUBLIC :: qq_so, dvan_so, deeq_nc 
+  PUBLIC :: uspp_deallocate, uspp_memusage
 
   INTEGER, PARAMETER :: &
        nlx  = (lmaxx+1)**2, &! maximum number of combined angular momentum
@@ -290,9 +292,38 @@ CONTAINS
     IF( ALLOCATED( qq_so ) )   DEALLOCATE( qq_so )
     IF( ALLOCATED( dvan_so ) ) DEALLOCATE( dvan_so )
     IF( ALLOCATED( deeq_nc ) ) DEALLOCATE( deeq_nc )
+    IF( ALLOCATED( beta ) )    DEALLOCATE( beta )
     IF( ALLOCATED( qb ) )      DEALLOCATE( qb )
     !
   END SUBROUTINE uspp_deallocate
+  !
+  !---------------------------------------------------------
+  REAL(DP) FUNCTION uspp_memusage()
+    !---------------------------------------------------------
+    IMPLICIT NONE
+       !
+       REAL(DP) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(nhtol) )    cost = cost + REAL(SIZE(nhtol))   *  4.0_DP
+       IF ( ALLOCATED(indv) )     cost = cost + REAL(SIZE(indv))    *  4.0_DP
+       IF ( ALLOCATED(nhtolm) )   cost = cost + REAL(SIZE(nhtolm))  *  4.0_DP
+       IF ( ALLOCATED(nhtoj) )    cost = cost + REAL(SIZE(nhtoj))   *  8.0_DP
+       IF ( ALLOCATED(ijtoh) )    cost = cost + REAL(SIZE(ijtoh))   *  4.0_DP
+       IF ( ALLOCATED(vkb) )      cost = cost + REAL(SIZE(vkb))     * 16.0_DP
+       IF ( ALLOCATED(becsum) )   cost = cost + REAL(SIZE(becsum))  *  8.0_DP
+       IF ( ALLOCATED(qq) )       cost = cost + REAL(SIZE(qq))      *  8.0_DP
+       IF ( ALLOCATED(dvan) )     cost = cost + REAL(SIZE(dvan))    *  8.0_DP
+       IF ( ALLOCATED(deeq) )     cost = cost + REAL(SIZE(deeq))    *  8.0_DP
+       IF ( ALLOCATED(qq_so) )    cost = cost + REAL(SIZE(qq_so))   * 16.0_DP
+       IF ( ALLOCATED(dvan_so) )  cost = cost + REAL(SIZE(dvan_so)) * 16.0_DP
+       IF ( ALLOCATED(deeq_nc) )  cost = cost + REAL(SIZE(deeq_nc)) * 16.0_DP
+       IF ( ALLOCATED(beta) )     cost = cost + REAL(SIZE(beta))    *  8.0_DP
+       IF ( ALLOCATED(qb) )       cost = cost + REAL(SIZE(qb))      * 16.0_DP
+       !
+       uspp_memusage = cost / 1000000.0_DP
+       !
+  END FUNCTION uspp_memusage
   !
 END MODULE uspp
 

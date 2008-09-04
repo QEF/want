@@ -19,7 +19,7 @@
    !
    USE kinds
    USE constants,      ONLY : ZERO, TWO
-   USE kpoints_module, ONLY : nb, wb, wbtot, nnpos
+   USE kpoints_module, ONLY : nb, nkpts_g, wb, wbtot, nnpos
    USE log_module,     ONLY : log_push, log_pop
    USE timing_module,  ONLY : timing
    USE mp,             ONLY : mp_sum
@@ -75,14 +75,12 @@
    ! recover over parallelism
    !
    CALL mp_sum( Omega_I )
-   !
-   ! this is a nasty way to recover the total number of kpts
-   !
-   cost = REAL( nkpts, dbl )
-   CALL mp_sum( cost )
+   
    !
    ! Omega_I is moltiplied by two to account for the -b terms which
    ! have not been summed up in the previous loop
+   !
+   cost = REAL( nkpts_g, dbl )
    !
    Omega_I = TWO * Omega_I / cost + REAL(dimwann, dbl) * wbtot
 

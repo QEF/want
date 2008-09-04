@@ -25,16 +25,15 @@
                                     unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
                                     read_symmetry
        USE util_module,      ONLY : zmat_unitary, mat_hdiag, mat_mul
-       USE kpoints_module,   ONLY : nkpts, nkpts_g, iks, iproc_g, vkpt_g, nb, nnlist, nnpos, nnrev
+       USE kpoints_module,   ONLY : nkpts, nkpts_g, iks, ike, iproc_g, vkpt_g, nb, nnlist, nnpos, nnrev
        USE windows_module,   ONLY : imin, dimwin, dimwinx, eig, dimfroz, indxnfroz
        USE windows_module,   ONLY : windows_allocate, windows_write
-       USE subspace_module,  ONLY : dimwann, wan_eig, lamp, camp, eamp, comp_eamp, &
-                                    mtrx_in, mtrx_out
+       USE subspace_module,  ONLY : dimwann, wan_eig, lamp, eamp, mtrx_in, mtrx_out
        USE subspace_module,  ONLY : disentangle_thr, maxiter_dis, alpha_dis, &
                                     subspace_allocate, subspace_write
        USE overlap_module,   ONLY : Mkb, overlap_allocate
        USE mp_global,        ONLY : mpime
-       USE mp,               ONLY : mp_get, mp_put
+       USE mp,               ONLY : mp_sum
        USE want_interfaces_module
        !
        IMPLICIT NONE
@@ -52,7 +51,7 @@
        !
        REAL(dbl)  :: omega_i, omega_i_save, omega_i_err
        INTEGER    :: i, j, l, m, ierr
-       INTEGER    :: ik, ik_g, inn, ib, ikb_g, iter, ncount
+       INTEGER    :: ik, ik_g, inn, ipos, ib, ikb_g, iter, ncount
        INTEGER    :: ik_proc, ikb_proc
 
 !      
@@ -144,7 +143,8 @@
            !
            CALL log_push( "iteration" )
 
-           DO ik_g = 1, nkpts_g
+
+           DO ik = 1, nkpts
                !
                ! ... update Mkb_aux, according to lamp
                !     Mkb_aux = Lamp(k)^{dag} * Mkb(k,b) * Lamp(k+b)
@@ -152,66 +152,39 @@
                !     Akb     = Mkb * Lamp(ikb)
                !     Mkb_aux = Lamp(ik)^{\dag} * Akb
                !
-               DO inn = 1, nb / 2
-                    !
-                    ! <DEVEL>
-                    ! we only do half of the b vectors and then, 
-                    ! temporarily, apply the symmetrization rule: 
-                    ! M_ij(k,b) = CONJG( M_ji (k+b, -b) )
-                    !
-                    ib    = nnpos(inn)
-                    ikb_g = nnlist(ib, ik_g) 
-                    !
-                    ik_proc  = iproc_g( ik_g )
-                    ikb_proc = iproc_g( ikb_g )
+               ik_g = ik +iks -1
+               !
+               DO inn = 1, nb/2
+                   !
+                   DO ipos = 1, 2 
+                      !
+                      SELECT CASE( ipos )   
+                      CASE( 1 )
+                        ib = nnpos( inn )  
+                      CASE( 2 )
+                        ib = nnrev( nnpos( inn ) )
+                      END SELECT   
+                      ! 
+                      ikb_g = nnlist(ib, ik_g) 
 
-                    !
-                    ! Get lamp(:,:,ikb) in the current pool 
-                    !
-                    IF ( mpime == ikb_proc ) THEN
-                        caux =  lamp(:,:,ikb_g -iks +1)
-                    ENDIF
-                    !
-                    CALL mp_get( caux, caux, mpime, ik_proc, ikb_proc, 1 )
-                    
-                    !
-                    !  A^k,b     =  M^kb * Lamp^(k+b)
-                    !
-                    IF ( ik_proc == mpime ) THEN
-                        !
-                        ik = ik_g - iks +1
-                        !
-                        CALL mat_mul(Akb_aux(:,:,ib,ik), Mkb(:,:,inn,ik), 'N',  &
-                                     caux(:,:), 'N', dimwin(ik_g), dimwann, dimwin(ikb_g) )
+                      !
+                      !  A^k,b     =  M^kb * Lamp^(k+b)
+                      !
+                      CALL mat_mul(Akb_aux(:,:,ib,ik), Mkb(:,:,ib,ik), 'N',  &
+                                   lamp(:,:,ikb_g), 'N', dimwin(ik_g), dimwann, dimwin(ikb_g) )
 
-                        !
-                        !  A^k+b,-b  =  M^k+b,-b * Lamp(k)  =  M^kb^dag * Lamp^(k)
-                        !
-                        CALL mat_mul(caux, Mkb(:,:,inn,ik), 'C',  &
-                                     lamp(:,:,ik), 'N', dimwin(ikb_g), dimwann, dimwin(ik_g) )
-                        !
-                    ENDIF
-                    !
-                    CALL mp_put( caux, caux, mpime, ik_proc, ikb_proc, 1 )
-                    !
-                    IF ( mpime == ikb_proc ) THEN
-                        Akb_aux(:,:,nnrev(ib), ikb_g -iks +1) = caux
-                    ENDIF
-                      
-                    !
-                    ! Here we compute the updated overlap integrals (M^kb_aux)
-                    !
-                    !  M^kb_aux  =  Lamp^k^dag * A^kb = Lamp^k^dag * M^kb * Lamp^(k+b)
-                    !
-                    IF ( ik_proc == mpime ) THEN
-                        !
-                        ik = ik_g - iks +1
-                        !
-                        CALL mat_mul(Mkb_aux(:,:,inn,ik), lamp(:,:,ik), 'C', & 
-                                     Akb_aux(:,:,ib,ik), 'N', dimwann, dimwann, dimwin(ik_g) )
-                        !
-                    ENDIF
-                    !
+                   ENDDO
+                   !
+                   ! Here we compute the updated overlap integrals (M^kb_aux)
+                   ! but only for positive b vectors
+                   !
+                   ib = nnpos( inn )  
+                   !
+                   ! M^kb_aux  =  Lamp^k^dag * A^kb = Lamp^k^dag * M^kb * Lamp^(k+b)
+                   !
+                   CALL mat_mul(Mkb_aux(:,:,inn,ik), lamp(:,:,ik_g), 'C', & 
+                                Akb_aux(:,:,ib,ik), 'N', dimwann, dimwann, dimwin(ik_g) )
+                   !
                ENDDO
                !
            ENDDO
@@ -221,7 +194,7 @@
            ! Compute Omega_I using the updated subspaces at all k
            ! 
            CALL omegai( omega_i, dimwann, nkpts, Mkb_aux)
-    
+
 
            !
            ! write info on stdout
@@ -247,7 +220,7 @@
                 !
                 ! write data to disk
                 !
-                IF ( MOD(ncount, nsave_dis) == 0 )  THEN
+                IF ( MOD(ncount, nsave_dis) == 0 .AND. ionode )  THEN
                     !
                     CALL io_name('space',filename)
                     CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write", &
@@ -296,6 +269,7 @@
            !
            CALL log_pop ( 'zmatrix' )
 
+
            !
            ! Compute the current z-matrix at each relevant k-point 
            ! using the mixing scheme
@@ -336,9 +310,26 @@
            !
            CALL log_push( 'lamp' )
            !
-           DO ik = 1, nkpts
+           !
+           !
+           DO ik_g = 1, nkpts_g
+
                !
-               ik_g = ik + iks -1
+               ! first nullify lamp for kpts out of the current pool
+               ! This is needed to avoid problems with frozen states when
+               ! performing mp_sum
+               !
+               IF ( ik_g < iks .OR. ik_g > ike ) THEN
+                   !
+                   lamp( :, :, ik_g ) = CZERO
+                   CYCLE
+                   !
+               ENDIF
+
+               !
+               ! NOTE: this part of the loop is done only in the local pool
+               !
+               ik = ik_g -iks +1
                ! 
                ! Diagonalize z matrix mtrx_in at all relevant k-points
                ! 
@@ -365,11 +356,11 @@
                    DO j = dimwin(ik_g)-dimwann+1, dimwin(ik_g)-dimfroz(ik_g)
                        !
                        m = m+1
-                       lamp( 1:dimwin(ik_g), m, ik) = CZERO
+                       lamp( 1:dimwin(ik_g), m, ik_g) = CZERO
                        !
                        DO i = 1, dimwin(ik_g)-dimfroz(ik_g)
                            !
-                           lamp( indxnfroz(i,ik_g), m, ik) = z(i,j) 
+                           lamp( indxnfroz(i,ik_g), m, ik_g) = z(i,j) 
                            !
                        ENDDO
                        !
@@ -379,7 +370,14 @@
                !
            ENDDO
            !
+           ! take care of parallelism
+           CALL timing( 'mp_sum', OPR='start' )
+           CALL mp_sum( lamp )
+           CALL timing( 'mp_sum', OPR='stop' )
+           !
+           !
            CALL log_pop ( 'lamp' )
+
 
            CALL log_pop ( 'iteration')
            !
@@ -436,14 +434,14 @@
             WRITE( stdout,"(/,2x,'Subspace decomposition:')" ) 
             WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" ) 
             !
-            DO ik=1,nkpts
-                !
-                ik_g = ik + iks -1
+            DO ik_g = 1, nkpts_g
                 !
                 WRITE( stdout,"(1x,'!',6x,'kpt =', i3,' ( ',3f6.3,' )    dimwin = ',i4)") &
                       ik_g, vkpt_g(:,ik_g), dimwin(ik_g)
-                CALL mat_mul(z, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+
+                CALL mat_mul(z, lamp(:,:,ik_g), 'N', lamp(:,:,ik_g), 'C', &
                              dimwin(ik_g), dimwin(ik_g), dimwann )
+
                 WRITE( stdout,"(1x,'!',2x, 8f9.5)") ( REAL(z(i,i)), i=1,dimwin(ik_g) )
                 WRITE( stdout,"(1x,'!')" ) 
                 !
@@ -456,13 +454,22 @@
        ! ...  Diagonalize the hamiltonian within the optimized subspace at each kpoint
        !      in order to re-define eigenvalues and eigenvectors
        !
+       ALLOCATE( eamp(dimwinx, dimwann, nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'allocating eamp', ABS(ierr) )
+     
+       !
+       ! nullify eamp and wan_eig for all global kpts
+       !
+       eamp( :, :, 1:nkpts_g ) = CZERO
+       wan_eig( :, 1:nkpts_g ) = ZERO
+       !
        DO ik = 1, nkpts
            !
-           ik_g = ik + iks -1
-           ! 
+           ik_g = ik +iks - 1
+           !
            ! check the unitariry of lamp
            !
-           IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik), &
+           IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik_g), &
                                     SIDE='left', TOLL=unitary_thr ) )&
                  CALL errore(subname,"Lamp matrices not orthogonal",ik_g)
 
@@ -471,33 +478,41 @@
                !
                ham(i,j,ik) = CZERO
                DO l = 1, dimwin(ik_g)
-                  ham(i,j,ik) = ham(i,j,ik) + CONJG(lamp(l,i,ik))*lamp(l,j,ik)*eig(imin(ik_g)+l-1,ik_g)
+                   !
+                   ham(i,j,ik) = ham(i,j,ik) + &
+                                 CONJG(lamp(l,i,ik_g)) * lamp(l,j,ik_g) * eig(imin(ik_g)+l-1,ik_g)
+                   !
                ENDDO
                !
            ENDDO
            ENDDO
            !
            CALL timing('mat_hdiag', OPR='start')
-           CALL mat_hdiag(z(:,:), wan_eig(:,ik), ham(:,:,ik), dimwann)
+           CALL mat_hdiag(z(:,:), wan_eig(:,ik_g), ham(:,:,ik), dimwann)
            CALL timing('mat_hdiag', OPR='stop')
  
            !
            ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
            !      the original ("window space") energy eigenvectors
            !
-           eamp(:,:,ik) = CZERO
+           eamp(:,:,ik_g) = CZERO
            !
            DO j = 1, dimwann
            DO i = 1, dimwin(ik_g)
                !
                DO l = 1, dimwann
-                    eamp(i,j,ik) = eamp(i,j,ik) + z(l,j)*lamp(i,l,ik)
+                    eamp(i,j,ik_g) = eamp(i,j,ik_g) + z(l,j)*lamp(i,l,ik_g)
                ENDDO
                !
            ENDDO
            ENDDO
  
        ENDDO 
+       !
+       ! get rid of parallelism
+       !
+       CALL mp_sum( wan_eig )
+       CALL mp_sum( eamp )
                   
        !
        ! NOTE: for the purpose of minimizing Omega_D + Omega_OD in wannier.x 
@@ -518,99 +533,27 @@
 !      ( IOTK formatted ) after some postprocessing on subspace quantities
 !--------------------------------------
 !
-      
-       DO ik= 1, nkpts
-           !
-           ik_g = ik + iks -1
-           !
-           ! find a basis for the (dimwin(ik)-dimwann)-dimensional
-           ! complement space
-           ! 
-           camp(:,:,ik) = CZERO
-           !
-           condition_have_a_nonzero_comp_space: &
-           IF ( dimwin(ik_g) > dimwann )  THEN
-               DO j = 1, dimwin(ik_g)-dimwann
-                   IF ( dimwann > dimfroz(ik_g) )  THEN
-                       ! 
-                       !  Use the non-leading eigenvectors of the z-matrix
-                       ! 
-                       DO i = 1, dimwin(ik_g)
-                            camp(i,j,ik) = z(i,j)
-                       ENDDO
-                   ELSE   
-                       !
-                       ! dimwann=dimfroz(ik_g) 
-                       ! Use the original non-frozen bloch eigenstates
-                       ! 
-                       DO i = 1, dimwin(ik_g)
-                           camp(i,j,ik) = CZERO
-                           IF ( i == indxnfroz(j,ik_g) )  camp(i,j,ik) = CONE
-                       ENDDO
-                   ENDIF
-               ENDDO
-               
-               !
-               ! Diagonalize the hamiltonian in the complement subspace, write the
-               ! corresponding eigenfunctions and energy eigenvalues
-               !
-               DO j = 1, dimwin(ik_g)-dimwann
-               DO i = 1, dimwin(ik_g)-dimwann
-                   !
-                   ham(i,j,ik) = CZERO
-                   DO l = 1, dimwin(ik_g)
-                         ham(i,j,ik) = ham(i,j,ik) + CONJG(camp(l,i,ik)) * &
-                                                     camp(l,j,ik) * eig(imin(ik_g)+l-1,ik_g)
-                   ENDDO
-                   !
-               ENDDO
-               ENDDO
-
-               m = dimwin(ik_g)-dimwann
-               !
-               CALL timing('mat_hdiag', OPR='start')
-               CALL mat_hdiag( z(:,:), w(:), ham(:,:,ik), m )
-               CALL timing('mat_hdiag', OPR='stop')
-
-               ! ... Calculate amplitudes of the energy eigenvectors in the complement 
-               !     subspace in terms of the original energy eigenvectors
-               !  
-               comp_eamp(:,:,ik) = CZERO
-               !
-               DO j = 1, dimwin(ik_g)-dimwann
-               DO i = 1, dimwin(ik_g)
-                   !
-                   DO l = 1, dimwin(ik_g)-dimwann
-                      comp_eamp(i,j,ik) = comp_eamp(i,j,ik)+z(l,j)*camp(i,l,ik)
-                   ENDDO
-                   !
-               ENDDO
-               ENDDO
-               !
-           ELSE
-               !
-               comp_eamp(:,:,ik) = CZERO
-               !
-           ENDIF condition_have_a_nonzero_comp_space
-           !
-       ENDDO
 
        !
        ! ...  actual writing procedures
        ! 
-       CALL io_name('space',filename)
-       CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write", &
-                      FORM=TRIM(wantdata_form), IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
-            !
-            CALL windows_write(space_unit,"WINDOWS")
-            CALL subspace_write(space_unit,"SUBSPACE")
-            !
-       CALL file_close(space_unit,PATH="/",ACTION="write", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr))
+       IF ( ionode ) THEN 
+           !
+           CALL io_name('space',filename)
+           CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="write", &
+                          FORM=TRIM(wantdata_form), IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
+                !
+                CALL windows_write(space_unit,"WINDOWS")
+                CALL subspace_write(space_unit,"SUBSPACE")
+                !
+           CALL file_close(space_unit,PATH="/",ACTION="write", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr))
 
-       CALL io_name('space',filename,LPATH=.FALSE.)
-       IF (ionode) WRITE( stdout,"(/,2x,'Subspace data written on file: ',a)") TRIM(filename)
+           CALL io_name('space',filename,LPATH=.FALSE.)
+           WRITE( stdout,"(/,2x,'Subspace data written on file: ',a)") TRIM(filename)
+           !
+       ENDIF
 
 
 !

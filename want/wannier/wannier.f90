@@ -35,7 +35,10 @@
                                       localization_allocate, localization_write, localization_print, &
                                       a_condmin, niter_condmin, dump_condmin, xcell
       USE hamiltonian_module,  ONLY : hamiltonian_write, hamiltonian_allocate
+      USE workspace_wan_module,ONLY : sheet, csheet, domg, domg_aux, dq, dq0, cdU, cu0, Mkb0, Mkb_aux, &
+                                      workspace_wan_allocate
       USE mp,                  ONLY : mp_sum
+      !
       USE trial_center_data_module, ONLY : trial
       !
       USE parser_module
@@ -53,16 +56,7 @@
       REAL(dbl)   :: gcnorm1, gcnorm0, gcnorm_aux
       REAL(dbl)   :: aux1, aux2, eqb, eqa, alpha, alphamin
       !
-      REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:), rave_aux(:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  domg(:,:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  dq(:,:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  dq0(:,:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  cdU(:,:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
-      COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
-      COMPLEX(dbl), ALLOCATABLE ::  Mkb_aux(:,:,:,:)
+      REAL(dbl),    ALLOCATABLE ::  rave_aux(:,:) 
       !
       CHARACTER( LEN=nstrx )    :: filename
       !
@@ -91,7 +85,7 @@
       !
       ! ... Summary of the input and DFT data
       !
-      CALL summary( stdout, WINDOWS=.FALSE. )
+      CALL summary( stdout, WINDOWS=.FALSE., MEMORY=.FALSE. )
 
       !
       ! ... wannier-specific variables init
@@ -117,35 +111,7 @@
       !
       ! ... allocate local variables
       !
-      ALLOCATE( csheet(dimwann,nb,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating csheet', ABS(ierr))
-      !
-      ALLOCATE( sheet(dimwann,nb,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating sheet', ABS(ierr))
-
-      ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating cu0', ABS(ierr) )
-      !
-      ALLOCATE( Mkb0(dimwann,dimwann,nb/2,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb0', ABS(ierr) )
-      !
-      ALLOCATE( Mkb_aux(dimwann,dimwann,nb/2,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating Mkb_aux', ABS(ierr) )
-      !
-      ALLOCATE( domg(dimwann,dimwann,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating domg', ABS(ierr) )
-      !
-      ALLOCATE( domg_aux(dimwann,dimwann,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating domg_aux', ABS(ierr) )
-      !
-      ALLOCATE( dq0(dimwann,dimwann,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating dq0', ABS(ierr) )
-      !
-      ALLOCATE( dq(dimwann,dimwann,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating dq', ABS(ierr) )
-      !
-      ALLOCATE( cdU(dimwann,dimwann,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'allocating cdU', ABS(ierr) )
+      CALL workspace_wan_allocate( )
 
 
 !
@@ -155,6 +121,10 @@
 ! 
 
       CALL write_header( stdout, "Init localization procedure")
+      !
+      IF ( ionode ) WRITE( stdout, "()" )
+      CALL memusage( stdout )
+      !
       CALL flush_unit( stdout )
 
       !
@@ -566,52 +536,28 @@
       CALL hamiltonian_allocate()
       CALL hamiltonian_calc(dimwann, nkpts, cu)
 
-      CALL io_name('hamiltonian',filename)
-      CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="write", FORM=TRIM(wantdata_form), IERR=ierr)
-      IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
-           !
-           CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
-           !
-      CALL file_close(ham_unit,PATH="/",ACTION="write", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 
-
-      CALL io_name('hamiltonian',filename, LPATH=.FALSE., LPROC=.FALSE.)
-      IF (ionode) WRITE( stdout,"(/,'  Hamiltonian on WF basis written on file : ',a)") TRIM(filename)
+      IF ( ionode ) THEN 
+          !
+          CALL io_name('hamiltonian',filename)
+          CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="write", &
+                                  FORM=TRIM(wantdata_form), IERR=ierr)
+          IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
+             !
+             CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
+             !
+          CALL file_close(ham_unit,PATH="/",ACTION="write", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 
+          !
+          CALL io_name('hamiltonian',filename, LPATH=.FALSE., LPROC=.FALSE.)
+          WRITE( stdout,"(/,'  Hamiltonian on WF basis written on file : ',a)") TRIM(filename)
+          !
+      ENDIF
 
 !
 !--------------------------------------
 ! ...  Shut down
 !--------------------------------------
 !
-      !
-      ! ... Deallocate local arrays
-      !
-      DEALLOCATE( csheet, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating csheet', ABS(ierr) )
-      !
-      DEALLOCATE( sheet, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating sheet', ABS(ierr) )
-      !
-      DEALLOCATE( cu0, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating cu0', ABS(ierr) )
-      !
-      DEALLOCATE( Mkb0, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb0', ABS(ierr) )
-      !
-      DEALLOCATE( Mkb_aux, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating Mkb_aux', ABS(ierr) )
-      !
-      DEALLOCATE( domg, domg_aux, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating domg', ABS(ierr) )
-      !
-      DEALLOCATE( dq0, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq0', ABS(ierr) )
-      !
-      DEALLOCATE( dq, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating dq', ABS(ierr) )
-      !
-      DEALLOCATE( cdu, STAT=ierr )
-      IF( ierr /=0 ) CALL errore('wannier', 'deallocating cdu', ABS(ierr) )
 
       !
       ! global cleanup

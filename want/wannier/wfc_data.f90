@@ -74,6 +74,7 @@
    PUBLIC :: alloc
 
    PUBLIC :: wfc_data_deallocate
+   PUBLIC :: wfc_data_memusage
    PUBLIC :: wfc_data_grids_read 
    PUBLIC :: wfc_data_grids_summary
    PUBLIC :: wfc_data_kread
@@ -238,6 +239,23 @@ CONTAINS
        CALL log_pop( subname )
        !
    END SUBROUTINE wfc_data_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION wfc_data_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !   
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(npwk) )   cost = cost + REAL(SIZE(npwk))   *  4.0_dbl
+       IF ( ALLOCATED(igsort) ) cost = cost + REAL(SIZE(igsort)) *  4.0_dbl
+       IF ( ALLOCATED(evc) )    cost = cost + REAL(SIZE(evc))    * 16.0_dbl
+       !   
+       wfc_data_memusage = cost / 1000000.0_dbl
+       !   
+   END FUNCTION wfc_data_memusage
 
 
 !*********************************************************

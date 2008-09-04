@@ -17,7 +17,7 @@
    ! Wannier basis
    ! 
    USE kinds,                ONLY : dbl 
-   USE constants,            ONLY : ZERO, CZERO, CI, TPI
+   USE constants,            ONLY : ZERO, ONE, CZERO, CI, TPI
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, ham_unit, ionode
    USE timing_module,        ONLY : timing
@@ -26,7 +26,7 @@
    USE control_module,       ONLY : verbosity
    USE kpoints_module,       ONLY : vkpt, nkpts_g, nrtot, vr, ivr
    USE windows_module,       ONLY : efermi
-   USE hamiltonian_module,   ONLY : wan_eig, rham, kham, ham_alloc => alloc 
+   USE hamiltonian_module,   ONLY : wan_eig, rham, ham_alloc => alloc 
    USE mp,                   ONLY : mp_sum
 
 #ifdef __CHECK_HAMILTONIAN
@@ -47,12 +47,13 @@
    CHARACTER(16) :: subname = 'hamiltonian_calc'
 
    INTEGER       :: i, j, m, ik, ir, inorm, imax, imin
-   REAL(dbl)     :: norm, rmod
+   INTEGER       :: ierr
+   REAL(dbl)     :: norm, rmod, fact
    REAL(dbl)     :: arg
    COMPLEX(dbl)  :: phase
+   COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)
  
 #ifdef __CHECK_HAMILTONIAN
-   INTEGER            :: ierr
    CHARACTER(nstrx)   :: filename
 #endif
    !
@@ -73,6 +74,9 @@
       ! set the zero as the fermi energy
       !
       wan_eig(:,:) = wan_eig(:,:) - efermi
+
+      ALLOCATE( kham(dimwann, dimwann, nkpts), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'allocating kham', ABS(ierr) )
 
 
       !
@@ -132,6 +136,8 @@
           !
       ENDDO
       
+      DEALLOCATE( kham, STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'deallocating kham', ABS(ierr) )
 
 
       !

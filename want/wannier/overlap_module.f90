@@ -12,7 +12,7 @@
    !*********************************************
    !
    USE kinds,            ONLY : dbl
-   USE constants,        ONLY : CZERO
+   USE constants,        ONLY : ZERO, CZERO
    USE parameters,       ONLY : nstrx
    USE log_module,       ONLY : log_push, log_pop
    USE windows_module,   ONLY : dimwinx, dimwin, windows_alloc => alloc
@@ -39,7 +39,7 @@
 !   
 
    COMPLEX(dbl), ALLOCATABLE   :: Mkb(:,:,:,:)   ! <u_nk|u_mk+b> overlap
-                                                 ! DIM: dimwinx,dimwinx,nb/2,nkpts
+                                                 ! DIM: dimwinx,dimwinx,nb,nkpts
    COMPLEX(dbl), ALLOCATABLE   :: ca(:,:,:)      ! <u_nk|phi_lk> projection
                                                  ! DIM: dimwinx,dimwann,nkpts
    LOGICAL :: alloc = .FALSE.
@@ -51,8 +51,10 @@
 
    PUBLIC :: Mkb, ca 
    PUBLIC :: dimwinx, dimwin, nkpts, nb, dimwann
+   !
    PUBLIC :: overlap_allocate
    PUBLIC :: overlap_deallocate
+   PUBLIC :: overlap_memusage
    PUBLIC :: overlap_write
    PUBLIC :: overlap_read
    PUBLIC :: alloc
@@ -64,10 +66,18 @@ CONTAINS
 !
 
 !**********************************************************
-   SUBROUTINE overlap_allocate()
+   SUBROUTINE overlap_allocate(memusage)
    !**********************************************************
+   !
+   ! memusgae = "full | high"   ->  allocates Mkb for all b vectors
+   !          = "low"           ->  allocates Mkb for positive b vectors only
+   ! DEFAULT: memusage = "full"
+   !
    IMPLICIT NONE
+       CHARACTER(*), OPTIONAL, INTENT(IN) :: memusage
+       !
        CHARACTER(16)      :: subname="overlap_allocate"
+       LOGICAL            :: lfull
        INTEGER            :: ierr 
 
        CALL log_push( subname )
@@ -77,8 +87,25 @@ CONTAINS
        IF ( dimwann <= 0 ) CALL errore(subname,'Invalid dimwann',1)
        IF ( nb <= 0      ) CALL errore(subname,'Invalid nb',1)
 
-       ALLOCATE( Mkb(dimwinx,dimwinx,nb/2,nkpts), STAT=ierr )       
+       lfull = .TRUE.
+       IF ( PRESENT(memusage) ) THEN
+          !
+          SELECT CASE ( TRIM(memusage) )
+          CASE ( "full", "FULL", "high", "HIGH")
+             lfull = .TRUE.
+          CASE ( "low", "LOW" )
+             lfull = .FALSE.
+          END SELECT
+          !
+       ENDIF
+       
+       IF ( lfull ) THEN
+          ALLOCATE( Mkb(dimwinx,dimwinx,nb,nkpts), STAT=ierr )       
+       ELSE
+          ALLOCATE( Mkb(dimwinx,dimwinx,nb/2,nkpts), STAT=ierr )       
+       ENDIF
        IF ( ierr/=0 ) CALL errore(subname,'allocating Mkb', ABS(ierr) )
+       !
        !
        ALLOCATE( ca(dimwinx,dimwann,nkpts), STAT=ierr )       
        IF ( ierr/=0 ) CALL errore(subname,'allocating ca', ABS(ierr) )
@@ -113,6 +140,22 @@ CONTAINS
        CALL log_pop( subname )
        !
    END SUBROUTINE overlap_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION overlap_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(Mkb) )    cost = cost + REAL(SIZE(Mkb))    * 16.0_dbl
+       IF ( ALLOCATED(ca) )     cost = cost + REAL(SIZE(ca))     * 16.0_dbl
+       !
+       overlap_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION overlap_memusage
 
 
 !**********************************************************

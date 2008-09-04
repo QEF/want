@@ -12,6 +12,7 @@
 !*********************************************
    !
    USE kinds,             ONLY : dbl
+   USE constants,         ONLY : ZERO
    USE log_module,        ONLY : log_push, log_pop
    USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, ityp, tau
    USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba
@@ -51,6 +52,7 @@
    PUBLIC :: alloc
    PUBLIC :: struct_fact_data_allocate
    PUBLIC :: struct_fact_data_deallocate
+   PUBLIC :: struct_fact_data_memusage
    PUBLIC :: struct_fact_data_init
 
 CONTAINS
@@ -124,6 +126,24 @@ CONTAINS
        CALL log_pop ( subname )
        !
    END SUBROUTINE struct_fact_data_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION struct_fact_data_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(strf) )     cost = cost + REAL(SIZE(strf))       * 16.0_dbl
+       IF ( ALLOCATED(eigts1) )   cost = cost + REAL(SIZE(eigts1))     * 16.0_dbl
+       IF ( ALLOCATED(eigts2) )   cost = cost + REAL(SIZE(eigts2))     * 16.0_dbl
+       IF ( ALLOCATED(eigts3) )   cost = cost + REAL(SIZE(eigts3))     * 16.0_dbl
+       !
+       struct_fact_data_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION struct_fact_data_memusage
 
 
 !*********************************************************

@@ -12,6 +12,7 @@
 !*********************************************
    !
    USE kinds,                  ONLY : dbl
+   USE constants,              ONLY : ZERO
    USE log_module,             ONLY : log_push, log_pop
    USE subspace_module,        ONLY : dimwann
    USE trial_center_module
@@ -40,6 +41,7 @@
    PUBLIC :: trial
    PUBLIC :: trial_center_data_allocate
    PUBLIC :: trial_center_data_deallocate
+   PUBLIC :: trial_center_data_memusage
    PUBLIC :: alloc
 
 CONTAINS
@@ -85,6 +87,20 @@ CONTAINS
       !
    END SUBROUTINE trial_center_data_deallocate
 
+
+!**********************************************************
+   REAL(dbl) FUNCTION trial_center_data_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(trial) )    cost = cost + REAL(SIZE(trial))  * 34 * 4.0_dbl
+       !
+       trial_center_data_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION trial_center_data_memusage 
 
 END MODULE trial_center_data_module
 

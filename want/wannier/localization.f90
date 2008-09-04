@@ -86,6 +86,7 @@
 
    PUBLIC :: localization_allocate
    PUBLIC :: localization_deallocate
+   PUBLIC :: localization_memusage
    PUBLIC :: localization_print
    PUBLIC :: localization_write
    PUBLIC :: localization_read
@@ -149,6 +150,24 @@ CONTAINS
        ENDIF
        alloc = .FALSE.
    END SUBROUTINE localization_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION localization_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !   
+       REAL(dbl) :: cost
+       !   
+       cost = ZERO
+       IF ( ALLOCATED(cu) )     cost = cost + REAL(SIZE(cu))     * 16.0_dbl
+       IF ( ALLOCATED(rave) )   cost = cost + REAL(SIZE(rave))   *  8.0_dbl
+       IF ( ALLOCATED(r2ave) )  cost = cost + REAL(SIZE(r2ave))  *  8.0_dbl
+       IF ( ALLOCATED(rave2) )  cost = cost + REAL(SIZE(rave2))  *  8.0_dbl
+       !   
+       localization_memusage = cost / 1000000.0_dbl
+       !   
+   END FUNCTION localization_memusage
 
 
 !**********************************************************

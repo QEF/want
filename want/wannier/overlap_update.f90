@@ -77,11 +77,11 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
            !
            ! get U(ikb) in the current pool
            !
-           CALL timing( 'mp_get', OPR='start' )
-           !
            IF ( mpime == ikb_proc ) THEN
                caux2 =  U(:,:,ikb_g -iks +1 )
            ENDIF
+           !
+           CALL timing( 'mp_get', OPR='start' )
            !
            CALL mp_get( caux2, caux2, mpime, ik_proc, ikb_proc, 1 )           
            !

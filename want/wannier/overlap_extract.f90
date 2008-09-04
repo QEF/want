@@ -52,7 +52,7 @@ SUBROUTINE overlap_extract(dimwann)
    !
    COMPLEX(dbl), ALLOCATABLE :: Mkb_tmp(:,:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: ca_tmp(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: caux1(:,:), caux2(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: caux1(:,:)
    !
    LOGICAL                   :: lfound
    CHARACTER(nstrx)          :: filename 
@@ -118,8 +118,6 @@ SUBROUTINE overlap_extract(dimwann)
    !
    ALLOCATE( caux1(dimwinx,dimwinx), STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"allocating caux1",ABS(ierr))
-   ALLOCATE( caux2(dimwinx,dimwinx), STAT=ierr ) 
-   IF (ierr/=0) CALL errore(subname,"allocating caux2",ABS(ierr))
 
 
    !
@@ -141,38 +139,22 @@ SUBROUTINE overlap_extract(dimwann)
    !
    ! Overlap integrals
    !
-   DO ik_g = 1, nkpts_g
+   DO ik = 1, nkpts
+       !
+       ik_g = ik +iks -1
        !
        DO inn = 1, nb / 2
            !
            ib    = nnpos ( inn )
            ikb_g = nnlist( ib, ik_g )
-           !
-           ik_proc  = iproc_g ( ik_g )
-           ikb_proc = iproc_g ( ikb_g )
-           
-           !
-           ! get eamp(:,:,ikb) in the current pool
-           !
-           IF ( mpime == ikb_proc ) THEN
-               caux2 =  eamp(:,:,ikb_g -iks +1)
-           ENDIF
-           !
-           CALL mp_get( caux2, caux2, mpime, ik_proc, ikb_proc, 1 ) 
 
            !
            ! perform the main task
            !
-           IF ( mpime == ik_proc ) THEN
-               !
-               ik = ik_g - iks +1
-               !
-               CALL mat_mul(caux1, eamp(:,:,ik), 'C', Mkb(:,:,inn,ik), 'N', &
-                            dimwann, dimwin(ikb_g), dimwin(ik_g) )
-               CALL mat_mul(Mkb_tmp(:,:,inn,ik), caux1, 'N', caux2, 'N', & 
-                            dimwann, dimwann, dimwin(ikb_g) )
-               !
-           ENDIF
+           CALL mat_mul(caux1, eamp(:,:,ik_g), 'C', Mkb(:,:,inn,ik), 'N', &
+                        dimwann, dimwin(ikb_g), dimwin(ik_g) )
+           CALL mat_mul(Mkb_tmp(:,:,inn,ik), caux1, 'N', eamp(:,:,ikb_g), 'N', & 
+                        dimwann, dimwann, dimwin(ikb_g) )
            !
        ENDDO
        !
@@ -185,7 +167,7 @@ SUBROUTINE overlap_extract(dimwann)
        !
        ik_g = ik + iks -1
        !
-       CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik), 'C', ca(:,:,ik), 'N',  &
+       CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik_g), 'C', ca(:,:,ik), 'N',  &
                      dimwann, dimwann, dimwin(ik_g) )
        !
    ENDDO
@@ -198,7 +180,7 @@ SUBROUTINE overlap_extract(dimwann)
    !
    dimwinx = dimwann
    !
-   CALL overlap_allocate()
+   CALL overlap_allocate( MEMUSAGE="low" )
    !
    !
    Mkb(:,:,:,:) = Mkb_tmp(:,:,:,:)
@@ -213,8 +195,6 @@ SUBROUTINE overlap_extract(dimwann)
    !
    DEALLOCATE( caux1, STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"deallocating caux1",ABS(ierr))
-   DEALLOCATE( caux2, STAT=ierr ) 
-   IF (ierr/=0) CALL errore(subname,"deallocating caux2",ABS(ierr))
 
    CALL timing('overlap_extract',OPR='stop')
    CALL log_pop('overlap_extract')

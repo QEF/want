@@ -12,6 +12,7 @@
    !*********************************************
    !
    USE kinds,             ONLY : dbl
+   USE constants,         ONLY : ZERO
    USE parameters,        ONLY : nstrx
    USE log_module,        ONLY : log_push, log_pop
    USE io_global_module,  ONLY : ionode, ionode_id
@@ -57,6 +58,7 @@
 
    PUBLIC :: symmetry_allocate
    PUBLIC :: symmetry_deallocate
+   PUBLIC :: symmetry_memusage
    PUBLIC :: symmetry_read_ext
    PUBLIC :: symmetry_rotate
    PUBLIC :: symmetry_write
@@ -119,6 +121,23 @@ CONTAINS
        CALL log_pop ( subname )
        !
    END SUBROUTINE symmetry_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION symmetry_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(srot) )     cost = cost + REAL(SIZE(srot))       * 4.0_dbl
+       IF ( ALLOCATED(strasl) )   cost = cost + REAL(SIZE(strasl))     * 8.0_dbl
+       IF ( ALLOCATED(sname) )    cost = cost + REAL(SIZE(sname))      * nstrx * 4.0_dbl
+       !
+       symmetry_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION symmetry_memusage
 
 
 !**********************************************************
