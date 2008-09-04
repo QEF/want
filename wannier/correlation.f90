@@ -15,6 +15,7 @@
    ! correlation self-energies
    !
    USE kinds,             ONLY : dbl
+   USE constants,         ONLY : ZERO
    USE parameters,        ONLY : nstrx
    USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : lattice_alloc => alloc
@@ -65,6 +66,7 @@
 
    PUBLIC :: correlation_allocate
    PUBLIC :: correlation_deallocate
+   PUBLIC :: correlation_memusage
 
 CONTAINS
 
@@ -141,6 +143,22 @@ CONTAINS
        CALL log_pop ( subname )
        !
    END SUBROUTINE correlation_deallocate
+
+!**********************************************************
+   REAL(dbl) FUNCTION correlation_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(rsgm) )     cost = cost + REAL(SIZE(rsgm))      * 16.0_dbl
+       IF ( ALLOCATED(ksgm) )     cost = cost + REAL(SIZE(ksgm))      * 16.0_dbl
+       IF ( ALLOCATED(omg_grid) ) cost = cost + REAL(SIZE(omg_grid))  *  8.0_dbl
+       !
+       correlation_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION correlation_memusage
 
 END MODULE correlation_module
 

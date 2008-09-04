@@ -47,12 +47,14 @@ kpoints.o \
 lattice.o \
 localization.o \
 localization_init.o \
+memusage.o \
 monkpack.o \
 omega.o \
 omegai.o \
 operator.o \
 ordering.o \
 overlap_augment.o \
+overlap_bsymm.o \
 overlap_extract.o \
 overlap.o \
 overlap_module.o \
@@ -101,6 +103,7 @@ wfc_data.o \
 wfc_info.o \
 wfc_manager.o \
 windows.o \
+workspace_wan.o \
 write_decay.o \
 write_upf_v2.o \
 xsf.o \

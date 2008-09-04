@@ -423,13 +423,13 @@
            ENDIF
            !
       CASE ( "space" ) 
-           suffix_ = TRIM(suffix_space) // TRIM(proc_)
+           suffix_ = TRIM(suffix_space)
       CASE ( "overlap_projection" ) 
            suffix_ = TRIM(suffix_ovp) // TRIM(proc_)
       CASE ( "wannier" ) 
-           suffix_ = TRIM(suffix_wannier) // TRIM(proc_)
+           suffix_ = TRIM(suffix_wannier)
       CASE ( "hamiltonian" )
-           suffix_ = TRIM(suffix_hamiltonian) // TRIM(proc_)
+           suffix_ = TRIM(suffix_hamiltonian) 
       CASE ( "save" )
            suffix_ = TRIM(suffix_save) // TRIM(proc_)
       CASE ( "log" )

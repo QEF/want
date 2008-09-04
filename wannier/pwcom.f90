@@ -41,6 +41,7 @@ MODULE us_module
   ! ... These parameters are needed with the US pseudopotentials
   !  
   USE kinds,      ONLY : dbl
+  USE constants,  ONLY : ZERO
   !
   SAVE
   !
@@ -58,11 +59,31 @@ MODULE us_module
   !
 CONTAINS
 
-SUBROUTINE us_deallocate()
-  IF( ALLOCATED( qrad ) )      DEALLOCATE( qrad ) 
-  IF( ALLOCATED( tab ) )       DEALLOCATE( tab ) 
-  IF( ALLOCATED( tab_at ) )    DEALLOCATE( tab_at ) 
+!**********************************************************
+   SUBROUTINE us_deallocate()
+   !**********************************************************
+      !
+      IF( ALLOCATED( qrad ) )      DEALLOCATE( qrad ) 
+      IF( ALLOCATED( tab ) )       DEALLOCATE( tab ) 
+      IF( ALLOCATED( tab_at ) )    DEALLOCATE( tab_at ) 
+      !
 END SUBROUTINE us_deallocate
+
+!**********************************************************
+   REAL(dbl) FUNCTION us_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(qrad) )     cost = cost + REAL(SIZE(qrad))     * 8.0_dbl
+       IF ( ALLOCATED(tab) )      cost = cost + REAL(SIZE(tab))      * 8.0_dbl
+       IF ( ALLOCATED(tab_at) )   cost = cost + REAL(SIZE(tab_at))   * 8.0_dbl
+       !
+       us_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION us_memusage
  
 END MODULE us_module
 !

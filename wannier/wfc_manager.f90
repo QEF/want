@@ -176,9 +176,8 @@
               CALL init_at_1()
               !
           ENDIF
-          
           !
-          IF (ionode) WRITE( stdout, "(/)")
+          IF ( ionode ) WRITE( stdout, "()" )
           CALL flush_unit( stdout )
 
 
@@ -210,6 +209,10 @@
           CALL file_open( dft_unit, TRIM(filename), PATH="/", ACTION="read", IERR=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
 
+          !
+          ! memory report
+          CALL memusage( stdout )
+          IF (ionode) WRITE( stdout, "()")
 
           !
           ! initializing Ca and Mkb
@@ -261,7 +264,7 @@
                     !
                     ! In order to do that we compute the Mkb integrals only 
                     ! for half of the defined b vectors and then impose the
-                    ! other values by symmetry
+                    ! other values by symmetry (at end of the driver)
                     !
                     ib    = nnpos(inn)
                     ikb_g = nnlist( ib , ik_g)
@@ -344,7 +347,7 @@
 
 
           !
-          ! ... re-closing the main data file
+          ! re-closing the main data file
           CALL file_close( dft_unit, PATH="/", ACTION="read", IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
 
@@ -364,14 +367,16 @@
           CALL wfc_data_deallocate()
           CALL ggrids_deallocate()
 
-      !
-      ! end of the newly computed quantities
-      !
+          !
+          ! end of the newly computed quantities
+          !
       ENDIF
 
 
 !
 ! ... Here read overlap or projections (or both) if needed
+!     Note that only half of the overlaps are read, and then symmetrized
+!     according to the +/- b symm
 !
       IF ( read_overlaps .OR. read_projections ) THEN
           !
@@ -418,6 +423,15 @@
           IF (ionode) WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") TRIM(filename)
           !
       ENDIF
+
+ 
+      !
+      ! Finally, symmetrize to have both +b and -b
+      ! In principle this is not needed, but it is useful in terms of 
+      ! parallelization
+      !
+      CALL overlap_bsymm( dimwinx, dimwann, nkpts, Mkb )
+
 
       IF (ionode) CALL timing_upto_now( stdout )
       CALL flush_unit( stdout )

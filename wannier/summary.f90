@@ -18,8 +18,8 @@
 CONTAINS
 !
 !**********************************************************
-   SUBROUTINE summary(iunit, input,  lattice, ions, windows, symmetry, &
-                             kpoints, bshells, pseudo )
+   SUBROUTINE summary(iunit, input,   lattice, ions,   windows, symmetry, &
+                             kpoints, bshells, pseudo, memory )
    !**********************************************************
    !
    ! Print out all the informnatins obtained from the 
@@ -37,6 +37,7 @@ CONTAINS
    !    - kpoints and bshells
    !    - windows (eigenvalues)
    !    - pseudo
+   !    - memory usage
    !
    USE kinds,             ONLY : dbl
    USE parameters,        ONLY : nstrx
@@ -76,15 +77,16 @@ CONTAINS
    !
    ! input variables
    !
-   INTEGER,           INTENT(in) :: iunit
-   LOGICAL, OPTIONAL, INTENT(in) :: input     ! if TRUE summ input
-   LOGICAL, OPTIONAL, INTENT(in) :: lattice   ! if TRUE summ lattice
-   LOGICAL, OPTIONAL, INTENT(in) :: ions      ! if TRUE summ ions
-   LOGICAL, OPTIONAL, INTENT(in) :: windows   ! if TRUE summ eigenvalues (windows)
-   LOGICAL, OPTIONAL, INTENT(in) :: symmetry  ! if TRUE summ symmetries
-   LOGICAL, OPTIONAL, INTENT(in) :: kpoints   ! if TRUE summ kpoints
-   LOGICAL, OPTIONAL, INTENT(in) :: bshells   ! if TRUE summ bshells
-   LOGICAL, OPTIONAL, INTENT(in) :: pseudo    ! if TRUE summ pseudos
+   INTEGER,           INTENT(IN) :: iunit
+   LOGICAL, OPTIONAL, INTENT(IN) :: input     ! if TRUE summ input
+   LOGICAL, OPTIONAL, INTENT(IN) :: lattice   ! if TRUE summ lattice
+   LOGICAL, OPTIONAL, INTENT(IN) :: ions      ! if TRUE summ ions
+   LOGICAL, OPTIONAL, INTENT(IN) :: windows   ! if TRUE summ eigenvalues (windows)
+   LOGICAL, OPTIONAL, INTENT(IN) :: symmetry  ! if TRUE summ symmetries
+   LOGICAL, OPTIONAL, INTENT(IN) :: kpoints   ! if TRUE summ kpoints
+   LOGICAL, OPTIONAL, INTENT(IN) :: bshells   ! if TRUE summ bshells
+   LOGICAL, OPTIONAL, INTENT(IN) :: pseudo    ! if TRUE summ pseudos
+   LOGICAL, OPTIONAL, INTENT(IN) :: memory    ! if TRUE summ memory usage
 
    !
    ! local variables
@@ -97,6 +99,7 @@ CONTAINS
    LOGICAL                :: lkpoints
    LOGICAL                :: lbshells
    LOGICAL                :: lpseudo
+   LOGICAL                :: lmemory
    LOGICAL                :: ldft
 
    INTEGER                :: ik, ia
@@ -122,6 +125,8 @@ CONTAINS
    lsymmetry = .TRUE. 
    lkpoints  = .TRUE. 
    lpseudo   = .TRUE. 
+   lmemory   = .TRUE. 
+   !
    IF ( PRESENT(input) )    linput    = input
    IF ( PRESENT(lattice) )  llattice  = lattice
    IF ( PRESENT(ions) )     lions     = ions
@@ -131,8 +136,9 @@ CONTAINS
    lbshells  = lkpoints
    IF ( PRESENT(bshells) )  lbshells  = bshells
    IF ( PRESENT(pseudo) )   lpseudo   = pseudo
+   IF ( PRESENT(memory) )   lmemory   = memory
    !
-   ldft  = llattice  .OR. lions .OR. lwindows .OR. lpseudo .OR. lkpoints .OR. lbshells
+   ldft  = llattice .OR. lions .OR. lwindows .OR. lpseudo .OR. lkpoints .OR. lbshells
 
 !
 ! <MAIN & INPUT> section
@@ -491,10 +497,20 @@ CONTAINS
    ENDIF
 
    !
+   ! memory usage
+   !
+   IF ( lmemory ) THEN 
+       !
+       CALL memusage( iunit )
+       !
+   ENDIF
+
+   !
    CALL flush_unit( iunit )
    CALL log_pop( 'summary' )
    !
 END SUBROUTINE summary
+!
 !
 !************************************************************
 SUBROUTINE print_ps_info( iunit, nt )

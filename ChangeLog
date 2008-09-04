@@ -4,6 +4,12 @@
 =======================================================
 
 
+03 Sep 2008      Further development of the parallel implementation of 
+                 disentangle.x and wannier.x . (AF)
+
+01 Sep 2008      Memory usage analysis added to all data modules. Workspace
+                 module for wannier localization added. (AF)
+
 31 Aug 2008      The currently implemented parallelism is not highly
                  performing. Further changes are going to be introduced. (AF)
 

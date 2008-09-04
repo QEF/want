@@ -16,9 +16,8 @@
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
    USE parser_module,     ONLY : change_case
-   USE kpoints_module,    ONLY : nkpts, nkpts_g, kpoints_alloc
+   USE kpoints_module,    ONLY : nkpts_g, kpoints_alloc
    USE io_global_module,  ONLY : ionode, ionode_id
-   USE mp_global,         ONLY : nproc
    USE mp,                ONLY : mp_bcast
    USE iotk_module
    USE qexml_module 
@@ -84,6 +83,7 @@
 
    PUBLIC :: windows_allocate
    PUBLIC :: windows_deallocate
+   PUBLIC :: windows_memusage
    PUBLIC :: windows_init
    PUBLIC :: windows_write
    PUBLIC :: windows_read
@@ -106,7 +106,7 @@ CONTAINS
        INTEGER,   INTENT(in) :: dimwann
        CHARACTER(12)         :: subname="windows_init"
        INTEGER               :: kifroz_max, kifroz_min, idum
-       INTEGER               :: i, ik, ierr
+       INTEGER               :: i, ik_g, ierr
 
        !
        CALL timing( subname, OPR='start' )
@@ -122,30 +122,30 @@ CONTAINS
 ! ... windows dimensions
 !
        kpoints_loop: &
-       DO ik = 1,nkpts_g
+       DO ik_g = 1,nkpts_g
 
           !
           ! ... Check which eigenvalues fall within the outer energy window
-          IF ( eig_(1,ik) > win_max .OR. eig_(nbnd,ik) < win_min ) &
+          IF ( eig_(1,ik_g) > win_max .OR. eig_(nbnd,ik_g) < win_min ) &
                CALL errore(subname, 'energy window contains no eigenvalues ',1)
 
-          imin(ik) = 0
+          imin(ik_g) = 0
           DO i = 1, nbnd
-              IF ( imin(ik) == 0 ) THEN
-                  IF ( ( eig_(i,ik) >= win_min ) .AND. ( eig_(i,ik) <= win_max )) THEN
-                      imin(ik) = i
-                      imax(ik) = i
+              IF ( imin(ik_g) == 0 ) THEN
+                  IF ( ( eig_(i,ik_g) >= win_min ) .AND. ( eig_(i,ik_g) <= win_max )) THEN
+                      imin(ik_g) = i
+                      imax(ik_g) = i
                   ENDIF
               ENDIF
-              IF ( eig_(i,ik) <= win_max ) imax(ik) = i
+              IF ( eig_(i,ik_g) <= win_max ) imax(ik_g) = i
           ENDDO
           !
-          dimwin(ik) = imax(ik) - imin(ik) + 1       
+          dimwin(ik_g) = imax(ik_g) - imin(ik_g) + 1       
           !
-          IF ( dimwin(ik) < dimwann) CALL errore(subname,'dimwin < dimwann', ik )
-          IF ( dimwin(ik) > nbnd) CALL errore(subname,'dimwin > nbnd', ik )
-          IF ( imax(ik) < imin(ik) ) CALL errore(subname,'imax < imin',ik)
-          IF ( imin(ik) < 1 ) CALL errore(subname,'imin < 1',ik)
+          IF ( dimwin(ik_g) < dimwann) CALL errore(subname,'dimwin < dimwann', ik_g )
+          IF ( dimwin(ik_g) > nbnd) CALL errore(subname,'dimwin > nbnd', ik_g )
+          IF ( imax(ik_g) < imin(ik_g) ) CALL errore(subname,'imax < imin',ik_g)
+          IF ( imin(ik_g) < 1 ) CALL errore(subname,'imin < 1',ik_g)
           !
        ENDDO kpoints_loop
 
@@ -171,57 +171,57 @@ CONTAINS
 
 
        kpoints_frozen_loop: &
-       DO ik = 1, nkpts_g
+       DO ik_g = 1, nkpts_g
           !
           ! ... frozen states
-          frozen(:,ik) = .FALSE.
+          frozen(:,ik_g) = .FALSE.
         
           kifroz_min = 0
           kifroz_max = -1
           ! Note that the above obeys kifroz_max-kifroz_min+1=kdimfroz=0,
           ! as required
 
-          DO i = imin(ik), imax(ik)
+          DO i = imin(ik_g), imax(ik_g)
               IF ( kifroz_min == 0 ) THEN
-                  IF ( ( eig_(i,ik) >= froz_min ).AND.( eig_(i,ik) <= froz_max )) THEN
+                  IF ( ( eig_(i,ik_g) >= froz_min ).AND.( eig_(i,ik_g) <= froz_max )) THEN
                       !    relative to bottom of outer window
-                      kifroz_min = i - imin(ik) + 1   
-                      kifroz_max = i - imin(ik) + 1
+                      kifroz_min = i - imin(ik_g) + 1   
+                      kifroz_max = i - imin(ik_g) + 1
                   ENDIF
-              ELSE IF ( eig_(i,ik) <= froz_max ) THEN
+              ELSE IF ( eig_(i,ik_g) <= froz_max ) THEN
                   kifroz_max = kifroz_max + 1
               ENDIF
           ENDDO
     
-          dimfroz(ik) = kifroz_max - kifroz_min + 1
-          IF ( dimfroz(ik) > dimwann ) CALL errore(subname,'dimfroz > dimwann',ik)
+          dimfroz(ik_g) = kifroz_max - kifroz_min + 1
+          IF ( dimfroz(ik_g) > dimwann ) CALL errore(subname,'dimfroz > dimwann',ik_g)
           !
           ! ... Generate index array for frozen states inside inner window
           ! 
-          indxfroz(:,ik) = 0
-          IF ( dimfroz(ik) > 0 ) THEN
+          indxfroz(:,ik_g) = 0
+          IF ( dimfroz(ik_g) > 0 ) THEN
                lfrozen = .TRUE.
-               DO i = 1, dimfroz(ik)
-                   indxfroz(i,ik) = kifroz_min + i - 1
-                   frozen(indxfroz(i,ik),ik) = .TRUE.
+               DO i = 1, dimfroz(ik_g)
+                   indxfroz(i,ik_g) = kifroz_min + i - 1
+                   frozen(indxfroz(i,ik_g),ik_g) = .TRUE.
                ENDDO
-               IF ( indxfroz(dimfroz(ik),ik) /= kifroz_max ) &
-                   CALL errore(subname,'wrong number of frozen states',ik )
+               IF ( indxfroz(dimfroz(ik_g),ik_g) /= kifroz_max ) &
+                   CALL errore(subname,'wrong number of frozen states',ik_g )
           ENDIF
    
           !
           ! ... Generate index array for non-frozen states
           !
           idum = 0
-          indxnfroz(:,ik) = 0
-          DO i = 1, dimwin(ik)
-              IF( .NOT. frozen(i,ik) ) THEN
+          indxnfroz(:,ik_g) = 0
+          DO i = 1, dimwin(ik_g)
+              IF( .NOT. frozen(i,ik_g) ) THEN
                   idum = idum + 1
-                  indxnfroz(idum,ik) = i
+                  indxnfroz(idum,ik_g) = i
               ENDIF
           ENDDO
-          IF ( idum /= dimwin(ik)-dimfroz(ik) )  &
-              CALL errore(subname, 'wrong number of non-frozen states', ik)
+          IF ( idum /= dimwin(ik_g)-dimfroz(ik_g) )  &
+              CALL errore(subname, 'wrong number of non-frozen states', ik_g)
 
        ENDDO kpoints_frozen_loop   
        !
@@ -313,6 +313,27 @@ CONTAINS
 
 
 !**********************************************************
+   REAL(dbl) FUNCTION windows_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(dimwin) )    cost = cost + REAL(SIZE(dimwin))       * 4.0_dbl
+       IF ( ALLOCATED(imin) )      cost = cost + REAL(SIZE(imin))         * 4.0_dbl
+       IF ( ALLOCATED(imax) )      cost = cost + REAL(SIZE(imax))         * 4.0_dbl
+       IF ( ALLOCATED(eig) )       cost = cost + REAL(SIZE(eig))          * 8.0_dbl
+       IF ( ALLOCATED(dimfroz) )   cost = cost + REAL(SIZE(dimfroz))      * 4.0_dbl
+       IF ( ALLOCATED(indxnfroz) ) cost = cost + REAL(SIZE(indxnfroz))    * 4.0_dbl
+       IF ( ALLOCATED(frozen) )    cost = cost + REAL(SIZE(frozen))       * 4.0_dbl
+       !
+       windows_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION windows_memusage
+
+
+!**********************************************************
    SUBROUTINE windows_write(unit,name)
    !**********************************************************
    IMPLICIT NONE
@@ -332,33 +353,32 @@ CONTAINS
        CALL log_push ( subname )
        ! 
        !
-       CALL iotk_write_begin(unit,TRIM(name))
-       CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
-       CALL iotk_write_attr(attr,"nkpts",nkpts)
-       !
-       IF ( nproc > 1 ) THEN
-           CALL iotk_write_attr(attr,"nkpts_g",nkpts_g)
+       IF ( ionode ) THEN
+           !
+           CALL iotk_write_begin(unit,TRIM(name))
+           CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
+           CALL iotk_write_attr(attr,"nkpts",nkpts_g)
+           !
+           CALL iotk_write_attr(attr,"nspin",nspin)
+           CALL iotk_write_attr(attr,"spin_component",TRIM(spin_component))
+           CALL iotk_write_attr(attr,"efermi",efermi)
+           CALL iotk_write_attr(attr,"dimwinx",dimwinx)
+           CALL iotk_write_attr(attr,"lfrozen",lfrozen)
+           CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+           !
+           CALL iotk_write_dat(unit,"DIMWIN",dimwin, COLUMNS=8)
+           CALL iotk_write_dat(unit,"IMIN",imin, COLUMNS=8)
+           CALL iotk_write_dat(unit,"IMAX",imax, COLUMNS=8)
+           CALL iotk_write_dat(unit,"EIG",eig, COLUMNS=4)
+           !
+           CALL iotk_write_dat(unit,"DIMFROZ",dimfroz, COLUMNS=8)
+           CALL iotk_write_dat(unit,"INDXFROZ",indxfroz, COLUMNS=8)
+           CALL iotk_write_dat(unit,"INDXNFROZ",indxnfroz, COLUMNS=8)
+           CALL iotk_write_dat(unit,"FROZEN",frozen, COLUMNS=8)
+           !
+           CALL iotk_write_end(unit,TRIM(name))
+           !
        ENDIF
-       !
-       CALL iotk_write_attr(attr,"nspin",nspin)
-       CALL iotk_write_attr(attr,"spin_component",TRIM(spin_component))
-       CALL iotk_write_attr(attr,"efermi",efermi)
-       CALL iotk_write_attr(attr,"dimwinx",dimwinx)
-       CALL iotk_write_attr(attr,"lfrozen",lfrozen)
-       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
-       !
-       CALL iotk_write_dat(unit,"DIMWIN",dimwin, COLUMNS=8)
-       CALL iotk_write_dat(unit,"IMIN",imin, COLUMNS=8)
-       CALL iotk_write_dat(unit,"IMAX",imax, COLUMNS=8)
-       CALL iotk_write_dat(unit,"EIG",eig, COLUMNS=4)
-       !
-       CALL iotk_write_dat(unit,"DIMFROZ",dimfroz, COLUMNS=8)
-       CALL iotk_write_dat(unit,"INDXFROZ",indxfroz, COLUMNS=8)
-       CALL iotk_write_dat(unit,"INDXNFROZ",indxnfroz, COLUMNS=8)
-       CALL iotk_write_dat(unit,"FROZEN",frozen, COLUMNS=8)
-       !
-       CALL iotk_write_end(unit,TRIM(name))
-       !
        !
        CALL timing( subname, OPR='stop')
        CALL log_pop ( subname )
@@ -375,7 +395,7 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="windows_read"
-       INTEGER            :: nkpts_, nkpts_g_, ierr
+       INTEGER            :: nkpts_g_, ierr
        LOGICAL            :: lfound
 
        CALL timing( subname, OPR='start')
@@ -383,46 +403,50 @@ CONTAINS
        !
        IF ( alloc ) CALL windows_deallocate()
        ! 
-       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
-       !
-       IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-       found = .TRUE.
-
-       !
-       CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nbnd',nbnd,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NBND',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
-       !
-       IF ( nproc > 1 ) THEN
-           CALL iotk_scan_attr(attr,'nkpts_g',nkpts_g_,IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS_G',ABS(ierr))
-       ELSE
-           nkpts_g_ = nkpts_
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           !
+           IF (.NOT. found) RETURN
+           IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+           found = .TRUE.
+           !
+           !
+           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
+           CALL iotk_scan_attr(attr,'nbnd',nbnd,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NBND',ABS(ierr))
+           CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+           !
+           CALL iotk_scan_attr(attr,'nspin',nspin,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NSPIN',ABS(ierr))
+           CALL iotk_scan_attr(attr,'spin_component',spin_component,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr SPIN_COMPONENT',ABS(ierr))
+           CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr EFERMI',ABS(ierr))
+           CALL iotk_scan_attr(attr,'dimwinx',dimwinx,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
+           !
+           CALL iotk_scan_attr(attr,'lfrozen',lfrozen, FOUND=lfound, IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find attr LFROZEN',ABS(ierr))
+           IF ( .NOT. lfound ) lfrozen = .FALSE.
+           !
        ENDIF
        !
-       CALL iotk_scan_attr(attr,'nspin',nspin,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NSPIN',ABS(ierr))
-       CALL iotk_scan_attr(attr,'spin_component',spin_component,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr SPIN_COMPONENT',ABS(ierr))
-       CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr EFERMI',ABS(ierr))
-       CALL iotk_scan_attr(attr,'dimwinx',dimwinx,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
-       !
-       CALL iotk_scan_attr(attr,'lfrozen',lfrozen, FOUND=lfound, IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find attr LFROZEN',ABS(ierr))
-       IF ( .NOT. lfound ) lfrozen = .FALSE.
+       CALL mp_bcast( found,               ionode_id)
+       CALL mp_bcast( nbnd,                ionode_id)
+       CALL mp_bcast( nkpts_g_,            ionode_id)
+       CALL mp_bcast( nspin,               ionode_id)
+       CALL mp_bcast( spin_component,      ionode_id)
+       CALL mp_bcast( efermi,              ionode_id)
+       CALL mp_bcast( dimwinx,             ionode_id)
+       CALL mp_bcast( lfrozen,             ionode_id)
 
 
        IF ( kpoints_alloc ) THEN
-            IF ( nkpts_   /= nkpts   ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_)+1)
             IF ( nkpts_g_ /= nkpts_g ) CALL errore(subname,'Invalid NKPTS_G',ABS(nkpts_g_)+1)
        ELSE
-            nkpts   = nkpts_
             nkpts_g = nkpts_g_
        ENDIF
        !
@@ -440,34 +464,46 @@ CONTAINS
        ALLOCATE( frozen(dimwinx,nkpts_g), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,'allocating frozen',ABS(ierr))
 
-       !
-       CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
-       CALL iotk_scan_dat(unit,'IMIN',imin,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find IMIN',ABS(ierr))
-       CALL iotk_scan_dat(unit,'IMAX',imax,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find IMAX',ABS(ierr))
-       CALL iotk_scan_dat(unit,'EIG',eig,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find EIG',ABS(ierr))
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
+           CALL iotk_scan_dat(unit,'IMIN',imin,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find IMIN',ABS(ierr))
+           CALL iotk_scan_dat(unit,'IMAX',imax,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find IMAX',ABS(ierr))
+           CALL iotk_scan_dat(unit,'EIG',eig,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find EIG',ABS(ierr))
 
-       CALL iotk_scan_dat(unit,'DIMFROZ',dimfroz, FOUND=lfound ,IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find DIMFROZ',ABS(ierr))
-       IF ( .NOT. lfound ) dimfroz = 0
-       !
-       CALL iotk_scan_dat(unit,'INDXFROZ',indxfroz,IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find INDXFROZ',ABS(ierr))
-       IF ( .NOT. lfound ) indxfroz = 0
-       !
-       CALL iotk_scan_dat(unit,'INDXNFROZ',indxnfroz,IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find INDXNFROZ',ABS(ierr))
-       IF ( .NOT. lfound ) indxnfroz = 0
-       !
-       CALL iotk_scan_dat(unit,'FROZEN',frozen,IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find FROZEN',ABS(ierr))
-       IF ( .NOT. lfound ) frozen = .FALSE.
+           CALL iotk_scan_dat(unit,'DIMFROZ',dimfroz, FOUND=lfound ,IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find DIMFROZ',ABS(ierr))
+           IF ( .NOT. lfound ) dimfroz = 0
+           !
+           CALL iotk_scan_dat(unit,'INDXFROZ',indxfroz,IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find INDXFROZ',ABS(ierr))
+           IF ( .NOT. lfound ) indxfroz = 0
+           !
+           CALL iotk_scan_dat(unit,'INDXNFROZ',indxnfroz,IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find INDXNFROZ',ABS(ierr))
+           IF ( .NOT. lfound ) indxnfroz = 0
+           !
+           CALL iotk_scan_dat(unit,'FROZEN',frozen,IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find FROZEN',ABS(ierr))
+           IF ( .NOT. lfound ) frozen = .FALSE.
 
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           !
+       ENDIF
+       !
+       CALL mp_bcast( dimwin,              ionode_id)
+       CALL mp_bcast( imin,                ionode_id)
+       CALL mp_bcast( imax,                ionode_id)
+       CALL mp_bcast( eig,                 ionode_id)
+       CALL mp_bcast( dimfroz,             ionode_id)
+       CALL mp_bcast( indxfroz,            ionode_id)
+       CALL mp_bcast( indxnfroz,           ionode_id)
+       CALL mp_bcast( frozen,              ionode_id)
 
        !
        ! set the auxiliary quantities IKE, IKS, ISPIN

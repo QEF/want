@@ -12,7 +12,7 @@
 !*********************************************
    !
    USE kinds,             ONLY : dbl
-   USE constants,         ONLY : ONE, TWO, TPI, EPS_m6, BOHR => bohr_radius_angs
+   USE constants,         ONLY : ZERO, ONE, TWO, TPI, EPS_m6, BOHR => bohr_radius_angs
    USE parameters,        ONLY : nstrx, nnx
    USE io_module,         ONLY : stdout
    USE log_module,        ONLY : log_push, log_pop
@@ -125,10 +125,15 @@
   PUBLIC :: kpoints_init
   PUBLIC :: kpoints_allocate
   PUBLIC :: kpoints_deallocate
+  PUBLIC :: kpoints_memusage
+  !
   PUBLIC :: rgrid_allocate
   PUBLIC :: rgrid_deallocate
+  PUBLIC :: rgrid_memusage
+  !
   PUBLIC :: bshells_allocate
   PUBLIC :: bshells_deallocate
+  PUBLIC :: bshells_memusage
 
 
 CONTAINS
@@ -599,8 +604,6 @@ CONTAINS
        wk( 1:nkpts )      = wk_g( iks:ike )
 
 
-
-
        CALL log_pop ( subname )
        !
    END SUBROUTINE kpoints_read_ext
@@ -638,11 +641,36 @@ CONTAINS
           IF (ierr/=0) CALL errore(subname,'deallocating vkpt_all',ABS(ierr))
        ENDIF
        !
+       IF ( ALLOCATED( iproc_g ) ) THEN
+          DEALLOCATE( iproc_g, STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'deallocating iproc_g',ABS(ierr))
+       ENDIF
+       !
        kpoints_alloc = .FALSE.
        !
        CALL log_pop( subname )
        !
    END SUBROUTINE kpoints_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION kpoints_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(vkpt) )      cost = cost + REAL(SIZE(vkpt))      * 8.0_dbl
+       IF ( ALLOCATED(wk) )        cost = cost + REAL(SIZE(wk))        * 8.0_dbl
+       IF ( ALLOCATED(vkpt_g) )    cost = cost + REAL(SIZE(vkpt_g))    * 8.0_dbl
+       IF ( ALLOCATED(wk_g) )      cost = cost + REAL(SIZE(wk_g))      * 8.0_dbl
+       IF ( ALLOCATED(vkpt_all) )  cost = cost + REAL(SIZE(vkpt_all))  * 8.0_dbl
+       IF ( ALLOCATED(iproc_g) )   cost = cost + REAL(SIZE(iproc_g))   * 4.0_dbl
+       !
+       kpoints_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION kpoints_memusage
 
 
 !**********************************************************
@@ -666,16 +694,29 @@ CONTAINS
           DEALLOCATE( wr, STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'deallocating wr',ABS(ierr))
        ENDIF
-       IF ( ALLOCATED( iproc_g ) ) THEN
-          DEALLOCATE( iproc_g, STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'deallocating iproc_g',ABS(ierr))
-       ENDIF
        !
        rgrid_alloc = .FALSE.
        !
        CALL log_pop( subname )
        !
    END SUBROUTINE rgrid_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION rgrid_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(ivr) )       cost = cost + REAL(SIZE(ivr))       * 4.0_dbl
+       IF ( ALLOCATED(vr) )        cost = cost + REAL(SIZE(vr))        * 8.0_dbl
+       IF ( ALLOCATED(wr) )        cost = cost + REAL(SIZE(wr))        * 8.0_dbl
+       !
+       rgrid_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION rgrid_memusage
 
 
 !**********************************************************
@@ -717,6 +758,27 @@ CONTAINS
        CALL log_pop( subname )
        !
    END SUBROUTINE bshells_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION bshells_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(ivr) )       cost = cost + REAL(SIZE(ivr))       * 4.0_dbl
+       IF ( ALLOCATED(nnlist) )    cost = cost + REAL(SIZE(nnlist))    * 4.0_dbl
+       IF ( ALLOCATED(nncell) )    cost = cost + REAL(SIZE(nncell))    * 4.0_dbl
+       IF ( ALLOCATED(nnrev) )     cost = cost + REAL(SIZE(nnrev))     * 4.0_dbl
+       IF ( ALLOCATED(vb) )        cost = cost + REAL(SIZE(vb))        * 8.0_dbl
+       IF ( ALLOCATED(nnpos) )     cost = cost + REAL(SIZE(nnpos))     * 4.0_dbl
+       IF ( ALLOCATED(wb) )        cost = cost + REAL(SIZE(wb))        * 8.0_dbl
+       !
+       bshells_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION bshells_memusage
 
 END MODULE kpoints_module
 

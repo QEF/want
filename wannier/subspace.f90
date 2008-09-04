@@ -12,7 +12,7 @@
    !*********************************************
    !
    USE kinds,          ONLY : dbl
-   USE constants,      ONLY : CZERO
+   USE constants,      ONLY : ZERO, CZERO
    USE parameters,     ONLY : nstrx
    USE timing_module,  ONLY : timing
    USE log_module,     ONLY : log_push, log_pop
@@ -20,8 +20,9 @@
                               windows_alloc => alloc
    USE kpoints_module, ONLY : nkpts, nkpts_g, iks, kpoints_alloc
    USE io_module,      ONLY : ionode, ionode_id
-   USE mp,             ONLY : mp_bcast, mp_sum
+   USE mp,             ONLY : mp_bcast
    USE iotk_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -54,9 +55,7 @@
    !
    ! ... rotations defining the chosen subspace
    COMPLEX(dbl), ALLOCATABLE   :: lamp(:,:,:)        ! dimwinx, dimwann, nkpts
-   COMPLEX(dbl), ALLOCATABLE   :: camp(:,:,:)        ! equal
    COMPLEX(dbl), ALLOCATABLE   :: eamp(:,:,:)        ! equal
-   COMPLEX(dbl), ALLOCATABLE   :: comp_eamp(:,:,:)   ! equal
    !
    ! NOTE: the second dimension should be DIMWANN instead of DIMWINX but, 
    !       for coherence with the old notation about frozen states 
@@ -76,12 +75,13 @@
    PUBLIC :: dimwann
    PUBLIC :: maxiter_dis, alpha_dis, disentangle_thr
    PUBLIC :: wan_eig
-   PUBLIC :: lamp, camp, eamp, comp_eamp
+   PUBLIC :: lamp, eamp
    PUBLIC :: mtrx_in, mtrx_out
    PUBLIC :: alloc
 
    PUBLIC :: subspace_allocate
    PUBLIC :: subspace_deallocate
+   PUBLIC :: subspace_memusage
    PUBLIC :: subspace_write
    PUBLIC :: subspace_read
 
@@ -101,25 +101,20 @@ CONTAINS
        CALL log_push( subname )
        !
        IF ( dimwinx <= 0 ) CALL errore(subname,'Invalid dimwinx',2)
-       IF ( nkpts <= 0 )   CALL errore(subname,'Invalid nkpts',3)
+       IF ( nkpts   <= 0 ) CALL errore(subname,'Invalid nkpts',3)
+       IF ( nkpts_g <= 0 ) CALL errore(subname,'Invalid nkpts_g',3)
        IF ( dimwann <= 0 ) CALL errore(subname,'Invalid dimwann', ABS(dimwann)+1)
 
-       ALLOCATE( wan_eig(dimwann,nkpts), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname,'allocating wan_eig', ABS(ierr) )
+       ALLOCATE( wan_eig(dimwann,nkpts_g), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating wan_eig', ABS(ierr) )
 
-       ALLOCATE( lamp(dimwinx,dimwann,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating lamp', ABS(ierr) )
-       ALLOCATE( camp(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating camp', ABS(ierr) )
-       ALLOCATE( eamp(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating eamp', ABS(ierr) )
-       ALLOCATE( comp_eamp(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating comp_eamp', ABS(ierr) )
+       ALLOCATE( lamp(dimwinx,dimwann,nkpts_g), STAT = ierr )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating lamp', ABS(ierr) )
 
        ALLOCATE( mtrx_in(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating mtrx_in', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating mtrx_in', ABS(ierr) )
        ALLOCATE( mtrx_out(dimwinx,dimwinx,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating mtrx_out', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating mtrx_out', ABS(ierr) )
        !
        alloc = .TRUE.
        !
@@ -145,17 +140,9 @@ CONTAINS
             DEALLOCATE(lamp, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating lamp ',ABS(ierr))
        ENDIF
-       IF ( ALLOCATED(camp) ) THEN 
-            DEALLOCATE(camp, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating camp ',ABS(ierr))
-       ENDIF
        IF ( ALLOCATED(eamp) ) THEN 
             DEALLOCATE(eamp, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,' deallocating eamp ',ABS(ierr))
-       ENDIF
-       IF ( ALLOCATED(comp_eamp) ) THEN 
-            DEALLOCATE(comp_eamp, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating comp_eamp ',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(mtrx_in) ) THEN 
             DEALLOCATE(mtrx_in, STAT=ierr)
@@ -171,6 +158,25 @@ CONTAINS
        CALL log_pop( subname )
        !
    END SUBROUTINE subspace_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION subspace_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(wan_eig) )  cost = cost + REAL(SIZE(wan_eig))    *  8.0_dbl
+       IF ( ALLOCATED(lamp) )     cost = cost + REAL(SIZE(lamp))       * 16.0_dbl
+       IF ( ALLOCATED(eamp) )     cost = cost + REAL(SIZE(eamp))       * 16.0_dbl
+       IF ( ALLOCATED(mtrx_in) )  cost = cost + REAL(SIZE(mtrx_in))    * 16.0_dbl
+       IF ( ALLOCATED(mtrx_out) ) cost = cost + REAL(SIZE(mtrx_out))   * 16.0_dbl
+       !
+       subspace_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION subspace_memusage
 
 
 !**********************************************************
@@ -193,7 +199,7 @@ CONTAINS
        !
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.) 
-       CALL iotk_write_attr(attr,"nkpts",nkpts) 
+       CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
        CALL iotk_write_attr(attr,"dimwann",dimwann) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
        !
@@ -201,18 +207,23 @@ CONTAINS
        CALL iotk_write_dat(unit,"WAN_EIGENVALUES",wan_eig)
        !
        !
-       DO ik = 1, nkpts
-           !
-           ik_g = ik + iks -1
+       DO ik_g = 1, nkpts_g
            !
            CALL iotk_write_dat(unit,"LAMP"//TRIM(iotk_index(ik_g)), &
-                               lamp(1:dimwin(ik_g),1:dimwann,ik))
+                               lamp(1:dimwin(ik_g),1:dimwann,ik_g))
            !
        ENDDO
        !
-       CALL iotk_write_dat(unit,"CAMP",camp)
-       CALL iotk_write_dat(unit,"EAMP",eamp)
-       ! CALL iotk_write_dat(unit,"COMP_EAMP",comp_eamp)
+       IF ( ALLOCATED( eamp ) ) THEN
+           !
+           DO ik_g = 1, nkpts_g
+               !
+               CALL iotk_write_dat(unit,"EAMP"//TRIM(iotk_index(ik_g)), &
+                                   eamp(1:dimwin(ik_g),1:dimwann,ik_g))
+               !
+           ENDDO
+           !
+       ENDIF
 
        CALL iotk_write_end(unit,TRIM(name))
        !
@@ -231,33 +242,44 @@ CONTAINS
        LOGICAL            :: lfound
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="subspace_read"
-       INTEGER            :: nkpts_, dimwinx_
+       INTEGER            :: nkpts_g_, dimwinx_
        INTEGER            :: ik, ik_g, ierr
+       COMPLEX(dbl), ALLOCATABLE :: eamp_(:,:,:)
 
        CALL timing( subname, OPR='start' )
        CALL log_push( subname )
        !
        IF ( alloc ) CALL subspace_deallocate()
 
-       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
-       IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-       found = .TRUE.
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           IF (.NOT. found) RETURN
+           IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+           found = .TRUE.
 
-       CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
-       CALL iotk_scan_attr(attr,'dimwinx',dimwinx_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
-       CALL iotk_scan_attr(attr,'dimwann',dimwann,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
+           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
+           CALL iotk_scan_attr(attr,'dimwinx',dimwinx_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
+           CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+           CALL iotk_scan_attr(attr,'dimwann',dimwann,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
+           !
+       ENDIF
+       !
+       CALL mp_bcast(  found,      ionode_id )
+       CALL mp_bcast(  dimwinx_,   ionode_id )
+       CALL mp_bcast(  nkpts_g_,   ionode_id )
+       CALL mp_bcast(  dimwann,    ionode_id )
 
        IF ( kpoints_alloc ) THEN
-           IF ( nkpts_ /= nkpts ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts-nkpts_))
+           IF ( nkpts_g_ /= nkpts_g ) CALL errore(subname,'Invalid NKPTS_G',ABS(nkpts_g-nkpts_g_))
        ELSE
-           nkpts = nkpts_
+           nkpts_g = nkpts_g_
        ENDIF
+       !
        IF ( windows_alloc ) THEN
           IF (dimwinx_/=dimwinx) CALL errore(subname,'Invalid DIMWINX',ABS(dimwinx-dimwinx_))
        ELSE
@@ -268,41 +290,73 @@ CONTAINS
 
        !
        ! no check is done for dimwin
-       CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag DIMWIN',ABS(ierr))
+       !
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find tag DIMWIN',ABS(ierr))
+           !
+       ENDIF
+       !
+       CALL mp_bcast( dimwin,   ionode_id )
 
        CALL subspace_allocate()
        !
-       CALL iotk_scan_dat(unit,'WAN_EIGENVALUES',wan_eig,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find EIGENVALUES',ABS(ierr))
+       ALLOCATE( eamp_( dimwinx, dimwann, nkpts_g ), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'allocating eamp_ ',ABS(ierr))
        !
-       DO ik=1,nkpts
+       IF ( ionode ) THEN
            !
-           ik_g = ik + iks -1
+           CALL iotk_scan_dat(unit,'WAN_EIGENVALUES',wan_eig,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find EIGENVALUES',ABS(ierr))
            !
-           CALL iotk_scan_dat( unit,'LAMP'//TRIM(iotk_index(ik_g)), &
-                               lamp(1:dimwin(ik_g), 1:dimwann, ik), FOUND=lfound, IERR=ierr)
-           IF (ierr>0) CALL errore(subname,'Unable to find LAMP at ik',ik_g)
+           DO ik_g=1,nkpts_g
+               !
+               CALL iotk_scan_dat( unit,'LAMP'//TRIM(iotk_index(ik_g)), &
+                                   lamp(1:dimwin(ik_g), 1:dimwann, ik_g), FOUND=lfound, IERR=ierr)
+               IF (ierr>0) CALL errore(subname,'Unable to find LAMP at ik',ik_g)
+               !
+               IF ( .NOT. lfound ) lamp(1:dimwin(ik_g), 1:dimwann, ik_g) = CZERO
+               !
+           ENDDO
            !
-           IF ( .NOT. lfound ) lamp(1:dimwin(ik_g), 1:dimwann, ik) = CZERO
            !
-       ENDDO
+           DO ik_g = 1, nkpts_g
+               !
+               eamp_(:,:, ik_g ) = CZERO
+               !
+               CALL iotk_scan_dat( unit,'EAMP'//TRIM(iotk_index(ik_g)), &
+                                   eamp_(1:dimwin(ik_g), 1:dimwann, ik_g), FOUND=lfound, IERR=ierr)
+               IF (ierr>0) CALL errore(subname,'Unable to find EAMP at ik',ik_g)
+               !
+               IF ( .NOT. lfound ) THEN
+                   eamp_(:,:,:) = CZERO
+                   EXIT
+               ENDIF
+               !
+           ENDDO
+           !
+           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           !
+       ENDIF
        !
-       CALL iotk_scan_dat(unit,'CAMP',camp, FOUND=lfound, IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find CAMP',ABS(ierr))
-       IF ( .NOT. lfound ) camp = CZERO
+       CALL mp_bcast( lamp,   ionode_id )
+       CALL mp_bcast( eamp_,  ionode_id )
        !
-       CALL iotk_scan_dat(unit,'EAMP',eamp, FOUND=lfound, IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find EAMP',ABS(ierr))
-       IF ( .NOT. lfound ) eamp = CZERO
+       IF ( lfound ) THEN
+           !
+           ALLOCATE( eamp( dimwinx, dimwann, nkpts_g ), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname,'allocating eamp',ABS(ierr))
+           !
+           eamp(:,:,:) = eamp_(:,:,:) 
+           !
+       ENDIF
        !
-       CALL iotk_scan_dat(unit,'COMP_EAMP',comp_eamp, FOUND=lfound, IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Wrong fmt in COMP_EAMP',ABS(ierr))
-       IF ( .NOT. lfound ) comp_eamp = CZERO
+       DEALLOCATE( eamp_, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'deallocating eamp_',ABS(ierr))
+       
 
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
-       !
        CALL timing( subname, OPR='stop' )
        CALL log_pop ( subname )
        !

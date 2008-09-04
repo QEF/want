@@ -12,10 +12,11 @@
 !*********************************************
    !
    USE kinds,             ONLY : dbl
+   USE constants,         ONLY : ZERO
    USE parameters,        ONLY : nstrx
    USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : avec, bvec, lattice_alloc => alloc
-   USE kpoints_module,    ONLY : nkpts, nk, vkpt, wk,  &
+   USE kpoints_module,    ONLY : nkpts, nkpts_g, nk, vkpt_g, wk_g,  &
                                  nrtot, nr, ivr,  wr,  kpoints_alloc 
    USE subspace_module,   ONLY : dimwann, wan_eig, subspace_alloc => alloc
    USE converters_module, ONLY : cry2cart, cart2cry
@@ -42,11 +43,7 @@
    ! ... hamiltonians
    COMPLEX(dbl), ALLOCATABLE   :: rham(:,:,:)  ! DIM: dimwann, dimwann, nrtot
                                                ! real space hamiltonian
-   COMPLEX(dbl), ALLOCATABLE   :: kham(:,:,:)  ! DIM: dimwann, dimwann, nkpts
-                                               ! kpt-symm hamiltonian rotated according to
-                                               ! WF transform
    COMPLEX(dbl), ALLOCATABLE   :: rovp(:,:,:)  ! overlap integrals, DIMS as rham
-   COMPLEX(dbl), ALLOCATABLE   :: kovp(:,:,:)  ! DIMS as kham
    !
    LOGICAL :: lhave_overlap = .FALSE.
    !
@@ -59,13 +56,14 @@
    PUBLIC :: nkpts, dimwann
    PUBLIC :: nrtot
    PUBLIC :: wan_eig
-   PUBLIC :: rham, kham
-   PUBLIC :: rovp, kovp
+   PUBLIC :: rham
+   PUBLIC :: rovp
    PUBLIC :: lhave_overlap
    PUBLIC :: alloc
 
    PUBLIC :: hamiltonian_allocate
    PUBLIC :: hamiltonian_deallocate
+   PUBLIC :: hamiltonian_memusage
    PUBLIC :: hamiltonian_write
    PUBLIC :: hamiltonian_read
 
@@ -98,16 +96,10 @@ CONTAINS
        ALLOCATE( rham(dimwann,dimwann,nrtot), STAT=ierr )
        IF( ierr /=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
        !
-       ALLOCATE( kham(dimwann,dimwann,nkpts), STAT=ierr )
-       IF( ierr /=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
-       !
        IF ( lhave_overlap ) THEN
            !
            ALLOCATE( rovp(dimwann,dimwann,nrtot), STAT=ierr )
            IF( ierr /=0 ) CALL errore(subname, 'allocating rovp', ABS(ierr) )
-           !
-           ALLOCATE( kovp(dimwann,dimwann,nkpts), STAT=ierr )
-           IF( ierr /=0 ) CALL errore(subname, 'allocating kovp', ABS(ierr) )
            !
        ENDIF
        !
@@ -131,22 +123,30 @@ CONTAINS
             DEALLOCATE(rham, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,'deallocating rham ',ABS(ierr))
        ENDIF
-       IF ( ALLOCATED(kham) ) THEN 
-            DEALLOCATE(kham, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,'deallocating kham ',ABS(ierr))
-       ENDIF
        IF ( ALLOCATED(rovp) ) THEN 
             DEALLOCATE(rovp, STAT=ierr)
             IF (ierr/=0)  CALL errore(subname,'deallocating rovp ',ABS(ierr))
-       ENDIF
-       IF ( ALLOCATED(kovp) ) THEN 
-            DEALLOCATE(kovp, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,'deallocating kovp ',ABS(ierr))
        ENDIF
        !
        CALL log_pop ( subname )
        !
    END SUBROUTINE hamiltonian_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION hamiltonian_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(rham) )     cost = cost + REAL(SIZE(rham))       * 16.0_dbl
+       IF ( ALLOCATED(rovp) )     cost = cost + REAL(SIZE(rovp))       * 16.0_dbl
+       !
+       hamiltonian_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION hamiltonian_memusage
 
 
 !**********************************************************
@@ -169,7 +169,7 @@ CONTAINS
 
        CALL iotk_write_begin(unit,TRIM(name))
        CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
-       CALL iotk_write_attr(attr,"nkpts",nkpts) 
+       CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
        CALL iotk_write_attr(attr,"nk",nk) 
        CALL iotk_write_attr(attr,"nrtot",nrtot) 
        CALL iotk_write_attr(attr,"nr",nr) 
@@ -177,9 +177,9 @@ CONTAINS
        CALL iotk_write_attr(attr,"fermi_energy",0.0) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
-       ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
+       ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))   
-       vkpt_cry = vkpt
+       vkpt_cry = vkpt_g
        CALL cart2cry(vkpt_cry, bvec)
 
        CALL iotk_write_attr(attr,"units","bohr",FIRST=.TRUE.)
@@ -192,7 +192,7 @@ CONTAINS
        CALL iotk_write_dat(unit,"VKPT", vkpt_cry, ATTR=attr, COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing VKPT',ABS(ierr))
             !
-       CALL iotk_write_dat(unit,"WK", wk, IERR=ierr) 
+       CALL iotk_write_dat(unit,"WK", wk_g, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing WK',ABS(ierr))
             !
        CALL iotk_write_dat(unit,"IVR", ivr, ATTR=attr, COLUMNS=3, IERR=ierr) 
@@ -204,23 +204,7 @@ CONTAINS
        DEALLOCATE( vkpt_cry, STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'deallocating vkpt_cry',ABS(ierr))   
 
-       CALL iotk_write_dat(unit,"WAN_EIGENVALUES",wan_eig)
-       !
-       CALL iotk_write_begin(unit,"KHAM")
-       !
-       DO ik = 1, nkpts
-           !
-           CALL iotk_write_dat(unit,"KPT"//TRIM(iotk_index(ik)), kham(:,:,ik))
-           !
-           IF ( lhave_overlap ) THEN
-               !
-               CALL iotk_write_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), kovp(:,:,ir))
-               !
-           ENDIF
-           !
-       ENDDO
-       CALL iotk_write_end(unit,"KHAM")
-       !
+
        CALL iotk_write_begin(unit,"RHAM")
        !
        DO ir = 1, nrtot
@@ -253,7 +237,7 @@ CONTAINS
        LOGICAL            :: lfound
        CHARACTER(nstrx)   :: attr
        CHARACTER(16)      :: subname="hamiltonian_read"
-       INTEGER            :: nkpts_, nrtot_, dimwann_
+       INTEGER            :: nkpts_g_, nrtot_, dimwann_
        INTEGER            :: ik, ir, ierr
 
        CALL log_push ( subname )
@@ -269,7 +253,7 @@ CONTAINS
        IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
        CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
+       CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
        CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NRTOT',ABS(ierr))
@@ -281,32 +265,14 @@ CONTAINS
        !
        ! few compatibility checks
        IF ( dimwann_ /= dimwann) CALL errore(subname,'invalid dimwann',1)
-       IF ( nkpts_ /= nkpts) CALL errore(subname,'invalid nkpts',2)
-       IF ( nrtot_ /= nrtot) CALL errore(subname,'invalid nrtot',3)
+       IF ( nkpts_g_ /= nkpts)   CALL errore(subname,'invalid nkpts',2)
+       IF ( nrtot_   /= nrtot)   CALL errore(subname,'invalid nrtot',3)
        !
        ! allocations
        CALL hamiltonian_allocate()
+
        !
        ! massive data read
-       CALL iotk_scan_begin(unit,"KHAM", IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag KHAM',ABS(ierr))
-       !
-       DO ik = 1, nkpts
-           !
-           CALL iotk_scan_dat(unit,"KPT"//TRIM(iotk_index(ik)), kham(:,:,ik), IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'Unable to find dat KPT in KHAM',ik)
-           !
-           IF ( lhave_overlap ) THEN
-               !
-               CALL iotk_scan_dat(unit,"OVERLAP"//TRIM(iotk_index(ik)), kovp(:,:,ik), IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'Unable to find dat OVERLAP in KHAM',ik)
-               !
-           ENDIF
-           !
-       ENDDO
-       !
-       CALL iotk_scan_end(unit,"KHAM", IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag KHAM',ABS(ierr))
        !
        CALL iotk_scan_begin(unit,"RHAM", IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find tag RHAM',ABS(ierr))

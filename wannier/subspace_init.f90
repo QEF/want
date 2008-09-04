@@ -28,10 +28,12 @@
    USE util_module,     ONLY : zmat_unitary, mat_mul, mat_svd
    !
    USE windows_module,  ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
-   USE kpoints_module,  ONLY : vkpt_g, nkpts, iks
+   USE kpoints_module,  ONLY : vkpt_g, nkpts, nkpts_g, iks
    USE control_module,  ONLY : unitary_thr, verbosity
    USE subspace_module, ONLY : subspace_read, lamp, dimwann
    USE overlap_module,  ONLY : ca 
+   USE mp,              ONLY : mp_sum
+   !
    IMPLICIT NONE
 
    !
@@ -69,7 +71,12 @@
 
 
    !
-   ! here set LAMP
+   ! set the LAMP matrix
+   !
+
+   ! first nullify the matrix for all global kpts
+   !
+   lamp( :, :, 1:nkpts_g ) = CZERO
    !
    SELECT CASE ( TRIM( mode ) )
    CASE DEFAULT
@@ -101,7 +108,7 @@
             !
             ik_g = ik + iks -1
             !
-            CALL random_orthovect(dimwann, dimwin(ik_g), dimwinx, lamp(1,1,ik) )
+            CALL random_orthovect(dimwann, dimwin(ik_g), dimwinx, lamp(1,1,ik_g) )
             !
         ENDDO           
         !   
@@ -116,8 +123,8 @@
             DO l=1, dimwann
             DO j=1,dimwin(ik_g)
                 !
-                lamp(j,l,ik) = CZERO
-                IF ( j == l ) lamp(j,l,ik) = CONE
+                lamp(j,l,ik_g) = CZERO
+                IF ( j == l ) lamp(j,l,ik_g) = CONE
                 !
             ENDDO
             ENDDO
@@ -134,8 +141,8 @@
             DO l=1, dimwann
             DO j=1,dimwin(ik_g)
                 !
-                lamp(j,l,ik) = CZERO
-                IF ( j == l+dimwin(ik_g)-dimwann ) lamp(j,l,ik) = CONE
+                lamp(j,l,ik_g) = CZERO
+                IF ( j == l+dimwin(ik_g)-dimwann ) lamp(j,l,ik_g) = CONE
                 !
             ENDDO
             ENDDO
@@ -183,7 +190,7 @@
                 CALL mat_svd( dimwin(ik_g), dimwann, ca(:,:,ik), s, u, vt )
                 !
                 CALL mat_mul( cu, u, 'N', vt, 'N', dimwin(ik_g), dimwann, dimwann )
-                lamp(  1:dimwin(ik_g), 1:dimwann , ik) = cu( 1:dimwin(ik_g), 1:dimwann )
+                lamp(  1:dimwin(ik_g), 1:dimwann , ik_g) = cu( 1:dimwin(ik_g), 1:dimwann )
                 !
             ENDIF
             !
@@ -232,10 +239,13 @@
                 IF ( dimfroz(ik_g) > 0 ) THEN
                     !
                     DO l = 1, dimfroz(ik_g)
-                       DO j = 1, dimwin(ik_g)
-                           lamp(j,l,ik)= CZERO
-                       ENDDO
-                       lamp(indxfroz(l,ik_g),l,ik) = CONE
+                        !
+                        DO j = 1, dimwin(ik_g)
+                            lamp(j,l,ik_g)= CZERO
+                        ENDDO
+                        !
+                        lamp(indxfroz(l,ik_g),l,ik_g) = CONE
+                        !
                     ENDDO
                     !
                 ENDIF
@@ -245,6 +255,11 @@
         IF (ionode) WRITE(stdout,"()")
 
    END SELECT
+
+   !
+   ! get rid of paralelism 
+   !
+   CALL mp_sum( lamp )
 
    !
    ! Finally check that the states in the columns of the final matrix lamp are orthonormal
@@ -264,7 +279,7 @@
        !
        ik_g = ik + iks -1
        !
-       IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik), &
+       IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik_g), &
                                 SIDE='left', TOLL=unitary_thr ) ) &
        CALL errore(subname, 'Vectors in lamp not orthonormal',ik_g)
        !
@@ -278,13 +293,11 @@
        WRITE( stdout,"(/,2x,'Subspace decomposition:')" )
        WRITE( stdout,"(  2x,'Norms of the projected Bloch functions',/)" )
        !
-       DO ik=1,nkpts
-           !
-           ik_g = ik + iks -1
+       DO ik_g = 1, nkpts_g
            !
            WRITE(stdout,"(1x,'!',6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                  ik, vkpt_g(:,ik_g), dimwin(ik_g)
-           CALL mat_mul(cu, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+           CALL mat_mul(cu, lamp(:,:,ik_g), 'N', lamp(:,:,ik_g), 'C', &
                          dimwin(ik_g), dimwin(ik_g), dimwann )
            !
            WRITE(stdout,"(1x,'!',2x, 8f9.5)") ( REAL(cu(i,i)), i=1,dimwin(ik_g) )

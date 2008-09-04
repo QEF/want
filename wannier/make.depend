@@ -96,6 +96,7 @@ cleanup.o : trial_center_data.o
 cleanup.o : uspp.o
 cleanup.o : wfc_data.o
 cleanup.o : windows.o
+cleanup.o : workspace_wan.o
 cmplx_bands.o : converters.o
 cmplx_bands.o : correlation.o
 cmplx_bands.o : datafiles.o
@@ -140,6 +141,7 @@ converters.o : ../libs/util.o
 correlation.o : ../iotk/iotk_16_module.o
 correlation.o : kpoints.o
 correlation.o : lattice.o
+correlation.o : ../libs/constants.o
 correlation.o : ../libs/kind.o
 correlation.o : ../libs/log_module.o
 correlation.o : ../libs/parameters.o
@@ -253,6 +255,7 @@ hamiltonian_calc.o : kpoints.o
 hamiltonian_calc.o : ../libs/constants.o
 hamiltonian_calc.o : ../libs/kind.o
 hamiltonian_calc.o : ../libs/log_module.o
+hamiltonian_calc.o : ../libs/mp.o
 hamiltonian_calc.o : ../libs/parameters.o
 hamiltonian_calc.o : ../libs/parser.o
 hamiltonian_calc.o : ../libs/timing.o
@@ -261,6 +264,7 @@ hamiltonian.o : converters.o
 hamiltonian.o : ../iotk/iotk_16_module.o
 hamiltonian.o : kpoints.o
 hamiltonian.o : lattice.o
+hamiltonian.o : ../libs/constants.o
 hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
@@ -390,6 +394,23 @@ localization.o : ../libs/io_global.o
 localization.o : ../libs/kind.o
 localization.o : ../libs/parameters.o
 localization.o : subspace.o
+memusage.o : correlation.o
+memusage.o : ggrids.o
+memusage.o : hamiltonian.o
+memusage.o : io_module.o
+memusage.o : ions.o
+memusage.o : kpoints.o
+memusage.o : localization.o
+memusage.o : overlap_module.o
+memusage.o : pwcom.o
+memusage.o : struct_fact_data.o
+memusage.o : subspace.o
+memusage.o : symmetry.o
+memusage.o : trial_center_data.o
+memusage.o : uspp.o
+memusage.o : wfc_data.o
+memusage.o : windows.o
+memusage.o : workspace_wan.o
 monkpack.o : ../libs/constants.o
 monkpack.o : ../libs/kind.o
 omegai.o : kpoints.o
@@ -446,7 +467,6 @@ overlap.o : ggrids.o
 overlap.o : ../libs/constants.o
 overlap.o : ../libs/kind.o
 overlap.o : ../libs/log_module.o
-overlap.o : ../libs/mp_global.o
 overlap.o : ../libs/timing.o
 overlap.o : wfc_info.o
 overlap_setmap.o : ggrids.o
@@ -531,6 +551,7 @@ projection.o : wfc_data.o
 projection.o : wfc_info.o
 pseudo_types.o : ../libs/kind.o
 pseudo_types.o : radial_grids.o
+pwcom.o : ../libs/constants.o
 pwcom.o : ../libs/kind.o
 pwcom.o : ../libs/parameters.o
 qvan2.o : ../libs/kind.o
@@ -598,6 +619,7 @@ startup.o : ../libs/timing.o
 struct_fact_data.o : ggrids.o
 struct_fact_data.o : ions.o
 struct_fact_data.o : lattice.o
+struct_fact_data.o : ../libs/constants.o
 struct_fact_data.o : ../libs/kind.o
 struct_fact_data.o : ../libs/log_module.o
 struct_fact.o : ../libs/constants.o
@@ -657,6 +679,7 @@ symmetrize_kgrid.o : ../libs/kind.o
 symmetrize_kgrid.o : ../libs/log_module.o
 symmetrize_kgrid.o : ../libs/timing.o
 symmetrize_kgrid.o : symmetry.o
+symmetry.o : ../libs/constants.o
 symmetry.o : ../libs/io_global.o
 symmetry.o : ../libs/kind.o
 symmetry.o : ../libs/log_module.o
@@ -664,6 +687,7 @@ symmetry.o : ../libs/mp.o
 symmetry.o : ../libs/parameters.o
 symmetry.o : ../libs/qexml.o
 symmetry.o : ../libs/qexpt.o
+trial_center_data.o : ../libs/constants.o
 trial_center_data.o : ../libs/kind.o
 trial_center_data.o : ../libs/log_module.o
 trial_center_data.o : subspace.o
@@ -721,6 +745,7 @@ wannier.o : overlap_module.o
 wannier.o : trial_center_data.o
 wannier.o : version.o
 wannier.o : want_interfaces.o
+wannier.o : workspace_wan.o
 want_dftread.o : control.o
 want_dftread.o : io_module.o
 want_dftread.o : ions.o
@@ -816,6 +841,9 @@ windows.o : ../libs/parser.o
 windows.o : ../libs/qexml.o
 windows.o : ../libs/qexpt.o
 windows.o : ../libs/timing.o
+workspace_wan.o : kpoints.o
+workspace_wan.o : ../libs/kind.o
+workspace_wan.o : subspace.o
 write_decay.o : io_module.o
 write_decay.o : ../libs/kind.o
 write_decay.o : ../libs/log_module.o
@@ -830,6 +858,7 @@ zmatrix.o : kpoints.o
 zmatrix.o : ../libs/constants.o
 zmatrix.o : ../libs/kind.o
 zmatrix.o : ../libs/timing.o
+memusage.o : ../include/f_defs.h
 qvan2.o : ../include/f_defs.h
 startup.o : ../include/configure.h
 version.o : ../include/version.h

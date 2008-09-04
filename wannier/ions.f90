@@ -83,7 +83,7 @@
    PUBLIC :: psfile
    PUBLIC :: alloc
 
-   PUBLIC :: ions_allocate, ions_deallocate
+   PUBLIC :: ions_allocate, ions_deallocate, ions_memusage
    PUBLIC :: ions_read_ext, ions_init
 
 
@@ -190,6 +190,29 @@ CONTAINS
       CALL log_pop ( subname )
       !
   END SUBROUTINE ions_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION ions_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(na) )       cost = cost + REAL(SIZE(na))         * 4.0_dbl
+       IF ( ALLOCATED(zv) )       cost = cost + REAL(SIZE(zv))         * 8.0_dbl
+       IF ( ALLOCATED(ityp) )     cost = cost + REAL(SIZE(ityp))       * 4.0_dbl
+       IF ( ALLOCATED(symb) )     cost = cost + REAL(SIZE(symb))       * 4.0_dbl
+       IF ( ALLOCATED(tau) )      cost = cost + REAL(SIZE(tau))        * 8.0_dbl
+       IF ( ALLOCATED(tau_srt) )  cost = cost + REAL(SIZE(tau_srt))    * 8.0_dbl
+       IF ( ALLOCATED(ind_srt) )  cost = cost + REAL(SIZE(ind_srt))    * 4.0_dbl
+       IF ( ALLOCATED(atm_symb) ) cost = cost + REAL(SIZE(atm_symb))   * 8.0_dbl
+       IF ( ALLOCATED(psfile) )   cost = cost + REAL(SIZE(psfile))     * nstrx * 4.0_dbl
+       !
+       ions_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION ions_memusage
 
 
 !*********************************************************

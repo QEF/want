@@ -34,7 +34,7 @@
    INTEGER,         INTENT(in) :: dimwin(*), dimwinx
    INTEGER,         INTENT(in) :: dimfroz(*)
    LOGICAL,         INTENT(in) :: frozen(dimwinx,*)
-   COMPLEX(dbl), INTENT(inout) :: lamp(dimwinx,dimwann,nkpts)
+   COMPLEX(dbl), INTENT(inout) :: lamp(dimwinx,dimwann,*)
 
    !
    ! local variables 
@@ -105,7 +105,7 @@
            ENDDO
            !      
            ! p_s = lamp * lamp^{dag}
-           CALL mat_mul( p_s, lamp(:,:,ik), 'N', lamp(:,:,ik), 'C', &
+           CALL mat_mul( p_s, lamp(:,:,ik_g), 'N', lamp(:,:,ik_g), 'C', &
                               dimwin(ik_g), dimwin(ik_g), dimwann )
      
            !
@@ -135,7 +135,7 @@
            !
            DO l = dimfroz(ik_g) + 1, dimwann
                !
-               lamp( 1:dimwin(ik_g), l,ik) = z( 1:dimwin(ik_g) ,il)  
+               lamp( 1:dimwin(ik_g), l, ik_g) = z( 1:dimwin(ik_g) ,il)  
                il = il + 1   
            ENDDO
            !
@@ -145,7 +145,7 @@
            ! check LEFT unitariery (lamp^dag * lamp = I)
            !
            IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann-dimfroz(ik_g),  &
-                                    lamp(:,dimfroz(ik_g)+1:dimwann,ik),   &
+                                    lamp(:,dimfroz(ik_g)+1:dimwann,ik_g), &
                                     SIDE='left', TOLL=unitary_thr ) )     &
               CALL errore(subname, 'Vectors in lamp not orthonormal',ik_g)
 
@@ -175,10 +175,4 @@
    CALL log_pop(subname)
    !
 END SUBROUTINE projection_frozen
-
-
-
-
-
-
 

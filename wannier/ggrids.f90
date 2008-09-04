@@ -11,7 +11,7 @@
 !*********************************************
    !
    USE kinds,             ONLY : dbl
-   USE constants,         ONLY : TWO, RYD
+   USE constants,         ONLY : ZERO, TWO, RYD
    USE parameters,        ONLY : nstrx
    USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba 
    USE timing_module,     ONLY : timing
@@ -67,7 +67,7 @@
    PUBLIC :: igv, g, gg
    PUBLIC :: alloc
 
-   PUBLIC :: ggrids_allocate, ggrids_deallocate
+   PUBLIC :: ggrids_allocate, ggrids_deallocate, ggrids_memusage
    PUBLIC :: ggrids_read_ext
    PUBLIC :: ggrids_summary
    PUBLIC :: ggrids_gk_indexes, ggrids_gv_indexes
@@ -130,6 +130,23 @@ CONTAINS
        CALL log_pop ( subname )
        !
    END SUBROUTINE ggrids_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION ggrids_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !   
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(igv) )    cost = cost + REAL(SIZE(igv))    *  4.0_dbl
+       IF ( ALLOCATED(g) )      cost = cost + REAL(SIZE(g))      *  8.0_dbl
+       IF ( ALLOCATED(gg) )     cost = cost + REAL(SIZE(gg))     *  8.0_dbl
+       !   
+       ggrids_memusage = cost / 1000000.0_dbl
+       !   
+   END FUNCTION ggrids_memusage
 
 
 !*********************************************************
