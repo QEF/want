@@ -254,93 +254,7 @@ c
 *     End of DLAPY2
 *
       END
-      LOGICAL          FUNCTION LSAME( CA, CB )
-*
-*  -- LAPACK auxiliary routine (version 3.0) --
-*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-*     Courant Institute, Argonne National Lab, and Rice University
-*     September 30, 1994
-*
-*     .. Scalar Arguments ..
-      CHARACTER          CA, CB
-*     ..
-*
-*  Purpose
-*  =======
-*
-*  LSAME returns .TRUE. if CA is the same letter as CB regardless of
-*  case.
-*
-*  Arguments
-*  =========
-*
-*  CA      (input) CHARACTER*1
-*  CB      (input) CHARACTER*1
-*          CA and CB specify the single characters to be compared.
-*
-* =====================================================================
-*
-*     .. Intrinsic Functions ..
-      INTRINSIC          ICHAR
-*     ..
-*     .. Local Scalars ..
-      INTEGER            INTA, INTB, ZCODE
-*     ..
-*     .. Executable Statements ..
-*
-*     Test if the characters are equal
-*
-      LSAME = CA.EQ.CB
-      IF( LSAME )
-     $   RETURN
-*
-*     Now test for equivalence if both characters are alphabetic.
-*
-      ZCODE = ICHAR( 'Z' )
-*
-*     Use 'Z' rather than 'A' so that ASCII can be detected on Prime
-*     machines, on which ICHAR returns a value with bit 8 set.
-*     ICHAR('A') on Prime machines returns 193 which is the same as
-*     ICHAR('A') on an EBCDIC machine.
-*
-      INTA = ICHAR( CA )
-      INTB = ICHAR( CB )
-*
-      IF( ZCODE.EQ.90 .OR. ZCODE.EQ.122 ) THEN
-*
-*        ASCII is assumed - ZCODE is the ASCII code of either lower or
-*        upper case 'Z'.
-*
-         IF( INTA.GE.97 .AND. INTA.LE.122 ) INTA = INTA - 32
-         IF( INTB.GE.97 .AND. INTB.LE.122 ) INTB = INTB - 32
-*
-      ELSE IF( ZCODE.EQ.233 .OR. ZCODE.EQ.169 ) THEN
-*
-*        EBCDIC is assumed - ZCODE is the EBCDIC code of either lower or
-*        upper case 'Z'.
-*
-         IF( INTA.GE.129 .AND. INTA.LE.137 .OR.
-     $       INTA.GE.145 .AND. INTA.LE.153 .OR.
-     $       INTA.GE.162 .AND. INTA.LE.169 ) INTA = INTA + 64
-         IF( INTB.GE.129 .AND. INTB.LE.137 .OR.
-     $       INTB.GE.145 .AND. INTB.LE.153 .OR.
-     $       INTB.GE.162 .AND. INTB.LE.169 ) INTB = INTB + 64
-*
-      ELSE IF( ZCODE.EQ.218 .OR. ZCODE.EQ.250 ) THEN
-*
-*        ASCII is assumed, on Prime machines - ZCODE is the ASCII code
-*        plus 128 of either lower or upper case 'Z'.
-*
-         IF( INTA.GE.225 .AND. INTA.LE.250 ) INTA = INTA - 32
-         IF( INTB.GE.225 .AND. INTB.LE.250 ) INTB = INTB - 32
-      END IF
-      LSAME = INTA.EQ.INTB
-*
-*     RETURN
-*
-*     End of LSAME
-*
-      END
+      
       DOUBLE PRECISION FUNCTION DLAPY3( X, Y, Z )
 *
 *  -- LAPACK auxiliary routine (version 3.0) --
@@ -4227,52 +4141,7 @@ c
 *     End of DSTERF
 *
       END
-      SUBROUTINE XERBLA( SRNAME, INFO )
-*
-*  -- LAPACK auxiliary routine (version 3.0) --
-*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-*     Courant Institute, Argonne National Lab, and Rice University
-*     September 30, 1994
-*
-*     .. Scalar Arguments ..
-      CHARACTER*6        SRNAME
-      INTEGER            INFO
-*     ..
-*
-*  Purpose
-*  =======
-*
-*  XERBLA  is an error handler for the LAPACK routines.
-*  It is called by an LAPACK routine if an input parameter has an
-*  invalid value.  A message is printed and execution stops.
-*
-*  Installers may consider modifying the STOP statement in order to
-*  call system-specific exception-handling facilities.
-*
-*  Arguments
-*  =========
-*
-*  SRNAME  (input) CHARACTER*6
-*          The name of the routine which called XERBLA.
-*
-*  INFO    (input) INTEGER
-*          The position of the invalid parameter in the parameter list
-*          of the calling routine.
-*
-* =====================================================================
-*
-*     .. Executable Statements ..
-*
-      WRITE( *, FMT = 9999 )SRNAME, INFO
-*
-      STOP
-*
- 9999 FORMAT( ' ** On entry to ', A6, ' parameter number ', I2, ' had ',
-     $      'an illegal value' )
-*
-*     End of XERBLA
-*
-      END
+      
       SUBROUTINE ZHPEV( JOBZ, UPLO, N, AP, W, Z, LDZ, WORK, RWORK,
      $                  INFO )
 *
@@ -55821,5 +55690,686 @@ CIBM           PREFER SCALAR
       RETURN
 *
 *     End of ZTRTI2
+*
+      END
+      
+      SUBROUTINE ZHPGVX( ITYPE, JOBZ, RANGE, UPLO, N, AP, BP, VL, VU,
+     $                   IL, IU, ABSTOL, M, W, Z, LDZ, WORK, RWORK,
+     $                   IWORK, IFAIL, INFO )
+*
+*  -- LAPACK driver routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     June 30, 1999
+*
+*     .. Scalar Arguments ..
+      CHARACTER          JOBZ, RANGE, UPLO
+      INTEGER            IL, INFO, ITYPE, IU, LDZ, M, N
+      DOUBLE PRECISION   ABSTOL, VL, VU
+*     ..
+*     .. Array Arguments ..
+      INTEGER            IFAIL( * ), IWORK( * )
+      DOUBLE PRECISION   RWORK( * ), W( * )
+      COMPLEX*16         AP( * ), BP( * ), WORK( * ), Z( LDZ, * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  ZHPGVX computes selected eigenvalues and, optionally, eigenvectors
+*  of a complex generalized Hermitian-definite eigenproblem, of the form
+*  A*x=(lambda)*B*x,  A*Bx=(lambda)*x,  or B*A*x=(lambda)*x.  Here A and
+*  B are assumed to be Hermitian, stored in packed format, and B is also
+*  positive definite.  Eigenvalues and eigenvectors can be selected by
+*  specifying either a range of values or a range of indices for the
+*  desired eigenvalues.
+*
+*  Arguments
+*  =========
+*
+*  ITYPE   (input) INTEGER
+*          Specifies the problem type to be solved:
+*          = 1:  A*x = (lambda)*B*x
+*          = 2:  A*B*x = (lambda)*x
+*          = 3:  B*A*x = (lambda)*x
+*
+*  JOBZ    (input) CHARACTER*1
+*          = 'N':  Compute eigenvalues only;
+*          = 'V':  Compute eigenvalues and eigenvectors.
+*
+*  RANGE   (input) CHARACTER*1
+*          = 'A': all eigenvalues will be found;
+*          = 'V': all eigenvalues in the half-open interval (VL,VU]
+*                 will be found;
+*          = 'I': the IL-th through IU-th eigenvalues will be found.
+*
+*  UPLO    (input) CHARACTER*1
+*          = 'U':  Upper triangles of A and B are stored;
+*          = 'L':  Lower triangles of A and B are stored.
+*
+*  N       (input) INTEGER
+*          The order of the matrices A and B.  N >= 0.
+*
+*  AP      (input/output) COMPLEX*16 array, dimension (N*(N+1)/2)
+*          On entry, the upper or lower triangle of the Hermitian matrix
+*          A, packed columnwise in a linear array.  The j-th column of A
+*          is stored in the array AP as follows:
+*          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1<=i<=j;
+*          if UPLO = 'L', AP(i + (j-1)*(2*n-j)/2) = A(i,j) for j<=i<=n.
+*
+*          On exit, the contents of AP are destroyed.
+*
+*  BP      (input/output) COMPLEX*16 array, dimension (N*(N+1)/2)
+*          On entry, the upper or lower triangle of the Hermitian matrix
+*          B, packed columnwise in a linear array.  The j-th column of B
+*          is stored in the array BP as follows:
+*          if UPLO = 'U', BP(i + (j-1)*j/2) = B(i,j) for 1<=i<=j;
+*          if UPLO = 'L', BP(i + (j-1)*(2*n-j)/2) = B(i,j) for j<=i<=n.
+*
+*          On exit, the triangular factor U or L from the Cholesky
+*          factorization B = U**H*U or B = L*L**H, in the same storage
+*          format as B.
+*
+*  VL      (input) DOUBLE PRECISION
+*  VU      (input) DOUBLE PRECISION
+*          If RANGE='V', the lower and upper bounds of the interval to
+*          be searched for eigenvalues. VL < VU.
+*          Not referenced if RANGE = 'A' or 'I'.
+*
+*  IL      (input) INTEGER
+*  IU      (input) INTEGER
+*          If RANGE='I', the indices (in ascending order) of the
+*          smallest and largest eigenvalues to be returned.
+*          1 <= IL <= IU <= N, if N > 0; IL = 1 and IU = 0 if N = 0.
+*          Not referenced if RANGE = 'A' or 'V'.
+*
+*  ABSTOL  (input) DOUBLE PRECISION
+*          The absolute error tolerance for the eigenvalues.
+*          An approximate eigenvalue is accepted as converged
+*          when it is determined to lie in an interval [a,b]
+*          of width less than or equal to
+*
+*                  ABSTOL + EPS *   max( |a|,|b| ) ,
+*
+*          where EPS is the machine precision.  If ABSTOL is less than
+*          or equal to zero, then  EPS*|T|  will be used in its place,
+*          where |T| is the 1-norm of the tridiagonal matrix obtained
+*          by reducing AP to tridiagonal form.
+*
+*          Eigenvalues will be computed most accurately when ABSTOL is
+*          set to twice the underflow threshold 2*DLAMCH('S'), not zero.
+*          If this routine returns with INFO>0, indicating that some
+*          eigenvectors did not converge, try setting ABSTOL to
+*          2*DLAMCH('S').
+*
+*  M       (output) INTEGER
+*          The total number of eigenvalues found.  0 <= M <= N.
+*          If RANGE = 'A', M = N, and if RANGE = 'I', M = IU-IL+1.
+*
+*  W       (output) DOUBLE PRECISION array, dimension (N)
+*          On normal exit, the first M elements contain the selected
+*          eigenvalues in ascending order.
+*
+*  Z       (output) COMPLEX*16 array, dimension (LDZ, N)
+*          If JOBZ = 'N', then Z is not referenced.
+*          If JOBZ = 'V', then if INFO = 0, the first M columns of Z
+*          contain the orthonormal eigenvectors of the matrix A
+*          corresponding to the selected eigenvalues, with the i-th
+*          column of Z holding the eigenvector associated with W(i).
+*          The eigenvectors are normalized as follows:
+*          if ITYPE = 1 or 2, Z**H*B*Z = I;
+*          if ITYPE = 3, Z**H*inv(B)*Z = I.
+*
+*          If an eigenvector fails to converge, then that column of Z
+*          contains the latest approximation to the eigenvector, and the
+*          index of the eigenvector is returned in IFAIL.
+*          Note: the user must ensure that at least max(1,M) columns are
+*          supplied in the array Z; if RANGE = 'V', the exact value of M
+*          is not known in advance and an upper bound must be used.
+*
+*  LDZ     (input) INTEGER
+*          The leading dimension of the array Z.  LDZ >= 1, and if
+*          JOBZ = 'V', LDZ >= max(1,N).
+*
+*  WORK    (workspace) COMPLEX*16 array, dimension (2*N)
+*
+*  RWORK   (workspace) DOUBLE PRECISION array, dimension (7*N)
+*
+*  IWORK   (workspace) INTEGER array, dimension (5*N)
+*
+*  IFAIL   (output) INTEGER array, dimension (N)
+*          If JOBZ = 'V', then if INFO = 0, the first M elements of
+*          IFAIL are zero.  If INFO > 0, then IFAIL contains the
+*          indices of the eigenvectors that failed to converge.
+*          If JOBZ = 'N', then IFAIL is not referenced.
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -i, the i-th argument had an illegal value
+*          > 0:  ZPPTRF or ZHPEVX returned an error code:
+*             <= N:  if INFO = i, ZHPEVX failed to converge;
+*                    i eigenvectors failed to converge.  Their indices
+*                    are stored in array IFAIL.
+*             > N:   if INFO = N + i, for 1 <= i <= n, then the leading
+*                    minor of order i of B is not positive definite.
+*                    The factorization of B could not be completed and
+*                    no eigenvalues or eigenvectors were computed.
+*
+*  Further Details
+*  ===============
+*
+*  Based on contributions by
+*     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
+*
+*  =====================================================================
+*
+*     .. Local Scalars ..
+      LOGICAL            ALLEIG, INDEIG, UPPER, VALEIG, WANTZ
+      CHARACTER          TRANS
+      INTEGER            J
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           XERBLA, ZHPEVX, ZHPGST, ZPPTRF, ZTPMV, ZTPSV
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          MIN
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters.
+*
+      WANTZ = LSAME( JOBZ, 'V' )
+      UPPER = LSAME( UPLO, 'U' )
+      ALLEIG = LSAME( RANGE, 'A' )
+      VALEIG = LSAME( RANGE, 'V' )
+      INDEIG = LSAME( RANGE, 'I' )
+*
+      INFO = 0
+      IF( ITYPE.LT.0 .OR. ITYPE.GT.3 ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( WANTZ .OR. LSAME( JOBZ, 'N' ) ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( ALLEIG .OR. VALEIG .OR. INDEIG ) ) THEN
+         INFO = -3
+      ELSE IF( .NOT.( UPPER .OR. LSAME( UPLO, 'L' ) ) ) THEN
+         INFO = -4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( VALEIG .AND. N.GT.0 .AND. VU.LE.VL ) THEN
+         INFO = -9
+      ELSE IF( INDEIG .AND. IL.LT.1 ) THEN
+         INFO = -10
+      ELSE IF( INDEIG .AND. ( IU.LT.MIN( N, IL ) .OR. IU.GT.N ) ) THEN
+         INFO = -11
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -16
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'ZHPGVX', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
+*     Form a Cholesky factorization of B.
+*
+      CALL ZPPTRF( UPLO, N, BP, INFO )
+      IF( INFO.NE.0 ) THEN
+         INFO = N + INFO
+         RETURN
+      END IF
+*
+*     Transform problem to standard eigenvalue problem and solve.
+*
+      CALL ZHPGST( ITYPE, UPLO, N, AP, BP, INFO )
+      CALL ZHPEVX( JOBZ, RANGE, UPLO, N, AP, VL, VU, IL, IU, ABSTOL, M,
+     $             W, Z, LDZ, WORK, RWORK, IWORK, IFAIL, INFO )
+*
+      IF( WANTZ ) THEN
+*
+*        Backtransform eigenvectors to the original problem.
+*
+         IF( INFO.GT.0 )
+     $      M = INFO - 1
+         IF( ITYPE.EQ.1 .OR. ITYPE.EQ.2 ) THEN
+*
+*           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+*           backtransform eigenvectors: x = inv(L)'*y or inv(U)*y
+*
+            IF( UPPER ) THEN
+               TRANS = 'N'
+            ELSE
+               TRANS = 'C'
+            END IF
+*
+            DO 10 J = 1, M
+               CALL ZTPSV( UPLO, TRANS, 'Non-unit', N, BP, Z( 1, J ),
+     $                     1 )
+   10       CONTINUE
+*
+         ELSE IF( ITYPE.EQ.3 ) THEN
+*
+*           For B*A*x=(lambda)*x;
+*           backtransform eigenvectors: x = L*y or U'*y
+*
+            IF( UPPER ) THEN
+               TRANS = 'C'
+            ELSE
+               TRANS = 'N'
+            END IF
+*
+            DO 20 J = 1, M
+               CALL ZTPMV( UPLO, TRANS, 'Non-unit', N, BP, Z( 1, J ),
+     $                     1 )
+   20       CONTINUE
+         END IF
+      END IF
+*
+      RETURN
+*
+*     End of ZHPGVX
+*
+      END
+      
+      SUBROUTINE ZHPGST( ITYPE, UPLO, N, AP, BP, INFO )
+*
+*  -- LAPACK routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     September 30, 1994
+*
+*     .. Scalar Arguments ..
+      CHARACTER          UPLO
+      INTEGER            INFO, ITYPE, N
+*     ..
+*     .. Array Arguments ..
+      COMPLEX*16         AP( * ), BP( * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  ZHPGST reduces a complex Hermitian-definite generalized
+*  eigenproblem to standard form, using packed storage.
+*
+*  If ITYPE = 1, the problem is A*x = lambda*B*x,
+*  and A is overwritten by inv(U**H)*A*inv(U) or inv(L)*A*inv(L**H)
+*
+*  If ITYPE = 2 or 3, the problem is A*B*x = lambda*x or
+*  B*A*x = lambda*x, and A is overwritten by U*A*U**H or L**H*A*L.
+*
+*  B must have been previously factorized as U**H*U or L*L**H by ZPPTRF.
+*
+*  Arguments
+*  =========
+*
+*  ITYPE   (input) INTEGER
+*          = 1: compute inv(U**H)*A*inv(U) or inv(L)*A*inv(L**H);
+*          = 2 or 3: compute U*A*U**H or L**H*A*L.
+*
+*  UPLO    (input) CHARACTER
+*          = 'U':  Upper triangle of A is stored and B is factored as
+*                  U**H*U;
+*          = 'L':  Lower triangle of A is stored and B is factored as
+*                  L*L**H.
+*
+*  N       (input) INTEGER
+*          The order of the matrices A and B.  N >= 0.
+*
+*  AP      (input/output) COMPLEX*16 array, dimension (N*(N+1)/2)
+*          On entry, the upper or lower triangle of the Hermitian matrix
+*          A, packed columnwise in a linear array.  The j-th column of A
+*          is stored in the array AP as follows:
+*          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1<=i<=j;
+*          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = A(i,j) for j<=i<=n.
+*
+*          On exit, if INFO = 0, the transformed matrix, stored in the
+*          same format as A.
+*
+*  BP      (input) COMPLEX*16 array, dimension (N*(N+1)/2)
+*          The triangular factor from the Cholesky factorization of B,
+*          stored in the same format as A, as returned by ZPPTRF.
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -i, the i-th argument had an illegal value
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ONE, HALF
+      PARAMETER          ( ONE = 1.0D+0, HALF = 0.5D+0 )
+      COMPLEX*16         CONE
+      PARAMETER          ( CONE = ( 1.0D+0, 0.0D+0 ) )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            UPPER
+      INTEGER            J, J1, J1J1, JJ, K, K1, K1K1, KK
+      DOUBLE PRECISION   AJJ, AKK, BJJ, BKK
+      COMPLEX*16         CT
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           XERBLA, ZAXPY, ZDSCAL, ZHPMV, ZHPR2, ZTPMV,
+     $                   ZTPSV
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          DBLE
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      COMPLEX*16         ZDOTC
+      EXTERNAL           LSAME, ZDOTC
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters.
+*
+      INFO = 0
+      UPPER = LSAME( UPLO, 'U' )
+      IF( ITYPE.LT.1 .OR. ITYPE.GT.3 ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'ZHPGST', -INFO )
+         RETURN
+      END IF
+*
+      IF( ITYPE.EQ.1 ) THEN
+         IF( UPPER ) THEN
+*
+*           Compute inv(U')*A*inv(U)
+*
+*           J1 and JJ are the indices of A(1,j) and A(j,j)
+*
+            JJ = 0
+            DO 10 J = 1, N
+               J1 = JJ + 1
+               JJ = JJ + J
+*
+*              Compute the j-th column of the upper triangle of A
+*
+               AP( JJ ) = DBLE( AP( JJ ) )
+               BJJ = BP( JJ )
+               CALL ZTPSV( UPLO, 'Conjugate transpose', 'Non-unit', J,
+     $                     BP, AP( J1 ), 1 )
+               CALL ZHPMV( UPLO, J-1, -CONE, AP, BP( J1 ), 1, CONE,
+     $                     AP( J1 ), 1 )
+               CALL ZDSCAL( J-1, ONE / BJJ, AP( J1 ), 1 )
+               AP( JJ ) = ( AP( JJ )-ZDOTC( J-1, AP( J1 ), 1, BP( J1 ),
+     $                    1 ) ) / BJJ
+   10       CONTINUE
+         ELSE
+*
+*           Compute inv(L)*A*inv(L')
+*
+*           KK and K1K1 are the indices of A(k,k) and A(k+1,k+1)
+*
+            KK = 1
+            DO 20 K = 1, N
+               K1K1 = KK + N - K + 1
+*
+*              Update the lower triangle of A(k:n,k:n)
+*
+               AKK = AP( KK )
+               BKK = BP( KK )
+               AKK = AKK / BKK**2
+               AP( KK ) = AKK
+               IF( K.LT.N ) THEN
+                  CALL ZDSCAL( N-K, ONE / BKK, AP( KK+1 ), 1 )
+                  CT = -HALF*AKK
+                  CALL ZAXPY( N-K, CT, BP( KK+1 ), 1, AP( KK+1 ), 1 )
+                  CALL ZHPR2( UPLO, N-K, -CONE, AP( KK+1 ), 1,
+     $                        BP( KK+1 ), 1, AP( K1K1 ) )
+                  CALL ZAXPY( N-K, CT, BP( KK+1 ), 1, AP( KK+1 ), 1 )
+                  CALL ZTPSV( UPLO, 'No transpose', 'Non-unit', N-K,
+     $                        BP( K1K1 ), AP( KK+1 ), 1 )
+               END IF
+               KK = K1K1
+   20       CONTINUE
+         END IF
+      ELSE
+         IF( UPPER ) THEN
+*
+*           Compute U*A*U'
+*
+*           K1 and KK are the indices of A(1,k) and A(k,k)
+*
+            KK = 0
+            DO 30 K = 1, N
+               K1 = KK + 1
+               KK = KK + K
+*
+*              Update the upper triangle of A(1:k,1:k)
+*
+               AKK = AP( KK )
+               BKK = BP( KK )
+               CALL ZTPMV( UPLO, 'No transpose', 'Non-unit', K-1, BP,
+     $                     AP( K1 ), 1 )
+               CT = HALF*AKK
+               CALL ZAXPY( K-1, CT, BP( K1 ), 1, AP( K1 ), 1 )
+               CALL ZHPR2( UPLO, K-1, CONE, AP( K1 ), 1, BP( K1 ), 1,
+     $                     AP )
+               CALL ZAXPY( K-1, CT, BP( K1 ), 1, AP( K1 ), 1 )
+               CALL ZDSCAL( K-1, BKK, AP( K1 ), 1 )
+               AP( KK ) = AKK*BKK**2
+   30       CONTINUE
+         ELSE
+*
+*           Compute L'*A*L
+*
+*           JJ and J1J1 are the indices of A(j,j) and A(j+1,j+1)
+*
+            JJ = 1
+            DO 40 J = 1, N
+               J1J1 = JJ + N - J + 1
+*
+*              Compute the j-th column of the lower triangle of A
+*
+               AJJ = AP( JJ )
+               BJJ = BP( JJ )
+               AP( JJ ) = AJJ*BJJ + ZDOTC( N-J, AP( JJ+1 ), 1,
+     $                    BP( JJ+1 ), 1 )
+               CALL ZDSCAL( N-J, BJJ, AP( JJ+1 ), 1 )
+               CALL ZHPMV( UPLO, N-J, CONE, AP( J1J1 ), BP( JJ+1 ), 1,
+     $                     CONE, AP( JJ+1 ), 1 )
+               CALL ZTPMV( UPLO, 'Conjugate transpose', 'Non-unit',
+     $                     N-J+1, BP( JJ ), AP( JJ ), 1 )
+               JJ = J1J1
+   40       CONTINUE
+         END IF
+      END IF
+      RETURN
+*
+*     End of ZHPGST
+*
+      END
+      SUBROUTINE ZPPTRF( UPLO, N, AP, INFO )
+*
+*  -- LAPACK routine (version 3.0) --
+*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
+*     Courant Institute, Argonne National Lab, and Rice University
+*     September 30, 1994
+*
+*     .. Scalar Arguments ..
+      CHARACTER          UPLO
+      INTEGER            INFO, N
+*     ..
+*     .. Array Arguments ..
+      COMPLEX*16         AP( * )
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  ZPPTRF computes the Cholesky factorization of a complex Hermitian
+*  positive definite matrix A stored in packed format.
+*
+*  The factorization has the form
+*     A = U**H * U,  if UPLO = 'U', or
+*     A = L  * L**H,  if UPLO = 'L',
+*  where U is an upper triangular matrix and L is lower triangular.
+*
+*  Arguments
+*  =========
+*
+*  UPLO    (input) CHARACTER*1
+*          = 'U':  Upper triangle of A is stored;
+*          = 'L':  Lower triangle of A is stored.
+*
+*  N       (input) INTEGER
+*          The order of the matrix A.  N >= 0.
+*
+*  AP      (input/output) COMPLEX*16 array, dimension (N*(N+1)/2)
+*          On entry, the upper or lower triangle of the Hermitian matrix
+*          A, packed columnwise in a linear array.  The j-th column of A
+*          is stored in the array AP as follows:
+*          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1<=i<=j;
+*          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = A(i,j) for j<=i<=n.
+*          See below for further details.
+*
+*          On exit, if INFO = 0, the triangular factor U or L from the
+*          Cholesky factorization A = U**H*U or A = L*L**H, in the same
+*          storage format as A.
+*
+*  INFO    (output) INTEGER
+*          = 0:  successful exit
+*          < 0:  if INFO = -i, the i-th argument had an illegal value
+*          > 0:  if INFO = i, the leading minor of order i is not
+*                positive definite, and the factorization could not be
+*                completed.
+*
+*  Further Details
+*  ===============
+*
+*  The packed storage scheme is illustrated by the following example
+*  when N = 4, UPLO = 'U':
+*
+*  Two-dimensional storage of the Hermitian matrix A:
+*
+*     a11 a12 a13 a14
+*         a22 a23 a24
+*             a33 a34     (aij = conjg(aji))
+*                 a44
+*
+*  Packed storage of the upper triangle of A:
+*
+*  AP = [ a11, a12, a22, a13, a23, a33, a14, a24, a34, a44 ]
+*
+*  =====================================================================
+*
+*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            UPPER
+      INTEGER            J, JC, JJ
+      DOUBLE PRECISION   AJJ
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      COMPLEX*16         ZDOTC
+      EXTERNAL           LSAME, ZDOTC
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           XERBLA, ZDSCAL, ZHPR, ZTPSV
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          DBLE, SQRT
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input parameters.
+*
+      INFO = 0
+      UPPER = LSAME( UPLO, 'U' )
+      IF( .NOT.UPPER .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'ZPPTRF', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
+      IF( UPPER ) THEN
+*
+*        Compute the Cholesky factorization A = U'*U.
+*
+         JJ = 0
+         DO 10 J = 1, N
+            JC = JJ + 1
+            JJ = JJ + J
+*
+*           Compute elements 1:J-1 of column J.
+*
+            IF( J.GT.1 )
+     $         CALL ZTPSV( 'Upper', 'Conjugate transpose', 'Non-unit',
+     $                     J-1, AP, AP( JC ), 1 )
+*
+*           Compute U(J,J) and test for non-positive-definiteness.
+*
+            AJJ = DBLE( AP( JJ ) ) - ZDOTC( J-1, AP( JC ), 1, AP( JC ),
+     $            1 )
+            IF( AJJ.LE.ZERO ) THEN
+               AP( JJ ) = AJJ
+               GO TO 30
+            END IF
+            AP( JJ ) = SQRT( AJJ )
+   10    CONTINUE
+      ELSE
+*
+*        Compute the Cholesky factorization A = L*L'.
+*
+         JJ = 1
+         DO 20 J = 1, N
+*
+*           Compute L(J,J) and test for non-positive-definiteness.
+*
+            AJJ = DBLE( AP( JJ ) )
+            IF( AJJ.LE.ZERO ) THEN
+               AP( JJ ) = AJJ
+               GO TO 30
+            END IF
+            AJJ = SQRT( AJJ )
+            AP( JJ ) = AJJ
+*
+*           Compute elements J+1:N of column J and update the trailing
+*           submatrix.
+*
+            IF( J.LT.N ) THEN
+               CALL ZDSCAL( N-J, ONE / AJJ, AP( JJ+1 ), 1 )
+               CALL ZHPR( 'Lower', N-J, -ONE, AP( JJ+1 ), 1,
+     $                    AP( JJ+N-J+1 ) )
+               JJ = JJ + N - J + 1
+            END IF
+   20    CONTINUE
+      END IF
+      GO TO 40
+*
+   30 CONTINUE
+      INFO = J
+*
+   40 CONTINUE
+      RETURN
+*
+*     End of ZPPTRF
 *
       END
