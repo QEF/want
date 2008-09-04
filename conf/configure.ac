@@ -5,7 +5,7 @@ AC_INIT(WANT, 2.1, , want)
 
 # default choices
 # set each variable to 0 (false) or 1 (true)
-use_parallel=0
+use_parallel=1
 set_use_parallel=0
 use_shared=1
 
