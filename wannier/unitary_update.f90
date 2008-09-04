@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************************
-SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
+SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
    !*********************************************************
    !
    ! This subroutine computes the variation in the unitary rotation U
@@ -23,6 +23,8 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    USE log_module,     ONLY : log_push, log_pop
    USE util_module,    ONLY : mat_mul, mat_hdiag, zmat_unitary
    USE parser_module,  ONLY : int2char
+   USE kpoints_module, ONLY : nkpts_g, iks, ike
+   USE mp,             ONLY : mp_sum
 
 #ifdef __CHECK_UNITARY
    USE control_module, ONLY : unitary_thr
@@ -34,13 +36,14 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
    !
    INTEGER,         INTENT(in)    :: dimwann, nkpts
    COMPLEX(dbl),    INTENT(in)    :: dq (dimwann,dimwann,nkpts)
-   COMPLEX(dbl),    INTENT(inout) :: cu (dimwann,dimwann,nkpts)
+   COMPLEX(dbl),    INTENT(inout) :: cU (dimwann,dimwann,nkpts_g)
    COMPLEX(dbl),    INTENT(out)   :: cdu(dimwann,dimwann,nkpts)
 
    !
    ! local variables
    !
-   INTEGER                   :: ik, i, j, ierr
+   CHARACTER(14)             :: subname='unitary_update'
+   INTEGER                   :: ik, ik_g, i, j, ierr
    REAL(dbl),    ALLOCATABLE :: w(:)
    COMPLEX(dbl), ALLOCATABLE :: z(:,:), cw(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
@@ -53,24 +56,33 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
 ! routine Main body
 !-----------------------------
 !
-   CALL timing('unitary_update',OPR='start')
-   CALL log_push('unitary_update')
+   CALL timing(subname,OPR='start')
+   CALL log_push(subname)
 
 
    ALLOCATE( w(dimwann), z(dimwann, dimwann), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('unitary_update', 'allocating w, z', ABS(ierr))
+   IF( ierr /=0 ) CALL errore(subname, 'allocating w, z', ABS(ierr))
    !
    ALLOCATE( cw(dimwann), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('unitary_update', 'allocating cw', ABS(ierr))
+   IF( ierr /=0 ) CALL errore(subname, 'allocating cw', ABS(ierr))
    !
    ALLOCATE( work(dimwann,dimwann), STAT=ierr )
-   IF( ierr /=0 ) CALL errore('unitary_update', 'allocating work', ABS(ierr))
+   IF( ierr /=0 ) CALL errore(subname, 'allocating work', ABS(ierr))
+
+   !
+   ! nullify cU for ik_g not in the current pool
+   ! needed to use mp_sum for pool recovering
+   !
+   cU( :,:, 1:iks-1 )        = CZERO
+   cU( :,:, ike+1:nkpts_g )  = CZERO
 
    !
    ! compute the change in the unitary matrix dU = e^(i * dq)
    !
    DO ik = 1, nkpts
-
+        !
+        ik_g = ik + iks -1
+        !
         CALL mat_hdiag( z, w, dq(:,:,ik), dimwann)
 
         !
@@ -94,33 +106,37 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cu, cdu)
         !
         ! The orbitals are rotated 
         !
-        CALL mat_mul( work(:,:), cu(:,:,ik), 'N', cdU(:,:,ik), 'N', &
+        CALL mat_mul( work(:,:), cU(:,:,ik_g), 'N', cdU(:,:,ik), 'N', &
                       dimwann, dimwann, dimwann )
-        cu(:,:,ik) = work(:,:)
+        cU(:,:,ik_g) = work(:,:)
 
 #ifdef __CHECK_UNITARY
-        IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik), &
+        IF (  .NOT. zmat_unitary( dimwann, dimwann, cU(:,:,ik_g), &
                                   SIDE='both', TOLL=unitary_thr )  )  &
-           CALL warning( 'unitary_update', 'U matrix NOT unitary (II) at ikpt = '//TRIM(int2char(ik)))
+           CALL warning( subname, 'U matrix NOT unitary (II) at ikpt = '//TRIM(int2char(ik_g)))
 #endif
    ENDDO
+   !
+   ! pool recovering
+   !
+   CALL mp_sum( cU )
    
 
    !
    ! cleaning
    !
    DEALLOCATE( w, z, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating w, z', ABS(ierr))
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating w, z', ABS(ierr))
    !
    DEALLOCATE( cw, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating cw', ABS(ierr))
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating cw', ABS(ierr))
    !
    DEALLOCATE( work, STAT=ierr )
-   IF( ierr /=0 ) CALL errore('unitary_update', 'deallocating work', ABS(ierr))
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating work', ABS(ierr))
 
 
-   CALL timing('unitary_update',OPR='stop')
-   CALL log_pop('unitary_update')
+   CALL timing(subname,OPR='stop')
+   CALL log_pop(subname)
    !
 END SUBROUTINE unitary_update
 

@@ -7,11 +7,14 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
+SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    !*********************************************************
    !
-   USE kinds,     ONLY : dbl
-   USE constants, ONLY : EPS_m6, EPS_m2
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : EPS_m6, EPS_m2, CZERO
+   USE kpoints_module,    ONLY : nkpts_g, iks, ike
+   USE mp,                ONLY : mp_sum
+   !
    IMPLICIT NONE
 
 ! <INFO>
@@ -32,19 +35,27 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
 !
 ! </INFO>
 
-   REAL(dbl), PARAMETER        :: toll_dist = 5.0 * EPS_m2
-   REAL(dbl), PARAMETER        :: toll_spread = EPS_m6
+   !
+   ! input vars
+   !
+   INTEGER,        INTENT(in)    :: dimwann, nkpts
+   REAL(dbl),      INTENT(inout) :: rave(3,dimwann)
+   REAL(dbl),      INTENT(inout) :: rave2(dimwann)
+   REAL(dbl),      INTENT(inout) :: r2ave(dimwann)
+   COMPLEX(dbl),   INTENT(inout) :: cU(dimwann,dimwann,nkpts_g)
+   CHARACTER(*),   INTENT(in)    :: ordering_mode
 
-   INTEGER, INTENT(in)         :: dimwann, nkpts
-   REAL(dbl), INTENT(inout)    :: rave(3,dimwann), rave2(dimwann), r2ave(dimwann)
-   COMPLEX(dbl), INTENT(inout) :: cu(dimwann,dimwann,nkpts)
-   CHARACTER(*), INTENT(in)    :: ordering_mode
+   !
+   ! local vars 
+   !
+   REAL(dbl), PARAMETER          :: toll_dist    = 5.0 * EPS_m2
+   REAL(dbl), PARAMETER          :: toll_spread  = EPS_m6
 
-   REAL(dbl), ALLOCATABLE      :: rtmp(:), rtmp2(:), rswap(:)
-   COMPLEX(dbl), ALLOCATABLE   :: cswap(:,:,:)
-   INTEGER, ALLOCATABLE        :: index(:)
-   LOGICAL                     :: lspatial, lspread
-   INTEGER                     :: i, is, ie, ierr
+   REAL(dbl),    ALLOCATABLE     :: rtmp(:), rtmp2(:), rswap(:)
+   COMPLEX(dbl), ALLOCATABLE     :: cswap(:,:,:)
+   INTEGER,      ALLOCATABLE     :: index(:)
+   LOGICAL                       :: lspatial, lspread
+   INTEGER                       :: i, is, ie, ierr
 
 
 !------------------------------------------------
@@ -88,7 +99,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    ALLOCATE(rswap(dimwann), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating rswap',ABS(ierr))
    !
-   ALLOCATE(cswap(dimwann,dimwann,nkpts), STAT=ierr)
+   ALLOCATE(cswap(dimwann,dimwann,nkpts_g), STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','allocating cswap',ABS(ierr))
    
    !
@@ -145,7 +156,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    ! ordering main quantities
    !
    DO i=1,3
-      rswap(:) = rave(i,:)
+      rswap(:)  = rave(i,:)
       rave(i,:) = rswap( index(:) )
    ENDDO
    !
@@ -153,8 +164,16 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
    rave2(:)  = rswap( index(:) )
    rswap(:)  = r2ave(:)
    r2ave(:)  = rswap( index(:) )
-   cswap(:,:,:) = cu(:,:,:)
-   cu(:,:,:) = cswap( :, index(:), : ) 
+
+   !
+   ! explicit the parallelism
+   !
+   cswap(:,:,1:nkpts) = cU(:,:,iks:ike)
+   cU(:,:,:)          = CZERO
+   cU(:,:,iks:ike)    = cswap( :, index(:), 1:nkpts ) 
+   !
+   CALL mp_sum( cU )
+
 
    DEALLOCATE( index, STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','deallocating INDEX',ABS(ierr))

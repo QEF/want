@@ -10,7 +10,7 @@
 ! See the CREDITS file in the ~want directory for a full description
 !
 !*****************************************************
-   SUBROUTINE hamiltonian_calc( dimwann, nkpts, cu )
+   SUBROUTINE hamiltonian_calc( dimwann, nkpts, cU )
    !*****************************************************
    !    
    ! Calculates the matrix elements of the hamiltonian on the
@@ -24,7 +24,7 @@
    USE log_module,           ONLY : log_push, log_pop
    USE parser_module,        ONLY : int2char
    USE control_module,       ONLY : verbosity
-   USE kpoints_module,       ONLY : vkpt, nkpts_g, nrtot, vr, ivr
+   USE kpoints_module,       ONLY : vkpt, nkpts_g, iks, nrtot, vr, ivr
    USE windows_module,       ONLY : efermi
    USE hamiltonian_module,   ONLY : wan_eig, rham, ham_alloc => alloc 
    USE mp,                   ONLY : mp_sum
@@ -39,14 +39,14 @@
    ! input variables
    ! 
    INTEGER,      INTENT(in) :: dimwann, nkpts
-   COMPLEX(dbl), INTENT(in) :: cu(dimwann,dimwann, nkpts)
+   COMPLEX(dbl), INTENT(in) :: cU(dimwann,dimwann,nkpts_g)
    
    !
    ! local variables
    !
    CHARACTER(16) :: subname = 'hamiltonian_calc'
 
-   INTEGER       :: i, j, m, ik, ir, inorm, imax, imin
+   INTEGER       :: i, j, m, ik, ik_g, ir, inorm, imax, imin
    INTEGER       :: ierr
    REAL(dbl)     :: norm, rmod, fact
    REAL(dbl)     :: arg
@@ -85,6 +85,8 @@
       !
       DO ik = 1, nkpts
           !
+          ik_g = ik + iks -1
+          !
           DO j = 1, dimwann
           DO i = 1, j
               !
@@ -92,8 +94,8 @@
               !
               DO m = 1, dimwann
                   !
-                  kham(i,j,ik) = kham(i,j,ik) + wan_eig(m,ik) * &
-                                                CONJG( cu(m,i,ik) ) * cu(m,j,ik)
+                  kham(i,j,ik) = kham(i,j,ik) + wan_eig(m,ik_g) * &
+                                                CONJG( cU(m,i,ik_g) ) * cU(m,j,ik_g)
               ENDDO
               !
               ! use hermiticity

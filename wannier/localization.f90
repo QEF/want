@@ -13,9 +13,10 @@
    USE kinds,            ONLY : dbl
    USE parameters,       ONLY : nstrx
    USE constants,        ONLY : ZERO
-   USE kpoints_module,   ONLY : nkpts, kpoints_alloc
+   USE kpoints_module,   ONLY : nkpts_g, kpoints_alloc
    USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
-   USE io_global_module, ONLY : ionode
+   USE io_global_module, ONLY : ionode, ionode_id
+   USE mp,               ONLY : mp_bcast
    USE iotk_module
    IMPLICIT NONE
    PRIVATE
@@ -39,7 +40,7 @@
    !
    ! ... some dimensions are taken from other moduli
    !     INTEGER :: dimwann
-   !     INTEGER :: nkpts
+   !     INTEGER :: nkpts_g
    !
    ! ... iterative localization procedure parameters
    INTEGER                     :: niter_condmin ! number of iteration with conditioned min
@@ -55,7 +56,7 @@
                                                 ! (cryst. units)
 
    ! ... unitary rotation matrices
-   COMPLEX(dbl), ALLOCATABLE   :: cu(:,:,:)     ! the actual unitary rot. (dimwann**2,nkpts)
+   COMPLEX(dbl), ALLOCATABLE   :: cu(:,:,:)     ! the actual unitary rot. (dimwann**2,nkpts_g)
    
    ! ... <r>, <r>^2, <r^2> and spreads of the single WFs
    REAL(dbl), ALLOCATABLE      :: rave(:,:)     ! 3 * dimwann,   <r>  (Bohr)
@@ -75,7 +76,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, dimwann
+   PUBLIC :: nkpts_g, dimwann
    PUBLIC :: wannier_thr, alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg
    PUBLIC :: niter_condmin, a_condmin, dump_condmin
    PUBLIC :: xcell
@@ -105,16 +106,16 @@ CONTAINS
        INTEGER            :: ierr 
       
        IF ( dimwann <= 0 ) CALL errore(subname,' Invalid DIMWANN ',ABS(dimwann)+1)
-       IF ( nkpts <= 0 )   CALL errore(subname,' Invalid NKPTS ',ABS(nkpts)+1)
+       IF ( nkpts_g <= 0 ) CALL errore(subname,' Invalid NKPTS_G',ABS(nkpts_g)+1)
 
-       ALLOCATE( cu(dimwann,dimwann,nkpts), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating cu ',dimwann*dimwann*nkpts )
+       ALLOCATE( cu(dimwann,dimwann,nkpts_g), STAT = ierr )
+       IF( ierr /=0 ) CALL errore(subname, ' allocating cu ', ABS(ierr) )
        ALLOCATE( rave(3,dimwann), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating rave ',3*dimwann )
+       IF( ierr /=0 ) CALL errore(subname, ' allocating rave ', ABS(ierr) )
        ALLOCATE( rave2(dimwann), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating rave2 ',dimwann )
+       IF( ierr /=0 ) CALL errore(subname, ' allocating rave2 ', ABS(ierr) )
        ALLOCATE( r2ave(dimwann), STAT = ierr )
-           IF( ierr /=0 ) CALL errore(subname, ' allocating r2ave ',dimwann )
+       IF( ierr /=0 ) CALL errore(subname, ' allocating r2ave ', ABS(ierr) )
        
        Omega_I        = ZERO
        Omega_OD       = ZERO
@@ -238,23 +239,28 @@ CONTAINS
 
        IF ( .NOT. alloc ) RETURN
 
-       CALL iotk_write_begin(unit,TRIM(name))
-       CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
-       CALL iotk_write_attr(attr,"nkpts",nkpts) 
-       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+       IF ( ionode ) THEN
+           !
+           CALL iotk_write_begin(unit,TRIM(name))
+           CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
+           CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
+           CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
-       CALL iotk_write_attr(attr,"Omega_I",Omega_I,FIRST=.TRUE.) 
-       CALL iotk_write_attr(attr,"Omega_D",Omega_D) 
-       CALL iotk_write_attr(attr,"Omega_OD",Omega_OD) 
-       CALL iotk_write_attr(attr,"Omega_tot",Omega_tot) 
-       CALL iotk_write_empty(unit,"SPREADS",ATTR=attr)
+           CALL iotk_write_attr(attr,"Omega_I",Omega_I,FIRST=.TRUE.) 
+           CALL iotk_write_attr(attr,"Omega_D",Omega_D) 
+           CALL iotk_write_attr(attr,"Omega_OD",Omega_OD) 
+           CALL iotk_write_attr(attr,"Omega_tot",Omega_tot) 
+           CALL iotk_write_empty(unit,"SPREADS",ATTR=attr)
 
-       CALL iotk_write_dat(unit,"CU",cu) 
-       CALL iotk_write_dat(unit,"RAVE",rave,COLUMNS=3)
-       CALL iotk_write_dat(unit,"RAVE2",rave2)
-       CALL iotk_write_dat(unit,"R2AVE",r2ave)
+           CALL iotk_write_dat(unit,"CU",cu) 
+           CALL iotk_write_dat(unit,"RAVE",rave,COLUMNS=3)
+           CALL iotk_write_dat(unit,"RAVE2",rave2)
+           CALL iotk_write_dat(unit,"R2AVE",r2ave)
 
-       CALL iotk_write_end(unit,TRIM(name))
+           CALL iotk_write_end(unit,TRIM(name))
+           !
+       ENDIF
+       !
    END SUBROUTINE localization_write
 
 !**********************************************************
@@ -266,36 +272,52 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(17)      :: subname="localization_read"
-       INTEGER            :: nkpts_, dimwann_
+       INTEGER            :: nkpts_g_, dimwann_
        INTEGER            :: ierr
 
        IF ( alloc ) CALL localization_deallocate()
 
-       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
-       IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-       found = .TRUE.
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           IF (.NOT. found) RETURN
+           IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+           found = .TRUE.
+           !
+       ENDIF
+       !
+       CALL mp_bcast(  found,    ionode_id )
 
        !
-       ! ... dimensions
-       CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
+       ! dimensions
+       !
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
 
-       CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
+           CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr dimwann',ABS(ierr))
 
-       CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
-       IF ( kpoints_alloc ) THEN
-           IF ( nkpts_ /= nkpts ) CALL errore(subname,'Invalid NKPTS',ABS(nkpts-nkpts_))
-       ELSE
-          nkpts = nkpts_
+           CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+           !
        ENDIF
+       !
+       CALL mp_bcast( dimwann_,     ionode_id )
+       CALL mp_bcast( nkpts_g_,     ionode_id )
+       !
+       IF ( kpoints_alloc ) THEN
+          IF ( nkpts_g_ /= nkpts_g ) CALL errore(subname,'Invalid NKPTS_G',ABS(nkpts_g-nkpts_g_))
+       ELSE
+          nkpts_g = nkpts_g_
+       ENDIF
+       !
        IF ( subspace_alloc ) THEN
            IF ( dimwann_ /= dimwann )  &
               CALL errore(subname,'Invalid dimwann',ABS(dimwann-dimwann_))
        ELSE
-          dimwann = dimwann_
+           dimwann = dimwann_
        ENDIF
 
        !
@@ -303,32 +325,47 @@ CONTAINS
        CALL localization_allocate()
 
        !
-       ! ... spreads
-       CALL iotk_scan_empty(unit,'SPREADS',ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag SPREADS',ABS(ierr))
-
-       CALL iotk_scan_attr(attr,'Omega_I',Omega_I,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_I',ABS(ierr))
-       CALL iotk_scan_attr(attr,'Omega_D',Omega_D,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_D',ABS(ierr))
-       CALL iotk_scan_attr(attr,'Omega_OD',Omega_OD,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_OD',ABS(ierr))
-       CALL iotk_scan_attr(attr,'Omega_tot',Omega_tot,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_tot',ABS(ierr))
-
+       ! spreads
        !
-       ! ... major data
-       CALL iotk_scan_dat(unit,'CU',cu,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find CU',ABS(ierr))
-       CALL iotk_scan_dat(unit,'RAVE',rave,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find RAVE',ABS(ierr))
-       CALL iotk_scan_dat(unit,'RAVE2',rave2,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find RAVE2',ABS(ierr))
-       CALL iotk_scan_dat(unit,'R2AVE',r2ave,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find R2AVE',ABS(ierr))
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_empty(unit,'SPREADS',ATTR=attr,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find tag SPREADS',ABS(ierr))
 
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           CALL iotk_scan_attr(attr,'Omega_I',Omega_I,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_I',ABS(ierr))
+           CALL iotk_scan_attr(attr,'Omega_D',Omega_D,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_D',ABS(ierr))
+           CALL iotk_scan_attr(attr,'Omega_OD',Omega_OD,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_OD',ABS(ierr))
+           CALL iotk_scan_attr(attr,'Omega_tot',Omega_tot,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr Omega_tot',ABS(ierr))
+
+           !
+           ! ... major data
+           CALL iotk_scan_dat(unit,'CU',cu,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find CU',ABS(ierr))
+           CALL iotk_scan_dat(unit,'RAVE',rave,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find RAVE',ABS(ierr))
+           CALL iotk_scan_dat(unit,'RAVE2',rave2,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find RAVE2',ABS(ierr))
+           CALL iotk_scan_dat(unit,'R2AVE',r2ave,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find R2AVE',ABS(ierr))
+
+           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           !
+       ENDIF
+       !
+       CALL mp_bcast( Omega_I,    ionode_id )
+       CALL mp_bcast( Omega_D,    ionode_id )
+       CALL mp_bcast( Omega_OD,   ionode_id )
+       CALL mp_bcast( Omega_tot,  ionode_id )
+       CALL mp_bcast( cu,         ionode_id )
+       CALL mp_bcast( rave,       ionode_id )
+       CALL mp_bcast( rave2,      ionode_id )
+       CALL mp_bcast( r2ave,      ionode_id )
+       !
    END SUBROUTINE localization_read
 
 END MODULE localization_module

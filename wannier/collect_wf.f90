@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !********************************************************
-   SUBROUTINE collect_wf( dimwann, nkpts, rave, xcell, cu )
+   SUBROUTINE collect_wf( dimwann, nkpts, rave, xcell, cU )
    !********************************************************
    !
    ! this subroutine moves the actual WFs in the cell specified
@@ -15,12 +15,14 @@
    ! in the U(k) matrices (cu in the routine).
    !
    USE kinds
-   USE constants,         ONLY : ZERO, ONE, TPI
+   USE constants,         ONLY : ZERO, CZERO, ONE, TPI
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
    USE converters_module, ONLY : cart2cry, cry2cart
    USE lattice_module,    ONLY : avec, bvec
-   USE kpoints_module,    ONLY : vkpt_g, iks, ike
+   USE kpoints_module,    ONLY : vkpt_g, nkpts_g, iks, ike
+   USE mp,                ONLY : mp_sum
+   !
    IMPLICIT NONE
 
    !
@@ -30,12 +32,13 @@
    REAL(dbl),    INTENT(inout) :: rave(3,dimwann)    ! the WF centers
    REAL(dbl),    INTENT(in)    :: xcell(3)           ! the corner of the selected cell, 
                                                      ! cryst units
-   COMPLEX(dbl), INTENT(inout) :: cu(dimwann,dimwann,nkpts)
+   COMPLEX(dbl), INTENT(inout) :: cU(dimwann,dimwann,nkpts_g)
 
    !
    ! local variables
    !
-   INTEGER      :: i, j, ik, m, n, ierr
+   CHARACTER(10):: subname='collect_wf'
+   INTEGER      :: i, j, ik, ik_g, m, n, ierr
    REAL(dbl)    :: arg
    COMPLEX(dbl) :: phase
    REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:), rave_cry(:,:)
@@ -50,17 +53,17 @@
 ! main body 
 !------------------------------
 !
-      CALL timing('collect_wf',OPR='start')
-      CALL log_push('collect_wf')
+      CALL timing(subname,OPR='start')
+      CALL log_push(subname)
 
       !
       ! aux data
       !
       ALLOCATE( vkpt_cry(3, nkpts), rave_cry(3, dimwann), STAT=ierr )
-      IF (ierr/=0) CALL errore('locate_wf', 'allocating vkpt_cry, rave_cry', ABS(ierr))
+      IF (ierr/=0) CALL errore(subname, 'allocating vkpt_cry, rave_cry', ABS(ierr))
       !
       ALLOCATE( rave_new(3, dimwann), STAT=ierr )
-      IF (ierr/=0) CALL errore('locate_wf', 'allocating rave_new', ABS(ierr))
+      IF (ierr/=0) CALL errore(subname, 'allocating rave_new', ABS(ierr))
 
       !
       ! convert vkpt from cart coord (bohr^-1) to cryst
@@ -87,32 +90,47 @@
          !
       ENDDO
 
+
+      !   
+      ! nullify cU for ik_g not in the current pool
+      ! needed to use mp_sum for pool recovering
+      !   
+      cU( :,:, 1:iks-1 )        = CZERO
+      cU( :,:, ike+1:nkpts_g )  = CZERO
+
       !
       ! apply the required shift to the bloch functions:
       ! this is done changing the phases in cU
       !
       ! | WF_mk > = \sum_n cU_nm | nk > 
       !
+      !
       DO ik = 1, nkpts
       DO m  = 1, dimwann
+          !
+          ik_g = ik + iks -1
 
-            !
-            ! compute the phase for the global shift
-            !
-            arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_new(:,m) - rave(:,m) )
-            phase = CMPLX( COS(arg), -SIN(arg), dbl )
+          !
+          ! compute the phase for the global shift
+          !
+          arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_new(:,m) - rave(:,m) )
+          phase = CMPLX( COS(arg), -SIN(arg), dbl )
 
-            !
-            ! apply the shift
-            !
-            DO n = 1, dimwann
-                 !
-                 cu(n,m,ik) = cu(n,m,ik) * phase 
-                 !
-            ENDDO
-
+          !
+          ! apply the shift
+          !
+          DO n = 1, dimwann
+              !
+              cU(n,m,ik_g) = cU(n,m,ik_g) * phase 
+              !
+          ENDDO
+          !
       ENDDO
       ENDDO
+      !
+      ! pool recovering
+      !
+      CALL mp_sum( cU(:,:,1:nkpts_g) )
 
       !
       ! output updated centers
@@ -124,13 +142,13 @@
       ! cleanup
       !
       DEALLOCATE( vkpt_cry, rave_cry, STAT=ierr )
-      IF (ierr/=0) CALL errore('locate_wf', 'deallocating vkpt_cry, rave_cry', ABS(ierr))
+      IF (ierr/=0) CALL errore(subname, 'deallocating vkpt_cry, rave_cry', ABS(ierr))
       !
       DEALLOCATE( rave_new, STAT=ierr )
-      IF (ierr/=0) CALL errore('locate_wf', 'deallocating rave_new', ABS(ierr))
+      IF (ierr/=0) CALL errore(subname, 'deallocating rave_new', ABS(ierr))
 
-      CALL timing('collect_wf',OPR='stop')
-      CALL log_pop('collect_wf')
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
       !
    END SUBROUTINE collect_wf
 

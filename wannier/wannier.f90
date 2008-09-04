@@ -27,7 +27,7 @@
       USE files_module,        ONLY : file_open, file_close
       USE version_module,      ONLY : version_number
       USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag
-      USE kpoints_module,      ONLY : nkpts, nb, wbtot
+      USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, nb, wbtot
       USE overlap_module,      ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                                       ncg, wannier_thr, cu, rave, rave2, r2ave, &
@@ -49,14 +49,14 @@
       !
       ! local variables
       !
-      INTEGER     :: ik, m, n, ierr
+      INTEGER     :: ik, ik_g, m, n, ierr
       INTEGER     :: ncgfix, ncount, iter
       LOGICAL     :: lcg, do_conjgrad
       REAL(dbl)   :: Omega_old, Omega_var, Omega0, OmegaA
       REAL(dbl)   :: gcnorm1, gcnorm0, gcnorm_aux
       REAL(dbl)   :: aux1, aux2, eqb, eqa, alpha, alphamin
       !
-      REAL(dbl),    ALLOCATABLE ::  rave_aux(:,:) 
+      REAL(dbl),    ALLOCATABLE :: rave_aux(:,:) 
       !
       CHARACTER( LEN=nstrx )    :: filename
       !
@@ -135,7 +135,7 @@
       ! Mkb_aux will contain tha updated overlaps, while
       ! Mkb keeps trace of thre starting overlaps
       !
-      CALL overlap_update(dimwann, nkpts, cu, Mkb, Mkb_aux)
+      CALL overlap_update(dimwann, nkpts, cU, Mkb, Mkb_aux)
 
 
       sheet(:,:,:)   = ZERO
@@ -193,10 +193,10 @@
            CALL log_push( "itaration" )
 
            !
-           ! Store cu and Mkb_aux
+           ! Store cU and Mkb_aux
            !
-           cu0(:,:,:)    = cu(:,:,:)
-           Mkb0(:,:,:,:) = Mkb_aux(:,:,:,:)
+           cu0(:,:,1:nkpts_g)    = cU(:,:,1:nkpts_g)
+           Mkb0(:,:,:,1:nkpts)   = Mkb_aux(:,:,:,1:nkpts)
 
            !
            ! settings
@@ -277,7 +277,7 @@
                !
            ENDDO
            !
-           CALL mp_sum( gcnorm1 )
+           CALL mp_sum( gcnorm_aux )
            !
            gcnorm_aux = gcnorm_aux * aux1
 
@@ -319,8 +319,8 @@
                !
                ! recover cu and Mkb
                !
-               cu      = cu0
-               Mkb_aux = Mkb0
+               cU(:,:,1:nkpts_g)      = cU0(:,:,1:nkpts_g)
+               Mkb_aux(:,:,:,1:nkpts) = Mkb0(:,:,:,1:nkpts)
    
                !
                ! Take now optimal parabolic step
@@ -341,7 +341,7 @@
                ! compute the change in the unitary matrix dU = e^(i * dq)
                ! and update U
                !
-               CALL unitary_update( dimwann, nkpts, dq, cu, cdU ) 
+               CALL unitary_update( dimwann, nkpts, dq, cU, cdU ) 
 
 
                !
@@ -393,7 +393,7 @@
            !
            ! write data to disk
            !
-           IF ( MOD( ncount, nsave_wan ) == 0 ) THEN
+           IF ( MOD( ncount, nsave_wan ) == 0 .AND. ionode ) THEN
                !
                CALL io_name('wannier',filename)
                CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write", &
@@ -446,7 +446,7 @@
       IF ( do_ordering ) THEN
            !
            IF (ionode) WRITE( stdout, "(2x,'Wannier function ordering : ',a,/)") TRIM(ordering_mode)
-           CALL ordering(dimwann, nkpts, rave, rave2, r2ave, cu, ordering_mode)
+           CALL ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
            !
       ENDIF
 
@@ -503,9 +503,11 @@
       !
       DO ik = 1, nkpts
           !
-          IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik),  &
+          ik_g = ik + iks -1
+          !
+          IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik_g),  &
                                     SIDE='both', TOLL=unitary_thr )  )  &
-               CALL warning('wannier', 'U matrix NOT unitary at ikpt = '//TRIM(int2char(ik)) )
+               CALL warning('wannier', 'U matrix NOT unitary at ikpt = '//TRIM(int2char(ik_g)) )
           !
       ENDDO
 
@@ -514,19 +516,23 @@
       ! ... Write the final unitary transformations and all other data referring
       !     to the Wannier localization procedure to a file
       !
-      CALL io_name('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form), IERR=ierr)
-      IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
-           !
-           CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
-           !
-      CALL file_close(wan_unit,PATH="/",ACTION="write", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 
+      IF ( ionode ) THEN
+          !
+          CALL io_name('wannier',filename)
+          CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="write",FORM=TRIM(wantdata_form), IERR=ierr)
+          IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
+              !
+              CALL localization_write(wan_unit,"WANNIER_LOCALIZATION")
+              !
+          CALL file_close(wan_unit,PATH="/",ACTION="write", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 
 
-      CALL io_name('wannier',filename, LPATH=.FALSE., LPROC=.FALSE.)
-      !
-      IF (ionode) WRITE( stdout,"(/,2x,'Unitary transf. matrixes written on file: ',a)") TRIM(filename)
-      IF (ionode) WRITE(stdout,"(2x,70('='))")
+          CALL io_name('wannier',filename, LPATH=.FALSE., LPROC=.FALSE.)
+          !
+          WRITE( stdout,"(/,2x,'Unitary transf. matrixes written on file: ',a)") TRIM(filename)
+          WRITE(stdout,"(2x,70('='))")
+          !
+      ENDIF
 
 
       !
@@ -542,9 +548,9 @@
           CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="write", &
                                   FORM=TRIM(wantdata_form), IERR=ierr)
           IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
-             !
-             CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
-             !
+              !
+              CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
+              !
           CALL file_close(ham_unit,PATH="/",ACTION="write", IERR=ierr)
           IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 
           !

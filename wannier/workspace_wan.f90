@@ -13,7 +13,7 @@
    !
    USE kinds,                ONLY : dbl 
    USE constants,            ONLY : ZERO
-   USE kpoints_module,       ONLY : nkpts, nb
+   USE kpoints_module,       ONLY : nkpts, nkpts_g, nb
    USE subspace_module,      ONLY : dimwann
    !
    IMPLICIT NONE
@@ -27,7 +27,7 @@
    COMPLEX(dbl), ALLOCATABLE ::  dq0(:,:,:)
    COMPLEX(dbl), ALLOCATABLE ::  cdU(:,:,:)
    COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE ::  cu0(:,:,:) 
+   COMPLEX(dbl), ALLOCATABLE ::  cU0(:,:,:) 
    COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
    COMPLEX(dbl), ALLOCATABLE ::  Mkb_aux(:,:,:,:)   
    !
@@ -37,7 +37,7 @@
    PUBLIC :: sheet, csheet
    PUBLIC :: domg, domg_aux
    PUBLIC :: dq, dq0
-   PUBLIC :: cdU, cu0
+   PUBLIC :: cdU, cU0
    PUBLIC :: Mkb0, Mkb_aux
    !
    PUBLIC :: workspace_wan_allocate
@@ -65,7 +65,7 @@ CONTAINS
       ALLOCATE( sheet(dimwann,nb,nkpts), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating sheet', ABS(ierr))
 
-      ALLOCATE( cu0(dimwann,dimwann,nkpts), STAT=ierr )
+      ALLOCATE( cU0(dimwann,dimwann,nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating cu0', ABS(ierr) )
       !
       ALLOCATE( Mkb0(dimwann,dimwann,nb/2,nkpts), STAT=ierr )
@@ -115,9 +115,9 @@ CONTAINS
           IF( ierr /=0 ) CALL errore(subname, 'deallocating sheet', ABS(ierr) )
       ENDIF
       !
-      IF ( ALLOCATED( cu0) ) THEN
-          DEALLOCATE( cu0, STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname, 'deallocating cu0', ABS(ierr) )
+      IF ( ALLOCATED( cU0) ) THEN
+          DEALLOCATE( cU0, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating cU0', ABS(ierr) )
       ENDIF
       !
       IF ( ALLOCATED( Mkb0) ) THEN
@@ -176,7 +176,7 @@ CONTAINS
        IF ( ALLOCATED(dq) )       cost = cost + REAL(SIZE(dq))         * 16.0_dbl
        IF ( ALLOCATED(dq0) )      cost = cost + REAL(SIZE(dq0))        * 16.0_dbl
        IF ( ALLOCATED(cdU) )      cost = cost + REAL(SIZE(cdU))        * 16.0_dbl
-       IF ( ALLOCATED(cu0) )      cost = cost + REAL(SIZE(cu0))        * 16.0_dbl
+       IF ( ALLOCATED(cU0) )      cost = cost + REAL(SIZE(cU0))        * 16.0_dbl
        IF ( ALLOCATED(Mkb0) )     cost = cost + REAL(SIZE(Mkb0))       * 16.0_dbl
        IF ( ALLOCATED(Mkb_aux) )  cost = cost + REAL(SIZE(Mkb_aux))    * 16.0_dbl
        !
