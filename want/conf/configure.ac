@@ -1,4 +1,4 @@
-AC_INIT(WANT, 2.1, , want)
+AC_INIT(WanT, 2.2, , want)
 
 # -----------------------------
 # application-specific settings
@@ -38,7 +38,7 @@ arflags=$ARFLAGS
 arflags_dynamic=$ARFLAGS_DYNAMIC
 includefftw=$INCLUDEFFTW
 pgplot_libs=$PGPLOT_LIBS
-#
+# <AF>
 iotk_integer_kinds=$IOTK_INTEGER_KINDS
 iotk_logical_kinds=$IOTK_LOGICAL_KINDS
 iotk_real_kinds=$IOTK_REAL_KINDS
@@ -78,6 +78,7 @@ cross_compiling=yes
 if test "$host" = "" ; then host=$build; fi
 
 # date
+# <AF>
 built_date=`date "+%c"`
 echo seting built date... $built_date
 
@@ -93,11 +94,13 @@ then
 		alphaev*-dec-osf* )     arch=alpha  ;;
 		alphaev*-*-linux* )     arch=alinux ;;
 		sparc-sun-* )           arch=sparc  ;;
+		i386-pc-solaris* )      arch=solaris;;
 		*cray-unicosmp* )       arch=crayx1 ;;
 		powerpc-apple-darwin* ) arch=macppc ;;
 		i686-apple-darwin* )    arch=mac686 ;;
 		*-pc-cygwin )           arch=cygwin ;;
 		sx*-nec* )              arch=necsx  ;;
+		powerpc64-*-linux-gnu ) arch=ppc64  ;;
                 * )                     AC_MSG_WARN(incorrect host name ?)
         ;;
 
@@ -115,14 +118,19 @@ try_iflags="-I../include"
 try_mpif90="mpif90"
 try_f90="g95 gfortran f90"
 
+try_dflags=""
+
 # candidate compilers and flags based on architecture
 case $arch in
 ia64 | amd64 )
 	try_f90="ifort ifc efc pgf90 pathf95 $try_f90"
-        try_dflags=""
 	;;
 ia32 )
 	try_f90="ifort ifc pgf90 pathf95 $try_f90"
+	;;
+solaris )
+	try_f90="f95 g95"
+	try_dflags="-D__SOLARIS"
 	;;
 aix )
 	try_mpif90="mpxlf90_r mpxlf90"
@@ -132,7 +140,7 @@ aix )
 	try_dflags="-D__AIX -D__XLF"
 	;;
 mips )
-	try_dflags="-D__COMPLIB -D__ORIGIN"
+	try_dflags="-D__ORIGIN"
 	;;
 alpha )
 	try_dflags="-D__ALPHA"
@@ -143,11 +151,9 @@ alinux )
 	;;
 sparc )
 	try_mpif90="mpf90"
-	try_dflags="-D__SUN"
 	;;
-crayx1 )
+crayx1 | crayxt4 )
 	try_f90="ftn $try_f90"
-	try_dflags="-D__X1"
 	;;
 macppc )
 	try_mpif90="mpxlf90 mpf90"
@@ -181,6 +187,21 @@ necsx )
         try_dflags_fft_mathkeisan=' '
         try_dflags_fft_para='-D__USE_3D_FFT'
 	;;
+ppc64 )
+	try_mpif90="mpxlf90_r mpf90_r"
+	try_f90="xlf90_r $try_f90"
+	try_dflags="-D__XLF"
+	try_arflags="ruv"
+	try_arflags_dynamic="ruv"
+	;;
+# PowerPC MareNostrum
+ppc64-mn )
+	try_mpif90="mpif90"
+	try_f90="xlf90_r"
+	try_dflags="-D__XLF"
+	try_arflags="ruv"
+	try_arflags_dynamic="ruv"
+	;;
 * )
 	AC_MSG_WARN(unsupported architecture?)
 	;;
@@ -200,14 +221,6 @@ f90=$F77
 if test "$use_parallel" -eq 0 ; 
 then
 	mpif90=$f90
-
-	case "$arch" in
-	ia32 | ia64 | amd64 )
-		# for MKL libraries
-	        MKL_LIBS="-lguide -lpthread"
-	        MKL_FLAGS=""
-        esac
-
 else
         # clear cached values (not sure when and why this is needed)
         unset F77 ac_cv_prog_ac_ct_F77 ac_cv_f77_compiler_gnu ac_cv_prog_f77_g
@@ -216,59 +229,78 @@ else
 	if test "$mpif90" = "" ; then mpif90="$try_mpif90 $f90" ; fi
 	AC_PROG_F77($mpif90)
 	mpif90=$F77
-
-	case "$arch" in
-	ia32 | ia64 | amd64 )
-		# check which compiler does mpif90 wrap
-		echo $ECHO_N "checking version of $mpif90... $ECHO_C"
-		ifort_version=`$mpif90 -V 2>&1 | grep "Intel(R)"`
-		pgf_version=`$mpif90 -V 2>&1 | grep "^pgf"`
-		eko_version=`$mpif90 -version 2>&1 | grep "EKOPath"`
-		g95_version=`$mpif90 -v 2>&1 | grep "g95"`
-		# for MKL libraries
-	        MKL_LIBS="-lguide -lpthread"
-	        MKL_FLAGS=""
-		if test "$ifort_version" != ""
-		then
-			version=`$mpif90 -V 2>&1 | grep Version |
-				 sed 's/.*Version//' | awk '{print $1}'`
-			if test `echo $version | sed 's/\..*//'` -lt 8; then
-			# ifc up to version 7
-				try_f90="ifc efc"
-				echo "${ECHO_T}ifc $version"
-			else 
-			# ifort v.8 and later
-				try_f90="ifort efc"
-				echo "${ECHO_T}ifort $version"
-			fi
-			# flags for MKL according to Axel - ifort 9 and later
-			# TEMPORARILY DISABLED - problems with older mkl?
-			#if test `echo $version | sed 's/\..*//'` -gt 8; then
-				#MKL_LIBS=""
-				#MKL_FLAGS="-i-static -openmp"
-			#fi
-		elif test "$pgf_version" != ""
-		then
-			version=`echo $pgf_version | awk '{print $2}'`
-			try_f90="pgf90"
-			echo "${ECHO_T}pgf90 $version"
-		elif test "$eko_version" != ""
-		then
-			version=`echo $eko_version | awk '{print $6}'`
-			try_f90="pathf95"
-			echo "${ECHO_T}pathf95 $version"
-		elif test "$g95_version" != ""
-		then
-			version=`echo $g95_version | awk '{print $3}'`
-			try_f90="g95"
-			echo "${ECHO_T}g95 $version"
-		else
-			echo "${ECHO_T}unknown"
-		fi
-		;;
-	esac
-
 fi
+
+# check which compiler does mpif90 wrap
+ 
+case "$arch" in
+	ia32 | ia64 | amd64 | mac686 )
+	echo $ECHO_N "checking version of $mpif90... $ECHO_C"
+	ifort_version=`$mpif90 -V 2>&1 | grep "Intel(R)"`
+	pgf_version=`$mpif90 -V 2>&1 | grep "^pgf"`
+	eko_version=`$mpif90 -v 2>&1 | grep "EKOPath"`
+	g95_version=`$mpif90 -v 2>&1 | grep "g95"`
+	# for MKL libraries
+        MKL_LIBS="-lguide -lpthread"
+        MKL_FLAGS=""
+	if test "$ifort_version" != ""
+	then
+		version=`$mpif90 -V 2>&1 | grep Version |
+			 sed 's/.*Version//' | awk '{print $1}'`
+		if test `echo $version | sed 's/\..*//'` -lt 8; then
+		# ifc up to version 7
+		   echo "${ECHO_T}ifc $version"
+	       	   if test "$f90" != "ifc"; then
+		      AC_MSG_WARN([serial/parallel compiler mismatch detected])
+		      AC_MSG_WARN([parallel compiler $mpif90 uses ifc, but serial compiler is $f90])
+                   fi
+		else 
+		# ifort v.8 and later
+		   echo "${ECHO_T}ifort $version"
+	           if test "$f90" != "ifort"; then
+		      AC_MSG_WARN([serial/parallel compiler mismatch detected])
+		      AC_MSG_WARN([parallel compiler $mpif90 uses ifort, but serial compiler is $f90])
+                   fi
+		fi
+		# flags for MKL according to Axel - ifort 9 and later
+		if test `echo $version | sed 's/\..*//'` -gt 8; then
+			MKL_LIBS=" "
+			MKL_FLAGS="-i-static -openmp"
+		fi
+	elif test "$pgf_version" != ""
+	then
+		version=`echo $pgf_version | awk '{print $2}'`
+		echo "${ECHO_T}pgf90 $version"
+	        if test "$f90" != "pgf90"; then
+		   AC_MSG_WARN([serial/parallel compiler mismatch detected])
+		   AC_MSG_WARN([parallel compiler $mpif90 uses pgf90, but serial compiler is $f90])
+                   echo "Mismatch? parallel compiler $mpif90 uses pgf90, serial compiler is $f90"
+                fi
+	elif test "$eko_version" != ""
+	then
+		version=`echo $eko_version | awk '{print $6}'`
+		echo "${ECHO_T}pathf95 $version"
+	        if test "$f90" != "pathf95"; then
+		   AC_MSG_WARN([serial/parallel compiler mismatch detected])
+		   AC_MSG_WARN([parallel compiler $mpif90 uses pathf95, but serial compiler is $f90])
+                fi
+	elif test "$g95_version" != ""
+	then
+		version=`echo $g95_version | awk '{print $3}'`
+		echo "${ECHO_T}g95 $version"
+	        if test "$f90" != "g95"; then
+		   AC_MSG_WARN([serial/parallel compiler mismatch detected])
+		   AC_MSG_WARN([parallel compiler $mpif90 uses g95, but serial compiler is $f90])
+                fi
+	else
+		echo "${ECHO_T}unknown, assuming gfortran"
+	        if test "$f90" != "gfortran"; then
+		   AC_MSG_WARN([serial/parallel compiler mismatch detected])
+		   AC_MSG_WARN([parallel compiler $mpif90 uses gfortran, but serial compiler is $f90])
+		fi
+	fi
+	;;
+esac
 
 echo setting F90... $f90
 echo setting MPIF90... $mpif90
@@ -308,10 +340,10 @@ alpha:* )
 alinux:* )
 	try_cc="ccc $try_cc"
 	;;
-sparc:* )
+sparc:* | solaris:f95 )
 	try_f77="f77 $f90"
 	;;
-crayx1:ftn )
+cray*:ftn )
 	try_cc="cc"
 	;;
 macppc:xlf90 )
@@ -319,6 +351,14 @@ macppc:xlf90 )
 	;;
 necsx:* )
 	try_cc="sxcc"
+	;;
+ppc64:*xlf* )
+	try_cc="xlc_r $try_cc"
+	try_f77="xlf_r $f90"
+	;;
+ppc64-mn:*xlf* )
+	try_cc="xlc_r $try_cc"
+	try_f77="xlf_r $f90"
 	;;
 esac
 
@@ -341,7 +381,6 @@ AC_CONFIG_FILES([include/fft_defs.h:include/fft_defs.h.in])
 AC_CHECK_HEADER(malloc.h,have_malloc_h=1,have_malloc_h=0, )
 if test "$have_malloc_h" -ne 0 
 then
-AC_DEFINE(HAVE_MALLOC)
 AC_CHECK_MEMBER([struct mallinfo.arena], 
                 [AC_DEFINE(HAVE_MALLINFO)], 
                 ,
@@ -362,6 +401,8 @@ echo setting F77... $f77
 # check Fortran compiler flags
 have_cpp=1
 xlf_flags=0
+
+echo using F90... $f90
 
 case "$arch:$f90" in
 ia32:ifort* | ia64:ifort* | amd64:ifort* | mac686:ifort*  )
@@ -414,14 +455,15 @@ ia32:path* | ia64:path* | amd64:path* )
 	try_f90flags="\$(FFLAGS)"
 	try_fflags_noopt="-O0 -cpp"
 	try_ldflags=""
-	#try_ldflags_static="-static"
+	try_ldflags_static="-static"
 	;;
 *:gfortran )
 	try_fflags="-O3"
 	try_f90flags="\$(FFLAGS) -x f95-cpp-input"
 	try_fflags_noopt="-O0"
 	try_ldflags=""
-	#try_ldflags_static="-static"
+	try_dflags="$try_dflags -D__GFORTRAN"
+	try_ldflags_static="-static"
         ;;
 aix:*xlf* )
 	try_fflags="-q64 -qalias=noaryovrlp -O3 -qstrict \
@@ -453,6 +495,13 @@ alpha:f90 )
 	try_f90flags="\$(FFLAGS) -free"
 	try_fflags_noopt="-O0 -real_size 64 -align dcommons -align records -assume buffered_io"
 	;;
+solaris:f95 )
+	try_fflags="-fast -O2 -fpp"
+	try_f90flags="\$(FFLAGS)"
+	try_fflags_noopt="-O0 "
+	try_ldflags=""
+	imod="-M"
+	;;
 sparc:mpf90 | sparc:f90 )
 	try_fflags="-fast -O1 -nodepend -xvector=no -xchip=ultra3 \
 -xarch=v8plusb -xlic_lib=sunperf"
@@ -468,8 +517,15 @@ crayx1:ftn )
         try_f90flags="\$(FFLAGS)"
         try_fflags_noopt="-s default64 -dp -rma -e0 -O0 -Z"
         try_ldflags="-s default64 -f nan64"
-        try_dflags="$try_dflags -D__X1_COA"
         pre_fdflags="-e Z -F"
+	;;
+crayxt4:ftn )
+        try_fflags="-fast -r8"
+        try_f90flags="\$(FFLAGS)"
+        try_fflags_noopt="-O0"
+        try_ldflags="-v"
+	try_dflags="$try_dflags -D__PGI"
+	have_cpp=0
 	;;
 macppc:* )
 	try_fflags="-O4 -qarch=auto -qtune=auto -qsuffix=cpp=f90 \
@@ -482,13 +538,13 @@ macppc:* )
 	;;
 
 necsx:* )
-        try_fflags='      -float0 -Chopt -eab -R5 -Wf,-Ncont,-A dbl4,-P nh,-ptr byte,-pvctl noifopt loopcnt=9999999 expand=12 fullmsg vwork=stack,-fusion,-O noif,-init stack=nan heap=nan'
-        try_f90flags='    -float0 -Chopt -eab -R5 -Wf,-Ncont,-A dbl4,-P nh,-ptr byte,-pvctl noifopt loopcnt=9999999 expand=12 fullmsg vwork=stack,-fusion,-O noif,-init stack=nan heap=nan'
+        try_fflags='      -float0 -Cvopt -eab -R5 -Wf,-Ncont,-A dbl4,-P nh,-ptr byte,-pvctl noifopt loopcnt=9999999 expand=12 fullmsg vwork=stack,-fusion,-O noif,-init stack=nan heap=nan'
+        try_f90flags='  -f2003  -float0 -Cvopt -eab -R5 -Wf,-Ncont,-A dbl4,-P nh,-ptr byte,-pvctl noifopt loopcnt=9999999 expand=12 fullmsg vwork=stack,-fusion,-O noif,-init stack=nan heap=nan'
         try_f90flags="-$sxopt $try_f90flags"
         try_fflags_noopt='-float0   '
-        try_f90flags_noopt='-float0 -eab -R5 -C debug  -Wf,-Ncont,-A dbl4,-P nh ,ptr byte,-init stack=nan heap=nan'
+        try_f90flags_noopt='-f2003 -float0 -eab -R5 -C debug  -Wf,-Ncont,-A dbl4,-P nh ,ptr byte,-init stack=nan heap=nan'
         try_f90flags_noopt="$try_f90flags_noopt"
-        try_f90flags_inline='   -float0 -Chopt -eab -R5 -pi noauto incdir exp=w0gauss -Wf,-Ncont,-A dbl4,-P nh,-ptr byte,-pvctl noifopt loopcnt=9999999 expand=12 fullmsg vwork=stack,-fusion,-O noif,-init stack=nan heap=nan'
+        try_f90flags_inline='-f2003  -float0 -Cvopt -eab -R5 -pi noauto incdir exp=w0gauss -Wf,-Ncont,-A dbl4,-P nh,-ptr byte,-pvctl noifopt loopcnt=9999999 expand=12 fullmsg vwork=stack,-fusion,-O noif,-init stack=nan heap=nan'
         try_f90flags_inline="$try_f90flags_inline"
         try_ldflags_static='-P static'
         try_ldflags='-Wl,-f zero'
@@ -496,14 +552,35 @@ necsx:* )
         have_cpp=1
         pre_fdflags=""
 	;;
+
+ppc64:*xlf* )
+	try_fflags="-O4 -qsuffix=cpp=f90 -qdpc -qalias=nointptr -Q"
+	try_f90flags="\$(FFLAGS) -qfree=f90"
+	try_fflags_noopt="-O0"
+	try_ldflags=""
+	pre_fdflags="-WF,"
+	xlf_flags=1
+	;;
+
+ppc64-mn:* )
+	try_fflags="-O3 -q64 -qstrict -qsuffix=cpp=f90 -qdpc -qalias=nointptr -Q -qtune=ppc970 -qarch=ppc970 -qcache=auto -qhot=vector,simd -qenablevmx"
+	try_f90flags="\$(FFLAGS) -qfree=f90"
+	try_fflags_noopt="-O0 -q64"
+	try_ldflags=""
+	pre_fdflags="-WF,"
+	xlf_flags=1
+        have_cpp=1
+	;;
+
 * )
 	# unknown, try these
 	try_fflags="-O"
 	try_f90flags="\$(FFLAGS)"
 	try_fflags_noopt="-O0"
 	try_ldflags=""
-	have_cpp=0
+        have_cpp=0
 	;;
+
 esac
 if test "$use_shared" -eq 0 ; then
 try_ldflags="$try_ldflags $try_ldflags_static" ; fi
@@ -528,7 +605,7 @@ case "$arch:$cc" in
 *:pathcc )
 	try_cpp="pathcc -E"
 	;;
-aix:mpcc* | aix:xlc* | aix:cc )
+aix:xlc* | aix:cc )
 	try_cflags="-q64 -O2"
 	c_ldflags="-q64"
 	;;
@@ -538,7 +615,10 @@ mips:cc )
 alpha:cc )
 	try_cflags="-O"
 	;;
-sparc:mpcc | sparc:cc )
+solaris:cc  )
+	try_cflags="-fast -O"
+	;;
+sparc:cc )
 	try_cflags="-fast -dalign -xchip=ultra3 -xarch=v8plusb \
 -xlic_lib=sunperf"
 	try_cpp="fpp"
@@ -546,13 +626,19 @@ sparc:mpcc | sparc:cc )
 crayx1:cc )
         try_cflags=""
         ;;
-macppc:xlc* | macppc:mpcc* )
+crayxt4:cc )
+        try_cflags="-fast"
+        ;;
+macppc:xlc* )
 	try_cflags="-O4"
 	;;
 necsx:* )
 	#try_cflags="-D__SX6 \$(IFLAGS) \$(MODFLAGS)"
         try_cflags=""
 	try_ar="sxar"
+	;;
+ppc64-mn:* )
+        try_cflags="-O3 -q64"
 	;;
 esac
 if test "$cflags" = "" ; then cflags=$try_cflags ; fi
@@ -629,6 +715,7 @@ have_fft=0
 have_fftw=0
 have_fftw_h=0
 have_mpi=0
+# <AF>
 internal_libs=
 
 # check for blas
@@ -816,14 +903,14 @@ then
                                 blas_libs="$LIBS")
 		;;
 
-	sparc:* )
+	sparc:* | solaris:* )
 		# check for SUNperf library
 		unset ac_cv_search_dgemm # clear cached value
 		FFLAGS="$test_fflags"
 		LDFLAGS="$test_ldflags"
 		LIBS=""
-		AC_SEARCH_LIBS(dgemm, sunperf, have_blas=1
-			       blas_libs="-xlic_lib=sunperf $LIBS")
+		AC_SEARCH_LIBS(dgemm, sunperf, have_blas=1 have_lapack=1
+                               blas_libs="-xlic_lib=sunperf $LIBS")
 		;;
 	necsx:* )
                 #sx5-nec or sx6-nec or sx8-nec: check in (/SX)/usr/lib 
@@ -846,6 +933,34 @@ then
                         then break ; fi
                  done
                  ;;
+	ppc64:* )
+		# check for essl
+		unset ac_cv_search_dgemm # clear cached value
+		FFLAGS="$test_fflags"
+		LDFLAGS="$test_ldflags"
+		LIBS=""
+		AC_SEARCH_LIBS(dgemm, essl, have_blas=1
+			       blas_libs="$LIBS" )
+                # notice that some IBM machines may not need -lessl
+                # to load blas so the above test may fail
+                if test "`echo $blas_libs | grep essl`" != ""
+                then
+                    have_essl=1 
+                    try_dflags="$try_dflags -D__LINUX_ESSL"
+                fi
+		;;
+        ppc64-mn:* )
+                # check for essl
+                unset ac_cv_search_dgemm # clear cached value
+                FFLAGS="$test_fflags"
+                LDFLAGS="$test_ldflags"
+                #LIBS=""
+                # notice that some IBM machines may not need -lessl
+                # to load blas so the above test may fail
+                have_essl=1
+                try_dflags="$try_dflags -D__LINUX_ESSL"
+                ;;
+
 	esac
 
 	if test "$have_blas" -eq 0
@@ -935,20 +1050,6 @@ then
 	# search
 	case "$arch:$f90" in
 
-	ia32:* | ia64:* )
-		# check for mkl_lapack
-		if test "$have_mkl" -ne 0
-		then
-			unset ac_cv_search_zggev # clear cached value
-			FFLAGS="$test_fflags"
-			LDFLAGS="$test_ldflags"
-			LIBS="$blas_libs"
-			LDFLAGS="$MKL_FLAGS $test_ldflags"
-			AC_SEARCH_LIBS(zggev, mkl_lapack, have_lapack=1
-				       lapack_libs="-lmkl_lapack")
-		fi
-		;;
-
         amd64:path* | amd64:pgf* )
                 # check for acml
                 unset ac_cv_search_zggev # clear cached value
@@ -958,16 +1059,16 @@ then
                 AC_SEARCH_LIBS(zggev, acml, have_lapack=1 lapack_libs="$LIBS")
                 ;;
 
-	amd64:* )
+	ia32:* | ia64:*| amd64:* )
 		# check for mkl_lapack
 		if test "$have_mkl" -ne 0
 		then
-			unset ac_cv_search_zggev # clear cached value
-			FFLAGS="$test_fflags"
+               	unset ac_cv_search_zggev # clear cached value
+                	FFLAGS="$test_fflags"
+                	LIBS=" $blas_libs"
 			LDFLAGS="$MKL_FLAGS $test_ldflags"
-			LIBS="$blas_libs"
 			AC_SEARCH_LIBS(zggev, mkl_lapack, have_lapack=1
-				       lapack_libs="-lmkl_lapack")
+				       lapack_libs="$LIBS")
 		fi
 		;;
 
@@ -1065,6 +1166,7 @@ then
             # add missing lapack routines so as to complete atlas
             # note that some compilers do not like to have multiple symbols
 
+            # <AF>
 	    lapack_libs="$lapack_libs ../libs/lapack_atlas.a"
             internal_libs="$internal_libs lapack_atlas.a"
 
@@ -1072,6 +1174,7 @@ then
 
         # ibm doesn't complain if there are multiple symbols so add everything
  
+            # <AF>
 	    lapack_libs="$lapack_libs ../libs/lapack.a"
             internal_libs="$internal_libs lapack.a"
 
@@ -1079,6 +1182,7 @@ then
 
 	# nothing found, use built-in library
 
+            # <AF>
  	    lapack_libs="../libs/lapack.a"
             internal_libs="$internal_libs lapack.a"
 
@@ -1091,6 +1195,7 @@ fi
 
 if test "$have_blas" -eq 0 -a "$blas_libs" = ""
 then
+    # <AF>
     blas_libs="../libs/blas.a"
     internal_libs="$internal_libs blas.a"
 fi
@@ -1126,12 +1231,14 @@ then
 		AC_SEARCH_LIBS(dcft, essl, have_fft=1 fft_libs="$LIBS")
 	    ;;     
 	sparc )
-		# check for SUNperf library
+		# check for SUNperf FFT library on Sun Sparcs
+                # but not on solaris PC! it is slower than FFTW
 		unset ac_cv_search_zfft3i # clear cached value
 		FFLAGS="$test_fflags"
 		LDFLAGS="$test_ldflags"
 		LIBS="$libs"
 		AC_SEARCH_LIBS(zfft3i, sunperf, have_fft=1
+			       try_dflags="$try_dflags -D__SUNPERF"
 			       fft_libs="-xlic_lib=sunperf $LIBS")
 		;;
 	necsx )
@@ -1193,6 +1300,22 @@ then
                    try_dflags="$try_dflags $try_dflags_fft_para"
                 fi
                 ;;
+	ppc64 )
+		# check for essl
+		unset ac_cv_search_dcft # clear cached value
+		FFLAGS="$test_fflags"
+		LDFLAGS="$test_ldflags"
+		LIBS="$fft_libs"
+		AC_SEARCH_LIBS(dcft, essl, have_fft=1 fft_libs="$LIBS")
+	    ;;     
+	ppc64-mn )
+		# check for essl
+		unset ac_cv_search_dcft # clear cached value
+		FFLAGS="$test_fflags"
+		LDFLAGS="$test_ldflags"
+		LIBS="$fft_libs"
+		AC_SEARCH_LIBS(dcft, essl, have_fft=1 fft_libs="$LIBS")
+	    ;;     
 	esac
 
 	if test "$have_fft" -eq 0
@@ -1273,6 +1396,7 @@ then
 			CPPFLAGS="$test_cppflags $try_ifftw"
 			LDFLAGS="$c_ldflags"
 			LIBS="$fft_libs"
+                        includefftw="$try_ifftw"
 			AC_CHECK_HEADER(fftw.h, have_fftw_h=1
 					try_iflags="$try_iflags $try_ifftw")
 			if test "$ac_cv_header_fftw_h" != "no"
@@ -1339,6 +1463,33 @@ then
 			if test "$ac_cv_search_vexp" != "no" ; then break ; fi
 		done
 		;;
+
+	ppc64* )
+		# check for mass (in several directories)
+		try_libdirs="/usr/local/lib /opt/ibmcmp/xlmass/4.3/lib64"
+		try_libdirs="$libdirs $try_libdirs $ld_library_path"
+
+		for dir in none $try_libdirs
+		do
+			unset ac_cv_search_vexp # clear cached value
+			if test "$dir" = "none"
+			then
+				try_loption=
+			else
+				echo $ECHO_N "in $dir: " $ECHO_C
+				try_loption="-L$dir"
+			fi
+			FFLAGS="$test_fflags"
+			LDFLAGS="$test_ldflags $try_loption"
+			LIBS=""
+			AC_SEARCH_LIBS(vexp, massvp4_64, , , -lmass_64)
+			if test "$ac_cv_search_vexp" = "-lmassvp4_64"
+			then mass_libs="$try_loption $ac_cv_search_vexp -lmass_64"
+			fi
+			if test "$ac_cv_search_vexp" != "no" ; then break ; fi
+		done
+		;;
+
 	esac
 fi
 
@@ -1457,9 +1608,9 @@ else
 fi
 
 # export settings to generated files
-AC_SUBST(built_date)
-AC_SUBST(host)
-AC_SUBST(arch)
+AC_SUBST(built_date)     # <AF>
+AC_SUBST(host)           # <AF>
+AC_SUBST(arch)           # <AF>
 AC_SUBST(cc)
 AC_SUBST(cflags)
 AC_SUBST(dflags)
@@ -1484,7 +1635,7 @@ AC_SUBST(fft_libs)
 AC_SUBST(mpi_libs)
 AC_SUBST(mass_libs)
 AC_SUBST(pgplot_libs)
-AC_SUBST(internal_libs)
+AC_SUBST(internal_libs)    # <AF>
 AC_SUBST(ar)
 AC_SUBST(arflags)
 AC_SUBST(arflags_dynamic)
@@ -1497,14 +1648,14 @@ AC_SUBST(mpi_line)
 AC_SUBST(mass_line)
 AC_SUBST(parallel_report)
 
-AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])
-AC_CONFIG_FILES([include/configure.h:include/configure.h.in])
+AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])     # <AF>
+AC_CONFIG_FILES([include/configure.h:include/configure.h.in]) # <AF>
 AC_CONFIG_FILES(make.sys)
 AC_CONFIG_FILES(configure.msg)
 
 AC_OUTPUT
 
-#
+# <AF>
 # greate also f_defs.h with a (not so) dirty trick
 #
 if test -e include/ctools.h
@@ -1512,8 +1663,9 @@ then
    test -e include/f_defs.h && rm include/f_defs.h
    grep "#define " include/ctools.h > include/f_defs.h
 fi
+# </AF>
 
-
+# <AF>
 #----------------------
 # configure iotk
 #
@@ -1545,8 +1697,10 @@ then
         ( cd $topdir ; ./conf/configure_iotk  IOTK_REAL_KINDS=$iotk_real_kinds \
                                               FC=$iotk_fc )
 fi
+# <AF>
 
 
 # final messages
 sed '/@delete@/d' configure.msg
 echo configure: success
+
