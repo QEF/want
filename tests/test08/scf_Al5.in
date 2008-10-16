@@ -1,5 +1,5 @@
 Al wire, 15 LDA NCPP
-a=3.0 ang
+a=4.5 bohr
    &CONTROL
       calculation = 'scf',
       restart_mode='from_scratch',
