@@ -26,7 +26,7 @@ a = 4.5 Bohr
    /
 ATOMIC_SPECIES
   Al  26.98154  Al.pz-vbc.UPF
-ATOMIC_POSITIONS {angstrom}
+ATOMIC_POSITIONS {bohr}
 Al    0.000    0.000   0.000
 K_POINTS {crystal}
     10
