@@ -12,15 +12,16 @@ MANUAL=" Usage
  where FLAG is one of the following 
  (no FLAG will print this manual page) :
  
- scf             DFT self-consistent calculation
- pwexport        export DFT data to WanT package in IOTK fmt
- dft             perform SCF, NSCF and PWEXPORT all together
- dipole          compute dipole using DFT postproc
- disentangle     select the optimal subspace on which perform the wannier minimization 
- wannier         perform the above cited minimization 
- plot            compute WFs on real space for plotting
- want            perform DISENTANGLE, WANNIER and BANDS
- all             perform all the above described steps
+ scf               DFT self-consistent calculation
+ pwexport          export DFT data to WanT package in IOTK fmt
+ dft               perform SCF, NSCF and PWEXPORT all together
+ dipole            compute dipole using DFT postproc
+ disentangle       select the optimal subspace on which perform the wannier minimization 
+ disentangle_buff  the same using buffering of wfcs and beta proj.
+ wannier           perform the above cited minimization 
+ plot              compute WFs on real space for plotting
+ want              perform DISENTANGLE, WANNIER and BANDS
+ all               perform all the above described steps
 
  check           check results with the reference outputs
  clean           delete all output files and the temporary directory
@@ -47,6 +48,7 @@ SCF=
 PWEXPORT=
 DIPOLE=
 DISENTANGLE=
+DISENTANGLE_BUFF=
 WANNIER=
 PLOT=
 CHECK=
@@ -56,21 +58,22 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (scf)            SCF=yes ;;
-   (pwexport)       PWEXPORT=yes ;;
-   (dipole)         DIPOLE=yes ;;
-   (dft)            SCF=yes; PWEXPORT=yes ; DIPOLE=no ;;
-   (disentangle)    DISENTANGLE=yes ;;
-   (wannier)        WANNIER=yes ;;
-   (plot)           PLOT=yes ;;
-   (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    PLOT=yes ;;
-   (all)            SCF=yes ; PWEXPORT=yes ; DIPOLE=no ;
-                    DISENTANGLE=yes ; WANNIER=yes ; 
-                    PLOT=yes ;;
-   (check)          CHECK=yes ;;
-   (clean)          CLEAN=yes ;;
-   (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
+   (scf)               SCF=yes ;;
+   (pwexport)          PWEXPORT=yes ;;
+   (dipole)            DIPOLE=yes ;;
+   (dft)               SCF=yes; PWEXPORT=yes ; DIPOLE=no ;;
+   (disentangle)       DISENTANGLE=yes ;;
+   (disentangle_buff)  DISENTANGLE_BUFF=yes ;;
+   (wannier)           WANNIER=yes ;;
+   (plot)              PLOT=yes ;;
+   (want)              DISENTANGLE=yes ; DISENTANGLE_BUFF=yes ; WANNIER=yes ;
+                       PLOT=yes ;;
+   (all)               SCF=yes ; PWEXPORT=yes ; DIPOLE=no ;
+                       DISENTANGLE=yes ; DISENTANGLE_BUFF=yes ; WANNIER=yes ; 
+                       PLOT=yes ;;
+   (check)             CHECK=yes ;;
+   (clean)             CLEAN=yes ;;
+   (*)                 echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
 esac
 
 #
@@ -117,7 +120,8 @@ fi
 #
 # running DISENTANGLE
 #
-run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
+run_disentangle  SUFFIX=$SUFFIX            RUN=$DISENTANGLE
+run_disentangle  NAME="DISENTANGLE_BUFF"   SUFFIX=${SUFFIX}_buff  RUN=$DISENTANGLE_BUFF
 
 #
 # running WANNIER
@@ -136,7 +140,7 @@ if [ "$CHECK" = yes ] ; then
    echo "running CHECK..."
    #
    cd $TEST_HOME
-   list="disentangle$SUFFIX.out wannier$SUFFIX.out"
+   list="disentangle$SUFFIX.out disentangle${SUFFIX}_buff.out wannier$SUFFIX.out"
    #
    for file in $list
    do
