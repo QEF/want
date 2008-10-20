@@ -89,6 +89,8 @@
    !
    ! read data from STDIN
    !
+   attr = ""   ! probably useless
+   !
    CALL iotk_scan_empty(stdin, TRIM(label), ATTR=attr, IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching for '//TRIM(label), ABS(ierr) )
    !
