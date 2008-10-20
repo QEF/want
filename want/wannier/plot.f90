@@ -601,6 +601,9 @@
           !
           IF ( nkb <= 0 ) CALL errore(subname,'no beta functions within USPP',-nkb+1)
           !
+          ALLOCATE( vkb(npwkx, nkb), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating vkb',ABS(ierr))
+          !
           ALLOCATE( becp(nkb, nplot, nkpts), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
           !
@@ -683,7 +686,7 @@
           IF ( uspp_augmentation ) THEN
               ! 
               xk(:) = vkpt(:,ik) / tpiba
-              CALL init_us_2( npwk(ik), igsort(1,ik), xk, vkb )
+              CALL init_us_2( npwk(ik), igsort(1,ik), xk, 1, nkb, vkb )
               !
               vkb_ik = ik
 
@@ -703,7 +706,7 @@
               wfc_aux( npwk(ik)+1: npwkx, : ) = CZERO
               !
               ! 
-              CALL ccalbec( nkb, npwkx, npwk(ik), nplot, becp( 1:nkb, 1:nplot, ik), &
+              CALL ccalbec( nkb, nkb, npwkx, npwk(ik), nplot, becp( 1:nkb, 1:nplot, ik), &
                             vkb, wfc_aux )
               !
               DEALLOCATE( wfc_aux, STAT=ierr )

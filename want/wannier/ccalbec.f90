@@ -6,7 +6,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !-----------------------------------------------------------------------
-SUBROUTINE ccalbec( nkb, npwx, npw, nbnd, bec, vkb, psi )
+SUBROUTINE ccalbec( nkbx, nkb, npwx, npw, nbnd, bec, vkb, psi )
   !-----------------------------------------------------------------------
   !
   !    This subroutine computes the dot product of the beta functions
@@ -21,12 +21,12 @@ SUBROUTINE ccalbec( nkb, npwx, npw, nbnd, bec, vkb, psi )
   !
   ! ... here the dummy variables
   !
-  INTEGER :: nkb, npwx, npw, nbnd
+  INTEGER :: nkbx, nkb, npwx, npw, nbnd
     ! input: the total number of beta functions
     ! input: the maximum number of plane waves
     ! input: the length of the vectors
     ! input: the number of bands
-  COMPLEX(KIND=dbl) ::  vkb(npwx,nkb), psi(npwx,nbnd), bec(nkb,nbnd)
+  COMPLEX(KIND=dbl) ::  vkb(npwx,nkb), psi(npwx,nbnd), bec(nkbx,nbnd)
     ! input: the FT of the beta functions
     ! input: the wavefunctions
     ! output: dot product of the beta and the wavefunctions
@@ -45,7 +45,7 @@ SUBROUTINE ccalbec( nkb, npwx, npw, nbnd, bec, vkb, psi )
 !  ELSE
      !   
      CALL ZGEMM( 'C', 'N', nkb, nbnd, npw, (1.0d0,0.0d0) , &
-                 vkb, npwx, psi, npwx, (0.0d0,0.0d0), bec, nkb )
+                 vkb, npwx, psi, npwx, (0.0d0,0.0d0), bec, nkbx )
      !
      ! as before, we are serial and therefore REDUCE is commented
      !

@@ -4,6 +4,10 @@
 =======================================================
 
 
+20 Oct 2008      Full implementation of wfc and beta proj buffering is now 
+                 properly working and carefully tested. Documentation 
+                 updated. (AF)
+
 17 Oct 2008      simple workaround in read_matrix added. (AF)
 
 14 Oct 2008      configure.ac updated from espresso distribution (today's

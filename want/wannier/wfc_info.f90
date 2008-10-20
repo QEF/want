@@ -62,7 +62,7 @@ CONTAINS
 !
 
 !**********************************************************
-   SUBROUTINE wfc_info_allocate(npwx, nbnd, nkpts, nwfc,obj)
+   SUBROUTINE wfc_info_allocate(npwx, nbnd, nkpts, nwfc, obj)
    !**********************************************************
    IMPLICIT NONE
        INTEGER,    INTENT(in)    :: npwx

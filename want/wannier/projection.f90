@@ -36,7 +36,7 @@
    ! I/O variables
    !
    TYPE(wfc_info),     INTENT(in) :: evc_info
-   COMPLEX(dbl),       INTENT(in) :: evc( evc_info%npwx, evc_info%nwfc )
+   COMPLEX(dbl),       INTENT(in) :: evc( evc_info%npwx, * )
    INTEGER,            INTENT(in) :: ik_g, dimw, imin
    INTEGER,            INTENT(in) :: dimwinx
    INTEGER,            INTENT(in) :: dimwann

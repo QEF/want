@@ -10,6 +10,7 @@
    SUBROUTINE overlap( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, &
                        evc, evc_info, igsort, lnncell, Mkb )
    !************************************************************
+   !
    USE kinds
    USE constants,      ONLY : CZERO
    USE timing_module,  ONLY : timing
@@ -22,7 +23,7 @@
       ! ... Input Variables
       !
       TYPE(wfc_info), INTENT(in) :: evc_info
-      COMPLEX(dbl),   INTENT(in) :: evc( evc_info%npwx, evc_info%nwfc )
+      COMPLEX(dbl),   INTENT(in) :: evc( evc_info%npwx, *)
 
       INTEGER,        INTENT(in) :: ik1, ik2
       INTEGER,        INTENT(in) :: dimw1, dimw2, dimwinx

@@ -105,11 +105,10 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
-   USE io_module,            ONLY : ionode, ionode_id
    IMPLICIT NONE
 
       CHARACTER(17)    :: subname = 'cmplx_bands_input'
-      INTEGER          :: ierr, nkpts_2D
+      INTEGER          :: ierr
       !
       ! end of declarations
       !
@@ -209,8 +208,7 @@ END PROGRAM cmplx_bands
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : ZERO, ONE, TWO, CZERO, CONE, EPS_m6, BOHR => bohr_radius_angs
    USE io_module,            ONLY : ionode, stdout, stdin, aux_unit, sgm_unit
-   USE io_module,            ONLY : work_dir, prefix, postfix
-   USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
+   USE io_module,            ONLY : datafile_sgm
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
@@ -219,7 +217,7 @@ END PROGRAM cmplx_bands
    USE windows_module,       ONLY : nspin
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
    USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
-   USE correlation_module,   ONLY : omg_min, omg_max, omg_grid, omg_nint
+   USE correlation_module,   ONLY : omg_grid, omg_nint
    USE timing_module,        ONLY : timing, timing_upto_now
    USE log_module,           ONLY : log_push, log_pop
    USE parser_module,        ONLY : change_case
@@ -276,13 +274,12 @@ END PROGRAM cmplx_bands
       CHARACTER(nstrx)  :: filename, analyticity_sgm
       CHARACTER(20)     :: ctmp
       !
-      REAL(dbl)         :: arg, cost, raux, avg_nrs
+      REAL(dbl)         :: cost, raux, avg_nrs
       !
       INTEGER           :: i, j, l, ie, ik, ir
       INTEGER           :: ierr
       INTEGER           :: nk_(3), s_(3)
       INTEGER           :: dimwann_sgm, nrtot_sgm
-      INTEGER           :: ne_sgm
       LOGICAL           :: lfound
       !
       ! end of declarations

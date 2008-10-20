@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************************
-SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, ib, Mkb )
+SUBROUTINE overlap_augment( dimx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    !***************************************************************
    !
    !    This routine add the augmentation part due to USPP to the
@@ -15,14 +15,14 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    !    Requires the products of psi with all beta functions
    !    in array becp(nkb,m,ik) 
    ! input:
-   !     dimwinx    leading dimension of arrays Mkb(:,:)
+   !     dimx              leading dimension of arrays Mkb(:,:)
    !     dimw1,
-   !     dimw2      true dimensions of the array Mkb
-   !     ik1        index of the first kpt
-   !     ik2        index of the second kpt
-   !     ib         index of the nearest neighbour b
+   !     dimw2             true dimensions of the array Mkb
+   !     ik1               index of the first kpt
+   !     ik2               index of the second kpt
+   !     ib                index of the nearest neighbour b
    ! input / output:
-   !     Mkb        the overlap matrix
+   !     Mkb               the overlap matrix
    !
    ! The task performed is:
    !  Mkb(m,n) = Mkb(m,n) + \sum_{ijI} qb_{ij}^I * e^i(b*tau_I)
@@ -43,9 +43,10 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    IMPLICIT NONE
    !
 
-   INTEGER,           INTENT(in)    :: dimwinx, dimw1, dimw2
+   INTEGER,           INTENT(in)    :: dimx
+   INTEGER,           INTENT(in)    :: dimw1, dimw2
    INTEGER,           INTENT(in)    :: ik1, ik2, ib
-   COMPLEX(KIND=dbl), INTENT(inout) :: Mkb(dimwinx,dimwinx)
+   COMPLEX(KIND=dbl), INTENT(inout) :: Mkb(dimx,dimx)
    !
    ! ... local variables
    !
@@ -85,8 +86,10 @@ SUBROUTINE overlap_augment( dimwinx, dimw1, dimw2, ik1, ik2, ib, Mkb )
 
                      DO ibnd2 = 1, dimw2
                      DO ibnd1 = 1, dimw1
-                         Mkb(ibnd1,ibnd2) = Mkb(ibnd1,ibnd2) +  &
-                                 CONJG( becp(ikb,ibnd1,ik1) ) * becp(jkb,ibnd2,ik2) *&
+                         !
+                         Mkb(ibnd1,ibnd2) = Mkb(ibnd1,ibnd2) +       &
+                                 CONJG( becp(ikb,ibnd1,1) )        * &
+                                        becp(jkb,ibnd2,2)          * &
                                  phase * qb(ih,jh,nt,ib) 
                      ENDDO
                      ENDDO
