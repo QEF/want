@@ -271,11 +271,11 @@ CONTAINS
    ! in the parallel case, ik_g is a global index 
    !
    IMPLICIT NONE
-       INTEGER,         INTENT(in)    :: ik_g
-       CHARACTER(*),    INTENT(in)    :: label, filefmt
-       COMPLEX(dbl),    INTENT(inout) :: wfc(:,:)
-       TYPE(wfc_info),  INTENT(inout) :: lwfc
-       INTEGER, OPTIONAL, INTENT(in)  :: iband_min,iband_max
+       INTEGER,           INTENT(IN)    :: ik_g
+       CHARACTER(*),      INTENT(IN)    :: label, filefmt
+       COMPLEX(dbl),      INTENT(INOUT) :: wfc(:,:)
+       TYPE(wfc_info),    INTENT(INOUT) :: lwfc
+       INTEGER, OPTIONAL, INTENT(IN)    :: iband_min,iband_max
 
        CHARACTER(14)      :: subname="wfc_data_kread"
        INTEGER            :: ib, ibs, ibe, lindex, ierr

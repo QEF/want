@@ -6,7 +6,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------
-subroutine init_us_2 ( npw_, igk_, q_, vkb_)
+subroutine init_us_2 ( npw_, igk_, q_, kbs, kbe, vkb_)
   !----------------------------------------------------------------------
   !
   !   Calculates beta functions (Kleinman-Bylander projectors), with
@@ -28,10 +28,11 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   !
   IMPLICIT NONE
   !
-  INTEGER      :: npw_           ! input: number of PW's
-  INTEGER      :: igk_ (npw_)    ! input: indices of q+G
-  REAL(dbl)    :: q_(3)          ! input: q vector
-  COMPLEX(dbl) :: vkb_ (npwkx, nkb)    ! output: beta functions
+  INTEGER,       INTENT(IN)  :: npw_               ! input: number of PW's
+  INTEGER,       INTENT(IN)  :: igk_ (npw_)        ! input: indices of q+G
+  REAL(dbl),     INTENT(IN)  :: q_(3)              ! input: q vector
+  INTEGER,       INTENT(IN)  :: kbs, kbe
+  COMPLEX(dbl),  INTENT(OUT) :: vkb_ (npwkx, kbe-kbs+1)  ! output: beta functions
   !
   !     Local variables
   !
@@ -44,9 +45,9 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
   COMPLEX(dbl), ALLOCATABLE :: sk(:)
   !
   !
-  
   !
-  IF (lmaxkb < 0) RETURN
+  IF ( lmaxkb < 0 .OR. nkb == 0 ) RETURN
+  !
   CALL timing ('init_us_2', OPR='start')
   CALL log_push ('init_us_2')
 
@@ -121,11 +122,18 @@ subroutine init_us_2 ( npw_, igk_, q_, vkb_)
                         eigts3 ( igv(3, igk_(ig)), na)
            ENDDO
            DO ih = 1, nh (nt)
+              !
               jkb = jkb + 1
-              pref = -CI **nhtol (ih, nt) * phase
-              DO ig = 1, npw_
-                 vkb_(ig, jkb) = vkb1 (ig,ih) * sk (ig) * pref
-              ENDDO
+              !
+              IF ( jkb >= kbs .AND. jkb <= kbe ) THEN
+                  !
+                  pref = -CI **nhtol (ih, nt) * phase
+                  DO ig = 1, npw_
+                     vkb_(ig, jkb-kbs+1) = vkb1 (ig,ih) * sk (ig) * pref
+                  ENDDO
+                  !
+              ENDIF
+              !
            ENDDO
         ENDIF
      ENDDO

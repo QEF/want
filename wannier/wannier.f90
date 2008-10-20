@@ -21,13 +21,13 @@
                                       localization_init_mode => localization_init, &
                                       ordering_mode, do_ordering, do_collect_wf 
       USE io_module,           ONLY : stdout, wan_unit, ham_unit, io_name, wantdata_form
-      USE io_module,           ONLY : ionode, ionode_id
+      USE io_module,           ONLY : ionode
       USE timing_module,       ONLY : timing, timing_upto_now
       USE log_module,          ONLY : log_push, log_pop
       USE files_module,        ONLY : file_open, file_close
       USE version_module,      ONLY : version_number
       USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag
-      USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, nb, wbtot
+      USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, wbtot
       USE overlap_module,      ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                                       ncg, wannier_thr, cu, rave, rave2, r2ave, &

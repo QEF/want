@@ -106,6 +106,14 @@
    DATA wantdata_fmt_allowed / 'binary',  'textual' /
        ! the allowed values for wantdata_fmt
 
+   INTEGER :: nwfc_buffer = -1
+       ! the maximum number of wfcs the be stored at once for each single kpt.
+       ! the default is to store all of them.
+       
+   INTEGER :: nkb_buffer = -1
+       ! the maximum number of beta projectors the be stored at once for each single kpt.
+       ! the default is to store all of them.
+
    LOGICAL :: assume_ncpp = .FALSE.
        ! if .TRUE. this variable avoids the reading of pseudopotential files
        ! assuming the DFT calculation has been performed within norm-conserving
@@ -119,11 +127,13 @@
 
    NAMELIST / CONTROL /  title, prefix, postfix, restart_mode, work_dir, verbosity, &
                          overlaps, projections, assume_ncpp, unitary_thr, &
-                         dftdata_fmt, wantdata_fmt, debug_level
+                         dftdata_fmt, wantdata_fmt, debug_level,  &
+                         nwfc_buffer, nkb_buffer
 
    PUBLIC :: title, prefix, postfix, work_dir
    PUBLIC :: overlaps, projections, restart_mode
    PUBLIC :: verbosity, assume_ncpp, unitary_thr, debug_level
+   PUBLIC :: nwfc_buffer, nkb_buffer
    PUBLIC :: dftdata_fmt, wantdata_fmt
    PUBLIC :: CONTROL
 
@@ -376,6 +386,8 @@ CONTAINS
       CALL mp_bcast( dftdata_fmt,      ionode_id )
       CALL mp_bcast( wantdata_fmt,     ionode_id )
       CALL mp_bcast( debug_level,      ionode_id )
+      CALL mp_bcast( nwfc_buffer,      ionode_id )
+      CALL mp_bcast( nkb_buffer,       ionode_id )
 
       !
       ! ... checking parameters
@@ -407,7 +419,12 @@ CONTAINS
           IF ( ierr/=0 ) CALL errore(subname,'Invalid wantdata_fmt = '//TRIM(wantdata_fmt),10)
           !
       ENDIF
-
+      !
+      IF ( nwfc_buffer /= -1 .AND. nwfc_buffer < 1 ) &
+          CALL errore(subname,'Invalid nwfc_buffer',ABS(nwfc_buffer)+1 )
+      !
+      IF ( nkb_buffer /= -1 .AND. nkb_buffer < 1 ) &
+          CALL errore(subname,'Invalid nkb_buffer',ABS(nkb_buffer)+1 )
 
    END SUBROUTINE read_namelist_control
 

@@ -30,6 +30,8 @@
    INTEGER                   :: nsave_dis
    INTEGER                   :: nprint_wan
    INTEGER                   :: nsave_wan
+   INTEGER                   :: nwfc_buffer
+   INTEGER                   :: nkb_buffer
    INTEGER                   :: debug_level
    REAL(dbl)                 :: unitary_thr
 
@@ -68,6 +70,8 @@
    PUBLIC :: nsave_dis
    PUBLIC :: nprint_wan
    PUBLIC :: nsave_wan
+   PUBLIC :: nwfc_buffer
+   PUBLIC :: nkb_buffer
    PUBLIC :: unitary_thr
    PUBLIC :: debug_level
 

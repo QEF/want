@@ -614,14 +614,16 @@ shutdown.o : ../libs/mp.o
 shutdown.o : ../libs/timing.o
 smearing.o : ../libs/constants.o
 smearing.o : ../libs/kind.o
-s_psi.o : becmod.o
 s_psi.o : ions.o
+s_psi.o : kpoints.o
+s_psi.o : lattice.o
 s_psi.o : ../libs/constants.o
 s_psi.o : ../libs/kind.o
 s_psi.o : ../libs/log_module.o
 s_psi.o : ../libs/timing.o
 s_psi.o : pwcom.o
 s_psi.o : uspp.o
+s_psi.o : wfc_data.o
 startup.o : io_module.o
 startup.o : ../libs/mp_global.o
 startup.o : ../libs/mp.o

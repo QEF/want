@@ -67,6 +67,8 @@ CONTAINS
                                            nprint_wan,        &
                                            nsave_dis,         &
                                            nsave_wan,         &
+                                           nwfc_buffer,       &
+                                           nkb_buffer,        &
                                            use_blimit,        &
                                            subspace_init,     &
                                            localization_init 
@@ -78,6 +80,8 @@ CONTAINS
                                            nprint_wan_      => nprint_wan, &
                                            nsave_dis_       => nsave_dis, &
                                            nsave_wan_       => nsave_wan, &
+                                           nwfc_buffer_     => nwfc_buffer, &
+                                           nkb_buffer_      => nkb_buffer, &
                                            overlaps_        => overlaps,  &
                                            projections_     => projections, &
                                            unitary_thr_     => unitary_thr, &
@@ -99,6 +103,8 @@ CONTAINS
       nsave_dis        = nsave_dis_
       nprint_wan       = nprint_wan_
       nsave_wan        = nsave_wan_
+      nwfc_buffer      = nwfc_buffer_
+      nkb_buffer       = nkb_buffer_
       use_blimit       = use_blimit_
       use_pseudo       = .NOT. assume_ncpp_
       read_pseudo      = .NOT. assume_ncpp_

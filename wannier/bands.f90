@@ -98,7 +98,6 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
-   USE io_module,            ONLY : ionode, ionode_id
    USE mp,                   ONLY : mp_bcast
    IMPLICIT NONE
 
@@ -192,8 +191,7 @@ END PROGRAM bands
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
-   USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
-   USE io_module,            ONLY : ionode, ionode_id
+   USE io_module,            ONLY : datafile_sgm
    USE mp,                   ONLY : mp_bcast
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, zmat_herm
@@ -242,7 +240,6 @@ END PROGRAM bands
       !
       INTEGER           :: i, j, ik, ir
       INTEGER           :: ierr
-      LOGICAL           :: lfound
       !
       ! end of declarations
       !

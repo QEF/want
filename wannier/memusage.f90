@@ -69,7 +69,7 @@
 
 #ifdef __HAVE_MALLINFO
       CALL memstat( tmem )
-      WRITE( iunit, 100 ) "Total Memory",  REAL( tmem )/ 1000.0_dbl
+      WRITE( iunit, 100 ) "Real alloc. Memory",  REAL( tmem )/ 1000.0_dbl
 #endif
 
       WRITE( iunit, "( ' </MEMORY_USAGE>',/ )" ) 

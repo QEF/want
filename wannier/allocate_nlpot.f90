@@ -34,7 +34,7 @@ subroutine allocate_nlpot
   USE ggrids_module,   ONLY : ecutwfc, ecutrho
 
   USE us_module,       ONLY : qrad, tab, tab_at, dq, nqx, nqxq
-  USE uspp,            ONLY : indv, nhtol, nhtolm, qq, qb, dvan, deeq, vkb, nkb, &
+  USE uspp,            ONLY : indv, nhtol, nhtolm, qq, qb, dvan, deeq, nkb, &
                               nkbus, nhtoj, becsum
   USE uspp_param,      ONLY : upf, lmaxq, lmaxkb, nh, nhm
   !
@@ -118,13 +118,7 @@ subroutine allocate_nlpot
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating qrad',ABS(ierr))
   ENDIF
   !
-  ! WFs: here we want to manage all projections at the same time
-  !      an extra kpt index is added
   !
-  IF (nkb > 0) THEN 
-       ALLOCATE (vkb( npwkx,  nkb), STAT=ierr)    
-       IF (ierr/=0) CALL errore('allocate_nlpot','allocating vkb',ABS(ierr))
-  ENDIF
   ALLOCATE (becsum( nhm * (nhm + 1)/2, nat, nspin), STAT=ierr)    
        IF (ierr/=0) CALL errore('allocate_nlpot','allocating becsum',ABS(ierr))
   !
