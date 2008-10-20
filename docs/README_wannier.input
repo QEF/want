@@ -101,6 +101,19 @@ debug_level   INTEGER
               level of debug report; values <= 0 switch the debug_mode off
               DEFAULT: 0
 
+nwfc_buffer   INTEGER
+              The max number of wfcs to be stored for each k-point. 
+              Useful to reduce the amount of required memory, while 
+              increasing read-in workload.
+              DEFAULT: all wfcs are stored
+
+nkb_buffer    INTEGER
+              The max number of beta projectors to be stored for each k-point. 
+              Useful to reduce the amount of required memory as nwfc_buffer,
+              but probably better in terms of performance. (beta's are not
+              read but generated).
+              DEFAULT: all betas are stored
+
 
 ==============================================================================
 
