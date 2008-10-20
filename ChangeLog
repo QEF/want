@@ -4,6 +4,14 @@
 =======================================================
 
 
+17 Oct 2008      simple workaround in read_matrix added. (AF)
+
+14 Oct 2008      configure.ac updated from espresso distribution (today's
+                 CVS). (AF)
+
+10 Oct 2008      Improvement of memory requirements by means of wfc buffering.
+                 nwfcx variable added. (AF)
+
 04 Sep 2008      Internal copies of blas and lapack updated, according to the
                  current needs of WanT. (AF)
 
