@@ -12,7 +12,7 @@
    !
    USE kinds,      ONLY : dbl
    USE parameters, ONLY : nstrx
-   USE io_module,  ONLY : stdin, ionode, log_unit
+   USE io_module,  ONLY : stdin, log_unit
    USE log_module, ONLY : log_init, log_push
    USE constants,  ONLY : ZERO
    !
@@ -48,8 +48,6 @@ CONTAINS
       USE T_input_parameters_module,  ONLY : read_namelist_input_conductor
       !
       IMPLICIT NONE
-      !
-      INTEGER :: ierr
 
       !
       ! attach input from file if the case
