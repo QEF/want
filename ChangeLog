@@ -4,6 +4,11 @@
 =======================================================
 
 
+24 Oct 2008      Bug fixed (transport calcs) in setting default for overlaps.
+                 Other minor changes added. (AF).
+
+22 Oct 2008      Little bug fixed in run_AlH.sh and docs/TODO file updated. (AF)
+
 20 Oct 2008      Full implementation of wfc and beta proj buffering is now 
                  properly working and carefully tested. Documentation 
                  updated. (AF)
