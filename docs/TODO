@@ -7,9 +7,7 @@
 
 * One step minimization (Thygesen like)
 * Symmetries in wfc management
-* Wannier parallelization
 * Symmetries in DOS calculation
 
 * eigenchannel in transport calculation
-* eigenvalue problem in wannier localization
 

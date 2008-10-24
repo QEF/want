@@ -5,6 +5,7 @@
 
 
 24 Oct 2008      Bug fixed (transport calcs) in setting default for overlaps.
+                 Bug fix and output updates in memusage.f90. 
                  Other minor changes added. (AF).
 
 22 Oct 2008      Little bug fixed in run_AlH.sh and docs/TODO file updated. (AF)
