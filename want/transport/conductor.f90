@@ -221,7 +221,6 @@
           ! 
           ! construct leads self-energies 
           ! 
-          ! ene + bias
           CALL transfer( dimR, s00_R(:,:,ik),  niterx, totR, tottR, aux00_R, aux01_R, niter )
           avg_iter = avg_iter + REAL(niter)
           !
