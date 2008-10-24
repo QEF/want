@@ -16,6 +16,7 @@
    ! currently allocated in the data modules.
    !
    USE io_module,                ONLY : ionode 
+   USE kinds,                    ONLY : dbl
    !
    USE kpoints_module,           ONLY : kpoints_memusage, kpoints_alloc 
    USE kpoints_module,           ONLY : rgrid_memusage,   rgrid_alloc
@@ -40,36 +41,114 @@
    !
    INTEGER, INTENT(IN) :: iunit
    !
-#ifdef __HAVE_MALLINFO
+   REAL(dbl) :: memsum, mtmp
+   !
+#ifdef HAVE_MALLINFO
    INTEGER  :: tmem
 #endif
- 
+
+   memsum = 0.0_dbl
+   !
    IF ( ionode ) THEN
       ! 
       WRITE( iunit, "( ' <MEMORY_USAGE>' )" ) 
       !
-      IF ( kpoints_alloc )  WRITE(iunit, 100) "kpoints",      kpoints_memusage()
-      IF ( rgrid_alloc )    WRITE(iunit, 100) "rgrid",        rgrid_memusage()
-      IF ( bshells_alloc )  WRITE(iunit, 100) "bshells",      bshells_memusage()
-      IF ( ions_alloc )     WRITE(iunit, 100) "ions",         ions_memusage()
-      IF ( symm_alloc )     WRITE(iunit, 100) "symmetry",     symmetry_memusage()
-      IF ( windows_alloc )  WRITE(iunit, 100) "windows",      windows_memusage()
-      IF ( subspace_alloc ) WRITE(iunit, 100) "subspace",     subspace_memusage()
-      IF ( overlap_alloc )  WRITE(iunit, 100) "overlap",      overlap_memusage()
-      IF ( ggrids_alloc )   WRITE(iunit, 100) "ggrids",       ggrids_memusage()
-      IF ( wfc_data_alloc ) WRITE(iunit, 100) "wfc_data",     wfc_data_memusage()
-      IF ( loc_alloc )      WRITE(iunit, 100) "localization", localization_memusage()
-      IF ( trial_alloc )    WRITE(iunit, 100) "trial_center", trial_center_data_memusage()
-      IF ( ham_alloc )      WRITE(iunit, 100) "hamiltonian",  hamiltonian_memusage()
-      IF ( corr_alloc )     WRITE(iunit, 100) "correlation",  correlation_memusage()
-      IF ( strf_alloc )     WRITE(iunit, 100) "struct_fact",  struct_fact_data_memusage()
-      IF ( workwan_alloc )  WRITE(iunit, 100) "workspace_wan",workspace_wan_memusage()
-                            WRITE(iunit, 100) "us",           us_memusage()
-                            WRITE(iunit, 100) "uspp",         uspp_memusage()
+      IF ( kpoints_alloc )  THEN
+          mtmp    =  kpoints_memusage()   
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "kpoints", mtmp 
+      ENDIF
+      IF ( rgrid_alloc ) THEN
+          mtmp    =  rgrid_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "rgrid", mtmp
+      ENDIF
+      IF ( bshells_alloc ) THEN
+          mtmp    =  bshells_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "bshells", mtmp
+      ENDIF
+      IF ( ions_alloc ) THEN
+          mtmp    =  ions_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "ions", mtmp
+      ENDIF
+      IF ( symm_alloc ) THEN
+          mtmp    =  symmetry_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "symmetry", mtmp
+      ENDIF
+      IF ( windows_alloc ) THEN
+          mtmp    =  windows_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "windows", mtmp
+      ENDIF
+      IF ( subspace_alloc ) THEN
+          mtmp    =  subspace_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "subspace", mtmp
+      ENDIF
+      IF ( overlap_alloc ) THEN
+          mtmp    =  overlap_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "overlap", mtmp
+      ENDIF
+      IF ( ggrids_alloc ) THEN
+          mtmp    =  ggrids_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "ggrids", mtmp
+      ENDIF
+      IF ( wfc_data_alloc ) THEN
+          mtmp    =  wfc_data_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "wfc_data", mtmp
+      ENDIF
+      IF ( loc_alloc ) THEN
+          mtmp    =  localization_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "localization", mtmp
+      ENDIF
+      IF ( trial_alloc ) THEN
+          mtmp    =  trial_center_data_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "trial_center", mtmp
+      ENDIF
+      IF ( ham_alloc ) THEN
+          mtmp    =  hamiltonian_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "hamiltonian", mtmp
+      ENDIF
+      IF ( corr_alloc ) THEN
+          mtmp    =  correlation_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "correlation", mtmp
+      ENDIF
+      IF ( strf_alloc ) THEN
+          mtmp    =  struct_fact_data_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "struct_fact", mtmp
+      ENDIF
+      IF ( workwan_alloc ) THEN
+          mtmp    =  workspace_wan_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "workspace_wan", mtmp
+      ENDIF
+          !
+          mtmp    =  us_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "us", mtmp
+          !
+          mtmp    =  uspp_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "uspp", mtmp
+      !
+      !
+      WRITE( iunit, "()")
+      WRITE( iunit, 100 ) "Total alloc. Memory", memsum
 
-#ifdef __HAVE_MALLINFO
+#ifdef HAVE_MALLINFO
       CALL memstat( tmem )
-      WRITE( iunit, 100 ) "Real alloc. Memory",  REAL( tmem )/ 1000.0_dbl
+      WRITE( iunit, 100 ) " Real alloc. Memory",  REAL( tmem )/ 1000.0_dbl
 #endif
 
       WRITE( iunit, "( ' </MEMORY_USAGE>',/ )" ) 
