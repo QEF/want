@@ -90,7 +90,8 @@
    CALL hamiltonian_allocate()
 
    !
-   ! dimx = MAX( dimL, dimC, dimR) 
+   ! redefine dimx for the sake of coherence
+   dimx = MAX( dimL, dimC, dimR) 
    !
    ALLOCATE( haux(dimx,dimx,nrtot_par), STAT=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'allocating haux',ABS(ierr))
@@ -121,6 +122,7 @@
        CALL read_matrix( datafile_C, ispin, 'H00_C', dimC, dimC, haux, dimx, dimx, &
                          lhave_overlap, saux, dimx, dimx)
    ENDIF
+
    !
    CALL mp_bcast( haux, ionode_id )
    CALL mp_bcast( saux, ionode_id )

@@ -337,12 +337,17 @@
               !
               S_loc(:,:) = CZERO
               !
-              DO i = 1, ldimwann
-                 S_loc(i,i) = CONE
-              ENDDO   
+              IF ( ALL (ivr_aux(:) == 0 ) ) THEN
+                  !
+                  DO i = 1, ldimwann
+                     S_loc(i,i) = CONE
+                  ENDDO   
+                  !
+              ENDIF
               !
           CASE( "H01_R", "H01_L", "H_LC", "H_CR" )
               !
+              ! This case could be joined to the previous
               S_loc(:,:) = CZERO
               !
           CASE DEFAULT
