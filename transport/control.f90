@@ -8,9 +8,11 @@
 !
 !*********************************************
    MODULE T_control_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,      ONLY : dbl
    USE parameters, ONLY : nstrx
+   !
    IMPLICIT NONE
    PRIVATE 
    SAVE
@@ -28,7 +30,6 @@
    INTEGER                   :: debug_level
    !
    LOGICAL                   :: use_overlap
-   LOGICAL                   :: use_correlation
    LOGICAL                   :: use_debug_mode
    LOGICAL                   :: write_kdata
    !
@@ -51,7 +52,6 @@
    PUBLIC :: debug_level
    !
    PUBLIC :: use_overlap
-   PUBLIC :: use_correlation
    PUBLIC :: use_debug_mode
    PUBLIC :: write_kdata
    !

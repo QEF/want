@@ -8,7 +8,7 @@
 ! 
 !********************************************
    MODULE T_input_module
-!********************************************
+   !********************************************
    !
    USE kinds,      ONLY : dbl
    USE parameters, ONLY : nstrx
@@ -67,6 +67,7 @@ CONTAINS
       CALL setup_egrid()
       CALL setup_smearing()
       CALL setup_hamiltonian()
+      CALL setup_correlation()
       CALL setup_kpoints()
 
 
@@ -79,7 +80,6 @@ CONTAINS
       USE T_control_module,         ONLY : calculation_type,  &
                                            conduct_formula,   &
                                            use_overlap,       &
-                                           use_correlation,   &
                                            niterx,            &
                                            nprint,            &
                                            bias,              &
@@ -118,7 +118,6 @@ CONTAINS
       datafile_C          = datafile_C_
       datafile_R          = datafile_R_
       datafile_sgm        = datafile_sgm_
-      use_correlation     = LEN_TRIM( datafile_sgm_ ) /= 0
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
       debug_level         = debug_level_
@@ -212,11 +211,17 @@ CONTAINS
                                            dimR,    &
                                            dimC,    & 
                                            dimx,    &
-                                           ispin
-      USE T_input_parameters_module,ONLY : dimL_     => dimL, &
-                                           dimR_     => dimR, &
-                                           dimC_     => dimC, &
-                                           ispin_    => ispin
+                                           ispin,   &
+                                           shift_L, &
+                                           shift_C, &
+                                           shift_R
+      USE T_input_parameters_module,ONLY : dimL_     => dimL,    &
+                                           dimR_     => dimR,    &
+                                           dimC_     => dimC,    &
+                                           ispin_    => ispin,   &
+                                           shift_L_  => shift_L, &
+                                           shift_C_  => shift_C, &
+                                           shift_R_  => shift_R
       IMPLICIT NONE
       ! 
       dimL            = dimL_
@@ -225,6 +230,9 @@ CONTAINS
       dimx            = MAX ( dimL, dimC, dimR )
       !
       ispin           = ispin_
+      shift_L         = shift_L_
+      shift_C         = shift_C_
+      shift_R         = shift_R_
       !
    END SUBROUTINE setup_hamiltonian
 
@@ -241,6 +249,21 @@ CONTAINS
       use_symm     = use_symm_
 
    END SUBROUTINE setup_kpoints
+
+
+!**********************************************************
+   SUBROUTINE setup_correlation()
+   !**********************************************************
+      USE T_correlation_module,     ONLY :     shift_corr,  &
+                                               lhave_corr
+      USE T_input_parameters_module,ONLY :     shift_corr_   => shift_corr, &
+                                               datafile_sgm_ => datafile_sgm
+      IMPLICIT NONE
+    
+      shift_corr     = shift_corr_
+      lhave_corr     = LEN_TRIM( datafile_sgm_ ) /= 0
+
+   END SUBROUTINE setup_correlation
 
 END MODULE T_input_module
 

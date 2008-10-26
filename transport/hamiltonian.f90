@@ -8,7 +8,8 @@
 !
 !*********************************************
    MODULE T_hamiltonian_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,           ONLY : dbl
    USE parameters,      ONLY : nstrx
    USE T_kpoints_module,ONLY : nkpts_par
@@ -28,6 +29,7 @@
     !
     INTEGER                   :: nspin
     INTEGER                   :: ispin
+    REAL(dbl)                 :: shift_L, shift_C, shift_R
     !
     COMPLEX(dbl), ALLOCATABLE :: h00_L(:,:,:), h01_L(:,:,:)
     COMPLEX(dbl), ALLOCATABLE :: h00_R(:,:,:), h01_R(:,:,:)
@@ -51,6 +53,8 @@
    PUBLIC :: dimL, dimC, dimR, dimx
    PUBLIC :: nspin, ispin
    PUBLIC :: nkpts_par
+   !
+   PUBLIC :: shift_L, shift_C, shift_R
    !
    PUBLIC :: h00_L, h01_L
    PUBLIC :: h00_R, h01_R

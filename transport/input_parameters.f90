@@ -149,6 +149,22 @@
        ! the name of the file containing correlation self-energy
        ! If a valid file is provided, correlation is taken into account
 
+   REAL(dbl) :: shift_L = 0.0
+       ! global energy shift [eV] to be applied to the matrix elements
+       ! of the left lead (H00_L, H01_L)
+
+   REAL(dbl) :: shift_C = 0.0
+       ! global energy shift [eV] to be applied to the matrix elements
+       ! of the conductor region (H00_C, H_LC, H_CR)
+       
+   REAL(dbl) :: shift_R = 0.0
+       ! global energy shift [eV] to be applied to the matrix elements
+       ! of the right lead (H00_R, H01_R)
+
+   REAL(dbl) :: shift_corr = 0.0
+       ! global energy shift [eV] to be applied to the matrix elements
+       ! of the correlation self-energy operator.
+
    INTEGER :: debug_level = 0
        ! level of debug report; values <= 0 switch the debug_mode off
 
@@ -163,7 +179,8 @@
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
                  transport_dir, use_overlap, smearing_type, &
                  delta_ratio, xmax, nk, s, use_symm, debug_level, &
-                 work_dir, prefix, postfix, write_kdata, ispin 
+                 work_dir, prefix, postfix, write_kdata, ispin,   &
+                 shift_L, shift_C, shift_R, shift_corr 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
@@ -171,6 +188,7 @@
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: nk, s, use_symm, debug_level
    PUBLIC :: work_dir, prefix, postfix, write_kdata, ispin
+   PUBLIC :: shift_L, shift_C, shift_R, shift_corr
    PUBLIC :: INPUT_CONDUCTOR
 
 
@@ -237,6 +255,10 @@ CONTAINS
       CALL mp_bcast( datafile_C,         ionode_id)      
       CALL mp_bcast( datafile_R,         ionode_id)      
       CALL mp_bcast( datafile_sgm,       ionode_id)      
+      CALL mp_bcast( shift_L,            ionode_id)      
+      CALL mp_bcast( shift_C,            ionode_id)      
+      CALL mp_bcast( shift_R,            ionode_id)      
+      CALL mp_bcast( shift_corr,         ionode_id)      
 
       !
       ! ... checking parameters

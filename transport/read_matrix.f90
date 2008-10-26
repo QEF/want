@@ -30,10 +30,11 @@
    USE timing_module
    USE log_module,           ONLY : log_push, log_pop
    USE parser_module
-   USE T_control_module,     ONLY : transport_dir, use_correlation
+   USE T_control_module,     ONLY : transport_dir
    USE T_kpoints_module,     ONLY : kpoints_alloc => alloc, nrtot_par, vr_par, nr_par
-   USE T_correlation_module, ONLY : icols_corr => icols, irows_corr => irows,  &
-                                    ncols_corr => ncols, nrows_corr => nrows
+   USE T_correlation_module, ONLY : icols_corr, irows_corr, ncols_corr, nrows_corr,  &
+                                    lhave_corr, init_corr => init
+                                    
    IMPLICIT NONE
 
    ! 
@@ -155,9 +156,9 @@
    ! save cols and rows data of H00_C for correlation self-energies
    ! this statement is quite fragile and should be improved
    !
-   IF ( use_correlation ) THEN
-      !
-      IF ( TRIM(label) == 'H00_C') THEN 
+   IF ( lhave_corr ) THEN
+       !
+       IF ( TRIM(label) == 'H00_C') THEN 
            !
            ncols_corr = ncols
            nrows_corr = nrows
@@ -170,8 +171,11 @@
            !
            icols_corr(:) = icols(:)
            irows_corr(:) = irows(:)
-      ENDIF
-      !
+           !
+           init_corr = .TRUE.
+           !
+       ENDIF
+       !
    ENDIF
 
 
