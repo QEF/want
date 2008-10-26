@@ -4,9 +4,13 @@
 =======================================================
 
 
+25 Oct 2008      Inclusion of correlation in transport updated. Test08
+                 modified to check correlation effects and shifts in
+                 transport. (AF)
+
 24 Oct 2008      Bug fixed (transport calcs) in setting default for overlaps.
-                 Bug fix and output updates in memusage.f90. 
-                 Other minor changes added. (AF).
+                 Bug fix and output updates in memusage.f90. Updates in the
+                 management of correlation in transport. (AF)
 
 22 Oct 2008      Little bug fixed in run_AlH.sh and docs/TODO file updated. (AF)
 

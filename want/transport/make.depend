@@ -90,6 +90,7 @@ hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
 input.o : control.o
+input.o : correlation.o
 input.o : egrid.o
 input.o : hamiltonian.o
 input.o : input_parameters.o
@@ -134,6 +135,7 @@ smearing.o : ../libs/log_module.o
 smearing.o : ../libs/timing.o
 smearing.o : ../wannier/smearing.o
 summary.o : control.o
+summary.o : correlation.o
 summary.o : egrid.o
 summary.o : hamiltonian.o
 summary.o : kpoints.o

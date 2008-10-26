@@ -26,22 +26,24 @@
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
                                     work_dir, prefix, postfix, aux_unit
    USE T_input_module,       ONLY : input_manager
-   USE T_control_module,     ONLY : use_correlation, calculation_type, &
+   USE T_control_module,     ONLY : calculation_type, &
                                     conduct_formula, niterx, nprint, datafile_sgm,  &
                                     write_kdata
-   USE T_egrid_module,       ONLY : egrid_init, ne, egrid
+   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
                                     h00_L, h01_L, h00_R, h01_R, h00_C, & 
                                     s00_L, s01_L, s00_R, s01_R, s00_C, &
-                                    h_LC, h_CR, s_LC, s_CR
+                                    h_LC, h_CR, s_LC, s_CR,            &
+                                    shift_L, shift_C, shift_R
    USE T_workspace_module,   ONLY : aux00_L, aux01_L, aux00_R, aux01_R, aux00_C, &
                                     aux_LC, aux_CL, aux_CR, aux_RC,    &
                                     totL, tottL, totR, tottR,          &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     workspace_allocate
-   USE T_correlation_module, ONLY : sgm_corr, correlation_sgmread, correlation_allocate, &
+   USE T_correlation_module, ONLY : sgm_corr, lhave_corr, ldynam_corr, shift_corr, &
+                                    correlation_sgmread, correlation_allocate, &
                                     correlation_init
    USE T_datafiles_module,   ONLY : datafiles_init
 
@@ -115,18 +117,31 @@
    CALL correlation_allocate()
    sgm_corr(:,:,:) = CZERO
    !
-   IF ( .NOT. use_correlation ) THEN 
-       !
-       CALL egrid_init()
-       !
-   ELSE
+   IF ( lhave_corr ) THEN 
        !
        CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr ) 
        IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
        !
        CALL correlation_init( sgm_unit )
+
+       !
+       ! Read correlation data if not dynamical
+       !
+       IF ( .NOT. ldynam_corr ) THEN
+           !
+           CALL correlation_sgmread(sgm_unit, sgm_corr )
+           !
+           sgm_corr(:,:,:) = sgm_corr(:,:,:) +shift_corr * S00_C(:,:,:)
+           !
+       ENDIF
        !
    ENDIF   
+   !
+   IF ( .NOT. egrid_alloc ) THEN
+       !
+       CALL egrid_init()
+       !
+   ENDIF
 
    !
    ! write input data on the output file
@@ -186,11 +201,19 @@
                          ie, egrid(ie)
       ENDIF
 
+
       !
       ! get correlaiton self-energy if the case
       !
-      IF ( use_correlation ) &
-          CALL correlation_sgmread(sgm_unit, ie, sgm_corr)
+      IF ( lhave_corr .AND. ldynam_corr ) THEN
+          !
+          CALL correlation_sgmread(sgm_unit, sgm_corr, IE=ie )
+          !
+          sgm_corr(:,:,:) = sgm_corr(:,:,:) +shift_corr * S00_C(:,:,:)
+          !
+      ENDIF
+
+
       !
       ! initialization of the average number of iteration 
       !
@@ -204,19 +227,19 @@
           ! init
           !
           !
-          aux00_L(:,:)  = h00_L(:,:,ik)  -ene * s00_L(:,:,ik)
-          aux01_L(:,:)  = h01_L(:,:,ik)  -ene * s01_L(:,:,ik)
+          aux00_L(:,:)  = h00_L(:,:,ik)  -(ene -shift_L) * s00_L(:,:,ik)
+          aux01_L(:,:)  = h01_L(:,:,ik)  -(ene -shift_L) * s01_L(:,:,ik)
           !
-          aux00_R(:,:)  = h00_R(:,:,ik)  -ene * s00_R(:,:,ik)
-          aux01_R(:,:)  = h01_R(:,:,ik)  -ene * s01_R(:,:,ik)
+          aux00_R(:,:)  = h00_R(:,:,ik)  -(ene -shift_R) * s00_R(:,:,ik)
+          aux01_R(:,:)  = h01_R(:,:,ik)  -(ene -shift_R) * s01_R(:,:,ik)
           !
-          aux00_C(:,:)  = h00_C(:,:,ik)  -ene * s00_C(:,:,ik)
+          aux00_C(:,:)  = h00_C(:,:,ik)  -(ene -shift_C) * s00_C(:,:,ik)
           !
-          aux_LC(:,:) = h_LC(:,:,ik) -ene * s_LC(:,:,ik)  
-          aux_CR(:,:) = h_CR(:,:,ik) -ene * s_CR(:,:,ik) 
+          aux_LC(:,:) = h_LC(:,:,ik) -(ene -shift_C) * s_LC(:,:,ik)  
+          aux_CR(:,:) = h_CR(:,:,ik) -(ene -shift_C) * s_CR(:,:,ik) 
           !
-          aux_CL(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene)*s_LC(:,:,ik) ))
-          aux_RC(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene)*s_CR(:,:,ik) ))
+          aux_CL(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene -shift_C) * s_LC(:,:,ik) ))
+          aux_RC(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene -shift_C) * s_CR(:,:,ik) ))
  
           ! 
           ! construct leads self-energies 
@@ -272,7 +295,7 @@
           ! or (in the correlated case) to the generalized expression as 
           ! from PRL 94, 116802 (2005)
           !
-          CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr(1,1,ik), &
+          CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr(:,:,ik), &
                              TRIM(conduct_formula), cond_aux )
           DO i=1,dimC
              conduct(ik,ie) =  conduct(ik,ie) + wk_par(ik) * cond_aux(i)
@@ -305,7 +328,7 @@
    !
    ! close sgm file
    !
-   IF ( use_correlation ) THEN
+   IF ( lhave_corr ) THEN
        !
        CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )

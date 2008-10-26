@@ -18,12 +18,14 @@
    USE constants,            ONLY : ZERO
    USE parser_module,        ONLY : log2char
    USE mp_global,            ONLY : nproc
-   USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
+   USE T_hamiltonian_module, ONLY : dimL, dimC, dimR, &
+                                    shift_L, shift_C, shift_R
+   USE T_correlation_module, ONLY : shift_corr, lhave_corr
    USE T_control_module,     ONLY : calculation_type, conduct_formula,  &
                                     datafile_C, datafile_L, datafile_R, &
                                     datafile_sgm,                       &
                                     transport_dir, niterx, nprint,      & 
-                                    use_overlap, use_correlation, write_kdata
+                                    use_overlap, write_kdata
    USE T_egrid_module,       ONLY : ne, emin, emax, de
    USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
    USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par, wk_par, use_symm, &
@@ -68,8 +70,8 @@
    WRITE(iunit,"( 7x,'        R-lead dim. :',5x,i5)") dimR
    WRITE(iunit,"( 7x,'Conductance Formula :',5x,a)") TRIM(conduct_formula)
    WRITE(iunit,"( 7x,'Transport Direction :',8x,i2)") transport_dir
-   WRITE(iunit,"( 7x,'Use Overlap         :',5x,a)") log2char(use_overlap)
-   WRITE(iunit,"( 7x,'Use Correlation     :',5x,a)") log2char(use_correlation)
+   WRITE(iunit,"( 7x,'Have Overlaps       :',5x,a)") log2char(use_overlap)
+   WRITE(iunit,"( 7x,'Have Correlation    :',5x,a)") log2char(lhave_corr)
    WRITE(iunit,"( 7x,'Write k-data        :',5x,a)") log2char(write_kdata)
    WRITE(iunit,"( 7x,'Max iteration number:',5x,i5)") niterx
    WRITE(iunit,"( )")
@@ -80,7 +82,7 @@
       WRITE(iunit,"( 7x,'Left lead data read from file  :',5x,a)") TRIM(datafile_L)
       WRITE(iunit,"( 7x,'Right lead data read from file :',5x,a)") TRIM(datafile_R)
    ENDIF
-   IF (use_correlation) THEN
+   IF (lhave_corr) THEN
       WRITE(iunit,"( 7x,'Self-energy data read from file:',5x,a)") TRIM(datafile_sgm)
    ENDIF
    WRITE( iunit,"( 2x,'</INPUT>',2/)" )
@@ -94,6 +96,10 @@
    WRITE(iunit,"( 7x,'Smearing Type :',5x,a)")     TRIM(smearing_type)
    WRITE(iunit,"( 7x,'Smearing grid :',5x,i6)")    nx_smear
    WRITE(iunit,"( 7x,'Smearing gmax :',5x,f10.5)") xmax
+   WRITE(iunit,"( 7x,'      Shift_L :',5x,f10.5)") shift_L
+   WRITE(iunit,"( 7x,'      Shift_C :',5x,f10.5)") shift_C
+   WRITE(iunit,"( 7x,'      Shift_R :',5x,f10.5)") shift_R
+   WRITE(iunit,"( 7x,'   Shift_corr :',5x,f10.5)") shift_corr
    WRITE(iunit,"( 2x,'</ENERGY_GRID>',/)" )
 
    IF ( kpoints_alloc ) THEN

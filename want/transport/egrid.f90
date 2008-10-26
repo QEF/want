@@ -8,9 +8,11 @@
 !
 !*********************************************
    MODULE T_egrid_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,           ONLY : dbl
    USE log_module,      ONLY : log_push, log_pop
+   !
    IMPLICIT NONE
    PRIVATE 
    SAVE
@@ -49,8 +51,9 @@ CONTAINS
    SUBROUTINE egrid_init()
    !**********************************************************
    IMPLICIT NONE
-       CHARACTER(10)      :: subname="egrid_init"
-       INTEGER  :: ie, ierr
+       CHARACTER(10) :: subname="egrid_init"
+       INTEGER       :: ie, ierr
+       !
        CALL log_push ( 'egrid_init' )
 
        IF ( alloc )   CALL errore(subname,'already allocated', 1 )
@@ -70,6 +73,7 @@ CONTAINS
 
        alloc = .TRUE.
        CALL log_pop ( 'egrid_init' )
+       !
    END SUBROUTINE egrid_init
 
 
@@ -82,11 +86,13 @@ CONTAINS
        CALL log_push ( 'egrid_deallocate' )
 
        IF ( ALLOCATED(egrid) ) THEN
-            DEALLOCATE(egrid, STAT=ierr)
-            IF (ierr/=0) CALL errore(subname,'deallocating egrid',ABS(ierr))
+           DEALLOCATE(egrid, STAT=ierr)
+           IF (ierr/=0) CALL errore(subname,'deallocating egrid',ABS(ierr))
        ENDIF
+       !
        alloc = .FALSE.
        CALL log_pop ( 'egrid_deallocate' )
+       !
    END SUBROUTINE egrid_deallocate
 
 
