@@ -262,7 +262,7 @@ END PROGRAM cmplx_bands
       COMPLEX(dbl), ALLOCATABLE :: zz(:,:), yy(:,:,:), ww(:,:), qq(:,:)
       COMPLEX(dbl), ALLOCATABLE :: u(:,:), vt(:,:)
       REAL(dbl),    ALLOCATABLE :: sngv(:)
-      INTEGER,      ALLOCATABLE :: subr_map(:), subn_map(:)
+      INTEGER,      ALLOCATABLE :: subn_map(:) !, subr_map(:)
       COMPLEX(dbl), ALLOCATABLE :: proj_r(:,:), proj_n(:,:)
       COMPLEX(dbl), ALLOCATABLE :: block_r(:,:), block_n(:,:)
       COMPLEX(dbl), ALLOCATABLE :: fact_r(:,:), fact_n1(:,:), fact_n2(:,:)
@@ -592,8 +592,8 @@ END PROGRAM cmplx_bands
       IF ( ierr/=0 ) CALL errore(subname,'allocating vt',ABS(ierr))
       ALLOCATE( sngv(dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,'allocating sngv',ABS(ierr))
-      ALLOCATE( subr_map(dimwann), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,'allocating subr_map',ABS(ierr))
+      !ALLOCATE( subr_map(dimwann), STAT=ierr )
+      !IF ( ierr/=0 ) CALL errore(subname,'allocating subr_map',ABS(ierr))
       ALLOCATE( subn_map(dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,'allocating subn_map',ABS(ierr))
       ALLOCATE( proj_r(dimwann, dimwann), STAT=ierr )
@@ -772,7 +772,7 @@ END PROGRAM cmplx_bands
               ndim_r = 0 
               ndim_n = 0 
               !
-              subr_map(:) = 0 
+              !subr_map(:) = 0 
               subn_map(:) = 0 
               ! 
               proj_r(:,:) = CZERO
@@ -788,7 +788,7 @@ END PROGRAM cmplx_bands
                   ELSE IF ( sngv(i) >  EPS_m6 ) THEN
                      !
                      ndim_r              = ndim_r + 1
-                     subr_map( ndim_r )  = i
+                     !subr_map( ndim_r )  = i
                      proj_r(i,i)         = CONE
                      !
                   ELSE
@@ -1066,8 +1066,8 @@ END PROGRAM cmplx_bands
       DEALLOCATE( u, vt, sngv, STAT=ierr)
       IF ( ierr/=0 ) CALL errore(subname,'deallocating u, vt, sngv',ABS(ierr))
       !
-      DEALLOCATE( subr_map, subn_map, STAT=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,'deallocating subr_map, subn_map',ABS(ierr))
+      !DEALLOCATE( subr_map, subn_map, STAT=ierr)
+      !IF ( ierr/=0 ) CALL errore(subname,'deallocating subr_map, subn_map',ABS(ierr))
       !
       DEALLOCATE( proj_r, proj_n, block_r, block_n, STAT=ierr)
       IF ( ierr/=0 ) CALL errore(subname,'deallocating proj_r -- block_n',ABS(ierr))

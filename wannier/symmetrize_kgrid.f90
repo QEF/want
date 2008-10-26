@@ -41,7 +41,7 @@ SUBROUTINE symmetrize_kgrid( )
    REAL(dbl), ALLOCATABLE    :: vkpt_cry(:,:), vkpt_symm(:,:)
    INTEGER,   ALLOCATABLE    :: symm_map(:), kpteq_map(:)
    LOGICAL                   :: found
-   INTEGER                   :: ifact, isym, ik, i, j, ierr, m,n
+   INTEGER                   :: ifact, isym, ik, i, j, ierr
 
 !
 !------------------------------
