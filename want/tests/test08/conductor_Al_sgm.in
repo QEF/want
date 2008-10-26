@@ -1,0 +1,23 @@
+
+
+  &INPUT_CONDUCTOR
+    postfix = '_Al_sgm'
+    dimC = 4
+    calculation_type = 'bulk'
+    ne = 400
+    emin = -8.0
+    emax =  2.5
+    datafile_C    = "./SCRATCH/al1_WanT.ham"
+    datafile_sgm  = "./SCRATCH/sigma_Al.wan.xml"
+    shift_L       = -1.0
+    shift_R       = -1.0
+    transport_dir = 3
+  /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C />
+   <H_CR  />
+
+</HAMILTONIAN_DATA>
+
