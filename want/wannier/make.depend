@@ -404,6 +404,7 @@ memusage.o : hamiltonian.o
 memusage.o : io_module.o
 memusage.o : ions.o
 memusage.o : kpoints.o
+memusage.o : ../libs/kind.o
 memusage.o : localization.o
 memusage.o : overlap_module.o
 memusage.o : pwcom.o

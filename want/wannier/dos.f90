@@ -214,9 +214,9 @@ END PROGRAM dos_main
    USE kinds
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6
-   USE io_module,            ONLY : stdout, stdin, ionode, ionode_id, aux_unit, sgm_unit
+   USE io_module,            ONLY : stdout, stdin, ionode, aux_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
-   USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
+   USE io_module,            ONLY : datafile_sgm
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
@@ -226,7 +226,7 @@ END PROGRAM dos_main
    USE smearing_module,      ONLY : smearing_func
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
    USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
-   USE correlation_module,   ONLY : omg_min, omg_max, omg_grid, omg_nint
+   USE correlation_module,   ONLY : omg_grid, omg_nint
    USE timing_module,        ONLY : timing, timing_upto_now
    USE log_module,           ONLY : log_push, log_pop
    USE parser_module,        ONLY : change_case
@@ -256,7 +256,6 @@ END PROGRAM dos_main
       INTEGER      :: nkpts_int     ! Number of interpolated k-points
       INTEGER      :: nrtot_nn
       LOGICAL      :: lhave_nn(3)
-      INTEGER      :: ne_sgm
       REAL(dbl)    :: arg, cost, raux
       COMPLEX(dbl) :: caux, ze
       !
@@ -277,7 +276,6 @@ END PROGRAM dos_main
       INTEGER      :: i, j, ie, ik, ir
       INTEGER      :: ierr
       INTEGER      :: dimwann_sgm, nrtot_sgm
-      LOGICAL      :: lfound
       !
       ! end of declarations
       !
