@@ -23,6 +23,7 @@ MANUAL=" Usage
  bands           interpolates the band structure using WFs
  dos             compute DOS using WFs
  conductor       evaluate the transmittance, for the bulk case
+ conductor_sgm   evaluate the transmittance, but including some correlation effects
  want            perform DISENTANGLE, WANNIER, BANDS, CONDUCTOR all together 
  all             perform all the above described steps
 
@@ -56,6 +57,7 @@ BLC2WAN=
 BANDS=
 DOS=
 CONDUCTOR=
+CONDUCTOR_SGM=
 CHECK=
 CLEAN=
 
@@ -73,11 +75,13 @@ case $INPUT in
    (bands)          BANDS=yes ;;
    (dos)            DOS=yes ;;
    (conductor)      CONDUCTOR=yes ;;
+   (conductor_sgm)  CONDUCTOR_SGM=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ; BANDS=yes; 
-                    BLC2WAN=yes ; DOS=yes ; CONDUCTOR=yes ;;
+                    BLC2WAN=yes ; DOS=yes ; CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    BANDS=yes ; BLC2WAN=yes ; DOS=yes ; CONDUCTOR=yes ;;
+                    BANDS=yes ; BLC2WAN=yes ; DOS=yes ; CONDUCTOR=yes ; 
+                    CONDUCTOR_SGM=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -146,6 +150,11 @@ run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 # running CONDUCTOR
 #
 run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
+
+#
+# running CONDUCTOR_SGM
+#
+run_conductor NAME=CONDUCTOR_SGM SUFFIX=${SUFFIX}_sgm RUN=$CONDUCTOR_SGM
 
 
 #
