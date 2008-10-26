@@ -151,6 +151,26 @@ datafile_sgm STRING
             When specified, correlation is included in the calculation.
             DEFAULT : ""
 
+shift_L     REAL
+            global energy shift [eV] to be applied to the matrix elements
+            of the left lead (H00_L, H01_L).
+            DEFAULT : 0.0
+
+shift_R     REAL
+            global energy shift [eV] to be applied to the matrix elements
+            of the right lead (H00_R, H01_R).
+            DEFAULT : 0.0
+
+shift_C     REAL
+            global energy shift [eV] to be applied to the matrix elements
+            of the conductor region (H00_C, H_LC, H_CR).
+            DEFAULT : 0.0
+
+shift_corr  REAL 
+            global energy shift [eV] to be applied to the matrix elements
+            of the correlation self-energy operator.
+            DEFAULT : 0.0
+
 
 CARD <HAMILTONIAN_DATA>
 
