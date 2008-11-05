@@ -202,8 +202,8 @@ END MODULE
 !
 ! Getting DFT data
 !
-      CALL want_dftread ( LATTICE =.TRUE.,  IONS=.TRUE.,    WINDOWS=.FALSE., KPOINTS=.FALSE., &
-                          NEED_WFC=.FALSE.)
+      CALL want_dftread ( LATTICE =.TRUE.,  IONS=.TRUE.,  WINDOWS=.FALSE., &
+                          KPOINTS=.FALSE.,  NEED_WFC=.FALSE.)
       CALL want_init    ( INPUT=   .FALSE., LATTICE=.TRUE., IONS=.TRUE., &
                           WINDOWS =.FALSE., KPOINTS=.FALSE., &
                           BSHELLS =.FALSE., PSEUDO =.FALSE. )
@@ -342,7 +342,7 @@ END MODULE
 
       !
       ! final loop searching for the nearest neighbor of each atom
-      ! add the found bond to the linked list "list"
+      ! add the found bonds to the linked list "list"
       !
       NULLIFY( list )
       nmid = 0
