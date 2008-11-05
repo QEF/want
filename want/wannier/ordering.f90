@@ -55,7 +55,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    COMPLEX(dbl), ALLOCATABLE     :: cswap(:,:,:)
    INTEGER,      ALLOCATABLE     :: index(:)
    LOGICAL                       :: lspatial, lspread
-   INTEGER                       :: i, is, ie, ierr
+   INTEGER                       :: i, is, ie, ik_g, ierr
 
 
 !------------------------------------------------
@@ -172,7 +172,11 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    cU(:,:,:)          = CZERO
    cU(:,:,iks:ike)    = cswap( :, index(:), 1:nkpts ) 
    !
-   CALL mp_sum( cU )
+   DO ik_g = 1, nkpts_g
+       !
+       CALL mp_sum( cU(:,:,ik_g) )
+       !
+   ENDDO
 
 
    DEALLOCATE( index, STAT=ierr)

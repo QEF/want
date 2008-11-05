@@ -69,6 +69,8 @@
    !
    ! here set CU
    !
+   cU( :,:, 1:nkpts_g ) = CZERO
+   !
    SELECT CASE ( TRIM( mode ) )
    CASE DEFAULT
       CALL errore(subname,'Invalid MODE = "'//TRIM(mode)//'"',1)
@@ -113,11 +115,7 @@
         !
         ALLOCATE( cv2(dimwann,dimwann), STAT=ierr )
         IF( ierr /=0 ) CALL errore('wannier', 'allocating cv2 ', ABS(ierr) )
-
         !
-        ! nullify the whoel vector
-        !
-        cu( :,:, 1:nkpts_g ) = CZERO
         !
         DO ik = 1, nkpts
             !
@@ -128,10 +126,6 @@
             !
         ENDDO
         !
-        ! recover over pool
-        !
-        CALL mp_sum( cU )
-
         !
         DEALLOCATE( singvd, cv1, cv2, STAT=ierr )
         IF( ierr /=0 ) CALL errore(subname,'deallocating SVD aux', ABS(ierr))
@@ -142,8 +136,6 @@
         !
         ! The Cu(k) matrices are set equal to the identity, therefore the
         ! starting wfc from dsentangle are used as they are
-        !
-        cU( :,:, 1:nkpts_g ) = CZERO
         !
         DO ik = 1, nkpts
             !
@@ -156,28 +148,36 @@
             ENDDO
         ENDDO
         !
-        CALL mp_sum( cU )
-        !
    CASE( 'randomized' )
         !
         IF (ionode) WRITE( stdout,"(/,'  Initial unitary rotations : random',/)")
         !
         ! The Cu(k) matrices unitary random matrixes
         !
-        cU( :,:, 1:nkpts_g ) = CZERO
         !
         DO ik = 1, nkpts
             !
             ik_g = ik + iks -1
             !
             cU(:,:,ik_g) = CZERO
-            CALL random_orthovect(dimwann,dimwann,dimwann,cu(1,1,ik_g))
+            CALL random_orthovect(dimwann,dimwann,dimwann,cU(1,1,ik_g))
             !
         ENDDO
         !
-        CALL mp_sum( cU )
-        !
    END SELECT
+
+   !
+   ! recover parallelism
+   !
+   IF ( TRIM(mode) /= "from_file " ) THEN
+       !
+       DO ik_g = 1, nkpts_g
+           !
+           CALL mp_sum( cU(:,:,ik_g) )
+           !
+       ENDDO
+       !
+   ENDIF
 
 
    !
