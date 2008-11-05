@@ -371,8 +371,13 @@
            ENDDO
            !
            ! take care of parallelism
+           !
            CALL timing( 'mp_sum', OPR='start' )
-           CALL mp_sum( lamp )
+           DO ik_g = 1, nkpts_g
+               !
+               CALL mp_sum( lamp(:,:,ik_g) )
+               !
+           ENDDO
            CALL timing( 'mp_sum', OPR='stop' )
            !
            !
@@ -512,7 +517,12 @@
        ! get rid of parallelism
        !
        CALL mp_sum( wan_eig )
-       CALL mp_sum( eamp )
+       !
+       DO ik_g = 1, nkpts_g
+           !
+           CALL mp_sum( eamp(:,:,ik_g) )
+           !
+       ENDDO
                   
        !
        ! NOTE: for the purpose of minimizing Omega_D + Omega_OD in wannier.x 

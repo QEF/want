@@ -130,7 +130,12 @@
       !
       ! pool recovering
       !
-      CALL mp_sum( cU(:,:,1:nkpts_g) )
+      DO ik_g = 1, nkpts_g 
+          !
+          !CALL mp_sum( cU(:,:,1:nkpts_g) )
+          CALL mp_sum( cU(:,:,ik_g) )
+          !
+      ENDDO
 
       !
       ! output updated centers

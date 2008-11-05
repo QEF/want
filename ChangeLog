@@ -4,6 +4,9 @@
 =======================================================
 
 
+05 Nov 2008      Calls to mp_sum bufferized over kpts. Bug fixed in parallel
+                 restarting (subspace_init). (AF)
+
 25 Oct 2008      Inclusion of correlation in transport updated. Test08
                  modified to check correlation effects and shifts in
                  transport. (AF)

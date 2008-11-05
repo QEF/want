@@ -259,7 +259,15 @@
    !
    ! get rid of paralelism 
    !
-   CALL mp_sum( lamp )
+   IF ( TRIM(mode) /= "from_file" ) THEN
+       !
+       DO ik_g = 1, nkpts_g
+           !
+           CALL mp_sum( lamp(:,:,ik_g) )
+           !
+       ENDDO
+       !
+   ENDIF
 
    !
    ! Finally check that the states in the columns of the final matrix lamp are orthonormal

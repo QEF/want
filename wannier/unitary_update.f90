@@ -119,7 +119,11 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
    !
    ! pool recovering
    !
-   CALL mp_sum( cU )
+   DO ik_g = 1, nkpts_g
+       !
+       CALL mp_sum( cU(:,:,ik_g) )
+       !
+   ENDDO
    
 
    !
