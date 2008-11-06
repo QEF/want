@@ -425,7 +425,7 @@
       CASE ( "space" ) 
            suffix_ = TRIM(suffix_space)
       CASE ( "overlap_projection" ) 
-           suffix_ = TRIM(suffix_ovp) // TRIM(proc_)
+           suffix_ = TRIM(suffix_ovp)
       CASE ( "wannier" ) 
            suffix_ = TRIM(suffix_wannier)
       CASE ( "hamiltonian" )

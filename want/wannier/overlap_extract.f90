@@ -68,8 +68,8 @@ SUBROUTINE overlap_extract(dimwann)
 ! main body
 !-----------------------------
 !
-   CALL timing('overlap_extract',OPR='start')
-   CALL log_push('overlap_extract')
+   CALL timing( subname, OPR='start')
+   CALL log_push( subname )
 
    !
    ! reading subspace and windows data
@@ -196,8 +196,8 @@ SUBROUTINE overlap_extract(dimwann)
    DEALLOCATE( caux1, STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"deallocating caux1",ABS(ierr))
 
-   CALL timing('overlap_extract',OPR='stop')
-   CALL log_pop('overlap_extract')
+   CALL timing( subname, OPR='stop')
+   CALL log_pop( subname )
 
 END SUBROUTINE overlap_extract
 

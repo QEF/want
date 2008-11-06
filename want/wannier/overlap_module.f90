@@ -13,11 +13,15 @@
    !
    USE kinds,            ONLY : dbl
    USE constants,        ONLY : ZERO, CZERO
+   USE io_module,        ONLY : ionode, ionode_id
    USE parameters,       ONLY : nstrx
    USE log_module,       ONLY : log_push, log_pop
    USE windows_module,   ONLY : dimwinx, dimwin, windows_alloc => alloc
-   USE kpoints_module,   ONLY : nkpts, iks, nb, nnlist, nnpos, nnrev, kpoints_alloc
+   USE kpoints_module,   ONLY : nkpts, nkpts_g, iks, ike, iproc_g, nb, &
+                                nnlist, nnpos, nnrev, kpoints_alloc
    USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
+   USE mp_global,        ONLY : mpime
+   USE mp,               ONLY : mp_get, mp_barrier
    USE iotk_module
    !
    IMPLICIT NONE
@@ -164,84 +168,139 @@ CONTAINS
    IMPLICIT NONE
        INTEGER,         INTENT(in) :: iun
        CHARACTER(*),    INTENT(in) :: tag
-       CHARACTER(nstrx)   :: attr
-       INTEGER            :: iwann, ib, ik, ik_g, ikb, ikb_g, inn
+       !
+       CHARACTER(13)               :: subname="overlap_write"
+       CHARACTER(nstrx)            :: attr
+       COMPLEX(dbl),   ALLOCATABLE :: Mkb_aux(:,:,:), ca_aux(:,:)
+       INTEGER                     :: iwann, ib, ik, ik_g, ikb, ikb_g, inn
+       INTEGER                     :: ierr
 
        IF ( .NOT. alloc ) RETURN
        CALL log_push ( 'overlap_write' )
        !
-       CALL iotk_write_begin(iun,TRIM(tag))
-       CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.)
-       CALL iotk_write_attr(attr,"dimwann",dimwann)
-       CALL iotk_write_attr(attr,"nb",nb)
-       CALL iotk_write_attr(attr,"nkpts",nkpts)
-       CALL iotk_write_empty(iun,"DATA",ATTR=attr)
+       IF ( ionode ) THEN
+           !
+           CALL iotk_write_begin(iun,TRIM(tag))
+           CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.)
+           CALL iotk_write_attr(attr,"dimwann",dimwann)
+           CALL iotk_write_attr(attr,"nb",nb)
+           CALL iotk_write_attr(attr,"nkpts",nkpts_g)
+           CALL iotk_write_empty(iun,"DATA",ATTR=attr)
+           !
+       ENDIF
 
        !  
        ! writing overlap
        !  
-       CALL iotk_write_begin(iun,'OVERLAP')
+       ALLOCATE( Mkb_aux(dimwinx, dimwinx, nb/2), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,"allocating Mkb_aux", ABS(ierr))
+
+       IF (ionode) CALL iotk_write_begin(iun,'OVERLAP')
        !
-       DO ik=1,nkpts
-          !
-          ik_g = ik + iks-1
-          !
-          CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
-          CALL iotk_write_attr(attr,'nneigh',nb)
-          CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr)
-          !
-          ! neighbours
-          !
-          DO inn = 1, nb / 2
-             !
-             ib    = nnpos( inn )
-             ikb_g = nnlist(ib, ik_g)
-             !
-             CALL iotk_write_begin(iun, "b-vect"//TRIM(iotk_index(ib)) )
-             !
-             CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
-             CALL iotk_write_attr(attr,'dimwin_kb',dimwin(ikb_g))
-             CALL iotk_write_empty(iun, 'data', ATTR=attr)
-             !
-             CALL iotk_write_dat(iun,'mkb', Mkb(1:dimwin(ik_g),1:dimwin(ikb_g),inn,ik) )
-             CALL iotk_write_dat(iun,'mkb_abs', ABS(Mkb(1:dimwin(ik_g),1:dimwin(ikb_g),inn,ik)) )
-             !
-             CALL iotk_write_end(iun, "b-vect"//TRIM(iotk_index(ib)) )
-             !
-          ENDDO
-          !
-          CALL iotk_write_end(iun,'kpoint'//TRIM(iotk_index(ik)))
+       DO ik_g = 1, nkpts_g
+           !
+           ik = ik_g -iks +1
+
+           !
+           ! get data
+           !
+           IF ( mpime == iproc_g( ik_g ) ) THEN
+               Mkb_aux = Mkb(:,:,:,ik)
+           ENDIF
+           ! 
+           CALL mp_get( Mkb_aux, Mkb_aux, mpime, ionode_id, iproc_g(ik_g), 1 )
+
+           IF ( ionode ) THEN
+               !
+               CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
+               CALL iotk_write_attr(attr,'nneigh',nb)
+               CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr)
+               !
+               ! neighbours
+               !
+               DO inn = 1, nb / 2
+                   !
+                   ib    = nnpos( inn )
+                   ikb_g = nnlist(ib, ik_g)
+                   !
+                   CALL iotk_write_begin(iun, "b-vect"//TRIM(iotk_index(ib)) )
+                   !
+                   CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
+                   CALL iotk_write_attr(attr,'dimwin_kb',dimwin(ikb_g))
+                   CALL iotk_write_empty(iun, 'data', ATTR=attr)
+                   !
+                   CALL iotk_write_dat(iun,'mkb', Mkb_aux(1:dimwin(ik_g),1:dimwin(ikb_g),inn) )
+                   CALL iotk_write_dat(iun,'mkb_abs', ABS(Mkb_aux(1:dimwin(ik_g),1:dimwin(ikb_g),inn)) )
+                   !
+                   CALL iotk_write_end(iun, "b-vect"//TRIM(iotk_index(ib)) )
+                   !
+               ENDDO
+               !
+               CALL iotk_write_end(iun,'kpoint'//TRIM(iotk_index(ik_g)))
+               !
+           ENDIF
+           !
        ENDDO
        !
-       CALL iotk_write_end(iun,'OVERLAP')
+       CALL mp_barrier()
+       !
+       IF (ionode) CALL iotk_write_end(iun,'OVERLAP')
+       !
+       DEALLOCATE( Mkb_aux, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,"deallocating Mkb_aux", ABS(ierr))
     
+
        !  
        ! writing projections  
        !  
-       CALL iotk_write_begin(iun,'PROJECTIONS')
+       ALLOCATE( ca_aux(dimwinx, dimwinx), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,"allocating ca_aux", ABS(ierr))
        !
-       DO ik=1,nkpts
-          !
-          ik_g = ik + iks-1
-          !
-          CALL iotk_write_attr(attr,'dimwin',dimwin(ik_g),FIRST=.TRUE.)
-          CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr)
-          !
-          DO iwann=1,dimwann
-             !
-             CALL iotk_write_dat(iun,'wannier'//TRIM(iotk_index(iwann)), &
-                                       ca(1:dimwin(ik_g),iwann,ik) )
-             CALL iotk_write_dat(iun,'wannier_abs'//TRIM(iotk_index(iwann)), &
-                                       ABS(ca(1:dimwin(ik_g),iwann,ik)) )
-          ENDDO
-          !
-          CALL iotk_write_end(iun,'kpoint'//TRIM(iotk_index(ik)))
-          !
+       IF (ionode) CALL iotk_write_begin(iun,'PROJECTIONS')
+       !
+       DO ik_g = 1, nkpts_g
+           !
+           ik = ik_g -iks +1
+        
+           !
+           ! get data
+           !
+           IF ( mpime == iproc_g( ik_g ) ) THEN
+               ca_aux = ca(:,:,ik)
+           ENDIF
+           ! 
+           CALL mp_get( ca_aux, ca_aux, mpime, ionode_id, iproc_g(ik_g), 1 )
+           !
+           IF ( ionode ) THEN
+               !
+               CALL iotk_write_attr(attr,'dimwin',dimwin(ik_g),FIRST=.TRUE.)
+               CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr)
+               !
+               DO iwann=1,dimwann
+                   !
+                   CALL iotk_write_dat(iun,'wannier'//TRIM(iotk_index(iwann)), &
+                                            ca_aux(1:dimwin(ik_g),iwann) )
+                   CALL iotk_write_dat(iun,'wannier_abs'//TRIM(iotk_index(iwann)), &
+                                           ABS(ca_aux(1:dimwin(ik_g),iwann)) )
+               ENDDO
+               !
+               CALL iotk_write_end(iun,'kpoint'//TRIM(iotk_index(ik_g)))
+               !
+           ENDIF
+           !
        ENDDO
        !
-       CALL iotk_write_end(iun,'PROJECTIONS')
-         
-       CALL iotk_write_end(iun,TRIM(tag))
+       CALL mp_barrier()
+       !
+       IF ( ionode ) THEN
+           !
+           CALL iotk_write_end(iun,'PROJECTIONS')
+           CALL iotk_write_end(iun,TRIM(tag))
+           !
+       ENDIF
+       !
+       DEALLOCATE( ca_aux, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,"deallocating ca_aux", ABS(ierr))
        !
        CALL log_pop ( 'overlap_write' )
        !
@@ -265,8 +324,8 @@ CONTAINS
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="overlap_read"
        LOGICAL            :: loverlap_, lprojection_
-       INTEGER            :: dimwinx_, dimwann_, nb_, nkpts_
-       INTEGER            :: ik, ib, inn
+       INTEGER            :: dimwinx_, dimwann_, nb_, nkpts_g_
+       INTEGER            :: ik, ik_g, ib, inn
        INTEGER            :: iwann, dimwin_, dimwin_k, dimwin_kb, nneigh_
        INTEGER            :: ierr
 
@@ -299,7 +358,7 @@ CONTAINS
        CALL iotk_scan_attr(attr,'nb',nb_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NNX',ABS(ierr))
        !
-       CALL iotk_scan_attr(attr,'nkpts',nkpts_,IERR=ierr)
+       CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
        IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
 
        !
@@ -311,10 +370,10 @@ CONTAINS
        ENDIF
        !
        IF ( kpoints_alloc ) THEN
-          IF ( nkpts_ /= nkpts) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_-nkpts))
-          IF ( nb_ /= nb) CALL errore(subname,'Invalid NB',ABS(nb_-nb))
+          IF ( nkpts_g_ /= nkpts_g) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_g_-nkpts_g))
+          IF ( nb_ /= nb)           CALL errore(subname,'Invalid NB',ABS(nb_-nb))
        ELSE
-          nkpts = nkpts_
+          nkpts_g = nkpts_g_
           !
           ! in the actual implementation of b-vector stuff, we need
           ! some initializations coming from kpoints module
@@ -342,18 +401,20 @@ CONTAINS
            CALL iotk_scan_begin(iun,'OVERLAP',IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'scanning for OVERLAP',ABS(ierr))
            ! 
-           DO ik=1,nkpts
+           DO ik_g= iks, ike
                !
-               CALL iotk_scan_begin(iun,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr, IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik)
+               ik = ik_g -iks +1
+               !
+               CALL iotk_scan_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr, IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik_g)
                !
                CALL iotk_scan_attr(attr,'dimwin_k',dimwin_k,IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik)
+               IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik_g)
                !
                IF ( dimwin_k > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_k)
                !
                CALL iotk_scan_attr(attr,'nneigh',nneigh_,IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for nneigh_',ik)
+               IF (ierr/=0) CALL errore(subname,'scanning for nneigh_',ik_g)
                !
                IF ( nneigh_ /= nb ) CALL errore(subname,'nniegh too large',nneigh_)
 
@@ -380,8 +441,8 @@ CONTAINS
                    !
                ENDDO
                !
-               CALL iotk_scan_end(iun,'kpoint'//TRIM(iotk_index(ik)), IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik)
+               CALL iotk_scan_end(iun,'kpoint'//TRIM(iotk_index(ik_g)), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik_g)
                !
            ENDDO
            ! 
@@ -400,13 +461,15 @@ CONTAINS
            CALL iotk_scan_begin(iun,'PROJECTIONS',IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'scanning for PROJECTIONS',ABS(ierr))
           
-           DO ik=1,nkpts
+           DO ik_g = iks, ike
                !
-               CALL iotk_scan_begin(iun,'kpoint'//TRIM(iotk_index(ik)), ATTR=attr, IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik)
+               ik = ik_g -iks +1
+               !
+               CALL iotk_scan_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr, IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik_g)
                !
                CALL iotk_scan_attr(attr,'dimwin',dimwin_,IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik)
+               IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik_g)
                !
                IF ( dimwin_ > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_)
                !
@@ -418,8 +481,8 @@ CONTAINS
                    !
                ENDDO
                !
-               CALL iotk_scan_end(iun,'kpoint'//TRIM(iotk_index(ik)), IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik)
+               CALL iotk_scan_end(iun,'kpoint'//TRIM(iotk_index(ik_g)), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik_g)
                !
            ENDDO
            ! 

@@ -22,7 +22,7 @@ SUBROUTINE overlap_bsymm(dimwinx, dimwann, nkpts, Mkb)
    USE log_module,        ONLY : log_push, log_pop
    USE kpoints_module,    ONLY : nkpts_g, iks, iproc_g, nb, nnpos, nnrev, nnlist 
    USE mp_global,         ONLY : mpime
-   USE mp,                ONLY : mp_put
+   USE mp,                ONLY : mp_put, mp_barrier
    !
    IMPLICIT NONE
 
@@ -88,6 +88,8 @@ SUBROUTINE overlap_bsymm(dimwinx, dimwann, nkpts, Mkb)
        ENDDO
        !
    ENDDO
+   !
+   CALL mp_barrier()
 
    !
    ! cleaning

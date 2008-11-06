@@ -572,18 +572,22 @@
 !
       IF ( .NOT. (read_overlaps .AND. read_projections)  ) THEN
 
-          CALL io_name('overlap_projection',filename)
-          CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write", &
-                                  FORM=TRIM(wantdata_form), IERR=ierr)
-          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
+          IF ( ionode ) THEN
+              CALL io_name('overlap_projection',filename)
+              CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="write", &
+                                      FORM=TRIM(wantdata_form), IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
+          ENDIF
+          !
+          CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
+          !
+          IF ( ionode ) THEN
+              CALL file_close(ovp_unit,PATH="/",ACTION="write", IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
               !
-              CALL overlap_write(ovp_unit,"OVERLAP_PROJECTION")
-              !
-          CALL file_close(ovp_unit,PATH="/",ACTION="write", IERR=ierr)
-          IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
-
-          CALL io_name('overlap_projection',filename,LPATH=.FALSE., LPROC=.FALSE.)
-          IF (ionode) WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") TRIM(filename)
+              CALL io_name('overlap_projection',filename,LPATH=.FALSE., LPROC=.FALSE.)
+              WRITE( stdout,"(/,'  Overlaps and projections written on file: ',a)") TRIM(filename)
+          ENDIF
           !
       ENDIF
 
