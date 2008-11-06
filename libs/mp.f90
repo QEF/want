@@ -44,7 +44,7 @@
 
       INTERFACE mp_get
         MODULE PROCEDURE mp_get_rv, mp_get_cv, mp_get_i1, mp_get_iv, &
-          mp_get_rm, mp_get_cm
+          mp_get_rm, mp_get_cm, mp_get_ct
       END INTERFACE
 
       INTERFACE mp_put
@@ -1046,6 +1046,53 @@
 #endif
         ELSE
           msg_dest(1:SIZE(msg_sour,1), 1:SIZE(msg_sour,2)) = msg_sour(:,:)
+          msglen = SIZE( msg_sour )
+        END IF
+        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8920)
+#if defined(__MPI)
+        CALL MPI_BARRIER(group, IERR)
+        IF (ierr/=0) CALL mp_stop(8140)
+#endif
+        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        RETURN
+      END SUBROUTINE
+
+!------------------------------------------------------------------------------!
+!
+!
+      SUBROUTINE mp_get_ct(msg_dest, msg_sour, mpime, dest, sour, ip, gid)
+        COMPLEX (dbl) :: msg_dest(:,:,:), msg_sour(:,:,:)
+        INTEGER, INTENT(IN) :: dest, sour, ip, mpime
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+#if defined(__MPI)
+        INTEGER :: istatus(MPI_STATUS_SIZE)
+#endif
+        INTEGER :: ierr, nrcv
+        INTEGER :: msglen = 0
+
+#if defined(__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+#endif
+
+        IF(sour .NE. dest) THEN
+#if defined(__MPI)
+        IF(mpime .EQ. sour) THEN
+          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_COMPLEX, dest, ip, group, ierr)
+          IF (ierr/=0) CALL mp_stop(8140)
+          msglen = SIZE(msg_sour)
+        END IF
+        IF(mpime .EQ. dest) THEN
+          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_COMPLEX, sour, ip, group, istatus, IERR )
+          IF (ierr/=0) CALL mp_stop(8140)
+          CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_COMPLEX, nrcv, ierr)
+          IF (ierr/=0) CALL mp_stop(8140)
+          msglen = nrcv
+        END IF
+#endif
+        ELSE
+          msg_dest(1:SIZE(msg_sour,1), 1:SIZE(msg_sour,2), 1:SIZE(msg_sour,3)) = msg_sour(:,:,:)
           msglen = SIZE( msg_sour )
         END IF
         IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8920)
