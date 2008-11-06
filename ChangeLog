@@ -4,6 +4,9 @@
 =======================================================
 
 
+06 Nov 2008      Overlaps and projections are written on a single file also
+                 in parallel runs. Bug fixed in restarting (eamp alloc). (AF)
+
 05 Nov 2008      Calls to mp_sum bufferized over kpts. Bug fixed in parallel
                  restarting (subspace_init). (AF)
 
