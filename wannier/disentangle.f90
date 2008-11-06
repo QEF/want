@@ -459,8 +459,12 @@
        ! ...  Diagonalize the hamiltonian within the optimized subspace at each kpoint
        !      in order to re-define eigenvalues and eigenvectors
        !
-       ALLOCATE( eamp(dimwinx, dimwann, nkpts_g), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname, 'allocating eamp', ABS(ierr) )
+       IF ( .NOT. ALLOCATED(eamp) ) THEN
+           !
+           ALLOCATE( eamp(dimwinx, dimwann, nkpts_g), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'allocating eamp', ABS(ierr) )
+           !
+       ENDIF
      
        !
        ! nullify eamp and wan_eig for all global kpts
