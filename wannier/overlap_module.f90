@@ -15,8 +15,9 @@
    USE constants,        ONLY : ZERO, CZERO
    USE io_module,        ONLY : ionode, ionode_id
    USE parameters,       ONLY : nstrx
+   USE timing_module,    ONLY : timing
    USE log_module,       ONLY : log_push, log_pop
-   USE windows_module,   ONLY : dimwinx, dimwin, windows_alloc => alloc
+   USE windows_module,   ONLY : dimwinx, dimwin, imin, imax, windows_alloc => alloc
    USE kpoints_module,   ONLY : nkpts, nkpts_g, iks, ike, iproc_g, nb, &
                                 nnlist, nnpos, nnrev, kpoints_alloc
    USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
@@ -176,7 +177,8 @@ CONTAINS
        INTEGER                     :: ierr
 
        IF ( .NOT. alloc ) RETURN
-       CALL log_push ( 'overlap_write' )
+       CALL timing   ( subname, OPR='start' )
+       CALL log_push ( subname )
        !
        IF ( ionode ) THEN
            !
@@ -213,6 +215,8 @@ CONTAINS
            IF ( ionode ) THEN
                !
                CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
+               CALL iotk_write_attr(attr,'imin_k',imin(ik_g))
+               CALL iotk_write_attr(attr,'imax_k',imax(ik_g))
                CALL iotk_write_attr(attr,'nneigh',nb)
                CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr)
                !
@@ -227,6 +231,8 @@ CONTAINS
                    !
                    CALL iotk_write_attr(attr,'dimwin_k',dimwin(ik_g),FIRST=.TRUE.)
                    CALL iotk_write_attr(attr,'dimwin_kb',dimwin(ikb_g))
+                   CALL iotk_write_attr(attr,'imin_kb',imin(ikb_g))
+                   CALL iotk_write_attr(attr,'imax_kb',imax(ikb_g))
                    CALL iotk_write_empty(iun, 'data', ATTR=attr)
                    !
                    CALL iotk_write_dat(iun,'mkb', Mkb_aux(1:dimwin(ik_g),1:dimwin(ikb_g),inn) )
@@ -253,7 +259,7 @@ CONTAINS
        !  
        ! writing projections  
        !  
-       ALLOCATE( ca_aux(dimwinx, dimwinx), STAT=ierr )
+       ALLOCATE( ca_aux(dimwinx, dimwann), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,"allocating ca_aux", ABS(ierr))
        !
        IF (ionode) CALL iotk_write_begin(iun,'PROJECTIONS')
@@ -266,7 +272,7 @@ CONTAINS
            ! get data
            !
            IF ( mpime == iproc_g( ik_g ) ) THEN
-               ca_aux = ca(:,:,ik)
+               ca_aux(:,:) = ca(1:dimwinx,1:dimwann,ik)
            ENDIF
            ! 
            CALL mp_get( ca_aux, ca_aux, mpime, ionode_id, iproc_g(ik_g), 1 )
@@ -274,6 +280,7 @@ CONTAINS
            IF ( ionode ) THEN
                !
                CALL iotk_write_attr(attr,'dimwin',dimwin(ik_g),FIRST=.TRUE.)
+               CALL iotk_write_attr(attr,'imin',imin(ik_g))
                CALL iotk_write_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr)
                !
                DO iwann=1,dimwann
@@ -302,7 +309,8 @@ CONTAINS
        DEALLOCATE( ca_aux, STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,"deallocating ca_aux", ABS(ierr))
        !
-       CALL log_pop ( 'overlap_write' )
+       CALL timing  ( subname, OPR='stop' )
+       CALL log_pop ( subname )
        !
    END SUBROUTINE overlap_write
 
@@ -321,14 +329,18 @@ CONTAINS
        LOGICAL,           INTENT(out):: found
        LOGICAL, OPTIONAL, INTENT(in) :: loverlap, lprojection
 
-       CHARACTER(nstrx)   :: attr
-       CHARACTER(12)      :: subname="overlap_read"
-       LOGICAL            :: loverlap_, lprojection_
-       INTEGER            :: dimwinx_, dimwann_, nb_, nkpts_g_
-       INTEGER            :: ik, ik_g, ib, inn
-       INTEGER            :: iwann, dimwin_, dimwin_k, dimwin_kb, nneigh_
-       INTEGER            :: ierr
+       CHARACTER(nstrx)            :: attr
+       CHARACTER(12)               :: subname="overlap_read"
+       COMPLEX(dbl),   ALLOCATABLE :: caux(:,:)
+       LOGICAL                     :: loverlap_, lprojection_, lfound
+       INTEGER                     :: dimwinx_, dimwann_, nb_, nkpts_g_
+       INTEGER                     :: ik, ik_g, ikb_g, ib, inn
+       INTEGER                     :: imin_k, imin_kb, imin_k_, imin_kb_
+       INTEGER                     :: dimwin_k, dimwin_kb, dimwin_k_, dimwin_kb_
+       INTEGER                     :: iwann, nneigh_
+       INTEGER                     :: ierr
 
+       CALL timing( subname, OPR='start' )
        CALL log_push( subname )
        !
        ! define the default
@@ -363,29 +375,30 @@ CONTAINS
 
        !
        ! ... various checks
-       IF ( windows_alloc ) THEN
-          IF (dimwinx_/=dimwinx) CALL errore(subname,'Invalid DIMWINX',ABS(dimwinx_-dimwinx))
-       ELSE
-          dimwinx = dimwinx_
+       IF ( .NOT. windows_alloc ) THEN
+           dimwinx    = dimwinx_
+           imin(:)    = -1
+           imax(:)    = -1
+           dimwin(:)  = -1
        ENDIF
        !
        IF ( kpoints_alloc ) THEN
-          IF ( nkpts_g_ /= nkpts_g) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_g_-nkpts_g))
-          IF ( nb_ /= nb)           CALL errore(subname,'Invalid NB',ABS(nb_-nb))
+           IF ( nkpts_g_ /= nkpts_g) CALL errore(subname,'Invalid NKPTS',ABS(nkpts_g_-nkpts_g))
+           IF ( nb_ /= nb)           CALL errore(subname,'Invalid NB',ABS(nb_-nb))
        ELSE
-          nkpts_g = nkpts_g_
-          !
-          ! in the actual implementation of b-vector stuff, we need
-          ! some initializations coming from kpoints module
-          !
-          CALL errore(subname,'kpoints should be allocated', 71)
+           nkpts_g = nkpts_g_
+           !
+           ! in the actual implementation of b-vector stuff, we need
+           ! some initializations coming from kpoints module
+           !
+           CALL errore(subname,'kpoints should be allocated', 71)
        ENDIF
        !
        IF ( subspace_alloc ) THEN
-           IF ( dimwann_ /= dimwann) &
+           IF ( dimwann_ /= dimwann .AND. lprojection_ ) &
                 CALL errore(subname,'Invalid DIMWANN',ABS(dimwann_-dimwann))
        ELSE
-          dimwann = dimwann_
+           dimwann = dimwann_
        ENDIF
        !
        !
@@ -396,6 +409,10 @@ CONTAINS
        !
        IF ( loverlap_ ) THEN
            !
+           ALLOCATE( caux(dimwinx_, dimwinx_), STAT=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'allocating caux I', ABS(ierr))
+           !
+           caux(:,:)    = CZERO
            Mkb(:,:,:,:) = CZERO
            !
            CALL iotk_scan_begin(iun,'OVERLAP',IERR=ierr)
@@ -408,10 +425,22 @@ CONTAINS
                CALL iotk_scan_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr, IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik_g)
                !
-               CALL iotk_scan_attr(attr,'dimwin_k',dimwin_k,IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik_g)
+               CALL iotk_scan_attr(attr,'dimwin_k',dimwin_k_,IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for dimwin_k',ik_g)
                !
-               IF ( dimwin_k > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_k)
+               IF ( dimwin_k_ > dimwinx_ ) CALL errore(subname,'dimwin too large',dimwin_k_)
+               !
+               dimwin_k = dimwin( ik_g )
+               IF ( dimwin_k < 0 ) dimwin_k = dimwin_k_
+               IF ( dimwin_k > dimwin_k_ ) CALL errore(subname,'dimwin_k from file too small', ik_g) 
+               !
+               CALL iotk_scan_attr(attr,'imin_k',imin_k_, FOUND=lfound,IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for imin',ik_g)
+               !
+               IF ( .NOT. lfound ) imin_k_ = 1
+               imin_k = imin(ik_g)
+               IF ( imin_k < 0 ) imin_k = imin_k_
+               IF ( imin_k < imin_k_ ) CALL errore(subname,'imin_k from file too large', ik_g) 
                !
                CALL iotk_scan_attr(attr,'nneigh',nneigh_,IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'scanning for nneigh_',ik_g)
@@ -420,7 +449,8 @@ CONTAINS
 
                DO inn = 1,nneigh_ / 2
                    !
-                   ib  = nnpos( inn )
+                   ib    = nnpos( inn )
+                   ikb_g = nnlist(ib, ik_g)
                    !
                    CALL iotk_scan_begin(iun, 'b-vect'//TRIM(iotk_index(ib)), IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'scanning for b-vect',inn)
@@ -428,16 +458,34 @@ CONTAINS
                    CALL iotk_scan_empty(iun, 'data', ATTR=attr, IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'scanning for data',inn)
                    !
-                   CALL iotk_scan_attr(attr,'dimwin_kb',dimwin_kb,IERR=ierr)
+                   CALL iotk_scan_attr(attr,'dimwin_kb',dimwin_kb_,IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'scanning for dimwin_kb',inn)
                    !
-                   IF ( dimwin_kb > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_kb)
+                   IF ( dimwin_kb_ > dimwinx_ ) CALL errore(subname,'dimwin too large',dimwin_kb_)
                    ! 
-                   CALL iotk_scan_dat(iun,'mkb', Mkb(1:dimwin_k,1:dimwin_kb,inn,ik),IERR=ierr )
+                   dimwin_kb = dimwin( ikb_g )
+                   IF ( dimwin_kb < 0 ) dimwin_kb = dimwin_kb_
+                   IF ( dimwin_kb > dimwin_kb_ ) &
+                        CALL errore(subname,'dimwin_kb from file too small', ikb_g) 
+                   !
+                   CALL iotk_scan_attr(attr,'imin_kb',imin_kb_, FOUND=lfound,IERR=ierr)
+                   IF (ierr/=0) CALL errore(subname,'scanning for imin_kb',ik_g)
+                   !
+                   IF ( .NOT. lfound ) imin_kb_ = 1
+                   imin_kb = imin(ikb_g)
+                   IF ( imin_kb < 0 ) imin_kb = imin_kb_
+                   IF ( imin_kb < imin_kb_ ) CALL errore(subname,'imin_kb from file too large', ikb_g) 
+                   !
+                   CALL iotk_scan_dat(iun,'mkb', caux(1:dimwin_k_,1:dimwin_kb_), IERR=ierr )
                    IF (ierr/=0) CALL errore(subname,'scanning for mkb',inn)
                    !
                    CALL iotk_scan_end(iun, 'b-vect'//TRIM(iotk_index(ib)), IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'scanning end for b-vect',inn)
+                   !
+                   !
+                   Mkb(1:dimwin_k,1:dimwin_kb,inn,ik) = &
+                                caux( imin_k-imin_k_+1: imin_k-imin_k_ +dimwin_k, &
+                                      imin_kb-imin_kb_+1: imin_kb-imin_kb_ +dimwin_kb)
                    !
                ENDDO
                !
@@ -449,6 +497,9 @@ CONTAINS
            CALL iotk_scan_end(iun,'OVERLAP',IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'scanning for ending OVERLAP',ABS(ierr))
            !
+           DEALLOCATE( caux, STAT=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'deallocating caux I', ABS(ierr))
+           !
        ENDIF
 
        !
@@ -456,6 +507,10 @@ CONTAINS
        !
        IF ( lprojection_ ) THEN
            !
+           ALLOCATE( caux(dimwinx_, dimwann), STAT=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'allocating caux II', ABS(ierr))
+           !
+           caux(:,:) = CZERO
            ca(:,:,:) = CZERO
            !
            CALL iotk_scan_begin(iun,'PROJECTIONS',IERR=ierr)
@@ -468,18 +523,34 @@ CONTAINS
                CALL iotk_scan_begin(iun,'kpoint'//TRIM(iotk_index(ik_g)), ATTR=attr, IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'scanning for kpoint',ik_g)
                !
-               CALL iotk_scan_attr(attr,'dimwin',dimwin_,IERR=ierr)
+               CALL iotk_scan_attr(attr,'dimwin',dimwin_k_,IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'scanning for dimwin',ik_g)
                !
-               IF ( dimwin_ > dimwinx ) CALL errore(subname,'dimwin too large',dimwin_)
+               IF ( dimwin_k_ > dimwinx_ ) CALL errore(subname,'dimwin from file too large',dimwin_k_)
+               !
+               dimwin_k = dimwin( ik_g )
+               IF ( dimwin_k < 0 ) dimwin_k = dimwin_k_
+               IF ( dimwin_k > dimwin_k_ ) CALL errore(subname,'dimwin_k from file too small', ik_g) 
+               !
+               CALL iotk_scan_attr(attr,'imin',imin_k_, FOUND=lfound,IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'scanning for imin',ik_g)
+               !
+               IF ( .NOT. lfound ) imin_k_ = 1
+               imin_k = imin(ik_g)
+               IF ( imin_k < 0 ) imin_k = imin_k_
+               IF ( imin_k < imin_k_ ) CALL errore(subname,'imin_k from file too large', ik_g) 
+               !
                !
                DO iwann=1,dimwann
                    !
                    CALL iotk_scan_dat(iun,'wannier'//TRIM(iotk_index(iwann)), &
-                                            ca(1:dimwin_,iwann,ik),IERR=ierr )
+                                            caux(1:dimwin_k_, iwann ), IERR=ierr )
                    IF (ierr/=0) CALL errore(subname,'scanning for wannier',iwann)
                    !
                ENDDO
+               !
+               ca(1:dimwin_k, 1:dimwann, ik) = &
+                    caux( imin_k-imin_k_+1: imin_k-imin_k_+dimwin_k, 1:dimwann)
                !
                CALL iotk_scan_end(iun,'kpoint'//TRIM(iotk_index(ik_g)), IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'scanning for ending kpoint',ik_g)
@@ -489,12 +560,17 @@ CONTAINS
            CALL iotk_scan_end(iun,'PROJECTIONS',IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'scanning for ending PROJECTIONS',ABS(ierr))
            !
+           DEALLOCATE( caux, STAT=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'deallocating caux II', ABS(ierr))
+           !
        ENDIF
        !
        !
        CALL iotk_scan_end(iun,TRIM(tag),IERR=ierr)
        IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(tag),ABS(ierr))
        !
+       !
+       CALL timing  ( subname, OPR='stop' )
        CALL log_pop ( subname )
        !
    END SUBROUTINE overlap_read
