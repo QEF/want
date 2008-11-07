@@ -5,7 +5,8 @@
 
 
 07 Nov 2008      Timing module updated to average over pools for well-defined
-                 clocks. (AF)
+                 clocks. Overlap_module updated to allow restart with a
+                 different number of bands in overlap_read. (AF)
 
 06 Nov 2008      Overlaps and projections are written on a single file also
                  in parallel runs. Bug fixed in restarting (eamp alloc). (AF)
