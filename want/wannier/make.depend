@@ -468,11 +468,14 @@ overlap_extract.o : ../libs/util.o
 overlap_extract.o : overlap_module.o
 overlap_extract.o : subspace.o
 overlap_extract.o : windows.o
+overlap_module.o : io_module.o
 overlap_module.o : ../iotk/iotk_16_module.o
 overlap_module.o : kpoints.o
 overlap_module.o : ../libs/constants.o
 overlap_module.o : ../libs/kind.o
 overlap_module.o : ../libs/log_module.o
+overlap_module.o : ../libs/mp_global.o
+overlap_module.o : ../libs/mp.o
 overlap_module.o : ../libs/parameters.o
 overlap_module.o : subspace.o
 overlap_module.o : windows.o

@@ -706,7 +706,7 @@ END PROGRAM dos_main
           !
           ! stdout report
           !
-          IF ( (MOD( ie, nprint) == 0 .OR. ie == 1 .OR. ie == ne ) .AND. ionode) THEN
+          IF ( MOD( ie, nprint) == 0 .OR. ie == 1 .OR. ie == ne ) THEN
                !
                CALL timing_upto_now(stdout)
                CALL flush_unit(stdout)

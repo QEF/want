@@ -102,10 +102,10 @@
           !
           WRITE(stdout,"(/,2x,'Overlaps and projections setup completed')")
           !
-          CALL timing_upto_now(stdout)
-          CALL flush_unit(stdout)
-          !
       ENDIF
+      !
+      CALL timing_upto_now(stdout)
+      CALL flush_unit(stdout)
 
 
       !
@@ -372,18 +372,22 @@
            !
            ! write info to stdout
            !
-           IF ( (MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1) .AND. ionode ) THEN
+           IF ( MOD( ncount, nprint_wan ) == 0 .OR. ncount == 1 ) THEN
                !
-               IF ( do_condmin ) THEN 
-                    WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
-                           & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
-               ELSE
-                    WRITE( stdout,"(/,2x,'Iteration = ',i5) ") ncount
+               IF ( ionode ) THEN
+                   !
+                   IF ( do_condmin ) THEN 
+                       WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
+                               & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
+                   ELSE
+                       WRITE( stdout,"(/,2x,'Iteration = ',i5) ") ncount
+                   ENDIF
+                   !
+                   CALL localization_print(stdout, FMT="standard" )
+                   WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6) ") Omega_var
+                   !
                ENDIF
-               !
-               CALL localization_print(stdout, FMT="standard" )
-               WRITE( stdout, " (2x,'Omega variation (Bohr^2):  ',f13.6) ") Omega_var
-               
+               ! 
                CALL timing_upto_now(stdout)
                CALL flush_unit(stdout)
                !
@@ -494,7 +498,7 @@
       !
       IF ( do_polarization ) CALL polarization( dimwann, rave )
       !
-      IF (ionode) CALL timing_upto_now(stdout)
+      CALL timing_upto_now(stdout)
       CALL flush_unit(stdout)
 
 

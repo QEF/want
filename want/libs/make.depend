@@ -39,6 +39,10 @@ sph_bes.o : constants.o
 sph_bes.o : kind.o
 sph_har.o : constants.o
 sph_har.o : kind.o
+timing.o : io_global.o
+timing.o : kind.o
+timing.o : mp_global.o
+timing.o : mp.o
 util.o : constants.o
 util.o : kind.o
 warning.o : io_global.o

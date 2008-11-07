@@ -9,7 +9,13 @@
 ! <INFO>
 !*********************************************
    MODULE timing_module
-!*********************************************
+   !*********************************************
+   !
+   USE kinds,             ONLY : dbl
+   USE io_global_module,  ONLY : ionode
+   USE mp_global,         ONLY : nproc
+   USE mp,                ONLY : mp_sum
+   !
    IMPLICIT NONE
    PRIVATE
 
@@ -31,7 +37,7 @@
 ! </INFO>
 !
 
-   INTEGER, PARAMETER             :: dbl = SELECTED_REAL_KIND(14,300)  ! dbl real
+!   INTEGER, PARAMETER             :: dbl = SELECTED_REAL_KIND(14,300)  ! dbl real
  
    INTEGER, PARAMETER             :: nclockx = 500
    INTEGER, PARAMETER             :: str_len = 200
@@ -355,59 +361,87 @@ CONTAINS
       TYPE(clock),         INTENT(inout) :: obj    
       CHARACTER(*), OPTIONAL, INTENT(in) :: form
       CHARACTER(3)                       :: form_
+      CHARACTER(256)                     :: str
       INTEGER                            :: nhour,nmin
-      REAL                               :: nsec
+      INTEGER                            :: call_number
+      REAL(dbl)                          :: total_time
+      REAL(dbl)                          :: nsec
 
       form_="sec"
       IF ( PRESENT(form) ) form_ = TRIM(form)
       CALL clock_update(obj)
 
-      SELECT CASE ( TRIM(form_) ) 
-      CASE ( "hms" )
-         nhour = INT( obj%total_time / 3600 )
-         nmin =  INT( (obj%total_time-3600 * nhour) / 60 )
-         nsec =  INT( obj%total_time-3600 * nhour - 60 * nmin )
-         IF ( obj%call_number == 1 )  THEN
-            IF (nhour > 0) THEN
-               WRITE (unit, '(5x,a20," : ",3x,i2,"h",i2,"m CPU ")') &
-                              TRIM(obj%name), nhour, nmin
-            ELSEIF (nmin > 0) THEN
-               WRITE (unit, '(5x,a20," : ",i2,"m",f5.2,"s CPU ")') &
-                    TRIM(obj%name), nmin, nsec
-            ELSE
-               WRITE (unit, '(5x,a20," : ",3x,f5.2,"s CPU ")') &
-                    TRIM(obj%name), nsec
-            ENDIF
-         ELSE
-            IF (nhour > 0) THEN
-               WRITE(unit,'(5x,a20," : ",3x,i2,"h",i2,"m CPU (", &
-                          &  i8," calls,",f8.3," s avg)")') TRIM(obj%name), nhour, nmin, &
-                              obj%call_number , obj%total_time / REAL( obj%call_number, dbl )
-            ELSEIF (nmin > 0) THEN
-               WRITE (unit, '(5x,a20," : ",i2,"m",f5.2,"s CPU (", &
-                          &    i8," calls,",f8.3," s avg)")') TRIM(obj%name), nmin, nsec, &
-                              obj%call_number , obj%total_time / REAL( obj%call_number, dbl )
-            ELSE
-               WRITE (unit, '(5x,a20," : ",3x,f5.2,"s CPU (", &
-                          &    i8," calls,",f8.3," s avg)")') TRIM(obj%name), nsec, &
-                              obj%call_number , obj%total_time / REAL( obj%call_number, dbl )
-            ENDIF
-         ENDIF
+      !
+      ! define an average over the pools
+      !
+      total_time  = obj%total_time
+      call_number = obj%call_number
+      !
+      ! do suitable averages only for MPI related clocks
+      !
+      str = obj%name
+      str(4:) = ' '
+      IF ( TRIM(str) == 'mp_' ) THEN
+          !
+          CALL mp_sum( total_time )
+          total_time = total_time / REAL( nproc, dbl )
+          !
+          CALL mp_sum( call_number )
+          call_number = NINT ( call_number / REAL( nproc, dbl ) )
+          !
+      ENDIF
 
-      CASE ( "sec" )
-         !
-         ! time in seconds
-         !
-         IF ( obj%call_number == 1) THEN
-            WRITE (unit, '(5x,a20," :",f9.2,"s CPU")') TRIM(obj%name) , obj%total_time
-         ELSE
-            WRITE (unit, '(5x,a20," :",f9.2,"s CPU (", i8," calls,",f8.3," s avg)")')  &
-                  TRIM(obj%name) , obj%total_time , obj%call_number ,   &
-                  obj%total_time / REAL( obj%call_number, dbl )
-         ENDIF
-      CASE DEFAULT
-         CALL errore('clock_write','Invalid FORM '//TRIM(form_),1 )
-      END SELECT
+
+      IF ( ionode ) THEN
+          !
+          SELECT CASE ( TRIM(form_) ) 
+          CASE ( "hms" )
+             nhour = INT( total_time / 3600 )
+             nmin =  INT( (total_time-3600 * nhour) / 60 )
+             nsec =  INT( total_time-3600 * nhour - 60 * nmin )
+             IF ( call_number == 1 )  THEN
+                IF (nhour > 0) THEN
+                   WRITE (unit, '(5x,a20," : ",3x,i2,"h",i2,"m CPU ")') &
+                                  TRIM(obj%name), nhour, nmin
+                ELSEIF (nmin > 0) THEN
+                   WRITE (unit, '(5x,a20," : ",i2,"m",f5.2,"s CPU ")') &
+                        TRIM(obj%name), nmin, nsec
+                ELSE
+                   WRITE (unit, '(5x,a20," : ",3x,f5.2,"s CPU ")') &
+                        TRIM(obj%name), nsec
+                ENDIF
+             ELSE
+                IF (nhour > 0) THEN
+                   WRITE(unit,'(5x,a20," : ",3x,i2,"h",i2,"m CPU (", &
+                              &  i8," calls,",f8.3," s avg)")') TRIM(obj%name), nhour, nmin, &
+                                  call_number , total_time / REAL( call_number, dbl )
+                ELSEIF (nmin > 0) THEN
+                   WRITE (unit, '(5x,a20," : ",i2,"m",f5.2,"s CPU (", &
+                              &    i8," calls,",f8.3," s avg)")') TRIM(obj%name), nmin, nsec, &
+                                  call_number , total_time / REAL( call_number, dbl )
+                ELSE
+                   WRITE (unit, '(5x,a20," : ",3x,f5.2,"s CPU (", &
+                              &    i8," calls,",f8.3," s avg)")') TRIM(obj%name), nsec, &
+                                  call_number , total_time / REAL( call_number, dbl )
+                ENDIF
+             ENDIF
+    
+          CASE ( "sec" )
+             !
+             ! time in seconds
+             !
+             IF ( call_number == 1) THEN
+                WRITE (unit, '(5x,a20," :",f9.2,"s CPU")') TRIM(obj%name), total_time
+             ELSE
+                WRITE (unit, '(5x,a20," :",f9.2,"s CPU (", i8," calls,",f8.3," s avg)")')  &
+                      TRIM(obj%name) , total_time , call_number ,   &
+                      total_time / REAL( call_number, dbl )
+             ENDIF
+          CASE DEFAULT
+             CALL errore('clock_write','Invalid FORM '//TRIM(form_),1 )
+          END SELECT
+          !
+      ENDIF
 
    END SUBROUTINE clock_write        
 
@@ -417,12 +451,26 @@ CONTAINS
    !**********************************************************
       IMPLICIT NONE
       INTEGER,                INTENT(in) :: unit
+      REAL(dbl) :: total_time
 
       IF ( .NOT. internal_list%alloc ) & 
            CALL errore('timing_upto_now','Internal clock not allocated',1)
       CALL clock_update(internal_list%clock(1))
-      WRITE(unit,"(30x,'Total time spent up to now :',F9.2,' secs',/)") &
-            internal_list%clock(1)%total_time
+
+      !
+      ! recovering over pools may create deadlocks
+      !
+      total_time  = internal_list%clock(1)%total_time
+      !
+      !CALL mp_sum( total_time )
+      !total_time = total_time / REAL( nproc, dbl )
+
+      IF ( ionode ) THEN
+          !
+          WRITE(unit,"(30x,'Total time spent up to now :',F9.2,' secs',/)") &
+                       total_time
+          !
+      ENDIF
 
   END SUBROUTINE timing_upto_now    
 
@@ -439,29 +487,38 @@ CONTAINS
       INTEGER                            :: i
 
       IF ( .NOT. list%alloc ) CALL errore('timing_overview','list not allocated',1)
-      INQUIRE(UNIT=unit,FORM=form)
-      IF ( TRIM(form) ==  "unformatted" .OR. TRIM(form) == "UNFORMATTED" ) &
-           CALL errore('Timing_overview','UNIT unformatted',1)
-      WRITE(unit,"(/,3x,'<',a,' routines>')") TRIM(list%name)
+      IF ( ionode ) THEN
+          !
+          INQUIRE(UNIT=unit,FORM=form)
+          IF ( TRIM(form) ==  "unformatted" .OR. TRIM(form) == "UNFORMATTED" ) &
+              CALL errore('Timing_overview','UNIT unformatted',1)
+          !
+      ENDIF
+      !
+      IF (ionode) WRITE(unit,"(/,3x,'<',a,' routines>')") TRIM(list%name)
+      !
       IF ( list%nclock == 0 ) THEN
-         WRITE(unit,"(7x,'No clock to display',/)") 
-         RETURN
+          IF ( ionode ) WRITE(unit,"(7x,'No clock to display',/)") 
+          RETURN
       ENDIF
 
-      WRITE(unit,"(13x,'clock number : ',i5,/)") list%nclock
+      IF( ionode ) WRITE(unit,"(13x,'clock number : ',i5,/)") list%nclock
+      !
       DO i=1,list%nclock 
+         !
          tmp_clock = list%clock(i)
          IF ( TRIM(list%clock(i)%name) == TRIM(main_name) .OR. &
                    list%clock(i)%total_time >= 1000           ) THEN 
-              CALL clock_write(unit,tmp_clock,FORM="hms")
-              IF ( TRIM(list%clock(i)%name) == TRIM(main_name) )  &
-                   WRITE(unit,*)
+             CALL clock_write(unit,tmp_clock,FORM="hms")
+             IF ( TRIM(list%clock(i)%name) == TRIM(main_name) .AND. ionode)  &
+                   WRITE(unit,"()")
          ELSE
-            CALL clock_write(unit,tmp_clock,FORM="sec")
+             CALL clock_write(unit,tmp_clock,FORM="sec")
          ENDIF
       ENDDO
-      WRITE(unit,"(/)")
-         
+      !
+      IF( ionode ) WRITE(unit,"(/)")
+
    END SUBROUTINE timing_overview
 
 

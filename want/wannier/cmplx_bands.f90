@@ -969,15 +969,16 @@ END PROGRAM cmplx_bands
           !
           avg_nrs = avg_nrs/REAL(nkpts_2D)
           !
-          IF ( (MOD( ie, nprint) == 0 .OR. &
-               ie == 1 .OR. ie == ne ) .AND. ionode) THEN
-               !
-               WRITE(stdout,"(7x,'avg. range of Z : ',i7)") NINT( avg_nrs )
-               WRITE(stdout,"(7x,'  avg. mtrx dim : ',i7,/)") NINT( (avg_nrs-1.0) ) * dimwann
-               !
-               CALL timing_upto_now(stdout)
-               CALL flush_unit(stdout)
-               ! 
+          IF ( (MOD( ie, nprint) == 0 .OR. ie == 1 .OR. ie == ne ) ) THEN
+              !
+              IF ( ionode ) THEN
+                  WRITE(stdout,"(7x,'avg. range of Z : ',i7)") NINT( avg_nrs )
+                  WRITE(stdout,"(7x,'  avg. mtrx dim : ',i7,/)") NINT( (avg_nrs-1.0) ) * dimwann
+              ENDIF
+              !
+              CALL timing_upto_now(stdout)
+              CALL flush_unit(stdout)
+              ! 
           ENDIF
           !
           !

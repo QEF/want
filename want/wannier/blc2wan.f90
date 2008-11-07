@@ -651,7 +651,7 @@ END PROGRAM blc2wan
           IF (ierr/=0) CALL errore(subname,'writing end '//TRIM(str),ABS(ierr))
 
           !
-          IF ( (MOD( ie, nprint) ==0 .OR. ie == 1) .AND. ionode ) THEN
+          IF ( (MOD( ie, nprint) ==0 .OR. ie == 1) ) THEN
              !
              CALL timing_upto_now( stdout )
              CALL flush_unit( stdout )

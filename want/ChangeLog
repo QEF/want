@@ -4,6 +4,9 @@
 =======================================================
 
 
+07 Nov 2008      Timing module updated to average over pools for well-defined
+                 clocks. (AF)
+
 06 Nov 2008      Overlaps and projections are written on a single file also
                  in parallel runs. Bug fixed in restarting (eamp alloc). (AF)
 

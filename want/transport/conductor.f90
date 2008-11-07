@@ -306,16 +306,15 @@
 
       avg_iter = avg_iter/REAL(2*nkpts_par)
       !
-      IF ( (MOD( ie, nprint) == 0 .OR. &
-            ie == nomg_s .OR. ie == nomg_e ) .AND. ionode) THEN
-           !
-           WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
-                 avg_iter
-           !
-           CALL timing_upto_now(stdout)
-           CALL flush_unit(stdout)
-           ! 
+      IF ( MOD( ie, nprint) == 0 .OR.  ie == nomg_s .OR. ie == nomg_e ) THEN
+          !
+          WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
+                avg_iter
+          !
       ENDIF
+      ! 
+      CALL timing_upto_now(stdout)
+      CALL flush_unit(stdout)
 
    ENDDO energy_loop
 
