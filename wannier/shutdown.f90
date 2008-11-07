@@ -37,13 +37,9 @@
    !
    CALL timing(TRIM(main_name),OPR="stop")
    !
-   IF ( ionode ) THEN
-        !
-        WRITE( stdout, "(/,2x, 70('='))" )
-        CALL timing_overview( UNIT=stdout, LIST=global_list, MAIN_NAME=TRIM(main_name))
-        !
-   ENDIF
+   IF ( ionode ) WRITE( stdout, "(/,2x, 70('='))" )
    !
+   CALL timing_overview( UNIT=stdout, LIST=global_list, MAIN_NAME=TRIM(main_name))
    CALL timing_deallocate()
 
 

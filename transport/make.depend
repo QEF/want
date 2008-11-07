@@ -30,7 +30,6 @@ control.o : ../libs/parameters.o
 correlation.o : control.o
 correlation.o : egrid.o
 correlation.o : hamiltonian.o
-correlation.o : ../iotk/iotk_16_module.o
 correlation.o : kpoints.o
 correlation.o : ../libs/constants.o
 correlation.o : ../libs/kind.o

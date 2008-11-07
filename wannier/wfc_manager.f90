@@ -493,7 +493,7 @@
                  ENDIF
                  !
                  CALL wfc_info_delete(evc_info, LABEL="IK")
-                 IF (ionode) CALL timing_upto_now(stdout)
+                 CALL timing_upto_now(stdout)
                  ! 
              ENDDO buffering_ik_loop
              !
@@ -600,7 +600,7 @@
       CALL overlap_bsymm( dimwinx, dimwann, nkpts, Mkb )
 
 
-      IF (ionode) CALL timing_upto_now( stdout )
+      CALL timing_upto_now( stdout )
       CALL flush_unit( stdout )
       !
       CALL timing('wfc_manager',OPR='stop')

@@ -125,7 +125,7 @@ CONTAINS
    lsymmetry = .TRUE. 
    lkpoints  = .TRUE. 
    lpseudo   = .TRUE. 
-   lmemory   = .TRUE. 
+   lmemory   = .FALSE. 
    !
    IF ( PRESENT(input) )    linput    = input
    IF ( PRESENT(lattice) )  llattice  = lattice

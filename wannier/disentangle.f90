@@ -117,6 +117,8 @@
        CALL flush_unit( stdout )
        !
        CALL wfc_manager()
+       !
+       CALL memusage( stdout )
 
 !
 !--------------------------------------------
@@ -209,9 +211,9 @@
                 !
                 ! timing
                 !
-                IF ( MOD(ncount, nprint_dis) == 0 .AND. ionode )  THEN
+                IF ( MOD(ncount, nprint_dis) == 0 )  THEN
                     !
-                    WRITE(stdout, "()")
+                    IF ( ionode ) WRITE(stdout, "()")
                     CALL timing_upto_now( stdout ) 
                     CALL flush_unit ( stdout )
                     !
@@ -422,10 +424,10 @@
                          omega_i/REAL(dimwann, dbl), omega_i*bohr**2/REAL(dimwann, dbl)
            WRITE( stdout,"()" ) 
            !
-           CALL timing_upto_now(stdout) 
            !
        ENDIF
        !
+       CALL timing_upto_now(stdout) 
        CALL flush_unit(stdout) 
 
      
