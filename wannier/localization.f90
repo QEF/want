@@ -273,7 +273,7 @@ CONTAINS
        CHARACTER(nstrx)   :: attr
        CHARACTER(17)      :: subname="localization_read"
        INTEGER            :: nkpts_g_, dimwann_
-       INTEGER            :: ierr
+       INTEGER            :: ik_g, ierr
 
        IF ( alloc ) CALL localization_deallocate()
 
@@ -361,10 +361,13 @@ CONTAINS
        CALL mp_bcast( Omega_D,    ionode_id )
        CALL mp_bcast( Omega_OD,   ionode_id )
        CALL mp_bcast( Omega_tot,  ionode_id )
-       CALL mp_bcast( cu,         ionode_id )
        CALL mp_bcast( rave,       ionode_id )
        CALL mp_bcast( rave2,      ionode_id )
        CALL mp_bcast( r2ave,      ionode_id )
+       !
+       DO ik_g = 1, nkpts_g
+           CALL mp_bcast( cu(:,:,ik_g),         ionode_id )
+       ENDDO
        !
    END SUBROUTINE localization_read
 
