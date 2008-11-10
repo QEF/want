@@ -342,8 +342,14 @@ CONTAINS
        ENDIF
        !
        CALL mp_bcast( wan_eig, ionode_id )
-       CALL mp_bcast( lamp,    ionode_id )
-       CALL mp_bcast( eamp_,   ionode_id )
+       !
+       DO ik_g = 1, nkpts_g
+           CALL mp_bcast( lamp(:,:,ik_g),    ionode_id )
+       ENDDO
+       !
+       DO ik_g = 1, nkpts_g
+           CALL mp_bcast( eamp_(:,:,ik_g),   ionode_id )
+       ENDDO
        !
        IF ( lfound ) THEN
            !
