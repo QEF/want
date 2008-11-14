@@ -74,7 +74,9 @@
    !
    ! recover over parallelism
    !
+   CALL timing ( 'mp_sum_omega', OPR='start' )
    CALL mp_sum( Omega_I )
+   CALL timing ( 'mp_sum_omega', OPR='stop' )
    
    !
    ! Omega_I is moltiplied by two to account for the -b terms which

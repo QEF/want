@@ -134,7 +134,9 @@
           ENDDO
           !
           ! recover parallelism
+          CALL timing ( 'mp_sum_rham', OPR='start' )
           CALL mp_sum ( rham(:,:,ir) )
+          CALL timing ( 'mp_sum_rham', OPR='stop' )
           !
       ENDDO
       

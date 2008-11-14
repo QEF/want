@@ -113,8 +113,10 @@
    ENDDO
    ENDDO
    !
+   CALL timing ( 'mp_sum_omega', OPR='start' )
    CALL mp_sum( rave ) 
    CALL mp_sum( r2ave ) 
+   CALL timing ( 'mp_sum_omega', OPR='stop' )
    !
    rave(:,:) = - TWO * rave(:,:) / REAL(nkpts_g, dbl)
    r2ave(:) =    TWO * r2ave(:) / REAL(nkpts_g, dbl)
@@ -160,7 +162,9 @@
    ENDDO
    ENDDO
    !
+   CALL timing ( 'mp_sum_omega', OPR='start' )
    CALL mp_sum( Omega_OD )
+   CALL timing ( 'mp_sum_omega', OPR='stop' )
    !
    Omega_OD = TWO * Omega_OD / REAL(nkpts_g, dbl)
 
@@ -188,7 +192,9 @@
    ENDDO
    ENDDO
    !
+   CALL timing ( 'mp_sum_omega', OPR='start' )
    CALL mp_sum( Omega_D )
+   CALL timing ( 'mp_sum_omega', OPR='stop' )
    !
    Omega_D = TWO * Omega_D / REAL(nkpts_g, dbl)
 

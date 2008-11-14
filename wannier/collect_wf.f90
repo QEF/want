@@ -130,12 +130,13 @@
       !
       ! pool recovering
       !
+      CALL timing ( 'mp_sum', OPR='start' )
       DO ik_g = 1, nkpts_g 
           !
-          !CALL mp_sum( cU(:,:,1:nkpts_g) )
           CALL mp_sum( cU(:,:,ik_g) )
           !
       ENDDO
+      CALL timing ( 'mp_sum', OPR='stop' )
 
       !
       ! output updated centers

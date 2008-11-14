@@ -35,8 +35,6 @@ SUBROUTINE overlap_extract(dimwann)
    USE windows_module,    ONLY : dimwinx, dimwin, windows_read
    USE kpoints_module,    ONLY : nkpts, nkpts_g, iks, iproc_g, nb, nnlist, nnpos, nnrev 
    USE overlap_module,    ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
-   USE mp_global,         ONLY : mpime
-   USE mp,                ONLY : mp_get
    
    !
    IMPLICIT NONE

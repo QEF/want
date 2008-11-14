@@ -4,6 +4,8 @@
 =======================================================
 
 
+14 Nov 2008      Timing of parallel routines improved. (AF)
+
 07 Nov 2008      Timing module updated to average over pools for well-defined
                  clocks. Overlap_module updated to allow restart with a
                  different number of bands in overlap_read. (AF)

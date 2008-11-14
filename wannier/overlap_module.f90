@@ -210,7 +210,9 @@ CONTAINS
                Mkb_aux = Mkb(:,:,:,ik)
            ENDIF
            ! 
+           CALL timing ( 'mp_get_ovp', OPR='start' )
            CALL mp_get( Mkb_aux, Mkb_aux, mpime, ionode_id, iproc_g(ik_g), 1 )
+           CALL timing ( 'mp_get_ovp', OPR='stop' )
 
            IF ( ionode ) THEN
                !
@@ -275,7 +277,9 @@ CONTAINS
                ca_aux(:,:) = ca(1:dimwinx,1:dimwann,ik)
            ENDIF
            ! 
+           CALL timing ( 'mp_get_ovp', OPR='start' )
            CALL mp_get( ca_aux, ca_aux, mpime, ionode_id, iproc_g(ik_g), 1 )
+           CALL timing ( 'mp_get_ovp', OPR='stop' )
            !
            IF ( ionode ) THEN
                !

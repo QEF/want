@@ -438,6 +438,7 @@ ordering.o : kpoints.o
 ordering.o : ../libs/constants.o
 ordering.o : ../libs/kind.o
 ordering.o : ../libs/mp.o
+ordering.o : ../libs/timing.o
 overlap_augment.o : becmod.o
 overlap_augment.o : ions.o
 overlap_augment.o : kpoints.o
@@ -460,8 +461,6 @@ overlap_extract.o : ../libs/constants.o
 overlap_extract.o : ../libs/files.o
 overlap_extract.o : ../libs/kind.o
 overlap_extract.o : ../libs/log_module.o
-overlap_extract.o : ../libs/mp_global.o
-overlap_extract.o : ../libs/mp.o
 overlap_extract.o : ../libs/parameters.o
 overlap_extract.o : ../libs/timing.o
 overlap_extract.o : ../libs/util.o
@@ -477,6 +476,7 @@ overlap_module.o : ../libs/log_module.o
 overlap_module.o : ../libs/mp_global.o
 overlap_module.o : ../libs/mp.o
 overlap_module.o : ../libs/parameters.o
+overlap_module.o : ../libs/timing.o
 overlap_module.o : subspace.o
 overlap_module.o : windows.o
 overlap.o : ggrids.o
