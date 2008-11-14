@@ -13,6 +13,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : EPS_m6, EPS_m2, CZERO
    USE kpoints_module,    ONLY : nkpts_g, iks, ike
+   USE timing_module,     ONLY : timing
    USE mp,                ONLY : mp_sum
    !
    IMPLICIT NONE
@@ -172,11 +173,13 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    cU(:,:,:)          = CZERO
    cU(:,:,iks:ike)    = cswap( :, index(:), 1:nkpts ) 
    !
+   CALL timing ( 'mp_sum', OPR='start' )
    DO ik_g = 1, nkpts_g
        !
        CALL mp_sum( cU(:,:,ik_g) )
        !
    ENDDO
+   CALL timing ( 'mp_sum', OPR='stop' )
 
 
    DEALLOCATE( index, STAT=ierr)

@@ -261,11 +261,13 @@
    !
    IF ( TRIM(mode) /= "from_file" ) THEN
        !
+       CALL timing ( 'mp_sum', OPR='start' )
        DO ik_g = 1, nkpts_g
            !
            CALL mp_sum( lamp(:,:,ik_g) )
            !
        ENDDO
+       CALL timing ( 'mp_sum', OPR='stop' )
        !
    ENDIF
 

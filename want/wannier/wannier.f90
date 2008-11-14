@@ -247,7 +247,9 @@
                ENDDO
            ENDDO
            !
+           CALL timing ( 'mp_sum_wan', OPR='start' )
            CALL mp_sum( gcnorm1 )
+           CALL timing ( 'mp_sum_wan', OPR='stop' )
 
 
            !
@@ -277,7 +279,9 @@
                !
            ENDDO
            !
+           CALL timing ( 'mp_sum_wan', OPR='start' )
            CALL mp_sum( gcnorm_aux )
+           CALL timing ( 'mp_sum_wan', OPR='stop' )
            !
            gcnorm_aux = gcnorm_aux * aux1
 

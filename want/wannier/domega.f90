@@ -143,9 +143,11 @@
                       !
                   ENDIF
                   !
+                  CALL timing( 'mp_get', OPR='start' )
                   CALL mp_get( Mkb_aux, Mkb_aux,        mpime, ik_proc, ikb_proc, 1 )
                   CALL mp_get( csheet_aux, csheet_aux,  mpime, ik_proc, ikb_proc, 1 )
                   CALL mp_get( sheet_aux, sheet_aux,    mpime, ik_proc, ikb_proc, 1 )
+                  CALL timing( 'mp_get', OPR='stop' )
                   !
                CASE DEFAULT
                   CALL errore(subname,'invalid ipos value',71)

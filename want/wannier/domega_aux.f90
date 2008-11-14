@@ -164,8 +164,9 @@
                       !
                   ENDIF
                   !
-                  !IF ( mpime == ikb_proc .OR. mpime == ik_proc) &
-                     CALL mp_get( Mkb_aux, Mkb_aux, mpime, ik_proc, ikb_proc, 1 )
+                  CALL timing( 'mp_get', OPR='start' )
+                  CALL mp_get( Mkb_aux, Mkb_aux, mpime, ik_proc, ikb_proc, 1 )
+                  CALL timing( 'mp_get', OPR='stop' )
                   !
                CASE DEFAULT
                   CALL errore(subname,'invalid ipos value',71)
