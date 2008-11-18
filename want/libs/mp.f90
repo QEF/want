@@ -16,9 +16,10 @@
       !
 
 !      PRIVATE
-      PUBLIC :: mp_start, mp_end, mp_env, mp_group, mp_cart_create, &
-        mp_bcast, mp_stop, mp_sum, mp_max, mp_min, mp_rank, mp_size, &
-        mp_excng, mp_gather, mp_get, mp_put, mp_barrier, mp_report
+      PUBLIC :: mp_start, mp_end, mp_env, mp_group, mp_cart_create,   &
+        mp_bcast, mp_stop, mp_sum, mp_max, mp_min, mp_rank, mp_size,  &
+        mp_excng, mp_gather, mp_allgather, mp_get, mp_put,            &
+        mp_barrier, mp_report
 !
       INTERFACE mp_excng    ! Carlo Cavazzoni
         MODULE PROCEDURE mp_excng_i
@@ -59,7 +60,11 @@
         MODULE PROCEDURE mp_min_i, mp_min_r, mp_min_rv, mp_min_iv
       END INTERFACE
       INTERFACE mp_gather
-        MODULE PROCEDURE mp_gather_iv, mp_gather_cvv, mp_gather_rvv
+        MODULE PROCEDURE mp_gather_iv, mp_gather_cvv, mp_gather_rvv, &
+                         mp_gather_ctt
+      END INTERFACE
+      INTERFACE mp_allgather
+        MODULE PROCEDURE mp_allgatherv_ctt
       END INTERFACE
 
       INTEGER, PRIVATE, SAVE :: mp_high_watermark = 0
@@ -191,6 +196,59 @@
         return
       END SUBROUTINE mp_gather_rvv
 
+!------------------------------------------------------------------------------!
+!..mp_gather_ctt
+!..Andrea Ferretti
+      SUBROUTINE mp_gather_ctt(mydata, alldata, root, gid)
+        IMPLICIT NONE
+        COMPLEX(dbl), INTENT(IN) :: mydata(:,:,:)
+        COMPLEX(dbl), INTENT(OUT) :: alldata(:,:,:)
+        INTEGER, INTENT(IN) :: root
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen, ierr
+#if defined (__MPI)
+        group = MPI_COMM_WORLD
+        msglen = SIZE(mydata)
+        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8902)
+        IF( PRESENT( gid ) ) group = gid
+        CALL MPI_GATHER(mydata, msglen, MPI_DOUBLE_COMPLEX, alldata, msglen, &
+          MPI_DOUBLE_COMPLEX, root, group, IERR)
+        IF (ierr/=0) CALL mp_stop(8001)
+#else
+        msglen = SIZE(mydata)
+        alldata = mydata
+#endif
+        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        RETURN
+      END SUBROUTINE mp_gather_ctt
+
+!------------------------------------------------------------------------------!
+!..mp_allgatherv_ctt
+!..Andrea Ferretti
+      SUBROUTINE mp_allgatherv_ctt(mydata, alldata, displs, gid)
+        IMPLICIT NONE
+        COMPLEX(dbl), INTENT(IN)  :: mydata(:,:,:)
+        COMPLEX(dbl), INTENT(OUT) :: alldata(:,:,:)
+        INTEGER,      INTENT(IN)  :: displs(:)
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen, ierr
+#if defined (__MPI)
+        group = MPI_COMM_WORLD
+        msglen = SIZE(mydata)
+        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8902)
+        IF( PRESENT( gid ) ) group = gid
+        CALL MPI_ALLGATHERV(mydata, msglen, MPI_DOUBLE_COMPLEX, alldata, msglen, &
+                            displs, MPI_DOUBLE_COMPLEX, group, IERR)
+        IF (ierr/=0) CALL mp_stop(8001)
+#else
+        msglen = SIZE(mydata)
+        alldata = mydata
+#endif
+        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        RETURN
+      END SUBROUTINE mp_allgatherv_ctt
 
 !
 !------------------------------------------------------------------------------!
