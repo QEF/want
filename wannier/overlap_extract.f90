@@ -31,7 +31,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE log_module,        ONLY : log_push, log_pop
    USE files_module,      ONLY : file_open, file_close
    USE util_module,       ONLY : mat_mul
-   USE subspace_module,   ONLY : eamp, subspace_read
+   USE subspace_module,   ONLY : eamp, subspace_read, subspace_deallocate
    USE windows_module,    ONLY : dimwinx, dimwin, windows_read
    USE kpoints_module,    ONLY : nkpts, nkpts_g, iks, iproc_g, nb, nnlist, nnpos, nnrev 
    USE overlap_module,    ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
@@ -79,7 +79,7 @@ SUBROUTINE overlap_extract(dimwann)
         CALL windows_read(space_unit,"WINDOWS",lfound)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1) 
         !
-        CALL subspace_read(space_unit,"SUBSPACE",lfound)
+        CALL subspace_read(space_unit,"SUBSPACE",lfound, LLAMP=.FALSE.)
         IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1) 
         !
    CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
@@ -169,6 +169,11 @@ SUBROUTINE overlap_extract(dimwann)
                      dimwann, dimwann, dimwin(ik_g) )
        !
    ENDDO
+   !
+   ! memory cleanup
+   ! lamp is not allocated, we just leave wan_eig alloc
+   DEALLOCATE( eamp, STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'deallocating eamp', ABS(ierr))
 
 
    !

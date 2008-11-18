@@ -104,6 +104,7 @@ wfc_info.o \
 wfc_manager.o \
 windows.o \
 workspace_wan.o \
+workspace_dis.o \
 write_decay.o \
 write_upf_v2.o \
 xsf.o \

@@ -68,6 +68,7 @@ WANNIER_OBJS= \
 ../wannier/wfc_info.o \
 ../wannier/windows.o \
 ../wannier/workspace_wan.o \
+../wannier/workspace_dis.o \
 ../wannier/write_upf_v2.o 
 
 

@@ -36,6 +36,7 @@
    USE hamiltonian_module,       ONLY : hamiltonian_memusage, ham_alloc => alloc
    USE correlation_module,       ONLY : correlation_memusage, corr_alloc => alloc
    USE workspace_wan_module,     ONLY : workspace_wan_memusage, workwan_alloc => alloc
+   USE workspace_dis_module,     ONLY : workspace_dis_memusage, workdis_alloc => alloc
    !
    IMPLICIT NONE
    !
@@ -132,6 +133,11 @@
           mtmp    =  workspace_wan_memusage()
           memsum  =  memsum + mtmp
           WRITE(iunit, 100) "workspace_wan", mtmp
+      ENDIF
+      IF ( workdis_alloc ) THEN
+          mtmp    =  workspace_dis_memusage()
+          memsum  =  memsum + mtmp
+          WRITE(iunit, 100) "workspace_dis", mtmp
       ENDIF
           !
           mtmp    =  us_memusage()

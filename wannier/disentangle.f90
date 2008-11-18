@@ -13,27 +13,30 @@
    PROGRAM disentangle
    !=====================================================
 
-       USE kinds,            ONLY : dbl
-       USE parameters,       ONLY : nstrx
-       USE constants,        ONLY : bohr => BOHR_RADIUS_ANGS, ZERO, ONE, CZERO, CONE
-       USE version_module,   ONLY : version_number
-       USE io_module,        ONLY : stdout, ionode, ionode_id, io_name, space_unit, wantdata_form
-       USE log_module,       ONLY : log_push, log_pop
-       USE files_module,     ONLY : file_open, file_close
-       USE timing_module,    ONLY : timing, timing_upto_now
-       USE control_module,   ONLY : subspace_init_mode => subspace_init, verbosity, &
-                                    unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
-                                    read_symmetry
-       USE util_module,      ONLY : zmat_unitary, mat_hdiag, mat_mul
-       USE kpoints_module,   ONLY : nkpts, nkpts_g, iks, ike, iproc_g, vkpt_g, nb, nnlist, nnpos, nnrev
-       USE windows_module,   ONLY : imin, dimwin, dimwinx, eig, dimfroz, indxnfroz
-       USE windows_module,   ONLY : windows_allocate, windows_write
-       USE subspace_module,  ONLY : dimwann, wan_eig, lamp, eamp, mtrx_in, mtrx_out
-       USE subspace_module,  ONLY : disentangle_thr, maxiter_dis, alpha_dis, &
-                                    subspace_allocate, subspace_write
-       USE overlap_module,   ONLY : Mkb, overlap_allocate
-       USE mp_global,        ONLY : mpime
-       USE mp,               ONLY : mp_sum
+       USE kinds,                 ONLY : dbl
+       USE parameters,            ONLY : nstrx
+       USE constants,             ONLY : bohr => BOHR_RADIUS_ANGS, ZERO, ONE, CZERO, CONE
+       USE version_module,        ONLY : version_number
+       USE io_module,             ONLY : stdout, ionode, ionode_id, io_name, space_unit, wantdata_form
+       USE log_module,            ONLY : log_push, log_pop
+       USE files_module,          ONLY : file_open, file_close
+       USE timing_module,         ONLY : timing, timing_upto_now
+       USE control_module,        ONLY : subspace_init_mode => subspace_init, verbosity, &
+                                         unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
+                                         read_symmetry
+       USE util_module,           ONLY : zmat_unitary, mat_hdiag, mat_mul
+       USE kpoints_module,        ONLY : nkpts, nkpts_g, iks, ike, iproc_g, vkpt_g, &
+                                         nb, nnlist, nnpos, nnrev
+       USE windows_module,        ONLY : imin, dimwin, dimwinx, eig, dimfroz, indxnfroz
+       USE windows_module,        ONLY : windows_allocate, windows_write
+       USE subspace_module,       ONLY : dimwann, wan_eig, lamp, eamp
+       USE subspace_module,       ONLY : disentangle_thr, maxiter_dis, alpha_dis, &
+                                         subspace_allocate, subspace_write
+       USE workspace_dis_module,  ONLY : mtrx_in, mtrx_out, Mkb_aux, Akb_aux, &
+                                         workspace_dis_allocate
+       USE overlap_module,        ONLY : Mkb, overlap_allocate
+       USE mp_global,             ONLY : mpime
+       USE mp,                    ONLY : mp_sum
        USE want_interfaces_module
        !
        IMPLICIT NONE
@@ -44,9 +47,8 @@
        CHARACTER(11)             :: subname='disentangle'
        !
        REAL(dbl),    ALLOCATABLE :: w(:)
-       COMPLEX(dbl), ALLOCATABLE :: ham(:,:,:)
-       COMPLEX(dbl), ALLOCATABLE :: z(:,:)
-       COMPLEX(dbl), ALLOCATABLE :: Akb_aux(:,:,:,:), Mkb_aux(:,:,:,:), caux(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: ham(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: z(:,:), caux(:,:)
        CHARACTER(LEN=nstrx)      :: filename 
        !
        REAL(dbl)  :: omega_i, omega_i_save, omega_i_err
@@ -84,29 +86,23 @@
        ! 
        ! ...  other allocations
        !
-       CALL subspace_allocate()
+       CALL subspace_allocate( LEIG=.FALSE., LEAMP=.FALSE.)
        CALL overlap_allocate()
+       !
+       CALL workspace_dis_allocate()
 
 
        !
        ! ...  Local allocations
        !
-       ALLOCATE( ham(dimwinx,dimwinx,nkpts), STAT=ierr ) 
+       ALLOCATE( ham(dimwinx,dimwinx), STAT=ierr ) 
        IF( ierr /=0 ) CALL errore(subname, 'allocating ham', ABS(ierr) )
-       !
-       ALLOCATE( z(dimwinx,dimwinx), w(dimwinx), STAT = ierr )
-       IF( ierr /=0 ) CALL errore(subname, 'allocating z, w', ABS(ierr) )
-       !
-       ALLOCATE( Mkb_aux(dimwann,dimwann,nb/2,nkpts), STAT=ierr ) 
-       IF( ierr /=0 ) CALL errore(subname, 'allocating Mkb_aux', ABS(ierr) )
-       !
-       ALLOCATE( Akb_aux(dimwinx,dimwann,nb,nkpts), STAT=ierr ) 
-       IF( ierr /=0 ) CALL errore(subname, 'allocating Akb_aux', ABS(ierr) )
        !
        ALLOCATE( caux(dimwinx,dimwann), STAT=ierr ) 
        IF( ierr /=0 ) CALL errore(subname, 'allocating caux', ABS(ierr) )
-
-
+       !
+       ALLOCATE( z(dimwinx,dimwinx), w(dimwinx), STAT = ierr )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating z, w', ABS(ierr) )
 
 !
 !--------------------------------------------
@@ -458,15 +454,12 @@
        ENDIF
 
 
-       ! ...  Diagonalize the hamiltonian within the optimized subspace at each kpoint
-       !      in order to re-define eigenvalues and eigenvectors
        !
-       IF ( .NOT. ALLOCATED(eamp) ) THEN
-           !
-           ALLOCATE( eamp(dimwinx, dimwann, nkpts_g), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname, 'allocating eamp', ABS(ierr) )
-           !
-       ENDIF
+       ! Diagonalize the hamiltonian within the optimized subspace at each kpoint
+       ! in order to re-define eigenvalues and eigenvectors
+       !
+       ! allocate eamp
+       CALL subspace_allocate( LEIG=.TRUE., LEAMP=.TRUE. )
      
        !
        ! nullify eamp and wan_eig for all global kpts
@@ -487,10 +480,10 @@
            DO j = 1, dimwann
            DO i = 1, dimwann
                !
-               ham(i,j,ik) = CZERO
+               ham(i,j) = CZERO
                DO l = 1, dimwin(ik_g)
                    !
-                   ham(i,j,ik) = ham(i,j,ik) + &
+                   ham(i,j) = ham(i,j) + &
                                  CONJG(lamp(l,i,ik_g)) * lamp(l,j,ik_g) * eig(imin(ik_g)+l-1,ik_g)
                    !
                ENDDO
@@ -499,7 +492,7 @@
            ENDDO
            !
            CALL timing('mat_hdiag', OPR='start')
-           CALL mat_hdiag(z(:,:), wan_eig(:,ik_g), ham(:,:,ik), dimwann)
+           CALL mat_hdiag(z(:,:), wan_eig(:,ik_g), ham(:,:), dimwann)
            CALL timing('mat_hdiag', OPR='stop')
  
            !
@@ -512,12 +505,12 @@
            DO i = 1, dimwin(ik_g)
                !
                DO l = 1, dimwann
-                    eamp(i,j,ik_g) = eamp(i,j,ik_g) + z(l,j)*lamp(i,l,ik_g)
+                   eamp(i,j,ik_g) = eamp(i,j,ik_g) + z(l,j)*lamp(i,l,ik_g)
                ENDDO
                !
            ENDDO
            ENDDO
- 
+           ! 
        ENDDO 
        !
        ! get rid of parallelism
@@ -536,7 +529,7 @@
        ! used the lambda eigenvectors as the basis set for the optimal subspace,
        ! i.e., write lamp instead of eamp. However, in order to calculate the
        ! interpolated band structure we need to assume that the unitary rotations
-       ! obtained in wannier.f are done starting from the energy eigenvectors.
+       ! obtained in wannier.f90 are done starting from the energy eigenvectors.
        ! Of course, if we were only interested in the maxloc WFs, not in the 
        ! interpolated band structure, we could have used lamp. I have check that
        ! the resulting spread and average location of the maxloc WFs are exactly the 
@@ -586,9 +579,6 @@
        !
        DEALLOCATE( z, w, STAT=ierr )
        IF( ierr /=0 ) CALL errore(subname, 'deallocating z, w', ABS(ierr) )
-       !
-       DEALLOCATE( Mkb_aux, Akb_aux, STAT=ierr )
-       IF( ierr /=0 ) CALL errore(subname, 'deallocating Mkb_aux, Akb_aux', ABS(ierr) )
        !
        DEALLOCATE( caux, STAT=ierr ) 
        IF( ierr /=0 ) CALL errore(subname, 'deallocating caux', ABS(ierr) )

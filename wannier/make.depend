@@ -96,6 +96,7 @@ cleanup.o : trial_center_data.o
 cleanup.o : uspp.o
 cleanup.o : wfc_data.o
 cleanup.o : windows.o
+cleanup.o : workspace_dis.o
 cleanup.o : workspace_wan.o
 cmplx_bands.o : converters.o
 cmplx_bands.o : correlation.o
@@ -180,6 +181,7 @@ disentangle.o : subspace.o
 disentangle.o : version.o
 disentangle.o : want_interfaces.o
 disentangle.o : windows.o
+disentangle.o : workspace_dis.o
 domega_aux.o : converters.o
 domega_aux.o : kpoints.o
 domega_aux.o : lattice.o
@@ -415,6 +417,7 @@ memusage.o : trial_center_data.o
 memusage.o : uspp.o
 memusage.o : wfc_data.o
 memusage.o : windows.o
+memusage.o : workspace_dis.o
 memusage.o : workspace_wan.o
 monkpack.o : ../libs/constants.o
 monkpack.o : ../libs/kind.o
@@ -859,6 +862,10 @@ windows.o : ../libs/parser.o
 windows.o : ../libs/qexml.o
 windows.o : ../libs/qexpt.o
 windows.o : ../libs/timing.o
+workspace_dis.o : kpoints.o
+workspace_dis.o : ../libs/constants.o
+workspace_dis.o : ../libs/kind.o
+workspace_dis.o : subspace.o
 workspace_wan.o : kpoints.o
 workspace_wan.o : ../libs/constants.o
 workspace_wan.o : ../libs/kind.o
