@@ -127,7 +127,7 @@ run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
 #
 # running BULK
 #
-run_conductor SUFFIX=${SUFFIX}_bulk  RUN=$BULK
+run_conductor NAME=CONDUCTOR_BULK  SUFFIX=${SUFFIX}_bulk  RUN=$BULK
 
 
 #
