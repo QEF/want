@@ -206,7 +206,7 @@
           !
           IF (ionode .AND. ( nwfc_buffer /= dimwinx .OR. nkb_buffer /= nkb ) ) THEN
               !
-              WRITE( stdout, "(/, 2x, '<WFC_BUFFERING>',/ )")
+              WRITE( stdout, "(/, 1x, '<WFC_BUFFERING>',/ )")
               WRITE( stdout, "(   2x, '     dimwinx = ', i6)") dimwinx
               WRITE( stdout, "(   2x, ' nwfc_buffer = ', i6)") nwfc_buffer
               WRITE( stdout, "(   2x, '  nkb_buffer = ', i6)") nkb_buffer
@@ -220,7 +220,7 @@
               !
               WRITE( stdout, "(/, 4x,  'beta kb    -->',i6,'  step(s)')") nstep_kb
               !
-              WRITE( stdout, "(/, 2x, '</WFC_BUFFERING>',/ )")
+              WRITE( stdout, "(/, 1x, '</WFC_BUFFERING>',/ )")
               !
           ENDIF
 

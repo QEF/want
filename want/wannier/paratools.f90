@@ -10,8 +10,9 @@
    MODULE paratools_module
    !*********************************************
    !
+   USE kinds,          ONLY : dbl
    USE mp_global,      ONLY : nproc, mpime
-   USE mp,             ONLY : mp_sum
+   USE mp,             ONLY : mp_sum, mp_allgather
    USE timing_module,  ONLY : timing
    USE log_module,     ONLY : log_push, log_pop
    !
@@ -19,6 +20,7 @@
    PRIVATE
    !
    PUBLIC :: para_get_poolindex
+   PUBLIC :: para_poolrecover
    !
 CONTAINS
 !
@@ -87,6 +89,31 @@ CONTAINS
    RETURN
    !
 END SUBROUTINE para_get_poolindex
+
+
+!*********************************************
+   SUBROUTINE para_poolrecover( data_l, data_g, iks, ike)
+   !*********************************************
+   !  
+   IMPLICIT NONE
+   !
+   COMPLEX(dbl),   INTENT(IN)  :: data_l(:,:,:)
+   COMPLEX(dbl),   INTENT(OUT) :: data_g(:,:,:)
+   INTEGER,        INTENT(IN)  :: iks(:), ike(:)
+   !
+   CHARACTER(16)  :: subname='para_poolrecover'
+   !
+   CALL timing( subname, OPR="start")
+   CALL log_push( subname )
+   !
+   data_g = 0.0
+   !
+   CALL timing( subname, OPR="stop")
+   CALL log_pop( subname )
+   !
+   RETURN
+   !
+END SUBROUTINE para_poolrecover
 
 END MODULE paratools_module
 

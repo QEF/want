@@ -34,6 +34,7 @@
    USE hamiltonian_module,       ONLY : hamiltonian_deallocate, ham_alloc => alloc
    USE correlation_module,       ONLY : correlation_deallocate, corr_alloc => alloc
    USE workspace_wan_module,     ONLY : workspace_wan_deallocate, workwan_alloc => alloc
+   USE workspace_dis_module,     ONLY : workspace_dis_deallocate, workdis_alloc => alloc
    !
    IMPLICIT NONE
       
@@ -53,6 +54,7 @@
       IF ( corr_alloc )     CALL correlation_deallocate()
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
       IF ( workwan_alloc )  CALL workspace_wan_deallocate()
+      IF ( workdis_alloc )  CALL workspace_dis_deallocate()
                             CALL us_deallocate()
                             CALL uspp_deallocate()
                             CALL uspp_param_deallocate()

@@ -4,6 +4,9 @@
 =======================================================
 
 
+18 Nov 2008      Further improvements in parallelism. Menagement of memory in
+                 subspace module improved. (AF)
+
 14 Nov 2008      Timing of parallel routines improved. (AF)
 
 07 Nov 2008      Timing module updated to average over pools for well-defined

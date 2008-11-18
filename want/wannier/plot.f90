@@ -213,7 +213,7 @@
           !
           CALL windows_read(space_unit,"WINDOWS",lfound)
           IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1)
-          CALL subspace_read(space_unit,"SUBSPACE",lfound)
+          CALL subspace_read(space_unit,"SUBSPACE",lfound, LLAMP=.FALSE.)
           IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1)
           !
       CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
