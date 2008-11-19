@@ -25,7 +25,6 @@
    COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
    COMPLEX(dbl), ALLOCATABLE ::  dq(:,:,:) 
    COMPLEX(dbl), ALLOCATABLE ::  dq0(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE ::  cdU(:,:,:)
    COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
    COMPLEX(dbl), ALLOCATABLE ::  cU0(:,:,:) 
    COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
@@ -37,7 +36,7 @@
    PUBLIC :: sheet, csheet
    PUBLIC :: domg, domg_aux
    PUBLIC :: dq, dq0
-   PUBLIC :: cdU, cU0
+   PUBLIC :: cU0
    PUBLIC :: Mkb0, Mkb_aux
    !
    PUBLIC :: workspace_wan_allocate
@@ -59,10 +58,10 @@ CONTAINS
       IF ( nb <=0  )     CALL errore(subname,'invalid nb', 1 )
       IF ( dimwann <=0 ) CALL errore(subname,'invalid dimwann', 1 )
 
-      ALLOCATE( csheet(dimwann,nb,nkpts), STAT=ierr )
+      ALLOCATE( csheet(dimwann,nb,nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating csheet', ABS(ierr))
       !
-      ALLOCATE( sheet(dimwann,nb,nkpts), STAT=ierr )
+      ALLOCATE( sheet(dimwann,nb,nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating sheet', ABS(ierr))
 
       ALLOCATE( cU0(dimwann,dimwann,nkpts_g), STAT=ierr )
@@ -74,10 +73,10 @@ CONTAINS
       ALLOCATE( Mkb_aux(dimwann,dimwann,nb/2,nkpts), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating Mkb_aux', ABS(ierr) )
       !
-      ALLOCATE( domg(dimwann,dimwann,nkpts), STAT=ierr )
+      ALLOCATE( domg(dimwann,dimwann,nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating domg', ABS(ierr) )
       !
-      ALLOCATE( domg_aux(dimwann,dimwann,nkpts), STAT=ierr )
+      ALLOCATE( domg_aux(dimwann,dimwann,nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating domg_aux', ABS(ierr) )
       !
       ALLOCATE( dq0(dimwann,dimwann,nkpts), STAT=ierr )
@@ -86,9 +85,6 @@ CONTAINS
       ALLOCATE( dq(dimwann,dimwann,nkpts), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating dq', ABS(ierr) )
       !
-      ALLOCATE( cdU(dimwann,dimwann,nkpts), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating cdU', ABS(ierr) )
-
       !
       alloc = .TRUE.
       !
@@ -150,11 +146,6 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname, 'deallocating dq', ABS(ierr) )
       ENDIF
       !
-      IF ( ALLOCATED( cdU ) ) THEN
-         DEALLOCATE( cdU, STAT=ierr )
-         IF( ierr /=0 ) CALL errore(subname, 'deallocating cdU', ABS(ierr) ) 
-      ENDIF
-
       !
       alloc = .FALSE.
       !
@@ -175,7 +166,6 @@ CONTAINS
        IF ( ALLOCATED(domg_aux) ) cost = cost + REAL(SIZE(domg_aux))   * 16.0_dbl
        IF ( ALLOCATED(dq) )       cost = cost + REAL(SIZE(dq))         * 16.0_dbl
        IF ( ALLOCATED(dq0) )      cost = cost + REAL(SIZE(dq0))        * 16.0_dbl
-       IF ( ALLOCATED(cdU) )      cost = cost + REAL(SIZE(cdU))        * 16.0_dbl
        IF ( ALLOCATED(cU0) )      cost = cost + REAL(SIZE(cU0))        * 16.0_dbl
        IF ( ALLOCATED(Mkb0) )     cost = cost + REAL(SIZE(Mkb0))       * 16.0_dbl
        IF ( ALLOCATED(Mkb_aux) )  cost = cost + REAL(SIZE(Mkb_aux))    * 16.0_dbl

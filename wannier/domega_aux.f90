@@ -28,10 +28,10 @@
    USE log_module,         ONLY : log_push, log_pop
    USE lattice_module,     ONLY : avec
    USE kpoints_module,     ONLY : nkpts_g, iks, iproc_g, nb, vb, wb, nnpos, nnrev, nnlist
-   USE mp_global,          ONLY : mpime
-   USE mp,                 ONLY : mp_get
+   USE mp,                 ONLY : mp_sum
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE trial_center_module
+   !
    IMPLICIT NONE 
 
    !  
@@ -41,14 +41,14 @@
    REAL(dbl),          INTENT(in)    :: rave(3,dimwann), a
    TYPE(trial_center), INTENT(in)    :: trial(dimwann)
    COMPLEX(dbl),       INTENT(in)    :: Mkb(dimwann,dimwann,nb/2,nkpts)
-   COMPLEX(dbl),       INTENT(inout) :: domg(dimwann,dimwann,nkpts)
+   COMPLEX(dbl),       INTENT(inout) :: domg(dimwann,dimwann,nkpts_g)
 
    !
    ! local variables
    !
    CHARACTER(10)   :: subname='domega_aux'
    !
-   INTEGER         :: ik, ik_g, ik_proc, ikb, ikb_g, ikb_proc, ib, inn, ipos
+   INTEGER         :: ikk_g, ik, ik_g, ikb, ikb_g, ib, inn, ipos
    INTEGER         :: i, m, n, ierr
    REAL(dbl)       :: fact
    REAL(dbl),    ALLOCATABLE :: qb(:), Dr(:,:) 
@@ -116,13 +116,9 @@
    fact = a / REAL( nkpts_g, dbl)
 
    kpoints_loop: &
-   DO ik_g = 1, nkpts_g
+   DO ik = 1, nkpts
        !
-       ik = ik_g -iks + 1
-       ik_proc = iproc_g( ik_g )
-       !
-       aux2(:,:) = CZERO
-       !
+       ik_g = ik +iks -1
        !
        bvectors_loop: &
        DO inn = 1, nb / 2 
@@ -137,36 +133,22 @@
                   !
                   ! positive b vectors
                   !
-                  IF ( mpime == ik_proc ) THEN
-                      !
-                      ib     = nnpos( inn )
-                      !
-                      Mkb_aux( :, :)  = Mkb( :, :, inn, ik)
-                      !
-                  ENDIF
+                  ikk_g  = ik_g
+                  !
+                  ib     = nnpos( inn )
+                  !
+                  Mkb_aux( :, :)  = Mkb( :, :, inn, ik)
                   !
                CASE ( 2 )
                   !
                   ! negative b vectors
                   !
                   ib       = nnrev( nnpos( inn ) )
-                  ikb_g    = nnlist( ib, ik_g )
-                  ikb_proc = iproc_g( ikb_g )
-
+                  ikb_g    = nnlist( nnpos(inn), ik_g )
                   !
-                  ! get all the needed quantities in the current pool
+                  ikk_g    = ikb_g
                   !
-                  IF ( mpime == ikb_proc ) THEN
-                      !
-                      ikb = ikb_g - iks +1
-                      !
-                      Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, inn, ikb) ) )
-                      !
-                  ENDIF
-                  !
-                  CALL timing( 'mp_get', OPR='start' )
-                  CALL mp_get( Mkb_aux, Mkb_aux, mpime, ik_proc, ikb_proc, 1 )
-                  CALL timing( 'mp_get', OPR='stop' )
+                  Mkb_aux( :, :)  = CONJG( TRANSPOSE( Mkb( :, :, inn, ik) ) )
                   !
                CASE DEFAULT
                   CALL errore(subname,'invalid ipos value',71)
@@ -177,62 +159,62 @@
                !       qb_n  = w_n *  b * Dr_n
                !       At_mn = w_n * (b * Dr_n) * Mkb_mn / Mkb_nn 
                !
-               IF ( mpime == ik_proc ) THEN
+               DO n = 1, dimwann
                    !
-                   DO n = 1, dimwann
+                   qb(n) = trial(n)%weight * DOT_PRODUCT( vb(:,ib), Dr(:,n) ) 
+                   !
+                   DO m = 1, dimwann
                        !
-                       qb(n) = trial(n)%weight * DOT_PRODUCT( vb(:,ib), Dr(:,n) ) 
-                       !
-                       DO m = 1, dimwann
-                           !
-                           At(m,n) = qb(n) * Mkb_aux(m,n) / Mkb_aux(n,n)
-                           !
-                       ENDDO
+                       At(m,n) = qb(n) * Mkb_aux(m,n) / Mkb_aux(n,n)
                        !
                    ENDDO
                    !
+               ENDDO
+               !
+               !
+               ! compute the contribution to the variation of the functional
+               ! note that a term -i has been factorized out ot make dOmega/dW
+               ! hermitean
+               !
+               aux2(:,:) = CZERO
+               !
+               DO n = 1, dimwann
+               DO m = 1, dimwann
                    !
-                   ! compute the contribution to the variation of the functional
-                   ! note that a term -i has been factorized out ot make dOmega/dW
-                   ! hermitean
+                   ! S[At^{k,b}] = (At+At\dag)/2 
                    !
-                   DO n = 1, dimwann
-                   DO m = 1, n
-                       !
-                       ! S[At^{k,b}] = (At+At\dag)/2 
-                       !
-                       aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
-                       !
-                   ENDDO
-                   ENDDO
+                   aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
+                 
                    !
-               ENDIF
+                   ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
+                   !
+                   domg(m,n,ikk_g) = domg(m,n,ikk_g) + fact * aux2(m,n)
+                   !
+               ENDDO
+               ENDDO
                !
            ENDDO
            !
        ENDDO bvectors_loop
        ! 
        !
-       IF ( mpime == ik_proc ) THEN
-           ! 
-           ! symmetrize aux2 
-           ! 
-           DO n = 1, dimwann 
-           DO m = 1, n-1
-               aux2(n,m) = CONJG( aux2(m,n) )
-           ENDDO
-           ENDDO
-           !
-           !
-           ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
-           !
-           domg(:,:,ik) = fact * aux2(:,:)
-           !
-       ENDIF
-       !
    ENDDO kpoints_loop
 
+   !   
+   ! recover over parallelism
+   !   
+   CALL timing( 'mp_sum', OPR='start' )
+   !
+   DO ik_g = 1, nkpts_g
+       CALL mp_sum( domg(:,:,ik_g) )
+   ENDDO
+   !
+   CALL timing( 'mp_sum', OPR='stop' )
 
+
+   !
+   ! local cleanup
+   !
    DEALLOCATE( qb, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname, 'deallocating qb', ABS(ierr) )
    !

@@ -21,7 +21,7 @@
    USE io_module,        ONLY : stdout
    USE timing_module,    ONLY : timing
    USE log_module,       ONLY : log_push, log_pop
-   USE kpoints_module,   ONLY : nkpts_g, nb, vb, wb, nnpos
+   USE kpoints_module,   ONLY : nkpts_g, iks, nb, vb, wb, nnpos
    USE mp,               ONLY : mp_sum
    !
    IMPLICIT NONE
@@ -30,8 +30,8 @@
    ! input variables
    !
    INTEGER,      INTENT(in) :: dimwann, nkpts
-   REAL(dbl),    INTENT(in) :: sheet(dimwann,nb,nkpts)
-   COMPLEX(dbl), INTENT(in) :: csheet(dimwann,nb,nkpts)
+   REAL(dbl),    INTENT(in) :: sheet(dimwann,nb,nkpts_g)
+   COMPLEX(dbl), INTENT(in) :: csheet(dimwann,nb,nkpts_g)
    COMPLEX(dbl), INTENT(in) :: Mkb(dimwann,dimwann,nb/2,nkpts)
    !
    REAL(dbl),   INTENT(out) :: r2ave(dimwann), rave2(dimwann), rave(3,dimwann)
@@ -40,7 +40,7 @@
    !
    ! local variables
    !
-   INTEGER   :: ik, ib, inn
+   INTEGER   :: ik, ik_g, ib, inn
    INTEGER   :: m, n, ierr 
    REAL(dbl) :: rtmp, rtmp1
    REAL(dbl), ALLOCATABLE :: aux(:,:,:)
@@ -72,12 +72,14 @@
    DO ik  = 1, nkpts
    DO inn = 1, nb / 2
        !
+       ik_g = ik + iks -1
+       !
        ib = nnpos( inn )
        !
        DO m = 1, dimwann
             !
-            aux(m,inn,ik) = AIMAG(LOG( csheet(m,ib,ik) * Mkb(m,m,inn,ik) ) ) &
-                           - sheet(m,ib,ik) 
+            aux(m,inn,ik) = AIMAG(LOG( csheet(m,ib,ik_g) * Mkb(m,m,inn,ik) ) ) &
+                           - sheet(m,ib,ik_g) 
        ENDDO
        !
    ENDDO
