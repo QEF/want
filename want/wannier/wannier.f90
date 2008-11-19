@@ -27,7 +27,7 @@
       USE files_module,        ONLY : file_open, file_close
       USE version_module,      ONLY : version_number
       USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag
-      USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, wbtot
+      USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, ike, wbtot
       USE overlap_module,      ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
                                       ncg, wannier_thr, cu, rave, rave2, r2ave, &
@@ -35,7 +35,7 @@
                                       localization_allocate, localization_write, localization_print, &
                                       a_condmin, niter_condmin, dump_condmin, xcell
       USE hamiltonian_module,  ONLY : hamiltonian_write, hamiltonian_allocate
-      USE workspace_wan_module,ONLY : sheet, csheet, domg, domg_aux, dq, dq0, cdU, cu0, Mkb0, Mkb_aux, &
+      USE workspace_wan_module,ONLY : sheet, csheet, domg, domg_aux, dq, dq0, cu0, Mkb0, Mkb_aux, &
                                       workspace_wan_allocate
       USE mp,                  ONLY : mp_sum
       !
@@ -240,11 +240,15 @@
            !
            gcnorm1 = ZERO
            DO ik = 1, nkpts
+               !
+               ik_g = ik + iks -1
+               !
                DO n = 1, dimwann
                DO m = 1, dimwann
-                   gcnorm1 = gcnorm1 + REAL( domg(m,n,ik)*CONJG( domg(m,n,ik) ) )
+                   gcnorm1 = gcnorm1 + REAL( domg(m,n,ik_g)*CONJG( domg(m,n,ik_g) ) )
                ENDDO
                ENDDO
+               !
            ENDDO
            !
            CALL timing ( 'mp_sum_wan', OPR='start' )
@@ -255,7 +259,8 @@
            !
            ! set dq
            !
-           dq(:,:,:) = domg(:,:,:) 
+           dq(:,:,:) = domg(:,:,iks:ike) 
+           !
            IF ( MOD( (ncount-1), ncg ) /= 0 )  THEN 
                 dq(:,:,:) = dq(:,:,:) + gcnorm1/gcnorm0 * dq0(:,:,:)
            ENDIF
@@ -271,9 +276,11 @@
            !
            DO ik = 1, nkpts
                !
+               ik_g = ik + iks -1
+               !
                DO n = 1, dimwann
                DO m = 1, dimwann
-                   gcnorm_aux = gcnorm_aux - REAL( dq(m,n,ik) * CONJG( domg(m,n,ik)) )
+                   gcnorm_aux = gcnorm_aux - REAL( dq(m,n,ik) * CONJG( domg(m,n,ik_g )) )
                ENDDO
                ENDDO
                !
@@ -296,7 +303,7 @@
            ! compute the change in the unitary matrix dU = e^(i * dq)
            ! and update U
            !
-           CALL unitary_update( dimwann, nkpts, dq, cU, cdU ) 
+           CALL unitary_update( dimwann, nkpts, dq, cU ) 
 
 
            !
@@ -345,7 +352,7 @@
                ! compute the change in the unitary matrix dU = e^(i * dq)
                ! and update U
                !
-               CALL unitary_update( dimwann, nkpts, dq, cU, cdU ) 
+               CALL unitary_update( dimwann, nkpts, dq, cU ) 
 
 
                !

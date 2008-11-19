@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************************
-SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
+SUBROUTINE unitary_update(dimwann, nkpts, dq, cU)
    !*********************************************************
    !
    ! This subroutine computes the variation in the unitary rotation U
@@ -37,7 +37,6 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
    INTEGER,         INTENT(in)    :: dimwann, nkpts
    COMPLEX(dbl),    INTENT(in)    :: dq (dimwann,dimwann,nkpts)
    COMPLEX(dbl),    INTENT(inout) :: cU (dimwann,dimwann,nkpts_g)
-   COMPLEX(dbl),    INTENT(out)   :: cdu(dimwann,dimwann,nkpts)
 
    !
    ! local variables
@@ -45,7 +44,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
    CHARACTER(14)             :: subname='unitary_update'
    INTEGER                   :: ik, ik_g, i, j, ierr
    REAL(dbl),    ALLOCATABLE :: w(:)
-   COMPLEX(dbl), ALLOCATABLE :: z(:,:), cw(:)
+   COMPLEX(dbl), ALLOCATABLE :: z(:,:), cw(:), cdU(:,:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
    !
    ! ... end of declarations
@@ -68,6 +67,9 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
    !
    ALLOCATE( work(dimwann,dimwann), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname, 'allocating work', ABS(ierr))
+   !
+   ALLOCATE( cdU(dimwann,dimwann), STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating cdU', ABS(ierr))
 
    !
    ! nullify cU for ik_g not in the current pool
@@ -101,12 +103,12 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
         ENDDO
         ENDDO
         !
-        CALL mat_mul( cdU(:,:,ik), work, 'N', z, 'C', dimwann, dimwann, dimwann)
+        CALL mat_mul( cdU(:,:), work, 'N', z, 'C', dimwann, dimwann, dimwann)
 
         !
         ! The orbitals are rotated 
         !
-        CALL mat_mul( work(:,:), cU(:,:,ik_g), 'N', cdU(:,:,ik), 'N', &
+        CALL mat_mul( work(:,:), cU(:,:,ik_g), 'N', cdU(:,:), 'N', &
                       dimwann, dimwann, dimwann )
         cU(:,:,ik_g) = work(:,:)
 
@@ -139,6 +141,9 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU, cdu)
    !
    DEALLOCATE( work, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname, 'deallocating work', ABS(ierr))
+   !
+   DEALLOCATE( cdU, STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname, 'deallocating cdU', ABS(ierr))
 
 
    CALL timing(subname,OPR='stop')
