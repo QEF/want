@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************************
-SUBROUTINE unitary_update(dimwann, nkpts, dq, cU)
+SUBROUTINE unitary_update(dimwann, nkpts, dqp, cU)
    !*********************************************************
    !
    ! This subroutine computes the variation in the unitary rotation U
@@ -35,7 +35,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU)
    ! input variables
    !
    INTEGER,         INTENT(in)    :: dimwann, nkpts
-   COMPLEX(dbl),    INTENT(in)    :: dq (dimwann,dimwann,nkpts)
+   COMPLEX(dbl),    INTENT(in)    :: dqp (dimwann*(dimwann+1)/2,nkpts)
    COMPLEX(dbl),    INTENT(inout) :: cU (dimwann,dimwann,nkpts_g)
 
    !
@@ -85,7 +85,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dq, cU)
         !
         ik_g = ik + iks -1
         !
-        CALL mat_hdiag( z, w, dq(:,:,ik), dimwann)
+        CALL mat_hdiag( z, w, dqp(:,ik), dimwann, 'U' )
 
         !
         ! compute dU on the spectral basis of dq

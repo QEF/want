@@ -4,6 +4,10 @@
 =======================================================
 
 
+19 Nov 2008      Most of the matrices in workspace_wan.f90 are now allocated
+                 in packed form to optimize memory usage. Util.f90 routines
+                 updated accordingly. (AF)
+
 18 Nov 2008      Further improvements in parallelism. Menagement of memory in
                  subspace module improved. (AF)
 
