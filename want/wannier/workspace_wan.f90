@@ -21,10 +21,9 @@
    SAVE
    !
    REAL(dbl),    ALLOCATABLE ::  sheet(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE ::  domg(:,:,:) 
-   COMPLEX(dbl), ALLOCATABLE ::  domg_aux(:,:,:) 
-   COMPLEX(dbl), ALLOCATABLE ::  dq(:,:,:) 
-   COMPLEX(dbl), ALLOCATABLE ::  dq0(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE ::  domg(:,:) 
+   COMPLEX(dbl), ALLOCATABLE ::  dq(:,:) 
+   COMPLEX(dbl), ALLOCATABLE ::  dq0(:,:)
    COMPLEX(dbl), ALLOCATABLE ::  csheet(:,:,:)
    COMPLEX(dbl), ALLOCATABLE ::  cU0(:,:,:) 
    COMPLEX(dbl), ALLOCATABLE ::  Mkb0(:,:,:,:)
@@ -34,7 +33,7 @@
 
    !
    PUBLIC :: sheet, csheet
-   PUBLIC :: domg, domg_aux
+   PUBLIC :: domg
    PUBLIC :: dq, dq0
    PUBLIC :: cU0
    PUBLIC :: Mkb0, Mkb_aux
@@ -73,16 +72,13 @@ CONTAINS
       ALLOCATE( Mkb_aux(dimwann,dimwann,nb/2,nkpts), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating Mkb_aux', ABS(ierr) )
       !
-      ALLOCATE( domg(dimwann,dimwann,nkpts_g), STAT=ierr )
+      ALLOCATE( domg(dimwann*(dimwann+1)/2,nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating domg', ABS(ierr) )
       !
-      ALLOCATE( domg_aux(dimwann,dimwann,nkpts_g), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating domg_aux', ABS(ierr) )
-      !
-      ALLOCATE( dq0(dimwann,dimwann,nkpts), STAT=ierr )
+      ALLOCATE( dq0(dimwann*(dimwann+1)/2,nkpts), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating dq0', ABS(ierr) )
       !
-      ALLOCATE( dq(dimwann,dimwann,nkpts), STAT=ierr )
+      ALLOCATE( dq(dimwann*(dimwann+1)/2,nkpts), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating dq', ABS(ierr) )
       !
       !
@@ -131,11 +127,6 @@ CONTAINS
          IF( ierr /=0 ) CALL errore(subname, 'deallocating domg', ABS(ierr) )
       ENDIF
       !
-      IF ( ALLOCATED( domg_aux ) ) THEN
-         DEALLOCATE( domg_aux,  STAT=ierr )
-         IF( ierr /=0 ) CALL errore(subname, 'deallocating domg_aux', ABS(ierr) )
-      ENDIF
-      !
       IF ( ALLOCATED( dq0 ) ) THEN
          DEALLOCATE( dq0, STAT=ierr )
          IF( ierr /=0 ) CALL errore(subname, 'deallocating dq0', ABS(ierr) )
@@ -163,7 +154,6 @@ CONTAINS
        IF ( ALLOCATED(sheet) )    cost = cost + REAL(SIZE(sheet))      *  8.0_dbl
        IF ( ALLOCATED(csheet) )   cost = cost + REAL(SIZE(csheet))     * 16.0_dbl
        IF ( ALLOCATED(domg) )     cost = cost + REAL(SIZE(domg))       * 16.0_dbl
-       IF ( ALLOCATED(domg_aux) ) cost = cost + REAL(SIZE(domg_aux))   * 16.0_dbl
        IF ( ALLOCATED(dq) )       cost = cost + REAL(SIZE(dq))         * 16.0_dbl
        IF ( ALLOCATED(dq0) )      cost = cost + REAL(SIZE(dq0))        * 16.0_dbl
        IF ( ALLOCATED(cU0) )      cost = cost + REAL(SIZE(cU0))        * 16.0_dbl

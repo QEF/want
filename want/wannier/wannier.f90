@@ -26,7 +26,7 @@
       USE log_module,          ONLY : log_push, log_pop
       USE files_module,        ONLY : file_open, file_close
       USE version_module,      ONLY : version_number
-      USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag
+      USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag, zmat_hdotp
       USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, ike, wbtot
       USE overlap_module,      ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
@@ -35,11 +35,9 @@
                                       localization_allocate, localization_write, localization_print, &
                                       a_condmin, niter_condmin, dump_condmin, xcell
       USE hamiltonian_module,  ONLY : hamiltonian_write, hamiltonian_allocate
-      USE workspace_wan_module,ONLY : sheet, csheet, domg, domg_aux, dq, dq0, cu0, Mkb0, Mkb_aux, &
+      USE workspace_wan_module,ONLY : sheet, csheet, domg, dq, dq0, cU0, Mkb0, Mkb_aux, &
                                       workspace_wan_allocate
       USE mp,                  ONLY : mp_sum
-      !
-      USE trial_center_data_module, ONLY : trial
       !
       USE parser_module
       USE want_interfaces_module
@@ -169,7 +167,7 @@
       ncgfix = ncg
 
       aux1 = ONE / ( FOUR * wbtot )
-      dq0(:,:,:) = CZERO
+      dq0(:,:)   = CZERO
       gcnorm0    = ONE
 
 
@@ -195,7 +193,7 @@
            !
            ! Store cU and Mkb_aux
            !
-           cu0(:,:,1:nkpts_g)    = cU(:,:,1:nkpts_g)
+           cU0(:,:,1:nkpts_g)    = cU(:,:,1:nkpts_g)
            Mkb0(:,:,:,1:nkpts)   = Mkb_aux(:,:,:,1:nkpts)
 
            !
@@ -218,21 +216,10 @@
 
            !
            ! compute the derivative of the functional
+           ! Includint penalty functional contributions
            !
-           CALL domega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, domg)
-
-           !
-           ! apply conditioned minimization if required
-           !
-           IF ( do_condmin ) THEN
-               !
-               domg_aux = CZERO
-               !
-               CALL domega_aux( dimwann, nkpts, Mkb_aux, rave, trial, a_condmin, domg_aux)
-               !
-               domg(:,:,:) = domg(:,:,:) + domg_aux(:,:,:)
-               !
-           ENDIF
+           CALL domega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, &
+                        do_condmin, a_condmin, domg )
 
 
            !
@@ -242,12 +229,7 @@
            DO ik = 1, nkpts
                !
                ik_g = ik + iks -1
-               !
-               DO n = 1, dimwann
-               DO m = 1, dimwann
-                   gcnorm1 = gcnorm1 + REAL( domg(m,n,ik_g)*CONJG( domg(m,n,ik_g) ) )
-               ENDDO
-               ENDDO
+               gcnorm1 = gcnorm1 + REAL( zmat_hdotp( dimwann, 'U', domg(:,ik_g), domg(:,ik_g) ), dbl )
                !
            ENDDO
            !
@@ -259,30 +241,25 @@
            !
            ! set dq
            !
-           dq(:,:,:) = domg(:,:,iks:ike) 
+           dq(:,:) = domg(:,iks:ike) 
            !
            IF ( MOD( (ncount-1), ncg ) /= 0 )  THEN 
-                dq(:,:,:) = dq(:,:,:) + gcnorm1/gcnorm0 * dq0(:,:,:)
+                dq(:,:) = dq(:,:) + gcnorm1/gcnorm0 * dq0(:,:)
            ENDIF
            !
            gcnorm0 = gcnorm1
-           dq0(:,:,:) = dq(:,:,:)
+           dq0(:,:) = dq(:,:)
 
            
            !
            ! auxiliary norm for cg
            !
            gcnorm_aux = ZERO
-           !
            DO ik = 1, nkpts
                !
                ik_g = ik + iks -1
                !
-               DO n = 1, dimwann
-               DO m = 1, dimwann
-                   gcnorm_aux = gcnorm_aux - REAL( dq(m,n,ik) * CONJG( domg(m,n,ik_g )) )
-               ENDDO
-               ENDDO
+               gcnorm_aux = gcnorm_aux + REAL( zmat_hdotp( dimwann, 'U', dq(:,ik), domg(:,ik_g) ), dbl )
                !
            ENDDO
            !
@@ -293,10 +270,10 @@
            gcnorm_aux = gcnorm_aux * aux1
 
            !
-           ! The cg step is calculated
+           ! The SD step is calculated
            !
            aux2 = alpha * aux1
-           dq(:,:,:) = aux2 * dq(:,:,:)
+           dq(:,:) = aux2 * dq(:,:)
 
 
            !
@@ -319,7 +296,7 @@
                        Omega_D, Omega_OD )
            Omega_tot = Omega_I + Omega_D + Omega_OD
            !
-           OmegaA = Omega_tot
+           OmegaA    = Omega_tot
            Omega_var = Omega_tot - Omega_old
 
 
@@ -345,7 +322,7 @@
                IF ( alphamin > THREE * alpha ) alphamin = THREE * alpha
                !
                aux2 = alphamin * aux1
-               dq(:,:,:) = aux2 * dq0(:,:,:)
+               dq(:,:) = aux2 * dq0(:,:)
    
 
                !
@@ -368,7 +345,7 @@
                            Omega_D, Omega_OD )
                Omega_tot = Omega_I + Omega_D + Omega_OD
            
-               OmegaA = Omega_tot
+               OmegaA    = Omega_tot
                Omega_var = Omega_tot - Omega_old
    
                !
@@ -377,7 +354,7 @@
            ENDIF
    
            Omega_old = Omega_tot
-           Omega0 = OmegaA
+           Omega0    = OmegaA
    
 
            !

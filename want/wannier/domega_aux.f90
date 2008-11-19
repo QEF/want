@@ -27,7 +27,7 @@
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
    USE lattice_module,     ONLY : avec
-   USE kpoints_module,     ONLY : nkpts_g, iks, iproc_g, nb, vb, wb, nnpos, nnrev, nnlist
+   USE kpoints_module,     ONLY : nkpts_g, iks, nb, vb, wb, nnpos, nnrev, nnlist
    USE mp,                 ONLY : mp_sum
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE trial_center_module
@@ -37,23 +37,24 @@
    !  
    ! input variables 
    !  
-   INTEGER,            INTENT(in)    :: dimwann, nkpts
-   REAL(dbl),          INTENT(in)    :: rave(3,dimwann), a
-   TYPE(trial_center), INTENT(in)    :: trial(dimwann)
-   COMPLEX(dbl),       INTENT(in)    :: Mkb(dimwann,dimwann,nb/2,nkpts)
-   COMPLEX(dbl),       INTENT(inout) :: domg(dimwann,dimwann,nkpts_g)
+   INTEGER,            INTENT(IN)    :: dimwann, nkpts
+   REAL(dbl),          INTENT(IN)    :: rave(3,dimwann), a
+   TYPE(trial_center), INTENT(IN)    :: trial(dimwann)
+   COMPLEX(dbl),       INTENT(IN)    :: Mkb(dimwann,dimwann,nb/2,nkpts)
+   COMPLEX(dbl),       INTENT(INOUT) :: domg(dimwann*(dimwann+1)/2,nkpts_g)
 
    !
    ! local variables
    !
    CHARACTER(10)   :: subname='domega_aux'
    !
-   INTEGER         :: ikk_g, ik, ik_g, ikb, ikb_g, ib, inn, ipos
-   INTEGER         :: i, m, n, ierr
+   INTEGER         :: ikk_g, ik, ik_g, ikb_g, ib, inn, ipos
+   INTEGER         :: i, m, n, l, ierr
    REAL(dbl)       :: fact
+   COMPLEX(dbl)    :: aux2
    REAL(dbl),    ALLOCATABLE :: qb(:), Dr(:,:) 
    COMPLEX(dbl), ALLOCATABLE :: At(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: aux2(:,:), Mkb_aux(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: Mkb_aux(:,:)
    !
    ! end of declarations 
    !
@@ -78,9 +79,6 @@
    !
    ALLOCATE( Dr(3,dimwann), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname, 'allocating Dr', ABS(ierr) )
-   !
-   ALLOCATE( aux2(dimwann,dimwann),  STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname, 'allocating aux2', ABS(ierr) )
 
    !
    ! build Dr_n = <r>_n - r_n0
@@ -176,19 +174,20 @@
                ! note that a term -i has been factorized out ot make dOmega/dW
                ! hermitean
                !
-               aux2(:,:) = CZERO
-               !
                DO n = 1, dimwann
-               DO m = 1, dimwann
+               DO m = 1, n
+                   !
+                   l =  (n-1) * n /2 + m
+
                    !
                    ! S[At^{k,b}] = (At+At\dag)/2 
                    !
-                   aux2(m,n) = aux2(m,n) - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
+                   aux2 = - wb(inn) * ( At(m,n) + CONJG(At(n,m)) )
                  
                    !
                    ! dOmega/dW(k) = 2 * a * \Sum_b wb * (  S[T] )
                    !
-                   domg(m,n,ikk_g) = domg(m,n,ikk_g) + fact * aux2(m,n)
+                   domg(l,ikk_g) = domg(l,ikk_g) + fact * aux2
                    !
                ENDDO
                ENDDO
@@ -199,17 +198,6 @@
        ! 
        !
    ENDDO kpoints_loop
-
-   !   
-   ! recover over parallelism
-   !   
-   CALL timing( 'mp_sum', OPR='start' )
-   !
-   DO ik_g = 1, nkpts_g
-       CALL mp_sum( domg(:,:,ik_g) )
-   ENDDO
-   !
-   CALL timing( 'mp_sum', OPR='stop' )
 
 
    !
@@ -223,9 +211,6 @@
    !
    DEALLOCATE( Mkb_aux, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname, 'deallocating Mkb_aux', ABS(ierr) )
-   !
-   DEALLOCATE( aux2, STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname, 'deallocating aux2', ABS(ierr) )
 
 
    CALL timing(subname,OPR='stop')

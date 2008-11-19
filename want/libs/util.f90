@@ -25,9 +25,11 @@
 ! SUBROUTINE   mat_svd( m, n, a, s, u, vt)
 ! SUBROUTINE   mat_sv ( n, nrhs, a, b [,ierr])
 ! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
-! SUBROUTINE   mat_hdiag( z, w, a, n)
+! SUBROUTINE   mat_hdiag( z, w, a, n, uplo)
 ! SUBROUTINE   mat_inv( n, a, z [,det_a] )
 ! SUBROUTINE  zmat_diag( z, w, a, n, side)
+! COMPLEX FUNCTION  zmat_dotp( m, n, a, b)
+! COMPLEX FUNCTION  zmat_hdotp( m, a, b)
 ! LOGICAL FUNCTION  zmat_unitary( m, n, z [,side] [,toll])
 ! INTEGER FUNCTION   mat_rank( m, n, a, toll)
 ! 
@@ -64,6 +66,7 @@ END INTERFACE
 ! matrix diagonalization
 INTERFACE mat_hdiag
    MODULE PROCEDURE zmat_hdiag
+   MODULE PROCEDURE zmat_hdiag_pack
    MODULE PROCEDURE zmat_hdiag_gen
    MODULE PROCEDURE dmat_hdiag
 END INTERFACE
@@ -73,7 +76,17 @@ INTERFACE mat_inv
    MODULE PROCEDURE zmat_inv
    MODULE PROCEDURE dmat_inv
 END INTERFACE
-
+!
+! matrix dot product
+INTERFACE zmat_dotp
+   MODULE PROCEDURE zmat_ge_dotp
+END INTERFACE
+!
+! matrix herm dot product
+INTERFACE zmat_hdotp
+   MODULE PROCEDURE zmat_hp_dotp
+   MODULE PROCEDURE zmat_he_dotp
+END INTERFACE
 
 
 PUBLIC :: zmat_pack
@@ -88,6 +101,8 @@ PUBLIC ::  mat_inv
 PUBLIC :: zmat_diag
 PUBLIC :: zmat_unitary
 PUBLIC ::  mat_rank
+PUBLIC :: zmat_hdotp
+PUBLIC :: zmat_dotp
 
 CONTAINS
 
@@ -717,6 +732,55 @@ END SUBROUTINE zmat_hdiag
 
 
 !**********************************************************
+   SUBROUTINE zmat_hdiag_pack( z, w, ap, n, uplo )
+   !**********************************************************
+   !
+   ! utility to diagonalize complex hermitean matrices, in packed form
+   !
+   IMPLICIT NONE
+   COMPLEX(dbl), INTENT(IN)  :: ap(:)
+   COMPLEX(dbl), INTENT(OUT) :: z(:,:)
+   REAL(dbl),    INTENT(OUT) :: w(:)
+   INTEGER,      INTENT(IN)  :: n
+   CHARACTER,    INTENT(IN)  :: uplo
+
+   INTEGER :: i, j, ierr, info
+   COMPLEX(dbl), ALLOCATABLE :: work(:)
+   REAL(dbl), ALLOCATABLE :: rwork(:)
+   INTEGER, ALLOCATABLE :: ifail(:)
+   INTEGER, ALLOCATABLE :: iwork(:)
+
+   ! get the dimension of the problem
+   IF ( n <= 0 ) CALL errore('zmat_hdiag','Invalid N',ABS(n)+1)
+   IF ( n*(n+1)/2 > SIZE(ap) .OR. n*(n+1)/2 > SIZE(ap) ) &
+        CALL errore('zmat_hdiag','Invalid A dimensions',ABS(n)+1)
+   IF ( n > SIZE(z,1) .OR. n > SIZE(z,2) ) &
+        CALL errore('zmat_hdiag','Invalid Z dimensions',ABS(n)+1)
+   
+   ALLOCATE( work(2*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating work',ABS(ierr))
+   ALLOCATE( rwork(7*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating rwork',ABS(ierr))
+   ALLOCATE( ifail(n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating ifail',ABS(ierr))
+   ALLOCATE( iwork(5*n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_hdiag','allocating iwork',ABS(ierr))
+
+   CALL ZHPEVX( 'v', 'a', uplo, n, ap, ZERO, ZERO, 0, 0, -ONE, i, w, &
+                 z, SIZE(z,1), work, rwork, iwork, ifail, info )
+
+   IF ( info < 0 ) CALL errore('zmat_hdiag', 'zhpevx: info illegal value', -info )
+   IF ( info > 0 ) &
+        CALL errore('zmat_hdiag', 'zhpevx: eigenvectors not converged', info )
+    
+   DEALLOCATE( work, rwork, iwork, ifail, STAT=ierr)
+      IF(ierr/=0) CALL errore('zmat_hdiag','deallocating work...ifail',ABS(ierr))
+
+   RETURN
+END SUBROUTINE zmat_hdiag_pack
+
+
+!**********************************************************
    SUBROUTINE zmat_hdiag_gen( z, w, a, b, n )
    !**********************************************************
    !
@@ -1205,6 +1269,132 @@ END FUNCTION zmat_rank
    !
 END FUNCTION dmat_rank
 
+
+!**********************************************************
+   FUNCTION  zmat_ge_dotp( m, n, a, b)
+   !**********************************************************
+   IMPLICIT NONE
+   COMPLEX(dbl)       :: zmat_ge_dotp
+   INTEGER            :: m, n
+   COMPLEX(dbl)       :: a(:,:), b(:,:)
+   !
+   COMPLEX(dbl) :: dotp
+   INTEGER      :: i, j
+
+   IF ( m > SIZE(a,1) ) CALL errore('zmat_dotp','Invalid m I',ABS(m)+1)
+   IF ( n > SIZE(a,2) ) CALL errore('zmat_dotp','Invalid n I',ABS(n)+1)
+   IF ( m > SIZE(b,1) ) CALL errore('zmat_dotp','Invalid m II',ABS(m)+1)
+   IF ( n > SIZE(b,2) ) CALL errore('zmat_dotp','Invalid n II',ABS(n)+1)
+
+   dotp = CZERO
+   !
+   DO j = 1, n
+   DO i = 1, m
+      dotp = dotp + a(i,j) * CMPLX( b(i,j) )
+   ENDDO
+   ENDDO
+   !
+   zmat_ge_dotp = dotp
+   RETURN
+   !
+END FUNCTION zmat_ge_dotp
+
+!**********************************************************
+   FUNCTION  zmat_he_dotp( m, a, b)
+   !**********************************************************
+   IMPLICIT NONE
+   COMPLEX(dbl)       :: zmat_he_dotp
+   INTEGER            :: m
+   COMPLEX(dbl)       :: a(:,:), b(:,:)
+   !
+   COMPLEX(dbl) :: dotp
+   INTEGER      :: i, j
+
+   IF ( m > SIZE(a,1) ) CALL errore('zmat_hdotp','Invalid m1',ABS(m)+1)
+   IF ( m > SIZE(a,2) ) CALL errore('zmat_hdotp','Invalid m2',ABS(m)+1)
+   IF ( m > SIZE(b,1) ) CALL errore('zmat_hdotp','Invalid m3',ABS(m)+1)
+   IF ( m > SIZE(b,2) ) CALL errore('zmat_hdotp','Invalid m4',ABS(m)+1)
+
+   dotp = CZERO
+   !
+   DO j = 1, m
+   DO i = 1, j-1
+      dotp = dotp + 2.0_dbl * a(i,j) * CMPLX( b(i,j) )
+   ENDDO
+   ENDDO
+   !
+   DO i = 1, m
+      dotp = dotp + 1.0_dbl * a(i,i) * CMPLX( b(i,i)  )
+   ENDDO
+   !
+   zmat_he_dotp = dotp
+   RETURN
+   !
+END FUNCTION zmat_he_dotp
+
+!**********************************************************
+   FUNCTION  zmat_hp_dotp( m, uplo, ap, bp)
+   !**********************************************************
+   !
+   ! UPLO: 'U', 'u', provide the upper triangular parts of A, B,
+   !       'L', 'l', provide the lower triangular parts
+   !
+   IMPLICIT NONE
+   COMPLEX(dbl)       :: zmat_hp_dotp
+   INTEGER            :: m
+   CHARACTER          :: uplo
+   COMPLEX(dbl)       :: ap(:), bp(:)
+   !
+   COMPLEX(dbl) :: dotp
+   INTEGER      :: i, j, l
+
+   IF ( m*(m+1)/2 > SIZE(ap) ) CALL errore('zmat_hdotp','Invalid m A',ABS(m)+1)
+   IF ( m*(m+1)/2 > SIZE(ap) ) CALL errore('zmat_hdotp','Invalid m B',ABS(m)+1)
+
+   dotp = CZERO
+   l    = 0
+   !
+   SELECT CASE ( uplo)
+   CASE ( 'U', 'u' )
+       !
+       DO j = 1, m
+           !
+           l = (j-1) * j / 2
+           !
+           DO i = 1, j-1
+               l = l+1
+               dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
+           ENDDO
+           !
+           l = l+1
+           dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
+           !
+       ENDDO
+       !
+   CASE ( 'L', 'l' )
+       !
+       DO j = 1, m
+           !
+           l = (j-1) * ( 2*m -j +2) /2 +1
+           dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
+           !
+           DO i = j+1, m
+               l = l+1
+               dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
+           ENDDO
+           !
+           !
+       ENDDO
+       !
+   CASE DEFAULT
+       CALL errore('zmat_hdotp','invalid uplo: '//uplo, 2 )
+   END SELECT
+    
+   !
+   zmat_hp_dotp = dotp
+   RETURN
+   !
+END FUNCTION zmat_hp_dotp
 
 END MODULE util_module
 
