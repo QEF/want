@@ -1363,11 +1363,11 @@ END FUNCTION zmat_he_dotp
            !
            DO i = 1, j-1
                l = l+1
-               dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
+               dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
            ENDDO
            !
            l = l+1
-           dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
+           dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
            !
        ENDDO
        !
@@ -1376,11 +1376,11 @@ END FUNCTION zmat_he_dotp
        DO j = 1, m
            !
            l = (j-1) * ( 2*m -j +2) /2 +1
-           dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
+           dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
            !
            DO i = j+1, m
                l = l+1
-               dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
+               dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
            ENDDO
            !
            !
