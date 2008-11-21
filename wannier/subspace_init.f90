@@ -91,7 +91,7 @@
                        FORM=TRIM(wantdata_form), IERR=ierr)
         IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr))
            !
-           CALL subspace_read(space_unit,"SUBSPACE", lfound)
+           CALL subspace_read(space_unit,"SUBSPACE", lfound, LEIG=.FALSE., LEAMP=.FALSE.)
            IF ( .NOT. lfound ) CALL errore(subname,'searching tag "SUBSPACE"',1)
            !
         CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
