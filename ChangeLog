@@ -4,7 +4,8 @@
 =======================================================
 
 
-21 Nov 2008      Bug in the disentanglement restart procedure fixed. (AF)
+21 Nov 2008      Bug in the disentanglement restart procedure fixed. 
+                 Parallelism improved using MPI_allgatherv in disentangle. (AF)
 
 20 Nov 2008      Bug fixed in util.f90. (AF)
 
