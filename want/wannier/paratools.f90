@@ -24,6 +24,11 @@
    !
    INTEGER, ALLOCATABLE   ::  iks_g(:)
    INTEGER, ALLOCATABLE   ::  ike_g(:)
+   INTEGER, ALLOCATABLE   ::  displs_aux(:)
+   INTEGER, ALLOCATABLE   ::  msglen_aux(:)
+   INTEGER, ALLOCATABLE   ::  displs(:)
+   INTEGER, ALLOCATABLE   ::  msglen(:)
+   !
    LOGICAL                ::  alloc = .FALSE.
    !
    !
@@ -34,44 +39,112 @@
    !
    PUBLIC :: para_get_poolindex
    PUBLIC :: para_poolrecover
+   PUBLIC :: paratools_deallocate
    PUBLIC :: alloc
    !
 CONTAINS
 !
 !*********************************************
-   SUBROUTINE para_init( nkpts_g )
+   SUBROUTINE paratools_init( nkpts_g )
    !*********************************************
    !
    IMPLICIT NONE
    !
    INTEGER,  INTENT(IN)  :: nkpts_g
    !
-   CHARACTER(9)  :: subname='para_init'
+   CHARACTER(14) :: subname='paratools_init'
    INTEGER       :: ip, ierr
    !
    !
    IF ( alloc ) RETURN
+   CALL log_push( subname )
+   !
    IF ( nkpts_g < 1 ) CALL errore(subname,'invalid nkpts_g',1)
    !
-   ALLOCATE( iks_g(nproc), STAT=ierr )
+   ALLOCATE( iks_g(0:nproc-1), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'allocating iks_g',ABS(ierr))
-   ALLOCATE( ike_g(nproc), STAT=ierr )
+   ALLOCATE( ike_g(0:nproc-1), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'allocating ike_g',ABS(ierr))
+   !
+   ALLOCATE( displs( 0:nproc-1 ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'allocating displs', ABS(ierr))
+   ALLOCATE( msglen( 0:nproc-1 ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'allocating msglen', ABS(ierr))
+   ALLOCATE( displs_aux( 0:nproc-1 ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'allocating displs_aux', ABS(ierr))
+   ALLOCATE( msglen_aux( 0:nproc-1 ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'allocating msglen_aux', ABS(ierr))
    !
    iks_g(:) = 0
    ike_g(:) = 0
    !
    DO ip = 0, nproc-1
        !
-       CALL divide_et_impera( 1, nkpts_g, iks_g(ip+1), ike_g(ip+1), ip, nproc )
+       CALL divide_et_impera( 1, nkpts_g, iks_g(ip), ike_g(ip), ip, nproc )
        !
    ENDDO
    !
+   displs_aux(0) = 0
+   msglen_aux(0) = ike_g(0)-iks_g(0)+1
+   !
+   DO ip = 1, nproc-1
+       !
+       displs_aux(ip) = ike_g(ip-1)
+       msglen_aux(ip) = ike_g(ip)-iks_g(ip)+1
+       !
+   ENDDO
+   !
+   !
    alloc = .TRUE.
    !
+   CALL log_pop( subname )
    RETURN
    !
-END SUBROUTINE para_init
+END SUBROUTINE paratools_init
+!
+!
+!*********************************************
+   SUBROUTINE paratools_deallocate( )
+   !*********************************************
+   !
+   IMPLICIT NONE
+   !
+   CHARACTER(20) :: subname='paratools_deallocate'
+   INTEGER       :: ierr
+   !
+   IF ( .NOT. alloc ) RETURN
+   !
+   CALL log_push( subname )
+   !
+   IF ( ALLOCATED( iks_g ) ) THEN
+       DEALLOCATE( iks_g, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating iks_g',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( ike_g ) ) THEN
+       DEALLOCATE( ike_g, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating ike_g',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( displs ) ) THEN
+       DEALLOCATE( displs, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating displs',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( msglen ) ) THEN
+       DEALLOCATE( msglen, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating msglen',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( displs_aux ) ) THEN
+       DEALLOCATE( displs_aux, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating displs_aux',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( msglen_aux ) ) THEN
+       DEALLOCATE( msglen_aux, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating msglen_aux',ABS(ierr))
+   ENDIF
+   !
+   alloc = .FALSE.
+   CALL log_pop( subname )
+   !
+END SUBROUTINE paratools_deallocate
 !
 !
 !*********************************************
@@ -115,14 +188,14 @@ END SUBROUTINE para_init
    !
    ! main task
    !
-   IF ( .NOT. alloc ) CALL para_init( nkpts_g )
+   IF ( .NOT. alloc ) CALL paratools_init( nkpts_g )
 
    !
    iproc = -1
    !
-   DO ip = 1, nproc
+   DO ip = 0, nproc-1
        !
-       IF ( ik_g >= iks_g(ip) .AND. ik_g <= ike_g(ip) ) iproc = ip-1
+       IF ( ik_g >= iks_g(ip) .AND. ik_g <= ike_g(ip) ) iproc = ip
        !
    ENDDO
    !
@@ -138,17 +211,15 @@ END SUBROUTINE para_get_poolindex
 
 
 !*********************************************
-   SUBROUTINE para_poolrecover_cm( data_l, data_g )
+   SUBROUTINE para_poolrecover_cm( mydata )
    !*********************************************
    !  
    IMPLICIT NONE
    !
-   COMPLEX(dbl),   INTENT(IN)    :: data_l(:,:,:)
-   COMPLEX(dbl),   INTENT(INOUT) :: data_g(:,:,:)
+   COMPLEX(dbl),   INTENT(INOUT) :: mydata(:,:,:)
    !
    CHARACTER(16)        :: subname='para_poolrecover'
-   INTEGER, ALLOCATABLE :: displs(:)
-   INTEGER              :: nkpts_g, ip, ierr
+   INTEGER              :: nkpts_g, datalen, ip, ierr
 
 
    !
@@ -156,24 +227,26 @@ END SUBROUTINE para_get_poolindex
    CALL log_push( subname )
    !
    !
-   nkpts_g = SIZE( data_g, 3)
-   IF ( .NOT. alloc ) CALL para_init( nkpts_g )
+   nkpts_g = SIZE( mydata, 3)
+   IF ( .NOT. alloc ) CALL paratools_init( nkpts_g )
    !
-   ALLOCATE( displs( nkpts_g ), STAT=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,'allocating displs', ABS(ierr))
+!#define __TEST
+!
+#ifdef __TEST
    !
-   displs(1) = 1
-   DO ip = 2, nproc
-       !
-       displs(ip) = SIZE( data_g, 1) * SIZE(data_g, 2) * ike_g(ip-1) +1
-       !
-   ENDDO
+   CALL mp_sum( mydata )
    !
-   CALL mp_allgather( data_l, data_g, displs )
+#else
    !
-   DEALLOCATE( displs, STAT=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,'allocating displs', ABS(ierr))
+   datalen = SIZE( mydata, 1) * SIZE( mydata, 2)
    !
+   displs(:) = displs_aux(:) * datalen
+   msglen(:) = msglen_aux(:) * datalen
+   !
+   CALL mp_allgather( mydata, displs, msglen )
+   !
+#endif
+   
    CALL timing( subname, OPR="stop")
    CALL log_pop( subname )
    !

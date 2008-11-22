@@ -35,6 +35,7 @@
    USE correlation_module,       ONLY : correlation_deallocate, corr_alloc => alloc
    USE workspace_wan_module,     ONLY : workspace_wan_deallocate, workwan_alloc => alloc
    USE workspace_dis_module,     ONLY : workspace_dis_deallocate, workdis_alloc => alloc
+   USE paratools_module,         ONLY : paratools_deallocate, paratools_alloc => alloc
    !
    IMPLICIT NONE
       
@@ -55,6 +56,7 @@
       IF ( strf_alloc )     CALL struct_fact_data_deallocate()
       IF ( workwan_alloc )  CALL workspace_wan_deallocate()
       IF ( workdis_alloc )  CALL workspace_dis_deallocate()
+      IF ( paratools_alloc )CALL paratools_deallocate()
                             CALL us_deallocate()
                             CALL uspp_deallocate()
                             CALL uspp_param_deallocate()

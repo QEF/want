@@ -35,7 +35,7 @@
        USE workspace_dis_module,  ONLY : mtrx_in, mtrx_out, Mkb_aux, Akb_aux, &
                                          workspace_dis_allocate
        USE overlap_module,        ONLY : Mkb, overlap_allocate
-       USE mp_global,             ONLY : mpime
+       USE paratools_module,      ONLY : para_poolrecover
        USE mp,                    ONLY : mp_sum
        USE want_interfaces_module
        !
@@ -370,13 +370,7 @@
            !
            ! take care of parallelism
            !
-           CALL timing( 'mp_sum', OPR='start' )
-           DO ik_g = 1, nkpts_g
-               !
-               CALL mp_sum( lamp(:,:,ik_g) )
-               !
-           ENDDO
-           CALL timing( 'mp_sum', OPR='stop' )
+           CALL para_poolrecover( lamp )
            !
            !
            CALL log_pop ( 'lamp' )

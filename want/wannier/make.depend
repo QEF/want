@@ -88,6 +88,7 @@ cleanup.o : ions.o
 cleanup.o : kpoints.o
 cleanup.o : localization.o
 cleanup.o : overlap_module.o
+cleanup.o : paratools.o
 cleanup.o : pwcom.o
 cleanup.o : struct_fact_data.o
 cleanup.o : subspace.o
@@ -171,12 +172,12 @@ disentangle.o : ../libs/constants.o
 disentangle.o : ../libs/files.o
 disentangle.o : ../libs/kind.o
 disentangle.o : ../libs/log_module.o
-disentangle.o : ../libs/mp_global.o
 disentangle.o : ../libs/mp.o
 disentangle.o : ../libs/parameters.o
 disentangle.o : ../libs/timing.o
 disentangle.o : ../libs/util.o
 disentangle.o : overlap_module.o
+disentangle.o : paratools.o
 disentangle.o : subspace.o
 disentangle.o : version.o
 disentangle.o : want_interfaces.o
@@ -188,7 +189,6 @@ domega_aux.o : lattice.o
 domega_aux.o : ../libs/constants.o
 domega_aux.o : ../libs/kind.o
 domega_aux.o : ../libs/log_module.o
-domega_aux.o : ../libs/mp_global.o
 domega_aux.o : ../libs/mp.o
 domega_aux.o : ../libs/timing.o
 domega_aux.o : trial_center.o
@@ -196,9 +196,9 @@ domega.o : kpoints.o
 domega.o : ../libs/constants.o
 domega.o : ../libs/kind.o
 domega.o : ../libs/log_module.o
-domega.o : ../libs/mp_global.o
 domega.o : ../libs/mp.o
 domega.o : ../libs/timing.o
+domega.o : trial_center_data.o
 dos.o : converters.o
 dos.o : correlation.o
 dos.o : datafiles.o
@@ -497,6 +497,7 @@ overlap_update.o : ../libs/kind.o
 overlap_update.o : ../libs/log_module.o
 overlap_update.o : ../libs/timing.o
 overlap_update.o : ../libs/util.o
+paratools.o : ../libs/kind.o
 paratools.o : ../libs/log_module.o
 paratools.o : ../libs/mp_global.o
 paratools.o : ../libs/mp.o
@@ -764,7 +765,6 @@ wannier.o : ../libs/timing.o
 wannier.o : ../libs/util.o
 wannier.o : localization.o
 wannier.o : overlap_module.o
-wannier.o : trial_center_data.o
 wannier.o : version.o
 wannier.o : want_interfaces.o
 wannier.o : workspace_wan.o
@@ -840,6 +840,7 @@ wfc_manager.o : ../libs/constants.o
 wfc_manager.o : ../libs/files.o
 wfc_manager.o : ../libs/kind.o
 wfc_manager.o : ../libs/log_module.o
+wfc_manager.o : ../libs/mp.o
 wfc_manager.o : ../libs/parameters.o
 wfc_manager.o : ../libs/timing.o
 wfc_manager.o : overlap_module.o

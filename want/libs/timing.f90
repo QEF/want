@@ -381,7 +381,7 @@ CONTAINS
       !
       str = obj%name
       str(4:) = ' '
-      IF ( TRIM(str) == 'mp_' ) THEN
+      IF ( TRIM(str) == 'mp_' .OR. TRIM(str) == 'para_' ) THEN
           !
           CALL mp_sum( total_time )
           total_time = total_time / REAL( nproc, dbl )

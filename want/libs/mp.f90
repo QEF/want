@@ -65,6 +65,7 @@
       END INTERFACE
       INTERFACE mp_allgather
         MODULE PROCEDURE mp_allgatherv_ctt
+        MODULE PROCEDURE mp_allgatherv_ctt_ip
       END INTERFACE
 
       INTEGER, PRIVATE, SAVE :: mp_high_watermark = 0
@@ -226,29 +227,58 @@
 !------------------------------------------------------------------------------!
 !..mp_allgatherv_ctt
 !..Andrea Ferretti
-      SUBROUTINE mp_allgatherv_ctt(mydata, alldata, displs, gid)
+      SUBROUTINE mp_allgatherv_ctt(mydata, alldata, displs, msglen, gid)
         IMPLICIT NONE
         COMPLEX(dbl), INTENT(IN)  :: mydata(:,:,:)
         COMPLEX(dbl), INTENT(OUT) :: alldata(:,:,:)
         INTEGER,      INTENT(IN)  :: displs(:)
+        INTEGER,      INTENT(IN)  :: msglen(:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
+        !
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen_, ierr
 #if defined (__MPI)
         group = MPI_COMM_WORLD
-        msglen = SIZE(mydata)
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8902)
+        msglen_ = SIZE( mydata )
+        IF( msglen_*16 > mp_msgsiz_max ) CALL mp_stop(8902)
         IF( PRESENT( gid ) ) group = gid
-        CALL MPI_ALLGATHERV(mydata, msglen, MPI_DOUBLE_COMPLEX, alldata, msglen, &
+        CALL MPI_ALLGATHERV(mydata, msglen_, MPI_DOUBLE_COMPLEX, alldata, msglen, &
                             displs, MPI_DOUBLE_COMPLEX, group, IERR)
         IF (ierr/=0) CALL mp_stop(8001)
 #else
-        msglen = SIZE(mydata)
+        msglen_ = SIZE( mydata )
         alldata = mydata
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen_ ) 
         RETURN
       END SUBROUTINE mp_allgatherv_ctt
+
+!------------------------------------------------------------------------------!
+!..mp_allgatherv_ctt_ip  (in_place)
+!..Andrea Ferretti
+      SUBROUTINE mp_allgatherv_ctt_ip(alldata, displs, msglen, gid)
+        IMPLICIT NONE
+        COMPLEX(dbl), INTENT(INOUT)   :: alldata(:,:,:)
+        INTEGER,      INTENT(IN)      :: displs(:)
+        INTEGER,      INTENT(IN)      :: msglen(:)
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        !
+        INTEGER :: group
+        INTEGER :: msglen_, ierr
+#if defined (__MPI)
+        group = MPI_COMM_WORLD
+        !msglen_ = SIZE( alldata )
+        !IF( msglen_*16 > mp_msgsiz_max ) CALL mp_stop(8902)
+        IF( PRESENT( gid ) ) group = gid
+        CALL MPI_ALLGATHERV(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, alldata, msglen, &
+                            displs, MPI_DOUBLE_COMPLEX, group, IERR)
+        IF (ierr/=0) CALL mp_stop(8001)
+#else
+        !msglen_ = SIZE( alldata )
+#endif
+        !mp_high_watermark = MAX( mp_high_watermark, 16 * msglen_ ) 
+        RETURN
+      END SUBROUTINE mp_allgatherv_ctt_ip
 
 !
 !------------------------------------------------------------------------------!
