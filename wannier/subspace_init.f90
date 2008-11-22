@@ -18,21 +18,21 @@
    !      * 'upper_states'   select the dimwann upper bands
    !      * 'center_projections'  uses the CA matrix to extract a subspace
    !
-   USE kinds,           ONLY : dbl
-   USE constants,       ONLY : CZERO, CONE, EPS_m8
-   USE parameters,      ONLY : nstrx
-   USE timing_module,   ONLY : timing
-   USE io_module,       ONLY : stdout, io_name, wantdata_form, space_unit, ionode
-   USE log_module,      ONLY : log_push, log_pop
-   USE files_module,    ONLY : file_open, file_close
-   USE util_module,     ONLY : zmat_unitary, mat_mul, mat_svd
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : CZERO, CONE, EPS_m8
+   USE parameters,        ONLY : nstrx
+   USE timing_module,     ONLY : timing
+   USE io_module,         ONLY : stdout, io_name, wantdata_form, space_unit, ionode
+   USE log_module,        ONLY : log_push, log_pop
+   USE files_module,      ONLY : file_open, file_close
+   USE util_module,       ONLY : zmat_unitary, mat_mul, mat_svd
    !
-   USE windows_module,  ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
-   USE kpoints_module,  ONLY : vkpt_g, nkpts, nkpts_g, iks
-   USE control_module,  ONLY : unitary_thr, verbosity
-   USE subspace_module, ONLY : subspace_read, lamp, dimwann
-   USE overlap_module,  ONLY : ca 
-   USE mp,              ONLY : mp_sum
+   USE windows_module,    ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
+   USE kpoints_module,    ONLY : vkpt_g, nkpts, nkpts_g, iks
+   USE control_module,    ONLY : unitary_thr, verbosity
+   USE subspace_module,   ONLY : subspace_read, lamp, dimwann
+   USE overlap_module,    ONLY : ca 
+   USE paratools_module,  ONLY : para_poolrecover
    !
    IMPLICIT NONE
 
@@ -261,13 +261,7 @@
    !
    IF ( TRIM(mode) /= "from_file" ) THEN
        !
-       CALL timing ( 'mp_sum', OPR='start' )
-       DO ik_g = 1, nkpts_g
-           !
-           CALL mp_sum( lamp(:,:,ik_g) )
-           !
-       ENDDO
-       CALL timing ( 'mp_sum', OPR='stop' )
+       CALL para_poolrecover( lamp )
        !
    ENDIF
 

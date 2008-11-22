@@ -46,7 +46,6 @@ CONTAINS
    USE io_module,         ONLY : title, prefix, postfix, work_dir, dftdata_fmt, &
                                  dftdata_fmt_version, wantdata_fmt, ionode
    USE mp_global,         ONLY : nproc
-   USE mp,                ONLY : mp_sum
    USE log_module,        ONLY : log_push, log_pop
    USE converters_module, ONLY : cart2cry
    USE control_module,    ONLY : ordering_mode, verbosity, restart_mode, & 

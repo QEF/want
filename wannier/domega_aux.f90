@@ -28,7 +28,6 @@
    USE log_module,         ONLY : log_push, log_pop
    USE lattice_module,     ONLY : avec
    USE kpoints_module,     ONLY : nkpts_g, iks, nb, vb, wb, nnpos, nnrev, nnlist
-   USE mp,                 ONLY : mp_sum
    USE converters_module,  ONLY : cry2cart, cart2cry
    USE trial_center_module
    !

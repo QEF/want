@@ -314,8 +314,6 @@
 
                !
                ! first nullify lamp for kpts out of the current pool
-               ! This is needed to avoid problems with frozen states when
-               ! performing mp_sum
                !
                IF ( ik_g < iks .OR. ik_g > ike ) THEN
                    !
@@ -509,13 +507,8 @@
        !
        ! get rid of parallelism
        !
-       CALL mp_sum( wan_eig )
-       !
-       DO ik_g = 1, nkpts_g
-           !
-           CALL mp_sum( eamp(:,:,ik_g) )
-           !
-       ENDDO
+       CALL para_poolrecover( wan_eig )
+       CALL para_poolrecover( eamp )
                   
        !
        ! NOTE: for the purpose of minimizing Omega_D + Omega_OD in wannier.x 

@@ -21,7 +21,7 @@
    USE converters_module, ONLY : cart2cry, cry2cart
    USE lattice_module,    ONLY : avec, bvec
    USE kpoints_module,    ONLY : vkpt_g, nkpts_g, iks, ike
-   USE mp,                ONLY : mp_sum
+   USE paratools_module,  ONLY : para_poolrecover
    !
    IMPLICIT NONE
 
@@ -93,7 +93,6 @@
 
       !   
       ! nullify cU for ik_g not in the current pool
-      ! needed to use mp_sum for pool recovering
       !   
       cU( :,:, 1:iks-1 )        = CZERO
       cU( :,:, ike+1:nkpts_g )  = CZERO
@@ -130,13 +129,7 @@
       !
       ! pool recovering
       !
-      CALL timing ( 'mp_sum', OPR='start' )
-      DO ik_g = 1, nkpts_g 
-          !
-          CALL mp_sum( cU(:,:,ik_g) )
-          !
-      ENDDO
-      CALL timing ( 'mp_sum', OPR='stop' )
+      CALL para_poolrecover( cU )
 
       !
       ! output updated centers

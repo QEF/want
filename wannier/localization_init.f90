@@ -30,7 +30,7 @@
    USE localization_module, ONLY : localization_read, cU
    USE overlap_module,      ONLY : ca, dimwann
    USE control_module,      ONLY : unitary_thr
-   USE mp,                  ONLY : mp_sum
+   USE paratools_module,    ONLY : para_poolrecover
    !
    IMPLICIT NONE
 
@@ -171,13 +171,7 @@
    !
    IF ( TRIM(mode) /= "from_file " ) THEN
        !
-       CALL timing( 'mp_sum', OPR='start' )
-       DO ik_g = 1, nkpts_g
-           !
-           CALL mp_sum( cU(:,:,ik_g) )
-           !
-       ENDDO
-       CALL timing( 'mp_sum', OPR='stop' )
+       CALL para_poolrecover( cU )
        !
    ENDIF
 

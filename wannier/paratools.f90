@@ -33,7 +33,8 @@
    !
    !
    INTERFACE para_poolrecover
-      MODULE PROCEDURE para_poolrecover_cm
+      MODULE PROCEDURE para_poolrecover_rm
+      MODULE PROCEDURE para_poolrecover_ct
    END INTERFACE
   
    !
@@ -211,7 +212,7 @@ END SUBROUTINE para_get_poolindex
 
 
 !*********************************************
-   SUBROUTINE para_poolrecover_cm( mydata )
+   SUBROUTINE para_poolrecover_ct( mydata )
    !*********************************************
    !  
    IMPLICIT NONE
@@ -222,7 +223,6 @@ END SUBROUTINE para_get_poolindex
    INTEGER              :: nkpts_g, datalen, ip, ierr
 
 
-   !
    CALL timing( subname, OPR="start")
    CALL log_push( subname )
    !
@@ -252,7 +252,50 @@ END SUBROUTINE para_get_poolindex
    !
    RETURN
    !
-END SUBROUTINE para_poolrecover_cm
+END SUBROUTINE para_poolrecover_ct
+
+!*********************************************
+   SUBROUTINE para_poolrecover_rm( mydata )
+   !*********************************************
+   !  
+   IMPLICIT NONE
+   !
+   REAL(dbl),   INTENT(INOUT) :: mydata(:,:)
+   !
+   CHARACTER(16)        :: subname='para_poolrecover'
+   INTEGER              :: nkpts_g, datalen, ip, ierr
+
+   
+   CALL timing( subname, OPR="start")
+   CALL log_push( subname )
+   !
+   !
+   nkpts_g = SIZE( mydata, 2)
+   IF ( .NOT. alloc ) CALL paratools_init( nkpts_g )
+   !
+!#define __TEST
+!
+#ifdef __TEST
+   !
+   CALL mp_sum( mydata )
+   !
+#else
+   !
+   datalen = SIZE( mydata, 1)
+   !
+   displs(:) = displs_aux(:) * datalen
+   msglen(:) = msglen_aux(:) * datalen
+   !
+   CALL mp_allgather( mydata, displs, msglen )
+   !
+#endif
+   
+   CALL timing( subname, OPR="stop")
+   CALL log_pop( subname )
+   !
+   RETURN
+   !
+END SUBROUTINE para_poolrecover_rm
 
 END MODULE paratools_module
 
