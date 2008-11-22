@@ -14,7 +14,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    USE constants,         ONLY : EPS_m6, EPS_m2, CZERO
    USE kpoints_module,    ONLY : nkpts_g, iks, ike
    USE timing_module,     ONLY : timing
-   USE mp,                ONLY : mp_sum
+   USE paratools_module,  ONLY : para_poolrecover
    !
    IMPLICIT NONE
 
@@ -173,15 +173,11 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    cU(:,:,:)          = CZERO
    cU(:,:,iks:ike)    = cswap( :, index(:), 1:nkpts ) 
    !
-   CALL timing ( 'mp_sum', OPR='start' )
-   DO ik_g = 1, nkpts_g
-       !
-       CALL mp_sum( cU(:,:,ik_g) )
-       !
-   ENDDO
-   CALL timing ( 'mp_sum', OPR='stop' )
+   CALL para_poolrecover( cU )
 
-
+   !
+   ! local cleaning
+   !
    DEALLOCATE( index, STAT=ierr)
    IF (ierr/=0) CALL errore('ordering','deallocating INDEX',ABS(ierr))
    !

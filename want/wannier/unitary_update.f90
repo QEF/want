@@ -16,15 +16,15 @@ SUBROUTINE unitary_update(dimwann, nkpts, dqp, cU)
    ! dU(k) = e^i dq(k) 
    !  U(k) = U0(k) * dU(k)
    !
-   USE kinds,          ONLY : dbl
-   USE constants,      ONLY : CZERO
-   USE io_module,      ONLY : stdout
-   USE timing_module,  ONLY : timing
-   USE log_module,     ONLY : log_push, log_pop
-   USE util_module,    ONLY : mat_mul, mat_hdiag, zmat_unitary
-   USE parser_module,  ONLY : int2char
-   USE kpoints_module, ONLY : nkpts_g, iks, ike
-   USE mp,             ONLY : mp_sum
+   USE kinds,             ONLY : dbl
+   USE constants,         ONLY : CZERO
+   USE io_module,         ONLY : stdout
+   USE timing_module,     ONLY : timing
+   USE log_module,        ONLY : log_push, log_pop
+   USE util_module,       ONLY : mat_mul, mat_hdiag, zmat_unitary
+   USE parser_module,     ONLY : int2char
+   USE kpoints_module,    ONLY : nkpts_g, iks, ike
+   USE paratools_module,  ONLY : para_poolrecover
 
 #ifdef __CHECK_UNITARY
    USE control_module, ONLY : unitary_thr
@@ -121,13 +121,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dqp, cU)
    !
    ! pool recovering
    !
-   CALL timing ( 'mp_sum', OPR='start' )
-   DO ik_g = 1, nkpts_g
-       !
-       CALL mp_sum( cU(:,:,ik_g) )
-       !
-   ENDDO
-   CALL timing ( 'mp_sum', OPR='stop' )
+   CALL para_poolrecover( cU )
    
 
    !
