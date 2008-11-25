@@ -220,7 +220,7 @@ END SUBROUTINE para_get_poolindex
    COMPLEX(dbl),   INTENT(INOUT) :: mydata(:,:,:)
    !
    CHARACTER(16)        :: subname='para_poolrecover'
-   INTEGER              :: nkpts_g, datalen, ip, ierr
+   INTEGER              :: nkpts_g, datalen, ip, ik_g, ierr
 
 
    CALL timing( subname, OPR="start")
@@ -230,11 +230,17 @@ END SUBROUTINE para_get_poolindex
    nkpts_g = SIZE( mydata, 3)
    IF ( .NOT. alloc ) CALL paratools_init( nkpts_g )
    !
-!#define __TEST
+#define __TEST
 !
 #ifdef __TEST
    !
-   CALL mp_sum( mydata )
+   CALL timing( 'mp_sum', OPR="start")
+   !
+   DO ik_g = 1, nkpts_g
+       CALL mp_sum( mydata(:,:,ik_g) )
+   ENDDO
+   !
+   CALL timing( 'mp_sum', OPR="stop")
    !
 #else
    !
@@ -243,7 +249,9 @@ END SUBROUTINE para_get_poolindex
    displs(:) = displs_aux(:) * datalen
    msglen(:) = msglen_aux(:) * datalen
    !
+   CALL timing( 'mp_allgather', OPR="start")
    CALL mp_allgather( mydata, displs, msglen )
+   CALL timing( 'mp_allgather', OPR="stop")
    !
 #endif
    
@@ -263,7 +271,7 @@ END SUBROUTINE para_poolrecover_ct
    REAL(dbl),   INTENT(INOUT) :: mydata(:,:)
    !
    CHARACTER(16)        :: subname='para_poolrecover'
-   INTEGER              :: nkpts_g, datalen, ip, ierr
+   INTEGER              :: nkpts_g, datalen, ip, ik_g, ierr
 
    
    CALL timing( subname, OPR="start")
@@ -273,11 +281,17 @@ END SUBROUTINE para_poolrecover_ct
    nkpts_g = SIZE( mydata, 2)
    IF ( .NOT. alloc ) CALL paratools_init( nkpts_g )
    !
-!#define __TEST
+#define __TEST
 !
 #ifdef __TEST
    !
-   CALL mp_sum( mydata )
+   CALL timing( 'mp_sum', OPR="start")
+   !
+   DO ik_g = 1, nkpts_g
+       CALL mp_sum( mydata(:,ik_g) )
+   ENDDO
+   !
+   CALL timing( 'mp_sum', OPR="stop")
    !
 #else
    !
@@ -286,7 +300,9 @@ END SUBROUTINE para_poolrecover_ct
    displs(:) = displs_aux(:) * datalen
    msglen(:) = msglen_aux(:) * datalen
    !
+   CALL timing( 'mp_allgather', OPR="start")
    CALL mp_allgather( mydata, displs, msglen )
+   CALL timing( 'mp_allgather', OPR="stop")
    !
 #endif
    
