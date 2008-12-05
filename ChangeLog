@@ -5,7 +5,9 @@
 
 
 05 Dec 2008      Bug fixed in current.f90 (call to input_from_file), courtesy of
-                 Miroslava Dieskova. (AF)
+                 Miroslava Dieskova. QExml lib debugged ad upgraded. Quality
+                 of test03 improved. Documentation updated according to bugs
+                 reported by Caterina Cocchi et al. (AF)
 
 21 Nov 2008      Bug in the disentanglement restart procedure fixed. 
                  Parallelism improved using MPI_allgatherv in disentangle. (AF)
