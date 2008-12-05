@@ -371,7 +371,7 @@ G_{RL} & G_{RC} & G_{R}\\
 -H_{CL} & \omega -H_{C} & -H_{CR}\\
 0 & -H_{RC} & \omega -H^R_{00} - H^R_{01} T \\
 \end{array}
-\right)^{-1}. \label{secular1}
+\right)^{-1}, \label{secular1}
 \end{eqnarray}
 %
 %
@@ -531,7 +531,7 @@ For our purposes, we need to transform the Bloch
 eigenstates in WFs with the narrowest spatial
 distribution. Following the procedure proposed by Marzari and
 Vanderbilt~\cite{nicola}, we search the particular unitary
-matrix $U_{mn}^{({\bf k})}$ that transform the Bloch eigenstates
+matrices $U_{mn}^{({\bf k})}$ that transform the Bloch eigenstates
 in the WFs with the narrowest spatial distribution.
 
 A measure of the spatial delocalization of WFs is given
@@ -583,7 +583,7 @@ $\langle r^2 \rangle $ as proposed by Blount~\cite{blount}:
 \label{eq:pos_k}
 \langle {\bf 0}n | {\bf r} | {\bf 0}n  \rangle &=& i \frac{1}{N}
 \sum_{ {\bf k} } e^{ +i{\bf k}\cdot{\bf R} } \langle u_{ {\bf k}n
-}| \nabla_{\bf k} | u_{ {\bf k}n },  \rangle\\
+}| \nabla_{\bf k} | u_{ {\bf k}n }  \rangle, \\
 %
 \nonumber
 \langle {\bf 0}n | r^2 | {\bf 0}n \rangle\ &=& \frac{1}{N} \sum_{
@@ -605,7 +605,7 @@ overlap matrix between Bloch orbitals as:
    \label{overlap}
    M^{ ( \mathbf{k},\mathbf{b}) }_{ mn } = \langle u_{ m\mathbf{k} }|
         u_{ n\mathbf{k}+\mathbf{b} }  \rangle =
-        \langle \psi_{ m \mathbf{k} } | e^{-i\mathbf{k}\mathbf{b}} |
+        \langle \psi_{ m \mathbf{k} } | e^{-i\mathbf{b}\cdot \mathbf{r}} |
         \psi_{ n \mathbf{k}+\mathbf{b}} \rangle .
 \end{equation}
 %
@@ -624,7 +624,7 @@ to be used in the localization procedure:
            w_b \, \mathbf{b} \, \text{Im}
           \, \text{Ln} M^{ ({\bf k}, {\bf b})}_{ nn } \\ \nonumber
    \langle r^2 \rangle_n &=&  \frac{1}{N} \sum_{ {\bf k,b} } w_b
-   \left[ \left( 1- |M^{ ({\bf k}, {\bf b}}_{ nn }|^2 \right) +
+   \left[ \left( 1- |M^{ ({\bf k}, {\bf b})}_{ nn }|^2 \right) +
           \left( \text{Im}\, \text{Ln} M^{ ({\bf k}, {\bf b})}_{ nn } \right)^2
    \right]
 \end{eqnarray}
@@ -652,7 +652,7 @@ gradient of the spread functional:
 \begin{equation}
    \label{grad_fin}
    G^{({\bf k})}=\frac{\delta \Omega}{dW^{({\bf k})}}= 4 \sum_{ {\bf
-   b} } w_b \left( \frac {R^{{\bf k,b})} -R^{({\bf
+   b} } w_b \left( \frac {R^{{(\bf k,b})} -R^{({\bf
    k,b}) \, \dagger}}{2} - \frac {T^{({\bf k,b})}+T^{({\bf
    k,b}) \, \dagger}}{2i} \right)
 \end{equation}
@@ -828,7 +828,7 @@ corresponding set of Bravais lattice vectors $\{ \mathbf{R} \}$:
 %
 \begin{equation}
     H_{ij}({\bf R})=\frac{1}{N_{kp}} \sum_{\bf k}
-    e^{-i{\bf k}\cdot {\bf R}} \, H^{(rot)}_{ij}({\bf k})
+    e^{-i{\bf k}\cdot {\bf R}} \, H^{(rot)}_{ij}({\bf k}) .
 \label{hrrot}
 \end{equation}
 %
