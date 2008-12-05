@@ -39,6 +39,7 @@ MODULE qexml_module
   ! some default for kinds
   !
   INTEGER,   PARAMETER :: dbl = SELECTED_REAL_KIND( 14, 200 )
+  INTEGER,   PARAMETER :: i4b = SELECTED_INT_KIND ( 9 )
   REAL(dbl), PARAMETER :: e2 = 2.0_dbl
   !
   ! internal data to be set
@@ -61,20 +62,23 @@ MODULE qexml_module
   PUBLIC :: qexml_current_version, qexml_default_version
   PUBLIC :: qexml_current_version_init
   !
-  PUBLIC :: qexml_init,  qexml_openfile, qexml_closefile
+  PUBLIC :: qexml_init,  qexml_openfile, qexml_closefile,               &
+            qexml_create_directory, qexml_wfc_filename,                 &
+            qexml_kpoint_dirname
+  
   !
-  PUBLIC :: qexml_write_header, qexml_write_cell, qexml_write_ions,   &
-            qexml_write_symmetry, qexml_write_efield,                 &
-            qexml_write_planewaves, qexml_write_spin, qexml_write_xc, &
-            qexml_write_occ, qexml_write_bz, qexml_write_phonon,      &
-            qexml_write_bands, qexml_write_bands_info,                &
+  PUBLIC :: qexml_write_header, qexml_write_control, qexml_write_cell,  &
+            qexml_write_ions, qexml_write_symmetry, qexml_write_efield, &
+            qexml_write_planewaves, qexml_write_spin, qexml_write_xc,   &
+            qexml_write_occ, qexml_write_bz, qexml_write_phonon,        &
+            qexml_write_bands, qexml_write_bands_info,                  &
             qexml_write_gk, qexml_write_wfc, qexml_write_rho
   !
-  PUBLIC :: qexml_read_header, qexml_read_cell, qexml_read_ions,      &
-            qexml_read_symmetry, qexml_read_efield,                   &
-            qexml_read_planewaves, qexml_read_spin, qexml_read_xc,    &
-            qexml_read_occ, qexml_read_bz, qexml_read_phonon,         &
-            qexml_read_bands, qexml_read_bands_info,                  &
+  PUBLIC :: qexml_read_header, qexml_read_control, qexml_read_cell,     &
+            qexml_read_ions, qexml_read_symmetry, qexml_read_efield,    &
+            qexml_read_planewaves, qexml_read_spin, qexml_read_xc,      &
+            qexml_read_occ, qexml_read_bz, qexml_read_phonon,           &
+            qexml_read_bands, qexml_read_bands_info,                    &
             qexml_read_gk, qexml_read_wfc, qexml_read_rho
 
 CONTAINS
@@ -419,13 +423,13 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE create_directory( dirname, ierr )
+    SUBROUTINE qexml_create_directory( dirname, ierr )
       !------------------------------------------------------------------------
       !
       CHARACTER(LEN=*), INTENT(IN)  :: dirname
       INTEGER,          INTENT(OUT) :: ierr
       !
-      INTEGER, EXTERNAL          :: c_mkdir
+      INTEGER(i4b), EXTERNAL        :: c_mkdir
       INTEGER  :: iunaux
       !
       !
@@ -445,14 +449,14 @@ CONTAINS
       !
       RETURN
       !
-    END SUBROUTINE create_directory
+    END SUBROUTINE qexml_create_directory
     !
     !
     !------------------------------------------------------------------------
-    FUNCTION kpoint_dirname( basedir, ik )
+    FUNCTION qexml_kpoint_dirname( basedir, ik )
       !------------------------------------------------------------------------
       !
-      CHARACTER(LEN=256)           :: kpoint_dirname
+      CHARACTER(LEN=256)           :: qexml_kpoint_dirname
       CHARACTER(LEN=*), INTENT(IN) :: basedir
       INTEGER,          INTENT(IN) :: ik
       !
@@ -463,18 +467,18 @@ CONTAINS
       !
       kdirname = TRIM( basedir ) // '/K' // kindex
       !
-      kpoint_dirname = TRIM( kdirname )
+      qexml_kpoint_dirname = TRIM( kdirname )
       !
       RETURN
       !
-    END FUNCTION kpoint_dirname
+    END FUNCTION qexml_kpoint_dirname
     !
     !
     !------------------------------------------------------------------------
-    FUNCTION wfc_filename( basedir, name, ik, ipol, tag, extension )
+    FUNCTION qexml_wfc_filename( basedir, name, ik, ipol, tag, extension )
       !------------------------------------------------------------------------
       !
-      CHARACTER(LEN=256)                 :: wfc_filename
+      CHARACTER(LEN=256)                 :: qexml_wfc_filename
       CHARACTER(LEN=*),       INTENT(IN) :: basedir
       CHARACTER(LEN=*),       INTENT(IN) :: name
       INTEGER,                INTENT(IN) :: ik
@@ -498,14 +502,14 @@ CONTAINS
          !
       END IF
       !
-      filename = TRIM( kpoint_dirname( basedir, ik ) ) // '/' // &
+      filename = TRIM( qexml_kpoint_dirname( basedir, ik ) ) // '/' // &
                  & TRIM( name ) // TRIM( filename ) // TRIM( tag_ ) // TRIM( ext_)
       !
-      wfc_filename = TRIM( filename )
+      qexml_wfc_filename = TRIM( filename )
       !
       RETURN
       !
-    END FUNCTION wfc_filename
+    END FUNCTION qexml_wfc_filename
     !
     !
     !------------------------------------------------------------------------
@@ -628,6 +632,28 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+    SUBROUTINE qexml_write_control( pp_check_flag, lkpoint_dir, q_real_space )
+      !------------------------------------------------------------------------
+      !
+      IMPLICIT NONE
+      LOGICAL, INTENT(IN) :: pp_check_flag
+      LOGICAL, INTENT(IN) :: lkpoint_dir
+      LOGICAL, INTENT(IN) :: q_real_space
+
+      !
+      CALL iotk_write_begin( ounit, "CONTROL" )
+      !
+      CALL iotk_write_dat( ounit, "PP_CHECK_FLAG", pp_check_flag )
+      CALL iotk_write_dat( ounit, "LKPOINT_DIR", lkpoint_dir )
+      CALL iotk_write_dat( ounit, "Q_REAL_SPACE", q_real_space )
+      !
+      CALL iotk_write_end( ounit, "CONTROL" )
+      !
+      RETURN
+    END SUBROUTINE qexml_write_control
+    !
+    !
+    !------------------------------------------------------------------------
     SUBROUTINE qexml_write_cell( ibravais_latt, symm_type, celldm, alat, &
                                  a1, a2, a3, b1, b2, b3, alat_units, a_units, b_units )
       !------------------------------------------------------------------------
@@ -690,9 +716,9 @@ CONTAINS
       CALL iotk_write_begin( ounit, "DIRECT_LATTICE_VECTORS" )
       CALL iotk_write_empty( ounit, "UNITS_FOR_DIRECT_LATTICE_VECTORS", &
                                      ATTR=attr )
-      CALL iotk_write_dat(   ounit, "a1", a1(:) * alat, COLUMNS=3 )
-      CALL iotk_write_dat(   ounit, "a2", a2(:) * alat, COLUMNS=3 )
-      CALL iotk_write_dat(   ounit, "a3", a3(:) * alat, COLUMNS=3 )
+      CALL iotk_write_dat(   ounit, "a1", a1(:), COLUMNS=3 )
+      CALL iotk_write_dat(   ounit, "a2", a2(:), COLUMNS=3 )
+      CALL iotk_write_dat(   ounit, "a3", a3(:), COLUMNS=3 )
       CALL iotk_write_end(   ounit, "DIRECT_LATTICE_VECTORS" )
       !
       CALL iotk_write_attr ( attr,   "UNITS", TRIM(b_units), FIRST = .TRUE. )
@@ -802,14 +828,14 @@ CONTAINS
                                      t_rev, irt, nat )
       !------------------------------------------------------------------------
       !
-      INTEGER,          INTENT(IN) :: nsym
-      LOGICAL,          INTENT(IN) :: invsym
-      INTEGER,          INTENT(IN) :: s(:,:,:) 
-      REAL(dbl),        INTENT(IN) :: trasl(:,:)
-      CHARACTER(LEN=*), INTENT(IN) :: sname(:)
-      CHARACTER(LEN=*), INTENT(IN) :: s_units
-      INTEGER,          INTENT(IN) :: t_rev(:)
-      INTEGER,          INTENT(IN) :: irt(:,:), nat
+      INTEGER,           INTENT(IN) :: nsym
+      LOGICAL,           INTENT(IN) :: invsym
+      INTEGER,           INTENT(IN) :: s(:,:,:) 
+      REAL(dbl),         INTENT(IN) :: trasl(:,:)
+      CHARACTER(LEN=*),  INTENT(IN) :: sname(:)
+      CHARACTER(LEN=*),  INTENT(IN) :: s_units
+      INTEGER, OPTIONAL, INTENT(IN) :: t_rev(:)
+      INTEGER, OPTIONAL, INTENT(IN) :: irt(:,:), nat
       !
       INTEGER   :: i
       REAL(dbl) :: tmp(3)
@@ -821,7 +847,9 @@ CONTAINS
       !
       CALL iotk_write_dat( ounit, "INVERSION_SYMMETRY", invsym )
       !
-      CALL iotk_write_dat( ounit, "NUMBER_OF_ATOMS", nat )
+      IF ( PRESENT( nat ) ) THEN
+          CALL iotk_write_dat( ounit, "NUMBER_OF_ATOMS", nat )
+      ENDIF
       !
       CALL iotk_write_attr( attr, "UNITS", TRIM(s_units), FIRST = .TRUE. )
       CALL iotk_write_empty( ounit, "UNITS_FOR_SYMMETRIES", ATTR = attr )
@@ -831,7 +859,11 @@ CONTAINS
          CALL iotk_write_begin( ounit, "SYMM" // TRIM( iotk_index( i ) ) )
          !
          CALL iotk_write_attr ( attr, "NAME", TRIM( sname(i) ), FIRST=.TRUE. )
-         CALL iotk_write_attr ( attr, "T_REV", t_rev(i) )
+         !
+         IF ( PRESENT( t_rev ) ) THEN
+             CALL iotk_write_attr ( attr, "T_REV", t_rev(i) )
+         ENDIF
+         !
          CALL iotk_write_empty( ounit, "INFO", ATTR = attr )
          !
          tmp(1) = trasl(1,i) 
@@ -840,7 +872,10 @@ CONTAINS
          !
          CALL iotk_write_dat( ounit, "ROTATION", s(:,:,i), COLUMNS=3 )
          CALL iotk_write_dat( ounit, "FRACTIONAL_TRANSLATION", tmp(1:3), COLUMNS=3 )
-         CALL iotk_write_dat( ounit, "EQUIVALENT_IONS", irt(i,1:nat), COLUMNS=8 )
+         !
+         IF ( PRESENT( irt ) .AND. PRESENT( nat ) ) THEN
+             CALL iotk_write_dat( ounit, "EQUIVALENT_IONS", irt(i,1:nat), COLUMNS=8 )
+         ENDIF
          !
          CALL iotk_write_end( ounit, "SYMM" // TRIM( iotk_index( i ) ) )
          !
@@ -936,6 +971,7 @@ CONTAINS
          CALL iotk_write_attr( attr, "nr1s", nr1s, FIRST = .TRUE. )
          CALL iotk_write_attr( attr, "nr2s", nr2s )
          CALL iotk_write_attr( attr, "nr3s", nr3s )
+         CALL iotk_write_attr( attr, "gvect_number", ngm )
          CALL iotk_write_attr( attr, "gamma_only", gamma_only )
          CALL iotk_write_attr( attr, "units", "crystal" )
          CALL iotk_write_empty( ounit, "INFO", ATTR = attr )
@@ -964,13 +1000,13 @@ CONTAINS
       LOGICAL,      INTENT(IN) :: gamma_only
       REAL(dbl),    INTENT(IN) :: xk(3)
       CHARACTER(*), INTENT(IN) :: k_units
-      LOGICAL,      INTENT(IN) :: index(:), igk(:,:)
+      INTEGER,      INTENT(IN) :: index(:), igk(:,:)
       !
       INTEGER        :: iunaux
       CHARACTER(256) :: filename
 
       CALL iotk_free_unit( iunaux )
-      filename = wfc_filename( datadir_out, 'gkvectors', ik )
+      filename = qexml_wfc_filename( datadir_out, 'gkvectors', ik )
       !
       CALL iotk_open_write( iunaux, FILE = TRIM( filename ), &
                             ROOT="GK-VECTORS", BINARY = .TRUE. )
@@ -983,7 +1019,7 @@ CONTAINS
       CALL iotk_write_dat( iunaux, "K-POINT_COORDS", xk, ATTR = attr )
       !
       CALL iotk_write_dat( iunaux, "INDEX", index(1:npwk) )
-      CALL iotk_write_dat( iunaux, "GRID", igk(1:npwk,ik), COLUMNS = 3 )
+      CALL iotk_write_dat( iunaux, "GRID", igk(1:3,1:npwk), COLUMNS = 3 )
       !
       CALL iotk_close_write( iunaux )
       !
@@ -1080,7 +1116,9 @@ CONTAINS
       !
       CALL iotk_write_dat( ounit, "SMEARING_METHOD", lgauss )
       !
-      IF ( lgauss ) THEN
+      IF ( lgauss .AND. PRESENT( ngauss ) .AND. &
+                        PRESENT( degauss_units ) .AND. &
+                        PRESENT( degauss ) ) THEN
          !
          CALL iotk_write_dat( ounit, "SMEARING_TYPE", ngauss )
          !
@@ -1092,7 +1130,7 @@ CONTAINS
       !
       CALL iotk_write_dat( ounit, "TETRAHEDRON_METHOD", ltetra )
       !
-      IF ( ltetra ) THEN
+      IF ( ltetra .AND. PRESENT( tetra ) ) THEN
          !
          CALL iotk_write_dat( ounit, "NUMBER_OF_TETRAHEDRA", ntetra )
          !
@@ -1107,7 +1145,8 @@ CONTAINS
       !
       CALL iotk_write_dat( ounit, "FIXED_OCCUPATIONS", tfixed_occ )
       !
-      IF ( tfixed_occ ) THEN
+      IF ( tfixed_occ .AND. PRESENT(nstates_up) .AND. &
+                            PRESENT(nstates_dw) ) THEN
          !
          CALL iotk_write_attr( attr, "lsda" , lsda, FIRST = .TRUE. )
          CALL iotk_write_attr( attr, "nstates_up", nstates_up )
@@ -1115,12 +1154,15 @@ CONTAINS
          !
          CALL iotk_write_empty( ounit, 'INFO', ATTR = attr )
          !
-         CALL iotk_write_dat( ounit, "INPUT_OCC_UP", input_occ(1:nstates_up,1) )
+         IF ( PRESENT( input_occ ) ) THEN
+             CALL iotk_write_dat( ounit, "INPUT_OCC_UP", input_occ(1:nstates_up,1) )
+             !
+             IF ( lsda ) &
+                CALL iotk_write_dat( ounit, "INPUT_OCC_DOWN", input_occ(1:nstates_dw,2) )
+             !
+         ENDIF
          !
-         IF ( lsda ) &
-            CALL iotk_write_dat( ounit, "INPUT_OCC_DOWN", input_occ(1:nstates_dw,2) )
-         !
-      END IF
+      ENDIF
       !
       CALL iotk_write_end( ounit, "OCCUPATIONS" )
       !
@@ -1132,9 +1174,10 @@ CONTAINS
                                nk1, nk2, nk3, k_units )
       !------------------------------------------------------------------------
       !
-      INTEGER,      INTENT(IN) :: num_k_points, k1, k2, k3, nk1, nk2, nk3
-      REAL(dbl),    INTENT(IN) :: xk(:,:), wk(:)
-      CHARACTER(*), INTENT(IN) :: k_units
+      INTEGER,           INTENT(IN) :: num_k_points
+      INTEGER, OPTIONAL, INTENT(IN) :: k1, k2, k3, nk1, nk2, nk3
+      REAL(dbl),         INTENT(IN) :: xk(:,:), wk(:)
+      CHARACTER(*),      INTENT(IN) :: k_units
       !
       INTEGER :: ik
       !
@@ -1146,14 +1189,19 @@ CONTAINS
       CALL iotk_write_attr( attr, "UNITS", TRIM(k_units), FIRST = .TRUE. )
       CALL iotk_write_empty( ounit, "UNITS_FOR_K-POINTS", attr )
       !
-      CALL iotk_write_attr( attr, "nk1", nk1, FIRST = .TRUE. )
-      CALL iotk_write_attr( attr, "nk2", nk2 )
-      CALL iotk_write_attr( attr, "nk3", nk3 )
-      CALL iotk_write_empty( ounit, "MONKHORST_PACK_GRID", attr )
-      CALL iotk_write_attr( attr, "k1", k1, FIRST = .TRUE. )
-      CALL iotk_write_attr( attr, "k2", k2 )
-      CALL iotk_write_attr( attr, "k3", k3 )
-      CALL iotk_write_empty( ounit, "MONKHORST_PACK_OFFSET", attr )
+      IF ( PRESENT(nk1) .AND. PRESENT(nk2) .AND. PRESENT(nk3) ) THEN
+          CALL iotk_write_attr( attr, "nk1", nk1, FIRST = .TRUE. )
+          CALL iotk_write_attr( attr, "nk2", nk2 )
+          CALL iotk_write_attr( attr, "nk3", nk3 )
+          CALL iotk_write_empty( ounit, "MONKHORST_PACK_GRID", attr )
+      ENDIF
+      ! 
+      IF ( PRESENT(k1) .AND. PRESENT(k2) .AND. PRESENT(k3) ) THEN
+          CALL iotk_write_attr( attr, "k1", k1, FIRST = .TRUE. )
+          CALL iotk_write_attr( attr, "k2", k2 )
+          CALL iotk_write_attr( attr, "k3", k3 )
+          CALL iotk_write_empty( ounit, "MONKHORST_PACK_OFFSET", attr )
+      ENDIF
       !
       DO ik = 1, num_k_points
          !
@@ -1252,12 +1300,12 @@ CONTAINS
       !
       IF ( PRESENT( ispin) ) THEN
          !
-         filename= TRIM( wfc_filename( datadir_out, 'eigenval', &
+         filename= TRIM( qexml_wfc_filename( datadir_out, 'eigenval', &
                                        ik, ispin, EXTENSION="xml") )
          !
       ELSE
          !
-         filename= TRIM( wfc_filename( datadir_out, 'eigenval', &
+         filename= TRIM( qexml_wfc_filename( datadir_out, 'eigenval', &
                                        ik, EXTENSION="xml") )
          !
       ENDIF
@@ -1332,15 +1380,15 @@ CONTAINS
       !
       IF ( PRESENT( ispin ) ) THEN
          !
-         filename = TRIM( wfc_filename( datadir_out, 'evc', ik, ispin ) )
+         filename = TRIM( qexml_wfc_filename( datadir_out, 'evc', ik, ispin ) )
          !
       ELSEIF ( PRESENT( ipol )  ) THEN
          !
-         filename = TRIM( wfc_filename( datadir_out, 'evc', ik, ipol ) )
+         filename = TRIM( qexml_wfc_filename( datadir_out, 'evc', ik, ipol ) )
          !
       ELSE
          !
-         filename = TRIM( wfc_filename( datadir_out, 'evc', ik ) )
+         filename = TRIM( qexml_wfc_filename( datadir_out, 'evc', ik ) )
          !
       ENDIF
       !
@@ -1354,9 +1402,15 @@ CONTAINS
       CALL iotk_write_attr( attr, "nbnd",         nbnd )
       CALL iotk_write_attr( attr, "ik",           ik )
       CALL iotk_write_attr( attr, "nk",           nkpts )
-      CALL iotk_write_attr( attr, "ispin",        ispin )
+      IF ( PRESENT( ispin) ) THEN 
+          CALL iotk_write_attr( attr, "ispin",    ispin )
+      ELSE
+          CALL iotk_write_attr( attr, "ispin",    1 )
+      ENDIF
       CALL iotk_write_attr( attr, "nspin",        nspin )
-      IF ( PRESENT( scale_factor) ) CALL iotk_write_attr( attr, "scale_factor", scale_factor )
+      IF ( PRESENT( scale_factor) ) THEN
+          CALL iotk_write_attr( attr, "scale_factor", scale_factor )
+      ENDIF
       !
       CALL iotk_write_empty( iunaux, "INFO", attr )
       !
@@ -1531,7 +1585,7 @@ CONTAINS
       IMPLICIT NONE
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: creator_name, creator_version
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: format_name, format_version
-      INTEGER,           OPTIONAL, INTENT(OUT) :: ierr
+      INTEGER,                     INTENT(OUT) :: ierr
 
       CHARACTER(256) :: creator_name_, creator_version_
       CHARACTER(256) :: format_name_,     format_version_
@@ -1568,6 +1622,47 @@ CONTAINS
       IF ( PRESENT(format_version) )   format_version  = TRIM(format_version_)
       !
     END SUBROUTINE qexml_read_header
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE qexml_read_control( pp_check_flag, lkpoint_dir, &
+                                   q_real_space, ierr )
+      !------------------------------------------------------------------------
+      !
+      IMPLICIT NONE
+      LOGICAL,  OPTIONAL, INTENT(OUT) :: pp_check_flag
+      LOGICAL,  OPTIONAL, INTENT(OUT) :: lkpoint_dir
+      LOGICAL,  OPTIONAL, INTENT(OUT) :: q_real_space
+      INTEGER,            INTENT(OUT) :: ierr
+
+      ierr = 0
+      !
+      !
+      CALL iotk_scan_begin( iunit, "CONTROL", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      !
+      IF ( PRESENT( pp_check_flag )) THEN
+          CALL iotk_scan_dat( iunit, "PP_CHECK_FLAG", pp_check_flag, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( lkpoint_dir )) THEN
+          CALL iotk_scan_dat( iunit, "LKPOINT_DIR", lkpoint_dir, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( q_real_space )) THEN
+          CALL iotk_scan_dat( iunit, "Q_REAL_SPACE", q_real_space, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
+      !
+      !
+      CALL iotk_scan_end( iunit, "CONTROL", IERR=ierr )
+      IF (ierr/=0) RETURN
+      !
+      RETURN
+    END SUBROUTINE qexml_read_control
     !
     !
     !------------------------------------------------------------------------
@@ -2091,7 +2186,7 @@ CONTAINS
       ierr = 0
       !
       CALL iotk_free_unit( iunaux )
-      filename = wfc_filename( datadir_in, 'gkvectors', ik )
+      filename = qexml_wfc_filename( datadir_in, 'gkvectors', ik )
       !
       CALL iotk_open_read ( iunaux, FILE = TRIM(filename), IERR=ierr )
       IF (ierr/=0)  RETURN
@@ -2377,13 +2472,19 @@ CONTAINS
          ! 
          IF ( PRESENT( input_occ ) ) THEN
             !
-            CALL iotk_scan_dat( iunit, "INPUT_OCC_UP", input_occ(1:nstates_up_,1), IERR=ierr )
-            IF (ierr/=0) RETURN
+            input_occ(:,:) = 1.0_dbl
+            !
+            CALL iotk_scan_dat( iunit, "INPUT_OCC_UP", input_occ(1:nstates_up_,1), &
+                                FOUND=lfound, IERR=ierr )
+            IF (ierr>0) RETURN
+            IF ( .NOT. lfound ) input_occ(1:nstates_up_,1) = 1.0_dbl
             !
             IF ( lsda_  ) THEN
                !
-               CALL iotk_scan_dat( iunit, "INPUT_OCC_DOWN", input_occ(1:nstates_dw_,2), IERR=ierr )
-               IF (ierr/=0) RETURN
+               CALL iotk_scan_dat( iunit, "INPUT_OCC_DOWN", input_occ(1:nstates_dw_,2), &
+                                   FOUND=lfound, IERR=ierr )
+               IF (ierr>0) RETURN
+               IF ( .NOT. lfound ) input_occ(1:nstates_dw_,2) = 1.0_dbl
                !
             ENDIF
             !
@@ -2447,26 +2548,33 @@ CONTAINS
       CALL iotk_scan_attr( attr, "UNITS", k_units_, IERR=ierr )
       IF ( ierr/=0 ) RETURN
       !
-      CALL iotk_scan_empty( iunit, "MONKHORST_PACK_GRID", ATTR=attr, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
+      IF ( PRESENT(nk1) .OR. PRESENT(nk2) .OR. PRESENT(nk3) ) THEN
+          !
+          CALL iotk_scan_empty( iunit, "MONKHORST_PACK_GRID", ATTR=attr, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          !
+          CALL iotk_scan_attr( attr, "nk1", nk1_, IERR=ierr  )
+          IF ( ierr/=0 ) RETURN
+          CALL iotk_scan_attr( attr, "nk2", nk2_, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          CALL iotk_scan_attr( attr, "nk3", nk3_, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          !
+      ENDIF
       !
-      CALL iotk_scan_attr( attr, "nk1", nk1_, IERR=ierr  )
-      IF ( ierr/=0 ) RETURN
-      CALL iotk_scan_attr( attr, "nk2", nk2_, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
-      CALL iotk_scan_attr( attr, "nk3", nk3_, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
-      !
-      !
-      CALL iotk_scan_empty( iunit, "MONKHORST_PACK_OFFSET", ATTR=attr, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
-      !
-      CALL iotk_scan_attr( attr, "k1", k1_, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
-      CALL iotk_scan_attr( attr, "k2", k2_, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
-      CALL iotk_scan_attr( attr, "k3", k3_, IERR=ierr )
-      IF ( ierr/=0 ) RETURN
+      IF ( PRESENT(k1) .OR. PRESENT(k2) .OR. PRESENT(k3) ) THEN
+          !
+          CALL iotk_scan_empty( iunit, "MONKHORST_PACK_OFFSET", ATTR=attr, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          !
+          CALL iotk_scan_attr( attr, "k1", k1_, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          CALL iotk_scan_attr( attr, "k2", k2_, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          CALL iotk_scan_attr( attr, "k3", k3_, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          !
+      ENDIF
       !
       !
       ALLOCATE( xk_( 3, num_k_points_ ) )
@@ -2649,12 +2757,12 @@ CONTAINS
       !
       IF ( PRESENT( ispin) ) THEN
          !
-         filename= TRIM( wfc_filename( datadir_in, 'eigenval', &
+         filename= TRIM( qexml_wfc_filename( datadir_in, 'eigenval', &
                                        ik, ispin, EXTENSION="xml") ) 
          !
       ELSE
          !
-         filename= TRIM( wfc_filename( datadir_in, 'eigenval', &
+         filename= TRIM( qexml_wfc_filename( datadir_in, 'eigenval', &
                                        ik, EXTENSION="xml") ) 
          !
       ENDIF
@@ -2749,15 +2857,15 @@ CONTAINS
       !
       IF ( PRESENT( ispin ) ) THEN
          !
-         filename = TRIM( wfc_filename( datadir_in, 'evc', ik, ispin ) ) 
+         filename = TRIM( qexml_wfc_filename( datadir_in, 'evc', ik, ispin ) ) 
          !
       ELSEIF ( PRESENT( ipol )  ) THEN
          !
-         filename = TRIM( wfc_filename( datadir_in, 'evc', ik, ipol ) ) 
+         filename = TRIM( qexml_wfc_filename( datadir_in, 'evc', ik, ipol ) ) 
          !
       ELSE
          !
-         filename = TRIM( wfc_filename( datadir_in, 'evc', ik ) ) 
+         filename = TRIM( qexml_wfc_filename( datadir_in, 'evc', ik ) ) 
          !
       ENDIF
       !
