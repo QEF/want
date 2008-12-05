@@ -18,14 +18,12 @@ VIEWER=xdvi
 #
 PDFLATEX=pdflatex
 PDFVIEWER=acroread
-PDFCONVERTER=epstopdf
-JPGCONVERTER=eps2png -jpg --resolution 200
 
 .SUFFIXES : .eps .pdf .jpg
 .eps.pdf  : 
-	$(PDFCONVERTER) $<
+	$(PDFCONVERTER) $<  $>
 .eps.jpg  : 
-	$(JPGCONVERTER) $<
+	$(JPGCONVERTER) $<  $>
 
 ######################################
 
@@ -75,22 +73,12 @@ latex:
 bib:
 	bibtex $(TEX)
 
-pdf:    pdffig
+pdf:
 	$(PDFLATEX) $(TEX).tex
 
 update:
 	if test -e $(TEX).pdf ; then \
 	cp $(TEX).pdf .. ; fi
-
-pdffig:
-	for fig in $(PDFFIG) ; do  \
-	   ( make $$fig ) \
-	done
-
-jpgfig:
-	for fig in $(JPGFIG) ; do  \
-	   ( make $$fig ) \
-	done
 
 ps:
 	dvips $(TEX).dvi
@@ -104,5 +92,5 @@ pdfview:
 
 clean:
 	-rm *.aux *.idx *.blg *.bbl *.dvi *.log *.toc \
-	    $(PDFFIG) $(TEX).ps $(TEX).pdf
+	    $(TEX).ps $(TEX).pdf
 

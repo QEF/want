@@ -4,6 +4,9 @@
 =======================================================
 
 
+05 Dec 2008     Documentation updated, according to bugs reported by 
+                Caterina Cocchi. (AF) 
+
 02 Jul 2008     bug reported for test08 (nscf_AlH.in used scf flag): fixed.
                 (AF & AC)
 
