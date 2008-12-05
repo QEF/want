@@ -186,6 +186,9 @@
           !
           IF ( nkb == 0 ) THEN
               nstep_kb = 1
+              ALLOCATE( ibetas( nstep_kb), ibetae(nstep_kb), STAT=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,'allocating ibetas, ibetae', ABS(ierr))
+              !
               ibetas   = 1
               ibetae   = 1
           ELSE
@@ -202,7 +205,8 @@
           ENDIF
           !
           nkbx = MAXVAL( ibetae(:) -ibetas(:) +1 )
-          IF ( nkbx > nkb_buffer) CALL errore(subname,'nkbx too large', 10)
+          IF ( nkbx > nkb_buffer .AND. nkb_buffer /= 0 ) &
+              CALL errore(subname,'nkbx too large', 10)
           !
           !
           IF (ionode .AND. ( nwfc_buffer /= dimwinx .OR. nkb_buffer /= nkb ) ) THEN
