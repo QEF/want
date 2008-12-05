@@ -13,9 +13,11 @@
    datafile_C = "./SCRATCH/graphene_WanT.ham"
    transport_dir = 2
    delta = 0.005
+   smearing_type = "lorentzian"
+!   delta = 0.05
 !   smearing_type = "gaussian"
    use_symm = .TRUE.
-   nk(1) = 80
+   nk(1) = 400
    nk(2) =  1
 /
 
