@@ -76,10 +76,10 @@ case $INPUT in
    (plot)           PLOT=yes ;;
    (conductor)      CONDUCTOR=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    BANDS=yes ; PLOT=yes ; DOS=yes ;;
+                    BANDS=yes ; PLOT=yes ; DOS=yes ; CONDUCTOR=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    BANDS=yes ; PLOT=yes ; DOS=yes ;;
+                    BANDS=yes ; PLOT=yes ; DOS=yes ; CONDUCTOR=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
