@@ -19,6 +19,8 @@
    USE kpoints_module,    ONLY : nkpts_g, kpoints_alloc
    USE io_global_module,  ONLY : ionode, ionode_id
    USE mp,                ONLY : mp_bcast
+   !
+   USE input_parameters_module, ONLY : iwin_min, iwin_max, ifroz_min, ifroz_max
    USE iotk_module
    USE qexml_module 
    USE qexpt_module 
@@ -105,6 +107,7 @@ CONTAINS
        REAL(dbl), INTENT(in) :: eig_(:,:)
        INTEGER,   INTENT(in) :: dimwann
        CHARACTER(12)         :: subname="windows_init"
+       LOGICAL               :: lhave_min, lhave_max
        INTEGER               :: kifroz_max, kifroz_min, idum
        INTEGER               :: i, ik_g, ierr
 
@@ -125,27 +128,48 @@ CONTAINS
        DO ik_g = 1,nkpts_g
 
           !
-          ! ... Check which eigenvalues fall within the outer energy window
+          ! Check which eigenvalues fall within the outer energy window
+          !
           IF ( eig_(1,ik_g) > win_max .OR. eig_(nbnd,ik_g) < win_min ) &
                CALL errore(subname, 'energy window contains no eigenvalues ',1)
 
-          imin(ik_g) = 0
+          !
+          ! iwin_min/iwin_max are either 0 (do the
+          ! standard initizalization) or > 0 if set from input
+          !
+          imin(ik_g) = iwin_min( ik_g )
+          imax(ik_g) = iwin_max( ik_g )
+          !
+          lhave_min = ( imin( ik_g ) /= 0 )
+          lhave_max = ( imax( ik_g ) /= 0 )
+          !
           DO i = 1, nbnd
-              IF ( imin(ik_g) == 0 ) THEN
+              !
+              IF ( .NOT. lhave_min ) THEN
+                  !
                   IF ( ( eig_(i,ik_g) >= win_min ) .AND. ( eig_(i,ik_g) <= win_max )) THEN
+                      !
                       imin(ik_g) = i
-                      imax(ik_g) = i
+                      lhave_min = .TRUE.
+                      !
                   ENDIF
+                  !
               ENDIF
-              IF ( eig_(i,ik_g) <= win_max ) imax(ik_g) = i
+              !
+              IF ( .NOT. lhave_max ) THEN
+                  !
+                  IF ( eig_(i,ik_g) <= win_max ) imax(ik_g) = i
+                  !
+              ENDIF
+              !
           ENDDO
           !
-          dimwin(ik_g) = imax(ik_g) - imin(ik_g) + 1       
+          dimwin(ik_g) = imax(ik_g) -imin(ik_g) +1       
           !
-          IF ( dimwin(ik_g) < dimwann) CALL errore(subname,'dimwin < dimwann', ik_g )
-          IF ( dimwin(ik_g) > nbnd) CALL errore(subname,'dimwin > nbnd', ik_g )
-          IF ( imax(ik_g) < imin(ik_g) ) CALL errore(subname,'imax < imin',ik_g)
-          IF ( imin(ik_g) < 1 ) CALL errore(subname,'imin < 1',ik_g)
+          IF ( dimwin(ik_g) < dimwann)     CALL errore(subname,'dimwin < dimwann', ik_g )
+          IF ( dimwin(ik_g) > nbnd)        CALL errore(subname,'dimwin > nbnd', ik_g )
+          IF ( imax(ik_g)   < imin(ik_g) ) CALL errore(subname,'imax < imin',ik_g)
+          IF ( imin(ik_g)   < 1 )          CALL errore(subname,'imin < 1',ik_g)
           !
        ENDDO kpoints_loop
 
@@ -167,59 +191,96 @@ CONTAINS
        ALLOCATE( frozen(dimwinx,nkpts_g), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname,'allocating frozen',ABS(ierr))
        !
+
+       !
+       ! set vars for frozen states
+       !
        lfrozen = .FALSE.
-
-
+       !
        kpoints_frozen_loop: &
        DO ik_g = 1, nkpts_g
           !
-          ! ... frozen states
           frozen(:,ik_g) = .FALSE.
-        
-          kifroz_min = 0
-          kifroz_max = -1
+          ! 
+          kifroz_min = ifroz_min( ik_g ) 
+          kifroz_max = ifroz_max( ik_g )
+          !
+          lhave_min = ( ifroz_min( ik_g ) /=  0 )
+          lhave_max = ( ifroz_max( ik_g ) /= -1 )
+
+          !
           ! Note that the above obeys kifroz_max-kifroz_min+1=kdimfroz=0,
           ! as required
-
+          !
           DO i = imin(ik_g), imax(ik_g)
-              IF ( kifroz_min == 0 ) THEN
+              !
+              IF ( .NOT. lhave_min ) THEN
+                  !
                   IF ( ( eig_(i,ik_g) >= froz_min ).AND.( eig_(i,ik_g) <= froz_max )) THEN
-                      !    relative to bottom of outer window
-                      kifroz_min = i - imin(ik_g) + 1   
-                      kifroz_max = i - imin(ik_g) + 1
+                      !
+                      kifroz_min = i
+                      lhave_min = .TRUE.
+                      !
                   ENDIF
-              ELSE IF ( eig_(i,ik_g) <= froz_max ) THEN
-                  kifroz_max = kifroz_max + 1
+                  !
               ENDIF
+              !
+              IF ( .NOT. lhave_max ) THEN 
+                  !
+                  IF ( eig_(i,ik_g) <= froz_max ) kifroz_max = i
+                  !
+              ENDIF
+              !
           ENDDO
+          !
+          ! set these vales relative to the bottom of the outer window
+          !
+          kifroz_min = kifroz_min -imin(ik_g) + 1   
+          kifroz_max = kifroz_max -imin(ik_g) + 1
     
           dimfroz(ik_g) = kifroz_max - kifroz_min + 1
-          IF ( dimfroz(ik_g) > dimwann ) CALL errore(subname,'dimfroz > dimwann',ik_g)
           !
-          ! ... Generate index array for frozen states inside inner window
+          IF ( dimfroz(ik_g) > dimwann ) CALL errore(subname,'dimfroz > dimwann',ik_g)
+
+
+          !
+          ! Generate index array for frozen states inside inner window
           ! 
           indxfroz(:,ik_g) = 0
+          !
           IF ( dimfroz(ik_g) > 0 ) THEN
+               !
                lfrozen = .TRUE.
+               !
                DO i = 1, dimfroz(ik_g)
+                   !
                    indxfroz(i,ik_g) = kifroz_min + i - 1
-                   frozen(indxfroz(i,ik_g),ik_g) = .TRUE.
+                   !
+                   frozen( indxfroz(i,ik_g), ik_g ) = .TRUE.
+                   !
                ENDDO
+               !
                IF ( indxfroz(dimfroz(ik_g),ik_g) /= kifroz_max ) &
                    CALL errore(subname,'wrong number of frozen states',ik_g )
           ENDIF
    
           !
-          ! ... Generate index array for non-frozen states
+          ! Generate index array for non-frozen states
           !
           idum = 0
           indxnfroz(:,ik_g) = 0
+          !
           DO i = 1, dimwin(ik_g)
+              !
               IF( .NOT. frozen(i,ik_g) ) THEN
+                  !
                   idum = idum + 1
                   indxnfroz(idum,ik_g) = i
+                  !
               ENDIF
+              !
           ENDDO
+          !
           IF ( idum /= dimwin(ik_g)-dimfroz(ik_g) )  &
               CALL errore(subname, 'wrong number of non-frozen states', ik_g)
 

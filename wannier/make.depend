@@ -124,8 +124,8 @@ collect_wf.o : lattice.o
 collect_wf.o : ../libs/constants.o
 collect_wf.o : ../libs/kind.o
 collect_wf.o : ../libs/log_module.o
-collect_wf.o : ../libs/mp.o
 collect_wf.o : ../libs/timing.o
+collect_wf.o : paratools.o
 compute_kham_2D.o : converters.o
 compute_kham_2D.o : lattice.o
 compute_kham_2D.o : ../libs/constants.o
@@ -189,7 +189,6 @@ domega_aux.o : lattice.o
 domega_aux.o : ../libs/constants.o
 domega_aux.o : ../libs/kind.o
 domega_aux.o : ../libs/log_module.o
-domega_aux.o : ../libs/mp.o
 domega_aux.o : ../libs/timing.o
 domega_aux.o : trial_center.o
 domega.o : kpoints.o
@@ -386,12 +385,12 @@ localization_init.o : ../libs/constants.o
 localization_init.o : ../libs/files.o
 localization_init.o : ../libs/kind.o
 localization_init.o : ../libs/log_module.o
-localization_init.o : ../libs/mp.o
 localization_init.o : ../libs/parameters.o
 localization_init.o : ../libs/timing.o
 localization_init.o : ../libs/util.o
 localization_init.o : localization.o
 localization_init.o : overlap_module.o
+localization_init.o : paratools.o
 localization.o : ../iotk/iotk_16_module.o
 localization.o : kpoints.o
 localization.o : ../libs/constants.o
@@ -440,8 +439,8 @@ operator.o : ../libs/kind.o
 ordering.o : kpoints.o
 ordering.o : ../libs/constants.o
 ordering.o : ../libs/kind.o
-ordering.o : ../libs/mp.o
 ordering.o : ../libs/timing.o
+ordering.o : paratools.o
 overlap_augment.o : becmod.o
 overlap_augment.o : ions.o
 overlap_augment.o : kpoints.o
@@ -653,11 +652,11 @@ subspace_init.o : ../libs/constants.o
 subspace_init.o : ../libs/files.o
 subspace_init.o : ../libs/kind.o
 subspace_init.o : ../libs/log_module.o
-subspace_init.o : ../libs/mp.o
 subspace_init.o : ../libs/parameters.o
 subspace_init.o : ../libs/timing.o
 subspace_init.o : ../libs/util.o
 subspace_init.o : overlap_module.o
+subspace_init.o : paratools.o
 subspace_init.o : subspace.o
 subspace_init.o : windows.o
 subspace.o : io_module.o
@@ -682,7 +681,6 @@ summary.o : ../libs/constants.o
 summary.o : ../libs/kind.o
 summary.o : ../libs/log_module.o
 summary.o : ../libs/mp_global.o
-summary.o : ../libs/mp.o
 summary.o : ../libs/parameters.o
 summary.o : ../libs/parser.o
 summary.o : localization.o
@@ -730,10 +728,10 @@ unitary_update.o : kpoints.o
 unitary_update.o : ../libs/constants.o
 unitary_update.o : ../libs/kind.o
 unitary_update.o : ../libs/log_module.o
-unitary_update.o : ../libs/mp.o
 unitary_update.o : ../libs/parser.o
 unitary_update.o : ../libs/timing.o
 unitary_update.o : ../libs/util.o
+unitary_update.o : paratools.o
 upf.o : ../iotk/iotk_16_module.o
 upf.o : ../libs/kind.o
 upf.o : pseudo_types.o
@@ -851,6 +849,7 @@ wfc_manager.o : uspp.o
 wfc_manager.o : wfc_data.o
 wfc_manager.o : wfc_info.o
 wfc_manager.o : windows.o
+windows.o : input_parameters.o
 windows.o : ../iotk/iotk_16_module.o
 windows.o : kpoints.o
 windows.o : ../libs/constants.o

@@ -18,11 +18,13 @@
 CONTAINS
 !
 !********************************************************
-   SUBROUTINE postproc_init( windows, subspace, hamiltonian, wannier)
+   SUBROUTINE postproc_init( windows, subspace_min, subspace, hamiltonian, wannier)
    !********************************************************
    !
    ! This is  a driver routine to manage almost the whole
    ! I/O during postprocessing operation
+   ! Subspace_min read a minimal definition of subspace (while subspace
+   ! reads a more complete one)
    !
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, io_name, ham_unit, space_unit, wan_unit
@@ -43,7 +45,7 @@ CONTAINS
    ! input variables
    !
    LOGICAL, OPTIONAL, INTENT(IN) :: windows
-   LOGICAL, OPTIONAL, INTENT(IN) :: subspace
+   LOGICAL, OPTIONAL, INTENT(IN) :: subspace, subspace_min
    LOGICAL, OPTIONAL, INTENT(IN) :: hamiltonian
    LOGICAL, OPTIONAL, INTENT(IN) :: wannier
 
@@ -56,6 +58,7 @@ CONTAINS
    LOGICAL            :: lfound
    !
    LOGICAL            :: lwindows
+   LOGICAL            :: lsubspace_min
    LOGICAL            :: lsubspace
    LOGICAL            :: lhamiltonian
    LOGICAL            :: lwannier
@@ -74,11 +77,13 @@ CONTAINS
       ! interface to CRYSTAL06
       !
       lwindows        = .TRUE.
-      lsubspace       = .TRUE.
+      lsubspace_min   = .TRUE.
+      lsubspace       = .FALSE.
       lhamiltonian    = .TRUE.
       lwannier        = .FALSE.
       !
       IF ( PRESENT( windows ) )           lwindows = windows
+      IF ( PRESENT( subspace_min ) ) lsubspace_min = subspace_min
       IF ( PRESENT( subspace ) )         lsubspace = subspace
       IF ( PRESENT( hamiltonian ) )   lhamiltonian = hamiltonian
       IF ( PRESENT( wannier ) )           lwannier = wannier
@@ -116,14 +121,14 @@ CONTAINS
       !
       ! Read subspace data
       !
-      IF ( lsubspace ) THEN
+      IF ( lsubspace .OR. lsubspace_min ) THEN
           !
           CALL io_name('space',filename)
           !
           CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
               !
-              CALL subspace_read(space_unit,"SUBSPACE",lfound, LLAMP=.FALSE.)
+              CALL subspace_read(space_unit,"SUBSPACE",lfound, LEAMP=lsubspace, LLAMP=.FALSE.)
               IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1)
               !
           CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
