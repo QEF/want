@@ -4,6 +4,11 @@
 =======================================================
 
 
+25 Dec 2008      Bug fixed in ~want/libs (zmat_hdotp). Merry Christmas. (AF)
+
+16 Dec 2008      Important changes in the transport code: reorganization of
+                 data storage aimed to include correlation sgm's more easily. (AF)
+
 05 Dec 2008      Bug fixed in current.f90 (call to input_from_file), courtesy of
                  Miroslava Dieskova. QExml lib debugged ad upgraded. Quality
                  of test03 improved. Documentation updated according to bugs

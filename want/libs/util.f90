@@ -26,7 +26,7 @@
 ! SUBROUTINE   mat_sv ( n, nrhs, a, b [,ierr])
 ! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
 ! SUBROUTINE   mat_hdiag( z, w, a, n, uplo)
-! SUBROUTINE   mat_inv( n, a, z [,det_a] )
+! SUBROUTINE   mat_inv( n, a, z [,det_a] [,ierr] )
 ! SUBROUTINE  zmat_diag( z, w, a, n, side)
 ! COMPLEX FUNCTION  zmat_dotp( m, n, a, b)
 ! COMPLEX FUNCTION  zmat_hdotp( m, a, b)
@@ -966,7 +966,7 @@ END SUBROUTINE zmat_diag
 
 
 !**********************************************************
-   SUBROUTINE zmat_inv( n, a, z, det_a )
+   SUBROUTINE zmat_inv( n, a, z, det_a, ierr )
    !**********************************************************
    !
    ! compute Z = inv( A ), and, if required, 
@@ -979,8 +979,9 @@ END SUBROUTINE zmat_diag
    COMPLEX(dbl),           INTENT(IN)  :: a(n,n)
    COMPLEX(dbl),           INTENT(OUT) :: z(n,n)
    COMPLEX(dbl), OPTIONAL, INTENT(OUT) :: det_a
+   INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
    !
-   INTEGER           :: i, nb, info, ierr, ldz, lwork, ipiv (n)
+   INTEGER           :: i, nb, info, ierr_, ldz, lwork, ipiv (n)
    INTEGER, EXTERNAL :: ILAENV
    ! info=0: inversion was successful
    ! ldz   : leading dimension (the same as n)
@@ -988,8 +989,9 @@ END SUBROUTINE zmat_diag
    COMPLEX(dbl), ALLOCATABLE :: work(:)
    !
    !
-   ldz = n
+   IF ( PRESENT( ierr ) ) ierr=0
    !
+   ldz = n
    z(1:n,1:n) = a(1:n,1:n)
    !
    ! perform matrix inversion according to LAPACK
@@ -999,12 +1001,23 @@ END SUBROUTINE zmat_diag
    nb = ILAENV( 1, 'ZGETRI', ' ', n, -1, -1, -1 )
    lwork = n * nb
    !
-   ALLOCATE( work( lwork ), STAT=ierr )
-   IF ( ierr/=0 ) CALL errore ('zmat_inv', 'allocating work', ABS (ierr) )
+   ALLOCATE( work( lwork ), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore ('zmat_inv', 'allocating work', ABS (ierr_) )
    ! 
    !
    CALL ZGETRF (n, n, z, ldz, ipiv, info)
-   IF ( info/=0 ) CALL errore ('zmat_inv', 'error in ZGETRF', ABS (info) )
+   !
+   IF ( PRESENT(ierr) ) THEN
+       ! 
+       IF ( info/=0 ) THEN
+           ierr = info
+           RETURN
+       ENDIF
+       ! 
+   ELSE
+       IF ( info/=0 ) CALL errore ('zmat_inv', 'error in ZGETRF', ABS (info) )
+   ENDIF
+
    !
    ! compute the determinan if required
    !
@@ -1018,17 +1031,22 @@ END SUBROUTINE zmat_diag
    ENDIF
    !
    CALL ZGETRI (n, z, ldz, ipiv, work, lwork, info)
-   IF (info/=0) CALL errore ('zmat_inv', 'error in ZGETRI', ABS (info) )
+   !
+   IF ( PRESENT(ierr) ) THEN
+       IF ( info/=0 ) ierr = info
+   ELSE
+       IF ( info/=0 ) CALL errore ('zmat_inv', 'error in ZGETRI', ABS (info) )
+   ENDIF
    !
    ! 
-   DEALLOCATE( work, STAT=ierr )
-   IF ( ierr/=0 ) CALL errore ('zmat_inv', 'deallocating work', ABS (ierr) )
+   DEALLOCATE( work, STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore ('zmat_inv', 'deallocating work', ABS (ierr_) )
    !
 END SUBROUTINE zmat_inv 
 
 
 !**********************************************************
-   SUBROUTINE dmat_inv( n, a, z, det_a )
+   SUBROUTINE dmat_inv( n, a, z, det_a, ierr )
    !**********************************************************
    !
    ! compute Z = inv( A ), and, if required, 
@@ -1041,8 +1059,9 @@ END SUBROUTINE zmat_inv
    REAL(dbl),           INTENT(IN)    :: a(n,n)
    REAL(dbl),           INTENT(OUT)   :: z(n,n)
    REAL(dbl), OPTIONAL, INTENT(OUT)   :: det_a
+   INTEGER,   OPTIONAL, INTENT(OUT)   :: ierr
    !
-   INTEGER           :: i, nb, info, ierr, ldz, lwork, ipiv (n)
+   INTEGER           :: i, nb, info, ierr_, ldz, lwork, ipiv (n)
    INTEGER, EXTERNAL :: ILAENV
    ! info=0: inversion was successful
    ! ldz   : leading dimension (the same as n)
@@ -1050,6 +1069,7 @@ END SUBROUTINE zmat_inv
    REAL(dbl), ALLOCATABLE :: work(:)
    !
    !
+   IF ( PRESENT( ierr ) ) ierr = 0
    ldz = n
    !
    z(1:n,1:n) = a(1:n,1:n)
@@ -1061,16 +1081,23 @@ END SUBROUTINE zmat_inv
    nb = ILAENV( 1, 'DGETRI', ' ', n, -1, -1, -1 )
    lwork = n * nb
    !
-!! this does not work
-!   CALL DGETRI( n, z, ldz, ipiv, lwork, -1, info)
-!   IF ( info/=0 ) CALL errore ('dmat_inv', 'getting lwork in DGETRI', ABS (info) )
    !
-   ALLOCATE( work( lwork ), STAT=ierr )
-   IF ( ierr/=0 ) CALL errore ('dmat_inv', 'allocating work', ABS (ierr) )
+   ALLOCATE( work( lwork ), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore ('dmat_inv', 'allocating work', ABS(ierr_) )
    ! 
    !
    CALL DGETRF (n, n, z, ldz, ipiv, info)
-   IF ( info/=0 ) CALL errore ('dmat_inv', 'error in DGETRF', ABS (info) )
+   !
+   IF ( PRESENT(ierr) ) THEN
+       ! 
+       IF ( info/=0 ) THEN
+           ierr = info
+           RETURN
+       ENDIF
+       ! 
+   ELSE
+       IF ( info/=0 ) CALL errore ('dmat_inv', 'error in DGETRF', ABS (info) )
+   ENDIF
 
    !
    ! compute the determinan if required
@@ -1085,13 +1112,19 @@ END SUBROUTINE zmat_inv
    ENDIF
    !
    CALL DGETRI (n, z, ldz, ipiv, work, lwork, info)
-   IF (info/=0) CALL errore ('dmat_inv', 'error in ZGETRI', ABS (info) )
+   !
+   IF ( PRESENT(ierr) ) THEN
+       IF ( info/=0 ) ierr = info
+   ELSE
+       IF ( info/=0 ) CALL errore ('dmat_inv', 'error in ZGETRI', ABS (info) )
+   ENDIF
    !
    ! 
-   DEALLOCATE( work, STAT=ierr )
-   IF ( ierr/=0 ) CALL errore ('dmat_inv', 'deallocating work', ABS (ierr) )
+   DEALLOCATE( work, STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore ('dmat_inv', 'deallocating work', ABS (ierr_) )
    !
 END SUBROUTINE dmat_inv 
+
 
 !**********************************************************
    FUNCTION  zmat_unitary( m, n, z, side, toll )
@@ -1290,7 +1323,7 @@ END FUNCTION dmat_rank
    !
    DO j = 1, n
    DO i = 1, m
-      dotp = dotp + a(i,j) * CMPLX( b(i,j) )
+      dotp = dotp + a(i,j) * CONJG ( b(i,j) )
    ENDDO
    ENDDO
    !
@@ -1319,12 +1352,12 @@ END FUNCTION zmat_ge_dotp
    !
    DO j = 1, m
    DO i = 1, j-1
-      dotp = dotp + 2.0_dbl * a(i,j) * CMPLX( b(i,j) )
+      dotp = dotp + 2.0_dbl * CONJG( a(i,j) ) * b(i,j)
    ENDDO
    ENDDO
    !
    DO i = 1, m
-      dotp = dotp + 1.0_dbl * a(i,i) * CMPLX( b(i,i)  )
+      dotp = dotp + 1.0_dbl * CONJG( a(i,i) ) * b(i,i)
    ENDDO
    !
    zmat_he_dotp = dotp
@@ -1363,11 +1396,11 @@ END FUNCTION zmat_he_dotp
            !
            DO i = 1, j-1
                l = l+1
-               dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
+               dotp = dotp + 2.0_dbl * CONJG( ap(l) ) * bp(l)
            ENDDO
            !
            l = l+1
-           dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
+           dotp = dotp + 1.0_dbl * CONJG ( ap(l) ) * bp(l)
            !
        ENDDO
        !
@@ -1376,11 +1409,11 @@ END FUNCTION zmat_he_dotp
        DO j = 1, m
            !
            l = (j-1) * ( 2*m -j +2) /2 +1
-           dotp = dotp + 1.0_dbl * ap(l) * CMPLX( bp(l) )
+           dotp = dotp + 1.0_dbl * CONJG ( ap(l) ) * bp(l)
            !
            DO i = j+1, m
                l = l+1
-               dotp = dotp + 2.0_dbl * ap(l) * CMPLX( bp(l) )
+               dotp = dotp + 2.0_dbl * CONJG( ap(l) ) * bp(l)
            ENDDO
            !
            !
