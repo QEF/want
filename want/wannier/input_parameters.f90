@@ -11,7 +11,7 @@
 !********************************************
    !
    USE kinds,            ONLY : dbl
-   USE parameters,       ONLY : nstrx
+   USE parameters,       ONLY : nstrx, nkptsx => npkx
    USE parser_module,    ONLY : change_case
    USE io_global_module, ONLY : ionode, ionode_id
    USE mp,               ONLY : mp_bcast
@@ -152,12 +152,24 @@
    REAL(dbl) :: win_max =   20000000.0_dbl
        ! the upper bound of the above defined energy window
 
+   INTEGER   :: iwin_min(nkptsx) = 0
+   INTEGER   :: iwin_max(nkptsx) = 0
+       ! min and max indexes defining the above energy window (for each kpt)
+       ! if specified they overwrite the definitions given by win_min and
+       ! win_max
+
    REAL(dbl) :: froz_min = -60000000.0_dbl
        ! the lower bound of a second energy window which "frozes" the
        ! inner states to be part of the subspace.
 
    REAL(dbl) :: froz_max = -50000000.0_dbl
        ! the upper bound of the frozen energy window
+
+   INTEGER   :: ifroz_min(nkptsx) =  0
+   INTEGER   :: ifroz_max(nkptsx) = -1
+       ! min and max indexes defining the frozen energy window (for each kpt)
+       ! if specified they overwrite the definitions given by froz_min and
+       ! froz_max
 
    REAL(dbl) :: alpha_dis = 0.5_dbl
        ! the mixing parameter for iterative minimization in disentangle procedure
@@ -213,12 +225,14 @@
        ! if .TRUE. uses time-reversal symmetry to reduce the number of required kpts
 ! XXX
 
-   NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, spin_component, &
+   NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, &
+                         iwin_min, iwin_max, ifroz_min, ifroz_max, spin_component, &
                          alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &
-                         subspace_init, use_blimit, use_symmetry, use_timerev
+                         subspace_init, use_blimit, use_symmetry, use_timerev 
 
 
-   PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max, spin_component
+   PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max 
+   PUBLIC :: iwin_min, iwin_max, ifroz_min, ifroz_max, spin_component
    PUBLIC :: use_blimit, use_symmetry, use_timerev
    PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, subspace_init
    PUBLIC :: SUBSPACE
@@ -452,8 +466,12 @@ CONTAINS
       CALL mp_bcast( dimwann,            ionode_id )
       CALL mp_bcast( win_min,            ionode_id )
       CALL mp_bcast( win_max,            ionode_id )
+      CALL mp_bcast( iwin_min,           ionode_id )
+      CALL mp_bcast( iwin_max,           ionode_id )
       CALL mp_bcast( froz_min,           ionode_id )
       CALL mp_bcast( froz_max,           ionode_id )
+      CALL mp_bcast( ifroz_min,          ionode_id )
+      CALL mp_bcast( ifroz_max,          ionode_id )
       CALL mp_bcast( spin_component,     ionode_id )
       CALL mp_bcast( alpha_dis,          ionode_id )
       CALL mp_bcast( maxiter_dis,        ionode_id )
@@ -471,6 +489,11 @@ CONTAINS
       !
       IF ( win_max <= win_min )     CALL errore(subname, 'win_max <= win_min ', 1 )
       IF ( froz_max <= froz_min )   CALL errore(subname, 'win_max <= win_min ', 1 )
+      IF ( ANY( iwin_min < 0 ))     CALL errore(subname, 'invalid values in iwin_min',2)
+      IF ( ANY( iwin_max < 0 ))     CALL errore(subname, 'invalid values in iwin_max',2)
+      IF ( ANY( ifroz_min < 0 ))    CALL errore(subname, 'invalid values in ifroz_min',2)
+      IF ( ANY( ifroz_max < -1 ))   CALL errore(subname, 'invalid values in ifroz_max',2)
+      IF ( ANY( ifroz_max == 0 ))   CALL errore(subname, 'invalid values in ifroz_max II',2)
       IF ( dimwann <= 0 )           CALL errore(subname, 'dimwann should be positive ', -dimwann+1 ) 
       IF ( alpha_dis <= 0.0 )       CALL errore(subname, 'alpha_dis should be positive ', 1 ) 
       IF ( alpha_dis > 1.0)         CALL errore(subname, 'alpha_dis should <=1.0 ', 1 ) 

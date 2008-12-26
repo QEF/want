@@ -259,7 +259,7 @@
                !
                ik_g = ik + iks -1
                !
-               gcnorm_aux = gcnorm_aux + REAL( zmat_hdotp( dimwann, 'U', dq(:,ik), domg(:,ik_g) ), dbl )
+               gcnorm_aux = gcnorm_aux -REAL( zmat_hdotp( dimwann, 'U', domg(:,ik_g), dq(:,ik) ), dbl )
                !
            ENDDO
            !

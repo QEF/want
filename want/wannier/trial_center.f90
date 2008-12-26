@@ -16,19 +16,19 @@
    USE converters_module,   ONLY : cry2cart
    USE parser_module,       ONLY : change_case
    USE log_module,          ONLY : log_push, log_pop
+   !
    IMPLICIT NONE
    PRIVATE
+   !
+   ! This module defines the TYPE trial_center, used to
+   ! managed the WFs trial localization orbitals.
+   !
+   ! routines in this module:
+   ! SUBROUTINE trial_center_init(obj)
+   ! SUBROUTINE trial_center_convert(avec, obj)
+   ! SUBROUTINE trial_center_setup(ik, obj, npwk, vect)
+   !
 
-! This module define the TYPE trial_center, used to
-! managed the WFs trial localization orbitals.
-!
-! routines in this module:
-! SUBROUTINE trial_center_init(obj)
-! SUBROUTINE trial_center_convert(avec, obj)
-! SUBROUTINE trial_center_setup(ik, obj, npwk, vect)
-!
-
-!
    TYPE trial_center
         CHARACTER(10)           :: type        ! center type, ("1gauss","2gauss","atomic")
         INTEGER                 :: iatom       ! atom index if "atomic" center

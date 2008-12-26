@@ -174,7 +174,7 @@ CONTAINS
        CALL iotk_write_attr(attr,"nrtot",nrtot) 
        CALL iotk_write_attr(attr,"nr",nr) 
        CALL iotk_write_attr(attr,"have_overlap",lhave_overlap) 
-       CALL iotk_write_attr(attr,"fermi_energy",0.0) 
+       CALL iotk_write_attr(attr,"fermi_energy",0.0_dbl) 
        CALL iotk_write_empty(unit,"DATA",ATTR=attr)
 
        ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )

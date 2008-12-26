@@ -64,7 +64,7 @@
       !
       CALL datafiles_init()
       !
-      CALL postproc_init ( WANNIER=.TRUE. )
+      CALL postproc_init ( WANNIER=.TRUE., SUBSPACE=.TRUE. )
 
       !
       ! print data to output
@@ -680,7 +680,7 @@ END PROGRAM blc2wan
       isup = 3    
       IF ( TRIM(verbosity) == "high" ) isup = MAXVAL( ivr(:,:) ) 
       !
-      iinf = 3    
+      iinf = 0
       IF ( TRIM(verbosity) == "high" ) iinf = MINVAL( ivr(:,:) ) 
       !
       DO ir = 1, nrtot
