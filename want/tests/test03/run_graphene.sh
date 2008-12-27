@@ -23,6 +23,7 @@ MANUAL=" Usage
  dos             compute the density of states using WFs
  plot            compute WFs on real space for plotting
  conductor       compute bulk transmittance as a reference
+ conductor_sgm   as above, but including a correlation term
  want            perform DISENTANGLE, WANNIER and BANDS
  all             perform all the above described steps
 
@@ -57,6 +58,7 @@ BANDS=
 DOS=
 PLOT=
 CONDUCTOR=
+CONDUCTOR_SGM=
 CHECK=
 CLEAN=
 
@@ -75,11 +77,14 @@ case $INPUT in
    (dos)            DOS=yes ;;
    (plot)           PLOT=yes ;;
    (conductor)      CONDUCTOR=yes ;;
+   (conductor_sgm)  CONDUCTOR_SGM=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    BANDS=yes ; PLOT=yes ; DOS=yes ; CONDUCTOR=yes ;;
+                    BANDS=yes ; PLOT=yes ; DOS=yes ; 
+                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    BANDS=yes ; PLOT=yes ; DOS=yes ; CONDUCTOR=yes ;;
+                    BANDS=yes ; PLOT=yes ; DOS=yes ; 
+                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -150,6 +155,7 @@ run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
 # running CONDUCTOR
 #
 run_conductor  SUFFIX=$SUFFIX  RUN=$CONDUCTOR
+run_conductor  NAME=CONDUCTOR_SGM   SUFFIX=${SUFFIX}_sgm  RUN=$CONDUCTOR_SGM
 
 
 

@@ -10,7 +10,7 @@
    ne    = 1000
    emin  = -10.0
    emax  =  10.0
-   delta =  0.02
-   smearing_type = 'lorentzian'
+   delta =  0.05
+   smearing_type = 'gaussian'
  /
 

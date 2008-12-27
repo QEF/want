@@ -1,3 +1,4 @@
+
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -8,19 +9,19 @@
 
 
   Program <plot>  v. 2.2.0-dev  starts ...
-  Date  7Aug2007 at 18:25:25 
+  Date  7Aug2008 at 17:55:40 
 
      Serial run.
 
-          BUILT :    Mon Jul 30 10:25:49 2007
-           HOST :    i686-pc-linux-gnu
-           ARCH :    ia32
+          BUILT :    Wed Jun 11 17:24:08 2008
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    amd64
              CC :    cc
             CPP :    cpp
             F90 :    ifort
             F77 :    ifort
          DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW
-      BLAS LIBS :    -L/opt/intel/mkl/9.1_beta/lib/32/ -lmkl_ia32 -lguide -lpthread
+      BLAS LIBS :    -lmkl_em64t -lguide -lpthread
     LAPACK LIBS :    -lmkl_lapack
        FFT LIBS :    
       MASS LIBS :    
@@ -44,24 +45,26 @@
   Omega =    1185.4762744 (Ang^3 )
 
   Crystal axes:
-                in units of Bohr                 in Alat units
-    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
-    a(3) = (  0.0000  0.0000 20.0000 )     (   0.0000  0.0000  1.0000 )
-  Crystal axes: (Ang)
-    a(1) = ( 10.5835  0.0000  0.0000 )
-    a(2) = (  0.0000 10.5835  0.0000 )
-    a(3) = (  0.0000  0.0000 10.5835 )
+                in Bohr units                           in Alat units
+    a(1) = (   20.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   20.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000   20.00000 )    (    0.00000    0.00000    1.00000 )
+                in Ang units
+    a(1) = (   10.58354    0.00000    0.00000 )
+    a(2) = (    0.00000   10.58354    0.00000 )
+    a(3) = (    0.00000    0.00000   10.58354 )
 
    Reciprocal lattice vectors:
-                in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
-    b(3) = (  0.0000  0.0000  0.3142 )     (   0.0000  0.0000  1.0000 )
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.31416    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.31416    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    0.31416 )    (    0.00000    0.00000    1.00000 )
  </LATTICE>
 
  <K-POINTS>
-  nkpts =     1
+         nproc =     1   (Parallelism over kpts)
+  global nkpts =     1
+   local nkpts =     1
   Monkhorst-Pack grid:      nk = (   1   1   1 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -77,6 +80,7 @@
   Reading Wfc grids from file: benzene_US.save/data-file.xml
 
 
+
           Energy cut-off for rho  =        200.00 (Ry)
       Total number of PW for rho  =     382323
                     (smooth grid) =      96969
@@ -85,7 +89,7 @@
 
           Energy cut-off for wfcs =         20.00 (Ry)
         Max number of PW for wfc  =      12053
-      Total number of PW for wfcs =      12053
+
 
 
   ======================================================================
@@ -115,10 +119,10 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -5.403163     2.480723     3.282298 )
-    Wf(   2 ) = (    -3.513783     5.674632     3.181043 )
-    Wf(  14 ) = (    -0.389639     4.706435     3.185543 )
-    Wf(  15 ) = (     0.878452     2.477829     3.126706 )
+    Wf(   1 ) = (    -5.403162     2.480723     3.282301 )
+    Wf(   2 ) = (    -3.513783     5.674631     3.181042 )
+    Wf(  14 ) = (    -0.389640     4.706434     3.185543 )
+    Wf(  15 ) = (     0.878451     2.477829     3.126706 )
         in crystal coord
     Wf(   1 ) = (    -0.270158     0.124036     0.164115 )
     Wf(   2 ) = (    -0.175689     0.283732     0.159052 )
@@ -127,13 +131,13 @@
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
-     H    tau(   1 ) = (  -6.3532592   2.4812104   3.1331659 )
+     H    tau(   1 ) = (  -6.3532593   2.4812104   3.1331659 )
      C    tau(   2 ) = (  -2.9876570   4.7715585   3.1085995 )
      H    tau(   3 ) = (  -4.0081091   6.5384524   3.1237173 )
-     C    tau(   4 ) = (  -0.3420404   4.7696687   3.0859228 )
+     C    tau(   4 ) = (  -0.3420404   4.7696688   3.0859228 )
      H    tau(   5 ) = (   0.6784117   6.5365627   3.0821433 )
-     C    tau(   6 ) = (   0.9788781   2.4774309   3.0651358 )
-     H    tau(   7 ) = (   3.0197823   2.4774309   3.0462385 )
+     C    tau(   6 ) = (   0.9788781   2.4774310   3.0651358 )
+     H    tau(   7 ) = (   3.0197824   2.4774310   3.0462385 )
      C    tau(   8 ) = (  -0.3439302   0.1870829   3.0708050 )
      H    tau(   9 ) = (   0.6746322  -1.5798110   3.0537974 )
      C    tau(  10 ) = (  -2.9895467   0.1889726   3.0934817 )
@@ -147,15 +151,15 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :    24.15 secs
+                              Total time spent up to now :    19.33 secs
 
 
   WF normalization:
     Index              Max value     Normaliz.     Wfc comp.   Aug comp.
   -----------------------------------------------------------------------
-    Wf(   1 )   -->     0.352557      1.000000      0.967797    0.032203
+    Wf(   1 )   -->     0.352558      1.000000      0.967797    0.032203
     Wf(   2 )   -->     0.352933      1.000000      0.971947    0.028053
-    Wf(   3 )   -->     0.285300      1.000000      0.965671    0.034329
+    Wf(   3 )   -->     0.285301      1.000000      0.965671    0.034329
     Wf(   4 )   -->     0.260100      1.000000      0.962313    0.037687
 
 
@@ -246,24 +250,24 @@ Job done ...
    <global routines>
              clock number :    18
 
-                     plot :  2m32.00s CPU 
+                     plot :  1m31.00s CPU 
  
-             want_dftread :     0.09s CPU
+             want_dftread :     0.06s CPU
                 want_init :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
-          ggrids_read_ext :     0.59s CPU
-      wfc_data_grids_read :     0.01s CPU
-              struct_fact :     0.92s CPU
-                init_us_1 :     3.66s CPU
-           wfc_data_kread :     0.12s CPU
-               kwann_calc :    16.24s CPU (       4 calls,   4.060 s avg)
-                init_us_2 :     0.15s CPU
+          ggrids_read_ext :     0.33s CPU
+      wfc_data_grids_read :     0.00s CPU
+              struct_fact :     0.48s CPU
+                init_us_1 :     2.72s CPU
+           wfc_data_kread :     0.04s CPU
+               kwann_calc :    14.60s CPU (       4 calls,   3.650 s avg)
+                init_us_2 :     0.09s CPU
                   ccalbec :     0.01s CPU
-                   cfft3d :     2.46s CPU (       8 calls,   0.308 s avg)
-               cwann_calc :     1.10s CPU (       4 calls,   0.276 s avg)
-              wf2_augment :    98.65s CPU
-                 gcubeplt :     6.38s CPU (       4 calls,   1.595 s avg)
+                   cfft3d :     0.45s CPU (       8 calls,   0.057 s avg)
+               cwann_calc :     0.46s CPU (       4 calls,   0.115 s avg)
+              wf2_augment :    61.87s CPU
+                 gcubeplt :     2.05s CPU (       4 calls,   0.513 s avg)
 
 
