@@ -4,7 +4,9 @@
 =======================================================
 
 
-27 Dec 2008      bands.f90 program made parallel over kpts. (AF)
+27 Dec 2008      bands.f90 program made parallel over kpts.
+                 Test script-system updated to take into account parallelism
+                 (which can be manually switched off). AF
 
 25 Dec 2008      Bug fixed in ~want/libs (zmat_hdotp). Merry Christmas. 
                  iwin_min, iwin_max, ifroz_min, ifroz_max variables added. (AF)

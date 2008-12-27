@@ -120,18 +120,18 @@ fi
 #
 # running DISENTANGLE
 #
-run_disentangle  SUFFIX=$SUFFIX            RUN=$DISENTANGLE
-run_disentangle  NAME="DISENTANGLE_BUFF"   SUFFIX=${SUFFIX}_buff  RUN=$DISENTANGLE_BUFF
+run_disentangle  SUFFIX=$SUFFIX            RUN=$DISENTANGLE       PARALLEL=no
+run_disentangle  NAME="DISENTANGLE_BUFF"   SUFFIX=${SUFFIX}_buff  RUN=$DISENTANGLE_BUFF  PARALLEL=no
 
 #
 # running WANNIER
 #
-run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
+run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER  PARALLEL=no
 
 #
 # running PLOT
 #
-run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
+run_plot  SUFFIX=$SUFFIX  RUN=$PLOT  PARALLEL=no
 
 #
 # running CHECK
