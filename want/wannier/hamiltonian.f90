@@ -9,18 +9,21 @@
 
 !*********************************************
    MODULE hamiltonian_module
-!*********************************************
+   !*********************************************
    !
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : ZERO
    USE parameters,        ONLY : nstrx
+   USE io_module,         ONLY : ionode, ionode_id
    USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : avec, bvec, lattice_alloc => alloc
    USE kpoints_module,    ONLY : nkpts, nkpts_g, nk, vkpt_g, wk_g,  &
                                  nrtot, nr, ivr,  wr,  kpoints_alloc 
    USE subspace_module,   ONLY : dimwann, wan_eig, subspace_alloc => alloc
    USE converters_module, ONLY : cry2cart, cart2cry
+   USE mp,                ONLY : mp_bcast
    USE iotk_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -230,6 +233,7 @@ CONTAINS
 !**********************************************************
    SUBROUTINE hamiltonian_read(unit,name,found)
    !**********************************************************
+   !
    IMPLICIT NONE
        INTEGER,           INTENT(in) :: unit
        CHARACTER(*),      INTENT(in) :: name
@@ -244,60 +248,91 @@ CONTAINS
        !
        IF ( alloc ) CALL hamiltonian_deallocate()
 
-       CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           !
+       ENDIF
+       !
+       CALL mp_bcast( found,    ionode_id )
+       CALL mp_bcast( ierr,     ionode_id )
+       !
        IF (.NOT. found) RETURN
        IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
        found = .TRUE.
-
-       CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
-       CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
-       CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find attr NRTOT',ABS(ierr))
        !
-       CALL iotk_scan_attr(attr,'have_overlap',lhave_overlap, FOUND=lfound ,IERR=ierr)
-       IF (ierr>0) CALL errore(subname,'Unable to find attr HAVE_OVERLAP',ABS(ierr))
-       IF ( .NOT. lfound ) lhave_overlap = .FALSE.
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
+           CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
+           CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+           CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find attr NRTOT',ABS(ierr))
+           !
+           CALL iotk_scan_attr(attr,'have_overlap',lhave_overlap, FOUND=lfound ,IERR=ierr)
+           IF (ierr>0) CALL errore(subname,'Unable to find attr HAVE_OVERLAP',ABS(ierr))
+           IF ( .NOT. lfound ) lhave_overlap = .FALSE.
+           !
+       ENDIF
+       !
+       CALL mp_bcast( dimwann_,      ionode_id )
+       CALL mp_bcast( nkpts_g_,      ionode_id )
+       CALL mp_bcast( nrtot_,        ionode_id )
+       CALL mp_bcast( lhave_overlap, ionode_id )
 
        !
        ! few compatibility checks
        IF ( dimwann_ /= dimwann) CALL errore(subname,'invalid dimwann',1)
-       IF ( nkpts_g_ /= nkpts)   CALL errore(subname,'invalid nkpts',2)
-       IF ( nrtot_   /= nrtot)   CALL errore(subname,'invalid nrtot',3)
+       IF ( nkpts_g_ /= nkpts_g)   CALL errore(subname,'invalid nkpts',2)
+       IF ( nrtot_   /= nrtot)     CALL errore(subname,'invalid nrtot',3)
        !
        ! allocations
+       !
        CALL hamiltonian_allocate()
 
        !
        ! massive data read
        !
-       CALL iotk_scan_begin(unit,"RHAM", IERR=ierr)
-       IF (ierr/=0) CALL errore(subname,'Unable to find tag RHAM',ABS(ierr))
+       IF ( ionode ) THEN
+           !
+           CALL iotk_scan_begin(unit,"RHAM", IERR=ierr)
+           IF (ierr/=0) CALL errore(subname,'Unable to find tag RHAM',ABS(ierr))
+           !
+           DO ir = 1, nrtot
+               !
+               CALL iotk_scan_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir), IERR=ierr)
+               IF (ierr/=0) CALL errore(subname,'Unable to find dat VR in RHAM',ir)
+               !
+               IF ( lhave_overlap ) THEN
+                   !
+                   CALL iotk_scan_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir), IERR=ierr)
+                   IF (ierr/=0) CALL errore(subname,'Unable to find dat OVERLAP in RHAM',ir)
+                   !
+               ENDIF
+               !
+           ENDDO
+           !
+           CALL iotk_scan_end(unit,"RHAM", IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag RHAM',ABS(ierr))
+
+           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           !
+       ENDIF
        !
        DO ir = 1, nrtot
            !
-           CALL iotk_scan_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir), IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'Unable to find dat VR in RHAM',ir)
-           !
-           IF ( lhave_overlap ) THEN
-               !
-               CALL iotk_scan_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir), IERR=ierr)
-               IF (ierr/=0) CALL errore(subname,'Unable to find dat OVERLAP in RHAM',ir)
-               !
-           ENDIF
+           CALL mp_bcast( rham(:,:,ir),   ionode_id )
+           CALL mp_bcast( rovp(:,:,ir),   ionode_id )
            !
        ENDDO
        !
-       CALL iotk_scan_end(unit,"RHAM", IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag RHAM',ABS(ierr))
-
-       CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-       IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
-       !
        CALL log_pop ( subname )
+       !
+       RETURN
        !
    END SUBROUTINE hamiltonian_read
 

@@ -8,11 +8,11 @@
 !
 !*********************************************
    MODULE datafiles_module
-!*********************************************
-!
-! This module is intended to check the formal of 
-! the provided datafiles and to internally convert them if needed.
-!
+   !*********************************************
+   !
+   ! This module is intended to check the formal of 
+   ! the provided datafiles and to internally convert them if needed.
+   !
    USE parameters,            ONLY : nstrx
    USE io_module,             ONLY : ionode, ionode_id, stdout, aux_unit
    USE io_module,             ONLY : work_dir, prefix, postfix, datafile => dftdata_file

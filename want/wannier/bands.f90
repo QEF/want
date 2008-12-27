@@ -6,9 +6,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Based on a previous version by Nicola Marzari and David Vanderbilt
-! See the CREDITS file in the ~want directory for a full description
-!
 !=====================================================
    PROGRAM bands
    !=====================================================
@@ -59,7 +56,7 @@
       !
       ! read input
       !
-      CALL bands_input( )
+      CALL bands_input()
 
       !
       ! init post processing (reading previous WanT and DFT data )
@@ -99,6 +96,7 @@ CONTAINS
    ! Read INPUT namelist from stdin
    !
    USE mp,                   ONLY : mp_bcast
+   USE io_module,            ONLY : ionode, ionode_id
    IMPLICIT NONE
 
       CHARACTER(11)    :: subname = 'bands_input'
@@ -125,9 +123,27 @@ CONTAINS
       
       CALL input_from_file ( stdin )
       !
-      READ(stdin, INPUT, IOSTAT=ierr)
+      IF ( ionode ) READ(stdin, INPUT, IOSTAT=ierr)
+      !
+      CALL mp_bcast( ierr, ionode_id )
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
 
+      !
+      ! broadcast
+      !
+      CALL mp_bcast( prefix,          ionode_id )
+      CALL mp_bcast( postfix,         ionode_id )
+      CALL mp_bcast( work_dir,        ionode_id )
+      CALL mp_bcast( datafile_sgm,    ionode_id )
+      CALL mp_bcast( datafile_dft,    ionode_id )
+      CALL mp_bcast( fileout,         ionode_id )
+      CALL mp_bcast( nkpts_in,        ionode_id )
+      CALL mp_bcast( nkpts_max,       ionode_id )
+      CALL mp_bcast( ircut,           ionode_id )
+
+      !
+      ! checks and init
+      !
       IF ( LEN_TRIM(fileout) == 0 ) &
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_bands.dat'
 
@@ -146,31 +162,35 @@ CONTAINS
       !
       ! input summary
       !
-      CALL write_header( stdout, "INPUT Summary" )
-      !
-      WRITE( stdout, "(   7x,'              work dir :',5x,   a)") TRIM(work_dir)
-      WRITE( stdout, "(   7x,'                prefix :',5x,   a)") TRIM(prefix)
-      WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
-      IF ( LEN_TRIM( datafile_dft ) /= 0 ) &
-         WRITE( stdout, "(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
-      WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
-      WRITE( stdout, "(   7x,'             nkpts_in  :',3x,3i4 )") nkpts_in
-      WRITE( stdout, "(   7x,'             nkpts_max :',3x,3i4 )") nkpts_max
-      !
-      IF ( ANY( ircut(:) > 0 ) ) THEN
-          WRITE( stdout, "(   7x,'                 ircut :',3x,3i4)") ircut(:)
+      IF ( ionode ) THEN
+          !
+          CALL write_header( stdout, "INPUT Summary" )
+          !
+          WRITE( stdout, "(   7x,'              work dir :',5x,   a)") TRIM(work_dir)
+          WRITE( stdout, "(   7x,'                prefix :',5x,   a)") TRIM(prefix)
+          WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
+          IF ( LEN_TRIM( datafile_dft ) /= 0 ) &
+              WRITE( stdout, "(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
+          WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
+          WRITE( stdout, "(   7x,'             nkpts_in  :',3x,3i4 )") nkpts_in
+          WRITE( stdout, "(   7x,'             nkpts_max :',3x,3i4 )") nkpts_max
+          !
+          IF ( ANY( ircut(:) > 0 ) ) THEN
+              WRITE( stdout, "(   7x,'                 ircut :',3x,3i4)") ircut(:)
+          ENDIF
+          !
+          IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
+              WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+          ENDIF
+          !
+          WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
+          IF ( lhave_sgm ) THEN
+              WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+          ENDIF
+          !
+          WRITE( stdout, "()" )
+          !
       ENDIF
-      !
-      IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
-          WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
-      ENDIF
-      !
-      WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
-      IF ( lhave_sgm ) THEN
-          WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
-      ENDIF
-      !
-      WRITE( stdout, "()" )
 
       CALL timing(subname,OPR='stop')
       CALL log_pop(subname)
@@ -187,12 +207,13 @@ END PROGRAM bands
    ! perform the main task of the calculation
    !
    USE kinds
-   USE constants,            ONLY : CZERO, TWO, EPS_m6
+   USE constants,            ONLY : ZERO, CZERO, TWO, EPS_m6
    USE parameters,           ONLY : nstrx, nkpts_inx
-   USE io_module,            ONLY : stdout, stdin, io_name, ham_unit, sgm_unit
+   USE io_module,            ONLY : stdout, stdin, io_name, ionode, ionode_id, ham_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_sgm
-   USE mp,                   ONLY : mp_bcast
+   USE mp,                   ONLY : mp_bcast, mp_sum
+   USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
@@ -223,6 +244,7 @@ END PROGRAM bands
       INTEGER           :: nrtot_sgm, dimwann_sgm
       INTEGER           :: nrtot_nn
       LOGICAL           :: lhave_nn(3)
+      INTEGER           :: iks, ike
       REAL(dbl)         :: raux
       !
       INTEGER,      ALLOCATABLE :: r_index(:)
@@ -267,12 +289,20 @@ END PROGRAM bands
       ! read the edge points of the required kpt-line
       ! kpts should be in CRYSTAL coordinates
       !
-      DO j = 1, nkpts_in
+      IF ( ionode ) THEN
           !
-          READ (stdin, FMT=*, IOSTAT=ierr) kptname_in(j), ( kpt_in(i,j), i=1,3 )
-          IF (ierr/=0) CALL errore(subname, 'reading kpt_in', j)
+          DO j = 1, nkpts_in
+              !
+              READ (stdin, FMT=*, IOSTAT=ierr) kptname_in(j), ( kpt_in(i,j), i=1,3 )
+              IF (ierr/=0) CALL errore(subname, 'reading kpt_in', j)
+              !
+          ENDDO
           !
-      ENDDO
+      ENDIF
+      !
+      CALL mp_bcast( kptname_in,     ionode_id ) 
+      CALL mp_bcast( kpt_in,         ionode_id ) 
+      !
       !
       CALL write_header( stdout, 'Band interpolation by WFs' )
       CALL flush_unit( stdout )
@@ -283,13 +313,21 @@ END PROGRAM bands
       !
       IF ( lhave_sgm ) THEN
           !
-          CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr)
-          IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
+          IF ( ionode ) THEN
+              !
+              CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
+              !
+              CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
+                                                DYNAMICAL=ldynam_sgm, IERR=ierr )
+                                                !
+              IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--DYNAMICAL', ABS(ierr) )
+              !
+          ENDIF
           !
-          CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
-                                            DYNAMICAL=ldynam_sgm, IERR=ierr )
-                                            !
-          IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--DYNAMICAL', ABS(ierr) )
+          CALL mp_bcast( dimwann_sgm,    ionode_id )
+          CALL mp_bcast( nrtot_sgm,      ionode_id )
+          CALL mp_bcast( ldynam_sgm,     ionode_id )
 
           !
           ! few checks
@@ -306,8 +344,15 @@ END PROGRAM bands
           ALLOCATE( vr_sgm( 3, nrtot ), STAT=ierr )
           IF ( ierr /=0 ) CALL errore(subname,'allocating vr_sgm', ABS(ierr) )
           !
-          CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'reading VR', ABS(ierr) )
+          IF ( ionode ) THEN
+              !
+              CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,'reading VR', ABS(ierr) )
+              !
+          ENDIF
+          !
+          CALL mp_bcast( vr_sgm,    ionode_id )
+          !
           !
           DO ir = 1, nrtot
              !
@@ -324,11 +369,17 @@ END PROGRAM bands
           !
           CALL correlation_allocate( )
           !
-          CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11)
+          IF ( ionode ) THEN
+              !
+              CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11)
+              !
+              CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
+              !
+          ENDIF
           !
-          CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr)
-          IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
+          CALL mp_bcast( rsgm,   ionode_id )
           !
       ENDIF
 
@@ -371,12 +422,23 @@ END PROGRAM bands
    !  Determine the k-points used in the band structure interpolation
    !
       !
-      ! convert kpts to internal cartesian representation (bohr^-1)
+      ! convert kpts to internal 
+      ! cartesian representation (bohr^-1)
+      !
       CALL cry2cart( kpt_in, bvec )
       !
       CALL get_points(nkpts_in, nkpts_max, kpt_in, xval_in,  &
                       kptname_in, vkpt_int, xval, nkpts_tot )
  
+      !
+      ! setup parallelism
+      !
+      CALL divide_et_impera( 1, nkpts_tot, iks, ike, mpime, nproc )
+
+
+      !
+      ! workspace
+      !
       ALLOCATE( eig_int( dimwann, nkpts_tot ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating eig_int', ABS(ierr) )
 
@@ -444,8 +506,10 @@ END PROGRAM bands
       ! H_ij(k') ~ sum_R e^{ik'R} H_ij(R), where the sum over R is over a 
       ! finite grid (truncation)
       ! 
+      eig_int(:,:) = ZERO
+      !
       kpt_loop: &
-      DO ik = 1, nkpts_tot
+      DO ik = iks, ike
           !
           ! compute the Hamiltonian with the correct bloch symmetry
           !
@@ -489,68 +553,78 @@ END PROGRAM bands
           !
       ENDDO kpt_loop
 
+      !
+      ! get rid of pool-parallelism
+      !
+      CALL mp_sum( eig_int )
+
 
 ! 
 ! ... Write final interpolated band structure to file
 ! 
-      filename=TRIM(fileout)
-      !
-      OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-      !
-      DO i = 1, dimwann
-          DO ik = 1, nkpts_tot
-            WRITE (ham_unit, "(2e16.8)") xval(ik)/(TWO*xval(nkpts_tot)), eig_int(i,ik)
-            !
-            ! Note that the factor TWO appear in order to be consistent with the 
-            ! x units of the other two plots (wanband and dftband) in the case where
-            ! a 1D BZ is treated, dft kpts are uniform in the BZ and the interpolated
-            ! kpts go from Gamma to X,Y, or Z.
-            ! 
-            ! This is a particular case, bu the most common in WF calculation for transport
-            !
+      IF ( ionode ) THEN
+          !
+          filename=TRIM(fileout)
+          !
+          OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+          !
+          DO i = 1, dimwann
+              DO ik = 1, nkpts_tot
+                WRITE (ham_unit, "(2e16.8)") xval(ik)/(TWO*xval(nkpts_tot)), eig_int(i,ik)
+                !
+                ! Note that the factor TWO appear in order to be consistent with the 
+                ! x units of the other two plots (wanband and dftband) in the case where
+                ! a 1D BZ is treated, dft kpts are uniform in the BZ and the interpolated
+                ! kpts go from Gamma to X,Y, or Z.
+                ! 
+                ! This is a particular case, bu the most common in WF calculation for transport
+                !
+              ENDDO
+              WRITE( ham_unit, "()") 
+              !
           ENDDO
-          WRITE( ham_unit, "()") 
-      ENDDO
-      CLOSE( ham_unit )
+          CLOSE( ham_unit )
 
-      !
-      ! as a check
-      ! these eigenvalues (and also the following ones) are not aligned 
-      ! to the fermi level. We impose the alignment manually...
-      !
-      filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
-      !
-      OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-      !
-      DO i = 1, dimwann
-          DO ik = 1, nkpts
-            WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
-                               wan_eig(i,ik) -efermi
+          !
+          ! as a check
+          ! these eigenvalues (and also the following ones) are not aligned 
+          ! to the fermi level. We impose the alignment manually...
+          !
+          filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
+          !
+          OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+          !
+          DO i = 1, dimwann
+              DO ik = 1, nkpts
+                WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
+                                   wan_eig(i,ik) -efermi
+              ENDDO
+              WRITE( ham_unit, "()") 
           ENDDO
-          WRITE( ham_unit, "()") 
-      ENDDO
-      CLOSE( ham_unit )
-
-
-      filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
-      !
-      OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-      !
-      DO i = 1, nbnd
-          DO ik = 1, nkpts
-             IF ( i >= imin(ik) .AND. i <= imax(ik) ) THEN
-                 WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
-                                              eig(i,ik) -efermi
-             ELSE
-                 WRITE (ham_unit, "()")
-             ENDIF
+          CLOSE( ham_unit )
+          !
+          !
+          filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
+          !
+          OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+          !
+          DO i = 1, nbnd
+              DO ik = 1, nkpts
+                 IF ( i >= imin(ik) .AND. i <= imax(ik) ) THEN
+                     WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
+                                                  eig(i,ik) -efermi
+                 ELSE
+                     WRITE (ham_unit, "()")
+                 ENDIF
+              ENDDO
+              WRITE( ham_unit, "()") 
           ENDDO
-          WRITE( ham_unit, "()") 
-      ENDDO
-      CLOSE( ham_unit )
+          CLOSE( ham_unit )
+          !
+      ENDIF
 
 !
 ! ... Shutdown

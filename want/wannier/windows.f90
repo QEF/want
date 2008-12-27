@@ -468,10 +468,16 @@ CONTAINS
            !
            CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
            !
-           IF (.NOT. found) RETURN
-           IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-           found = .TRUE.
-           !
+       ENDIF
+       !
+       CALL mp_bcast( found,    ionode_id )       
+       CALL mp_bcast( ierr,     ionode_id )       
+       !
+       IF (.NOT. found) RETURN
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       found = .TRUE.
+       !
+       IF ( ionode ) THEN
            !
            CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
