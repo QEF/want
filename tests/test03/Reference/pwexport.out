@@ -1,3 +1,14 @@
 
-     Program POST-PROC v.3.2cvs starts ...
-     Today is  7Aug2007 at 18:15:10 
+     Program POST-PROC v.4.0cvs starts ...
+     Today is 11Jun2008 at 18:13:53 
+
+     Parallel version (MPI)
+
+     Number of processors in use:       1
+
+     Planes per process (thick) : nr3 = 80 npp =  80 ncplane = 6400
+ 
+     Proc/  planes cols     G    planes cols    G      columns  G
+     Pool       (dense grid)       (smooth grid)      (wavefct grid)
+       1     80   4469   223735   80   4469   223735   1109    28017
+ 

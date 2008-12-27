@@ -107,17 +107,17 @@ run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 #
 # running DISENTANGLE
 #
-run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
+run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE  PARALLEL=no
 
 #
 # running WANNIER
 #
-run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
+run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER  PARALLEL=no
 
 #
 # running PLOT
 #
-run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
+run_plot  SUFFIX=$SUFFIX  RUN=$PLOT  PARALLEL=no
 
 
 
