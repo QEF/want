@@ -9,7 +9,8 @@
 
 !*********************************************
    MODULE localization_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,            ONLY : dbl
    USE parameters,       ONLY : nstrx
    USE constants,        ONLY : ZERO
@@ -18,6 +19,7 @@
    USE io_global_module, ONLY : ionode, ionode_id
    USE mp,               ONLY : mp_bcast
    USE iotk_module
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -280,13 +282,15 @@ CONTAINS
        IF ( ionode ) THEN
            !
            CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
-           IF (.NOT. found) RETURN
-           IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
-           found = .TRUE.
            !
        ENDIF
        !
        CALL mp_bcast(  found,    ionode_id )
+       CALL mp_bcast(  ierr,     ionode_id )
+       !
+       IF (.NOT. found) RETURN
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       found = .TRUE.
 
        !
        ! dimensions
