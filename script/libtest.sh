@@ -160,6 +160,7 @@ run_dft () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    local name_tmp
    
    for arg 
@@ -169,6 +170,7 @@ run_dft () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
 
    [[ "$RUN" != "yes" ]]  && return
@@ -177,7 +179,7 @@ run_dft () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -193,6 +195,10 @@ run_export () {
    local SUFFIX=
    local INPUT=
    local OUTPUT=
+   local PARALLEL=yes
+   #
+   local lpara_prefix
+   local lpara_postfix
    
    for arg 
    do
@@ -201,19 +207,25 @@ run_export () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
 
    [[ "$RUN" != "yes" ]]  && return
 
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/pwexport$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/pwexport$SUFFIX.out ; fi
+
+   if [ "$PARALLEL" = "yes" ] ; then
+      lpara_prefix=$PARA_PREFIX
+      lpara_postfix=$PARA_POSTFIX
+   fi
    
    echo "running $NAME calculation..."
    
    if [ "$INPUT_TYPE" = "from_stdin" ] ; then
-       $PARA_PREFIX $EXEC $PARA_POSTFIX < $INPUT > $OUTPUT
+       $lpara_prefix $EXEC $lpara_postfix < $INPUT > $OUTPUT
    elif [ "$INPUT_TYPE" = "from_file" ] ; then
-       $PARA_PREFIX $EXEC $PARA_POSTFIX -input $INPUT > $OUTPUT
+       $lpara_prefix $EXEC $lpara_postfix -input $INPUT > $OUTPUT
    else
        echo "$ECHO_T Invalid INPUT_TYPE = $INPUT_TYPE" ; exit 1 
    fi
@@ -237,6 +249,7 @@ run_disentangle () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    
    for arg 
    do
@@ -245,6 +258,7 @@ run_disentangle () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
 
    [[ "$RUN" != "yes" ]]  && return
@@ -252,7 +266,7 @@ run_disentangle () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/want$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/disentangle$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -267,6 +281,7 @@ run_wannier () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    
    for arg 
    do
@@ -275,6 +290,7 @@ run_wannier () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
    
    [[ "$RUN" != "yes" ]]  && return
@@ -282,7 +298,7 @@ run_wannier () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/want$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/wannier$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes 
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -297,6 +313,7 @@ run_bands () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    local name_tmp
    
    for arg 
@@ -306,6 +323,7 @@ run_bands () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
    
    [[ "$RUN" != "yes" ]]  && return
@@ -314,7 +332,7 @@ run_bands () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/bands$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/bands$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -329,6 +347,7 @@ run_dos () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    local name_tmp
    
    for arg 
@@ -338,6 +357,7 @@ run_dos () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
    
    [[ "$RUN" != "yes" ]]  && return
@@ -346,7 +366,7 @@ run_dos () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/dos$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/dos$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -361,6 +381,7 @@ run_blc2wan () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    local name_tmp
    
    for arg 
@@ -370,6 +391,7 @@ run_blc2wan () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
    
    [[ "$RUN" != "yes" ]]  && return
@@ -378,7 +400,7 @@ run_blc2wan () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/blc2wan$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/blc2wan$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -394,6 +416,7 @@ run_plot () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    local name_tmp
    
    for arg 
@@ -403,6 +426,7 @@ run_plot () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
    
    [[ "$RUN" != "yes" ]]  && return
@@ -411,7 +435,7 @@ run_plot () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/plot$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/plot$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -426,6 +450,7 @@ run_conductor () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
+   local PARALLEL=yes
    local name_tmp
    
    for arg 
@@ -435,6 +460,7 @@ run_conductor () {
          [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
          [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
          [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
    
    [[ "$RUN" != "yes" ]]  && return
@@ -443,7 +469,7 @@ run_conductor () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/conductor$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/conductor$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
 
@@ -476,7 +502,7 @@ run_current () {
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/current$SUFFIX.in  ; fi
    if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/current$SUFFIX.out ; fi
 
-   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=yes
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=no
 }
 
 
