@@ -75,9 +75,9 @@
       !
       CALL write_header( stdout, "Post Processing Init" )
       !
-      CALL datafiles_init()
+      CALL datafiles_init( )
       !
-      CALL postproc_init ()
+      CALL postproc_init ( )
 
       !
       ! print data to output
@@ -106,6 +106,9 @@ CONTAINS
    !********************************************************
    !
    ! Read INPUT namelist from stdin
+   !
+   USE mp,                   ONLY : mp_bcast
+   USE io_module,            ONLY : ionode, ionode_id
    !
    IMPLICIT NONE
 
@@ -140,9 +143,34 @@ CONTAINS
       
       CALL input_from_file ( stdin )
       !
-      READ(stdin, INPUT, IOSTAT=ierr)
+      IF ( ionode ) READ(stdin, INPUT, IOSTAT=ierr)
+      !
+      CALL mp_bcast( ierr, ionode_id )
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
 
+      !
+      ! broadcast
+      !
+      CALL mp_bcast( prefix,          ionode_id )
+      CALL mp_bcast( postfix,         ionode_id )
+      CALL mp_bcast( work_dir,        ionode_id )
+      CALL mp_bcast( datafile_sgm,    ionode_id )
+      CALL mp_bcast( datafile_dft,    ionode_id )
+      CALL mp_bcast( fileout,         ionode_id )
+      CALL mp_bcast( delta,           ionode_id )
+      CALL mp_bcast( nk,              ionode_id )
+      CALL mp_bcast( s,               ionode_id )
+      CALL mp_bcast( emin,            ionode_id )
+      CALL mp_bcast( emax,            ionode_id )
+      CALL mp_bcast( ne,              ionode_id )
+      CALL mp_bcast( smearing_type,   ionode_id )
+      CALL mp_bcast( ircut,           ionode_id )      
+      CALL mp_bcast( projdos,         ionode_id )      
+      CALL mp_bcast( nprint,          ionode_id )      
+
+      !
+      ! Init
+      !
       IF ( LEN_TRIM(fileout) == 0 ) &
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dos.dat'
 
@@ -166,6 +194,7 @@ CONTAINS
       !
       ! the check of SMEARING_TYPE is done inside the function smearing_func
       ! just move to lower_case
+      !
       CALL change_case(smearing_type,'lower')
 
       !
@@ -173,32 +202,39 @@ CONTAINS
       !
       CALL write_header( stdout, "INPUT Summary" )
       !
-      WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
-      WRITE( stdout, "(   7x,'                  type :',5x,   a)") TRIM(smearing_type)
-      WRITE( stdout, "(   7x,'                 delta :',3x, f9.5, ' eV')" ) delta
-      WRITE( stdout, "(   7x,'                    nk :',3x,3i4 )") nk(:)
-      WRITE( stdout, "(   7x,'                     s :',3x,3i4 )") s(:)
-      WRITE( stdout, "(   7x,'                 nktot :',5x,i6  )") nkpts_int
-      WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin 
-      WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax 
-      WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
-      WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
-      !
-      IF ( ANY( ircut(:) > 0 ) ) THEN
-          WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
-      ENDIF
-      !
-      WRITE( stdout, "(   7x,'       compute projdos :',5x,   a)") TRIM( log2char( projdos ) )
-      !
-      IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
-          WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
-      ENDIF
-      !
-      WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
-      IF ( lhave_sgm ) THEN
-          WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+      IF ( ionode ) THEN
+          !
+          WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
+          WRITE( stdout, "(   7x,'                  type :',5x,   a)") TRIM(smearing_type)
+          WRITE( stdout, "(   7x,'                 delta :',3x, f9.5, ' eV')" ) delta
+          WRITE( stdout, "(   7x,'                    nk :',3x,3i4 )") nk(:)
+          WRITE( stdout, "(   7x,'                     s :',3x,3i4 )") s(:)
+          WRITE( stdout, "(   7x,'                 nktot :',5x,i6  )") nkpts_int
+          WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin 
+          WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax 
+          WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
+          WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
+          !
+          IF ( ANY( ircut(:) > 0 ) ) THEN
+              WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
+          ENDIF
+          !
+          WRITE( stdout, "(   7x,'       compute projdos :',5x,   a)") TRIM( log2char( projdos ) )
+          !
+          IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
+              WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+          ENDIF
+          !
+          WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
+          IF ( lhave_sgm ) THEN
+              WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+          ENDIF
+          !
       ENDIF
 
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
+      !
    END SUBROUTINE dos_input
    !
 END PROGRAM dos_main
@@ -214,9 +250,11 @@ END PROGRAM dos_main
    USE kinds
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6
-   USE io_module,            ONLY : stdout, stdin, ionode, aux_unit, sgm_unit
+   USE io_module,            ONLY : stdout, stdin, ionode, ionode_id, aux_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_sgm
+   USE mp,                   ONLY : mp_bcast, mp_sum
+   USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
@@ -273,6 +311,7 @@ END PROGRAM dos_main
       CHARACTER(nstrx)          :: filename, analyticity_sgm
       CHARACTER(4)              :: ctmp
       !
+      INTEGER      :: iks, ike
       INTEGER      :: i, j, ie, ik, ir
       INTEGER      :: ierr
       INTEGER      :: dimwann_sgm, nrtot_sgm
@@ -302,11 +341,22 @@ END PROGRAM dos_main
           CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
           !
-          CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
-                                            DYNAMICAL=ldynam_sgm, NOMEGA=omg_nint,    &
-                                            ANALYTICITY=analyticity_sgm, IERR=ierr )
-                                            !
-          IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr) )
+          IF ( ionode ) THEN
+              !
+              CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
+                                                DYNAMICAL=ldynam_sgm, NOMEGA=omg_nint,    &
+                                                ANALYTICITY=analyticity_sgm, IERR=ierr )
+                                                !
+              IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr) )
+              !
+          ENDIF
+          !
+          CALL mp_bcast( dimwann_sgm,      ionode_id )
+          CALL mp_bcast( nrtot_sgm,        ionode_id )
+          CALL mp_bcast( ldynam_sgm,       ionode_id )
+          CALL mp_bcast( omg_nint,         ionode_id )
+          CALL mp_bcast( analyticity_sgm,  ionode_id )
+
 
           !
           ! few checks
@@ -325,15 +375,28 @@ END PROGRAM dos_main
           CALL correlation_allocate( )
           !
           IF ( ldynam_sgm ) THEN 
-             !
-             CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=omg_grid, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore(subname,'reading VR, GRID', ABS(ierr) )
-             !
-          ELSE
-             !
-             CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore(subname,'reading VR', ABS(ierr) )
-             !
+              !
+              IF ( ionode ) THEN
+                  !
+                  CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=omg_grid, IERR=ierr )
+                  IF ( ierr/=0 ) CALL errore(subname,'reading VR, GRID', ABS(ierr) )
+                  !
+              ENDIF
+              !
+              CALL mp_bcast( vr_sgm,    ionode_id )
+              CALL mp_bcast( omg_grid,  ionode_id )
+              !
+           ELSE
+              !
+              IF ( ionode ) THEN
+                  !
+                  CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
+                  IF ( ierr/=0 ) CALL errore(subname,'reading VR', ABS(ierr) )
+                  !
+              ENDIF
+              !
+              CALL mp_bcast( vr_sgm,    ionode_id )
+              !
           ENDIF
  
           ! 
@@ -364,7 +427,7 @@ END PROGRAM dos_main
       IF ( ldynam_sgm ) THEN
          !
          CALL warning(subname, 'energy grid is forced from SGM datafile' )
-         IF(ionode) WRITE( stdout, '()')
+         IF( ionode ) WRITE( stdout, '()')
          !
          ne = omg_nint
          !
@@ -412,21 +475,37 @@ END PROGRAM dos_main
       wk(1:nkpts_int) = TWO / REAL( nspin * nkpts_int ,dbl)
       !
       ! mv kpts in cartesian coords (bohr^-1)
+      !
       CALL cry2cart( vkpt_int, bvec )
+
+
+      !
+      ! setup parallelism
+      !
+      CALL divide_et_impera( 1, nkpts_int, iks, ike, mpime, nproc )      
+
 
       !
       ! kpt summary
       !
-      WRITE( stdout, "(2x, 'nktot = ',i5 ) " ) nkpts_int
-      WRITE( stdout, "(2x, 'Monkhorst-Pack grid:      nk = (',3i4,' ),', &
-                                         & 6x,'shift = (',3i4,' )' ) " ) nk(:), s(:)
-      WRITE( stdout, "(2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1)',/)" )
-      !
-      DO ik=1,nkpts_int
-           WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   weight = ', f11.7 )") &
-           ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
-      ENDDO
-      WRITE( stdout, "()" )
+      IF ( ionode ) THEN
+          !
+          WRITE( stdout, "(2x, 'nktot = ',i5 ) " ) nkpts_int
+          WRITE( stdout, "(2x, 'Monkhorst-Pack grid:      nk = (',3i4,' ),', &
+                               & 6x,'shift = (',3i4,' )' ) " ) nk(:), s(:)
+          WRITE( stdout, "(2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1)',/)" )
+          !
+          DO ik=1,nkpts_int
+              !
+              WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   &
+                               & weight = ', f11.7 )") &
+                               ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
+              !
+          ENDDO
+          !
+          WRITE( stdout, "()" )
+          !
+      ENDIF
 
 
       !
@@ -478,11 +557,11 @@ END PROGRAM dos_main
           IF (  ( .NOT. lhave_nn(1) .OR.  ABS(NINT(vr_cry(1,ir))) <= ircut(1) ) .AND. &
                 ( .NOT. lhave_nn(2) .OR.  ABS(NINT(vr_cry(2,ir))) <= ircut(2) ) .AND. &
                 ( .NOT. lhave_nn(3) .OR.  ABS(NINT(vr_cry(3,ir))) <= ircut(3) ) )  THEN
-                !
-                nrtot_nn = nrtot_nn + 1
-                !
-                r_index( nrtot_nn ) = ir
-                !
+              !
+              nrtot_nn = nrtot_nn + 1
+              !
+              r_index( nrtot_nn ) = ir
+              !
           ENDIF
           !
       ENDDO
@@ -531,8 +610,14 @@ END PROGRAM dos_main
           !
           IF ( lhave_sgm ) THEN
               !
-              CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
-              IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11)
+              IF ( ionode ) THEN
+                  !
+                  CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
+                  IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11)
+                  !
+              ENDIF
+              !
+              CALL mp_bcast( rsgm,  ionode_id )
               !
               DO ir = 1, nrtot_nn
                   rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
@@ -540,8 +625,13 @@ END PROGRAM dos_main
               !
           ENDIF
 
+          !
+          !
+          z( :, :, : )    = CZERO
+          eig_int( :, : ) = ZERO
+          !
           kpt_loop: &
-          DO ik = 1, nkpts_int
+          DO ik = iks, ike
 
               !
               ! compute the Hamiltonian with the correct bloch symmetry
@@ -585,6 +675,12 @@ END PROGRAM dos_main
               ENDIF
               !
           ENDDO kpt_loop
+
+          !
+          ! recover over parallelism
+          !
+          CALL mp_sum( z )
+          CALL mp_sum( eig_int )
           !
       ENDIF
 
@@ -628,81 +724,91 @@ END PROGRAM dos_main
                             ie, egrid(ie)
           ENDIF
 
-          !
-          dos  ( ie ) = ZERO
+          
+          dos ( ie ) = ZERO
           !
           IF ( lhave_sgm .AND. ldynam_sgm ) THEN
 
              !
              ! include external self-energy in the calc
              !
-             CALL operator_read_data( sgm_unit, IE=ie, R_OPR=rsgm, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore(subname,'reading rsgm', ie)
+             IF ( ionode ) THEN
+                 !
+                 CALL operator_read_data( sgm_unit, IE=ie, R_OPR=rsgm, IERR=ierr )
+                 IF ( ierr/=0 ) CALL errore(subname,'reading rsgm', ie)
+                 !
+             ENDIF
+             !
+             CALL mp_bcast( rsgm,   ionode_id )
              !
              DO ir = 1, nrtot
                  rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
              ENDDO
              !
              !
-             DO ik = 1, nkpts_int
-                !
-                ! interpolate rsgm on the required kpt
-                ! in principles kham and kovp could be computed out of the
-                ! energy loop (saving time)
-                !
-                CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
-                                   vkpt_int(:,ik), kham )
-                CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm_nn,  &
-                                   vkpt_int(:,ik), ksgm )
-                !
-                IF ( lhave_overlap ) THEN
+             DO ik = iks, ike
+                 !
+                 ! interpolate rsgm on the required kpt
+                 ! in principles kham and kovp could be computed out of the
+                 ! energy loop (saving time)
+                 !
+                 CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
+                                    vkpt_int(:,ik), kham )
+                 CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm_nn,  &
+                                    vkpt_int(:,ik), ksgm )
+                 !
+                 IF ( lhave_overlap ) THEN
+                     !
+                     CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
+                                        vkpt_int(:,ik), kovp )
+                     !
+                 ENDIF
+                 !
+                 ! solve dyson equation to obtain the interacting Green function
+                 ! NOTE: here the smearing of GF0 (non-interacting) is still
+                 !       lorentzian whatever value from input
+                 !
+                 ze = egrid( ie ) + CI * delta
+                 !
+                 IF ( .NOT. lhave_overlap ) THEN
+                     !
+                     CALL dyson_solver( GF0, GF, ze, dimwann, kham(:,:), ksgm(:,:) )
+                     !
+                 ELSE
+                     !
+                     CALL dyson_solver( GF0, GF, ze, dimwann, kham(:,:), ksgm(:,:), kovp(:,:) )
+                     !
+                 ENDIF
+                 !
+                 !
+                 DO i  = 1, dimwann 
                     !
-                    CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
-                                       vkpt_int(:,ik), kovp )
+                    dos0( ie )    = dos0( ie ) - cost * wk(ik) * AIMAG( GF0(i,i) )
+                    dos(  ie )    = dos(  ie ) - cost * wk(ik) * AIMAG( GF(i,i)  )
                     !
-                ENDIF
-                !
-                ! solve dyson equation to obtain the interacting Green function
-                ! NOTE: here the smearing of GF0 (non-interacting) is still
-                !       lorentzian whatever value from input
-                !
-                ze = egrid( ie ) + CI * delta
-                !
-                IF ( .NOT. lhave_overlap ) THEN
-                    !
-                    CALL dyson_solver( GF0, GF, ze, dimwann, kham(:,:), ksgm(:,:) )
-                    !
-                ELSE
-                    !
-                    CALL dyson_solver( GF0, GF, ze, dimwann, kham(:,:), ksgm(:,:), kovp(:,:) )
-                    !
-                ENDIF
-                !
-                !
-                DO i  = 1, dimwann 
-                   !
-                   dos0( ie )    = dos0( ie ) - cost * wk(ik) * AIMAG( GF0(i,i) )
-                   dos(  ie )    = dos(  ie ) - cost * wk(ik) * AIMAG( GF(i,i)  )
-                   !
-                ENDDO
+                 ENDDO
+                 !
              ENDDO
              !
           ELSE
              !
              ! standard DOS calculation (no sgm or static sgm)
              !
-             DO ik = 1, nkpts_int
-             DO i  = 1, dimwann 
-                !
-                arg  = ( egrid( ie ) - eig_int( i, ik ) ) / delta
-                raux = smearing_func( arg, smearing_type )
-                !
-                dos ( ie )    = dos(ie) + cost * wk(ik) * raux
-                !
-             ENDDO
+             DO ik = iks, ike
+                 !
+                 DO i = 1, dimwann 
+                     !
+                     arg  = ( egrid( ie ) - eig_int( i, ik ) ) / delta
+                     raux = smearing_func( arg, smearing_type )
+                     !
+                     dos( ie ) = dos( ie ) + cost * wk(ik) * raux
+                     !
+                 ENDDO
+                 !
              ENDDO
              !
           ENDIF
+
           !
           ! stdout report
           !
@@ -714,6 +820,11 @@ END PROGRAM dos_main
           ENDIF          
           !
       ENDDO energy_loop1
+      !
+      ! recover over kpt-parallelism
+      !
+      CALL mp_sum( dos  )
+      CALL mp_sum( dos0 )
       !
       !
       IF ( lhave_sgm ) THEN
@@ -736,7 +847,7 @@ END PROGRAM dos_main
           energy_loop2: &
           DO ie = 1, ne
               !
-              DO ik = 1, nkpts_int
+              DO ik = iks, ike
               DO i  = 1, dimwann 
                   !
                   ! compute the smearing function
@@ -763,6 +874,8 @@ END PROGRAM dos_main
               ENDDO
               !
           ENDDO energy_loop2
+          !
+          CALL mp_sum( pdos )
           !
       ENDIF
 

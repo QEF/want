@@ -105,6 +105,8 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
+   USE mp,                   ONLY : mp_bcast
+   USE io_module,            ONLY : ionode, ionode_id
    IMPLICIT NONE
 
       CHARACTER(17)    :: subname = 'cmplx_bands_input'
@@ -137,9 +139,31 @@ CONTAINS
       
       CALL input_from_file ( stdin )
       !
-      READ(stdin, INPUT, IOSTAT=ierr)
+      IF ( ionode )  READ(stdin, INPUT, IOSTAT=ierr)
+      !
+      CALL mp_bcast( ierr, ionode_id )
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
 
+      !
+      ! broadcast
+      !
+      CALL mp_bcast( prefix,          ionode_id )
+      CALL mp_bcast( postfix,         ionode_id )
+      CALL mp_bcast( work_dir,        ionode_id )
+      CALL mp_bcast( datafile_sgm,    ionode_id )
+      CALL mp_bcast( datafile_dft,    ionode_id )
+      CALL mp_bcast( fileout,         ionode_id )      
+      CALL mp_bcast( idir,            ionode_id )      
+      CALL mp_bcast( nk,              ionode_id )      
+      CALL mp_bcast( s,               ionode_id )      
+      CALL mp_bcast( toll,            ionode_id )      
+      CALL mp_bcast( emin,            ionode_id )      
+      CALL mp_bcast( emax,            ionode_id )      
+      CALL mp_bcast( ne,              ionode_id )      
+      CALL mp_bcast( ircut,           ionode_id )      
+      CALL mp_bcast( nprint,          ionode_id )      
+      !
+      !
       IF ( LEN_TRIM(fileout) == 0 ) &
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)// &
                                      '_cmplx_bands.dat'
@@ -168,31 +192,38 @@ CONTAINS
       !
       CALL write_header( stdout, "INPUT Summary" )
       !
-      WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
-      WRITE( stdout, "(   7x,'        band direction :',3x,i4 )") idir
-      WRITE( stdout, "(   7x,'                    nk :',3x,2i4 )") nk(1:2)
-      WRITE( stdout, "(   7x,'                     s :',3x,2i4 )") s(1:2)
-      WRITE( stdout, "(   7x,'                  toll :',3x,e12.4 )") toll
-      WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin
-      WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax
-      WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
-      WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
-      !
-      IF ( ANY( ircut(:) > 0 ) ) THEN
-          WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
+      IF ( ionode ) THEN
+          !
+          WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
+          WRITE( stdout, "(   7x,'        band direction :',3x,i4 )") idir
+          WRITE( stdout, "(   7x,'                    nk :',3x,2i4 )") nk(1:2)
+          WRITE( stdout, "(   7x,'                     s :',3x,2i4 )") s(1:2)
+          WRITE( stdout, "(   7x,'                  toll :',3x,e12.4 )") toll
+          WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin
+          WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax
+          WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
+          WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
+          !
+          IF ( ANY( ircut(:) > 0 ) ) THEN
+              WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
+          ENDIF
+          !
+          IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
+              WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+          ENDIF
+          !
+          WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
+          IF ( lhave_sgm ) THEN
+              WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+          ENDIF
+          !
+          WRITE(stdout, "()")
+          !
       ENDIF
       !
-      IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
-          WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
-      ENDIF
+      CALL timing( subname, OPR='stop' )
+      CALL log_pop( subname )
       !
-      WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
-      IF ( lhave_sgm ) THEN
-          WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
-      ENDIF
-      !
-      WRITE(stdout, "()")
-
    END SUBROUTINE cmplx_bands_input
    !
 END PROGRAM cmplx_bands
@@ -207,8 +238,10 @@ END PROGRAM cmplx_bands
    USE kinds
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : ZERO, ONE, TWO, CZERO, CONE, EPS_m6, BOHR => bohr_radius_angs
-   USE io_module,            ONLY : ionode, stdout, stdin, aux_unit, sgm_unit
+   USE io_module,            ONLY : ionode, ionode_id, stdout, stdin, aux_unit, sgm_unit
    USE io_module,            ONLY : datafile_sgm
+   USE mp,                   ONLY : mp_bcast, mp_sum
+   USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
@@ -276,6 +309,7 @@ END PROGRAM cmplx_bands
       !
       REAL(dbl)         :: cost, raux, avg_nrs
       !
+      INTEGER           :: iomg_s, iomg_e
       INTEGER           :: i, j, l, ie, ik, ir
       INTEGER           :: ierr
       INTEGER           :: nk_(3), s_(3)
@@ -307,11 +341,21 @@ END PROGRAM cmplx_bands
           CALL file_open(sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
           !
-          CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
-                                            DYNAMICAL=ldynam_sgm, NOMEGA=omg_nint,    &
-                                            ANALYTICITY=analyticity_sgm, IERR=ierr )
-                                            !
-          IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr) )
+          IF ( ionode ) THEN
+              !
+              CALL operator_read_aux( sgm_unit, DIMWANN=dimwann_sgm, NR=nrtot_sgm,        &
+                                                DYNAMICAL=ldynam_sgm, NOMEGA=omg_nint,    &
+                                                ANALYTICITY=analyticity_sgm, IERR=ierr )
+                                                !
+              IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr) )
+              !
+          ENDIF
+          !
+          CALL mp_bcast( dimwann_sgm,      ionode_id )
+          CALL mp_bcast( nrtot_sgm,        ionode_id )
+          CALL mp_bcast( ldynam_sgm,       ionode_id )
+          CALL mp_bcast( omg_nint,         ionode_id )
+          CALL mp_bcast( analyticity_sgm,  ionode_id )
 
           !
           ! few checks
@@ -330,15 +374,28 @@ END PROGRAM cmplx_bands
           CALL correlation_allocate( )
           !
           IF ( ldynam_sgm ) THEN 
-             !
-             CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=omg_grid, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore(subname,'reading VR, GRID', ABS(ierr) )
-             !
+              !
+              IF ( ionode ) THEN
+                  !
+                  CALL operator_read_aux( sgm_unit, VR=vr_sgm, GRID=omg_grid, IERR=ierr )
+                  IF ( ierr/=0 ) CALL errore(subname,'reading VR, GRID', ABS(ierr) )
+                  !
+              ENDIF
+              !
+              CALL mp_bcast( vr_sgm,    ionode_id )
+              CALL mp_bcast( omg_grid,  ionode_id )
+              !
           ELSE
-             !
-             CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
-             IF ( ierr/=0 ) CALL errore(subname,'reading VR', ABS(ierr) )
-             !
+              !
+              IF ( ionode ) THEN
+                  !
+                  CALL operator_read_aux( sgm_unit, VR=vr_sgm, IERR=ierr )
+                  IF ( ierr/=0 ) CALL errore(subname,'reading VR', ABS(ierr) )
+                  !
+              ENDIF
+              !
+              CALL mp_bcast( vr_sgm,    ionode_id )
+              !
           ENDIF
  
           ! 
@@ -364,7 +421,7 @@ END PROGRAM cmplx_bands
       IF ( ldynam_sgm ) THEN
          !
          CALL warning(subname, 'energy grid is forced from SGM datafile' )
-         WRITE( stdout, '()')
+         IF (ionode) WRITE( stdout, '()')
          !
          ne = omg_nint
          !
@@ -388,7 +445,13 @@ END PROGRAM cmplx_bands
       ENDIF
 
       !
-      ! parallel kpt mesh
+      ! define parallelism over energy grid
+      !
+      CALL divide_et_impera( 1, ne, iomg_s, iomg_e, mpime, nproc )
+
+
+      !
+      ! kpt mesh parallel to plane orthogonal to idir
       !
       nkpts_2D = PRODUCT( nk(1:2) )
       !
@@ -511,8 +574,14 @@ END PROGRAM cmplx_bands
       !
       IF ( lhave_sgm  .AND. .NOT. ldynam_sgm ) THEN
           !
-          CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11) 
+          IF ( ionode ) THEN
+              !
+              CALL operator_read_data( sgm_unit, R_OPR=rsgm, IERR=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,'reading static rsgm', 11) 
+              !
+          ENDIF
+          !
+          CALL mp_bcast( rsgm,   ionode_id )
           !
           DO ir = 1, nrtot_nn
                rsgm_nn( :, :, ir ) = rsgm( :, :, r_index(ir) )
@@ -621,10 +690,10 @@ END PROGRAM cmplx_bands
 !
 ! ... Main energy loop
 !
-!     From here on, we are implementing the algorithm reported in
-!     John K. Tomfohr and Ottto F. Sankey, Phys.Rev.B 65, 245105 (2002)
+!     From here on, we implement the algorithm reported in
+!     John K. Tomfohr and Otto F. Sankey, Phys.Rev.B 65, 245105 (2002)
 !
-!     When the case we make rererence to the equations of the above paper
+!     When the case, we make reference to the equations of the above paper
 !
 
       !
@@ -634,9 +703,11 @@ END PROGRAM cmplx_bands
       cost = DOT_PRODUCT( avec(:,idir), avec(:,idir) )
       cost = TWO / ( SQRT( cost ) * BOHR )
 
-
+      !
+      beta(:,:,:)= ZERO
+      !
       energy_loop: &
-      DO ie = 1, ne
+      DO ie = iomg_s, iomg_e
 
           !
           ! stdout report
@@ -969,7 +1040,7 @@ END PROGRAM cmplx_bands
           !
           avg_nrs = avg_nrs/REAL(nkpts_2D)
           !
-          IF ( (MOD( ie, nprint) == 0 .OR. ie == 1 .OR. ie == ne ) ) THEN
+          IF ( (MOD( ie, nprint) == 0 .OR. ie == iomg_s .OR. ie == iomg_e ) ) THEN
               !
               IF ( ionode ) THEN
                   WRITE(stdout,"(7x,'avg. range of Z : ',i7)") NINT( avg_nrs )
@@ -983,7 +1054,14 @@ END PROGRAM cmplx_bands
           !
           !
       ENDDO energy_loop
+
       !
+      ! recover over energy parallelism
+      !
+      CALL mp_sum( beta )
+      
+      !
+      ! close sgm file
       !
       IF ( lhave_sgm ) THEN
           !
@@ -999,24 +1077,28 @@ END PROGRAM cmplx_bands
 ! 
       filename=TRIM(fileout)
       !
-      OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-         !
-         WRITE( ctmp, "(i5)") dimwann * (nrsx-1) +1
-         !
-         DO ik = 1, nkpts_2D
-             WRITE( aux_unit, "(a,i5)") "# CBS for kpt = ", ik
-             !
-             DO ie = 1, ne
-                 WRITE(aux_unit, "("//TRIM(ctmp)//"f15.9)") egrid(ie), &
-                       beta( 1:dimwann*(nrsx-1), ik, ie)
-             ENDDO
-             !
-         ENDDO
-         !
-      CLOSE( aux_unit )
-      !
-      WRITE( stdout, "(/,2x,'CBS written on file:',4x,a)" ) TRIM(fileout)
+      IF ( ionode ) THEN
+          !
+          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+              !
+              WRITE( ctmp, "(i5)") dimwann * (nrsx-1) +1
+              !
+              DO ik = 1, nkpts_2D
+                  WRITE( aux_unit, "(a,i5)") "# CBS for kpt = ", ik
+                  !
+                  DO ie = 1, ne
+                      WRITE(aux_unit, "("//TRIM(ctmp)//"f15.9)") egrid(ie), &
+                            beta( 1:dimwann*(nrsx-1), ik, ie)
+                  ENDDO
+                  !
+              ENDDO
+              !
+          CLOSE( aux_unit )
+          !
+          WRITE( stdout, "(/,2x,'CBS written on file:',4x,a)" ) TRIM(fileout)
+          !
+      ENDIF
 
 !
 ! ... Shutdown
