@@ -49,7 +49,7 @@
 CONTAINS
 
 !****************************************************
-   SUBROUTINE sph_har_index( lmax, index)
+   SUBROUTINE sph_har_index( lmax, indx)
    !****************************************************
    IMPLICIT NONE
      !
@@ -71,26 +71,29 @@ CONTAINS
      !
      INTEGER, INTENT(in)   :: lmax  ! the number of angular mom
                                     ! channel (0 -> l = lmax)
-     INTEGER, INTENT(out)  :: index(-lmax:lmax, 0:lmax)
+     INTEGER, INTENT(out)  :: indx(-lmax:lmax, 0:lmax)
      !
      ! local variables
      !
-     INTEGER :: il, im, count
+     INTEGER :: il, im, icount
      !
-     index = 0
+     indx = 0
 
-     count=1
-     index(0,0)= count
+     icount=1
+     indx(0,0)= icount
      !
      DO il=1,lmax
-        count = count + 1
-        index(0,il) = count
+        icount = icount + 1
+        indx(0,il) = icount
 
         DO im = 1, il
-            count = count +1
-            index(im,il) = count
-            count = count +1
-            index(-im,il) = count
+            !
+            icount = icount +1
+            indx(im,il) = icount
+            !
+            icount = icount +1
+            indx(-im,il) = icount
+            !
         ENDDO
      ENDDO
 
