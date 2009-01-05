@@ -9,11 +9,11 @@
 
 
   Program <conductor>  v. 2.2.0-dev  starts ...
-  Date 17Dec2008 at 12: 6:10 
+  Date  5Jan2009 at  0:37:52 
 
      Parallel run, # proc:    4
 
-          BUILT :    Wed Dec 17 11:21:48 2008
+          BUILT :    Mon Jan  5 00:09:02 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
@@ -66,7 +66,7 @@
              Shift_L :        0.00000
              Shift_C :        0.00000
              Shift_R :        0.00000
-          Shift_corr :        1.00000
+          Shift_corr :        0.00000
   </ENERGY_GRID>
 
 
@@ -299,34 +299,34 @@
   ======================================================================
 
   Computing E(     1 ) =     -5.00000 eV
-  T matrix converged after avg. # of iterations    6.657
+  T matrix converged after avg. # of iterations    7.343
 
-                              Total time spent up to now :     0.13 secs
+                              Total time spent up to now :     0.15 secs
 
   Computing E(    20 ) =     -4.52381 eV
-  T matrix converged after avg. # of iterations    6.985
+  T matrix converged after avg. # of iterations    7.667
 
-                              Total time spent up to now :     1.42 secs
+                              Total time spent up to now :     1.58 secs
 
   Computing E(    40 ) =     -4.02256 eV
-  T matrix converged after avg. # of iterations    7.318
+  T matrix converged after avg. # of iterations    7.915
 
-                              Total time spent up to now :     2.80 secs
+                              Total time spent up to now :     3.13 secs
 
   Computing E(    60 ) =     -3.52130 eV
   T matrix converged after avg. # of iterations    7.667
 
-                              Total time spent up to now :     4.21 secs
+                              Total time spent up to now :     4.67 secs
 
   Computing E(    80 ) =     -3.02005 eV
-  T matrix converged after avg. # of iterations    7.915
+  T matrix converged after avg. # of iterations    6.294
 
-                              Total time spent up to now :     5.65 secs
+                              Total time spent up to now :     6.14 secs
 
   Computing E(   100 ) =     -2.51880 eV
-  T matrix converged after avg. # of iterations    7.652
+  T matrix converged after avg. # of iterations    5.408
 
-                              Total time spent up to now :     7.11 secs
+                              Total time spent up to now :     7.51 secs
 
 
   ======================================================================
@@ -340,20 +340,22 @@
   ======================================================================
 
    <global routines>
-             clock number :    12
+             clock number :    14
 
                 conductor :     7.00s CPU 
 
            datafiles_init :     0.00s CPU
-            smearing_init :     0.04s CPU
-                   cft_1z :     0.02s CPU (       2 calls,   0.009 s avg)
-         hamiltonian_init :     0.01s CPU
-              read_matrix :     0.01s CPU (       2 calls,   0.005 s avg)
-              fourier_par :     0.00s CPU (       5 calls,   0.000 s avg)
-      correlation_sgmread :     0.00s CPU
-            transfer_mtrx :     4.23s CPU (   40200 calls,   0.000 s avg)
-                    green :     1.49s CPU (   40200 calls,   0.000 s avg)
-              gzero_maker :     1.29s CPU (   60300 calls,   0.000 s avg)
-            transmittance :     0.17s CPU (   20100 calls,   0.000 s avg)
+            smearing_init :     0.05s CPU
+                   cft_1z :     0.02s CPU (       2 calls,   0.011 s avg)
+         hamiltonian_init :     0.00s CPU
+              read_matrix :     0.00s CPU (       2 calls,   0.002 s avg)
+              fourier_par :     0.00s CPU (       6 calls,   0.000 s avg)
+         correlation_init :     0.01s CPU
+      correlation_sgmread :     0.01s CPU (       2 calls,   0.003 s avg)
+        hamiltonian_setup :     0.16s CPU (   20100 calls,   0.000 s avg)
+            transfer_mtrx :     4.20s CPU (   40200 calls,   0.000 s avg)
+                    green :     1.60s CPU (   40200 calls,   0.000 s avg)
+              gzero_maker :     1.36s CPU (   60300 calls,   0.000 s avg)
+            transmittance :     0.18s CPU (   20100 calls,   0.000 s avg)
 
 

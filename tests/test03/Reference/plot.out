@@ -9,11 +9,11 @@
 
 
   Program <plot>  v. 2.2.0-dev  starts ...
-  Date 18Nov2008 at 13: 2:38 
+  Date  5Jan2009 at 10:49:17 
 
      Serial run.
 
-          BUILT :    Fri Nov  7 18:29:57 2008
+          BUILT :    Mon Jan  5 00:09:02 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
@@ -117,15 +117,15 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -5.383762     2.480865     3.250960 )
-    Wf(   2 ) = (    -3.516489     5.688645     3.231705 )
-    Wf(  14 ) = (    -0.379884     4.705592     3.177447 )
-    Wf(  15 ) = (     0.904087     2.477502     3.164786 )
+    Wf(   1 ) = (    -5.417803     2.480415     3.370406 )
+    Wf(   2 ) = (    -3.536550     5.718283     3.377422 )
+    Wf(  14 ) = (    -0.437098     4.635869     3.129838 )
+    Wf(  15 ) = (     0.752331     2.478509     2.986798 )
         in crystal coord
-    Wf(   1 ) = (    -0.269188     0.124043     0.162548 )
-    Wf(   2 ) = (    -0.175824     0.284432     0.161585 )
-    Wf(  14 ) = (    -0.018994     0.235280     0.158872 )
-    Wf(  15 ) = (     0.045204     0.123875     0.158239 )
+    Wf(   1 ) = (    -0.270890     0.124021     0.168520 )
+    Wf(   2 ) = (    -0.176827     0.285914     0.168871 )
+    Wf(  14 ) = (    -0.021855     0.231793     0.156492 )
+    Wf(  15 ) = (     0.037617     0.123925     0.149340 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -144,3 +144,118 @@
 
 
     Wfc Fourier Transf. for k-point    1
+                              Total time spent up to now :    33.28 secs
+
+
+  WF normalization:
+    Index              Max value     Normaliz.
+  ---------------------------------------------
+    Wf(   1 )   -->     0.391098      1.000000
+    Wf(   2 )   -->     0.394534      1.000000
+    Wf(   3 )   -->     0.356527      1.000000
+    Wf(   4 )   -->     0.346759      1.000000
+
+
+  writing WF(   1) plot on file: ./SCRATCH//benzene_WanT_WFM001.cube
+       atomic positions on file: ./SCRATCH//benzene_WanT_WFM001.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_WanT_WFM001.cube'
+Output file (plot file):  './SCRATCH//benzene_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.152960
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_WanT_WFM001.cube
+                      ./SCRATCH//benzene_WanT_WFM001.crd
+
+
+  writing WF(   2) plot on file: ./SCRATCH//benzene_WanT_WFM002.cube
+       atomic positions on file: ./SCRATCH//benzene_WanT_WFM002.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_WanT_WFM002.cube'
+Output file (plot file):  './SCRATCH//benzene_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM002.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.155660
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_WanT_WFM002.cube
+                      ./SCRATCH//benzene_WanT_WFM002.crd
+
+
+  writing WF(  14) plot on file: ./SCRATCH//benzene_WanT_WFM014.cube
+       atomic positions on file: ./SCRATCH//benzene_WanT_WFM014.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_WanT_WFM014.cube'
+Output file (plot file):  './SCRATCH//benzene_WanT_WFM014.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM014.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.127110
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_WanT_WFM014.cube
+                      ./SCRATCH//benzene_WanT_WFM014.crd
+
+
+  writing WF(  15) plot on file: ./SCRATCH//benzene_WanT_WFM015.cube
+       atomic positions on file: ./SCRATCH//benzene_WanT_WFM015.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_WanT_WFM015.cube'
+Output file (plot file):  './SCRATCH//benzene_WanT_WFM015.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM015.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.120240
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_WanT_WFM015.cube
+                      ./SCRATCH//benzene_WanT_WFM015.crd
+
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :    13
+
+                     plot :    37.00s CPU 
+
+             want_dftread :     0.04s CPU
+                want_init :     0.00s CPU
+             bshells_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+          ggrids_read_ext :     0.08s CPU
+      wfc_data_grids_read :     0.00s CPU
+           wfc_data_kread :     0.07s CPU
+               kwann_calc :    32.77s CPU (       4 calls,   8.191 s avg)
+                   cfft3d :     0.13s CPU (       4 calls,   0.032 s avg)
+               cwann_calc :     0.05s CPU (       4 calls,   0.012 s avg)
+                 gcubeplt :     0.94s CPU (       4 calls,   0.235 s avg)
+
+

@@ -9,11 +9,11 @@
 
 
   Program <conductor>  v. 2.2.0-dev  starts ...
-  Date 17Dec2008 at 12: 6:21 
+  Date  5Jan2009 at  0:37:45 
 
      Parallel run, # proc:    4
 
-          BUILT :    Wed Dec 17 11:21:48 2008
+          BUILT :    Mon Jan  5 00:09:02 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
@@ -298,34 +298,34 @@
   ======================================================================
 
   Computing E(     1 ) =     -5.00000 eV
-  T matrix converged after avg. # of iterations    6.657
+  T matrix converged after avg. # of iterations    6.652
 
-                              Total time spent up to now :     0.14 secs
+                              Total time spent up to now :     0.13 secs
 
   Computing E(    20 ) =     -4.52381 eV
   T matrix converged after avg. # of iterations    6.985
 
-                              Total time spent up to now :     1.41 secs
+                              Total time spent up to now :     1.46 secs
 
   Computing E(    40 ) =     -4.02256 eV
   T matrix converged after avg. # of iterations    7.318
 
-                              Total time spent up to now :     2.78 secs
+                              Total time spent up to now :     2.88 secs
 
   Computing E(    60 ) =     -3.52130 eV
   T matrix converged after avg. # of iterations    7.667
 
-                              Total time spent up to now :     4.18 secs
+                              Total time spent up to now :     4.35 secs
 
   Computing E(    80 ) =     -3.02005 eV
   T matrix converged after avg. # of iterations    7.915
 
-                              Total time spent up to now :     5.60 secs
+                              Total time spent up to now :     5.84 secs
 
   Computing E(   100 ) =     -2.51880 eV
   T matrix converged after avg. # of iterations    7.652
 
-                              Total time spent up to now :     7.03 secs
+                              Total time spent up to now :     7.33 secs
 
 
   ======================================================================
@@ -339,19 +339,20 @@
   ======================================================================
 
    <global routines>
-             clock number :    11
+             clock number :    12
 
                 conductor :     7.00s CPU 
 
            datafiles_init :     0.00s CPU
-            smearing_init :     0.05s CPU
-                   cft_1z :     0.02s CPU (       2 calls,   0.012 s avg)
-         hamiltonian_init :     0.01s CPU
-              read_matrix :     0.01s CPU (       2 calls,   0.003 s avg)
+            smearing_init :     0.04s CPU
+                   cft_1z :     0.02s CPU (       2 calls,   0.009 s avg)
+         hamiltonian_init :     0.00s CPU
+              read_matrix :     0.00s CPU (       2 calls,   0.002 s avg)
               fourier_par :     0.00s CPU (       4 calls,   0.000 s avg)
-            transfer_mtrx :     4.25s CPU (   40200 calls,   0.000 s avg)
-                    green :     1.45s CPU (   40200 calls,   0.000 s avg)
-              gzero_maker :     1.26s CPU (   60300 calls,   0.000 s avg)
-            transmittance :     0.16s CPU (   20100 calls,   0.000 s avg)
+        hamiltonian_setup :     0.11s CPU (   20100 calls,   0.000 s avg)
+            transfer_mtrx :     4.29s CPU (   40200 calls,   0.000 s avg)
+                    green :     1.52s CPU (   40200 calls,   0.000 s avg)
+              gzero_maker :     1.30s CPU (   60300 calls,   0.000 s avg)
+            transmittance :     0.17s CPU (   20100 calls,   0.000 s avg)
 
 

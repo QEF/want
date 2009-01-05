@@ -9,18 +9,18 @@
 
 
   Program <disentangle>  v. 2.2.0-dev  starts ...
-  Date 15Dec2008 at 13:28:18 
+  Date  5Jan2009 at  0:35:31 
 
-     Serial run.
+     Parallel run, # proc:    4
 
-          BUILT :    Fri Dec 12 19:20:33 2008
+          BUILT :    Mon Jan  5 00:09:02 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
             CPP :    cpp
-            F90 :    ifort
+            F90 :    mpiifort
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW
+         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__MPI -D__PARA
       BLAS LIBS :    -lmkl_em64t
     LAPACK LIBS :    -lmkl_em64t
        FFT LIBS :    
@@ -147,9 +147,9 @@
  </IONS>
 
  <K-POINTS>
-         nproc =     1   (Parallelism over kpts)
+         nproc =     4   (Parallelism over kpts)
   global nkpts =    36
-   local nkpts =    36
+   local nkpts =     9
   Monkhorst-Pack grid:      nk = (   6   6   1 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -539,167 +539,59 @@
                     ions:          0.003 MB
                  windows:          0.012 MB
                 subspace:          0.058 MB
-                 overlap:          1.901 MB
+                 overlap:          0.475 MB
                   ggrids:          1.001 MB
                 wfc_data:          2.257 MB
             trial_center:          0.001 MB
              struct_fact:          0.376 MB
-           workspace_dis:          0.979 MB
+           workspace_dis:          0.245 MB
                       us:          1.316 MB
                     uspp:          0.000 MB
 
-     Total alloc. Memory:          7.914 MB
-      Real alloc. Memory:          0.792 MB
+     Total alloc. Memory:          5.753 MB
+      Real alloc. Memory:          1.028 MB
  </MEMORY_USAGE>
 
 
     Overlaps or Projections calculation for k-point:    1
     npw =   2848,    dimwin =   20
-                              Total time spent up to now :     0.70 secs
+                              Total time spent up to now :     0.66 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     0.83 secs
+                              Total time spent up to now :     0.76 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     0.96 secs
+                              Total time spent up to now :     0.85 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =   2848,    dimwin =   20
-                              Total time spent up to now :     1.09 secs
+                              Total time spent up to now :     0.94 secs
 
     Overlaps or Projections calculation for k-point:    5
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.21 secs
+                              Total time spent up to now :     1.03 secs
 
     Overlaps or Projections calculation for k-point:    6
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.34 secs
+                              Total time spent up to now :     1.12 secs
 
     Overlaps or Projections calculation for k-point:    7
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.47 secs
+                              Total time spent up to now :     1.21 secs
 
     Overlaps or Projections calculation for k-point:    8
     npw =   2790,    dimwin =   20
-                              Total time spent up to now :     1.60 secs
+                              Total time spent up to now :     1.30 secs
 
     Overlaps or Projections calculation for k-point:    9
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.72 secs
-
-    Overlaps or Projections calculation for k-point:   10
-    npw =   2856,    dimwin =   20
-                              Total time spent up to now :     1.84 secs
-
-    Overlaps or Projections calculation for k-point:   11
-    npw =   2855,    dimwin =   20
-                              Total time spent up to now :     1.97 secs
-
-    Overlaps or Projections calculation for k-point:   12
-    npw =   2856,    dimwin =   20
-                              Total time spent up to now :     2.09 secs
-
-    Overlaps or Projections calculation for k-point:   13
-    npw =   2840,    dimwin =   20
-                              Total time spent up to now :     2.22 secs
-
-    Overlaps or Projections calculation for k-point:   14
-    npw =   2840,    dimwin =   20
-                              Total time spent up to now :     2.35 secs
-
-    Overlaps or Projections calculation for k-point:   15
-    npw =   2855,    dimwin =   20
-                              Total time spent up to now :     2.47 secs
-
-    Overlaps or Projections calculation for k-point:   16
-    npw =   2878,    dimwin =   20
-                              Total time spent up to now :     2.59 secs
-
-    Overlaps or Projections calculation for k-point:   17
-    npw =   2878,    dimwin =   20
-                              Total time spent up to now :     2.71 secs
-
-    Overlaps or Projections calculation for k-point:   18
-    npw =   2855,    dimwin =   20
-                              Total time spent up to now :     2.83 secs
-
-    Overlaps or Projections calculation for k-point:   19
-    npw =   2848,    dimwin =   20
-                              Total time spent up to now :     2.95 secs
-
-    Overlaps or Projections calculation for k-point:   20
-    npw =   2856,    dimwin =   20
-                              Total time spent up to now :     3.08 secs
-
-    Overlaps or Projections calculation for k-point:   21
-    npw =   2878,    dimwin =   20
-                              Total time spent up to now :     3.20 secs
-
-    Overlaps or Projections calculation for k-point:   22
-    npw =   2827,    dimwin =   20
-                              Total time spent up to now :     3.32 secs
-
-    Overlaps or Projections calculation for k-point:   23
-    npw =   2878,    dimwin =   20
-                              Total time spent up to now :     3.44 secs
-
-    Overlaps or Projections calculation for k-point:   24
-    npw =   2856,    dimwin =   20
-                              Total time spent up to now :     3.56 secs
-
-    Overlaps or Projections calculation for k-point:   25
-    npw =   2840,    dimwin =   20
-                              Total time spent up to now :     3.68 secs
-
-    Overlaps or Projections calculation for k-point:   26
-    npw =   2855,    dimwin =   20
-                              Total time spent up to now :     3.80 secs
-
-    Overlaps or Projections calculation for k-point:   27
-    npw =   2878,    dimwin =   20
-                              Total time spent up to now :     3.93 secs
-
-    Overlaps or Projections calculation for k-point:   28
-    npw =   2878,    dimwin =   20
-                              Total time spent up to now :     4.05 secs
-
-    Overlaps or Projections calculation for k-point:   29
-    npw =   2855,    dimwin =   20
-                              Total time spent up to now :     4.17 secs
-
-    Overlaps or Projections calculation for k-point:   30
-    npw =   2840,    dimwin =   20
-                              Total time spent up to now :     4.29 secs
-
-    Overlaps or Projections calculation for k-point:   31
-    npw =   2840,    dimwin =   20
-                              Total time spent up to now :     4.42 secs
-
-    Overlaps or Projections calculation for k-point:   32
-    npw =   2856,    dimwin =   20
-                              Total time spent up to now :     4.54 secs
-
-    Overlaps or Projections calculation for k-point:   33
-    npw =   2855,    dimwin =   20
-                              Total time spent up to now :     4.66 secs
-
-    Overlaps or Projections calculation for k-point:   34
-    npw =   2856,    dimwin =   20
-                              Total time spent up to now :     4.79 secs
-
-    Overlaps or Projections calculation for k-point:   35
-    npw =   2840,    dimwin =   20
-                              Total time spent up to now :     4.91 secs
-
-    Overlaps or Projections calculation for k-point:   36
-    npw =   2790,    dimwin =   20
-                              Total time spent up to now :     5.04 secs
+                              Total time spent up to now :     1.39 secs
 
 
   Overlaps and projections written on file: graphene_WanT.ovp
-                              Total time spent up to now :     5.19 secs
+                              Total time spent up to now :     1.50 secs
 
  <MEMORY_USAGE>
                  kpoints:          0.002 MB
@@ -708,15 +600,15 @@
                     ions:          0.003 MB
                  windows:          0.012 MB
                 subspace:          0.058 MB
-                 overlap:          1.901 MB
+                 overlap:          0.475 MB
             trial_center:          0.001 MB
              struct_fact:          0.376 MB
-           workspace_dis:          0.979 MB
+           workspace_dis:          0.245 MB
                       us:          1.316 MB
                     uspp:          0.000 MB
 
-     Total alloc. Memory:          4.655 MB
-      Real alloc. Memory:          1.256 MB
+     Total alloc. Memory:          2.494 MB
+      Real alloc. Memory:          1.028 MB
  </MEMORY_USAGE>
 
 
@@ -731,182 +623,182 @@
   Subspace decomposition:
   Norms of the projected Bloch functions
 
- !      kpt = 37 ( -0.686-1.187 0.000 )    dimwin =   20
+ !      kpt =  1 ( -0.686-1.187 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 ( -0.457-1.056 0.000 )    dimwin =   20
+ !      kpt =  2 ( -0.457-1.056 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.229-0.924 0.000 )    dimwin =   20
+ !      kpt =  3 ( -0.229-0.924 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 (  0.000-0.792 0.000 )    dimwin =   20
+ !      kpt =  4 (  0.000-0.792 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 (  0.229-0.660 0.000 )    dimwin =   20
+ !      kpt =  5 (  0.229-0.660 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 (  0.457-0.528 0.000 )    dimwin =   20
+ !      kpt =  6 (  0.457-0.528 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.686-0.924 0.000 )    dimwin =   20
+ !      kpt =  7 ( -0.686-0.924 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.457-0.792 0.000 )    dimwin =   20
+ !      kpt =  8 ( -0.457-0.792 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 ( -0.229-0.660 0.000 )    dimwin =   20
+ !      kpt =  9 ( -0.229-0.660 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 (  0.000-0.528 0.000 )    dimwin =   20
+ !      kpt = 10 (  0.000-0.528 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.94498  0.00000  0.01258  0.00000
  !    0.00000  0.00624  0.00000  0.00407  0.00000  0.00500  0.00000  0.00000
  !    0.00000  0.02308  0.00404  0.00000
  !
- !      kpt = 37 (  0.229-0.396 0.000 )    dimwin =   20
+ !      kpt = 11 (  0.229-0.396 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 (  0.457-0.264 0.000 )    dimwin =   20
+ !      kpt = 12 (  0.457-0.264 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.94498  0.00000  0.01258  0.00000
  !    0.00000  0.00624  0.00000  0.00407  0.00000  0.00500  0.00000  0.00000
  !    0.00000  0.02308  0.00404  0.00000
  !
- !      kpt = 37 ( -0.686-0.660 0.000 )    dimwin =   20
+ !      kpt = 13 ( -0.686-0.660 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.457-0.528 0.000 )    dimwin =   20
+ !      kpt = 14 ( -0.457-0.528 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.229-0.396 0.000 )    dimwin =   20
+ !      kpt = 15 ( -0.229-0.396 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 (  0.000-0.264 0.000 )    dimwin =   20
+ !      kpt = 16 (  0.000-0.264 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00007  0.00000  0.00013
  !    0.00000  0.00085  0.00000  0.00000  0.99353  0.00353  0.00000  0.00000
  !    0.00000  0.00064  0.00000  0.00126
  !
- !      kpt = 37 (  0.229-0.132 0.000 )    dimwin =   20
+ !      kpt = 17 (  0.229-0.132 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00007  0.00000  0.00013
  !    0.00000  0.00085  0.00000  0.00000  0.99353  0.00353  0.00000  0.00000
  !    0.00000  0.00064  0.00000  0.00126
  !
- !      kpt = 37 (  0.457 0.000 0.000 )    dimwin =   20
+ !      kpt = 18 (  0.457 0.000 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 ( -0.686-0.396 0.000 )    dimwin =   20
+ !      kpt = 19 ( -0.686-0.396 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 ( -0.457-0.264 0.000 )    dimwin =   20
+ !      kpt = 20 ( -0.457-0.264 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.94498  0.00000  0.01258  0.00000
  !    0.00000  0.00624  0.00000  0.00407  0.00000  0.00500  0.00000  0.00000
  !    0.00000  0.02308  0.00404  0.00000
  !
- !      kpt = 37 ( -0.229-0.132 0.000 )    dimwin =   20
+ !      kpt = 21 ( -0.229-0.132 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00007  0.00000  0.00013
  !    0.00000  0.00085  0.00000  0.00000  0.99353  0.00353  0.00000  0.00000
  !    0.00000  0.00064  0.00000  0.00126
  !
- !      kpt = 37 (  0.000 0.000 0.000 )    dimwin =   20
+ !      kpt = 22 (  0.000 0.000 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 (  0.229 0.132 0.000 )    dimwin =   20
+ !      kpt = 23 (  0.229 0.132 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00007  0.00000  0.00013
  !    0.00000  0.00085  0.00000  0.00000  0.99353  0.00353  0.00000  0.00000
  !    0.00000  0.00064  0.00000  0.00126
  !
- !      kpt = 37 (  0.457 0.264 0.000 )    dimwin =   20
+ !      kpt = 24 (  0.457 0.264 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.94498  0.00000  0.01258  0.00000
  !    0.00000  0.00624  0.00000  0.00407  0.00000  0.00500  0.00000  0.00000
  !    0.00000  0.02308  0.00404  0.00000
  !
- !      kpt = 37 ( -0.686-0.132 0.000 )    dimwin =   20
+ !      kpt = 25 ( -0.686-0.132 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.457 0.000 0.000 )    dimwin =   20
+ !      kpt = 26 ( -0.457 0.000 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 ( -0.229 0.132 0.000 )    dimwin =   20
+ !      kpt = 27 ( -0.229 0.132 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00007  0.00000  0.00013
  !    0.00000  0.00085  0.00000  0.00000  0.99353  0.00353  0.00000  0.00000
  !    0.00000  0.00064  0.00000  0.00126
  !
- !      kpt = 37 (  0.000 0.264 0.000 )    dimwin =   20
+ !      kpt = 28 (  0.000 0.264 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00007  0.00000  0.00013
  !    0.00000  0.00085  0.00000  0.00000  0.99353  0.00353  0.00000  0.00000
  !    0.00000  0.00064  0.00000  0.00126
  !
- !      kpt = 37 (  0.229 0.396 0.000 )    dimwin =   20
+ !      kpt = 29 (  0.229 0.396 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 (  0.457 0.528 0.000 )    dimwin =   20
+ !      kpt = 30 (  0.457 0.528 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.686 0.132 0.000 )    dimwin =   20
+ !      kpt = 31 ( -0.686 0.132 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 ( -0.457 0.264 0.000 )    dimwin =   20
+ !      kpt = 32 ( -0.457 0.264 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.94498  0.00000  0.01258  0.00000
  !    0.00000  0.00624  0.00000  0.00407  0.00000  0.00500  0.00000  0.00000
  !    0.00000  0.02308  0.00404  0.00000
  !
- !      kpt = 37 ( -0.229 0.396 0.000 )    dimwin =   20
+ !      kpt = 33 ( -0.229 0.396 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
  !
- !      kpt = 37 (  0.000 0.528 0.000 )    dimwin =   20
+ !      kpt = 34 (  0.000 0.528 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.94498  0.00000  0.01258  0.00000
  !    0.00000  0.00624  0.00000  0.00407  0.00000  0.00500  0.00000  0.00000
  !    0.00000  0.02308  0.00404  0.00000
  !
- !      kpt = 37 (  0.229 0.660 0.000 )    dimwin =   20
+ !      kpt = 35 (  0.229 0.660 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.98280  0.00000  0.00371  0.00000
  !    0.00000  0.00270  0.00000  0.00666  0.00000  0.00000  0.00393  0.00000
  !    0.00000  0.00000  0.00020  0.00000
  !
- !      kpt = 37 (  0.457 0.792 0.000 )    dimwin =   20
+ !      kpt = 36 (  0.457 0.792 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
@@ -951,7 +843,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      10.101209         2.828624
    Avrg Omega_I                     :       2.020242         0.565725
 
-                              Total time spent up to now :     5.38 secs
+                              Total time spent up to now :     1.56 secs
 
 
   Subspace decomposition:
@@ -1144,40 +1036,41 @@
   ======================================================================
 
    <global routines>
-             clock number :    33
+             clock number :    34
 
-              disentangle :     5.00s CPU 
+              disentangle :     1.00s CPU 
 
              want_dftread :     0.19s CPU
          windows_read_ext :     0.04s CPU
-                want_init :     0.01s CPU
-             bshells_init :     0.01s CPU
+                want_init :     0.00s CPU
+       para_get_poolindex :     0.00s CPU (      36 calls,   0.000 s avg)
+             bshells_init :     0.00s CPU
              windows_init :     0.00s CPU
-              wfc_manager :     4.77s CPU
+              wfc_manager :     1.08s CPU
           ggrids_read_ext :     0.07s CPU
       wfc_data_grids_read :     0.03s CPU
               struct_fact :     0.00s CPU
-                init_at_1 :     0.02s CPU
-           wfc_data_kread :     0.94s CPU (     180 calls,   0.005 s avg)
-                  overlap :     3.21s CPU (     144 calls,   0.022 s avg)
-           overlap_setmap :     0.16s CPU (     144 calls,   0.001 s avg)
-                    s_psi :     0.01s CPU (      36 calls,   0.000 s avg)
-               projection :     0.31s CPU (      36 calls,   0.009 s avg)
-       trial_center_setup :     0.10s CPU (     180 calls,   0.001 s avg)
-               atomic_wfc :     0.03s CPU (      72 calls,   0.000 s avg)
-            overlap_write :     0.10s CPU
-               mp_get_ovp :     0.00s CPU (      72 calls,   0.000 s avg)
+                init_at_1 :     0.01s CPU
+           wfc_data_kread :     0.25s CPU (      45 calls,   0.006 s avg)
+                  overlap :     0.52s CPU (      36 calls,   0.015 s avg)
+           overlap_setmap :     0.02s CPU (      36 calls,   0.000 s avg)
+                    s_psi :     0.00s CPU (       9 calls,   0.000 s avg)
+               projection :     0.05s CPU (       9 calls,   0.006 s avg)
+       trial_center_setup :     0.02s CPU (      45 calls,   0.000 s avg)
+               atomic_wfc :     0.00s CPU (      18 calls,   0.000 s avg)
+            overlap_write :     0.07s CPU
+               mp_get_ovp :     0.05s CPU (      72 calls,   0.001 s avg)
             overlap_bsymm :     0.00s CPU
                    mp_put :     0.00s CPU (     144 calls,   0.000 s avg)
-               iterations :     0.19s CPU
+               iterations :     0.06s CPU
             subspace_init :     0.01s CPU
-        projection_frozen :     0.01s CPU
-         para_poolrecover :     0.00s CPU (      30 calls,   0.000 s avg)
-                   mp_sum :     0.00s CPU (      30 calls,   0.000 s avg)
+        projection_frozen :     0.00s CPU
+         para_poolrecover :     0.02s CPU (      30 calls,   0.001 s avg)
+                   mp_sum :     0.02s CPU (      30 calls,   0.001 s avg)
                    omegai :     0.00s CPU (      28 calls,   0.000 s avg)
              mp_sum_omega :     0.00s CPU (      28 calls,   0.000 s avg)
-                  zmatrix :     0.03s CPU (     837 calls,   0.000 s avg)
-                mat_hdiag :     0.07s CPU (     873 calls,   0.000 s avg)
+                  zmatrix :     0.01s CPU (     162 calls,   0.000 s avg)
+                mat_hdiag :     0.01s CPU (     171 calls,   0.000 s avg)
             windows_write :     0.00s CPU
            subspace_write :     0.01s CPU
 

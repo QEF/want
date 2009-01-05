@@ -1,12 +1,13 @@
 
-     Program PWSCF     v.4.0cvs starts ...
-     Today is 11Jun2008 at 18:14:36 
+     Program PWSCF     v.4.0.3  starts ...
+     Today is  5Jan2009 at 10:50:15 
 
      Parallel version (MPI)
 
-     Number of processors in use:       1
+     Number of processors in use:       4
+     R & G space division:  proc/pool =    4
 
-     Ultrasoft (Vanderbilt) Pseudopotentials and PAW
+     For Norm-Conserving or Ultrasoft (Vanderbilt) Pseudopotentials or PAW
 
      Current dimensions of program pwscf are:
      Max number of different atomic species (ntypx) = 10
@@ -14,18 +15,22 @@
      Max angular momentum in pseudopotentials (lmaxx) =  3
 
      Iterative solution of the eigenvalue problem
-     Too few procs for parallel algorithm
-       we need at least 4 procs per pool
 
-     a serial algorithm will be used
+     a parallel distributed memory algorithm will be used,
+     eigenstates matrixes will be distributed block like on
+     ortho sub-group =    2*   2 procs
 
 
-     Planes per process (thick) : nr3 = 96 npp =  96 ncplane = 9216
-     Planes per process (smooth): nr3s= 60 npps=  60 ncplanes= 3600
+     Planes per process (thick) : nr3 = 96 npp =  24 ncplane = 9216
+     Planes per process (smooth): nr3s= 60 npps=  15 ncplanes= 3600
  
      Proc/  planes cols     G    planes cols    G      columns  G
      Pool       (dense grid)       (smooth grid)      (wavefct grid)
-       1     96   6369   382323   60   2561    96969    641    12053
+       1     24   1591    95581   15    640    24234    160     3014
+       2     24   1593    95581   15    640    24242    159     3013
+       3     24   1593    95581   15    640    24250    161     3013
+       4     24   1592    95580   15    641    24243    161     3013
+     tot     96   6369   382323   60   2561    96969    641    12053
  
 
 
@@ -105,16 +110,16 @@
      G cutoff =  810.5695  (  96969 G-vectors)  smooth grid: ( 60, 60, 60)
 
      Largest allocated arrays     est. size (Mb)     dimensions
-        Kohn-Sham Wavefunctions         3.49 Mb     (  12053,  19)
-        NL pseudopotentials             9.93 Mb     (  12053,  54)
-        Each V/rho on FFT grid         13.50 Mb     ( 884736)
-        Each G-vector array             2.92 Mb     ( 382323)
-        G-vector shells                 0.01 Mb     (   1691)
+        Kohn-Sham Wavefunctions         0.87 Mb     (   3014,  19)
+        NL pseudopotentials             2.48 Mb     (   3014,  54)
+        Each V/rho on FFT grid          3.38 Mb     ( 221184)
+        Each G-vector array             0.73 Mb     (  95581)
+        G-vector shells                 0.01 Mb     (   1689)
      Largest temporary arrays     est. size (Mb)     dimensions
-        Auxiliary wavefunctions        13.98 Mb     (  12053,  76)
+        Auxiliary wavefunctions         3.50 Mb     (   3014,  76)
         Each subspace H/S matrix        0.09 Mb     (     76,  76)
         Each <psi_i|beta_j> matrix      0.02 Mb     (     54,  19)
-        Arrays for rho mixing         108.00 Mb     ( 884736,   8)
+        Arrays for rho mixing          27.00 Mb     ( 221184,   8)
 
      Initial potential from superposition of free atoms
      Check: negative starting charge=   -0.003199
@@ -124,9 +129,9 @@
      negative rho (up, down):  0.320E-02 0.000E+00
      Starting wfc are   30 atomic wfcs
 
-     total cpu time spent up to now is      6.29 secs
+     total cpu time spent up to now is      3.49 secs
 
-     per-process dynamical memory:   182.9 Mb
+     per-process dynamical memory:    56.4 Mb
 
      Self-consistent Calculation
 
@@ -136,7 +141,7 @@
 
      negative rho (up, down):  0.170E-02 0.000E+00
 
-     total cpu time spent up to now is     14.50 secs
+     total cpu time spent up to now is      8.62 secs
 
      total energy              =   -75.22430701 Ry
      Harris-Foulkes estimate   =   -75.73259267 Ry
@@ -148,7 +153,7 @@
 
      negative rho (up, down):  0.639E-02 0.000E+00
 
-     total cpu time spent up to now is     21.99 secs
+     total cpu time spent up to now is     13.31 secs
 
      total energy              =   -75.14786137 Ry
      Harris-Foulkes estimate   =   -75.30469128 Ry
@@ -160,7 +165,7 @@
 
      negative rho (up, down):  0.153E-01 0.000E+00
 
-     total cpu time spent up to now is     30.65 secs
+     total cpu time spent up to now is     19.00 secs
 
      total energy              =   -75.17211294 Ry
      Harris-Foulkes estimate   =   -75.19825967 Ry
@@ -172,7 +177,7 @@
 
      negative rho (up, down):  0.922E-02 0.000E+00
 
-     total cpu time spent up to now is     39.96 secs
+     total cpu time spent up to now is     21.88 secs
 
      total energy              =   -75.17335111 Ry
      Harris-Foulkes estimate   =   -75.20280308 Ry
@@ -184,7 +189,7 @@
 
      negative rho (up, down):  0.769E-02 0.000E+00
 
-     total cpu time spent up to now is     47.78 secs
+     total cpu time spent up to now is     25.31 secs
 
      total energy              =   -75.18127651 Ry
      Harris-Foulkes estimate   =   -75.18219486 Ry
@@ -196,7 +201,7 @@
 
      negative rho (up, down):  0.651E-02 0.000E+00
 
-     total cpu time spent up to now is     56.20 secs
+     total cpu time spent up to now is     30.14 secs
 
      total energy              =   -75.18163986 Ry
      Harris-Foulkes estimate   =   -75.18162622 Ry
@@ -208,7 +213,7 @@
 
      negative rho (up, down):  0.593E-02 0.000E+00
 
-     total cpu time spent up to now is     64.96 secs
+     total cpu time spent up to now is     34.77 secs
 
      total energy              =   -75.18161526 Ry
      Harris-Foulkes estimate   =   -75.18164415 Ry
@@ -220,7 +225,7 @@
 
      negative rho (up, down):  0.561E-02 0.000E+00
 
-     total cpu time spent up to now is     74.12 secs
+     total cpu time spent up to now is     39.18 secs
 
      total energy              =   -75.18163191 Ry
      Harris-Foulkes estimate   =   -75.18162806 Ry
@@ -232,7 +237,7 @@
 
      negative rho (up, down):  0.548E-02 0.000E+00
 
-     total cpu time spent up to now is     83.29 secs
+     total cpu time spent up to now is     43.36 secs
 
      total energy              =   -75.18163461 Ry
      Harris-Foulkes estimate   =   -75.18163214 Ry
@@ -244,7 +249,7 @@
 
      negative rho (up, down):  0.545E-02 0.000E+00
 
-     total cpu time spent up to now is     91.62 secs
+     total cpu time spent up to now is     48.06 secs
 
      total energy              =   -75.18163598 Ry
      Harris-Foulkes estimate   =   -75.18163463 Ry
@@ -256,7 +261,7 @@
 
      negative rho (up, down):  0.556E-02 0.000E+00
 
-     total cpu time spent up to now is     99.68 secs
+     total cpu time spent up to now is     52.65 secs
 
      End of self-consistent calculation
 
@@ -301,40 +306,41 @@
 
      Writing output data file benzene_US.save
  
-     PWSCF        :  1m45.88s CPU time,     1m52.72s wall time
+     PWSCF        :  0m57.08s CPU time,     1m46.01s wall time
 
-     init_run     :     6.27s CPU
-     electrons    :    93.39s CPU
-     forces       :     6.06s CPU
+     init_run     :     3.47s CPU
+     electrons    :    49.16s CPU
+     forces       :     4.01s CPU
 
      Called by init_run:
-     wfcinit      :     0.73s CPU
-     potinit      :     1.80s CPU
+     wfcinit      :     0.33s CPU
+     potinit      :     0.93s CPU
 
      Called by electrons:
-     c_bands      :    22.92s CPU (      11 calls,   2.084 s avg)
-     sum_band     :    27.55s CPU (      11 calls,   2.505 s avg)
-     v_of_rho     :    16.68s CPU (      12 calls,   1.390 s avg)
-     newd         :    24.85s CPU (      12 calls,   2.071 s avg)
-     mix_rho      :     2.58s CPU (      11 calls,   0.235 s avg)
+     c_bands      :     8.83s CPU (      11 calls,   0.803 s avg)
+     sum_band     :    14.04s CPU (      11 calls,   1.277 s avg)
+     v_of_rho     :     8.12s CPU (      12 calls,   0.676 s avg)
+     newd         :    16.78s CPU (      12 calls,   1.398 s avg)
+     mix_rho      :     1.47s CPU (      11 calls,   0.133 s avg)
 
      Called by c_bands:
-     init_us_2    :     0.30s CPU (      23 calls,   0.013 s avg)
-     cegterg      :    22.47s CPU (      11 calls,   2.043 s avg)
+     init_us_2    :     0.14s CPU (      23 calls,   0.006 s avg)
+     cegterg      :     8.67s CPU (      11 calls,   0.788 s avg)
 
      Called by *egterg:
-     h_psi        :    16.29s CPU (      44 calls,   0.370 s avg)
-     s_psi        :     1.08s CPU (      44 calls,   0.024 s avg)
-     g_psi        :     0.38s CPU (      32 calls,   0.012 s avg)
-     cdiaghg      :     0.18s CPU (      43 calls,   0.004 s avg)
+     h_psi        :     4.16s CPU (      44 calls,   0.094 s avg)
+     s_psi        :     0.24s CPU (      44 calls,   0.006 s avg)
+     g_psi        :     0.06s CPU (      32 calls,   0.002 s avg)
+     cdiaghg      :     3.77s CPU (      43 calls,   0.088 s avg)
 
      Called by h_psi:
-     add_vuspsi   :     1.14s CPU (      44 calls,   0.026 s avg)
+     add_vuspsi   :     0.21s CPU (      44 calls,   0.005 s avg)
 
      General routines
-     calbec       :     6.96s CPU (      56 calls,   0.124 s avg)
-     cft3s        :    27.09s CPU (    1555 calls,   0.017 s avg)
-     interpolate  :     3.52s CPU (      23 calls,   0.153 s avg)
+     calbec       :     0.35s CPU (      56 calls,   0.006 s avg)
+     cft3s        :    13.75s CPU (    1555 calls,   0.009 s avg)
+     interpolate  :     1.76s CPU (      23 calls,   0.077 s avg)
      davcio       :     0.00s CPU (      11 calls,   0.000 s avg)
  
      Parallel routines
+     fft_scatter  :     7.68s CPU (    1555 calls,   0.005 s avg)
