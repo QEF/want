@@ -326,7 +326,10 @@ CONTAINS
        DO ir = 1, nrtot
            !
            CALL mp_bcast( rham(:,:,ir),   ionode_id )
-           CALL mp_bcast( rovp(:,:,ir),   ionode_id )
+           !
+           IF ( lhave_overlap ) THEN
+               CALL mp_bcast( rovp(:,:,ir),   ionode_id )
+           ENDIF
            !
        ENDDO
        !
