@@ -4,6 +4,17 @@
 =======================================================
 
 
+05 Jan 2009      References in test03 updated. Io_name routine generalize to
+                 deal also with transport files. (AF)
+
+04 Jan 2009      Bug fixed in bcast of rovp in hamiltonian_read; it
+                 was shown only by blc2wan.x (AF)
+
+01 Jan 2009      Happy new year. (AF)
+
+28 Dec 2008      cmplx_bands.f90 and dos.f90 parallelized over energies
+                 and kpts respectively. (AF)
+
 27 Dec 2008      bands.f90 program made parallel over kpts.
                  Test script-system updated to take into account parallelism
                  (which can be manually switched off). AF

@@ -359,14 +359,15 @@
 
 
 !**********************************************************
-   SUBROUTINE io_name(data,filename,lpostfix,lpath,lproc)
+   SUBROUTINE io_name(data_type,filename,lpostfix,lbody,lpath,lproc)
    !**********************************************************
       IMPLICIT NONE
-      CHARACTER(*),       INTENT(in)  :: data
-      CHARACTER(*),       INTENT(out) :: filename
-      LOGICAL, OPTIONAL,  INTENT(in)  :: lpostfix, lpath, lproc   
-      LOGICAL             :: lpostfix_, lpath_, lproc_
-      CHARACTER(nstrx)    :: path_, prefix_, postfix_, suffix_, proc_
+      CHARACTER(*),       INTENT(IN)  :: data_type
+      CHARACTER(*),       INTENT(OUT) :: filename
+      LOGICAL, OPTIONAL,  INTENT(IN)  :: lpostfix, lbody, lpath, lproc   
+      !
+      LOGICAL             :: lpostfix_, lbody_, lpath_, lproc_
+      CHARACTER(nstrx)    :: path_, prefix_, body_, postfix_, suffix_, proc_
       INTEGER             :: length
 
       !
@@ -374,6 +375,9 @@
       lpostfix_ = .TRUE.
       lpath_ = .TRUE.
       lproc_ = .TRUE.
+      lbody_ = .FALSE.
+      !
+      IF ( PRESENT(lbody) )    lbody_    = lbody
       IF ( PRESENT(lpostfix) ) lpostfix_ = lpostfix
       IF ( PRESENT(lpath) )       lpath_ = lpath
       IF ( PRESENT(lproc) )       lproc_ = lproc
@@ -381,10 +385,11 @@
 
       !
       ! setting the base name
-      path_ = " " 
+      path_    = " " 
+      body_    = " "
       postfix_ = " " 
-      IF ( lpath_ )       path_ = TRIM(work_dir)
-      IF ( lpostfix_ ) postfix_ = TRIM(postfix)
+      IF ( lpath_ )           path_ = TRIM(work_dir)
+      IF ( lpostfix_ )     postfix_ = TRIM(postfix)
 
 
       !
@@ -403,13 +408,12 @@
          proc_ = "."//TRIM(proc_)
       ENDIF
 
-
       !
-      ! redefnie prefix
+      ! redefine prefix
       prefix_ = TRIM(prefix)
           
 
-      SELECT CASE( TRIM(data) )
+      SELECT CASE( TRIM(data_type) )
       CASE ( "dft_data" ) 
            suffix_  = TRIM(suffix_dft_data)
            postfix_ = " "
@@ -434,11 +438,18 @@
            suffix_ = TRIM(suffix_save) // TRIM(proc_)
       CASE ( "log" )
            suffix_ = TRIM(suffix_log) // TRIM(proc_)
+           IF ( lbody_ ) body_ = "debug"
+      CASE ( "conductance", "cond" )
+           body_   = "cond" 
+           suffix_ = ".dat"
+      CASE ( "doscond" )
+           body_   = "doscond" 
+           suffix_ = ".dat"
       CASE DEFAULT
            CALL errore('io_name','Unknown DATA type in input',1)
       END SELECT
 
-      filename = TRIM(path_)//TRIM(prefix_)//TRIM(postfix_)//TRIM(suffix_)
+      filename = TRIM(path_)//TRIM(prefix_)//TRIM(body_)//TRIM(postfix_)//TRIM(suffix_)
 
   END SUBROUTINE io_name
    
