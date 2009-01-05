@@ -10,9 +10,9 @@
    datafile_sgm = "./SCRATCH/sigma_graphene.wan.dat"
    transport_dir = 2
    delta = 0.05
-!   smearing_type = "lorentzian"
    smearing_type = "gaussian"
-   shift_corr = 1.0
+!   smearing_type = "lorentzian"
+!   shift_corr = 1.0
    use_symm = .TRUE.
    nk(1) = 400
    nk(2) =  1
