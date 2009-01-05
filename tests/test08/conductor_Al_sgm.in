@@ -8,9 +8,7 @@
     emin = -8.0
     emax =  2.5
     datafile_C    = "./SCRATCH/al1_WanT.ham"
-    datafile_sgm  = "./SCRATCH/sigma_Al.wan.xml"
-    shift_L       = -1.0
-    shift_R       = -1.0
+    datafile_sgm  = "./SCRATCH/sigma_Al.wan.dat"
     transport_dir = 3
   /
 
