@@ -381,7 +381,7 @@ run_blc2wan () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
-   local PARALLEL=yes
+   local PARALLEL=no
    local name_tmp
    
    for arg 
@@ -416,7 +416,7 @@ run_plot () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
-   local PARALLEL=yes
+   local PARALLEL=no
    local name_tmp
    
    for arg 
