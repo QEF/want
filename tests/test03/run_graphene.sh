@@ -57,6 +57,7 @@ WANNIER=
 BANDS=
 DOS=
 PLOT=
+BLC2WAN=
 CONDUCTOR=
 CONDUCTOR_SGM=
 CHECK=
@@ -76,14 +77,15 @@ case $INPUT in
    (bands)          BANDS=yes ;;
    (dos)            DOS=yes ;;
    (plot)           PLOT=yes ;;
+   (blc2wan)        BLC2WAN=yes ;;
    (conductor)      CONDUCTOR=yes ;;
-   (conductor_sgm)  CONDUCTOR_SGM=yes ;;
+   (conductor_sgm)  BLC2WAN=yes ; CONDUCTOR_SGM=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    BANDS=yes ; PLOT=yes ; DOS=yes ; 
+                    BANDS=yes ; PLOT=yes ; DOS=yes ; BLC2WAN=yes ;
                     CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    BANDS=yes ; PLOT=yes ; DOS=yes ; 
+                    BANDS=yes ; PLOT=yes ; DOS=yes ; BLC2WAN=yes ;
                     CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
@@ -150,6 +152,11 @@ run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 # running PLOT
 #
 run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
+
+#
+# running BLC2WAN
+#
+run_blc2wan  SUFFIX=$SUFFIX  RUN=$BLC2WAN
 
 #
 # running CONDUCTOR
