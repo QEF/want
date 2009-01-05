@@ -1,0 +1,25 @@
+
+&INPUT_CONDUCTOR
+   calculation_type = 'bulk'
+   postfix = '_sgm'
+   dimC = 48
+   ne   = 300
+   emin =  -4.0
+   emax =   4.0
+   datafile_C   = "./SCRATCH/si111_WanT.ham"
+   datafile_sgm = "./SCRATCH/sigma.wan.dat"
+   transport_dir = 3
+   delta = 0.1
+   smearing_type = "gaussian"
+   use_symm = .TRUE.
+   nk(1) = 8
+   nk(2) = 4
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C rows="ALL" cols="ALL" />
+   <H_CR  rows="ALL" cols="ALL" />
+
+</HAMILTONIAN_DATA>
+
