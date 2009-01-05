@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************************
-   SUBROUTINE green( dim, tot, tott, c00, c01, s00, g, igreen)
+   SUBROUTINE green( ndim, opr00, opr01, tot, tott, g, igreen)
    !***********************************************************************************
    !
    !  Construct green's functions
@@ -18,42 +18,49 @@
    !  igreen =  0  bulk
    !
    USE kinds
-   USE constants,         ONLY : CZERO, CONE, CI
-   USE timing_module,     ONLY : timing
-   USE log_module,        ONLY : log_push, log_pop
-   USE util_module,       ONLY : mat_mul, mat_sv
+   USE constants,               ONLY : CZERO, CONE, CI
+   USE timing_module,           ONLY : timing
+   USE log_module,              ONLY : log_push, log_pop
+   USE util_module,             ONLY : mat_mul, mat_inv
+   USE T_operator_blc_module
+   !
    IMPLICIT NONE
 
    !
    ! I/O variables
    !
-   INTEGER,      INTENT(in)    :: dim
-   INTEGER,      INTENT(in)    :: igreen
-   COMPLEX(dbl), INTENT(in)    :: tot(dim,dim), tott(dim,dim)
-   COMPLEX(dbl), INTENT(in)    :: c00(dim,dim)
-   COMPLEX(dbl), INTENT(in)    :: c01(dim,dim)
-   COMPLEX(dbl), INTENT(in)    :: s00(dim,dim)
-   COMPLEX(dbl), INTENT(out)   :: g(dim, dim)
+   INTEGER,                 INTENT(IN)    :: ndim
+   TYPE(operator_blc),      INTENT(IN)    :: opr00, opr01
+   INTEGER,                 INTENT(IN)    :: igreen
+   COMPLEX(dbl),            INTENT(IN)    :: tot(ndim,ndim), tott(ndim,ndim)
+   COMPLEX(dbl),            INTENT(OUT)   :: g(ndim, ndim)
 
    !
    ! local variables
    !
-   INTEGER                   :: i, ierr
+   CHARACTER(5)              :: subname='green'
+   INTEGER                   :: ierr
    COMPLEX(dbl), ALLOCATABLE :: eh0(:,:), s1(:,:), s2(:,:)
-   COMPLEX(dbl)              :: g0inv(dim,dim)
+   COMPLEX(dbl)              :: g0inv(ndim,ndim)
 
 !
 !----------------------------------------
 ! main Body
 !----------------------------------------
 !
-   CALL timing('green',OPR='start')
-   CALL log_push('green')
+   CALL timing(subname,OPR='start')
+   CALL log_push(subname)
 
-   ALLOCATE( eh0(dim,dim), s1(dim,dim), s2(dim,dim), STAT=ierr)
-      IF (ierr/=0) CALL errore('green','allocating eh0,s1,s2',ABS(ierr))
+   IF ( .NOT. opr00%alloc )   CALL errore(subname,'opr00 not alloc',1)
+   IF ( .NOT. opr01%alloc )   CALL errore(subname,'opr01 not alloc',1)
 
-   CALL gzero_maker(dim, -c00, s00, g0inv, 'inverse')
+   ALLOCATE( eh0(ndim,ndim), s1(ndim,ndim), s2(ndim,ndim), STAT=ierr)
+   IF (ierr/=0) CALL errore(subname,'allocating eh0,s1,s2',ABS(ierr))
+
+   !
+   ! opr00%aux = ene * s00 - h00
+   !
+   CALL gzero_maker(ndim, opr00, g0inv, 'inverse')
 
    SELECT CASE ( igreen )
 
@@ -62,7 +69,7 @@
       ! Construct the surface green's function g00 
       !
 
-      CALL mat_mul(s1, c01, 'N', tot, 'N', dim, dim, dim)
+      CALL mat_mul(s1, opr01%aux, 'N', tot, 'N', ndim, ndim, ndim)
       eh0(:,:) = g0inv(:,:) -s1(:,:)
     
    CASE( -1 )
@@ -70,7 +77,7 @@
       ! Construct the dual surface green's function gbar00 
       !
 
-      CALL mat_mul(s1, c01, 'C', tott, 'N', dim, dim, dim)
+      CALL mat_mul(s1, opr01%aux, 'C', tott, 'N', ndim, ndim, ndim)
       eh0(:,:) = g0inv(:,:) -s1(:,:)
     
    CASE ( 0 )
@@ -78,34 +85,30 @@
       ! Construct the bulk green's function gnn or (if surface=.true.) the
       ! sub-surface green's function
       !
-      CALL mat_mul(s1, c01, 'N', tot, 'N', dim, dim, dim)
-      CALL mat_mul(s2, c01, 'C', tott, 'N', dim, dim, dim)
+      CALL mat_mul(s1, opr01%aux, 'N', tot,  'N', ndim, ndim, ndim)
+      CALL mat_mul(s2, opr01%aux, 'C', tott, 'N', ndim, ndim, ndim)
       !
       eh0(:,:) = g0inv(:,:) -s1(:,:) -s2(:,:)
     
    CASE DEFAULT 
-      CALL errore('green','invalid igreen', ABS(igreen))
+      CALL errore(subname,'invalid igreen', ABS(igreen))
 
    END SELECT
 
    
-!
-! set the identity and compute G inverting eh0
-!
-   g(:,:) = CZERO
-   DO i = 1, dim
-      g(i,i) = CONE
-   ENDDO
    !
-   CALL mat_sv(dim, dim, eh0, g)
-!
-! ... local cleaning
-!
-   DEALLOCATE( eh0, s1, s2, STAT=ierr)
-      IF (ierr/=0) CALL errore('green','deallocating eh0, s1, s2',ABS(ierr))
+   ! set the identity and compute G inverting eh0
+   !
+   CALL mat_inv( ndim, eh0, g)
 
-   CALL timing('green',OPR='stop')
-   CALL log_pop('green')
+   !
+   ! local cleaning
+   !
+   DEALLOCATE( eh0, s1, s2, STAT=ierr)
+   IF (ierr/=0) CALL errore(subname,'deallocating eh0, s1, s2',ABS(ierr))
+
+   CALL timing(subname,OPR='stop')
+   CALL log_pop(subname)
 
 END SUBROUTINE green
 

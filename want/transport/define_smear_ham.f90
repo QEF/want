@@ -21,6 +21,7 @@
    USE T_smearing_module,  ONLY : smear_alloc => alloc, delta, nkpts_smear
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
+   !
    IMPLICIT NONE 
 
    !  

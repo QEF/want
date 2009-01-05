@@ -75,7 +75,7 @@ CONTAINS
 
       CHARACTER(12)      :: subname="kpoints_init"
       CHARACTER(nstrx)   :: attr
-      INTEGER            :: nr_(3), nk_(3), nrtot_, nkpts_par_x
+      INTEGER            :: nr_(3), nrtot_, nkpts_par_x
       INTEGER            :: ir, ik, i, j, l, ierr
       LOGICAL            :: lfound, lequiv
       REAL(dbl)          :: arg, vaux(3)
@@ -93,8 +93,8 @@ CONTAINS
       !
       CALL iotk_scan_empty( aux_unit, 'DATA', ATTR=attr, IERR=ierr) 
       IF (ierr/=0) CALL errore(subname, 'searching for DATA', ABS(ierr) )
-      CALL iotk_scan_attr(attr,'nk',nk_,IERR=ierr) 
-      IF (ierr/=0) CALL errore(subname, 'searching for nk', ABS(ierr) )
+!      CALL iotk_scan_attr(attr,'nk',nk_,IERR=ierr) 
+!      IF (ierr/=0) CALL errore(subname, 'searching for nk', ABS(ierr) )
       CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr) 
       IF (ierr/=0) CALL errore(subname, 'searching for nrtot', ABS(ierr) )
       CALL iotk_scan_attr(attr,'nr',nr_,IERR=ierr) 

@@ -7,7 +7,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE hamiltonian_init( calculation_type )
+   SUBROUTINE hamiltonian_init( )
    !*******************************************************************
    !
    ! Initialize hamiltonian data:
@@ -47,31 +47,24 @@
    USE kinds
    USE io_module,            ONLY : stdin, ionode, ionode_id
    USE log_module,           ONLY : log_push, log_pop
+   USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
-   USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R, &
-                                    use_overlap
-   USE T_kpoints_module,     ONLY : kpoints_init, nrtot_par
-   USE T_hamiltonian_module, ONLY : hamiltonian_allocate,   &
-                                    dimL, dimR, dimC, dimx, &
-                                    ispin,                  &
-                                    h00_L, h01_L, h00_R, h01_R, h00_C, &
-                                    s00_L, s01_L, s00_R, s01_R, s00_C, &
-                                    h_LC, h_CR, s_LC, s_CR
+   USE T_control_module,     ONLY : calculation_type, &
+                                    datafile_L, datafile_C, datafile_R
+   USE T_kpoints_module,     ONLY : kpoints_init
+   USE T_hamiltonian_module, ONLY : hamiltonian_allocate, ispin,        &
+                                    blc_00L, blc_01L, blc_00R, blc_01R, &
+                                    blc_00C, blc_LC,  blc_CR
+   USE T_operator_blc_module
    USE iotk_module
+   !
    IMPLICIT NONE
 
-   ! 
-   ! input variables
-   !
-   CHARACTER(*), INTENT(in)  :: calculation_type
    !
    ! local variables
    !
    CHARACTER(16) :: subname="hamiltonian_init"
    INTEGER       :: ierr
-   LOGICAL       :: lhave_overlap
-   !
-   COMPLEX(dbl), ALLOCATABLE :: haux(:,:,:), saux(:,:,:)
 
    !
    ! end of declarations
@@ -82,73 +75,70 @@
 ! main Body
 !----------------------------------------
 !
-   CALL log_push( 'hamiltonian_init' )
+   CALL timing( subname, OPR='start')
+   CALL log_push( subname )
 
    !
    ! allocations
    !
    CALL hamiltonian_allocate()
 
-   !
-   ! redefine dimx for the sake of coherence
-   dimx = MAX( dimL, dimC, dimR) 
-   !
-   ALLOCATE( haux(dimx,dimx,nrtot_par), STAT=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'allocating haux',ABS(ierr))
-   !
-   ALLOCATE( saux(dimx,dimx,nrtot_par), STAT=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'allocating saux',ABS(ierr))
 
    !
-   ! set defaults for overlaps 
-   !
-   use_overlap = .FALSE.
-
-
-   !
-   ! open the IOTK tag
+   ! Read the HAMILTONIAN_DATA card from input file
    !
    IF ( ionode ) THEN
-      !
-      CALL iotk_scan_begin( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
-      IF (ierr/=0) CALL errore(subname,'searching HAMILTONIAN_DATA',ABS(ierr))
-      !
+       !
+       CALL iotk_scan_begin( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
+       IF (ierr/=0) CALL errore(subname,'searching HAMILTONIAN_DATA',ABS(ierr))
+       !
+       ! these data must always be present
+       !
+       CALL iotk_scan_empty( stdin, "H00_C", ATTR=blc_00C%tag, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching for tag H00_C', ABS(ierr) )       
+       !
+       CALL iotk_scan_empty( stdin, "H_CR", ATTR=blc_CR%tag, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching for tag H_CR', ABS(ierr) )       
+       !
+       ! read the remaing data if the case
+       !
+       IF ( TRIM(calculation_type) == "conductor" ) THEN
+           !
+           CALL iotk_scan_empty( stdin, "H_LC", ATTR=blc_LC%tag, IERR=ierr)
+           IF (ierr/=0) CALL errore(subname, 'searching for tag H_LC', ABS(ierr) )       
+           !
+           CALL iotk_scan_empty( stdin, "H00_L", ATTR=blc_00L%tag, IERR=ierr)
+           IF (ierr/=0) CALL errore(subname, 'searching for tag H00_L', ABS(ierr) )       
+           CALL iotk_scan_empty( stdin, "H01_L", ATTR=blc_01L%tag, IERR=ierr)
+           IF (ierr/=0) CALL errore(subname, 'searching for tag H01_L', ABS(ierr) )       
+           !
+           CALL iotk_scan_empty( stdin, "H00_R", ATTR=blc_00R%tag, IERR=ierr)
+           IF (ierr/=0) CALL errore(subname, 'searching for tag H00_R', ABS(ierr) )       
+           CALL iotk_scan_empty( stdin, "H01_R", ATTR=blc_01R%tag, IERR=ierr)
+           IF (ierr/=0) CALL errore(subname, 'searching for tag H01_R', ABS(ierr) )       
+           !
+       ENDIF
+       !
+       CALL iotk_scan_end( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
+       IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
+       !
    ENDIF
+   !
+   CALL mp_bcast(  blc_00C%tag,      ionode_id )
+   CALL mp_bcast(  blc_CR%tag,       ionode_id )
+   CALL mp_bcast(  blc_LC%tag,       ionode_id )
+   CALL mp_bcast(  blc_00L%tag,      ionode_id )
+   CALL mp_bcast(  blc_01L%tag,      ionode_id )
+   CALL mp_bcast(  blc_00R%tag,      ionode_id )
+   CALL mp_bcast(  blc_01R%tag,      ionode_id )
+
+
 
    !
-   ! read basic quantities
+   ! Read basic quantities from datafile
    !
-   IF ( ionode ) THEN 
-       CALL read_matrix( datafile_C, ispin, 'H00_C', dimC, dimC, haux, dimx, dimx, &
-                         lhave_overlap, saux, dimx, dimx)
-   ENDIF
-
-   !
-   CALL mp_bcast( haux, ionode_id )
-   CALL mp_bcast( saux, ionode_id )
-   CALL mp_bcast( lhave_overlap, ionode_id )
-   !
-   CALL fourier_par( h00_C, dimC, dimC, haux, dimx, dimx)   
-   CALL fourier_par( s00_C, dimC, dimC, saux, dimx, dimx)   
-   !
-   use_overlap = use_overlap .OR. lhave_overlap
-   !
-   !
-   !
-   IF ( ionode ) THEN
-       CALL read_matrix( datafile_C, ispin, 'H_CR', dimC, dimR, haux, dimx, dimx, &
-                         lhave_overlap, saux, dimx, dimx)
-   ENDIF
-   !
-   CALL mp_bcast( haux, ionode_id )
-   CALL mp_bcast( saux, ionode_id )
-   CALL mp_bcast( lhave_overlap, ionode_id )
-   !
-   CALL fourier_par( h_CR, dimC, dimR, haux, dimx, dimx)   
-   CALL fourier_par( s_CR, dimC, dimR, saux, dimx, dimx)   
-   !
-   use_overlap = use_overlap .OR. lhave_overlap
-
+   CALL read_matrix( datafile_C, ispin, blc_00C )
+   CALL read_matrix( datafile_C, ispin, blc_CR )
 
    !
    ! chose whether to do 'conductor' or 'bulk'
@@ -159,121 +149,33 @@
        !
        ! read the missing data
        !
-       IF ( ionode ) THEN
-           CALL read_matrix( datafile_C, ispin, 'H_LC', dimL, dimC, haux, dimx, dimx, &
-                             lhave_overlap, saux, dimx, dimx )
-       ENDIF
-       !
-       CALL mp_bcast( haux, ionode_id )
-       CALL mp_bcast( saux, ionode_id )
-       CALL mp_bcast( lhave_overlap, ionode_id )
-       !
-       CALL fourier_par( h_LC, dimL, dimC, haux, dimx, dimx)   
-       CALL fourier_par( s_LC, dimL, dimC, saux, dimx, dimx)   
-       !
-       use_overlap = use_overlap .OR. lhave_overlap
-       !
-       !
-       !
-       IF ( ionode ) THEN 
-           CALL read_matrix( datafile_L, ispin, 'H00_L', dimL, dimL, haux, dimx, dimx, &
-                             lhave_overlap, saux, dimx, dimx )
-       ENDIF
-       !
-       CALL mp_bcast( haux, ionode_id )
-       CALL mp_bcast( saux, ionode_id )
-       CALL mp_bcast( lhave_overlap, ionode_id )
-       !
-       CALL fourier_par( h00_L, dimL, dimL, haux, dimx, dimx)   
-       CALL fourier_par( s00_L, dimL, dimL, saux, dimx, dimx)   
-       !
-       use_overlap = use_overlap .OR. lhave_overlap
-       !
-       !
-       !
-       IF ( ionode ) THEN 
-           CALL read_matrix( datafile_L, ispin, 'H01_L', dimL, dimL, haux, dimx, dimx, &
-                             lhave_overlap, saux, dimx, dimx )
-       ENDIF
-       !
-       CALL mp_bcast( haux, ionode_id )
-       CALL mp_bcast( saux, ionode_id )
-       CALL mp_bcast( lhave_overlap, ionode_id )
-       !
-       CALL fourier_par( h01_L, dimL, dimL, haux, dimx, dimx)   
-       CALL fourier_par( s01_L, dimL, dimL, saux, dimx, dimx)   
-       !
-       use_overlap = use_overlap .OR. lhave_overlap
-       !
-       !
-       !
-       IF ( ionode ) THEN
-           CALL read_matrix( datafile_R, ispin, 'H00_R', dimR, dimR, haux, dimx, dimx, &
-                             lhave_overlap, saux, dimx, dimx )
-       ENDIF
-       !
-       CALL mp_bcast( haux, ionode_id )
-       CALL mp_bcast( saux, ionode_id )
-       CALL mp_bcast( lhave_overlap, ionode_id )
-       !
-       CALL fourier_par( h00_R, dimR, dimR, haux, dimx, dimx)   
-       CALL fourier_par( s00_R, dimR, dimR, saux, dimx, dimx)   
-       !
-       use_overlap = use_overlap .OR. lhave_overlap
-       !
-       !
-       !
-       IF ( ionode ) THEN 
-           CALL read_matrix( datafile_R, ispin, 'H01_R', dimR, dimR, haux, dimx, dimx, &
-                             lhave_overlap, saux, dimx, dimx )
-       ENDIF
-       !
-       CALL mp_bcast( haux, ionode_id )
-       CALL mp_bcast( saux, ionode_id )
-       CALL mp_bcast( lhave_overlap, ionode_id ) 
-       !
-       CALL fourier_par( h01_R, dimR, dimR, haux, dimx, dimx)   
-       CALL fourier_par( s01_R, dimR, dimR, saux, dimx, dimx)   
-       !
-       use_overlap = use_overlap .OR. lhave_overlap
-       !
+       CALL read_matrix( datafile_C, ispin, blc_LC )
+       CALL read_matrix( datafile_L, ispin, blc_00L )
+       CALL read_matrix( datafile_L, ispin, blc_01L )
+       CALL read_matrix( datafile_R, ispin, blc_00R )
+       CALL read_matrix( datafile_R, ispin, blc_01R )
        !
    CASE ( "bulk" )
        !
        ! rearrange the data already read
        !
-       h00_L(:,:,:) = h00_C(:,:,:)
-       h00_R(:,:,:) = h00_C(:,:,:)
-       h01_L(:,:,:) = h_CR(:,:,:)
-       h01_R(:,:,:) = h_CR(:,:,:)
-       h_LC(:,:,:)  = h_CR(:,:,:)
-       !
-       s00_L(:,:,:) = s00_C(:,:,:)
-       s00_R(:,:,:) = s00_C(:,:,:)
-       s01_L(:,:,:) = s_CR(:,:,:)
-       s01_R(:,:,:) = s_CR(:,:,:)
-       s_LC(:,:,:)  = s_CR(:,:,:)
+       blc_00L = blc_00C
+       blc_00R = blc_00C
+       blc_01L = blc_CR
+       blc_01R = blc_CR
+       blc_LC  = blc_CR
        !
    CASE DEFAULT
+       !
        CALL errore(subname,'Invalid calculation_type = '// TRIM(calculation_type),5)
+       !
    END SELECT
 
-
-   IF ( ionode ) THEN
-       !
-       CALL iotk_scan_end( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
-       IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
-       !
-   ENDIF
-
-
+   
+   CALL timing( subname, OPR='STOP' )
+   CALL log_pop( subname )
    !
-   ! local cleaning
+   RETURN
    !
-   DEALLOCATE( haux, saux, STAT=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'deallocating haux, saux',ABS(ierr))
-   !
-   CALL log_pop( 'hamiltonian_init' )
-
 END SUBROUTINE hamiltonian_init
 

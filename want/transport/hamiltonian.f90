@@ -10,38 +10,41 @@
    MODULE T_hamiltonian_module
    !*********************************************
    !
-   USE kinds,           ONLY : dbl
-   USE parameters,      ONLY : nstrx
-   USE T_kpoints_module,ONLY : nkpts_par
-   USE log_module,      ONLY : log_push, log_pop
+   USE kinds,                  ONLY : dbl
+   USE parameters,             ONLY : nstrx
+   USE log_module,             ONLY : log_push, log_pop
+   USE T_kpoints_module,       ONLY : nkpts_par
+   USE T_operator_blc_module
+   !
    IMPLICIT NONE
    PRIVATE 
    SAVE
 !
-! Contains transport hamiltonian data
+! Contains the description of the system in terms of 
+! Hamiltonian, Overlap, and correlation Sigma blocks
 ! 
     ! 
-    ! WF numbers in lead L,R and conductor C 
+    ! dimensions
+    !
     INTEGER                   :: dimL  
     INTEGER                   :: dimC       
     INTEGER                   :: dimR       
-    INTEGER                   :: dimx      ! MAX ( dimL, dimC, dimR )       
+    INTEGER                   :: dimx
     !
     INTEGER                   :: nspin
     INTEGER                   :: ispin
-    REAL(dbl)                 :: shift_L, shift_C, shift_R
+    REAL(dbl)                 :: shift_L
+    REAL(dbl)                 :: shift_C
+    REAL(dbl)                 :: shift_R
+    REAL(dbl)                 :: shift_corr
     !
-    COMPLEX(dbl), ALLOCATABLE :: h00_L(:,:,:), h01_L(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: h00_R(:,:,:), h01_R(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: h00_C(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: h_LC(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: h_CR(:,:,:)
-    !
-    COMPLEX(dbl), ALLOCATABLE :: s00_L(:,:,:), s01_L(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: s00_R(:,:,:), s01_R(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: s00_C(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: s_LC(:,:,:)
-    COMPLEX(dbl), ALLOCATABLE :: s_CR(:,:,:)
+    TYPE( operator_blc )      :: blc_00L 
+    TYPE( operator_blc )      :: blc_01L 
+    TYPE( operator_blc )      :: blc_00R 
+    TYPE( operator_blc )      :: blc_01R 
+    TYPE( operator_blc )      :: blc_00C
+    TYPE( operator_blc )      :: blc_LC
+    TYPE( operator_blc )      :: blc_CR
     !
     LOGICAL :: alloc = .FALSE.
 
@@ -54,19 +57,15 @@
    PUBLIC :: nspin, ispin
    PUBLIC :: nkpts_par
    !
-   PUBLIC :: shift_L, shift_C, shift_R
+   PUBLIC :: shift_L, shift_C, shift_R, shift_corr
    !
-   PUBLIC :: h00_L, h01_L
-   PUBLIC :: h00_R, h01_R
-   PUBLIC :: h00_C
-   PUBLIC :: h_LC
-   PUBLIC :: h_CR
-   !
-   PUBLIC :: s00_L, s01_L
-   PUBLIC :: s00_R, s01_R
-   PUBLIC :: s00_C
-   PUBLIC :: s_LC
-   PUBLIC :: s_CR
+   PUBLIC :: blc_00L
+   PUBLIC :: blc_01L
+   PUBLIC :: blc_00R
+   PUBLIC :: blc_01R
+   PUBLIC :: blc_00C
+   PUBLIC :: blc_LC
+   PUBLIC :: blc_CR
    !
    PUBLIC :: alloc
    !
@@ -85,67 +84,44 @@ CONTAINS
    !**********************************************************
    IMPLICIT NONE
       CHARACTER(20)      :: subname="hamiltonian_allocate"
-      INTEGER  :: ierr
 
-      CALL log_push( 'hamiltonian_allocate' )
+      CALL log_push( subname )
 
       IF ( alloc )       CALL errore(subname,'already allocated', 1 )
       IF ( dimL <= 0 )   CALL errore(subname,'invalid dimL', 1 )
       IF ( dimR <= 0 )   CALL errore(subname,'invalid dimR', 1 )
       IF ( dimC <= 0 )   CALL errore(subname,'invalid dimC', 1 )
       IF ( nkpts_par <= 0 )   CALL errore(subname,'invalid nkpts_par', 1 )
+      !
+      dimx = MAX( dimC, dimR, dimL )
 
       !
-      ! h allocation       
+      ! init data
       !
-      ALLOCATE ( h00_L(dimL,dimL,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating h00_L', 1 )
-      !
-      ALLOCATE ( h01_L(dimL,dimL,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating h01_L', 1 )
-      !
-      ALLOCATE ( h00_R(dimR,dimR,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating h00_R', 1 )
-      !
-      ALLOCATE ( h01_R(dimR,dimR,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating h01_R', 1 )
-      !
-      ALLOCATE ( h00_C(dimC,dimC,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating h00_C', 1 )
-      !
-      ALLOCATE ( h_LC(dimL,dimC,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating h_LC', 1 )
-      !
-      ALLOCATE ( h_CR(dimC,dimR,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating h_CR', 1 )
+      CALL operator_blc_init( blc_00L, "block_00L")
+      CALL operator_blc_init( blc_01L, "block_01L")
+      CALL operator_blc_init( blc_00R, "block_00R")
+      CALL operator_blc_init( blc_01R, "block_01R")
+      CALL operator_blc_init( blc_00C, "block_00C")
+      CALL operator_blc_init( blc_LC,  "block_LC")
+      CALL operator_blc_init( blc_CR,  "block_CR")
 
       !
-      ! s allocation
+      ! allocations
       !
-      ALLOCATE ( s00_L(dimL,dimL,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating s00_L ', 1 )
+      CALL operator_blc_allocate( dimL, dimL, nkpts_par, OBJ=blc_00L )
+      CALL operator_blc_allocate( dimL, dimL, nkpts_par, OBJ=blc_01L )
       !
-      ALLOCATE ( s01_L(dimL,dimL,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating s01_L ', 1 )
+      CALL operator_blc_allocate( dimR, dimR, nkpts_par, OBJ=blc_00R )
+      CALL operator_blc_allocate( dimR, dimR, nkpts_par, OBJ=blc_01R )
       !
-      ALLOCATE ( s00_R(dimR,dimR,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating s00_R ', 1 )
+      CALL operator_blc_allocate( dimC, dimC, nkpts_par, OBJ=blc_00C )
+      CALL operator_blc_allocate( dimL, dimC, nkpts_par, OBJ=blc_LC )
+      CALL operator_blc_allocate( dimC, dimR, nkpts_par, OBJ=blc_CR )
       !
-      ALLOCATE ( s01_R(dimR,dimR,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating s01_R ', 1 )
-      !
-      ALLOCATE ( s00_C(dimC,dimC,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating s00_C ', 1 )
-      !
-      ALLOCATE ( s_LC(dimL,dimC,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating s_LC ', 1 )
-      !
-      ALLOCATE ( s_CR(dimC,dimR,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, ' allocating s_CR ', 1 )
-
       alloc = .TRUE.
 
-      CALL log_pop( 'hamiltonian_allocate' )
+      CALL log_pop( subname )
 
    END SUBROUTINE hamiltonian_allocate
 
@@ -155,45 +131,24 @@ CONTAINS
    !**********************************************************
    IMPLICIT NONE
       CHARACTER(22)      :: subname="hamiltonian_deallocate"
-      INTEGER :: ierr
 
-      CALL log_push( 'hamiltonian_deallocate' )
+      CALL log_push( subname )
 
       IF ( .NOT. alloc ) RETURN
 
-      DEALLOCATE ( h00_L, h01_L, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_L, h01_L', 1 )
+      CALL operator_blc_deallocate( OBJ=blc_00L )
+      CALL operator_blc_deallocate( OBJ=blc_01L )
       !
-      DEALLOCATE ( h00_R, h01_R, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_R, h01_R', 1 )
+      CALL operator_blc_deallocate( OBJ=blc_00R )
+      CALL operator_blc_deallocate( OBJ=blc_01R )
       !
-      DEALLOCATE ( h00_C, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating h00_C', 1 )
+      CALL operator_blc_deallocate( OBJ=blc_00C )
+      CALL operator_blc_deallocate( OBJ=blc_LC )
+      CALL operator_blc_deallocate( OBJ=blc_CR )
       !
-      DEALLOCATE ( h_LC, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating h_LC', 1 )
-      !
-      DEALLOCATE ( h_CR, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating hac_cb', 1 )
-
-      DEALLOCATE ( s00_L, s01_L, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_L, s01_L', 1 )
-      !
-      DEALLOCATE ( s00_R, s01_R, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_R, s01_R', 1 )
-      !
-      DEALLOCATE ( s00_C, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating s00_C', 1 )
-      !
-      DEALLOCATE ( s_LC, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating s_LC', 1 )
-      !
-      DEALLOCATE ( s_CR, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating s_CR', 1 )
-          
       alloc = .FALSE.   
 
-      CALL log_pop( 'hamiltonian_deallocate' )
+      CALL log_pop( subname )
 
    END SUBROUTINE hamiltonian_deallocate
 

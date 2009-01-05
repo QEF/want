@@ -29,11 +29,13 @@
    INTEGER                   :: transport_dir
    INTEGER                   :: debug_level
    !
-   LOGICAL                   :: use_overlap
+   LOGICAL                   :: use_overlap = .FALSE.
    LOGICAL                   :: use_debug_mode
    LOGICAL                   :: write_kdata
    !
    INTEGER                   :: niterx
+   INTEGER                   :: nfailx
+   INTEGER                   :: nfail = 0
    !
    INTEGER                   :: nprint
    !
@@ -56,6 +58,8 @@
    PUBLIC :: write_kdata
    !
    PUBLIC :: niterx
+   PUBLIC :: nfailx
+   PUBLIC :: nfail
    !
    PUBLIC :: nprint
    !
