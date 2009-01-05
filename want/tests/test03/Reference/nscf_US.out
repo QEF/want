@@ -1,12 +1,13 @@
 
-     Program PWSCF     v.4.0cvs starts ...
-     Today is 11Jun2008 at 18:16:29 
+     Program PWSCF     v.4.0.3  starts ...
+     Today is  5Jan2009 at 10:52: 1 
 
      Parallel version (MPI)
 
-     Number of processors in use:       1
+     Number of processors in use:       4
+     R & G space division:  proc/pool =    4
 
-     Ultrasoft (Vanderbilt) Pseudopotentials and PAW
+     For Norm-Conserving or Ultrasoft (Vanderbilt) Pseudopotentials or PAW
 
      Current dimensions of program pwscf are:
      Max number of different atomic species (ntypx) = 10
@@ -14,18 +15,22 @@
      Max angular momentum in pseudopotentials (lmaxx) =  3
 
      Iterative solution of the eigenvalue problem
-     Too few procs for parallel algorithm
-       we need at least 4 procs per pool
 
-     a serial algorithm will be used
+     a parallel distributed memory algorithm will be used,
+     eigenstates matrixes will be distributed block like on
+     ortho sub-group =    2*   2 procs
 
 
-     Planes per process (thick) : nr3 = 96 npp =  96 ncplane = 9216
-     Planes per process (smooth): nr3s= 60 npps=  60 ncplanes= 3600
+     Planes per process (thick) : nr3 = 96 npp =  24 ncplane = 9216
+     Planes per process (smooth): nr3s= 60 npps=  15 ncplanes= 3600
  
      Proc/  planes cols     G    planes cols    G      columns  G
      Pool       (dense grid)       (smooth grid)      (wavefct grid)
-       1     96   6369   382323   60   2561    96969    641    12053
+       1     24   1591    95581   15    640    24234    160     3014
+       2     24   1593    95581   15    640    24242    159     3013
+       3     24   1593    95581   15    640    24250    161     3013
+       4     24   1592    95580   15    641    24243    161     3013
+     tot     96   6369   382323   60   2561    96969    641    12053
  
 
 
@@ -105,16 +110,16 @@
      G cutoff =  810.5695  (  96969 G-vectors)  smooth grid: ( 60, 60, 60)
 
      Largest allocated arrays     est. size (Mb)     dimensions
-        Kohn-Sham Wavefunctions         7.36 Mb     (  12053,  40)
-        NL pseudopotentials             9.93 Mb     (  12053,  54)
-        Each V/rho on FFT grid         13.50 Mb     ( 884736)
-        Each G-vector array             2.92 Mb     ( 382323)
-        G-vector shells                 0.01 Mb     (   1691)
+        Kohn-Sham Wavefunctions         1.84 Mb     (   3014,  40)
+        NL pseudopotentials             2.48 Mb     (   3014,  54)
+        Each V/rho on FFT grid          3.38 Mb     ( 221184)
+        Each G-vector array             0.73 Mb     (  95581)
+        G-vector shells                 0.01 Mb     (   1689)
      Largest temporary arrays     est. size (Mb)     dimensions
-        Auxiliary wavefunctions        29.43 Mb     (  12053, 160)
+        Auxiliary wavefunctions         7.36 Mb     (   3014, 160)
         Each subspace H/S matrix        0.39 Mb     (    160, 160)
         Each <psi_i|beta_j> matrix      0.03 Mb     (     54,  40)
-        Arrays for rho mixing         108.00 Mb     ( 884736,   8)
+        Arrays for rho mixing          27.00 Mb     ( 221184,   8)
 
      The potential is recalculated from file :
      ./SCRATCH/benzene_US.save/charge-density.dat
@@ -123,9 +128,9 @@
      negative rho (up, down):  0.556E-02 0.000E+00
      Starting wfc are   30 atomic +   10 random wfc
 
-     total cpu time spent up to now is      5.42 secs
+     total cpu time spent up to now is      3.05 secs
 
-     per-process dynamical memory:   177.3 Mb
+     per-process dynamical memory:    47.8 Mb
 
      Band Structure Calculation
      Davidson diagonalization with overlap
@@ -133,7 +138,7 @@
 
      ethr =  3.33E-11,  avg # of iterations =120.0
 
-     total cpu time spent up to now is     63.33 secs
+     total cpu time spent up to now is     46.87 secs
 
      End of band structure calculation
 
@@ -149,37 +154,38 @@
 
      Writing output data file benzene_US.save
  
-     PWSCF        :  1m 3.54s CPU time,     0m47.92s wall time
+     PWSCF        :  0m47.08s CPU time,     2m23.28s wall time
 
-     init_run     :     5.39s CPU
-     electrons    :    57.91s CPU
+     init_run     :     3.00s CPU
+     electrons    :    43.82s CPU
 
      Called by init_run:
      wfcinit      :     0.00s CPU
-     potinit      :     1.66s CPU
+     potinit      :     0.79s CPU
 
      Called by electrons:
-     c_bands      :    57.91s CPU
-     v_of_rho     :     1.39s CPU
-     newd         :     2.09s CPU
+     c_bands      :    43.82s CPU
+     v_of_rho     :     0.60s CPU
+     newd         :     1.49s CPU
 
      Called by c_bands:
-     init_us_2    :     0.01s CPU
-     cegterg      :    56.85s CPU (       6 calls,   9.475 s avg)
+     init_us_2    :     0.00s CPU
+     cegterg      :    43.38s CPU (       6 calls,   7.230 s avg)
 
      Called by *egterg:
-     h_psi        :    30.46s CPU (     127 calls,   0.240 s avg)
-     s_psi        :     2.19s CPU (     127 calls,   0.017 s avg)
-     g_psi        :     0.94s CPU (     120 calls,   0.008 s avg)
-     cdiaghg      :     3.69s CPU (     121 calls,   0.031 s avg)
+     h_psi        :     9.22s CPU (     127 calls,   0.073 s avg)
+     s_psi        :     0.50s CPU (     127 calls,   0.004 s avg)
+     g_psi        :     0.15s CPU (     120 calls,   0.001 s avg)
+     cdiaghg      :    29.29s CPU (     121 calls,   0.242 s avg)
 
      Called by h_psi:
-     add_vuspsi   :     2.45s CPU (     127 calls,   0.019 s avg)
+     add_vuspsi   :     0.44s CPU (     127 calls,   0.003 s avg)
 
      General routines
-     calbec       :     3.48s CPU (     127 calls,   0.027 s avg)
-     cft3s        :    22.25s CPU (    2469 calls,   0.009 s avg)
-     interpolate  :     0.12s CPU
+     calbec       :     0.70s CPU (     127 calls,   0.005 s avg)
+     cft3s        :     7.87s CPU (    2469 calls,   0.003 s avg)
+     interpolate  :     0.06s CPU
      davcio       :     0.00s CPU (       3 calls,   0.000 s avg)
  
      Parallel routines
+     fft_scatter  :     5.26s CPU (    2469 calls,   0.002 s avg)
