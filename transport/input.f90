@@ -12,7 +12,7 @@
    !
    USE kinds,      ONLY : dbl
    USE parameters, ONLY : nstrx
-   USE io_module,  ONLY : stdin, log_unit
+   USE io_module,  ONLY : stdin, log_unit, io_name
    USE log_module, ONLY : log_init, log_push
    USE constants,  ONLY : ZERO
    !
@@ -79,7 +79,6 @@ CONTAINS
    !**********************************************************
       USE T_control_module,         ONLY : calculation_type,  &
                                            conduct_formula,   &
-                                           use_overlap,       &
                                            niterx,            &
                                            nprint,            &
                                            bias,              &
@@ -90,11 +89,11 @@ CONTAINS
                                            datafile_sgm,      &
                                            write_kdata,       &
                                            debug_level,       &
-                                           use_debug_mode
+                                           use_debug_mode,    &
+                                           nfailx
                                             
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
                                            conduct_formula_   => conduct_formula, &
-                                           use_overlap_       => use_overlap, &
                                            niterx_            => niterx, &
                                            nprint_            => nprint, &
                                            bias_              => bias, &
@@ -104,13 +103,13 @@ CONTAINS
                                            datafile_R_        => datafile_R, &
                                            datafile_sgm_      => datafile_sgm, &
                                            write_kdata_       => write_kdata, &
-                                           debug_level_       => debug_level
+                                           debug_level_       => debug_level, &
+                                           nfailx_            => nfailx
 
       IMPLICIT NONE
 
       calculation_type    = calculation_type_
       conduct_formula     = conduct_formula_
-      use_overlap         = use_overlap_
       niterx              = niterx_
       nprint              = nprint_
       bias                = bias_
@@ -121,6 +120,7 @@ CONTAINS
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
       debug_level         = debug_level_
+      nfailx              = nfailx_
 
       use_debug_mode = .FALSE.
       IF ( debug_level_ > 0 )  use_debug_mode  = .TRUE.
@@ -156,8 +156,7 @@ CONTAINS
       !
       IF ( debug_level_ > 0 )  use_debug_mode  = .TRUE.
 
-      logfile = TRIM(work_dir)//'/'//TRIM(prefix)// &
-                    'debug'//TRIM(postfix)//'.log'
+      CALL io_name( "log", logfile, LBODY=.TRUE. )
       !
       CALL log_init( log_unit, use_debug_mode, logfile, debug_level)
       CALL log_push("main")
@@ -210,29 +209,32 @@ CONTAINS
       USE T_hamiltonian_module, ONLY :     dimL,    &
                                            dimR,    &
                                            dimC,    & 
-                                           dimx,    &
+                                           dimx,    & 
                                            ispin,   &
                                            shift_L, &
                                            shift_C, &
-                                           shift_R
+                                           shift_R, &
+                                           shift_corr
       USE T_input_parameters_module,ONLY : dimL_     => dimL,    &
                                            dimR_     => dimR,    &
                                            dimC_     => dimC,    &
                                            ispin_    => ispin,   &
                                            shift_L_  => shift_L, &
                                            shift_C_  => shift_C, &
-                                           shift_R_  => shift_R
+                                           shift_R_  => shift_R, &
+                                        shift_corr_  => shift_corr
       IMPLICIT NONE
       ! 
       dimL            = dimL_
       dimR            = dimR_
       dimC            = dimC_
-      dimx            = MAX ( dimL, dimC, dimR )
+      dimx            = MAX( dimL, dimR, dimC)
       !
       ispin           = ispin_
       shift_L         = shift_L_
       shift_C         = shift_C_
       shift_R         = shift_R_
+      shift_corr      = shift_corr_
       !
    END SUBROUTINE setup_hamiltonian
 
@@ -254,13 +256,10 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_correlation()
    !**********************************************************
-      USE T_correlation_module,     ONLY :     shift_corr,  &
-                                               lhave_corr
-      USE T_input_parameters_module,ONLY :     shift_corr_   => shift_corr, &
-                                               datafile_sgm_ => datafile_sgm
+      USE T_correlation_module,     ONLY :     lhave_corr
+      USE T_input_parameters_module,ONLY :     datafile_sgm_ => datafile_sgm
       IMPLICIT NONE
     
-      shift_corr     = shift_corr_
       lhave_corr     = LEN_TRIM( datafile_sgm_ ) /= 0
 
    END SUBROUTINE setup_correlation

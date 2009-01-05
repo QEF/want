@@ -19,8 +19,8 @@
    USE parser_module,        ONLY : log2char
    USE mp_global,            ONLY : nproc
    USE T_hamiltonian_module, ONLY : dimL, dimC, dimR, &
-                                    shift_L, shift_C, shift_R
-   USE T_correlation_module, ONLY : shift_corr, lhave_corr
+                                    shift_L, shift_C, shift_R, shift_corr
+   USE T_correlation_module, ONLY : lhave_corr
    USE T_control_module,     ONLY : calculation_type, conduct_formula,  &
                                     datafile_C, datafile_L, datafile_R, &
                                     datafile_sgm,                       &

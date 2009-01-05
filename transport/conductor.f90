@@ -19,34 +19,30 @@
    USE parser_module,        ONLY : change_case
    USE files_module,         ONLY : file_open, file_close
    USE timing_module,        ONLY : timing, timing_upto_now
-   USE util_module,          ONLY : mat_mul, mat_sv
+   USE util_module,          ONLY : mat_mul, mat_inv
    USE mp_global,            ONLY : mpime, nproc
    USE mp,                   ONLY : mp_sum
-   USE io_module,            ONLY : ionode, stdout, stdin, sgm_unit, &
+   USE io_module,            ONLY : io_name, ionode, stdout, stdin, sgm_unit, &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
                                     work_dir, prefix, postfix, aux_unit
    USE T_input_module,       ONLY : input_manager
-   USE T_control_module,     ONLY : calculation_type, &
-                                    conduct_formula, niterx, nprint, datafile_sgm,  &
+   USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
                                     write_kdata
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
-   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,            &
-                                    h00_L, h01_L, h00_R, h01_R, h00_C, & 
-                                    s00_L, s01_L, s00_R, s01_R, s00_C, &
-                                    h_LC, h_CR, s_LC, s_CR,            &
-                                    shift_L, shift_C, shift_R
-   USE T_workspace_module,   ONLY : aux00_L, aux01_L, aux00_R, aux01_R, aux00_C, &
-                                    aux_LC, aux_CL, aux_CR, aux_RC,    &
-                                    totL, tottL, totR, tottR,          &
+   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
+                                    blc_00L, blc_01L, blc_00R, blc_01R, &
+                                    blc_00C, blc_LC,  blc_CR,           &
+                                    shift_L, shift_C, shift_R, shift_corr
+   USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     workspace_allocate
-   USE T_correlation_module, ONLY : sgm_corr, lhave_corr, ldynam_corr, shift_corr, &
-                                    correlation_sgmread, correlation_allocate, &
-                                    correlation_init
+   USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_init, &
+                                    correlation_read
    USE T_datafiles_module,   ONLY : datafiles_init
-
+   USE T_operator_blc_module
+   !
    IMPLICIT NONE
 
    !
@@ -54,14 +50,11 @@
    !
    CHARACTER(9)     :: subname='conductor'
    !
-   COMPLEX(dbl)     :: ene
    CHARACTER(nstrx) :: filename
    INTEGER          :: i, ie, ik, ierr, niter
-   INTEGER          :: nomg_s, nomg_e
+   INTEGER          :: iomg_s, iomg_e
    REAL(dbl)        :: avg_iter
    CHARACTER(4)     :: ctmp
-
-
    !   
    REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: cond_aux(:)
@@ -74,15 +67,16 @@
 !
    CALL startup(version_number,subname)
 
-!
-! read input file
-!
+   !
+   ! read input file
+   !
    CALL input_manager()
       
 
-!
-! init
-!
+   !
+   ! init
+   !
+
    !
    ! check whether data files should be internally converted
    !
@@ -101,26 +95,18 @@
    !
    ! Set up the layer hamiltonians
    !
-   CALL hamiltonian_init( calculation_type )
-
+   CALL hamiltonian_init( )
 
 
    !
-   ! setup correlation data and energy grids
+   ! Setup correlation data and energy grids
    !
    ! If correlation is used, the energy grid is read
    ! from datafile_sgm and input parameters are overwirtten
    !
    ! otherwise, grid is built indipendently
    !
-
-   CALL correlation_allocate()
-   sgm_corr(:,:,:) = CZERO
-   !
    IF ( lhave_corr ) THEN 
-       !
-       CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr ) 
-       IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
        !
        CALL correlation_init( sgm_unit )
 
@@ -129,17 +115,16 @@
        !
        IF ( .NOT. ldynam_corr ) THEN
            !
-           CALL correlation_sgmread(sgm_unit, sgm_corr )
-           !
-           sgm_corr(:,:,:) = sgm_corr(:,:,:) +shift_corr * S00_C(:,:,:)
+           CALL correlation_read( )
            !
        ENDIF
        !
    ENDIF   
    !
+   !
    IF ( .NOT. egrid_alloc ) THEN
        !
-       CALL egrid_init()
+       CALL egrid_init( )
        !
    ENDIF
 
@@ -169,7 +154,9 @@
 
 
 !
+!================================
 ! main loop over frequency
+!================================
 ! 
 
    IF ( ionode ) THEN
@@ -182,21 +169,20 @@
    !
    ! init parallelism over frequencies
    !
-   CALL divide_et_impera( 1, ne,  nomg_s, nomg_e, mpime, nproc )
+   CALL divide_et_impera( 1, ne,  iomg_s, iomg_e, mpime, nproc )
 
 
    dos(:,:)     = ZERO
    conduct(:,:) = ZERO
    !
    energy_loop: &
-   DO ie = nomg_s, nomg_e
+   DO ie = iomg_s, iomg_e
       
       !
       ! grids and misc
       !
-      ene =  egrid(ie)   
-
-      IF ( (MOD( ie, nprint) == 0 .OR. ie == 1) .AND. ionode ) THEN
+      IF ( (MOD( ie, nprint) == 0 .OR. ie == iomg_s .OR. ie == iomg_e ) &
+           .AND. ionode ) THEN
            WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f12.5, ' eV' )") &
                          ie, egrid(ie)
       ENDIF
@@ -207,9 +193,7 @@
       !
       IF ( lhave_corr .AND. ldynam_corr ) THEN
           !
-          CALL correlation_sgmread(sgm_unit, sgm_corr, IE=ie )
-          !
-          sgm_corr(:,:,:) = sgm_corr(:,:,:) +shift_corr * S00_C(:,:,:)
+          CALL correlation_read( IE=ie )
           !
       ENDIF
 
@@ -223,97 +207,97 @@
       !
       kpt_loop: &
       DO ik = 1, nkpts_par
+
           !
-          ! init
+          ! define aux quantities for each data block
           !
-          !
-          aux00_L(:,:)  = h00_L(:,:,ik)  -(ene -shift_L) * s00_L(:,:,ik)
-          aux01_L(:,:)  = h01_L(:,:,ik)  -(ene -shift_L) * s01_L(:,:,ik)
-          !
-          aux00_R(:,:)  = h00_R(:,:,ik)  -(ene -shift_R) * s00_R(:,:,ik)
-          aux01_R(:,:)  = h01_R(:,:,ik)  -(ene -shift_R) * s01_R(:,:,ik)
-          !
-          aux00_C(:,:)  = h00_C(:,:,ik)  -(ene -shift_C) * s00_C(:,:,ik)
-          !
-          aux_LC(:,:) = h_LC(:,:,ik) -(ene -shift_C) * s_LC(:,:,ik)  
-          aux_CR(:,:) = h_CR(:,:,ik) -(ene -shift_C) * s_CR(:,:,ik) 
-          !
-          aux_CL(:,:) = CONJG( TRANSPOSE( h_LC(:,:,ik) -CONJG(ene -shift_C) * s_LC(:,:,ik) ))
-          aux_RC(:,:) = CONJG( TRANSPOSE( h_CR(:,:,ik) -CONJG(ene -shift_C) * s_CR(:,:,ik) ))
+          CALL hamiltonian_setup( ik, ie )
+
  
           ! 
+          !=================================== 
           ! construct leads self-energies 
+          !=================================== 
           ! 
-          CALL transfer( dimR, s00_R(:,:,ik),  niterx, totR, tottR, aux00_R, aux01_R, niter )
+
+          !
+          ! right lead
+          CALL transfer_mtrx( dimR, blc_00R, blc_01R, totR, tottR, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimR, totR, tottR, aux00_R, aux01_R, s00_R(:,:,ik), gR, 1 )
+          CALL green( dimR, blc_00R, blc_01R, totR, tottR, gR, 1 )
           !
-          !
-          CALL mat_mul(work, aux_CR, 'N', gR, 'N', dimC, dimR, dimR)
-          CALL mat_mul(sgm_R, work, 'N', aux_RC, 'N', dimC, dimC, dimR)
+          CALL mat_mul(work, blc_CR%aux, 'N', gR,    'N', dimC, dimR, dimR)
+          CALL mat_mul(sgm_R, work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
  
-          ! ene
-          CALL transfer( dimL, s00_L(:,:,ik), niterx, totL, tottL, aux00_L, aux01_L, niter )
+          ! 
+          ! left lead 
+          CALL transfer_mtrx( dimL, blc_00L, blc_01L, totL, tottL, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimL, totL, tottL, aux00_L, aux01_L,  s00_L(:,:,ik), gL, -1 )
+          CALL green( dimL, blc_00L, blc_01L, totL, tottL, gL, -1 )
           !
-          !
-          CALL mat_mul(work, aux_CL, 'N', gL, 'N', dimC, dimL, dimL)
-          CALL mat_mul(sgm_L, work, 'N', aux_LC, 'N', dimC, dimC, dimL) 
+          CALL mat_mul(work, blc_LC%aux, 'C', gL,    'N', dimC, dimL, dimL)
+          CALL mat_mul(sgm_L, work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
  
           !
-          ! gamma_L and gamma_R
+          ! gamma_L & gamma_R
           !
           gamma_L(:,:) = CI * (  sgm_L(:,:) - CONJG( TRANSPOSE(sgm_L(:,:)) )   )
           gamma_R(:,:) = CI * (  sgm_R(:,:) - CONJG( TRANSPOSE(sgm_R(:,:)) )   )
  
+
           !
+          !=================================== 
           ! Construct the conductor green's function
           ! gC = work^-1  (retarded)
+          !=================================== 
           !
-          work = CZERO
+          CALL gzero_maker ( dimC, blc_00C, work(1:dimC,1:dimC), 'inverse')
           !
-          CALL gzero_maker ( dimC, -aux00_C, s00_C(:,:,ik), work(1:dimC,1:dimC), 'inverse')
-          work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:) -sgm_R(:,:) -sgm_corr(:,:,ik)  
-  
-          gC(:,:) = CZERO
-          DO i = 1, dimC
-             gC(i,i)= CONE
-          ENDDO
- 
-          CALL mat_sv(dimC, dimC, work, gC)
+          work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:) -sgm_R(:,:)
+          !
+          CALL mat_inv( dimC, work, gC)
+
+
           !
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimC
              dos(ik,ie) = dos(ik,ie) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
+
+
+          !
+          !=================================== 
+          ! Transmittance
+          !=================================== 
           !
           ! evaluate the transmittance according to the Fisher-Lee formula
           ! or (in the correlated case) to the generalized expression as 
           ! from PRL 94, 116802 (2005)
           !
-          CALL transmittance(dimC, gamma_L, gamma_R, gC, sgm_corr(:,:,ik), &
+          CALL transmittance(dimC, gamma_L, gamma_R, gC, blc_00C, &
                              TRIM(conduct_formula), cond_aux )
+          !
           DO i=1,dimC
              conduct(ik,ie) =  conduct(ik,ie) + wk_par(ik) * cond_aux(i)
           ENDDO
-      
+          ! 
       ENDDO kpt_loop 
 
 
       avg_iter = avg_iter/REAL(2*nkpts_par)
       !
-      IF ( ionode .AND. (MOD( ie, nprint) == 0 .OR.  ie == nomg_s .OR. ie == nomg_e )) THEN
+      IF ( MOD( ie, nprint) == 0 .OR.  ie == iomg_s .OR. ie == iomg_e ) THEN
           !
-          WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',f8.3,/)") &
-                avg_iter
+          IF ( ionode ) WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',&
+                                      & f8.3,/)") avg_iter
+          !
+          CALL timing_upto_now(stdout)
           !
       ENDIF
-      ! 
-      CALL timing_upto_now(stdout)
+      !
       CALL flush_unit(stdout)
 
    ENDDO energy_loop
@@ -346,21 +330,20 @@
        CALL flush_unit( stdout )
    
 
-       filename = TRIM(work_dir)//'/'//TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
+       CALL io_name( "conductance", filename )
+       !
        OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
-       !
        DO ie = 1, ne
-           !
            WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,ie) )
-           !
        ENDDO
-       !
        CLOSE( cond_unit )
        !
-       filename = TRIM(prefix)//'cond'//TRIM(postfix)//'.dat'
+       CALL io_name( "conductance", filename, LPATH=.FALSE. )
        WRITE(stdout,"(/,2x,'Conductance written on file: ',3x,a)") TRIM(filename)
                             
-       filename = TRIM(work_dir)//'/'//TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
+
+       CALL io_name( "doscond", filename )
+       !
        OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
        !
        DO ie = 1, ne
@@ -369,9 +352,9 @@
        !
        CLOSE( dos_unit )
        !
-       filename = TRIM(prefix)//'doscond'//TRIM(postfix)//'.dat'
+       CALL io_name( "doscond", filename, LPATH=.FALSE. )
        WRITE(stdout,"(  2x,'        DOS written on file: ',3x,a)") TRIM(filename)
-   
+       ! 
    ENDIF
 
 

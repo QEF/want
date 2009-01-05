@@ -121,8 +121,8 @@
        ! max number of iterations in the calculation of
        ! lead self-energies
 
-   LOGICAL :: use_overlap = .FALSE.
-       ! wheter to include overlaps (non-orthogonal bases)
+   INTEGER :: nfailx = 5
+       ! max allowed number of failures during lead-sgm calculation
 
    LOGICAL :: write_kdata = .FALSE.
        ! wheter to write kpoint-resolved dos an transmittance to output
@@ -177,18 +177,18 @@
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, &
                  datafile_L, datafile_C, datafile_R, datafile_sgm, &
-                 transport_dir, use_overlap, smearing_type, &
+                 transport_dir, smearing_type, &
                  delta_ratio, xmax, nk, s, use_symm, debug_level, &
                  work_dir, prefix, postfix, write_kdata, ispin,   &
-                 shift_L, shift_C, shift_R, shift_corr 
+                 shift_L, shift_C, shift_R, shift_corr, nfailx 
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
-   PUBLIC :: ne, emin, emax, nprint, delta, bias, use_overlap, delta_ratio, xmax 
+   PUBLIC :: ne, emin, emax, nprint, delta, bias, delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: nk, s, use_symm, debug_level
    PUBLIC :: work_dir, prefix, postfix, write_kdata, ispin
-   PUBLIC :: shift_L, shift_C, shift_R, shift_corr
+   PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
    PUBLIC :: INPUT_CONDUCTOR
 
 
@@ -241,7 +241,6 @@ CONTAINS
       CALL mp_bcast( bias,               ionode_id)      
       CALL mp_bcast( nprint,             ionode_id)      
       CALL mp_bcast( niterx,             ionode_id)      
-      CALL mp_bcast( use_overlap,        ionode_id)      
       CALL mp_bcast( write_kdata,        ionode_id)      
       CALL mp_bcast( nk,                 ionode_id)      
       CALL mp_bcast( s,                  ionode_id)      
@@ -259,6 +258,7 @@ CONTAINS
       CALL mp_bcast( shift_C,            ionode_id)      
       CALL mp_bcast( shift_R,            ionode_id)      
       CALL mp_bcast( shift_corr,         ionode_id)      
+      CALL mp_bcast( nfailx,             ionode_id)      
 
       !
       ! ... checking parameters

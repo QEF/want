@@ -21,7 +21,6 @@
    USE T_egrid_module,       ONLY : egrid_deallocate, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_deallocate, smearing_alloc => alloc
    USE T_hamiltonian_module, ONLY : hamiltonian_deallocate, ham_alloc => alloc
-   USE T_correlation_module, ONLY : correlation_deallocate, corr_alloc => alloc
    USE T_kpoints_module,     ONLY : kpoints_deallocate, kpoints_alloc => alloc
    IMPLICIT NONE
       
@@ -29,7 +28,6 @@
       IF ( egrid_alloc )    CALL egrid_deallocate()
       IF ( smearing_alloc ) CALL smearing_deallocate()
       IF ( ham_alloc )      CALL hamiltonian_deallocate()
-      IF ( corr_alloc )     CALL correlation_deallocate()
       IF ( kpoints_alloc )  CALL kpoints_deallocate()
 
 END SUBROUTINE cleanup
