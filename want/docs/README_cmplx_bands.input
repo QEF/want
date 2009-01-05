@@ -62,7 +62,7 @@ s(2)          INTEGER
               DEFAULT: 0, 0
 
 toll          REAL
-              tolerance to define inegligible Hamiltonian (or Sgm) matrix elements. 
+              tolerance to define negligible Hamiltonian (or Sgm) matrix elements. 
               It is used to compute the decay renage of Ham or Sgm. 
               DEFAULT: 1.0d-4
 
