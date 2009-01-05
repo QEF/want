@@ -95,7 +95,7 @@ CONTAINS
       CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE.  )
       CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., BSHELLS=.FALSE. )
       !
-      IF (ionode) WRITE( stdout, "()")
+      IF ( ionode ) WRITE( stdout, "()")
 
       !
       ! Read windows data

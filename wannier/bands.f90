@@ -97,6 +97,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : ionode, ionode_id
+   !
    IMPLICIT NONE
 
       CHARACTER(11)    :: subname = 'bands_input'
@@ -142,7 +143,7 @@ CONTAINS
       CALL mp_bcast( ircut,           ionode_id )
 
       !
-      ! checks and init
+      ! init
       !
       IF ( LEN_TRIM(fileout) == 0 ) &
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_bands.dat'
