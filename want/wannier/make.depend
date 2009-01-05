@@ -35,6 +35,7 @@ bands.o : ../libs/constants.o
 bands.o : ../libs/files.o
 bands.o : ../libs/kind.o
 bands.o : ../libs/log_module.o
+bands.o : ../libs/mp_global.o
 bands.o : ../libs/mp.o
 bands.o : ../libs/parameters.o
 bands.o : ../libs/parser.o
@@ -110,6 +111,8 @@ cmplx_bands.o : ../libs/constants.o
 cmplx_bands.o : ../libs/files.o
 cmplx_bands.o : ../libs/kind.o
 cmplx_bands.o : ../libs/log_module.o
+cmplx_bands.o : ../libs/mp_global.o
+cmplx_bands.o : ../libs/mp.o
 cmplx_bands.o : ../libs/parameters.o
 cmplx_bands.o : ../libs/parser.o
 cmplx_bands.o : ../libs/timing.o
@@ -210,6 +213,8 @@ dos.o : ../libs/constants.o
 dos.o : ../libs/files.o
 dos.o : ../libs/kind.o
 dos.o : ../libs/log_module.o
+dos.o : ../libs/mp_global.o
+dos.o : ../libs/mp.o
 dos.o : ../libs/parameters.o
 dos.o : ../libs/parser.o
 dos.o : ../libs/timing.o
@@ -263,12 +268,14 @@ hamiltonian_calc.o : ../libs/parser.o
 hamiltonian_calc.o : ../libs/timing.o
 hamiltonian_calc.o : windows.o
 hamiltonian.o : converters.o
+hamiltonian.o : io_module.o
 hamiltonian.o : ../iotk/iotk_16_module.o
 hamiltonian.o : kpoints.o
 hamiltonian.o : lattice.o
 hamiltonian.o : ../libs/constants.o
 hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/log_module.o
+hamiltonian.o : ../libs/mp.o
 hamiltonian.o : ../libs/parameters.o
 hamiltonian.o : subspace.o
 init_at_1.o : atom.o
