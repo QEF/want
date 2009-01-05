@@ -20,7 +20,9 @@ MANUAL=" Usage
                  the wannier minimization
  wannier         perform the above cited minimization
  dos             compute DOS using WFs
+ blc2wan         convert a model self-energy to wannier basis set
  conductor       evaluate the transmittance, for the bulk case
+ conductor_sgm   as before, including a model sefl-energy (sigma_graphene.xml)
  want            perform DISENTANGLE, WANNIER, PLOT, CONDUCTOR all together 
  all             perform all the above described steps
 
@@ -51,7 +53,9 @@ PWEXPORT=
 DISENTANGLE=
 WANNIER=
 DOS=
+BLC2WAN=
 CONDUCTOR=
+CONDUCTOR_SGM=
 CHECK=
 CLEAN=
 
@@ -66,12 +70,16 @@ case $INPUT in
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (dos)            DOS=yes ;;
+   (blc2wan)        BLC2WAN=yes ;;
    (conductor)      CONDUCTOR=yes ;;
+   (conductor_sgm)  BLC2WAN=yes ; CONDUCTOR_SGM=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    DOS=yes ; CONDUCTOR=yes ;;
+                    DOS=yes ; BLC2WAN=yes ;
+                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ;
-                    DOS=yes ; CONDUCTOR=yes ;;
+                    DOS=yes ; BLC2WAN=yes ;
+                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -125,9 +133,15 @@ run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 
 #
+# running DOS
+#
+run_blc2wan  SUFFIX=$SUFFIX  RUN=$BLC2WAN
+
+#
 # running CONDUCTOR
 #
 run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
+run_conductor  NAME=CONDUCTOR_SGM   SUFFIX=${SUFFIX}_sgm  RUN=$CONDUCTOR_SGM
 
 
 #

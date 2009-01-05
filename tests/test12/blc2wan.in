@@ -1,0 +1,9 @@
+
+&INPUT
+   prefix = 'si111'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   filein = "sigma.xml"
+   fileout = "./SCRATCH/sigma.wan.dat"
+   binary = .TRUE.
+/
