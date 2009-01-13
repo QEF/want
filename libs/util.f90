@@ -219,7 +219,8 @@ END SUBROUTINE
    REAL(dbl), INTENT(OUT) :: s(:)
    REAL(dbl), INTENT(OUT) :: u(:,:), vt(:,:)
 
-   INTEGER :: ierr, info, lwork
+   INTEGER   :: ierr, info, lwork
+   REAL(dbl) :: raux 
    REAL(dbl), ALLOCATABLE :: atmp(:,:), work(:)
 
    IF ( m <= 0 .OR. n<=0 ) CALL errore('dmat_svd','Invalid DIMs',1)
@@ -232,15 +233,26 @@ END SUBROUTINE
    !
    ! allocate local variables and workspace
    !
-   lwork = MAX( 3*MIN(m,n) + MAX(m,n), 5*MIN(m,n) )
    ALLOCATE( atmp(m,n), STAT=ierr )
-      IF (ierr/=0)  CALL errore('dmat_svd','allocating atmp',ABS(ierr))
-   ALLOCATE( work(lwork), STAT=ierr )
-      IF (ierr/=0)  CALL errore('dmat_svd','allocating work',ABS(ierr))
-
+   IF (ierr/=0)  CALL errore('dmat_svd','allocating atmp',ABS(ierr))
    !
    ! save A (which is intent IN)
    atmp(:,:) = a(1:m, 1:n)
+
+   !
+   ! get lwork
+   !
+   ! lwork = MAX( 3*MIN(m,n) + MAX(m,n), 5*MIN(m,n) )
+   lwork = -1
+   !
+   CALL DGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
+                raux, lwork, info)
+   !
+   lwork = NINT( raux )
+   !
+   ALLOCATE( work(lwork), STAT=ierr )
+   IF (ierr/=0)  CALL errore('dmat_svd','allocating work',ABS(ierr))
+
 
    CALL DGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
                 work, lwork, info)
@@ -249,7 +261,7 @@ END SUBROUTINE
    IF ( info > 0 ) CALL errore('dmat_svd', 'DGESVD: DBESQR not converged', info )
     
    DEALLOCATE( atmp, work, STAT=ierr)
-      IF(ierr/=0) CALL errore('dmat_svd','deallocating atpm, work',ABS(ierr))
+   IF(ierr/=0) CALL errore('dmat_svd','deallocating atpm, work',ABS(ierr))
 
    RETURN
 END SUBROUTINE dmat_svd
@@ -277,7 +289,8 @@ END SUBROUTINE dmat_svd
    REAL(dbl),    INTENT(OUT) :: s(:)
    COMPLEX(dbl), INTENT(OUT) :: u(:,:), vt(:,:)
 
-   INTEGER :: ierr, info, lwork
+   INTEGER    :: ierr, info, lwork
+   REAL(dbl)  :: raux
    REAL(dbl),    ALLOCATABLE :: rwork(:)
    COMPLEX(dbl), ALLOCATABLE :: atmp(:,:), work(:)
 
@@ -291,17 +304,29 @@ END SUBROUTINE dmat_svd
    !
    ! allocate local variables and workspace
    !
-   lwork = 2 * MIN(m,n) + MAX(m,n)
    ALLOCATE( atmp(m,n), STAT=ierr )
-      IF (ierr/=0)  CALL errore('zmat_svd','allocating atmp',ABS(ierr))
-   ALLOCATE( work(lwork), STAT=ierr )
-      IF (ierr/=0)  CALL errore('zmat_svd','allocating work',ABS(ierr))
+   IF (ierr/=0)  CALL errore('zmat_svd','allocating atmp',ABS(ierr))
+   !
    ALLOCATE( rwork(5 * MIN(m,n) ), STAT=ierr )
-      IF (ierr/=0)  CALL errore('zmat_svd','allocating rwork',ABS(ierr))
-
+   IF (ierr/=0)  CALL errore('zmat_svd','allocating rwork',ABS(ierr))
    !
    ! save A (which is intent IN)
    atmp(:,:) = a(1:m, 1:n)
+   
+   !
+   ! determine lwork
+   !
+   ! lwork = 2 * MIN(m,n) + MAX(m,n)
+   lwork = -1
+   !
+   CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
+                raux, lwork, rwork, info)
+   !
+   lwork = NINT( raux )
+   ! 
+   ALLOCATE( work(lwork), STAT=ierr )
+   IF (ierr/=0)  CALL errore('zmat_svd','allocating work',ABS(ierr))
+
 
    CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
                 work, lwork, rwork, info)
@@ -310,7 +335,7 @@ END SUBROUTINE dmat_svd
    IF ( info > 0 ) CALL errore('zmat_svd', 'ZGESVD: ZBESQR not converged', info )
     
    DEALLOCATE( atmp, work, rwork, STAT=ierr)
-      IF(ierr/=0) CALL errore('zmat_svd','deallocating atmp, work, rwork',ABS(ierr))
+   IF(ierr/=0) CALL errore('zmat_svd','deallocating atmp, work, rwork',ABS(ierr))
 
    RETURN
 END SUBROUTINE zmat_svd
@@ -985,7 +1010,7 @@ END SUBROUTINE zmat_diag
    INTEGER, EXTERNAL :: ILAENV
    ! info=0: inversion was successful
    ! ldz   : leading dimension (the same as n)
-   ! ipiv  : work space for pivoting (assumed of length lwork=n)
+   ! ipiv  : work space for pivoting 
    COMPLEX(dbl), ALLOCATABLE :: work(:)
    !
    !
@@ -1065,7 +1090,7 @@ END SUBROUTINE zmat_inv
    INTEGER, EXTERNAL :: ILAENV
    ! info=0: inversion was successful
    ! ldz   : leading dimension (the same as n)
-   ! ipiv  : work space for pivoting (assumed of length lwork=n)
+   ! ipiv  : work space for pivoting 
    REAL(dbl), ALLOCATABLE :: work(:)
    !
    !
