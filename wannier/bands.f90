@@ -18,6 +18,7 @@
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
+   USE control_module,       ONLY : debug_level, use_debug_mode
    USE datafiles_module,     ONLY : datafiles_init
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
@@ -41,7 +42,7 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
-                    fileout, nkpts_in, nkpts_max, ircut
+                    fileout, nkpts_in, nkpts_max, ircut, debug_level
    !
    ! end of declariations
    !   
@@ -96,7 +97,7 @@ CONTAINS
    ! Read INPUT namelist from stdin
    !
    USE mp,                   ONLY : mp_bcast
-   USE io_module,            ONLY : ionode, ionode_id
+   USE io_module,            ONLY : io_init, ionode, ionode_id
    !
    IMPLICIT NONE
 
@@ -107,7 +108,6 @@ CONTAINS
       !
 
       CALL timing( subname, OPR='start' )
-      CALL log_push( subname )
 
       !   
       ! init input namelist   
@@ -121,6 +121,7 @@ CONTAINS
       nkpts_in                    = 0
       nkpts_max                   = 100
       ircut(1:3)                  = 0
+      debug_level                 = 0
       
       CALL input_from_file ( stdin )
       !
@@ -141,15 +142,22 @@ CONTAINS
       CALL mp_bcast( nkpts_in,        ionode_id )
       CALL mp_bcast( nkpts_max,       ionode_id )
       CALL mp_bcast( ircut,           ionode_id )
+      CALL mp_bcast( debug_level,     ionode_id )
 
       !
       ! init
       !
       IF ( LEN_TRIM(fileout) == 0 ) &
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_bands.dat'
-
+      !   
+      use_debug_mode = .FALSE.
+      IF ( debug_level > 0  )     use_debug_mode = .TRUE.
+      !   
       lhave_sgm = .FALSE.
       IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
+      !
+      CALL io_init( NEED_WFC=.FALSE. )
+
 
       !
       ! Some checks 
@@ -194,7 +202,6 @@ CONTAINS
       ENDIF
 
       CALL timing(subname,OPR='stop')
-      CALL log_pop(subname)
       !
    END SUBROUTINE bands_input
 
