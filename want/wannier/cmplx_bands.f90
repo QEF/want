@@ -20,6 +20,7 @@
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : prefix, postfix, work_dir
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
+   USE control_module,       ONLY : debug_level, use_debug_mode
    USE correlation_module,   ONLY : lhave_sgm
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
@@ -52,7 +53,8 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
-                    nk, s, toll, idir, emin, emax, ne, ircut, fileout, nprint
+                    nk, s, toll, idir, emin, emax, ne, ircut, fileout, nprint, &
+                    debug_level
    !
    ! end of declariations
    !   
@@ -106,7 +108,8 @@ CONTAINS
    ! Read INPUT namelist from stdin
    !
    USE mp,                   ONLY : mp_bcast
-   USE io_module,            ONLY : ionode, ionode_id
+   USE io_module,            ONLY : io_init, ionode, ionode_id
+   !
    IMPLICIT NONE
 
       CHARACTER(17)    :: subname = 'cmplx_bands_input'
@@ -116,7 +119,6 @@ CONTAINS
       !
 
       CALL timing( subname, OPR='start' )
-      CALL log_push( subname )
 
       !
       ! init input namelist
@@ -136,6 +138,7 @@ CONTAINS
       ne                          =  1000
       ircut(1:3)                  =  0
       nprint                      = 50
+      debug_level                 = 0
       
       CALL input_from_file ( stdin )
       !
@@ -162,11 +165,21 @@ CONTAINS
       CALL mp_bcast( ne,              ionode_id )      
       CALL mp_bcast( ircut,           ionode_id )      
       CALL mp_bcast( nprint,          ionode_id )      
+      CALL mp_bcast( debug_level,     ionode_id )      
       !
       !
       IF ( LEN_TRIM(fileout) == 0 ) &
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)// &
                                      '_cmplx_bands.dat'
+      !
+      use_debug_mode = .FALSE.
+      IF ( debug_level > 0  )     use_debug_mode = .TRUE.
+      !
+      lhave_sgm = .FALSE.
+      IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
+      !
+      CALL io_init( NEED_WFC=.FALSE. )
+
 
       !
       ! Some checks 
@@ -181,9 +194,6 @@ CONTAINS
       IF ( nprint <= 0  )        CALL errore(subname, 'invalid nprint', 5)
       IF ( toll < 0.0  )         CALL errore(subname, 'invalid toll', 5)
       IF ( ANY( ircut(:) < 0 ) ) CALL errore(subname,'Invalid ircut', 10)
-      !
-      lhave_sgm = .FALSE.
-      IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
       !
       toll2 = toll**2
 
@@ -222,7 +232,6 @@ CONTAINS
       ENDIF
       !
       CALL timing( subname, OPR='stop' )
-      CALL log_pop( subname )
       !
    END SUBROUTINE cmplx_bands_input
    !

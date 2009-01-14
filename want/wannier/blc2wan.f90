@@ -18,7 +18,7 @@
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : work_dir, prefix, postfix
-   USE control_module,       ONLY : verbosity
+   USE control_module,       ONLY : verbosity, debug_level, use_debug_mode
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
    USE parser_module,        ONLY : log2char, change_case
@@ -40,7 +40,8 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
-                    binary, energy_ref, spin_component, nprint, verbosity
+                    binary, energy_ref, spin_component, nprint, verbosity, &
+                    debug_level
    !
    ! end of declariations
    !   
@@ -95,6 +96,8 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
+   USE io_module,     ONLY : io_init
+   !
    IMPLICIT NONE
 
       CHARACTER(13)    :: subname = 'blc2wan_input'
@@ -104,7 +107,6 @@ CONTAINS
       !
 
       CALL timing( subname, OPR='start' )
-      CALL log_push( subname )
 
       !
       ! init input namelist
@@ -119,12 +121,21 @@ CONTAINS
       energy_ref                  = 0.0
       nprint                      = 10
       verbosity                   = 'medium'
+      debug_level                 = 0
 
 
       CALL input_from_file ( stdin )
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
+
+      !
+      ! Init
+      !
+      use_debug_mode = .FALSE.
+      IF ( debug_level > 0  )     use_debug_mode = .TRUE.
+      !
+      CALL io_init( NEED_WFC=.FALSE. )
 
 
       !
@@ -166,7 +177,6 @@ CONTAINS
       !
       !
       CALL timing(subname,OPR='stop')
-      CALL log_pop(subname)
       !
    END SUBROUTINE blc2wan_input
 
