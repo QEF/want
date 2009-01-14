@@ -71,6 +71,9 @@ verbosity     STRING
               whole information about decay.
               DEFAULT: "medium"
 
+debug_level   INTEGER
+              level of debug report; values <= 0 switch the debug_mode off 
+              DEFAULT: 0
 
 ==============================================================================
 

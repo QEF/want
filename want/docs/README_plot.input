@@ -86,5 +86,9 @@ collect_wf    LOGICAL
               plotting cell. Useful to plot purposes.
               DEFAULT: .TRUE.
 
+debug_level   INTEGER
+              level of debug report; values <= 0 switch the debug_mode off 
+              DEFAULT: 0
+
 ==============================================================================
 

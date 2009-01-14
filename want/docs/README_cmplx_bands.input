@@ -88,6 +88,9 @@ nprint        INTEGER
               every nprint energy steps write to stdout.
               DEFAULT : 20
 
+debug_level   INTEGER
+              level of debug report; values <= 0 switch the debug_mode off 
+              DEFAULT: 0
 
 ==============================================================================
 
