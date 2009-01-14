@@ -4,7 +4,8 @@
 =======================================================
 
 
-14 Jan 2009      debug_level variable added to WanT PPs. (AF)
+14 Jan 2009      debug_level variable added to WanT PPs. Documentation for
+                 midpoint program added. (AF)
 
 05 Jan 2009      References in test03 updated. Io_name routine generalize to
                  deal also with transport files. (AF)
