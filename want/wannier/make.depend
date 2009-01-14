@@ -24,6 +24,7 @@ atomic_wfc.o : wfc_data.o
 atom.o : radial_grids.o
 bachel.o : ../libs/constants.o
 bachel.o : ../libs/kind.o
+bands.o : control.o
 bands.o : converters.o
 bands.o : correlation.o
 bands.o : datafiles.o
@@ -100,6 +101,7 @@ cleanup.o : wfc_data.o
 cleanup.o : windows.o
 cleanup.o : workspace_dis.o
 cleanup.o : workspace_wan.o
+cmplx_bands.o : control.o
 cmplx_bands.o : converters.o
 cmplx_bands.o : correlation.o
 cmplx_bands.o : datafiles.o
@@ -201,6 +203,7 @@ domega.o : ../libs/log_module.o
 domega.o : ../libs/mp.o
 domega.o : ../libs/timing.o
 domega.o : trial_center_data.o
+dos.o : control.o
 dos.o : converters.o
 dos.o : correlation.o
 dos.o : datafiles.o
