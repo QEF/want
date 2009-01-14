@@ -242,14 +242,15 @@ END SUBROUTINE
    !
    ! get lwork
    !
-   ! lwork = MAX( 3*MIN(m,n) + MAX(m,n), 5*MIN(m,n) )
-   lwork = -1
+   lwork = MAX( 3*MIN(m,n) + MAX(m,n), 5*MIN(m,n) )
    !
-   CALL DGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
-                raux, lwork, info)
-   !
-   lwork = NINT( raux )
-   !
+!   lwork = -1
+!   !
+!   CALL DGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
+!                raux, lwork, info)
+!   !
+!   lwork = NINT( raux )
+!   !
    ALLOCATE( work(lwork), STAT=ierr )
    IF (ierr/=0)  CALL errore('dmat_svd','allocating work',ABS(ierr))
 
@@ -316,14 +317,15 @@ END SUBROUTINE dmat_svd
    !
    ! determine lwork
    !
-   ! lwork = 2 * MIN(m,n) + MAX(m,n)
-   lwork = -1
-   !
-   CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
-                raux, lwork, rwork, info)
-   !
-   lwork = NINT( raux )
-   ! 
+   lwork = 2 * MIN(m,n) + MAX(m,n)
+!   !
+!   lwork = -1
+!   !
+!   CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
+!                raux, lwork, rwork, info)
+!   !
+!   lwork = NINT( raux )
+!   ! 
    ALLOCATE( work(lwork), STAT=ierr )
    IF (ierr/=0)  CALL errore('zmat_svd','allocating work',ABS(ierr))
 
