@@ -320,7 +320,7 @@ END PROGRAM dos_main
       CHARACTER(4)              :: ctmp
       !
       INTEGER      :: iks, ike
-      INTEGER      :: i, j, ie, ik, ir
+      INTEGER      :: i, j, ie, ik, ik_g, ir
       INTEGER      :: ierr
       INTEGER      :: dimwann_sgm, nrtot_sgm
       !
@@ -532,10 +532,10 @@ END PROGRAM dos_main
           IF ( ierr/=0 ) CALL errore(subname,'allocating kovp',ABS(ierr))
       ENDIF
       !
-      ALLOCATE( z( dimwann, dimwann, nkpts_int ), STAT=ierr )
+      ALLOCATE( z( dimwann, dimwann, ike-iks+1 ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating z', ABS(ierr) )
       !
-      ALLOCATE( eig_int( dimwann, nkpts_int ), STAT=ierr )
+      ALLOCATE( eig_int( dimwann, ike-iks+1 ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating eig_int', ABS(ierr) )
 
       !
@@ -639,25 +639,26 @@ END PROGRAM dos_main
           eig_int( :, : ) = ZERO
           !
           kpt_loop: &
-          DO ik = iks, ike
-
+          DO ik_g = iks, ike
+              !
+              ik = ik_g -iks +1
               !
               ! compute the Hamiltonian with the correct bloch symmetry
               !
               CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
-                                 vkpt_int(:,ik), kham)
+                                 vkpt_int(:,ik_g), kham)
 
               IF ( lhave_overlap ) THEN
                   !
                   CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
-                                     vkpt_int(:,ik), kovp)
+                                     vkpt_int(:,ik_g), kovp)
                   !
               ENDIF
 
               IF ( lhave_sgm ) THEN
                   !
                   CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm_nn,  &
-                                     vkpt_int(:,ik), ksgm)
+                                     vkpt_int(:,ik_g), ksgm)
                   !
                   ! symmetryze the static sgm in order to make it hermitean
                   !
@@ -672,6 +673,7 @@ END PROGRAM dos_main
               ! Diagonalize the hamiltonian at the present k-point
               ! taking care of the overlaps if the case
               !
+              CALL log_push("mat_hdiag")
               IF ( .NOT. lhave_overlap ) THEN
                   !
                   CALL mat_hdiag( z(:,:,ik), eig_int(:,ik), kham(:,:), dimwann)
@@ -681,14 +683,9 @@ END PROGRAM dos_main
                   CALL mat_hdiag( z(:,:,ik), eig_int(:,ik), kham(:,:), kovp(:,:), dimwann)
                   !
               ENDIF
+              CALL log_pop("mat_hdiag")
               !
           ENDDO kpt_loop
-
-          !
-          ! recover over parallelism
-          !
-          CALL mp_sum( z )
-          CALL mp_sum( eig_int )
           !
       ENDIF
 
@@ -733,7 +730,8 @@ END PROGRAM dos_main
           ENDIF
 
           
-          dos ( ie ) = ZERO
+          dos ( ie )  = ZERO
+          dos0 ( ie ) = ZERO
           !
           IF ( lhave_sgm .AND. ldynam_sgm ) THEN
 
@@ -754,21 +752,23 @@ END PROGRAM dos_main
              ENDDO
              !
              !
-             DO ik = iks, ike
+             DO ik_g = iks, ike
+                 !
+                 ik = ik_g -iks +1
                  !
                  ! interpolate rsgm on the required kpt
                  ! in principles kham and kovp could be computed out of the
                  ! energy loop (saving time)
                  !
                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
-                                    vkpt_int(:,ik), kham )
+                                    vkpt_int(:,ik_g), kham )
                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rsgm_nn,  &
-                                    vkpt_int(:,ik), ksgm )
+                                    vkpt_int(:,ik_g), ksgm )
                  !
                  IF ( lhave_overlap ) THEN
                      !
                      CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
-                                        vkpt_int(:,ik), kovp )
+                                        vkpt_int(:,ik_g), kovp )
                      !
                  ENDIF
                  !
@@ -791,8 +791,8 @@ END PROGRAM dos_main
                  !
                  DO i  = 1, dimwann 
                     !
-                    dos0( ie )    = dos0( ie ) - cost * wk(ik) * AIMAG( GF0(i,i) )
-                    dos(  ie )    = dos(  ie ) - cost * wk(ik) * AIMAG( GF(i,i)  )
+                    dos0( ie )    = dos0( ie ) - cost * wk(ik_g) * AIMAG( GF0(i,i) )
+                    dos(  ie )    = dos(  ie ) - cost * wk(ik_g) * AIMAG( GF(i,i)  )
                     !
                  ENDDO
                  !
@@ -802,14 +802,16 @@ END PROGRAM dos_main
              !
              ! standard DOS calculation (no sgm or static sgm)
              !
-             DO ik = iks, ike
+             DO ik_g = iks, ike
+                 !
+                 ik = ik_g -iks +1
                  !
                  DO i = 1, dimwann 
                      !
                      arg  = ( egrid( ie ) - eig_int( i, ik ) ) / delta
                      raux = smearing_func( arg, smearing_type )
                      !
-                     dos( ie ) = dos( ie ) + cost * wk(ik) * raux
+                     dos( ie ) = dos( ie ) + cost * wk(ik_g) * raux
                      !
                  ENDDO
                  !
@@ -855,8 +857,10 @@ END PROGRAM dos_main
           energy_loop2: &
           DO ie = 1, ne
               !
-              DO ik = iks, ike
+              DO ik_g = iks, ike
               DO i  = 1, dimwann 
+                  !
+                  ik = ik_g -iks +1
                   !
                   ! compute the smearing function
                   !
@@ -874,7 +878,7 @@ END PROGRAM dos_main
                   !
                   DO j = 1, dimwann
                       !
-                      pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik) * raux * &
+                      pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik_g) * raux * &
                                       REAL( z( j, i, ik) * CONJG( z( j, i, ik)) , dbl )
                   ENDDO
                   !
