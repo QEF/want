@@ -204,13 +204,13 @@
    !
    ! recover over parallelism
    !
-   CALL timing( 'mp_sum', OPR='start' )
+   CALL timing( 'mp_sum_domega', OPR='start' )
    DO ik_g = 1, nkpts_g
        !
        CALL mp_sum( domg(:,ik_g) )
        !
    ENDDO
-   CALL timing( 'mp_sum', OPR='stop' )
+   CALL timing( 'mp_sum_domega', OPR='stop' )
 
 
    !
