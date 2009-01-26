@@ -368,7 +368,16 @@
            !
            ! take care of parallelism
            !
-           CALL para_poolrecover( lamp )
+           CALL timing( 'mp_sum_lamp', OPR='start')
+           !
+           DO ik_g = 1, nkpts_g
+               CALL mp_sum( lamp(:,:,ik_g))
+           ENDDO
+           !
+           CALL timing( 'mp_sum_lamp', OPR='stop')
+           !
+           !CALL para_poolrecover( lamp )
+
            !
            !
            CALL log_pop ( 'lamp' )

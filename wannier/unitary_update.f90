@@ -25,6 +25,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dqp, cU)
    USE parser_module,     ONLY : int2char
    USE kpoints_module,    ONLY : nkpts_g, iks, ike
    USE paratools_module,  ONLY : para_poolrecover
+   USE mp,                ONLY : mp_sum
 
 #ifdef __CHECK_UNITARY
    USE control_module, ONLY : unitary_thr
@@ -121,7 +122,15 @@ SUBROUTINE unitary_update(dimwann, nkpts, dqp, cU)
    !
    ! pool recovering
    !
-   CALL para_poolrecover( cU )
+   CALL timing( 'mp_sum_unitary', OPR='start' )
+   DO ik_g = 1, nkpts_g
+       !
+       CALL mp_sum( cU(:,:,ik_g) )
+       !
+   ENDDO
+   CALL timing( 'mp_sum_unitary', OPR='stop' )
+   !
+   !CALL para_poolrecover( cU )
    
 
    !
