@@ -47,7 +47,7 @@
       !
       ! local variables
       !
-      INTEGER     :: ik, ik_g, m, n, ierr
+      INTEGER     :: ik, ik_g, m, ierr
       INTEGER     :: ncgfix, ncount, iter
       LOGICAL     :: lcg, do_conjgrad
       REAL(dbl)   :: Omega_old, Omega_var, Omega0, OmegaA
