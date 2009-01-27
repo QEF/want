@@ -4,6 +4,9 @@
 =======================================================
 
 
+27 Jan 2009      plugins tree added to want distribution: useful to treat
+                 external libs and interfaces to Abinit, etc. (AF)
+
 14 Jan 2009      debug_level variable added to WanT PPs. Documentation for
                  midpoint program added. (AF)
 
