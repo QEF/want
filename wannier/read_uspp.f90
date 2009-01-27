@@ -269,7 +269,7 @@ CONTAINS
          call errore(' readvan', 'Wrong  nqlc read', upf%nqlc )
     !
     ALLOCATE ( rc(nang) )
-    read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
          ( rc(l), l=1,nang )
     !
     !     reads the number of beta functions 
@@ -295,7 +295,7 @@ CONTAINS
     ALLOCATE ( eee(upf%nbeta), ddd(upf%nbeta,upf%nbeta) )
     do iv=1,upf%nbeta
        read( iunps, '(i5)',err=100, iostat=ios ) upf%lll(iv)
-       read( iunps, '(1p4e19.11)',err=100, iostat=ios ) &
+       read( iunps, '(4(1p,e19.11))',err=100, iostat=ios ) &
             eee(iv), ( upf%beta(ir,iv), ir=1,upf%kkbeta )
        do ir=upf%kkbeta+1,upf%mesh
           upf%beta(ir,iv)=0.0_DP
@@ -308,7 +308,7 @@ CONTAINS
           !  Q(iv,jv) => qfunc(ijv) as defined below (for jv >= iv)
           !
           ijv = jv * (jv-1) / 2 + iv
-          read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+          read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
                upf%dion(iv,jv), ddd(iv,jv), upf%qqq(iv,jv), &
                (upf%qfunc(ir,ijv),ir=1,upf%kkbeta),         &
                ((upf%qfcoef(i,lp,iv,jv),i=1,upf%nqf),lp=1,upf%nqlc)
@@ -351,7 +351,7 @@ CONTAINS
     !   read the local potential
     !
     ALLOCATE ( upf%vloc(upf%mesh) )
-    read( iunps, '(1p4e19.11)',err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))',err=100, iostat=ios ) &
          rcloc, ( upf%vloc(ir), ir=1,upf%mesh )
     !
     !   If present reads the core charge rho_atc(r)=4*pi*r**2*rho_core(r)
@@ -359,29 +359,29 @@ CONTAINS
     if ( upf%nlcc ) then 
        ALLOCATE ( upf%rho_atc(upf%mesh) )
        if (iver(1) >= 7) &
-            read( iunps, '(1p4e19.11)', err=100, iostat=ios ) dummy
-       read( iunps, '(1p4e19.11)', err=100, iostat=ios )  &
+            read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) dummy
+       read( iunps, '(4(1p,e19.11))', err=100, iostat=ios )  &
             ( upf%rho_atc(ir), ir=1,upf%mesh )
     endif
     !
     !     Read the screened local potential (not used)
     !
     ALLOCATE ( upf%rho_at(upf%mesh) )
-    read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
          (upf%rho_at(ir), ir=1,upf%mesh)
     !
     !     Read the valence atomic charge
     !
-    read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
          (upf%rho_at(ir), ir=1,upf%mesh)
     !
     !     Read the logarithmic mesh (if version > 1)
     !
     ALLOCATE ( upf%r(upf%mesh), upf%rab(upf%mesh) ) 
     if (iver(1) >1) then
-       read( iunps, '(1p4e19.11)',err=100, iostat=ios ) &
+       read( iunps, '(4(1p,e19.11))',err=100, iostat=ios ) &
             (upf%r(ir),ir=1,upf%mesh)
-       read( iunps, '(1p4e19.11)',err=100, iostat=ios ) &
+       read( iunps, '(4(1p,e19.11))',err=100, iostat=ios ) &
             (upf%rab(ir),ir=1,upf%mesh)
     else
        !
@@ -697,9 +697,9 @@ CONTAINS
     if ( upf%nwfc < 0 ) &
          call errore('readrrkj', 'wrong nchi', is)
     !
-    read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
          ( rdum, nb=1,upf%nwfc )
-    read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
          ( rdum, nb=1,upf%nwfc )
     !
     ALLOCATE ( upf%oc(upf%nwfc), upf%lchi(upf%nwfc), upf%lll(upf%nwfc) ) 
@@ -722,7 +722,7 @@ CONTAINS
     do nb=1,upf%nbeta
        read ( iunps, '(i6)',err=100, iostat=ios ) upf%kbeta(nb)
        upf%kkbeta = MAX ( upf%kkbeta, upf%kbeta(nb) )
-       read ( iunps, '(1p4e19.11)',err=100, iostat=ios ) &
+       read ( iunps, '(4(1p,e19.11))',err=100, iostat=ios ) &
             ( upf%beta(ir,nb), ir=1,upf%kbeta(nb))
        do ir=upf%kbeta(nb)+1,upf%mesh
           upf%beta(ir,nb)=0.0_DP
@@ -733,12 +733,12 @@ CONTAINS
           ! Q(nb,mb) => qfunc(ijv) as defined below (for mb <= nb)
           ! 
           ijv = nb * (nb - 1) / 2 + mb
-          read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+          read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
                upf%dion(nb,mb)
           if (pseudotype == 3) then
-             read(iunps,'(1p4e19.11)',err=100,iostat=ios) &
+             read(iunps,'(4(1p,e19.11))',err=100,iostat=ios) &
                   upf%qqq(nb,mb)
-             read(iunps,'(1p4e19.11)',err=100,iostat=ios) &
+             read(iunps,'(4(1p,e19.11))',err=100,iostat=ios) &
                   (upf%qfunc(n,ijv),n=1,upf%mesh)
           else
              upf%qqq(nb,mb)=0.0_DP
@@ -754,27 +754,27 @@ CONTAINS
     !   reads the local potential 
     !
     ALLOCATE ( upf%vloc(upf%mesh) )
-    read( iunps, '(1p4e19.11)',err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))',err=100, iostat=ios ) &
          rdum, ( upf%vloc(ir), ir=1,upf%mesh )
     !
     !   reads the atomic charge
     !
     ALLOCATE ( upf%rho_at(upf%mesh) )
-    read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
          ( upf%rho_at(ir), ir=1,upf%mesh )
     !
     !   if present reads the core charge
     !
     if ( upf%nlcc ) then 
        ALLOCATE ( upf%rho_atc(upf%mesh) )
-       read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+       read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
             ( upf%rho_atc(ir), ir=1,upf%mesh )
     endif
     !
     !   read the pseudo wavefunctions of the atom
     !  
     ALLOCATE ( upf%chi(upf%mesh, upf%nwfc) )
-    read( iunps, '(1p4e19.11)', err=100, iostat=ios ) &
+    read( iunps, '(4(1p,e19.11))', err=100, iostat=ios ) &
          ((upf%chi(ir,nb),ir=1,upf%mesh),nb=1,upf%nwfc)
     !
     !    set several variables for compatibility with the rest of the code
