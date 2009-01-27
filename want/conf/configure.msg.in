@@ -8,6 +8,8 @@ The following libraries have been found:
   @lapack_line@
   @fft_line@
   @mass_line@
+  @etsf_io_line@
+  @netcdf_line@
 Please check if that is correct.
 
 If any libraries are missing, you may specify a list of directories

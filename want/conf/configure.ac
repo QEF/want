@@ -52,8 +52,6 @@ etsf_io_include=$ETSF_IO_INCLUDE
 etsf_io_libs=$ETSF_IO_LIBS
 
 
-
-
 # command-line arguments
 for arg in $*
 do
@@ -68,10 +66,6 @@ do
 	elif test "$arg" = "--with-etsf_io"  ; then use_etsf_io=1
 	fi
 done
-
-# AF
-if ! test -z "$netcdf_libs"  ; then use_netcdf=1 ; fi 
-if ! test -z "$etsf_io_libs" ; then use_etsf_io=1 ; fi 
 
 
 # configure for current directory by default
@@ -733,6 +727,7 @@ have_fftw_h=0
 have_mpi=0
 # <AF>
 internal_libs=
+plugins_libs=
 
 # check for blas
 # supported vendor replacements:
@@ -1562,6 +1557,30 @@ then
 fi
 echo setting MPI_LIBS... $mpi_libs
 
+#
+# ETSF_IO & NETCDF
+# <AF>
+
+if test "$etsf_io_libs" != "" ; then use_etsf_io=1 ; fi 
+#
+if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
+    etsf_io_libs="../plugins/etsf_io/libetsf_io.a"
+    etsf_io_include="${imod}../plugins/etsf_io"
+    plugins_libs="$plugins_libs libetsf_io"
+fi
+if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
+#
+if test "$netcdf_libs" != "" ;  then use_netcdf=1 ;  fi 
+#
+if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
+    netcdf_libs="../plugins/netcdf/libnetcdf.a"
+    netcdf_include="${imod}../plugins/netcdf"
+    plugins_libs="$plugins_libs libnetcdf"
+fi
+if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
+
+
+
 # final check on availability of parallel environment
 parallel=0
 if test "$use_parallel" -ne 0
@@ -1597,6 +1616,7 @@ echo setting RANLIB... $ranlib
 blas_line="BLAS_LIBS=$blas_libs"
 lapack_line="LAPACK_LIBS=$lapack_libs"
 fft_line="FFT_LIBS=$fft_libs"
+#
 if test "$have_fft" -ne 0 && test "$have_fftw" -ne 0 &&
 	test "$have_fftw_h" -eq 0
 then
@@ -1607,6 +1627,12 @@ if test "$mpi_libs" != "" ; then mpi_line="MPI_LIBS=$mpi_libs"
 else mpi_line="@delete@" ; fi
 if test "$arch" = "aix" ; then mass_line="MASS_LIBS=$mass_libs"
 else mass_line="@delete@" ; fi
+# <AF>
+if test "$etsf_io_libs" != "" ; then etsf_io_line="ETSF_IO_LIBS=$etsf_io_libs"
+else etsf_io_line="@delete@" ; fi
+if test "$netcdf_libs" != "" ; then nectdf_line="NETCDF_LIBS=$netcdf_libs"
+else netcdf_line="@delete@" ; fi
+#
 
 if test "$use_parallel" -ne 0
 then
@@ -1651,7 +1677,12 @@ AC_SUBST(fft_libs)
 AC_SUBST(mpi_libs)
 AC_SUBST(mass_libs)
 AC_SUBST(pgplot_libs)
-AC_SUBST(internal_libs)    # <AF>
+AC_SUBST(etsf_io_libs)      # <AF>
+AC_SUBST(etsf_io_include)   # <AF>
+AC_SUBST(netcdf_libs)       # <AF>
+AC_SUBST(netcdf_include)    # <AF>
+AC_SUBST(internal_libs)     # <AF>
+AC_SUBST(plugins_libs)      # <AF>
 AC_SUBST(ar)
 AC_SUBST(arflags)
 AC_SUBST(arflags_dynamic)
@@ -1662,6 +1693,8 @@ AC_SUBST(lapack_line)
 AC_SUBST(fft_line)
 AC_SUBST(mpi_line)
 AC_SUBST(mass_line)
+AC_SUBST(etsf_io_line)      # <AF>
+AC_SUBST(netcdf_line)       # <AF>
 AC_SUBST(parallel_report)
 
 AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])     # <AF>
@@ -1685,7 +1718,6 @@ fi
 #----------------------
 # configure iotk
 #
-# generate dependencies
 if test -x $topdir/conf/configure_iotk
 then
         echo
@@ -1713,7 +1745,19 @@ then
         ( cd $topdir ; ./conf/configure_iotk  IOTK_REAL_KINDS=$iotk_real_kinds \
                                               FC=$iotk_fc )
 fi
+
 # <AF>
+#----------------------
+# setup for configuring plugins
+#
+if test "$use_etsf_io" = "1" ; then
+   test -e ./plugins/etsf_io/configure-stamp && rm ./plugins/etsf_io/configure-stamp
+fi
+if test "$use_netcdf" = "1" ; then
+   test -e ./plugins/netcdf/configure-stamp && rm ./plugins/netcdf/configure-stamp
+fi
+
+
 
 # final messages
 sed '/@delete@/d' configure.msg

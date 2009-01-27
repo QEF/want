@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP SIZEOF_INT_P SET_MAKE FLIBS ranlib built_date host arch cc cflags dflags fdflags cpp cppflags f90 mpif90 f90flags f77 fflags fflags_noopt pre_fdflags imod iflags includefftw ld ldflags blas_libs lapack_libs fft_libs mpi_libs mass_libs pgplot_libs internal_libs ar arflags arflags_dynamic f90rule blas_line lapack_line fft_line mpi_line mass_line parallel_report LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP SIZEOF_INT_P SET_MAKE FLIBS ranlib built_date host arch cc cflags dflags fdflags cpp cppflags f90 mpif90 f90flags f77 fflags fflags_noopt pre_fdflags imod iflags includefftw ld ldflags blas_libs lapack_libs fft_libs mpi_libs mass_libs pgplot_libs etsf_io_libs etsf_io_include netcdf_libs netcdf_include internal_libs plugins_libs ar arflags arflags_dynamic f90rule blas_line lapack_line fft_line mpi_line mass_line etsf_io_line netcdf_line parallel_report LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1353,6 +1353,12 @@ iotk_logical_kinds=$IOTK_LOGICAL_KINDS
 iotk_real_kinds=$IOTK_REAL_KINDS
 iotk_fc=$IOTK_FC
 #
+use_netcdf=
+netcdf_include=$NETCDF_INCLUDE
+netcdf_libs=$NETCDF_LIBS
+use_etsf_io=
+etsf_io_include=$ETSF_IO_INCLUDE
+etsf_io_libs=$ETSF_IO_LIBS
 
 
 # command-line arguments
@@ -1364,8 +1370,12 @@ do
 	elif test "$arg" = "--disable-parallel" ; then use_parallel=0
 	elif test "$arg" = "--enable-shared"    ; then use_shared=1
 	elif test "$arg" = "--disable-shared"   ; then use_shared=0
+        # AF
+	elif test "$arg" = "--with-netcdf"   ; then use_netcdf=1
+	elif test "$arg" = "--with-etsf_io"  ; then use_etsf_io=1
 	fi
 done
+
 
 # configure for current directory by default
 if test "$topdir" = "" ; then topdir="`pwd`" ; fi
@@ -1674,7 +1684,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:1677:" \
+echo "$as_me:1687:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -2102,7 +2112,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:2105:" \
+echo "$as_me:2115:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4178,7 +4188,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4181:" \
+echo "$as_me:4191:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4708,7 +4718,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4711: \"$ac_link\") >&5
+(eval echo $as_me:4721: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4786,7 +4796,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4789: \"$ac_link\") >&5
+(eval echo $as_me:4799: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -5492,6 +5502,7 @@ have_fftw_h=0
 have_mpi=0
 # <AF>
 internal_libs=
+plugins_libs=
 
 # check for blas
 # supported vendor replacements:
@@ -9783,6 +9794,30 @@ fi
 fi
 echo setting MPI_LIBS... $mpi_libs
 
+#
+# ETSF_IO & NETCDF
+# <AF>
+
+if test "$etsf_io_libs" != "" ; then use_etsf_io=1 ; fi
+#
+if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
+    etsf_io_libs="../plugins/etsf_io/libetsf_io.a"
+    etsf_io_include="${imod}../plugins/etsf_io"
+    plugins_libs="$plugins_libs libetsf_io"
+fi
+if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
+#
+if test "$netcdf_libs" != "" ;  then use_netcdf=1 ;  fi
+#
+if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
+    netcdf_libs="../plugins/netcdf/libnetcdf.a"
+    netcdf_include="${imod}../plugins/netcdf"
+    plugins_libs="$plugins_libs libnetcdf"
+fi
+if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
+
+
+
 # final check on availability of parallel environment
 parallel=0
 if test "$use_parallel" -ne 0
@@ -9944,6 +9979,7 @@ echo setting RANLIB... $ranlib
 blas_line="BLAS_LIBS=$blas_libs"
 lapack_line="LAPACK_LIBS=$lapack_libs"
 fft_line="FFT_LIBS=$fft_libs"
+#
 if test "$have_fft" -ne 0 && test "$have_fftw" -ne 0 &&
 	test "$have_fftw_h" -eq 0
 then
@@ -9954,6 +9990,12 @@ if test "$mpi_libs" != "" ; then mpi_line="MPI_LIBS=$mpi_libs"
 else mpi_line="@delete@" ; fi
 if test "$arch" = "aix" ; then mass_line="MASS_LIBS=$mass_libs"
 else mass_line="@delete@" ; fi
+# <AF>
+if test "$etsf_io_libs" != "" ; then etsf_io_line="ETSF_IO_LIBS=$etsf_io_libs"
+else etsf_io_line="@delete@" ; fi
+if test "$netcdf_libs" != "" ; then nectdf_line="NETCDF_LIBS=$netcdf_libs"
+else netcdf_line="@delete@" ; fi
+#
 
 if test "$use_parallel" -ne 0
 then
@@ -9998,7 +10040,12 @@ fi
 
 
 
+      # <AF>
+   # <AF>
+       # <AF>
     # <AF>
+     # <AF>
+      # <AF>
 
 
 
@@ -10009,6 +10056,8 @@ fi
 
 
 
+      # <AF>
+       # <AF>
 
 
           ac_config_headers="$ac_config_headers include/ctools.h:include/ctools.h.in"
@@ -10680,7 +10729,12 @@ s,@fft_libs@,$fft_libs,;t t
 s,@mpi_libs@,$mpi_libs,;t t
 s,@mass_libs@,$mass_libs,;t t
 s,@pgplot_libs@,$pgplot_libs,;t t
+s,@etsf_io_libs@,$etsf_io_libs,;t t
+s,@etsf_io_include@,$etsf_io_include,;t t
+s,@netcdf_libs@,$netcdf_libs,;t t
+s,@netcdf_include@,$netcdf_include,;t t
 s,@internal_libs@,$internal_libs,;t t
+s,@plugins_libs@,$plugins_libs,;t t
 s,@ar@,$ar,;t t
 s,@arflags@,$arflags,;t t
 s,@arflags_dynamic@,$arflags_dynamic,;t t
@@ -10690,6 +10744,8 @@ s,@lapack_line@,$lapack_line,;t t
 s,@fft_line@,$fft_line,;t t
 s,@mpi_line@,$mpi_line,;t t
 s,@mass_line@,$mass_line,;t t
+s,@etsf_io_line@,$etsf_io_line,;t t
+s,@netcdf_line@,$netcdf_line,;t t
 s,@parallel_report@,$parallel_report,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
@@ -11194,7 +11250,6 @@ fi
 #----------------------
 # configure iotk
 #
-# generate dependencies
 if test -x $topdir/conf/configure_iotk
 then
         echo
@@ -11222,7 +11277,18 @@ then
         ( cd $topdir ; ./conf/configure_iotk  IOTK_REAL_KINDS=$iotk_real_kinds \
                                               FC=$iotk_fc )
 fi
+
 # <AF>
+#----------------------
+# setup for configuring plugins
+#
+if test "$use_etsf_io" = "1" ; then
+   test -e ./plugins/etsf_io/configure-stamp && rm ./plugins/etsf_io/configure-stamp
+fi
+if test "$use_netcdf" = "1" ; then
+   test -e ./plugins/netcdf/configure-stamp && rm ./plugins/netcdf/configure-stamp
+fi
+
 
 
 # final messages
