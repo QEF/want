@@ -12,13 +12,20 @@ TARBALL=../archive/$(PACKAGE).tar.gz
 #
 # MAIN target
 #
-all: uncompress-stamp
+all: uncompress-stamp configure-stamp
 
 uncompress-stamp:
 	../../conf/missing --run tar xf $(TARBALL)
 	touch uncompress-stamp
 
-lib: uncompress-stamp
+configure-stamp: uncompress-stamp
+	FC=$(F90); \
+	FCFLAGS=$(F90FLAGS); 
+	if test -d $(PACKAGE) ; then \
+	   ( cd $(PACKAGE);  ./configure ) ; fi
+	touch configure-stamp
+	
+lib: uncompress-stamp configure-stamp
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) ) ; fi
 
 #
@@ -29,6 +36,6 @@ clean:
 
 wash:
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
-	- rm uncompress-stamp $(LIBNAME) *.mod
+	- rm uncompress-stamp configure-stamp $(LIBNAME) *.mod
 	
 
