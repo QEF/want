@@ -44,6 +44,14 @@ iotk_logical_kinds=$IOTK_LOGICAL_KINDS
 iotk_real_kinds=$IOTK_REAL_KINDS
 iotk_fc=$IOTK_FC
 #
+use_netcdf=
+netcdf_include=$NETCDF_INCLUDE
+netcdf_libs=$NETCDF_LIBS
+use_etsf_io=
+etsf_io_include=$ETSF_IO_INCLUDE
+etsf_io_libs=$ETSF_IO_LIBS
+
+
 
 
 # command-line arguments
@@ -55,8 +63,16 @@ do
 	elif test "$arg" = "--disable-parallel" ; then use_parallel=0
 	elif test "$arg" = "--enable-shared"    ; then use_shared=1
 	elif test "$arg" = "--disable-shared"   ; then use_shared=0
+        # AF
+	elif test "$arg" = "--with-netcdf"   ; then use_netcdf=1
+	elif test "$arg" = "--with-etsf_io"  ; then use_etsf_io=1
 	fi
 done
+
+# AF
+if ! test -z "$netcdf_libs"  ; then use_netcdf=1 ; fi 
+if ! test -z "$etsf_io_libs" ; then use_etsf_io=1 ; fi 
+
 
 # configure for current directory by default
 if test "$topdir" = "" ; then topdir="`pwd`" ; fi
@@ -1698,7 +1714,6 @@ then
                                               FC=$iotk_fc )
 fi
 # <AF>
-
 
 # final messages
 sed '/@delete@/d' configure.msg

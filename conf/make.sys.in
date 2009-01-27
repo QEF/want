@@ -43,7 +43,9 @@ LAPACK_LIBS    = @lapack_libs@
 FFT_LIBS       = @fft_libs@
 MPI_LIBS       = @mpi_libs@
 MASS_LIBS      = @mass_libs@
+#
 INTERNAL_LIBS  = @internal_libs@
+PLUGINS_LIBS   = @plugins_libs@
 
 # -----------------------------
 # application-specific settings
