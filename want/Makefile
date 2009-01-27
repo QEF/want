@@ -41,6 +41,10 @@ deps:
 # 
 # LIBS and MODULES
 #
+libplugins: 
+	if test -d plugins ; then \
+	( cd plugins ; $(MAKE) ) ; fi
+
 libiotk:
 	if test -d iotk ; then \
 	( cd iotk ; $(MAKE) ) ; fi
@@ -69,6 +73,7 @@ utility: libiotk libctools libwant
 # CLEAN UP
 #
 clean:
+	if test -d plugins ;   then ( cd plugins;   $(MAKE) clean ) ; fi
 	if test -d iotk ;      then ( cd iotk;      $(MAKE) clean ) ; fi
 	if test -d ctools ;    then ( cd ctools;    $(MAKE) clean ) ; fi
 	if test -d libs ;      then ( cd libs;      $(MAKE) clean ) ; fi
@@ -80,6 +85,10 @@ clean:
 clean_test:
 	if test -d tests ; then \
 	( cd tests ; ./run.sh -r clean ) ; fi
+
+wash_plugins:
+	if test -d plugins ;   then ( cd plugins;   $(MAKE) wash ) ; fi
+	
 
 wash : clean clean_test
 	- /bin/rm -rf make.sys ./conf/configure.msg \
