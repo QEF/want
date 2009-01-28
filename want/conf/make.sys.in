@@ -19,35 +19,38 @@
 # compiler definitions
 
 @SET_MAKE@
-CC             = @cc@
-CFLAGS         = @cflags@ $(DFLAGS) $(IFLAGS)
-CPP            = @cpp@
-CPPFLAGS       = @cppflags@ $(DFLAGS) $(IFLAGS)
-F90            = @f90@
-MPIF90         = @mpif90@
-F90FLAGS       = @f90flags@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
-F77            = @f77@
-FFLAGS         = @fflags@
-FFLAGS_NOOPT   = @fflags_noopt@
-LD             = @ld@
-LDFLAGS        = @ldflags@
-AR             = @ar@
-ARFLAGS        = @arflags@
-RANLIB         = @ranlib@
+HOMEDIR         = @homedir@
+CC              = @cc@
+CFLAGS          = @cflags@ $(DFLAGS) $(IFLAGS)
+CPP             = @cpp@
+CPPFLAGS        = @cppflags@ $(DFLAGS) $(IFLAGS)
+F90             = @f90@
+MPIF90          = @mpif90@
+F90FLAGS        = @f90flags@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
+F77             = @f77@
+FFLAGS          = @fflags@
+FFLAGS_NOOPT    = @fflags_noopt@
+LD              = @ld@
+LDFLAGS         = @ldflags@
+AR              = @ar@
+ARFLAGS         = @arflags@
+RANLIB          = @ranlib@
 
 # -----------------------------
 # libraries
 
-BLAS_LIBS      = @blas_libs@
-LAPACK_LIBS    = @lapack_libs@
-FFT_LIBS       = @fft_libs@
-MPI_LIBS       = @mpi_libs@
-MASS_LIBS      = @mass_libs@
-ETSF_IO_LIBS   = @etsf_io_libs@
-NETCDF_LIBS    = @netcdf_libs@
+BLAS_LIBS       = @blas_libs@
+LAPACK_LIBS     = @lapack_libs@
+FFT_LIBS        = @fft_libs@
+MPI_LIBS        = @mpi_libs@
+MASS_LIBS       = @mass_libs@
+ETSF_IO_LIBS    = @etsf_io_libs@
+ETSF_IO_INCLUDE = @etsf_io_include@
+NETCDF_LIBS     = @netcdf_libs@
+NETCDF_INCLUDE  = @netcdf_include@
 #
-INTERNAL_LIBS  = @internal_libs@
-PLUGINS_LIBS   = @plugins_libs@
+INTERNAL_LIBS   = @internal_libs@
+PLUGINS_LIBS    = @plugins_libs@
 
 # -----------------------------
 # application-specific settings
@@ -57,11 +60,12 @@ PLUGINS_LIBS   = @plugins_libs@
 DFLAGS         = @dflags@
 FDFLAGS        = @fdflags@
 IFLAGS         = -I../include @iflags@
-MODFLAGS       = @imod@. @imod@../iotk @netcdf_include@ @etsf_io_include@ \
+MODFLAGS       = @imod@. @imod@../iotk @i_netcdf_include@ @i_etsf_io_include@ \
                  @imod@../libs @imod@../wannier @imod@../transport 
 
 LIBOBJS        = ../libs/libwant.a ../iotk/libiotk.a ../ctools/libctools.a
 
 # LIBS must contain the location of all needed external libraries
-LIBS           = $(LAPACK_LIBS) $(BLAS_LIBS) $(FFT_LIBS) $(MPI_LIBS) $(MASS_LIBS) $(ETSF_IO_LIBS) $(NETCDF_LIBS)
+LIBS           = $(LAPACK_LIBS) $(BLAS_LIBS) $(FFT_LIBS) $(MPI_LIBS) \
+                 $(MASS_LIBS) $(ETSF_IO_LIBS) $(NETCDF_LIBS)
 

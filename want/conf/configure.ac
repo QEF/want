@@ -1564,8 +1564,9 @@ echo setting MPI_LIBS... $mpi_libs
 if test "$etsf_io_libs" != "" ; then use_etsf_io=1 ; fi 
 #
 if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
-    etsf_io_libs="../plugins/etsf_io/libetsf_io.a"
-    etsf_io_include="${imod}../plugins/etsf_io"
+    etsf_io_libs="`pwd`/plugins/etsf_io/libetsf_io.a"
+    etsf_io_include="`pwd`/plugins/etsf_io"
+    i_etsf_io_include="${imod}../plugins/etsf_io"
     plugins_libs="$plugins_libs libetsf_io"
 fi
 if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
@@ -1573,8 +1574,9 @@ if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
 if test "$netcdf_libs" != "" ;  then use_netcdf=1 ;  fi 
 #
 if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
-    netcdf_libs="../plugins/netcdf/libnetcdf.a"
-    netcdf_include="${imod}../plugins/netcdf"
+    netcdf_libs="`pwd`/plugins/netcdf/libnetcdf.a"
+    netcdf_include="`pwd`/plugins/netcdf"
+    i_netcdf_include="${imod}../plugins/netcdf"
     plugins_libs="$plugins_libs libnetcdf"
 fi
 if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
@@ -1630,7 +1632,7 @@ else mass_line="@delete@" ; fi
 # <AF>
 if test "$etsf_io_libs" != "" ; then etsf_io_line="ETSF_IO_LIBS=$etsf_io_libs"
 else etsf_io_line="@delete@" ; fi
-if test "$netcdf_libs" != "" ; then nectdf_line="NETCDF_LIBS=$netcdf_libs"
+if test "$netcdf_libs" != "" ; then netcdf_line="NETCDF_LIBS=$netcdf_libs"
 else netcdf_line="@delete@" ; fi
 #
 
@@ -1648,6 +1650,10 @@ Configured for compilation of serial executables."
 else
 	parallel_report="Configured for compilation of serial executables."
 fi
+
+# XXX
+echo "ETSF_IO: $etsf_io_line"
+echo "NETCDF: $netcdf_line"
 
 # export settings to generated files
 AC_SUBST(built_date)     # <AF>
@@ -1679,8 +1685,10 @@ AC_SUBST(mass_libs)
 AC_SUBST(pgplot_libs)
 AC_SUBST(etsf_io_libs)      # <AF>
 AC_SUBST(etsf_io_include)   # <AF>
+AC_SUBST(i_etsf_io_include) # <AF>
 AC_SUBST(netcdf_libs)       # <AF>
 AC_SUBST(netcdf_include)    # <AF>
+AC_SUBST(i_netcdf_include)  # <AF>
 AC_SUBST(internal_libs)     # <AF>
 AC_SUBST(plugins_libs)      # <AF>
 AC_SUBST(ar)
