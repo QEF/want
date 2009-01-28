@@ -22,6 +22,7 @@ default:
 	@echo  "     libwant            compile the want utility library"
 	@echo  "     libiotk            compile iotk library"
 	@echo  "     libctools          compile ctools library"
+	@echo  "     libplugins         compile plugins"
 	@echo 
 	@echo  "     all                all the above executables "
 	@echo  "     deps               update fortran90 dependencies "
@@ -53,19 +54,19 @@ libctools:
 	if test -d ctools ; then \
 	( cd ctools ; $(MAKE) ) ; fi
 
-libwant: libiotk
+libwant: libiotk libplugins
 	if test -d libs ; then \
 	( cd libs ; $(MAKE) ) ; fi
 
-wannier: libiotk libctools libwant
+wannier: libiotk libctools libwant libplugins
 	if test -d wannier ; then \
 	( cd wannier ; $(MAKE) ) ; fi
 
-transport: libiotk libctools libwant
+transport: libiotk libctools libwant libplugins
 	if test -d transport ; then \
 	( cd transport ; $(MAKE) ) ; fi
 
-utility: libiotk libctools libwant
+utility: libiotk libctools libwant libplugins
 	if test -d utility ; then \
 	( cd utility ; $(MAKE) ) ; fi
 
@@ -90,7 +91,7 @@ wash_plugins:
 	if test -d plugins ;   then ( cd plugins;   $(MAKE) wash ) ; fi
 	
 
-wash : clean clean_test
+wash : wash_plugins clean clean_test
 	- /bin/rm -rf make.sys ./conf/configure.msg \
 		./conf/config.log ./conf/config.status \
 		./conf/*.lineno \
