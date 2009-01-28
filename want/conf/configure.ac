@@ -87,10 +87,11 @@ if test "$host" != "" ; then ranlib=echo; fi
 cross_compiling=yes
 if test "$host" = "" ; then host=$build; fi
 
-# date
+# date and local dir
 # <AF>
 built_date=`date "+%c"`
 echo seting built date... $built_date
+#
 
 # identify architecture
 if test "$arch" = ""
@@ -1564,8 +1565,8 @@ echo setting MPI_LIBS... $mpi_libs
 if test "$etsf_io_libs" != "" ; then use_etsf_io=1 ; fi 
 #
 if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
-    etsf_io_libs="`pwd`/plugins/etsf_io/libetsf_io.a"
-    etsf_io_include="`pwd`/plugins/etsf_io"
+    etsf_io_libs="-L$topdir/plugins/etsf_io -letsf_io"
+    etsf_io_include="$topdir/plugins/etsf_io"
     i_etsf_io_include="${imod}../plugins/etsf_io"
     plugins_libs="$plugins_libs libetsf_io"
 fi
@@ -1574,8 +1575,8 @@ if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
 if test "$netcdf_libs" != "" ;  then use_netcdf=1 ;  fi 
 #
 if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
-    netcdf_libs="`pwd`/plugins/netcdf/libnetcdf.a"
-    netcdf_include="`pwd`/plugins/netcdf"
+    netcdf_libs="-L$topdir/plugins/netcdf -lnetcdf"
+    netcdf_include="$topdir/plugins/netcdf"
     i_netcdf_include="${imod}../plugins/netcdf"
     plugins_libs="$plugins_libs libnetcdf"
 fi
@@ -1651,11 +1652,9 @@ else
 	parallel_report="Configured for compilation of serial executables."
 fi
 
-# XXX
-echo "ETSF_IO: $etsf_io_line"
-echo "NETCDF: $netcdf_line"
 
 # export settings to generated files
+AC_SUBST(topdir)         # <AF>
 AC_SUBST(built_date)     # <AF>
 AC_SUBST(host)           # <AF>
 AC_SUBST(arch)           # <AF>

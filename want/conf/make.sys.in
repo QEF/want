@@ -19,7 +19,6 @@
 # compiler definitions
 
 @SET_MAKE@
-HOMEDIR         = @homedir@
 CC              = @cc@
 CFLAGS          = @cflags@ $(DFLAGS) $(IFLAGS)
 CPP             = @cpp@
@@ -39,6 +38,7 @@ RANLIB          = @ranlib@
 # -----------------------------
 # libraries
 
+TOPDIR          = @topdir@
 BLAS_LIBS       = @blas_libs@
 LAPACK_LIBS     = @lapack_libs@
 FFT_LIBS        = @fft_libs@
