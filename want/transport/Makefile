@@ -34,6 +34,7 @@ WANNIER_OBJS= \
 ../wannier/control.o \
 ../wannier/converters.o \
 ../wannier/crystal_tools.o \
+../wannier/etsf_io_data.o \
 ../wannier/io_module.o \
 ../wannier/operator.o \
 ../wannier/startup.o \

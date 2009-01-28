@@ -27,6 +27,7 @@ datafiles.o \
 domega_aux.o \
 domega.o \
 dyson_solver.o \
+etsf_io_data.o \
 functionals.o \
 get_rgrid.o \
 get_monkpack.o \
