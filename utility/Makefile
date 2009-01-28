@@ -19,6 +19,7 @@ WANNIER_OBJS= \
 ../wannier/converters.o \
 ../wannier/correlation.o \
 ../wannier/crystal_tools.o \
+../wannier/etsf_io_data.o \
 ../wannier/functionals.o \
 ../wannier/get_monkpack.o \
 ../wannier/get_rgrid.o \

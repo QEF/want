@@ -23,6 +23,12 @@
    USE qexpt_module
    USE iotk_module
    !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module,  ONLY : ncid, lstat, dims, error_data
+#endif
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -128,9 +134,12 @@
       LOGICAL, OPTIONAL, INTENT(IN) :: need_wfc
       !
       CHARACTER(nstrx) :: filename, version
-      CHARACTER(nstrx) :: fmt_searched(3)
-      CHARACTER(nstrx) :: fmt_filename(3)
+      CHARACTER(nstrx) :: fmt_searched(4)
+      CHARACTER(nstrx) :: fmt_filename(4)
       LOGICAL          :: lexist, lexist1, lneed_wfc
+#ifdef __ETSF_IO
+      LOGICAL          :: lstat
+#endif
       INTEGER          :: i, ierr
 
       !
@@ -139,10 +148,12 @@
       fmt_searched(1) = 'crystal'
       fmt_searched(2) = 'qexml'
       fmt_searched(3) = 'pw_export'
+      fmt_searched(4) = 'etsf_io'
       !
       fmt_filename(1) = TRIM(dftdata_file_)
       fmt_filename(2) = '.save/data-file.xml'
       fmt_filename(3) = '.export/index.xml'
+      fmt_filename(4) = '_WFK-etsf.nc'
       !
       ! init
       lexist    = .FALSE.
@@ -216,6 +227,29 @@
                lexist = file_is_crystal( filename )
                !
            ENDIF
+           !
+#ifdef __ETSF_IO
+           IF ( lexist .AND. TRIM( fmt_searched(i) ) == 'etsf_io')  THEN
+               !
+               ! Try to open the file and to get dimensions to check that
+               ! the file is actually ETSF_IO formatted
+               !
+               IF ( ionode ) THEN
+                   CALL etsf_io_low_open_read(ncid, filename, lstat, &
+                                         ERROR_DATA=error_data, VERSION_MIN=2.1 )
+               ENDIF
+               CALL mp_bcast( lstat,   ionode_id )
+               IF ( .NOT. lstat ) EXIT
+               !
+               IF ( ionode ) THEN
+                   call etsf_io_dims_get(ncid, dims, lstat, error_data)
+               ENDIF
+               CALL mp_bcast( lstat,   ionode_id )
+               !
+               lexist = lstat
+               !
+           ENDIF
+#endif
            !
            IF ( lexist ) EXIT
            !

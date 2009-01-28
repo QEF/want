@@ -232,6 +232,8 @@ dyson_solver.o : ../libs/kind.o
 dyson_solver.o : ../libs/log_module.o
 dyson_solver.o : ../libs/timing.o
 dyson_solver.o : ../libs/util.o
+# etsf_io_data.o : @etsf_io@
+etsf_io_data.o : ../libs/kind.o
 functionals.o : ../libs/io_global.o
 functionals.o : ../libs/kind.o
 functionals.o : ../libs/parser.o
@@ -342,6 +344,9 @@ input_parameters.o : ../libs/parameters.o
 input_parameters.o : ../libs/parser.o
 io_module.o : control.o
 io_module.o : crystal_tools.o
+# io_module.o : @etsf_io@
+io_module.o : etsf_io_data.o
+# io_module.o : @etsf_io_tools@
 io_module.o : ../iotk/iotk_16_module.o
 io_module.o : ../libs/crystal_io.o
 io_module.o : ../libs/io_global.o
@@ -738,6 +743,7 @@ unitary_update.o : kpoints.o
 unitary_update.o : ../libs/constants.o
 unitary_update.o : ../libs/kind.o
 unitary_update.o : ../libs/log_module.o
+unitary_update.o : ../libs/mp.o
 unitary_update.o : ../libs/parser.o
 unitary_update.o : ../libs/timing.o
 unitary_update.o : ../libs/util.o

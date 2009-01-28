@@ -5,7 +5,8 @@
 
 
 28 Jan 2009      plugins are almost properly compiling. Configuration machinery
-                 updated. (AF)
+                 updated. Further changes to plugins Makefile system. 
+                 Inclusion of ETSF_IO lib started. (AF)
 
 27 Jan 2009      plugins tree added to want distribution: useful to treat
                  external libs and interfaces to Abinit, etc. (AF)
