@@ -15,7 +15,7 @@ all: $(PLUGINS_LIBS)
 libnetcdf:
 	 if test -d netcdf ;    then ( cd netcdf;    $(MAKE) ) ; fi
 
-libetsf_io:
+libetsf_io: libnetcdf
 	 if test -d etsf_io ;   then ( cd etsf_io;   $(MAKE) ) ; fi
 
 #
