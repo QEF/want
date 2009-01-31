@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************************
-SUBROUTINE overlap_augment( dimx, dimw1, dimw2, ik1, ik2, ib, Mkb )
+SUBROUTINE overlap_augment( dimx, dimw1, dimw2, ib, Mkb )
    !***************************************************************
    !
    !    This routine add the augmentation part due to USPP to the
@@ -18,8 +18,6 @@ SUBROUTINE overlap_augment( dimx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    !     dimx              leading dimension of arrays Mkb(:,:)
    !     dimw1,
    !     dimw2             true dimensions of the array Mkb
-   !     ik1               index of the first kpt
-   !     ik2               index of the second kpt
    !     ib                index of the nearest neighbour b
    ! input / output:
    !     Mkb               the overlap matrix
@@ -40,12 +38,13 @@ SUBROUTINE overlap_augment( dimx, dimw1, dimw2, ik1, ik2, ib, Mkb )
    USE becmod,          ONLY : becp
    USE log_module,      ONLY : log_push, log_pop
    USE timing_module
+   !
    IMPLICIT NONE
    !
 
    INTEGER,           INTENT(in)    :: dimx
    INTEGER,           INTENT(in)    :: dimw1, dimw2
-   INTEGER,           INTENT(in)    :: ik1, ik2, ib
+   INTEGER,           INTENT(in)    :: ib
    COMPLEX(KIND=dbl), INTENT(inout) :: Mkb(dimx,dimx)
    !
    ! ... local variables

@@ -18,7 +18,7 @@
    USE parameters,         ONLY : ntypx, natx, nstrx
    USE fft_scalar,         ONLY : cfft3d, good_fft_order
    USE timing_module,      ONLY : timing, timing_upto_now
-   USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout, ionode, ionode_id
+   USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout, ionode
    USE io_module,          ONLY : io_name, dftdata_fmt, space_unit, wan_unit, dft_unit, &
                                   aux_unit, aux1_unit 
    USE control_module,     ONLY : read_pseudo, use_uspp, debug_level, use_debug_mode

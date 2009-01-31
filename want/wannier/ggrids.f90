@@ -20,8 +20,16 @@
    USE converters_module, ONLY : cry2cart
    USE io_global_module,  ONLY : ionode, ionode_id
    USE mp,                ONLY : mp_bcast
+   !
    USE qexml_module
    USE qexpt_module
+   !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module
+#endif
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -155,10 +163,19 @@ CONTAINS
    IMPLICIT NONE
        CHARACTER(*), INTENT(IN) :: filefmt      
        ! 
-       REAL(dbl)          :: tmp(3,3)
-       CHARACTER(nstrx)   :: str
-       CHARACTER(15)      :: subname="ggrids_read_ext"
-       INTEGER            :: i, ierr
+       REAL(dbl)                :: tmp(3,3)
+       CHARACTER(nstrx)         :: units
+       CHARACTER(15)            :: subname="ggrids_read_ext"
+       INTEGER                  :: i, ierr
+       !
+#ifdef __ETSF_IO
+       REAL(dbl)                :: gcutm, b1(3), b2(3), b3(3)
+       INTEGER, ALLOCATABLE     :: gvectors_aux(:,:)   
+       INTEGER, ALLOCATABLE     :: gmap(:,:,:)   
+       !
+       TYPE(etsf_basisdata)     :: basisdata
+       DOUBLE PRECISION, TARGET :: kinetic_energy_cutoff
+#endif
 
        !
        CALL timing ( subname,OPR='start')
@@ -167,20 +184,25 @@ CONTAINS
        !
        IF ( alloc ) CALL ggrids_deallocate()
        !
+       ! Some definitions from the lattice module are required
+       !
+       IF ( .NOT. lattice_alloc ) &
+            CALL errore(subname,'Lattice quantities not allocated',4)
+       !
        !
        SELECT CASE ( TRIM(filefmt) )
        !
        CASE ( 'qexml' )
             !
             IF ( ionode ) &
-            CALL qexml_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=str, &
+            CALL qexml_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=units, &
                                         NR1=nfft(1),   NR2=nfft(2),   NR3=nfft(3),          &
                                         NR1S=nffts(1), NR2S=nffts(2), NR3S=nffts(3),        &
                                         NGM=npw_rho,   NGMS=npws_rho, IERR=ierr )
             !
             CALL mp_bcast( ecutwfc,    ionode_id )
             CALL mp_bcast( ecutrho,    ionode_id )
-            CALL mp_bcast( str,        ionode_id )
+            CALL mp_bcast( units,      ionode_id )
             CALL mp_bcast( nfft,       ionode_id )
             CALL mp_bcast( nffts,      ionode_id )
             CALL mp_bcast( npw_rho,    ionode_id )
@@ -190,13 +212,13 @@ CONTAINS
        CASE ( 'pw_export' )
             !
             IF ( ionode ) &
-            CALL qexpt_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=str, &
+            CALL qexpt_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=units, &
                                         NR1=nfft(1), NR2=nfft(2), NR3=nfft(3),              &
                                         NGM=npw_rho, IERR=ierr )
             !
             CALL mp_bcast( ecutwfc,    ionode_id )
             CALL mp_bcast( ecutrho,    ionode_id )
-            CALL mp_bcast( str,        ionode_id )
+            CALL mp_bcast( units,      ionode_id )
             CALL mp_bcast( nfft,       ionode_id )
             CALL mp_bcast( nffts,      ionode_id )
             CALL mp_bcast( npw_rho,    ionode_id )
@@ -208,6 +230,64 @@ CONTAINS
             !
             nffts(1:3) = nfft(1:3)
             npws_rho   = npw_rho
+            !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            basisdata%kinetic_energy_cutoff            => kinetic_energy_cutoff
+            ! 
+            IF ( ionode ) CALL etsf_io_basisdata_get(ncid, basisdata, lstat, error_data) 
+            !
+            basisdata%kinetic_energy_cutoff            => null()
+            !
+            CALL mp_bcast( kinetic_energy_cutoff,    ionode_id)
+            CALL mp_bcast( lstat,                    ionode_id)
+            !
+            ierr = 0
+            IF ( .NOT. lstat ) ierr = 10
+            !
+            !
+            nfft(1) = dims%number_of_grid_points_vector1
+            nfft(2) = dims%number_of_grid_points_vector2
+            nfft(3) = dims%number_of_grid_points_vector3
+            !
+            nffts(1:3) = nfft(1:3)
+            !
+            ! cutoff energies are in Ha
+            !
+            units   = 'Hartree'
+            ecutwfc = kinetic_energy_cutoff
+            ecutrho = ecutwfc * 4.0_dbl
+
+            !
+            ! aux data
+            gcutm   = TWO * ecutrho / tpiba**2
+            !
+            b1 = bvec(:,1) / tpiba
+            b2 = bvec(:,2) / tpiba
+            b3 = bvec(:,3) / tpiba
+            !
+            ! re-determine the cutoff and the gvectors for the density
+            ! since not present in etsf_io data
+            !
+            ALLOCATE( gvectors_aux(3, PRODUCT(nfft)), STAT=ierr )
+            IF ( ierr/=0 ) CALL errore(subname,'allocating gvectors_aux',ABS(ierr))
+            ALLOCATE( gmap(-nfft(1):nfft(1), -nfft(2):nfft(2), -nfft(3):nfft(3) ), STAT=ierr)
+            IF ( ierr/=0 ) CALL errore(subname,'allocating gmap',ABS(ierr))
+            !
+            CALL gglobal( npw_rho, gvectors_aux, gmap, b1, b2, b3, &
+                          nfft(1), nfft(2), nfft(3), gcutm, .FALSE. )
+            !
+            npws_rho   = npw_rho
+
+            !
+            DEALLOCATE( gmap, STAT=ierr )
+            IF ( ierr/=0 ) CALL errore(subname,'deallocating gmap',ABS(ierr))
+            !
+#else
+            CALL errore(subname,'ETSF_IO not configured',10)
+#endif
             !
        CASE DEFAULT
             !
@@ -226,6 +306,7 @@ CONTAINS
        ! ... allocaing ggrids
        !
        CALL ggrids_allocate( )
+
 
        !
        ! read massive data
@@ -246,6 +327,19 @@ CONTAINS
             CALL mp_bcast( igv,        ionode_id )
             CALL mp_bcast( ierr,       ionode_id )
             !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            igv( 1:3, 1:npw_rho) = gvectors_aux( 1:3, 1:npw_rho)
+            !
+            DEALLOCATE( gvectors_aux, STAT=ierr)
+            IF ( ierr/=0 ) CALL errore(subname,'deallocating gvectors_aux',ABS(ierr))
+            !
+            ierr = 0
+            !
+#endif
+            !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 2)
@@ -256,9 +350,9 @@ CONTAINS
        !
        ! check energy units (move them to Ryd)
        !
-       CALL change_case(str,'lower')
+       CALL change_case(units,'lower')
        !
-       SELECT CASE ( TRIM(str) )
+       SELECT CASE ( TRIM(units) )
        CASE ( 'rydberg', 'ryd', 'ry' )
            !
            ! doing nothing
@@ -281,7 +375,6 @@ CONTAINS
        !
        ! ... move units in tpiba (2pi/alat) according to Espresso units
        !
-       IF ( .NOT. lattice_alloc ) CALL errore(subname,'Lattice quantities not allocated',4)
 
        !
        ! compute g and gg in units of tpiba and tpiba2

@@ -32,6 +32,7 @@ functionals.o \
 get_rgrid.o \
 get_monkpack.o \
 get_points.o \
+gglobal.o \
 ggrids.o \
 hamiltonian_calc.o \
 hamiltonian.o \
@@ -81,6 +82,7 @@ s_psi.o \
 setqf.o \
 shutdown.o \
 smearing.o \
+sort_gvec.o \
 startup.o \
 struct_fact_data.o \
 struct_fact.o \

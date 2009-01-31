@@ -28,7 +28,7 @@ CONTAINS
    !
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, io_name, ham_unit, space_unit, wan_unit
-   USE io_module,            ONLY : ionode, ionode_id
+   USE io_module,            ONLY : ionode
    USE files_module,         ONLY : file_open, file_close
    USE windows_module,       ONLY : windows_read
    USE subspace_module,      ONLY : subspace_read

@@ -19,6 +19,13 @@
    USE mp,                ONLY : mp_bcast
    USE qexml_module
    USE qexpt_module
+   !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module
+#endif
+   ! 
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -174,6 +181,12 @@ CONTAINS
        !
        CHARACTER(17)        :: subname="symmetry_read_ext"
        INTEGER              :: ierr
+       !
+#ifdef __ETSF_IO
+       TYPE(etsf_geometry)  :: geometry
+       INTEGER,          ALLOCATABLE, TARGET :: reduced_symmetry_matrices(:,:,:)
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: reduced_symmetry_translations(:,:)
+#endif
 
        CALL log_push( subname )
        !
@@ -190,6 +203,17 @@ CONTAINS
             IF (ionode) CALL qexpt_read_symmetry( NSYM=nsym, IERR=ierr )
             CALL mp_bcast( nsym, ionode_id)
             CALL mp_bcast( ierr, ionode_id)
+            !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            nsym  = dims%number_of_symmetry_operations
+            ierr = 0
+            !
+#else
+            CALL errore(subname,'ETSF_IO fmt not configured',71)
+#endif
             !
        CASE ( 'crystal' )
             !
@@ -224,12 +248,46 @@ CONTAINS
             !
        CASE ( 'pw_export' )
             !
-            CALL qexpt_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
+            IF (ionode) CALL qexpt_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
             !
             CALL mp_bcast( srot,    ionode_id)
             CALL mp_bcast( strasl,  ionode_id)
             CALL mp_bcast( sname,   ionode_id)
             CALL mp_bcast( ierr,    ionode_id)
+            !
+       CASE( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            ALLOCATE( reduced_symmetry_matrices(dims%number_of_reduced_dimensions,     &
+                                                dims%number_of_reduced_dimensions,     &
+                                                dims%number_of_symmetry_operations) )
+            ALLOCATE( reduced_symmetry_translations(dims%number_of_reduced_dimensions, &
+                                                dims%number_of_symmetry_operations) )
+            !
+            geometry%reduced_symmetry_matrices       => reduced_symmetry_matrices
+            geometry%reduced_symmetry_translations   => reduced_symmetry_translations
+            !
+            IF (ionode) CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data)
+            !
+            geometry%reduced_symmetry_matrices       => null()
+            geometry%reduced_symmetry_translations   => null()
+            !
+            CALL mp_bcast( reduced_symmetry_matrices,      ionode_id)
+            CALL mp_bcast( reduced_symmetry_translations,  ionode_id)
+            CALL mp_bcast( lstat,    ionode_id)
+            !
+            ierr = 0
+            IF ( .NOT. lstat) ierr = 10
+            !
+            strasl(:,:) = reduced_symmetry_translations(:,:)
+            srot(:,:,:) = reduced_symmetry_matrices(:,:,:)
+            sname(:)    = " "
+            !
+            DEALLOCATE( reduced_symmetry_matrices )
+            DEALLOCATE( reduced_symmetry_translations )
+            !
+#endif
             !
        CASE DEFAULT
             !

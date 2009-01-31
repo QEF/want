@@ -17,7 +17,7 @@
        USE parameters,            ONLY : nstrx
        USE constants,             ONLY : bohr => BOHR_RADIUS_ANGS, ZERO, ONE, CZERO, CONE
        USE version_module,        ONLY : version_number
-       USE io_module,             ONLY : stdout, ionode, ionode_id, io_name, space_unit, wantdata_form
+       USE io_module,             ONLY : stdout, ionode, io_name, space_unit, wantdata_form
        USE log_module,            ONLY : log_push, log_pop
        USE files_module,          ONLY : file_open, file_close
        USE timing_module,         ONLY : timing, timing_upto_now
@@ -25,7 +25,7 @@
                                          unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
                                          read_symmetry
        USE util_module,           ONLY : zmat_unitary, mat_hdiag, mat_mul
-       USE kpoints_module,        ONLY : nkpts, nkpts_g, iks, ike, iproc_g, vkpt_g, &
+       USE kpoints_module,        ONLY : nkpts, nkpts_g, iks, ike, vkpt_g, &
                                          nb, nnlist, nnpos, nnrev
        USE windows_module,        ONLY : imin, dimwin, dimwinx, eig, dimfroz, indxnfroz
        USE windows_module,        ONLY : windows_allocate, windows_write
@@ -48,13 +48,12 @@
        !
        REAL(dbl),    ALLOCATABLE :: w(:)
        COMPLEX(dbl), ALLOCATABLE :: ham(:,:)
-       COMPLEX(dbl), ALLOCATABLE :: z(:,:), caux(:,:)
+       COMPLEX(dbl), ALLOCATABLE :: z(:,:)
        CHARACTER(LEN=nstrx)      :: filename 
        !
        REAL(dbl)  :: omega_i, omega_i_save, omega_i_err
        INTEGER    :: i, j, l, m, ierr
        INTEGER    :: ik, ik_g, inn, ipos, ib, ikb_g, iter, ncount
-       INTEGER    :: ik_proc, ikb_proc
 
 !      
 ! ...  end of declarations
@@ -97,9 +96,6 @@
        !
        ALLOCATE( ham(dimwinx,dimwinx), STAT=ierr ) 
        IF( ierr /=0 ) CALL errore(subname, 'allocating ham', ABS(ierr) )
-       !
-       ALLOCATE( caux(dimwinx,dimwann), STAT=ierr ) 
-       IF( ierr /=0 ) CALL errore(subname, 'allocating caux', ABS(ierr) )
        !
        ALLOCATE( z(dimwinx,dimwinx), w(dimwinx), STAT = ierr )
        IF( ierr /=0 ) CALL errore(subname, 'allocating z, w', ABS(ierr) )
@@ -575,9 +571,6 @@
        !
        DEALLOCATE( z, w, STAT=ierr )
        IF( ierr /=0 ) CALL errore(subname, 'deallocating z, w', ABS(ierr) )
-       !
-       DEALLOCATE( caux, STAT=ierr ) 
-       IF( ierr /=0 ) CALL errore(subname, 'deallocating caux', ABS(ierr) )
 
        !
        ! global cleanup

@@ -181,7 +181,6 @@ CONTAINS
                                            postfix_      => postfix,      &
                                            work_dir_     => work_dir,     &
                                            title_        => title,        &
-                                           dimwann_      => dimwann,      &
                                            dftdata_fmt_  => dftdata_fmt
       IMPLICIT NONE
       prefix   = prefix_

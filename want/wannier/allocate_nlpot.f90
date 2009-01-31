@@ -30,7 +30,6 @@ subroutine allocate_nlpot
   USE ions_module,     ONLY : nat, nsp, ityp
   USE lattice_module,  ONLY : tpiba
   USE windows_module,  ONLY : nspin
-  USE wfc_data_module, ONLY : npwkx
   USE ggrids_module,   ONLY : ecutwfc, ecutrho
 
   USE us_module,       ONLY : qrad, tab, tab_at, dq, nqx, nqxq

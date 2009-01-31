@@ -23,9 +23,16 @@
    USE mp_global,         ONLY : mpime, nproc
    USE mp,                ONLY : mp_bcast
    USE paratools_module,  ONLY : para_get_poolindex
+   !
    USE qexml_module
    USE qexpt_module
    USE crystal_io_module
+   !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module
+#endif
    !
    IMPLICIT NONE
    PRIVATE
@@ -386,10 +393,20 @@ CONTAINS
     IMPLICIT NONE
        CHARACTER(*),      INTENT(in) :: filefmt
        !
-       CHARACTER(16)      :: subname='kpoints_read_ext'
-       CHARACTER(256)     :: k_units, r_units, b_units
-       REAL(dbl)          :: lbvec(3,3)
-       INTEGER            :: ierr
+       CHARACTER(16)       :: subname='kpoints_read_ext'
+       CHARACTER(256)      :: k_units, r_units, b_units
+       REAL(dbl)           :: lbvec(3,3)
+       INTEGER             :: ierr
+       !
+#ifdef __ETSF_IO
+       REAL(dbl)           :: volume
+       TYPE(etsf_kpoints)  :: kpoints
+       TYPE(etsf_geometry) :: geometry
+       !
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: primitive_vectors(:,:)
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: reduced_coordinates_of_kpoints(:,:)
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: kpoint_weights(:)
+#endif
        
        CALL log_push ( subname )
        !
@@ -423,6 +440,39 @@ CONTAINS
             !
             kgrid_from_file = .FALSE.
             rgrid_from_file = .FALSE.
+            !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            nkpts_g = dims%number_of_kpoints
+            !
+            kgrid_from_file = .FALSE.
+            rgrid_from_file = .FALSE.
+            !
+            ALLOCATE( primitive_vectors(dims%number_of_cartesian_directions, &
+                                        dims%number_of_vectors) )
+            !
+            geometry%primitive_vectors                   => primitive_vectors
+            IF (ionode) CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data)
+            !
+            geometry%primitive_vectors                   => null()
+            !
+            CALL mp_bcast( primitive_vectors,   ionode_id )
+            CALL mp_bcast( lstat,               ionode_id )
+            !
+            IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading geometry',10)
+            !
+            CALL recips( primitive_vectors(:,1), primitive_vectors(:,2), primitive_vectors(:,3), & 
+                         lbvec(:,1), lbvec(:,2), lbvec(:,3), volume )
+            !
+            lbvec = lbvec * TPI
+            !
+            DEALLOCATE( primitive_vectors )
+            !
+#else
+            CALL errore(subname,'ETSF_IO not configured',10)
+#endif
             !
        CASE ( 'crystal' )
             !
@@ -506,6 +556,36 @@ CONTAINS
             IF ( ierr/=0 )   CALL errore(subname,'QEXPT: reading bz',ABS(ierr))
             !
             k_units = '2 pi / alat'
+            !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            ALLOCATE( reduced_coordinates_of_kpoints( dims%number_of_cartesian_directions, &
+                                                      dims%number_of_kpoints) )
+            ALLOCATE( kpoint_weights(dims%number_of_kpoints) )
+            !
+            kpoints%reduced_coordinates_of_kpoints  => reduced_coordinates_of_kpoints
+            kpoints%kpoint_weights                  => kpoint_weights
+            IF ( ionode ) CALL etsf_io_kpoints_get(ncid, kpoints, lstat, error_data)
+            !
+            kpoints%reduced_coordinates_of_kpoints  => null()
+            kpoints%kpoint_weights                  => null()
+            !
+            CALL mp_bcast( reduced_coordinates_of_kpoints,   ionode_id )
+            CALL mp_bcast( kpoint_weights,                   ionode_id )
+            CALL mp_bcast( lstat,                            ionode_id )
+            !
+            IF ( .NOT. lstat ) CALL errore(subname,'ETSF_IO reading data',10)
+            !
+            vkpt_g  = reduced_coordinates_of_kpoints
+            wk_g    = kpoint_weights
+            k_units = 'crystal'
+            !
+            DEALLOCATE( reduced_coordinates_of_kpoints )
+            DEALLOCATE( kpoint_weights )
+            !
+#endif
             !
        CASE ( 'crystal' )
             !

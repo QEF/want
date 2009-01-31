@@ -188,7 +188,7 @@
       DO iter = 1, maxiter0_wan + maxiter1_wan
 
            ncount = iter
-           CALL log_push( "itaration" )
+           CALL log_push( "iteration" )
 
            !
            ! Store cU and Mkb_aux
@@ -400,7 +400,7 @@
            ENDIF
            !
            !     
-           CALL log_pop( "itaration" )
+           CALL log_pop( "iteration" )
            !
            ! convergence condition
            !

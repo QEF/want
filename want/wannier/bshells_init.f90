@@ -24,7 +24,7 @@
    !
    USE parameters,      ONLY : nnx
    USE lattice_module,  ONLY : bvec, lattice_alloc => alloc
-   USE kpoints_module,  ONLY : vkpt_g, nkpts_g, vkpt, nkpts, nk, s, nb, vb, wb, wbtot, &
+   USE kpoints_module,  ONLY : vkpt_g, nkpts_g, nkpts, nk, s, nb, vb, wb, wbtot, &
                                nnlist, nncell, nnrev, nnpos,          &
                                kpoints_alloc, bshells_allocate 
    !
@@ -38,13 +38,13 @@
    ! 
    INTEGER       :: ik, ik1, ib, ierr
    INTEGER       :: i, j, l, m, n
-   INTEGER       :: nq, nqx, rank
+   INTEGER       :: nq, rank
    INTEGER       :: nk_(3), s_(3)
-   INTEGER       :: lwork_aux, info, ipiv(6)
-   LOGICAL       :: eqv_found, found
+   INTEGER       :: lwork_aux, info
+   LOGICAL       :: found
    REAL(dbl)     :: aux, aux1, vkb(3), vtmp(3)
    !
-   INTEGER,   ALLOCATABLE :: ivb(:), index(:)
+   INTEGER,   ALLOCATABLE :: indx(:)
    REAL(dbl), ALLOCATABLE :: vb_aux(:,:), vq(:,:), vqq(:)
    REAL(dbl), ALLOCATABLE :: work(:,:), work1(:,:), rhs(:)
    REAL(dbl), ALLOCATABLE :: work_aux(:)
@@ -86,12 +86,11 @@
    ! 125 = 5 **3 
    !
    nq  = 125*nkpts_g
-   nqx = 125
 
-   ALLOCATE( vq(3,nq), vqq(nq), index(nq),  STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'allocating vq--index',ABS(ierr))
-   ALLOCATE( vb_aux(3, nnx), ivb(nnx),  STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'allocating vb_aux, ivb',ABS(ierr))
+   ALLOCATE( vq(3,nq), vqq(nq), indx(nq),  STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'allocating vq--indx',ABS(ierr))
+   ALLOCATE( vb_aux(3, nnx), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'allocating vb_aux',ABS(ierr))
 
    !
    ! loop over 125 different cells in rec space
@@ -115,8 +114,8 @@
    !
    ! order the vq vectors for increasing moduli
    !
-   index (:) = 0
-   CALL hpsort_eps(nq, vqq(:), index(:), EPS_m6 )
+   indx (:) = 0
+   CALL hpsort_eps(nq, vqq(:), indx(:), EPS_m6 )
 
 !
 ! Now we deternine the possible b-vectors.
@@ -140,7 +139,7 @@
    !
    !
    DO i=1,nq
-      j = index(i)
+      j = indx(i)
       work( 1, i ) = vq( 1, j) * vq( 1, j)
       work( 2, i ) = vq( 1, j) * vq( 2, j)
       work( 3, i ) = vq( 1, j) * vq( 3, j)
@@ -197,16 +196,14 @@
        inner_b_loop: &
        DO l = 2, nq
            !
-           aux = DOT_PRODUCT( bvec(:,j), vq(:,index(l)) ) /  &
+           aux = DOT_PRODUCT( bvec(:,j), vq(:,indx(l)) ) /  &
                      SQRT( aux1 * vqq(l) )
            aux = ABS(aux)
            !
            IF ( ABS( aux - ONE ) < EPS_m6 ) THEN
                found = .TRUE.
                !
-               ivb(j)  = index(l)
-               !
-               vb_aux(:,j) = vq(:, index(l) )
+               vb_aux(:,j) = vq(:, indx(l) )
                work1(:,j)  = work(:, l ) 
                !
                EXIT inner_b_loop
@@ -219,8 +216,8 @@
        !
    ENDDO
 
-   IF ( mat_rank( 6, 3, work1, EPS_m6 ) /= 3 ) &
-      CALL errore(subname,'work1 is a rank-deficient matrix I',3)
+   rank = mat_rank( 6, 3, work1, EPS_m6 )
+   IF ( rank /= 3 ) CALL errore(subname,'work1 is a rank-deficient matrix I',3)
 
    !
    ! now search for the remaining vectors
@@ -237,9 +234,8 @@
            IF ( mat_rank( 6, i, work1, EPS_m6 ) == i ) THEN
                !
                found = .TRUE.
-               ivb(i)  = index(l)
                !
-               vb_aux(:,i) = vq(:, index(l) )
+               vb_aux(:,i) = vq(:, indx(l) )
                !
                EXIT inner_column_loop
                !
@@ -313,7 +309,7 @@
          ! b vectors excluding -b
          nnpos(l)       =  j
          !
-         ! once b is fixed, report the index of -b
+         ! once b is fixed, report the indx of -b
          nnrev(j)      = j+nb/2
          nnrev(j+nb/2) = j
          !
@@ -412,10 +408,10 @@
    IF (ierr/=0 ) CALL errore(subname,'deallocating work ',ABS(ierr))
    DEALLOCATE( rhs, work1, STAT=ierr )
    IF (ierr/=0 ) CALL errore(subname,'deallocating rhs, work1',ABS(ierr))
-   DEALLOCATE( vq, vqq, index,  STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'deallocating vq--index',ABS(ierr))
-   DEALLOCATE( vb_aux, ivb, STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'deallocating vb_aux--ivb',ABS(ierr))
+   DEALLOCATE( vq, vqq, indx,  STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'deallocating vq--indx',ABS(ierr))
+   DEALLOCATE( vb_aux, STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'deallocating vb_aux',ABS(ierr))
 
    !
    !

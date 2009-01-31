@@ -14,7 +14,7 @@
    !
    USE kinds,       ONLY : dbl
    USE constants,   ONLY : ZERO
-   USE io_module,   ONLY : stdout, ionode, ionode_id
+   USE io_module,   ONLY : stdout, ionode
    USE mp,          ONLY : mp_bcast
    !
    IMPLICIT NONE

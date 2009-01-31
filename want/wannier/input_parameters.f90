@@ -91,11 +91,11 @@
        ! the allowed values for projections
 
    CHARACTER(nstrx) :: dftdata_fmt = ' '
-       ! ( 'qexml' | 'pw_export' )
+       ! ( 'qexml' | 'pw_export' | 'etsf_io' )
        ! the format of DFT data
 
-   CHARACTER(nstrx) :: dftdata_fmt_allowed(2)
-   DATA dftdata_fmt_allowed / 'qexml',  'pw_export' /
+   CHARACTER(nstrx) :: dftdata_fmt_allowed(3)
+   DATA dftdata_fmt_allowed / 'qexml',  'pw_export', 'etsf_io' /
        ! the allowed values for dftdata_fmt
 
    CHARACTER(nstrx) :: wantdata_fmt = 'binary'
