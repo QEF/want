@@ -119,7 +119,7 @@ run () {
    
    if [ ! -x $EXEC ] ; then
       #
-      echo $ECHO_N "$EXEC not executable... exit"
+      echo "$EXEC not executable... exit "
       exit 0
       #
    fi
