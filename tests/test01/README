@@ -1,10 +1,11 @@
 
 ==============================================================================
-@title@   Silicon bulk (NCPP & USPP)
+@title@   Silicon bulk (NCPP & USPP), GaAs bulk (QE & Abinit)
 ==============================================================================
   
-  Wannier function calculation for Silicon bulk. No transport calculation is done. 
-  All calculations are performed using both NC and US pseudopotentials.
+  Wannier function calculation for Silicon bulk and GaAs. No transport calculation is done. 
+  All calculations are performed using both NC and US pseudopotentials (for Si)
+  and comparing Quantum-ESPRESSO and Abinit (for GaAs).
   The band structure along standard symmetry lines is computed by the DFT code
   (see the file $TESTDIR/Reference/dft_bands.dat) and then recalculated by 
   interpolation on the Wannier function Hamiltonian. 
