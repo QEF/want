@@ -61,8 +61,8 @@ CONTAINS
    USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
    USE symmetry_module,   ONLY : symmetry_alloc => alloc, nsym, srot, strasl, sname, &
                                  symmetry_write
-   USE kpoints_module,    ONLY : kpoints_alloc, nkpts, vkpt, wk, nkpts_g, vkpt_g, wk_g, &
-                                 iks, ike, nk, s, bshells_alloc, nb, vb, wb, wbtot
+   USE kpoints_module,    ONLY : kpoints_alloc, nkpts, nkpts_g, vkpt_g, wk_g, &
+                                 nk, s, bshells_alloc, nb, vb, wb, wbtot
    USE windows_module,    ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, &
                                  imin, imax, dimfroz, lfrozen, dimwinx, nspin, &
                                  spin_component, win_min, win_max, froz_min, froz_max

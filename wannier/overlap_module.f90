@@ -19,7 +19,7 @@
    USE log_module,       ONLY : log_push, log_pop
    USE windows_module,   ONLY : dimwinx, dimwin, imin, imax, windows_alloc => alloc
    USE kpoints_module,   ONLY : nkpts, nkpts_g, iks, ike, iproc_g, nb, &
-                                nnlist, nnpos, nnrev, kpoints_alloc
+                                nnlist, nnpos, kpoints_alloc
    USE subspace_module,  ONLY : dimwann, subspace_alloc => alloc
    USE mp_global,        ONLY : mpime
    USE mp,               ONLY : mp_get, mp_barrier
@@ -173,7 +173,7 @@ CONTAINS
        CHARACTER(13)               :: subname="overlap_write"
        CHARACTER(nstrx)            :: attr
        COMPLEX(dbl),   ALLOCATABLE :: Mkb_aux(:,:,:), ca_aux(:,:)
-       INTEGER                     :: iwann, ib, ik, ik_g, ikb, ikb_g, inn
+       INTEGER                     :: iwann, ib, ik, ik_g, ikb_g, inn
        INTEGER                     :: ierr
 
        IF ( .NOT. alloc ) RETURN

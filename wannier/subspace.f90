@@ -18,7 +18,7 @@
    USE log_module,     ONLY : log_push, log_pop
    USE windows_module, ONLY : nbnd, dimwin, dimwinx, windows_allocate, &
                               windows_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, nkpts_g, iks, kpoints_alloc
+   USE kpoints_module, ONLY : nkpts, nkpts_g, kpoints_alloc
    USE io_module,      ONLY : ionode, ionode_id
    USE mp,             ONLY : mp_bcast
    USE iotk_module
@@ -34,8 +34,8 @@
 ! routines in this module:
 ! SUBROUTINE subspace_allocate()
 ! SUBROUTINE subspace_deallocate()
-! SUBROUTINE subspace_write(unit,name)
-! SUBROUTINE subspace_read(unit,name,found)
+! SUBROUTINE subspace_write(iun,tag)
+! SUBROUTINE subspace_read(iun,tag,found)
 
 !
 ! declarations of common variables
@@ -177,12 +177,12 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE subspace_write(unit,name)
+   SUBROUTINE subspace_write(iun,tag)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,         INTENT(in) :: unit
-       CHARACTER(*),    INTENT(in) :: name
-       INTEGER            :: ik, ik_g
+       INTEGER,         INTENT(in) :: iun
+       CHARACTER(*),    INTENT(in) :: tag
+       INTEGER            :: ik_g
        CHARACTER(nstrx)   :: attr
        CHARACTER(14)      :: subname="subspace_write"
 
@@ -194,16 +194,16 @@ CONTAINS
        !
        ! every processor writes to a different file
        !
-       CALL iotk_write_begin(unit,TRIM(name))
+       CALL iotk_write_begin(iun,TRIM(tag))
        CALL iotk_write_attr(attr,"dimwinx",dimwinx,FIRST=.TRUE.) 
        CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
        CALL iotk_write_attr(attr,"dimwann",dimwann) 
-       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+       CALL iotk_write_empty(iun,"DATA",ATTR=attr)
        !
-       CALL iotk_write_dat(unit,"DIMWIN",dimwin) 
+       CALL iotk_write_dat(iun,"DIMWIN",dimwin) 
        !
        IF ( ALLOCATED( wan_eig ) ) THEN
-           CALL iotk_write_dat(unit,"WAN_EIGENVALUES",wan_eig)
+           CALL iotk_write_dat(iun,"WAN_EIGENVALUES",wan_eig)
        ENDIF
        !
        !
@@ -211,7 +211,7 @@ CONTAINS
            !
            DO ik_g = 1, nkpts_g
                !
-               CALL iotk_write_dat(unit,"LAMP"//TRIM(iotk_index(ik_g)), &
+               CALL iotk_write_dat(iun,"LAMP"//TRIM(iotk_index(ik_g)), &
                                    lamp(1:dimwin(ik_g),1:dimwann,ik_g))
                !
            ENDDO
@@ -222,14 +222,14 @@ CONTAINS
            !
            DO ik_g = 1, nkpts_g
                !
-               CALL iotk_write_dat(unit,"EAMP"//TRIM(iotk_index(ik_g)), &
+               CALL iotk_write_dat(iun,"EAMP"//TRIM(iotk_index(ik_g)), &
                                    eamp(1:dimwin(ik_g),1:dimwann,ik_g))
                !
            ENDDO
            !
        ENDIF
 
-       CALL iotk_write_end(unit,TRIM(name))
+       CALL iotk_write_end(iun,TRIM(tag))
        !
        CALL timing( subname, OPR='stop' )
        CALL log_pop( subname )
@@ -237,11 +237,11 @@ CONTAINS
    END SUBROUTINE subspace_write
 
 !**********************************************************
-   SUBROUTINE subspace_read(unit,name,found, leig,llamp,leamp)
+   SUBROUTINE subspace_read(iun,tag,found, leig,llamp,leamp)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
-       CHARACTER(*),      INTENT(in) :: name
+       INTEGER,           INTENT(in) :: iun
+       CHARACTER(*),      INTENT(in) :: tag
        LOGICAL,           INTENT(out):: found
        LOGICAL, OPTIONAL, INTENT(IN) :: leig, llamp, leamp
        !
@@ -250,7 +250,7 @@ CONTAINS
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="subspace_read"
        INTEGER            :: nkpts_g_, dimwinx_
-       INTEGER            :: ik, ik_g, ierr
+       INTEGER            :: ik_g, ierr
 
        CALL timing( subname, OPR='start' )
        CALL log_push( subname )
@@ -268,12 +268,12 @@ CONTAINS
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           CALL iotk_scan_begin(iun,TRIM(tag),FOUND=found,IERR=ierr)
            IF (.NOT. found) RETURN
-           IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+           IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(tag),ierr)
            found = .TRUE.
 
-           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           CALL iotk_scan_empty(iun,'DATA',ATTR=attr,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
            CALL iotk_scan_attr(attr,'dimwinx',dimwinx_,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
@@ -308,7 +308,7 @@ CONTAINS
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
+           CALL iotk_scan_dat(iun,'DIMWIN',dimwin,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag DIMWIN',ABS(ierr))
            !
        ENDIF
@@ -321,7 +321,7 @@ CONTAINS
            !
            IF ( leig_ ) THEN
                !
-               CALL iotk_scan_dat(unit,'WAN_EIGENVALUES',wan_eig,IERR=ierr)
+               CALL iotk_scan_dat(iun,'WAN_EIGENVALUES',wan_eig,IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'Unable to find EIGENVALUES',ABS(ierr))
                !
            ENDIF
@@ -330,7 +330,7 @@ CONTAINS
                !
                DO ik_g=1,nkpts_g
                    !
-                   CALL iotk_scan_dat( unit,'LAMP'//TRIM(iotk_index(ik_g)), &
+                   CALL iotk_scan_dat( iun,'LAMP'//TRIM(iotk_index(ik_g)), &
                                        lamp(1:dimwin(ik_g), 1:dimwann, ik_g), FOUND=lfound, IERR=ierr)
                    IF (ierr>0) CALL errore(subname,'Unable to find LAMP at ik',ik_g)
                    !
@@ -345,7 +345,7 @@ CONTAINS
                    !
                    eamp(:,:, ik_g ) = CZERO
                    !
-                   CALL iotk_scan_dat( unit,'EAMP'//TRIM(iotk_index(ik_g)), &
+                   CALL iotk_scan_dat( iun,'EAMP'//TRIM(iotk_index(ik_g)), &
                                        eamp(1:dimwin(ik_g), 1:dimwann, ik_g), IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'Unable to find EAMP at ik',ik_g)
                    !
@@ -353,8 +353,8 @@ CONTAINS
                !
            ENDIF
            !
-           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           CALL iotk_scan_end(iun,TRIM(tag),IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(tag),ABS(ierr))
            !
        ENDIF
        !

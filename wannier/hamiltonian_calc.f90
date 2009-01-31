@@ -26,7 +26,8 @@
    USE control_module,       ONLY : verbosity
    USE kpoints_module,       ONLY : vkpt, nkpts_g, iks, nrtot, vr, ivr
    USE windows_module,       ONLY : efermi
-   USE hamiltonian_module,   ONLY : wan_eig, rham, ham_alloc => alloc 
+   USE subspace_module,      ONLY : wan_eig
+   USE hamiltonian_module,   ONLY : rham, ham_alloc => alloc 
    USE mp,                   ONLY : mp_sum
 
 #ifdef __CHECK_HAMILTONIAN

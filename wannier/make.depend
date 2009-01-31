@@ -232,8 +232,8 @@ dyson_solver.o : ../libs/kind.o
 dyson_solver.o : ../libs/log_module.o
 dyson_solver.o : ../libs/timing.o
 dyson_solver.o : ../libs/util.o
-# etsf_io_data.o : @etsf_io@
 etsf_io_data.o : ../libs/kind.o
+etsf_io_data.o : ../libs/mp.o
 functionals.o : ../libs/io_global.o
 functionals.o : ../libs/kind.o
 functionals.o : ../libs/parser.o
@@ -248,7 +248,9 @@ get_points.o : ../libs/kind.o
 get_rgrid.o : converters.o
 get_rgrid.o : ../libs/constants.o
 get_rgrid.o : ../libs/kind.o
+gglobal.o : ../libs/kind.o
 ggrids.o : converters.o
+ggrids.o : etsf_io_data.o
 ggrids.o : lattice.o
 ggrids.o : ../libs/constants.o
 ggrids.o : ../libs/io_global.o
@@ -344,18 +346,20 @@ input_parameters.o : ../libs/parameters.o
 input_parameters.o : ../libs/parser.o
 io_module.o : control.o
 io_module.o : crystal_tools.o
-# io_module.o : @etsf_io@
 io_module.o : etsf_io_data.o
-# io_module.o : @etsf_io_tools@
 io_module.o : ../iotk/iotk_16_module.o
 io_module.o : ../libs/crystal_io.o
+io_module.o : ../libs/files.o
 io_module.o : ../libs/io_global.o
+io_module.o : ../libs/kind.o
 io_module.o : ../libs/log_module.o
 io_module.o : ../libs/mp_global.o
 io_module.o : ../libs/mp.o
 io_module.o : ../libs/parameters.o
 io_module.o : ../libs/qexml.o
 io_module.o : ../libs/qexpt.o
+ions.o : converters.o
+ions.o : etsf_io_data.o
 ions.o : io_module.o
 ions.o : ../libs/constants.o
 ions.o : ../libs/crystal_io.o
@@ -368,6 +372,7 @@ ions.o : ../libs/parser.o
 ions.o : ../libs/qexml.o
 ions.o : ../libs/qexpt.o
 kpoints.o : converters.o
+kpoints.o : etsf_io_data.o
 kpoints.o : io_module.o
 kpoints.o : lattice.o
 kpoints.o : ../libs/constants.o
@@ -382,6 +387,7 @@ kpoints.o : ../libs/parser.o
 kpoints.o : ../libs/qexml.o
 kpoints.o : ../libs/qexpt.o
 kpoints.o : paratools.o
+lattice.o : etsf_io_data.o
 lattice.o : io_module.o
 lattice.o : ../libs/constants.o
 lattice.o : ../libs/crystal_io.o
@@ -636,6 +642,8 @@ shutdown.o : ../libs/mp.o
 shutdown.o : ../libs/timing.o
 smearing.o : ../libs/constants.o
 smearing.o : ../libs/kind.o
+sort_gvec.o : ../libs/constants.o
+sort_gvec.o : ../libs/kind.o
 s_psi.o : ions.o
 s_psi.o : kpoints.o
 s_psi.o : lattice.o
@@ -713,6 +721,7 @@ symmetrize_kgrid.o : ../libs/kind.o
 symmetrize_kgrid.o : ../libs/log_module.o
 symmetrize_kgrid.o : ../libs/timing.o
 symmetrize_kgrid.o : symmetry.o
+symmetry.o : etsf_io_data.o
 symmetry.o : ../libs/constants.o
 symmetry.o : ../libs/io_global.o
 symmetry.o : ../libs/kind.o
@@ -783,11 +792,11 @@ wannier.o : version.o
 wannier.o : want_interfaces.o
 wannier.o : workspace_wan.o
 want_dftread.o : control.o
+want_dftread.o : etsf_io_data.o
 want_dftread.o : io_module.o
 want_dftread.o : ions.o
 want_dftread.o : kpoints.o
 want_dftread.o : lattice.o
-want_dftread.o : ../libs/files.o
 want_dftread.o : ../libs/io_global.o
 want_dftread.o : ../libs/kind.o
 want_dftread.o : ../libs/log_module.o
@@ -829,6 +838,7 @@ wf2_augment.o : ../libs/timing.o
 wf2_augment.o : pwcom.o
 wf2_augment.o : struct_fact_data.o
 wf2_augment.o : uspp.o
+wfc_data.o : etsf_io_data.o
 wfc_data.o : ggrids.o
 wfc_data.o : kpoints.o
 wfc_data.o : ../libs/constants.o
@@ -865,6 +875,7 @@ wfc_manager.o : uspp.o
 wfc_manager.o : wfc_data.o
 wfc_manager.o : wfc_info.o
 wfc_manager.o : windows.o
+windows.o : etsf_io_data.o
 windows.o : input_parameters.o
 windows.o : ../iotk/iotk_16_module.o
 windows.o : kpoints.o

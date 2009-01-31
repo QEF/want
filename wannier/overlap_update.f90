@@ -36,8 +36,8 @@ SUBROUTINE overlap_update(dimwann, nkpts, U, Mkb_in, Mkb_out)
    ! local variables
    !
    CHARACTER(14)             :: subname='overlap_update'
-   COMPLEX(dbl), ALLOCATABLE :: caux1(:,:), caux2(:,:)
-   INTEGER                   :: ik, ik_g, ikb, ikb_g, ib, inn, ierr
+   COMPLEX(dbl), ALLOCATABLE :: caux1(:,:)
+   INTEGER                   :: ik, ik_g, ikb_g, ib, inn, ierr
    ! 
    ! end of declarations
    ! 

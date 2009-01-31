@@ -33,7 +33,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE util_module,       ONLY : mat_mul
    USE subspace_module,   ONLY : eamp, subspace_read, subspace_deallocate
    USE windows_module,    ONLY : dimwinx, dimwin, windows_read
-   USE kpoints_module,    ONLY : nkpts, nkpts_g, iks, iproc_g, nb, nnlist, nnpos, nnrev 
+   USE kpoints_module,    ONLY : nkpts, iks, nb, nnlist, nnpos
    USE overlap_module,    ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
    
    !
@@ -54,8 +54,7 @@ SUBROUTINE overlap_extract(dimwann)
    !
    LOGICAL                   :: lfound
    CHARACTER(nstrx)          :: filename 
-   INTEGER                   :: ik_proc, ikb_proc
-   INTEGER                   :: ik, ik_g, ikb, ikb_g, ib, inn
+   INTEGER                   :: ik, ik_g, ikb_g, ib, inn
    INTEGER                   :: ierr
    ! 
    ! end of declarations

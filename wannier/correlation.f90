@@ -85,6 +85,7 @@ CONTAINS
        !
        IF ( .NOT. lattice_alloc )   CALL errore(subname,'lattice NOT alloc',1)
        IF ( .NOT. kpoints_alloc )   CALL errore(subname,'kpoints NOT alloc',1)
+       IF ( .NOT. subspace_alloc )  CALL errore(subname,'subspace NOT alloc',1)
        
        IF ( dimwann <= 0 )  CALL errore(subname,'Invalid DIMWANN',1)
        IF ( nkpts <= 0 )    CALL errore(subname,'Invalid NKPTS',1)

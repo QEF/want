@@ -10,16 +10,22 @@
    MODULE lattice_module
    !*********************************************************
    !
-   USE kinds
-   USE constants,        ONLY : ZERO, TPI, BOHR => bohr_radius_angs
-   USE parameters,       ONLY : nstrx
-   USE log_module,       ONLY : log_push, log_pop
-   USE parser_module,    ONLY : change_case
-   USE io_global_module, ONLY : ionode, ionode_id
-   USE mp,               ONLY : mp_bcast
+   USE kinds,                    ONLY : dbl
+   USE constants,                ONLY : ZERO, TPI, BOHR => bohr_radius_angs
+   USE parameters,               ONLY : nstrx
+   USE log_module,               ONLY : log_push, log_pop
+   USE parser_module,            ONLY : change_case
+   USE io_global_module,         ONLY : ionode, ionode_id
+   USE mp,                       ONLY : mp_bcast
    USE qexml_module
    USE qexpt_module
    USE crystal_io_module
+   !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module
+#endif
    !
    IMPLICIT NONE
    PRIVATE
@@ -90,6 +96,11 @@ CONTAINS
        CHARACTER(16)      :: subname="lattice_read_ext"
        CHARACTER(256)     :: a_units
        INTEGER            :: ierr
+       !
+#ifdef __ETSF_IO
+       TYPE(etsf_geometry)                   :: geometry
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: primitive_vectors(:,:)
+#endif
 
        CALL log_push ( subname )
        ierr = 0
@@ -119,6 +130,41 @@ CONTAINS
            CALL mp_bcast( ierr,  ionode_id )
            !
            IF (ierr/=0) CALL errore(subname,'QEXPT: reading lattice',ABS(ierr))
+           !
+       CASE ( 'etsf_io' )
+           !
+#ifdef __ETSF_IO
+           !
+           ALLOCATE( primitive_vectors(dims%number_of_cartesian_directions, &
+                                       dims%number_of_vectors ) ) 
+           !
+           geometry%primitive_vectors                 => primitive_vectors
+           !
+           IF ( ionode ) CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data)
+           !
+           geometry%primitive_vectors                 => null()
+           !
+           CALL mp_bcast( primitive_vectors,  ionode_id )
+           CALL mp_bcast( lstat,  ionode_id )
+           !
+           IF ( .NOT. lstat ) CALL errore(subname,'ETSF_IO: reading lattice',10)
+           ! 
+           ! define internal quantities
+           !
+           avec(:,1) = primitive_vectors(:,1)
+           avec(:,2) = primitive_vectors(:,2)
+           avec(:,3) = primitive_vectors(:,3)
+           !
+           a_units = "bohr"
+           !
+           alat      = DOT_PRODUCT( avec(:,1), avec(:,1) )
+           alat      = SQRT( alat )
+           !
+           DEALLOCATE( primitive_vectors )
+           !
+#else
+           CALL errore(subname,'ETSF_IO fmt not configured',71)
+#endif
            !
        CASE ( 'crystal' )
            !

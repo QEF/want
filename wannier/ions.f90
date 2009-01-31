@@ -21,10 +21,17 @@
    USE log_module,        ONLY : log_push, log_pop
    USE parser_module,     ONLY : change_case
    USE io_global_module,  ONLY : ionode, ionode_id
+   USE converters_module, ONLY : cry2cart
    USE mp,                ONLY : mp_bcast
    USE qexml_module
    USE qexpt_module
    USE crystal_io_module
+   !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module
+#endif
    !
    IMPLICIT NONE
    PRIVATE
@@ -99,10 +106,10 @@ CONTAINS
 
       CALL log_push( subname )
       !
-      IF ( nat_ <= 0) CALL errore(subname,'Invalid nat_',ABS(nat_)+1)
-      IF ( nsp_ <= 0) CALL errore(subname,'Invalid nsp_',ABS(nsp_)+1)
-      IF ( nat_ > natx ) CALL errore(subname,'Nat too large',nat_)
-      IF ( nsp_ > ntypx ) CALL errore(subname,'Nsp too large',nsp_)
+      IF ( nat_ <= 0)      CALL errore(subname,'Invalid nat_',ABS(nat_)+1)
+      IF ( nsp_ <= 0)      CALL errore(subname,'Invalid nsp_',ABS(nsp_)+1)
+      IF ( nat_ > natx )   CALL errore(subname,'Nat too large',nat_)
+      IF ( nsp_ > ntypx )  CALL errore(subname,'Nsp too large',nsp_)
       nat = nat_
       nsp = nsp_
 
@@ -223,10 +230,18 @@ CONTAINS
        !
        CHARACTER(13)             :: subname="ions_read_ext"
        CHARACTER(256)            :: units
-       INTEGER,      ALLOCATABLE :: ityp(:)
+       INTEGER,      ALLOCATABLE :: ityp_tmp(:)
        CHARACTER(3), ALLOCATABLE :: symb_tmp(:), atm_symb_tmp(:)
        INTEGER                   :: i, ia, ierr
        LOGICAL                   :: found
+       !   
+#ifdef __ETSF_IO
+       TYPE(etsf_geometry)                   :: geometry
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: primitive_vectors(:,:)
+       INTEGER,          ALLOCATABLE, TARGET :: atom_species(:)
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: reduced_atom_positions(:,:)
+       CHARACTER(LEN=etsf_chemlen), ALLOCATABLE, TARGET :: chemical_symbols(:)
+#endif
 
        CALL log_push( subname )
        !
@@ -249,6 +264,18 @@ CONTAINS
             CALL mp_bcast( ierr,  ionode_id )
             !
             IF ( ierr/=0) CALL errore(subname,'QEXPT: getting ion dimensions',ABS(ierr))
+            !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            nat  = dims%number_of_atoms
+            nsp  = dims%number_of_atom_species
+            ierr = 0
+            !
+#else
+            CALL errore(subname,'ETSF_IO fmt not configured',71)
+#endif
             !
        CASE ( 'crystal' )
             !
@@ -321,20 +348,20 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            ALLOCATE( ityp(nat), STAT=ierr )
-            IF ( ierr/=0) CALL errore(subname,'allocating ityp', ABS(ierr))
+            ALLOCATE( ityp_tmp(nat), STAT=ierr )
+            IF ( ierr/=0) CALL errore(subname,'allocating ityp_tmp', ABS(ierr))
             !
             IF ( ionode ) &
-            CALL qexml_read_ions( ATM=atm_symb, ITYP=ityp, &
+            CALL qexml_read_ions( ATM=atm_symb, ITYP=ityp_tmp, &
                                   PSFILE=psfile, TAU=tau,  IERR=ierr )
             !
             CALL mp_bcast( atm_symb,   ionode_id )
-            CALL mp_bcast( ityp,       ionode_id )
+            CALL mp_bcast( ityp_tmp,   ionode_id )
             CALL mp_bcast( psfile,     ionode_id )
             CALL mp_bcast( tau,        ionode_id )
             CALL mp_bcast( ierr,       ionode_id )
             !
-            IF (ierr/=0) CALL errore(subname,'reading qexml file' , ABS(ierr))
+            IF (ierr/=0) CALL errore(subname,'QEXML: reading data' , ABS(ierr))
             !
             ! pseudo pot are in the .save directory
             !
@@ -342,11 +369,11 @@ CONTAINS
             !
             ! conversions
             DO i = 1, nat
-                 symb( i ) = atm_symb( ityp (i) )
+                 symb( i ) = atm_symb( ityp_tmp (i) )
             ENDDO
             !
-            DEALLOCATE( ityp, STAT=ierr )
-            IF ( ierr/=0) CALL errore(subname,'deallocating ityp', ABS(ierr))
+            DEALLOCATE( ityp_tmp, STAT=ierr )
+            IF ( ierr/=0) CALL errore(subname,'deallocating ityp_tmp', ABS(ierr))
             !
        CASE ( 'pw_export' )
             !
@@ -361,7 +388,57 @@ CONTAINS
             CALL mp_bcast( tau,        ionode_id )
             CALL mp_bcast( ierr,       ionode_id )
             !
-            IF (ierr/=0) CALL errore(subname,'reading qexpt file' , ABS(ierr))
+            IF (ierr/=0) CALL errore(subname,'QEXPT: reading data' , ABS(ierr))
+            !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            ALLOCATE( primitive_vectors(dims%number_of_cartesian_directions, dims%number_of_vectors) )
+            ALLOCATE( chemical_symbols(dims%number_of_atom_species) )
+            ALLOCATE( atom_species(dims%number_of_atoms) )
+            ALLOCATE( reduced_atom_positions(dims%number_of_reduced_dimensions, &
+                                             dims%number_of_atoms ) )
+            !
+            geometry%primitive_vectors         => primitive_vectors
+            geometry%chemical_symbols          => chemical_symbols
+            geometry%atom_species              => atom_species
+            geometry%reduced_atom_positions    => reduced_atom_positions
+            !
+            IF ( ionode ) CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data) 
+            !
+            geometry%primitive_vectors         => null()
+            geometry%chemical_symbols          => null()
+            geometry%atom_species              => null()
+            geometry%reduced_atom_positions    => null()
+            !
+            CALL mp_bcast( primitive_vectors,       ionode_id )
+            CALL mp_bcast( chemical_symbols,        ionode_id )
+            CALL mp_bcast( atom_species,            ionode_id )
+            CALL mp_bcast( reduced_atom_positions,  ionode_id )
+            CALL mp_bcast( lstat,                   ionode_id )
+            !
+            IF (.NOT. lstat) CALL errore(subname,'ETSF_IO: reading data' , 11 )
+            !
+            pseudo_dir  = " "
+            psfile(:)   = " "
+            !
+            atm_symb( 1: nsp )  = chemical_symbols( 1: dims%number_of_atom_species )
+            !
+            DO i = 1, nat
+                symb( i ) = chemical_symbols( atom_species( i ) )
+            ENDDO
+            !
+            !
+            tau( :, :) = reduced_atom_positions( :, :)
+            CALL cry2cart( tau, primitive_vectors)
+            !
+            DEALLOCATE( primitive_vectors )
+            DEALLOCATE( chemical_symbols )
+            DEALLOCATE( atom_species )
+            DEALLOCATE( reduced_atom_positions )
+            !
+#endif
             !
        CASE ( 'crystal' )
             !

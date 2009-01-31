@@ -19,7 +19,7 @@
    USE lattice_module,    ONLY : avec, bvec, lattice_alloc => alloc
    USE kpoints_module,    ONLY : nkpts, nkpts_g, nk, vkpt_g, wk_g,  &
                                  nrtot, nr, ivr,  wr,  kpoints_alloc 
-   USE subspace_module,   ONLY : dimwann, wan_eig, subspace_alloc => alloc
+   USE subspace_module,   ONLY : dimwann, subspace_alloc => alloc
    USE converters_module, ONLY : cry2cart, cart2cry
    USE mp,                ONLY : mp_bcast
    USE iotk_module
@@ -34,8 +34,8 @@
 ! routines in this module:
 ! SUBROUTINE hamiltonian_allocate()
 ! SUBROUTINE hamiltonian_deallocate()
-! SUBROUTINE hamiltonian_write(unit,name)
-! SUBROUTINE hamiltonian_read(unit,name,found)
+! SUBROUTINE hamiltonian_write(iun,tag)
+! SUBROUTINE hamiltonian_read(iun,tag,found)
 !
 
 !
@@ -58,7 +58,6 @@
 
    PUBLIC :: nkpts, dimwann
    PUBLIC :: nrtot
-   PUBLIC :: wan_eig
    PUBLIC :: rham
    PUBLIC :: rovp
    PUBLIC :: lhave_overlap
@@ -153,15 +152,15 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE hamiltonian_write(unit,name)
+   SUBROUTINE hamiltonian_write(iun,tag)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,         INTENT(in) :: unit
-       CHARACTER(*),    INTENT(in) :: name
+       INTEGER,         INTENT(in) :: iun
+       CHARACTER(*),    INTENT(in) :: tag
        CHARACTER(nstrx)   :: attr
        CHARACTER(17)      :: subname="hamiltonian_write"
        REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:)
-       INTEGER            :: ik, ir, ierr
+       INTEGER            :: ir, ierr
 
        IF ( .NOT. alloc ) RETURN
        !
@@ -170,7 +169,7 @@ CONTAINS
        IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1)
        IF ( .NOT. subspace_alloc ) CALL errore(subname,'subspace NOT alloc',1)
 
-       CALL iotk_write_begin(unit,TRIM(name))
+       CALL iotk_write_begin(iun,TRIM(tag))
        CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
        CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
        CALL iotk_write_attr(attr,"nk",nk) 
@@ -178,7 +177,7 @@ CONTAINS
        CALL iotk_write_attr(attr,"nr",nr) 
        CALL iotk_write_attr(attr,"have_overlap",lhave_overlap) 
        CALL iotk_write_attr(attr,"fermi_energy",0.0_dbl) 
-       CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+       CALL iotk_write_empty(iun,"DATA",ATTR=attr)
 
        ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))   
@@ -186,44 +185,44 @@ CONTAINS
        CALL cart2cry(vkpt_cry, bvec)
 
        CALL iotk_write_attr(attr,"units","bohr",FIRST=.TRUE.)
-       CALL iotk_write_dat(unit,"DIRECT_LATTICE", avec, ATTR=attr, COLUMNS=3) 
+       CALL iotk_write_dat(iun,"DIRECT_LATTICE", avec, ATTR=attr, COLUMNS=3) 
        !
        CALL iotk_write_attr(attr,"units","bohr^-1",FIRST=.TRUE.)
-       CALL iotk_write_dat(unit,"RECIPROCAL_LATTICE", bvec, ATTR=attr, COLUMNS=3) 
+       CALL iotk_write_dat(iun,"RECIPROCAL_LATTICE", bvec, ATTR=attr, COLUMNS=3) 
        !
        CALL iotk_write_attr(attr,"units","crystal",FIRST=.TRUE.)
-       CALL iotk_write_dat(unit,"VKPT", vkpt_cry, ATTR=attr, COLUMNS=3, IERR=ierr) 
+       CALL iotk_write_dat(iun,"VKPT", vkpt_cry, ATTR=attr, COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing VKPT',ABS(ierr))
             !
-       CALL iotk_write_dat(unit,"WK", wk_g, IERR=ierr) 
+       CALL iotk_write_dat(iun,"WK", wk_g, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing WK',ABS(ierr))
             !
-       CALL iotk_write_dat(unit,"IVR", ivr, ATTR=attr, COLUMNS=3, IERR=ierr) 
+       CALL iotk_write_dat(iun,"IVR", ivr, ATTR=attr, COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing ivr',ABS(ierr))
             !
-       CALL iotk_write_dat(unit,"WR", wr, IERR=ierr) 
+       CALL iotk_write_dat(iun,"WR", wr, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing wr',ABS(ierr))
 
        DEALLOCATE( vkpt_cry, STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'deallocating vkpt_cry',ABS(ierr))   
 
 
-       CALL iotk_write_begin(unit,"RHAM")
+       CALL iotk_write_begin(iun,"RHAM")
        !
        DO ir = 1, nrtot
            !
-           CALL iotk_write_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir))
+           CALL iotk_write_dat(iun,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir))
            !
            IF ( lhave_overlap ) THEN
                !
-               CALL iotk_write_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir))
+               CALL iotk_write_dat(iun,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir))
                !
            ENDIF
            !
        ENDDO
-       CALL iotk_write_end(unit,"RHAM")
+       CALL iotk_write_end(iun,"RHAM")
 
-       CALL iotk_write_end(unit,TRIM(name))
+       CALL iotk_write_end(iun,TRIM(tag))
        !
        CALL log_pop ( subname )
        !
@@ -231,18 +230,18 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE hamiltonian_read(unit,name,found)
+   SUBROUTINE hamiltonian_read(iun,tag,found)
    !**********************************************************
    !
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
-       CHARACTER(*),      INTENT(in) :: name
+       INTEGER,           INTENT(in) :: iun
+       CHARACTER(*),      INTENT(in) :: tag
        LOGICAL,           INTENT(out):: found
        LOGICAL            :: lfound
        CHARACTER(nstrx)   :: attr
        CHARACTER(16)      :: subname="hamiltonian_read"
        INTEGER            :: nkpts_g_, nrtot_, dimwann_
-       INTEGER            :: ik, ir, ierr
+       INTEGER            :: ir, ierr
 
        CALL log_push ( subname )
        !
@@ -250,7 +249,7 @@ CONTAINS
 
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           CALL iotk_scan_begin(iun,TRIM(tag),FOUND=found,IERR=ierr)
            !
        ENDIF
        !
@@ -258,12 +257,12 @@ CONTAINS
        CALL mp_bcast( ierr,     ionode_id )
        !
        IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(tag),ierr)
        found = .TRUE.
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           CALL iotk_scan_empty(iun,'DATA',ATTR=attr,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
            CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
@@ -298,28 +297,28 @@ CONTAINS
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_begin(unit,"RHAM", IERR=ierr)
+           CALL iotk_scan_begin(iun,"RHAM", IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag RHAM',ABS(ierr))
            !
            DO ir = 1, nrtot
                !
-               CALL iotk_scan_dat(unit,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir), IERR=ierr)
+               CALL iotk_scan_dat(iun,"VR"//TRIM(iotk_index(ir)), rham(:,:,ir), IERR=ierr)
                IF (ierr/=0) CALL errore(subname,'Unable to find dat VR in RHAM',ir)
                !
                IF ( lhave_overlap ) THEN
                    !
-                   CALL iotk_scan_dat(unit,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir), IERR=ierr)
+                   CALL iotk_scan_dat(iun,"OVERLAP"//TRIM(iotk_index(ir)), rovp(:,:,ir), IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'Unable to find dat OVERLAP in RHAM',ir)
                    !
                ENDIF
                !
            ENDDO
            !
-           CALL iotk_scan_end(unit,"RHAM", IERR=ierr)
+           CALL iotk_scan_end(iun,"RHAM", IERR=ierr)
            IF (ierr/=0)  CALL errore(subname,'Unable to end tag RHAM',ABS(ierr))
 
-           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           CALL iotk_scan_end(iun,TRIM(tag),IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(tag),ABS(ierr))
            !
        ENDIF
        !

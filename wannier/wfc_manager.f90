@@ -26,6 +26,7 @@
    USE constants,                  ONLY : CZERO, ZERO
    USE io_module,                  ONLY : stdout, ionode, dft_unit, ovp_unit
    USE io_module,                  ONLY : io_name, dftdata_fmt, wantdata_form
+   USE io_module,                  ONLY : io_open_dftdata, io_close_dftdata
    USE log_module,                 ONLY : log_push, log_pop
    USE timing_module,              ONLY : timing, timing_upto_now
    USE files_module,               ONLY : file_open, file_close
@@ -98,12 +99,9 @@
           !
           ! ... opening the file containing the PW-DFT data
           !
-          CALL io_name('dft_data',filename)
-          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
+          CALL io_open_dftdata( LSERIAL=.FALSE. ) 
           !
           CALL io_name('dft_data',filename,LPATH=.FALSE.)
-
 
           !
           ! ... Read grids
@@ -117,8 +115,9 @@
 
           !
           ! ... closing the main data file
-          CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr)
-          IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
+          !
+          CALL io_close_dftdata( LSERIAL=.FALSE. )
+
 
 
           !
@@ -309,9 +308,8 @@
           !
           ! Re-open the main data file
           CALL io_name('dft_data',filename)
-          !
-          CALL file_open( dft_unit, TRIM(filename), PATH="/", ACTION="read", IERR=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
+          CALL io_open_dftdata( LSERIAL=.FALSE. )
+
 
           !
           ! memory report
@@ -443,7 +441,7 @@
                              IF ( use_uspp ) THEN
                                  !
                                  CALL overlap_augment( nwfcx, ibe-ibs+1, jbe-jbs+1, &
-                                                       ik_g, ikb_g, ib, aux )
+                                                       ib, aux )
                              
                                  Mkb( ibs:ibe, jbs:jbe, inn, ik ) = &
                                         !
@@ -507,8 +505,7 @@
 
           !
           ! re-closing the main data file
-          CALL file_close( dft_unit, PATH="/", ACTION="read", IERR=ierr)
-          IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr)) 
+          CALL io_close_dftdata( LSERIAL=.FALSE. )
 
 
           !
@@ -609,7 +606,7 @@
       ! In principle this is not needed, but it is useful in terms of 
       ! parallelization
       !
-      CALL overlap_bsymm( dimwinx, dimwann, nkpts, Mkb )
+      CALL overlap_bsymm( dimwinx, nkpts, Mkb )
 
 
       CALL timing_upto_now( stdout )

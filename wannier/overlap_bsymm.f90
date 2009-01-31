@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-SUBROUTINE overlap_bsymm(dimwinx, dimwann, nkpts, Mkb)
+SUBROUTINE overlap_bsymm(dimwinx, nkpts, Mkb)
    !*********************************************************
    !
    ! This subroutine perform the symmetrization of overlap
@@ -30,7 +30,7 @@ SUBROUTINE overlap_bsymm(dimwinx, dimwann, nkpts, Mkb)
    !
    ! input variables
    !
-   INTEGER,         INTENT(IN)    :: dimwinx, dimwann, nkpts
+   INTEGER,         INTENT(IN)    :: dimwinx, nkpts
    COMPLEX(dbl),    INTENT(INOUT) :: Mkb(dimwinx,dimwinx,nb,nkpts) 
 
    !

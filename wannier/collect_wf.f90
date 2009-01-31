@@ -38,7 +38,7 @@
    ! local variables
    !
    CHARACTER(10):: subname='collect_wf'
-   INTEGER      :: i, j, ik, ik_g, m, n, ierr
+   INTEGER      :: i, ik, ik_g, m, n, ierr
    REAL(dbl)    :: arg
    COMPLEX(dbl) :: phase
    REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:), rave_cry(:,:)

@@ -12,18 +12,26 @@
 !*********************************************
    !
    USE kinds,             ONLY : dbl
-   USE constants,         ONLY : CZERO, ZERO
+   USE constants,         ONLY : CZERO, ZERO, TWO
    USE parameters,        ONLY : nstrx
    USE windows_module,    ONLY : nbnd, dimwinx, imin, imax, ispin, nspin
-   USE kpoints_module,    ONLY : nkpts_g, iks, ike
+   USE kpoints_module,    ONLY : kpoints_alloc, nkpts_g
+   USE lattice_module,    ONLY : lattice_alloc => alloc, bvec, tpiba
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
    USE io_global_module,  ONLY : ionode, ionode_id
-   USE ggrids_module,     ONLY : ecutwfc
+   USE ggrids_module,     ONLY : ggrids_alloc => alloc, ecutwfc, ecutrho
    USE mp,                ONLY : mp_bcast
    USE wfc_info_module
+   !
    USE qexml_module
    USE qexpt_module
+   !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module
+#endif
    !
    IMPLICIT NONE
    PRIVATE
@@ -90,12 +98,29 @@ CONTAINS
    !**********************************************************
    IMPLICIT NONE
        CHARACTER(*), INTENT(IN) :: filefmt
-       CHARACTER(19)       :: subname="wfc_data_grids_read"
-       INTEGER             :: ik_g, ierr 
+       !
+       CHARACTER(19)        :: subname="wfc_data_grids_read"
+       INTEGER              :: ik_g, ierr 
+       !
+#ifdef __ETSF_IO
+       INTEGER              :: nfft(3), ig, npw_rho
+       REAL(dbl)            :: gcutm, b1(3), b2(3), b3(3)
+       INTEGER, ALLOCATABLE :: gvectors_aux(:,:)
+       INTEGER, ALLOCATABLE :: gmap(:,:,:)
+       !
+       TYPE(etsf_basisdata) :: basisdata       
+       INTEGER,          ALLOCATABLE, TARGET :: number_of_coefficients(:)
+       INTEGER,          ALLOCATABLE, TARGET :: reduced_coordinates_of_plane_waves(:,:,:)
+#endif
 
 
        CALL timing ( subname, OPR="START")
        CALL log_push( subname )
+
+       IF ( .NOT. lattice_alloc ) CALL errore(subname,'lattice not alloc',10)
+       IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints not alloc',10)
+       IF ( .NOT. ggrids_alloc )  CALL errore(subname,'ggrids not alloc',10)
+
        !
        !
        ! few checks
@@ -124,7 +149,7 @@ CONTAINS
                 DO ik_g = 1, nkpts_g
                     !
                     CALL qexml_read_gk( ik_g, NPWK=npwk(ik_g), IERR=ierr )
-                    IF ( ierr/=0) CALL errore(subname,'getting npwk',ik_g)
+                    IF ( ierr/=0) CALL errore(subname,'QEXML: getting npwk',ik_g)
                     !
                 ENDDO
                 !
@@ -133,16 +158,39 @@ CONTAINS
                 DO ik_g = 1, nkpts_g
                     !
                     CALL qexpt_read_gk( ik_g, NPWK=npwk(ik_g), IERR=ierr )
-                    IF ( ierr/=0) CALL errore(subname,'getting npwk',ik_g)
+                    IF ( ierr/=0) CALL errore(subname,'QEXPT: getting npwk',ik_g)
                     !
                 ENDDO
+                !
+           CASE ( 'etsf_io' )
+                !
+#ifdef __ETSF_IO
+                !
+                ALLOCATE( number_of_coefficients(dims%number_of_kpoints) )
+                !
+                basisdata%number_of_coefficients   => number_of_coefficients
+                !
+                call etsf_io_basisdata_get(ncid, basisdata, lstat, error_data)
+                IF ( .NOT. lstat) CALL errore(subname,'ETSF_IO: getting npwk',10)
+                !
+                basisdata%number_of_coefficients   => null()
+                !
+                DO ik_g = 1, nkpts_g
+                    !
+                    npwk( ik_g ) = number_of_coefficients(ik_g)
+                    !
+                ENDDO
+                !
+                DEALLOCATE( number_of_coefficients )
+                !
+#else
+                CALL errore(subname,'ETSF_IO not configured',10)
+#endif
                 !
            CASE DEFAULT
                 !
                 CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
            END SELECT
-           !
-           IF ( ierr/=0) CALL errore(subname,'getting grids dimensions',ABS(ierr))
            !
        ENDIF
        !
@@ -193,6 +241,71 @@ CONTAINS
                     IF ( ierr/=0) CALL errore(subname,'getting igsort',ik_g)
                     !
                 ENDDO
+                !
+           CASE( 'etsf_io' )
+                !
+#ifdef __ETSF_IO
+                !
+                ALLOCATE( reduced_coordinates_of_plane_waves( dims%number_of_reduced_dimensions, & 
+                                                              dims%max_number_of_coefficients,   &
+                                                              dims%number_of_kpoints), STAT=ierr )
+                IF ( ierr/=0 ) CALL errore(subname,'allocating reduced_coordinates_of_plane_waves',10)
+                !
+                basisdata%reduced_coordinates_of_plane_waves%data3d =>  &
+                                              reduced_coordinates_of_plane_waves(:,:,:)
+                !
+                CALL etsf_io_basisdata_get(ncid, basisdata, lstat, error_data)
+                IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading plane-waves',10)
+                !
+                basisdata%reduced_coordinates_of_plane_waves%data3d => null()
+
+                !
+                ! we have to feel igksort with the map between the PWs of each
+                ! kpt and the G-grid of the density.
+                ! To do this, we regenerate locally the main G-grid use the map
+                ! given by gglobal
+                !
+                
+                ! aux data
+                gcutm   = ecutrho / tpiba**2
+                !
+                b1 = bvec(:,1) / tpiba
+                b2 = bvec(:,2) / tpiba
+                b3 = bvec(:,3) / tpiba
+                !
+                nfft(1) = dims%number_of_grid_points_vector1
+                nfft(2) = dims%number_of_grid_points_vector2
+                nfft(3) = dims%number_of_grid_points_vector3
+                !
+                ALLOCATE( gvectors_aux(3, PRODUCT(nfft)), STAT=ierr )
+                IF ( ierr/=0 ) CALL errore(subname,'allocating gvectors_aux',ABS(ierr))
+                !
+                ALLOCATE( gmap(-nfft(1):nfft(1), -nfft(2):nfft(2), -nfft(3):nfft(3)), STAT=ierr)
+                IF ( ierr/=0 ) CALL errore(subname,'allocating gmap',ABS(ierr))
+                !
+                CALL gglobal( npw_rho, gvectors_aux, gmap, b1, b2, b3, &
+                              nfft(1), nfft(2), nfft(3), gcutm, .FALSE. )
+                !
+                DO ik_g = 1, nkpts_g
+                    !
+                    DO ig = 1, npwk( ik_g )
+                        !
+                        igsort( ig, ik_g) = gmap( reduced_coordinates_of_plane_waves(1,ig,ik_g), &
+                                                  reduced_coordinates_of_plane_waves(2,ig,ik_g), &
+                                                  reduced_coordinates_of_plane_waves(3,ig,ik_g)  )
+                        !
+                    ENDDO
+                    !
+                ENDDO
+
+
+                DEALLOCATE( reduced_coordinates_of_plane_waves, STAT=ierr )
+                IF ( ierr/=0 ) CALL errore(subname,'deallocating reduced_coordinates_of_plane_waves',10)
+                !
+                DEALLOCATE( gvectors_aux, gmap, STAT=ierr)
+                IF ( ierr/=0 ) CALL errore(subname,'deallocating gvectors_aux, gmap',ABS(ierr))
+                !
+#endif
                 !
            CASE DEFAULT
                 !
@@ -275,10 +388,19 @@ CONTAINS
        CHARACTER(*),      INTENT(IN)    :: label, filefmt
        COMPLEX(dbl),      INTENT(INOUT) :: wfc(:,:)
        TYPE(wfc_info),    INTENT(INOUT) :: lwfc
-       INTEGER, OPTIONAL, INTENT(IN)    :: iband_min,iband_max
+       INTEGER, OPTIONAL, INTENT(IN)    :: iband_min, iband_max
 
-       CHARACTER(14)      :: subname="wfc_data_kread"
-       INTEGER            :: ib, ibs, ibe, lindex, ierr
+       CHARACTER(14)        :: subname="wfc_data_kread"
+       INTEGER              :: ib, ibs, ibe, lindex, ierr
+       !
+#ifdef __ETSF_IO
+       INTEGER              :: npw
+       TYPE(etsf_main)      :: main
+       TYPE(etsf_basisdata) :: basisdata
+       !
+       INTEGER,          ALLOCATABLE, TARGET :: number_of_coefficients(:)
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: coefficients_of_wavefunctions(:,:,:)
+#endif
 
        !
        CALL timing ( subname,OPR='start')
@@ -331,6 +453,58 @@ CONTAINS
             !
             CALL qexpt_read_wfc( ibs, ibe, ik_g, ispin, IGK=igsort(:,ik_g), &
                                  WF=wfc(:, lindex: ), IERR=ierr )
+            !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            !
+            IF ( dims%number_of_spins/= 1 .AND. dims%number_of_spinor_components/=1)   &
+            CALL errore(subname,'too many spin and spinor components',1)
+            !
+            IF ( dims%number_of_spinor_components /= 1 ) &
+               CALL errore(subname,'spinorial wfcs not implemented',10)
+            !
+            ALLOCATE( coefficients_of_wavefunctions(dims%real_or_complex_coefficients, &
+                                                    dims%max_number_of_coefficients,   & 
+                                                    dims%max_number_of_states), STAT=ierr)
+            IF (ierr/=0 ) CALL errore(subname,'allocating coeff_of_wfcs',ABS(ierr))
+            !
+            ALLOCATE( number_of_coefficients(dims%number_of_kpoints), STAT=ierr )
+            IF (ierr/=0 ) CALL errore(subname,'allocating numb_of_coeff',ABS(ierr))
+            !
+            !
+            basisdata%number_of_coefficients           => number_of_coefficients 
+            !
+            CALL etsf_io_basisdata_get(ncid, basisdata, lstat, error_data)
+            IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading basisdata',ABS(ierr))
+            !
+            basisdata%number_of_coefficients           => null()
+            !
+            !
+            main%wfs_coeff__kpoint_access = ik_g
+            main%wfs_coeff__spin_access   = ispin
+            main%coefficients_of_wavefunctions%data3D => coefficients_of_wavefunctions
+            !
+            CALL etsf_io_main_get(ncid, main, lstat, error_data)
+            IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading wfcs',ABS(ierr))
+            !
+            main%coefficients_of_wavefunctions%data3D => null()
+            !
+            npw = number_of_coefficients( ik_g )
+            !
+            wfc( 1 : npw, lindex : lindex+ibe-ibs ) = &
+                    CMPLX( coefficients_of_wavefunctions(1, 1:npw, ibs:ibe ), &
+                           coefficients_of_wavefunctions(2, 1:npw, ibs:ibe ), dbl )
+            !
+            DEALLOCATE( coefficients_of_wavefunctions, STAT=ierr )
+            IF (ierr/=0 ) CALL errore(subname,'deallocating coeff_of_wfcs',ABS(ierr))
+            DEALLOCATE( number_of_coefficients, STAT=ierr )
+            IF (ierr/=0 ) CALL errore(subname,'deallocating numb_of_coeff',ABS(ierr))
+            !
+#else
+            CALL errore(subname,'ETSF_IO not configure', 10)
+#endif
             !
        CASE DEFAULT
             !

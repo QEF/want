@@ -56,7 +56,7 @@ SUBROUTINE ordering(dimwann, nkpts, rave, rave2, r2ave, cU, ordering_mode)
    COMPLEX(dbl), ALLOCATABLE     :: cswap(:,:,:)
    INTEGER,      ALLOCATABLE     :: index(:)
    LOGICAL                       :: lspatial, lspread
-   INTEGER                       :: i, is, ie, ik_g, ierr
+   INTEGER                       :: i, is, ie, ierr
 
 
 !------------------------------------------------

@@ -10,20 +10,26 @@
    MODULE windows_module
    !*********************************************
    !
-   USE kinds,             ONLY : dbl
-   USE constants,         ONLY : RYD, TWO, ZERO
-   USE parameters,        ONLY : nstrx
-   USE timing_module,     ONLY : timing
-   USE log_module,        ONLY : log_push, log_pop
-   USE parser_module,     ONLY : change_case
-   USE kpoints_module,    ONLY : nkpts_g, kpoints_alloc
-   USE io_global_module,  ONLY : ionode, ionode_id
-   USE mp,                ONLY : mp_bcast
+   USE kinds,                    ONLY : dbl
+   USE constants,                ONLY : RYD, TWO, ZERO
+   USE parameters,               ONLY : nstrx
+   USE timing_module,            ONLY : timing
+   USE log_module,               ONLY : log_push, log_pop
+   USE parser_module,            ONLY : change_case
+   USE kpoints_module,           ONLY : nkpts_g, kpoints_alloc
+   USE io_global_module,         ONLY : ionode, ionode_id
+   USE input_parameters_module,  ONLY : iwin_min, iwin_max, ifroz_min, ifroz_max
+   USE mp,                       ONLY : mp_bcast
    !
-   USE input_parameters_module, ONLY : iwin_min, iwin_max, ifroz_min, ifroz_max
    USE iotk_module
    USE qexml_module 
    USE qexpt_module 
+   !
+#ifdef __ETSF_IO
+   USE etsf_io
+   USE etsf_io_tools
+   USE etsf_io_data_module
+#endif
    !
    IMPLICIT NONE
    PRIVATE
@@ -38,8 +44,8 @@
 ! SUBROUTINE windows_allocate()
 ! SUBROUTINE windows_deallocate()
 ! SUBROUTINE windows_init(eig, dimwann)
-! SUBROUTINE windows_write(unit,name)
-! SUBROUTINE windows_read(unit,name,found)
+! SUBROUTINE windows_write(iun,tag)
+! SUBROUTINE windows_read(iun,tag,found)
 ! SUBROUTINE windows_read_ext(filefmt)
 
 !
@@ -395,14 +401,13 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE windows_write(unit,name)
+   SUBROUTINE windows_write(iun,tag)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,         INTENT(in) :: unit
-       CHARACTER(*),    INTENT(in) :: name
+       INTEGER,         INTENT(in) :: iun
+       CHARACTER(*),    INTENT(in) :: tag
        CHARACTER(nstrx)   :: attr
        CHARACTER(13)      :: subname="windows_write"
-       INTEGER            :: ierr
 
        !
        ! even if all the quantities are global, 
@@ -416,7 +421,7 @@ CONTAINS
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_write_begin(unit,TRIM(name))
+           CALL iotk_write_begin(iun,TRIM(tag))
            CALL iotk_write_attr(attr,"nbnd",nbnd,FIRST=.TRUE.)
            CALL iotk_write_attr(attr,"nkpts",nkpts_g)
            !
@@ -425,19 +430,19 @@ CONTAINS
            CALL iotk_write_attr(attr,"efermi",efermi)
            CALL iotk_write_attr(attr,"dimwinx",dimwinx)
            CALL iotk_write_attr(attr,"lfrozen",lfrozen)
-           CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+           CALL iotk_write_empty(iun,"DATA",ATTR=attr)
            !
-           CALL iotk_write_dat(unit,"DIMWIN",dimwin, COLUMNS=8)
-           CALL iotk_write_dat(unit,"IMIN",imin, COLUMNS=8)
-           CALL iotk_write_dat(unit,"IMAX",imax, COLUMNS=8)
-           CALL iotk_write_dat(unit,"EIG",eig, COLUMNS=4)
+           CALL iotk_write_dat(iun,"DIMWIN",dimwin, COLUMNS=8)
+           CALL iotk_write_dat(iun,"IMIN",imin, COLUMNS=8)
+           CALL iotk_write_dat(iun,"IMAX",imax, COLUMNS=8)
+           CALL iotk_write_dat(iun,"EIG",eig, COLUMNS=4)
            !
-           CALL iotk_write_dat(unit,"DIMFROZ",dimfroz, COLUMNS=8)
-           CALL iotk_write_dat(unit,"INDXFROZ",indxfroz, COLUMNS=8)
-           CALL iotk_write_dat(unit,"INDXNFROZ",indxnfroz, COLUMNS=8)
-           CALL iotk_write_dat(unit,"FROZEN",frozen, COLUMNS=8)
+           CALL iotk_write_dat(iun,"DIMFROZ",dimfroz, COLUMNS=8)
+           CALL iotk_write_dat(iun,"INDXFROZ",indxfroz, COLUMNS=8)
+           CALL iotk_write_dat(iun,"INDXNFROZ",indxnfroz, COLUMNS=8)
+           CALL iotk_write_dat(iun,"FROZEN",frozen, COLUMNS=8)
            !
-           CALL iotk_write_end(unit,TRIM(name))
+           CALL iotk_write_end(iun,TRIM(tag))
            !
        ENDIF
        !
@@ -448,11 +453,11 @@ CONTAINS
    
 
 !**********************************************************
-   SUBROUTINE windows_read(unit,name,found)
+   SUBROUTINE windows_read(iun,tag,found)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
-       CHARACTER(*),      INTENT(in) :: name
+       INTEGER,           INTENT(in) :: iun
+       CHARACTER(*),      INTENT(in) :: tag
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="windows_read"
@@ -466,7 +471,7 @@ CONTAINS
        ! 
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           CALL iotk_scan_begin(iun,TRIM(tag),FOUND=found,IERR=ierr)
            !
        ENDIF
        !
@@ -474,12 +479,12 @@ CONTAINS
        CALL mp_bcast( ierr,     ionode_id )       
        !
        IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(name),ierr)
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(tag),ierr)
        found = .TRUE.
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           CALL iotk_scan_empty(iun,'DATA',ATTR=attr,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
            CALL iotk_scan_attr(attr,'nbnd',nbnd,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr NBND',ABS(ierr))
@@ -533,33 +538,33 @@ CONTAINS
 
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_dat(unit,'DIMWIN',dimwin,IERR=ierr)
+           CALL iotk_scan_dat(iun,'DIMWIN',dimwin,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find DIMWIN',ABS(ierr))
-           CALL iotk_scan_dat(unit,'IMIN',imin,IERR=ierr)
+           CALL iotk_scan_dat(iun,'IMIN',imin,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find IMIN',ABS(ierr))
-           CALL iotk_scan_dat(unit,'IMAX',imax,IERR=ierr)
+           CALL iotk_scan_dat(iun,'IMAX',imax,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find IMAX',ABS(ierr))
-           CALL iotk_scan_dat(unit,'EIG',eig,IERR=ierr)
+           CALL iotk_scan_dat(iun,'EIG',eig,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find EIG',ABS(ierr))
 
-           CALL iotk_scan_dat(unit,'DIMFROZ',dimfroz, FOUND=lfound ,IERR=ierr)
+           CALL iotk_scan_dat(iun,'DIMFROZ',dimfroz, FOUND=lfound ,IERR=ierr)
            IF (ierr>0) CALL errore(subname,'Unable to find DIMFROZ',ABS(ierr))
            IF ( .NOT. lfound ) dimfroz = 0
            !
-           CALL iotk_scan_dat(unit,'INDXFROZ',indxfroz,IERR=ierr)
+           CALL iotk_scan_dat(iun,'INDXFROZ',indxfroz,IERR=ierr)
            IF (ierr>0) CALL errore(subname,'Unable to find INDXFROZ',ABS(ierr))
            IF ( .NOT. lfound ) indxfroz = 0
            !
-           CALL iotk_scan_dat(unit,'INDXNFROZ',indxnfroz,IERR=ierr)
+           CALL iotk_scan_dat(iun,'INDXNFROZ',indxnfroz,IERR=ierr)
            IF (ierr>0) CALL errore(subname,'Unable to find INDXNFROZ',ABS(ierr))
            IF ( .NOT. lfound ) indxnfroz = 0
            !
-           CALL iotk_scan_dat(unit,'FROZEN',frozen,IERR=ierr)
+           CALL iotk_scan_dat(iun,'FROZEN',frozen,IERR=ierr)
            IF (ierr>0) CALL errore(subname,'Unable to find FROZEN',ABS(ierr))
            IF ( .NOT. lfound ) frozen = .FALSE.
 
-           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
+           CALL iotk_scan_end(iun,TRIM(tag),IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(tag),ABS(ierr))
            !
        ENDIF
        !
@@ -575,7 +580,7 @@ CONTAINS
        !
        ! set the auxiliary quantities IKE, IKS, ISPIN
        !
-       CALL windows_setspin( spin_component, nspin, nkpts_g, ispin )
+       CALL windows_setspin( spin_component, nspin, ispin )
 
        !
        ! close
@@ -594,7 +599,12 @@ CONTAINS
        CHARACTER(nstrx)   :: str
        INTEGER            :: lnkpts, ierr, ik
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
-
+       !
+#ifdef __ETSF_IO
+       TYPE(etsf_electrons)                  :: electrons
+       DOUBLE PRECISION,              TARGET :: fermi_energy
+       DOUBLE PRECISION, ALLOCATABLE, TARGET :: eigenvalues(:,:,:)
+#endif
 
        CALL timing ( subname, OPR='start' )
        CALL log_push ( subname )
@@ -631,6 +641,25 @@ CONTAINS
             CALL mp_bcast( nelec,   ionode_id )
             CALL mp_bcast( ierr,    ionode_id )
             !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            nbnd   = dims%max_number_of_states  
+            lnkpts = dims%number_of_kpoints
+            !
+            nspin  = 1
+            IF ( dims%number_of_spins == 2 ) nspin = 2
+            IF ( dims%number_of_spinor_components == 2 ) nspin = 4
+            !
+            ! Fermi energy will be read in the next section
+            efermi = 0.0  
+            ierr   = 0
+            !
+#else
+            CALL errore(subname,'ETSF_IO not configured',10)
+#endif
+            !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
@@ -652,7 +681,7 @@ CONTAINS
        !
        ! setting the auxiliary quantity ISPIN
        !
-       CALL windows_setspin( spin_component, nspin, nkpts_g, ispin )
+       CALL windows_setspin( spin_component, nspin, ispin )
 
 
        !
@@ -708,6 +737,36 @@ CONTAINS
             !
             IF ( ierr/=0 ) CALL errore(subname,'QEXPT: reading bands',10)
             !
+       CASE ( 'etsf_io' )
+            !
+#ifdef __ETSF_IO
+            !
+            ALLOCATE( eigenvalues(dims%max_number_of_states, &
+                                  dims%number_of_kpoints,    &   
+                                  dims%number_of_spins )     )
+            !
+            electrons%fermi_energy            => fermi_energy 
+            electrons%eigenvalues%data3d      => eigenvalues
+            !
+            IF ( ionode ) CALL etsf_io_electrons_get(ncid, electrons, lstat, error_data)
+            !
+            electrons%fermi_energy            => null() 
+            electrons%eigenvalues%data3d      => null()
+            !
+            CALL mp_bcast( fermi_energy,  ionode_id )
+            CALL mp_bcast( eigenvalues,   ionode_id )
+            CALL mp_bcast( lstat,         ionode_id )
+            !
+            IF ( .NOT. lstat ) CALL errore(subname,'ETSF_IO: reading bands',10)
+            !
+            str = "Hartree"
+            !
+            leig( 1:nbnd, 1:nkpts_g, 1:nspin) = eigenvalues(:,:,:)
+            !
+            DEALLOCATE( eigenvalues )
+            !
+#endif
+            !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
@@ -755,11 +814,11 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE windows_setspin( spin_component, nspin, nkpts_g, ispin )
+   SUBROUTINE windows_setspin( spin_component, nspin, ispin )
    !**********************************************************
    IMPLICIT NONE
        CHARACTER(*),  INTENT(IN)  :: spin_component
-       INTEGER,       INTENT(IN)  :: nspin, nkpts_g
+       INTEGER,       INTENT(IN)  :: nspin
        INTEGER,       INTENT(OUT) :: ispin
        !
        CHARACTER(17)  :: subname="windows_setspin"

@@ -193,7 +193,7 @@ END PROGRAM blc2wan
    USE kinds
    USE constants,            ONLY : ZERO, CZERO, TWO, RYD, EPS_m6
    USE parameters,           ONLY : nstrx
-   USE io_module,            ONLY : stdout, work_dir, prefix, postfix, ionode
+   USE io_module,            ONLY : stdout, work_dir, prefix, postfix
    USE io_module,            ONLY : in_unit => aux1_unit, out_unit => aux2_unit
    USE parser_module,        ONLY : log2char, change_case
    USE converters_module,    ONLY : cry2cart
