@@ -100,14 +100,16 @@ run () {
    local INPUT=
    local OUTPUT=
    local PARALLEL=
+   local INPUT_TYPE_LOC=$INPUT_TYPE
 
    for arg 
    do
-         [[ "$arg" == NAME=* ]]      && NAME="${arg#NAME=}"
-         [[ "$arg" == EXEC=* ]]      && EXEC="${arg#EXEC=}"
-         [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
-         [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
-         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
+         [[ "$arg" == NAME=* ]]        && NAME="${arg#NAME=}"
+         [[ "$arg" == EXEC=* ]]        && EXEC="${arg#EXEC=}"
+         [[ "$arg" == INPUT=* ]]       && INPUT="${arg#INPUT=}"
+         [[ "$arg" == OUTPUT=* ]]      && OUTPUT="${arg#OUTPUT=}"
+         [[ "$arg" == PARALLEL=* ]]    && PARALLEL="${arg#PARALLEL=}"
+         [[ "$arg" == INPUT_TYPE=* ]]  && INPUT_TYPE_LOC="${arg#INPUT_TYPE=}"
    done
 
    if [ -z "$NAME" ]   ; then echo "empty NAME card"   ; exit 1 ; fi 
@@ -115,6 +117,13 @@ run () {
    if [ -z "$INPUT" ]  ; then echo "empty INPUT card"  ; exit 1 ; fi 
    if [ -z "$OUTPUT" ] ; then echo "empty OUTPUT card" ; exit 1 ; fi 
    
+   if [ ! -x $EXEC ] ; then
+      #
+      echo $ECHO_N "$EXEC not executable... exit"
+      exit 0
+      #
+   fi
+
    if [ ! -z $NAME ] ; then
       #
       echo $ECHO_N "running $NAME calculation... $ECHO_C"
@@ -122,7 +131,7 @@ run () {
    fi
 
    #
-   if [ "$INPUT_TYPE" = "from_stdin" ] ; then
+   if [ "$INPUT_TYPE_LOC" = "from_stdin" ] ; then
       #
       if [ "$PARALLEL" = "yes" ] ; then
          $PARA_PREFIX $EXEC $PARA_POSTFIX < $INPUT > $OUTPUT
@@ -131,7 +140,7 @@ run () {
       fi
    fi
    #
-   if [ "$INPUT_TYPE" = "from_file" ] ; then
+   if [ "$INPUT_TYPE_LOC" = "from_file" ] ; then
       #
       if [ "$PARALLEL" = "yes" ] ; then
          $PARA_PREFIX $EXEC $PARA_POSTFIX -input $INPUT > $OUTPUT
@@ -155,7 +164,7 @@ run_dft () {
 #----------------------
 #
    local NAME=DFT
-   local EXEC=$DFT_BIN/pw.x
+   local EXEC=$QE_BIN/pw.x
    local RUN=yes
    local INPUT=
    local OUTPUT=
@@ -185,12 +194,51 @@ run_dft () {
 
 #
 #----------------------
+run_abinit () {
+#----------------------
+#
+   local NAME=DFT_ABINIT
+   local EXEC=$ABINIT_BIN/abinip
+   local RUN=yes
+   local INPUT=
+   local OUTPUT=
+   local SUFFIX=
+   local PARALLEL=yes
+   local name_tmp
+   
+   for arg 
+   do
+         [[ "$arg" == NAME=* ]]      && NAME="${arg#NAME=}"
+         [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
+         [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
+         [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
+   done
+
+   [[ "$RUN" != "yes" ]]  && return
+   [[ "$PARALLEL" != "yes" ]]  && EXEC=$ABINIT_BIN/abinis 
+   
+   name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.files  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/$name_tmp$SUFFIX.log ; fi
+   OUTPUT_INT=$TEST_HOME/$name_tmp$SUFFIX.out
+
+   test -e $OUTPUT_INT && rm $OUTPUT_INT
+   #
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL \
+       INPUT_TYPE="from_stdin"
+}
+
+
+#
+#----------------------
 run_export () {
 #----------------------
 #
  
    local NAME=EXPORT
-   local EXEC=$DFT_BIN/pw_export.x
+   local EXEC=$QE_BIN/pw_export.x
    local RUN=yes
    local SUFFIX=
    local INPUT=
