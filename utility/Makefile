@@ -23,6 +23,7 @@ WANNIER_OBJS= \
 ../wannier/functionals.o \
 ../wannier/get_monkpack.o \
 ../wannier/get_rgrid.o \
+../wannier/gglobal.o \
 ../wannier/ggrids.o \
 ../wannier/hamiltonian.o \
 ../wannier/init_at_1.o \
@@ -50,6 +51,7 @@ WANNIER_OBJS= \
 ../wannier/recips.o \
 ../wannier/setqf.o \
 ../wannier/shutdown.o \
+../wannier/sort_gvec.o \
 ../wannier/startup.o \
 ../wannier/struct_fact.o \
 ../wannier/struct_fact_data.o \
