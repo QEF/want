@@ -1,0 +1,7 @@
+dft_GaAs_abi.in
+dft_GaAs_abi.out
+SCRATCH/gaas-i
+SCRATCH/gaas-o
+SCRATCH/gaas-r
+../pseudo/31ga.pspnc
+../pseudo/33as.pspnc
