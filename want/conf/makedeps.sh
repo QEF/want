@@ -9,6 +9,7 @@ cd ..
 TOPDIR=`pwd`
 BINDIR=$TOPDIR/conf
 
+SPECIAL_MODULES="etsf_io etsf_io_tools mkl_dfti.f90"
 
 for DIR in iotk libs wannier transport utility
 do
@@ -35,6 +36,13 @@ do
         mv make.depend make.depend.tmp
         sed 's/@fftw.c@/fftw.c/' make.depend.tmp > make.depend
     fi
+
+    # eliminate dependencies on special modules
+    for module in $SPECIAL_MODULES
+    do
+        mv make.depend make.depend.tmp
+        grep -v "@$module@" make.depend.tmp > make.depend
+    done
 
     test -e make.depend.tmp && rm make.depend.tmp
 
