@@ -8,6 +8,7 @@
    emax = 5.0
    datafile_C = "./SCRATCH/pt_h2_pt_WanT.ham"
    transport_dir = 3
+   do_eigenchannels = .TRUE.
 /
 
 <HAMILTONIAN_DATA>
