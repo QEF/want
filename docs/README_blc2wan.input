@@ -75,5 +75,12 @@ debug_level   INTEGER
               level of debug report; values <= 0 switch the debug_mode off 
               DEFAULT: 0
 
+do_extrapolation        LOGICAL
+              if .TRUE. and if input operator is diagonal, missing matrix elements
+              such as those lower than ibnd_start and higher then ibnd_end 
+              are guessed according to the lowest and the highest (nearest) available 
+              values.  On the contrary, they are set to zero.
+              DEFAULT: .FALSE.
+
 ==============================================================================
 
