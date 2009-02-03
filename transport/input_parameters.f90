@@ -17,6 +17,7 @@
    USE io_module,     ONLY : ionode, ionode_id
    USE log_module,    ONLY : log_push, log_pop
    USE mp,            ONLY : mp_bcast
+   !
    IMPLICIT NONE
    PRIVATE
    SAVE
@@ -127,6 +128,9 @@
    LOGICAL :: write_kdata = .FALSE.
        ! wheter to write kpoint-resolved dos an transmittance to output
 
+   LOGICAL :: do_eigenchannels = .FALSE.
+       ! compute eigenchannels
+
    CHARACTER(nstrx) :: work_dir   = './'
        ! working directory where to write datafiles
 
@@ -174,12 +178,12 @@
        ! treatment of the spin degrees of freedom is not implemented.
        ! Currently it is used only within the interface with CRYSTAL06.
 
-   NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,&
-                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias, &
-                 datafile_L, datafile_C, datafile_R, datafile_sgm, &
-                 transport_dir, smearing_type, &
-                 delta_ratio, xmax, nk, s, use_symm, debug_level, &
-                 work_dir, prefix, postfix, write_kdata, ispin,   &
+   NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,             &
+                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias,  &
+                 datafile_L, datafile_C, datafile_R, datafile_sgm,              &
+                 transport_dir, smearing_type, do_eigenchannels,                &
+                 delta_ratio, xmax, nk, s, use_symm, debug_level,               &
+                 work_dir, prefix, postfix, write_kdata, ispin,                 &
                  shift_L, shift_C, shift_R, shift_corr, nfailx 
 
 
@@ -187,7 +191,7 @@
    PUBLIC :: ne, emin, emax, nprint, delta, bias, delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: nk, s, use_symm, debug_level
-   PUBLIC :: work_dir, prefix, postfix, write_kdata, ispin
+   PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, do_eigenchannels
    PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
    PUBLIC :: INPUT_CONDUCTOR
 
@@ -246,6 +250,7 @@ CONTAINS
       CALL mp_bcast( s,                  ionode_id)      
       CALL mp_bcast( use_symm,           ionode_id)      
       CALL mp_bcast( debug_level,        ionode_id)      
+      CALL mp_bcast( do_eigenchannels,   ionode_id)      
       CALL mp_bcast( ispin,              ionode_id)      
       CALL mp_bcast( work_dir,           ionode_id)      
       CALL mp_bcast( prefix,             ionode_id)      

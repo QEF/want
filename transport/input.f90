@@ -90,6 +90,7 @@ CONTAINS
                                            write_kdata,       &
                                            debug_level,       &
                                            use_debug_mode,    &
+                                           do_eigenchannels,  &
                                            nfailx
                                             
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
@@ -104,6 +105,7 @@ CONTAINS
                                            datafile_sgm_      => datafile_sgm, &
                                            write_kdata_       => write_kdata, &
                                            debug_level_       => debug_level, &
+                                           do_eigenchannels_  => do_eigenchannels, &
                                            nfailx_            => nfailx
 
       IMPLICIT NONE
@@ -120,6 +122,7 @@ CONTAINS
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
       debug_level         = debug_level_
+      do_eigenchannels    = do_eigenchannels_
       nfailx              = nfailx_
 
       use_debug_mode = .FALSE.

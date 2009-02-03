@@ -16,7 +16,7 @@
    USE constants,            ONLY : PI, ZERO, CZERO, CONE, CI, EPS_m5
    USE parameters,           ONLY : nstrx 
    USE version_module,       ONLY : version_number
-   USE parser_module,        ONLY : change_case
+   USE parser_module,        ONLY : change_case, int2char
    USE files_module,         ONLY : file_open, file_close
    USE timing_module,        ONLY : timing, timing_upto_now
    USE util_module,          ONLY : mat_mul, mat_inv
@@ -27,7 +27,7 @@
                                     work_dir, prefix, postfix, aux_unit
    USE T_input_module,       ONLY : input_manager
    USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
-                                    write_kdata
+                                    write_kdata, do_eigenchannels
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
@@ -54,10 +54,10 @@
    INTEGER          :: i, ie, ik, ierr, niter
    INTEGER          :: iomg_s, iomg_e
    REAL(dbl)        :: avg_iter
-   CHARACTER(4)     :: ctmp
+   CHARACTER(4)     :: ctmp, str
    !   
-   REAL(dbl),    ALLOCATABLE :: dos(:,:), conduct(:,:)
-   REAL(dbl),    ALLOCATABLE :: cond_aux(:)
+   REAL(dbl),    ALLOCATABLE :: conduct_k(:,:), conduct(:,:)
+   REAL(dbl),    ALLOCATABLE :: dos_k(:,:), dos(:), cond_aux(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
 
 !
@@ -140,11 +140,21 @@
    !
    CALL workspace_allocate()
 
-   ALLOCATE ( dos(nkpts_par,ne), STAT=ierr )
+   ALLOCATE ( dos_k(ne,nkpts_par), STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'allocating dos_k', ABS(ierr) )
+   ALLOCATE ( dos(ne), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating dos', ABS(ierr) )
    !
-   ALLOCATE ( conduct(nkpts_par,ne), STAT=ierr )
+   ALLOCATE ( conduct_k(ne,nkpts_par), STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'allocating conduct_k', ABS(ierr) )
+   !
+   IF ( do_eigenchannels ) THEN
+       ALLOCATE ( conduct(ne,1+dimC), STAT=ierr )
+   ELSE
+       ALLOCATE ( conduct(ne,1), STAT=ierr )
+   ENDIF
    IF( ierr /=0 ) CALL errore(subname,'allocating conduct', ABS(ierr) )
+   !
    !
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating cond_aux', ABS(ierr) )
@@ -172,8 +182,10 @@
    CALL divide_et_impera( 1, ne,  iomg_s, iomg_e, mpime, nproc )
 
 
-   dos(:,:)     = ZERO
-   conduct(:,:) = ZERO
+   dos(:)           = ZERO
+   dos_k(:,:)       = ZERO
+   conduct(:,:)     = ZERO
+   conduct_k(:,:)   = ZERO
    !
    energy_loop: &
    DO ie = iomg_s, iomg_e
@@ -264,8 +276,10 @@
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimC
-             dos(ik,ie) = dos(ik,ie) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
+             dos_k(ie,ik) = - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
+          !
+          dos(ie) = dos(ie) + dos_k(ie,ik)
 
 
           !
@@ -277,12 +291,23 @@
           ! or (in the correlated case) to the generalized expression as 
           ! from PRL 94, 116802 (2005)
           !
-          CALL transmittance(dimC, gamma_L, gamma_R, gC, blc_00C, &
-                             TRIM(conduct_formula), cond_aux )
+          CALL transmittance( cond_aux, dimC, gamma_L, gamma_R, gC, blc_00C, &
+                              TRIM(conduct_formula), do_eigenchannels )
           !
+          ! get the total trace
           DO i=1,dimC
-             conduct(ik,ie) =  conduct(ik,ie) + wk_par(ik) * cond_aux(i)
+              !
+              conduct(ie,1)    = conduct(ie,1)  + wk_par(ik) * cond_aux(i)
+              conduct_k(ie,ik) = conduct(ie,ik) + wk_par(ik) * cond_aux(i)
+              !
           ENDDO
+          !
+          ! resolve over eigenchannels
+          IF ( do_eigenchannels ) THEN
+              !
+              conduct(ie,2:dimC+1) = conduct(ie,2:dimC+1) + wk_par(ik) * cond_aux(1:dimC)
+              !
+          ENDIF
           ! 
       ENDDO kpt_loop 
 
@@ -305,8 +330,10 @@
    !
    ! recover over frequencies
    !
-   CALL mp_sum( conduct )
    CALL mp_sum( dos )
+   CALL mp_sum( dos_k )
+   CALL mp_sum( conduct )
+   CALL mp_sum( conduct_k )
 
    !
    ! close sgm file
@@ -333,9 +360,12 @@
        CALL io_name( "conductance", filename )
        !
        OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
+       !
+       str = TRIM( int2char(dimC+2))
        DO ie = 1, ne
-           WRITE ( cond_unit, '(2(f15.9))' ) egrid(ie), SUM( conduct(:,ie) )
+           WRITE ( cond_unit, '('//TRIM(str)//'(f15.9))' ) egrid(ie), conduct(ie,:)
        ENDDO
+       !
        CLOSE( cond_unit )
        !
        CALL io_name( "conductance", filename, LPATH=.FALSE. )
@@ -347,7 +377,7 @@
        OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
        !
        DO ie = 1, ne
-           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), SUM( dos(:,ie) )
+           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), dos(ie)
        ENDDO
        !
        CLOSE( dos_unit )
@@ -376,7 +406,7 @@
          WRITE( aux_unit, *) "# E (eV)   cond(E)"
          !
          DO ie = 1, ne
-              WRITE( aux_unit, '(2(f15.9))') egrid(ie), conduct(ik,ie) 
+              WRITE( aux_unit, '(2(f15.9))') egrid(ie), conduct_k(ie,ik) 
          ENDDO
          !
          CLOSE( aux_unit )         
@@ -397,7 +427,7 @@
          WRITE( aux_unit, *) "# E (eV)   doscond(E)"
          !
          DO ie = 1, ne
-             WRITE( aux_unit, '(2(f15.9))') egrid(ie), dos(ik,ie) 
+             WRITE( aux_unit, '(2(f15.9))') egrid(ie), dos_k(ie,ik) 
          ENDDO
          !
          CLOSE( aux_unit )         
@@ -417,8 +447,8 @@
    DEALLOCATE ( dos, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'deallocating dos', ABS(ierr) )
    !
-   DEALLOCATE ( conduct, STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'deallocating conduct', ABS(ierr) )
+   DEALLOCATE ( conduct_k, conduct, STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'deallocating conduct_k, conduct', ABS(ierr) )
    !
    DEALLOCATE ( cond_aux, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'deallocating cond_aux', ABS(ierr) )
