@@ -5,7 +5,9 @@
 
 
 03 Jan 2009      Bug fixed in the documentation (definition of froz_min);
-                 Courtesy of Regina Lelis de Sousa. (AF)
+                 Courtesy of Regina Lelis de Sousa. Implementation of
+                 eigenchannles added in conductor.x: only eigenvalues are
+                 computed. (AF)
 
 31 Jan 2009      Bug fixed in etsf_io interface. Clenaup of unused variables
                  all around. Interface to ETSF_IO working. Examples of Abinit 
