@@ -1,3 +1,4 @@
+
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -7,43 +8,54 @@
   ======================================================================
 
 
-  Program <bands>  v. 2.1.0  starts ...
-  Date 19May2007 at  2:15: 5 
+  Program <bands>  v. 2.2.0-dev  starts ...
+  Date 31Jan2009 at 12:46:15 
 
      Serial run.
 
-          BUILT :    Fri May 18 15:33:46 2007
-           HOST :    i686-pc-linux-gnu
-           ARCH :    ia32
+          BUILT :    Sat Jan 31 11:14:44 2009
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    amd64
              CC :    cc
             CPP :    cpp
-            F90 :    ifort
-            F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW
-      BLAS LIBS :    -lblas
-    LAPACK LIBS :    -llapack
-       FFT LIBS :    -lfftw
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__FFTW -D__USE_INTERNAL_FFTW -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -lmkl_em64t -lguide -lpthread
+    LAPACK LIBS :    -lmkl_em64t -lguide -lpthread
+       FFT LIBS :    
       MASS LIBS :    
 
 
   DFT-data fmt automaticaly detected: qexml
-  DFT-data read from file: gold.save/data-file.xml
-
-  Space data read from file: gold_WanT.space
-  Hamiltonian data read from file: gold_WanT.ham
-
 
   ======================================================================
-  =                           INPUT Summary                            =
+  =  INPUT Summary                                                     =
   ======================================================================
 
+                     work dir :     ./SCRATCH
+                       prefix :     gold
+                      postfix :     _WanT
                       fileout :     bands_Au.dat
                     nkpts_in  :      2
                     nkpts_max :    100
+                   have sigma :     FALSE
 
 
   ======================================================================
-  =                              DFT data                              =
+  =  Post Processing Init                                              =
+  ======================================================================
+
+  DFT-data read from file: gold.save/data-file.xml
+
+      Windows data read from file: gold_WanT.space
+     Subspace data read from file: gold_WanT.space
+  Hamiltonian data read from file: gold_WanT.ham
+
+
+
+  ======================================================================
+  =  DFT data                                                          =
   ======================================================================
 
  <LATTICE>
@@ -53,24 +65,26 @@
   Omega =     280.0284636 (Ang^3 )
 
   Crystal axes:
-                in units of Bohr                 in Alat units
-    a(1) = ( 20.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    a(2) = (  0.0000 20.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
-    a(3) = (  0.0000  0.0000  4.7243 )     (   0.0000  0.0000  0.2362 )
-  Crystal axes: (Ang)
-    a(1) = ( 10.5835  0.0000  0.0000 )
-    a(2) = (  0.0000 10.5835  0.0000 )
-    a(3) = (  0.0000  0.0000  2.5000 )
+                in Bohr units                           in Alat units
+    a(1) = (   20.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   20.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000    4.72432 )    (    0.00000    0.00000    0.23622 )
+                in Ang units
+    a(1) = (   10.58354    0.00000    0.00000 )
+    a(2) = (    0.00000   10.58354    0.00000 )
+    a(3) = (    0.00000    0.00000    2.50000 )
 
    Reciprocal lattice vectors:
-                in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.3142  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    b(2) = (  0.0000  0.3142  0.0000 )     (   0.0000  1.0000  0.0000 )
-    b(3) = (  0.0000  0.0000  1.3300 )     (   0.0000  0.0000  4.2334 )
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.31416    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.31416    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    1.32997 )    (    0.00000    0.00000    4.23341 )
  </LATTICE>
 
  <K-POINTS>
-  nkpts =     8
+         nproc =     1   (Parallelism over kpts)
+  global nkpts =     8
+   local nkpts =     8
   Monkhorst-Pack grid:      nk = (   1   1   8 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -86,7 +100,7 @@
 
 
   ======================================================================
-  =                     Band interpolation by WFs                      =
+  =  Band interpolation by WFs                                         =
   ======================================================================
 
 
@@ -310,13 +324,17 @@
   ======================================================================
 
    <global routines>
-             clock number :     5
+             clock number :     9
 
                     bands :     0.00s CPU 
- 
-             want_dftread :     0.26s CPU
-                want_init :     0.04s CPU
-             windows_read :     0.01s CPU
-            subspace_read :     0.03s CPU
+
+              bands_input :     0.06s CPU
+            postproc_init :     0.07s CPU
+             want_dftread :     0.06s CPU
+                want_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+                 do_bands :     0.02s CPU
+             compute_kham :     0.00s CPU (     100 calls,   0.000 s avg)
 
 

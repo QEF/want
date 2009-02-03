@@ -8,9 +8,10 @@
     emax =   5.0 
     datafile_C = "./SCRATCH/gold_WanT.ham"
     transport_dir = 3
-    delta = 0.05
+    delta = 0.005
     smearing_type = "gaussian"
 !    smearing_type = "lorentzian"
+    do_eigenchannels = .TRUE.
   /
 
 <HAMILTONIAN_DATA>
