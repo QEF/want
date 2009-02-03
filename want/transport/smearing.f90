@@ -8,13 +8,15 @@
 !
 !*********************************************
    MODULE T_smearing_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,           ONLY : dbl
    USE constants,       ONLY : ZERO, ONE, TWO, PI, SQRTPI, SQRT2, CZERO, CONE, CI, EPS_m1
    USE timing_module,   ONLY : timing
    USE log_module,      ONLY : log_push, log_pop
    USE fft_scalar,      ONLY : cft_1z, good_fft_order_1dz
    USE smearing_module, ONLY : smearing_func
+   !
    IMPLICIT NONE
    PRIVATE 
    SAVE
@@ -99,9 +101,10 @@ CONTAINS
        ALLOCATE( g_smear(nx), xgrid(nx), STAT=ierr )
        IF ( ierr /=0 ) CALL errore(subname,'allocating g_smear, xgrid',ABS(ierr))
        !
-       DO i=1,nx
-          !
-          xgrid(i) = -REAL(nx/2,dbl)*dx + REAL(i-1, dbl) * dx
+       DO i = 1, nx
+           !
+           xgrid(i) = -REAL(nx/2,dbl)*dx + REAL(i-1, dbl) * dx
+           !
        ENDDO
 
        !
@@ -126,18 +129,22 @@ CONTAINS
        !
        ALLOCATE( fft_grid( nfft ), STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'allocating fft_grid',ABS(ierr))
+       !
        ALLOCATE( auxs_in( nfft ), auxp_in( nfft ), STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'allocating auxs_in, auxp_in',ABS(ierr))
+       !
        ALLOCATE( auxs_out( nfft ), auxp_out( nfft ), STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'allocating auxs_out, auxp_out',ABS(ierr))
+       !
        ALLOCATE( wrapped( nfft ), STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'allocating wrapped',ABS(ierr))
        !
        alloc = .true.
        !
        DO i=1,nfft
-            !
-            fft_grid(i) = -REAL(nfft/2, dbl)*dx + REAL(i-1,dbl) *dx
+           !
+           fft_grid(i) = -REAL(nfft/2, dbl)*dx + REAL(i-1,dbl) *dx
+           !
        ENDDO
 
        !
@@ -157,8 +164,10 @@ CONTAINS
        cost = ONE / delta 
        !
        DO i= is_start, is_end
+           !
            x          = fft_grid(i)
            auxs_in(i) = cost * smearing_func( x, TRIM(smearing_type) )
+           !
        ENDDO
        
        !
@@ -168,9 +177,11 @@ CONTAINS
        auxp_out(:) = CZERO
        !
        cost = ONE 
-       DO i= ip_start, ip_end
+       DO i = ip_start, ip_end
+           !
            x          = fft_grid(i)
            auxp_in(i) = cost / ( x + CI * delta_ratio )
+           !
        ENDDO
 
 !
@@ -205,6 +216,7 @@ CONTAINS
        DO i=1, nfft
            !
            auxp_out(i) = cost * auxp_out(i) * auxs_out(i) 
+           !
        ENDDO
 
        !
@@ -231,10 +243,13 @@ CONTAINS
        !
        DEALLOCATE( fft_grid, STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'deallocating fft_grid',ABS(ierr))
+       !
        DEALLOCATE( auxs_in, auxp_in, STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'deallocating auxs_in, auxp_in',ABS(ierr))
+       !
        DEALLOCATE( auxs_out, auxp_out, STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'deallocating auxs_out, auxp_out',ABS(ierr))
+       !
        DEALLOCATE( wrapped, STAT=ierr ) 
        IF (ierr/=0) CALL errore(subname, 'deallocating wrapped',ABS(ierr))
 

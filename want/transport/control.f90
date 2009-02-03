@@ -29,6 +29,8 @@
    INTEGER                   :: transport_dir
    INTEGER                   :: debug_level
    !
+   LOGICAL                   :: do_eigenchannels = .FALSE.
+   !
    LOGICAL                   :: use_overlap = .FALSE.
    LOGICAL                   :: use_debug_mode
    LOGICAL                   :: write_kdata
@@ -53,6 +55,7 @@
    PUBLIC :: transport_dir
    PUBLIC :: debug_level
    !
+   PUBLIC :: do_eigenchannels
    PUBLIC :: use_overlap
    PUBLIC :: use_debug_mode
    PUBLIC :: write_kdata
