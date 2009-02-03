@@ -125,66 +125,61 @@
    !
    CALL mat_mul(work2, G_ret, 'C', work, 'N', dimC, dimC, dimC)
 
-   !
-   ! WORK  = G_adv * gamma_L * G_ret * gamma_R
-   !
-   CALL mat_mul(work, work2, 'N', gamma_R, 'N', dimC, dimC, dimC)
 
-   !
-   ! WORK1 = G_adv * gamma_L * G_ret * gamma_R * Lambda
-   ! This is calculated only if needed
-   !
-   IF ( TRIM(formula) ==  'generalized' ) THEN
-       !
-       CALL mat_mul(work1, work, 'N', lambda, 'N', dimC, dimC, dimC)
-       !
-   ELSE
-       !
-       work1 = work
-       !
-   ENDIF
-
-!   !
-!   ! WORK1 = gamma_L * G_ret * gammma_R
-!   !
-!   CALL mat_mul(work1, work, 'N', gamma_R, 'N', dimC, dimC, dimC)
-!
-!   !
-!   ! WORK  = gamma_L * G_ret * gamma_R * lambda
-!   !
-!   CALL mat_mul(work, work1, 'N', lambda, 'N', dimC, dimC, dimC)
-!
-!   !
-!   ! WORK1 = gamma_L * G_ret * gamma_R * lambda * G_adv
-!   !
-!   CALL mat_mul(work1, work, 'N', G_ret, 'C', dimC, dimC, dimC)
-       
-      
    !
    ! If we are not interested in the eigenchannels analysis
    ! we just take the diagonal matrix elements, otherwise
    ! we diagonalize and take the eigenvalues.
    !
-   IF ( do_eigenchannels ) THEN
+   IF ( .NOT. do_eigenchannels ) THEN
+       
+       !
+       ! WORK  = G_adv * gamma_L * G_ret * gamma_R
+       !
+       CALL mat_mul(work, work2, 'N', gamma_R, 'N', dimC, dimC, dimC)
+
+       !
+       ! WORK1 = G_adv * gamma_L * G_ret * gamma_R * Lambda
+       ! This is calculated only if needed
+       !
+       IF ( TRIM(formula) ==  'generalized' ) THEN
+           !
+           CALL mat_mul(work1, work, 'N', lambda, 'N', dimC, dimC, dimC)
+           !
+       ELSE
+           !
+           work1 = work
+           !
+       ENDIF
+
+       ! 
+       ! select the data to compute the trace
+       !
+       DO i=1,dimC
+           conduct(i) = REAL( work1(i,i), dbl )
+       ENDDO
+       !
+   ELSE
        !
        ! Here we compute and diagonalize the product
        !
-       ! work1 = gamma_L^1/2 * G_ret * gamma_R * G_adv * gamma_L^1/2
-       !       = gamma_L^1/2 * work2 * gamma_L^1/2
+       ! work1 = gamma_R^1/2 * G_adv * gamma_L * G_ret * gamma_R^1/2
+       !       = gamma_R^1/2 * work2 * gamma_R^1/2
        !
        ! which is a hermitean matrix.
        !
-       ! To do this, we need to compute gamma_L^1/2  ( stored in work )
+       ! To do this, we need to compute gamma_R^1/2  ( stored in work )
        !
+
        ALLOCATE( z(dimC,dimC), w(dimC), STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'allocating z, w',ABS(ierr))
 
-       CALL mat_hdiag( z, w, gamma_L, dimC ) 
+       CALL mat_hdiag( z, w, gamma_R, dimC ) 
        !
        DO i = 1, dimC
            !
            IF ( w(i) < -EPS_m6 ) &
-                 CALL errore(subname,'gamma_L not positive defined', 10)
+                 CALL errore(subname,'gamma_R not positive defined', 10)
            !
            ! clean any numerical noise leading to eigenvalues  -eps_m6 < w < 0.0
            IF ( w(i) < ZERO ) w(i) = ZERO
@@ -224,12 +219,6 @@
        DEALLOCATE( z, w, STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'deallocating z, w',ABS(ierr))
        !
-   ELSE
-       !
-       DO i=1,dimC
-           conduct(i) = REAL( work1(i,i), dbl )
-       ENDDO
-       !
    ENDIF
 
    !
@@ -247,4 +236,19 @@
    RETURN
    !
 END SUBROUTINE transmittance
+
+!   !
+!   ! WORK1 = gamma_L * G_ret * gammma_R
+!   !
+!   CALL mat_mul(work1, work, 'N', gamma_R, 'N', dimC, dimC, dimC)
+!
+!   !
+!   ! WORK  = gamma_L * G_ret * gamma_R * lambda
+!   !
+!   CALL mat_mul(work, work1, 'N', lambda, 'N', dimC, dimC, dimC)
+!
+!   !
+!   ! WORK1 = gamma_L * G_ret * gamma_R * lambda * G_adv
+!   !
+!   CALL mat_mul(work1, work, 'N', G_ret, 'C', dimC, dimC, dimC)
 
