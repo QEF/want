@@ -43,6 +43,7 @@
    LOGICAL                   :: binary
    REAL(dbl)                 :: energy_ref
    INTEGER                   :: nprint
+   LOGICAL                   :: do_extrapolation
 
    !
    ! local variables
@@ -66,7 +67,7 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
-                    binary, energy_ref, spin_component, nprint
+                    binary, energy_ref, spin_component, nprint, do_extrapolation
    !
    ! end of declariations
    !   
@@ -91,6 +92,7 @@
       spin_component              = 'none'
       energy_ref                  = ZERO
       nprint                      = 10
+      do_extrapolation            = .FALSE.
 
       
       CALL input_from_file ( stdin, ierr )
@@ -348,6 +350,8 @@
       WRITE( stdout,"(  2x,'  diag. on bands :',3x,a)") TRIM( log2char(lband_diag) )
       WRITE( stdout,"(  2x,'      ibnd_start :',3x,i5)") ibnd_start
       WRITE( stdout,"(  2x,'        ibnd_end :',3x,i5)") ibnd_end
+      WRITE( stdout,"(  2x,'   extrapolation :',3x,a)") &
+                    TRIM( log2char(do_extrapolation) )
       WRITE( stdout,"(  2x,'energy reference :',3x,f10.4)") energy_ref
       !
       WRITE( stdout, "()")
@@ -497,6 +501,21 @@
                        opr_in(m,m,ik) = aux( m -ibnd_start + 1 )
                        !
                    ENDDO
+                   
+                   !
+                   ! try to complete the missing terms in finein
+                   !
+                   IF ( do_extrapolation ) THEN
+                       !
+                       DO m = 1, ibnd_start -1
+                           opr_in(m,m,ik) = aux( 1 )
+                       ENDDO
+                       !
+                       DO m = ibnd_end+1, nbnd
+                           opr_in(m,m,ik) = aux( nbnd_file )
+                       ENDDO
+                       !
+                   ENDIF
                    !
                ELSE
                    ! 

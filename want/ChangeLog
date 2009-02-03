@@ -4,6 +4,8 @@
 =======================================================
 
 
+03 Feb 2009     Extrapolation input var added to blc2wan.f90. (AF)
+
 05 Dec 2008     Documentation updated, according to bugs reported by 
                 Caterina Cocchi. (AF) 
 
