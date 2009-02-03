@@ -120,29 +120,31 @@ nkb_buffer    INTEGER
 NAMELIST &SUBSPACE
 
 dimwann       INTEGER
-              the number of wannier functions, i.e. the dimension of the wannier subspace
+              the number of wannier functions, i.e. the dimension of the Wannier 
+              subspace.
               DEFAULT : mandatory
  
 win_min       REAL
               the lower limit [eV] of the energy window containing the states
-              forming the starting subspace for Wannier functions
+              forming the starting subspace for Wannier functions.
               DEFAULT : -20000000 (this is a large number which stands for -INF)
 
 win_max       REAL
-              the upper limit [eV] of the above described energy window
+              the upper limit [eV] of the above described energy window.
               DEFAULT : 20000000 (this is a large number which stands for +INF)
               
 froz_min      REAL
-              the lower limit [eV] of the energy window containing 'frozen' states
-              which will not enter the calculation of WFs
+              the lower limit [eV] of the energy window containing 'frozen' states,
+              i.e. those states which are kept as from the DFT calculation when defining
+              the WF subspace.
               DEFAULT : -60000000 (this is a large number which stands for -INF)
               
 froz_max      REAL
-              upper limit [eV] of the frozen window above described
+              upper limit [eV] of the frozen window above described.
               DEFAULT : -50000000 (this is a large number which stands for -INF)
 
 alpha_dis     REAL
-              mixing parameter for the disentangle iterative procedure 
+              mixing parameter for the disentangle iterative procedure.
               DEFAULT : 0.5
 
 maxiter_dis   INTEGER
