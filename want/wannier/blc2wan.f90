@@ -33,6 +33,7 @@
    CHARACTER(nstrx)          :: filein, fileout
    CHARACTER(10)             :: spin_component
    LOGICAL                   :: binary
+   LOGICAL                   :: do_extrapolation
    REAL(dbl)                 :: energy_ref
    INTEGER                   :: nprint
 
@@ -41,7 +42,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
                     binary, energy_ref, spin_component, nprint, verbosity, &
-                    debug_level
+                    debug_level, do_extrapolation
    !
    ! end of declariations
    !   
@@ -76,7 +77,7 @@
       ! do the main task 
       ! 
       CALL do_blc2wan( filein, fileout, energy_ref, spin_component, &
-                       binary, nprint, verbosity )
+                       binary, nprint, verbosity, do_extrapolation )
 
       !
       ! clean global memory
@@ -122,6 +123,7 @@ CONTAINS
       nprint                      = 10
       verbosity                   = 'medium'
       debug_level                 = 0
+      do_extrapolation            = .FALSE.
 
 
       CALL input_from_file ( stdin )
@@ -185,7 +187,7 @@ END PROGRAM blc2wan
 
 !********************************************************
    SUBROUTINE do_blc2wan( filein, fileout, energy_ref, spin_component, &
-                          binary, nprint, verbosity  )
+                          binary, nprint, verbosity, do_extrapolation  )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -220,6 +222,7 @@ END PROGRAM blc2wan
       INTEGER,       INTENT(IN) :: nprint
       LOGICAL,       INTENT(IN) :: binary
       CHARACTER(*),  INTENT(IN) :: verbosity
+      LOGICAL,       INTENT(IN) :: do_extrapolation
 
       !
       ! local vars
@@ -306,7 +309,7 @@ END PROGRAM blc2wan
       ENDIF
 
       IF ( ibnd_end - ibnd_start +1 /= nbnd_file ) CALL errore(subname,'invalid nbnd_file',3)
-      IF ( nbnd_file > nbnd )     CALL errore(subname,'nbnd_file too large',3)
+      IF ( nbnd < nbnd_file )     CALL errore(subname,'nbnd_file too large',3)
       IF ( nkpts_file /= nkpts )  CALL errore(subname,'invalid nkpts',3)
       IF ( nspin_file /= 1 .AND. nspin_file /= 2 )  CALL errore(subname,'invalid nspin',3)
       IF ( TRIM(spin_component) /= "none" .AND. nspin_file == 1 ) &
@@ -426,6 +429,8 @@ END PROGRAM blc2wan
       WRITE( stdout,"(  2x,'  diag. on bands :',3x,a)") TRIM( log2char(lband_diag) )
       WRITE( stdout,"(  2x,'      ibnd_start :',3x,i5)") ibnd_start
       WRITE( stdout,"(  2x,'        ibnd_end :',3x,i5)") ibnd_end
+      WRITE( stdout,"(  2x,'   extrapolation :',3x,a)") &
+                    TRIM( log2char(do_extrapolation) )
       WRITE( stdout,"(  2x,'energy reference :',3x,f10.4)") energy_ref
       !
       WRITE( stdout, "()")
@@ -575,6 +580,20 @@ END PROGRAM blc2wan
                        opr_in(m,m,ik) = aux( m -ibnd_start + 1 )
                        !
                    ENDDO
+                   !
+                   ! try to complete the missing terms in finein
+                   !
+                   IF ( do_extrapolation ) THEN
+                       !
+                       DO m = 1, ibnd_start -1
+                           opr_in(m,m,ik) = aux( 1 )
+                       ENDDO
+                       !
+                       DO m = ibnd_end+1, nbnd
+                           opr_in(m,m,ik) = aux( nbnd_file )
+                       ENDDO
+                       !
+                   ENDIF
                    !
                ELSE
                    ! 
