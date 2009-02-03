@@ -4,6 +4,9 @@
 =======================================================
 
 
+03 Jan 2009      Bug fixed in the documentation (definition of froz_min);
+                 Courtesy of Regina Lelis de Sousa. (AF)
+
 31 Jan 2009      Bug fixed in etsf_io interface. Clenaup of unused variables
                  all around. Interface to ETSF_IO working. Examples of Abinit 
                  usage added to test01, test03. (AF)
