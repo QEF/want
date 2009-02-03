@@ -12,6 +12,7 @@
    transport_dir = 3
    delta = 0.005
 !   smearing_type = 'gaussian'
+   do_eigenchannels = .TRUE.
 /
 
 <HAMILTONIAN_DATA>
