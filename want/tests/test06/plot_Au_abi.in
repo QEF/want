@@ -1,0 +1,11 @@
+
+ &INPUT
+   prefix = 'gold-o_DS2'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   datatype = 'modulus'
+   output_fmt = 'plt'
+   wann = '1-2,6'
+   r3min =  -1.0
+   r3max =   1.0
+ /
