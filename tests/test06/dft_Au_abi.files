@@ -1,0 +1,7 @@
+dft_Au_abi.in
+dft_Au_abi.out
+SCRATCH/gold-i
+SCRATCH/gold-o
+SCRATCH/gold-r
+../pseudo/79-Au.GGA.fhi
+
