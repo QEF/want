@@ -4,6 +4,9 @@
 =======================================================
 
 
+04 Jan 2009      Test06 updated including the calculation of gold chain using
+                 Abinit. (AF)
+
 03 Jan 2009      Bug fixed in the documentation (definition of froz_min);
                  Courtesy of Regina Lelis de Sousa. Implementation of
                  eigenchannles added in conductor.x: only eigenvalues are
