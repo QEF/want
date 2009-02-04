@@ -216,8 +216,14 @@ run_abinit () {
          [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
    done
 
-   [[ "$RUN" != "yes" ]]  && return
-   [[ "$PARALLEL" != "yes" ]]  && EXEC=$ABINIT_BIN/abinis 
+   [[ "$RUN" != "yes" ]]   &&  return
+   [[ -z "$PARA_PREFIX" ]] &&  PARALELL=no
+   #
+   if [ "$PARALLEL" = "yes" ] ; then
+      EXEC=$ABINIT_BIN/abinip 
+   else
+      EXEC=$ABINIT_BIN/abinis 
+   fi
    
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
    if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/$name_tmp$SUFFIX.files  ; fi
