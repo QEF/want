@@ -100,7 +100,6 @@
           ! ... opening the file containing the PW-DFT data
           !
           CALL io_open_dftdata( LSERIAL=.FALSE. ) 
-          !
           CALL io_name('dft_data',filename,LPATH=.FALSE.)
 
           !

@@ -18,7 +18,7 @@
 CONTAINS
 !
 !********************************************************
-   SUBROUTINE postproc_init( windows, subspace_min, subspace, hamiltonian, wannier)
+   SUBROUTINE postproc_init( windows, bshells, pseudo, subspace_min, subspace, hamiltonian, wannier)
    !********************************************************
    !
    ! This is  a driver routine to manage almost the whole
@@ -45,6 +45,8 @@ CONTAINS
    ! input variables
    !
    LOGICAL, OPTIONAL, INTENT(IN) :: windows
+   LOGICAL, OPTIONAL, INTENT(IN) :: bshells
+   LOGICAL, OPTIONAL, INTENT(IN) :: pseudo
    LOGICAL, OPTIONAL, INTENT(IN) :: subspace, subspace_min
    LOGICAL, OPTIONAL, INTENT(IN) :: hamiltonian
    LOGICAL, OPTIONAL, INTENT(IN) :: wannier
@@ -58,6 +60,8 @@ CONTAINS
    LOGICAL            :: lfound
    !
    LOGICAL            :: lwindows
+   LOGICAL            :: lbshells
+   LOGICAL            :: lpseudo
    LOGICAL            :: lsubspace_min
    LOGICAL            :: lsubspace
    LOGICAL            :: lhamiltonian
@@ -77,12 +81,16 @@ CONTAINS
       ! interface to CRYSTAL06
       !
       lwindows        = .TRUE.
+      lbshells        = .FALSE.
+      lpseudo         = .FALSE.
       lsubspace_min   = .TRUE.
       lsubspace       = .FALSE.
       lhamiltonian    = .TRUE.
       lwannier        = .FALSE.
       !
       IF ( PRESENT( windows ) )           lwindows = windows
+      IF ( PRESENT( bshells ) )           lbshells = bshells
+      IF ( PRESENT( pseudo ) )             lpseudo = pseudo
       IF ( PRESENT( subspace_min ) ) lsubspace_min = subspace_min
       IF ( PRESENT( subspace ) )         lsubspace = subspace
       IF ( PRESENT( hamiltonian ) )   lhamiltonian = hamiltonian
@@ -92,8 +100,9 @@ CONTAINS
       !
       ! ... Getting previous WanT data
       !
-      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE.  )
-      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., BSHELLS=.FALSE. )
+      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE.,   IONS=.TRUE., &
+                          KPOINTS=.TRUE.,  PSEUDO=lpseudo )
+      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE.,  BSHELLS=lbshells )
       !
       IF ( ionode ) WRITE( stdout, "()")
 
