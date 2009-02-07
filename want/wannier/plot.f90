@@ -7,44 +7,21 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !=====================================================
-   PROGRAM plot
+   PROGRAM plot_main
    !=====================================================
    !
-   ! real space plot of the computed Wannier functions
+   ! Real space representation and plot of Wannier functions
    !
    USE kinds
-   USE constants,          ONLY : ZERO, CZERO, ONE, TWO, CONE, CI, TPI, &
-                                  bohr => bohr_radius_angs, EPS_m6, EPS_m4
-   USE parameters,         ONLY : ntypx, natx, nstrx
-   USE fft_scalar,         ONLY : cfft3d, good_fft_order
-   USE timing_module,      ONLY : timing, timing_upto_now
-   USE io_module,          ONLY : prefix, postfix, work_dir, stdin, stdout, ionode
-   USE io_module,          ONLY : io_name, dftdata_fmt, space_unit, wan_unit, dft_unit, &
-                                  aux_unit, aux1_unit 
-   USE control_module,     ONLY : read_pseudo, use_uspp, debug_level, use_debug_mode
-   USE files_module,       ONLY : file_open, file_close, file_delete
-   USE version_module,     ONLY : version_number
-   USE util_module,        ONLY : mat_mul
-   USE converters_module,  ONLY : cry2cart, cart2cry
-   USE atomic_module,      ONLY : atomic_name2num, atomic_num2name
-   !
-   USE lattice_module,     ONLY : avec, bvec, alat, tpiba, omega
-   USE ions_module,        ONLY : symb, tau, nat
-   USE kpoints_module,     ONLY : nkpts, vkpt
-   USE windows_module,     ONLY : imin, dimwin, dimwinx, windows_read, windows_read_ext
-   USE subspace_module,    ONLY : dimwann, eamp, subspace_read
-   USE localization_module,ONLY : cu, rave, localization_read
-   USE ggrids_module,      ONLY : nfft, nffts, igv, &
-                                  ggrids_read_ext, ggrids_deallocate, &
-                                  ggrids_gk_indexes, ggrids_summary
-   USE wfc_info_module
-   USE wfc_data_module,    ONLY : npwkx, npwk, igsort, evc, evc_info, &
-                                  wfc_data_grids_read, wfc_data_grids_summary, &
-                                  wfc_data_kread, wfc_data_deallocate
-   USE uspp,               ONLY : nkb, vkb, vkb_ik
-   USE becmod,             ONLY : becp
-   USE parser_module
-   USE struct_fact_data_module
+   USE version_module,       ONLY : version_number
+   USE parameters,           ONLY : nstrx
+   USE io_module,            ONLY : stdout, stdin
+   USE io_module,            ONLY : prefix, postfix, work_dir
+   USE control_module,       ONLY : debug_level, use_debug_mode, read_pseudo
+   USE timing_module,        ONLY : timing
+   USE log_module,           ONLY : log_push, log_pop
+   USE datafiles_module,     ONLY : datafiles_init
+   USE parser_module,        ONLY : change_case
    USE want_interfaces_module
    !
    IMPLICIT NONE
@@ -71,57 +48,76 @@
                     datatype, assume_ncpp, uspp_augmentation, output_fmt, collect_wf,   &
                     r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3, debug_level
 
-   !
-   ! local variables
-   !
-   CHARACTER( 4 )      :: subname = 'plot'
-   !
-   INTEGER :: nrxl, nryl, nrzl
-   INTEGER :: nrxh, nryh, nrzh
-   INTEGER :: nnrx, nnry, nnrz
-   INTEGER :: nx, ny, nz, nzz, nyy, nxx
-   !
-   INTEGER :: ia, ib, ik, ig, ir
-   INTEGER :: natot, nplot
-   INTEGER :: m, n, i, j, ierr
-   INTEGER :: zatom
-   !
-   REAL(dbl)    :: tmaxx, tmax, xk(3)
-   REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
-   REAL(dbl)    :: arg, cost, norm, norm_us
-   COMPLEX(dbl) :: phase
-   COMPLEX(dbl) :: caux, cmod
-   !
-   INTEGER,      ALLOCATABLE :: map(:), iwann(:)
-   REAL(dbl),    ALLOCATABLE :: rwann_out(:,:,:)
-   REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
-   REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
-   REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
-   CHARACTER(3), ALLOCATABLE :: symbtot(:)
-   COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:,:), cwann_aug(:,:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: kwann(:,:), wfc_aux(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
-
-
-   CHARACTER( nstrx )  :: filename
-   CHARACTER( 5 )      :: str, aux_fmt
-   LOGICAL             :: lfound, do_modulus
-   LOGICAL             :: okp( 3 )
-   !
-   ! end of declariations
-   !
 
 !
 !------------------------------
 ! main body
 !------------------------------
 !
-      CALL startup(version_number,subname)
+      CALL startup(version_number,'plot')
 
 
-!
-! ... Read INPUT namelist from stdin
-!
+      !
+      ! read input
+      !
+      CALL plot_input( )
+
+      !
+      ! init post processing (reading previous WanT and DFT data )
+      !
+      CALL write_header( stdout, "Post Processing Init" )
+      !
+      CALL datafiles_init( )
+      !
+      CALL postproc_init ( BSHELLS=.TRUE., PSEUDO=read_pseudo, WANNIER=.TRUE., SUBSPACE=.TRUE. )
+
+      !
+      ! print data to output
+      !
+      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., BSHELLS=.FALSE., WINDOWS=.FALSE. )
+
+      !
+      ! do the main task
+      !      
+      CALL do_plot( wann, datatype, assume_ncpp, uspp_augmentation, output_fmt, &
+                    collect_wf, r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3)
+
+      !
+      ! clean global memory
+      !
+      CALL cleanup()
+
+      !
+      ! finalize
+      !
+      CALL shutdown( 'plot' )
+
+
+CONTAINS
+
+!********************************************************
+   SUBROUTINE plot_input()
+   !********************************************************
+   !
+   ! Read INPUT namelist from stdin
+   !
+   USE constants,            ONLY : EPS_m4
+   USE mp,                   ONLY : mp_bcast
+   USE io_module,            ONLY : io_init, ionode, ionode_id
+   !
+   IMPLICIT NONE
+
+      CHARACTER(10)    :: subname = 'plot_input'
+      INTEGER          :: ierr
+      !
+      ! end of declarations
+      !
+
+      CALL timing( subname, OPR='start' )
+
+      !
+      ! init input namelist
+      !
       prefix                      = 'WanT'
       postfix                     = ' '
       work_dir                    = './'
@@ -148,8 +144,34 @@
       
       CALL input_from_file ( stdin )
       !
-      READ(stdin, INPUT, IOSTAT=ierr)
+      IF ( ionode ) READ(stdin, INPUT, IOSTAT=ierr)
+      !
+      CALL mp_bcast( ierr, ionode_id )
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
+
+      !
+      ! broadcast
+      !
+      CALL mp_bcast( prefix,               ionode_id )
+      CALL mp_bcast( postfix,              ionode_id )
+      CALL mp_bcast( work_dir,             ionode_id )
+      CALL mp_bcast( assume_ncpp,          ionode_id )
+      CALL mp_bcast( uspp_augmentation,    ionode_id )
+      CALL mp_bcast( debug_level,          ionode_id )
+      CALL mp_bcast( collect_wf,           ionode_id )
+      CALL mp_bcast( wann,                 ionode_id )
+      CALL mp_bcast( datatype,             ionode_id )
+      CALL mp_bcast( output_fmt,           ionode_id )
+      CALL mp_bcast( r1min,                ionode_id )
+      CALL mp_bcast( r1max,                ionode_id )
+      CALL mp_bcast( r2min,                ionode_id )
+      CALL mp_bcast( r2max,                ionode_id )
+      CALL mp_bcast( r3min,                ionode_id )
+      CALL mp_bcast( r3max,                ionode_id )
+      CALL mp_bcast( nr1,                  ionode_id )
+      CALL mp_bcast( nr2,                  ionode_id )
+      CALL mp_bcast( nr3,                  ionode_id )
+
 
       !
       ! Some checks
@@ -161,9 +183,6 @@
            TRIM(datatype) /= "real"    .AND. TRIM(datatype) /= "imaginary"  ) &
            CALL errore(subname,'invalid DATATYPE = '//TRIM(datatype),2)
            !
-      IF ( TRIM(datatype) == "module" ) datatype = "modulus"
-      IF ( TRIM(datatype) == "modulus") do_modulus = .TRUE.
-      !
       CALL change_case(output_fmt,'lower')
       IF ( TRIM(output_fmt) /= "txt" .AND. TRIM(output_fmt) /= "plt" .AND. &
            TRIM(output_fmt) /= "cube" .AND. TRIM(output_fmt) /= "xsf" ) &
@@ -179,80 +198,133 @@
       IF ( ABS(r1max -r1min) < EPS_m4 ) CALL errore(subname, 'r1 too small',1)
       IF ( ABS(r2max -r2min) < EPS_m4 ) CALL errore(subname, 'r2 too small',2)
       IF ( ABS(r3max -r3min) < EPS_m4 ) CALL errore(subname, 'r3 too small',3)
-      rmin(1) = r1min 
-      rmin(2) = r2min
-      rmin(3) = r3min
-      rmax(1) = r1max 
-      rmax(2) = r2max
-      rmax(3) = r3max
       !
       read_pseudo = .NOT. assume_ncpp
       !
       use_debug_mode = .FALSE.
       IF ( debug_level > 0 ) use_debug_mode = .TRUE.
-
-
-
-!
-! ... Getting previous WanT data
-!
-      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE., IONS=.TRUE., KPOINTS=.TRUE., &
-                          PSEUDO=read_pseudo)
-      CALL want_init    ( INPUT =.FALSE., WINDOWS=.FALSE., BSHELLS=.TRUE., &
-                          PSEUDO=read_pseudo)
-
-      uspp_augmentation = uspp_augmentation .AND. use_uspp
-
       !
       !
-      ! Read Subspace data
+      CALL timing( subname, OPR='stop' )
       !
-      CALL io_name('space',filename)
-      CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
-          !
-          CALL windows_read(space_unit,"WINDOWS",lfound)
-          IF ( .NOT. lfound ) CALL errore(subname,"unable to find WINDOWS",1)
-          CALL subspace_read(space_unit,"SUBSPACE",lfound, LLAMP=.FALSE.)
-          IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1)
-          !
-      CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
-
-      CALL io_name('space',filename,LPATH=.FALSE.)
-      IF (ionode) WRITE( stdout,"(/,2x,'Subspace data read from file: ',a)") TRIM(filename)
-
-      !
-      ! Read unitary matrices U(k) that rotate the bloch states
-      !
-      CALL io_name('wannier',filename)
-      CALL file_open(wan_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
-          !
-          CALL localization_read(wan_unit,"WANNIER_LOCALIZATION",lfound)
-          IF ( .NOT. lfound ) CALL errore(subname,'searching WANNIER_LOCALIZATION',1)
-          !
-      CALL file_close(wan_unit,PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
-
-      CALL io_name('wannier',filename,LPATH=.FALSE.)
-      IF (ionode) WRITE( stdout,"('  Wannier data read from file: ',a)") TRIM(filename)
-
-     
-      !
-      ! Print data to output
-      !
-      CALL summary( stdout, INPUT=.FALSE., IONS=.FALSE., BSHELLS=.FALSE., WINDOWS=.FALSE. )
+   END SUBROUTINE plot_input
+   !
+END PROGRAM plot_main
 
 
+!********************************************************
+   SUBROUTINE do_plot( wann, datatype, assume_ncpp, uspp_augmentation, output_fmt, &
+                       collect_wf, r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3 )
+   !********************************************************
+   !
+   ! Perform the main task of constructing and plotting 
+   ! WFs in real space
+   !
+   USE kinds,                     ONLY : dbl
+   USE constants,                 ONLY : ZERO, CZERO, ONE, TWO, CONE, CI, TPI, &
+                                         bohr => bohr_radius_angs, EPS_m6, EPS_m4
+   USE parameters,                ONLY : ntypx, natx, nstrx
+   USE fft_scalar,                ONLY : cfft3d, good_fft_order
+   USE timing_module,             ONLY : timing, timing_upto_now
+   USE log_module,                ONLY : log_push, log_pop
+   USE io_module,                 ONLY : prefix, postfix, work_dir, stdout, ionode
+   USE io_module,                 ONLY : io_name, dftdata_fmt, aux_unit, aux1_unit 
+   USE io_module,                 ONLY : io_open_dftdata, io_close_dftdata
+   USE control_module,            ONLY : use_uspp
+   USE files_module,              ONLY : file_delete
+   USE util_module,               ONLY : mat_mul
+   USE converters_module,         ONLY : cry2cart, cart2cry
+   USE atomic_module,             ONLY : atomic_name2num, atomic_num2name
+   !
+   USE lattice_module,            ONLY : avec, bvec, alat, tpiba, omega
+   USE ions_module,               ONLY : symb, tau, nat
+   USE kpoints_module,            ONLY : nkpts, vkpt
+   USE windows_module,            ONLY : imin, dimwin, dimwinx
+   USE subspace_module,           ONLY : dimwann, eamp
+   USE localization_module,       ONLY : cu, rave
+   USE ggrids_module,             ONLY : nfft, nffts, igv, &
+                                         ggrids_read_ext, ggrids_deallocate, &
+                                         ggrids_gk_indexes, ggrids_summary
+   USE wfc_info_module
+   USE wfc_data_module,           ONLY : npwkx, npwk, igsort, evc, evc_info, &
+                                         wfc_data_grids_read, wfc_data_grids_summary, &
+                                         wfc_data_kread, wfc_data_deallocate
+   USE uspp,                      ONLY : nkb, vkb, vkb_ik
+   USE becmod,                    ONLY : becp
+   USE parser_module
+   USE struct_fact_data_module
+   USE want_interfaces_module
+   !
+   IMPLICIT NONE
 
       !
-      ! opening the file containing the PW-DFT data
+      ! input variables
       !
-      CALL io_name('dft_data',filename)
-      CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
+      CHARACTER(*)     :: wann
+      CHARACTER(*)     :: datatype          
+      LOGICAL          :: assume_ncpp       
+      LOGICAL          :: uspp_augmentation 
+      CHARACTER(*)     :: output_fmt        
+      LOGICAL          :: collect_wf        
+      REAL(dbl)        :: r1min, r1max      
+      REAL(dbl)        :: r2min, r2max      
+      REAL(dbl)        :: r3min, r3max      
+      INTEGER          :: nr1, nr2, nr3     
+
       !
+      ! local variables
+      !
+      CHARACTER(7)      :: subname = 'do_plot'
+      !
+      INTEGER :: nrxl, nryl, nrzl
+      INTEGER :: nrxh, nryh, nrzh
+      INTEGER :: nnrx, nnry, nnrz
+      INTEGER :: nx, ny, nz, nzz, nyy, nxx
+      !
+      INTEGER :: ia, ib, ik, ig, ir
+      INTEGER :: natot, nplot
+      INTEGER :: m, n, i, j, ierr
+      INTEGER :: zatom
+      !
+      !
+      REAL(dbl)    :: tmaxx, tmax, xk(3)
+      REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
+      REAL(dbl)    :: arg, cost, norm, norm_us
+      COMPLEX(dbl) :: phase
+      COMPLEX(dbl) :: caux, cmod
+      !
+      INTEGER,      ALLOCATABLE :: map(:), iwann(:)
+      REAL(dbl),    ALLOCATABLE :: rwann_out(:,:,:)
+      REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
+      REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
+      REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
+      CHARACTER(3), ALLOCATABLE :: symbtot(:)
+      COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:,:), cwann_aug(:,:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: kwann(:,:), wfc_aux(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
+
+      CHARACTER( nstrx )  :: filename
+      CHARACTER( 5 )      :: str, aux_fmt
+      LOGICAL             :: lfound, do_modulus
+      LOGICAL             :: okp( 3 )
+      !
+      ! end of declariations
+      !
+
+      CALL timing( subname, OPR='start')
+      CALL log_push( subname )
+
+      !
+      ! Few definitions
+      !
+      IF ( TRIM(datatype) == "module" ) datatype = "modulus"
+      IF ( TRIM(datatype) == "modulus") do_modulus = .TRUE.
+      
+
+      !
+      ! ... Opening the file containing the PW-DFT data
+      !
+      CALL io_open_dftdata( LSERIAL=.FALSE. )
       CALL io_name('dft_data',filename,LPATH=.FALSE.)
 
       !
@@ -267,11 +339,20 @@
       CALL wfc_data_grids_read( dftdata_fmt )
       !
       ! ... closing the main data file
-      CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
+      CALL io_close_dftdata( LSERIAL=.FALSE. )
+
 
       !
       ! set FFT mesh
+      !
+      rmin(1) = r1min 
+      rmin(2) = r2min
+      rmin(3) = r3min
+      rmax(1) = r1max 
+      rmax(2) = r2max
+      rmax(3) = r3max
+      !
+      uspp_augmentation = uspp_augmentation .AND. use_uspp
       !
       IF ( uspp_augmentation ) THEN
          !
@@ -316,12 +397,13 @@
       !
       ! ... stdout summary about grids
       !
-      WRITE(stdout, "()")
+      IF ( ionode ) WRITE(stdout, "()")
       !
       CALL ggrids_summary( stdout )
       CALL wfc_data_grids_summary( stdout )
       !
-      WRITE(stdout, "()")
+      IF ( ionode ) WRITE(stdout, "()")
+
 
 !
 ! ... final settings on input
@@ -371,23 +453,27 @@
       !
       CALL write_header( stdout, "Wannier function plotting" )
       !
-      WRITE( stdout,"(2x,'nplot = ',i4, ' Wannier func.s to be plotted')") nplot
-      DO m=1,nplot
-          WRITE( stdout,"(5x,'wf (',i4,' ) = ',i4 )") m, iwann(m)
-      ENDDO
-      WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
-      WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
-      WRITE( stdout,"(/,2x,'Plotting Cell extrema [cryst. coord]:')") 
-      WRITE( stdout,"(  6x, ' r1 :  ', f8.4, ' --> ', f8.4 )" ) r1min, r1max
-      WRITE( stdout,"(  6x, ' r2 :  ', f8.4, ' --> ', f8.4 )" ) r2min, r2max
-      WRITE( stdout,"(  6x, ' r3 :  ', f8.4, ' --> ', f8.4 )" ) r3min, r3max
-      WRITE( stdout,"(/,2x,'Grid dimensions:')") 
-      WRITE( stdout,"(  6x, 'nrx :  ', i8, ' --> ', i8 )" ) nrxl, nrxh 
-      WRITE( stdout,"(  6x, 'nry :  ', i8, ' --> ', i8 )" ) nryl, nryh 
-      WRITE( stdout,"(  6x, 'nrz :  ', i8, ' --> ', i8 )" ) nrzl, nrzh 
-      WRITE( stdout,"()")
+      IF ( ionode ) THEN
+          !
+          WRITE( stdout,"(2x,'nplot = ',i4, ' Wannier func.s to be plotted')") nplot
+          DO m=1,nplot
+              WRITE( stdout,"(5x,'wf (',i4,' ) = ',i4 )") m, iwann(m)
+          ENDDO
+          WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
+          WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
+          WRITE( stdout,"(/,2x,'Plotting Cell extrema [cryst. coord]:')") 
+          WRITE( stdout,"(  6x, ' r1 :  ', f8.4, ' --> ', f8.4 )" ) r1min, r1max
+          WRITE( stdout,"(  6x, ' r2 :  ', f8.4, ' --> ', f8.4 )" ) r2min, r2max
+          WRITE( stdout,"(  6x, ' r3 :  ', f8.4, ' --> ', f8.4 )" ) r3min, r3max
+          WRITE( stdout,"(/,2x,'Grid dimensions:')") 
+          WRITE( stdout,"(  6x, 'nrx :  ', i8, ' --> ', i8 )" ) nrxl, nrxh 
+          WRITE( stdout,"(  6x, 'nry :  ', i8, ' --> ', i8 )" ) nryl, nryh 
+          WRITE( stdout,"(  6x, 'nrz :  ', i8, ' --> ', i8 )" ) nrzl, nrzh 
+          WRITE( stdout,"()")
+          !
+      ENDIF
       !
-      IF ( uspp_augmentation .AND. .NOT. do_modulus ) THEN
+      IF ( uspp_augmentation .AND. .NOT. do_modulus .AND. ionode ) THEN
          !
          ! in this case we cannot perform the full PAW reconstruction:
          ! a warning is given
@@ -462,36 +548,47 @@
          ENDDO
          !
       ENDIF
-
       !
-      WRITE( stdout, " (/,2x, 'Centers for the required Wannier functions:')")
-      WRITE( stdout, " (/,8x,'in cartesian coord (Bohr)' )")
-      DO m=1,nplot
-         WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
-                iwann(m), rave(:,iwann(m))
-      ENDDO
       !
-      WRITE( stdout, " (8x,'in crystal coord' )")
-      DO m=1,nplot
-         WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
-                iwann(m), rave_cry(:,iwann(m))
-      ENDDO
-      !
-      IF ( collect_wf ) THEN
-          WRITE( stdout,"(/,2x,'Collecting WFs: ')")
-          WRITE( stdout,"(2x,'Plotting Cell dimensions [cryst. coord]:')") 
-          DO i=1,3
-             WRITE( stdout,"(  6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4 )" ) &
-                    i, (rmin(i)+rmax(i)-ONE)/TWO, (rmin(i)+rmax(i)+ONE)/TWO
-          ENDDO
-          WRITE( stdout,"(/,2x,'New center positions [cryst. coord]:')") 
+      IF ( ionode ) THEN
+          !
+          WRITE( stdout, " (/,2x, 'Centers for the required Wannier functions:')")
+          WRITE( stdout, " (/,8x,'in cartesian coord (Bohr)' )")
+          !
           DO m=1,nplot
              WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
-                    iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
+                    iwann(m), rave(:,iwann(m))
           ENDDO
           !
+          WRITE( stdout, " (8x,'in crystal coord' )")
+          !
+          DO m=1,nplot
+             WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                    iwann(m), rave_cry(:,iwann(m))
+          ENDDO
+          !
+          IF ( collect_wf ) THEN
+              !
+              WRITE( stdout,"(/,2x,'Collecting WFs: ')")
+              WRITE( stdout,"(2x,'Plotting Cell dimensions [cryst. coord]:')") 
+              !
+              DO i=1,3
+                  WRITE( stdout,"(  6x, ' r',i1,' :  ', f8.4, ' --> ', f8.4 )" ) &
+                            i, (rmin(i)+rmax(i)-ONE)/TWO, (rmin(i)+rmax(i)+ONE)/TWO
+              ENDDO
+              !
+              WRITE( stdout,"(/,2x,'New center positions [cryst. coord]:')") 
+              !
+              DO m=1,nplot
+                  WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                         iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
+              ENDDO
+              !
+          ENDIF
+          !
+          WRITE( stdout, "(/)" )
+          !
       ENDIF
-      WRITE( stdout, "(/)" )
 
 
 !
@@ -544,29 +641,32 @@
       !
       CALL cry2cart( tautot(:,1:natot), avec )
       ! 
-      WRITE(stdout, " (2x,'Atoms in the selected cell: (cart. coord. in Bohr)' ) " )
-      !
-      DO ia = 1, natot
-           WRITE( stdout, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
-                  symbtot(ia), ia, (tautot( i, ia ), i = 1, 3)
-      ENDDO
-      !
-      WRITE(stdout, "(/)" )
+      IF ( ionode ) THEN
+          !
+          WRITE(stdout, " (2x,'Atoms in the selected cell: (cart. coord. in Bohr)' ) " )
+          !
+          DO ia = 1, natot
+               WRITE( stdout, "(5x, a, 2x,'tau( ',I3,' ) = (', 3F12.7, ' )' )" ) &
+                      symbtot(ia), ia, (tautot( i, ia ), i = 1, 3)
+          ENDDO
+          !
+          WRITE(stdout, "(/)" )
+          !
+      ENDIF
 
 
 !
 ! wfc allocations
 !
       CALL wfc_info_allocate(npwkx, dimwinx, nkpts, dimwinx, evc_info)
+      !
       ALLOCATE( evc(npwkx, dimwinx ), STAT=ierr )
-         IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
 
       !
       ! re-opening the file containing the PW-DFT data
       !
-      CALL io_name('dft_data',filename)
-      CALL file_open(dft_unit,TRIM(filename),PATH="/", ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
+      CALL io_open_dftdata( LSERIAL=.FALSE. )
       
      
 !
@@ -577,7 +677,7 @@
       !
       IF ( uspp_augmentation ) THEN
           !
-          WRITE( stdout,"(2x,'Initializing global dft data')")
+          IF (ionode) WRITE( stdout,"(2x,'Initializing global dft data')")
           !
           ! ... data required by USPP and atomic WFC
           CALL allocate_nlpot()
@@ -587,14 +687,14 @@
 
           !
           ! ... quantities strictly related to USPP
-          WRITE( stdout,"(2x,'Initializing US pseudopot. data')")
+          IF (ionode) WRITE( stdout,"(2x,'Initializing US pseudopot. data')")
 
           !
           ! first initialization
           ! here we compute (among other quantities) \int dr Q_ij(r)
           !                                              \int dr e^ibr Q_ij(r)
           CALL init_us_1()
-          WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5 ) ') nkb
+          IF (ionode) WRITE( stdout, '(2x, "Total number Nkb of beta functions: ",i5 ) ') nkb
 
           !
           ! space for beta functions in reciproc space within struct_facts
@@ -607,10 +707,11 @@
           ALLOCATE( becp(nkb, nplot, nkpts), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
           !
-          WRITE( stdout, "(/)") 
+          IF (ionode) WRITE( stdout, "(/)") 
           !
       ENDIF
 
+!#############
 
 !
 ! ... Main loop on wfcs
@@ -624,7 +725,7 @@
       kpoint_loop: &
       DO ik = 1, nkpts
           ! 
-          WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i4 )") ik
+          IF (ionode) WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i4 )") ik
 
           !
           ! getting wfc 
@@ -795,8 +896,7 @@
       CALL wfc_data_deallocate()
       !
       !
-      CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
+      CALL io_close_dftdata( LSERIAL=.FALSE. )
 
 
 !
@@ -833,15 +933,19 @@
       !
       cost =  ONE / ( REAL(nkpts, dbl) * SQRT(omega) )
       !
-      WRITE(stdout, " (2x,'WF normalization:')")
-      !
-      IF ( uspp_augmentation ) THEN
-          WRITE(stdout, " (2x,'  Index', 14x, 'Max value', 5x, 'Normaliz.', 5x, &
-                        & 'Wfc comp.',3x,'Aug comp.')")
-          WRITE(stdout, " (2x,71('-'))")
-      ELSE
-          WRITE(stdout, " (2x,'  Index', 14x, 'Max value', 5x, 'Normaliz.')" )
-          WRITE(stdout, " (2x,45('-'))")
+      IF ( ionode ) THEN
+          !
+          WRITE(stdout, " (2x,'WF normalization:')")
+          !
+          IF ( uspp_augmentation ) THEN
+               WRITE(stdout, " (2x,'  Index', 14x, 'Max value', 5x, 'Normaliz.', 5x, &
+                             & 'Wfc comp.',3x,'Aug comp.')")
+               WRITE(stdout, " (2x,71('-'))")
+          ELSE
+               WRITE(stdout, " (2x,'  Index', 14x, 'Max value', 5x, 'Normaliz.')" )
+               WRITE(stdout, " (2x,45('-'))")
+          ENDIF
+          !
       ENDIF
       !
       !
@@ -883,12 +987,16 @@
           ENDIF
           !
           ! report
-          IF ( uspp_augmentation ) THEN
-              WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6, 2x, f12.6, 2x, 2f12.6) " ) &
-                            m, ABS(cmod), norm+norm_us, norm, norm_us
-          ELSE
-              WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6, 2x, f12.6 ) " ) &
-                            m, ABS(cmod), norm
+          IF ( ionode ) THEN
+              !
+              IF ( uspp_augmentation ) THEN
+                  WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6, 2x, f12.6, 2x, 2f12.6) " ) &
+                                m, ABS(cmod), norm+norm_us, norm, norm_us
+              ELSE
+                  WRITE(stdout, " (4x,'Wf(',i4,' )   --> ',f12.6, 2x, f12.6 ) " ) &
+                                m, ABS(cmod), norm
+              ENDIF
+              !
           ENDIF
           !
           !
@@ -899,7 +1007,7 @@
           !
       ENDDO
       !
-      WRITE(stdout, "(/)")
+      IF ( ionode ) WRITE(stdout, "(/)")
 
       
 !
@@ -944,7 +1052,7 @@
       ! workspace for output writing
       !
       ALLOCATE( rwann_out( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
-         IF (ierr/=0) CALL errore(subname,'allocating rwann_out',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'allocating rwann_out',ABS(ierr))
 
 
       !
@@ -993,12 +1101,16 @@
           ENDIF
           !
           !
-          WRITE( stdout,"(2x,'writing WF(',i4,') plot on file: ',a)") &
-                 iwann(m), TRIM(filename)//TRIM(aux_fmt)
+          IF ( ionode ) THEN 
+               !
+               WRITE( stdout,"(2x,'writing WF(',i4,') plot on file: ',a)") &
+                      iwann(m), TRIM(filename)//TRIM(aux_fmt)
 
-          OPEN ( aux_unit, FILE=TRIM(filename)//TRIM(aux_fmt), FORM='formatted', &
-                           STATUS='unknown', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening file '//TRIM(filename)//TRIM(aux_fmt),1)
+               OPEN ( aux_unit, FILE=TRIM(filename)//TRIM(aux_fmt), FORM='formatted', &
+                                STATUS='unknown', IOSTAT=ierr )
+               IF (ierr/=0) CALL errore(subname,'opening file '//TRIM(filename)//TRIM(aux_fmt),1)
+               !
+          ENDIF
 
 
           SELECT CASE ( TRIM(output_fmt) )
@@ -1010,41 +1122,49 @@
               avecl(:,2) = avec(:,2) / REAL( nr2, dbl) 
               avecl(:,3) = avec(:,3) / REAL( nr3, dbl) 
 
-              WRITE(aux_unit, '( " WanT" )') 
-              WRITE(aux_unit, '( " plot output - cube format" )' ) 
-              WRITE(aux_unit, '(i4,3f12.6)' ) natot, r0(:) 
-              WRITE(aux_unit, '(i4,3f12.6)' ) (nrxh-nrxl+1),  avecl(:,1) 
-              WRITE(aux_unit, '(i4,3f12.6)' ) (nryh-nryl+1),  avecl(:,2) 
-              WRITE(aux_unit, '(i4,3f12.6)' ) (nrzh-nrzl+1),  avecl(:,3) 
+              IF ( ionode ) THEN
+                  !
+                  WRITE(aux_unit, '( " WanT" )') 
+                  WRITE(aux_unit, '( " plot output - cube format" )' ) 
+                  WRITE(aux_unit, '(i4,3f12.6)' ) natot, r0(:) 
+                  WRITE(aux_unit, '(i4,3f12.6)' ) (nrxh-nrxl+1),  avecl(:,1) 
+                  WRITE(aux_unit, '(i4,3f12.6)' ) (nryh-nryl+1),  avecl(:,2) 
+                  WRITE(aux_unit, '(i4,3f12.6)' ) (nrzh-nrzl+1),  avecl(:,3) 
     
-              DO ia = 1, natot
-                  CALL atomic_name2num( symbtot(ia), zatom )
-                  WRITE(aux_unit, '(i4,4e13.5)' ) zatom, ONE, tautot( :, ia )
-              ENDDO
+                  DO ia = 1, natot
+                      CALL atomic_name2num( symbtot(ia), zatom )
+                      WRITE(aux_unit, '(i4,4e13.5)' ) zatom, ONE, tautot( :, ia )
+                  ENDDO
     
-              DO nx = nrxl, nrxh
-              DO ny = nryl, nryh
-                  WRITE( aux_unit, "(6e13.5)" ) rwann_out( nx, ny, : )
-              ENDDO
-              ENDDO
+                  DO nx = nrxl, nrxh
+                  DO ny = nryl, nryh
+                      WRITE( aux_unit, "(6e13.5)" ) rwann_out( nx, ny, : )
+                  ENDDO
+                  ENDDO
+                  !
+              ENDIF
 
           CASE( "txt" )
 
-              WRITE(aux_unit, '( " 3 2" )') 
-              WRITE(aux_unit, '( 3i5 )' ) nrzh-nrzl+1, nryh-nryl+1, nrxh-nrxl+1
-              WRITE(aux_unit, '(6f10.4)' ) r0(3) * bohr, r1(3) * bohr,  &
-                                           r0(2) * bohr, r1(2) * bohr,  & 
-                                           r0(1) * bohr, r1(1) * bohr
+              IF ( ionode ) THEN
+                  !
+                  WRITE(aux_unit, '( " 3 2" )') 
+                  WRITE(aux_unit, '( 3i5 )' ) nrzh-nrzl+1, nryh-nryl+1, nrxh-nrxl+1
+                  WRITE(aux_unit, '(6f10.4)' ) r0(3) * bohr, r1(3) * bohr,  &
+                                               r0(2) * bohr, r1(2) * bohr,  & 
+                                               r0(1) * bohr, r1(1) * bohr
 
-              DO nz = nrzl, nrzh
-              DO ny = nryl, nryh
-              DO nx = nrxl, nrxh
+                  DO nz = nrzl, nrzh
+                  DO ny = nryl, nryh
+                  DO nx = nrxl, nrxh
+                      !
+                      WRITE( aux_unit, "(f20.10)" ) rwann_out( nx, ny, nz )
+                      !
+                  ENDDO
+                  ENDDO
+                  ENDDO
                   !
-                  WRITE( aux_unit, "(f20.10)" ) rwann_out( nx, ny, nz )
-                  !
-              ENDDO
-              ENDDO
-              ENDDO
+              ENDIF
 
           CASE( "xsf" )
 
@@ -1054,29 +1174,34 @@
               avecl(:,2) = avec(:,2) * REAL(nryh-nryl+1, dbl) / REAL( nr2, dbl) 
               avecl(:,3) = avec(:,3) * REAL(nrzh-nrzl+1, dbl) / REAL( nr3, dbl) 
               
-              !
-              ! tau is temporarily converted to bohr 
-              ! avec and tau passed in bohr, but converted to Ang in the routine
-              !
-              tau = tau * alat
-              CALL xsf_struct ( avec, nat, tau, symb, aux_unit )
-              tau = tau / alat
-              !
-              CALL xsf_datagrid_3d ( rwann_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
-                                     nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
-                                     r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
+              IF ( ionode ) THEN
+                  !
+                  ! tau is temporarily converted to bohr 
+                  ! avec and tau passed in bohr, but converted to Ang in the routine
+                  !
+                  tau = tau * alat
+                  CALL xsf_struct ( avec, nat, tau, symb, aux_unit )
+                  tau = tau / alat
+                  !
+                  CALL xsf_datagrid_3d ( rwann_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
+                                         nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
+                                         r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
+                  !
+              ENDIF
 
           CASE DEFAULT
+             
               CALL errore(subname,'invalid OUTPUT_FMT '//TRIM(output_fmt),5)
+
           END SELECT
           !
-          CLOSE(aux_unit)
+          IF ( ionode ) CLOSE( aux_unit )
 
         
           !
           ! ... write a XYZ file for the atomic positions, when the case
           !
-          IF ( TRIM( output_fmt ) == "txt" .OR. TRIM( output_fmt ) == "plt" ) THEN
+          IF ( ionode .AND. ( TRIM( output_fmt ) == "txt" .OR. TRIM( output_fmt ) == "plt" ) ) THEN
               !
               WRITE( stdout,"(7x,'atomic positions on file: ',a)") TRIM(filename)//".xyz"
               OPEN ( aux1_unit, FILE=TRIM(filename)//".xyz", FORM='formatted', &
@@ -1089,6 +1214,7 @@
               ENDDO
               !
               CLOSE( aux1_unit )
+              !
           ENDIF
 
 
@@ -1098,20 +1224,25 @@
           IF ( TRIM( output_fmt ) == "plt" ) THEN
                !
                CALL timing('gcubeplt',OPR='start')
-               CALL gcube2plt( filename, LEN_TRIM(filename) )
+               IF ( ionode ) CALL gcube2plt( filename, LEN_TRIM(filename) )
                CALL timing('gcubeplt',OPR='stop')
                !
                ! removing temporary .cube file
-               WRITE(stdout,"(2x,'deleting tmp files: ',a)" ) TRIM(filename)//".cube"
-               WRITE(stdout,"(22x,a,2/)" )                    TRIM(filename)//".crd"
-               CALL file_delete( TRIM(filename)//".cube" )
-               CALL file_delete( TRIM(filename)//".crd" )
+               !
+               IF ( ionode ) THEN
+                   !
+                   WRITE(stdout,"(2x,'deleting tmp files: ',a)" ) TRIM(filename)//".cube"
+                   WRITE(stdout,"(22x,a,2/)" )                    TRIM(filename)//".crd"
+                   CALL file_delete( TRIM(filename)//".cube" )
+                   CALL file_delete( TRIM(filename)//".crd" )
+                   !
+               ENDIF
                !
           ENDIF
 
       ENDDO
       !
-      WRITE( stdout, "()" )
+      IF ( ionode ) WRITE( stdout, "()" )
 
 
 !
@@ -1150,16 +1281,11 @@
           IF( ierr /=0 ) CALL errore(subname, 'deallocating cwann_aug', ABS(ierr) )
           !
       ENDIF
-
       !
-      ! global cleanup
+      CALL timing( subname, OPR="STOP")
+      CALL log_pop( subname )
+      ! 
+      RETURN
       !
-      CALL cleanup 
-
-      !
-      ! finalize
-      !
-      CALL shutdown( subname )
-
-END PROGRAM plot
+END SUBROUTINE do_plot
 

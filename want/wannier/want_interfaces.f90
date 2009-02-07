@@ -44,8 +44,9 @@
 !
 !   INTERFACE postproc_init
 !      !
-!      SUBROUTINE postproc_init_x ( windows, subspace, hamiltonian, wannier )
+!      SUBROUTINE postproc_init_x ( windows, bshells, subspace, hamiltonian, wannier )
 !         LOGICAL, OPTIONAL, INTENT(in) :: windows
+!         LOGICAL, OPTIONAL, INTENT(in) :: bshells
 !         LOGICAL, OPTIONAL, INTENT(in) :: subspace
 !         LOGICAL, OPTIONAL, INTENT(in) :: hamiltonian
 !         LOGICAL, OPTIONAL, INTENT(in) :: wannier
