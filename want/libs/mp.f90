@@ -64,9 +64,11 @@
                          mp_gather_ctt
       END INTERFACE
       INTERFACE mp_allgather
-        MODULE PROCEDURE mp_allgatherv_rmm_ip
         MODULE PROCEDURE mp_allgatherv_ctt
+#ifdef MPI_IN_PLACE
+        MODULE PROCEDURE mp_allgatherv_rmm_ip
         MODULE PROCEDURE mp_allgatherv_ctt_ip
+#endif
       END INTERFACE
 
       INTEGER, PRIVATE, SAVE :: mp_high_watermark = 0
@@ -225,6 +227,7 @@
         RETURN
       END SUBROUTINE mp_gather_ctt
 
+#ifdef MPI_IN_PLACE
 !------------------------------------------------------------------------------!
 !..mp_allgatherv_rmm_ip  (in_place)
 !..Andrea Ferretti
@@ -251,6 +254,7 @@
         !mp_high_watermark = MAX( mp_high_watermark, 16 * msglen_ ) 
         RETURN
       END SUBROUTINE mp_allgatherv_rmm_ip
+#endif
 
 !------------------------------------------------------------------------------!
 !..mp_allgatherv_ctt
@@ -281,6 +285,7 @@
         RETURN
       END SUBROUTINE mp_allgatherv_ctt
 
+#ifdef MPI_IN_PLACE
 !------------------------------------------------------------------------------!
 !..mp_allgatherv_ctt_ip  (in_place)
 !..Andrea Ferretti
@@ -307,6 +312,7 @@
         !mp_high_watermark = MAX( mp_high_watermark, 16 * msglen_ ) 
         RETURN
       END SUBROUTINE mp_allgatherv_ctt_ip
+#endif
 
 !
 !------------------------------------------------------------------------------!
