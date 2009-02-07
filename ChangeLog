@@ -4,6 +4,11 @@
 =======================================================
 
 
+06 Jan 2009      Makefile system in plugins cleaned up. Bug fixed in mp.f90
+                 (mpi extention removed). (AF)
+
+05 Jan 2009      Cleanup in plot.f90 . (AF)
+
 04 Jan 2009      Test06 updated including the calculation of gold chain using
                  Abinit. (AF)
 

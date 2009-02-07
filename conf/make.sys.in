@@ -45,9 +45,7 @@ FFT_LIBS        = @fft_libs@
 MPI_LIBS        = @mpi_libs@
 MASS_LIBS       = @mass_libs@
 ETSF_IO_LIBS    = @etsf_io_libs@
-ETSF_IO_INCLUDE = @etsf_io_include@
 NETCDF_LIBS     = @netcdf_libs@
-NETCDF_INCLUDE  = @netcdf_include@
 #
 INTERNAL_LIBS   = @internal_libs@
 PLUGINS_LIBS    = @plugins_libs@
@@ -60,7 +58,7 @@ PLUGINS_LIBS    = @plugins_libs@
 DFLAGS         = @dflags@
 FDFLAGS        = @fdflags@
 IFLAGS         = -I../include @iflags@
-MODFLAGS       = @imod@. @imod@../iotk @i_netcdf_include@ @i_etsf_io_include@ \
+MODFLAGS       = @imod@. @imod@../iotk @netcdf_include@ @etsf_io_include@ \
                  @imod@../libs @imod@../wannier @imod@../transport 
 
 LIBOBJS        = ../libs/libwant.a ../iotk/libiotk.a ../ctools/libctools.a
