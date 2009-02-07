@@ -41,11 +41,16 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	if test -d $(PACKAGE) ; then \
 	( cd $(PACKAGE);  $(MAKE) ; $(MAKE) install ) ; fi
 	#
-	cp $(PACKAGE)/f90/*.mod .
-	mv $(INSTALL_DIR)/lib/*.a .
-	mv $(INSTALL_DIR)/lib/*.la .
-	mv $(INSTALL_DIR)/bin/* .
-	mv $(INSTALL_DIR)/include/* .
+	if test -d ./bin      ; then rm -rf ./bin      ; fi
+	if test -d ./lib      ; then rm -rf ./lib      ; fi
+	if test -d ./include  ; then rm -rf ./include  ; fi
+	#
+	mv $(INSTALL_DIR)/lib .
+	mv $(INSTALL_DIR)/bin .
+	cp $(PACKAGE)/f90/*.mod $(INSTALL_DIR)/include
+	mv $(INSTALL_DIR)/include .
+        #
+	- ( cd ../../bin ; ln -sf ../plugins/netcdf/bin/* . )
 	#	
 	touch package-ready-stamp
 	
@@ -55,7 +60,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 #
 clean:
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) clean ) ; fi
-	- rm *.mod *.a *.la *.inc *.h *.hh ncdump ncgen package-ready-stamp
+	- rm -rf ./bin ./lib ./include  package-ready-stamp
 
 wash: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 

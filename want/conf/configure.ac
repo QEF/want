@@ -1567,9 +1567,8 @@ echo setting MPI_LIBS... $mpi_libs
 if test "$etsf_io_libs" != "" ; then use_etsf_io=1 ; fi 
 #
 if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
-    etsf_io_libs="-L$topdir/plugins/etsf_io -letsf_io"
-    etsf_io_include="$topdir/plugins/etsf_io"
-    i_etsf_io_include="${imod}../plugins/etsf_io"
+    etsf_io_libs="-L$topdir/plugins/etsf_io/lib -letsf_io"
+    etsf_io_include="${imod}../plugins/etsf_io/include"
     plugins_libs="$plugins_libs libetsf_io"
 fi
 if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
@@ -1577,9 +1576,8 @@ if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
 if test "$netcdf_libs" != "" ;  then use_netcdf=1 ;  fi 
 #
 if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
-    netcdf_libs="-L$topdir/plugins/netcdf -lnetcdf"
-    netcdf_include="$topdir/plugins/netcdf"
-    i_netcdf_include="${imod}../plugins/netcdf"
+    netcdf_libs="-L$topdir/plugins/netcdf/lib -lnetcdf"
+    netcdf_include="${imod}../plugins/netcdf/include"
     plugins_libs="$plugins_libs libnetcdf"
 fi
 if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
@@ -1686,10 +1684,8 @@ AC_SUBST(mass_libs)
 AC_SUBST(pgplot_libs)
 AC_SUBST(etsf_io_libs)      # <AF>
 AC_SUBST(etsf_io_include)   # <AF>
-AC_SUBST(i_etsf_io_include) # <AF>
 AC_SUBST(netcdf_libs)       # <AF>
 AC_SUBST(netcdf_include)    # <AF>
-AC_SUBST(i_netcdf_include)  # <AF>
 AC_SUBST(internal_libs)     # <AF>
 AC_SUBST(plugins_libs)      # <AF>
 AC_SUBST(ar)

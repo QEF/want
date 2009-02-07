@@ -15,8 +15,8 @@ TARBALL=../archive/$(PACKAGE).tar.gz
 INSTALL_DIR=$(TOPDIR)/plugins/etsf_io/tmp
 AUXFLAGS= --prefix=$(INSTALL_DIR) \
           --with-moduledir=$(INSTALL_DIR)/include \
-          --with-netcdf-module-path="$(NETCDF_INCLUDE)" \
-          --with-netcdf-ldflags="-L$(TOPDIR)/plugins/netcdf"
+          --with-netcdf-module-path="$(TOPDIR)/plugins/netcdf/include" \
+          --with-netcdf-ldflags="-L$(TOPDIR)/plugins/netcdf/lib"
 
 #
 # MAIN target
@@ -43,10 +43,16 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	if test -d $(PACKAGE) ; then \
 	( cd $(PACKAGE);  $(MAKE) ; $(MAKE) install ) ; fi
 	#
-	test -d $(INSTALL_DIR) && mv $(INSTALL_DIR)/bin/* .
-	test -d $(INSTALL_DIR) && mv $(INSTALL_DIR)/lib/* .
-	test -d $(INSTALL_DIR) && mv $(INSTALL_DIR)/include/*/*.mod .
+	if test -d ./bin      ; then rm -rf ./bin      ; fi
+	if test -d ./lib      ; then rm -rf ./lib      ; fi
+	if test -d ./include  ; then rm -rf ./include  ; fi
 	#
+	mv $(INSTALL_DIR)/lib .
+	mv $(INSTALL_DIR)/bin .
+	-( mv $(INSTALL_DIR)/include/*/*.mod  $(INSTALL_DIR)/include )
+	mv $(INSTALL_DIR)/include .
+	#
+	- ( cd ../../bin ; ln -sf ../plugins/netcdf/bin/* . )
 	touch package-ready-stamp
 
 #
@@ -54,7 +60,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 #
 clean:
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) clean ) ; fi
-	- rm *.a *.mod *.h package-ready-stamp
+	- rm -rf ./bin ./lib ./include package-ready-stamp
 
 wash: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
