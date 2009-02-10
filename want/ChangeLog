@@ -4,15 +4,20 @@
 =======================================================
 
 
-06 Jan 2009      Makefile system in plugins cleaned up. Bug fixed in mp.f90
+10 Feb 2009      Input files for abinit calculations made more standard
+                 (thanks to Tonatiuh Rangel). Test03 improved. Stdout
+                 made more clear when selecting DFT datafiles. ETSF_IO
+                 updated to version v1.0.2 . (AF)
+
+06 Feb 2009      Makefile system in plugins cleaned up. Bug fixed in mp.f90
                  (mpi extention removed). (AF)
 
-05 Jan 2009      Cleanup in plot.f90 . (AF)
+05 Feb 2009      Cleanup in plot.f90 . (AF)
 
-04 Jan 2009      Test06 updated including the calculation of gold chain using
+04 Feb 2009      Test06 updated including the calculation of gold chain using
                  Abinit. (AF)
 
-03 Jan 2009      Bug fixed in the documentation (definition of froz_min);
+03 Feb 2009      Bug fixed in the documentation (definition of froz_min);
                  Courtesy of Regina Lelis de Sousa. Implementation of
                  eigenchannles added in conductor.x: only eigenvalues are
                  computed. Extrapolation procedure added to blc2wan (problem

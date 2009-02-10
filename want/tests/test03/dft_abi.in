@@ -5,7 +5,7 @@
 ndtset 2
 
 # Definition of the unit cell
-acell 3*20.0                  # Lattice constants (in atomic units)
+acell 20.0 20.0 15.0          # Lattice constants (in atomic units)
 
 rprim 1.0 0.0 0.0             # Cubic primitive lattice
       0.0 1.0 0.0             # (to be scaled by acell)
@@ -60,11 +60,8 @@ prtden1  1                    # Store electronic density in a file
 
 # Step 2: obtain the Kohn-Sham band structure
 getden2    1                  # Read electronic density from step 1
-getwfk2   0
+getwfk2    0
 iscf2     -2                  # Non self-consistent calculation
 tolwfr2    1.0d-16            # Tolerance on wavefunctions
-nband2     40                 # Number of bands for the system
-#nbandkss2  40                 # Number of bands to output to the KSS file
-#kssform2   3                  # Format of the KSS file
-symmorphi2 0                  # Disallow non-symmorphic operations (required)
+nband2     60                 # Number of bands for the system
 
