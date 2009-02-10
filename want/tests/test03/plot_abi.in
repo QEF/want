@@ -1,0 +1,10 @@
+
+ &INPUT
+   prefix = 'benzene_abi-o_DS2'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   output_fmt = 'plt'
+   datatype = 'modulus'
+   collect_wf = .FALSE.
+   wann = '1-2,14-15'
+ /
