@@ -3,20 +3,20 @@
    prefix = 'benzene_abi-o_DS2'
    postfix = '_WanT'
    work_dir = './SCRATCH/'
+   verbosity = 'high'
 /
 
 &SUBSPACE
-   win_max = 2.0
-   dimwann = 18
+!   win_max  =  1.80
+   froz_max = -1.8
+   dimwann  = 18
    maxiter_dis = 5000
 /
 
 &LOCALIZATION
    a_condmin = 20.0
-   alpha0_wan = 0.25
-   alpha1_wan = 0.25
    maxiter0_wan = 200
-   maxiter1_wan = 4000
+   maxiter1_wan = 8000
    ncg = 5    
 /
 
@@ -33,10 +33,10 @@ WANNIER_CENTERS {bohr}
 1gauss    -1.666739106    0.188027859    3.082144737     0 0  1.0    1.0
 1gauss    -3.500719070   -0.694474578    3.095372677     0 0  1.0    1.0
 1gauss    -3.650952339    1.335092068    3.103876591     0 0  1.0    1.0
-atomic   2   1 0   1.0 
-atomic   4   1 0   1.0
-atomic   6   1 0   1.0
-atomic   8   1 0   1.0
-atomic  10   1 0   1.0
-atomic  12   1 0   1.0
+1gauss      -2.987658194       4.771560366       3.108600714   1 0  1.0  1.0
+1gauss      -0.342040565       4.769670640       3.085923991   1 0  1.0  1.0
+1gauss       0.978878523       2.477431937       3.065136996   1 0  1.0  1.0
+1gauss      -0.343930292       0.187082961       3.070806176   1 0  1.0  1.0
+1gauss      -2.989547921       0.188972688       3.093482899   1 0  1.0  1.0
+1gauss      -4.312356735       2.481211391       3.114269895   1 0  1.0  1.0
 

@@ -24,8 +24,7 @@ Isolate benzene molecule
       occupations='smearing',
       smearing='gaussian',
       degauss=0.01,
-      nbnd = 40
-      nspin=1,
+      nbnd = 60
    /
    &ELECTRONS
       electron_maxstep = 100,
