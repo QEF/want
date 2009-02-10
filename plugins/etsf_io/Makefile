@@ -6,7 +6,7 @@
 include ../../make.sys
 
 LIBNAME=libetsf_io.a
-PACKAGE=etsf_io-1.0.0
+PACKAGE=etsf_io-1.0.2
 TARBALL=../archive/$(PACKAGE).tar.gz
 
 #
