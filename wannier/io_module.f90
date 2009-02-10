@@ -144,7 +144,7 @@
       CHARACTER(nstrx) :: filename, version
       CHARACTER(nstrx) :: fmt_searched(4)
       CHARACTER(nstrx) :: fmt_filename(4)
-      LOGICAL          :: lexist, lexist1, lneed_wfc
+      LOGICAL          :: lfound, lfound1, lneed_wfc
       INTEGER          :: i, ierr
 
       !
@@ -161,7 +161,7 @@
       fmt_filename(4) = '_WFK-etsf.nc'
       !
       ! init
-      lexist    = .FALSE.
+      lfound    = .FALSE.
       lneed_wfc = .TRUE.
       IF ( PRESENT( need_wfc )) lneed_wfc = need_wfc
       !
@@ -170,12 +170,17 @@
            !
            ! set the filename
            !
+           IF ( ionode ) WRITE(stdout, "(2x, 'checking for fmt ',a,'... ', $)" ) TRIM( fmt_searched(i) )
+           !
            IF ( TRIM( fmt_searched(i) ) == 'crystal' ) THEN
                !
                ! in the case of crystal fmt, the presence of 
                ! a non-null dftdata_file is required
                !
-               IF ( LEN_TRIM(fmt_filename( i )) == 0 ) CYCLE
+               IF ( LEN_TRIM(fmt_filename( i )) == 0 ) THEN
+                   IF ( ionode ) WRITE(stdout, "('no')" ) 
+                   CYCLE
+               ENDIF
                !
                filename = TRIM( fmt_filename( i ) )
                !
@@ -184,23 +189,23 @@
            ENDIF
            !
            ! check the existence of the file
-           IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
-           CALL mp_bcast( lexist,   ionode_id )
+           IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lfound )
+           CALL mp_bcast( lfound,   ionode_id )
            !
-           IF ( lexist .AND. lneed_wfc .AND. TRIM( fmt_searched(i) ) == 'qexml'  )  THEN
+           IF ( lfound .AND. lneed_wfc .AND. TRIM( fmt_searched(i) ) == 'qexml'  )  THEN
                !
                ! check also the existence of evc.dat or evc1.dat
                ! this means that file produced by espresso are fine for WanT
                !
                filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc.dat"
-               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lexist )
-               CALL mp_bcast( lexist,   ionode_id )
+               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lfound )
+               CALL mp_bcast( lfound,   ionode_id )
                !
                filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/K00001/evc1.dat"
-               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lexist1 )
-               CALL mp_bcast( lexist1,   ionode_id )
+               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lfound1 )
+               CALL mp_bcast( lfound1,   ionode_id )
                !            
-               lexist = lexist .OR. lexist1
+               lfound = lfound .OR. lfound1
                !
                !
                ! check  the version of the format.
@@ -217,7 +222,7 @@
                CALL mp_bcast( ierr,   ionode_id )
                CALL mp_bcast( version,   ionode_id )
                !
-               IF ( ierr /= 0 )  lexist = .FALSE.
+               IF ( ierr /= 0 )  lfound = .FALSE.
                !
                ! any check on the version should be placed here
                !
@@ -227,14 +232,14 @@
                !
            ENDIF
            !
-           IF ( lexist .AND. TRIM( fmt_searched(i) ) == 'crystal'  )  THEN
+           IF ( lfound .AND. TRIM( fmt_searched(i) ) == 'crystal'  )  THEN
                !
-               lexist = file_is_crystal( filename )
+               lfound = file_is_crystal( filename )
                !
            ENDIF
            !
 #ifdef __ETSF_IO
-           IF ( lexist .AND. TRIM( fmt_searched(i) ) == 'etsf_io')  THEN
+           IF ( lfound .AND. TRIM( fmt_searched(i) ) == 'etsf_io')  THEN
                !
                ! Try to open the file and to get dimensions to check that
                ! the file is actually ETSF_IO formatted
@@ -258,21 +263,26 @@
                ENDIF
                CALL mp_bcast( lstat,   ionode_id )
                !
-               lexist = lstat
+               lfound = lstat
                !
            ENDIF
 #endif
            !
-           IF ( lexist ) EXIT
+           IF ( lfound ) THEN
+               IF ( ionode ) WRITE(stdout, "('ok')" ) 
+               EXIT
+           ELSE
+               IF ( ionode ) WRITE(stdout, "('no')" ) 
+           ENDIF
            !
       ENDDO
       !
-      IF ( .NOT. lexist ) THEN
+      IF ( .NOT. lfound ) THEN
            dftdata_fmt_ = ""
       ELSE
            dftdata_fmt_ = TRIM( fmt_searched( i ) )
            !
-           IF (ionode) WRITE( stdout , "(2x, 'DFT-data fmt automaticaly detected: ',a )" ) &
+           IF (ionode) WRITE( stdout , "(/,2x, 'DFT-data fmt automaticaly detected: ',a )" ) &
                   TRIM( dftdata_fmt_)
            !
       ENDIF

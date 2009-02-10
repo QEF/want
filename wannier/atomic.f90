@@ -71,7 +71,7 @@ CONTAINS
    !
    ! cut the third char
    !
-   lsymb = symbol(1:2) 
+   lsymb = ADJUSTL( symbol(1:2) )
 
    !
    ! if the second digit is a number set it to blank

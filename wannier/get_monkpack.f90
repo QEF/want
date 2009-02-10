@@ -7,8 +7,9 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
+   SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    !*********************************************************
+   !
    USE kinds
    USE constants,         ONLY : EPS_m6, ZERO, ONE, TWO
    USE converters_module, ONLY : cart2cry
@@ -24,6 +25,10 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
 ! VKPT are supposed to be in the coordinates given in input by
 ! 'CARTESIAN' or 'CRYSTAL' strings.
 ! the units should be the same as in BVEC.
+!
+! NOTE: this soubroutine should be generalized to treat
+!       cases where the s shift is non-integer and completely
+!       general.
 !
 
    INTEGER,  INTENT(out)     :: nk(3), s(3)
@@ -54,10 +59,13 @@ SUBROUTINE get_monkpack(nk,s,nkpts,vkpt,coordinate,bvec,ierr)
    !
    ! first take the kpts to crystal coordinates (and computes moduli)
    ! assuming they are in cartesian ones
+   !
    ALLOCATE(kpt_loc(3,nkpts), STAT=ierrl)
-      IF (ierrl/=0) CALL errore(subname,'allocating kpt_loc',ABS(ierrl))
+   IF (ierrl/=0) CALL errore(subname,'allocating kpt_loc',ABS(ierrl))
+   !
    ALLOCATE(kpt_gen(3,nkpts), STAT=ierrl)
-      IF (ierrl/=0) CALL errore(subname,'allocating kpt_gen',ABS(ierrl))
+   IF (ierrl/=0) CALL errore(subname,'allocating kpt_gen',ABS(ierrl))
+   !
    kpt_loc(:,:) = vkpt(:,:)
 
    SELECT CASE (TRIM(coordinate))
