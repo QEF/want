@@ -10,7 +10,8 @@
 &SUBSPACE
    dimwann  =  6    
    win_max  =  0.6
-   froz_max = -3.4     ! Fermi = -6.21 eV
+   froz_max = -3.4
+   efermi   = -6.21107
 /   
 
 &LOCALIZATION
