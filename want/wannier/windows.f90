@@ -18,6 +18,7 @@
    USE parser_module,            ONLY : change_case
    USE kpoints_module,           ONLY : nkpts_g, kpoints_alloc
    USE io_global_module,         ONLY : ionode, ionode_id
+   USE control_module,           ONLY : read_efermi
    USE input_parameters_module,  ONLY : iwin_min, iwin_max, ifroz_min, ifroz_max
    USE mp,                       ONLY : mp_bcast
    !
@@ -66,7 +67,7 @@
    INTEGER,      ALLOCATABLE   :: imin(:)            ! chosen energy window
    INTEGER,      ALLOCATABLE   :: imax(:)            ! dim: nkpts_g
    REAL(dbl),    ALLOCATABLE   :: eig(:,:)           ! DFT eigenv; dim: nbnd, nkpts_g
-   REAL(dbl)                   :: efermi             ! Fermi energy (from DFT)
+   REAL(dbl)                   :: efermi             ! Fermi energy
    REAL(dbl)                   :: nelec              ! total number of electrons
    !
    LOGICAL                     :: alloc=.FALSE.      
@@ -598,6 +599,7 @@ CONTAINS
        CHARACTER(16)      :: subname="windows_read_ext"
        CHARACTER(nstrx)   :: str
        INTEGER            :: lnkpts, ierr, ik
+       REAL(dbl)          :: lefermi
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
        !
 #ifdef __ETSF_IO
@@ -618,26 +620,26 @@ CONTAINS
             !
             IF ( ionode ) &
             CALL qexml_read_bands_info( NBND=nbnd, NUM_K_POINTS=lnkpts, &
-                                        NSPIN=nspin, EF=efermi, &
+                                        NSPIN=nspin, EF=lefermi, &
                                         NELEC=nelec, IERR=ierr )
             !
             CALL mp_bcast( nbnd,    ionode_id )
             CALL mp_bcast( lnkpts,  ionode_id )
             CALL mp_bcast( nspin,   ionode_id )
-            CALL mp_bcast( efermi,  ionode_id )
+            CALL mp_bcast( lefermi, ionode_id )
             CALL mp_bcast( nelec,   ionode_id )
             CALL mp_bcast( ierr,    ionode_id )
             !
        CASE ( 'pw_export' )
             !
             CALL qexpt_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, &
-                                   NSPIN=nspin, EF=efermi, &
+                                   NSPIN=nspin, EF=lefermi, &
                                    NELEC=nelec, IERR=ierr )
             !
             CALL mp_bcast( nbnd,    ionode_id )
             CALL mp_bcast( lnkpts,  ionode_id )
             CALL mp_bcast( nspin,   ionode_id )
-            CALL mp_bcast( efermi,  ionode_id )
+            CALL mp_bcast( lefermi, ionode_id )
             CALL mp_bcast( nelec,   ionode_id )
             CALL mp_bcast( ierr,    ionode_id )
             !
@@ -653,7 +655,7 @@ CONTAINS
             IF ( dims%number_of_spinor_components == 2 ) nspin = 4
             !
             ! Fermi energy will be read in the next section
-            efermi = 0.0  
+            lefermi = 0.0  
             ierr   = 0
             !
 #else
@@ -745,7 +747,9 @@ CONTAINS
                                   dims%number_of_kpoints,    &   
                                   dims%number_of_spins )     )
             !
-            electrons%fermi_energy            => fermi_energy 
+            fermi_energy = 0.0
+            IF ( read_efermi ) electrons%fermi_energy  => fermi_energy 
+            !
             electrons%eigenvalues%data3d      => eigenvalues
             !
             IF ( ionode ) CALL etsf_io_electrons_get(ncid, electrons, lstat, error_data)
@@ -762,6 +766,7 @@ CONTAINS
             str = "Hartree"
             !
             leig( 1:nbnd, 1:nkpts_g, 1:nspin) = eigenvalues(:,:,:)
+            lefermi = fermi_energy
             !
             DEALLOCATE( eigenvalues )
             !
@@ -782,12 +787,12 @@ CONTAINS
        CASE ( 'rydberg', 'ryd', 'ry' )
            !
            leig(:,:,:) = leig(:,:,:) * RYD
-           efermi      = efermi * RYD
+           lefermi     = lefermi * RYD
            !
        CASE ( 'hartree', 'ha')
            !
            leig(:,:,:) = leig(:,:,:) * TWO * RYD
-           efermi      = efermi * TWO * RYD
+           lefermi     = lefermi * TWO * RYD
            !
        CASE ( 'elettronvolt', 'elettron-volt', 'ev')
            !
@@ -797,6 +802,10 @@ CONTAINS
            CALL errore(subname,'Wrong units in Energies',5)
        END SELECT
  
+       !
+       ! check whether fermi energy is read from dftdata_file
+       !
+       IF ( read_efermi ) efermi = lefermi
 
        !
        ! define EIG, which contains only the kpts related to the current pool

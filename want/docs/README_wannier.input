@@ -143,6 +143,12 @@ froz_max      REAL
               upper limit [eV] of the frozen window above described.
               DEFAULT : -50000000 (this is a large number which stands for -INF)
 
+efermi        REAL
+              Fermi energy [eV]. Allow to read Efermi from input instead of
+              getting it from dftdata files. Useful to be used with Abinit interface
+              and likely to be overtaken by a direct calculation of Efermi.
+              DEFAULT : not used
+
 alpha_dis     REAL
               mixing parameter for the disentangle iterative procedure.
               DEFAULT : 0.5

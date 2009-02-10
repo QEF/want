@@ -8,7 +8,7 @@
 !
 !*****************************************************************
    SUBROUTINE domega( dimwann, nkpts, Mkb, csheet, sheet, rave, &
-                      do_condmin, a_condmin, domg )
+                      use_condmin, a_condmin, domg )
    !*****************************************************************
    !
    ! This routine compute the gradinet of the spread functional
@@ -40,7 +40,7 @@
    REAL(dbl),    INTENT(IN)  :: sheet(dimwann,nb,nkpts_g)
    COMPLEX(dbl), INTENT(IN)  :: csheet(dimwann,nb,nkpts_g)
    COMPLEX(dbl), INTENT(IN)  :: Mkb(dimwann,dimwann,nb/2,nkpts)
-   LOGICAL,      INTENT(IN)  :: do_condmin
+   LOGICAL,      INTENT(IN)  :: use_condmin
    REAL(dbl),    INTENT(IN)  :: a_condmin
    COMPLEX(dbl), INTENT(OUT) :: domg(dimwann*(dimwann+1)/2,nkpts_g)
 
@@ -195,7 +195,7 @@
    ! note that the action of this subroutine is to add the
    ! penalty contributions to domg
    !
-   IF ( do_condmin ) THEN
+   IF ( use_condmin ) THEN
        !
        CALL domega_aux( dimwann, nkpts, Mkb, rave, trial, a_condmin, domg)
        !
