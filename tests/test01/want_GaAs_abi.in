@@ -8,6 +8,7 @@
 
 &SUBSPACE
     dimwann  = 4         
+    efermi   = -0.442678
 /
 
 &LOCALIZATION
