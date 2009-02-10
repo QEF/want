@@ -9,20 +9,20 @@
 
 
   Program <conductor>  v. 2.2.0-dev  starts ...
-  Date  5Jan2009 at  0:37:52 
+  Date 31Jan2009 at 12:54: 6 
 
-     Parallel run, # proc:    4
+     Serial run.
 
-          BUILT :    Mon Jan  5 00:09:02 2009
+          BUILT :    Sat Jan 31 11:14:44 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
             CPP :    cpp
-            F90 :    mpiifort
-            F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__MPI -D__PARA
-      BLAS LIBS :    -lmkl_em64t
-    LAPACK LIBS :    -lmkl_em64t
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__FFTW -D__USE_INTERNAL_FFTW -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -lmkl_em64t -lguide -lpthread
+    LAPACK LIBS :    -lmkl_em64t -lguide -lpthread
        FFT LIBS :    
       MASS LIBS :    
 
@@ -290,7 +290,7 @@
 
   <PARALLELISM>
        Paralellization over frequencies
-       # of processes:     4
+       # of processes:     1
   </PARALLELISM>
 
 
@@ -301,32 +301,107 @@
   Computing E(     1 ) =     -5.00000 eV
   T matrix converged after avg. # of iterations    7.343
 
-                              Total time spent up to now :     0.15 secs
+                              Total time spent up to now :     0.45 secs
 
   Computing E(    20 ) =     -4.52381 eV
   T matrix converged after avg. # of iterations    7.667
 
-                              Total time spent up to now :     1.58 secs
+                              Total time spent up to now :     6.51 secs
 
   Computing E(    40 ) =     -4.02256 eV
   T matrix converged after avg. # of iterations    7.915
 
-                              Total time spent up to now :     3.13 secs
+                              Total time spent up to now :    13.08 secs
 
   Computing E(    60 ) =     -3.52130 eV
   T matrix converged after avg. # of iterations    7.667
 
-                              Total time spent up to now :     4.67 secs
+                              Total time spent up to now :    19.69 secs
 
   Computing E(    80 ) =     -3.02005 eV
   T matrix converged after avg. # of iterations    6.294
 
-                              Total time spent up to now :     6.14 secs
+                              Total time spent up to now :    25.75 secs
 
   Computing E(   100 ) =     -2.51880 eV
   T matrix converged after avg. # of iterations    5.408
 
-                              Total time spent up to now :     7.51 secs
+                              Total time spent up to now :    31.12 secs
+
+  Computing E(   120 ) =     -2.01754 eV
+  T matrix converged after avg. # of iterations    4.836
+
+                              Total time spent up to now :    36.09 secs
+
+  Computing E(   140 ) =     -1.51629 eV
+  T matrix converged after avg. # of iterations    4.358
+
+                              Total time spent up to now :    40.74 secs
+
+  Computing E(   160 ) =     -1.01504 eV
+  T matrix converged after avg. # of iterations    4.174
+
+                              Total time spent up to now :    45.19 secs
+
+  Computing E(   180 ) =     -0.51378 eV
+  T matrix converged after avg. # of iterations    4.547
+
+                              Total time spent up to now :    49.71 secs
+
+  Computing E(   200 ) =     -0.01253 eV
+  T matrix converged after avg. # of iterations    5.085
+
+                              Total time spent up to now :    54.52 secs
+
+  Computing E(   220 ) =      0.48872 eV
+  T matrix converged after avg. # of iterations    6.209
+
+                              Total time spent up to now :    59.76 secs
+
+  Computing E(   240 ) =      0.98997 eV
+  T matrix converged after avg. # of iterations    7.925
+
+                              Total time spent up to now :    65.96 secs
+
+  Computing E(   260 ) =      1.49123 eV
+  T matrix converged after avg. # of iterations    8.488
+
+                              Total time spent up to now :    72.73 secs
+
+  Computing E(   280 ) =      1.99248 eV
+  T matrix converged after avg. # of iterations    8.403
+
+                              Total time spent up to now :    79.67 secs
+
+  Computing E(   300 ) =      2.49373 eV
+  T matrix converged after avg. # of iterations    8.194
+
+                              Total time spent up to now :    86.52 secs
+
+  Computing E(   320 ) =      2.99499 eV
+  T matrix converged after avg. # of iterations    7.955
+
+                              Total time spent up to now :    93.24 secs
+
+  Computing E(   340 ) =      3.49624 eV
+  T matrix converged after avg. # of iterations    7.692
+
+                              Total time spent up to now :    99.81 secs
+
+  Computing E(   360 ) =      3.99749 eV
+  T matrix converged after avg. # of iterations    7.433
+
+                              Total time spent up to now :   106.22 secs
+
+  Computing E(   380 ) =      4.49875 eV
+  T matrix converged after avg. # of iterations    7.169
+
+                              Total time spent up to now :   112.49 secs
+
+  Computing E(   400 ) =      5.00000 eV
+  T matrix converged after avg. # of iterations    6.905
+
+                              Total time spent up to now :   118.59 secs
 
 
   ======================================================================
@@ -342,20 +417,20 @@
    <global routines>
              clock number :    14
 
-                conductor :     7.00s CPU 
+                conductor :  1m58.00s CPU 
 
            datafiles_init :     0.00s CPU
             smearing_init :     0.05s CPU
-                   cft_1z :     0.02s CPU (       2 calls,   0.011 s avg)
-         hamiltonian_init :     0.00s CPU
-              read_matrix :     0.00s CPU (       2 calls,   0.002 s avg)
-              fourier_par :     0.00s CPU (       6 calls,   0.000 s avg)
-         correlation_init :     0.01s CPU
-      correlation_sgmread :     0.01s CPU (       2 calls,   0.003 s avg)
-        hamiltonian_setup :     0.16s CPU (   20100 calls,   0.000 s avg)
-            transfer_mtrx :     4.20s CPU (   40200 calls,   0.000 s avg)
-                    green :     1.60s CPU (   40200 calls,   0.000 s avg)
-              gzero_maker :     1.36s CPU (   60300 calls,   0.000 s avg)
-            transmittance :     0.18s CPU (   20100 calls,   0.000 s avg)
+                   cft_1z :     0.03s CPU (       2 calls,   0.013 s avg)
+         hamiltonian_init :     0.02s CPU
+              read_matrix :     0.02s CPU (       2 calls,   0.009 s avg)
+              fourier_par :     0.02s CPU (       6 calls,   0.003 s avg)
+         correlation_read :     0.02s CPU
+      correlation_sgmread :     0.02s CPU (       2 calls,   0.011 s avg)
+        hamiltonian_setup :     2.63s CPU (   80400 calls,   0.000 s avg)
+            transfer_mtrx :    96.15s CPU (  160800 calls,   0.001 s avg)
+                    green :     9.28s CPU (  160800 calls,   0.000 s avg)
+              gzero_maker :     8.34s CPU (  241200 calls,   0.000 s avg)
+            transmittance :     2.42s CPU (   80400 calls,   0.000 s avg)
 
 

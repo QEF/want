@@ -9,20 +9,20 @@
 
 
   Program <wannier>  v. 2.2.0-dev  starts ...
-  Date  5Jan2009 at  0:35:38 
+  Date 31Jan2009 at 12:51: 7 
 
-     Parallel run, # proc:    4
+     Serial run.
 
-          BUILT :    Mon Jan  5 00:09:02 2009
+          BUILT :    Sat Jan 31 11:14:44 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
             CPP :    cpp
-            F90 :    mpiifort
-            F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__MPI -D__PARA
-      BLAS LIBS :    -lmkl_em64t
-    LAPACK LIBS :    -lmkl_em64t
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__FFTW -D__USE_INTERNAL_FFTW -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -lmkl_em64t -lguide -lpthread
+    LAPACK LIBS :    -lmkl_em64t -lguide -lpthread
        FFT LIBS :    
       MASS LIBS :    
 
@@ -122,9 +122,9 @@
 
    Reciprocal lattice vectors:
                 in Bohr^-1 units                        in 2Pi/Alat units
-    b(1) = (    1.37117    0.79165    0.00000 )    (    1.00000    0.57735    0.00000 )
+    b(1) = (    1.37117    0.79165   -0.00000 )    (    1.00000    0.57735   -0.00000 )
     b(2) = (    0.00000    1.58329    0.00000 )    (    0.00000    1.15470    0.00000 )
-    b(3) = (    0.00000    0.00000    0.17140 )    (    0.00000    0.00000    0.12500 )
+    b(3) = (    0.00000   -0.00000    0.17140 )    (    0.00000   -0.00000    0.12500 )
  </LATTICE>
 
  <IONS>
@@ -147,9 +147,9 @@
  </IONS>
 
  <K-POINTS>
-         nproc =     4   (Parallelism over kpts)
+         nproc =     1   (Parallelism over kpts)
   global nkpts =    36
-   local nkpts =     9
+   local nkpts =    36
   Monkhorst-Pack grid:      nk = (   6   6   1 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -170,7 +170,7 @@
     k (   15) =    (   -0.2285286  -0.3958231   0.0000000 ),   weight =      0.0277778
     k (   16) =    (    0.0000000  -0.2638821   0.0000000 ),   weight =      0.0277778
     k (   17) =    (    0.2285286  -0.1319410   0.0000000 ),   weight =      0.0277778
-    k (   18) =    (    0.4570572   0.0000000   0.0000000 ),   weight =      0.0277778
+    k (   18) =    (    0.4570572  -0.0000000   0.0000000 ),   weight =      0.0277778
     k (   19) =    (   -0.6855858  -0.3958231   0.0000000 ),   weight =      0.0277778
     k (   20) =    (   -0.4570572  -0.2638821   0.0000000 ),   weight =      0.0277778
     k (   21) =    (   -0.2285286  -0.1319410   0.0000000 ),   weight =      0.0277778
@@ -197,10 +197,10 @@
     b (    2) =    (    0.0000000  -0.2638821   0.0000000 ),   weight =      4.7869502
     b (    3) =    (    0.0000000   0.0000000   0.1713964 ),   weight =     17.0202673
     b (    4) =    (   -0.2285286   0.1319410   0.0000000 ),   weight =      4.7869502
-    b (    5) =    (   -0.2285286  -0.1319410   0.0000000 ),   weight =      4.7869502
-    b (    6) =    (    0.0000000   0.2638821   0.0000000 ),   weight =      4.7869502
-    b (    7) =    (    0.0000000   0.0000000  -0.1713964 ),   weight =     17.0202673
-    b (    8) =    (    0.2285286  -0.1319410   0.0000000 ),   weight =      4.7869502
+    b (    5) =    (   -0.2285286  -0.1319410  -0.0000000 ),   weight =      4.7869502
+    b (    6) =    (   -0.0000000   0.2638821  -0.0000000 ),   weight =      4.7869502
+    b (    7) =    (   -0.0000000  -0.0000000  -0.1713964 ),   weight =     17.0202673
+    b (    8) =    (    0.2285286  -0.1319410  -0.0000000 ),   weight =      4.7869502
 
   Total weight =      62.7622357
  </B-SHELL>
@@ -210,7 +210,7 @@
   Overlap and projections read from file: graphene_WanT.ovp
 
   Overlaps and projections setup completed
-                              Total time spent up to now :     0.45 secs
+                              Total time spent up to now :     0.59 secs
 
 
   ======================================================================
@@ -225,25 +225,25 @@
                     ions:          0.003 MB
                  windows:          0.012 MB
                 subspace:          0.001 MB
-                 overlap:          0.018 MB
+                 overlap:          0.072 MB
             localization:          0.015 MB
             trial_center:          0.001 MB
-           workspace_wan:          0.091 MB
+           workspace_wan:          0.190 MB
                       us:          0.000 MB
                     uspp:          0.000 MB
 
-     Total alloc. Memory:          0.149 MB
-      Real alloc. Memory:          0.656 MB
+     Total alloc. Memory:          0.303 MB
+      Real alloc. Memory:          0.772 MB
  </MEMORY_USAGE>
 
 
   Initial unitary rotations : projected localized orbitals
 
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (      1.145595     0.661409     0.000000 )  Omega =      2.152139
+    Center   1 = (      1.145595     0.661409    -0.000000 )  Omega =      2.152139
     Center   2 = (      3.436753     0.661409     0.000000 )  Omega =      2.152139
     Center   3 = (      2.291174     2.645611     0.000000 )  Omega =      2.152141
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343737
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343737
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343751
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     13.143906
 
@@ -262,28 +262,28 @@
 
   Iteration =     1   (condit. minim, A =   20.0000 )
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (      1.145595     0.661409     0.000000 )  Omega =      2.151593
+    Center   1 = (      1.145595     0.661409    -0.000000 )  Omega =      2.151593
     Center   2 = (      3.436753     0.661409     0.000000 )  Omega =      2.151593
     Center   3 = (      2.291174     2.645611     0.000000 )  Omega =      2.151595
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343735
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343735
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343748
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     13.142265
 
   Omega variation (Bohr^2):      -0.001641
-                              Total time spent up to now :     0.46 secs
+                              Total time spent up to now :     0.61 secs
 
 
   Iteration =    50   (condit. minim, A =   20.0000 )
   Wannier centers (Bohr) and Spreads Omega (Bohr^2):
-    Center   1 = (      1.145594     0.661409     0.000000 )  Omega =      2.127921
+    Center   1 = (      1.145594     0.661409    -0.000000 )  Omega =      2.127921
     Center   2 = (      3.436754     0.661409     0.000000 )  Omega =      2.127921
     Center   3 = (      2.291174     2.645611     0.000000 )  Omega =      2.127923
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343637
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343637
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343650
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     13.071054
 
   Omega variation (Bohr^2):      -0.001288
-                              Total time spent up to now :     0.50 secs
+                              Total time spent up to now :     0.99 secs
 
 
   Iteration =   100   (condit. minim, A =   20.0000 )
@@ -291,12 +291,12 @@
     Center   1 = (      1.145594     0.661409     0.000000 )  Omega =      2.108954
     Center   2 = (      3.436754     0.661409     0.000000 )  Omega =      2.108954
     Center   3 = (      2.291174     2.645611     0.000000 )  Omega =      2.108956
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343561
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343561
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343574
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     13.013998
 
   Omega variation (Bohr^2):      -0.001012
-                              Total time spent up to now :     0.54 secs
+                              Total time spent up to now :     1.37 secs
 
 
   Iteration =   150   (condit. minim, A =   20.0000 )
@@ -304,12 +304,12 @@
     Center   1 = (      1.145594     0.661409     0.000000 )  Omega =      2.094008
     Center   2 = (      3.436754     0.661409     0.000000 )  Omega =      2.094008
     Center   3 = (      2.291174     2.645611     0.000000 )  Omega =      2.094010
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343503
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343503
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343516
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     12.969044
 
   Omega variation (Bohr^2):      -0.000800
-                              Total time spent up to now :     0.58 secs
+                              Total time spent up to now :     1.76 secs
 
 
   Iteration =   200   (condit. minim, A =   20.0000 )
@@ -317,12 +317,12 @@
     Center   1 = (      1.145594     0.661409     0.000000 )  Omega =      2.082159
     Center   2 = (      3.436754     0.661409     0.000000 )  Omega =      2.082159
     Center   3 = (      2.291174     2.645611     0.000000 )  Omega =      2.082160
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343459
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343459
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343472
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     12.933408
 
   Omega variation (Bohr^2):      -0.000636
-                              Total time spent up to now :     0.62 secs
+                              Total time spent up to now :     2.15 secs
 
 
   Iteration =   250   (condit. minim, A =   20.0000 )
@@ -330,12 +330,12 @@
     Center   1 = (      1.145594     0.661409     0.000000 )  Omega =      2.040050
     Center   2 = (      3.436754     0.661409     0.000000 )  Omega =      2.040050
     Center   3 = (      2.291174     2.645612     0.000000 )  Omega =      2.040052
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343328
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343328
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343341
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     12.806821
 
   Omega variation (Bohr^2):      -0.001566
-                              Total time spent up to now :     0.69 secs
+                              Total time spent up to now :     2.74 secs
 
 
   Iteration =   300   (condit. minim, A =   20.0000 )
@@ -343,12 +343,12 @@
     Center   1 = (      1.145594     0.661408     0.000000 )  Omega =      2.032329
     Center   2 = (      3.436754     0.661408     0.000000 )  Omega =      2.032329
     Center   3 = (      2.291174     2.645612     0.000000 )  Omega =      2.032330
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343317
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343317
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343329
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     12.783633
 
   Omega variation (Bohr^2):      -0.000331
-                              Total time spent up to now :     0.75 secs
+                              Total time spent up to now :     3.32 secs
 
 
   Iteration =   350   (condit. minim, A =   20.0000 )
@@ -356,12 +356,12 @@
     Center   1 = (      1.145594     0.661408     0.000000 )  Omega =      2.030619
     Center   2 = (      3.436754     0.661408     0.000000 )  Omega =      2.030619
     Center   3 = (      2.291174     2.645612     0.000000 )  Omega =      2.030621
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343316
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343316
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343328
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     12.778503
 
   Omega variation (Bohr^2):      -0.000077
-                              Total time spent up to now :     0.81 secs
+                              Total time spent up to now :     3.90 secs
 
 
   Iteration =   400   (condit. minim, A =   20.0000 )
@@ -369,12 +369,12 @@
     Center   1 = (      1.145593     0.661408     0.000000 )  Omega =      2.030221
     Center   2 = (      3.436754     0.661408     0.000000 )  Omega =      2.030221
     Center   3 = (      2.291174     2.645612     0.000000 )  Omega =      2.030222
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343315
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343315
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343328
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     12.777307
 
   Omega variation (Bohr^2):      -0.000019
-                              Total time spent up to now :     0.88 secs
+                              Total time spent up to now :     4.48 secs
 
 
 
@@ -389,7 +389,7 @@
     Center   1 = (      1.145593     0.661408     0.000000 )  Omega =      2.030189
     Center   2 = (      3.436755     0.661408     0.000000 )  Omega =      2.030189
     Center   3 = (      2.291174     2.645612     0.000000 )  Omega =      2.030190
-    Center   4 = (      0.000000     0.000000     0.000000 )  Omega =      3.343315
+    Center   4 = (     -0.000000    -0.000000     0.000000 )  Omega =      3.343315
     Center   5 = (      2.291174     1.322809     0.000000 )  Omega =      3.343328
   ! Center Sum = (      9.164696     5.291238     0.000000 )  Omega =     12.777211
 
@@ -402,7 +402,7 @@
 
   Omega variation (Bohr^2):      -0.000001
 
-                              Total time spent up to now :     0.90 secs
+                              Total time spent up to now :     4.61 secs
 
 
   Unitary transf. matrixes written on file: graphene_WanT.wan
@@ -412,23 +412,23 @@
   dimwann =     5
  !
  !    R = (   0  -1   0 )
- !  -0.122424   0.000000,     0.586065   0.000000,     0.586066   0.000000,
- !   0.240446   0.000000,     0.240447   0.000000,
+ !  -0.122424   0.000000,     0.586065  -0.000000,     0.586066  -0.000000,
+ !   0.240446  -0.000000,     0.240447  -0.000000,
  !
  !    R = (  -1   0   0 )
- !   0.586065   0.000000,     0.586065   0.000000,    -0.122424   0.000000,
+ !   0.586065  -0.000000,     0.586065   0.000000,    -0.122424  -0.000000,
  !   0.240447   0.000000,     0.240447   0.000000,
  !
  !    R = (   0   0   0 )
- ! -11.181374   0.000000,   -11.181374   0.000000,   -11.181362   0.000000,
+ ! -11.181374  -0.000000,   -11.181374   0.000000,   -11.181362  -0.000000,
  !   0.373041   0.000000,     0.373171   0.000000,
  !
  !    R = (   1   0   0 )
- !   0.586065   0.000000,     0.586065   0.000000,    -0.122424   0.000000,
- !   0.240447   0.000000,     0.240447   0.000000,
+ !   0.586065   0.000000,     0.586065  -0.000000,    -0.122424   0.000000,
+ !   0.240447  -0.000000,     0.240447  -0.000000,
  !
  !    R = (   0   1   0 )
- !  -0.122424   0.000000,     0.586065   0.000000,     0.586066   0.000000,
+ !  -0.122424  -0.000000,     0.586065   0.000000,     0.586066   0.000000,
  !   0.240446   0.000000,     0.240447   0.000000,
 
 
@@ -478,33 +478,34 @@
   ======================================================================
 
    <global routines>
-             clock number :    25
+             clock number :    26
 
-                  wannier :     0.00s CPU 
+                  wannier :     4.00s CPU 
 
-             want_dftread :     0.19s CPU
-         windows_read_ext :     0.03s CPU
-                want_init :     0.00s CPU
-       para_get_poolindex :     0.00s CPU (      36 calls,   0.000 s avg)
-             bshells_init :     0.00s CPU
+             want_dftread :     0.24s CPU
+         windows_read_ext :     0.04s CPU
+                want_init :     0.03s CPU
+             bshells_init :     0.03s CPU
              windows_init :     0.00s CPU
-          overlap_extract :     0.03s CPU
-             windows_read :     0.01s CPU
+          overlap_extract :     0.07s CPU
+             windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
-             overlap_read :     0.02s CPU
+             overlap_read :     0.06s CPU
         localization_init :     0.00s CPU
-         para_poolrecover :     0.09s CPU (     623 calls,   0.000 s avg)
-                   mp_sum :     0.13s CPU (    1034 calls,   0.000 s avg)
-           overlap_update :     0.03s CPU (     623 calls,   0.000 s avg)
+         para_poolrecover :     0.00s CPU
+                   mp_sum :     0.00s CPU
+           overlap_update :     1.06s CPU (     623 calls,   0.002 s avg)
                    omegai :     0.00s CPU
-             mp_sum_omega :     0.02s CPU (    1870 calls,   0.000 s avg)
-                    omega :     0.06s CPU (     623 calls,   0.000 s avg)
-               iterations :     0.44s CPU
-                   domega :     0.12s CPU (     411 calls,   0.000 s avg)
-               domega_aux :     0.02s CPU (     411 calls,   0.000 s avg)
-               mp_sum_wan :     0.01s CPU (     822 calls,   0.000 s avg)
-           unitary_update :     0.19s CPU (     622 calls,   0.000 s avg)
-         hamiltonian_calc :     0.00s CPU
+             mp_sum_omega :     0.01s CPU (    1870 calls,   0.000 s avg)
+                    omega :     0.54s CPU (     623 calls,   0.001 s avg)
+               iterations :     4.01s CPU
+                   domega :     1.52s CPU (     411 calls,   0.004 s avg)
+               domega_aux :     0.60s CPU (     411 calls,   0.001 s avg)
+            mp_sum_domega :     0.00s CPU (     411 calls,   0.000 s avg)
+               mp_sum_wan :     0.00s CPU (     822 calls,   0.000 s avg)
+           unitary_update :     0.72s CPU (     622 calls,   0.001 s avg)
+           mp_sum_unitary :     0.00s CPU (     622 calls,   0.000 s avg)
+         hamiltonian_calc :     0.01s CPU
               mp_sum_rham :     0.00s CPU (      36 calls,   0.000 s avg)
 
 

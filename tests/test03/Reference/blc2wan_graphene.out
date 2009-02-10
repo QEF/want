@@ -9,24 +9,25 @@
 
 
   Program <blc2wan>  v. 2.2.0-dev  starts ...
-  Date  5Jan2009 at  0:37:44 
+  Date  3Feb2009 at 19:12: 0 
 
      Serial run.
 
-          BUILT :    Mon Jan  5 00:09:02 2009
+          BUILT :    Mon Feb  2 17:26:35 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
             CPP :    cpp
-            F90 :    mpiifort
+            F90 :    ifort
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__MPI -D__PARA
+         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__ETSF_IO -D__NETCDF
       BLAS LIBS :    -lmkl_em64t
     LAPACK LIBS :    -lmkl_em64t
        FFT LIBS :    
       MASS LIBS :    
 
 
+  DFT-data fmt automaticaly detected: qexml
 
   ======================================================================
   =  INPUT Summary                                                     =
@@ -42,7 +43,6 @@
   =  Post Processing Init                                              =
   ======================================================================
 
-  DFT-data fmt automaticaly detected: qexml
   DFT-data read from file: graphene.save/data-file.xml
 
       Windows data read from file: graphene_WanT.space
@@ -134,6 +134,7 @@
     diag. on bands :   TRUE
         ibnd_start :       1
           ibnd_end :      20
+     extrapolation :   TRUE
   energy reference :       0.0000
 
 
@@ -141,7 +142,7 @@
   =  Conversion to Wannier Function basis                              =
   ======================================================================
 
-                              Total time spent up to now :     0.39 secs
+                              Total time spent up to now :     0.29 secs
 
 
   Real space decay of OPR:
@@ -171,9 +172,9 @@
 
                   blc2wan :     0.00s CPU 
 
-            blc2wan_input :     0.00s CPU
-            postproc_init :     0.37s CPU
-             want_dftread :     0.15s CPU
+            blc2wan_input :     0.10s CPU
+            postproc_init :     0.17s CPU
+             want_dftread :     0.16s CPU
                 want_init :     0.00s CPU
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU

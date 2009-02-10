@@ -9,20 +9,20 @@
 
 
   Program <disentangle>  v. 2.2.0-dev  starts ...
-  Date  5Jan2009 at  0:35:31 
+  Date 31Jan2009 at 12:50:55 
 
-     Parallel run, # proc:    4
+     Serial run.
 
-          BUILT :    Mon Jan  5 00:09:02 2009
+          BUILT :    Sat Jan 31 11:14:44 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
             CPP :    cpp
-            F90 :    mpiifort
-            F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__MPI -D__PARA
-      BLAS LIBS :    -lmkl_em64t
-    LAPACK LIBS :    -lmkl_em64t
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__FFTW -D__USE_INTERNAL_FFTW -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -lmkl_em64t -lguide -lpthread
+    LAPACK LIBS :    -lmkl_em64t -lguide -lpthread
        FFT LIBS :    
       MASS LIBS :    
 
@@ -122,9 +122,9 @@
 
    Reciprocal lattice vectors:
                 in Bohr^-1 units                        in 2Pi/Alat units
-    b(1) = (    1.37117    0.79165    0.00000 )    (    1.00000    0.57735    0.00000 )
+    b(1) = (    1.37117    0.79165   -0.00000 )    (    1.00000    0.57735   -0.00000 )
     b(2) = (    0.00000    1.58329    0.00000 )    (    0.00000    1.15470    0.00000 )
-    b(3) = (    0.00000    0.00000    0.17140 )    (    0.00000    0.00000    0.12500 )
+    b(3) = (    0.00000   -0.00000    0.17140 )    (    0.00000   -0.00000    0.12500 )
  </LATTICE>
 
  <IONS>
@@ -147,9 +147,9 @@
  </IONS>
 
  <K-POINTS>
-         nproc =     4   (Parallelism over kpts)
+         nproc =     1   (Parallelism over kpts)
   global nkpts =    36
-   local nkpts =     9
+   local nkpts =    36
   Monkhorst-Pack grid:      nk = (   6   6   1 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -170,7 +170,7 @@
     k (   15) =    (   -0.2285286  -0.3958231   0.0000000 ),   weight =      0.0277778
     k (   16) =    (    0.0000000  -0.2638821   0.0000000 ),   weight =      0.0277778
     k (   17) =    (    0.2285286  -0.1319410   0.0000000 ),   weight =      0.0277778
-    k (   18) =    (    0.4570572   0.0000000   0.0000000 ),   weight =      0.0277778
+    k (   18) =    (    0.4570572  -0.0000000   0.0000000 ),   weight =      0.0277778
     k (   19) =    (   -0.6855858  -0.3958231   0.0000000 ),   weight =      0.0277778
     k (   20) =    (   -0.4570572  -0.2638821   0.0000000 ),   weight =      0.0277778
     k (   21) =    (   -0.2285286  -0.1319410   0.0000000 ),   weight =      0.0277778
@@ -197,10 +197,10 @@
     b (    2) =    (    0.0000000  -0.2638821   0.0000000 ),   weight =      4.7869502
     b (    3) =    (    0.0000000   0.0000000   0.1713964 ),   weight =     17.0202673
     b (    4) =    (   -0.2285286   0.1319410   0.0000000 ),   weight =      4.7869502
-    b (    5) =    (   -0.2285286  -0.1319410   0.0000000 ),   weight =      4.7869502
-    b (    6) =    (    0.0000000   0.2638821   0.0000000 ),   weight =      4.7869502
-    b (    7) =    (    0.0000000   0.0000000  -0.1713964 ),   weight =     17.0202673
-    b (    8) =    (    0.2285286  -0.1319410   0.0000000 ),   weight =      4.7869502
+    b (    5) =    (   -0.2285286  -0.1319410  -0.0000000 ),   weight =      4.7869502
+    b (    6) =    (   -0.0000000   0.2638821  -0.0000000 ),   weight =      4.7869502
+    b (    7) =    (   -0.0000000  -0.0000000  -0.1713964 ),   weight =     17.0202673
+    b (    8) =    (    0.2285286  -0.1319410  -0.0000000 ),   weight =      4.7869502
 
   Total weight =      62.7622357
  </B-SHELL>
@@ -334,7 +334,7 @@
  !     4.5694   6.3437   6.9482   7.1919   8.2470   9.5465   9.6550  10.4359
  !    12.9021  13.5158  14.5935  18.1190
  !
- !    kpt =   18 (   0.45706  0.00000  0.00000 )    dimwin =   20
+ !    kpt =   18 (   0.45706 -0.00000  0.00000 )    dimwin =   20
  !                                       imin =    1  imax =   20
  !   Eigenvalues:
  !   -19.7787  -9.6992  -8.3545  -7.2751   3.9082   4.7678   4.9398   5.0530
@@ -539,59 +539,167 @@
                     ions:          0.003 MB
                  windows:          0.012 MB
                 subspace:          0.058 MB
-                 overlap:          0.475 MB
+                 overlap:          1.901 MB
                   ggrids:          1.001 MB
                 wfc_data:          2.257 MB
             trial_center:          0.001 MB
              struct_fact:          0.376 MB
-           workspace_dis:          0.245 MB
+           workspace_dis:          0.979 MB
                       us:          1.316 MB
                     uspp:          0.000 MB
 
-     Total alloc. Memory:          5.753 MB
-      Real alloc. Memory:          1.028 MB
+     Total alloc. Memory:          7.914 MB
+      Real alloc. Memory:          0.608 MB
  </MEMORY_USAGE>
 
 
     Overlaps or Projections calculation for k-point:    1
     npw =   2848,    dimwin =   20
-                              Total time spent up to now :     0.66 secs
+                              Total time spent up to now :     1.66 secs
 
     Overlaps or Projections calculation for k-point:    2
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     0.76 secs
+                              Total time spent up to now :     2.02 secs
 
     Overlaps or Projections calculation for k-point:    3
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     0.85 secs
+                              Total time spent up to now :     2.37 secs
 
     Overlaps or Projections calculation for k-point:    4
     npw =   2848,    dimwin =   20
-                              Total time spent up to now :     0.94 secs
+                              Total time spent up to now :     2.70 secs
 
     Overlaps or Projections calculation for k-point:    5
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.03 secs
+                              Total time spent up to now :     3.04 secs
 
     Overlaps or Projections calculation for k-point:    6
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.12 secs
+                              Total time spent up to now :     3.34 secs
 
     Overlaps or Projections calculation for k-point:    7
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.21 secs
+                              Total time spent up to now :     3.65 secs
 
     Overlaps or Projections calculation for k-point:    8
     npw =   2790,    dimwin =   20
-                              Total time spent up to now :     1.30 secs
+                              Total time spent up to now :     3.93 secs
 
     Overlaps or Projections calculation for k-point:    9
     npw =   2840,    dimwin =   20
-                              Total time spent up to now :     1.39 secs
+                              Total time spent up to now :     4.22 secs
+
+    Overlaps or Projections calculation for k-point:   10
+    npw =   2856,    dimwin =   20
+                              Total time spent up to now :     4.50 secs
+
+    Overlaps or Projections calculation for k-point:   11
+    npw =   2855,    dimwin =   20
+                              Total time spent up to now :     4.77 secs
+
+    Overlaps or Projections calculation for k-point:   12
+    npw =   2856,    dimwin =   20
+                              Total time spent up to now :     5.05 secs
+
+    Overlaps or Projections calculation for k-point:   13
+    npw =   2840,    dimwin =   20
+                              Total time spent up to now :     5.36 secs
+
+    Overlaps or Projections calculation for k-point:   14
+    npw =   2840,    dimwin =   20
+                              Total time spent up to now :     5.64 secs
+
+    Overlaps or Projections calculation for k-point:   15
+    npw =   2855,    dimwin =   20
+                              Total time spent up to now :     5.91 secs
+
+    Overlaps or Projections calculation for k-point:   16
+    npw =   2878,    dimwin =   20
+                              Total time spent up to now :     6.19 secs
+
+    Overlaps or Projections calculation for k-point:   17
+    npw =   2878,    dimwin =   20
+                              Total time spent up to now :     6.46 secs
+
+    Overlaps or Projections calculation for k-point:   18
+    npw =   2855,    dimwin =   20
+                              Total time spent up to now :     6.73 secs
+
+    Overlaps or Projections calculation for k-point:   19
+    npw =   2848,    dimwin =   20
+                              Total time spent up to now :     7.03 secs
+
+    Overlaps or Projections calculation for k-point:   20
+    npw =   2856,    dimwin =   20
+                              Total time spent up to now :     7.33 secs
+
+    Overlaps or Projections calculation for k-point:   21
+    npw =   2878,    dimwin =   20
+                              Total time spent up to now :     7.60 secs
+
+    Overlaps or Projections calculation for k-point:   22
+    npw =   2827,    dimwin =   20
+                              Total time spent up to now :     7.87 secs
+
+    Overlaps or Projections calculation for k-point:   23
+    npw =   2878,    dimwin =   20
+                              Total time spent up to now :     8.14 secs
+
+    Overlaps or Projections calculation for k-point:   24
+    npw =   2856,    dimwin =   20
+                              Total time spent up to now :     8.42 secs
+
+    Overlaps or Projections calculation for k-point:   25
+    npw =   2840,    dimwin =   20
+                              Total time spent up to now :     8.69 secs
+
+    Overlaps or Projections calculation for k-point:   26
+    npw =   2855,    dimwin =   20
+                              Total time spent up to now :     8.95 secs
+
+    Overlaps or Projections calculation for k-point:   27
+    npw =   2878,    dimwin =   20
+                              Total time spent up to now :     9.22 secs
+
+    Overlaps or Projections calculation for k-point:   28
+    npw =   2878,    dimwin =   20
+                              Total time spent up to now :     9.48 secs
+
+    Overlaps or Projections calculation for k-point:   29
+    npw =   2855,    dimwin =   20
+                              Total time spent up to now :     9.75 secs
+
+    Overlaps or Projections calculation for k-point:   30
+    npw =   2840,    dimwin =   20
+                              Total time spent up to now :    10.02 secs
+
+    Overlaps or Projections calculation for k-point:   31
+    npw =   2840,    dimwin =   20
+                              Total time spent up to now :    10.29 secs
+
+    Overlaps or Projections calculation for k-point:   32
+    npw =   2856,    dimwin =   20
+                              Total time spent up to now :    10.55 secs
+
+    Overlaps or Projections calculation for k-point:   33
+    npw =   2855,    dimwin =   20
+                              Total time spent up to now :    10.82 secs
+
+    Overlaps or Projections calculation for k-point:   34
+    npw =   2856,    dimwin =   20
+                              Total time spent up to now :    11.09 secs
+
+    Overlaps or Projections calculation for k-point:   35
+    npw =   2840,    dimwin =   20
+                              Total time spent up to now :    11.36 secs
+
+    Overlaps or Projections calculation for k-point:   36
+    npw =   2790,    dimwin =   20
+                              Total time spent up to now :    11.63 secs
 
 
   Overlaps and projections written on file: graphene_WanT.ovp
-                              Total time spent up to now :     1.50 secs
+                              Total time spent up to now :    11.81 secs
 
  <MEMORY_USAGE>
                  kpoints:          0.002 MB
@@ -600,15 +708,15 @@
                     ions:          0.003 MB
                  windows:          0.012 MB
                 subspace:          0.058 MB
-                 overlap:          0.475 MB
+                 overlap:          1.901 MB
             trial_center:          0.001 MB
              struct_fact:          0.376 MB
-           workspace_dis:          0.245 MB
+           workspace_dis:          0.979 MB
                       us:          1.316 MB
                     uspp:          0.000 MB
 
-     Total alloc. Memory:          2.494 MB
-      Real alloc. Memory:          1.028 MB
+     Total alloc. Memory:          4.655 MB
+      Real alloc. Memory:          0.620 MB
  </MEMORY_USAGE>
 
 
@@ -708,7 +816,7 @@
  !    0.00000  0.00085  0.00000  0.00000  0.99353  0.00353  0.00000  0.00000
  !    0.00000  0.00064  0.00000  0.00126
  !
- !      kpt = 18 (  0.457 0.000 0.000 )    dimwin =   20
+ !      kpt = 18 (  0.457-0.000 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
@@ -843,7 +951,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      10.101209         2.828624
    Avrg Omega_I                     :       2.020242         0.565725
 
-                              Total time spent up to now :     1.56 secs
+                              Total time spent up to now :    12.05 secs
 
 
   Subspace decomposition:
@@ -934,7 +1042,7 @@
  !    0.00000  0.00087  0.00000  0.00000  0.99489  0.00338  0.00000  0.00000
  !    0.00000  0.00045  0.00000  0.00023
  !
- !      kpt = 18 (  0.457 0.000 0.000 )    dimwin =   20
+ !      kpt = 18 (  0.457-0.000 0.000 )    dimwin =   20
  !    1.00000  1.00000  1.00000  1.00000  0.00000  0.00000  0.00000  1.00000
  !    0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000
  !    0.00000  0.00000  0.00000  0.00000
@@ -1038,39 +1146,39 @@
    <global routines>
              clock number :    34
 
-              disentangle :     1.00s CPU 
+              disentangle :    12.00s CPU 
 
-             want_dftread :     0.19s CPU
-         windows_read_ext :     0.04s CPU
-                want_init :     0.00s CPU
-       para_get_poolindex :     0.00s CPU (      36 calls,   0.000 s avg)
-             bshells_init :     0.00s CPU
+             want_dftread :     0.31s CPU
+         windows_read_ext :     0.08s CPU
+                want_init :     0.03s CPU
+             bshells_init :     0.03s CPU
              windows_init :     0.00s CPU
-              wfc_manager :     1.08s CPU
-          ggrids_read_ext :     0.07s CPU
-      wfc_data_grids_read :     0.03s CPU
-              struct_fact :     0.00s CPU
-                init_at_1 :     0.01s CPU
-           wfc_data_kread :     0.25s CPU (      45 calls,   0.006 s avg)
-                  overlap :     0.52s CPU (      36 calls,   0.015 s avg)
-           overlap_setmap :     0.02s CPU (      36 calls,   0.000 s avg)
-                    s_psi :     0.00s CPU (       9 calls,   0.000 s avg)
-               projection :     0.05s CPU (       9 calls,   0.006 s avg)
-       trial_center_setup :     0.02s CPU (      45 calls,   0.000 s avg)
-               atomic_wfc :     0.00s CPU (      18 calls,   0.000 s avg)
-            overlap_write :     0.07s CPU
-               mp_get_ovp :     0.05s CPU (      72 calls,   0.001 s avg)
-            overlap_bsymm :     0.00s CPU
+              wfc_manager :    11.16s CPU
+          ggrids_read_ext :     0.10s CPU
+      wfc_data_grids_read :     0.44s CPU
+              struct_fact :     0.01s CPU
+                init_at_1 :     0.06s CPU
+           wfc_data_kread :     1.69s CPU (     180 calls,   0.009 s avg)
+                  overlap :     7.92s CPU (     144 calls,   0.055 s avg)
+           overlap_setmap :     0.37s CPU (     144 calls,   0.003 s avg)
+                    s_psi :     0.01s CPU (      36 calls,   0.000 s avg)
+               projection :     0.72s CPU (      36 calls,   0.020 s avg)
+       trial_center_setup :     0.16s CPU (     180 calls,   0.001 s avg)
+               atomic_wfc :     0.06s CPU (      72 calls,   0.001 s avg)
+            overlap_write :     0.11s CPU
+               mp_get_ovp :     0.00s CPU (      72 calls,   0.000 s avg)
+            overlap_bsymm :     0.01s CPU
                    mp_put :     0.00s CPU (     144 calls,   0.000 s avg)
-               iterations :     0.06s CPU
+               iterations :     0.23s CPU
             subspace_init :     0.01s CPU
-        projection_frozen :     0.00s CPU
-         para_poolrecover :     0.02s CPU (      30 calls,   0.001 s avg)
-                   mp_sum :     0.02s CPU (      30 calls,   0.001 s avg)
-                   omegai :     0.00s CPU (      28 calls,   0.000 s avg)
+        projection_frozen :     0.01s CPU
+         para_poolrecover :     0.00s CPU (       3 calls,   0.000 s avg)
+                   mp_sum :     0.00s CPU (       3 calls,   0.000 s avg)
+                   omegai :     0.01s CPU (      28 calls,   0.000 s avg)
              mp_sum_omega :     0.00s CPU (      28 calls,   0.000 s avg)
-                  zmatrix :     0.01s CPU (     162 calls,   0.000 s avg)
-                mat_hdiag :     0.01s CPU (     171 calls,   0.000 s avg)
+                  zmatrix :     0.05s CPU (     837 calls,   0.000 s avg)
+                mat_hdiag :     0.08s CPU (     873 calls,   0.000 s avg)
+              mp_sum_lamp :     0.00s CPU (      27 calls,   0.000 s avg)
             windows_write :     0.00s CPU
            subspace_write :     0.01s CPU
 
