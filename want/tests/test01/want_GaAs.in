@@ -4,7 +4,6 @@
     prefix      = 'gaas'
     postfix     = '_WanT'
     work_dir    = './SCRATCH'
-    verbosity   = 'high'
 /
 
 &SUBSPACE
