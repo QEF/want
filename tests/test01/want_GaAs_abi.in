@@ -4,8 +4,6 @@
     prefix      = 'gaas-o_DS2'
     postfix     = '_WanT'
     work_dir    = './SCRATCH'
-    verbosity   = 'high' 
-    debug_level = 10
 /
 
 &SUBSPACE

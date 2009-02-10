@@ -5,9 +5,9 @@
 
 
 10 Feb 2009      Input files for abinit calculations made more standard
-                 (thanks to Tonatiuh Rangel). Test03 improved. Stdout
-                 made more clear when selecting DFT datafiles. ETSF_IO
-                 updated to version v1.0.2 . (AF)
+                 (thanks to Tonatiuh Rangel). Test03 improved and references
+                 updated. Stdout made more clear when selecting DFT datafiles. 
+                 ETSF_IO updated to version v1.0.2 . (AF)
 
 06 Feb 2009      Makefile system in plugins cleaned up. Bug fixed in mp.f90
                  (mpi extention removed). (AF)
