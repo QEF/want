@@ -29,11 +29,18 @@ xangst    -1.581   2.525   1.645
            0.357  -0.836   1.616
           -2.123  -0.835   1.639
 
-nkpt      1
-kpt       3*0.0
+#kptopt      1
+#ngkpt      1 1 1
+
+
+kptopt 0
+nkpt   1
+kpt    0.0 0.0 0.0
+
+
 
 # Definition of the plane-wave basis set
-ecut  17.5                    # Kinetic energy cut-off, in Hartree
+ecut  20                   # Kinetic energy cut-off, in Hartree
 
 # IO
 istwfk  1                     # wfc storage flag
@@ -44,20 +51,20 @@ accesswff  3                  # ETSF_IO
 #nbdblock   4
 
 # Step 1: determine the ground state
-nstep1  50                    # Maximum number of SCF cycles
+nstep1  1                    # Maximum number of SCF cycles
 iscf1    3                    # Algorithm: Anderson mixing of the potential
-diemix1  0.3
 diemac1  3.0
 nband1  20                    # Number of bands
-toldfe1  1.0d-10              # Tolerance on total energy
+toldfe1  1.0d-5              # Tolerance on total energy
 prtden1  1                    # Store electronic density in a file
 
 # Step 2: obtain the Kohn-Sham band structure
 getden2    1                  # Read electronic density from step 1
+getwfk2   0
 iscf2     -2                  # Non self-consistent calculation
 tolwfr2    1.0d-16            # Tolerance on wavefunctions
 nband2     40                 # Number of bands for the system
-nbandkss2  40                 # Number of bands to output to the KSS file
-kssform2   3                  # Format of the KSS file
+#nbandkss2  40                 # Number of bands to output to the KSS file
+#kssform2   3                  # Format of the KSS file
 symmorphi2 0                  # Disallow non-symmorphic operations (required)
 
