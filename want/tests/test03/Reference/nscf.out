@@ -1,11 +1,10 @@
 
      Program PWSCF     v.4.0.3  starts ...
-     Today is  5Jan2009 at 10:46:51 
+     Today is 10Feb2009 at 16:32:42 
 
      Parallel version (MPI)
 
-     Number of processors in use:       4
-     R & G space division:  proc/pool =    4
+     Number of processors in use:       1
 
      For Norm-Conserving or Ultrasoft (Vanderbilt) Pseudopotentials or PAW
 
@@ -15,21 +14,17 @@
      Max angular momentum in pseudopotentials (lmaxx) =  3
 
      Iterative solution of the eigenvalue problem
+     Too few procs for parallel algorithm
+       we need at least 4 procs per pool
 
-     a parallel distributed memory algorithm will be used,
-     eigenstates matrixes will be distributed block like on
-     ortho sub-group =    2*   2 procs
+     a serial algorithm will be used
 
 
-     Planes per process (thick) : nr3 = 80 npp =  20 ncplane = 6400
+     Planes per process (thick) : nr3 = 80 npp =  80 ncplane = 6400
  
      Proc/  planes cols     G    planes cols    G      columns  G
      Pool       (dense grid)       (smooth grid)      (wavefct grid)
-       1     20   1116    55934   20   1116    55934    277     7005
-       2     20   1118    55934   20   1118    55934    278     7006
-       3     20   1118    55934   20   1118    55934    277     7003
-       4     20   1117    55933   20   1117    55933    277     7003
-     tot     80   4469   223735   80   4469   223735   1109    28017
+       1     80   4469   223735   80   4469   223735   1109    28017
  
 
 
@@ -39,7 +34,7 @@
      number of atoms/cell      =           12
      number of atomic types    =            2
      number of electrons       =        30.00
-     number of Kohn-Sham states=           40
+     number of Kohn-Sham states=           60
      kinetic-energy cutoff     =      35.0000  Ry
      charge density cutoff     =     140.0000  Ry
      convergence threshold     =      1.0E-08
@@ -101,32 +96,32 @@
      G cutoff = 1418.4966  ( 223735 G-vectors)     FFT grid: ( 80, 80, 80)
 
      Largest allocated arrays     est. size (Mb)     dimensions
-        Kohn-Sham Wavefunctions         4.28 Mb     (   7005,  40)
-        NL pseudopotentials             0.64 Mb     (   7005,   6)
-        Each V/rho on FFT grid          1.95 Mb     ( 128000)
-        Each G-vector array             0.43 Mb     (  55934)
-        G-vector shells                 0.01 Mb     (   1184)
+        Kohn-Sham Wavefunctions        25.65 Mb     (  28017,  60)
+        NL pseudopotentials             2.57 Mb     (  28017,   6)
+        Each V/rho on FFT grid          7.81 Mb     ( 512000)
+        Each G-vector array             1.71 Mb     ( 223735)
+        G-vector shells                 0.01 Mb     (   1185)
      Largest temporary arrays     est. size (Mb)     dimensions
-        Auxiliary wavefunctions        17.10 Mb     (   7005, 160)
-        Each subspace H/S matrix        0.39 Mb     (    160, 160)
-        Each <psi_i|beta_j> matrix      0.00 Mb     (      6,  40)
-        Arrays for rho mixing          15.62 Mb     ( 128000,   8)
+        Auxiliary wavefunctions       102.60 Mb     (  28017, 240)
+        Each subspace H/S matrix        0.88 Mb     (    240, 240)
+        Each <psi_i|beta_j> matrix      0.01 Mb     (      6,  60)
+        Arrays for rho mixing          62.50 Mb     ( 512000,   8)
 
      The potential is recalculated from file :
      ./SCRATCH/benzene.save/charge-density.dat
 
-     Starting wfc are   30 atomic +   10 random wfc
+     Starting wfc are   30 atomic +   30 random wfc
 
-     total cpu time spent up to now is      0.60 secs
+     total cpu time spent up to now is      1.08 secs
 
-     per-process dynamical memory:    32.6 Mb
+     per-process dynamical memory:   140.9 Mb
 
      Band Structure Calculation
      Davidson diagonalization with overlap
 
-     ethr =  3.33E-11,  avg # of iterations = 46.0
+     ethr =  3.33E-11,  avg # of iterations = 49.0
 
-     total cpu time spent up to now is     36.29 secs
+     total cpu time spent up to now is    133.64 secs
 
      End of band structure calculation
 
@@ -137,40 +132,42 @@
     -0.3956  -0.1806   1.0051   1.0886   1.1128   1.1239   1.2794   1.5771
      1.9209   2.4679   2.4977   2.5168   2.5405   2.5430   2.5923   2.5933
      2.6020   2.8268   2.8672   3.2823   3.3148   3.7553   3.7629   3.7903
+     3.7924   3.9819   4.0356   4.0604   4.2045   4.2794   4.9540   4.9953
+     5.0357   5.0510   5.0890   5.1465   5.2506   5.5329   5.7798   5.9663
+     6.0458   6.0835   6.2849   6.2870
 
-     the Fermi energy is    -2.1756 ev
+     the Fermi energy is    -3.7342 ev
 
      Writing output data file benzene.save
  
-     PWSCF        :  0m36.95s CPU time,     2m14.27s wall time
+     PWSCF        :  2m14.22s CPU time,     2m18.39s wall time
 
-     init_run     :     0.59s CPU
-     electrons    :    35.69s CPU
+     init_run     :     1.06s CPU
+     electrons    :   132.56s CPU
 
      Called by init_run:
      wfcinit      :     0.00s CPU
-     potinit      :     0.34s CPU
+     potinit      :     0.65s CPU
 
      Called by electrons:
-     c_bands      :    35.69s CPU
-     v_of_rho     :     0.28s CPU
+     c_bands      :   132.56s CPU
+     v_of_rho     :     0.57s CPU
 
      Called by c_bands:
-     init_us_2    :     0.00s CPU
-     cegterg      :    34.54s CPU (       3 calls,  11.514 s avg)
+     init_us_2    :     0.01s CPU
+     cegterg      :   127.14s CPU (       3 calls,  42.379 s avg)
 
      Called by *egterg:
-     h_psi        :    21.76s CPU (      50 calls,   0.435 s avg)
-     g_psi        :     0.26s CPU (      46 calls,   0.006 s avg)
-     cdiaghg      :     7.48s CPU (      47 calls,   0.159 s avg)
+     h_psi        :    97.66s CPU (      53 calls,   1.843 s avg)
+     g_psi        :     1.55s CPU (      49 calls,   0.032 s avg)
+     cdiaghg      :     1.50s CPU (      50 calls,   0.030 s avg)
 
      Called by h_psi:
-     add_vuspsi   :     0.14s CPU (      50 calls,   0.003 s avg)
+     add_vuspsi   :     0.54s CPU (      53 calls,   0.010 s avg)
 
      General routines
-     calbec       :     0.51s CPU (      50 calls,   0.010 s avg)
-     cft3s        :    17.35s CPU (    1868 calls,   0.009 s avg)
+     calbec       :     0.61s CPU (      53 calls,   0.012 s avg)
+     cft3s        :    76.97s CPU (    2728 calls,   0.028 s avg)
      davcio       :     0.00s CPU (       3 calls,   0.000 s avg)
  
      Parallel routines
-     fft_scatter  :     9.45s CPU (    1868 calls,   0.005 s avg)

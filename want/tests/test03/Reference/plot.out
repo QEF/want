@@ -9,29 +9,40 @@
 
 
   Program <plot>  v. 2.2.0-dev  starts ...
-  Date  5Jan2009 at 10:49:17 
+  Date 10Feb2009 at 16:42: 8 
 
      Serial run.
 
-          BUILT :    Mon Jan  5 00:09:02 2009
+          BUILT :    Mon Feb  2 17:26:35 2009
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    amd64
              CC :    cc
             CPP :    cpp
-            F90 :    mpiifort
+            F90 :    ifort
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__MPI -D__PARA
+         DFLAGS :    -D__INTEL -D__FFTW -D__USE_INTERNAL_FFTW -D__ETSF_IO -D__NETCDF
       BLAS LIBS :    -lmkl_em64t
     LAPACK LIBS :    -lmkl_em64t
        FFT LIBS :    
       MASS LIBS :    
 
 
+
+  ======================================================================
+  =  Post Processing Init                                              =
+  ======================================================================
+
+  checking for fmt crystal ... no
+  checking for fmt qexml ... ok
+
   DFT-data fmt automaticaly detected: qexml
   DFT-data read from file: benzene.save/data-file.xml
 
-  Subspace data read from file: benzene_WanT.space
-  Wannier data read from file: benzene_WanT.wan
+      Windows data read from file: benzene_WanT.space
+     Subspace data read from file: benzene_WanT.space
+  Hamiltonian data read from file: benzene_WanT.ham
+      Wannier data read from file: benzene_WanT.wan
+
 
 
   ======================================================================
@@ -117,15 +128,15 @@
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(   1 ) = (    -5.417803     2.480415     3.370406 )
-    Wf(   2 ) = (    -3.536550     5.718283     3.377422 )
-    Wf(  14 ) = (    -0.437098     4.635869     3.129838 )
-    Wf(  15 ) = (     0.752331     2.478509     2.986798 )
+    Wf(   1 ) = (    -5.615449     2.481323     3.125939 )
+    Wf(   2 ) = (    -3.641167     5.901764     3.117728 )
+    Wf(  14 ) = (    -0.225637     4.947335     3.085821 )
+    Wf(  15 ) = (     1.188964     2.477359     3.063849 )
         in crystal coord
-    Wf(   1 ) = (    -0.270890     0.124021     0.168520 )
-    Wf(   2 ) = (    -0.176827     0.285914     0.168871 )
-    Wf(  14 ) = (    -0.021855     0.231793     0.156492 )
-    Wf(  15 ) = (     0.037617     0.123925     0.149340 )
+    Wf(   1 ) = (    -0.280772     0.124066     0.156297 )
+    Wf(   2 ) = (    -0.182058     0.295088     0.155886 )
+    Wf(  14 ) = (    -0.011282     0.247367     0.154291 )
+    Wf(  15 ) = (     0.059448     0.123868     0.153192 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
@@ -144,16 +155,16 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :    33.28 secs
+                              Total time spent up to now :   185.26 secs
 
 
   WF normalization:
     Index              Max value     Normaliz.
   ---------------------------------------------
-    Wf(   1 )   -->     0.391098      1.000000
-    Wf(   2 )   -->     0.394534      1.000000
-    Wf(   3 )   -->     0.356527      1.000000
-    Wf(   4 )   -->     0.346759      1.000000
+    Wf(   1 )   -->     0.395238      1.000000
+    Wf(   2 )   -->     0.394973      1.000000
+    Wf(   3 )   -->     0.397223      1.000000
+    Wf(   4 )   -->     0.401493      1.000000
 
 
   writing WF(   1) plot on file: ./SCRATCH//benzene_WanT_WFM001.cube
@@ -169,7 +180,7 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM001.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.152960
+Max value: 0.156210
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//benzene_WanT_WFM001.cube
@@ -189,7 +200,7 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM002.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.155660
+Max value: 0.156000
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//benzene_WanT_WFM002.cube
@@ -209,7 +220,7 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM014.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.127110
+Max value: 0.157790
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//benzene_WanT_WFM014.cube
@@ -229,7 +240,7 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_WanT_WFM015.crd'
  plot output - cube format
 Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
 Min value: 0.000000
-Max value: 0.120240
+Max value: 0.161200
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//benzene_WanT_WFM015.cube
@@ -241,21 +252,24 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :    13
+             clock number :    16
 
-                     plot :    37.00s CPU 
+                     plot :  3m10.00s CPU 
 
+               plot_input :     0.01s CPU
+            postproc_init :     0.10s CPU
              want_dftread :     0.04s CPU
                 want_init :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
-          ggrids_read_ext :     0.08s CPU
+                  do_plot :   190.66s CPU
+          ggrids_read_ext :     0.11s CPU
       wfc_data_grids_read :     0.00s CPU
-           wfc_data_kread :     0.07s CPU
-               kwann_calc :    32.77s CPU (       4 calls,   8.191 s avg)
-                   cfft3d :     0.13s CPU (       4 calls,   0.032 s avg)
-               cwann_calc :     0.05s CPU (       4 calls,   0.012 s avg)
-                 gcubeplt :     0.94s CPU (       4 calls,   0.235 s avg)
+           wfc_data_kread :     0.15s CPU
+               kwann_calc :   184.47s CPU (       4 calls,  46.119 s avg)
+                   cfft3d :     0.15s CPU (       4 calls,   0.038 s avg)
+               cwann_calc :     0.16s CPU (       4 calls,   0.041 s avg)
+                 gcubeplt :     1.04s CPU (       4 calls,   0.260 s avg)
 
 
