@@ -28,7 +28,7 @@ nstep 3000                    # Maximum number of SCF cycles
 # Step 1: determine the ground state
 iscf1    3                    # Algorithm: Anderson mixing of the potential
 nband1  10                    # Number of bands
-tolwfr1  1.0d-16              # Tolerance on wavefunctions to stop SCF cycles
+tolvrs1  1.0d-10             # Tolerance on wavefunctions to stop SCF cycles
 kptopt1  1                    # Automatic generation of k-points
 ngkpt1   4 4 4                # Number of grid points for k-point generation
 prtden1  1                    # Store electronic density in a file
@@ -38,8 +38,6 @@ getden2    1                  # Read electronic density from step 1
 iscf2     -2                  # Non self-consistent calculation
 tolwfr2    1.0d-16            # Tolerance on wavefunctions
 nband2     4                  # Number of bands for the system
-nbandkss2  4                  # Number of bands to output to the KSS file
-kssform2   3                  # Format of the KSS file
 kptopt2    0                  # Automatic generation of k-points
 #ngkpt2     4 4 4              # Number of grid points for k-point generation
 accesswff 3

@@ -1,6 +1,6 @@
 
 &CONTROL
-   prefix = 'benzene_abi-o_DS1'
+   prefix = 'benzene_abi-o_DS2'
    postfix = '_WanT'
    work_dir = './SCRATCH/'
 /
