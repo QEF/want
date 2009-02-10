@@ -103,7 +103,7 @@ CONTAINS
    !**********************************************************
    !
    USE parser_module,             ONLY : read_line, matches, change_case
-   USE control_module,            ONLY : use_atomwfc, do_condmin
+   USE control_module,            ONLY : use_atomwfc, use_condmin
    USE trial_center_data_module,  ONLY : list => trial
    USE trial_center_module
    !
@@ -168,7 +168,7 @@ CONTAINS
            ! ... chose the center type
            SELECT CASE ( TRIM(list(iwann)%type) )
            CASE ( "1gauss" )
-               IF ( do_condmin ) THEN
+               IF ( use_condmin ) THEN
                    READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
                         list(iwann)%l, list(iwann)%m, list(iwann)%decay, list(iwann)%weight
                ELSE
@@ -184,7 +184,7 @@ CONTAINS
                list(iwann)%l = 0
                list(iwann)%m = 0
                !
-               IF ( do_condmin ) THEN
+               IF ( use_condmin ) THEN
                    READ(tmp_line,*, IOSTAT=ierr) adum, list(iwann)%x1(1:3), &
                         list(iwann)%x2(1:3), list(iwann)%decay, list(iwann)%weight
                ELSE
@@ -201,7 +201,7 @@ CONTAINS
                list(iwann)%x1 = ZERO
                list(iwann)%x2 = ZERO
                !
-               IF ( do_condmin ) THEN
+               IF ( use_condmin ) THEN
                    READ(tmp_line,*, IOSTAT=ierr) adum, &
                         list(iwann)%iatom, list(iwann)%l, list(iwann)%m, list(iwann)%weight
                ELSE

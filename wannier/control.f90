@@ -42,13 +42,14 @@
    LOGICAL                   :: use_symmetry
    LOGICAL                   :: use_timerev
    LOGICAL                   :: use_debug_mode
+   LOGICAL                   :: use_condmin
 
    LOGICAL                   :: do_overlaps
    LOGICAL                   :: do_projections
    LOGICAL                   :: do_polarization
-   LOGICAL                   :: do_condmin
    LOGICAL                   :: do_ordering
    LOGICAL                   :: do_collect_wf
+   LOGICAL                   :: do_efermi
 
    LOGICAL                   :: read_pseudo 
    LOGICAL                   :: read_overlaps
@@ -56,6 +57,7 @@
    LOGICAL                   :: read_subspace
    LOGICAL                   :: read_unitary
    LOGICAL                   :: read_symmetry
+   LOGICAL                   :: read_efermi
  
 !
 ! end delcarations
@@ -82,13 +84,14 @@
    PUBLIC :: use_symmetry
    PUBLIC :: use_timerev
    PUBLIC :: use_debug_mode
+   PUBLIC :: use_condmin
 
    PUBLIC :: do_overlaps
    PUBLIC :: do_projections
    PUBLIC :: do_polarization
-   PUBLIC :: do_condmin
    PUBLIC :: do_ordering
    PUBLIC :: do_collect_wf
+   PUBLIC :: do_efermi
 
    PUBLIC :: read_pseudo
    PUBLIC :: read_overlaps
@@ -96,6 +99,7 @@
    PUBLIC :: read_subspace
    PUBLIC :: read_unitary
    PUBLIC :: read_symmetry
+   PUBLIC :: read_efermi
 
 
 END MODULE control_module

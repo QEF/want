@@ -171,6 +171,15 @@
        ! if specified they overwrite the definitions given by froz_min and
        ! froz_max
 
+   REAL(dbl) :: efermi = -60000000.0_dbl
+       ! Fermi energy is taken from input and not read from file
+       ! useful to run with Abinit and intended to be overtaken by an
+       ! internal calculation of Efermi
+
+   LOGICAL   :: do_efermi = .FALSE. 
+       ! Internally compute Efermi. Incompatible with setting efermi from input.
+       !
+      
    REAL(dbl) :: alpha_dis = 0.5_dbl
        ! the mixing parameter for iterative minimization in disentangle procedure
 
@@ -228,12 +237,12 @@
    NAMELIST / SUBSPACE / dimwann, win_min, win_max, froz_min, froz_max, &
                          iwin_min, iwin_max, ifroz_min, ifroz_max, spin_component, &
                          alpha_dis, maxiter_dis, disentangle_thr, nprint_dis, nsave_dis, &
-                         subspace_init, use_blimit, use_symmetry, use_timerev 
+                         subspace_init, use_blimit, use_symmetry, use_timerev, efermi 
 
 
    PUBLIC :: dimwann, win_min, win_max, froz_min, froz_max 
    PUBLIC :: iwin_min, iwin_max, ifroz_min, ifroz_max, spin_component
-   PUBLIC :: use_blimit, use_symmetry, use_timerev
+   PUBLIC :: use_blimit, use_symmetry, use_timerev, efermi, do_efermi
    PUBLIC :: alpha_dis, maxiter_dis, nprint_dis, nsave_dis, disentangle_thr, subspace_init
    PUBLIC :: SUBSPACE
    
@@ -482,6 +491,8 @@ CONTAINS
       CALL mp_bcast( use_blimit,         ionode_id )
       CALL mp_bcast( use_symmetry,       ionode_id )
       CALL mp_bcast( use_timerev,        ionode_id )
+      CALL mp_bcast( efermi,             ionode_id )
+      CALL mp_bcast( do_efermi,          ionode_id )
 
 
       !
@@ -501,6 +512,11 @@ CONTAINS
       IF ( disentangle_thr <= 0.0 ) CALL errore(subname, 'disentangle_thr should be > 0',1)
       IF ( nprint_dis <= 0)         CALL errore(subname, 'nprint_dis must be > 0', -nprint_dis+1 )
       IF ( nsave_dis <= 0 )         CALL errore(subname, 'nsave_dis must be > 0', -nsave_dis+1 )
+      IF ( do_efermi .AND. efermi /= -60000000.0_dbl ) &
+                                    CALL errore(subname, 'efermi and do_efermi specified together', 10)
+
+      IF ( do_efermi )              CALL errore(subname,'do_efermi not yet implemented', 71) 
+   
       !
       CALL string_check( subspace_init, subspace_init_allowed, ierr ) 
       IF ( ierr/=0 ) CALL errore(subname,'Invalid subspace_init = '//TRIM(subspace_init),10)

@@ -55,7 +55,7 @@ CONTAINS
                                  unitary_thr, subspace_init, localization_init, &
                                  nprint_dis, nprint_wan, nsave_dis, nsave_wan, &
                                  use_debug_mode, debug_level
-   USE control_module,    ONLY : do_condmin
+   USE control_module,    ONLY : use_condmin
    USE trial_center_data_module, ONLY : trial
    USE lattice_module,    ONLY : lattice_alloc => alloc, avec, bvec, alat, omega
    USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, symb, tau, psfile
@@ -172,7 +172,7 @@ CONTAINS
        WRITE(iunit,"(   7x,'    Read init subspace :',5x,   a)") log2char(read_subspace)
        WRITE(iunit,"(   7x,'  Read init unit. mat. :',5x,   a)") log2char(read_unitary)
        WRITE(iunit,"(   7x,'       Read pseudopot. :',5x,   a)") log2char(read_pseudo)
-       WRITE(iunit,"(   7x,'    Use penalty funct. :',5x,   a)") log2char(do_condmin)
+       WRITE(iunit,"(   7x,'    Use penalty funct. :',5x,   a)") log2char(use_condmin)
        WRITE(iunit,"(   )")
        WRITE(iunit,"(   7x,'        Use debug mode :',5x,   a)") log2char(use_debug_mode)
        IF ( use_debug_mode ) THEN
@@ -222,7 +222,7 @@ CONTAINS
        WRITE(iunit,"(   7x,'                   ncg :',5x,  i8)") ncg
        WRITE(iunit,"(   7x,'            nprint_wan :',5x,  i8)") nprint_wan
        WRITE(iunit,"(   7x,'             nsave_wan :',5x,  i8)") nsave_wan
-       IF ( do_condmin ) THEN
+       IF ( use_condmin ) THEN
           WRITE(iunit,"(7x,'             a_condmin :',1x,f12.4)") a_condmin
           WRITE(iunit,"(7x,'          dump_condmin :',1x,f12.4)") dump_condmin
           WRITE(iunit,"(7x,'         niter_condmin :',5x,  i8)") niter_condmin
@@ -240,7 +240,7 @@ CONTAINS
        ENDDO
 
        WRITE(iunit, '(2x, "Trial centers: (cart. coord. in Bohr)" ) ' )
-       IF ( do_condmin ) THEN
+       IF ( use_condmin ) THEN
            WRITE(iunit, '(/,6x,"#",4x,"Type",8x,"l",3x,"m",4x,"Position",29x,"Decay",4x,"Weight")')
            WRITE(iunit, '(4x, 4("-"), 1x, 11("-"), 1x, 8("-"), 1x, 36("-"),1x,9("-"),1x,7("-"))')
            DO i = 1, dimwann

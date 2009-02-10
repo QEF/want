@@ -17,7 +17,7 @@
       USE constants,           ONLY : CZERO, CONE, ZERO, ONE, TWO, THREE, FOUR, EPS_m8, EPS_m4
       USE parameters,          ONLY : nstrx
       USE control_module,      ONLY : nprint_wan, nsave_wan,  &
-                                      unitary_thr, do_condmin, read_pseudo, do_polarization, &
+                                      unitary_thr, use_condmin, read_pseudo, do_polarization, &
                                       localization_init_mode => localization_init, &
                                       ordering_mode, do_ordering, do_collect_wf 
       USE io_module,           ONLY : stdout, wan_unit, ham_unit, io_name, wantdata_form
@@ -210,7 +210,7 @@
            ENDIF
            IF ( ncount > niter_condmin ) THEN 
                 a_condmin = a_condmin * dump_condmin
-                IF ( a_condmin < EPS_m4 ) do_condmin = .FALSE.
+                IF ( a_condmin < EPS_m4 ) use_condmin = .FALSE.
            ENDIF
 
 
@@ -219,7 +219,7 @@
            ! Includint penalty functional contributions
            !
            CALL domega( dimwann, nkpts, Mkb_aux, csheet, sheet, rave, &
-                        do_condmin, a_condmin, domg )
+                        use_condmin, a_condmin, domg )
 
 
            !
@@ -364,7 +364,7 @@
                !
                IF ( ionode ) THEN
                    !
-                   IF ( do_condmin ) THEN 
+                   IF ( use_condmin ) THEN 
                        WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
                                & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
                    ELSE

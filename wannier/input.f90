@@ -47,11 +47,12 @@ CONTAINS
                                            unitary_thr,       &
                                            restart_mode,      &
                                            ordering_mode,     &
-                                           do_condmin,        &
                                            do_overlaps,       &
                                            do_projections,    &
                                            do_collect_wf,     &
                                            do_ordering,       &
+                                           do_efermi,         &
+                                           use_condmin,       &
                                            use_pseudo,        &
                                            use_symmetry,      &
                                            use_timerev,       &
@@ -63,6 +64,7 @@ CONTAINS
                                            read_subspace,     &
                                            read_unitary,      &
                                            read_symmetry,     &
+                                           read_efermi,       &
                                            nprint_dis,        &
                                            nprint_wan,        &
                                            nsave_dis,         &
@@ -86,6 +88,8 @@ CONTAINS
                                            projections_     => projections, &
                                            unitary_thr_     => unitary_thr, &
                                            a_condmin_       => a_condmin, &
+                                           efermi_          => efermi, &
+                                           do_efermi_       => do_efermi, &
                                            ordering_mode_   => ordering_mode, &
                                            collect_wf_      => collect_wf, &
                                            use_blimit_      => use_blimit, &
@@ -96,37 +100,40 @@ CONTAINS
 
       IMPLICIT NONE
 
-      verbosity        = verbosity_
-      unitary_thr      = unitary_thr_
-      ordering_mode    = ordering_mode_
-      nprint_dis       = nprint_dis_
-      nsave_dis        = nsave_dis_
-      nprint_wan       = nprint_wan_
-      nsave_wan        = nsave_wan_
-      nwfc_buffer      = nwfc_buffer_
-      nkb_buffer       = nkb_buffer_
-      use_blimit       = use_blimit_
-      use_pseudo       = .NOT. assume_ncpp_
-      read_pseudo      = .NOT. assume_ncpp_
-      use_symmetry     = use_symmetry_
-      read_symmetry    = use_symmetry_
-      use_timerev      = use_timerev_
+      verbosity          = verbosity_
+      unitary_thr        = unitary_thr_
+      ordering_mode      = ordering_mode_
+      nprint_dis         = nprint_dis_
+      nsave_dis          = nsave_dis_
+      nprint_wan         = nprint_wan_
+      nsave_wan          = nsave_wan_
+      nwfc_buffer        = nwfc_buffer_
+      nkb_buffer         = nkb_buffer_
+      use_blimit         = use_blimit_
+      use_pseudo         = .NOT. assume_ncpp_
+      read_pseudo        = .NOT. assume_ncpp_
+      use_symmetry       = use_symmetry_
+      read_symmetry      = use_symmetry_
+      use_timerev        = use_timerev_
 
-      debug_level      = debug_level_
-      use_debug_mode   = .FALSE.
+      debug_level        = debug_level_
+      use_debug_mode     = .FALSE.
       IF ( debug_level_ > 0 )  use_debug_mode   = .TRUE.
 
-      do_condmin = .TRUE.
-      IF ( a_condmin_ <= ZERO ) do_condmin = .FALSE.
+      use_condmin        = .TRUE.
+      IF ( a_condmin_ <= ZERO ) use_condmin = .FALSE.
 
-      do_ordering   = .NOT. TRIM( ordering_mode ) == "none"
+      do_efermi          = do_efermi_
+      read_efermi        = .NOT. do_efermi_ .AND. efermi_ == -60000000.0_dbl
+               
+      do_ordering        = .NOT. TRIM( ordering_mode ) == "none"
 
-      do_collect_wf = collect_wf_ 
+      do_collect_wf      = collect_wf_ 
 
-      subspace_init = subspace_init_
-      localization_init = localization_init_
+      subspace_init      = subspace_init_
+      localization_init  = localization_init_
 
-      restart_mode = restart_mode_
+      restart_mode       = restart_mode_
       SELECT CASE ( TRIM(restart_mode_) )
       CASE ( "from_scratch" )
       CASE ( "restart" )
@@ -205,18 +212,21 @@ CONTAINS
                                            win_max,      &
                                            froz_min,     &
                                            froz_max,     &
+                                           efermi,       &
                                            spin_component
       USE input_parameters_module,  ONLY : win_min_   => win_min,      &
                                            win_max_   => win_max,      &
                                            froz_min_  => froz_min,     &
                                            froz_max_  => froz_max,     &
+                                           efermi_    => efermi,       &
                                            spin_component_ => spin_component
       IMPLICIT NONE
-      win_min    = win_min_
-      win_max    = win_max_
-      froz_min   = froz_min_
-      froz_max   = froz_max_
-      spin_component = spin_component_
+      win_min         = win_min_
+      win_max         = win_max_
+      froz_min        = froz_min_
+      froz_max        = froz_max_
+      efermi          = efermi_
+      spin_component  = spin_component_
       !
    END SUBROUTINE setup_windows
 
