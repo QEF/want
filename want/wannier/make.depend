@@ -8,7 +8,6 @@ allocate_nlpot.o : ../libs/log_module.o
 allocate_nlpot.o : ../libs/parameters.o
 allocate_nlpot.o : pwcom.o
 allocate_nlpot.o : uspp.o
-allocate_nlpot.o : wfc_data.o
 allocate_nlpot.o : windows.o
 atomic_wfc.o : ggrids.o
 atomic_wfc.o : ions.o
@@ -43,6 +42,7 @@ bands.o : ../libs/parser.o
 bands.o : ../libs/timing.o
 bands.o : ../libs/util.o
 bands.o : operator.o
+bands.o : subspace.o
 bands.o : version.o
 bands.o : want_interfaces.o
 bands.o : windows.o
@@ -170,6 +170,7 @@ datafiles.o : ../libs/log_module.o
 datafiles.o : ../libs/mp.o
 datafiles.o : ../libs/parameters.o
 datafiles.o : ../libs/timing.o
+datafiles.o : wannier90_tools.o
 disentangle.o : control.o
 disentangle.o : io_module.o
 disentangle.o : kpoints.o
@@ -273,6 +274,7 @@ hamiltonian_calc.o : ../libs/mp.o
 hamiltonian_calc.o : ../libs/parameters.o
 hamiltonian_calc.o : ../libs/parser.o
 hamiltonian_calc.o : ../libs/timing.o
+hamiltonian_calc.o : subspace.o
 hamiltonian_calc.o : windows.o
 hamiltonian.o : converters.o
 hamiltonian.o : io_module.o
@@ -526,6 +528,7 @@ plot.o : atomic.o
 plot.o : becmod.o
 plot.o : control.o
 plot.o : converters.o
+plot.o : datafiles.o
 plot.o : ggrids.o
 plot.o : io_module.o
 plot.o : ions.o
@@ -535,6 +538,8 @@ plot.o : ../libs/constants.o
 plot.o : ../libs/fft_scalar.o
 plot.o : ../libs/files.o
 plot.o : ../libs/kind.o
+plot.o : ../libs/log_module.o
+plot.o : ../libs/mp.o
 plot.o : ../libs/parameters.o
 plot.o : ../libs/parser.o
 plot.o : ../libs/timing.o
@@ -773,6 +778,14 @@ uspp.o : ../libs/parameters.o
 uspp.o : ../libs/random_numbers.o
 uspp.o : ../libs/util.o
 uspp.o : pseudo_types.o
+wannier90_tools.o : converters.o
+wannier90_tools.o : ../iotk/iotk_16_module.o
+wannier90_tools.o : ../libs/constants.o
+wannier90_tools.o : ../libs/kind.o
+wannier90_tools.o : ../libs/log_module.o
+wannier90_tools.o : ../libs/parameters.o
+wannier90_tools.o : ../libs/parser.o
+wannier90_tools.o : ../libs/timing.o
 wannier.o : control.o
 wannier.o : hamiltonian.o
 wannier.o : io_module.o
@@ -792,7 +805,6 @@ wannier.o : version.o
 wannier.o : want_interfaces.o
 wannier.o : workspace_wan.o
 want_dftread.o : control.o
-want_dftread.o : etsf_io_data.o
 want_dftread.o : io_module.o
 want_dftread.o : ions.o
 want_dftread.o : kpoints.o
@@ -841,6 +853,7 @@ wf2_augment.o : uspp.o
 wfc_data.o : etsf_io_data.o
 wfc_data.o : ggrids.o
 wfc_data.o : kpoints.o
+wfc_data.o : lattice.o
 wfc_data.o : ../libs/constants.o
 wfc_data.o : ../libs/io_global.o
 wfc_data.o : ../libs/kind.o
@@ -875,6 +888,7 @@ wfc_manager.o : uspp.o
 wfc_manager.o : wfc_data.o
 wfc_manager.o : wfc_info.o
 wfc_manager.o : windows.o
+windows.o : control.o
 windows.o : etsf_io_data.o
 windows.o : input_parameters.o
 windows.o : ../iotk/iotk_16_module.o

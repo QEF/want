@@ -26,7 +26,7 @@
    !
    ! contains:
    ! SUBROUTINE  crystal_to_internal( filein, fileout, filetype )
-   ! FUNCTION    file_is_crystal()
+   ! FUNCTION    file_is_crystal( filein )
    !
    PUBLIC :: crystal_to_internal
    PUBLIC :: file_is_crystal

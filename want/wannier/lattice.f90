@@ -147,7 +147,7 @@ CONTAINS
            CALL mp_bcast( primitive_vectors,  ionode_id )
            CALL mp_bcast( lstat,  ionode_id )
            !
-           IF ( .NOT. lstat ) CALL errore(subname,'ETSF_IO: reading lattice',10)
+           IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO: reading lattice',10)
            ! 
            ! define internal quantities
            !

@@ -395,16 +395,17 @@
            CALL etsf_io_low_open_read(ncid, filename, lstat, &
                                       ERROR_DATA=error_data, &
                                       VERSION_MIN=etsf_io_version_min)
-           IF (.NOT. lstat) CALL errore(subname,'opening '//TRIM(filename),1)
+           IF (.NOT. lstat) &
+               CALL etsf_error(error_data,subname,'opening '//TRIM(filename),1)
            !
            CALL etsf_io_dims_get(ncid, dims, lstat, error_data)
-           IF (.NOT. lstat) CALL errore(subname,'reading dims',1)
+           IF (.NOT. lstat) CALL etsf_error(error_data,subname,'reading dims',1)
            !
            ! To be fixed
            dftdata_fmt_version="1.0.0"
            !
            CALL etsf_io_low_close(ncid, lstat, error_data)
-           IF (.NOT. lstat) CALL errore(subname,'closing '//TRIM(filename),1)
+           IF (.NOT. lstat) CALL etsf_error(error_data,subname,'closing '//TRIM(filename),1)
 
            !
            ! switch off pseudo readin and bcast dims
@@ -589,7 +590,7 @@
           CALL etsf_io_low_open_read(ncid, TRIM(filename), lstat,  &
                                      ERROR_DATA=error_data,        &
                                      VERSION_MIN=etsf_io_version_min)   
-          IF (.NOT. lstat) CALL errore(subname,'opening '//TRIM(filename), 10) 
+          IF (.NOT. lstat) CALL etsf_error(error_data,subname,'opening '//TRIM(filename), 10) 
           !
 #else
           CALL errore(subname,'ETSF_IO not configured',10)
@@ -634,7 +635,7 @@
 #ifdef __ETSF_IO
           !
           CALL etsf_io_low_close(ncid, lstat, error_data)
-          IF (.NOT. lstat) CALL errore(subname,'ETSF_IO: closing DFT datafile', 10) 
+          IF (.NOT. lstat) CALL etsf_error(error_data,subname,'ETSF_IO: closing DFT datafile', 10) 
           !
 #else
           CALL errore(subname,'ETSF_IO not configured',10)

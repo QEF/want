@@ -461,7 +461,7 @@ CONTAINS
             CALL mp_bcast( primitive_vectors,   ionode_id )
             CALL mp_bcast( lstat,               ionode_id )
             !
-            IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading geometry',10)
+            IF(.NOT.lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading geometry',10)
             !
             CALL recips( primitive_vectors(:,1), primitive_vectors(:,2), primitive_vectors(:,3), & 
                          lbvec(:,1), lbvec(:,2), lbvec(:,3), volume )
@@ -576,7 +576,7 @@ CONTAINS
             CALL mp_bcast( kpoint_weights,                   ionode_id )
             CALL mp_bcast( lstat,                            ionode_id )
             !
-            IF ( .NOT. lstat ) CALL errore(subname,'ETSF_IO reading data',10)
+            IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO reading data',10)
             !
             vkpt_g  = reduced_coordinates_of_kpoints
             wk_g    = kpoint_weights

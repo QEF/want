@@ -98,6 +98,7 @@ upf.o \
 upf_to_internal.o \
 uspp.o \
 version.o \
+wannier90_tools.o \
 want_dftread.o \
 want_init.o \
 want_interfaces.o \

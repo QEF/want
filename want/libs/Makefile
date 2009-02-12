@@ -13,6 +13,7 @@ date_and_tim.o \
 divide_et_impera.o \
 erf.o \
 error.o \
+etsf_error.o \
 fft_scalar.o \
 files.o \
 flush_unit.o \

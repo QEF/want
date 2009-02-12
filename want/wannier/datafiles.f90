@@ -13,13 +13,14 @@
    ! This module is intended to check the formal of 
    ! the provided datafiles and to internally convert them if needed.
    !
-   USE parameters,            ONLY : nstrx
-   USE io_module,             ONLY : ionode, ionode_id, stdout, aux_unit
-   USE io_module,             ONLY : work_dir, prefix, postfix, datafile => dftdata_file
-   USE mp,                    ONLY : mp_bcast
-   USE timing_module,         ONLY : timing
-   USE log_module,            ONLY : log_push, log_pop
-   USE crystal_tools_module,  ONLY : crystal_to_internal, file_is_crystal
+   USE parameters,              ONLY : nstrx
+   USE io_module,               ONLY : ionode, ionode_id, stdout, aux_unit
+   USE io_module,               ONLY : work_dir, prefix, postfix, datafile => dftdata_file
+   USE mp,                      ONLY : mp_bcast
+   USE timing_module,           ONLY : timing
+   USE log_module,              ONLY : log_push, log_pop
+   USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
+   USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
    USE iotk_module
    !
    IMPLICIT NONE
@@ -85,7 +86,7 @@ CONTAINS
    !
    CALL mp_bcast( exists, ionode_id ) 
    ! 
-   IF (.NOT. exists ) CALL errore(subname, 'unable to find '//TRIM(datafile),1 )
+   IF (.NOT. exists ) CALL errore(subname, 'unable to find '//TRIM(filein),1 )
 
    !
    ! convert the file if the case
@@ -94,7 +95,8 @@ CONTAINS
        !
        CALL datafiles_check_fmt( filein, fmtstr )
        !
-       IF ( TRIM( fmtstr) == 'crystal' ) THEN
+       SELECT CASE( TRIM(fmtstr) )
+       CASE ( 'crystal' )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
            CALL crystal_to_internal( filein, fileout, 'hamiltonian' )
@@ -102,9 +104,25 @@ CONTAINS
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
            CALL crystal_to_internal( filein, fileout, 'subspace' )
            !
-           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( datafile )
+           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
            !
-       ENDIF
+       CASE ( 'wannier90' )
+           !
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
+           CALL wannier90_to_internal( filein, fileout, 'hamiltonian' )
+           !
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
+           CALL wannier90_to_internal( filein, fileout, 'subspace' )
+           !
+           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
+           !
+       CASE ( 'internal' )
+           !
+           ! nothing to do
+           !
+       CASE DEFAULT
+           CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
+       END SELECT
        !
    ENDIF
    !
@@ -128,8 +146,9 @@ END SUBROUTINE datafiles_init
    !
    ! * internal
    ! * crystal
+   ! * wannier90
    ! 
-   ! an empty string is returned when no knwon fmt is found
+   ! an empty string is returned when no known fmt is found
    !
    IMPLICIT NONE
      !
@@ -138,21 +157,28 @@ END SUBROUTINE datafiles_init
      !
      fmtstr=' '
      !
-     IF ( file_is_internal( filename) ) THEN 
-        !
-        fmtstr = 'internal'
-        RETURN
-        !
+     IF ( file_is_internal( filename ) ) THEN 
+         !
+         fmtstr = 'internal'
+         RETURN
+         !
      ENDIF
      !
-     IF ( file_is_crystal( filename) ) THEN 
-        !
-        fmtstr = 'crystal'
-        RETURN
-        !
+     IF ( file_is_crystal( filename ) ) THEN 
+         !
+         fmtstr = 'crystal'
+         RETURN
+         !
      ENDIF
      !
+     IF ( file_is_wannier90( filename ) ) THEN 
+         !
+         fmtstr = 'wannier90'
+         RETURN
+         !
+     ENDIF
      !
+     RETURN
    END SUBROUTINE datafiles_check_fmt
 
 

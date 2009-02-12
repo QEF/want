@@ -418,7 +418,7 @@ CONTAINS
             CALL mp_bcast( reduced_atom_positions,  ionode_id )
             CALL mp_bcast( lstat,                   ionode_id )
             !
-            IF (.NOT. lstat) CALL errore(subname,'ETSF_IO: reading data' , 11 )
+            IF (.NOT. lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading data' , 11 )
             !
             pseudo_dir  = " "
             psfile(:)   = " "
