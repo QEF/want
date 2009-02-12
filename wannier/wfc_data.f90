@@ -171,7 +171,7 @@ CONTAINS
                 basisdata%number_of_coefficients   => number_of_coefficients
                 !
                 call etsf_io_basisdata_get(ncid, basisdata, lstat, error_data)
-                IF ( .NOT. lstat) CALL errore(subname,'ETSF_IO: getting npwk',10)
+                IF ( .NOT. lstat) CALL etsf_error(error_data,subname,'ETSF_IO: getting npwk',10)
                 !
                 basisdata%number_of_coefficients   => null()
                 !
@@ -255,7 +255,7 @@ CONTAINS
                                               reduced_coordinates_of_plane_waves(:,:,:)
                 !
                 CALL etsf_io_basisdata_get(ncid, basisdata, lstat, error_data)
-                IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading plane-waves',10)
+                IF(.NOT.lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading plane-waves',10)
                 !
                 basisdata%reduced_coordinates_of_plane_waves%data3d => null()
 
@@ -477,7 +477,7 @@ CONTAINS
             basisdata%number_of_coefficients           => number_of_coefficients 
             !
             CALL etsf_io_basisdata_get(ncid, basisdata, lstat, error_data)
-            IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading basisdata',ABS(ierr))
+            IF(.NOT.lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading basisdata',ABS(ierr))
             !
             basisdata%number_of_coefficients           => null()
             !
@@ -487,7 +487,7 @@ CONTAINS
             main%coefficients_of_wavefunctions%data3D => coefficients_of_wavefunctions
             !
             CALL etsf_io_main_get(ncid, main, lstat, error_data)
-            IF(.NOT.lstat) CALL errore(subname,'ETSF_IO: reading wfcs',ABS(ierr))
+            IF(.NOT.lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading wfcs',ABS(ierr))
             !
             main%coefficients_of_wavefunctions%data3D => null()
             !

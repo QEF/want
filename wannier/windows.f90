@@ -761,7 +761,7 @@ CONTAINS
             CALL mp_bcast( eigenvalues,   ionode_id )
             CALL mp_bcast( lstat,         ionode_id )
             !
-            IF ( .NOT. lstat ) CALL errore(subname,'ETSF_IO: reading bands',10)
+            IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO: reading bands',10)
             !
             str = "Hartree"
             !

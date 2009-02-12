@@ -278,7 +278,10 @@ CONTAINS
             CALL mp_bcast( lstat,    ionode_id)
             !
             ierr = 0
-            IF ( .NOT. lstat) ierr = 10
+            IF ( .NOT. lstat) THEN
+                 ierr = 10
+                 CALL etsf_error(error_data,subname,'reading ETSF_IO data',ierr)
+            ENDIF
             !
             strasl(:,:) = reduced_symmetry_translations(:,:)
             srot(:,:,:) = reduced_symmetry_matrices(:,:,:)

@@ -40,7 +40,8 @@ WANNIER_OBJS= \
 ../wannier/startup.o \
 ../wannier/smearing.o \
 ../wannier/shutdown.o \
-../wannier/version.o 
+../wannier/version.o \
+../wannier/wannier90_tools.o 
 
 BIN= \
 conductor.x \

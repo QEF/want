@@ -8,18 +8,19 @@
 !
 !*********************************************
    MODULE T_datafiles_module
-!*********************************************
-!
-! This module is intended to check the formal of 
-! the provided datafiles and to internally convert them if needed.
-!
-   USE parameters,           ONLY : nstrx
-   USE io_module,            ONLY : ionode, ionode_id, stdout, aux_unit
-   USE mp,                   ONLY : mp_bcast
-   USE timing_module,        ONLY : timing
-   USE log_module,           ONLY : log_push, log_pop
-   USE T_control_module,     ONLY : datafile_L, datafile_C, datafile_R, calculation_type
-   USE crystal_tools_module, ONLY : crystal_to_internal, file_is_crystal
+   !*********************************************
+   !
+   ! This module is intended to check the formal of 
+   ! the provided datafiles and to internally convert them if needed.
+   !
+   USE parameters,              ONLY : nstrx
+   USE io_module,               ONLY : ionode, ionode_id, stdout, aux_unit
+   USE mp,                      ONLY : mp_bcast
+   USE timing_module,           ONLY : timing
+   USE log_module,              ONLY : log_push, log_pop
+   USE T_control_module,        ONLY : datafile_L, datafile_C, datafile_R, calculation_type
+   USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
+   USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
    USE iotk_module
    !
    IMPLICIT NONE
@@ -107,7 +108,8 @@ CONTAINS
            !
            CALL datafiles_check_fmt( filename, fmtstr )
            !
-           IF ( TRIM( fmtstr) == 'crystal' ) THEN
+           SELECT CASE( TRIM(fmtstr) )
+           CASE ( 'crystal' )
                !
                CALL crystal_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian' )
                !
@@ -116,7 +118,23 @@ CONTAINS
                !
                filelist(i) = TRIM(filelist(i))//'.ham' 
                !
-           ENDIF
+           CASE( 'wannier90' )
+               !
+               CALL wannier90_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian' )
+               !
+               WRITE( stdout, "(2x, A,' converted to internal fmt' )") &
+                   TRIM( filename )
+               !
+               filelist(i) = TRIM(filelist(i))//'.ham' 
+               !
+           CASE ( 'internal' )
+               !
+               ! nothing to do
+               !
+           CASE DEFAULT
+               CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
+           END SELECT
+
            !
        ENDIF
        !
@@ -166,17 +184,24 @@ END SUBROUTINE datafiles_init
      fmtstr=' '
      !
      IF ( file_is_internal( filename) ) THEN 
-        !
-        fmtstr = 'internal'
-        RETURN
-        !
+         !
+         fmtstr = 'internal'
+         RETURN
+         !
      ENDIF
      !
      IF ( file_is_crystal( filename) ) THEN 
-        !
-        fmtstr = 'crystal'
-        RETURN
-        !
+         !
+         fmtstr = 'crystal'
+         RETURN
+         !
+     ENDIF
+     !
+     IF ( file_is_wannier90( filename) ) THEN 
+         !
+         fmtstr = 'wannier90'
+         RETURN
+         !
      ENDIF
      !
      !
