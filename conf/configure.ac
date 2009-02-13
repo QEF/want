@@ -1698,8 +1698,8 @@ AC_SUBST(lapack_line)
 AC_SUBST(fft_line)
 AC_SUBST(mpi_line)
 AC_SUBST(mass_line)
-AC_SUBST(etsf_io_line)      # <AF>
-AC_SUBST(netcdf_line)       # <AF>
+#AC_SUBST(etsf_io_line)      # <AF>
+#AC_SUBST(netcdf_line)       # <AF>
 AC_SUBST(parallel_report)
 
 AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])     # <AF>

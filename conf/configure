@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP SIZEOF_INT_P SET_MAKE FLIBS ranlib topdir built_date host arch cc cflags dflags fdflags cpp cppflags f90 mpif90 f90flags f77 fflags fflags_noopt pre_fdflags imod iflags includefftw ld ldflags blas_libs lapack_libs fft_libs mpi_libs mass_libs pgplot_libs etsf_io_libs etsf_io_include netcdf_libs netcdf_include internal_libs plugins_libs ar arflags arflags_dynamic f90rule blas_line lapack_line fft_line mpi_line mass_line etsf_io_line netcdf_line parallel_report LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP SIZEOF_INT_P SET_MAKE FLIBS ranlib topdir built_date host arch cc cflags dflags fdflags cpp cppflags f90 mpif90 f90flags f77 fflags fflags_noopt pre_fdflags imod iflags includefftw ld ldflags blas_libs lapack_libs fft_libs mpi_libs mass_libs pgplot_libs etsf_io_libs etsf_io_include netcdf_libs netcdf_include internal_libs plugins_libs ar arflags arflags_dynamic f90rule blas_line lapack_line fft_line mpi_line mass_line parallel_report LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -10061,8 +10061,8 @@ fi
 
 
 
-      # <AF>
-       # <AF>
+#AC_SUBST(etsf_io_line)      # <AF>
+#AC_SUBST(netcdf_line)       # <AF>
 
 
           ac_config_headers="$ac_config_headers include/ctools.h:include/ctools.h.in"
@@ -10750,8 +10750,6 @@ s,@lapack_line@,$lapack_line,;t t
 s,@fft_line@,$fft_line,;t t
 s,@mpi_line@,$mpi_line,;t t
 s,@mass_line@,$mass_line,;t t
-s,@etsf_io_line@,$etsf_io_line,;t t
-s,@netcdf_line@,$netcdf_line,;t t
 s,@parallel_report@,$parallel_report,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
