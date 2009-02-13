@@ -8,8 +8,8 @@ The following libraries have been found:
   @lapack_line@
   @fft_line@
   @mass_line@
-  @etsf_io_line@
-  @netcdf_line@
+  @etsf_io_line@    @delete@     # just temporary
+  @netcdf_line@     @delete@     # just temporary
 
 Please check if that is correct.
 
