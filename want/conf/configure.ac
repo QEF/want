@@ -63,7 +63,7 @@ do
 	elif test "$arg" = "--disable-shared"   ; then use_shared=0
         # AF
 	elif test "$arg" = "--with-netcdf"   ; then use_netcdf=1
-	elif test "$arg" = "--with-etsf_io"  ; then 
+	elif test "$arg" = "--with-etsf-io"  ; then 
            use_etsf_io=1
            use_netcdf=1
 	fi
