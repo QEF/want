@@ -6,6 +6,7 @@
 
 13 Feb 2009      Bug in autoconf found. output of ETSF_IO_LINE in configure.msg
                  removed to workaround the bug. (AF)
+		 Bug fixed in atomic.f90 (Tonatiuh Rangel)
 
 12 Feb 2009      wannier90 fmt supported in transport; etsf_error handler
                  added (according to a former implementation of Conor Hogan).
