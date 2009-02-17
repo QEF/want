@@ -405,10 +405,13 @@ CONTAINS
    SUBROUTINE windows_write(iun,tag)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,         INTENT(in) :: iun
-       CHARACTER(*),    INTENT(in) :: tag
-       CHARACTER(nstrx)   :: attr
+       !
+       INTEGER,         INTENT(IN) :: iun
+       CHARACTER(*),    INTENT(IN) :: tag
+       !
        CHARACTER(13)      :: subname="windows_write"
+       INTEGER            :: isp
+       CHARACTER(nstrx)   :: attr
 
        !
        ! even if all the quantities are global, 
@@ -419,6 +422,10 @@ CONTAINS
        CALL timing( subname, OPR='start')
        CALL log_push ( subname )
        ! 
+       isp = 0
+       IF ( nspin == 2 .AND.   TRIM(spin_component) == "up" )   isp = 1
+       IF ( nspin == 2 .AND. ( TRIM(spin_component) == "dw" .OR. &
+                               TRIM(spin_component) == "down" )  ) isp = 2
        !
        IF ( ionode ) THEN
            !
@@ -436,12 +443,25 @@ CONTAINS
            CALL iotk_write_dat(iun,"DIMWIN",dimwin, COLUMNS=8)
            CALL iotk_write_dat(iun,"IMIN",imin, COLUMNS=8)
            CALL iotk_write_dat(iun,"IMAX",imax, COLUMNS=8)
+           !
+           IF ( nspin == 2 ) THEN
+               !
+               CALL iotk_write_end(iun,"SPIN"//TRIM(iotk_index(isp)) )
+               !
+           ENDIF
+           !
            CALL iotk_write_dat(iun,"EIG",eig, COLUMNS=4)
            !
-           CALL iotk_write_dat(iun,"DIMFROZ",dimfroz, COLUMNS=8)
-           CALL iotk_write_dat(iun,"INDXFROZ",indxfroz, COLUMNS=8)
+           IF ( nspin == 2 ) THEN
+               !
+               CALL iotk_write_end(iun,"SPIN"//TRIM(iotk_index(isp)) )
+               !
+           ENDIF
+           !
+           CALL iotk_write_dat(iun,"DIMFROZ",    dimfroz, COLUMNS=8)
+           CALL iotk_write_dat(iun,"INDXFROZ",  indxfroz, COLUMNS=8)
            CALL iotk_write_dat(iun,"INDXNFROZ",indxnfroz, COLUMNS=8)
-           CALL iotk_write_dat(iun,"FROZEN",frozen, COLUMNS=8)
+           CALL iotk_write_dat(iun,"FROZEN",      frozen, COLUMNS=8)
            !
            CALL iotk_write_end(iun,TRIM(tag))
            !
@@ -460,9 +480,10 @@ CONTAINS
        INTEGER,           INTENT(in) :: iun
        CHARACTER(*),      INTENT(in) :: tag
        LOGICAL,           INTENT(out):: found
+       !
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="windows_read"
-       INTEGER            :: nkpts_g_, ierr
+       INTEGER            :: isp, nkpts_g_, ierr
        LOGICAL            :: lfound
 
        CALL timing( subname, OPR='start')
@@ -516,6 +537,10 @@ CONTAINS
        CALL mp_bcast( dimwinx,             ionode_id)
        CALL mp_bcast( lfrozen,             ionode_id)
 
+       isp = 0
+       IF ( nspin == 2 .AND.   TRIM(spin_component) == "up" )   isp = 1
+       IF ( nspin == 2 .AND. ( TRIM(spin_component) == "dw" .OR. &
+                               TRIM(spin_component) == "down" )  ) isp = 2
 
        IF ( kpoints_alloc ) THEN
             IF ( nkpts_g_ /= nkpts_g ) CALL errore(subname,'Invalid NKPTS_G',ABS(nkpts_g_)+1)
@@ -545,9 +570,26 @@ CONTAINS
            IF (ierr/=0) CALL errore(subname,'Unable to find IMIN',ABS(ierr))
            CALL iotk_scan_dat(iun,'IMAX',imax,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find IMAX',ABS(ierr))
+           !
+           IF ( nspin == 2 ) THEN
+               !
+               CALL iotk_scan_begin(iun,'SPIN'//TRIM(iotk_index(isp)), IERR=ierr )
+               IF (ierr/=0) CALL errore(subname,'Unable to find SPIN'// &
+                                                 TRIM(iotk_index(isp)),ABS(ierr))
+               !
+           ENDIF
+           !
            CALL iotk_scan_dat(iun,'EIG',eig,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find EIG',ABS(ierr))
-
+           !
+           IF ( nspin == 2 ) THEN
+               !
+               CALL iotk_scan_end(iun,'SPIN'//TRIM(iotk_index(isp)), IERR=ierr )
+               IF (ierr/=0) CALL errore(subname,'Unable to find end of SPIN'// & 
+                                                 TRIM(iotk_index(isp)),ABS(ierr))
+               !
+           ENDIF
+           !
            CALL iotk_scan_dat(iun,'DIMFROZ',dimfroz, FOUND=lfound ,IERR=ierr)
            IF (ierr>0) CALL errore(subname,'Unable to find DIMFROZ',ABS(ierr))
            IF ( .NOT. lfound ) dimfroz = 0

@@ -120,7 +120,7 @@ CONTAINS
                !
            CASE( 'wannier90' )
                !
-               CALL wannier90_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian' )
+               CALL wannier90_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
                !
                WRITE( stdout, "(2x, A,' converted to internal fmt' )") &
                    TRIM( filename )
@@ -183,21 +183,21 @@ END SUBROUTINE datafiles_init
      !
      fmtstr=' '
      !
-     IF ( file_is_internal( filename) ) THEN 
+     IF ( file_is_internal( filename ) ) THEN 
          !
          fmtstr = 'internal'
          RETURN
          !
      ENDIF
      !
-     IF ( file_is_crystal( filename) ) THEN 
+     IF ( file_is_crystal( filename ) ) THEN 
          !
          fmtstr = 'crystal'
          RETURN
          !
      ENDIF
      !
-     IF ( file_is_wannier90( filename) ) THEN 
+     IF ( file_is_wannier90( filename ) ) THEN 
          !
          fmtstr = 'wannier90'
          RETURN

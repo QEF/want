@@ -69,7 +69,8 @@
       !
       CALL datafiles_init( )
       !
-      CALL postproc_init ( BSHELLS=.TRUE., PSEUDO=read_pseudo, WANNIER=.TRUE., SUBSPACE=.TRUE. )
+      CALL postproc_init ( BSHELLS=.TRUE., IONS=.TRUE., PSEUDO=read_pseudo, &
+                           WANNIER=.TRUE., SUBSPACE=.TRUE. )
 
       !
       ! print data to output
@@ -305,7 +306,7 @@ END PROGRAM plot_main
 
       CHARACTER( nstrx )  :: filename
       CHARACTER( 5 )      :: str, aux_fmt
-      LOGICAL             :: lfound, do_modulus
+      LOGICAL             :: do_modulus
       LOGICAL             :: okp( 3 )
       !
       ! end of declariations

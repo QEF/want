@@ -246,7 +246,6 @@ get_points.o : io_module.o
 get_points.o : lattice.o
 get_points.o : ../libs/constants.o
 get_points.o : ../libs/kind.o
-get_rgrid.o : converters.o
 get_rgrid.o : ../libs/constants.o
 get_rgrid.o : ../libs/kind.o
 gglobal.o : ../libs/kind.o
@@ -360,6 +359,7 @@ io_module.o : ../libs/mp.o
 io_module.o : ../libs/parameters.o
 io_module.o : ../libs/qexml.o
 io_module.o : ../libs/qexpt.o
+io_module.o : wannier90_tools.o
 ions.o : converters.o
 ions.o : etsf_io_data.o
 ions.o : io_module.o
@@ -389,6 +389,7 @@ kpoints.o : ../libs/parser.o
 kpoints.o : ../libs/qexml.o
 kpoints.o : ../libs/qexpt.o
 kpoints.o : paratools.o
+kpoints.o : wannier90_tools.o
 lattice.o : etsf_io_data.o
 lattice.o : io_module.o
 lattice.o : ../libs/constants.o
@@ -401,6 +402,7 @@ lattice.o : ../libs/parameters.o
 lattice.o : ../libs/parser.o
 lattice.o : ../libs/qexml.o
 lattice.o : ../libs/qexpt.o
+lattice.o : wannier90_tools.o
 localization_init.o : control.o
 localization_init.o : io_module.o
 localization_init.o : kpoints.o

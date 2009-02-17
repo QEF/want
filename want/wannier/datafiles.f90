@@ -109,7 +109,7 @@ CONTAINS
        CASE ( 'wannier90' )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL wannier90_to_internal( filein, fileout, 'hamiltonian' )
+           CALL wannier90_to_internal( TRIM(filein), TRIM(fileout), 'hamiltonian' )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
            CALL wannier90_to_internal( filein, fileout, 'subspace' )

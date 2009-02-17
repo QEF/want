@@ -5,6 +5,7 @@ crystal_io.o : ../iotk/iotk_16_module.o
 erf.o : kind.o
 error.o : io_global.o
 error.o : parallel_include.o
+etsf_error.o : io_global.o
 fft_scalar.o : kind.o
 files.o : io_global.o
 files.o : ../iotk/iotk_16_module.o

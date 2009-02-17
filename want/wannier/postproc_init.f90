@@ -18,7 +18,8 @@
 CONTAINS
 !
 !********************************************************
-   SUBROUTINE postproc_init( windows, bshells, pseudo, subspace_min, subspace, hamiltonian, wannier)
+   SUBROUTINE postproc_init( windows, ions, bshells, pseudo, &
+                             subspace_min, subspace, hamiltonian, wannier)
    !********************************************************
    !
    ! This is  a driver routine to manage almost the whole
@@ -45,6 +46,7 @@ CONTAINS
    ! input variables
    !
    LOGICAL, OPTIONAL, INTENT(IN) :: windows
+   LOGICAL, OPTIONAL, INTENT(IN) :: ions
    LOGICAL, OPTIONAL, INTENT(IN) :: bshells
    LOGICAL, OPTIONAL, INTENT(IN) :: pseudo
    LOGICAL, OPTIONAL, INTENT(IN) :: subspace, subspace_min
@@ -60,6 +62,7 @@ CONTAINS
    LOGICAL            :: lfound
    !
    LOGICAL            :: lwindows
+   LOGICAL            :: lions
    LOGICAL            :: lbshells
    LOGICAL            :: lpseudo
    LOGICAL            :: lsubspace_min
@@ -81,6 +84,7 @@ CONTAINS
       ! interface to CRYSTAL06
       !
       lwindows        = .TRUE.
+      lions           = .FALSE.
       lbshells        = .FALSE.
       lpseudo         = .FALSE.
       lsubspace_min   = .TRUE.
@@ -89,6 +93,7 @@ CONTAINS
       lwannier        = .FALSE.
       !
       IF ( PRESENT( windows ) )           lwindows = windows
+      IF ( PRESENT( ions ) )                 lions = ions
       IF ( PRESENT( bshells ) )           lbshells = bshells
       IF ( PRESENT( pseudo ) )             lpseudo = pseudo
       IF ( PRESENT( subspace_min ) ) lsubspace_min = subspace_min
@@ -100,9 +105,10 @@ CONTAINS
       !
       ! ... Getting previous WanT data
       !
-      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE.,   IONS=.TRUE., &
+      CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE.,   IONS=lions, &
                           KPOINTS=.TRUE.,  PSEUDO=lpseudo )
-      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE.,  BSHELLS=lbshells )
+      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., IONS=lions,  &
+                          BSHELLS=lbshells )
       !
       IF ( ionode ) WRITE( stdout, "()")
 

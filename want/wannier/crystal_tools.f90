@@ -46,7 +46,7 @@ CONTAINS
    !
    IMPLICIT NONE
 
-   LOGICAL, PARAMETER :: binary = .FALSE.
+   LOGICAL, PARAMETER :: binary = .TRUE.
    
    !
    ! input variables
@@ -76,7 +76,6 @@ CONTAINS
    REAL(dbl),      ALLOCATABLE :: vkpt_cry(:,:), vkpt(:,:), wk(:), wr(:), vr(:,:)
    REAL(dbl),      ALLOCATABLE :: eig(:,:,:)
    REAL(dbl),      ALLOCATABLE :: rham(:,:,:,:), rovp(:,:,:)
-   COMPLEX(dbl),   ALLOCATABLE :: kham(:,:,:,:), kovp(:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: caux(:,:,:)
 
 !
@@ -354,8 +353,6 @@ CONTAINS
        !
        ALLOCATE( rovp(dimwann, dimwann, nrtot), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating rovp', ABS(ierr) )
-       ALLOCATE( kovp(dimwann, dimwann, nkpts), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname, 'allocating kovp', ABS(ierr) )
        ! 
        CALL crio_read_matrix( "overlaps", MATRIX=rovp, IERR=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'reading ovp matrix', ABS(ierr) )
@@ -375,8 +372,6 @@ CONTAINS
        !
        ALLOCATE( rham(dimwann, dimwann, nrtot, nspin), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
-       ALLOCATE( kham(dimwann, dimwann, nkpts, nspin), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
        !
        SELECT CASE ( nspin ) 
        CASE ( 1 )
@@ -426,27 +421,6 @@ CONTAINS
            !
        ENDDO
        ENDDO
-       !
-
-       !
-       ! compute kham to complete the dataset present in the .ham file
-       !
-       ALLOCATE( caux( dimwann, dimwann, nrtot), STAT=ierr)
-       IF ( ierr/=0 ) CALL errore(subname, 'allocating caux', ABS(ierr))
-       !
-       DO isp = 1, nspin
-           !
-           caux = CMPLX( rham(:,:,:,isp), ZERO, KIND=dbl )
-           CALL compute_kham( dimwann, nrtot, vr, wr, caux, vkpt, &
-                              kham(:,:,:,isp) )
-           !
-       ENDDO
-       !
-       caux = CMPLX( rovp, ZERO, KIND=dbl )
-       CALL compute_kham( dimwann, nrtot, vr, wr, caux, vkpt, kovp )
-       !
-       DEALLOCATE( caux, STAT=ierr)
-       IF ( ierr/=0 ) CALL errore(subname, 'deallocating caux', ABS(ierr))
        !
    ENDIF
 
@@ -506,24 +480,6 @@ CONTAINS
           ENDIF
           !
           !
-          ! Eigenvalues are not read, and are temporarily not written
-          ! when converting from Crystal
-          !
-          CALL iotk_write_dat( ounit,"WAN_EIGENVALUES", eig(:,:,isp))
-          !
-          CALL iotk_write_begin( ounit,"KHAM")
-          !
-          DO ik = 1, nkpts
-              !
-              CALL iotk_write_dat( ounit,"KPT"//TRIM(iotk_index(ik)), &
-                                   kham( :, :, ik, isp) )
-              CALL iotk_write_dat( ounit,"OVERLAP"//TRIM(iotk_index(ik)), &
-                                   kovp( :, :, ik) )
-              !
-          ENDDO
-          ! 
-          CALL iotk_write_end( ounit,"KHAM")
-          !
           CALL iotk_write_begin( ounit,"RHAM")
           !
           DO ir = 1, nrtot
@@ -575,7 +531,20 @@ CONTAINS
        CALL iotk_write_dat( ounit, "IMIN", itmp, COLUMNS=8 )
        itmp(:) = dimwann
        CALL iotk_write_dat( ounit, "IMAX", itmp, COLUMNS=8 )
-       CALL iotk_write_dat( ounit, "EIG", eig, COLUMNS=4)
+       !
+       DO isp = 1, nspin
+           !
+           IF ( nspin == 2 ) THEN
+               CALL iotk_write_begin( ounit, "SPIN"//TRIM(iotk_index(isp)) )
+           ENDIF
+           !
+           CALL iotk_write_dat( ounit, "EIG", eig(:,:,isp), COLUMNS=4)
+           !
+           IF ( nspin == 2 ) THEN
+               CALL iotk_write_end( ounit, "SPIN"//TRIM(iotk_index(isp)) )
+           ENDIF
+           !
+       ENDDO
        !
        CALL iotk_write_end( ounit, "WINDOWS" )
        !
@@ -589,7 +558,6 @@ CONTAINS
        !
        itmp(:) = dimwann 
        CALL iotk_write_dat( ounit, "DIMWIN", itmp, COLUMNS=8 )
-       CALL iotk_write_dat( ounit, "WAN_EIGENVALUES", eig, COLUMNS=4)
        !
        CALL iotk_write_end( ounit, "SUBSPACE" )
        !
@@ -620,17 +588,9 @@ CONTAINS
        DEALLOCATE( rham, STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating rham', ABS(ierr) )
    ENDIF
-   IF( ALLOCATED( kham ) ) THEN
-       DEALLOCATE( kham, STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname, 'deallocating kham', ABS(ierr) )
-   ENDIF
    IF( ALLOCATED( rovp ) ) THEN
        DEALLOCATE( rovp, STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating rovp', ABS(ierr) )
-   ENDIF
-   IF( ALLOCATED( kovp ) ) THEN
-       DEALLOCATE( kovp, STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname, 'deallocating kovp', ABS(ierr) )
    ENDIF
    
 
