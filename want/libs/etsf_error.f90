@@ -36,7 +36,7 @@ END SUBROUTINE etsf_error
   !
   ! avoid compilation problems
   !
-  SUBROUTINE __tmp_etsf_error
+  SUBROUTINE etsf_error_aux__
      WRITE(*,*)
   END SUBROUTINE
 #endif
