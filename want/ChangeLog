@@ -5,7 +5,8 @@
 
 
 17 Feb 2009      Bugs fixed in conductor.f90: dos was not computed correctly;
-                 conductance array was going out-of-bounds. (AF)
+                 conductance array was going out-of-bounds. Bug fixed when
+                 reading efermi from input file. (AF)
 
 13 Feb 2009      Bug in autoconf found. output of ETSF_IO_LINE in configure.msg
                  removed to workaround the bug. Support of Wannier90 datafiles
