@@ -733,7 +733,7 @@ END SUBROUTINE wannier90_tools_get_kpoints
    ALLOCATE( kham(dimwann, dimwann, nkpts, nspin), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
    !
-   ALLOCATE( eig_aux(dimwann), STAT=ierr )
+   ALLOCATE( eig_aux(dimwinx), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_aux', ABS(ierr) )
    ALLOCATE( eig_wan(dimwann,nkpts,nspin), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_wan', ABS(ierr) )
