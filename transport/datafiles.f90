@@ -183,9 +183,9 @@ END SUBROUTINE datafiles_init
      !
      fmtstr=' '
      !
-     IF ( file_is_internal( filename ) ) THEN 
+     IF ( file_is_wannier90( filename ) ) THEN 
          !
-         fmtstr = 'internal'
+         fmtstr = 'wannier90'
          RETURN
          !
      ENDIF
@@ -197,9 +197,9 @@ END SUBROUTINE datafiles_init
          !
      ENDIF
      !
-     IF ( file_is_wannier90( filename ) ) THEN 
+     IF ( file_is_internal( filename ) ) THEN 
          !
-         fmtstr = 'wannier90'
+         fmtstr = 'internal'
          RETURN
          !
      ENDIF

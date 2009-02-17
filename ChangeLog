@@ -6,7 +6,9 @@
 
 17 Feb 2009      Bugs fixed in conductor.f90: dos was not computed correctly;
                  conductance array was going out-of-bounds. Bug fixed when
-                 reading efermi from input file. (AF)
+                 reading efermi from input file. Bug fixed when trying to
+                 get the .ham fmt in the case of wannier90 files (failure of
+                 iotk getting tags). (AF)
                  wfk2etsf.x utility (abinit binary to etsf converter) added to
                  WanT. (Tonatiuh Rangel)
 

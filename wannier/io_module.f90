@@ -151,17 +151,17 @@
       !
       ! Setting fmts to be searched
       !
-      fmt_searched(1) = 'crystal'
-      fmt_searched(2) = 'qexml'
-      fmt_searched(3) = 'pw_export'
-      fmt_searched(4) = 'etsf_io'
-      fmt_searched(5) = 'wannier90'
+      fmt_searched(1) = 'wannier90'
+      fmt_searched(2) = 'crystal'
+      fmt_searched(3) = 'qexml'
+      fmt_searched(4) = 'pw_export'
+      fmt_searched(5) = 'etsf_io'
       !
       fmt_filename(1) = TRIM(dftdata_file_)
-      fmt_filename(2) = '.save/data-file.xml'
-      fmt_filename(3) = '.export/index.xml'
-      fmt_filename(4) = '_WFK-etsf.nc'
-      fmt_filename(5) = TRIM(dftdata_file_)
+      fmt_filename(2) = TRIM(dftdata_file_)
+      fmt_filename(3) = '.save/data-file.xml'
+      fmt_filename(4) = '.export/index.xml'
+      fmt_filename(5) = '_WFK-etsf.nc'
       !
       ! init
       lfound    = .FALSE.
