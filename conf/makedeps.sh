@@ -9,7 +9,7 @@ cd ..
 TOPDIR=`pwd`
 BINDIR=$TOPDIR/conf
 
-SPECIAL_MODULES="etsf_io etsf_io_tools mkl_dfti.f90"
+SPECIAL_MODULES="etsf_io etsf_io_tools etsf_io_low_level mkl_dfti.f90"
 
 for DIR in iotk libs wannier transport utility
 do

@@ -20,6 +20,7 @@
    USE qexml_module
    USE qexpt_module
    USE crystal_io_module
+   USE wannier90_tools_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -202,9 +203,18 @@ CONTAINS
            alat = DOT_PRODUCT( avec(:,1), avec(:,1) )
            alat = SQRT( alat )
            !
+       CASE ( 'wannier90' )
+           !
+           IF (ionode) CALL wannier90_tools_get_lattice( alat, avec, bvec )
+           !
+           CALL mp_bcast( alat,     ionode_id )
+           CALL mp_bcast( avec,     ionode_id )
+           CALL mp_bcast( bvec,     ionode_id )
+           !
        CASE DEFAULT
            !
            CALL errore(subname,'invalid fmt ='//TRIM(filefmt),1)
+           !
        END SELECT
        !
        !

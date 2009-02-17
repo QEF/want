@@ -83,7 +83,6 @@ CONTAINS
       !
       CHARACTER(16)         :: subname="correlation_init"
       CHARACTER(nstrx)      :: analyticity
-      LOGICAL               :: lopen
       INTEGER,  ALLOCATABLE :: ivr_corr(:,:)
       INTEGER               :: ne_corr, ierr
 
@@ -361,7 +360,6 @@ CONTAINS
    !
    CHARACTER(16) :: subname="correlation_read"
    LOGICAL       :: lopen
-   INTEGER       :: ierr
 
    !
    ! end of declarations

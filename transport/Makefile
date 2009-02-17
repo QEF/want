@@ -35,7 +35,10 @@ WANNIER_OBJS= \
 ../wannier/converters.o \
 ../wannier/crystal_tools.o \
 ../wannier/etsf_io_data.o \
+../wannier/get_monkpack.o \
+../wannier/get_rgrid.o \
 ../wannier/io_module.o \
+../wannier/monkpack.o \
 ../wannier/operator.o \
 ../wannier/startup.o \
 ../wannier/smearing.o \

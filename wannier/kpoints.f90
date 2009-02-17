@@ -27,6 +27,7 @@
    USE qexml_module
    USE qexpt_module
    USE crystal_io_module
+   USE wannier90_tools_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -280,7 +281,10 @@ CONTAINS
           !
           CALL rgrid_allocate( )
           !
-          CALL get_rgrid(nr, nrtot, wr, vr, avec )
+          CALL get_rgrid(nr, nrtot, wr, ivr )
+          !
+          vr(:,:) = REAL( ivr, dbl)
+          CALL cry2cart( vr, avec)
           !
       ELSE
           !
@@ -288,20 +292,24 @@ CONTAINS
           IF ( .NOT. ALLOCATED(vr) )  CALL errore(subname, 'vr not alloc', 10)
           IF ( .NOT. ALLOCATED(ivr) ) CALL errore(subname,'ivr not alloc', 11)
           IF ( .NOT. ALLOCATED(wr) )  CALL errore(subname, 'wr not alloc', 12)
+         
+          !
+          ! compute ivr, crystal compononet of vr
+          !
+          ALLOCATE( vr_cry( 3, nrtot ), STAT=ierr )
+          IF ( ierr /= 0) CALL errore(subname,'allocating vr_cry',ABS(ierr))
+          !
+          vr_cry(:,:) = vr(:,:) 
+          CALL cart2cry(vr_cry, avec)
+          !
+          ivr(:,:) = NINT( vr_cry(:,:) )
+          !
+          DEALLOCATE( vr_cry, STAT=ierr )
+          IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
           !
       ENDIF
       !
 
-      !
-      ! compute ivr, crystal compononet of vr
-      !
-      ALLOCATE( vr_cry( 3, nrtot ), STAT=ierr )
-      IF ( ierr /= 0) CALL errore(subname,'allocating vr_cry',ABS(ierr))
-      !
-      vr_cry(:,:) = vr(:,:) 
-      CALL cart2cry(vr_cry, avec)
-      !
-      ivr(:,:) = NINT( vr_cry(:,:) )
 
       !
       ! determine nr if needed
@@ -314,10 +322,7 @@ CONTAINS
           nr ( 3 ) = MAXVAL( ivr(3,:) ) - MINVAL( ivr(3,:) ) +1           
           !
       ENDIF
-      !
-      DEALLOCATE( vr_cry, STAT=ierr )
-      IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
-      
+      ! 
       CALL log_pop ( subname )
       !
    END SUBROUTINE kpoints_init
@@ -524,9 +529,15 @@ CONTAINS
             kgrid_from_file = .TRUE.
             rgrid_from_file = .TRUE.
             !
+       CASE( 'wannier90' )
+            !
+            IF (ionode) CALL wannier90_tools_get_dims( NKPTS=nkpts_g )
+            CALL mp_bcast( nkpts_g,   ionode_id )
+            !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
+            !
        END SELECT
        !
        !
@@ -620,6 +631,16 @@ CONTAINS
             IF (ionode) CALL crio_close_section( "METHOD", ACTION='read', IERR=ierr )
             CALL mp_bcast( ierr,      ionode_id )
             IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. METHOD', ABS(ierr) )
+            !
+       CASE ( 'wannier90' )
+            !
+            IF (ionode) CALL wannier90_tools_get_kpoints( nkpts_g, VKPT=vkpt_g, &
+                                                          WK=wk_g, BVEC=lbvec )
+            CALL mp_bcast( vkpt_g,    ionode_id )
+            CALL mp_bcast( wk_g,      ionode_id )
+            CALL mp_bcast( lbvec,     ionode_id )
+            !
+            k_units = 'crystal'
             !
        CASE DEFAULT
             !

@@ -65,6 +65,7 @@ WANNIER_OBJS= \
 ../wannier/upf_to_internal.o \
 ../wannier/uspp.o \
 ../wannier/version.o \
+../wannier/wannier90_tools.o \
 ../wannier/want_init.o \
 ../wannier/want_dftread.o \
 ../wannier/wfc_data.o \

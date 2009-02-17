@@ -200,10 +200,10 @@ CONTAINS
        CALL iotk_write_attr(attr,"dimwann",dimwann) 
        CALL iotk_write_empty(iun,"DATA",ATTR=attr)
        !
-       CALL iotk_write_dat(iun,"DIMWIN",dimwin) 
+       CALL iotk_write_dat(iun,"DIMWIN",dimwin, COLUMNS=8) 
        !
        IF ( ALLOCATED( wan_eig ) ) THEN
-           CALL iotk_write_dat(iun,"WAN_EIGENVALUES",wan_eig)
+           CALL iotk_write_dat(iun,"WAN_EIGENVALUES",wan_eig, COLUMNS=8)
        ENDIF
        !
        !

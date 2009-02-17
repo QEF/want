@@ -33,8 +33,8 @@
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
-                                    blc_00C, blc_LC,  blc_CR,           &
-                                    shift_L, shift_C, shift_R, shift_corr
+                                    blc_00C, blc_LC,  blc_CR
+                                    
    USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     workspace_allocate
@@ -276,7 +276,7 @@
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimC
-             dos_k(ie,ik) = - wk_par(ik) * AIMAG( gC(i,i) ) / PI
+             dos_k(ie,ik) = dos_k(ie,ik) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
           !
           dos(ie) = dos(ie) + dos_k(ie,ik)
@@ -297,8 +297,8 @@
           ! get the total trace
           DO i=1,dimC
               !
-              conduct(ie,1)    = conduct(ie,1)  + wk_par(ik) * cond_aux(i)
-              conduct_k(ie,ik) = conduct(ie,ik) + wk_par(ik) * cond_aux(i)
+              conduct(ie,1)    = conduct(ie,1)    + wk_par(ik) * cond_aux(i)
+              conduct_k(ie,ik) = conduct_k(ie,ik) + wk_par(ik) * cond_aux(i)
               !
           ENDDO
           !

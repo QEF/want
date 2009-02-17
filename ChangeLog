@@ -4,8 +4,13 @@
 =======================================================
 
 
+17 Feb 2009      Bugs fixed in conductor.f90: dos was not computed correctly;
+                 conductance array was going out-of-bounds. (AF)
+
 13 Feb 2009      Bug in autoconf found. output of ETSF_IO_LINE in configure.msg
-                 removed to workaround the bug. (AF)
+                 removed to workaround the bug. Support of Wannier90 datafiles
+                 added, courtesy of Tonatiuh Rangel; related tests added in
+                 test11. (AF)
 		 Bug fixed in atomic.f90 (Tonatiuh Rangel)
 
 12 Feb 2009      wannier90 fmt supported in transport; etsf_error handler

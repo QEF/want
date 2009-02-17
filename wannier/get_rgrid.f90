@@ -7,25 +7,26 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-SUBROUTINE get_rgrid(nr, nrtot, wr, vr, avec)
+SUBROUTINE get_rgrid(nr, nrtot, wr, ivr)
    !*********************************************************
+   !
+   ! Given the three generators nr(:), this subroutine defines
+   ! a R-grid in real space. Output is in crystal coords
    !
    USE kinds
    USE constants,         ONLY : ONE
-   USE converters_module, ONLY : cry2cart
    !
    IMPLICIT NONE
 
 ! <INFO>
+!
 ! This subroutine generates the regular R-vector grid according to
 ! the input generators nr(1:3).
 !
 
-   INTEGER,  INTENT(in)      :: nr(3)
-   INTEGER,  INTENT(in)      :: nrtot
-   REAL(dbl),INTENT(out)     :: wr(nrtot)
-   REAL(dbl),INTENT(out)     :: vr(3,nrtot)
-   REAL(dbl),INTENT(in)      :: avec(3,3)
+   INTEGER,      INTENT(IN)      :: nr(3), nrtot
+   REAL(dbl),    INTENT(OUT)     :: wr(nrtot)
+   INTEGER,      INTENT(OUT)     :: ivr(3,nrtot)
 
 ! </INFO>
 ! ... local variables
@@ -40,9 +41,9 @@ SUBROUTINE get_rgrid(nr, nrtot, wr, vr, avec)
 !
 
    IF ( ANY(nr(:) <= 0 )  ) CALL errore(subname,'invalid nr',1)
-   
+
    !
-   ! setup vr in crystal coordinates
+   ! setup ivr in crystal coordinates
    !
    ir = 0
 
@@ -52,9 +53,9 @@ SUBROUTINE get_rgrid(nr, nrtot, wr, vr, avec)
        !
        ir = ir + 1
        ! 
-       vr(1,ir) = REAL( i - ( nr(1)+1)/2, dbl )
-       vr(2,ir) = REAL( j - ( nr(2)+1)/2, dbl )
-       vr(3,ir) = REAL( k - ( nr(3)+1)/2, dbl )
+       ivr(1,ir) =  i -( nr(1) +1 ) / 2
+       ivr(2,ir) =  j -( nr(2) +1 ) / 2
+       ivr(3,ir) =  k -( nr(3) +1 ) / 2
        !
        ! the sum rule on the weights depends on the definition 
        ! of the kpt-weight sum
@@ -66,12 +67,6 @@ SUBROUTINE get_rgrid(nr, nrtot, wr, vr, avec)
    ENDDO
  
    IF ( nrtot /= ir ) CALL errore(subname,'something nasty happened',2)
-
-   !
-   ! move to cartesian coord (bohr)
-   !
-   CALL cry2cart( vr(1:3,1:nrtot), avec )
-
 
 END SUBROUTINE get_rgrid
 

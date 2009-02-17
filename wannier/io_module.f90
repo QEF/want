@@ -10,17 +10,18 @@
    MODULE io_module
 !*********************************************
    !
-   USE kinds,                ONLY : dbl
-   USE parameters,           ONLY : nstrx
-   USE io_global_module,     ONLY : stdout, stdin, ionode, ionode_id, &
-                                    io_global_start, io_global_getionode
-   USE files_module,         ONLY : file_open, file_close
-   USE mp_global,            ONLY : nproc, mpime
-   USE mp,                   ONLY : mp_bcast
-   USE control_module,       ONLY : read_symmetry, use_pseudo, read_pseudo, use_debug_mode, debug_level
-   USE log_module,           ONLY : log_init, log_push, log_pop
-   USE crystal_io_module,    ONLY : crio_open_file, crio_read_header, crio_close_file
-   USE crystal_tools_module, ONLY : file_is_crystal
+   USE kinds,                   ONLY : dbl
+   USE parameters,              ONLY : nstrx
+   USE io_global_module,        ONLY : stdout, stdin, ionode, ionode_id, &
+                                       io_global_start, io_global_getionode
+   USE files_module,            ONLY : file_open, file_close
+   USE mp_global,               ONLY : nproc, mpime
+   USE mp,                      ONLY : mp_bcast
+   USE control_module,          ONLY : read_symmetry, use_pseudo, read_pseudo, use_debug_mode, debug_level
+   USE log_module,              ONLY : log_init, log_push, log_pop
+   USE crystal_io_module,       ONLY : crio_open_file, crio_read_header, crio_close_file
+   USE crystal_tools_module,    ONLY : file_is_crystal
+   USE wannier90_tools_module,  ONLY : file_is_wannier90
    USE qexml_module
    USE qexpt_module
    USE iotk_module
@@ -142,8 +143,8 @@
       CHARACTER(18)    :: subname='io_get_dftdata_fmt'  
       !
       CHARACTER(nstrx) :: filename, version
-      CHARACTER(nstrx) :: fmt_searched(4)
-      CHARACTER(nstrx) :: fmt_filename(4)
+      CHARACTER(nstrx) :: fmt_searched(5)
+      CHARACTER(nstrx) :: fmt_filename(5)
       LOGICAL          :: lfound, lfound1, lneed_wfc
       INTEGER          :: i, ierr
 
@@ -154,11 +155,13 @@
       fmt_searched(2) = 'qexml'
       fmt_searched(3) = 'pw_export'
       fmt_searched(4) = 'etsf_io'
+      fmt_searched(5) = 'wannier90'
       !
       fmt_filename(1) = TRIM(dftdata_file_)
       fmt_filename(2) = '.save/data-file.xml'
       fmt_filename(3) = '.export/index.xml'
       fmt_filename(4) = '_WFK-etsf.nc'
+      fmt_filename(5) = TRIM(dftdata_file_)
       !
       ! init
       lfound    = .FALSE.
@@ -172,7 +175,8 @@
            !
            IF ( ionode ) WRITE(stdout, "(2x, 'checking for fmt ',a,'... ', $)" ) TRIM( fmt_searched(i) )
            !
-           IF ( TRIM( fmt_searched(i) ) == 'crystal' ) THEN
+           IF ( TRIM( fmt_searched(i) ) == 'crystal'    .OR.  &
+                TRIM( fmt_searched(i) ) == 'wannier90'  ) THEN
                !
                ! in the case of crystal fmt, the presence of 
                ! a non-null dftdata_file is required
@@ -235,6 +239,12 @@
            IF ( lfound .AND. TRIM( fmt_searched(i) ) == 'crystal'  )  THEN
                !
                lfound = file_is_crystal( filename )
+               !
+           ENDIF
+           !
+           IF ( lfound .AND. TRIM( fmt_searched(i) ) == 'wannier90'  )  THEN
+               !
+               lfound = file_is_wannier90( filename )
                !
            ENDIF
            !
@@ -430,6 +440,10 @@
            CALL crio_close_file( ACTION='read', IERR=ierr )
            IF ( ierr/=0) CALL errore(subname,'closing crio datafile',ABS(ierr))
            !
+      CASE ( 'wannier90' )
+           !
+           dftdata_fmt_version = 'unknown'
+           !
       CASE DEFAULT
            !
            CALL errore(subname,'invalid dftdata_fmt = '//TRIM(dftdata_fmt),1)
@@ -517,10 +531,11 @@
                suffix_  = TRIM(suffix_etsf_io_data)
                postfix_ = " "
                !
-           CASE ( 'crystal' ) 
+           CASE ( 'crystal', 'wannier90' ) 
                !
                path_    = " "
                prefix_  = " " 
+               postfix_ = " "
                suffix_  = TRIM( dftdata_file )
                !
            CASE DEFAULT
@@ -595,6 +610,10 @@
 #else
           CALL errore(subname,'ETSF_IO not configured',10)
 #endif
+      CASE ( 'wannier90' )
+          !
+          ! nothing to do
+          !
       CASE DEFAULT 
           CALL errore(subname,'invalid dftdata_fmt = '//TRIM(dftdata_fmt),10)
       END SELECT
@@ -640,6 +659,10 @@
 #else
           CALL errore(subname,'ETSF_IO not configured',10)
 #endif
+      CASE ( 'wannier90' )
+          !
+          ! nothing to do
+          !
       CASE DEFAULT 
           CALL errore(subname,'invalid dftdata_fmt = '//TRIM(dftdata_fmt),10)
       END SELECT
