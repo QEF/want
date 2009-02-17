@@ -483,6 +483,7 @@ CONTAINS
        !
        CHARACTER(nstrx)   :: attr
        CHARACTER(12)      :: subname="windows_read"
+       REAL(dbl)          :: efermi_
        INTEGER            :: isp, nkpts_g_, ierr
        LOGICAL            :: lfound
 
@@ -517,7 +518,7 @@ CONTAINS
            IF (ierr/=0) CALL errore(subname,'Unable to find attr NSPIN',ABS(ierr))
            CALL iotk_scan_attr(attr,'spin_component',spin_component,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr SPIN_COMPONENT',ABS(ierr))
-           CALL iotk_scan_attr(attr,'efermi',efermi,IERR=ierr)
+           CALL iotk_scan_attr(attr,'efermi',efermi_,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr EFERMI',ABS(ierr))
            CALL iotk_scan_attr(attr,'dimwinx',dimwinx,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWINX',ABS(ierr))
@@ -533,7 +534,7 @@ CONTAINS
        CALL mp_bcast( nkpts_g_,            ionode_id)
        CALL mp_bcast( nspin,               ionode_id)
        CALL mp_bcast( spin_component,      ionode_id)
-       CALL mp_bcast( efermi,              ionode_id)
+       CALL mp_bcast( efermi_,             ionode_id)
        CALL mp_bcast( dimwinx,             ionode_id)
        CALL mp_bcast( lfrozen,             ionode_id)
 
@@ -547,6 +548,11 @@ CONTAINS
        ELSE
             nkpts_g = nkpts_g_
        ENDIF
+       !
+       ! if efermi is not read from file, it means it is given
+       ! by input
+       !
+       IF ( read_efermi ) efermi = efermi_
        !
        CALL windows_allocate()
        !
