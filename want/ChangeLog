@@ -4,6 +4,9 @@
 =======================================================
 
 
+18 Feb 2009      kpt sorting (and symmetrization) implemented in blc2wan.f90 .
+                 (AF and Tonatiuh Rangel)
+
 17 Feb 2009      Bugs fixed in conductor.f90: dos was not computed correctly;
                  conductance array was going out-of-bounds. Bug fixed when
                  reading efermi from input file. Bug fixed when trying to
