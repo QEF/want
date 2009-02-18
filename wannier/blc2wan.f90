@@ -193,7 +193,7 @@ END PROGRAM blc2wan
    ! perform the main task of the calculation
    !
    USE kinds
-   USE constants,            ONLY : ZERO, CZERO, TWO, RYD, EPS_m6
+   USE constants,            ONLY : ZERO, CZERO, TWO, RYD, EPS_m6, EPS_m8
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, work_dir, prefix, postfix
    USE io_module,            ONLY : in_unit => aux1_unit, out_unit => aux2_unit
@@ -229,10 +229,11 @@ END PROGRAM blc2wan
       !
       CHARACTER(10)      :: subname = 'do_blc2wan'       
       !
+      INTEGER,      ALLOCATABLE :: ikmap(:)
       REAL(dbl),    ALLOCATABLE :: grid(:), vkpt_file(:,:)
       REAL(dbl),    ALLOCATABLE :: vrr(:), norms(:)
       COMPLEX(dbl), ALLOCATABLE :: phase(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: opr_in(:,:,:), opr_out(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: opr_in(:,:), opr_out(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: oprk(:,:,:), cutot(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: aux(:), work(:,:)
       !
@@ -308,20 +309,32 @@ END PROGRAM blc2wan
           !
       ENDIF
 
-      IF ( ibnd_end - ibnd_start +1 /= nbnd_file ) CALL errore(subname,'invalid nbnd_file',3)
+      !
+      ! internal checks
+      !
+      IF ( ibnd_end - ibnd_start +1 /= nbnd_file ) &
+                                  CALL errore(subname,'invalid nbnd_file',3)
       IF ( nbnd < nbnd_file )     CALL errore(subname,'nbnd_file too large',3)
-      IF ( nkpts_file /= nkpts )  CALL errore(subname,'invalid nkpts',3)
-      IF ( nspin_file /= 1 .AND. nspin_file /= 2 )  CALL errore(subname,'invalid nspin',3)
-      IF ( TRIM(spin_component) /= "none" .AND. nspin_file == 1 ) &
+      IF ( nkpts_file <= 0  )     CALL errore(subname,'invalid nkpts from file',3)
+      !
+      IF ( .NOT. lband_diag .AND. nkpts /= nkpts_file ) &
+                                  CALL errore(subname,'symmetries not allowed when'//&
+                                                      ' opr not diagonal',10)
+      !
+      IF ( nspin_file /= 1 .AND. nspin_file /= 2 ) &
+                                  CALL errore(subname,'invalid nspin',3)
+      !
+      IF ( TRIM( spin_component) /= "none" .AND. nspin_file == 1 ) &
                                   CALL errore(subname,'calculation is spin-unpolarized',3)
+      !
       IF ( ABS(energy_ref) > EPS_m6 .AND. .NOT. ldynam ) &
-           CALL warning( subname, 'energy_ref specified for a static operator' )
+                                  CALL warning( subname, 'energy_ref specified for a static operator' )
 
 
       !
       ! few local allocations
       !
-      ALLOCATE( opr_in(nbnd,nbnd,nkpts), STAT=ierr )
+      ALLOCATE( opr_in(nbnd,nbnd), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating opr_in',ABS(ierr))
       !
       ALLOCATE( oprk(dimwann,dimwann,nkpts), STAT=ierr )
@@ -339,7 +352,10 @@ END PROGRAM blc2wan
       ALLOCATE( work(dimwinx,dimwinx), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating work',ABS(ierr))
       !
-      ALLOCATE( vkpt_file(3,nkpts), STAT=ierr )
+      ALLOCATE( vkpt_file(3,nkpts_file), STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'allocating vkpt_file',ABS(ierr))
+      !
+      ALLOCATE( ikmap(nkpts), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating vkpt_file',ABS(ierr))
       !
       ALLOCATE( phase(nkpts,nrtot), STAT=ierr )
@@ -374,7 +390,7 @@ END PROGRAM blc2wan
           ! 
           vkpt_file(:,:) = vkpt_file(:,:) * tpiba
           ! 
-      CASE ( "crystal" )
+      CASE ( "crystal", "relative" )
           ! 
           CALL cry2cart( vkpt_file, bvec )
           ! 
@@ -385,13 +401,25 @@ END PROGRAM blc2wan
       END SELECT
       
       !
-      ! check whether kpts are ordered in the same way as in want
+      ! define a mapping between kpts in WanT and kpts from filein
+      ! kpts are given in cartesian units (bohr^-1)
+      !
+      CALL get_vectmap( nkpts, vkpt, nkpts_file, vkpt_file, .TRUE., EPS_m8, ikmap ) 
+      !
+      IF ( ANY( ikmap(:) == 0) ) CALL errore(subname,'invalid ikmap value',10)
+
+
+      !
+      ! check whether kpts consistent
+      ! In principles this check can be removed since it is performed also
+      ! inside get_kpt_map
       !
       DO ik = 1, nkpts
           !
-          rtmp = DOT_PRODUCT( vkpt(:,ik)-vkpt_file(:,ik) , vkpt(:,ik)-vkpt_file(:,ik) )
+          rtmp = DOT_PRODUCT( vkpt(:,ik)-vkpt_file(:, ikmap(ik) ), &
+                              vkpt(:,ik)-vkpt_file(:, ikmap(ik) )  )
           !
-          IF ( rtmp > EPS_m6 ) CALL errore(subname,'invalid input kpts', ik ) 
+          IF ( rtmp > EPS_m8 ) CALL errore(subname,'invalid input kpts', ik ) 
           !
       ENDDO 
       !
@@ -488,6 +516,7 @@ END PROGRAM blc2wan
           ! compute also the norms of the vr vectors
           !
           vrr(ir) = SQRT( DOT_PRODUCT( vr(:,ir), vr(:,ir) ) ) 
+          !
       ENDDO
 
 
@@ -568,16 +597,16 @@ END PROGRAM blc2wan
                !
                ! reading data from filein
                !
-               opr_in(:,:,ik) = CZERO
+               opr_in(:,:) = CZERO
                !
                IF ( lband_diag ) THEN 
                    !
-                   CALL iotk_scan_dat(in_unit, "KPT"//TRIM(iotk_index(ik)), aux(:), IERR=ierr)
-                   IF (ierr/=0) CALL errore(subname,'reading diag KPT' ,ik)
+                   CALL iotk_scan_dat(in_unit, "KPT"//TRIM(iotk_index( ikmap(ik) ) ), aux(:), IERR=ierr)
+                   IF (ierr/=0) CALL errore(subname,'reading diag KPT' , ikmap(ik) )
                    !
                    DO m = ibnd_start, ibnd_end
                        !
-                       opr_in(m,m,ik) = aux( m -ibnd_start + 1 )
+                       opr_in(m,m) = aux( m -ibnd_start + 1 )
                        !
                    ENDDO
                    !
@@ -586,35 +615,36 @@ END PROGRAM blc2wan
                    IF ( do_extrapolation ) THEN
                        !
                        DO m = 1, ibnd_start -1
-                           opr_in(m,m,ik) = aux( 1 )
+                           opr_in(m,m) = aux( 1 )
                        ENDDO
                        !
                        DO m = ibnd_end+1, nbnd
-                           opr_in(m,m,ik) = aux( nbnd_file )
+                           opr_in(m,m) = aux( nbnd_file )
                        ENDDO
                        !
                    ENDIF
                    !
                ELSE
                    ! 
-                   CALL iotk_scan_dat(in_unit,"KPT"//TRIM(iotk_index(ik)),  &
-                                      opr_in(ibnd_start:ibnd_end, ibnd_start:ibnd_end, ik), &
+                   CALL iotk_scan_dat(in_unit,"KPT"//TRIM(iotk_index( ikmap(ik) )),  &
+                                      opr_in(ibnd_start:ibnd_end, ibnd_start:ibnd_end), &
                                       IERR=ierr)
-                   IF (ierr/=0) CALL errore(subname,'reading full KPT' ,ik)
+                   IF (ierr/=0) CALL errore(subname,'reading full KPT' ,ikmap(ik) )
+                   !
                ENDIF
 
                !
                ! converting data to oprk(ik) = cutot^dag(ik) * opr_in(ik) * cutot(ik)
                !
-               CALL mat_mul( work, opr_in( imin(ik):imax(ik), imin(ik):imax(ik), ik), 'N', &
+               CALL mat_mul( work, opr_in( imin(ik):imax(ik), imin(ik):imax(ik)), 'N', &
                              cutot(:,:,ik), 'N', dimwin(ik), dimwann, dimwin(ik) )
                CALL mat_mul( oprk(:,:,ik), cutot(:,:,ik), 'C', &
                              work(:,:), 'N', dimwann, dimwann, dimwin(ik) )
 
-               !
-               ! eventually this writing call may be eliminated
-               !
-               CALL iotk_write_dat(out_unit,"KPT"//TRIM(iotk_index(ik)), oprk(:,:,ik))
+               !!
+               !! eventually this writing call may be eliminated
+               !!
+               !CALL iotk_write_dat(out_unit,"KPT"//TRIM(iotk_index(ik)), oprk(:,:,ik))
                !
           ENDDO kpoints
           
@@ -643,7 +673,7 @@ END PROGRAM blc2wan
                    !
                    DO j=1,dimwann
                    DO i=1,dimwann
-                        opr_out(i,j,ir) = opr_out(i,j,ir) + phase(ik,ir) * oprk(i,j,ik) 
+                        opr_out(i,j,ir) = opr_out(i,j,ir) + phase(ik,ir) * oprk(i,j,ik)
                    ENDDO
                    ENDDO
                    !
@@ -747,6 +777,9 @@ END PROGRAM blc2wan
       !
       DEALLOCATE( opr_in, opr_out, oprk, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating opr_in -- opr_out', ABS(ierr) )
+      !
+      DEALLOCATE( ikmap, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating ikmap', ABS(ierr) )
       !
       DEALLOCATE( cutot, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating cutot', ABS(ierr) )
