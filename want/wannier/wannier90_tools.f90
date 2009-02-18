@@ -924,12 +924,12 @@ END SUBROUTINE wannier90_tools_get_kpoints
        CALL iotk_write_begin( ounit, "WINDOWS" )
        !
        !
-       CALL iotk_write_attr( attr,"nbnd",dimwann,FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"nbnd",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr( attr,"nkpts",nkpts)
        CALL iotk_write_attr( attr,"nspin",nspin)
        CALL iotk_write_attr( attr,"spin_component","none")
        CALL iotk_write_attr( attr,"efermi", 0.0 )
-       CALL iotk_write_attr( attr,"dimwinx", dimwann )
+       CALL iotk_write_attr( attr,"dimwinx", dimwinx )
        CALL iotk_write_empty( ounit,"DATA",ATTR=attr)
        !
        CALL iotk_write_dat( ounit, "DIMWIN", ndimwin, COLUMNS=8 )
