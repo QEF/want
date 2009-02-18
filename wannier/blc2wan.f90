@@ -407,21 +407,6 @@ END PROGRAM blc2wan
       CALL get_vectmap( nkpts, vkpt, nkpts_file, vkpt_file, .TRUE., EPS_m8, ikmap ) 
       !
       IF ( ANY( ikmap(:) == 0) ) CALL errore(subname,'invalid ikmap value',10)
-
-
-      !
-      ! check whether kpts consistent
-      ! In principles this check can be removed since it is performed also
-      ! inside get_kpt_map
-      !
-      DO ik = 1, nkpts
-          !
-          rtmp = DOT_PRODUCT( vkpt(:,ik)-vkpt_file(:, ikmap(ik) ), &
-                              vkpt(:,ik)-vkpt_file(:, ikmap(ik) )  )
-          !
-          IF ( rtmp > EPS_m8 ) CALL errore(subname,'invalid input kpts', ik ) 
-          !
-      ENDDO 
       !
       DEALLOCATE( vkpt_file, STAT=ierr)
       IF ( ierr/=0 ) CALL errore(subname,'deallocating vkpt_file', ABS(ierr) )
