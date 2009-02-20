@@ -4,6 +4,9 @@
 =======================================================
 
 
+21 Feb 2009      bug fixed in the documentation of kpoints.f90 (courtesy of
+                 Y.P.Wang). (AF)
+
 18 Feb 2009      kpt sorting (and symmetrization) implemented in blc2wan.f90 .
                  (AF and Tonatiuh Rangel)
 
