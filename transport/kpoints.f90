@@ -29,7 +29,7 @@
     !
     INTEGER                   :: nrtot_par       ! number of 2D R-vectors
     INTEGER                   :: nr_par(2)       ! 2D R-vect mesh geenrator
-    REAL(dbl),    ALLOCATABLE :: vr_par(:,:)     ! 2D kpt-vectors
+    REAL(dbl),    ALLOCATABLE :: vr_par(:,:)     ! 2D R-vectors
     REAL(dbl),    ALLOCATABLE :: wr_par(:)       ! weights of the 2D R-vects
     !
     COMPLEX(dbl), ALLOCATABLE :: table_par(:,:)  ! coefficients for the 2D FFT
