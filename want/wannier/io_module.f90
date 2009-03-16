@@ -596,7 +596,7 @@
       CASE ( 'qexml', 'pw_export' )
           !
           CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
+          IF ( ierr/=0 ) CALL errore(subname, 'QEXML-PWEXP: opening '//TRIM(filename), ABS(ierr)) 
           !
       CASE ( 'etsf_io' )
           !
@@ -605,11 +605,17 @@
           CALL etsf_io_low_open_read(ncid, TRIM(filename), lstat,  &
                                      ERROR_DATA=error_data,        &
                                      VERSION_MIN=etsf_io_version_min)   
-          IF (.NOT. lstat) CALL etsf_error(error_data,subname,'opening '//TRIM(filename), 10) 
+          IF (.NOT. lstat) CALL etsf_error(error_data,subname,'ETSF_IO: opening '//TRIM(filename), 10) 
           !
 #else
           CALL errore(subname,'ETSF_IO not configured',10)
 #endif
+          !
+      CASE ( 'crystal' )
+          !
+          CALL crio_open_file( dft_unit, TRIM(filename), ACTION='read', IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening '//TRIM(filename), ABS(ierr)) 
+          !
       CASE ( 'wannier90' )
           !
           ! nothing to do
@@ -647,7 +653,7 @@
       CASE ( 'qexml', 'pw_export' )
           !
           CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'closing DFT datafile', ABS(ierr)) 
+          IF ( ierr/=0 ) CALL errore(subname, 'QEXML-PWEXP: closing DFT datafile', ABS(ierr)) 
           !
       CASE ( 'etsf_io' )
           !
@@ -659,6 +665,12 @@
 #else
           CALL errore(subname,'ETSF_IO not configured',10)
 #endif
+          !
+      CASE ( 'crystal' )
+          !
+          CALL crio_close_file( ACTION='read', IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing DFT datafile', ABS(ierr)) 
+          !
       CASE ( 'wannier90' )
           !
           ! nothing to do

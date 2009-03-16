@@ -4,7 +4,13 @@
 =======================================================
 
 
-21 Feb 2009      bug fixed in the documentation of kpoints.f90 (courtesy of
+16 Mar 2009      Bug fixed in compilation withou __ETSF_IO support. (AF)
+
+13 Mar 2009      Bug fixed in kpt generation algorithm when interpolating bands
+                 (one point was missing). Bug fixed in io_open_dftdata routine
+                 when using the crystal interface. (AF)
+
+21 Feb 2009      Bug fixed in the documentation of kpoints.f90 (courtesy of
                  Y.P.Wang). (AF)
 
 18 Feb 2009      kpt sorting (and symmetrization) implemented in blc2wan.f90 .
