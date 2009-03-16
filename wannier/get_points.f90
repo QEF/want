@@ -69,12 +69,12 @@
        !
        DO i = 1, nkpts_in - 1
            !
-           n = INT( nkpts_max * length(i) / length0 )
+           n = INT( (nkpts_max-1) * length(i) / length0 )
            knum(i) = n
            !
            IF ( n ==  0 ) CALL errore('get_points', 'nint=0', n+1 )
  
-           DO j = 1, n-1
+           DO j = 1, n
                !
                nkpts_tot = nkpts_tot + 1
                !

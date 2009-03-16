@@ -38,6 +38,6 @@ END SUBROUTINE etsf_error
   !
   SUBROUTINE etsf_error_aux__
      WRITE(*,*)
-  END SUBROUTINE
+  END SUBROUTINE etsf_error_aux__
 #endif
 

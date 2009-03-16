@@ -6,7 +6,10 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
+!****************************
 program wfk2etsf
+!****************************
+#ifdef __ETSF_IO
  use etsf_io
  use etsf_io_tools
  use atomic_module, only : atomic_num2name
@@ -470,6 +473,9 @@ subroutine deallocate_etsf()
  deallocate(chemical_symbols)
 end subroutine deallocate_etsf
 
+#else
+   CALL errore('wfk2etsf','ETSF_IO not supported', 10)
+#endif
 end program wfk2etsf
 
 
