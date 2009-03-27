@@ -62,8 +62,8 @@ do
 	elif test "$arg" = "--enable-shared"    ; then use_shared=1
 	elif test "$arg" = "--disable-shared"   ; then use_shared=0
         # AF
-	elif test "$arg" = "--with-netcdf"   ; then use_netcdf=1
-	elif test "$arg" = "--with-etsf-io"  ; then 
+	elif test "$arg" = "--enable-netcdf"    ; then use_netcdf=1
+	elif test "$arg" = "--enable-etsf-io"   ; then 
            use_etsf_io=1
            use_netcdf=1
 	fi
@@ -1702,8 +1702,8 @@ AC_SUBST(mass_line)
 #AC_SUBST(netcdf_line)       # <AF>
 AC_SUBST(parallel_report)
 
-#AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])     # <AF>
-AC_CONFIG_FILES([include/ctools.h:include/ctools.h.in])     # <AF>
+AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])     # <AF>
+#AC_CONFIG_FILES([include/ctools.h:include/ctools.h.in])     # <AF>
 AC_CONFIG_FILES([include/configure.h:include/configure.h.in]) # <AF>
 AC_CONFIG_FILES(make.sys)
 AC_CONFIG_FILES(configure.msg)
