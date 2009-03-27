@@ -1702,7 +1702,8 @@ AC_SUBST(mass_line)
 #AC_SUBST(netcdf_line)       # <AF>
 AC_SUBST(parallel_report)
 
-AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])     # <AF>
+#AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])     # <AF>
+AC_CONFIG_FILES([include/ctools.h:include/ctools.h.in])     # <AF>
 AC_CONFIG_FILES([include/configure.h:include/configure.h.in]) # <AF>
 AC_CONFIG_FILES(make.sys)
 AC_CONFIG_FILES(configure.msg)
