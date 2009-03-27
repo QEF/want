@@ -4,7 +4,9 @@
 =======================================================
 
 
-16 Mar 2009      Bug fixed in compilation withou __ETSF_IO support. (AF)
+27 Mar 2009      Bug fixed in configure.ac. (AF) 
+
+16 Mar 2009      Bug fixed in compilation without __ETSF_IO support. (AF)
 
 13 Mar 2009      Bug fixed in kpt generation algorithm when interpolating bands
                  (one point was missing). Bug fixed in io_open_dftdata routine
