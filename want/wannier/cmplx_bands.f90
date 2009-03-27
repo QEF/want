@@ -1094,7 +1094,7 @@ END PROGRAM cmplx_bands
               WRITE( ctmp, "(i5)") dimwann * (nrsx-1) +1
               !
               DO ik = 1, nkpts_2D
-                  WRITE( aux_unit, "(a,i5)") "# CBS for kpt = ", ik
+                  WRITE( aux_unit, "(a,i5,a)") "# CBS for kpt = ", ik, "   [Ang^-1]"
                   !
                   DO ie = 1, ne
                       WRITE(aux_unit, "("//TRIM(ctmp)//"f15.9)") egrid(ie), &
