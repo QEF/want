@@ -228,7 +228,8 @@ END PROGRAM bands
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
    USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi
-   USE subspace_module,      ONLY : wan_eig
+!XXX
+!   USE subspace_module,      ONLY : wan_eig
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
    USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
    USE timing_module,        ONLY : timing
@@ -595,44 +596,44 @@ END PROGRAM bands
           ENDDO
           CLOSE( ham_unit )
 
-          !
-          ! as a check
-          ! these eigenvalues (and also the following ones) are not aligned 
-          ! to the fermi level. We impose the alignment manually...
-          !
-          filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
-          !
-          OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-          !
-          DO i = 1, dimwann
-              DO ik = 1, nkpts
-                WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
-                                   wan_eig(i,ik) -efermi
-              ENDDO
-              WRITE( ham_unit, "()") 
-          ENDDO
-          CLOSE( ham_unit )
-          !
-          !
-          filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
-          !
-          OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-          !
-          DO i = 1, nbnd
-              DO ik = 1, nkpts
-                 IF ( i >= imin(ik) .AND. i <= imax(ik) ) THEN
-                     WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
-                                                  eig(i,ik) -efermi
-                 ELSE
-                     WRITE (ham_unit, "()")
-                 ENDIF
-              ENDDO
-              WRITE( ham_unit, "()") 
-          ENDDO
-          CLOSE( ham_unit )
-          !
+!          !
+!          ! as a check
+!          ! these eigenvalues (and also the following ones) are not aligned 
+!          ! to the fermi level. We impose the alignment manually...
+!          !
+!          filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_wanband.dat'
+!          !
+!          OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
+!          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+!          !
+!          DO i = 1, dimwann
+!              DO ik = 1, nkpts
+!                WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
+!                                   wan_eig(i,ik) -efermi
+!              ENDDO
+!              WRITE( ham_unit, "()") 
+!          ENDDO
+!          CLOSE( ham_unit )
+!          !
+!          !
+!          filename=TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dftband.dat'
+!          !
+!          OPEN( ham_unit, FILE=TRIM(filename), STATUS='unknown', FORM='formatted', IOSTAT=ierr )
+!          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+!          !
+!          DO i = 1, nbnd
+!              DO ik = 1, nkpts
+!                 IF ( i >= imin(ik) .AND. i <= imax(ik) ) THEN
+!                     WRITE (ham_unit, "(2e16.8)") REAL(ik-1, dbl)/REAL(nkpts, dbl), &
+!                                                  eig(i,ik) -efermi
+!                 ELSE
+!                     WRITE (ham_unit, "()")
+!                 ENDIF
+!              ENDDO
+!              WRITE( ham_unit, "()") 
+!          ENDDO
+!          CLOSE( ham_unit )
+!          !
       ENDIF
 
 !
