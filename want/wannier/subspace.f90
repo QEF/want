@@ -123,7 +123,7 @@ CONTAINS
            IF( ierr /=0 ) CALL errore(subname, 'allocating eamp', ABS(ierr) )
        ENDIF
        !
-       alloc = leig_ .OR. llamp_ .OR. leamp_
+       alloc = .TRUE.
        !
        CALL log_pop ( subname )
        !

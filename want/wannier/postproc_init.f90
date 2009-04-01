@@ -143,7 +143,8 @@ CONTAINS
           CALL file_open(space_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
               !
-              CALL subspace_read(space_unit,"SUBSPACE",lfound, LEAMP=lsubspace, LLAMP=.FALSE.)
+              CALL subspace_read(space_unit,"SUBSPACE",lfound, &
+                                 LEIG=.FALSE., LEAMP=lsubspace, LLAMP=.FALSE.)
               IF ( .NOT. lfound ) CALL errore(subname,"unable to find SUBSPACE",1)
               !
           CALL file_close(space_unit,PATH="/",ACTION="read", IERR=ierr)

@@ -4,6 +4,9 @@
 =======================================================
 
 
+31 Mar 2009      Bug fixed in dealing with CRYSTAL06 datafiles: wan_eig are
+                 no longer requested to be in .space file. (AF)
+
 27 Mar 2009      Bug fixed in configure.ac. (AF) 
 
 16 Mar 2009      Bug fixed in compilation without __ETSF_IO support. (AF)
