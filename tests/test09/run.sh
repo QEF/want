@@ -148,7 +148,7 @@ run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 #
 if [ "$PROJ" = "yes" ] ; then
    #
-   run  NAME="PROJ"  EXEC=$DFT_BIN/projwfc.x  INPUT=proj$SUFFIX.in \
+   run  NAME="PROJ"  EXEC=$QE_BIN/projwfc.x  INPUT=proj$SUFFIX.in \
         OUTPUT=proj$SUFFIX.out PARALLEL=yes
 fi
 

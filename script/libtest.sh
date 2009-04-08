@@ -277,9 +277,9 @@ run_export () {
    echo "running $NAME calculation..."
    
    if [ "$INPUT_TYPE" = "from_stdin" ] ; then
-       $lpara_prefix $EXEC $lpara_postfix < $INPUT > $OUTPUT
+       $lpara_prefix $EXEC $lpara_postfix < $INPUT > $OUTPUT 2> /dev/null
    elif [ "$INPUT_TYPE" = "from_file" ] ; then
-       $lpara_prefix $EXEC $lpara_postfix -input $INPUT > $OUTPUT
+       $lpara_prefix $EXEC $lpara_postfix -input $INPUT > $OUTPUT 2> /dev/null
    else
        echo "$ECHO_T Invalid INPUT_TYPE = $INPUT_TYPE" ; exit 1 
    fi

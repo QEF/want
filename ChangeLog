@@ -3,6 +3,7 @@
             WanT code:  Log of Changes 
 =======================================================
 
+08 Apr 2009      Updates in the script lib to run tests. (AF)
 
 31 Mar 2009      Bug fixed in dealing with CRYSTAL06 datafiles: wan_eig are
                  no longer requested to be in .space file. (AF)
