@@ -97,25 +97,6 @@ fi
 #
 run_abinit  NAME=DFT   SUFFIX=$SUFFIX  PARALLEL=no  RUN=$ABI
 
-#
-# running DFT NSCF
-#
-run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
-   
-#
-# running DFT PWEXPORT
-#
-run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
-
-#
-# running DFT PROJ
-#
-if [ "$PROJ" = "yes" ] ; then
-   #
-   run  NAME="PROJ"  EXEC=$DFT_BIN/projwfc.x  INPUT=proj$SUFFIX.in \
-        OUTPUT=proj$SUFFIX.out PARALLEL=yes
-fi
-
 
 #
 # running DISENTANGLE
