@@ -48,13 +48,14 @@
    INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
                                      ! for directions i=1,2,3  (0 means no cutoff)
    INTEGER          :: nprint        ! print every "nprint" iterations
+   LOGICAL          :: do_orthoovp   ! orthogonalize overlaps
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, toll, idir, emin, emax, ne, ircut, fileout, nprint, &
-                    debug_level
+                    debug_level, do_orthoovp
    !
    ! end of declariations
    !   
@@ -88,7 +89,8 @@
       !
       ! do the main task
       !
-      CALL do_cmplx_bands( fileout, idir, toll2, nk, s, emin, emax, ne, ircut, nprint )
+      CALL do_cmplx_bands( fileout, idir, toll2, nk, s, emin, emax, ne, &
+                           ircut, nprint, do_orthoovp )
       !
       ! clean global memory
       !
@@ -138,8 +140,10 @@ CONTAINS
       ne                          =  1000
       ircut(1:3)                  =  0
       nprint                      = 50
-      debug_level                 = 0
+      debug_level                 =  0
+      do_orthoovp                 = .TRUE.
       
+
       CALL input_from_file ( stdin )
       !
       IF ( ionode )  READ(stdin, INPUT, IOSTAT=ierr)
@@ -166,6 +170,7 @@ CONTAINS
       CALL mp_bcast( ircut,           ionode_id )      
       CALL mp_bcast( nprint,          ionode_id )      
       CALL mp_bcast( debug_level,     ionode_id )      
+      CALL mp_bcast( do_orthoovp,     ionode_id )      
       !
       !
       IF ( LEN_TRIM(fileout) == 0 ) &
@@ -193,7 +198,7 @@ CONTAINS
       IF ( ne <= 0  )            CALL errore(subname, 'invalid ne', 4)
       IF ( nprint <= 0  )        CALL errore(subname, 'invalid nprint', 5)
       IF ( toll < 0.0  )         CALL errore(subname, 'invalid toll', 5)
-      IF ( ANY( ircut(:) < 0 ) ) CALL errore(subname,'Invalid ircut', 10)
+      IF ( ANY( ircut(:) < 0 ) ) CALL errore(subname, 'Invalid ircut', 10)
       !
       toll2 = toll**2
 
@@ -213,6 +218,7 @@ CONTAINS
           WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax
           WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
           WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
+          WRITE( stdout, "(   7x,'     orthogonalize ovp :',5x,a )") TRIM( log2char(do_orthoovp) )
           !
           IF ( ANY( ircut(:) > 0 ) ) THEN
               WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
@@ -239,7 +245,8 @@ END PROGRAM cmplx_bands
 
 
 !********************************************************
-   SUBROUTINE do_cmplx_bands( fileout, idir, toll2, nk, s, emin, emax, ne, ircut, nprint )
+   SUBROUTINE do_cmplx_bands( fileout, idir, toll2, nk, s, emin, emax, ne, &
+                              ircut, nprint, do_orthoovp )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -255,7 +262,7 @@ END PROGRAM cmplx_bands
    USE util_module,          ONLY : mat_hdiag, zmat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
-   USE kpoints_module,       ONLY : nrtot, nr, vr, wr 
+   USE kpoints_module,       ONLY : nrtot, nr, vr, wr
    USE windows_module,       ONLY : nspin
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
    USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
@@ -279,6 +286,7 @@ END PROGRAM cmplx_bands
       REAL(dbl),     INTENT(INOUT) :: emin, emax
       INTEGER,       INTENT(IN)    :: ircut(3)
       INTEGER,       INTENT(IN)    :: nprint
+      LOGICAL,       INTENT(IN)    :: do_orthoovp
 
       !
       ! local vars
@@ -311,8 +319,16 @@ END PROGRAM cmplx_bands
       !
       COMPLEX(dbl), ALLOCATABLE :: mtrx(:,:)
       COMPLEX(dbl), ALLOCATABLE :: caux(:,:), zaux(:,:), waux(:)
+      COMPLEX(dbl), ALLOCATABLE :: kovpi(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: kovp(:,:,:)
+      REAL(dbl),    ALLOCATABLE :: w(:)
+      REAL(dbl),    ALLOCATABLE :: wk_i(:), vkpt_i(:,:)
       REAL(dbl),    ALLOCATABLE :: beta(:,:,:)
-      ! 
+      !
+      INTEGER           :: nkpts_i, nk_i(3), s_i(3)
+      REAL(dbl)         :: arg
+      COMPLEX(dbl)      :: phase
       CHARACTER(nstrx)  :: filename, analyticity_sgm
       CHARACTER(20)     :: ctmp
       !
@@ -327,6 +343,7 @@ END PROGRAM cmplx_bands
       !
       ! end of declarations
       !
+
 
 !
 !------------------------------
@@ -598,6 +615,137 @@ END PROGRAM cmplx_bands
           !
       ENDIF
 
+    
+      !
+      ! if required, orthogonalize the basis and work with
+      ! no overlaps
+      !
+      IF ( do_orthoovp .AND. lhave_overlap ) THEN
+          !
+          IF ( lhave_sgm ) CALL errore(subname,'orthoovp and sgm not yet impl',71)
+
+          !
+          ! generate a suitable kgrid
+          !
+          s_i(:)  = 0
+          nk_i(:) = nr(:)
+          nkpts_i = PRODUCT( nk_i )
+          !
+          ALLOCATE( wk_i(nkpts_i), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating wk_i',ABS(ierr))
+          ALLOCATE( vkpt_i(3,nkpts_i), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating vkpt_i',ABS(ierr))
+          !
+          CALL monkpack( nk_i, s_i, vkpt_i )
+          !
+          wk_i(1:nkpts_i) = ONE / REAL( nkpts_i, dbl)
+          !
+          ! mv kpts in cartesian coords (bohr^-1)
+          !
+          CALL cry2cart( vkpt_i, bvec )
+
+
+          ALLOCATE( w(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating w',ABS(ierr))
+          !
+          ALLOCATE( kham(dimwann, dimwann, nkpts_i), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating kham',ABS(ierr))
+          !
+          ALLOCATE( kovp(dimwann, dimwann, nkpts_i), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating kovp',ABS(ierr))
+          !
+          ALLOCATE( kovpi(dimwann, dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating kovpi',ABS(ierr))
+          !
+          ALLOCATE( caux(dimwann, dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating caux',ABS(ierr))
+          !
+          ALLOCATE( zaux(dimwann, dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating zaux',ABS(ierr))
+          !
+          DO ik = 1, nkpts_i
+              !
+              CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn, &
+                                 vkpt_i(:,ik), kham(:,:,ik) )
+              CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn, &
+                                 vkpt_i(:,ik), kovp(:,:,ik) )
+
+              !
+              ! compute kovp^-1/2 ( kovpi )
+              !
+              CALL mat_hdiag( zaux, w(:), kovp(:,:,ik), dimwann)
+              !
+              DO i = 1, dimwann
+                  !
+                  IF ( w(i) <= ZERO ) CALL errore(subname,'unexpected eig < = 0 ',i)
+                  w(i) = ONE / SQRT( w(i) ) 
+                  !
+              ENDDO
+              !
+              DO j = 1, dimwann 
+              DO i = 1, dimwann 
+                  !
+                  caux(i,j) = zaux(i,j) * w(j)
+                  !
+              ENDDO
+              ENDDO
+              !
+              CALL mat_mul( kovpi, caux, 'N', zaux, 'C', dimwann, dimwann, dimwann)
+
+              !
+              ! apply the basis change to the hamiltonian
+              ! multiply kovpi to the right and the left of kham
+              !
+              CALL mat_mul( caux, kovpi, 'N', kham(:,:,ik), 'N', dimwann, dimwann, dimwann)
+              CALL mat_mul( kham(:,:,ik), caux, 'N', kovpi, 'N', dimwann, dimwann, dimwann)
+              !
+              ! reset the overlaps
+              !
+              kovp(:,:,ik) = CZERO
+              DO i = 1, dimwann
+                  kovp(i,i,ik) = CONE
+              ENDDO
+              !
+          ENDDO
+          !
+          ! take the hamiltonian and the overlaps back to the R space
+          !
+          DO ir = 1, nrtot_nn
+              !
+              rham_nn(:,:,ir) = CZERO
+              rovp_nn(:,:,ir) = CZERO
+              !
+              DO ik = 1, nkpts_i
+                  !
+                  arg =   DOT_PRODUCT( vkpt_i(:,ik), vr_nn(:, ir ) )
+                  phase = CMPLX( COS(arg), -SIN(arg), dbl ) * wk_i(ik)
+                  !
+                  DO j = 1, dimwann
+                  DO i = 1, dimwann
+                      rham_nn(i,j,ir) = rham_nn(i,j,ir) + phase * kham(i,j,ik)
+                      rovp_nn(i,j,ir) = rovp_nn(i,j,ir) + phase * kovp(i,j,ik)
+                  ENDDO
+                  ENDDO
+                  !
+              ENDDO
+              ! 
+          ENDDO
+          ! 
+          DEALLOCATE( w, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating kham, kovp',ABS(ierr))
+          DEALLOCATE( kham, kovp, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating kham, kovp',ABS(ierr))
+          DEALLOCATE( kovpi, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating kovpi',ABS(ierr))
+          DEALLOCATE( caux, zaux, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating caux, zaux',ABS(ierr))
+          DEALLOCATE( vkpt_i, wk_i, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating vkpt_i, wk_i',ABS(ierr))
+          !
+          lhave_overlap = .FALSE.
+          !
+      ENDIF
+   
       !
       ! define nrtot_1D
       !
@@ -1145,7 +1293,7 @@ END PROGRAM cmplx_bands
       DEALLOCATE( rovp_1D, STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,'deallocating rovp_1D',ABS(ierr))
       !
-      IF ( lhave_overlap ) THEN
+      IF ( ALLOCATED( rovp_nn ) ) THEN
          DEALLOCATE( rovp_nn, STAT=ierr )
          IF ( ierr/=0 ) CALL errore(subname,'deallocating rovp_nn',ABS(ierr))
       ENDIF
