@@ -3,7 +3,10 @@
             WanT code:  Log of Changes 
 =======================================================
 
-13 Apr 2009      orthogonalization of ovp added to cmplx_bands.f90 to 
+16 Apr 2009      Changes in test04 because the usage of dipole.x in QE
+                 is changed. (AF)
+
+13 Apr 2009      Orthogonalization of ovp added to cmplx_bands.f90 to 
                  improve numerical accuracy. (AF)
 
 08 Apr 2009      Updates in the script lib to run tests. (AF)
