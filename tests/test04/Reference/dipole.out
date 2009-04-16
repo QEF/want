@@ -1,14 +1,38 @@
 
-     Program POST-PROC v.3.2cvs starts ...
-     Today is 21Oct2006 at 15:38: 3 
-     Reading header from file  ./SCRATCH/guanine_charge.txt
-     Reading data from file  ./SCRATCH/guanine_charge.txt
-     Origin translated by:  -0.2153  0.1156 -0.2083 (alat units)
+     Program POST-PROC v.4.0.5  starts ...
+     Today is 16Apr2009 at 16:21:48 
 
-     Charge density inside the Wigner-Seitz cell:   56.00000000
-     Dipole moment:
-     Elect-13.1756  5.2434-28.4080 au,  -33.4893 13.3274-72.2062 Debye
-     Ionic 12.1717 -4.8598 25.8098 au,   30.9376-12.3524 65.6022 Debye
-     Total -1.0039  0.3836 -2.5982 au,   -2.5517  0.9749 -6.6040 Debye
+     Parallel version (MPI)
 
-    Makov-Payne correction only for cubic lattices
+     Number of processors in use:       4
+     R & G space division:  proc/pool =    4
+
+     Planes per process (thick) : nr3 =144 npp =  36 ncplane =20736
+     Planes per process (smooth): nr3s= 96 npps=  24 ncplanes= 9216
+ 
+     Proc/  planes cols     G    planes cols    G      columns  G
+     Pool       (dense grid)       (smooth grid)      (wavefct grid)
+       1     36   3582   322440   24   1789   113969    447    14263
+       2     36   3583   322443   24   1788   113958    446    14264
+       3     36   3582   322438   24   1788   113964    448    14262
+       4     36   3582   322438   24   1788   113972    448    14262
+     tot    144  14329  1289759   96   7153   455863   1789    57051
+ 
+
+     negative rho (up, down):  0.621E-01 0.000E+00
+
+     charge density inside the Wigner-Seitz cell:   56.00000000
+
+     reference position (x0):        -6.24098115    3.37988455   -5.78911153 bohr
+
+     Dipole moments (with respect to x0):
+     Elect   -1.0102    0.3789   -2.6188 au,     -2.5678    0.9632   -6.6562 Debye
+     Ionic    0.0000    0.0000    0.0000 au,      0.0000    0.0000    0.0000 Debye
+     Total   -1.0102    0.3789   -2.6188 au,     -2.5678    0.9632   -6.6562 Debye
+
+     Electrons quadrupole moment      -1185.96144993 a.u.
+          Ions quadrupole moment       1055.72934419 a.u.
+         Total quadrupole moment       -130.23210574 a.u.
+
+     Makov-Payne correction only for cubic lattices
+
