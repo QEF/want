@@ -107,13 +107,14 @@ run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 #
 # running DIPOLE
 #
-# compute dipole running pp.x and dipole.x form the Espresso suite
+# compute dipole dipole.x form the Espresso suite
 #
 if [ "$DIPOLE" = "yes" ] ; then
    #
-   run  NAME="DIPOLE_PP" EXEC=$DFT_BIN/pp.x INPUT=pp$SUFFIX.in OUTPUT=pp$SUFFIX.out \
-                         PARALLEL=yes
-   run  NAME="DIPOLE"    EXEC=$DFT_BIN/dipole.x INPUT=dipole$SUFFIX.in \
+   #   run  NAME="DIPOLE_PP" EXEC=$QE_BIN/pp.x INPUT=pp$SUFFIX.in OUTPUT=pp$SUFFIX.out \
+   #                         PARALLEL=yes
+   #
+   run  NAME="DIPOLE"    EXEC=$QE_BIN/dipole.x INPUT=dipole$SUFFIX.in \
                          OUTPUT=dipole$SUFFIX.out PARALLEL=yes
 fi
 
