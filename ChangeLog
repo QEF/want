@@ -3,6 +3,13 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+01 May 2009      Bug fixed in *.space file (windows_write) in the case of
+                 spin polarized systems. (AF)
+
+28 Apr 2009      Routine read_upf_v2.f90 updated according to QEspresso cvs.
+                 Bugs fixed in that routine to allow reading of 1/r potentials. (AF)
+
 16 Apr 2009      Changes in test04 because the usage of dipole.x in QE
                  is changed. (AF)
 

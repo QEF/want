@@ -11,10 +11,10 @@
 !  this module handles the reading of pseudopotential data
 
 ! ...   declare modules
-        USE kinds,               ONLY : DP => dbl
-        USE pseudo_types_module, ONLY : pseudo_upf
-        USE radial_grids_module, ONLY : radial_grid_type
-        USE parser_module,       ONLY : version_compare, matches
+        USE kinds,                 ONLY: DP => dbl
+        USE pseudo_types_module,   ONLY: pseudo_upf
+        USE radial_grids_module,   ONLY: radial_grid_type
+        USE parser_module,         ONLY : version_compare, matches
         USE iotk_module
         !
         PRIVATE
@@ -38,7 +38,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
    CHARACTER(len=iotk_attlenx) :: attr
    INTEGER :: ierr_
    LOGICAL :: found
-   CHARACTER(len=6),PARAMETER :: max_version = '2.0.0'
+   CHARACTER(len=6),PARAMETER :: max_version = '2.0.1'
    !
    ! Prepare the type .  Should be done where upf is instantiated
    ! CALL deallocate_pseudo_upf(upf)
@@ -54,7 +54,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
        !
        CALL iotk_close_read(u,ierr=ierr)
        IF(.not. present(ierr)) &
-         CALL errore('read_upf_v2','Fatal Error',1)
+         CALL errore('read_upf_v2','Cannot open UPF file.',1)
        ierr = 1
        RETURN
    ENDIF
@@ -68,14 +68,23 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
    CALL iotk_scan_begin(u,'PP_INFO',found=found)
    if(found) CALL iotk_scan_end(u,'PP_INFO')
    !
-   ! Write machine-readable header
+   ! Read machine-readable header
    CALL read_header(u, upf)
    IF(upf%tpawp .and. .not. present(grid)) &
       CALL errore('read_upf_v2', 'PAW requires a radial_grid_type.', 1)
+   !
+   ! CHECK for bug in version 2.0.0 of UPF file, occurring for ultrasoft pseudopotentials
+   IF (version_compare(upf%nv, '2.0.1') == 'older' .and. upf%tvanp .and. .not. upf%tpawp) &
+      CALL errore('read_upf_v2',&
+                   'Ultrasoft and PAW pseudopotential generated with &
+                  & code version equal or older than QE 4.0.5 can contain &
+                  & a bug compromising the quality of the calculation. &
+                  & regenerate the pseudopotential file with a newer version &
+                  & of the ld1 code!', 1)
 
-   ! Write radial grid mesh
+   ! Read radial grid mesh
    CALL read_mesh(u, upf, grid)
-   ! Write non-linear core correction charge
+   ! Read non-linear core correction charge
    ALLOCATE( upf%rho_atc(upf%mesh) )
    IF(upf%nlcc) THEN
       CALL iotk_scan_dat(u, 'PP_NLCC',  upf%rho_atc)
@@ -83,24 +92,24 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       ! A null core charge simplifies several functions, mostly in PAW
       upf%rho_atc(1:upf%mesh) = 0._dp
    ENDIF
-   ! Write local potential
+   ! Read local potential
    IF(.not. upf%tcoulombp) THEN
       ALLOCATE( upf%vloc(upf%mesh) )
       CALL iotk_scan_dat(u, 'PP_LOCAL', upf%vloc)
    ENDIF
-   ! Write nonlocal components: projectors, augmentation, hamiltonian elements
+   ! Read nonlocal components: projectors, augmentation, hamiltonian elements
    CALL read_nonlocal(u, upf)
-   ! Write initial pseudo wavefunctions
+   ! Read initial pseudo wavefunctions
    ! (usually only wfcs with occupancy > 0)
    CALL read_pswfc(u, upf)
    ! Read all-electron and pseudo wavefunctions
    CALL read_full_wfc(u, upf)
-   ! Write valence atomic density (used for initial density)
+   ! Read valence atomic density (used for initial density)
    ALLOCATE( upf%rho_at(upf%mesh) )
    CALL iotk_scan_dat(u, 'PP_RHOATOM', upf%rho_at)
-   ! Write additional info for full-relativistic calculation
+   ! Read additional info for full-relativistic calculation
    CALL read_spin_orb(u, upf)
-   ! Write additional data for PAW (All-electron charge, wavefunctions, vloc..)
+   ! Read additional data for PAW (All-electron charge, wavefunctions, vloc..)
    CALL read_paw(u, upf)
    ! Read data dor gipaw reconstruction
    CALL read_gipaw(u, upf)
@@ -222,12 +231,12 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       LOGICAL :: isnull, found
       zeros=0._dp
       !
-      IF (upf%tcoulombp) RETURN
-      !
-      CALL iotk_scan_begin(u, 'PP_NONLOCAL')
+      ! modified by AF
+      !IF (upf%tcoulombp) RETURN
+      IF (upf%tcoulombp) upf%nbeta = 0
       !
       ! Allocate space for non-local part
-      if ( upf%nbeta == 0) then
+      IF ( upf%nbeta == 0) then
          upf%nqf = 0
          upf%nqlc= 0
          upf%qqq_eps= -1._dp
@@ -243,9 +252,14 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
                    upf%rcut(1),          &
                    upf%rcutus(1),        &
                    upf%els_beta(1) )
-         CALL iotk_scan_end(u, 'PP_NONLOCAL')
+         ! <AF>
+         !CALL iotk_scan_end(u, 'PP_NONLOCAL')
          RETURN
-      end if
+      END IF
+      !
+      ! <AF>
+      CALL iotk_scan_begin(u, 'PP_NONLOCAL')
+      !
       ALLOCATE( upf%kbeta(upf%nbeta),          &
                 upf%lll(upf%nbeta),            &
                 upf%beta(upf%mesh, upf%nbeta), &
@@ -253,6 +267,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
                 upf%rcut(upf%nbeta),           &
                 upf%rcutus(upf%nbeta),         &
                 upf%els_beta(upf%nbeta) )
+
       !
       ! Read the projectors:
       DO nb = 1,upf%nbeta
@@ -290,6 +305,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       ALLOCATE( upf%qqq   ( upf%nbeta, upf%nbeta ) )
       IF ( upf%q_with_l ) THEN
         ALLOCATE( upf%qfuncl ( upf%mesh, upf%nbeta*(upf%nbeta+1)/2, 0:2*upf%lmax ) )
+        upf%qfuncl=0._dp
       ELSE
         ALLOCATE( upf%qfunc (upf%mesh, upf%nbeta*(upf%nbeta+1)/2) )
       ENDIF
@@ -304,7 +320,6 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       ENDIF
       !
       ! Read polinomial coefficients for Q_ij expansion at small radius
-      ALLOCATE( upf%rinner( upf%nqlc ) )
       IF(upf%nqf <= 0) THEN
          upf%rinner(:) = 0._dp
          ALLOCATE( upf%qfcoef(1,1,1,1) )
@@ -344,7 +359,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       !
       ! Maximum radius of beta projector: outer radius to integrate
       upf%kkbeta = MAXVAL(upf%kbeta(1:upf%nbeta))
-      ! For PAW augmntation charge may extend a bit further:
+      ! For PAW augmentation charge may extend a bit further:
       IF(upf%tpawp) upf%kkbeta = MAX(upf%kkbeta, upf%paw%iraug)
       !
       CALL iotk_scan_end(u, 'PP_NONLOCAL')
@@ -433,8 +448,8 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       !
       CALL iotk_scan_begin(u, 'PP_SPIN_ORB')
       !
-      ALLOCATE( upf%nn(upf%nwfc), upf%nn(upf%nwfc), &
-                upf%oc(upf%nwfc), upf%jchi(upf%nwfc))
+      ALLOCATE (upf%nn(upf%nwfc))
+      ALLOCATE (upf%jchi(upf%nwfc))
       !
       DO nw = 1,upf%nwfc
          CALL iotk_scan_empty(u, 'PP_RELWFC'//iotk_index(nw),&
@@ -446,7 +461,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
             !CALL iotk_scan_attr(attr, 'oc',    upf%oc(nw))   ! already read
       ENDDO
       !
-      ALLOCATE( upf%lll(upf%nbeta), upf%jjj(upf%nbeta))
+      ALLOCATE(upf%jjj(upf%nbeta))
       !
       DO nb = 1,upf%nbeta
          CALL iotk_scan_empty(u, 'PP_RELBETA'//iotk_index(nb),&
@@ -581,7 +596,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       ENDDO
       CALL iotk_scan_end(u, 'PP_GIPAW_ORBITALS')
       !
-      ! Write all-electron and pseudo local potentials
+      ! Read all-electron and pseudo local potentials
       ALLOCATE ( upf%gipaw_vlocal_ae(upf%mesh) )
       ALLOCATE ( upf%gipaw_vlocal_ps(upf%mesh) )
       CALL iotk_scan_begin(u, 'PP_GIPAW_VLOCAL')

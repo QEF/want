@@ -446,7 +446,7 @@ CONTAINS
            !
            IF ( nspin == 2 ) THEN
                !
-               CALL iotk_write_end(iun,"SPIN"//TRIM(iotk_index(isp)) )
+               CALL iotk_write_begin(iun,"SPIN"//TRIM(iotk_index(isp)) )
                !
            ENDIF
            !
