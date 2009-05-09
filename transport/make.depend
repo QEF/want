@@ -23,6 +23,7 @@ conductor.o : ../libs/util.o
 conductor.o : operator_blc.o
 conductor.o : smearing.o
 conductor.o : ../wannier/io_module.o
+conductor.o : ../wannier/operator.o
 conductor.o : ../wannier/version.o
 conductor.o : workspace.o
 control.o : ../libs/kind.o

@@ -9,4 +9,5 @@ midpoint.o : ../wannier/ions.o
 midpoint.o : ../wannier/lattice.o
 midpoint.o : ../wannier/version.o
 midpoint.o : ../wannier/want_interfaces.o
+wfk2etsf.o : ../wannier/atomic.o
 gcube2plt.o : ../include/ctools.h

@@ -126,7 +126,10 @@
        ! max allowed number of failures during lead-sgm calculation
 
    LOGICAL :: write_kdata = .FALSE.
-       ! wheter to write kpoint-resolved dos an transmittance to output
+       ! write kpoint-resolved dos an transmittance to output
+
+   LOGICAL :: write_lead_sgm = .FALSE.
+       ! write the computed lead self-energies to disk.
 
    LOGICAL :: do_eigenchannels = .FALSE.
        ! compute eigenchannels
@@ -183,7 +186,7 @@
                  datafile_L, datafile_C, datafile_R, datafile_sgm,              &
                  transport_dir, smearing_type, do_eigenchannels,                &
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
-                 work_dir, prefix, postfix, write_kdata, ispin,                 &
+                 work_dir, prefix, postfix, write_kdata, write_lead_sgm, ispin, &
                  shift_L, shift_C, shift_R, shift_corr, nfailx 
 
 
@@ -191,7 +194,7 @@
    PUBLIC :: ne, emin, emax, nprint, delta, bias, delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: nk, s, use_symm, debug_level
-   PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, do_eigenchannels
+   PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm, do_eigenchannels
    PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
    PUBLIC :: INPUT_CONDUCTOR
 
@@ -246,6 +249,7 @@ CONTAINS
       CALL mp_bcast( nprint,             ionode_id)      
       CALL mp_bcast( niterx,             ionode_id)      
       CALL mp_bcast( write_kdata,        ionode_id)      
+      CALL mp_bcast( write_lead_sgm,     ionode_id)      
       CALL mp_bcast( nk,                 ionode_id)      
       CALL mp_bcast( s,                  ionode_id)      
       CALL mp_bcast( use_symm,           ionode_id)      
