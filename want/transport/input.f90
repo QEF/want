@@ -88,6 +88,7 @@ CONTAINS
                                            datafile_R,        &
                                            datafile_sgm,      &
                                            write_kdata,       &
+                                           write_lead_sgm,    &
                                            debug_level,       &
                                            use_debug_mode,    &
                                            do_eigenchannels,  &
@@ -104,6 +105,7 @@ CONTAINS
                                            datafile_R_        => datafile_R, &
                                            datafile_sgm_      => datafile_sgm, &
                                            write_kdata_       => write_kdata, &
+                                           write_lead_sgm_    => write_lead_sgm, &
                                            debug_level_       => debug_level, &
                                            do_eigenchannels_  => do_eigenchannels, &
                                            nfailx_            => nfailx
@@ -121,6 +123,7 @@ CONTAINS
       datafile_sgm        = datafile_sgm_
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
+      write_lead_sgm      = write_lead_sgm_
       debug_level         = debug_level_
       do_eigenchannels    = do_eigenchannels_
       nfailx              = nfailx_

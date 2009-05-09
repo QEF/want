@@ -68,6 +68,7 @@
       aux2_unit = 32,              &! 
       aux3_unit = 33,              &! 
       aux4_unit = 34,              &! 
+      aux5_unit = 35,              &! 
       save_unit = 60                ! restart file unit
 
 
@@ -77,6 +78,7 @@
    CHARACTER( 4), PARAMETER   ::  suffix_hamiltonian=".ham"
    CHARACTER( 5), PARAMETER   ::  suffix_save=".save"
    CHARACTER( 4), PARAMETER   ::  suffix_log=".log"
+   CHARACTER( 4), PARAMETER   ::  suffix_sgm=".sgm"
    CHARACTER(nstrx)           ::  suffix_qe_data=" "
    CHARACTER(12), PARAMETER   ::  suffix_etsf_io_data="_WFK-etsf.nc"
    REAL,          PARAMETER   ::  etsf_io_version_min=2.1
@@ -462,12 +464,13 @@
 
 
 !**********************************************************
-   SUBROUTINE io_name(data_type,filename,lpostfix,lbody,lpath,lproc)
+   SUBROUTINE io_name( data_type, filename, lpostfix, lbody, body, lpath, lproc)
    !**********************************************************
       IMPLICIT NONE
-      CHARACTER(*),       INTENT(IN)  :: data_type
-      CHARACTER(*),       INTENT(OUT) :: filename
-      LOGICAL, OPTIONAL,  INTENT(IN)  :: lpostfix, lbody, lpath, lproc   
+      CHARACTER(*),            INTENT(IN)  :: data_type
+      CHARACTER(*),            INTENT(OUT) :: filename
+      CHARACTER(*),  OPTIONAL, INTENT(IN)  :: body
+      LOGICAL,       OPTIONAL, INTENT(IN)  :: lpostfix, lbody, lpath, lproc   
       !
       CHARACTER(7)        :: subname="io_name"
       LOGICAL             :: lpostfix_, lbody_, lpath_, lproc_
@@ -476,12 +479,14 @@
 
       !
       ! DEFAULT
-      lpostfix_ = .TRUE.
-      lpath_ = .TRUE.
-      lproc_ = .TRUE.
-      lbody_ = .FALSE.
+      lpostfix_   = .TRUE.
+      lpath_      = .TRUE.
+      lproc_      = .TRUE.
+      lbody_      = .FALSE.
       !
-      IF ( PRESENT(lbody) )    lbody_    = lbody
+      IF ( PRESENT(lbody) )       lbody_ = lbody
+      IF ( PRESENT(body) )         body_ = TRIM(body)
+      IF ( PRESENT(body) )        lbody_ = .TRUE.
       IF ( PRESENT(lpostfix) ) lpostfix_ = lpostfix
       IF ( PRESENT(lpath) )       lpath_ = lpath
       IF ( PRESENT(lproc) )       lproc_ = lproc
@@ -543,24 +548,46 @@
            END SELECT
            !
       CASE ( "space" ) 
+           !
            suffix_ = TRIM(suffix_space)
+           !
       CASE ( "overlap_projection" ) 
+           !
            suffix_ = TRIM(suffix_ovp)
+           !
       CASE ( "wannier" ) 
+           !
            suffix_ = TRIM(suffix_wannier)
+           !
       CASE ( "hamiltonian" )
+           !
            suffix_ = TRIM(suffix_hamiltonian) 
+           !
       CASE ( "save" )
+           !
            suffix_ = TRIM(suffix_save) // TRIM(proc_)
+           !
       CASE ( "log" )
+           !
            suffix_ = TRIM(suffix_log) // TRIM(proc_)
            IF ( lbody_ ) body_ = "debug"
+           !
       CASE ( "conductance", "cond" )
+           !
            body_   = "cond" 
            suffix_ = ".dat"
+           !
       CASE ( "doscond" )
+           !
            body_   = "doscond" 
            suffix_ = ".dat"
+           !
+      CASE ( "sgm" )
+           !
+           body_   = "sgm" 
+           IF ( PRESENT(body) )  body_ = TRIM(body)
+           suffix_ = TRIM(suffix_sgm) // TRIM(proc_)
+           !
       CASE DEFAULT
            CALL errore('io_name','Unknown DATA type in input',1)
       END SELECT

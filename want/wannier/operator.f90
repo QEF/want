@@ -14,8 +14,10 @@ MODULE operator_module
   ! iotk-XML fmt
   !
   USE kinds
-  USE constants, ONLY : ZERO
+  USE constants,      ONLY : ZERO
+  USE files_module,   ONLY : file_exist, file_open, file_close
   USE iotk_module
+  !
   IMPLICIT NONE
   !
   PRIVATE
@@ -23,8 +25,13 @@ MODULE operator_module
   CHARACTER( iotk_attlenx ) :: attr
   !
   !
+  PUBLIC :: operator_read_init
+  PUBLIC :: operator_read_close
   PUBLIC :: operator_read_aux
   PUBLIC :: operator_read_data
+  !
+  PUBLIC :: operator_write_init
+  PUBLIC :: operator_write_close
   !
 CONTAINS
 
@@ -33,6 +40,46 @@ CONTAINS
 ! ... basic (public) subroutines
 !-------------------------------------------
 !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE operator_read_init( iun, filename, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,           INTENT(IN)  :: iun
+      CHARACTER(LEN=*),  INTENT(IN)  :: filename
+      INTEGER,           INTENT(OUT) :: ierr
+      !
+      LOGICAL :: lexist
+      !
+      ierr = 0
+      !
+      CALL file_exist( filename, lexist)
+      !
+      IF ( .NOT. lexist ) THEN
+          ierr = 1
+          RETURN
+      ENDIF
+      !
+      CALL file_open( iun, TRIM(filename), PATH="/", ACTION="read", IERR=ierr )
+      IF ( ierr/=0 ) ierr = 2
+      !
+      RETURN
+      !
+    END SUBROUTINE operator_read_init
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE operator_read_close( iun, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,           INTENT(IN)  :: iun
+      INTEGER,           INTENT(OUT) :: ierr
+      !
+      CALL file_close( iun, PATH="/", ACTION="read", IERR=ierr )
+      IF ( ierr/=0 ) ierr = 2
+      !
+    END SUBROUTINE operator_read_close
+    !
     !
     !------------------------------------------------------------------------
     SUBROUTINE operator_read_aux( iun, dimwann, dynamical, nomega, grid, analyticity, &
@@ -154,6 +201,33 @@ CONTAINS
       ENDIF
       !
     END SUBROUTINE operator_read_data
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE operator_write_init( iun, filename, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,           INTENT(IN)  :: iun
+      CHARACTER(LEN=*),  INTENT(IN)  :: filename
+      INTEGER,           INTENT(OUT) :: ierr
+      !
+      ierr = 0
+      CALL file_open( iun, TRIM(filename), PATH="/", ACTION="write", IERR=ierr )
+      !
+    END SUBROUTINE operator_write_init
+    ! 
+    ! 
+    !------------------------------------------------------------------------
+    SUBROUTINE operator_write_close( iun, ierr )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,           INTENT(IN)  :: iun
+      INTEGER,           INTENT(OUT) :: ierr
+      !
+      ierr = 0
+      CALL file_close( iun, PATH="/", ACTION="write", IERR=ierr )
+      !
+    END SUBROUTINE operator_write_close
     !
     !
 END MODULE operator_module

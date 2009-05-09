@@ -34,6 +34,7 @@
    LOGICAL                   :: use_overlap = .FALSE.
    LOGICAL                   :: use_debug_mode
    LOGICAL                   :: write_kdata
+   LOGICAL                   :: write_lead_sgm
    !
    INTEGER                   :: niterx
    INTEGER                   :: nfailx
@@ -58,7 +59,9 @@
    PUBLIC :: do_eigenchannels
    PUBLIC :: use_overlap
    PUBLIC :: use_debug_mode
+   !
    PUBLIC :: write_kdata
+   PUBLIC :: write_lead_sgm
    !
    PUBLIC :: niterx
    PUBLIC :: nfailx

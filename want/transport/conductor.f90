@@ -24,10 +24,12 @@
    USE mp,                   ONLY : mp_sum
    USE io_module,            ONLY : io_name, ionode, stdout, stdin, sgm_unit, &
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
+                                    sgmL_unit => aux3_unit, sgmR_unit => aux4_unit, &
                                     work_dir, prefix, postfix, aux_unit
+   USE operator_module,      ONLY : operator_write_init, operator_write_close
    USE T_input_module,       ONLY : input_manager
    USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
-                                    write_kdata, do_eigenchannels
+                                    write_kdata, write_lead_sgm, do_eigenchannels
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
@@ -170,16 +172,32 @@
 ! 
 
    IF ( ionode ) THEN
-      !
-      CALL write_header( stdout, "Frequency Loop" )
-      CALL flush_unit( stdout )
-      !
+       !
+       CALL write_header( stdout, "Frequency Loop" )
+       CALL flush_unit( stdout )
+       !
    ENDIF
 
    !
    ! init parallelism over frequencies
    !
    CALL divide_et_impera( 1, ne,  iomg_s, iomg_e, mpime, nproc )
+
+   
+   !
+   ! init lead sgm output files, if the case
+   !
+   IF ( write_lead_sgm ) THEN
+       !
+       CALL io_name( "sgm", filename, BODY="sgmlead_L" )
+       CALL operator_write_init(sgmL_unit, filename, ierr)
+       IF ( ierr/=0 ) CALL errore(subname,"opening sgmL file",ABS(ierr))
+       !
+       CALL io_name( "sgm", filename, BODY="sgmlead_R" )
+       CALL operator_write_init(sgmR_unit, filename, ierr)
+       IF ( ierr/=0 ) CALL errore(subname,"opening sgmR file",ABS(ierr))
+       !
+   ENDIF
 
 
    dos(:)           = ZERO
@@ -345,6 +363,20 @@
        !
    ENDIF
        
+   !
+   ! close lead sgm output files
+   !
+   IF ( write_lead_sgm ) THEN
+       !
+       CALL operator_write_close(sgmL_unit, ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing smgL file',ABS(ierr))
+       !
+       CALL operator_write_close(sgmR_unit, ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing smgR file',ABS(ierr))
+       !
+   ENDIF
+
+
 
 
 !

@@ -42,7 +42,6 @@ bands.o : ../libs/parser.o
 bands.o : ../libs/timing.o
 bands.o : ../libs/util.o
 bands.o : operator.o
-bands.o : subspace.o
 bands.o : version.o
 bands.o : want_interfaces.o
 bands.o : windows.o
@@ -248,6 +247,8 @@ get_points.o : ../libs/constants.o
 get_points.o : ../libs/kind.o
 get_rgrid.o : ../libs/constants.o
 get_rgrid.o : ../libs/kind.o
+get_vectmap.o : ../libs/kind.o
+get_vectmap.o : ../libs/log_module.o
 gglobal.o : ../libs/kind.o
 ggrids.o : converters.o
 ggrids.o : etsf_io_data.o
@@ -460,6 +461,7 @@ omega.o : ../libs/mp.o
 omega.o : ../libs/timing.o
 operator.o : ../iotk/iotk_16_module.o
 operator.o : ../libs/constants.o
+operator.o : ../libs/files.o
 operator.o : ../libs/kind.o
 ordering.o : kpoints.o
 ordering.o : ../libs/constants.o
