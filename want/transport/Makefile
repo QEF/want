@@ -31,6 +31,7 @@ workspace.o
 
 WANNIER_OBJS= \
 ../wannier/compute_kham.o \
+../wannier/compute_rham.o \
 ../wannier/control.o \
 ../wannier/converters.o \
 ../wannier/crystal_tools.o \

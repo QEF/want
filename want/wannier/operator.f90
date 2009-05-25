@@ -32,6 +32,8 @@ MODULE operator_module
   !
   PUBLIC :: operator_write_init
   PUBLIC :: operator_write_close
+  PUBLIC :: operator_write_aux
+  PUBLIC :: operator_write_data
   !
 CONTAINS
 
@@ -40,6 +42,10 @@ CONTAINS
 ! ... basic (public) subroutines
 !-------------------------------------------
 !
+    !
+    !==========================
+    ! READ routines
+    !==========================
     !
     !------------------------------------------------------------------------
     SUBROUTINE operator_read_init( iun, filename, ierr )
@@ -203,29 +209,148 @@ CONTAINS
     END SUBROUTINE operator_read_data
     !
     !
+    !==========================
+    ! WRITE routines
+    !==========================
+    !
     !------------------------------------------------------------------------
-    SUBROUTINE operator_write_init( iun, filename, ierr )
+    SUBROUTINE operator_write_aux( iun, dimwann, dynamical, nomega, iomg_s, iomg_e, &
+                                   grid, eunits, analyticity, nrtot, vr, ivr ) 
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                     INTENT(IN)  :: iun
+      INTEGER,                     INTENT(IN)  :: dimwann, nomega, nrtot
+      INTEGER,           OPTIONAL, INTENT(IN)  :: iomg_s, iomg_e
+      LOGICAL,                     INTENT(IN)  :: dynamical
+      REAL(dbl),         OPTIONAL, INTENT(IN)  :: vr(:,:)
+      REAL(dbl),         OPTIONAL, INTENT(IN)  :: grid(:)
+      INTEGER,           OPTIONAL, INTENT(IN)  :: ivr(:,:)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN)  :: analyticity
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(IN)  :: eunits
+      !
+      CHARACTER(256)    :: analyticity_
+      CHARACTER(18)     :: subname="operator_write_aux"
+      !
+      !
+      IF ( dynamical .AND. .NOT. PRESENT(grid) ) CALL errore(subname,'grid must be present',10)
+      IF ( dynamical .AND. .NOT. PRESENT(analyticity) ) CALL errore(subname,'analyt must be present',10)
+      IF ( .NOT. PRESENT(vr) .AND. .NOT. PRESENT(ivr) ) CALL errore(subname,'both VR and IVR not present',10)
+      !
+      IF ( .NOT. dynamical .AND. nomega /= 1 ) CALL errore(subname,'invalid nomega',10)
+      !
+      analyticity_ = ""
+      IF (PRESENT( analyticity)) analyticity_ = TRIM(analyticity)
+      
+      CALL iotk_write_attr( attr, "dimwann", dimwann, FIRST=.TRUE. )
+      CALL iotk_write_attr( attr, "nrtot", nrtot )
+      CALL iotk_write_attr( attr, "dynamical", dynamical )
+      CALL iotk_write_attr( attr, "nomega", nomega )
+      !
+      IF ( PRESENT(iomg_s) ) CALL iotk_write_attr( attr, "iomg_s", iomg_s )
+      IF ( PRESENT(iomg_e) ) CALL iotk_write_attr( attr, "iomg_e", iomg_e )
+      !
+      IF ( dynamical ) CALL iotk_write_attr( attr, "analyticity", TRIM(analyticity_) )
+      !
+      CALL iotk_write_empty( iun, "DATA", ATTR=attr )
+      !
+      !
+      IF ( PRESENT ( vr ) ) THEN
+          !
+          CALL iotk_write_dat( iun, "VR", vr, COLUMNS=SIZE(vr,1) )
+          !
+      ENDIF
+      !
+      IF ( PRESENT ( ivr ) ) THEN
+          !
+          CALL iotk_write_dat( iun, "IVR", ivr, COLUMNS=SIZE(ivr,1) )
+          !
+      ENDIF
+      !
+      IF ( PRESENT ( grid ) ) THEN
+          !
+          IF ( PRESENT( eunits ) ) THEN
+              CALL iotk_write_attr(attr, "units", TRIM(eunits), FIRST=.TRUE.)
+              CALL iotk_write_dat( iun, "GRID", grid, COLUMNS=4, ATTR=attr )
+          ELSE
+              CALL iotk_write_dat( iun, "GRID", grid, COLUMNS=4 )
+          ENDIF
+          !
+      ENDIF
+      !
+      RETURN
+      ! 
+    END SUBROUTINE operator_write_aux
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE operator_write_data( iun, r_opr, dynamical, ie )
+      !------------------------------------------------------------------------
+      !
+      INTEGER,                 INTENT(IN)  :: iun
+      COMPLEX(dbl),            INTENT(IN)  :: r_opr(:,:,:)
+      LOGICAL,                 INTENT(IN)  :: dynamical
+      INTEGER,       OPTIONAL, INTENT(IN)  :: ie
+      !
+      CHARACTER( 19 )  :: subname="operator_write_data"
+      CHARACTER( 256 ) :: str
+      INTEGER          :: ir
+      !
+      !
+      IF ( dynamical .AND. .NOT. PRESENT (ie) ) CALL errore(subname,'ie is needed',10)
+      !
+      str = "OPR"
+      IF ( dynamical ) str = TRIM(str)//TRIM( iotk_index(ie) ) 
+      !
+      CALL iotk_write_begin( iun, TRIM(str) )
+      !
+      DO ir = 1, SIZE( r_opr, 3 )
+          !
+          CALL iotk_write_dat( iun, "VR"//TRIM(iotk_index(ir)), r_opr(:,:,ir) )
+          !
+      ENDDO
+      !
+      CALL iotk_write_end( iun, TRIM(str) )
+      !
+      RETURN
+      ! 
+    END SUBROUTINE operator_write_data
+    !
+    !
+    !------------------------------------------------------------------------
+    SUBROUTINE operator_write_init( iun, filename, binary )
       !------------------------------------------------------------------------
       !
       INTEGER,           INTENT(IN)  :: iun
       CHARACTER(LEN=*),  INTENT(IN)  :: filename
-      INTEGER,           INTENT(OUT) :: ierr
+      LOGICAL, OPTIONAL, INTENT(IN)  :: binary
       !
-      ierr = 0
-      CALL file_open( iun, TRIM(filename), PATH="/", ACTION="write", IERR=ierr )
+      CHARACTER(19) :: subname="operator_write_init"
+      CHARACTER(20) :: form
+      LOGICAL       :: binary_ = .TRUE.
+      INTEGER       :: ierr
+      !
+      IF ( PRESENT(binary) ) binary_ = binary
+      !
+      form = "UNFORMATTED"
+      IF ( .NOT. binary_ ) form="FORMATTED"
+      !
+      CALL file_open( iun, TRIM(filename), PATH="/", ACTION="write", FORM=TRIM(form), IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
       !
     END SUBROUTINE operator_write_init
     ! 
     ! 
     !------------------------------------------------------------------------
-    SUBROUTINE operator_write_close( iun, ierr )
+    SUBROUTINE operator_write_close( iun )
       !------------------------------------------------------------------------
       !
       INTEGER,           INTENT(IN)  :: iun
-      INTEGER,           INTENT(OUT) :: ierr
       !
-      ierr = 0
+      CHARACTER(20) :: subname="operator_write_close"
+      INTEGER       :: ierr
+      !
       CALL file_close( iun, PATH="/", ACTION="write", IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'closing file', ABS(ierr))
       !
     END SUBROUTINE operator_write_close
     !

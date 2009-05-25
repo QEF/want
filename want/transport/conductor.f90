@@ -26,20 +26,21 @@
                                     dos_unit => aux1_unit, cond_unit => aux2_unit, &
                                     sgmL_unit => aux3_unit, sgmR_unit => aux4_unit, &
                                     work_dir, prefix, postfix, aux_unit
-   USE operator_module,      ONLY : operator_write_init, operator_write_close
+   USE operator_module,      ONLY : operator_write_init, operator_write_close, &
+                                    operator_write_aux, operator_write_data
    USE T_input_module,       ONLY : input_manager
    USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
                                     write_kdata, write_lead_sgm, do_eigenchannels
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_init
-   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, wk_par
+   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par, wk_par, vr_par, nrtot_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
                                     
    USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
-                                    workspace_allocate
+                                    rsgm_L, rsgm_R, workspace_allocate
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_init, &
                                     correlation_read
    USE T_datafiles_module,   ONLY : datafiles_init
@@ -53,7 +54,7 @@
    CHARACTER(9)     :: subname='conductor'
    !
    CHARACTER(nstrx) :: filename
-   INTEGER          :: i, ie, ik, ierr, niter
+   INTEGER          :: i, ie, ir, ik, ierr, niter
    INTEGER          :: iomg_s, iomg_e
    REAL(dbl)        :: avg_iter
    CHARACTER(4)     :: ctmp, str
@@ -190,12 +191,16 @@
    IF ( write_lead_sgm ) THEN
        !
        CALL io_name( "sgm", filename, BODY="sgmlead_L" )
-       CALL operator_write_init(sgmL_unit, filename, ierr)
-       IF ( ierr/=0 ) CALL errore(subname,"opening sgmL file",ABS(ierr))
+       CALL operator_write_init(sgmL_unit, filename)
+       CALL operator_write_aux( sgmL_unit, dimC, .TRUE., ne, iomg_s, iomg_e, &
+                                NRTOT=nrtot_par, VR=vr_par, GRID=egrid, &
+                                ANALYTICITY="retarded", EUNITS="eV" )
        !
        CALL io_name( "sgm", filename, BODY="sgmlead_R" )
-       CALL operator_write_init(sgmR_unit, filename, ierr)
-       IF ( ierr/=0 ) CALL errore(subname,"opening sgmR file",ABS(ierr))
+       CALL operator_write_init(sgmR_unit, filename)
+       CALL operator_write_aux( sgmR_unit, dimC, .TRUE., ne, iomg_s, iomg_e, &
+                                NRTOT=nrtot_par, VR=vr_par, GRID=egrid, &
+                                ANALYTICITY="retarded", EUNITS="eV" )
        !
    ENDIF
 
@@ -258,7 +263,7 @@
           CALL green( dimR, blc_00R, blc_01R, totR, tottR, gR, 1 )
           !
           CALL mat_mul(work, blc_CR%aux, 'N', gR,    'N', dimC, dimR, dimR)
-          CALL mat_mul(sgm_R, work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
+          CALL mat_mul(sgm_R(:,:,ik), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
  
           ! 
           ! left lead 
@@ -268,13 +273,13 @@
           CALL green( dimL, blc_00L, blc_01L, totL, tottL, gL, -1 )
           !
           CALL mat_mul(work, blc_LC%aux, 'C', gL,    'N', dimC, dimL, dimL)
-          CALL mat_mul(sgm_L, work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
+          CALL mat_mul(sgm_L(:,:,ik), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
  
           !
           ! gamma_L & gamma_R
           !
-          gamma_L(:,:) = CI * (  sgm_L(:,:) - CONJG( TRANSPOSE(sgm_L(:,:)) )   )
-          gamma_R(:,:) = CI * (  sgm_R(:,:) - CONJG( TRANSPOSE(sgm_R(:,:)) )   )
+          gamma_L(:,:) = CI * (  sgm_L(:,:,ik) - CONJG( TRANSPOSE( sgm_L(:,:,ik) ) )  )
+          gamma_R(:,:) = CI * (  sgm_R(:,:,ik) - CONJG( TRANSPOSE( sgm_R(:,:,ik) ) )  )
  
 
           !
@@ -285,7 +290,7 @@
           !
           CALL gzero_maker ( dimC, blc_00C, work(1:dimC,1:dimC), 'inverse')
           !
-          work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:) -sgm_R(:,:)
+          work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:,ik) -sgm_R(:,:,ik)
           !
           CALL mat_inv( dimC, work, gC)
 
@@ -329,7 +334,26 @@
           ! 
       ENDDO kpt_loop 
 
-
+      !
+      ! write massice data for lead sgm if the case
+      !
+      IF ( write_lead_sgm ) THEN
+          !
+          DO ir = 1, nrtot_par
+              !
+              CALL compute_rham(dimC, vr_par(:,ir), rsgm_L(:,:,ir), nkpts_par, vkpt_par, wk_par, sgm_L)
+              CALL compute_rham(dimC, vr_par(:,ir), rsgm_R(:,:,ir), nkpts_par, vkpt_par, wk_par, sgm_R)
+              !
+          ENDDO
+          !
+          CALL operator_write_data( sgmL_unit, rsgm_L, .TRUE., ie )
+          CALL operator_write_data( sgmR_unit, rsgm_R, .TRUE., ie )
+          !
+      ENDIF
+ 
+      !
+      ! report to stdout
+      !
       avg_iter = avg_iter/REAL(2*nkpts_par)
       !
       IF ( MOD( ie, nprint) == 0 .OR.  ie == iomg_s .OR. ie == iomg_e ) THEN
@@ -368,11 +392,8 @@
    !
    IF ( write_lead_sgm ) THEN
        !
-       CALL operator_write_close(sgmL_unit, ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing smgL file',ABS(ierr))
-       !
-       CALL operator_write_close(sgmR_unit, ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing smgR file',ABS(ierr))
+       CALL operator_write_close(sgmL_unit)
+       CALL operator_write_close(sgmR_unit)
        !
    ENDIF
 

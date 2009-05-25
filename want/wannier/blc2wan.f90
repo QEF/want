@@ -208,6 +208,8 @@ END PROGRAM blc2wan
    USE util_module,          ONLY : mat_mul
    USE timing_module,        ONLY : timing, timing_upto_now
    USE log_module,           ONLY : log_push, log_pop
+   USE operator_module,      ONLY : operator_write_init, operator_write_close, &
+                                    operator_write_aux,  operator_write_data
    USE iotk_module
    USE files_module
    !
@@ -460,32 +462,48 @@ END PROGRAM blc2wan
       ! fileout is initializated
       !
       filename = TRIM(fileout)
-      CALL iotk_open_write(out_unit, TRIM(filename), BINARY=binary)
+      !
+      CALL operator_write_init(out_unit, TRIM(filename), BINARY=binary)
 
-      CALL iotk_write_attr(attr,"dimwann", dimwann, FIRST=.TRUE.)
-      CALL iotk_write_attr(attr,"nrtot",nrtot)
-      CALL iotk_write_attr(attr,"dynamical", ldynam)
-      CALL iotk_write_attr(attr,"nomega",nomega)
       !
-      IF ( ldynam ) CALL iotk_write_attr(attr,"analyticity", TRIM(analyticity) )
+      ! apply energy ref (whatever units)
       !
-      CALL iotk_write_empty(out_unit,"DATA",ATTR=attr)
-      CALL iotk_write_dat(out_unit,"VR",vr, COLUMNS=3)
-      CALL iotk_write_dat(out_unit,"IVR",ivr, COLUMNS=3)
-      !
-      IF ( ldynam ) THEN
-         !
-         ! apply energy ref (whatever units)
-         !
-         grid(:) = grid(:) - energy_ref
-         !
-         IF ( LEN_TRIM(grid_units) /= 0 ) THEN
-            CALL iotk_write_attr( attr, "units", TRIM(grid_units), FIRST=.TRUE. )
-            CALL iotk_write_dat(out_unit,"GRID",grid, ATTR=attr)
-         ELSE
-            CALL iotk_write_dat(out_unit,"GRID",grid)
-         ENDIF
+      IF (ldynam) THEN
+          !
+          grid(:) = grid(:) - energy_ref
+          !
+          CALL operator_write_aux(out_unit, dimwann, ldynam, nomega, 1, nomega, grid, &
+                                  grid_units, analyticity, nrtot, vr, ivr)
+          !
+      ELSE
+          !
+          CALL operator_write_aux(out_unit, dimwann, ldynam, NOMEGA=nomega, &
+                                  NRTOT=nrtot, VR=vr, IVR=ivr)
+          !
       ENDIF
+
+      !CALL iotk_open_write(out_unit, TRIM(filename), BINARY=binary)
+      !
+      !CALL iotk_write_attr(attr,"dimwann", dimwann, FIRST=.TRUE.)
+      !CALL iotk_write_attr(attr,"nrtot",nrtot)
+      !CALL iotk_write_attr(attr,"dynamical", ldynam)
+      !CALL iotk_write_attr(attr,"nomega",nomega)
+      !!
+      !IF ( ldynam ) CALL iotk_write_attr(attr,"analyticity", TRIM(analyticity) )
+      !!
+      !CALL iotk_write_empty(out_unit,"DATA",ATTR=attr)
+      !CALL iotk_write_dat(out_unit,"VR",vr, COLUMNS=3)
+      !CALL iotk_write_dat(out_unit,"IVR",ivr, COLUMNS=3)
+      !!
+      !IF ( ldynam ) THEN
+      !   !
+      !   IF ( LEN_TRIM(grid_units) /= 0 ) THEN
+      !      CALL iotk_write_attr( attr, "units", TRIM(grid_units), FIRST=.TRUE. )
+      !      CALL iotk_write_dat(out_unit,"GRID",grid, ATTR=attr)
+      !   ELSE
+      !      CALL iotk_write_dat(out_unit,"GRID",grid)
+      !   ENDIF
+      !ENDIF
 
 
       !
@@ -564,8 +582,8 @@ END PROGRAM blc2wan
           CALL iotk_scan_begin(in_unit, TRIM(str), IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'searching for '//TRIM(str),ABS(ierr))
           !
-          CALL iotk_write_begin(out_unit, TRIM(str), IERR=ierr)
-          IF (ierr/=0) CALL errore(subname,'writing '//TRIM(str),ABS(ierr))
+          !CALL iotk_write_begin(out_unit, TRIM(str), IERR=ierr)
+          !IF (ierr/=0) CALL errore(subname,'writing '//TRIM(str),ABS(ierr))
           !
           ! spin stuff 
           !
@@ -666,10 +684,10 @@ END PROGRAM blc2wan
                !
                opr_out(:,:,ir) = opr_out(:,:,ir) / REAL(nkpts, dbl)
 
-               !
-               ! write to file
-               !
-               CALL iotk_write_dat(out_unit,"VR"//TRIM(iotk_index(ir)), opr_out(:,:,ir))
+               !!
+               !! write to file
+               !!
+               !CALL iotk_write_dat(out_unit,"VR"//TRIM(iotk_index(ir)), opr_out(:,:,ir))
 
                !
                ! add the contribution to the localization measure
@@ -684,6 +702,11 @@ END PROGRAM blc2wan
                ENDDO
 
           ENDDO rlattice
+          
+          !
+          ! writing to file
+          !
+          CALL operator_write_data( out_unit, opr_out, ldynam, IE=ie)
 
           !
           ! ending the sections
@@ -691,8 +714,8 @@ END PROGRAM blc2wan
           CALL iotk_scan_end(in_unit, TRIM(str), IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'ending '//TRIM(str),ABS(ierr))
           !
-          CALL iotk_write_end(out_unit, TRIM(str), IERR=ierr)
-          IF (ierr/=0) CALL errore(subname,'writing end '//TRIM(str),ABS(ierr))
+          !CALL iotk_write_end(out_unit, TRIM(str), IERR=ierr)
+          !IF (ierr/=0) CALL errore(subname,'writing end '//TRIM(str),ABS(ierr))
 
           !
           IF ( (MOD( ie, nprint) ==0 .OR. ie == 1) ) THEN
@@ -711,8 +734,8 @@ END PROGRAM blc2wan
       CALL iotk_close_read(in_unit, IERR=ierr)
       IF (ierr/=0) CALL errore(subname,'closing IN_UNIT',ABS(ierr))
       !
-      CALL iotk_close_write(out_unit)
-      !
+      CALL operator_write_close( out_unit )
+
 
 !
 ! ... print the localization measure 

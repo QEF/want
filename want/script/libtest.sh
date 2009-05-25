@@ -274,7 +274,7 @@ run_export () {
       lpara_postfix=$PARA_POSTFIX
    fi
    
-   echo "running $NAME calculation..."
+   echo $ECHO_N "running $NAME calculation... $ECHO_C"
    
    if [ "$INPUT_TYPE" = "from_stdin" ] ; then
        $lpara_prefix $EXEC $lpara_postfix < $INPUT > $OUTPUT 2> /dev/null
