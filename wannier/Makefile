@@ -19,6 +19,7 @@ cleanup.o \
 collect_wf.o \
 compute_kham.o \
 compute_kham_2D.o \
+compute_rham.o \
 control.o \
 converters.o \
 correlation.o \

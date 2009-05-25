@@ -63,6 +63,7 @@ blc2wan.o : ../libs/parser.o
 blc2wan.o : ../libs/timing.o
 blc2wan.o : ../libs/util.o
 blc2wan.o : localization.o
+blc2wan.o : operator.o
 blc2wan.o : subspace.o
 blc2wan.o : version.o
 blc2wan.o : want_interfaces.o
@@ -140,6 +141,10 @@ compute_kham.o : ../libs/constants.o
 compute_kham.o : ../libs/kind.o
 compute_kham.o : ../libs/log_module.o
 compute_kham.o : ../libs/timing.o
+compute_rham.o : ../libs/constants.o
+compute_rham.o : ../libs/kind.o
+compute_rham.o : ../libs/log_module.o
+compute_rham.o : ../libs/timing.o
 control.o : ../libs/kind.o
 control.o : ../libs/parameters.o
 converters.o : ../libs/constants.o

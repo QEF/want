@@ -1,7 +1,8 @@
 
 
 &INPUT_CONDUCTOR
-   postfix = '_UP'
+   postfix  = '_UP'
+   work_dir = './SCRATCH'
    dimC = 6
    calculation_type = 'bulk'
    ne = 1000

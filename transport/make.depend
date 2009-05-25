@@ -179,5 +179,7 @@ transmittance.o : ../libs/log_module.o
 transmittance.o : ../libs/timing.o
 transmittance.o : ../libs/util.o
 transmittance.o : operator_blc.o
+workspace.o : control.o
 workspace.o : hamiltonian.o
+workspace.o : kpoints.o
 workspace.o : ../libs/kind.o

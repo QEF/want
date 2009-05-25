@@ -1044,7 +1044,7 @@ END PROGRAM cmplx_bands
               ww(:,:) = ww(:,:) + proj_n(:,:)
 
               !   
-              ! invert W and overwirte it with the inverse
+              ! invert W and overwrite with the inverse
               CALL mat_inv( dimwann, ww, caux )
               ww = caux
 
@@ -1077,7 +1077,7 @@ END PROGRAM cmplx_bands
               !
               qq = qq + proj_r
               !
-              ! invert qq and overwirte it with the inverse
+              ! invert qq and overwrite with the inverse
               CALL mat_inv( dimwann, qq, caux )
               qq = caux
 
@@ -1129,7 +1129,7 @@ END PROGRAM cmplx_bands
                       !
                   ENDIF
                   !
-                  ! plug the blocks in the big matrix
+                  ! plug the blocks into the big matrix
                   !
                   j = (nrs -ir -1)*dimwann
                   mtrx( 1:dimwann, j+1:j+dimwann ) = block_r(:,:) + block_n(:,:)

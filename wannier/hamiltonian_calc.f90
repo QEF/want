@@ -24,7 +24,7 @@
    USE log_module,           ONLY : log_push, log_pop
    USE parser_module,        ONLY : int2char
    USE control_module,       ONLY : verbosity
-   USE kpoints_module,       ONLY : vkpt, nkpts_g, iks, nrtot, vr, ivr
+   USE kpoints_module,       ONLY : vkpt, wk, nkpts_g, iks, nrtot, vr, ivr
    USE windows_module,       ONLY : efermi
    USE subspace_module,      ONLY : wan_eig
    USE hamiltonian_module,   ONLY : rham, ham_alloc => alloc 
@@ -115,24 +115,26 @@
       !
       DO ir = 1, nrtot
           !
-          DO j = 1, dimwann
-          DO i = 1, dimwann
-              !
-              rham(i,j,ir) = CZERO
-              !
-              DO ik = 1, nkpts
-                  !
-                  arg = DOT_PRODUCT( vkpt(:,ik), vr(:,ir) )
-                  phase = CMPLX( COS(arg), -SIN(arg), dbl )
-                  !
-                  rham(i,j,ir) = rham(i,j,ir) + phase * kham(i,j,ik)
-                  !
-              ENDDO
-              !
-              rham(i,j,ir) = rham(i,j,ir) * fact
-              !
-          ENDDO
-          ENDDO
+          !DO j = 1, dimwann
+          !DO i = 1, dimwann
+          !    !
+          !    rham(i,j,ir) = CZERO
+          !    !
+          !    DO ik = 1, nkpts
+          !        !
+          !        arg = DOT_PRODUCT( vkpt(:,ik), vr(:,ir) )
+          !        phase = CMPLX( COS(arg), -SIN(arg), dbl )
+          !        !
+          !        rham(i,j,ir) = rham(i,j,ir) + phase * kham(i,j,ik)
+          !        !
+          !    ENDDO
+          !    !
+          !    rham(i,j,ir) = rham(i,j,ir) * fact
+          !    !
+          !ENDDO
+          !ENDDO
+          !
+          CALL compute_rham( dimwann, vr(:,ir), rham(:,:,ir), nkpts, vkpt, wk, kham ) 
           !
           ! recover parallelism
           CALL timing ( 'mp_sum_rham', OPR='start' )

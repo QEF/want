@@ -12,10 +12,13 @@
    !
    USE kinds,                ONLY : dbl
    USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
+   USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, kpoints_alloc => alloc
+   USE T_control_module,     ONLY : write_lead_sgm
    !
    IMPLICIT NONE
    PRIVATE 
    SAVE
+
    !
    ! Contains workspace used through transport calcs
    ! 
@@ -25,8 +28,10 @@
    COMPLEX(dbl), ALLOCATABLE :: tottR(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gamma_R(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gamma_L(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: sgm_L(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: sgm_R(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: sgm_L(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: sgm_R(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: rsgm_L(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: rsgm_R(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: gL(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gR(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gC(:,:)
@@ -46,7 +51,8 @@
    !
    PUBLIC :: gR, gL, gC
    PUBLIC :: gamma_R, gamma_L
-   PUBLIC :: sgm_L, sgm_R
+   PUBLIC :: sgm_L,  sgm_R
+   PUBLIC :: rsgm_L, rsgm_R
    !
    PUBLIC :: workspace_allocate
    PUBLIC :: workspace_deallocate
@@ -66,9 +72,11 @@ CONTAINS
       INTEGER  :: ierr
 
       IF ( alloc )       CALL errore(subname,'already allocated', 1 )
-      IF ( dimL <= 0 )   CALL errore(subname,'invalid dimL', 1 )
-      IF ( dimR <= 0 )   CALL errore(subname,'invalid dimR', 1 )
-      IF ( dimC <= 0 )   CALL errore(subname,'invalid dimC', 1 )
+      IF ( .NOT. kpoints_alloc ) &
+                         CALL errore(subname,'kpoints modukle not alloc', 2 )
+      IF ( dimL <= 0 )   CALL errore(subname,'invalid dimL', 3 )
+      IF ( dimR <= 0 )   CALL errore(subname,'invalid dimR', 3 )
+      IF ( dimC <= 0 )   CALL errore(subname,'invalid dimC', 3 )
       !
       ALLOCATE ( totL(dimL,dimL), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating totL', ABS(ierr) )
@@ -78,24 +86,35 @@ CONTAINS
       IF( ierr /=0 ) CALL errore(subname,'allocating tottL', ABS(ierr) )
       ALLOCATE ( tottR(dimR,dimR), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating tottR', ABS(ierr) )
-   
-      ALLOCATE ( sgm_L(dimC,dimC), STAT=ierr )
+      ! 
+      ALLOCATE ( sgm_L(dimC,dimC,nkpts_par), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating sgm_L', ABS(ierr) )
-      ALLOCATE ( sgm_R(dimC,dimC), STAT=ierr )
+      ALLOCATE ( sgm_R(dimC,dimC,nkpts_par), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating sgm_R', ABS(ierr) )
+      !
+      IF ( write_lead_sgm ) THEN
+          !
+          ALLOCATE ( rsgm_L(dimC,dimC,nrtot_par), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating rsgm_L', ABS(ierr) )
+          ALLOCATE ( rsgm_R(dimC,dimC,nrtot_par), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating rsgm_R', ABS(ierr) )
+          !
+      ENDIF
+      !
       ALLOCATE ( gamma_R(dimC,dimC), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating gamma_R', ABS(ierr) )
       ALLOCATE ( gamma_L(dimC,dimC), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating gamma_L', ABS(ierr) )
-
+      !
       ALLOCATE ( gL(dimL,dimL), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating gL', ABS(ierr) )
       ALLOCATE ( gR(dimR,dimR), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating gR', ABS(ierr) )
       ALLOCATE ( gC(dimC,dimC), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating gC', ABS(ierr) )
-
+      !
       alloc = .TRUE.
+      !
    END SUBROUTINE workspace_allocate
 
 
@@ -115,14 +134,23 @@ CONTAINS
    
       DEALLOCATE ( sgm_L, sgm_R, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'deallocating sgm_L, sgm_R ', ABS(ierr) )
+      !
+      IF ( write_lead_sgm ) THEN
+          !
+          DEALLOCATE ( rsgm_L, rsgm_R, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating rsgm_L, rsgm_R ', ABS(ierr) )
+          !
+      ENDIF
+      !
       DEALLOCATE ( gamma_R, gamma_L, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'deallocating gamma_R, gamma_L ', ABS(ierr) )
       DEALLOCATE ( gR, gL, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'deallocating gR, gL ', ABS(ierr) )
       DEALLOCATE ( gC, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'deallocating gC ', ABS(ierr) )
-
+      !
       alloc = .FALSE.   
+      !
    END SUBROUTINE workspace_deallocate
 
 END MODULE T_workspace_module

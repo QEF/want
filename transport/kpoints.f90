@@ -8,10 +8,12 @@
 !
 !*********************************************
    MODULE T_kpoints_module
-!*********************************************
+   !*********************************************
+   !
    USE kinds,           ONLY : dbl
    USE constants,       ONLY : EPS_m6, ZERO, ONE, TPI
    USE log_module,      ONLY : log_push, log_pop
+   !
    IMPLICIT NONE
    PRIVATE 
    SAVE
@@ -155,13 +157,14 @@ CONTAINS
       ir = 0
       DO j = 1, nr_par(2)
       DO i = 1, nr_par(1)
-           !
-           ir = ir + 1
-           !
-           vr_par(1,ir) = REAL( i - ( nr_par(1)+1)/2, dbl )
-           vr_par(2,ir) = REAL( j - ( nr_par(2)+1)/2, dbl )
-           !
-           wr_par( ir ) = ONE
+          !
+          ir = ir + 1
+          !
+          vr_par(1,ir) = REAL( i - ( nr_par(1)+1)/2, dbl )
+          vr_par(2,ir) = REAL( j - ( nr_par(2)+1)/2, dbl )
+          !
+          wr_par( ir ) = ONE
+          !
       ENDDO
       ENDDO
   
