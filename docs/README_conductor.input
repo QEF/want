@@ -132,6 +132,10 @@ write_kdata LOGICAL
             If .TRUE. kpoint-resolved transmittance and dos are written.
             DEFAULT : .FALSE.
 
+write_lead_sgm   LOGICAL
+            If .TRUE. writes the computed lead self-energies to disk.
+            DEFAULT : .FALSE.
+
 datafile_C  STRING
             Name of the file containing the Wannier Hamiltonian blocks for the conductor 
             region.
