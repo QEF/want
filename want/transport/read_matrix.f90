@@ -49,8 +49,8 @@
    COMPLEX(dbl), ALLOCATABLE :: A(:,:,:), S(:,:,:)
    CHARACTER(nstrx)          :: attr, str
    !
-   LOGICAL                   :: found, lhave_ovp
-   INTEGER                   :: ind, ivr_aux(3), nr_aux(3)
+   LOGICAL                   :: found, ivr_from_input, lhave_ovp
+   INTEGER                   :: ind, ivr_aux(3), ivr_input, nr_aux(3)
    INTEGER                   :: ncols, nrows
    CHARACTER(nstrx)          :: cols, rows
    CHARACTER(nstrx)          :: filein 
@@ -91,7 +91,9 @@
    IF (ierr/=0) CALL errore(subname, 'searching for rows', ABS(ierr) )
    IF( .NOT. found ) rows = 'all'
    CALL change_case( rows, 'lower')
-
+   !
+   CALL iotk_scan_attr(attr, 'ivr', ivr_input, FOUND=ivr_from_input, IERR=ierr)
+   IF (ierr/=0) CALL errore(subname, 'searching for ivr', ABS(ierr) )
 
    !
    ! parse the obtained data
@@ -259,6 +261,10 @@
               CASE DEFAULT
                   CALL errore(subname, 'invalid label = '//TRIM(opr%blc_name), 1009 )
               END SELECT
+              !
+              ! if ivr is from input, overwrite the default choice
+              !
+              IF ( ivr_from_input ) ivr_aux(i) = ivr_input
               !
           ELSE
               !
