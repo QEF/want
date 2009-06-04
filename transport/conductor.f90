@@ -30,7 +30,8 @@
                                     operator_write_aux, operator_write_data
    USE T_input_module,       ONLY : input_manager
    USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
-                                    write_kdata, write_lead_sgm, do_eigenchannels
+                                    write_kdata, write_lead_sgm, do_eigenchannels, &
+                                    datafile_C, transport_dir
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_init
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par, wk_par, vr_par, nrtot_par
@@ -77,10 +78,6 @@
       
 
    !
-   ! init
-   !
-
-   !
    ! check whether data files should be internally converted
    !
    CALL datafiles_init()
@@ -93,7 +90,7 @@
    !
    ! initialize kpoints and R vectors
    !
-   CALL kpoints_init()
+   CALL kpoints_init( datafile_C, transport_dir )
 
    !
    ! Set up the layer hamiltonians
@@ -104,6 +101,8 @@
    !
    ! Setup correlation data and energy grids
    !
+
+
    ! If correlation is used, the energy grid is read
    ! from datafile_sgm and input parameters are overwirtten
    !
@@ -335,7 +334,7 @@
       ENDDO kpt_loop 
 
       !
-      ! write massice data for lead sgm if the case
+      ! write massive data for lead sgm if the case
       !
       IF ( write_lead_sgm ) THEN
           !

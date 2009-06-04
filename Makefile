@@ -18,6 +18,7 @@ default:
 	@echo  "  Possible <target>'s are: "
 	@echo  "     wannier            compile Wannier function suite"
 	@echo  "     transport          compile transport executables"
+	@echo  "     embed              compile embedding executables"
 	@echo  "     utility            compile utility executables"
 	@echo  "     libwant            compile the want utility library"
 	@echo  "     libiotk            compile iotk library"
@@ -34,7 +35,7 @@ default:
 #
 # MAIN target
 #
-all: wannier transport utility
+all: wannier transport embed utility
 
 deps:
 	if test -x ./conf/makedeps.sh ; then ./conf/makedeps.sh ; fi
@@ -62,11 +63,15 @@ wannier: libiotk libctools libwant libplugins
 	if test -d wannier ; then \
 	( cd wannier ; $(MAKE) ) ; fi
 
-transport: libiotk libctools libwant libplugins
+transport: libiotk libctools libwant libplugins wannier
 	if test -d transport ; then \
 	( cd transport ; $(MAKE) ) ; fi
 
-utility: libiotk libctools libwant libplugins
+embed: libiotk libctools libwant libplugins transport wannier
+	if test -d embed ; then \
+	( cd embed ; $(MAKE) ) ; fi
+
+utility: libiotk libctools libwant libplugins wannier
 	if test -d utility ; then \
 	( cd utility ; $(MAKE) ) ; fi
 
@@ -80,6 +85,7 @@ clean:
 	if test -d libs ;      then ( cd libs;      $(MAKE) clean ) ; fi
 	if test -d wannier ;   then ( cd wannier;   $(MAKE) clean ) ; fi
 	if test -d transport ; then ( cd transport; $(MAKE) clean ) ; fi
+	if test -d embed ;     then ( cd embed;     $(MAKE) clean ) ; fi
 	if test -d utility ;   then ( cd utility;   $(MAKE) clean ) ; fi
 	- /bin/rm -rf bin/*.x
 

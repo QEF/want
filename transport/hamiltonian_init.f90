@@ -34,13 +34,6 @@
    !     S01_L, S01_R         = hopping overlap matrices
    !     S_LC, S_CR           = coupling overlap matrices
    !
-   !...  Overlap
-   !     if  use_overlap = .FALSE. (default) the basis set is orthonormal =>
-   !         S00_L, S00_R, S00_C = Identity
-   !         S01_L, S01_R, S_LC, S_CR = Zero
-   !     if  use_overlap=  .TRUE. => external reading  
-   !                (not implemented within the current interface)
-   !
    !...  Units
    !     energies are supposed to be in eV
    !
@@ -49,9 +42,8 @@
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
-   USE T_control_module,     ONLY : calculation_type, &
+   USE T_control_module,     ONLY : calculation_type, idir => transport_dir, &
                                     datafile_L, datafile_C, datafile_R
-   USE T_kpoints_module,     ONLY : kpoints_init
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate, ispin,        &
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
@@ -137,8 +129,8 @@
    !
    ! Read basic quantities from datafile
    !
-   CALL read_matrix( datafile_C, ispin, blc_00C )
-   CALL read_matrix( datafile_C, ispin, blc_CR )
+   CALL read_matrix( datafile_C, ispin, idir, blc_00C )
+   CALL read_matrix( datafile_C, ispin, idir, blc_CR )
 
    !
    ! chose whether to do 'conductor' or 'bulk'
@@ -149,11 +141,11 @@
        !
        ! read the missing data
        !
-       CALL read_matrix( datafile_C, ispin, blc_LC )
-       CALL read_matrix( datafile_L, ispin, blc_00L )
-       CALL read_matrix( datafile_L, ispin, blc_01L )
-       CALL read_matrix( datafile_R, ispin, blc_00R )
-       CALL read_matrix( datafile_R, ispin, blc_01R )
+       CALL read_matrix( datafile_C, ispin, idir, blc_LC )
+       CALL read_matrix( datafile_L, ispin, idir, blc_00L )
+       CALL read_matrix( datafile_L, ispin, idir, blc_01L )
+       CALL read_matrix( datafile_R, ispin, idir, blc_00R )
+       CALL read_matrix( datafile_R, ispin, idir, blc_01R )
        !
    CASE ( "bulk" )
        !

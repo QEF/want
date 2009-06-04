@@ -64,17 +64,19 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE kpoints_init()
+   SUBROUTINE kpoints_init(datafile_C, transport_dir)
    !**********************************************************
    !
    USE parameters,       ONLY : nstrx
    USE files_module,     ONLY : file_open, file_close
    USE io_module,        ONLY : aux_unit
    USE iotk_module
-   USE T_control_module, ONLY : datafile_C, transport_dir 
    !
    IMPLICIT NONE
-
+      !
+      CHARACTER(*), INTENT(IN) :: datafile_C
+      INTEGER,      INTENT(IN) :: transport_dir
+      !
       CHARACTER(12)      :: subname="kpoints_init"
       CHARACTER(nstrx)   :: attr
       INTEGER            :: nr_(3), nrtot_, nkpts_par_x

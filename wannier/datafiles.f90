@@ -29,6 +29,7 @@
 
    PUBLIC :: datafiles_init
    PUBLIC :: datafiles_check_fmt
+   PUBLIC :: file_is_internal
 
 
 CONTAINS
