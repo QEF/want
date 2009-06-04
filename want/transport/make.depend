@@ -55,6 +55,7 @@ datafiles.o : ../libs/mp.o
 datafiles.o : ../libs/parameters.o
 datafiles.o : ../libs/timing.o
 datafiles.o : ../wannier/crystal_tools.o
+datafiles.o : ../wannier/datafiles.o
 datafiles.o : ../wannier/io_module.o
 datafiles.o : ../wannier/wannier90_tools.o
 define_smear_ham.o : ../libs/constants.o

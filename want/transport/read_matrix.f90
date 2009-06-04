@@ -7,7 +7,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***************************************************************************
-   SUBROUTINE read_matrix( filename, ispin, opr )
+   SUBROUTINE read_matrix( filename, ispin, transport_dir, opr )
    !***************************************************************************
    !
    ! Read the required matrix block from FILEIN.
@@ -21,7 +21,6 @@
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
-   USE T_control_module,     ONLY : transport_dir, use_overlap
    USE T_kpoints_module,     ONLY : kpoints_alloc => alloc, nrtot_par, vr_par, nr_par
    USE T_operator_blc_module
    USE iotk_module
@@ -34,6 +33,7 @@
    !
    CHARACTER(*),         INTENT(IN)    :: filename
    INTEGER,              INTENT(IN)    :: ispin
+   INTEGER,              INTENT(IN)    :: transport_dir
    TYPE( operator_blc ), INTENT(INOUT) :: opr
 
    !
@@ -162,8 +162,6 @@
        !
        IF ( .NOT. found ) lhave_ovp = .FALSE.
        !
-       use_overlap = use_overlap .OR. lhave_ovp
-       !
    ENDIF
    !
    CALL mp_bcast( ldimwann,     ionode_id )
@@ -171,7 +169,6 @@
    CALL mp_bcast( nrtot,        ionode_id )
    CALL mp_bcast( nr_aux,       ionode_id )
    CALL mp_bcast( lhave_ovp,    ionode_id )
-   CALL mp_bcast( use_overlap,  ionode_id )
    !
    opr%nrtot = nrtot
 
@@ -254,7 +251,7 @@
               !
               SELECT CASE( TRIM(opr%blc_name) )
               !
-              CASE( "block_00C", "block_00R", "block_00L" )
+              CASE( "block_00C", "block_00R", "block_00L", "block_C", "block_emb" )
                   ivr_aux(i) = 0
               CASE( "block_01R", "block_01L", "block_LC", "block_CR" )
                   ivr_aux(i) = 1
@@ -320,7 +317,7 @@
               !
               SELECT CASE( TRIM(opr%blc_name) )
               !
-              CASE( "block_00C", "block_00R", "block_00L" )
+              CASE( "block_00C", "block_00R", "block_00L", "block_C", "block_emb" )
                   !
                   S_loc(:,:) = CZERO
                   !

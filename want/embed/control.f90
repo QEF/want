@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************
-   MODULE T_control_module
+   MODULE E_control_module
    !*********************************************
    !
    USE kinds,      ONLY : dbl
@@ -20,54 +20,31 @@
 ! Contains GLOBAL CONTROL variables for transport calculations
 ! 
    
-   CHARACTER(nstrx)          :: calculation_type
-   CHARACTER(nstrx)          :: conduct_formula
-   !
-   CHARACTER(nstrx)          :: datafile_L, datafile_C, datafile_R
+   CHARACTER(nstrx)          :: datafile_C
+   CHARACTER(nstrx)          :: datafile_emb
    CHARACTER(nstrx)          :: datafile_sgm
+   CHARACTER(nstrx)          :: datafile_sgm_emb
    !
    INTEGER                   :: transport_dir
    INTEGER                   :: debug_level
-   !
-   LOGICAL                   :: do_eigenchannels = .FALSE.
-   !
    LOGICAL                   :: use_debug_mode
-   LOGICAL                   :: write_kdata
-   LOGICAL                   :: write_lead_sgm
-   !
-   INTEGER                   :: niterx
-   INTEGER                   :: nfailx
-   INTEGER                   :: nfail = 0
    !
    INTEGER                   :: nprint
-   !
-   REAL(dbl)                 :: bias
 
 !
 ! end delcarations
 !
 
-   PUBLIC :: calculation_type
-   PUBLIC :: conduct_formula
-   PUBLIC :: datafile_L, datafile_C, datafile_R
+   PUBLIC :: datafile_C
+   PUBLIC :: datafile_emb
    PUBLIC :: datafile_sgm
+   PUBLIC :: datafile_sgm_emb
    !
    PUBLIC :: transport_dir
    PUBLIC :: debug_level
-   !
-   PUBLIC :: do_eigenchannels
    PUBLIC :: use_debug_mode
    !
-   PUBLIC :: write_kdata
-   PUBLIC :: write_lead_sgm
-   !
-   PUBLIC :: niterx
-   PUBLIC :: nfailx
-   PUBLIC :: nfail
-   !
    PUBLIC :: nprint
-   !
-   PUBLIC :: bias
 
-END MODULE T_control_module
+END MODULE E_control_module
 

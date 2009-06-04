@@ -94,7 +94,7 @@
        ! the allowed values for smearing_type
        
    REAL(dbl) :: delta_ratio =  5.0_dbl * EPS_m3
-       ! ratio between ddelta (used for convolution with the pole) and
+       ! ratio between delta (used for convolution with the pole) and
        ! smearing delta
 
    REAL(dbl) :: xmax = 25.0    
@@ -111,7 +111,7 @@
    INTEGER :: s(2) =  0
        ! shifts for the generation of the 2D mesh of kpts
  
-   LOGICAL :: use_symm = .FALSE.  ! this is a tmp default
+   LOGICAL :: use_symm = .TRUE.
        ! whether to use symmetry to reduce the numberof kpts
        ! only Time-Rev is implemented at the moment
 

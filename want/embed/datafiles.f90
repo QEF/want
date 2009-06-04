@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2008 WanT Group
+! Copyright (C) 2009 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License\'
@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************
-   MODULE T_datafiles_module
+   MODULE E_datafiles_module
    !*********************************************
    !
    ! This module is intended to check the formal of 
@@ -21,7 +21,7 @@
    USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
    USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
    USE datafiles_module,        ONLY : datafiles_check_fmt, file_is_internal
-   USE T_control_module,        ONLY : datafile_L, datafile_C, datafile_R, calculation_type
+   USE E_control_module,        ONLY : datafile_C 
    USE iotk_module
    !
    IMPLICIT NONE
@@ -56,7 +56,7 @@ CONTAINS
    !
    INTEGER                :: i, nfile
    LOGICAL                :: exists
-   CHARACTER(nstrx)       :: filelist(3), filename
+   CHARACTER(nstrx)       :: filelist(1), filename
 
    !
    !-------------------
@@ -71,16 +71,6 @@ CONTAINS
    !
    nfile=1
    filelist(1) = TRIM( datafile_C )
-   !
-   IF ( TRIM(calculation_type) == 'conductor' ) THEN
-       !
-       nfile=3
-       !
-       filelist(2) = TRIM( datafile_L )
-       filelist(3) = TRIM( datafile_R )
-       !
-   ENDIF
-       
 
    !
    ! loop over the files and check them
@@ -150,13 +140,6 @@ CONTAINS
    ! update the name of the files
    !
    datafile_C = TRIM( filelist(1) )
-   !
-   IF ( TRIM(calculation_type) == 'conductor' ) THEN
-       !
-       datafile_L = TRIM( filelist(2) )
-       datafile_R = TRIM( filelist(3) )
-       !
-   ENDIF
 
 
    CALL log_pop( subname )
@@ -164,5 +147,5 @@ CONTAINS
    !
 END SUBROUTINE datafiles_init
   !
-END MODULE T_datafiles_module
+END MODULE E_datafiles_module
 

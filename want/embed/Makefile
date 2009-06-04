@@ -11,23 +11,11 @@ cleanup.o \
 control.o \
 correlation.o \
 datafiles.o \
-egrid.o \
-fourier_par.o \
-green.o \
-gzero_maker.o \
 hamiltonian.o \
 hamiltonian_init.o \
-hamiltonian_setup.o \
 input.o \
 input_parameters.o \
-kpoints.o \
-operator_blc.o \
-read_matrix.o \
-smearing.o \
-summary.o \
-transfer.o \
-transmittance.o \
-workspace.o
+summary.o
 
 WANNIER_OBJS= \
 ../wannier/compute_kham.o \
@@ -48,12 +36,20 @@ WANNIER_OBJS= \
 ../wannier/version.o \
 ../wannier/wannier90_tools.o 
 
+TRANSPORT_OBJS= \
+../transport/egrid.o \
+../transport/fourier_par.o \
+../transport/kpoints.o \
+../transport/operator_blc.o \
+../transport/read_matrix.o \
+../transport/smearing.o
+
 BIN= \
-conductor.x \
-current.x 
+embed.x 
 
 EXTERNAL_LIBS= ../iotk/libiotk.a ../ctools/libctools.a ../libs/libwant.a
 BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
+OBJS_ALL=  $(OBJS) $(WANNIER_OBJS) $(TRANSPORT_OBJS)
 
 #
 # main targets
@@ -61,15 +57,10 @@ BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 all: $(BIN)
 
 
-conductor.x: conductor.o $(BIN_DEPS)
-	$(LD) $(LDFLAGS) -o $@ conductor.o \
-	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../transport/$@ . )
-
-current.x: current.o $(BIN_DEPS)
-	$(LD) $(LDFLAGS) -o $@ current.o \
-	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../transport/$@ . )
+embed.x: $(BIN_DEPS) embed.o $(OBJS_ALL)
+	$(LD) $(LDFLAGS) -o $@ embed.o \
+	     $(OBJS_ALL) $(LIBOBJS) $(LIBS)
+	- ( cd ../bin ; ln -sf ../embed/$@ . )
 
 clean:
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x
