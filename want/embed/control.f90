@@ -20,7 +20,7 @@
 ! Contains GLOBAL CONTROL variables for transport calculations
 ! 
    
-   CHARACTER(nstrx)          :: datafile_C
+   CHARACTER(nstrx)          :: datafile_tot
    CHARACTER(nstrx)          :: datafile_emb
    CHARACTER(nstrx)          :: datafile_sgm
    CHARACTER(nstrx)          :: datafile_sgm_emb
@@ -35,7 +35,7 @@
 ! end delcarations
 !
 
-   PUBLIC :: datafile_C
+   PUBLIC :: datafile_tot
    PUBLIC :: datafile_emb
    PUBLIC :: datafile_sgm
    PUBLIC :: datafile_sgm_emb

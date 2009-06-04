@@ -63,6 +63,7 @@ CONTAINS
       !
       CALL setup_control()
       CALL setup_io()
+      CALL setup_smearing()
       CALL setup_egrid()
       CALL setup_hamiltonian()
       CALL setup_correlation()
@@ -76,7 +77,7 @@ CONTAINS
    !**********************************************************
       USE E_control_module,         ONLY : nprint,            &
                                            transport_dir,     &
-                                           datafile_C,        &
+                                           datafile_tot,      &
                                            datafile_emb,      &
                                            datafile_sgm,      &
                                            datafile_sgm_emb,  &
@@ -85,7 +86,7 @@ CONTAINS
                                             
       USE E_input_parameters_module,ONLY : nprint_            => nprint, &
                                            transport_dir_     => transport_dir, &
-                                           datafile_C_        => datafile_C, &
+                                           datafile_tot_      => datafile_tot, &
                                            datafile_emb_      => datafile_emb, &
                                            datafile_sgm_      => datafile_sgm, &
                                            datafile_sgm_emb_  => datafile_sgm_emb, &
@@ -94,7 +95,7 @@ CONTAINS
       IMPLICIT NONE
 
       nprint              = nprint_
-      datafile_C          = datafile_C_
+      datafile_tot        = datafile_tot_
       datafile_emb        = datafile_emb_
       datafile_sgm        = datafile_sgm_
       datafile_sgm_emb    = datafile_sgm_emb_
@@ -146,7 +147,7 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_egrid()
    !**********************************************************
-      USE T_egrid_module,           ONLY : ne,           &
+      USE T_egrid_module,           ONLY : ne,              &
                                            emin, emax   
       USE E_input_parameters_module,ONLY : ne_     => ne,   &
                                            emin_   => emin, &
@@ -185,21 +186,23 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_hamiltonian()
    !**********************************************************
-      USE E_hamiltonian_module, ONLY :     dimC,    & 
-                                           dim_emb, &
+      USE E_hamiltonian_module, ONLY :     dimT,    & 
+                                           dimE,    &
+                                           dimB,    &
                                            ispin,   &
-                                           shift_C
-      USE E_input_parameters_module,ONLY : dimC_     => dimC,    &
-                                           dim_emb_  => dim_emb, &
-                                           ispin_    => ispin,   &
-                                           shift_C_  => shift_C
+                                           shift_T
+      USE E_input_parameters_module,ONLY : dimT_      => dim_tot,    &
+                                           dimE_      => dim_emb,    &
+                                           ispin_     => ispin,   &
+                                           shift_T_   => shift_tot
       IMPLICIT NONE
       ! 
-      dimC            = dimC_
-      dim_emb         = dim_emb_
+      dimT            = dimT_
+      dimE            = dimE_
+      dimB            = dimT_ - dimE_
       !
       ispin           = ispin_
-      shift_C         = shift_C_
+      shift_T         = shift_T_
       !
    END SUBROUTINE setup_hamiltonian
 
@@ -207,8 +210,8 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_kpoints()
    !**********************************************************
-      USE T_kpoints_module,         ONLY :     nk_par, s_par, use_symm
-      USE E_input_parameters_module,ONLY :     nk, s, use_symm_ => use_symm
+      USE T_kpoints_module,          ONLY : nk_par,      s_par, use_symm
+      USE E_input_parameters_module, ONLY : nk, s, use_symm_ => use_symm
       IMPLICIT NONE
       
       nk_par(1:2)  = nk(1:2)
