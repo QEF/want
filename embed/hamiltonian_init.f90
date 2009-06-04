@@ -19,8 +19,9 @@
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
    !
-   USE E_control_module,     ONLY : idir => transport_dir, datafile_C
-   USE E_hamiltonian_module, ONLY : hamiltonian_allocate, ispin, blc_C, blc_emb
+   USE E_control_module,     ONLY : idir => transport_dir, datafile_tot
+   USE E_hamiltonian_module, ONLY : hamiltonian_allocate, ispin, &
+                                    blc_T, blc_E, blc_B, blc_EB
    !
    USE T_operator_blc_module
    USE iotk_module
@@ -61,25 +62,35 @@
        !
        ! these data must always be present
        !
-       CALL iotk_scan_empty( stdin, "H_C", ATTR=blc_C%tag, IERR=ierr)
-       IF (ierr/=0) CALL errore(subname, 'searching for tag H_C', ABS(ierr) )       
+       CALL iotk_scan_empty( stdin, "H_T", ATTR=blc_T%tag, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching for tag H_T', ABS(ierr) )       
        !
-       CALL iotk_scan_empty( stdin, "H_EMB", ATTR=blc_EMB%tag, IERR=ierr)
-       IF (ierr/=0) CALL errore(subname, 'searching for tag H_EMB', ABS(ierr) )       
+       CALL iotk_scan_empty( stdin, "H_E", ATTR=blc_E%tag, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching for tag H_E', ABS(ierr) )       
+       !
+       CALL iotk_scan_empty( stdin, "H_B", ATTR=blc_B%tag, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching for tag H_B', ABS(ierr) )       
+       !
+       CALL iotk_scan_empty( stdin, "H_EB", ATTR=blc_EB%tag, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching for tag H_EB', ABS(ierr) )       
        !
        CALL iotk_scan_end( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
        IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
        !
    ENDIF
    !
-   CALL mp_bcast(  blc_C%tag,      ionode_id )
-   CALL mp_bcast(  blc_EMB%tag,    ionode_id )
+   CALL mp_bcast(  blc_T%tag,    ionode_id )
+   CALL mp_bcast(  blc_E%tag,    ionode_id )
+   CALL mp_bcast(  blc_B%tag,    ionode_id )
+   CALL mp_bcast(  blc_EB%tag,   ionode_id )
 
    !
    ! Read basic quantities from datafile
    !
-   CALL read_matrix( datafile_C, ispin, idir, blc_C )
-   CALL read_matrix( datafile_C, ispin, idir, blc_emb )
+   CALL read_matrix( datafile_tot, ispin, idir, blc_T )
+   CALL read_matrix( datafile_tot, ispin, idir, blc_E )
+   CALL read_matrix( datafile_tot, ispin, idir, blc_B )
+   CALL read_matrix( datafile_tot, ispin, idir, blc_EB )
 
    
    CALL timing( subname, OPR='STOP' )

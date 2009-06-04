@@ -13,6 +13,7 @@
    USE kinds,                  ONLY : dbl
    USE parameters,             ONLY : nstrx
    USE log_module,             ONLY : log_push, log_pop
+   !
    USE T_kpoints_module,       ONLY : nkpts_par
    USE T_operator_blc_module
    !
@@ -26,16 +27,18 @@
     ! 
     ! dimensions
     !
-    INTEGER                   :: dimC       
-    INTEGER                   :: dim_emb
+    INTEGER                   :: dimT
+    INTEGER                   :: dimE, dimB
     INTEGER                   :: dimx
     !
     INTEGER                   :: nspin
     INTEGER                   :: ispin
-    REAL(dbl)                 :: shift_C
+    REAL(dbl)                 :: shift_T
     !
-    TYPE( operator_blc )      :: blc_C
-    TYPE( operator_blc )      :: blc_emb
+    TYPE( operator_blc )      :: blc_T
+    TYPE( operator_blc )      :: blc_E
+    TYPE( operator_blc )      :: blc_B
+    TYPE( operator_blc )      :: blc_EB
     !
     LOGICAL :: alloc = .FALSE.
 
@@ -44,14 +47,15 @@
 ! end delcarations
 !
 
-   PUBLIC :: dimC, dim_emb
+   PUBLIC :: dimx, dimT, dimE, dimB
    PUBLIC :: nspin, ispin
    PUBLIC :: nkpts_par
+   PUBLIC :: shift_T
    !
-   PUBLIC :: shift_C
-   !
-   PUBLIC :: blc_C
-   PUBLIC :: blc_emb
+   PUBLIC :: blc_T
+   PUBLIC :: blc_E
+   PUBLIC :: blc_B
+   PUBLIC :: blc_EB
    !
    PUBLIC :: alloc
    !
@@ -74,25 +78,31 @@ CONTAINS
       CALL log_push( subname )
 
       IF ( alloc )            CALL errore(subname,'already allocated', 1 )
-      IF ( dimC <= 0 )        CALL errore(subname,'invalid dimC', 1 )
-      IF ( dim_emb <= 0 )     CALL errore(subname,'invalid dim_emb', 1 )
-      IF ( dim_emb >= dimC)   CALL errore(subname,'Invalid dim_emb >= dimC',1)
+      IF ( dimT <= 0 )        CALL errore(subname,'invalid dimT', 1 )
+      IF ( dimE <= 0 )        CALL errore(subname,'invalid dimE', 1 )
+      IF ( dimE >= dimT)      CALL errore(subname,'Invalid dimE >= dimT',1)
+      !
+      IF ( dimB /= dimT-dimE) CALL errore(subname,'Invalid dimB,dimE,dimT',1)
       !
       IF ( nkpts_par <= 0 )   CALL errore(subname,'invalid nkpts_par', 1 )
       !
-      dimx = dimC
+      dimx = dimT
 
       !
       ! init data
       !
-      CALL operator_blc_init( blc_C,   "block_C")
-      CALL operator_blc_init( blc_emb, "block_emb")
+      CALL operator_blc_init( blc_T,   "block_C")
+      CALL operator_blc_init( blc_E,   "block_E")
+      CALL operator_blc_init( blc_B,   "block_B")
+      CALL operator_blc_init( blc_EB,  "block_EB")
 
       !
       ! allocations
       !
-      CALL operator_blc_allocate( dimC,    dimC,    nkpts_par, OBJ=blc_C )
-      CALL operator_blc_allocate( dim_emb, dim_emb, nkpts_par, OBJ=blc_emb )
+      CALL operator_blc_allocate( dimT, dimT, nkpts_par, OBJ=blc_T )
+      CALL operator_blc_allocate( dimE, dimE, nkpts_par, OBJ=blc_E )
+      CALL operator_blc_allocate( dimB, dimB, nkpts_par, OBJ=blc_B )
+      CALL operator_blc_allocate( dimE, dimB, nkpts_par, OBJ=blc_EB )
       !
       alloc = .TRUE.
 
@@ -111,8 +121,10 @@ CONTAINS
 
       IF ( .NOT. alloc ) RETURN
 
-      CALL operator_blc_deallocate( OBJ=blc_C )
-      CALL operator_blc_deallocate( OBJ=blc_emb )
+      CALL operator_blc_deallocate( OBJ=blc_T )
+      CALL operator_blc_deallocate( OBJ=blc_E )
+      CALL operator_blc_deallocate( OBJ=blc_B )
+      CALL operator_blc_deallocate( OBJ=blc_EB )
       !
       alloc = .FALSE.   
 

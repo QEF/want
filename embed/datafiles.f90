@@ -21,7 +21,7 @@
    USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
    USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
    USE datafiles_module,        ONLY : datafiles_check_fmt, file_is_internal
-   USE E_control_module,        ONLY : datafile_C 
+   USE E_control_module,        ONLY : datafile_tot 
    USE iotk_module
    !
    IMPLICIT NONE
@@ -70,7 +70,7 @@ CONTAINS
    ! determine the files to be checked
    !
    nfile=1
-   filelist(1) = TRIM( datafile_C )
+   filelist(1) = TRIM( datafile_tot )
 
    !
    ! loop over the files and check them
@@ -139,7 +139,7 @@ CONTAINS
    !
    ! update the name of the files
    !
-   datafile_C = TRIM( filelist(1) )
+   datafile_tot = TRIM( filelist(1) )
 
 
    CALL log_pop( subname )

@@ -43,7 +43,7 @@
    INTEGER :: dim_emb = 0
        ! WF number the reduced subspace
 
-   INTEGER :: dimC = 0
+   INTEGER :: dim_tot = 0
        ! WF number in the central conductor region
 
    INTEGER :: ne = 1000  
@@ -99,7 +99,7 @@
    CHARACTER(nstrx) :: postfix     = ' '
        ! postfix used for the names of files
 
-   CHARACTER(nstrx) :: datafile_C = ' '
+   CHARACTER(nstrx) :: datafile_tot = ' '
        ! the name of the file containing central conductor data
 
    CHARACTER(nstrx) :: datafile_emb = ' '
@@ -112,9 +112,9 @@
    CHARACTER(nstrx) :: datafile_sgm_emb = ' '
        ! the name of the file containing the embedding sgm
 
-   REAL(dbl) :: shift_C = 0.0
+   REAL(dbl) :: shift_tot = 0.0
        ! global energy shift [eV] to be applied to the matrix elements
-       ! of the conductor region (H00_C, H_LC, H_CR)
+       ! of the hamiltonian
        
    INTEGER :: debug_level = 0
        ! level of debug report; values <= 0 switch the debug_mode off
@@ -126,17 +126,17 @@
        ! Currently it is used only within the interface with CRYSTAL06.
 
 
-   NAMELIST / INPUT / dimC, dim_emb, ne, emin, emax, nprint,                 &
-                 datafile_C, datafile_emb, datafile_sgm, datafile_sgm_emb,   &
+   NAMELIST / INPUT / dim_tot, dim_emb, ne, emin, emax, nprint,              &
+                 datafile_tot, datafile_emb, datafile_sgm, datafile_sgm_emb, &
                  delta, smearing_type, delta_ratio, xmax,                    &
                  transport_dir, nk, s, use_symm, debug_level,                &
-                 work_dir, prefix, postfix, shift_C, ispin
+                 work_dir, prefix, postfix, shift_tot, ispin
 
-   PUBLIC :: dimC, dim_emb, ne, emin, emax, nprint
-   PUBLIC :: datafile_C, datafile_emb, datafile_sgm, datafile_sgm_emb
+   PUBLIC :: dim_tot, dim_emb, ne, emin, emax, nprint
+   PUBLIC :: datafile_tot, datafile_emb, datafile_sgm, datafile_sgm_emb
    PUBLIC :: transport_dir, nk, s, use_symm, debug_level
    PUBLIC :: delta, smearing_type, delta_ratio, xmax
-   PUBLIC :: work_dir, prefix, postfix, shift_C, ispin
+   PUBLIC :: work_dir, prefix, postfix, shift_tot, ispin
    PUBLIC :: INPUT
 
 
@@ -173,7 +173,7 @@ CONTAINS
       !
       ! variable bcasting
       !
-      CALL mp_bcast( dimC,               ionode_id)      
+      CALL mp_bcast( dim_tot,            ionode_id)      
       CALL mp_bcast( dim_emb,            ionode_id)      
       CALL mp_bcast( transport_dir,      ionode_id)      
       CALL mp_bcast( ne,                 ionode_id)      
@@ -191,11 +191,11 @@ CONTAINS
       CALL mp_bcast( work_dir,           ionode_id)      
       CALL mp_bcast( prefix,             ionode_id)      
       CALL mp_bcast( postfix,            ionode_id)      
-      CALL mp_bcast( datafile_C,         ionode_id)      
+      CALL mp_bcast( datafile_tot,       ionode_id)      
       CALL mp_bcast( datafile_emb,       ionode_id)      
       CALL mp_bcast( datafile_sgm,       ionode_id)      
       CALL mp_bcast( datafile_sgm_emb,   ionode_id)      
-      CALL mp_bcast( shift_C,            ionode_id)      
+      CALL mp_bcast( shift_tot,          ionode_id)      
       CALL mp_bcast( ispin,              ionode_id)      
 
       !
@@ -204,17 +204,17 @@ CONTAINS
       IF ( transport_dir < 1 .OR. transport_dir > 3) &
            CALL errore(subname,'Invalid transport_dir',1)
 
-      IF ( dimC <= 0) CALL errore(subname,'Invalid dimC',1)
+      IF ( dim_tot <= 0) CALL errore(subname,'Invalid dim_tot',1)
 
-      IF ( LEN_TRIM(datafile_C) == 0 ) &
-           CALL errore(subname,'datafile_C unspecified',1)
+      IF ( LEN_TRIM(datafile_tot) == 0 ) &
+           CALL errore(subname,'datafile_tot unspecified',1)
       IF ( LEN_TRIM(datafile_emb) == 0 ) &
            CALL errore(subname,'datafile_emb unspecified',1)
       IF ( LEN_TRIM(datafile_sgm_emb) == 0 ) &
            CALL errore(subname,'datafile_sgm_emb unspecified',1)
 
-      INQUIRE( FILE=datafile_C, EXIST=exists )
-      IF ( .NOT. exists ) CALL errore(subname,'unable to find '//TRIM(datafile_C),1)
+      INQUIRE( FILE=datafile_tot, EXIST=exists )
+      IF ( .NOT. exists ) CALL errore(subname,'unable to find '//TRIM(datafile_tot),1)
       !
       IF ( emax <= emin ) CALL errore(subname,'Invalid EMIN EMAX',1)
       IF ( ne <= 1 ) CALL errore(subname,'Invalid NE',1)
@@ -230,8 +230,8 @@ CONTAINS
       IF (.NOT. allowed) &
           CALL errore(subname,'Invalid smearing_type ='//TRIM(smearing_type),10)
 
-      IF ( dim_emb <= 0)     CALL errore(subname,'Invalid dim_emb',1)
-      IF ( dim_emb >= dimC)  CALL errore(subname,'Invalid dim_emb >= dimC',1)
+      IF ( dim_emb <= 0)        CALL errore(subname,'Invalid dim_emb',1)
+      IF ( dim_emb >= dim_tot)  CALL errore(subname,'Invalid dim_emb >= dim_tot',1)
 
       IF ( ANY( nk(:) < 0 ) ) CALL errore(subname,'invalid nk', 10 )
       IF ( ANY( s(:)  < 0 .OR.  s(:) > 1 ) ) CALL errore(subname,'invalid s', 10 )

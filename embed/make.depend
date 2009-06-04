@@ -2,6 +2,7 @@ cleanup.o : hamiltonian.o
 cleanup.o : ../transport/egrid.o
 cleanup.o : ../transport/kpoints.o
 cleanup.o : ../transport/smearing.o
+cleanup.o : workspace.o
 control.o : ../libs/kind.o
 control.o : ../libs/parameters.o
 correlation.o : control.o
@@ -31,6 +32,7 @@ datafiles.o : ../wannier/io_module.o
 datafiles.o : ../wannier/wannier90_tools.o
 embed.o : control.o
 embed.o : correlation.o
+embed.o : datafiles.o
 embed.o : hamiltonian.o
 embed.o : input.o
 embed.o : ../iotk/iotk_16_module.o
@@ -43,7 +45,6 @@ embed.o : ../libs/parameters.o
 embed.o : ../libs/parser.o
 embed.o : ../libs/timing.o
 embed.o : ../libs/util.o
-embed.o : ../transport/datafiles.o
 embed.o : ../transport/egrid.o
 embed.o : ../transport/kpoints.o
 embed.o : ../transport/operator_blc.o
@@ -51,11 +52,27 @@ embed.o : ../transport/smearing.o
 embed.o : ../wannier/io_module.o
 embed.o : ../wannier/operator.o
 embed.o : ../wannier/version.o
+embed.o : workspace.o
+hamiltonian_init.o : control.o
+hamiltonian_init.o : hamiltonian.o
+hamiltonian_init.o : ../iotk/iotk_16_module.o
+hamiltonian_init.o : ../libs/kind.o
+hamiltonian_init.o : ../libs/log_module.o
+hamiltonian_init.o : ../libs/mp.o
+hamiltonian_init.o : ../libs/timing.o
+hamiltonian_init.o : ../transport/operator_blc.o
+hamiltonian_init.o : ../wannier/io_module.o
 hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
 hamiltonian.o : ../transport/kpoints.o
 hamiltonian.o : ../transport/operator_blc.o
+hamiltonian_setup.o : hamiltonian.o
+hamiltonian_setup.o : ../libs/kind.o
+hamiltonian_setup.o : ../libs/log_module.o
+hamiltonian_setup.o : ../libs/timing.o
+hamiltonian_setup.o : ../transport/egrid.o
+hamiltonian_setup.o : ../transport/operator_blc.o
 input.o : control.o
 input.o : correlation.o
 input.o : hamiltonian.o
@@ -66,6 +83,7 @@ input.o : ../libs/log_module.o
 input.o : ../libs/parameters.o
 input.o : ../transport/egrid.o
 input.o : ../transport/kpoints.o
+input.o : ../transport/smearing.o
 input.o : ../wannier/io_module.o
 input_parameters.o : ../libs/constants.o
 input_parameters.o : ../libs/kind.o
@@ -85,3 +103,6 @@ summary.o : ../transport/egrid.o
 summary.o : ../transport/kpoints.o
 summary.o : ../transport/smearing.o
 summary.o : ../wannier/io_module.o
+workspace.o : hamiltonian.o
+workspace.o : ../libs/kind.o
+workspace.o : ../transport/kpoints.o

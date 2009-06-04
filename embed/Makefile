@@ -13,9 +13,12 @@ correlation.o \
 datafiles.o \
 hamiltonian.o \
 hamiltonian_init.o \
+hamiltonian_setup.o \
 input.o \
 input_parameters.o \
-summary.o
+summary.o \
+workspace.o
+
 
 WANNIER_OBJS= \
 ../wannier/compute_kham.o \
@@ -39,6 +42,7 @@ WANNIER_OBJS= \
 TRANSPORT_OBJS= \
 ../transport/egrid.o \
 ../transport/fourier_par.o \
+../transport/gzero_maker.o \
 ../transport/kpoints.o \
 ../transport/operator_blc.o \
 ../transport/read_matrix.o \
@@ -48,7 +52,7 @@ BIN= \
 embed.x 
 
 EXTERNAL_LIBS= ../iotk/libiotk.a ../ctools/libctools.a ../libs/libwant.a
-BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
+BIN_DEPS=  $(OBJS) $(WANNIER_OBJS) $(TRANSPORT_OBJS) $(EXTERNAL_LIBS)
 OBJS_ALL=  $(OBJS) $(WANNIER_OBJS) $(TRANSPORT_OBJS)
 
 #

@@ -18,9 +18,9 @@
    USE constants,            ONLY : ZERO
    USE parser_module,        ONLY : log2char
    USE mp_global,            ONLY : nproc
-   USE E_hamiltonian_module, ONLY : dimC, dim_emb, shift_C
+   USE E_hamiltonian_module, ONLY : dimT, dimE, dimB, shift_T
    USE E_correlation_module, ONLY : lhave_corr
-   USE E_control_module,     ONLY : datafile_C, datafile_emb, &
+   USE E_control_module,     ONLY : datafile_tot, datafile_emb, &
                                     datafile_sgm, datafile_sgm_emb, &
                                     transport_dir, nprint
    USE T_egrid_module,       ONLY : ne, emin, emax, de
@@ -62,14 +62,16 @@
    ELSE
       WRITE(iunit,"(7x,'work_dir :',5x,/,10x,a)") TRIM(work_dir)
    ENDIF
-   WRITE(iunit,"( 7x,'         total dim. :',5x,i5)") dimC
-   WRITE(iunit,"( 7x,'         embed dim. :',5x,i5)") dim_emb
+   WRITE(iunit,"( 7x,'         total dim. :',5x,i5)") dimT
+   WRITE(iunit,"( 7x,'         embed dim. :',5x,i5)") dimE
+   WRITE(iunit,"( 7x,'          bath dim. :',5x,i5)") dimB
    WRITE(iunit,"( 7x,'Transport Direction :',8x,i2)") transport_dir
-   WRITE(iunit,"( 7x,'Have Correlation    :',5x,a)") log2char(lhave_corr)
+   WRITE(iunit,"( 7x,'   Have Correlation :',5x,a)") log2char(lhave_corr)
    WRITE(iunit,"( )")
-   WRITE(iunit,"( 7x,'Print info each ', i3,' energy step' )" ) nprint
+   WRITE(iunit,"( 7x,'             nprint :',5x,i5)") nprint
+   WRITE(iunit,"( 7x,'          Shift_tot :',5x,f10.5)") shift_T
    WRITE(iunit,"( )")
-   WRITE(iunit,"( 7x,'    global datafile :',5x,a)") TRIM(datafile_C)
+   WRITE(iunit,"( 7x,'    global datafile :',5x,a)") TRIM(datafile_tot)
    WRITE(iunit,"( 7x,'     embed datafile :',5x,a)") TRIM(datafile_emb)
    WRITE(iunit,"( 7x,' sgm embed datafile :',5x,a)") TRIM(datafile_sgm_emb)
    !
@@ -79,23 +81,22 @@
    WRITE( iunit,"( 2x,'</INPUT>',2/)" )
 
    WRITE(iunit,"( 2x,'<ENERGY_GRID>')" )
-   WRITE(iunit,"( 7x,'Dimension     :',5x,i6)")    ne
-   WRITE(iunit,"( 7x,'Min Energy    :',5x,f10.5)") emin
-   WRITE(iunit,"( 7x,'Max Energy    :',5x,f10.5)") emax
-   WRITE(iunit,"( 7x,'Energy Step   :',5x,f10.5)") de
-   WRITE(iunit,"( 7x,'Delta         :',5x,f10.5)") delta
-   WRITE(iunit,"( 7x,'Smearing Type :',5x,a)")     TRIM(smearing_type)
-   WRITE(iunit,"( 7x,'Smearing grid :',5x,i6)")    nx_smear
-   WRITE(iunit,"( 7x,'Smearing gmax :',5x,f10.5)") xmax
-   WRITE(iunit,"( 7x,'      Shift_C :',5x,f10.5)") shift_C
+   WRITE(iunit,"( 7x,'          Dimension :',5x,i6)")    ne
+   WRITE(iunit,"( 7x,'         Min energy :',5x,f10.5)") emin
+   WRITE(iunit,"( 7x,'         Max energy :',5x,f10.5)") emax
+   WRITE(iunit,"( 7x,'        Energy step :',5x,f10.5)") de
+   WRITE(iunit,"( 7x,'              Delta :',5x,f10.5)") delta
+   WRITE(iunit,"( 7x,'      Smearing type :',5x,a)")     TRIM(smearing_type)
+   WRITE(iunit,"( 7x,'      Smearing grid :',5x,i6)")    nx_smear
+   WRITE(iunit,"( 7x,'      Smearing gmax :',5x,f10.5)") xmax
    WRITE(iunit,"( 2x,'</ENERGY_GRID>',/)" )
 
    IF ( kpoints_alloc ) THEN
        !
-       WRITE( iunit, "( /,2x,'<K-POINTS>')" )
-       WRITE( iunit, "( 7x, 'nkpts_par = ',i4 ) " ) nkpts_par
-       WRITE( iunit, "( 7x, 'nrtot_par = ',i4 ) " ) nrtot_par
-       WRITE( iunit, "( 7x, ' use_symm = ',a  ) " ) TRIM(log2char(use_symm))
+       WRITE(iunit, "( /,2x,'<K-POINTS>')" )
+       WRITE(iunit, "( 7x, 'nkpts_par = ',i4 ) " ) nkpts_par
+       WRITE(iunit, "( 7x, 'nrtot_par = ',i4 ) " ) nrtot_par
+       WRITE(iunit, "( 7x, ' use_symm = ',a  ) " ) TRIM(log2char(use_symm))
        !
        !
        nk_par3D(:) = imask( nk_par, 1, transport_dir )
