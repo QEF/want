@@ -161,6 +161,28 @@ CONTAINS
 
 
 !**********************************************************
+   SUBROUTINE setup_smearing()
+   !**********************************************************
+      USE T_smearing_module,        ONLY : delta,         &
+                                           smearing_type, &
+                                           delta_ratio, xmax
+
+      USE E_input_parameters_module,ONLY : delta_         => delta,         &
+                                           smearing_type_ => smearing_type, &
+                                           delta_ratio_   => delta_ratio,   &
+                                           xmax_          => xmax
+
+      IMPLICIT NONE
+
+      delta         = delta_
+      smearing_type = smearing_type_
+      delta_ratio   = delta_ratio_
+      xmax          = xmax_
+
+   END SUBROUTINE setup_smearing
+
+
+!**********************************************************
    SUBROUTINE setup_hamiltonian()
    !**********************************************************
       USE E_hamiltonian_module, ONLY :     dimC,    & 
