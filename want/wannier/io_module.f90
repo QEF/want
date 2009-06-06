@@ -582,6 +582,11 @@
            body_   = "doscond" 
            suffix_ = ".dat"
            !
+      CASE ( "dos" )
+           !
+           body_   = "dos" 
+           suffix_ = ".dat"
+           !
       CASE ( "sgm" )
            !
            body_   = "sgm" 

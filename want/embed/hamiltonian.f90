@@ -91,7 +91,7 @@ CONTAINS
       !
       ! init data
       !
-      CALL operator_blc_init( blc_T,   "block_C")
+      CALL operator_blc_init( blc_T,   "block_T")
       CALL operator_blc_init( blc_E,   "block_E")
       CALL operator_blc_init( blc_B,   "block_B")
       CALL operator_blc_init( blc_EB,  "block_EB")

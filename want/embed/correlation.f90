@@ -271,7 +271,7 @@ CONTAINS
                   !
                   SELECT CASE( TRIM(opr%blc_name) )
                   !
-                  CASE( "block_00C", "block_00R", "block_00L", "block_C", "block_E", "block_B", "block_EB" )
+                  CASE( "block_00C", "block_00R", "block_00L", "block_T", "block_E", "block_B", "block_EB" )
                       ivr_aux(i) = 0
                   CASE( "block_01R", "block_01L", "block_LC", "block_CR" )
                       ivr_aux(i) = 1

@@ -55,12 +55,12 @@
    ! <INPUT> section
    !
    WRITE(iunit,"( 2x,'<INPUT>')" )
-   WRITE(iunit,"(   7x,'prefix              :',5x,   a)") TRIM(prefix)
-   WRITE(iunit,"(   7x,'postfix             :',5x,   a)") TRIM(postfix)
+   WRITE(iunit,"(   7x,'           prefix :',5x,   a)") TRIM(prefix)
+   WRITE(iunit,"(   7x,'          postfix :',5x,   a)") TRIM(postfix)
    IF ( LEN_TRIM(work_dir) <= 65 ) THEN
-      WRITE(iunit,"(7x,'work_dir            :',5x,   a)") TRIM(work_dir)
+      WRITE(iunit,"(7x,'            work_dir :',5x,   a)") TRIM(work_dir)
    ELSE
-      WRITE(iunit,"(7x,'work_dir :',5x,/,10x,a)") TRIM(work_dir)
+      WRITE(iunit,"(7x,'            work_dir :',5x,/,10x,a)") TRIM(work_dir)
    ENDIF
    WRITE(iunit,"( 7x,'         total dim. :',5x,i5)") dimT
    WRITE(iunit,"( 7x,'         embed dim. :',5x,i5)") dimE

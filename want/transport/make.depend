@@ -86,7 +86,6 @@ gzero_maker.o : smearing.o
 hamiltonian_init.o : control.o
 hamiltonian_init.o : hamiltonian.o
 hamiltonian_init.o : ../iotk/iotk_16_module.o
-hamiltonian_init.o : kpoints.o
 hamiltonian_init.o : ../libs/kind.o
 hamiltonian_init.o : ../libs/log_module.o
 hamiltonian_init.o : ../libs/mp.o
@@ -123,7 +122,6 @@ input_parameters.o : ../libs/mp.o
 input_parameters.o : ../libs/parameters.o
 input_parameters.o : ../libs/parser.o
 input_parameters.o : ../wannier/io_module.o
-kpoints.o : control.o
 kpoints.o : ../iotk/iotk_16_module.o
 kpoints.o : ../libs/constants.o
 kpoints.o : ../libs/files.o
@@ -135,7 +133,6 @@ operator_blc.o : ../libs/kind.o
 operator_blc.o : ../libs/log_module.o
 operator_blc.o : ../libs/parameters.o
 operator_blc.o : ../libs/parser.o
-read_matrix.o : control.o
 read_matrix.o : ../iotk/iotk_16_module.o
 read_matrix.o : kpoints.o
 read_matrix.o : ../libs/constants.o

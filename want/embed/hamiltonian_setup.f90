@@ -10,7 +10,7 @@
    SUBROUTINE hamiltonian_setup( ik, ie )
    !*******************************************************************
    !
-   ! For each block (tot, emb, bulk, eb) define
+   ! For each block (tot T, emb E, bath B, emb bath EB) define
    ! the aux quantity:
    !
    !  aux = E*ovp -ham -sgm_corr
