@@ -1,4 +1,4 @@
-!
+
 ! Copyright (C) 2009 WanT Group
 !
 ! This file is distributed under the terms of the
@@ -44,6 +44,7 @@
    ! local variables
    !
    CHARACTER(5)     :: subname='embed'
+   CHARACTER(256)   :: filename
    !
    INTEGER          :: i, ie, ir, ik, ierr
    INTEGER          :: iomg_s, iomg_e
@@ -141,6 +142,12 @@
        !
    ENDIF
 
+
+   !
+   ! init parallelism over frequencies
+   !
+   CALL divide_et_impera( 1, ne,  iomg_s, iomg_e, mpime, nproc )
+
    
    !
    ! init embedding sgm output
@@ -151,7 +158,7 @@
                             ANALYTICITY="retarded", EUNITS="eV" )
 
 
-   dos(:)           = ZERO
+   dos(:) = ZERO
    !
    energy_loop: &
    DO ie = iomg_s, iomg_e
@@ -249,6 +256,16 @@
       !
       CALL flush_unit(stdout)
 
+      !
+      ! time report
+      !
+      IF ( MOD( ie, nprint) == 0 .OR.  ie == iomg_s .OR. ie == iomg_e ) THEN
+          !
+          IF ( ionode ) WRITE(stdout,"()")
+          CALL timing_upto_now(stdout)
+          !
+      ENDIF
+
    ENDDO energy_loop
 
 
@@ -266,6 +283,31 @@
    ! close lead sgm output files
    !
    CALL operator_write_close(sgmB_unit)
+
+
+!
+! write DOS data to file
+!
+
+   IF ( ionode ) THEN
+       !
+       CALL write_header( stdout, "Writing data" )
+       CALL flush_unit( stdout )
+
+       CALL io_name( "dos", filename )
+       !
+       OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
+       !
+       DO ie = 1, ne
+           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), dos(ie)
+       ENDDO
+       !
+       CLOSE( dos_unit )
+       !
+       CALL io_name( "dos", filename, LPATH=.FALSE. )
+       WRITE(stdout,"(  2x,'        DOS written on file: ',3x,a)") TRIM(filename)
+       ! 
+   ENDIF
 
 
 

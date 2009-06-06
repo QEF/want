@@ -56,48 +56,48 @@
    ! <INPUT> section
    !
    WRITE(iunit,"( 2x,'<INPUT>')" )
-   WRITE(iunit,"( 7x,'Calculation Type    :',5x,a)") TRIM(calculation_type)
-   WRITE(iunit,"(   7x,'prefix              :',5x,   a)") TRIM(prefix)
-   WRITE(iunit,"(   7x,'postfix             :',5x,   a)") TRIM(postfix)
+   WRITE(iunit,"( 7x,'   Calculation Type :',5x,a)") TRIM(calculation_type)
+   WRITE(iunit,"( 7x,'             prefix :',5x,   a)") TRIM(prefix)
+   WRITE(iunit,"( 7x,'            postfix :',5x,   a)") TRIM(postfix)
    IF ( LEN_TRIM(work_dir) <= 65 ) THEN
-      WRITE(iunit,"(7x,'work_dir            :',5x,   a)") TRIM(work_dir)
+      WRITE(iunit,"(7x,'           work_dir :',5x,   a)") TRIM(work_dir)
    ELSE
-      WRITE(iunit,"(7x,'work_dir :',5x,/,10x,a)") TRIM(work_dir)
+      WRITE(iunit,"(7x,'           work_dir :',5x,/,10x,a)") TRIM(work_dir)
    ENDIF
    WRITE(iunit,"( 7x,'        L-lead dim. :',5x,i5)") dimL
    WRITE(iunit,"( 7x,'     conductor dim. :',5x,i5)") dimC
    WRITE(iunit,"( 7x,'        R-lead dim. :',5x,i5)") dimR
    WRITE(iunit,"( 7x,'Conductance Formula :',5x,a)") TRIM(conduct_formula)
    WRITE(iunit,"( 7x,'Transport Direction :',8x,i2)") transport_dir
-   WRITE(iunit,"( 7x,'Have Correlation    :',5x,a)") log2char(lhave_corr)
-   WRITE(iunit,"( 7x,'Write k-data        :',5x,a)") log2char(write_kdata)
+   WRITE(iunit,"( 7x,'   Have Correlation :',5x,a)") log2char(lhave_corr)
+   WRITE(iunit,"( 7x,'       Write k-data :',5x,a)") log2char(write_kdata)
    WRITE(iunit,"( 7x,'Max iteration number:',5x,i5)") niterx
    WRITE(iunit,"( )")
-   WRITE(iunit,"( 7x,'Print info each ', i3,' energy step' )" ) nprint
+   WRITE(iunit,"( 7x,'             nprint :',5x,i5)") nprint
    WRITE(iunit,"( )")
-   WRITE(iunit,"( 7x,'Conductor data read from file  :',5x,a)") TRIM(datafile_C)
+   WRITE(iunit,"( 7x,' Conductor datafile :',5x,a)") TRIM(datafile_C)
    IF (calculation_type == 'conductor') THEN
-      WRITE(iunit,"( 7x,'Left lead data read from file  :',5x,a)") TRIM(datafile_L)
-      WRITE(iunit,"( 7x,'Right lead data read from file :',5x,a)") TRIM(datafile_R)
+      WRITE(iunit,"( 7x,'    L-lead datafile :',5x,a)") TRIM(datafile_L)
+      WRITE(iunit,"( 7x,'    R-lead datafile :',5x,a)") TRIM(datafile_R)
    ENDIF
    IF (lhave_corr) THEN
-      WRITE(iunit,"( 7x,'Self-energy data read from file:',5x,a)") TRIM(datafile_sgm)
+      WRITE(iunit,"( 7x,'       Sgm datafile :',5x,a)") TRIM(datafile_sgm)
    ENDIF
    WRITE( iunit,"( 2x,'</INPUT>',2/)" )
 
    WRITE(iunit,"( 2x,'<ENERGY_GRID>')" )
-   WRITE(iunit,"( 7x,'Dimension     :',5x,i6)")    ne
-   WRITE(iunit,"( 7x,'Min Energy    :',5x,f10.5)") emin
-   WRITE(iunit,"( 7x,'Max Energy    :',5x,f10.5)") emax
-   WRITE(iunit,"( 7x,'Energy Step   :',5x,f10.5)") de
-   WRITE(iunit,"( 7x,'Delta         :',5x,f10.5)") delta
-   WRITE(iunit,"( 7x,'Smearing Type :',5x,a)")     TRIM(smearing_type)
-   WRITE(iunit,"( 7x,'Smearing grid :',5x,i6)")    nx_smear
-   WRITE(iunit,"( 7x,'Smearing gmax :',5x,f10.5)") xmax
-   WRITE(iunit,"( 7x,'      Shift_L :',5x,f10.5)") shift_L
-   WRITE(iunit,"( 7x,'      Shift_C :',5x,f10.5)") shift_C
-   WRITE(iunit,"( 7x,'      Shift_R :',5x,f10.5)") shift_R
-   WRITE(iunit,"( 7x,'   Shift_corr :',5x,f10.5)") shift_corr
+   WRITE(iunit,"( 7x,'          Dimension :',5x,i6)")    ne
+   WRITE(iunit,"( 7x,'         Min Energy :',5x,f10.5)") emin
+   WRITE(iunit,"( 7x,'         Max Energy :',5x,f10.5)") emax
+   WRITE(iunit,"( 7x,'        Energy Step :',5x,f10.5)") de
+   WRITE(iunit,"( 7x,'              Delta :',5x,f10.5)") delta
+   WRITE(iunit,"( 7x,'      Smearing Type :',5x,a)")     TRIM(smearing_type)
+   WRITE(iunit,"( 7x,'      Smearing grid :',5x,i6)")    nx_smear
+   WRITE(iunit,"( 7x,'      Smearing gmax :',5x,f10.5)") xmax
+   WRITE(iunit,"( 7x,'            Shift_L :',5x,f10.5)") shift_L
+   WRITE(iunit,"( 7x,'            Shift_C :',5x,f10.5)") shift_C
+   WRITE(iunit,"( 7x,'            Shift_R :',5x,f10.5)") shift_R
+   WRITE(iunit,"( 7x,'         Shift_corr :',5x,f10.5)") shift_corr
    WRITE(iunit,"( 2x,'</ENERGY_GRID>',/)" )
 
    IF ( kpoints_alloc ) THEN
