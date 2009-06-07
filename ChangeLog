@@ -4,6 +4,8 @@
 =======================================================
 
 
+07 Jun 2009      Parallel read-in of selfenergies added to embed.x . (AF)
+
 05 Jun 2009      Embedding code completed and partly tested. (AF)
 
 04 Jun 2009      Embedding dir added; Changes spread all over accordingly. (AF)

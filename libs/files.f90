@@ -30,7 +30,7 @@
 ! SUBROUTINE  file_close(unit[,path][,action], ierr)
 ! SUBROUTINE  get_free_unit(unit)
 ! SUBROUTINE  file_delete(name)
-! SUBROUTINE  file_exist(name,exist)
+! FUNCTION    file_exist(name)
 ! SUBROUTINE  file_rename(oldname,newname)
 !
 ! PATH is the IOTK_PATH (root NOT included) for the
@@ -127,18 +127,17 @@ CONTAINS
       
 
 !**********************************************************
-   SUBROUTINE file_exist(filename,exist)
+   LOGICAL FUNCTION file_exist(filename)
    !**********************************************************
    IMPLICIT NONE
-      CHARACTER(*),  INTENT(in)  :: filename
-      LOGICAL,       INTENT(out) :: exist
+      CHARACTER(*)  :: filename
    
-      IF (ionode) INQUIRE(FILE=TRIM(filename),EXIST=exist)
-      CALL mp_bcast( exist, ionode_id )
+      IF (ionode) INQUIRE(FILE=TRIM(filename),EXIST=file_exist)
+      CALL mp_bcast( file_exist, ionode_id )
       !
       RETURN
       !
-   END SUBROUTINE file_exist
+   END FUNCTION file_exist
 
 
 !**********************************************************

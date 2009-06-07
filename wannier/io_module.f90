@@ -120,6 +120,7 @@
    PUBLIC ::  alloc
    PUBLIC ::  io_init
    PUBLIC ::  io_name
+   PUBLIC ::  io_set_nd_nmbr
    PUBLIC ::  io_open_dftdata
    PUBLIC ::  io_close_dftdata
    PUBLIC ::  io_read_data
