@@ -55,13 +55,9 @@ CONTAINS
       CHARACTER(LEN=*),  INTENT(IN)  :: filename
       INTEGER,           INTENT(OUT) :: ierr
       !
-      LOGICAL :: lexist
-      !
       ierr = 0
       !
-      CALL file_exist( filename, lexist)
-      !
-      IF ( .NOT. lexist ) THEN
+      IF ( .NOT. file_exist(filename) ) THEN
           ierr = 1
           RETURN
       ENDIF

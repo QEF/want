@@ -13,13 +13,14 @@
    USE kinds,                   ONLY : dbl
    USE constants,               ONLY : EPS_m6
    USE parameters,              ONLY : nstrx
-   USE io_module,               ONLY : sgm_unit, ionode, ionode_id, stdout
+   USE io_module,               ONLY : sgm_unit, ionode, ionode_id, stdout, io_set_nd_nmbr
    USE mp,                      ONLY : mp_bcast
+   USE mp_global,               ONLY : mpime, nproc
    USE parser_module,           ONLY : change_case
    USE operator_module,         ONLY : operator_read_aux, operator_read_data
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
-   USE files_module,            ONLY : file_open, file_close
+   USE files_module,            ONLY : file_open, file_close, file_exist
    !
    USE E_hamiltonian_module,    ONLY : dimT, dimE, dimB, blc_T, blc_E, blc_B, blc_EB
    USE E_control_module,        ONLY : transport_dir, datafile_sgm
@@ -83,11 +84,32 @@ CONTAINS
       !
       CHARACTER(16)         :: subname="correlation_init"
       CHARACTER(nstrx)      :: analyticity
+      CHARACTER(20)         :: str
       INTEGER,  ALLOCATABLE :: ivr_corr(:,:)
       INTEGER               :: ne_corr, ierr
 
       CALL log_push( 'correlation_init' )
       IF ( egrid_alloc )   CALL errore(subname,'egrid already allocated', 1 )
+
+
+      !
+      ! check the existence of datafile
+      !
+      IF ( .NOT. file_exist(TRIM(datafile_sgm)) ) THEN
+          !
+          CALL io_set_nd_nmbr( str, mpime, nproc )
+          str="."//TRIM(str)
+          !
+          IF ( file_exist( TRIM(datafile_sgm)//TRIM(str) ) ) THEN
+              !
+              datafile_sgm=TRIM(datafile_sgm)//TRIM(str)
+              !
+          ELSE
+              CALL errore(subname,"datafile sgm not found",10)
+          ENDIF
+          !
+      ENDIF
+
 
       !
       ! This file must be opened by all the processors
