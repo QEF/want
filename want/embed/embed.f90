@@ -268,6 +268,11 @@
 
    ENDDO energy_loop
 
+   !
+   ! recover over frequencies
+   !
+   CALL mp_sum( dos )
+
 
    !
    ! close sgm file
