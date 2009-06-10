@@ -122,7 +122,7 @@
        !
        nr_par3D(:) = kpoints_imask( nr_par, 1, transport_dir )
        !
-       WRITE( iunit, "(/,7x, 'Parallel R vector grid:      nr = (',3i3,' )') " ) nr_par3D(:) 
+       WRITE( iunit, "(/,7x, 'Parallel R vector grid:       nr = (',3i3,' )') " ) nr_par3D(:) 
        !
        DO ir=1,nrtot_par
            !
