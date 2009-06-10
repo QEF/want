@@ -21,7 +21,7 @@
    USE log_module,              ONLY : log_push, log_pop
    USE files_module,            ONLY : file_open, file_close
    USE T_egrid_module,          ONLY : de, ne, egrid, emin, emax, egrid_alloc => alloc
-   USE T_kpoints_module,        ONLY : nkpts_par, nrtot_par, vr_par
+   USE T_kpoints_module,        ONLY : nkpts_par, nrtot_par, ivr_par
    USE T_hamiltonian_module,    ONLY : dimL, dimC, dimR, &
                                        blc_00L, blc_01L, blc_00R, blc_01R, &
                                        blc_00C, blc_LC,  blc_CR
@@ -281,7 +281,7 @@ CONTAINS
                   ! set the 2D parallel indexes
                   !
                   j = j + 1
-                  ivr_aux(i) = NINT( vr_par( j, ir_par) )
+                  ivr_aux(i) = ivr_par( j, ir_par)
                   !
               ENDIF
               !

@@ -25,9 +25,10 @@
                                     transport_dir, nprint
    USE T_egrid_module,       ONLY : ne, emin, emax, de
    USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
-   USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par, wk_par, use_symm, &
+   USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par3D, wk_par, use_symm, &
                                     kpoints_alloc => alloc
-   USE T_kpoints_module,     ONLY : nrtot_par, nr_par, vr_par, wr_par
+   USE T_kpoints_module,     ONLY : nrtot_par, nr_par, ivr_par3D, wr_par
+   USE T_kpoints_module,     ONLY : kpoints_imask
    USE io_module,            ONLY : work_dir, prefix, postfix
    !
    IMPLICIT NONE
@@ -44,8 +45,6 @@
    INTEGER      :: nk_par3D(3)       ! 3D kpt mesh generator
    INTEGER      :: s_par3D(3)        ! 3D shifts
    INTEGER      :: nr_par3D(3)       ! 3D R-vect mesh generator
-   REAL(dbl)    :: vkpt_par3D(3)     ! 3D kpt-vectors
-   REAL(dbl)    :: vr_par3D(3)       ! 3D R-vectors
 
 !--------------------------------------------------------
 
@@ -99,30 +98,28 @@
        WRITE(iunit, "( 7x, ' use_symm = ',a  ) " ) TRIM(log2char(use_symm))
        !
        !
-       nk_par3D(:) = imask( nk_par, 1, transport_dir )
-       s_par3D(:)  = imask(  s_par, 0, transport_dir )
+       nk_par3D(:) = kpoints_imask( nk_par, 1, transport_dir )
+       s_par3D(:)  = kpoints_imask(  s_par, 0, transport_dir )
        !
        WRITE( iunit, "(/,7x, 'Parallel kpoints grid:',8x, &
                            &'nk = (',3i3,' )',3x,'s = (',3i3,' )') " ) nk_par3D(:), s_par3D(:) 
        !
        DO ik=1,nkpts_par
-          !
-          vkpt_par3D(:) = rmask( vkpt_par(:,ik), ZERO, transport_dir )
-          !
-          WRITE( iunit, "(7x, 'k (', i4, ') =    ( ',3f9.5,' ),   weight = ', f8.4 )") &
-                 ik, vkpt_par3D(:), wk_par(ik)
+           !
+           WRITE( iunit, "(7x, 'k (', i4, ') =    ( ',3f9.5,' ),   weight = ', f8.4 )") &
+                 ik, vkpt_par3D(:,ik), wk_par(ik)
+           !
        ENDDO
        !
-       nr_par3D(:) = imask( nr_par, 1, transport_dir )
+       nr_par3D(:) = kpoints_imask( nr_par, 1, transport_dir )
        !
        WRITE( iunit, "(/,7x, 'Parallel R vector grid:      nr = (',3i3,' )') " ) nr_par3D(:) 
        !
        DO ir=1,nrtot_par
-          !
-          vr_par3D(:) = rmask( vr_par(:,ir), ZERO, transport_dir )
-          !
-          WRITE( iunit, "(7x, 'R (', i4, ') =    ( ',3f9.5,' ),   weight = ', f8.4 )") &
-                 ir, vr_par3D(:), wr_par(ir)
+           !
+           WRITE( iunit, "(7x, 'R (', i4, ') =    ( ',3f9.5,' ),   weight = ', f8.4 )") &
+                  ir, REAL(ivr_par3D(:,ir),dbl), wr_par(ir)
+           !
        ENDDO
        !    
        WRITE( iunit, " ( 2x,'</K-POINTS>',/)" )
@@ -136,61 +133,8 @@
    WRITE( iunit, "(   2x,'</PARALLELISM>',/)" )
    !
    CALL flush_unit( iunit )
-
-
-CONTAINS
-
-!*****************************
-   FUNCTION imask ( ivect, init, dir )
-   !*****************************
-   IMPLICIT NONE
-      INTEGER :: imask(3)
-      INTEGER :: ivect(2), init
-      INTEGER :: dir 
-      !
-      imask( : ) = init
-      !
-      SELECT CASE ( dir )
-      CASE ( 1 )
-         imask( 2 ) = ivect(1) 
-         imask( 3 ) = ivect(2) 
-      CASE ( 2 )
-         imask( 1 ) = ivect(1) 
-         imask( 3 ) = ivect(2) 
-      CASE ( 3 )
-         imask( 1 ) = ivect(1) 
-         imask( 2 ) = ivect(2) 
-      CASE DEFAULT
-         CALL errore('summary','invalid dir',21)
-      END SELECT
-      !
-   END FUNCTION imask
-
-!*****************************
-   FUNCTION rmask ( rvect, init, dir )
-   !*****************************
-   IMPLICIT NONE
-      REAL(dbl) :: rmask(3)
-      REAL(dbl) :: rvect(2), init
-      INTEGER   :: dir 
-      !
-      rmask( : ) = init
-      !
-      SELECT CASE ( dir )
-      CASE ( 1 )
-         rmask( 2 ) = rvect(1) 
-         rmask( 3 ) = rvect(2) 
-      CASE ( 2 )
-         rmask( 1 ) = rvect(1) 
-         rmask( 3 ) = rvect(2) 
-      CASE ( 3 )
-         rmask( 1 ) = rvect(1) 
-         rmask( 2 ) = rvect(2) 
-      CASE DEFAULT
-         CALL errore('summary','invalid dir',21)
-      END SELECT
-      !
-   END FUNCTION
-
+   !
+   RETURN
+   !
 END SUBROUTINE summary
 

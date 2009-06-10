@@ -4,6 +4,9 @@
 =======================================================
 
 
+09 Jun 2009      Bug fixed in conductor.x when writing lead sgm. Variables related
+                 to 2D kpt and R grids modified in transport and embed. (AF)
+
 08 Jun 2009      Bug fixed in embed.f90: dos was not recover of frequencies. (AF)
 
 07 Jun 2009      Parallel read-in of selfenergies added to embed.x . (AF)

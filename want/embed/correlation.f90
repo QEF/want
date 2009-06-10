@@ -26,7 +26,7 @@
    USE E_control_module,        ONLY : transport_dir, datafile_sgm
    !
    USE T_egrid_module,          ONLY : de, ne, egrid, emin, emax, egrid_alloc => alloc
-   USE T_kpoints_module,        ONLY : nkpts_par, nrtot_par, vr_par
+   USE T_kpoints_module,        ONLY : nkpts_par, nrtot_par, ivr_par
    USE T_operator_blc_module
    !
    IMPLICIT NONE
@@ -306,7 +306,7 @@ CONTAINS
                   ! set the 2D parallel indexes
                   !
                   j = j + 1
-                  ivr_aux(i) = NINT( vr_par( j, ir_par) )
+                  ivr_aux(i) = ivr_par( j, ir_par)
                   !
               ENDIF
               !
