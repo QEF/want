@@ -187,7 +187,7 @@ CONTAINS
                                   LHAVE_CORR=.TRUE., OBJ=blc_E)
       CALL operator_blc_allocate( dimB, dimB, nkpts_par, NRTOT_SGM=nrtot_corr, &
                                   LHAVE_CORR=.TRUE., OBJ=blc_B)
-      CALL operator_blc_allocate( dimB, dimB, nkpts_par, NRTOT_SGM=nrtot_corr, &
+      CALL operator_blc_allocate( dimE, dimB, nkpts_par, NRTOT_SGM=nrtot_corr, &
                                   LHAVE_CORR=.TRUE., OBJ=blc_EB)
       !
       blc_T%ivr_sgm = ivr_corr
