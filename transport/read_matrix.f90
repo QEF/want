@@ -21,7 +21,7 @@
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
-   USE T_kpoints_module,     ONLY : kpoints_alloc => alloc, nrtot_par, vr_par, nr_par
+   USE T_kpoints_module,     ONLY : kpoints_alloc => alloc, nrtot_par, ivr_par, nr_par
    USE T_operator_blc_module
    USE iotk_module
    USE parser_module
@@ -268,7 +268,7 @@
               ! set the 2D parallel indexes
               !
               j = j + 1
-              ivr_aux(i) = NINT( vr_par( j, ir_par) )
+              ivr_aux(i) = ivr_par( j, ir_par)
               !
           ENDIF
           !

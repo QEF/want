@@ -34,7 +34,7 @@
                                     datafile_C, transport_dir
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_smearing_module,    ONLY : smearing_init
-   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par, wk_par, ivr_par, nrtot_par
+   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par3D, wk_par, ivr_par3D, vr_par3D, nrtot_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
@@ -192,13 +192,13 @@
        CALL io_name( "sgm", filename, BODY="sgmlead_L" )
        CALL operator_write_init(sgmL_unit, filename)
        CALL operator_write_aux( sgmL_unit, dimC, .TRUE., ne, iomg_s, iomg_e, &
-                                NRTOT=nrtot_par, IVR=ivr_par, GRID=egrid, &
+                                NRTOT=nrtot_par, IVR=ivr_par3D, GRID=egrid, &
                                 ANALYTICITY="retarded", EUNITS="eV" )
        !
        CALL io_name( "sgm", filename, BODY="sgmlead_R" )
        CALL operator_write_init(sgmR_unit, filename)
        CALL operator_write_aux( sgmR_unit, dimC, .TRUE., ne, iomg_s, iomg_e, &
-                                NRTOT=nrtot_par, IVR=ivr_par, GRID=egrid, &
+                                NRTOT=nrtot_par, IVR=ivr_par3D, GRID=egrid, &
                                 ANALYTICITY="retarded", EUNITS="eV" )
        !
    ENDIF
@@ -340,8 +340,8 @@
           !
           DO ir = 1, nrtot_par
               !
-              CALL compute_rham(dimC, vr_par(:,ir), rsgm_L(:,:,ir), nkpts_par, vkpt_par, wk_par, sgm_L)
-              CALL compute_rham(dimC, vr_par(:,ir), rsgm_R(:,:,ir), nkpts_par, vkpt_par, wk_par, sgm_R)
+              CALL compute_rham(dimC, vr_par3D(:,ir), rsgm_L(:,:,ir), nkpts_par, vkpt_par3D, wk_par, sgm_L)
+              CALL compute_rham(dimC, vr_par3D(:,ir), rsgm_R(:,:,ir), nkpts_par, vkpt_par3D, wk_par, sgm_R)
               !
           ENDDO
           !

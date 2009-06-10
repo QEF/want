@@ -27,7 +27,7 @@
    USE operator_module,      ONLY : operator_write_init, operator_write_close, &
                                     operator_write_aux, operator_write_data
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
-   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par, wk_par, vr_par, nrtot_par
+   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par3D, wk_par, ivr_par3D, vr_par3D, nrtot_par
    USE T_smearing_module,    ONLY : smearing_init
    USE T_operator_blc_module
    !
@@ -154,7 +154,7 @@
    !
    CALL operator_write_init(sgmB_unit, TRIM(datafile_sgm_emb) )
    CALL operator_write_aux( sgmB_unit, dimE, .TRUE., ne, iomg_s, iomg_e, &
-                            NRTOT=nrtot_par, VR=vr_par, GRID=egrid, &
+                            NRTOT=nrtot_par, IVR=ivr_par3D,  GRID=egrid, &
                             ANALYTICITY="retarded", EUNITS="eV" )
 
 
@@ -247,7 +247,7 @@
       !
       DO ir = 1, nrtot_par
           !
-          CALL compute_rham(dimE, vr_par(:,ir), rsgm_B(:,:,ir), nkpts_par, vkpt_par, wk_par, sgm_B)
+          CALL compute_rham(dimE, vr_par3D(:,ir), rsgm_B(:,:,ir), nkpts_par, vkpt_par3D, wk_par, sgm_B)
           !
       ENDDO
       !

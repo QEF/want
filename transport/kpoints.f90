@@ -20,19 +20,21 @@
 
 !
 ! Contains parallel kpt-and R-vectors data
-! all vectors (vkpt_par, vr_par) in crystal units
+! all vectors (vkpt_par, ivr_par) in crystal units
 ! 
     LOGICAL                   :: use_symm        ! whether to use kpt_symm
     INTEGER                   :: nkpts_par       ! number of parallel  kpts
     INTEGER                   :: nk_par(2)       ! 2D kpt mesh generator
     INTEGER                   :: s_par(2)        ! 2D shifts for kpt mesh generation
     REAL(dbl),    ALLOCATABLE :: vkpt_par(:,:)   ! 2D kpt-vectors
+    REAL(dbl),    ALLOCATABLE :: vkpt_par3D(:,:) ! 3D kpt-vectors
     REAL(dbl),    ALLOCATABLE :: wk_par(:)       ! weights of the 2D kpts
     !
     INTEGER                   :: nrtot_par       ! number of 2D R-vectors
     INTEGER                   :: nr_par(2)       ! 2D R-vect mesh geenrator
     INTEGER,      ALLOCATABLE :: ivr_par(:,:)    ! 2D R-vectors, crystal units
-    REAL(dbl),    ALLOCATABLE :: vr_par(:,:)     ! 2D R-vectors, crystal units
+    INTEGER,      ALLOCATABLE :: ivr_par3D(:,:)  ! 3D R-vectors, crystal units
+    REAL(dbl),    ALLOCATABLE :: vr_par3D(:,:)   ! 3D R-vectors, crystal units, multipl by 2Pi
     REAL(dbl),    ALLOCATABLE :: wr_par(:)       ! weights of the 2D R-vects
     !
     COMPLEX(dbl), ALLOCATABLE :: table_par(:,:)  ! coefficients for the 2D FFT
@@ -47,14 +49,17 @@
 !
 
    PUBLIC :: use_symm
-   PUBLIC :: nrtot_par, nr_par, vr_par, ivr_par, wr_par
+   PUBLIC :: nrtot_par, nr_par, ivr_par, wr_par
    PUBLIC :: nkpts_par, nk_par, s_par, vkpt_par, wk_par
+   PUBLIC :: vkpt_par3D, ivr_par3D, vr_par3D
    PUBLIC :: table_par
    !
    PUBLIC :: alloc
    !
    PUBLIC :: kpoints_init
    PUBLIC :: kpoints_deallocate
+   PUBLIC :: kpoints_rmask
+   PUBLIC :: kpoints_imask
 
 
 CONTAINS
@@ -145,13 +150,17 @@ CONTAINS
       !
       ! allocations
       !
-      ALLOCATE( vr_par(2,nrtot_par), wr_par(nrtot_par), STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'allocating vr_par, wr_par',ABS(ierr))
-      ALLOCATE( ivr_par(2,nrtot_par), STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par',ABS(ierr))
+      ALLOCATE( ivr_par(2,nrtot_par), wr_par(nrtot_par), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par, wr_par',ABS(ierr))
+      ALLOCATE( ivr_par3D(3,nrtot_par), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par3D',ABS(ierr))
+      ALLOCATE( vr_par3D(3,nrtot_par), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating vr_par3D',ABS(ierr))
       !
       ALLOCATE( vkpt_par(2,nkpts_par_x), wk_par(nkpts_par_x) , STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_par, wk_par',ABS(ierr))
+      ALLOCATE( vkpt_par3D(3,nkpts_par_x), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_par3D',ABS(ierr))
   
       !
       ! set the prallel grids (vr & kpt) in crystal units
@@ -165,15 +174,16 @@ CONTAINS
           !
           ir = ir + 1
           !
-          vr_par(1,ir) = REAL( i - ( nr_par(1)+1)/2, dbl )
-          vr_par(2,ir) = REAL( j - ( nr_par(2)+1)/2, dbl )
+          ivr_par(1,ir) = i - ( nr_par(1) +1 ) / 2
+          ivr_par(2,ir) = j - ( nr_par(2) +1 ) / 2
           !
           wr_par( ir ) = ONE
           !
+          ivr_par3D(:,ir) = kpoints_imask( ivr_par(:,ir), 0, transport_dir )
+          vr_par3D(:,ir)  = TPI * REAL( ivr_par3D(:,ir), dbl )
+          !
       ENDDO
       ENDDO
-      !
-      ivr_par(:,:) = NINT( vr_par(:,:) )
   
       !
       ! then the kpt grid
@@ -223,6 +233,8 @@ CONTAINS
               vkpt_par(:,ik) = vaux(:)
               wk_par( ik )   = ONE
               !
+              vkpt_par3D(:,ik) = kpoints_rmask( vkpt_par, ZERO, transport_dir )
+              !
           ENDIF
           !
       ENDDO
@@ -240,7 +252,7 @@ CONTAINS
       DO ik = 1, nkpts_par
       DO ir = 1, nrtot_par
           !
-          arg = TPI * DOT_PRODUCT( vkpt_par(:,ik), vr_par(:,ir) )
+          arg = TPI * DOT_PRODUCT( vkpt_par(:,ik), REAL(ivr_par(:,ir), dbl) )
           table_par(ir,ik) = CMPLX( COS(arg), SIN(arg), dbl )
           !
       ENDDO
@@ -260,13 +272,17 @@ CONTAINS
       INTEGER :: ierr
       CALL log_push( 'kpoints_deallocate' )
 
-      IF ( ALLOCATED( vr_par)  ) THEN
-          DEALLOCATE( vr_par, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_par',ABS(ierr))
-      ENDIF
       IF ( ALLOCATED( ivr_par)  ) THEN
           DEALLOCATE( ivr_par, STAT=ierr)
           IF( ierr /=0 ) CALL errore(subname, 'deallocating ivr_par',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( ivr_par3D)  ) THEN
+          DEALLOCATE( ivr_par3D, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating ivr_par3D',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( vr_par3D)  ) THEN
+          DEALLOCATE( vr_par3D, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_par3D',ABS(ierr))
       ENDIF
       IF ( ALLOCATED( wr_par)  ) THEN
           DEALLOCATE( wr_par, STAT=ierr)
@@ -275,6 +291,10 @@ CONTAINS
       IF ( ALLOCATED( vkpt_par)  ) THEN
           DEALLOCATE( vkpt_par, STAT=ierr)
           IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_par',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( vkpt_par3D)  ) THEN
+          DEALLOCATE( vkpt_par3D, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_par3D',ABS(ierr))
       ENDIF
       IF ( ALLOCATED( wk_par)  ) THEN
           DEALLOCATE( wk_par, STAT=ierr)
@@ -316,6 +336,63 @@ CONTAINS
       !
    END FUNCTION kpoints_equivalent
 
+
+!*****************************
+   FUNCTION kpoints_imask ( ivect, init, dir )
+   !*****************************
+   IMPLICIT NONE
+      INTEGER :: kpoints_imask(3)
+      INTEGER :: imask(3), ivect(2), init
+      INTEGER :: dir
+      !
+      imask( : ) = init
+      !
+      SELECT CASE ( dir )
+      CASE ( 1 )
+         imask( 2 ) = ivect(1)
+         imask( 3 ) = ivect(2)
+      CASE ( 2 )
+         imask( 1 ) = ivect(1)
+         imask( 3 ) = ivect(2)
+      CASE ( 3 )
+         imask( 1 ) = ivect(1)
+         imask( 2 ) = ivect(2)
+      CASE DEFAULT
+         CALL errore('kpoints_imask','invalid dir',21)
+      END SELECT
+      !
+      kpoints_imask = imask
+      !
+   END FUNCTION kpoints_imask
+
+
+!*****************************
+   FUNCTION kpoints_rmask ( rvect, init, dir )
+   !*****************************
+   IMPLICIT NONE
+      REAL(dbl) :: kpoints_rmask(3)
+      REAL(dbl) :: rmask(3), rvect(2), init
+      INTEGER   :: dir
+      !
+      rmask( : ) = init
+      !
+      SELECT CASE ( dir )
+      CASE ( 1 )
+         rmask( 2 ) = rvect(1)
+         rmask( 3 ) = rvect(2)
+      CASE ( 2 )
+         rmask( 1 ) = rvect(1)
+         rmask( 3 ) = rvect(2)
+      CASE ( 3 )
+         rmask( 1 ) = rvect(1)
+         rmask( 2 ) = rvect(2)
+      CASE DEFAULT
+         CALL errore('kpoints_rmask','invalid dir',21)
+      END SELECT
+      !
+      kpoints_rmask = rmask
+      !
+   END FUNCTION kpoints_rmask
 
 END MODULE T_kpoints_module
 
