@@ -179,7 +179,7 @@ CONTAINS
       !
       IF ( ldynam_corr ) THEN
           !
-          CALL warning( stdout, "energy egrid is forced from SGM datafile" )
+          CALL warning( subname, "energy egrid is forced from SGM datafile" )
           WRITE( stdout, "()")
           !
           emin = egrid(1)
