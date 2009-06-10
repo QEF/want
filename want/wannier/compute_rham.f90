@@ -33,7 +33,7 @@
    ! input variables
    !
    INTEGER,      INTENT(IN)   :: dimwann, nkpts
-   REAL(dbl),    INTENT(IN)   :: vr( 3),  wk(nkpts), vkpt(3, nkpts)
+   REAL(dbl),    INTENT(IN)   :: vr(3),  wk(nkpts), vkpt(3, nkpts)
    COMPLEX(dbl), INTENT(IN)   :: kham( dimwann, dimwann, nkpts )
    COMPLEX(dbl), INTENT(OUT)  :: rham( dimwann, dimwann )
  
