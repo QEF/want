@@ -31,7 +31,8 @@
     !
     INTEGER                   :: nrtot_par       ! number of 2D R-vectors
     INTEGER                   :: nr_par(2)       ! 2D R-vect mesh geenrator
-    REAL(dbl),    ALLOCATABLE :: vr_par(:,:)     ! 2D R-vectors
+    INTEGER,      ALLOCATABLE :: ivr_par(:,:)    ! 2D R-vectors, crystal units
+    REAL(dbl),    ALLOCATABLE :: vr_par(:,:)     ! 2D R-vectors, crystal units
     REAL(dbl),    ALLOCATABLE :: wr_par(:)       ! weights of the 2D R-vects
     !
     COMPLEX(dbl), ALLOCATABLE :: table_par(:,:)  ! coefficients for the 2D FFT
@@ -46,7 +47,7 @@
 !
 
    PUBLIC :: use_symm
-   PUBLIC :: nrtot_par, nr_par, vr_par, wr_par
+   PUBLIC :: nrtot_par, nr_par, vr_par, ivr_par, wr_par
    PUBLIC :: nkpts_par, nk_par, s_par, vkpt_par, wk_par
    PUBLIC :: table_par
    !
@@ -146,6 +147,8 @@ CONTAINS
       !
       ALLOCATE( vr_par(2,nrtot_par), wr_par(nrtot_par), STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'allocating vr_par, wr_par',ABS(ierr))
+      ALLOCATE( ivr_par(2,nrtot_par), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par',ABS(ierr))
       !
       ALLOCATE( vkpt_par(2,nkpts_par_x), wk_par(nkpts_par_x) , STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_par, wk_par',ABS(ierr))
@@ -169,6 +172,8 @@ CONTAINS
           !
       ENDDO
       ENDDO
+      !
+      ivr_par(:,:) = NINT( vr_par(:,:) )
   
       !
       ! then the kpt grid
@@ -258,6 +263,10 @@ CONTAINS
       IF ( ALLOCATED( vr_par)  ) THEN
           DEALLOCATE( vr_par, STAT=ierr)
           IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_par',ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( ivr_par)  ) THEN
+          DEALLOCATE( ivr_par, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating ivr_par',ABS(ierr))
       ENDIF
       IF ( ALLOCATED( wr_par)  ) THEN
           DEALLOCATE( wr_par, STAT=ierr)
