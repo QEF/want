@@ -5,7 +5,7 @@
 
 
 10 Jun 2009      Bug in embed/correlation.f90 find by Deborah Prezzi in the
-                 allocation ob blc_EB. Fixed. (AF)
+                 allocation ob blc_EB. Fixed. Other bug fixed in correlation init. (AF)
 
 09 Jun 2009      Bug fixed in conductor.x when writing lead sgm. Variables related
                  to 2D kpt and R grids modified in transport and embed. (AF)
