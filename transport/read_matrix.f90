@@ -130,17 +130,14 @@
    IF ( nrows /= dim1 ) CALL errore(subname,'invalid number of rows',3)
    IF ( ncols /= dim2 ) CALL errore(subname,'invalid number of cols',3)
    !
-   IF ( opr%lhave_corr ) THEN
-       !
-       CALL parser_replica( rows_sgm, nrows_sgm, IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows_sgm string I',ABS(ierr))
-       CALL parser_replica( cols_sgm, ncols_sgm, IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols_sgm string I',ABS(ierr))
-       !  
-       IF ( nrows_sgm /= dim1 ) CALL errore(subname,'invalid number of rows_sgm',3)
-       IF ( ncols_sgm /= dim2 ) CALL errore(subname,'invalid number of cols_sgm',3)
-       !
-   ENDIF
+   !
+   CALL parser_replica( rows_sgm, nrows_sgm, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows_sgm string I',ABS(ierr))
+   CALL parser_replica( cols_sgm, ncols_sgm, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols_sgm string I',ABS(ierr))
+   !  
+   IF ( nrows_sgm /= dim1 ) CALL errore(subname,'invalid number of rows_sgm',3)
+   IF ( ncols_sgm /= dim2 ) CALL errore(subname,'invalid number of cols_sgm',3)
 
    !
    ! get the actual indexes for rows and cols
@@ -156,19 +153,16 @@
 
    !
    ! correlation data
-   IF ( opr%lhave_corr ) THEN
-       !
-       CALL parser_replica( rows_sgm, nrows_sgm, opr%irows_sgm, IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string II',ABS(ierr))
-       !
-       CALL parser_replica( cols_sgm, ncols_sgm, opr%icols_sgm, IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string II',ABS(ierr))
-       !
-       ! simple check
-       IF ( ANY( opr%irows_sgm(:) <=0 ) ) CALL errore(subname,'invalid irows_sgm(:) I',10) 
-       IF ( ANY( opr%icols_sgm(:) <=0 ) ) CALL errore(subname,'invalid icols_sgm(:) I',10) 
-       !
-   ENDIF
+   !
+   CALL parser_replica( rows_sgm, nrows_sgm, opr%irows_sgm, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string II',ABS(ierr))
+   !
+   CALL parser_replica( cols_sgm, ncols_sgm, opr%icols_sgm, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string II',ABS(ierr))
+   !
+   ! simple check
+   IF ( ANY( opr%irows_sgm(:) <=0 ) ) CALL errore(subname,'invalid irows_sgm(:) I',10) 
+   IF ( ANY( opr%icols_sgm(:) <=0 ) ) CALL errore(subname,'invalid icols_sgm(:) I',10) 
 
 
 !
