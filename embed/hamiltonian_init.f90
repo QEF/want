@@ -14,7 +14,7 @@
    !     Units: energies are supposed to be in eV
    !
    USE kinds
-   USE io_module,            ONLY : stdin, ionode, ionode_id
+   USE io_module,            ONLY : stdin, stdout, ionode, ionode_id
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast

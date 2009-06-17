@@ -84,7 +84,7 @@ CONTAINS
       !
       CHARACTER(16)         :: subname="correlation_init"
       CHARACTER(nstrx)      :: analyticity
-      CHARACTER(20)         :: str
+      CHARACTER(6)          :: str
       INTEGER,  ALLOCATABLE :: ivr_corr(:,:)
       INTEGER               :: ne_corr, ierr
 
@@ -247,7 +247,6 @@ CONTAINS
       IF ( opr%dim2 >  dimT_corr )  CALL errore(subname,'invalid dim2',2)
       IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
 
-
       !
       ! allocate auxiliary quantities
       !
@@ -347,12 +346,10 @@ CONTAINS
           !
       ENDDO R_loop
 
-
       !
       ! Compute the 2D fourier transform
       !
       CALL fourier_par (opr%sgm, opr%dim1, opr%dim2, caux_small, opr%dim1, opr%dim2)
-
 
       !
       ! local cleaning

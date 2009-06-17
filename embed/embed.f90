@@ -92,7 +92,6 @@
    IF ( lhave_corr ) THEN 
        !
        CALL correlation_init( sgm_unit )
-
        !
        ! Read correlation data if not dynamical
        !

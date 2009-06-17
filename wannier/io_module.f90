@@ -105,7 +105,7 @@
 
 
    PUBLIC ::  io_global_start, io_global_getionode
-   PUBLIC ::  ionode, ionode_id
+   PUBLIC ::  mpime, ionode, ionode_id
 
    PUBLIC ::  stdin, stdout 
    PUBLIC ::  dftdata_fmt, dftdata_fmt_version, dftdata_file
