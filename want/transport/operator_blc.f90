@@ -298,6 +298,16 @@ CONTAINS
           IF ( ierr/=0 ) CALL errore(subname,'allocating icols',ABS(ierr))
       ENDIF
       !
+      IF ( .NOT. ASSOCIATED( obj%irows_sgm) ) THEN
+          ALLOCATE( obj%irows_sgm(dim1), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating irows_sgm',ABS(ierr))
+      ENDIF
+      !
+      IF ( .NOT. ASSOCIATED( obj%icols_sgm) ) THEN
+          ALLOCATE( obj%icols_sgm(dim2), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating icols_sgm',ABS(ierr))
+      ENDIF
+      !
       IF ( lhave_aux_ .AND. .NOT. ASSOCIATED( obj%aux ) ) THEN
           !
           ALLOCATE( obj%aux(dim1,dim2), STAT=ierr )
@@ -331,20 +341,6 @@ CONTAINS
           IF ( ierr/=0 ) CALL errore(subname,'allocating sgm',ABS(ierr))
           !
           obj%lhave_corr = .TRUE.
-          !
-      ENDIF
-      !
-      IF ( lhave_corr_ .AND. .NOT. ASSOCIATED( obj%irows_sgm ) ) THEN
-          !
-          ALLOCATE( obj%irows_sgm(dim1), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'allocating irows_sgm',ABS(ierr))
-          !
-      ENDIF
-      !
-      IF ( lhave_corr_ .AND. .NOT. ASSOCIATED( obj%icols_sgm ) ) THEN
-          !
-          ALLOCATE( obj%icols_sgm(dim2), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,'allocating icols_sgm',ABS(ierr))
           !
       ENDIF
       !

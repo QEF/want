@@ -17,7 +17,7 @@
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : CZERO, CONE
    USE files_module,         ONLY : file_open, file_close
-   USE io_module,            ONLY : stdin, aux_unit, ionode, ionode_id
+   USE io_module,            ONLY : stdin, aux_unit, ionode, ionode_id, mpime
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
@@ -163,6 +163,7 @@
    ! simple check
    IF ( ANY( opr%irows_sgm(:) <=0 ) ) CALL errore(subname,'invalid irows_sgm(:) I',10) 
    IF ( ANY( opr%icols_sgm(:) <=0 ) ) CALL errore(subname,'invalid icols_sgm(:) I',10) 
+
 
 
 !
