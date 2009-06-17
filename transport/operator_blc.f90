@@ -49,6 +49,9 @@
         INTEGER,      POINTER   :: icols(:)     ! indexes used to read data 
         INTEGER,      POINTER   :: irows(:)     !
         INTEGER,      POINTER   :: ivr(:,:)     ! 3D lattice vectors for H and S
+        !
+        INTEGER,      POINTER   :: icols_sgm(:) ! indexes used to read data 
+        INTEGER,      POINTER   :: irows_sgm(:) !
         INTEGER,      POINTER   :: ivr_sgm(:,:) ! 3D lattice vectors for Sgm
         !
         COMPLEX(dbl), POINTER   :: H(:,:,:)     ! hamiltonian mtrx elements
@@ -99,6 +102,8 @@ CONTAINS
       obj%tag=" " 
       NULLIFY( obj%icols )
       NULLIFY( obj%irows )
+      NULLIFY( obj%icols_sgm )
+      NULLIFY( obj%irows_sgm )
       NULLIFY( obj%H )
       NULLIFY( obj%S )
       NULLIFY( obj%sgm )
@@ -140,10 +145,12 @@ CONTAINS
       obj2%ik = obj1%ik
       obj2%tag = TRIM( obj1%tag )
       !
-      IF ( ASSOCIATED( obj1%icols ) )  obj2%icols = obj1%icols
-      IF ( ASSOCIATED( obj1%irows ) )  obj2%irows = obj1%irows
-      IF ( ASSOCIATED( obj1%H ) )          obj2%H = obj1%H
-      IF ( ASSOCIATED( obj1%S ) )          obj2%S = obj1%S
+      IF ( ASSOCIATED( obj1%icols ) )    obj2%icols = obj1%icols
+      IF ( ASSOCIATED( obj1%irows ) )    obj2%irows = obj1%irows
+      IF ( ASSOCIATED( obj1%icols_sgm ) )  obj2%icols_sgm = obj1%icols_sgm
+      IF ( ASSOCIATED( obj1%irows_sgm ) )  obj2%irows_sgm = obj1%irows_sgm
+      IF ( ASSOCIATED( obj1%H ) )        obj2%H = obj1%H
+      IF ( ASSOCIATED( obj1%S ) )        obj2%S = obj1%S
       IF ( ASSOCIATED( obj1%sgm ) )      obj2%sgm = obj1%sgm
       IF ( ASSOCIATED( obj1%aux ) )      obj2%aux = obj1%aux
       IF ( ASSOCIATED( obj1%ivr ) )      obj2%ivr = obj1%ivr
@@ -327,6 +334,20 @@ CONTAINS
           !
       ENDIF
       !
+      IF ( lhave_corr_ .AND. .NOT. ASSOCIATED( obj%irows_sgm ) ) THEN
+          !
+          ALLOCATE( obj%irows_sgm(dim1), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating irows_sgm',ABS(ierr))
+          !
+      ENDIF
+      !
+      IF ( lhave_corr_ .AND. .NOT. ASSOCIATED( obj%icols_sgm ) ) THEN
+          !
+          ALLOCATE( obj%icols_sgm(dim2), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating icols_sgm',ABS(ierr))
+          !
+      ENDIF
+      !
       IF ( PRESENT( nrtot ) .AND. .NOT. ASSOCIATED( obj%ivr ) ) THEN
           !
           ALLOCATE( obj%ivr(3,nrtot), STAT=ierr )
@@ -369,6 +390,14 @@ CONTAINS
       IF ( ASSOCIATED( obj%icols ) ) THEN
           DEALLOCATE( obj%icols, STAT=ierr)
           IF ( ierr/=0 ) CALL errore(subname,'deallocating icols',ABS(ierr))
+      ENDIF
+      IF ( ASSOCIATED( obj%irows_sgm ) ) THEN
+          DEALLOCATE( obj%irows_sgm, STAT=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating irows_sgm',ABS(ierr))
+      ENDIF
+      IF ( ASSOCIATED( obj%icols_sgm ) ) THEN
+          DEALLOCATE( obj%icols_sgm, STAT=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating icols_sgm',ABS(ierr))
       ENDIF
       IF ( ASSOCIATED( obj%aux ) ) THEN
           DEALLOCATE( obj%aux, STAT=ierr)

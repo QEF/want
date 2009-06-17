@@ -51,8 +51,8 @@
    !
    LOGICAL                   :: found, ivr_from_input, lhave_ovp
    INTEGER                   :: ind, ivr_aux(3), ivr_input, nr_aux(3)
-   INTEGER                   :: ncols, nrows
-   CHARACTER(nstrx)          :: cols, rows
+   INTEGER                   :: ncols, nrows, ncols_sgm, nrows_sgm
+   CHARACTER(nstrx)          :: cols, rows, cols_sgm, rows_sgm
    CHARACTER(nstrx)          :: filein 
 
    !
@@ -92,6 +92,16 @@
    IF( .NOT. found ) rows = 'all'
    CALL change_case( rows, 'lower')
    !
+   CALL iotk_scan_attr(attr, 'cols_sgm', cols_sgm, FOUND=found, IERR=ierr)
+   IF (ierr/=0) CALL errore(subname, 'searching for cols_sgm', ABS(ierr) )
+   IF( .NOT. found ) cols_sgm = TRIM(cols)
+   CALL change_case( cols_sgm, 'lower')
+   !
+   CALL iotk_scan_attr(attr, 'rows_sgm', rows_sgm, FOUND=found, IERR=ierr)
+   IF (ierr/=0) CALL errore(subname, 'searching for rows_sgm', ABS(ierr) )
+   IF( .NOT. found ) rows_sgm = TRIM(rows)
+   CALL change_case( rows_sgm, 'lower')
+   !
    CALL iotk_scan_attr(attr, 'ivr', ivr_input, FOUND=ivr_from_input, IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching for ivr', ABS(ierr) )
 
@@ -106,17 +116,32 @@
    !
    IF ( TRIM(rows) == "all" ) rows="1-"//TRIM( int2char(dim1) )
    IF ( TRIM(cols) == "all" ) cols="1-"//TRIM( int2char(dim2) )
+   !
+   IF ( TRIM(rows_sgm) == "all" ) rows_sgm="1-"//TRIM( int2char(dim1) )
+   IF ( TRIM(cols_sgm) == "all" ) cols_sgm="1-"//TRIM( int2char(dim2) )
 
    !
    ! get the number of required rows and cols
    CALL parser_replica( rows, nrows, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string I',ABS(ierr))
-   !
    CALL parser_replica( cols, ncols, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string I',ABS(ierr))
    ! 
    IF ( nrows /= dim1 ) CALL errore(subname,'invalid number of rows',3)
    IF ( ncols /= dim2 ) CALL errore(subname,'invalid number of cols',3)
+   !
+   IF ( opr%lhave_corr ) THEN
+       !
+       CALL parser_replica( rows_sgm, nrows_sgm, IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows_sgm string I',ABS(ierr))
+       CALL parser_replica( cols_sgm, ncols_sgm, IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols_sgm string I',ABS(ierr))
+       !  
+       IF ( nrows_sgm /= dim1 ) CALL errore(subname,'invalid number of rows_sgm',3)
+       IF ( ncols_sgm /= dim2 ) CALL errore(subname,'invalid number of cols_sgm',3)
+       !
+   ENDIF
+
    !
    ! get the actual indexes for rows and cols
    CALL parser_replica( rows, nrows, opr%irows, IERR=ierr)
@@ -128,6 +153,22 @@
    ! simple check
    IF ( ANY( opr%irows(:) <=0 ) ) CALL errore(subname,'invalid irows(:) I',10) 
    IF ( ANY( opr%icols(:) <=0 ) ) CALL errore(subname,'invalid icols(:) I',10) 
+
+   !
+   ! correlation data
+   IF ( opr%lhave_corr ) THEN
+       !
+       CALL parser_replica( rows_sgm, nrows_sgm, opr%irows_sgm, IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string II',ABS(ierr))
+       !
+       CALL parser_replica( cols_sgm, ncols_sgm, opr%icols_sgm, IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string II',ABS(ierr))
+       !
+       ! simple check
+       IF ( ANY( opr%irows_sgm(:) <=0 ) ) CALL errore(subname,'invalid irows_sgm(:) I',10) 
+       IF ( ANY( opr%icols_sgm(:) <=0 ) ) CALL errore(subname,'invalid icols_sgm(:) I',10) 
+       !
+   ENDIF
 
 
 !

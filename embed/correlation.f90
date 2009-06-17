@@ -339,7 +339,7 @@ CONTAINS
           DO j=1,opr%dim2
           DO i=1,opr%dim1
               !
-              caux_small(i, j, ir_par) = caux( opr%irows(i), opr%icols(j), ind )
+              caux_small(i, j, ir_par) = caux( opr%irows_sgm(i), opr%icols_sgm(j), ind )
               !
           ENDDO
           ENDDO
