@@ -192,15 +192,39 @@ depend on the calculation_type variable:
 each subcard (tag) may contain a number of attribute according to the format 
 (XML compilant):
 
-<Hwhatever cols="" rows="" />
+<Hwhatever    rows="" cols=""  [ rows_sgm="" cols_sgm="" ivr="" ]  />
 
-cols (rows)   STRING 
+rows (cols)   STRING 
               The string describing which index should be considered to define 
-              the columns (rows) of the specific H submatrix. The format in the 
+              the rows (columns) of the specific H submatrix. The format in the 
               is quite standard, according e.g. to the default for printing programs:
               "1-3,5,7-9" stands for "1,2,3,5,7,8,9", and so on. The string "ALL"
               is allowed as well, being equivalent to "1-Nmax".
               DEFAULT : "ALL"
+
+rows_sgm      STRING
+(cols_sgm)    as above, but only concerned the dimensions of correlation self-energies
+              read from file. If the flags are not given, rows="" and cols="" above
+              are used instead.
+              DEFAULT : rows, cols
+
+filein        STRING
+              specify a different file to read the data.
+              DEFAULT : use the one given in the INPUT_CONDUCTOR namelist
+
+ivr           STRING
+              re-define the index of the R vector [crystal units along
+              the transport direction, or idir], to be used to read
+              H_ij(R) for some specific hamiltonian block.
+              Typical values are 0 or 1.
+              DEFAULT : use 0 for H00_C, H00_R, H00_L, 
+                        use 1 for H01_L, H01_L, H_LC, H_CR
+
+idir          STRING
+              when specified, re-define tra transport direction for the 
+              specific hamiltonian block.
+              DEFAULT : use the one given in the INPUT_CONDUCTOR namelist
+              
 
 ==============================================================================
 
