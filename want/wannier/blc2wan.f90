@@ -239,7 +239,7 @@ END PROGRAM blc2wan
       COMPLEX(dbl), ALLOCATABLE :: oprk(:,:,:), cutot(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: aux(:), work(:,:)
       !
-      REAL(dbl)                 :: arg, rtmp
+      REAL(dbl)                 :: arg
       CHARACTER(nstrx)          :: filename
       CHARACTER(nstrx)          :: attr, str, grid_units, analyticity
       !

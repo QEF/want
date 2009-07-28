@@ -207,7 +207,7 @@ CONTAINS
            ! get data
            !
            IF ( mpime == iproc_g( ik_g ) ) THEN
-               Mkb_aux = Mkb(:,:,:,ik)
+               Mkb_aux = Mkb(:,:,1:nb/2,ik)
            ENDIF
            ! 
            CALL timing ( 'mp_get_ovp', OPR='start' )

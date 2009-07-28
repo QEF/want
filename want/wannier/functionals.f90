@@ -329,7 +329,7 @@ CONTAINS
     ! Default value: no gradient correction on correlation
     if (igcc == notset) call set_dft_value (igcc, 0)
 
-    dft = dftout
+    dft = TRIM(dftout)
 
     dftout = exc (iexch) //'-'//corr (icorr) //'-'//gradx (igcx) //'-' &
          &//gradc (igcc)

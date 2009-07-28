@@ -80,7 +80,7 @@
       !
       ! do the main task
       !      
-      CALL do_plot( wann, datatype, assume_ncpp, uspp_augmentation, output_fmt, &
+      CALL do_plot( wann, datatype, uspp_augmentation, output_fmt, &
                     collect_wf, r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3)
 
       !
@@ -214,7 +214,7 @@ END PROGRAM plot_main
 
 
 !********************************************************
-   SUBROUTINE do_plot( wann, datatype, assume_ncpp, uspp_augmentation, output_fmt, &
+   SUBROUTINE do_plot( wann, datatype, uspp_augmentation, output_fmt, &
                        collect_wf, r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3 )
    !********************************************************
    !
@@ -263,7 +263,6 @@ END PROGRAM plot_main
       !
       CHARACTER(*)     :: wann
       CHARACTER(*)     :: datatype          
-      LOGICAL          :: assume_ncpp       
       LOGICAL          :: uspp_augmentation 
       CHARACTER(*)     :: output_fmt        
       LOGICAL          :: collect_wf        
