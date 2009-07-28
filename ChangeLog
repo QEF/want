@@ -4,6 +4,9 @@
 =======================================================
 
 
+28 Jul 2009      Cleanup using gfortran debug options; couple of more serious
+                 bugs (out-of-bound arrays) fixed. (AF)
+
 17 Jun 2009      Read in of self-energy generalized to take into account different
                  dimensions of sgm wrt H or S. Bug fixed in operator_* system. (AF)
 

@@ -50,8 +50,8 @@
    INTEGER       :: i, j, m, ik, ik_g, ir, inorm, imax, imin
    INTEGER       :: ierr
    REAL(dbl)     :: norm, rmod, fact
-   REAL(dbl)     :: arg
-   COMPLEX(dbl)  :: phase
+!   REAL(dbl)     :: arg
+!   COMPLEX(dbl)  :: phase
    COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)
  
 #ifdef __CHECK_HAMILTONIAN

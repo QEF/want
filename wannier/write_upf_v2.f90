@@ -47,7 +47,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
    TYPE(pseudo_config),OPTIONAL,INTENT(IN) :: conf
    !
    CHARACTER(len=iotk_attlenx) :: attr
-   INTEGER :: ierr      ! /= 0 if something went wrong
    !
    ! Initialize the file
    CALL iotk_write_attr(attr, 'version', TRIM(upf%nv), first=.true.)
@@ -101,7 +100,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       TYPE(pseudo_config),OPTIONAL,INTENT(IN) :: conf
       !
       INTEGER :: nb ! aux counter
-      INTEGER :: ierr ! /= 0 if something went wrong
       !
       CALL iotk_write_begin(u,'PP_INFO')
       ! All the section has to fit in a comment, otherwise iotk will complain:
@@ -207,11 +205,8 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
 
       CHARACTER(len=iotk_attlenx) :: attr
-      !
-      INTEGER :: nw
       !
       ! Write HEADER section with some initialization data
          !CALL iotk_write_attr(attr, 'version',       upf%nv, first=.true., newline=.true.)
@@ -255,7 +250,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
 
       CHARACTER(len=iotk_attlenx) :: attr
       !
@@ -278,7 +272,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
 
       CHARACTER(len=iotk_attlenx) :: attr
       !
@@ -392,7 +385,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
 
       CHARACTER(len=iotk_attlenx) :: attr
       !
@@ -422,7 +414,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
 
       CHARACTER(len=iotk_attlenx) :: attr
       !
@@ -461,7 +452,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
       !
       CHARACTER(len=iotk_attlenx) :: attr
       !
@@ -496,11 +486,8 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
       !
       CHARACTER(len=iotk_attlenx) :: attr
-      !
-      INTEGER :: nb
 
       IF (.not. upf%tpawp ) RETURN
 
@@ -523,7 +510,6 @@ SUBROUTINE write_upf_v2(u, upf, conf) !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(IN)  :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
       !
       CHARACTER(len=iotk_attlenx) :: attr
       !

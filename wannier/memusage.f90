@@ -48,6 +48,8 @@
    INTEGER  :: tmem
 #endif
 
+100 FORMAT ( 4x, a20,':', f15.3, ' MB')
+
    memsum = 0.0_dbl
    !
    IF ( ionode ) THEN
@@ -161,7 +163,6 @@
       !
    ENDIF
 
-100 FORMAT ( 4x, a20':', f15.3 ' MB')
 
 END SUBROUTINE memusage
 

@@ -145,7 +145,7 @@
        ALLOCATE( tmp(3,nkpts_tot), STAT=ierr )
           IF (ierr/=0) CALL errore('get_points', 'allocating tmp', ABS(ierr) )
           !
-       tmp(:,:) = kpt(:,:)
+       tmp(:,:) = kpt(:,1:nkpts_tot)
        !
        CALL cart2cry(tmp, bvec)
        !

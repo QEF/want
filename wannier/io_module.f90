@@ -176,7 +176,8 @@
            !
            ! set the filename
            !
-           IF ( ionode ) WRITE(stdout, "(2x, 'checking for fmt ',a,'... ', $)" ) TRIM( fmt_searched(i) )
+           IF ( ionode ) WRITE(stdout, "(2x, 'checking for fmt ',a,'... ')", advance='no' ) &
+                         TRIM( fmt_searched(i) )
            !
            IF ( TRIM( fmt_searched(i) ) == 'crystal'    .OR.  &
                 TRIM( fmt_searched(i) ) == 'wannier90'  ) THEN

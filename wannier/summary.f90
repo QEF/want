@@ -245,7 +245,7 @@ CONTAINS
            WRITE(iunit, '(4x, 4("-"), 1x, 11("-"), 1x, 8("-"), 1x, 36("-"),1x,9("-"),1x,7("-"))')
            DO i = 1, dimwann
               str = "  "
-              IF ( TRIM(trial(i)%type) == 'atomic' ) str = symb(trial(i)%iatom)
+              IF ( TRIM(trial(i)%type) == 'atomic' ) str = TRIM(symb(trial(i)%iatom))
               WRITE(iunit, "(4x,i3,3x,a6, 2x,a2,1x,i3,1x,i3,3x,'(',3f11.6,' )',f9.5,1x,f7.3)") &
                      i, TRIM(trial(i)%type), str, trial(i)%l, trial(i)%m,  &
                      center_cart1(:,i), trial(i)%decay, trial(i)%weight
@@ -258,7 +258,7 @@ CONTAINS
            WRITE(iunit, '(4x, 4("-"), 2x, 12("-"), 2x, 8("-"), 3x, 36("-"),3x,9("-"))')
            DO i = 1, dimwann
               str = "  "
-              IF ( TRIM(trial(i)%type) == 'atomic' ) str = symb(trial(i)%iatom)
+              IF ( TRIM(trial(i)%type) == 'atomic' ) str = TRIM(symb(trial(i)%iatom))
               WRITE(iunit, "(4x,i3,4x,a6, 2x,a2, 3x, i3,1x,i3,4x,'(',3f11.6,' )',2x,f9.5)") &
                      i, TRIM(trial(i)%type), str, trial(i)%l, trial(i)%m,  &
                      center_cart1(:,i), trial(i)%decay
@@ -484,7 +484,7 @@ CONTAINS
                !
                WRITE( iunit, "()" )
                DO ik=1,nkpts_g
-                   WRITE(iunit, "(4x, 'k(' i5, ' )  --> ', i5, '  frozen states')") ik, dimfroz(ik)
+                   WRITE(iunit, "(4x, 'k(', i5, ' )  --> ', i5, '  frozen states')") ik, dimfroz(ik)
                ENDDO
                !
            ENDIF

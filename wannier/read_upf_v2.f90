@@ -125,10 +125,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       IMPLICIT NONE
       INTEGER,INTENT(IN)             :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
-      INTEGER                     :: ierr ! /= 0 if something went wrong
       CHARACTER(len=iotk_attlenx) :: attr
-      !
-      INTEGER :: nw
       !
       ! Read HEADER section with some initialization data
       CALL iotk_scan_empty(u, 'PP_HEADER', attr=attr)
@@ -175,9 +172,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
       TYPE(radial_grid_type),OPTIONAL,INTENT(INOUT),TARGET :: grid
       !
-      INTEGER                     :: ierr ! /= 0 if something went wrong
       CHARACTER(len=iotk_attlenx) :: attr
-      LOGICAL :: found
       !
       CALL iotk_scan_begin(u, 'PP_MESH', attr=attr)
 
@@ -225,10 +220,9 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
       CHARACTER(len=iotk_attlenx) :: attr
       !
-      INTEGER :: nb,mb,ln,lm,l,nmb,ierr=0
+      INTEGER :: nb,mb,ln,lm,l,nmb
       !INTEGER :: nb_=-1,mb_=-1,l_=-1,nmb_=-1
       REAL(DP):: zeros(upf%mesh)
-      LOGICAL :: isnull, found
       zeros=0._dp
       !
       ! modified by AF
@@ -371,7 +365,6 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
       CHARACTER(len=iotk_attlenx) :: attr
       !
       INTEGER :: nw
@@ -409,7 +402,6 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
       CHARACTER(len=iotk_attlenx) :: attr
       !
       INTEGER :: nb
@@ -438,7 +430,6 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
 
       CHARACTER(len=iotk_attlenx) :: attr
       !
@@ -479,7 +470,6 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
 
       !
       CHARACTER(len=iotk_attlenx) :: attr
@@ -543,7 +533,6 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       IMPLICIT NONE
       INTEGER,INTENT(IN)           :: u    ! i/o unit
       TYPE(pseudo_upf),INTENT(INOUT) :: upf  ! the pseudo data
-      INTEGER :: ierr ! /= 0 if something went wrong
       !
       CHARACTER(len=iotk_attlenx) :: attr
       !
