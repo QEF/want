@@ -36,6 +36,7 @@ MANUAL=" Usage
 #
 # macros
 SUFFIX=_abi
+if [ -z "$ABINIT_BIN" ] ; then exit 0 ; fi
 
 #
 # evaluate the starting choice about what is to run 

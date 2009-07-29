@@ -51,7 +51,7 @@ case $INPUT in
    (dos)            DOS=yes ;;
    (bands)          BANDS=yes ;;
    (conductor)      CONDUCTOR=yes ;;
-   (all)            DOS=yes ; BANDS=yes ; CONDUCTOR=yes ;;
+   (all,want)       DOS=yes ; BANDS=yes ; CONDUCTOR=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
