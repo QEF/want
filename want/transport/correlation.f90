@@ -161,14 +161,14 @@ CONTAINS
       !
       CALL operator_blc_allocate( dimC, dimC, nkpts_par, NRTOT_SGM=nrtot_corr, &
                                   LHAVE_CORR=.TRUE., OBJ=blc_00C)
-      CALL operator_blc_allocate( dimL, dimC, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_LC)
       CALL operator_blc_allocate( dimC, dimR, nkpts_par, NRTOT_SGM=nrtot_corr, &
                                   LHAVE_CORR=.TRUE., OBJ=blc_CR)
+      CALL operator_blc_allocate( dimL, dimC, nkpts_par, NRTOT_SGM=nrtot_corr, &
+                                  LHAVE_CORR=.TRUE., OBJ=blc_LC)
       !
       blc_00C%ivr_sgm = ivr_corr
-      blc_LC%ivr_sgm  = ivr_corr
       blc_CR%ivr_sgm  = ivr_corr
+      blc_LC%ivr_sgm  = ivr_corr
       !
       DEALLOCATE ( ivr_corr, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )

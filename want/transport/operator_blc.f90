@@ -145,16 +145,16 @@ CONTAINS
       obj2%ik = obj1%ik
       obj2%tag = TRIM( obj1%tag )
       !
-      IF ( ASSOCIATED( obj1%icols ) )    obj2%icols = obj1%icols
-      IF ( ASSOCIATED( obj1%irows ) )    obj2%irows = obj1%irows
+      IF ( ASSOCIATED( obj1%icols ) )      obj2%icols = obj1%icols
+      IF ( ASSOCIATED( obj1%irows ) )      obj2%irows = obj1%irows
       IF ( ASSOCIATED( obj1%icols_sgm ) )  obj2%icols_sgm = obj1%icols_sgm
       IF ( ASSOCIATED( obj1%irows_sgm ) )  obj2%irows_sgm = obj1%irows_sgm
-      IF ( ASSOCIATED( obj1%H ) )        obj2%H = obj1%H
-      IF ( ASSOCIATED( obj1%S ) )        obj2%S = obj1%S
-      IF ( ASSOCIATED( obj1%sgm ) )      obj2%sgm = obj1%sgm
-      IF ( ASSOCIATED( obj1%aux ) )      obj2%aux = obj1%aux
-      IF ( ASSOCIATED( obj1%ivr ) )      obj2%ivr = obj1%ivr
-      IF ( ASSOCIATED( obj1%ivr_sgm ) )  obj2%ivr_sgm = obj1%ivr_sgm
+      IF ( ASSOCIATED( obj1%H ) )          obj2%H = obj1%H
+      IF ( ASSOCIATED( obj1%S ) )          obj2%S = obj1%S
+      IF ( ASSOCIATED( obj1%sgm ) )        obj2%sgm = obj1%sgm
+      IF ( ASSOCIATED( obj1%aux ) )        obj2%aux = obj1%aux
+      IF ( ASSOCIATED( obj1%ivr ) )        obj2%ivr = obj1%ivr
+      IF ( ASSOCIATED( obj1%ivr_sgm ) )    obj2%ivr_sgm = obj1%ivr_sgm
       !
       obj2%alloc = obj1%alloc
       !
@@ -344,14 +344,18 @@ CONTAINS
           !
       ENDIF
       !
-      IF ( PRESENT( nrtot ) .AND. .NOT. ASSOCIATED( obj%ivr ) ) THEN
+      IF ( PRESENT( nrtot ) .AND. nrtot /= 0 ) THEN
+          !
+          IF ( ASSOCIATED( obj%ivr ) ) CALL errore(subname,'ivr already alloc', 10)
           !
           ALLOCATE( obj%ivr(3,nrtot), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'allocating ivr',ABS(ierr))
           !
       ENDIF
       !
-      IF ( PRESENT( nrtot_sgm ) .AND. .NOT. ASSOCIATED( obj%ivr_sgm) ) THEN
+      IF ( PRESENT( nrtot_sgm ) .AND. nrtot_sgm /= 0 ) THEN
+          !
+          IF ( ASSOCIATED( obj%ivr_sgm ) ) CALL errore(subname,'ivr_sgm already alloc', 10)
           !
           ALLOCATE( obj%ivr_sgm(3,nrtot_sgm), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'allocating ivr_sgm',ABS(ierr))

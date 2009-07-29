@@ -88,7 +88,7 @@ CONTAINS
       INTEGER            :: nr_(3), nrtot_, nkpts_par_x
       INTEGER            :: ir, ik, i, j, l, ierr
       LOGICAL            :: lfound, lequiv
-      REAL(dbl)          :: arg, vaux(3)
+      REAL(dbl)          :: arg, vaux(2)
  
       CALL log_push( 'kpoints_init' )
 
@@ -210,7 +210,7 @@ CONTAINS
               !
               IF ( .NOT. use_symm ) EXIT
               !
-              lequiv = kpoints_equivalent( vaux(:), vkpt_par(:,l) )
+              lequiv = kpoints_equivalent( vaux(1:2), vkpt_par(1:2,l) )
               !
               IF ( lequiv ) THEN
                  !
@@ -230,7 +230,7 @@ CONTAINS
           ELSE
               !
               ik = ik + 1
-              vkpt_par(:,ik) = vaux(:)
+              vkpt_par(:,ik) = vaux(1:2)
               wk_par( ik )   = ONE
               !
               vkpt_par3D(:,ik) = kpoints_rmask( vkpt_par, ZERO, transport_dir )
