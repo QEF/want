@@ -22,7 +22,7 @@ AUXFLAGS="--prefix=$(INSTALL_DIR)"
 all: package-ready-stamp
 
 uncompress-stamp:
-	../../conf/missing --run tar xf $(TARBALL)
+	gunzip < $(TARBALL) | ../../conf/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
 

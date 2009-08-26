@@ -4,6 +4,8 @@
 =======================================================
 
 
+26 Aug 2009      Makefiles in plug-ins fixed for -z option in tar. (AF)
+
 28 Jul 2009      Cleanup using gfortran debug options; couple of more serious
                  bugs (out-of-bound arrays) fixed. (AF)
 
