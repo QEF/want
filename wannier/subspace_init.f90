@@ -299,7 +299,7 @@
        !
        DO ik_g = 1, nkpts_g
            !
-           WRITE(stdout,"(1x,'!',6x,'kpt =', i3, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
+           WRITE(stdout,"(1x,'!',6x,'kpt =', i5, ' ( ',3f6.3,' )    dimwin = ', i4)" ) &
                  ik_g, vkpt_g(:,ik_g), dimwin(ik_g)
            CALL mat_mul(cu, lamp(:,:,ik_g), 'N', lamp(:,:,ik_g), 'C', &
                          dimwin(ik_g), dimwin(ik_g), dimwann )

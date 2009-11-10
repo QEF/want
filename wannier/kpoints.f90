@@ -13,7 +13,7 @@
    !
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : ZERO, ONE, TWO, TPI, EPS_m6, BOHR => bohr_radius_angs
-   USE parameters,        ONLY : nstrx, nnx
+   USE parameters,        ONLY : nstrx, nnx, nkptx => npkx
    USE io_module,         ONLY : stdout
    USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : alat, avec, bvec, lattice_alloc => alloc
@@ -157,6 +157,9 @@ CONTAINS
       CHARACTER(16) :: subname="kpoints_allocate"
 
       CALL log_push ( subname )
+
+      IF ( nkpts   > nkptx ) CALL errore(subname,'too many kpts', 10)
+      IF ( nkpts_g > nkptx ) CALL errore(subname,'too many kpts', 11)
 
       !
       ! local quantities (within each pool)
@@ -539,6 +542,8 @@ CONTAINS
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
             !
        END SELECT
+       !
+       IF ( nkpts_g > nkptx ) CALL errore(subname,'too many kpts', 12)
        !
        !
        CALL kpoints_allocate( KLOCAL = .FALSE., KGLOBAL = .TRUE.)

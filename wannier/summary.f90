@@ -106,6 +106,9 @@ CONTAINS
    REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:), tau_cry(:,:)
    INTEGER                :: ierr
    CHARACTER(2)           :: str
+   !
+   ! end of declaration
+   !
 
 !
 !------------------------------
@@ -457,7 +460,7 @@ CONTAINS
            IF ( TRIM(verbosity) == "medium" .OR. TRIM(verbosity) == "high" ) THEN
                DO ik=1,nkpts_g
                    WRITE(iunit,"(1x,'!')")
-                   WRITE(iunit,"(1x,'!',4x,'kpt = ',i4,' ( ',3f9.5,' )    dimwin = ',i4)") &
+                   WRITE(iunit,"(1x,'!',4x,'kpt = ',i5,' ( ',3f9.5,' )    dimwin = ',i4)") &
                                 ik, vkpt_g(:,ik), dimwin(ik)
                    WRITE(iunit,"(1x,'!',39x,'imin = ',i4,'  imax = ',i4)") imin(ik), imax(ik)
                    WRITE(iunit,"(1x,'!',3x,'Eigenvalues:')"  )
