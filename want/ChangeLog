@@ -4,6 +4,12 @@
 =======================================================
 
 
+10 Nov 2009      npkx parameter increased to 10000. Checks added. 
+                 fmt for kpt writing updated. (AF)
+
+25 Oct 2009      Auxiliary data to plot the eigenchannel analysis are written on demand
+                 by conductor.x. Some input vars added. (AF)
+
 26 Aug 2009      Makefiles in plug-ins fixed for -z option in tar. (AF)
 
 28 Jul 2009      Cleanup using gfortran debug options; couple of more serious
