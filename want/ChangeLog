@@ -4,6 +4,11 @@
 =======================================================
 
 
+22 Nov 2009      IOTK lib updated with today's CVS version. 
+                 extlibs directory added; blas and lapack moved there;
+                 configure.ac updated using the one from espresso cvs;
+                 other install falies updated; Makefile system changed in plugins. (AF)
+
 10 Nov 2009      npkx parameter increased to 10000. Checks added. 
                  fmt for kpt writing updated. (AF)
 
