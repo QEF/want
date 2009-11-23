@@ -43,6 +43,10 @@ deps:
 # 
 # LIBS and MODULES
 #
+libextlibs: 
+	if test -d extlibs ; then \
+	( cd extlibs ; $(MAKE) ) ; fi
+
 libplugins: 
 	if test -d plugins ; then \
 	( cd plugins ; $(MAKE) ) ; fi
@@ -55,23 +59,23 @@ libctools:
 	if test -d ctools ; then \
 	( cd ctools ; $(MAKE) ) ; fi
 
-libwant: libiotk libplugins
+libwant: libextlibs libiotk libplugins
 	if test -d libs ; then \
 	( cd libs ; $(MAKE) ) ; fi
 
-wannier: libiotk libctools libwant libplugins
+wannier: libextlibs libiotk libctools libwant libplugins
 	if test -d wannier ; then \
 	( cd wannier ; $(MAKE) ) ; fi
 
-transport: libiotk libctools libwant libplugins wannier
+transport: libextlibs libiotk libctools libwant libplugins wannier
 	if test -d transport ; then \
 	( cd transport ; $(MAKE) ) ; fi
 
-embed: libiotk libctools libwant libplugins transport wannier
+embed: libextlibs libiotk libctools libwant libplugins transport wannier
 	if test -d embed ; then \
 	( cd embed ; $(MAKE) ) ; fi
 
-utility: libiotk libctools libwant libplugins wannier
+utility: libextlibs libiotk libctools libwant libplugins wannier
 	if test -d utility ; then \
 	( cd utility ; $(MAKE) ) ; fi
 
@@ -79,6 +83,7 @@ utility: libiotk libctools libwant libplugins wannier
 # CLEAN UP
 #
 clean:
+	if test -d extlibs ;   then ( cd extlibs;   $(MAKE) clean ) ; fi
 	if test -d plugins ;   then ( cd plugins;   $(MAKE) clean ) ; fi
 	if test -d iotk ;      then ( cd iotk;      $(MAKE) clean ) ; fi
 	if test -d ctools ;    then ( cd ctools;    $(MAKE) clean ) ; fi
@@ -93,11 +98,14 @@ clean_test:
 	if test -d tests ; then \
 	( cd tests ; ./run.sh -r clean ) ; fi
 
+wash_extlibs:
+	if test -d extlibs ;   then ( cd extlibs;   $(MAKE) wash ) ; fi
+	
 wash_plugins:
 	if test -d plugins ;   then ( cd plugins;   $(MAKE) wash ) ; fi
-	
 
-wash : wash_plugins clean clean_test
+
+wash : wash_extlibs wash_plugins clean clean_test
 	- /bin/rm -rf make.sys ./conf/configure.msg \
 		./conf/config.log ./conf/config.status \
 		./conf/*.lineno \

@@ -9,14 +9,30 @@ include ../make.sys
 #
 # MAIN target
 #
-all: $(PLUGINS_LIBS)
+all: libnetcdf libetsf_io
 
 
-libnetcdf:
+#
+# lib netcdf
+#
+libnetcdf: libnetcdf_$(NETCDF_LIBS_SWITCH)
+
+libnetcdf_internal:
 	 if test -d netcdf ;    then ( cd netcdf;    $(MAKE) ) ; fi
 
-libetsf_io: libnetcdf
+libnetcdf_external:
+libnetcdf_:
+	
+#
+# lib etsf_io
+#
+libetsf_io: libnetcdf libetsf_io_$(ETSF_IO_LIBS_SWITCH)
+
+libetsf_io_internal:
 	 if test -d etsf_io ;   then ( cd etsf_io;   $(MAKE) ) ; fi
+
+libetsf_io_external:
+libetsf_io_:
 
 #
 # cleaning

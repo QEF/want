@@ -7,9 +7,10 @@ The following libraries have been found:
   @blas_line@
   @lapack_line@
   @fft_line@
+  @mpi_line@
   @mass_line@
-  @etsf_io_line@    @delete@     # just temporary
-  @netcdf_line@     @delete@     # just temporary
+  @etsf_io_line@
+  @netcdf_line@
 
 Please check if that is correct.
 
