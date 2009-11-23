@@ -47,28 +47,12 @@ ylmr2.o
 #
 # main targets
 #
-all : libwant.a $(INTERNAL_LIBS)
+all : libwant.a
 
 
 libwant.a : $(OBJS) 
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
-
-blas.a : blas.o
-	$(AR) $(ARFLAGS) $@ $?
-	$(RANLIB) $@
-
-lapack_atlas.a : lapack_atlas.o dlamch.o
-	$(AR) $(ARFLAGS) $@ $?
-	$(RANLIB) $@
-
-lapack.a : lapack_atlas.o lapack_all.o dlamch.o
-	$(AR) $(ARFLAGS) $@ $?
-	$(RANLIB) $@
-
-dlamch.o : dlamch.f
-	$(F77) $(FFLAGS_NOOPT) -c $<
-
 
 #
 # cleaning
