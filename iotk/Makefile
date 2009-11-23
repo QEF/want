@@ -71,7 +71,7 @@ iotk.x: iotk.o $(OBJS)
 	                ln -sf ../iotk/iotk.x . )
     
 clean:
-	rm -rf *.x *.o *.a *core *.F90 *.mod *.d work.pc work.pcl
+	rm -rf iotk *.x *.o *.a *core *.F90 *.mod *.d work.pc work.pcl
 
 # dependencies
 include make.depend
