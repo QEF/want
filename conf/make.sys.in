@@ -19,36 +19,44 @@
 # compiler definitions
 
 @SET_MAKE@
-CC              = @cc@
-CFLAGS          = @cflags@ $(DFLAGS) $(IFLAGS)
-CPP             = @cpp@
-CPPFLAGS        = @cppflags@ $(DFLAGS) $(IFLAGS)
-F90             = @f90@
-MPIF90          = @mpif90@
-F90FLAGS        = @f90flags@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
-F77             = @f77@
-FFLAGS          = @fflags@
-FFLAGS_NOOPT    = @fflags_noopt@
-LD              = @ld@
-LDFLAGS         = @ldflags@
-AR              = @ar@
-ARFLAGS         = @arflags@
-RANLIB          = @ranlib@
+CC                  = @cc@
+CFLAGS              = @cflags@ $(DFLAGS) $(IFLAGS)
+CPP                 = @cpp@
+CPPFLAGS            = @cppflags@ $(DFLAGS) $(IFLAGS)
+F90                 = @f90@
+MPIF90              = @mpif90@
+F90FLAGS            = @f90flags@ @pre_fdflags@$(FDFLAGS) $(IFLAGS) $(MODFLAGS)
+F77                 = @f77@
+FFLAGS              = @fflags@
+FFLAGS_NOOPT        = @fflags_noopt@
+LD                  = @ld@
+LDFLAGS             = @ldflags@
+AR                  = @ar@
+ARFLAGS             = @arflags@
+RANLIB              = @ranlib@
 
 # -----------------------------
 # libraries
 
-TOPDIR          = @topdir@
-BLAS_LIBS       = @blas_libs@
-LAPACK_LIBS     = @lapack_libs@
-FFT_LIBS        = @fft_libs@
-MPI_LIBS        = @mpi_libs@
-MASS_LIBS       = @mass_libs@
-ETSF_IO_LIBS    = @etsf_io_libs@
-NETCDF_LIBS     = @netcdf_libs@
+TOPDIR              = @topdir@
+
+BLAS_LIBS           = @blas_libs@
+BLAS_LIBS_SWITCH    = @blas_libs_switch@
+
+LAPACK_LIBS         = @lapack_libs@
+LAPACK_LIBS_SWITCH  = @lapack_libs_switch@
+
+FFT_LIBS            = @fft_libs@
+MPI_LIBS            = @mpi_libs@
+MASS_LIBS           = @mass_libs@
+
+ETSF_IO_LIBS        = @etsf_io_libs@
+ETSF_IO_LIBS_SWITCH = @etsf_io_libs_switch@
 #
-INTERNAL_LIBS   = @internal_libs@
-PLUGINS_LIBS    = @plugins_libs@
+NETCDF_LIBS         = @netcdf_libs@
+NETCDF_LIBS_SWITCH  = @netcdf_libs_switch@
+#
+
 
 # -----------------------------
 # application-specific settings
