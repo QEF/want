@@ -4,22 +4,21 @@
 # script (configure) in conf/
 # Dependencies may be also directly generated 
 #
-#================================================================
+##================================================================
+##
+#MANUAL=" Usage
+#   configure [-h, --help] [<conf_flags>]
 #
-MANUAL=" Usage
-   configure [-h, --help] [-d, --deps] [<conf_flags>]
-
- -h, --help           print this manual    
- -d, --deps           generate f90 dependencies            
- <conf_flags>         these flags will be passed to 
-                      the autoconf configure
-
- After configuration, the make.sys file will created in the
- WanT home (current) directory
- 
-"
+# -h, --help           print this manual    
+# <conf_flags>         these flags will be passed to 
+#                      the autoconf configure
 #
-#================================================================
+# After configuration, the make.sys file will created in the
+# WanT home (current) directory
+# 
+#"
+##
+##================================================================
 #
 
 
@@ -31,24 +30,21 @@ if [ "$auxdir" != "configure" ] ; then cd $auxdir ; fi
 #
 # detect what to do
 #
-makedeps=
-configure=
-help=
+configure=yes
 
-#
-case $1 in
-  ("-d" | "--deps" )      makedeps=yes  ;;
-  ("-c" | "--conf" )      configure=yes  ;;
-  ("-h" | "--help" )      help=yes ;;
-  (*)                     configure=yes ;;
-esac
+##
+#case $1 in
+#  ("-c" | "--conf" )      configure=yes  ;;
+#  ("-h" | "--help" )      help=yes ;;
+#  (*)                     configure=yes ;;
+#esac
 
-#
-# print manual
-#
-if [ "$help" = "yes" ] ; then
-   echo "$MANUAL"  ; exit 0 
-fi
+##
+## print manual
+##
+#if [ "$help" = "yes" ] ; then
+#   echo "$MANUAL"  ; exit 0 
+#fi
 
 
 #
@@ -80,18 +76,6 @@ if [ "$configure" = "yes" ] ; then
    #
 fi
 
-
-#
-# running dependency generator
-#
-if [ "$makedeps" = "yes" ] ; then
-
-   echo
-   echo checking dependencies...
-   #
-   ./conf/makedeps.sh
-fi
-#
 
 exit 0
 
