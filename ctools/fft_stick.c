@@ -9,16 +9,7 @@
 #include "ctools.h"
 
 #if defined __FFTW
-
-#if defined __USE_INTERNAL_FFTW
 #  include "fftw.c"
-#else
-#  if defined __FFTW_WITH_SIZE
-#    include <dfftw.h>
-#  else
-#    include <fftw.h>
-#  endif
-#endif
 
 int F77_FUNC_ (create_plan_1d, CREATE_PLAN_1D)(fftw_plan *p, int *n, int *idir)
 {
@@ -59,7 +50,10 @@ int F77_FUNC_ (create_plan_3d, CREATE_PLAN_3D)
 {
    fftw_direction dir = ( (*idir < 0) ? FFTW_FORWARD : FFTW_BACKWARD );
    *p = fftw3d_create_plan(*l, *m, *n, dir, FFTW_ESTIMATE | FFTW_IN_PLACE);
-   if( *p == NULL ) fprintf(stderr," *** CREATE_PLAN_3D: warning empty plan ***\n");
+   if( *p == NULL ) {
+	fprintf(stderr," *** CREATE_PLAN_3D: warning empty plan ***\n");
+	fprintf(stderr," *** input was (n,m,l,dir): %d %d %d %d ***\n", *l, *m, *n, *idir);
+   }
 /*   printf(" pointer size = %d, value = %d\n", sizeof ( *p ), *p ); */
    return 0;
 }
@@ -135,6 +129,36 @@ int F77_FUNC_ ( fftw_inplace_drv_3d, FFTW_INPLACE_DRV_3D )
 {
    fftwnd( *p, (*nfft), a, (*inca), (*idist), 0, 0, 0 );
    return 0;
+}
+
+int F77_FUNC_ (fft_x_stick_single, FFT_X_STICK_SINGLE)
+(fftw_plan *p, FFTW_COMPLEX *a, int *nx, int *ny, int *nz, int *ldx, int *ldy )
+{
+
+   int i, j, ind;
+   int xstride, bigstride;
+   int xhowmany, xidist;
+   double * ptr;
+
+/* trasform  along x and y */
+   bigstride = (*ldx) * (*ldy);
+
+   xhowmany = (*ny);
+   xstride  = 1;
+   xidist   = (*ldx);
+
+   fftw(*p,xhowmany,a,xstride,xidist,0,0,0);
+
+   return 0;
+}
+
+
+int F77_FUNC_ (fft_z_stick_single, FFT_Z_STICK_SINGLE)
+  (fftw_plan *p, FFTW_COMPLEX *a, int *ldz)
+{
+  fftw(*p, 1,a, 1, 0, 0, 0, 0);
+
+  return 0;
 }
 
 /* Computing the N-Dimensional FFT 
